@@ -4,21 +4,25 @@ TensorFEM is a differentiable structural finite-element toolkit built on
 PyTorch. It targets verification-first engineering analysis, inverse problems,
 design optimization, and AI-assisted digital twins.
 
-## Current capability (v0.2)
+## Capability maturity (v0.3)
 
-- 2D linear-elastic truss elements
-- Dense differentiable assembly (CPU/CUDA)
-- Displacement boundary conditions and nodal forces
-- Linear static solution
-- Displacement, reaction, strain, stress, axial force and strain energy
-- Analytical single-bar benchmark
-- Three-bar structural example
-- Automatic differentiation through material and section parameters
-- 2D Euler--Bernoulli beam/frame elements and distributed loads
-- CST and fully integrated Q4 plane stress/plane strain elements
-- Consistent-mass Euler--Bernoulli beam modal analysis
-- Linear eigenvalue buckling for beam-columns
-- Fail-closed benchmark evidence with strict relative error below 3%
+| Capability | Status | Verification |
+|---|---|---|
+| 2-D truss and frame | stable | analytical bar and cantilever |
+| CST/Q4 continuum | stable | patch tests and Cook membrane |
+| Timoshenko beam | stable | deep/slender cantilevers |
+| modal, Newmark dynamics, linear buckling | stable | analytical beam, SDOF and Euler columns |
+| TET4/HEX8 solids | stable | patch, distortion and bar-mode cases |
+| Mindlin plate | stable | sinusoidal-load thin/thick plate |
+| geometric nonlinearity and plasticity | stable kernels | shallow arch and return mapping |
+| frictionless contact | stable kernel | complementarity and penalty spring |
+| flat shell and cohesive law | stable kernels | energy identities and fracture energy |
+| general fracture, advanced contact, sparse/distributed solvers | planned | not advertised |
+
+Stable scalar benchmarks are executed through a fail-closed registry. Every
+entry records its source, computed and reference values, relative error and
+tolerance; passing requires `error < tolerance <= 3%`. Zero-reference patch
+tests remain explicit invariants and are not misreported as relative errors.
 
 ## Quick start
 
@@ -26,7 +30,7 @@ design optimization, and AI-assisted digital twins.
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-tensorfem benchmark
+tensorfem verify --output benchmark-evidence.json
 pytest
 ```
 
