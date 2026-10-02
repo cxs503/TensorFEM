@@ -14,6 +14,8 @@ def test_v040_public_industrial_api_is_importable():
         "solve_load_steps", "Tet10Model", "solve_tet10",
         "Hex20Model", "solve_hex20", "project_point_to_polyline",
         "update_node_polyline_contact",
+        "gmres", "solve_multiple_rhs", "PlasticBarContact",
+        "coupled_bar_contact_problem",
     }
     assert required <= set(tensorfem.__all__)
     assert all(hasattr(tensorfem, name) for name in required)

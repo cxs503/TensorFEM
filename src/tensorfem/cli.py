@@ -24,9 +24,9 @@ def main() -> None:
             "stable": [
                 "2-D truss/frame/continuum", "modal/buckling/dynamics",
                 "TET4/HEX8/TET10/HEX20 solids", "sparse assembly and CG",
-                "adaptive nonlinear steps", "TET4 J2 plasticity",
+                "adaptive and coupled plastic-contact nonlinear steps", "TET4 J2 plasticity",
                 "thermal and sequential thermoelasticity", "model database and engineering I/O",
-                "finite-sliding 2-D frictional contact kernel",
+                "finite-sliding 2-D frictional contact kernel", "Jacobi-GMRES and multi-RHS sparse solves",
             ],
             "experimental": [
                 "curved shell benchmarks", "3-D surface contact and self-contact",

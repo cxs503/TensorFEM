@@ -27,6 +27,8 @@ from .finite_sliding_contact import (
     PolylineProjection, FrictionState, ContactUpdate,
     project_point_to_polyline, update_node_polyline_contact,
 )
+from .sparse_advanced import gmres, jacobi_inverse, solve_multiple_rhs
+from .coupled_nonlinear import PlasticBarContact, coupled_bar_contact_problem
 
 __version__ = "0.4.0"
 __all__ = [
@@ -49,4 +51,6 @@ __all__ = [
     "Hex20Model", "solve_hex20",
     "PolylineProjection", "FrictionState", "ContactUpdate",
     "project_point_to_polyline", "update_node_polyline_contact",
+    "gmres", "jacobi_inverse", "solve_multiple_rhs",
+    "PlasticBarContact", "coupled_bar_contact_problem",
 ]
