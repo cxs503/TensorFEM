@@ -117,8 +117,24 @@ from .dynamic_contact_extended import (
     earliest_unified_contacts, coulomb_impact,
 )
 from .large_rotation_shell_benchmark import LargeRotationResult, pure_bending_shell
+from .implicit_plastic_tangent import (
+    smooth_spd_log, implicit_update, implicit_material_tangent,
+    tet4_implicit_response,
+)
+from .multi_contact_impulse import (
+    ContactConstraint, ContactImpulseHistory, MultiContactState,
+    MultiContactResult, solve_multi_contact_impulses,
+    build_vertex_face_manifold, constraints_from_unified_events,
+)
+from .arc_length import (
+    ArcLengthPoint, ArcLengthResult, ArcLengthProblem,
+    general_shell_arc_problem, solve_arc_length,
+)
+from .von_mises_arch import (
+    ArchReference, arch_load, arch_limit_reference, trace_von_mises_arch,
+)
 
-__version__ = "0.12.0"
+__version__ = "0.13.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -193,4 +209,13 @@ __all__ = [
     "ImpactResult", "edge_edge_ccd", "spatial_hash_edge_pairs",
     "earliest_edge_contacts", "earliest_unified_contacts", "coulomb_impact",
     "LargeRotationResult", "pure_bending_shell",
+    "smooth_spd_log", "implicit_update", "implicit_material_tangent",
+    "tet4_implicit_response",
+    "ContactConstraint", "ContactImpulseHistory", "MultiContactState",
+    "MultiContactResult", "solve_multi_contact_impulses",
+    "build_vertex_face_manifold", "constraints_from_unified_events",
+    "ArcLengthPoint", "ArcLengthResult", "ArcLengthProblem",
+    "general_shell_arc_problem", "solve_arc_length",
+    "ArchReference", "arch_load", "arch_limit_reference",
+    "trace_von_mises_arch",
 ]

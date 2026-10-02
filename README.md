@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.12)
+## Capability maturity (v0.13)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -40,6 +40,9 @@ analytical or recognized benchmark evidence.
 | AD finite-plasticity tangent | stable prototype | Richardson agreement 2.06e-10 and measured 6.75x speedup |
 | edge-edge CCD and Coulomb impact | stable foundation | analytical TOI, deterministic broad phase, momentum and energy gates |
 | large-rotation pure-bending shell | qualified evidence | 4x1 tip error 0.645% and moment error 2.56e-7 |
+| local implicit finite-plasticity tangent | stable qualified kernel | dual-oracle error below 3%, near-repeated spectrum gate and 16.6x reference speedup |
+| multi-contact complementarity impulses | stable foundation | PGS nonpenetration, complementarity, friction-cone and energy gates |
+| Crisfield arc-length continuation | stable algorithm | analytical von Mises arch limit load error 0.0255% and restart verification |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

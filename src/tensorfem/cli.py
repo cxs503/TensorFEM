@@ -43,10 +43,13 @@ def main() -> None:
                 "AD finite-plasticity algorithmic tangent",
                 "edge-edge CCD, spatial hash and Coulomb impact",
                 "large-rotation shell pure-bending benchmark",
+                "local implicit finite-plasticity tangent",
+                "multi-contact complementarity impulse solver",
+                "Crisfield arc-length limit-point solver",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
-                "closed-form plastic tangent and multi-point contact complementarity",
+                "large-step closed-form plastic tangent and large contact graphs",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))
