@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.8)
+## Capability maturity (v0.9)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -27,7 +27,10 @@ analytical or recognized benchmark evidence.
 | low-order surface contact | stable kernel | TRI3/QUAD4 tributary integration, resultant balance and topology gates |
 | cylindrical shell research formulation | experimental | global nonlinear Newton/line search/restart works; wider nonlinear shell benchmarks remain |
 | axisymmetric deformable Hertz model | stable benchmark | coupled Q4/contact pressure solution reaches all four 3% gates at 40x40 |
-| finite-strain plasticity | planned | multiplicative plasticity and objective integration are not implemented |
+| multiplicative finite-strain J2 plasticity | stable prototype | objectivity, isochoric flow, dissipation, coaxial reference and restart gates |
+| low-order frictionless Mortar contact | stable prototype | force/moment patch, master-slave symmetry and nonmatching convergence |
+| Pinched Cylinder shell benchmark | qualified evidence | MacNeal-Harder 12x12 error 0.985%; shell family remains experimental |
+| general nonproportional finite plasticity/self-contact | experimental | broader path benchmarks and full contact solve remain |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

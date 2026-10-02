@@ -120,12 +120,16 @@ def solve_shell_step(mesh: CylindricalShellMesh, loads: torch.Tensor,
         target=min(1.,factor+increment); trial=committed.clone(); trial[fixed]=target*values
         accepted=False; last_norm=float("inf")
         for iteration in range(1,max_iterations+1):
-            energy,internal,K=assemble_shell(mesh,trial,tangent=True)
+            # Residual-only evaluation is much cheaper than a 24x24 element
+            # Hessian and avoids constructing a tangent after convergence.
+            energy,internal,_=assemble_shell(mesh,trial,tangent=False)
             residual=internal-target*loads; rf=residual[free]
             last_norm=float(torch.linalg.vector_norm(rf).detach())
             scale=max(float(torch.linalg.vector_norm((target*loads)[free]).detach()),1.)
             if last_norm <= absolute_tolerance+relative_tolerance*scale:
                 accepted=True; break
+            energy,internal,K=assemble_shell(mesh,trial,tangent=True)
+            residual=internal-target*loads; rf=residual[free]
             try: delta=torch.linalg.solve(K[free[:,None],free],-rf)
             except torch.linalg.LinAlgError: break
             potential=float((energy-target*torch.dot(loads,trial)).detach())

@@ -71,8 +71,20 @@ from .shell_nonlinear_step import (
     assemble_shell, solve_shell_step, write_shell_checkpoint,
     read_shell_checkpoint,
 )
+from .finite_strain_plasticity import (
+    MultiplicativeJ2State, FinitePlasticState, FinitePlasticResult,
+    update_multiplicative_j2, assemble_finite_plastic,
+    solve_finite_plastic_path,
+)
+from .mortar_contact3d import (
+    MortarContactResult, integrate_mortar_contact, self_contact_candidates,
+)
+from .pinched_cylinder import (
+    PinchedCylinderResult, pinched_cylinder_model,
+    solve_pinched_cylinder_linear, solve_pinched_cylinder_nonlinear,
+)
 
-__version__ = "0.8.0"
+__version__ = "0.9.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -119,4 +131,11 @@ __all__ = [
     "CylindricalShellMesh", "ShellIncrement", "ShellStepResult",
     "assemble_shell", "solve_shell_step", "write_shell_checkpoint",
     "read_shell_checkpoint",
+    "MultiplicativeJ2State", "FinitePlasticState", "FinitePlasticResult",
+    "update_multiplicative_j2", "assemble_finite_plastic",
+    "solve_finite_plastic_path",
+    "MortarContactResult", "integrate_mortar_contact",
+    "self_contact_candidates",
+    "PinchedCylinderResult", "pinched_cylinder_model",
+    "solve_pinched_cylinder_linear", "solve_pinched_cylinder_nonlinear",
 ]

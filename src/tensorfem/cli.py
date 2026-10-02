@@ -34,10 +34,12 @@ def main() -> None:
                 "low-order node-quadrature surface contact",
                 "total-Lagrangian TET4 Neo-Hookean elasticity",
                 "axisymmetric deformable Hertz verification model",
+                "multiplicative finite-strain J2 proportional-path prototype",
+                "low-order frictionless mortar contact foundation",
             ],
             "experimental": [
                 "global nonlinear corotational curved shell analysis",
-                "finite-strain plasticity, self-contact and mortar contact",
+                "nonproportional finite-strain plasticity and full self-contact",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))
