@@ -46,10 +46,13 @@ def main() -> None:
                 "local implicit finite-plasticity tangent",
                 "multi-contact complementarity impulse solver",
                 "Crisfield arc-length limit-point solver",
+                "fail-closed hybrid implicit/AD plastic tangent",
+                "rigid-body inertia and contact-island PGS",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
                 "large-step closed-form plastic tangent and large contact graphs",
+                "follower ring-load snap-through shell qualification",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))

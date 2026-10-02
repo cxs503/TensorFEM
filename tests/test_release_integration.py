@@ -4,8 +4,8 @@ import tensorfem
 from tensorfem.cli import main
 
 
-def test_v0130_public_industrial_api_is_importable():
-    assert tensorfem.__version__ == "0.13.0"
+def test_v0140_public_industrial_api_is_importable():
+    assert tensorfem.__version__ == "0.14.0"
     required = {
         "DofManager", "MPC", "assemble_coo", "solve_sparse_static",
         "ModelDB", "solve_adaptive", "save_checkpoint", "load_checkpoint",
@@ -32,6 +32,8 @@ def test_v0130_public_industrial_api_is_importable():
         "assemble_ad_global", "edge_edge_ccd", "pure_bending_shell",
         "implicit_material_tangent", "solve_multi_contact_impulses",
         "solve_arc_length",
+        "assemble_hybrid", "solve_rigid_contact_graph",
+        "karatas_yuksel_ring_load_audit",
     }
     assert required <= set(tensorfem.__all__)
     assert all(hasattr(tensorfem, name) for name in required)
@@ -41,6 +43,6 @@ def test_capabilities_cli_separates_stable_and_experimental(monkeypatch, capsys)
     monkeypatch.setattr("sys.argv", ["tensorfem", "capabilities"])
     main()
     payload = json.loads(capsys.readouterr().out)
-    assert payload["version"] == "0.13.0"
+    assert payload["version"] == "0.14.0"
     assert any("sparse" in item for item in payload["stable"])
     assert any("curved shell" in item for item in payload["experimental"])

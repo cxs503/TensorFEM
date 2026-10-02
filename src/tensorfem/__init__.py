@@ -133,8 +133,16 @@ from .arc_length import (
 from .von_mises_arch import (
     ArchReference, arch_load, arch_limit_reference, trace_von_mises_arch,
 )
+from .hybrid_plastic_tangent import HybridMetrics, assemble_hybrid
+from .rigid_contact_graph import (
+    RigidContact, RigidImpulseHistory, RigidContactState, RigidContactResult,
+    contact_islands, solve_rigid_contact_graph,
+)
+from .snapthrough_shell_qualification import (
+    QualificationAudit, karatas_yuksel_ring_load_audit,
+)
 
-__version__ = "0.13.0"
+__version__ = "0.14.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -218,4 +226,8 @@ __all__ = [
     "general_shell_arc_problem", "solve_arc_length",
     "ArchReference", "arch_load", "arch_limit_reference",
     "trace_von_mises_arch",
+    "HybridMetrics", "assemble_hybrid",
+    "RigidContact", "RigidImpulseHistory", "RigidContactState",
+    "RigidContactResult", "contact_islands", "solve_rigid_contact_graph",
+    "QualificationAudit", "karatas_yuksel_ring_load_audit",
 ]
