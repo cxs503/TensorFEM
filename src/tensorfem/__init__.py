@@ -150,8 +150,22 @@ from .follower_shell_load import (
     follower_pressure_force, follower_pressure_force_tangent,
     assemble_follower_pressure, general_shell_pressure_arc_problem,
 )
+from .substep_tape_tangent import (
+    SubstepTape, RetapeRequired, build_tape, replay_tape,
+    taped_material_tangent,
+)
+from .colored_frictional_contact import (
+    ColoredFrictionState, ColoredFrictionResult,
+    solve_colored_frictional_contacts,
+)
+from .contact_island_scheduler import (
+    IslandJob, IslandExecution, IslandWorkerError,
+    colored_island_jobs, deterministic_partitions, execute_island_jobs,
+    serialize_jobs, deserialize_jobs, serialize_executions,
+    deserialize_executions, available_execution_devices,
+)
 
-__version__ = "0.15.0"
+__version__ = "0.16.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -244,4 +258,12 @@ __all__ = [
     "prepare_colored_contacts", "solve_colored_contacts",
     "follower_pressure_force", "follower_pressure_force_tangent",
     "assemble_follower_pressure", "general_shell_pressure_arc_problem",
+    "SubstepTape", "RetapeRequired", "build_tape", "replay_tape",
+    "taped_material_tangent",
+    "ColoredFrictionState", "ColoredFrictionResult",
+    "solve_colored_frictional_contacts",
+    "IslandJob", "IslandExecution", "IslandWorkerError",
+    "colored_island_jobs", "deterministic_partitions", "execute_island_jobs",
+    "serialize_jobs", "deserialize_jobs", "serialize_executions",
+    "deserialize_executions", "available_execution_devices",
 ]

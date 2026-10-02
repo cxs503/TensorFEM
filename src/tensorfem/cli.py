@@ -51,11 +51,15 @@ def main() -> None:
                 "global cyclic hybrid-tangent plasticity solver",
                 "colored vectorized rigid-contact graph solver",
                 "follower shell pressure and consistent load tangent",
+                "taped adaptive-substep plastic tangent",
+                "colored vectorized frictional contact",
+                "deterministic multi-worker contact-island scheduling",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
                 "large-step closed-form plastic tangent and large contact graphs",
                 "published ring-load snap-through shell qualification data",
+                "qualified multi-GPU contact-island execution",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))
