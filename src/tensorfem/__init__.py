@@ -177,8 +177,22 @@ from .benchmark_cases import (
     hemisphere_case, run_case, write_archive, read_archive,
     compare_archives, to_legacy_evidence,
 )
+from .project_workflow import (
+    Project, ProjectModel, Material as ProjectMaterial, Section as ProjectSection,
+    ProjectStep, Load, Constraint, OutputRequest,
+    project_id, validate_project, run_project, project_from_json,
+)
+from .result_db import (
+    ResultDB, write_result_db, read_result_db, query_result_nodes,
+    iter_result_node_chunks, hemisphere_result_db,
+)
+from .shell_benchmark_suite import (
+    scordelis_case, pinched_cylinder_case, pure_bending_case,
+    classical_shell_cases, run_classical_shell_suite,
+    write_suite, read_suite, compare_suites,
+)
 
-__version__ = "0.17.0"
+__version__ = "0.18.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -286,4 +300,12 @@ __all__ = [
     "Citation", "ReferenceQuantity", "BenchmarkCase", "validate_case",
     "case_hash", "hemisphere_case", "run_case", "write_archive",
     "read_archive", "compare_archives", "to_legacy_evidence",
+    "Project", "ProjectModel", "ProjectMaterial", "ProjectSection",
+    "ProjectStep", "Load", "Constraint", "OutputRequest",
+    "project_id", "validate_project", "run_project", "project_from_json",
+    "ResultDB", "write_result_db", "read_result_db", "query_result_nodes",
+    "iter_result_node_chunks", "hemisphere_result_db",
+    "scordelis_case", "pinched_cylinder_case", "pure_bending_case",
+    "classical_shell_cases", "run_classical_shell_suite",
+    "write_suite", "read_suite", "compare_suites",
 ]

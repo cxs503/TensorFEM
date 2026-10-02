@@ -57,6 +57,9 @@ def main() -> None:
                 "versioned Model-Step-Job-Result workflow",
                 "hemisphere JSON/VTK/report post-processing",
                 "hashed versioned benchmark evidence and drift checks",
+                "safe versioned engineering project workflow",
+                "checksummed ResultDB with optional chunked HDF5 body",
+                "four-case classical shell evidence suite",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

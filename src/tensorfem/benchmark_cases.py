@@ -70,7 +70,8 @@ def validate_case(case: BenchmarkCase):
         raise ValueError("invalid reference quantity")
     if case.error_strategy!="absolute_relative" or not 0<case.tolerance<=.03:raise ValueError("unsupported error policy")
     if case.maturity not in ("experimental","qualified","stable"):raise ValueError("invalid maturity")
-    if not case.capability_boundaries or case.runner not in ("hemisphere_18deg",):raise ValueError("missing capability boundary or runner")
+    runners=("hemisphere_18deg","scordelis_lo","pinched_cylinder","pure_bending_90deg")
+    if not case.capability_boundaries or case.runner not in runners:raise ValueError("missing capability boundary or runner")
     return case
 
 
@@ -99,6 +100,15 @@ def _computed(case,tier):
     if case.runner=="hemisphere_18deg":
         from .spherical_shell import hemisphere_with_hole
         return tuple(hemisphere_with_hole(n).displacement for n in case.mesh_sequence)
+    if case.runner=="scordelis_lo":
+        from .cylindrical_shell_benchmarks import scordelis_lo_cylindrical
+        return tuple(scordelis_lo_cylindrical(n,n).probe_displacement for n in case.mesh_sequence)
+    if case.runner=="pinched_cylinder":
+        from .pinched_cylinder import solve_pinched_cylinder_linear
+        return tuple(solve_pinched_cylinder_linear(n).displacement for n in case.mesh_sequence)
+    if case.runner=="pure_bending_90deg":
+        from .large_rotation_shell_benchmark import pure_bending_shell
+        return tuple(float(pure_bending_shell(n).tip[2]) for n in case.mesh_sequence)
     raise ValueError("runner is not available")
 
 
