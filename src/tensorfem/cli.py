@@ -26,11 +26,12 @@ def main() -> None:
                 "TET4/HEX8/TET10/HEX20 solids", "sparse assembly and CG",
                 "adaptive and coupled plastic-contact nonlinear steps", "TET4 J2 plasticity",
                 "thermal and sequential thermoelasticity", "model database and engineering I/O",
-                "finite-sliding 2-D frictional contact kernel", "Jacobi-GMRES and multi-RHS sparse solves",
+                "finite-sliding 2-D/3-D frictional contact kernels", "Jacobi-GMRES and multi-RHS sparse solves",
+                "additive-Schwarz domain decomposition", "Gmsh v2/v4 mesh diagnostics and conversion",
             ],
             "experimental": [
-                "curved shell benchmarks", "3-D surface contact and self-contact",
-                "general crack propagation", "distributed solvers",
+                "curved shell benchmarks", "general self-contact and mortar contact",
+                "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))
         return

@@ -29,8 +29,14 @@ from .finite_sliding_contact import (
 )
 from .sparse_advanced import gmres, jacobi_inverse, solve_multiple_rhs
 from .coupled_nonlinear import PlasticBarContact, coupled_bar_contact_problem
+from .domain_decomposition import Subdomain, AdditiveSchwarz, solve_schwarz
+from .contact3d import (
+    FacetProjection, Contact3DState, Contact3DUpdate,
+    project_point_to_facets, update_node_facet_contact, update_contact_nodes,
+)
+from .mesh_pipeline import MeshReport, diagnose_model, read_gmsh, convert_model
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -53,4 +59,8 @@ __all__ = [
     "project_point_to_polyline", "update_node_polyline_contact",
     "gmres", "jacobi_inverse", "solve_multiple_rhs",
     "PlasticBarContact", "coupled_bar_contact_problem",
+    "Subdomain", "AdditiveSchwarz", "solve_schwarz",
+    "FacetProjection", "Contact3DState", "Contact3DUpdate",
+    "project_point_to_facets", "update_node_facet_contact", "update_contact_nodes",
+    "MeshReport", "diagnose_model", "read_gmsh", "convert_model",
 ]
