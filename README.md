@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.6)
+## Capability maturity (v0.7)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -20,9 +20,12 @@ analytical or recognized benchmark evidence.
 | adaptive nonlinear load steps, restart and plastic-contact coupling | stable core | finite-strain, elastoplastic/contact closed forms and rollback tests |
 | spatial bar geometric-plastic-contact coupling | stable benchmark | independent force-law reference, rollback and restart checks |
 | TET4 J2 elastoplasticity | stable kernel | global uniaxial loading/unloading and consistent tangent |
+| multi-element small-strain TET4 J2 paths | stable core | 12-element loading/unloading, restart and rollback verification |
 | steady/transient thermal and sequential thermoelasticity | stable | conduction, convection, decay and thermal expansion references |
 | plate, flat shell, finite-sliding 2-D/3-D contact and cohesive formulations | stable kernels | patch, energy, complementarity, friction and fracture-energy checks |
-| cylindrical shell research formulation | experimental | Scordelis-Lo below 3%; corotational kinematics now pass finite rigid-motion objectivity gates |
+| low-order surface contact | stable kernel | TRI3/QUAD4 tributary integration, resultant balance and topology gates |
+| cylindrical shell research formulation | experimental | Scordelis-Lo below 3%; objective kinematics and consistent element tangent verified |
+| Hertz reference diagnostics | verification only | analytical pressure integration passes; deformable half-space solve is not implemented |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

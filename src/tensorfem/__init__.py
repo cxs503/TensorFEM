@@ -48,8 +48,18 @@ from .structural_grid_benchmark import (
     GridBenchmarkResult, grid_spring_stiffness, analytical_mode,
     manufactured_solution, run_grid_benchmark,
 )
+from .global_plasticity import GlobalPlasticResult, solve_tet4_j2_path
+from .surface_contact3d import (
+    SurfaceContactState, SurfaceContactUpdate, HertzReference,
+    tributary_areas, initial_surface_contact_state, update_surface_contact,
+    hertz_sphere_halfspace_reference, integrate_hertz_pressure,
+)
+from .shell_consistent import (
+    ShellTangentResult, rotation_matrix_from_vector, shell_energy,
+    consistent_internal_force_tangent,
+)
 
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -83,4 +93,10 @@ __all__ = [
     "monotonic_reference_displacement",
     "GridBenchmarkResult", "grid_spring_stiffness", "analytical_mode",
     "manufactured_solution", "run_grid_benchmark",
+    "GlobalPlasticResult", "solve_tet4_j2_path",
+    "SurfaceContactState", "SurfaceContactUpdate", "HertzReference",
+    "tributary_areas", "initial_surface_contact_state", "update_surface_contact",
+    "hertz_sphere_halfspace_reference", "integrate_hertz_pressure",
+    "ShellTangentResult", "rotation_matrix_from_vector", "shell_energy",
+    "consistent_internal_force_tangent",
 ]

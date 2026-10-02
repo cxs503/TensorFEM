@@ -30,9 +30,12 @@ def main() -> None:
                 "additive-Schwarz domain decomposition", "Gmsh v2/v4 mesh diagnostics and conversion",
                 "non-diagonal structural-grid sparse benchmark",
                 "auditable 3-D bar plasticity/contact coupling benchmark",
+                "multi-element small-strain TET4 J2 load-path solver",
+                "low-order node-quadrature surface contact",
             ],
             "experimental": [
-                "objective corotational curved shell kinematics", "general self-contact and mortar contact",
+                "objective corotational curved shell with consistent element tangent",
+                "elastic-halfspace Hertz solve, self-contact and mortar contact",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))
