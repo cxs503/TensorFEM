@@ -28,6 +28,7 @@ class ArcLengthProblem:
     """Nonlinear equilibrium ``internal(u) - lambda*reference_load = 0``."""
     internal_tangent: Callable[[torch.Tensor],tuple[torch.Tensor,torch.Tensor]]
     reference_load: torch.Tensor
+    residual_tangent: Callable[[torch.Tensor,float],tuple[torch.Tensor,torch.Tensor,torch.Tensor]]|None=None
 
 
 def general_shell_arc_problem(mesh, reference_load: torch.Tensor, fixed_dofs):
@@ -76,8 +77,12 @@ def solve_arc_length(problem: ArcLengthProblem, initial: torch.Tensor, *, steps:
     points=[];accepted=0
     while accepted<steps:
         committed_u=u.clone();committed_load=load
-        internal,K=problem.internal_tangent(u)
-        try:duhat=torch.linalg.solve(K,f)
+        if problem.residual_tangent is None:
+            internal,K=problem.internal_tangent(u);residual=internal-load*f;load_derivative=-f
+        else:
+            residual,K,load_derivative=problem.residual_tangent(u,load)
+        predictor_rhs=f if problem.residual_tangent is None else -load_derivative
+        try:duhat=torch.linalg.solve(K,predictor_rhs)
         except torch.linalg.LinAlgError:return ArcLengthResult(tuple(points),False,ds)
         tangent=torch.cat((duhat,duhat.new_tensor([1.])))
         metric=torch.cat((duhat,duhat.new_tensor([load_scale])))
@@ -88,14 +93,16 @@ def solve_arc_length(problem: ArcLengthProblem, initial: torch.Tensor, *, steps:
         dl=sign*ds/float(torch.linalg.vector_norm(metric).detach());du=dl*duhat
         trial_u=u+du;trial_load=load+dl;ok=False;last=float("inf")
         for iteration in range(1,max_iterations+1):
-            internal,K=problem.internal_tangent(trial_u);res=internal-trial_load*f
+            if problem.residual_tangent is None:
+                internal,K=problem.internal_tangent(trial_u);res=internal-trial_load*f;load_derivative=-f
+            else:res,K,load_derivative=problem.residual_tangent(trial_u,trial_load)
             Du=trial_u-committed_u;Dl=trial_load-committed_load
             constraint=torch.dot(Du,Du)+(load_scale*Dl)**2-ds**2
             last=float(torch.linalg.vector_norm(torch.cat((res,constraint.reshape(1)))).detach())
             if float(torch.linalg.vector_norm(res).detach())<=tolerance and abs(float(constraint.detach()))<=tolerance*max(ds,1.):
                 ok=True;break
             A=torch.zeros((len(u)+1,len(u)+1),dtype=u.dtype,device=u.device)
-            A[:-1,:-1]=K;A[:-1,-1]=-f;A[-1,:-1]=2*Du;A[-1,-1]=2*load_scale**2*Dl
+            A[:-1,:-1]=K;A[:-1,-1]=load_derivative;A[-1,:-1]=2*Du;A[-1,-1]=2*load_scale**2*Dl
             rhs=-torch.cat((res,constraint.reshape(1)))
             try:correction=torch.linalg.solve(A,rhs)
             except torch.linalg.LinAlgError:break

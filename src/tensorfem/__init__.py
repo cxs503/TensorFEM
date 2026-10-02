@@ -141,8 +141,17 @@ from .rigid_contact_graph import (
 from .snapthrough_shell_qualification import (
     QualificationAudit, karatas_yuksel_ring_load_audit,
 )
+from .hybrid_global_solver import HybridGlobalResult, solve_hybrid_global_path
+from .colored_contact_graph import (
+    ColoredContactData, ColoredContactState, ColoredContactResult,
+    prepare_colored_contacts, solve_colored_contacts,
+)
+from .follower_shell_load import (
+    follower_pressure_force, follower_pressure_force_tangent,
+    assemble_follower_pressure, general_shell_pressure_arc_problem,
+)
 
-__version__ = "0.14.0"
+__version__ = "0.15.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -230,4 +239,9 @@ __all__ = [
     "RigidContact", "RigidImpulseHistory", "RigidContactState",
     "RigidContactResult", "contact_islands", "solve_rigid_contact_graph",
     "QualificationAudit", "karatas_yuksel_ring_load_audit",
+    "HybridGlobalResult", "solve_hybrid_global_path",
+    "ColoredContactData", "ColoredContactState", "ColoredContactResult",
+    "prepare_colored_contacts", "solve_colored_contacts",
+    "follower_pressure_force", "follower_pressure_force_tangent",
+    "assemble_follower_pressure", "general_shell_pressure_arc_problem",
 ]

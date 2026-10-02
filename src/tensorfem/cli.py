@@ -48,11 +48,14 @@ def main() -> None:
                 "Crisfield arc-length limit-point solver",
                 "fail-closed hybrid implicit/AD plastic tangent",
                 "rigid-body inertia and contact-island PGS",
+                "global cyclic hybrid-tangent plasticity solver",
+                "colored vectorized rigid-contact graph solver",
+                "follower shell pressure and consistent load tangent",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
                 "large-step closed-form plastic tangent and large contact graphs",
-                "follower ring-load snap-through shell qualification",
+                "published ring-load snap-through shell qualification data",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))
