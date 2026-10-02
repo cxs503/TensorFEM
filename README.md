@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.10)
+## Capability maturity (v0.11)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -34,6 +34,9 @@ analytical or recognized benchmark evidence.
 | adaptive nonproportional finite J2 integration | stable prototype | independent 400-substep reference, path dependence and restart gates |
 | frictional Mortar and self-contact force update | stable prototype | Coulomb return, rollback, dissipation, force and moment balance |
 | Hemispherical Shell with 18-degree hole | qualified evidence | MacNeal-Harder 12x12 error 0.690%; coarse locking evidence retained |
+| global adaptive cyclic finite plasticity | stable prototype | multi-TET Newton, 500-substep reference, rollback and restart |
+| vertex-triangle continuous collision detection | stable foundation | analytical TOI, no-tunnelling, impulse conservation and pair history |
+| general nonlinear doubly-curved shell | experimental solver | objective energy/tangent, multi-element Newton and mesh convergence gates |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

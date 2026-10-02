@@ -38,10 +38,12 @@ def main() -> None:
                 "low-order frictionless mortar contact foundation",
                 "adaptive nonproportional finite-J2 path integrator",
                 "incremental frictional mortar and self-contact force foundation",
+                "multi-TET adaptive cyclic finite-plasticity solver",
+                "vertex-triangle CCD and dynamic self-contact history",
             ],
             "experimental": [
-                "general nonlinear doubly-curved shell analysis",
-                "arbitrary cyclic finite plasticity and dynamic self-contact",
+                "general nonlinear doubly-curved shell engineering solver",
+                "closed-form plastic tangent and edge-edge/contact friction impulses",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))

@@ -96,8 +96,22 @@ from .frictional_mortar import (
 from .spherical_shell import (
     HemisphereResult, projected_shell4_stiffness, hemisphere_with_hole,
 )
+from .adaptive_global_plasticity import (
+    AdaptiveGlobalState, AdaptiveGlobalResult,
+    assemble_adaptive_global, solve_adaptive_global_path,
+)
+from .self_contact_ccd import (
+    CCDEvent, DynamicPairHistory, DynamicSelfContactState,
+    DynamicSelfContactUpdate, vertex_triangle_ccd,
+    swept_vertex_face_candidates, earliest_self_contact,
+    update_dynamic_self_contact,
+)
+from .general_shell_nonlinear import (
+    GeneralShellMesh, GeneralShellResult, general_shell_energy,
+    general_shell_force_tangent, assemble_general_shell, solve_general_shell,
+)
 
-__version__ = "0.10.0"
+__version__ = "0.11.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -158,4 +172,13 @@ __all__ = [
     "SelfContactResult", "initial_frictional_mortar_state",
     "update_frictional_mortar", "update_self_contact",
     "HemisphereResult", "projected_shell4_stiffness", "hemisphere_with_hole",
+    "AdaptiveGlobalState", "AdaptiveGlobalResult",
+    "assemble_adaptive_global", "solve_adaptive_global_path",
+    "CCDEvent", "DynamicPairHistory", "DynamicSelfContactState",
+    "DynamicSelfContactUpdate", "vertex_triangle_ccd",
+    "swept_vertex_face_candidates", "earliest_self_contact",
+    "update_dynamic_self_contact",
+    "GeneralShellMesh", "GeneralShellResult", "general_shell_energy",
+    "general_shell_force_tangent", "assemble_general_shell",
+    "solve_general_shell",
 ]
