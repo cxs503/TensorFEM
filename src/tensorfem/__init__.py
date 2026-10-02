@@ -35,8 +35,21 @@ from .contact3d import (
     project_point_to_facets, update_node_facet_contact, update_contact_nodes,
 )
 from .mesh_pipeline import MeshReport, diagnose_model, read_gmsh, convert_model
+from .corotational_shell import (
+    CorotationalState, axis_angle, corotational_cylindrical_shell4,
+    cylindrical_nodes,
+)
+from .coupled_3d_demo import (
+    Coupled3DModel, Coupled3DState, Coupled3DResponse,
+    default_coupled_3d_model, coupled_3d_problem, coupled_3d_response,
+    monotonic_reference_displacement,
+)
+from .structural_grid_benchmark import (
+    GridBenchmarkResult, grid_spring_stiffness, analytical_mode,
+    manufactured_solution, run_grid_benchmark,
+)
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -63,4 +76,11 @@ __all__ = [
     "FacetProjection", "Contact3DState", "Contact3DUpdate",
     "project_point_to_facets", "update_node_facet_contact", "update_contact_nodes",
     "MeshReport", "diagnose_model", "read_gmsh", "convert_model",
+    "CorotationalState", "axis_angle", "corotational_cylindrical_shell4",
+    "cylindrical_nodes",
+    "Coupled3DModel", "Coupled3DState", "Coupled3DResponse",
+    "default_coupled_3d_model", "coupled_3d_problem", "coupled_3d_response",
+    "monotonic_reference_displacement",
+    "GridBenchmarkResult", "grid_spring_stiffness", "analytical_mode",
+    "manufactured_solution", "run_grid_benchmark",
 ]

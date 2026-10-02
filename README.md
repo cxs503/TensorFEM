@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.5)
+## Capability maturity (v0.6)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -14,13 +14,15 @@ analytical or recognized benchmark evidence.
 | TET4, HEX8, B-bar HEX8, TET10 and HEX20 solids | stable | affine patches, locking, distortion, modal and cantilever cases |
 | sparse COO/CSR, CG/GMRES, Jacobi, multi-RHS, Dirichlet and MPC | stable core | dense equivalence, ill-conditioned/indefinite systems and independent 100k-DOF performance test |
 | additive-Schwarz domain decomposition | stable prototype | partition-independent coupled solves and 100k/1M topology benchmarks |
+| non-diagonal structural-grid sparse benchmark | stable verification utility | exact discrete modes, dense cross-check and one-million-DOF run |
 | model database and Abaqus INP/Gmsh/VTK/HDF5 adapters | stable core | parser round trips and INP-to-solver-to-VTK workflow |
 | Gmsh v2/v4 mesh diagnostics and conversion | stable core | Jacobian, quality, topology and metadata fail-closed tests |
 | adaptive nonlinear load steps, restart and plastic-contact coupling | stable core | finite-strain, elastoplastic/contact closed forms and rollback tests |
+| spatial bar geometric-plastic-contact coupling | stable benchmark | independent force-law reference, rollback and restart checks |
 | TET4 J2 elastoplasticity | stable kernel | global uniaxial loading/unloading and consistent tangent |
 | steady/transient thermal and sequential thermoelasticity | stable | conduction, convection, decay and thermal expansion references |
 | plate, flat shell, finite-sliding 2-D/3-D contact and cohesive formulations | stable kernels | patch, energy, complementarity, friction and fracture-energy checks |
-| cylindrical shell research formulation | experimental | Scordelis-Lo converges below 3%, but finite-angle rigid-body objectivity is not exact |
+| cylindrical shell research formulation | experimental | Scordelis-Lo below 3%; corotational kinematics now pass finite rigid-motion objectivity gates |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

@@ -28,9 +28,11 @@ def main() -> None:
                 "thermal and sequential thermoelasticity", "model database and engineering I/O",
                 "finite-sliding 2-D/3-D frictional contact kernels", "Jacobi-GMRES and multi-RHS sparse solves",
                 "additive-Schwarz domain decomposition", "Gmsh v2/v4 mesh diagnostics and conversion",
+                "non-diagonal structural-grid sparse benchmark",
+                "auditable 3-D bar plasticity/contact coupling benchmark",
             ],
             "experimental": [
-                "curved shell benchmarks", "general self-contact and mortar contact",
+                "objective corotational curved shell kinematics", "general self-contact and mortar contact",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))
