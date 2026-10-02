@@ -1,38 +1,49 @@
 # TensorFEM
 
-TensorFEM is a differentiable structural finite-element toolkit built on
-PyTorch. It targets verification-first engineering analysis, inverse problems,
-design optimization, and AI-assisted digital twins.
+TensorFEM is a verification-first finite-element toolkit built on PyTorch for
+engineering analysis, inverse problems, design optimization, and AI-assisted
+digital twins. Stable capabilities are admitted only with executable
+analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.3)
+## Capability maturity (v0.4)
 
-| Capability | Status | Verification |
+| Capability | Maturity | Verification |
 |---|---|---|
-| 2-D truss and frame | stable | analytical bar and cantilever |
-| CST/Q4 continuum | stable | patch tests and Cook membrane |
-| Timoshenko beam | stable | deep/slender cantilevers |
-| modal, Newmark dynamics, linear buckling | stable | analytical beam, SDOF and Euler columns |
-| TET4/HEX8 solids | stable | patch, distortion and bar-mode cases |
-| Mindlin plate | stable | sinusoidal-load thin/thick plate |
-| geometric nonlinearity and plasticity | stable kernels | shallow arch and return mapping |
-| frictionless contact | stable kernel | complementarity and penalty spring |
-| flat shell and cohesive law | stable kernels | energy identities and fracture energy |
-| general fracture, advanced contact, sparse/distributed solvers | planned | not advertised |
+| 2-D truss, frame, CST/Q4 and Timoshenko beam | stable | analytical solutions, patch tests and Cook membrane |
+| modal, buckling, implicit and explicit dynamics | stable | beam/column/SDOF references and stability gates |
+| TET4, HEX8, B-bar HEX8, TET10 and HEX20 solids | stable | affine patches, locking, distortion, modal and cantilever cases |
+| sparse COO/CSR assembly, CG, Dirichlet and MPC constraints | stable core | dense equivalence, analytical bar and independent 100k-DOF performance test |
+| model database and Abaqus INP/Gmsh/VTK/HDF5 adapters | stable core | parser round trips and INP-to-solver-to-VTK workflow |
+| adaptive nonlinear load steps and restart | stable core | finite-strain and elastoplastic closed forms, rollback tests |
+| TET4 J2 elastoplasticity | stable kernel | global uniaxial loading/unloading and consistent tangent |
+| steady/transient thermal and sequential thermoelasticity | stable | conduction, convection, decay and thermal expansion references |
+| plate, flat shell, finite-sliding 2-D contact and cohesive formulations | stable kernels | patch, energy, complementarity, friction and fracture-energy checks |
+| curved shell benchmark suite | experimental | Scordelis-Lo/Pinched-cylinder accuracy not yet qualified |
+| 3-D surface/self-contact and general crack growth | experimental/planned | not advertised as stable |
+| distributed sparse solvers and production CAD meshing | planned | not implemented |
 
-Stable scalar benchmarks are executed through a fail-closed registry. Every
-entry records its source, computed and reference values, relative error and
-tolerance; passing requires `error < tolerance <= 3%`. Zero-reference patch
-tests remain explicit invariants and are not misreported as relative errors.
+The formal registry is fail-closed: each scalar entry records its source,
+computed and reference values, relative error and tolerance. Passing requires
+`error < tolerance <= 3%`. Zero-reference invariants and large performance
+tests remain in the specialist test suite rather than being misrepresented as
+relative-error benchmarks.
 
-## Quick start
+## Install and verify
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 tensorfem verify --output benchmark-evidence.json
+tensorfem capabilities
 pytest
 ```
+
+The default registry is deliberately lightweight. Large sparse throughput,
+mesh convergence, negative/fail-closed cases and experimental formulations are
+covered independently under `tests/` and documented under `docs/`.
+
+## Minimal static example
 
 ```python
 from tensorfem.benchmarks import single_bar
@@ -43,17 +54,19 @@ result = solve_linear_static(model)
 print(result.displacement, result.axial_stress)
 ```
 
-## Verification roadmap
+## Industrial data path
 
-1. Timoshenko beam/frame elements
-2. Cook's membrane and distorted-mesh convergence
-3. J2 plasticity and geometric nonlinearity
-4. Sparse solvers, batched models and distributed execution
-5. Gmsh/meshio input and VTK/PyVista output
+The solver-neutral `ModelDB` stores nodes, element blocks, sets, materials,
+sections, boundary conditions, loads, steps, and output requests. Current
+adapters support a qualified subset of Abaqus INP and Gmsh v2 ASCII input,
+legacy VTK output, and optional HDF5 results. Unsupported records fail clearly;
+format support should not be interpreted as full compatibility with the
+corresponding commercial products.
 
-Numerical features are admitted only with analytical or recognized benchmark
-evidence and mesh-convergence tests.
+## Scope and verification policy
 
-The current automated suite covers truss, frame, CST/Q4 continuum, vibration,
-and Euler buckling. Run `pytest`; every formal accuracy case must satisfy
-`relative_error < 3%`. Validation contracts are documented under `docs/`.
+TensorFEM is under active development and is not a substitute for engineering
+judgement or code-required certification. Validation contracts, sources and
+known limitations are recorded under `docs/`. The curved-shell implementation
+is explicitly experimental until its recognized benchmark errors are below
+the project threshold.

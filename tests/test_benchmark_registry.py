@@ -7,7 +7,17 @@ from tensorfem.cli import main
 def report(): return verification_report()
 
 def test_registry_traceable_and_below_three_percent(report):
-    assert report["passed"] and report["summary"] == {"total":14,"passed":14}
+    expected = {
+        "truss.bar", "frame.cantilever", "continuum.cook", "beam.timoshenko",
+        "buckling.euler", "dynamics.newmark", "solid.hex8", "plate.mindlin",
+        "nonlinear.arch", "contact.spring", "modal.cantilever",
+        "shell.patch_energy", "cohesive.fracture_energy", "plasticity.j2",
+        "sparse.axial_bar", "thermal.rod_convection", "dynamics.explicit",
+        "nonlinear.finite_bar", "solid.tet10_patch", "plasticity.tet4_j2",
+    }
+    assert report["passed"]
+    assert report["summary"] == {"total": len(expected), "passed": len(expected)}
+    assert {item["id"] for item in report["results"]} == expected
     for item in report["results"]:
         assert item["source"].strip() and item["reference"] != 0
         assert item["error"] < item["tolerance"] <= .03 and item["passed"] is True

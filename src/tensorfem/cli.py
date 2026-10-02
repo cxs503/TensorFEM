@@ -8,10 +8,32 @@ from .benchmark_registry import verification_report
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(prog="tensorfem")
-    parser.add_argument("command", choices=("benchmark", "three-bar", "verify"))
+    parser = argparse.ArgumentParser(
+        prog="tensorfem",
+        description="TensorFEM verified finite-element command line tools",
+    )
+    parser.add_argument(
+        "command", choices=("benchmark", "three-bar", "verify", "capabilities"),
+        help="run the legacy bar benchmark, three-bar example, formal verification, or list capabilities",
+    )
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
+    if args.command == "capabilities":
+        print(json.dumps({
+            "version": __import__("tensorfem").__version__,
+            "stable": [
+                "2-D truss/frame/continuum", "modal/buckling/dynamics",
+                "TET4/HEX8/TET10/HEX20 solids", "sparse assembly and CG",
+                "adaptive nonlinear steps", "TET4 J2 plasticity",
+                "thermal and sequential thermoelasticity", "model database and engineering I/O",
+                "finite-sliding 2-D frictional contact kernel",
+            ],
+            "experimental": [
+                "curved shell benchmarks", "3-D surface contact and self-contact",
+                "general crack propagation", "distributed solvers",
+            ],
+        }, indent=2))
+        return
     if args.command == "verify":
         report = verification_report()
         payload = json.dumps(report, indent=2, ensure_ascii=False)

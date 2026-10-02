@@ -55,6 +55,58 @@ def run_registered_benchmarks():
     from .plasticity import J2State,update_j2
     z=torch.zeros((3,3),dtype=torch.float64); stress,state,_=update_j2(torch.diag(torch.tensor([.004,-.002,-.002],dtype=torch.float64)),210000.,.3,300.,2000.,J2State(z,torch.tensor(0.,dtype=torch.float64))); dev=stress-torch.trace(stress)/3*torch.eye(3,dtype=torch.float64); seq=torch.sqrt(1.5*torch.sum(dev*dev)); radius=300.+2000.*state.alpha
     out.append(_evidence("plasticity.j2","J2 plasticity","yield-surface equivalent stress","stress","J2 radial-return consistency equation",seq,radius))
+    # Industrial-core representatives are intentionally small.  Large-model
+    # throughput (including the 100k-DOF sparse case) remains a separate
+    # performance benchmark and never slows the default qualification gate.
+    from .sparse_core import assemble_coo, solve_sparse_static
+    n=41; length=2.; area=.01; young=200e9; load=1e5
+    ke=(young*area/(length/(n-1)))*torch.tensor([[1.,-1.],[-1.,1.]],dtype=torch.float64).repeat(n-1,1,1)
+    ed=torch.stack((torch.arange(n-1),torch.arange(1,n)),1); K=assemble_coo(ke,ed,n)
+    f=torch.zeros(n,dtype=torch.float64); f[-1]=load
+    sr=solve_sparse_static(K,f,dirichlet={0:0.},rtol=1e-12)
+    out.append(_evidence("sparse.axial_bar","sparse statics","tip displacement","m","u=PL/(EA)",sr.displacement[-1],load*length/(young*area)))
+
+    from .thermal import ThermalModel, solve_steady_thermal
+    tm=ThermalModel(torch.tensor([[0.],[2.]],dtype=torch.float64),torch.tensor([[0,1]]),
+        torch.tensor(5.,dtype=torch.float64),torch.tensor(3.,dtype=torch.float64),
+        torch.tensor(7.,dtype=torch.float64),torch.tensor([0]),torch.tensor([100.],dtype=torch.float64),
+        thickness=torch.tensor(2.,dtype=torch.float64),convection_edges=torch.tensor([[1,1]]),
+        convection_coefficient=torch.tensor(4.,dtype=torch.float64),ambient_temperature=torch.tensor(20.,dtype=torch.float64))
+    temperature=solve_steady_thermal(tm); heat=(100.-20.)/(2./(5.*2.)+1./(4.*2.)); exact=100.-heat*2./(5.*2.)
+    out.append(_evidence("thermal.rod_convection","thermal","end temperature","temperature","One-dimensional conduction and convection resistances in series",temperature[-1],exact))
+
+    from .explicit_dynamics import central_difference
+    omega=20.; mass=torch.tensor([[2.]],dtype=torch.float64); stiffness=mass*omega**2
+    period=2*math.pi/omega; dt=period/100; time=torch.arange(0.,period+dt/2,dt,dtype=torch.float64)
+    er=central_difference(mass,stiffness,torch.zeros((len(time),1),dtype=torch.float64),time,
+                          torch.tensor([.01],dtype=torch.float64),torch.tensor([0.],dtype=torch.float64))
+    out.append(_evidence("dynamics.explicit","explicit dynamics","one-period displacement","m","SDOF u=u0 cos(omega*t)",er.displacement[-1,0],.01))
+
+    from .nonlinear_step import StepState, solve_adaptive, total_lagrangian_truss_problem
+    from .nonlinear_truss import NonlinearTrussModel
+    nm=NonlinearTrussModel(torch.tensor([[0.,0.],[1.,0.]],dtype=torch.float64),torch.tensor([[0,1]]),
+        torch.tensor([200.],dtype=torch.float64),torch.tensor([2.],dtype=torch.float64),torch.tensor([0,1,3]))
+    problem,free=total_lagrangian_truss_problem(nm,torch.tensor([0.,0.,46.2,0.],dtype=torch.float64))
+    nr=solve_adaptive(problem,StepState(0.,torch.zeros(len(free),dtype=torch.float64)),initial_increment=.2,tolerance=1e-11)
+    out.append(_evidence("nonlinear.finite_bar","adaptive nonlinear step","axial displacement","m","Finite-strain bar closed-form response",nr.displacement[0],.1))
+
+    from .quadratic_solid import tet4_to_tet10, tet10_stiffness
+    from .solid3d import elasticity_matrix_3d
+    vertices=torch.tensor([[0.,0.,0.],[1.,0.,0.],[0.,1.,0.],[0.,0.,1.]],dtype=torch.float64)
+    qnodes=tet4_to_tet10(vertices,torch.tensor([[0,1,2,3]]))[0]
+    eps=torch.tensor([1.2e-4,-.4e-4,.7e-4,.3e-4,-.2e-4,.5e-4],dtype=torch.float64)
+    qu=torch.stack((eps[0]*qnodes[:,0]+eps[3]*qnodes[:,1]/2+eps[5]*qnodes[:,2]/2,
+                    eps[1]*qnodes[:,1]+eps[3]*qnodes[:,0]/2+eps[4]*qnodes[:,2]/2,
+                    eps[2]*qnodes[:,2]+eps[5]*qnodes[:,0]/2+eps[4]*qnodes[:,1]/2),1).reshape(-1)
+    dc=elasticity_matrix_3d(torch.tensor([210e9],dtype=torch.float64),torch.tensor([.29],dtype=torch.float64)); qk,_=tet10_stiffness(qnodes[None],dc)
+    exact=.5*torch.dot(eps,torch.mv(dc[0],eps))/6
+    out.append(_evidence("solid.tet10_patch","TET10 solid","affine strain energy","J","Constant-strain tetrahedron energy identity",.5*torch.dot(qu,torch.mv(qk[0],qu)),exact))
+
+    from .solid_plasticity import Tet4J2Model, solve_load_steps
+    pm=Tet4J2Model(vertices,torch.tensor([[0,1,2,3]]),200000.,.3,250.,10000.,torch.tensor([0,1,2,4,5,6,8,9,10]))
+    pf=torch.zeros(pm.n_dofs,dtype=torch.float64); pf[3]=400./6
+    pr=solve_load_steps(pm,pf,(1.,))[-1]; exact=.002+(400.-250.)/10000.
+    out.append(_evidence("plasticity.tet4_j2","TET4 J2 plasticity","uniaxial strain","strain","Linear-hardening uniaxial stress-strain solution",pr.displacement[3],exact))
     return tuple(out)
 
 def verification_report():
