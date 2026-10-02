@@ -110,8 +110,15 @@ from .general_shell_nonlinear import (
     GeneralShellMesh, GeneralShellResult, general_shell_energy,
     general_shell_force_tangent, assemble_general_shell, solve_general_shell,
 )
+from .ad_plastic_tangent import ADMetrics, assemble_ad_global, benchmark_tangents
+from .dynamic_contact_extended import (
+    AmbiguousCoplanarContactError, EdgeEdgeEvent, UnifiedEvent, ImpactResult,
+    edge_edge_ccd, spatial_hash_edge_pairs, earliest_edge_contacts,
+    earliest_unified_contacts, coulomb_impact,
+)
+from .large_rotation_shell_benchmark import LargeRotationResult, pure_bending_shell
 
-__version__ = "0.11.0"
+__version__ = "0.12.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -181,4 +188,9 @@ __all__ = [
     "GeneralShellMesh", "GeneralShellResult", "general_shell_energy",
     "general_shell_force_tangent", "assemble_general_shell",
     "solve_general_shell",
+    "ADMetrics", "assemble_ad_global", "benchmark_tangents",
+    "AmbiguousCoplanarContactError", "EdgeEdgeEvent", "UnifiedEvent",
+    "ImpactResult", "edge_edge_ccd", "spatial_hash_edge_pairs",
+    "earliest_edge_contacts", "earliest_unified_contacts", "coulomb_impact",
+    "LargeRotationResult", "pure_bending_shell",
 ]

@@ -40,10 +40,13 @@ def main() -> None:
                 "incremental frictional mortar and self-contact force foundation",
                 "multi-TET adaptive cyclic finite-plasticity solver",
                 "vertex-triangle CCD and dynamic self-contact history",
+                "AD finite-plasticity algorithmic tangent",
+                "edge-edge CCD, spatial hash and Coulomb impact",
+                "large-rotation shell pure-bending benchmark",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
-                "closed-form plastic tangent and edge-edge/contact friction impulses",
+                "closed-form plastic tangent and multi-point contact complementarity",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))

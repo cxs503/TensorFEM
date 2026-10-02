@@ -30,9 +30,9 @@ def virgin_adaptive_state(*,dtype=torch.float64,device=None):
     return AdaptiveFiniteJ2State(MultiplicativeJ2State(I.clone(),torch.zeros((),dtype=dtype,device=device)),I)
 
 def _state_error(a,b):
-    fp=torch.linalg.vector_norm(a.plastic_gradient-b.plastic_gradient)/max(float(torch.linalg.vector_norm(b.plastic_gradient)),1.)
-    alpha=torch.abs(a.alpha-b.alpha)/max(abs(float(b.alpha)),1.)
-    return float(torch.maximum(fp,alpha))
+    fp=torch.linalg.vector_norm(a.plastic_gradient-b.plastic_gradient)/max(float(torch.linalg.vector_norm(b.plastic_gradient).detach()),1.)
+    alpha=torch.abs(a.alpha-b.alpha)/max(abs(float(b.alpha.detach())),1.)
+    return float(torch.maximum(fp,alpha).detach())
 
 def integrate_adaptive(F_target: Tensor,state: AdaptiveFiniteJ2State,young: float,poisson: float,
     yield_stress: float,hardening: float,*,rtol=1e-6,max_depth=12) -> AdaptiveUpdate:
