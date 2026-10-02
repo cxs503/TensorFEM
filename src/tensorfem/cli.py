@@ -32,10 +32,12 @@ def main() -> None:
                 "auditable 3-D bar plasticity/contact coupling benchmark",
                 "multi-element small-strain TET4 J2 load-path solver",
                 "low-order node-quadrature surface contact",
+                "total-Lagrangian TET4 Neo-Hookean elasticity",
+                "axisymmetric deformable Hertz verification model",
             ],
             "experimental": [
-                "objective corotational curved shell with consistent element tangent",
-                "elastic-halfspace Hertz solve, self-contact and mortar contact",
+                "global nonlinear corotational curved shell analysis",
+                "finite-strain plasticity, self-contact and mortar contact",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))

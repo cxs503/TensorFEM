@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.7)
+## Capability maturity (v0.8)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -21,11 +21,13 @@ analytical or recognized benchmark evidence.
 | spatial bar geometric-plastic-contact coupling | stable benchmark | independent force-law reference, rollback and restart checks |
 | TET4 J2 elastoplasticity | stable kernel | global uniaxial loading/unloading and consistent tangent |
 | multi-element small-strain TET4 J2 paths | stable core | 12-element loading/unloading, restart and rollback verification |
+| total-Lagrangian TET4 hyperelasticity | stable core | 50% extension, finite-rotation objectivity, exact tangent and restart |
 | steady/transient thermal and sequential thermoelasticity | stable | conduction, convection, decay and thermal expansion references |
 | plate, flat shell, finite-sliding 2-D/3-D contact and cohesive formulations | stable kernels | patch, energy, complementarity, friction and fracture-energy checks |
 | low-order surface contact | stable kernel | TRI3/QUAD4 tributary integration, resultant balance and topology gates |
-| cylindrical shell research formulation | experimental | Scordelis-Lo below 3%; objective kinematics and consistent element tangent verified |
-| Hertz reference diagnostics | verification only | analytical pressure integration passes; deformable half-space solve is not implemented |
+| cylindrical shell research formulation | experimental | global nonlinear Newton/line search/restart works; wider nonlinear shell benchmarks remain |
+| axisymmetric deformable Hertz model | stable benchmark | coupled Q4/contact pressure solution reaches all four 3% gates at 40x40 |
+| finite-strain plasticity | planned | multiplicative plasticity and objective integration are not implemented |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

@@ -58,8 +58,21 @@ from .shell_consistent import (
     ShellTangentResult, rotation_matrix_from_vector, shell_energy,
     consistent_internal_force_tangent,
 )
+from .finite_strain_elasticity import (
+    FiniteStrainTet4Model, FiniteElasticResult, neo_hookean_response,
+    assemble_finite_tet4, solve_finite_elastic_path,
+)
+from .hertz_axisymmetric import (
+    AxisymmetricHertzResult, hertz_reference, axisymmetric_mesh,
+    solve_axisymmetric_hertz,
+)
+from .shell_nonlinear_step import (
+    CylindricalShellMesh, ShellIncrement, ShellStepResult,
+    assemble_shell, solve_shell_step, write_shell_checkpoint,
+    read_shell_checkpoint,
+)
 
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -99,4 +112,11 @@ __all__ = [
     "hertz_sphere_halfspace_reference", "integrate_hertz_pressure",
     "ShellTangentResult", "rotation_matrix_from_vector", "shell_energy",
     "consistent_internal_force_tangent",
+    "FiniteStrainTet4Model", "FiniteElasticResult", "neo_hookean_response",
+    "assemble_finite_tet4", "solve_finite_elastic_path",
+    "AxisymmetricHertzResult", "hertz_reference", "axisymmetric_mesh",
+    "solve_axisymmetric_hertz",
+    "CylindricalShellMesh", "ShellIncrement", "ShellStepResult",
+    "assemble_shell", "solve_shell_step", "write_shell_checkpoint",
+    "read_shell_checkpoint",
 ]
