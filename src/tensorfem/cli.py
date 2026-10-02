@@ -54,6 +54,9 @@ def main() -> None:
                 "taped adaptive-substep plastic tangent",
                 "colored vectorized frictional contact",
                 "deterministic multi-worker contact-island scheduling",
+                "versioned Model-Step-Job-Result workflow",
+                "hemisphere JSON/VTK/report post-processing",
+                "hashed versioned benchmark evidence and drift checks",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

@@ -164,8 +164,21 @@ from .contact_island_scheduler import (
     serialize_jobs, deserialize_jobs, serialize_executions,
     deserialize_executions, available_execution_devices,
 )
+from .industrial_workflow import (
+    ModelSpec, StepSpec, WorkflowSpec, WorkflowResult,
+    deterministic_job_id, run_job, spec_from_json,
+)
+from .hemisphere_postprocess import (
+    HemispherePost, build_hemisphere_post, write_hemisphere_json,
+    read_hemisphere_json, write_hemisphere_vtk, write_hemisphere_markdown,
+)
+from .benchmark_cases import (
+    Citation, ReferenceQuantity, BenchmarkCase, validate_case, case_hash,
+    hemisphere_case, run_case, write_archive, read_archive,
+    compare_archives, to_legacy_evidence,
+)
 
-__version__ = "0.16.0"
+__version__ = "0.17.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -266,4 +279,11 @@ __all__ = [
     "colored_island_jobs", "deterministic_partitions", "execute_island_jobs",
     "serialize_jobs", "deserialize_jobs", "serialize_executions",
     "deserialize_executions", "available_execution_devices",
+    "ModelSpec", "StepSpec", "WorkflowSpec", "WorkflowResult",
+    "deterministic_job_id", "run_job", "spec_from_json",
+    "HemispherePost", "build_hemisphere_post", "write_hemisphere_json",
+    "read_hemisphere_json", "write_hemisphere_vtk", "write_hemisphere_markdown",
+    "Citation", "ReferenceQuantity", "BenchmarkCase", "validate_case",
+    "case_hash", "hemisphere_case", "run_case", "write_archive",
+    "read_archive", "compare_archives", "to_legacy_evidence",
 ]
