@@ -36,10 +36,12 @@ def main() -> None:
                 "axisymmetric deformable Hertz verification model",
                 "multiplicative finite-strain J2 proportional-path prototype",
                 "low-order frictionless mortar contact foundation",
+                "adaptive nonproportional finite-J2 path integrator",
+                "incremental frictional mortar and self-contact force foundation",
             ],
             "experimental": [
-                "global nonlinear corotational curved shell analysis",
-                "nonproportional finite-strain plasticity and full self-contact",
+                "general nonlinear doubly-curved shell analysis",
+                "arbitrary cyclic finite plasticity and dynamic self-contact",
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))

@@ -83,8 +83,21 @@ from .pinched_cylinder import (
     PinchedCylinderResult, pinched_cylinder_model,
     solve_pinched_cylinder_linear, solve_pinched_cylinder_nonlinear,
 )
+from .nonproportional_plasticity import (
+    AdaptiveFiniteJ2State, AdaptiveUpdate, virgin_adaptive_state,
+    integrate_adaptive, integrate_path, richardson_algorithmic_tangent,
+    fixed_substep_reference,
+)
+from .frictional_mortar import (
+    MortarPointState, FrictionalMortarState, FrictionalMortarResult,
+    SelfContactResult, initial_frictional_mortar_state,
+    update_frictional_mortar, update_self_contact,
+)
+from .spherical_shell import (
+    HemisphereResult, projected_shell4_stiffness, hemisphere_with_hole,
+)
 
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -138,4 +151,11 @@ __all__ = [
     "self_contact_candidates",
     "PinchedCylinderResult", "pinched_cylinder_model",
     "solve_pinched_cylinder_linear", "solve_pinched_cylinder_nonlinear",
+    "AdaptiveFiniteJ2State", "AdaptiveUpdate", "virgin_adaptive_state",
+    "integrate_adaptive", "integrate_path", "richardson_algorithmic_tangent",
+    "fixed_substep_reference",
+    "MortarPointState", "FrictionalMortarState", "FrictionalMortarResult",
+    "SelfContactResult", "initial_frictional_mortar_state",
+    "update_frictional_mortar", "update_self_contact",
+    "HemisphereResult", "projected_shell4_stiffness", "hemisphere_with_hole",
 ]
