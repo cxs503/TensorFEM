@@ -31,6 +31,10 @@ def test_capability_boundaries_are_explicit_and_fail_closed(report):
     assert categories["multi_component_progressive_yielding"]["status"] == "qualified_section_prototype"
     assert categories["spectrum_fatigue_and_crack_growth"]["status"] == "qualified_primitives"
     assert categories["full_shell_progressive_collapse"]["status"] == "not_qualified"
+    assert categories["shell4_initial_stress_buckling"]["status"] == "qualified"
+    assert categories["imperfection_residual_stress_plasticity"]["status"] == "qualified_reduced_order"
+    assert categories["resultdb_hotspot_and_lefm"]["status"] == "qualified_primitives"
+    assert categories["shell_arc_length_postbuckling"]["status"] == "not_qualified"
     tampered = copy.deepcopy(report)
     tampered["categories"]["full_shell_progressive_collapse"]["status"] = "qualified"
     with pytest.raises(ValueError, match="hash mismatch"):

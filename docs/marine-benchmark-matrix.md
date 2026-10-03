@@ -21,6 +21,9 @@ relative error greater than or equal to 3%.
 | `marine.postbuckling.*` | imperfect plate response | bracketed Koiter equilibrium | 40/80/160-step convergence |
 | `marine.hull_progressive.*` | multi-component section yielding | mirrored-component hand sum | equilibrium, event and work checks |
 | `marine.fatigue_advanced.*` | spectrum and crack-growth primitives | rainflow/Miner/Paris hand oracles | path and critical-stop checks |
+| `marine.shell4_buckling.*` | initial-stress Shell4 eigenbuckling | Navier plate load | 4/8/16-mesh stability |
+| `marine.imperfect_strip.*` | defect/residual-stress plastic strip | 1280-step/512-fibre reference | equilibrium/yield/energy gates |
+| `marine.fracture.*` | ResultDB hotspot/SCL and LEFM | affine field and Mode-I identities | path coverage and toughness gates |
 
 The Morison formulation follows the slender-member equation described by
 DNV-RP-C205. These cases validate the implemented equations and numerical

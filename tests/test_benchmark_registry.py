@@ -29,6 +29,11 @@ def test_registry_traceable_and_below_three_percent(report):
         "marine.fatigue_advanced.rainflow.triangle_count",
         "marine.fatigue_advanced.miner.variable_amplitude",
         "marine.fatigue_advanced.paris.m2_closed_form",
+        "marine.shell4_buckling.navier",
+        "marine.imperfect_strip.amplitude", "marine.imperfect_strip.membrane_force",
+        "marine.imperfect_strip.external_work", "marine.fracture.hot_spot",
+        "marine.fracture.scl_membrane", "marine.fracture.mode_i_k",
+        "marine.fracture.mode_i_j",
     }
     assert report["passed"]
     assert report["summary"] == {"total": len(expected), "passed": len(expected)}

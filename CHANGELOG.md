@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.26.0
+
+- Added a real Shell4 initial-stress geometric matrix and eigenbuckling qualification.
+- Added a reduced imperfection/residual-stress/plastic strip convergence and energy gate.
+- Added ResultDB field-path, SCL, hot-spot, Mode-I K/J, and toughness post-processing gates.
+- Expanded the formal benchmark registry to 53 passing reference quantities.
+
 ## 0.25.0
 
 - Added uniaxial/biaxial prestress buckling and imperfect reduced-order postbuckling qualification.

@@ -13,6 +13,9 @@ from .marine_fatigue_qualification import run_fatigue_qualification
 from .marine_plate_postbuckling import run_plate_postbuckling_qualification
 from .hull_girder_progressive import run_progressive_hull_girder_benchmark
 from .marine_fatigue_advanced import run_advanced_fatigue_qualification
+from .shell4_buckling import run_shell4_buckling_qualification
+from .marine_imperfect_strip import run_imperfect_strip_qualification
+from .marine_hotspot_fracture import run_hotspot_fracture_qualification
 
 
 def run_marine_benchmarks() -> tuple[BenchmarkEvidence, ...]:
@@ -139,4 +142,28 @@ def run_marine_benchmarks() -> tuple[BenchmarkEvidence, ...]:
         out.append(_evidence(f"marine.fatigue_advanced.{row['id']}",
                              "advanced structural fatigue", quantity, unit,
                              advanced_source, row["actual"], row["oracle"]))
+
+    shell_buckling = run_shell4_buckling_qualification()
+    out.append(_evidence("marine.shell4_buckling.navier", "Shell4 initial-stress buckling",
+                         "critical compressive line load", "N/m",
+                         "Navier simply-supported isotropic plate critical load",
+                         shell_buckling["meshes"][-1]["value"], shell_buckling["exact"]))
+
+    strip = run_imperfect_strip_qualification()
+    strip_units = ("amplitude", "membrane force", "external work")
+    for index, quantity in enumerate(strip_units):
+        out.append(_evidence(f"marine.imperfect_strip.{quantity.replace(' ', '_')}",
+                             "imperfect residual-stress plastic strip", quantity, "normalized",
+                             "1280-step/512-fibre independently refined strip reference",
+                             getattr(strip["final"], quantity.replace(" ", "_")),
+                             strip["oracle"]["final_response"][index]))
+
+    fracture = run_hotspot_fracture_qualification()
+    fracture_units = {"hot_spot": "Pa", "scl_membrane": "Pa",
+                      "mode_i_k": "Pa sqrt(m)", "mode_i_j": "J/m^2"}
+    for row in fracture["evidence"]:
+        out.append(_evidence(f"marine.fracture.{row['id']}", "hot-spot and LEFM post-processing",
+                             row["id"], fracture_units[row["id"]],
+                             "Affine field/SCL and finite-width Mode-I direct analytical identities",
+                             row["actual"], row["oracle"]))
     return tuple(out)
