@@ -17,6 +17,10 @@ relative error greater than or equal to 3%.
 | `marine.plate_buckling.*` | local plate buckling | continuous Navier eigenvalue | 8/16/32-grid convergence |
 | `marine.hull_ultimate.*` | section progressive yielding | rectangular ideal-elastic-plastic closed form | fiber convergence and state checks |
 | `marine.fatigue.*` | hot-spot/S-N/Miner primitives | independent hand calculations | strict inputs and non-certification boundary |
+| `marine.prestress_buckling.*` | uniaxial/biaxial plate buckling | continuous Navier eigenvalue | 8/16/32-grid convergence |
+| `marine.postbuckling.*` | imperfect plate response | bracketed Koiter equilibrium | 40/80/160-step convergence |
+| `marine.hull_progressive.*` | multi-component section yielding | mirrored-component hand sum | equilibrium, event and work checks |
+| `marine.fatigue_advanced.*` | spectrum and crack-growth primitives | rainflow/Miner/Paris hand oracles | path and critical-stop checks |
 
 The Morison formulation follows the slender-member equation described by
 DNV-RP-C205. These cases validate the implemented equations and numerical

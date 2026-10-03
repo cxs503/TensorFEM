@@ -10,6 +10,9 @@ from .marine_structures import solve_hull_girder_uniform_load, stiffened_panel_s
 from .marine_plate_buckling import run_local_plate_buckling_qualification
 from .hull_girder_ultimate import run_hull_girder_ultimate_benchmark
 from .marine_fatigue_qualification import run_fatigue_qualification
+from .marine_plate_postbuckling import run_plate_postbuckling_qualification
+from .hull_girder_progressive import run_progressive_hull_girder_benchmark
+from .marine_fatigue_advanced import run_advanced_fatigue_qualification
 
 
 def run_marine_benchmarks() -> tuple[BenchmarkEvidence, ...]:
@@ -104,4 +107,36 @@ def run_marine_benchmarks() -> tuple[BenchmarkEvidence, ...]:
         quantity, unit = quantities[row["id"]]
         out.append(_evidence(f"marine.fatigue.{row['id']}", "weld fatigue assessment",
                              quantity, unit, fatigue_source, row["actual"], row["oracle"]))
+
+    postbuckling = run_plate_postbuckling_qualification()
+    post_source = "Continuous Navier prestress eigenvalue and bracketed von Karman-Koiter equilibrium branch"
+    for row in postbuckling["prestress_eigenbuckling"]:
+        out.append(_evidence(f"marine.prestress_buckling.{row['case']}",
+                             "prestressed plate buckling", "critical load factor", "1",
+                             post_source, row["factors"][-1], row["reference_factor"]))
+    path = postbuckling["imperfect_postbuckling"]
+    out.append(_evidence("marine.postbuckling.imperfect_path", "imperfect plate postbuckling",
+                         "final modal amplitude", "thickness", post_source,
+                         path["final_amplitudes"][-1], path["reference_final_amplitude"]))
+
+    progressive = run_progressive_hull_girder_benchmark()
+    endpoint = progressive["curve"][-1]
+    out.append(_evidence("marine.hull_progressive.moment", "multi-component hull-girder yielding",
+                         "high-curvature section moment", "N m",
+                         "Closed-form mirrored-component elastic-perfect-plastic section sum",
+                         endpoint["moment"], endpoint["reference_moment"]))
+
+    advanced = run_advanced_fatigue_qualification()
+    advanced_source = "Independent path extrapolation, ASTM E1049-style rainflow, Miner, and Paris-law calculations"
+    advanced_quantities = {
+        "hot_spot.path_linear": ("path-extrapolated hot-spot stress", "Pa"),
+        "rainflow.triangle_count": ("rainflow cycle count", "cycles"),
+        "miner.variable_amplitude": ("variable-amplitude damage", "1"),
+        "paris.m2_closed_form": ("Paris-law final crack length", "m"),
+    }
+    for row in advanced["evidence"]:
+        quantity, unit = advanced_quantities[row["id"]]
+        out.append(_evidence(f"marine.fatigue_advanced.{row['id']}",
+                             "advanced structural fatigue", quantity, unit,
+                             advanced_source, row["actual"], row["oracle"]))
     return tuple(out)

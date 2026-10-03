@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.25.0
+
+- Added uniaxial/biaxial prestress buckling and imperfect reduced-order postbuckling qualification.
+- Added multi-component hull-girder progressive-yielding equilibrium and event auditing.
+- Added path hot-spot extraction, rainflow counting, spectrum Miner damage, and Paris crack growth.
+- Expanded the formal benchmark registry to 45 passing reference quantities.
+
 ## 0.24.0
 
 - Added local isotropic and smeared-stiffener plate-buckling convergence qualifications.

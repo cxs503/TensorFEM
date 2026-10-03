@@ -21,7 +21,10 @@ the 3% threshold.
 | local stiffened-plate buckling | qualified prototype for Navier/finite-difference ideal plates |
 | hull-girder ultimate strength | qualified section prototype; not full progressive collapse |
 | fatigue assessment primitives | hot-spot/S-N/Miner hand-oracle qualified prototype |
-| fatigue/fracture life | not qualified without load spectra and detail-class evidence |
+| imperfect plate postbuckling | single-mode reduced-order qualification only |
+| multi-component hull yielding | section prototype; not shell progressive collapse |
+| spectrum fatigue and crack growth | rainflow/Miner/Paris primitives qualified |
+| full shell progressive collapse | not qualified |
 
 The next TensorFEM-only evidence should therefore target local plate buckling,
 stiffened-panel collapse, nonlinear hull-girder ultimate strength, wet-free

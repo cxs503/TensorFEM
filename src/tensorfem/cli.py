@@ -72,9 +72,10 @@ def main() -> None:
                 "ship hull-girder and stiffened-panel screening benchmarks",
                 "box-barge hydrostatics and intact small-angle stability",
                 "Airy/Morison marine loads and TensorLBM force-history exchange",
-                "17-case marine qualification and convergence matrix",
+                "25-case marine qualification and convergence matrix",
                 "TensorFEM-only marine structural qualification gate",
                 "marine local buckling, section ultimate and fatigue qualification prototypes",
+                "marine reduced-order postbuckling, progressive section and spectrum fatigue prototypes",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

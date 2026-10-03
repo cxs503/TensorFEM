@@ -10,6 +10,9 @@ from .shell_benchmark_suite import run_classical_shell_suite
 from .marine_plate_buckling import run_local_plate_buckling_qualification
 from .hull_girder_ultimate import run_hull_girder_ultimate_benchmark
 from .marine_fatigue_qualification import run_fatigue_qualification
+from .marine_plate_postbuckling import run_plate_postbuckling_qualification
+from .hull_girder_progressive import run_progressive_hull_girder_benchmark
+from .marine_fatigue_advanced import run_advanced_fatigue_qualification
 
 
 SCHEMA = "tensorfem.marine-structural-qualification/1.0"
@@ -38,6 +41,9 @@ def run_marine_structural_qualification() -> dict[str, object]:
     local_buckling = run_local_plate_buckling_qualification()
     hull_ultimate = run_hull_girder_ultimate_benchmark()
     fatigue = run_fatigue_qualification()
+    postbuckling = run_plate_postbuckling_qualification()
+    progressive = run_progressive_hull_girder_benchmark()
+    advanced_fatigue = run_advanced_fatigue_qualification()
     categories = {
         "global_hull_and_beam": {"status": "qualified", "evidence": 6},
         "plate_shell_linear_and_large_rotation": {"status": "qualified", "evidence": 7},
@@ -47,19 +53,26 @@ def run_marine_structural_qualification() -> dict[str, object]:
         "local_plate_buckling": {"status": "qualified_prototype", "evidence": 3},
         "ultimate_hull_girder_strength": {"status": "qualified_section_prototype", "evidence": 2},
         "fatigue_damage_primitives": {"status": "qualified_prototype", "evidence": 4},
-        "fatigue_and_fracture_life": {"status": "not_qualified", "evidence": 0},
+        "imperfect_plate_postbuckling": {"status": "qualified_reduced_order", "evidence": 3},
+        "multi_component_progressive_yielding": {"status": "qualified_section_prototype", "evidence": 1},
+        "spectrum_fatigue_and_crack_growth": {"status": "qualified_primitives", "evidence": 4},
+        "full_shell_progressive_collapse": {"status": "not_qualified", "evidence": 0},
     }
     clean: dict[str, object] = {
         "schema": SCHEMA,
         "solver_scope": "TensorFEM only; no TensorLBM or CFD execution",
         "passed": (all(item["passed"] for item in scalar) and bool(shells["passed"])
                    and bool(local_buckling["passed"]) and bool(hull_ultimate["passed"])
-                   and bool(fatigue["passed"])),
+                   and bool(fatigue["passed"]) and bool(postbuckling["passed"])
+                   and bool(progressive["passed"]) and bool(advanced_fatigue["passed"])),
         "scalar_evidence": scalar,
         "classical_shell_suite": shells,
         "local_plate_buckling": local_buckling,
         "hull_girder_ultimate": hull_ultimate,
         "fatigue_primitives": fatigue,
+        "plate_postbuckling": postbuckling,
+        "hull_girder_progressive": progressive,
+        "advanced_fatigue": advanced_fatigue,
         "categories": categories,
     }
     return {**clean, "report_hash": _digest(clean)}

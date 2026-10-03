@@ -27,9 +27,12 @@ def test_capability_boundaries_are_explicit_and_fail_closed(report):
     assert categories["local_plate_buckling"]["status"] == "qualified_prototype"
     assert categories["ultimate_hull_girder_strength"]["status"] == "qualified_section_prototype"
     assert categories["fatigue_damage_primitives"]["status"] == "qualified_prototype"
-    assert categories["fatigue_and_fracture_life"]["status"] == "not_qualified"
+    assert categories["imperfect_plate_postbuckling"]["status"] == "qualified_reduced_order"
+    assert categories["multi_component_progressive_yielding"]["status"] == "qualified_section_prototype"
+    assert categories["spectrum_fatigue_and_crack_growth"]["status"] == "qualified_primitives"
+    assert categories["full_shell_progressive_collapse"]["status"] == "not_qualified"
     tampered = copy.deepcopy(report)
-    tampered["categories"]["fatigue_and_fracture_life"]["status"] = "qualified"
+    tampered["categories"]["full_shell_progressive_collapse"]["status"] = "qualified"
     with pytest.raises(ValueError, match="hash mismatch"):
         validate_marine_structural_qualification(tampered)
 

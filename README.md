@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.24)
+## Capability maturity (v0.25)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -67,9 +67,10 @@ analytical or recognized benchmark evidence.
 | ship structural screening | stable benchmarks | hull-girder longitudinal bending and equivalent-orthotropic stiffened-panel analytical checks |
 | box-barge hydrostatics | stable initial subset | displacement, KB/BM/KM/GM and small-angle restoring moment for intact rectangular hulls |
 | marine environmental loads | stable initial subset | Airy-wave/Morison pile actions and audited TensorLBM-to-TensorFEM nodal force histories |
-| marine qualification matrix | stable verification suite | 17 registered nonzero-reference quantities plus mesh/integration convergence and balance gates |
+| marine qualification matrix | stable verification suite | 25 registered nonzero-reference quantities plus mesh/integration convergence and balance gates |
 | TensorFEM-only marine structural gate | stable verification view | 15 scalar references and four DOI-traceable shell cases; TensorLBM/CFD excluded |
 | marine buckling, section ultimate and fatigue primitives | qualified prototypes | Navier plate buckling, rectangular section yielding, hot-spot/S-N/Miner hand-oracle gates |
+| marine postbuckling, progressive section and spectrum fatigue | qualified prototypes | reduced-order Koiter path, component-section equilibrium, rainflow and Paris-law gates |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

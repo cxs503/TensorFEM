@@ -23,6 +23,12 @@ def test_registry_traceable_and_below_three_percent(report):
         "marine.hull_ultimate.initial_yield", "marine.hull_ultimate.full_plastic",
         "marine.fatigue.hot_spot.linear", "marine.fatigue.hot_spot.quadratic",
         "marine.fatigue.sn.single_block", "marine.fatigue.miner.multi_block",
+        "marine.prestress_buckling.uniaxial", "marine.prestress_buckling.biaxial",
+        "marine.postbuckling.imperfect_path", "marine.hull_progressive.moment",
+        "marine.fatigue_advanced.hot_spot.path_linear",
+        "marine.fatigue_advanced.rainflow.triangle_count",
+        "marine.fatigue_advanced.miner.variable_amplitude",
+        "marine.fatigue_advanced.paris.m2_closed_form",
     }
     assert report["passed"]
     assert report["summary"] == {"total": len(expected), "passed": len(expected)}
