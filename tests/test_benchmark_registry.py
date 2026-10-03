@@ -18,6 +18,11 @@ def test_registry_traceable_and_below_three_percent(report):
         "marine.stiffened_panel.navier", "marine.hydrostatics.displacement",
         "marine.hydrostatics.gm", "marine.hydrostatics.restoring",
         "marine.morison.base_shear", "marine.morison.overturning",
+        "marine.plate_buckling.square", "marine.plate_buckling.long_panel",
+        "marine.plate_buckling.longitudinally_stiffened",
+        "marine.hull_ultimate.initial_yield", "marine.hull_ultimate.full_plastic",
+        "marine.fatigue.hot_spot.linear", "marine.fatigue.hot_spot.quadratic",
+        "marine.fatigue.sn.single_block", "marine.fatigue.miner.multi_block",
     }
     assert report["passed"]
     assert report["summary"] == {"total": len(expected), "passed": len(expected)}

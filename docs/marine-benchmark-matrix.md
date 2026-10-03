@@ -14,6 +14,9 @@ relative error greater than or equal to 3%.
 | `marine.hydrostatics.restoring` | small-angle heel | `Delta*g*GM*sin(phi)` | input limited to plus/minus 10 degrees |
 | `marine.morison.base_shear` | fixed slender pile | integrated Airy/Morison closed form | 4/8/16/32/128-point convergence |
 | `marine.morison.overturning` | fixed slender pile | integrated Airy/Morison first moment | same convergence gate |
+| `marine.plate_buckling.*` | local plate buckling | continuous Navier eigenvalue | 8/16/32-grid convergence |
+| `marine.hull_ultimate.*` | section progressive yielding | rectangular ideal-elastic-plastic closed form | fiber convergence and state checks |
+| `marine.fatigue.*` | hot-spot/S-N/Miner primitives | independent hand calculations | strict inputs and non-certification boundary |
 
 The Morison formulation follows the slender-member equation described by
 DNV-RP-C205. These cases validate the implemented equations and numerical

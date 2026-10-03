@@ -7,6 +7,9 @@ from .benchmark_registry import BenchmarkEvidence, _evidence
 from .marine_hydrodynamics import AiryWave, MorisonMember, morison_base_actions, morison_quarter_phase_oracle
 from .marine_hydrostatics import SCHEMA, analyze_box_barge
 from .marine_structures import solve_hull_girder_uniform_load, stiffened_panel_sine_benchmark
+from .marine_plate_buckling import run_local_plate_buckling_qualification
+from .hull_girder_ultimate import run_hull_girder_ultimate_benchmark
+from .marine_fatigue_qualification import run_fatigue_qualification
 
 
 def run_marine_benchmarks() -> tuple[BenchmarkEvidence, ...]:
@@ -70,4 +73,35 @@ def run_marine_benchmarks() -> tuple[BenchmarkEvidence, ...]:
     out.append(_evidence("marine.morison.overturning", "offshore wave-current loading",
                          "fixed-pile overturning moment", "N m", morison_source,
                          actions["overturning_moment"], oracle["overturning_moment"]))
+
+    buckling = run_local_plate_buckling_qualification()
+    buckling_source = "Navier simply-supported orthotropic plate uniaxial-buckling eigenvalue"
+    for row in buckling["cases"]:
+        out.append(_evidence(f"marine.plate_buckling.{row['case']}", "local plate buckling",
+                             "critical compressive line load", "N/m", buckling_source,
+                             row["loads"][-1], row["reference_load"]))
+
+    ultimate = run_hull_girder_ultimate_benchmark()
+    ultimate_source = "Closed-form rectangular ideal-elastic-plastic section bending solution"
+    out.append(_evidence("marine.hull_ultimate.initial_yield", "hull-girder section yielding",
+                         "initial yield moment", "N m", ultimate_source,
+                         ultimate["initial_yield"]["computed_moment"],
+                         ultimate["initial_yield"]["reference_moment"]))
+    out.append(_evidence("marine.hull_ultimate.full_plastic", "hull-girder section yielding",
+                         "full plastic moment", "N m", ultimate_source,
+                         ultimate["full_plastic"]["computed_moment"],
+                         ultimate["full_plastic"]["reference_moment"]))
+
+    fatigue = run_fatigue_qualification()
+    fatigue_source = "Independent weld-toe extrapolation, power-law S-N, and Palmgren-Miner hand calculations"
+    quantities = {
+        "hot_spot.linear": ("linear hot-spot stress", "Pa"),
+        "hot_spot.quadratic": ("quadratic hot-spot stress", "Pa"),
+        "sn.single_block": ("constant-amplitude fatigue life", "cycles"),
+        "miner.multi_block": ("cumulative fatigue damage", "1"),
+    }
+    for row in fatigue["evidence"]:
+        quantity, unit = quantities[row["id"]]
+        out.append(_evidence(f"marine.fatigue.{row['id']}", "weld fatigue assessment",
+                             quantity, unit, fatigue_source, row["actual"], row["oracle"]))
     return tuple(out)

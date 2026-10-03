@@ -16,11 +16,12 @@ the 3% threshold.
 | global hull/beam static response | qualified for the stated linear benchmarks |
 | plates and shells | qualified for patch, bending and four classical cases |
 | structural modal response | qualified for the cantilever reference |
-| buckling | qualified only for linear beam/column Euler buckling |
+| buckling | beam/column qualified; local plate buckling qualified prototype |
 | plasticity | qualified prototype at material and limited global TET4 levels |
-| local stiffened-plate buckling | not qualified |
-| hull-girder ultimate strength | not qualified |
-| fatigue/fracture life | not qualified |
+| local stiffened-plate buckling | qualified prototype for Navier/finite-difference ideal plates |
+| hull-girder ultimate strength | qualified section prototype; not full progressive collapse |
+| fatigue assessment primitives | hot-spot/S-N/Miner hand-oracle qualified prototype |
+| fatigue/fracture life | not qualified without load spectra and detail-class evidence |
 
 The next TensorFEM-only evidence should therefore target local plate buckling,
 stiffened-panel collapse, nonlinear hull-girder ultimate strength, wet-free

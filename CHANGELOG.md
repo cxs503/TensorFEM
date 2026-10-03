@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.24.0
+
+- Added local isotropic and smeared-stiffener plate-buckling convergence qualifications.
+- Added a section-fiber hull-girder yielding and full-plastic-moment benchmark.
+- Added weld hot-spot, S-N, thickness-correction, and Miner fatigue assessment primitives.
+- Expanded the formal registry to 37 benchmarks while keeping TensorLBM out of scope.
+
 ## 0.23.0
 
 - Added a TensorFEM-only marine structural qualification report with no TensorLBM or CFD dependency.

@@ -24,8 +24,9 @@ def test_tensorfem_only_qualification_is_traceable_and_passes(report):
 def test_capability_boundaries_are_explicit_and_fail_closed(report):
     categories = report["categories"]
     assert categories["plate_shell_linear_and_large_rotation"]["status"] == "qualified"
-    assert categories["local_plate_buckling"]["status"] == "not_qualified"
-    assert categories["ultimate_hull_girder_strength"]["status"] == "not_qualified"
+    assert categories["local_plate_buckling"]["status"] == "qualified_prototype"
+    assert categories["ultimate_hull_girder_strength"]["status"] == "qualified_section_prototype"
+    assert categories["fatigue_damage_primitives"]["status"] == "qualified_prototype"
     assert categories["fatigue_and_fracture_life"]["status"] == "not_qualified"
     tampered = copy.deepcopy(report)
     tampered["categories"]["fatigue_and_fracture_life"]["status"] = "qualified"

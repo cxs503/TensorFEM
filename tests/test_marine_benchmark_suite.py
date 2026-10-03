@@ -9,7 +9,7 @@ from tensorfem.marine_structures import solve_hull_girder_uniform_load
 
 def test_all_marine_qualification_evidence_is_traceable_and_below_three_percent():
     evidence = run_marine_benchmarks()
-    assert len(evidence) == 8
+    assert len(evidence) == 17
     assert len({item.id for item in evidence}) == len(evidence)
     assert all(item.source and item.reference != 0.0 for item in evidence)
     assert all(item.passed and item.error < item.tolerance <= 0.03 for item in evidence)

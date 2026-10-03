@@ -7,6 +7,9 @@ import json
 
 from .benchmark_registry import run_registered_benchmarks
 from .shell_benchmark_suite import run_classical_shell_suite
+from .marine_plate_buckling import run_local_plate_buckling_qualification
+from .hull_girder_ultimate import run_hull_girder_ultimate_benchmark
+from .marine_fatigue_qualification import run_fatigue_qualification
 
 
 SCHEMA = "tensorfem.marine-structural-qualification/1.0"
@@ -32,22 +35,31 @@ def run_marine_structural_qualification() -> dict[str, object]:
         raise RuntimeError(f"missing structural evidence: {sorted(missing)}")
     scalar = [asdict(registry[item_id]) for item_id in STRUCTURAL_IDS]
     shells = run_classical_shell_suite(tier="quick")
+    local_buckling = run_local_plate_buckling_qualification()
+    hull_ultimate = run_hull_girder_ultimate_benchmark()
+    fatigue = run_fatigue_qualification()
     categories = {
         "global_hull_and_beam": {"status": "qualified", "evidence": 6},
         "plate_shell_linear_and_large_rotation": {"status": "qualified", "evidence": 7},
         "modal": {"status": "qualified", "evidence": 1},
         "linear_column_buckling": {"status": "qualified", "evidence": 1},
         "material_and_global_plasticity": {"status": "qualified_prototype", "evidence": 3},
-        "local_plate_buckling": {"status": "not_qualified", "evidence": 0},
-        "ultimate_hull_girder_strength": {"status": "not_qualified", "evidence": 0},
+        "local_plate_buckling": {"status": "qualified_prototype", "evidence": 3},
+        "ultimate_hull_girder_strength": {"status": "qualified_section_prototype", "evidence": 2},
+        "fatigue_damage_primitives": {"status": "qualified_prototype", "evidence": 4},
         "fatigue_and_fracture_life": {"status": "not_qualified", "evidence": 0},
     }
     clean: dict[str, object] = {
         "schema": SCHEMA,
         "solver_scope": "TensorFEM only; no TensorLBM or CFD execution",
-        "passed": all(item["passed"] for item in scalar) and bool(shells["passed"]),
+        "passed": (all(item["passed"] for item in scalar) and bool(shells["passed"])
+                   and bool(local_buckling["passed"]) and bool(hull_ultimate["passed"])
+                   and bool(fatigue["passed"])),
         "scalar_evidence": scalar,
         "classical_shell_suite": shells,
+        "local_plate_buckling": local_buckling,
+        "hull_girder_ultimate": hull_ultimate,
+        "fatigue_primitives": fatigue,
         "categories": categories,
     }
     return {**clean, "report_hash": _digest(clean)}
