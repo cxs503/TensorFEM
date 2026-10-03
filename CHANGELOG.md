@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.28.0
+
+- Added a unified ModelDB-to-AnalysisPlan-to-Job-to-ResultDB v2 vertical slice with strict schema migration, registered kernels, deterministic IDs, atomic failure records and resume.
+- Added a real multi-facet geometrically nonlinear Shell4 continuation path with measured reference imperfections, committed generalized section state and rejected-step rollback.
+- Added a transactional 2-D global finite-sliding contact solve with deformable-master search, objective Coulomb history, balanced residual, algorithmic tangent and rollback.
+- Added a hashed industrial P0 qualification report that keeps shell integration-point plasticity, general 3-D mortar/self-contact and distributed production solving explicitly unqualified.
+
 ## 0.27.0
 
 - Connected the Crisfield continuation solver to an assembled corotational Shell4 residual and consistent autograd tangent, with discrete-equilibrium and step-size gates.

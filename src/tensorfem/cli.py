@@ -80,6 +80,10 @@ def main() -> None:
                 "numerical Mode-I contour J integration qualification",
                 "ResultDB initial-field transfer to reduced structural response",
                 "real-residual Shell4 arc-length integration prototype",
+                "multi-facet Shell4 transactional elastic state path",
+                "2-D global finite-sliding frictional contact prototype",
+                "unified ModelDB AnalysisPlan Job ResultDB v2 workflow",
+                "hashed industrial P0 qualification view",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

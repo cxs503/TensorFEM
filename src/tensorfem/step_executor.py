@@ -111,7 +111,8 @@ def _checkpoint(path,plan_hash,results):
     payload={"schema":"tensorfem.steps.v1","plan_hash":plan_hash,"steps":[{"name":r.name,"kind":r.kind,
         "fields":_encode(dict(r.fields)),"elapsed_seconds":r.elapsed_seconds,"success":r.success,
         "diagnostic":r.diagnostic} for r in results]}
-    Path(path).write_text(json.dumps(payload,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+    path=Path(path);tmp=path.with_suffix(path.suffix+".tmp")
+    tmp.write_text(json.dumps(payload,indent=2,sort_keys=True)+"\n",encoding="utf-8");tmp.replace(path)
 
 
 class StepExecutor:
@@ -138,7 +139,9 @@ class StepExecutor:
             if spec.name in ctx.results:continue
             if spec.kind not in self.kernels:
                 result=StepResult(spec.name,spec.kind,{},0.,False,f"unsupported step kind {spec.kind}")
-                results.append(result);return ExecutionResult(tuple(results),False,resumed)
+                results.append(result)
+                if checkpoint:_checkpoint(checkpoint,signature,results)
+                return ExecutionResult(tuple(results),False,resumed)
             inputs=dict(spec.inputs)
             start=None
             try:
@@ -152,6 +155,7 @@ class StepExecutor:
                 elapsed=time.perf_counter()-start if start is not None else 0.
                 result=StepResult(spec.name,spec.kind,{},elapsed,False,f"{type(exc).__name__}: {exc}")
                 results.append(result)
+                if checkpoint:_checkpoint(checkpoint,signature,results)
                 if progress:progress({"event":"failed","step":spec.name,"diagnostic":result.diagnostic})
                 return ExecutionResult(tuple(results),False,resumed)
             ctx.results[spec.name]=result;results.append(result)

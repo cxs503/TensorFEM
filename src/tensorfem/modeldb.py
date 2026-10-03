@@ -3,9 +3,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 import torch
+
+SCHEMA = "tensorfem.model-db.v1"
 
 
 @dataclass
@@ -103,6 +105,74 @@ class ModelDB:
                 for eid, conn in zip(b.ids, b.connectivity)}
 
 
+def modeldb_to_dict(db: ModelDB) -> dict[str, Any]:
+    """Return a canonical, JSON-safe ModelDB representation.
+
+    External identifiers are encoded as records rather than JSON object keys so
+    integer IDs survive a round trip without coercion.
+    """
+    db.validate()
+    return {
+        "schema": SCHEMA,
+        "nodes": [{"id": i, "coordinates": list(db.nodes[i])} for i in sorted(db.nodes)],
+        "elements": [{"element_type": b.element_type, "ids": list(b.ids),
+                      "connectivity": [list(c) for c in b.connectivity], "name": b.name}
+                     for b in db.elements],
+        "node_sets": {k: sorted(v) for k, v in sorted(db.node_sets.items())},
+        "element_sets": {k: sorted(v) for k, v in sorted(db.element_sets.items())},
+        "materials": {k: {"name": v.name, "elastic": None if v.elastic is None else list(v.elastic)}
+                      for k, v in sorted(db.materials.items())},
+        "sections": [{"elset": x.elset, "material": x.material, "kind": x.kind,
+                      "properties": list(x.properties)} for x in db.sections],
+        "boundaries": [{"target": x.target, "dof_start": x.dof_start,
+                        "dof_end": x.dof_end, "value": x.value} for x in db.boundaries],
+        "loads": [{"target": x.target, "dof": x.dof, "value": x.value} for x in db.loads],
+        "steps": [{"name": x.name, "kind": x.kind} for x in db.steps],
+        "output_requests": [{"variables": list(x.variables)} for x in db.output_requests],
+        "metadata": db.metadata,
+    }
+
+
+def modeldb_from_dict(raw: Mapping[str, Any]) -> ModelDB:
+    """Load the versioned representation, rejecting unknown executable input."""
+    expected = {"schema", "nodes", "elements", "node_sets", "element_sets", "materials",
+                "sections", "boundaries", "loads", "steps", "output_requests", "metadata"}
+    if set(raw) != expected or raw.get("schema") != SCHEMA:
+        raise ValueError("unknown fields or unsupported ModelDB schema")
+    def exact(item, fields, label):
+        if set(item) != set(fields): raise ValueError(f"unknown or missing {label} fields")
+    for x in raw["nodes"]: exact(x, ("id", "coordinates"), "node")
+    for x in raw["elements"]: exact(x, ("element_type", "ids", "connectivity", "name"), "element block")
+    for x in raw["materials"].values(): exact(x, ("name", "elastic"), "material")
+    maps = (("sections", Section, ("elset", "material", "kind", "properties")),
+            ("boundaries", BoundaryCondition, ("target", "dof_start", "dof_end", "value")),
+            ("loads", ConcentratedLoad, ("target", "dof", "value")),
+            ("steps", AnalysisStep, ("name", "kind")),
+            ("output_requests", OutputRequest, ("variables",)))
+    made = {}
+    for key, cls, fields in maps:
+        for x in raw[key]: exact(x, fields, key)
+        values = []
+        for x in raw[key]:
+            x = dict(x)
+            tuple_field = "properties" if key == "sections" else "variables" if key == "output_requests" else None
+            if tuple_field is not None: x[tuple_field] = tuple(x[tuple_field])
+            values.append(cls(**x))
+        made[key] = values
+    db = ModelDB(
+        nodes={int(x["id"]): tuple(x["coordinates"]) for x in raw["nodes"]},
+        elements=[ElementBlock(x["element_type"], list(x["ids"]),
+                               [list(c) for c in x["connectivity"]], x["name"])
+                  for x in raw["elements"]],
+        node_sets={str(k): set(v) for k, v in raw["node_sets"].items()},
+        element_sets={str(k): set(v) for k, v in raw["element_sets"].items()},
+        materials={str(k): Material(v["name"], None if v["elastic"] is None else tuple(v["elastic"]))
+                   for k, v in raw["materials"].items()}, sections=made["sections"],
+        boundaries=made["boundaries"], loads=made["loads"], steps=made["steps"],
+        output_requests=made["output_requests"], metadata=dict(raw["metadata"]))
+    db.validate(); return db
+
+
 def to_truss_model(db: ModelDB, *, dtype: torch.dtype = torch.float64):
     """Adapt a 2-D Abaqus T2D2 database to TensorFEM's verified truss solver."""
     from .model import TrussModel
@@ -149,4 +219,3 @@ def to_truss_model(db: ModelDB, *, dtype: torch.dtype = torch.float64):
     return TrussModel(nodes, torch.tensor(conn, dtype=torch.long),
                       torch.tensor(young, dtype=dtype), torch.tensor(area, dtype=dtype),
                       force, torch.tensor(fixed, dtype=torch.long)), node_ids
-

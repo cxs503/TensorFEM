@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.27)
+## Capability maturity (v0.28)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -75,6 +75,10 @@ analytical or recognized benchmark evidence.
 | numerical crack-tip J integral | qualified Mode-I prototype | direct discrete contour integration, plane stress/strain K-J oracle, path-shape independence and quadrature convergence |
 | initial imperfection and residual-stress transfer | qualified reduced-order integration | ResultDB v1/v2 ID/coordinate mapping, balance checks, round trip and field-sensitive elastic/plastic strip response |
 | Shell4 arc-length residual/tangent integration | qualified integration prototype | real assembled corotational residual and autograd Hessian with equilibrium and step-size gates; no postbuckling claim |
+| multi-facet Shell4 transactional state | qualified elastic prototype | measured imperfection in the stress-free reference, accepted generalized section state, exact tangent and rejected-step rollback |
+| global finite-sliding contact equilibrium | qualified 2-D prototype | deformable node/polyline current-configuration search, Coulomb history, balanced global residual, algorithmic tangent and rollback |
+| unified analysis workflow | stable initial subset | versioned ModelDB/AnalysisPlan, registered structural/thermal steps, deterministic jobs, atomic checkpoint/resume and ResultDB v2 |
+| industrial P0 qualification | stable verification view | hashed executable report with explicit unqualified shell-plasticity, general 3-D mortar/self-contact and distributed-solver boundaries |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 
