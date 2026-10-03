@@ -2,6 +2,12 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.21.0
+
+- Added verified hull-girder and equivalent-orthotropic stiffened-panel screening cases.
+- Added rectangular-barge hydrostatics, load cases, and intact small-angle stability checks.
+- Added Airy/Morison marine load generation and an audited TensorLBM-to-TensorFEM force-history contract.
+
 ## 0.20.0
 
 - Expanded safe mesh projects with HEX8 structural and LINE2/Q4 steady thermal elements.

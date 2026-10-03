@@ -69,6 +69,9 @@ def main() -> None:
                 "ResultDB v2 multiframe and integration-point histories",
                 "three auditable engineering case packages",
                 "versioned public API and offline release gates",
+                "ship hull-girder and stiffened-panel screening benchmarks",
+                "box-barge hydrostatics and intact small-angle stability",
+                "Airy/Morison marine loads and TensorLBM force-history exchange",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

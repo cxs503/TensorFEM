@@ -1,0 +1,10 @@
+{
+  "schema": "tensorfem.marine-load-case.v1",
+  "name": "Fixed slender pile under linear wave and uniform current",
+  "units": {"length": "m", "time": "s", "mass": "kg", "force": "N", "pressure": "Pa"},
+  "water": {"density": 1025.0, "gravity": 9.80665},
+  "wave": {"height": 3.0, "period": 9.0, "depth": 25.0},
+  "current": {"velocity": 0.8},
+  "member": {"diameter": 1.2, "drag_coefficient": 1.05, "inertia_coefficient": 2.0},
+  "evaluation": {"x": 0.0, "time": -2.25, "quadrature_order": 32}
+}
