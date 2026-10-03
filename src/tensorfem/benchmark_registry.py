@@ -107,6 +107,8 @@ def run_registered_benchmarks():
     pf=torch.zeros(pm.n_dofs,dtype=torch.float64); pf[3]=400./6
     pr=solve_load_steps(pm,pf,(1.,))[-1]; exact=.002+(400.-250.)/10000.
     out.append(_evidence("plasticity.tet4_j2","TET4 J2 plasticity","uniaxial strain","strain","Linear-hardening uniaxial stress-strain solution",pr.displacement[3],exact))
+    from .marine_benchmark_suite import run_marine_benchmarks
+    out.extend(run_marine_benchmarks())
     return tuple(out)
 
 def verification_report():

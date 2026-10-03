@@ -2,6 +2,12 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.22.0
+
+- Promoted eight marine reference quantities into the fail-closed formal benchmark registry.
+- Added hull-girder mesh/reaction and Morison quadrature-convergence qualification gates.
+- Added an explicit marine validation matrix and documented unqualified capability boundaries.
+
 ## 0.21.0
 
 - Added verified hull-girder and equivalent-orthotropic stiffened-panel screening cases.

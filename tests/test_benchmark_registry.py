@@ -14,6 +14,10 @@ def test_registry_traceable_and_below_three_percent(report):
         "shell.patch_energy", "cohesive.fracture_energy", "plasticity.j2",
         "sparse.axial_bar", "thermal.rod_convection", "dynamics.explicit",
         "nonlinear.finite_bar", "solid.tet10_patch", "plasticity.tet4_j2",
+        "marine.hull_girder.deflection", "marine.hull_girder.moment",
+        "marine.stiffened_panel.navier", "marine.hydrostatics.displacement",
+        "marine.hydrostatics.gm", "marine.hydrostatics.restoring",
+        "marine.morison.base_shear", "marine.morison.overturning",
     }
     assert report["passed"]
     assert report["summary"] == {"total": len(expected), "passed": len(expected)}
