@@ -16,6 +16,9 @@ from .marine_fatigue_advanced import run_advanced_fatigue_qualification
 from .shell4_buckling import run_shell4_buckling_qualification
 from .marine_imperfect_strip import run_imperfect_strip_qualification
 from .marine_hotspot_fracture import run_hotspot_fracture_qualification
+from .crack_tip_j_integral import run_crack_tip_j_qualification
+from .shell4_arc_path import run_shell4_arc_path_evidence
+from .initial_fields import run_initial_field_transfer_qualification
 
 
 SCHEMA = "tensorfem.marine-structural-qualification/1.0"
@@ -51,6 +54,9 @@ def run_marine_structural_qualification() -> dict[str, object]:
     imperfect_strip = run_imperfect_strip_qualification()
     imperfect_strip = {**imperfect_strip, "final": asdict(imperfect_strip["final"])}
     hotspot_fracture = run_hotspot_fracture_qualification()
+    numerical_j = run_crack_tip_j_qualification()
+    shell4_arc_path = run_shell4_arc_path_evidence()
+    initial_field_transfer = run_initial_field_transfer_qualification()
     categories = {
         "global_hull_and_beam": {"status": "qualified", "evidence": 6},
         "plate_shell_linear_and_large_rotation": {"status": "qualified", "evidence": 7},
@@ -67,6 +73,9 @@ def run_marine_structural_qualification() -> dict[str, object]:
         "shell4_initial_stress_buckling": {"status": "qualified", "evidence": 1},
         "imperfection_residual_stress_plasticity": {"status": "qualified_reduced_order", "evidence": 3},
         "resultdb_hotspot_and_lefm": {"status": "qualified_primitives", "evidence": 4},
+        "numerical_crack_tip_j": {"status": "qualified_mode_i_prototype", "evidence": 3},
+        "initial_field_transfer": {"status": "qualified_reduced_order_integration", "evidence": 4},
+        "shell4_real_residual_arc_path": {"status": "qualified_integration_prototype", "evidence": 2},
         "shell_arc_length_postbuckling": {"status": "not_qualified", "evidence": 0},
     }
     clean: dict[str, object] = {
@@ -77,7 +86,8 @@ def run_marine_structural_qualification() -> dict[str, object]:
                    and bool(fatigue["passed"]) and bool(postbuckling["passed"])
                    and bool(progressive["passed"]) and bool(advanced_fatigue["passed"])
                    and bool(shell4_buckling["passed"]) and bool(imperfect_strip["passed"])
-                   and bool(hotspot_fracture["passed"])),
+                   and bool(hotspot_fracture["passed"]) and bool(numerical_j["passed"])
+                   and bool(shell4_arc_path["passed"]) and bool(initial_field_transfer["passed"])),
         "scalar_evidence": scalar,
         "classical_shell_suite": shells,
         "local_plate_buckling": local_buckling,
@@ -89,6 +99,9 @@ def run_marine_structural_qualification() -> dict[str, object]:
         "shell4_buckling": shell4_buckling,
         "imperfect_strip": imperfect_strip,
         "hotspot_fracture": hotspot_fracture,
+        "numerical_crack_tip_j": numerical_j,
+        "shell4_arc_path": shell4_arc_path,
+        "initial_field_transfer": initial_field_transfer,
         "categories": categories,
     }
     return {**clean, "report_hash": _digest(clean)}

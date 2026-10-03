@@ -2,6 +2,14 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.27.0
+
+- Connected the Crisfield continuation solver to an assembled corotational Shell4 residual and consistent autograd tangent, with discrete-equilibrium and step-size gates.
+- Added direct numerical Mode-I contour J integration with plane stress/strain, path-independence and refinement evidence.
+- Added fail-closed ResultDB v1/v2 import of imperfection and residual-stress fields and complete-field reduced strip response paths.
+- Removed the undeclared NumPy dependency from the imperfect plastic strip and made ResultDB checksums work with the declared PyTorch-only core.
+- Expanded the formal benchmark registry to 55 passing nonzero reference quantities while retaining explicit postbuckling and crack-growth boundaries.
+
 ## 0.26.0
 
 - Added a real Shell4 initial-stress geometric matrix and eigenbuckling qualification.

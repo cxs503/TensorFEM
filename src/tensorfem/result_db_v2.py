@@ -11,7 +11,7 @@ LOCATIONS=("node","element","integration_point")
 
 
 def _hash_tensor(value):
-    x=value.detach().cpu().contiguous();h=hashlib.sha256();h.update(str(x.dtype).encode());h.update(str(tuple(x.shape)).encode());h.update(x.numpy().tobytes());return h.hexdigest()
+    x=value.detach().cpu().contiguous();h=hashlib.sha256();h.update(str(x.dtype).encode());h.update(str(tuple(x.shape)).encode());h.update(bytes(x.reshape(-1).view(torch.uint8).tolist()));return h.hexdigest()
 def _canonical(x):return json.dumps(x,sort_keys=True,separators=(",",":"),allow_nan=False)
 
 

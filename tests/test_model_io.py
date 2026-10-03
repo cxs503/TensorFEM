@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import subprocess
 import sys
 
@@ -114,7 +115,8 @@ def test_hdf5_is_optional(tmp_path):
 
 def test_inp_to_vtk_example_help():
     script = Path(__file__).parents[1] / "examples" / "inp_to_vtk.py"
+    env={**os.environ,"PYTHONPATH":str(Path(__file__).parents[1]/"src")}
     proc = subprocess.run([sys.executable, str(script), "--help"],
-                          text=True, capture_output=True, check=False)
+                          text=True, capture_output=True, check=False,env=env)
     assert proc.returncode == 0
     assert "input Abaqus .inp file" in proc.stdout

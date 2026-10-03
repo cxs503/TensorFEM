@@ -78,7 +78,10 @@ def build_and_smoke() -> dict[str, object]:
         code = ("import importlib.metadata as m, importlib.resources as r, json, tensorfem; "
                 "assert m.version('tensorfem') == tensorfem.__version__; "
                 "assert json.loads(r.files('tensorfem').joinpath('public_api_manifest.json').read_text())['entries']")
-        run([str(python), "-Werror", "-c", code], cwd=temp, env=env)
+        # NumPy is optional for the declared PyTorch-only core.  Keep all
+        # package warnings fatal while allowing PyTorch's missing-bridge note.
+        run([str(python), "-Werror", "-Wignore:Failed to initialize NumPy", "-c", code],
+            cwd=temp, env=env)
         run([str(venv / "bin/tensorfem"), "capabilities"], cwd=temp, env=env,
             stdout=subprocess.DEVNULL)
         return {**audit, "wheel": wheel.name, "sdist": sdist.name, "smoke": "pass"}

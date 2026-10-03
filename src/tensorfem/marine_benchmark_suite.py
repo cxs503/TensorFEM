@@ -16,6 +16,7 @@ from .marine_fatigue_advanced import run_advanced_fatigue_qualification
 from .shell4_buckling import run_shell4_buckling_qualification
 from .marine_imperfect_strip import run_imperfect_strip_qualification
 from .marine_hotspot_fracture import run_hotspot_fracture_qualification
+from .crack_tip_j_integral import run_crack_tip_j_qualification
 
 
 def run_marine_benchmarks() -> tuple[BenchmarkEvidence, ...]:
@@ -165,5 +166,11 @@ def run_marine_benchmarks() -> tuple[BenchmarkEvidence, ...]:
         out.append(_evidence(f"marine.fracture.{row['id']}", "hot-spot and LEFM post-processing",
                              row["id"], fracture_units[row["id"]],
                              "Affine field/SCL and finite-width Mode-I direct analytical identities",
+                             row["actual"], row["oracle"]))
+    numerical_j = run_crack_tip_j_qualification()
+    for row in numerical_j["evidence"]:
+        out.append(_evidence(f"marine.fracture.numerical_j.{row['id']}",
+                             "numerical crack-tip contour integration", "J integral", "J/m^2",
+                             "Rice contour integral evaluated on the Williams Mode-I field; K^2/E' oracle",
                              row["actual"], row["oracle"]))
     return tuple(out)

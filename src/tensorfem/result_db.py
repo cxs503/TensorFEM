@@ -13,7 +13,11 @@ SCHEMA="tensorfem.result-db.v1"
 def _tensor_hash(value):
     data=value.detach().cpu().contiguous()
     h=hashlib.sha256();h.update(str(data.dtype).encode());h.update(str(tuple(data.shape)).encode())
-    h.update(data.numpy().tobytes());return h.hexdigest()
+    # ResultDB JSON summaries remain usable without the optional NumPy/HDF5
+    # stack.  Hash the tensor storage through a byte view instead of crossing
+    # the NumPy bridge, which PyTorch may not have been built/configured with.
+    raw=data.reshape(-1).view(torch.uint8).tolist()
+    h.update(bytes(raw));return h.hexdigest()
 
 
 def _canonical(value):return json.dumps(value,sort_keys=True,separators=(",",":"),allow_nan=False)

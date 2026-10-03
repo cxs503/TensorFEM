@@ -34,6 +34,8 @@ def test_registry_traceable_and_below_three_percent(report):
         "marine.imperfect_strip.external_work", "marine.fracture.hot_spot",
         "marine.fracture.scl_membrane", "marine.fracture.mode_i_k",
         "marine.fracture.mode_i_j",
+        "marine.fracture.numerical_j.plane_stress",
+        "marine.fracture.numerical_j.plane_strain",
     }
     assert report["passed"]
     assert report["summary"] == {"total": len(expected), "passed": len(expected)}

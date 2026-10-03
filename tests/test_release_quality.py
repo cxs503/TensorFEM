@@ -8,7 +8,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_api_audit_script_passes_with_warnings_as_errors():
-    env = {**os.environ, "PYTHONPATH": str(ROOT / "src"), "PYTHONWARNINGS": "error"}
+    # Keep project warnings fatal while tolerating PyTorch's optional NumPy
+    # bridge warning in a valid torch-only installation.
+    env = {**os.environ, "PYTHONPATH": str(ROOT / "src"),
+           "PYTHONWARNINGS": "error,ignore:Failed to initialize NumPy"}
     result = subprocess.run(
         [sys.executable, str(ROOT / "scripts/audit_public_api.py"), "--json"],
         cwd=ROOT, env=env, check=True, capture_output=True, text=True,

@@ -34,6 +34,9 @@ def test_capability_boundaries_are_explicit_and_fail_closed(report):
     assert categories["shell4_initial_stress_buckling"]["status"] == "qualified"
     assert categories["imperfection_residual_stress_plasticity"]["status"] == "qualified_reduced_order"
     assert categories["resultdb_hotspot_and_lefm"]["status"] == "qualified_primitives"
+    assert categories["numerical_crack_tip_j"]["status"] == "qualified_mode_i_prototype"
+    assert categories["initial_field_transfer"]["status"] == "qualified_reduced_order_integration"
+    assert categories["shell4_real_residual_arc_path"]["status"] == "qualified_integration_prototype"
     assert categories["shell_arc_length_postbuckling"]["status"] == "not_qualified"
     tampered = copy.deepcopy(report)
     tampered["categories"]["full_shell_progressive_collapse"]["status"] = "qualified"

@@ -79,7 +79,7 @@ KERNELS={"linear_static":_linear,"thermal_steady":_thermal,"modal":_modal,
 
 def _fingerprint(value):
     if isinstance(value,torch.Tensor):
-        v=value.detach().cpu().contiguous();return {"tensor_sha256":hashlib.sha256(v.numpy().tobytes()).hexdigest(),
+        v=value.detach().cpu().contiguous();raw=bytes(v.reshape(-1).view(torch.uint8).tolist());return {"tensor_sha256":hashlib.sha256(raw).hexdigest(),
             "dtype":str(v.dtype),"shape":list(v.shape)}
     if dataclasses.is_dataclass(value):return {f.name:_fingerprint(getattr(value,f.name)) for f in dataclasses.fields(value)}
     if isinstance(value,Mapping):return {str(k):_fingerprint(v) for k,v in sorted(value.items(),key=lambda x:str(x[0]))}
