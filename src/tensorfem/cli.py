@@ -84,6 +84,9 @@ def main() -> None:
                 "2-D global finite-sliding frictional contact prototype",
                 "unified ModelDB AnalysisPlan Job ResultDB v2 workflow",
                 "hashed industrial P0 qualification view",
+                "small-strain layered Shell4 plane-stress J2 prototype",
+                "global 3-D node-to-TRI3 frictional contact prototype",
+                "external benchmark contracts and industrial P0 phase-2 qualification",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

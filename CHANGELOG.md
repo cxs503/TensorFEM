@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.29.0
+
+- Added a real small-strain layered Shell4 with 2x2 in-plane integration, through-thickness plane-stress J2 points, residual stress, unloading and transactional material history.
+- Added a global low-order 3-D node-to-TRI3 contact solve with current-configuration search, barycentric master reactions, Coulomb history, objective motion and force/moment audits.
+- Added machine-readable external benchmark contracts: Bathe-Bolourchi large-rotation bending is qualified while shallow-shell snap-through and deformable Hertz FE remain blocked.
+- Added a hashed industrial P0 phase-2 report preserving explicit boundaries around finite-rotation plastic postbuckling and general mortar/self-contact.
+
 ## 0.28.0
 
 - Added a unified ModelDB-to-AnalysisPlan-to-Job-to-ResultDB v2 vertical slice with strict schema migration, registered kernels, deterministic IDs, atomic failure records and resume.
