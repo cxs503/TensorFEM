@@ -35,12 +35,23 @@ Raw active extent and raw nodal peak remain in the result for auditing.
 |---:|---:|---:|---:|---:|---:|
 | 16 x 16 | 1720.7875 | 6.0450% | 14.4294% | 8.3889% | 3.0306% |
 | 24 x 24 | 1931.0021 | 5.4327% | 4.1924% | 5.6309% | 2.9477% |
-| 40 x 40 | 1877.3477 | 2.5032% | 0.9934% | 2.8387% | 2.8534% |
+| 48 x 48 | 1882.8952 | 2.8061% | 2.7738% | 2.2767% | 2.8017% |
 
 The first two meshes are convergence evidence and fail the 3% capability
-gate. The 40 x 40 result is the qualifying discretisation: load, radius,
-pressure and normalized penalty overlap are each strictly below 3%. Errors in
-all three Hertz outputs decrease along the stated 16/24/40 sequence.
+gate. The 48 x 48 result is the qualifying discretisation: load, radius,
+peak pressure, full pressure-distribution weighted L2 error and normalized
+penalty overlap are each strictly below 3%. Errors in all four nontrivial
+Hertz outputs decrease along the stated 16/24/48 sequence. Indenter travel is
+the prescribed displacement and is checked independently against the oracle;
+the normalized contact overlap is reported separately rather than hidden in
+that quantity.
+
+A separate truncation study holds contact-zone resolution approximately
+constant while increasing the cylinder from 24 to 32 contact radii in width
+and depth (40x40 to 53x53 elements). Load, fitted contact radius and fitted
+peak pressure change by less than 3%. The reaction recovered from the remote
+supports also balances the independently integrated contact resultant to
+relative tolerance `1e-10`.
 
 The penalty is fixed in physical units across the refinement sequence; it is
 not retuned per mesh. Nonnegative pressure, solver convergence, stiffness

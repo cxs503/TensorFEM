@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.29)
+## Capability maturity (v0.30)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -26,7 +26,7 @@ analytical or recognized benchmark evidence.
 | plate, flat shell, finite-sliding 2-D/3-D contact and cohesive formulations | stable kernels | patch, energy, complementarity, friction and fracture-energy checks |
 | low-order surface contact | stable kernel | TRI3/QUAD4 tributary integration, resultant balance and topology gates |
 | cylindrical shell research formulation | experimental | global nonlinear Newton/line search/restart works; wider nonlinear shell benchmarks remain |
-| axisymmetric deformable Hertz model | stable benchmark | coupled Q4/contact pressure solution reaches all four 3% gates at 40x40 |
+| axisymmetric deformable Hertz model | qualified benchmark | deformable Q4 half-space pressure, load, radius, peak pressure and overlap converge below 3% at 48x48; rigid indenter and axisymmetric scope only |
 | multiplicative finite-strain J2 plasticity | stable prototype | objectivity, isochoric flow, dissipation, coaxial reference and restart gates |
 | low-order frictionless Mortar contact | stable prototype | force/moment patch, master-slave symmetry and nonmatching convergence |
 | Pinched Cylinder shell benchmark | qualified evidence | MacNeal-Harder 12x12 error 0.985%; shell family remains experimental |
@@ -83,6 +83,9 @@ analytical or recognized benchmark evidence.
 | global 3-D surface contact equilibrium | qualified node-TRI3 prototype | current-facet search, barycentric master reactions, Coulomb history, objective motion, force/moment balance and rollback |
 | external P0 benchmark contracts | stable evidence governance | qualified Bathe-Bolourchi elastic large rotation; shell snap-through and deformable Hertz FE remain explicitly blocked |
 | industrial P0 phase-2 qualification | stable verification view | hashed layered-shell/contact report with finite-rotation plastic postbuckling and general mortar/self-contact kept unqualified |
+| finite-rotation layered Shell4 arc integration | qualified integration primitive | corotational small-strain J2 layers, residual stress, imperfections, algorithmic tangent and transactional accept/reject history; not a finite-membrane-strain claim |
+| marine panel ultimate-strength FE contract | blocked execution evidence | real 4/8/12 Shell4 meshes and two arc controls are defined; peak/post-peak mesh, step, equilibrium and energy evidence remains to execute |
+| industrial P0 phase-3 qualification | stable verification view | hashed executable report qualifies the Shell4 integration primitive and axisymmetric Hertz scope while keeping panel ultimate and general 3-D double-deformable contact blocked |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

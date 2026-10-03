@@ -87,6 +87,9 @@ def main() -> None:
                 "small-strain layered Shell4 plane-stress J2 prototype",
                 "global 3-D node-to-TRI3 frictional contact prototype",
                 "external benchmark contracts and industrial P0 phase-2 qualification",
+                "finite-rotation layered Shell4 transactional arc integration",
+                "axisymmetric rigid-indenter/deformable-halfspace Hertz qualification",
+                "hashed industrial P0 phase-3 qualification view",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
@@ -94,6 +97,8 @@ def main() -> None:
                 "published ring-load snap-through shell qualification data",
                 "qualified multi-GPU contact-island execution",
                 "general crack propagation", "multi-node distributed production runs",
+                "marine panel peak/post-peak qualification evidence",
+                "general 3-D deformable-to-deformable Hertz qualification",
             ],
         }, indent=2))
         return

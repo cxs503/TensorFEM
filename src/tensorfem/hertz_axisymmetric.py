@@ -20,6 +20,10 @@ class AxisymmetricHertzResult:
     peak_pressure: torch.Tensor
     active_extent: torch.Tensor
     raw_peak_pressure: torch.Tensor
+    prescribed_indentation: torch.Tensor
+    maximum_overlap: torch.Tensor
+    pressure_l2_error: torch.Tensor
+    force_balance_error: torch.Tensor
     iterations: int
     converged: bool
 
@@ -149,5 +153,35 @@ def solve_axisymmetric_hertz(*,nr=40,nz=40,width=12.,depth=12.,radius=10.,
         fitted_radius=torch.sqrt(torch.clamp(-coeff[0]/coeff[1],min=0.))
     else:
         fitted_peak=pressure.max(); fitted_radius=a
+    reference_load,reference_radius,reference_peak=hertz_reference(
+        indentation,radius,young,poisson)
+    reference_pressure=reference_peak*torch.sqrt(torch.clamp(
+        1-(radii/reference_radius)**2,min=0.))
+    reference_active=radii <= reference_radius
+    pressure_l2_error=torch.sqrt(
+        torch.sum(area[reference_active]*(pressure[reference_active]-reference_pressure[reference_active])**2)
+        / torch.sum(area[reference_active]*reference_pressure[reference_active]**2))
+    # The contact force and the constrained-boundary elastic reaction are
+    # independently recovered.  This is an equilibrium audit, not a
+    # restatement of the applied contact resultant.
+    support_reaction=torch.sum((K@u)[fixed[fixed % 2 == 1]])
+    force_balance_error=torch.abs(support_reaction-load)/torch.clamp(torch.abs(load),min=1.)
     return AxisymmetricHertzResult(u,radii,pressure,load,fitted_radius,fitted_peak,
-                                   a,pressure.max(),iteration,converged)
+                                   a,pressure.max(),nodes.new_tensor(indentation),
+                                   penetration.max(),pressure_l2_error,
+                                   force_balance_error,iteration,converged)
+
+
+def axisymmetric_hertz_errors(result: AxisymmetricHertzResult, *,
+                              indentation=.025,radius=10.,young=1e5,poisson=.3):
+    """Return auditable relative errors against the independent Hertz oracle."""
+    load,contact_radius,peak=hertz_reference(indentation,radius,young,poisson)
+    return {
+        "load": abs(float(result.load)/load-1),
+        "contact_radius": abs(float(result.contact_radius)/contact_radius-1),
+        "indentation": abs(float(result.prescribed_indentation)/indentation-1),
+        "peak_pressure": abs(float(result.peak_pressure)/peak-1),
+        "pressure_l2": float(result.pressure_l2_error),
+        "force_balance": float(result.force_balance_error),
+        "normalized_overlap": float(result.maximum_overlap)/indentation,
+    }

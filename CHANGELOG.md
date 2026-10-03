@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.30.0
+
+- Added a finite-rotation corotational Shell4 wrapper with layered plane-stress J2 plasticity, stress-free imperfections, residual stress, numerical algorithmic tangent and transactional Crisfield continuation.
+- Expanded the deformable axisymmetric Hertz qualification to pressure-field L2 error, force balance, penalty overlap, three contact-zone meshes and a half-space domain-size study; all declared fine-grid errors remain below 3%.
+- Added a real multi-element marine-panel ultimate-strength input and acceptance contract while keeping peak/post-peak qualification blocked until its complete mesh/control matrix is executed.
+- Added a hashed industrial P0 phase-3 report that separates qualified integration primitives and axisymmetric Hertz evidence from unqualified panel ultimate strength and general 3-D deformable-to-deformable contact.
+
 ## 0.29.0
 
 - Added a real small-strain layered Shell4 with 2x2 in-plane integration, through-thickness plane-stress J2 points, residual stress, unloading and transactional material history.
