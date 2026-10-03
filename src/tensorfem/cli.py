@@ -13,10 +13,13 @@ def main() -> None:
         description="TensorFEM verified finite-element command line tools",
     )
     parser.add_argument(
-        "command", choices=("benchmark", "three-bar", "verify", "capabilities"),
-        help="run the legacy bar benchmark, three-bar example, formal verification, or list capabilities",
+        "command", choices=("benchmark", "three-bar", "verify", "capabilities",
+                           "validate", "run", "resume", "status", "inspect"),
+        help="run, validate, inspect, or verify TensorFEM projects and results",
     )
+    parser.add_argument("target", nargs="?", type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--runs", type=Path, default=Path("runs"))
     args = parser.parse_args()
     if args.command == "capabilities":
         print(json.dumps({
@@ -60,6 +63,9 @@ def main() -> None:
                 "safe versioned engineering project workflow",
                 "checksummed ResultDB with optional chunked HDF5 body",
                 "four-case classical shell evidence suite",
+                "safe arbitrary-mesh truss/TET4 project execution",
+                "multistep linear/thermal/modal execution with resume",
+                "ResultDB v2 multiframe and integration-point histories",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
@@ -69,6 +75,36 @@ def main() -> None:
                 "general crack propagation", "multi-node distributed production runs",
             ],
         }, indent=2))
+        return
+    if args.command in ("validate", "run", "resume"):
+        if args.target is None:
+            parser.error(f"{args.command} requires a project JSON path")
+        from .mesh_project import load_mesh_project, run_mesh_project
+        project = load_mesh_project(args.target)
+        if args.command == "validate":
+            print(json.dumps({"valid": True, "project": str(args.target),
+                              "schema": project["schema"]}, indent=2))
+            return
+        result = run_mesh_project(args.target, args.runs,
+                                  replay=args.command == "resume")
+        print(json.dumps(result, indent=2))
+        return
+    if args.command == "status":
+        if args.target is None:
+            parser.error("status requires a job directory or job.json")
+        path = args.target if args.target.name == "job.json" else args.target / "job.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        print(json.dumps(payload, indent=2))
+        raise SystemExit(0 if payload.get("status") == "completed" else 2)
+    if args.command == "inspect":
+        if args.target is None:
+            parser.error("inspect requires a ResultDB JSON path")
+        payload = json.loads(args.target.read_text(encoding="utf-8"))
+        print(json.dumps({"schema": payload.get("schema"),
+                          "database_sha256": payload.get("database_sha256"),
+                          "body": payload.get("body"),
+                          "steps": payload.get("steps"),
+                          "inventory": payload.get("inventory")}, indent=2))
         return
     if args.command == "verify":
         report = verification_report()

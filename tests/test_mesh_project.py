@@ -1,0 +1,17 @@
+import json,pytest
+from tensorfem.mesh_project import load_mesh_project,run_mesh_project
+def project(mesh):return {'schema':'tensorfem.mesh-project.v1','name':'bar','units':{'length':'m','force':'N','stress':'Pa','displacement':'m'},'model':{'name':'bar','element_type':'truss2d'},'mesh':mesh,'sets':{'node':{'left':[1],'right':[2]},'element':{'all':[1]},'surface':{}},'materials':[{'name':'mat','model':'linear_elastic','properties':{'young':200.}}],'sections':[{'name':'sec','element_set':'all','material':'mat','properties':{'area':2.}}],'step':{'name':'static','procedure':'linear_static'},'loads':[{'name':'pull','type':'nodal','target':'right','dof':1,'value':40.}],'constraints':[{'name':'fix','type':'displacement','target':'left','dofs':[1,2],'value':0},{'name':'guide','type':'displacement','target':'right','dofs':[2],'value':0}],'outputs':[{'name':'field','fields':['U','RF','S','E']}]}
+def test_external_json_mesh_end_to_end_and_replay(tmp_path):
+ mesh={'nodes':[{'id':1,'coordinates':[0.,0.]},{'id':2,'coordinates':[2.,0.]}],'elements':[{'id':1,'type':'truss2d','connectivity':[1,2]}]};(tmp_path/'mesh.json').write_text(json.dumps(mesh));p=tmp_path/'project.json';p.write_text(json.dumps(project({'file':'mesh.json'})))
+ a=run_mesh_project(p,tmp_path/'runs');b=run_mesh_project(p,tmp_path/'runs');assert abs(a['displacement'][2]-.2)<1e-12 and b['metadata']['replayed']
+def test_unknown_topology_path_and_code_fail_closed(tmp_path):
+ base=project({'nodes':[{'id':1,'coordinates':[0,0]},{'id':2,'coordinates':[1,0]}],'elements':[{'id':1,'type':'truss2d','connectivity':[1,3]}]});p=tmp_path/'p.json';p.write_text(json.dumps(base))
+ with pytest.raises(ValueError,match='topology'):load_mesh_project(p)
+ base=project({'file':'../escape.json'});p.write_text(json.dumps(base))
+ with pytest.raises(ValueError,match='escapes'):load_mesh_project(p)
+ base=project({'nodes':[],'elements':[]});base['python']='import os';p.write_text(json.dumps(base))
+ with pytest.raises(ValueError,match='unknown'):load_mesh_project(p)
+def test_inline_tet4_linear_dispatch(tmp_path):
+ p={'schema':'tensorfem.mesh-project.v1','name':'tet','units':{'length':'m','force':'N','stress':'Pa','displacement':'m'},'model':{'name':'tet','element_type':'tet4_linear'},'mesh':{'nodes':[{'id':1,'coordinates':[0,0,0]},{'id':2,'coordinates':[1,0,0]},{'id':3,'coordinates':[0,1,0]},{'id':4,'coordinates':[0,0,1]}],'elements':[{'id':1,'type':'tet4_linear','connectivity':[1,2,3,4]}]},'sets':{'node':{'origin':[1],'x':[2],'y':[3],'z':[4]},'element':{'all':[1]},'surface':{'face':[{'element':1,'face':1}]}},'materials':[{'name':'mat','model':'linear_elastic','properties':{'young':200000.,'poisson':.3}}],'sections':[{'name':'solid','element_set':'all','material':'mat','properties':{}}],'step':{'name':'static','procedure':'linear_static'},'loads':[{'name':'pull','type':'nodal','target':'x','dof':1,'value':400/6}],'constraints':[{'name':'o','type':'displacement','target':'origin','dofs':[1,2,3],'value':0},{'name':'xg','type':'displacement','target':'x','dofs':[2,3],'value':0},{'name':'yg','type':'displacement','target':'y','dofs':[1,3],'value':0},{'name':'zg','type':'displacement','target':'z','dofs':[1,2],'value':0}],'outputs':[{'name':'field','fields':['U','RF','S','E']}]}
+ path=tmp_path/'tet.json';path.write_text(json.dumps(p));r=run_mesh_project(path,tmp_path/'runs')
+ assert abs(r['displacement'][3]-.002)<1e-12 and abs(r['fields']['stress'][0][0]-400)<1e-9

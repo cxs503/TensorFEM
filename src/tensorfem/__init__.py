@@ -191,8 +191,18 @@ from .shell_benchmark_suite import (
     classical_shell_cases, run_classical_shell_suite,
     write_suite, read_suite, compare_suites,
 )
+from .mesh_project import load_mesh_project, run_mesh_project
+from .step_executor import (
+    StepSpec as ExecutionStepSpec, StepResult, StepContext,
+    ExecutionResult, StepExecutor, execution_result_db,
+)
+from .result_db_v2 import (
+    FieldSpec, ResultFrame, ResultStep, HistorySeries, ResultDBv2,
+    write_result_db_v2, read_result_db_v2, query_frame_field,
+    query_history_series, migrate_v1, read_result_db_compatible,
+)
 
-__version__ = "0.18.0"
+__version__ = "0.19.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -308,4 +318,10 @@ __all__ = [
     "scordelis_case", "pinched_cylinder_case", "pure_bending_case",
     "classical_shell_cases", "run_classical_shell_suite",
     "write_suite", "read_suite", "compare_suites",
+    "load_mesh_project", "run_mesh_project",
+    "ExecutionStepSpec", "StepResult", "StepContext", "ExecutionResult",
+    "StepExecutor", "execution_result_db",
+    "FieldSpec", "ResultFrame", "ResultStep", "HistorySeries", "ResultDBv2",
+    "write_result_db_v2", "read_result_db_v2", "query_frame_field",
+    "query_history_series", "migrate_v1", "read_result_db_compatible",
 ]
