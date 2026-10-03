@@ -73,6 +73,7 @@ def main() -> None:
                 "box-barge hydrostatics and intact small-angle stability",
                 "Airy/Morison marine loads and TensorLBM force-history exchange",
                 "eight-case marine qualification and convergence matrix",
+                "TensorFEM-only marine structural qualification gate",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

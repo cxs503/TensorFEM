@@ -2,6 +2,12 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.23.0
+
+- Added a TensorFEM-only marine structural qualification report with no TensorLBM or CFD dependency.
+- Combined 15 scalar references with four DOI-traceable classical shell cases.
+- Made local plate buckling, ultimate hull strength, and fatigue explicit unqualified gaps.
+
 ## 0.22.0
 
 - Promoted eight marine reference quantities into the fail-closed formal benchmark registry.
