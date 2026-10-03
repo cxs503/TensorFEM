@@ -4,7 +4,8 @@ import hashlib,json,time,traceback,torch
 from .model import TrussModel
 from .solvers import solve_linear_static
 from .solid3d import SolidModel,solve_solid
-SCHEMA="tensorfem.mesh-project.v1"; TYPES={"truss2d":(2,2),"tet4_linear":(3,4)}
+from .thermal import ThermalModel,assemble_thermal,solve_steady_thermal
+SCHEMA="tensorfem.mesh-project.v1"; TYPES={"truss2d":(2,2),"tet4_linear":(3,4),"hex8_linear":(3,8),"thermal_line2":(1,2),"thermal_q4":(2,4)}
 def _exact(x,keys,label):
  if set(x)!=set(keys):raise ValueError(f"unknown or missing {label} fields")
 def _safe_file(root,name):
@@ -19,7 +20,8 @@ def load_mesh_project(path):
  if raw['schema']!=SCHEMA:raise ValueError("unsupported mesh project schema")
  _exact(raw['model'],{'name','element_type'},'model');etype=raw['model']['element_type']
  if etype not in TYPES:raise ValueError("element type is not allow-listed")
- _exact(raw['units'],{'length','force','stress','displacement'},'units')
+ thermal=etype.startswith('thermal_')
+ _exact(raw['units'],{'length','temperature','heat_rate','conductivity'} if thermal else {'length','force','stress','displacement'},'units')
  mesh=raw['mesh'];
  if set(mesh)=={'file'}:mesh=json.loads(_safe_file(path.parent,mesh['file']).read_text())
  _exact(mesh,{'nodes','elements'},'mesh')
@@ -59,14 +61,16 @@ def _validate(p):
   if overlap:raise ValueError("element has multiple sections")
   covered|=set(elsets[sec['element_set']])
  if covered!=es:raise ValueError("every element needs exactly one section")
- ndof=dim
+ thermal=p['model']['element_type'].startswith('thermal_');ndof=1 if thermal else dim
  for bc in p['constraints']:
-  if bc['type']!='displacement' or bc['target'] not in p['sets']['node'] or any(d<1 or d>ndof for d in bc['dofs']) or bc['value']!=0:raise ValueError("unsupported constraint")
+  expected_bc='temperature' if thermal else 'displacement'
+  if bc['type']!=expected_bc or bc['target'] not in p['sets']['node'] or any(d<1 or d>ndof for d in bc['dofs']) or (not thermal and bc['value']!=0):raise ValueError("unsupported constraint")
  for load in p['loads']:
-  if load['type']!='nodal' or load['target'] not in p['sets']['node'] or not 1<=load['dof']<=ndof:raise ValueError("unsupported load")
- allowed={'U','RF','S','E'}
+  expected_load='heat' if thermal else 'nodal'
+  if load['type']!=expected_load or load['target'] not in p['sets']['node'] or not 1<=load['dof']<=ndof:raise ValueError("unsupported load")
+ allowed={'TEMP','FLUX'} if thermal else {'U','RF','S','E'}
  if any(not set(o['fields'])<=allowed for o in p['outputs']):raise ValueError("unsupported output field")
- expected='linear_elastic';
+ expected='steady_thermal' if thermal else 'linear_elastic';
  if any(m['model']!=expected for m in p['materials']):raise ValueError("only linear_elastic material is allowed")
 def _solve(p):
  dim,nen=TYPES[p['model']['element_type']];nodes=sorted(p['mesh']['nodes'],key=lambda x:x['id']);idx={n['id']:i for i,n in enumerate(nodes)}
@@ -74,12 +78,13 @@ def _solve(p):
  mats={m['name']:m for m in p['materials']};sec_by={}
  for s in p['sections']:
   for eid in p['sets']['element'][s['element_set']]:sec_by[eid]=s
- force=torch.zeros(dim*len(nodes),dtype=torch.float64);fixed=[]
+ thermal=p['model']['element_type'].startswith('thermal_');dof_per_node=1 if thermal else dim
+ force=torch.zeros(dof_per_node*len(nodes),dtype=torch.float64);fixed=[]
  for l in p['loads']:
-  for nid in p['sets']['node'][l['target']]:force[dim*idx[nid]+l['dof']-1]+=l['value']
+  for nid in p['sets']['node'][l['target']]:force[dof_per_node*idx[nid]+l['dof']-1]+=l['value']
  for b in p['constraints']:
   for nid in p['sets']['node'][b['target']]:
-   for d in b['dofs']:fixed.append(dim*idx[nid]+d-1)
+   for d in b['dofs']:fixed.append(dof_per_node*idx[nid]+d-1)
  xyz=torch.tensor([n['coordinates'] for n in nodes],dtype=torch.float64);fixed=torch.tensor(sorted(set(fixed)),dtype=torch.long)
  if p['model']['element_type']=='truss2d':
   E=[];A=[]
@@ -89,12 +94,26 @@ def _solve(p):
    E.append(prop['young']);A.append(s['properties']['area'])
   r=solve_linear_static(TrussModel(xyz,conn,torch.tensor(E),torch.tensor(A),force,fixed))
   return r.displacement,r.reaction,{"stress":r.axial_stress.tolist(),"strain":r.axial_strain.tolist()}
+ if p['model']['element_type'].startswith('thermal_'):
+  conductivity=[];density=[];specific=[];thickness=[]
+  for e in elements:
+   s=sec_by[e['id']];prop=mats[s['material']]['properties']
+   if set(prop)!={'conductivity','density','specific_heat'}:raise ValueError("thermal material requires conductivity, density and specific_heat")
+   if set(s['properties'])!={'thickness'}:raise ValueError("thermal section requires thickness")
+   conductivity.append(prop['conductivity']);density.append(prop['density']);specific.append(prop['specific_heat']);thickness.append(s['properties']['thickness'])
+  fixed_nodes=[];fixed_temp=[]
+  for b in p['constraints']:
+   for nid in p['sets']['node'][b['target']]:fixed_nodes.append(idx[nid]);fixed_temp.append(b['value'])
+  tm=ThermalModel(xyz,conn,torch.tensor(conductivity),torch.tensor(density),torch.tensor(specific),torch.tensor(fixed_nodes),torch.tensor(fixed_temp,dtype=torch.float64),nodal_heat=force,thickness=torch.tensor(thickness),element_type='line2' if p['model']['element_type']=='thermal_line2' else 'q4')
+  temp=solve_steady_thermal(tm);flux=assemble_thermal(tm).conductivity@temp-assemble_thermal(tm).heat
+  return temp,flux,{"temperature":temp.tolist(),"flux":flux.tolist()}
  E=[];nu=[]
  for e in elements:
   prop=mats[sec_by[e['id']]['material']]['properties']
   if set(prop)!={'young','poisson'}:raise ValueError("tet4 requires young and poisson")
   E.append(prop['young']);nu.append(prop['poisson'])
- r=solve_solid(SolidModel(xyz,conn,torch.tensor(E),torch.tensor(nu),force,fixed,'tet4'))
+ solid_type='tet4' if p['model']['element_type']=='tet4_linear' else 'hex8'
+ r=solve_solid(SolidModel(xyz,conn,torch.tensor(E),torch.tensor(nu),force,fixed,solid_type))
  return r.displacement,r.reaction,{"stress":r.stress.tolist(),"strain":r.strain.tolist()}
 def run_mesh_project(path,run_root,replay=True):
  p=load_mesh_project(path);canonical=json.dumps(p,sort_keys=True,separators=(',',':'));jid=hashlib.sha256(canonical.encode()).hexdigest()[:20];d=Path(run_root)/jid;d.mkdir(parents=True,exist_ok=True);jp=d/'job.json';rp=d/'result.json';(d/'project.json').write_text(json.dumps(p,sort_keys=True,indent=2));start=time.time()

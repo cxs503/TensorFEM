@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.19)
+## Capability maturity (v0.20)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -59,9 +59,11 @@ analytical or recognized benchmark evidence.
 | general engineering project workflow | stable initial schema | safe static dispatch for three shell cases, replay and diagnostics |
 | ResultDB | stable core | field checksums, chunked HDF5 round trip, lazy subset queries and no-h5py fallback |
 | classical shell evidence suite | stable verification suite | four sourced cases, 19 meshes, quick/full tiers and suite drift hash |
-| arbitrary-mesh project schema | stable initial subset | safe truss/TET4 JSON meshes, sets, materials, loads and deterministic jobs |
+| arbitrary-mesh project schema | stable initial subset | safe truss/TET4/HEX8 structural and LINE2/Q4 thermal JSON projects with deterministic jobs |
 | multistep execution | stable initial subset | linear, thermal, modal and sequential thermoelastic steps with resume |
 | ResultDB v2 | stable core | multistep/multiframe/IP fields, histories, lazy queries and atomic HDF5 publication |
+| engineering case packages | stable examples | pressurized component, thin-wall panel and stopped connector with checkpoints, ResultDB, VTK and reports |
+| public API and release gates | stable infrastructure | versioned 310-symbol manifest, drift audit and offline wheel/sdist installation smoke test |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

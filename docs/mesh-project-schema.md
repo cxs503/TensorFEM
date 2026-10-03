@@ -4,7 +4,11 @@
 contained within the project directory. It defines node, element and surface
 sets, linear-elastic materials, sections, zero displacement constraints, nodal
 loads and output requests. Initial static dispatch is limited to verified
-`truss2d` and linear `tet4` kernels.
+`truss2d`, linear `tet4`/`hex8`, and steady thermal `line2`/`q4` kernels.
+Structural projects require force/stress/displacement units and permit only
+linear-elastic materials with `U/RF/S/E`. Thermal projects instead require
+temperature/heat-rate/conductivity units, steady-thermal material properties,
+temperature constraints and `TEMP/FLUX`; cross-physics combinations fail.
 
 Unknown fields, element/material types, missing references, duplicate IDs,
 invalid topology, uncovered/multiply-sectioned elements, unsupported DOFs and

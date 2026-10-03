@@ -63,9 +63,12 @@ def main() -> None:
                 "safe versioned engineering project workflow",
                 "checksummed ResultDB with optional chunked HDF5 body",
                 "four-case classical shell evidence suite",
-                "safe arbitrary-mesh truss/TET4 project execution",
+                "safe arbitrary-mesh truss/TET4/HEX8 project execution",
+                "steady thermal LINE2/Q4 arbitrary-mesh projects",
                 "multistep linear/thermal/modal execution with resume",
                 "ResultDB v2 multiframe and integration-point histories",
+                "three auditable engineering case packages",
+                "versioned public API and offline release gates",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

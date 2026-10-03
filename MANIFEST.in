@@ -1,0 +1,5 @@
+include CHANGELOG.md
+include LICENSE
+include README.md
+include api/public-api-v1.json
+include src/tensorfem/public_api_manifest.json
