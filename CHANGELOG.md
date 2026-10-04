@@ -2,6 +2,15 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.36.0
+
+- Replaced the dimensionally invalid shell continuation norm with an opt-in thickness-integrated metric: bending rotations use `t^2/12`, drilling does not consume arc length, and all DOFs remain in equilibrium.
+- Diagnosed the 8x8 480.2 kN plateau as drilling-gauge drift (99.9934% of the old increment), then advanced the corrected path to 580.889 kN at point 340 with equilibrium and energy gates passing; the path remains monotone, so no peak is claimed.
+- Added immutable generation checkpoints and atomic manifest pointers, with fault injection proving that interruption between binary publication and manifest commit preserves the prior valid generation.
+- Added hash-verified controlled metric migration and retained provenance for the 8x8 and 12x12 paths; the corrected 12x12 prefix reached 20 points and 309.197 kN.
+- Added an optional, fail-closed SciPy SuperLU/ILU adapter without a hard dependency. Real 4x4/8x8 corrector comparisons qualify accuracy but not speed, so production sparse acceleration remains unclaimed.
+- Preserved the fail-closed 4/8/12 convergence status: refined meshes have not reached their peaks and currently contradict the former assumption that the 4x4 peak transfers directly.
+
 ## 0.35.0
 
 - Fixed the panel stored-energy observer to use the same projected facet basis as the Shell4 internal force. The 4x4 coarse/fine terminal residuals are now 0.001526/0.0000611 J, both below the 0.025 J gate, with the expected 24.98x second-order reduction under fivefold step refinement.

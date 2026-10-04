@@ -23,6 +23,26 @@ from .layered_shell4_plasticity import (
 from .shell_consistent import rotation_matrix_from_vector
 
 
+def _arc_metric_weights(model: LayeredShell4Model, free: torch.Tensor,
+                        arc_metric: str) -> torch.Tensor:
+    """Return squared-length weights for the continuation coordinates."""
+    if arc_metric not in ("full", "structural", "dimensionally_scaled"):
+        raise ValueError(
+            "arc_metric must be 'full', 'structural', or 'dimensionally_scaled'"
+        )
+    metric = torch.ones(len(free) + 1, dtype=model.nodes.dtype,
+                        device=model.nodes.device)
+    if arc_metric in ("structural", "dimensionally_scaled"):
+        metric[:-1][(free % 6) == 5] = 0.0
+    if arc_metric == "dimensionally_scaled":
+        # Integrating |u + z x theta|^2 through a symmetric shell thickness
+        # gives integral(z^2)/integral(1) = t^2/12.
+        metric[:-1][((free % 6) == 3) | ((free % 6) == 4)] = (
+            float(model.thickness) ** 2 / 12.0
+        )
+    return metric
+
+
 @dataclass(frozen=True)
 class FiniteRotationShell4Response:
     internal_force: torch.Tensor
@@ -458,6 +478,7 @@ def solve_finite_rotation_arc_path(
     branch_sign: int = 1,
     critical_eigenvalue_ratio: float = 1e-6,
     augmented_scaling: str = "legacy",
+    arc_metric: str = "full",
 ) -> FiniteRotationArcResult:
     """Path-dependent Crisfield continuation with transactional J2 history.
 
@@ -486,6 +507,7 @@ def solve_finite_rotation_arc_path(
     mask = torch.ones(model.n_dofs, dtype=torch.bool, device=model.nodes.device)
     mask[fixed] = False
     free = torch.nonzero(mask).flatten()
+    metric = _arc_metric_weights(model, free, arc_metric)
     load_vector = reference_load.to(model.nodes)[free]
     state = LayeredShell4State.virgin(model) if initial_state is None else initial_state
     displacement = torch.zeros(model.n_dofs, dtype=model.nodes.dtype,
@@ -631,10 +653,11 @@ def solve_finite_rotation_arc_path(
         direction = torch.cat((direction_u, direction_u.new_tensor([1.])))
         sign = 1.0
         if previous is not None:
-            dot = torch.dot(direction, previous)
+            dot = torch.dot(metric * direction, previous)
             sign = 1.0 if float(dot) >= 0 else -1.0
         mode_diagnostic = None
-        predictor = sign * direction / torch.linalg.vector_norm(direction)
+        direction_norm = torch.sqrt(torch.dot(metric * direction, direction))
+        predictor = sign * direction / direction_norm
         if branch_switch == "critical_mode":
             from .branch_switch import (
                 perturbed_arc_predictor, smallest_eligible_symmetric_mode,
@@ -674,7 +697,8 @@ def solve_finite_rotation_arc_path(
             residual = internal - trial_load * load_vector
             Du = trial_u - committed_reduced
             Dp = trial_p - load_scale * committed_load
-            constraint = torch.dot(Du, Du) + Dp**2 - ds**2
+            full_increment = torch.cat((Du, Du.new_tensor([Dp])))
+            constraint = torch.dot(metric * full_increment, full_increment) - ds**2
             residual_norm = float(torch.linalg.vector_norm(residual))
             residual_scale = max(float(torch.linalg.vector_norm(internal)),
                                  abs(trial_load) * float(torch.linalg.vector_norm(load_vector)),
@@ -698,8 +722,8 @@ def solve_finite_rotation_arc_path(
                                  device=model.nodes.device)
             matrix[:-1, :-1] = stiffness
             matrix[:-1, -1] = -load_vector / load_scale
-            matrix[-1, :-1] = 2 * Du
-            matrix[-1, -1] = 2 * Dp
+            matrix[-1, :-1] = 2 * metric[:-1] * Du
+            matrix[-1, -1] = 2 * metric[-1] * Dp
             rhs = -torch.cat((residual, constraint.reshape(1)))
             if augmented_scaling == "normalized":
                 # Row equilibration does not change the Newton equations, but

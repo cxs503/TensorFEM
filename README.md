@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.35)
+## Capability maturity (v0.36)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -92,7 +92,7 @@ analytical or recognized benchmark evidence.
 | deformable-to-deformable 3-D Hertz | blocked qualification | strict three-mesh/domain/pressure/equilibrium contract exists; curved solid coupling and complete convergence evidence remain |
 | finite-rotation layered Shell4 consistent tangent | qualified integration primitive | one material integration per element, corotational material/geometric chain rule and directional errors below 4e-9 |
 | transactional residual-stress equilibration | qualified panel foundation | initial free residual is relaxed from about 139 kN before continuation, with rollback and deterministic displacement/material-state hashes |
-| dimensionally scaled shell arc continuation | qualified panel foundation | scaled load coordinate, relative force/constraint gates, minimum-norm drilling gauge and attempt diagnostics |
+| dimensionally scaled shell arc continuation | qualified panel foundation | thickness-integrated rotation metric, scaled load coordinate, relative force/constraint gates, drilling-gauge exclusion and attempt diagnostics |
 | marine panel first-point performance gate | qualified pre-peak foundation | real 2x2/4x4 first points in 3.26/12.89 s with balance near 1e-13; three-point paths pass, peak/post-peak remains blocked |
 | matrix-free shell arc continuation | stable experimental solver | transactional finite-difference JVP, GMRES, frozen-tangent/Jacobi/block options and fail-fast initial-equilibrium diagnostics |
 | sparse Shell4 tangent assembly | verified storage foundation | connectivity-graph COO tangent matches dense force and directional action; 4x4 storage gate passes, while production sparse throughput remains unqualified |
@@ -100,9 +100,10 @@ analytical or recognized benchmark evidence.
 | resumable panel long-path continuation | stable execution foundation | branch-direction restart, atomic hashed mechanical/energy checkpoints and dynamically extendable targets/checkpoint cadence |
 | panel path energy and failure evidence | qualified observer | projected-facet stored energy is force-conjugate; coarse/fine 4x4 residuals pass the 0.025 J gate and show 24.98x second-order reduction, with versioned ledgers preventing stale resume |
 | marine panel long-path localization | 4x4 peak/post-peak and energy qualified | fine ds=0.02 peaks at 508.999 kN on point 334 and completes 400 points with 66 post-peak points; the coarse/fine peak difference is 0.0615%, zero yield confirms an elastic geometric snap-back, while cross-mesh convergence remains open |
-| large panel short-path scalability | qualified pre-peak foundation | corrected 8x8 path has ten recoverable points and 12x12 has one real point; both pass equilibrium/energy gates, but neither establishes a refined-mesh peak |
-| refined panel peak-window scheduling | verified execution foundation | energy-versioned one-point persistence, stale-manifest replay protection and coarse/approach/peak scheduling support 8x8 and 12x12; refined-mesh descending branches remain open |
+| large panel path scalability | qualified pre-peak foundation | dimensionally consistent 8x8/12x12 paths reach 340/20 points and 580.889/309.197 kN with equilibrium/energy gates passing; neither establishes a refined-mesh peak |
+| refined panel peak-window scheduling | verified execution foundation | energy/metric-versioned immutable generations, stale-manifest replay protection and coarse/approach/peak scheduling support 8x8 and 12x12; refined-mesh descending branches remain open |
 | panel 4/8/12 mesh-convergence gate | verified fail-closed evaluator | requires explicit peak and post-peak evidence on every mesh and rejects missing data without extrapolation; current status is blocked by 8x8/12x12 paths |
+| optional sparse direct/ILU backend | verified internal adapter | fail-closed lazy SciPy integration matches dense 4x4/8x8 correctors, but is slower at current sizes and is not a production-performance claim |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

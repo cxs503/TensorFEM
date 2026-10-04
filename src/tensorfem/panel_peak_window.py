@@ -120,6 +120,8 @@ def _checkpoint_paths(cache_dir: str | Path, normalized_arc_step: float,
                 "energy_definition": ENERGY_DEFINITION,
                 "divisions": divisions,
                 "normalized_arc_step": normalized_arc_step,
+                "arc_metric": "dimensionally_scaled",
+                "solver_maximum_step": normalized_arc_step * .01,
                 "relative_equilibrium_tolerance": relative_equilibrium_tolerance}
     key = hashlib.sha256(_canonical(identity).encode()).hexdigest()[:20]
     root = Path(cache_dir)
@@ -134,15 +136,26 @@ def retune_next_arc_step(manifest_path: str | Path, checkpoint_path: str | Path,
         raise ValueError("arc step and characteristic displacement must be positive")
     manifest_path, checkpoint_path = Path(manifest_path), Path(checkpoint_path)
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    # New writers publish immutable checkpoint generations.  Resolve the
+    # committed generation through the manifest; ``checkpoint_path`` remains
+    # the legacy fallback for old evidence.
+    committed_file = manifest.get("checkpoint_file")
+    if committed_file:
+        checkpoint_path = manifest_path.parent / str(committed_file)
     binary = checkpoint_path.read_bytes()
     if manifest.get("checkpoint_sha256") != hashlib.sha256(binary).hexdigest():
         raise ValueError("panel checkpoint integrity mismatch before retuning")
     saved = torch.load(checkpoint_path, weights_only=False)
     saved["step_size"] = normalized_arc_step * characteristic_displacement_m
-    temporary = checkpoint_path.with_suffix(checkpoint_path.suffix + ".tmp")
+    temporary = checkpoint_path.with_suffix(checkpoint_path.suffix + ".retune.tmp")
     torch.save(saved, temporary)
-    os.replace(temporary, checkpoint_path)
-    manifest["checkpoint_sha256"] = hashlib.sha256(checkpoint_path.read_bytes()).hexdigest()
+    digest = hashlib.sha256(temporary.read_bytes()).hexdigest()
+    tuned_path = checkpoint_path.with_name(
+        f"{checkpoint_path.stem}-r{digest[:12]}{checkpoint_path.suffix}"
+    )
+    os.replace(temporary, tuned_path)
+    manifest["checkpoint_file"] = tuned_path.name
+    manifest["checkpoint_sha256"] = digest
     manifest["scheduled_next_normalized_arc_step"] = float(normalized_arc_step)
     manifest.pop("evidence_sha256", None)
     manifest["evidence_sha256"] = hashlib.sha256(
@@ -196,12 +209,17 @@ def execute_panel_peak_window(
             break
         terminal_force = float((existing.get("point_history") or [{}])[-1].get("force_n", 0.0))
         zone, next_step = select_peak_window(terminal_force, target, policy)
-        if checkpoint_path.exists() and manifest_path.exists():
-            retune_next_arc_step(
-                manifest_path, checkpoint_path,
-                normalized_arc_step=next_step,
-                characteristic_displacement_m=thickness,
+        if manifest_path.exists():
+            committed_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            committed_checkpoint = manifest_path.parent / str(
+                committed_manifest.get("checkpoint_file", checkpoint_path.name)
             )
+            if committed_checkpoint.exists():
+                retune_next_arc_step(
+                    manifest_path, checkpoint_path,
+                    normalized_arc_step=next_step,
+                    characteristic_displacement_m=thickness,
+                )
         remaining_wall = (None if maximum_wall_seconds is None else
                           maximum_wall_seconds - (time.monotonic() - started))
         if remaining_wall is not None and remaining_wall <= 0:

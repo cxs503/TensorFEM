@@ -5,6 +5,7 @@ import torch
 
 from tensorfem.corotational_shell import axis_angle
 from tensorfem.finite_rotation_layered_shell4 import (
+    _arc_metric_weights,
     assemble_finite_rotation_layered_shell4,
     finite_rotation_element_response,
     model_with_imperfection,
@@ -20,6 +21,22 @@ from tensorfem.layered_shell4_plasticity import (
 )
 
 D = torch.float64
+
+
+def test_dimensionally_scaled_arc_metric_comes_from_shell_kinematics():
+    shell = model()
+    free = torch.arange(shell.n_dofs)
+    metric = _arc_metric_weights(shell, free, "dimensionally_scaled")
+    assert torch.all(metric[:-1][(free % 6) < 3] == 1.0)
+    assert torch.all(metric[:-1][(free % 6) == 5] == 0.0)
+    expected_rotation_weight = shell.thickness**2 / 12.0
+    rotation_weights = metric[:-1][((free % 6) == 3) | ((free % 6) == 4)]
+    assert torch.allclose(
+        rotation_weights, torch.full_like(rotation_weights, expected_rotation_weight)
+    )
+    assert metric[-1] == 1.0
+    with pytest.raises(ValueError, match="arc_metric"):
+        _arc_metric_weights(shell, free, "load_tuned")
 
 
 def model(nodes=None, elements=None, *, residual=None):

@@ -103,6 +103,8 @@ def main() -> None:
                 "energy-conjugate panel path observer and versioned ledgers",
                 "8x8 ten-point and 12x12 first-point execution evidence",
                 "generalized refined-panel peak-window execution foundation",
+                "dimensionally consistent panel arc metric and immutable checkpoint generations",
+                "optional fail-closed sparse direct and ILU adapter",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
@@ -115,6 +117,7 @@ def main() -> None:
                 "marine panel scalable tangent and peak/post-peak execution evidence",
                 "4x4 cross-step elastic peak/post-peak and energy qualification; mesh convergence blocked",
                 "complete 8x8 peak localization and descending-branch evidence",
+                "complete 12x12 peak localization and 4/8/12 convergence evidence",
             ],
         }, indent=2))
         return

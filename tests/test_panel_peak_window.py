@@ -57,13 +57,46 @@ def test_checkpoint_retune_preserves_state_and_renews_hashes(tmp_path):
     retune_next_arc_step(manifest_path, checkpoint,
                          normalized_arc_step=.02,
                          characteristic_displacement_m=.01)
-    saved = torch.load(checkpoint, weights_only=False)
     renewed = json.loads(manifest_path.read_text())
+    committed = tmp_path / renewed["checkpoint_file"]
+    saved = torch.load(committed, weights_only=False)
     assert saved["step_size"] == pytest.approx(.0002)
     assert torch.equal(saved["displacement"], state["displacement"])
     assert saved["load_factor"] == state["load_factor"]
-    assert renewed["checkpoint_sha256"] == hashlib.sha256(checkpoint.read_bytes()).hexdigest()
+    assert renewed["checkpoint_sha256"] == hashlib.sha256(committed.read_bytes()).hexdigest()
+    assert torch.load(checkpoint, weights_only=False)["step_size"] == .001
     assert renewed["evidence_sha256"] != "old"
+
+
+def test_checkpoint_generation_survives_crash_before_manifest_commit(
+        tmp_path, monkeypatch):
+    """A completed new PT must not invalidate the prior manifest generation."""
+    old = tmp_path / "path-g000003.pt"
+    manifest_path = tmp_path / "path.json"
+    torch.save({"step_size": .001, "displacement": torch.tensor([1.]),
+                "load_factor": 12.}, old)
+    old_digest = hashlib.sha256(old.read_bytes()).hexdigest()
+    manifest_path.write_text(json.dumps({
+        "checkpoint_file": old.name, "checkpoint_sha256": old_digest,
+        "accepted_points": 3,
+    }))
+
+    def crash_before_manifest(*args, **kwargs):
+        raise KeyboardInterrupt("fault after PT publish")
+
+    monkeypatch.setattr(window, "_atomic_json", crash_before_manifest)
+    with pytest.raises(KeyboardInterrupt, match="fault after PT publish"):
+        retune_next_arc_step(
+            manifest_path, tmp_path / "legacy-unused.pt",
+            normalized_arc_step=.02, characteristic_displacement_m=.01,
+        )
+
+    committed = json.loads(manifest_path.read_text())
+    assert committed["checkpoint_file"] == old.name
+    assert committed["checkpoint_sha256"] == old_digest
+    assert hashlib.sha256(old.read_bytes()).hexdigest() == old_digest
+    # The interrupted generation can remain orphaned, but it is not trusted.
+    assert len(list(tmp_path.glob("path-g000003-r*.pt"))) == 1
 
 
 def test_scheduler_checkpoint_identity_tracks_energy_definition(tmp_path):
@@ -71,6 +104,8 @@ def test_scheduler_checkpoint_identity_tracks_energy_definition(tmp_path):
     identity = {"schema": window.CHUNKED_SCHEMA,
                 "energy_definition": ENERGY_DEFINITION,
                 "divisions": 8, "normalized_arc_step": .1,
+                "arc_metric": "dimensionally_scaled",
+                "solver_maximum_step": .001,
                 "relative_equilibrium_tolerance": 1e-6}
     expected = hashlib.sha256(window._canonical(identity).encode()).hexdigest()[:20]
     assert manifest.name == f"chunked-{expected}.json"

@@ -477,6 +477,7 @@ def execute_panel_chunked_job(
     chunk_size: int = 20,
     resume: bool = True,
     maximum_wall_seconds: float | None = None,
+    maximum_solver_step: float | None = None,
     relative_equilibrium_tolerance: float = 1e-6,
 ) -> dict[str, object]:
     """Run a long dense path with exact, branch-preserving checkpoints.
@@ -492,10 +493,21 @@ def execute_panel_chunked_job(
         raise ValueError("steps and chunk_size must be positive")
     case = build_panel_case(divisions)
     controls = dimensional_arc_controls(case, normalized_arc_step)
+    if maximum_solver_step is not None:
+        if maximum_solver_step <= 0:
+            raise ValueError("maximum_solver_step must be positive")
+        controls["solver_maximum_step"] = min(
+            controls["solver_step_size"], float(maximum_solver_step)
+        )
+    else:
+        controls["solver_maximum_step"] = controls["solver_step_size"]
     controls["augmented_scaling"] = "normalized"
+    controls["arc_metric"] = "dimensionally_scaled"
     identity = {"schema": CHUNKED_SCHEMA, "energy_definition": ENERGY_DEFINITION,
                 "divisions": divisions,
                 "normalized_arc_step": normalized_arc_step,
+                "arc_metric": "dimensionally_scaled",
+                "solver_maximum_step": controls["solver_maximum_step"],
                 "relative_equilibrium_tolerance": relative_equilibrium_tolerance}
     key_payload = {**identity, "steps": steps, "chunk_size": chunk_size}
     # Target length and persistence cadence are deliberately absent: a
@@ -504,7 +516,12 @@ def execute_panel_chunked_job(
     key = hashlib.sha256(_canonical(identity).encode()).hexdigest()[:20]
     root = Path(cache_dir); root.mkdir(parents=True, exist_ok=True)
     manifest_path = root / f"chunked-{key}.json"
-    checkpoint_path = root / f"chunked-{key}.pt"
+    # The manifest is the commit record.  Checkpoints written after this
+    # version are immutable generations; publishing the manifest pointer is
+    # the single atomic commit.  A crash between those operations merely
+    # leaves an unreferenced generation and cannot invalidate the last commit.
+    legacy_checkpoint_path = root / f"chunked-{key}.pt"
+    checkpoint_path = legacy_checkpoint_path
     displacement = None; state = None; previous = None; load_factor = 0.0
     current_step_size = controls["solver_step_size"]
     history: list[dict[str, object]] = []
@@ -513,7 +530,13 @@ def execute_panel_chunked_job(
     cumulative_external_work = 0.0
     cumulative_plastic_dissipation = 0.0
     energy_prefix_complete = True
+    migration = None
     load_manifest_path, load_checkpoint_path = manifest_path, checkpoint_path
+    if resume and manifest_path.exists():
+        committed = json.loads(manifest_path.read_text(encoding="utf-8"))
+        checkpoint_file = committed.get("checkpoint_file")
+        if checkpoint_file:
+            load_checkpoint_path = root / str(checkpoint_file)
     if resume and not (manifest_path.exists() and checkpoint_path.exists()):
         # One-time migration of v1.0 artifacts whose legacy key included the
         # requested target length.  Select only an exact-control, hashed prefix.
@@ -543,6 +566,7 @@ def execute_panel_chunked_job(
         current_step_size = float(saved.get("step_size", current_step_size))
         history = manifest.get("point_history", [])
         chunks = manifest.get("chunks", [])
+        migration = manifest.get("migration")
         required_energy = {"reference_recoverable_energy", "cumulative_external_work",
                            "cumulative_plastic_dissipation", "energy_definition"}
         if (required_energy <= set(saved)
@@ -593,8 +617,9 @@ def execute_panel_chunked_job(
                 initial_previous_increment=previous,
                 tolerance=relative_equilibrium_tolerance,
                 minimum_step=controls["solver_step_size"] / 128,
-                maximum_step=controls["solver_step_size"], diagnostics=diagnostics,
+                maximum_step=controls["solver_maximum_step"], diagnostics=diagnostics,
                 augmented_scaling="normalized",
+                arc_metric="dimensionally_scaled",
             )
         except TimeoutError as exc:
             status, error = "incomplete", str(exc)
@@ -675,6 +700,8 @@ def execute_panel_chunked_job(
             "terminal_plastic_dissipation_j": cumulative_plastic_dissipation,
             "terminal_energy_residual_j": energy.points[-1].energy_residual,
         })
+        generation = len(history)
+        checkpoint_path = root / f"chunked-{key}-g{generation:06d}.pt"
         temporary = checkpoint_path.with_suffix(".pt.tmp")
         torch.save({"displacement": displacement, "state": state,
                     "previous_increment": previous, "load_factor": load_factor,
@@ -683,6 +710,8 @@ def execute_panel_chunked_job(
                     "cumulative_external_work": cumulative_external_work,
                     "cumulative_plastic_dissipation": cumulative_plastic_dissipation,
                     "energy_definition": ENERGY_DEFINITION,
+                    "arc_metric": "dimensionally_scaled",
+                    "migration": migration,
                     "energy_prefix_complete": energy_prefix_complete},
                    temporary)
         os.replace(temporary, checkpoint_path)
@@ -699,6 +728,7 @@ def execute_panel_chunked_job(
             "energy_prefix_complete": energy_prefix_complete,
             "checkpoint_file": checkpoint_path.name,
             "checkpoint_sha256": checkpoint_hash,
+            "migration": migration,
             "elapsed_seconds_this_run": time.monotonic() - started,
         }
         _atomic_json(manifest_path, manifest)
@@ -723,6 +753,7 @@ def execute_panel_chunked_job(
                                          for x in history), default=0.0),
         "reference_recoverable_energy_j": reference_recoverable_energy,
         "energy_prefix_complete": energy_prefix_complete,
+        "migration": migration,
         "energy_boundary": (None if energy_prefix_complete else
                             "energy ledger begins at a legacy mechanical checkpoint"),
         "external_work_j": (cumulative_external_work if history and
