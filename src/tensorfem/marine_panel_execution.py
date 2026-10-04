@@ -484,6 +484,7 @@ def execute_panel_chunked_job(
     maximum_wall_seconds: float | None = None,
     maximum_solver_step: float | None = None,
     relative_equilibrium_tolerance: float = 1e-6,
+    automatic_step_control: bool = False,
 ) -> dict[str, object]:
     """Run a long dense path with exact, branch-preserving checkpoints.
 
@@ -514,6 +515,11 @@ def execute_panel_chunked_job(
                 "arc_metric": "dimensionally_scaled",
                 "solver_maximum_step": controls["solver_maximum_step"],
                 "relative_equilibrium_tolerance": relative_equilibrium_tolerance}
+    # Preserve the established advisory checkpoint identity byte-for-byte;
+    # automatic mode is a distinct, explicit identity rather than a new
+    # default field that would orphan qualified long-running prefixes.
+    if automatic_step_control:
+        identity["automatic_step_control"] = True
     key_payload = {**identity, "steps": steps, "chunk_size": chunk_size}
     # Target length and persistence cadence are deliberately absent: a
     # validated prefix can be extended and checkpointed more frequently near
@@ -567,6 +573,12 @@ def execute_panel_chunked_job(
             raise ValueError("chunked panel checkpoint controls mismatch")
         saved = torch.load(load_checkpoint_path, map_location=case.model.nodes.device,
                            weights_only=False)
+        if automatic_step_control:
+            expected_decision = manifest.get("nonlinear_controller_latest", {}).get(
+                "decision_sha256"
+            )
+            if saved.get("nonlinear_controller_decision_sha256") != expected_decision:
+                raise ValueError("automatic controller checkpoint identity mismatch")
         displacement, state = saved["displacement"], saved["state"]
         previous, load_factor = saved["previous_increment"], saved["load_factor"]
         current_step_size = float(saved.get("step_size", current_step_size))
@@ -704,8 +716,16 @@ def execute_panel_chunked_job(
                 controller_decisions[-1]["decision_sha256"]
                 if controller_decisions else None
             ),
+            automatic_step_control=automatic_step_control,
+            current_step_size=current_step_size,
+            minimum_step_size=controls["solver_step_size"] / 128,
+            maximum_step_size=controls["solver_maximum_step"],
         )
         controller_decisions.append(decision)
+        if automatic_step_control:
+            current_step_size = float(
+                decision["step_application"]["applied_step_size"]
+            )
         chunks.append({
             "first_step": offset + 1, "last_step": len(history),
             "accepted": len(path.points),
@@ -723,7 +743,8 @@ def execute_panel_chunked_job(
         temporary = checkpoint_path.with_suffix(".pt.tmp")
         torch.save({"displacement": displacement, "state": state,
                     "previous_increment": previous, "load_factor": load_factor,
-                    "step_size": path.step_size,
+                    "step_size": current_step_size,
+                    "nonlinear_controller_decision_sha256": decision["decision_sha256"],
                     "reference_recoverable_energy": reference_recoverable_energy,
                     "cumulative_external_work": cumulative_external_work,
                     "cumulative_plastic_dissipation": cumulative_plastic_dissipation,

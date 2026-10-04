@@ -293,6 +293,49 @@ def test_arc_restart_preserves_branch_direction_and_matches_single_run():
                           rtol=2e-8, atol=2e-10)
 
 
+def test_superlu_runs_complete_arc_path_and_matches_dense():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    shell = model(); state = LayeredShell4State.virgin(shell)
+    fixed = torch.tensor([0,1,2,3,4,5, 8,9,10,11, 14,15,16,17,
+                          18,19,20,21,22,23])
+    load = torch.zeros(shell.n_dofs, dtype=D); load[6] = load[12] = 2.
+    options = dict(steps=3, step_size=.01, maximum_step=.01,
+                   load_scale=.1, initial_state=state, tolerance=2e-7,
+                   augmented_scaling="normalized")
+    dense = solve_finite_rotation_arc_path(shell, load, fixed, **options)
+    trace = []
+    sparse = solve_finite_rotation_arc_path(
+        shell, load, fixed, linear_solver="superlu", diagnostics=trace, **options,
+    )
+    assert dense.converged and sparse.converged
+    assert sparse.load_factor == pytest.approx(dense.load_factor, rel=1e-8)
+    assert torch.allclose(sparse.displacement, dense.displacement,
+                          rtol=1e-8, atol=1e-10)
+    solves = [row for row in trace if row.get("backend") == "splu"]
+    assert solves and all(row["solve_calls"] == 1 for row in solves)
+    assert all(row["last_relative_residual"] < 1e-10 for row in solves)
+
+
+def test_superlu_increment_matches_dense():
+    pytest.importorskip("numpy")
+    pytest.importorskip("scipy")
+    shell = model(); state = LayeredShell4State.virgin(shell)
+    fixed = torch.tensor([0,1,2,3,4,5, 8,9,10,11, 14,15,16,17,
+                          18,19,20,21,22,23])
+    load = torch.zeros(shell.n_dofs, dtype=D); load[6] = load[12] = 2.
+    initial = torch.zeros_like(load)
+    dense = solve_finite_rotation_increment(shell, load, .01, fixed, state, initial)
+    trace = []
+    sparse = solve_finite_rotation_increment(
+        shell, load, .01, fixed, state, initial,
+        linear_solver="superlu", diagnostics=trace,
+    )
+    assert torch.allclose(sparse.displacement, dense.displacement,
+                          rtol=1e-9, atol=1e-11)
+    assert trace and trace[-1]["backend"] == "splu"
+
+
 def test_normalized_augmented_rows_preserve_solution_and_transaction():
     shell = model(); virgin = LayeredShell4State.virgin(shell)
     fixed = torch.tensor([0,1,2,3,4,5, 8,9,10,11, 14,15,16,17,

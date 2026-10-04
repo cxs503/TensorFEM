@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.38.0
+
+- Added an explicit SuperLU route to the finite-rotation Shell4 increment and full arc-length path. Real 2x2 and 4x4 prefixes match dense loads and displacements far below 1%, with auditable sparse factorization diagnostics and no speedup claim.
+- Added opt-in, bounded automatic step-size control with deterministic decision hashes and checkpoint identity. Fixed and automatic short arch/panel paths agree, and interrupted/resumed execution matches a fresh run; Newton, line search and arc-metric switching remain disabled.
+- Added reduced-order marine qualifications for individual compatible line stiffeners and a smooth nonuniform-corrosion field. Both have independent analytical Ritz oracles and executable 3% gates, with tripping, weld failure, isolated pitting and ultimate collapse explicitly excluded.
+- Advanced the corrected-metric 4x4 panel path to 600 monotone points and 1.0095 MN, and the 8x8 path to first yield at point 638 and 967.73 kN at point 658. Neither establishes a peak, so the former 509 kN coarse result is retained only as invalidated legacy evidence and mesh convergence remains fail-closed.
+
 ## 0.37.0
 
 - Added a deterministic advisory-only nonlinear controller that classifies accepted chunks from Newton contraction, rejected attempts, path curvature, equilibrium and energy evidence; restart verifies a SHA-256 decision chain and no unqualified algorithm switch is activated.

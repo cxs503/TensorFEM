@@ -1,9 +1,8 @@
-"""Deterministic, advisory control policy for nonlinear continuation.
+"""Deterministic nonlinear continuation control policy.
 
-The controller deliberately does not mutate solver controls.  It converts
-accepted-point and Newton diagnostics into an auditable recommendation which
-can be qualified independently before any automatic algorithm switching is
-enabled.
+The policy converts accepted-point and Newton diagnostics into an auditable
+recommendation.  A caller may explicitly opt into bounded step-size changes;
+algorithm switching remains disabled until separately qualified.
 """
 from __future__ import annotations
 
@@ -63,8 +62,25 @@ def recommend_nonlinear_controls(
     diagnostics: Sequence[Mapping[str, object]],
     *,
     prior_decision_sha256: str | None = None,
+    automatic_step_control: bool = False,
+    current_step_size: float | None = None,
+    minimum_step_size: float | None = None,
+    maximum_step_size: float | None = None,
 ) -> dict[str, object]:
-    """Produce a fail-closed recommendation without changing solver controls."""
+    """Produce a fail-closed decision, optionally applying *only* step size.
+
+    Automatic control is deliberately explicit opt-in.  Newton method, line
+    search and arc metric remain unchanged even when step control is enabled.
+    The applied size and its bounds are part of the hashed decision, making a
+    restarted run deterministic and tamper evident.
+    """
+    if automatic_step_control:
+        values = (current_step_size, minimum_step_size, maximum_step_size)
+        if any(value is None or not _finite(value) or float(value) <= 0
+               for value in values):
+            raise ValueError("automatic step control requires finite positive bounds")
+        if not float(minimum_step_size) <= float(current_step_size) <= float(maximum_step_size):
+            raise ValueError("current step size must lie within automatic-control bounds")
     attempted = [item for item in diagnostics if item.get("attempt") is not None]
     rejected = sum(item.get("reason") != "accepted" for item in attempted)
     rate, iterations = _newton_metrics(diagnostics)
@@ -111,10 +127,15 @@ def recommend_nonlinear_controls(
         reasons.append("no_policy_threshold_crossed")
 
     difficult = classification in {"blocked", "unsafe", "difficult"}
+    applied_step = None
+    if automatic_step_control:
+        applied_step = min(float(maximum_step_size), max(float(minimum_step_size),
+                           float(current_step_size) * factor))
     evidence = {
         "schema": SCHEMA,
-        "mode": "advisory_only",
-        "automatic_switching_enabled": False,
+        "mode": "automatic_step_only" if automatic_step_control else "advisory_only",
+        "automatic_switching_enabled": automatic_step_control,
+        "automatic_algorithm_switching_enabled": False,
         "classification": classification,
         "observations": {
             "accepted_points": len(point_history),
@@ -132,12 +153,21 @@ def recommend_nonlinear_controls(
             "line_search": "enable" if difficult else "retain",
             "arc_metric": "dimensionally_scaled",
         },
+        "step_application": ({
+            "current_step_size": float(current_step_size),
+            "minimum_step_size": float(minimum_step_size),
+            "maximum_step_size": float(maximum_step_size),
+            "applied_step_size": applied_step,
+        } if automatic_step_control else None),
         "reasons": reasons,
         "prior_decision_sha256": prior_decision_sha256,
         "boundary": (
-            "Recommendations are evidence only. The panel runner retains its "
-            "qualified full-Newton and dimensionally-scaled arc controls; a "
-            "line-search or modified-Newton recommendation is not activated."
+            ("Only the hashed step-size recommendation is applied; full-Newton, "
+             "line-search and dimensionally-scaled arc controls are retained."
+             if automatic_step_control else
+             "Recommendations are evidence only. The panel runner retains its "
+             "qualified full-Newton and dimensionally-scaled arc controls; a "
+             "line-search or modified-Newton recommendation is not activated.")
         ),
     }
     evidence["decision_sha256"] = hashlib.sha256(

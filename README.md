@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.37)
+## Capability maturity (v0.38)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -63,7 +63,7 @@ analytical or recognized benchmark evidence.
 | multistep execution | stable initial subset | linear, thermal, modal and sequential thermoelastic steps with resume |
 | ResultDB v2 | stable core | multistep/multiframe/IP fields, histories, lazy queries and atomic HDF5 publication |
 | engineering case packages | stable examples | pressurized component, thin-wall panel and stopped connector with checkpoints, ResultDB, VTK and reports |
-| public API and release gates | stable infrastructure | versioned 310-symbol manifest, drift audit and offline wheel/sdist installation smoke test |
+| public API and release gates | stable infrastructure | versioned 312-symbol manifest, drift audit and offline wheel/sdist installation smoke test |
 | ship structural screening | stable benchmarks | hull-girder longitudinal bending and equivalent-orthotropic stiffened-panel analytical checks |
 | box-barge hydrostatics | stable initial subset | displacement, KB/BM/KM/GM and small-angle restoring moment for intact rectangular hulls |
 | marine environmental loads | stable initial subset | Airy-wave/Morison pile actions and audited TensorLBM-to-TensorFEM nodal force histories |
@@ -84,7 +84,7 @@ analytical or recognized benchmark evidence.
 | external P0 benchmark contracts | stable evidence governance | qualified Bathe-Bolourchi elastic large rotation; shell snap-through and deformable Hertz FE remain explicitly blocked |
 | industrial P0 phase-2 qualification | stable verification view | hashed layered-shell/contact report with finite-rotation plastic postbuckling and general mortar/self-contact kept unqualified |
 | finite-rotation layered Shell4 arc integration | qualified integration primitive | corotational small-strain J2 layers, residual stress, imperfections, algorithmic tangent and transactional accept/reject history; not a finite-membrane-strain claim |
-| marine panel ultimate-strength FE contract | partial execution evidence | 4x4 peak/post-peak and energy gates are established; complete 8x8/12x12 peak paths and cross-mesh convergence remain to execute |
+| marine panel ultimate-strength FE contract | partial execution evidence | corrected-metric 4x4/8x8 paths pass equilibrium and energy gates, but no refined peak/post-peak matrix or cross-mesh convergence is established |
 | industrial P0 phase-3 qualification | stable verification view | hashed executable report qualifies the Shell4 integration primitive and axisymmetric Hertz scope while keeping panel ultimate and general 3-D double-deformable contact blocked |
 | shallow-warp layered Shell4 geometry | qualified integration primitive | ordered best-fit midsurface, stress-free warped references, rigid-motion objectivity and explicit deep-fold rejection |
 | marine panel qualification execution | stable execution foundation | dimensionless force/displacement scaling, resumable hashed cells and fail-closed timeouts; accepted pre-peak paths exist, but the declared peak/post-peak matrix remains incomplete |
@@ -99,13 +99,16 @@ analytical or recognized benchmark evidence.
 | normalized augmented arc predictor | verified continuation correction | displacement and scaled-load coordinates share one normalized metric with non-unit-load-scale and branch-direction regression gates |
 | resumable panel long-path continuation | stable execution foundation | branch-direction restart, atomic hashed mechanical/energy checkpoints and dynamically extendable targets/checkpoint cadence |
 | panel path energy and failure evidence | qualified observer | projected-facet stored energy is force-conjugate; coarse/fine 4x4 residuals pass the 0.025 J gate and show 24.98x second-order reduction, with versioned ledgers preventing stale resume |
-| marine panel long-path localization | 4x4 peak/post-peak and energy qualified | fine ds=0.02 peaks at 508.999 kN on point 334 and completes 400 points with 66 post-peak points; the coarse/fine peak difference is 0.0615%, zero yield confirms an elastic geometric snap-back, while cross-mesh convergence remains open |
+| marine panel long-path localization | corrected-metric evidence in progress | 4x4 remains monotone through 600 points and 1.0095 MN; 8x8 first yields at point 638 and reaches 967.73 kN at point 658 with 1.25% yielded integration points, but neither path establishes a peak |
 | large panel path scalability | qualified pre-peak foundation | dimensionally consistent 8x8/12x12 paths reach 340/20 points and 580.889/309.197 kN with equilibrium/energy gates passing; neither establishes a refined-mesh peak |
 | refined panel peak-window scheduling | verified execution foundation | energy/metric-versioned immutable generations, stale-manifest replay protection and coarse/approach/peak scheduling support 8x8 and 12x12; refined-mesh descending branches remain open |
 | panel 4/8/12 mesh-convergence gate | verified fail-closed evaluator | requires explicit peak and post-peak evidence on every mesh and rejects missing data without extrapolation; current status is blocked by 8x8/12x12 paths |
 | optional sparse direct/ILU backend | verified internal adapter | fail-closed lazy SciPy integration matches dense 4x4/8x8 correctors, but is slower at current sizes and is not a production-performance claim |
 | advisory nonlinear control policy | verified execution foundation | deterministic Newton/rejection/curvature/equilibrium/energy classifications, hashed restart chain and explicit recommendations; automatic solver switching remains disabled |
 | marine stiffening and degradation screening | qualified analytical/numerical prototypes | smeared stiffener buckling, uniform-corrosion thickness sensitivity and self-balanced residual-stress first-yield errors remain below 0.08%; discrete tripping, pitting and collapse remain unqualified |
+| sparse Shell4 nonlinear path | verified experimental route | explicit SuperLU increment/arc solves match dense 2x2/4x4 paths far below 1%; no speedup or long plastic-path equivalence is claimed |
+| automatic nonlinear step control | experimental opt-in | bounded step-only control preserves short arch/panel paths and deterministic restart; it does not switch algorithms and has not yet demonstrated fewer iterations or rejections |
+| discrete stiffener and nonuniform corrosion screening | qualified reduced-order prototypes | explicit compatible line stiffeners match an independent Ritz oracle; smooth corrosion converges below 3%, while tripping, welds, isolated pits and collapse remain out of scope |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

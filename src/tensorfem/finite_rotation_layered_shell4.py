@@ -10,7 +10,7 @@ general finite-membrane-strain shell.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import asdict, dataclass, replace
 
 import torch
 
@@ -426,6 +426,8 @@ def solve_finite_rotation_increment(
     *,
     tolerance: float = 1e-7,
     max_iterations: int = 20,
+    linear_solver: str = "dense",
+    diagnostics: list[dict[str, object]] | None = None,
 ) -> FiniteRotationShell4Step:
     """Full Newton increment; state is returned only after convergence."""
     fixed = fixed_dofs.to(device=model.nodes.device, dtype=torch.long)
@@ -435,8 +437,15 @@ def solve_finite_rotation_increment(
     load = external_force.to(model.nodes) * load_factor
     value = displacement.clone()
     scale = max(float(torch.linalg.vector_norm(load[free])), 1.0)
+    if linear_solver not in ("dense", "superlu"):
+        raise ValueError("linear_solver must be 'dense' or 'superlu'")
+    if linear_solver == "superlu" and model.nodes.device.type != "cpu":
+        raise ValueError("SuperLU Shell4 paths require a CPU model")
     for iteration in range(1, max_iterations + 1):
-        response = assemble_finite_rotation_layered_shell4(model, value, committed)
+        response = (assemble_finite_rotation_layered_shell4(model, value, committed)
+                    if linear_solver == "dense" else
+                    assemble_finite_rotation_layered_shell4_sparse(
+                        model, value, committed, active_dofs=free))
         residual = load - response.internal_force
         norm = float(torch.linalg.vector_norm(residual[free]))
         if norm <= tolerance * scale:
@@ -445,10 +454,20 @@ def solve_finite_rotation_increment(
                 response.trial_state, iteration, norm
             )
         try:
-            increment = torch.linalg.solve(
-                response.tangent[free[:, None], free], residual[free]
-            )
-        except torch.linalg.LinAlgError as error:
+            if linear_solver == "dense":
+                increment = torch.linalg.solve(
+                    response.tangent[free[:, None], free], residual[free]
+                )
+            else:
+                from .sparse_direct import SparseLinearSolver
+                factor = SparseLinearSolver("superlu").factorize(response.tangent)
+                increment = factor.solve(residual[free])
+                if diagnostics is not None:
+                    diagnostics.append({"phase": "newton_linear_solve", "iteration": iteration,
+                                        **asdict(factor.diagnostics)})
+        except (torch.linalg.LinAlgError, RuntimeError) as error:
+            if error.__class__.__name__ == "SparseBackendUnavailable":
+                raise
             raise RuntimeError("finite-rotation layered Shell4 tangent is singular") from error
         value = value.index_add(0, free, increment)
     raise RuntimeError(
@@ -479,6 +498,8 @@ def solve_finite_rotation_arc_path(
     critical_eigenvalue_ratio: float = 1e-6,
     augmented_scaling: str = "legacy",
     arc_metric: str = "full",
+    linear_solver: str = "dense",
+    sparse_drilling_regularization: float = 1e-12,
 ) -> FiniteRotationArcResult:
     """Path-dependent Crisfield continuation with transactional J2 history.
 
@@ -500,6 +521,14 @@ def solve_finite_rotation_arc_path(
         raise ValueError("critical_eigenvalue_ratio must be positive")
     if augmented_scaling not in ("legacy", "normalized"):
         raise ValueError("augmented_scaling must be 'legacy' or 'normalized'")
+    if linear_solver not in ("dense", "superlu"):
+        raise ValueError("linear_solver must be 'dense' or 'superlu'")
+    if linear_solver == "superlu" and model.nodes.device.type != "cpu":
+        raise ValueError("SuperLU Shell4 paths require a CPU model")
+    if linear_solver == "superlu" and branch_switch is not None:
+        raise ValueError("critical-mode branch switching is not available with SuperLU")
+    if sparse_drilling_regularization < 0.0:
+        raise ValueError("sparse_drilling_regularization must be non-negative")
     fixed = torch.tensor(sorted(set(int(i) for i in fixed_dofs)), dtype=torch.long,
                          device=model.nodes.device)
     if bool(torch.any(fixed < 0)) or (len(fixed) and int(fixed.max()) >= model.n_dofs):
@@ -527,8 +556,34 @@ def solve_finite_rotation_arc_path(
         previous = initial_previous_increment.to(model.nodes).clone()
     points = []
 
-    def linear_solve(matrix: torch.Tensor, rhs: torch.Tensor) -> torch.Tensor:
+    def linear_solve(matrix: torch.Tensor, rhs: torch.Tensor,
+                     phase: str = "linear_solve") -> torch.Tensor:
         """Minimum-norm solve tolerating physically inactive drilling gauges."""
+        if linear_solver == "superlu":
+            from .sparse_direct import SparseLinearSolver
+            # Free drilling gauges make the shell tangent rank deficient.  A
+            # sparse LU has no minimum-norm mode analogous to dense SVD, so
+            # add an explicitly reported, scale-relative gauge penalty.  It
+            # acts only on theta-z rows and never on the bordered load row.
+            matrix = matrix.coalesce()
+            gauge = torch.nonzero((free % 6) == 5).flatten()
+            regularization = 0.0
+            if len(gauge) and sparse_drilling_regularization:
+                scale = max(float(matrix.values().abs().max()), 1.0)
+                regularization = sparse_drilling_regularization * scale
+                indices = torch.stack((gauge, gauge))
+                penalty = torch.sparse_coo_tensor(
+                    indices, matrix.values().new_full((len(gauge),), regularization),
+                    matrix.shape, check_invariants=True,
+                )
+                matrix = (matrix + penalty).coalesce()
+            factor = SparseLinearSolver("superlu").factorize(matrix)
+            answer = factor.solve(rhs)
+            if diagnostics is not None:
+                diagnostics.append({"phase": phase,
+                                    "drilling_regularization": regularization,
+                                    **asdict(factor.diagnostics)})
+            return answer
         # Small benchmark systems retain the explicit rank/conditioning gate:
         # their free drilling gauges can admit a low-residual but non-minimum-
         # norm pivoted solution, which is a poor Newton direction.
@@ -560,8 +615,51 @@ def solve_finite_rotation_arc_path(
     def response(reduced: torch.Tensor, committed: LayeredShell4State):
         value = displacement.clone()
         value[free] = reduced
-        evaluated = assemble_finite_rotation_layered_shell4(model, value, committed)
-        return evaluated, evaluated.internal_force[free], evaluated.tangent[free[:, None], free]
+        if linear_solver == "superlu":
+            evaluated = assemble_finite_rotation_layered_shell4_sparse(
+                model, value, committed, active_dofs=free)
+            stiffness = evaluated.tangent
+        else:
+            evaluated = assemble_finite_rotation_layered_shell4(model, value, committed)
+            stiffness = evaluated.tangent[free[:, None], free]
+        return evaluated, evaluated.internal_force[free], stiffness
+
+    def augmented_matrix(stiffness: torch.Tensor, Du: torch.Tensor, Dp: float,
+                         residual_scale: float, ds: float) -> torch.Tensor:
+        """Build the bordered Newton matrix without densifying a sparse tangent."""
+        n = len(free)
+        if linear_solver == "dense":
+            matrix = torch.zeros((n+1, n+1), dtype=model.nodes.dtype,
+                                 device=model.nodes.device)
+            matrix[:-1, :-1] = stiffness
+            matrix[:-1, -1] = -load_vector / load_scale
+            matrix[-1, :-1] = 2 * metric[:-1] * Du
+            matrix[-1, -1] = 2 * metric[-1] * Dp
+            return matrix
+        stiffness = stiffness.coalesce()
+        rows = [stiffness.indices()[0], torch.arange(n, device=free.device),
+                torch.full((n,), n, dtype=torch.long, device=free.device),
+                torch.tensor([n], dtype=torch.long, device=free.device)]
+        cols = [stiffness.indices()[1],
+                torch.full((n,), n, dtype=torch.long, device=free.device),
+                torch.arange(n, device=free.device),
+                torch.tensor([n], dtype=torch.long, device=free.device)]
+        values = [stiffness.values(), -load_vector / load_scale,
+                  2 * metric[:-1] * Du, Du.new_tensor([2 * metric[-1] * Dp])]
+        matrix = torch.sparse_coo_tensor(
+            torch.stack((torch.cat(rows), torch.cat(cols))), torch.cat(values),
+            (n+1, n+1), dtype=model.nodes.dtype, device=model.nodes.device,
+            check_invariants=True,
+        ).coalesce()
+        if augmented_scaling == "normalized":
+            indices = matrix.indices()
+            scales = torch.where(indices[0] < n,
+                                 matrix.values().new_tensor(residual_scale),
+                                 matrix.values().new_tensor(max(ds**2, torch.finfo(model.nodes.dtype).tiny)))
+            matrix = torch.sparse_coo_tensor(indices, matrix.values()/scales,
+                                             matrix.shape,
+                                             check_invariants=True).coalesce()
+        return matrix
 
     # Imported residual stresses need not be nodally self-equilibrated even if
     # their section resultant is zero.  Arc continuation requires an actual
@@ -588,7 +686,13 @@ def solve_finite_rotation_arc_path(
             state = initial_eval.trial_state
             initial_trace["reason"] = "accepted"
             break
-        correction = linear_solve(initial_stiffness, -initial_residual)
+        try:
+            correction = linear_solve(initial_stiffness, -initial_residual,
+                                      "initial_equilibrium_linear_solve")
+        except RuntimeError as error:
+            initial_trace["reason"] = "linear_solver_failed"
+            initial_trace["linear_solver_error"] = str(error)
+            break
         baseline = initial_norm
         relaxed = False
         for backtrack in range(9):
@@ -644,11 +748,13 @@ def solve_finite_rotation_arc_path(
             # Solving directly for lambda leaves the bordered column in N and
             # its constraint derivative in m^2/N, which is catastrophically
             # ill-conditioned for industrial MN loads.
-            direction_u = linear_solve(stiffness, load_vector / load_scale)
-        except torch.linalg.LinAlgError:
+            direction_u = linear_solve(stiffness, load_vector / load_scale,
+                                       "predictor_linear_solve")
+        except (torch.linalg.LinAlgError, RuntimeError) as error:
             if diagnostics is not None:
                 diagnostics.append({"attempt": attempt, "step": accepted + 1,
-                                    "ds": ds, "reason": "predictor_singular"})
+                                    "ds": ds, "reason": "predictor_singular",
+                                    "linear_solver_error": str(error)})
             return arc_result(False)
         direction = torch.cat((direction_u, direction_u.new_tensor([1.])))
         sign = 1.0
@@ -718,12 +824,7 @@ def solve_finite_rotation_arc_path(
                 ok = True
                 trace["reason"] = "accepted"
                 break
-            matrix = torch.zeros((len(free)+1, len(free)+1), dtype=model.nodes.dtype,
-                                 device=model.nodes.device)
-            matrix[:-1, :-1] = stiffness
-            matrix[:-1, -1] = -load_vector / load_scale
-            matrix[-1, :-1] = 2 * metric[:-1] * Du
-            matrix[-1, -1] = 2 * metric[-1] * Dp
+            matrix = augmented_matrix(stiffness, Du, Dp, residual_scale, ds)
             rhs = -torch.cat((residual, constraint.reshape(1)))
             if augmented_scaling == "normalized":
                 # Row equilibration does not change the Newton equations, but
@@ -731,15 +832,17 @@ def solve_finite_rotation_arc_path(
                 # This is essential once ds has been reduced near a turning
                 # point; otherwise the linear solve can satisfy equilibrium
                 # while effectively dropping the constraint equation.
-                matrix[:-1] /= residual_scale
                 rhs[:-1] /= residual_scale
                 arc_scale = max(ds**2, torch.finfo(model.nodes.dtype).tiny)
-                matrix[-1] /= arc_scale
                 rhs[-1] /= arc_scale
+                if linear_solver == "dense":
+                    matrix[:-1] /= residual_scale
+                    matrix[-1] /= arc_scale
             try:
-                correction = linear_solve(matrix, rhs)
-            except torch.linalg.LinAlgError:
+                correction = linear_solve(matrix, rhs, "corrector_linear_solve")
+            except (torch.linalg.LinAlgError, RuntimeError) as error:
                 trace["reason"] = "corrector_singular"
+                trace["linear_solver_error"] = str(error)
                 break
             trial_u = trial_u + correction[:-1]
             trial_p += float(correction[-1])
