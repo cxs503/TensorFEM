@@ -1,4 +1,5 @@
 import json
+from types import SimpleNamespace
 
 import pytest
 
@@ -18,6 +19,9 @@ def test_dimensional_controls_reach_engineering_load_scale():
     assert controls["nominal_elastic_load_increment_n"] == pytest.approx(50_000)
     assert controls["solver_step_size"] == pytest.approx(2e-4)
     assert controls["solver_load_scale_m_per_n"] == pytest.approx(4e-9)
+    assert controls["characteristic_energy_j"] == pytest.approx(25_000.)
+    assert controls["energy_absolute_tolerance_j"] == pytest.approx(.025)
+    assert controls["energy_relative_tolerance"] == pytest.approx(1e-4)
 
 
 def test_warped_imperfect_facets_use_guarded_projection_without_flattening():
@@ -90,3 +94,30 @@ def test_first_point_gate_stops_before_4x4_after_timeout(tmp_path, monkeypatch):
     assert report["status"] == "blocked"
     assert calls == [2]
     assert len(report["stages"]) == 1
+
+
+def test_dense_panel_explicitly_enables_normalized_augmented_rows(monkeypatch):
+    import tensorfem.marine_panel_execution as execution
+    captured = {}
+
+    monkeypatch.setattr(execution, "panel_geometry_preflight",
+                        lambda case: {"passed": True})
+    monkeypatch.setattr(execution, "panel_initial_equilibrium_preflight",
+                        lambda case, **kwargs: {"passed": True})
+
+    def fake_solve(*args, **kwargs):
+        captured.update(kwargs)
+        kwargs["diagnostics"].append({
+            "phase": "initial_equilibrium", "reason": "accepted",
+            "iterations": [{"residual_norm": 0., "residual_relative": 0.}],
+        })
+        return SimpleNamespace(
+            points=(), converged=True, step_size=kwargs["step_size"],
+            relaxed_initial_displacement=None, relaxed_initial_state=None,
+        )
+
+    monkeypatch.setattr(execution, "solve_finite_rotation_arc_path", fake_solve)
+    result = execute_panel_job(2, .02, steps=1, resume=False)
+    assert result["status"] == "executed"
+    assert result["controls"]["augmented_scaling"] == "normalized"
+    assert captured["augmented_scaling"] == "normalized"

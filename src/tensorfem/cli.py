@@ -97,7 +97,10 @@ def main() -> None:
                 "matrix-free transactional shell arc continuation",
                 "branch-preserving panel long-path checkpoints",
                 "accepted-state panel energy and failure evidence",
+                "sparse Shell4 tangent storage and action foundation",
+                "normalized augmented shell arc predictor",
                 "8x8/12x12 panel short-path scalability evidence",
+                "8x8 three-point peak-window execution foundation",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
@@ -108,6 +111,8 @@ def main() -> None:
                 "marine panel peak/post-peak qualification evidence",
                 "general 3-D deformable-to-deformable Hertz qualification",
                 "marine panel scalable tangent and peak/post-peak execution evidence",
+                "4x4 cross-step elastic peak/post-peak observed; wall target, energy and mesh qualification blocked",
+                "complete 8x8 peak localization and descending-branch evidence",
             ],
         }, indent=2))
         return

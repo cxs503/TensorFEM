@@ -42,7 +42,10 @@ class PanelPointEvidence:
     plastic_dissipation: float
     internal_energy: float
     energy_residual: float
+    absolute_energy_residual: float
     relative_energy_residual: float
+    mixed_energy_residual: float
+    energy_scale: float
     yielded_fraction: float
     is_peak: bool
     is_post_peak: bool
@@ -56,6 +59,52 @@ class PanelPathEvidence:
     peak_load: float | None
     post_peak_confirmed: bool
     failure_mode: str
+
+
+def energy_residual_metrics(external_work: float, internal_energy: float, *,
+                            absolute_scale_floor: float = 0.) -> tuple[float, float, float]:
+    """Return absolute, raw-relative and mixed-scale energy residual measures.
+
+    ``absolute_scale_floor`` has energy units.  It prevents a vanishing first
+    increment from turning a decreasing absolute discretisation defect into an
+    increasing percentage.  The raw relative value remains available and is
+    never silently replaced by the mixed measure.
+    """
+    values = (float(external_work), float(internal_energy),
+              float(absolute_scale_floor))
+    if not all(math.isfinite(value) for value in values):
+        raise ValueError("energy residual inputs must be finite")
+    if absolute_scale_floor < 0:
+        raise ValueError("absolute energy scale floor cannot be negative")
+    absolute = abs(external_work-internal_energy)
+    raw_scale = max(abs(external_work), abs(internal_energy), 1e-30)
+    mixed_scale = max(raw_scale, absolute_scale_floor)
+    return absolute, absolute/raw_scale, absolute/mixed_scale
+
+
+def energy_balance_gate(external_work: float, internal_energy: float, *,
+                        characteristic_energy: float,
+                        absolute_ratio: float = 1e-6,
+                        relative_tolerance: float = 1e-4) -> dict[str, object]:
+    """Apply a dimensionally explicit absolute/relative energy gate."""
+    if not math.isfinite(characteristic_energy) or characteristic_energy <= 0:
+        raise ValueError("characteristic_energy must be finite and positive")
+    if absolute_ratio <= 0 or relative_tolerance <= 0:
+        raise ValueError("energy gate tolerances must be positive")
+    absolute, relative, _ = energy_residual_metrics(external_work, internal_energy)
+    energy = max(abs(external_work), abs(internal_energy))
+    absolute_tolerance = absolute_ratio*characteristic_energy
+    use_absolute = energy < characteristic_energy
+    return {
+        "passed": (absolute <= absolute_tolerance if use_absolute
+                   else relative <= relative_tolerance),
+        "criterion": "absolute" if use_absolute else "relative",
+        "absolute_residual_j": absolute,
+        "absolute_tolerance_j": absolute_tolerance,
+        "relative_residual": relative,
+        "relative_tolerance": relative_tolerance,
+        "characteristic_energy_j": characteristic_energy,
+    }
 
 
 def _element_ids(conn: torch.Tensor) -> torch.Tensor:
@@ -166,6 +215,7 @@ def evaluate_panel_path(model: LayeredShell4Model, reference_load: torch.Tensor,
                         initial_external_work: float = 0.,
                         initial_plastic_dissipation: float = 0.,
                         reference_recoverable_energy: float | None = None,
+                        energy_scale_floor: float = 0.,
                         post_peak_drop: float = .02) -> PanelPathEvidence:
     """Build auditable evidence from accepted points only.
 
@@ -191,6 +241,8 @@ def evaluate_panel_path(model: LayeredShell4Model, reference_load: torch.Tensor,
         raise ValueError("path continuation totals must be finite")
     if initial_plastic_dissipation < 0:
         raise ValueError("initial plastic dissipation cannot be negative")
+    if not math.isfinite(energy_scale_floor) or energy_scale_floor < 0:
+        raise ValueError("energy_scale_floor must be finite and non-negative")
     previous_u, previous_state = u0, s0
     previous_factor = float(initial_load_factor)
     external_work = float(initial_external_work)
@@ -204,7 +256,10 @@ def evaluate_panel_path(model: LayeredShell4Model, reference_load: torch.Tensor,
         stored = shell_stored_energy(model, u, point.state).recoverable-base_energy
         internal = stored+dissipation
         residual = external_work-internal
-        scale = max(abs(external_work), abs(internal), 1e-30)
+        absolute_residual, relative_residual, mixed_residual = energy_residual_metrics(
+            external_work, internal, absolute_scale_floor=energy_scale_floor,
+        )
+        scale = max(abs(external_work), abs(internal), energy_scale_floor, 1e-30)
         fraction = yielded_fraction(model, point.state, s0)
         transverse = float(torch.max(torch.abs((u-u0)[2::6])))
         shortening = float(torch.dot(load, u-u0))
@@ -213,7 +268,10 @@ def evaluate_panel_path(model: LayeredShell4Model, reference_load: torch.Tensor,
                         maximum_transverse_displacement=transverse,
                         external_work=external_work, recoverable_energy=stored,
                         plastic_dissipation=dissipation, internal_energy=internal,
-                        energy_residual=residual, relative_energy_residual=abs(residual)/scale,
+                        energy_residual=residual,
+                        absolute_energy_residual=absolute_residual,
+                        relative_energy_residual=relative_residual,
+                        mixed_energy_residual=mixed_residual, energy_scale=scale,
                         yielded_fraction=fraction))
         previous_u, previous_state, previous_factor = u, point.state, factor
     if not raw:

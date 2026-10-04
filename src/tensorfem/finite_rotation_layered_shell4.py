@@ -31,6 +31,21 @@ class FiniteRotationShell4Response:
     trial_state: LayeredShell4State
 
 
+@dataclass(frozen=True)
+class SparseFiniteRotationShell4Response:
+    """Shell response whose tangent is a reduced sparse COO matrix.
+
+    ``active_dofs`` records the global DOFs represented by the rows and
+    columns.  The force and stress remain full-sized/full-mesh quantities so
+    callers cannot accidentally lose reactions or material evidence.
+    """
+    internal_force: torch.Tensor
+    tangent: torch.Tensor
+    active_dofs: torch.Tensor
+    stress: torch.Tensor
+    trial_state: LayeredShell4State
+
+
 def _element_dofs(conn: torch.Tensor) -> torch.Tensor:
     return torch.stack(tuple(6 * conn + k for k in range(6)), 1).reshape(-1).long()
 
@@ -263,6 +278,71 @@ def assemble_finite_rotation_layered_shell4(
     )
 
 
+def assemble_finite_rotation_layered_shell4_sparse(
+    model: LayeredShell4Model,
+    displacement: torch.Tensor,
+    committed: LayeredShell4State,
+    *,
+    active_dofs: torch.Tensor | None = None,
+) -> SparseFiniteRotationShell4Response:
+    """Assemble the exact element tangent directly into reduced sparse COO.
+
+    This evaluates the same element residual and algorithmic tangent as the
+    dense assembler.  Entries attached to prescribed DOFs are discarded before
+    allocation, avoiding both the full ``ndof**2`` matrix and dense reduction.
+    Duplicate element contributions are summed by ``coalesce``.
+    """
+    model.validate()
+    if displacement.shape != (model.n_dofs,):
+        raise ValueError("wrong displacement vector length")
+    if active_dofs is None:
+        active = torch.arange(model.n_dofs, device=model.nodes.device)
+    else:
+        active = active_dofs.to(device=model.nodes.device, dtype=torch.long)
+        if active.ndim != 1 or len(torch.unique(active)) != len(active):
+            raise ValueError("active_dofs must be a one-dimensional unique set")
+        if len(active) and (bool(torch.any(active < 0)) or int(active.max()) >= model.n_dofs):
+            raise ValueError("active shell DOF out of range")
+    global_to_reduced = torch.full(
+        (model.n_dofs,), -1, dtype=torch.long, device=model.nodes.device,
+    )
+    global_to_reduced[active] = torch.arange(len(active), device=model.nodes.device)
+    internal = torch.zeros_like(displacement)
+    row_parts, column_parts, value_parts = [], [], []
+    stresses, states = [], []
+    for element, conn in enumerate(model.elements):
+        ids = _element_dofs(conn)
+        force, local_k, stress, state = finite_rotation_element_response(
+            model, element, displacement[ids], committed.points[element], tangent=True
+        )
+        internal.index_add_(0, ids, force)
+        reduced = global_to_reduced[ids]
+        retained = reduced >= 0
+        local_ids = torch.nonzero(retained).flatten()
+        if local_ids.numel():
+            mapped = reduced[local_ids]
+            row_parts.append(mapped[:, None].expand(-1, len(mapped)).reshape(-1))
+            column_parts.append(mapped[None, :].expand(len(mapped), -1).reshape(-1))
+            value_parts.append(local_k[local_ids[:, None], local_ids].reshape(-1))
+        stresses.append(stress)
+        states.append(state)
+    if value_parts:
+        indices = torch.stack((torch.cat(row_parts), torch.cat(column_parts)))
+        values = torch.cat(value_parts)
+    else:
+        indices = torch.empty((2, 0), dtype=torch.long, device=model.nodes.device)
+        values = torch.empty(0, dtype=model.nodes.dtype, device=model.nodes.device)
+    tangent = torch.sparse_coo_tensor(
+        indices, values, (len(active), len(active)),
+        dtype=model.nodes.dtype, device=model.nodes.device,
+        check_invariants=True,
+    ).coalesce()
+    return SparseFiniteRotationShell4Response(
+        internal, tangent, active, torch.stack(stresses),
+        LayeredShell4State(tuple(states)),
+    )
+
+
 def model_with_imperfection(
     model: LayeredShell4Model, imperfection: torch.Tensor
 ) -> LayeredShell4Model:
@@ -373,6 +453,11 @@ def solve_finite_rotation_arc_path(
     minimum_step: float = 1e-5,
     maximum_step: float | None = None,
     diagnostics: list[dict[str, object]] | None = None,
+    branch_switch: str | None = None,
+    branch_mode_fraction: float = 0.25,
+    branch_sign: int = 1,
+    critical_eigenvalue_ratio: float = 1e-6,
+    augmented_scaling: str = "legacy",
 ) -> FiniteRotationArcResult:
     """Path-dependent Crisfield continuation with transactional J2 history.
 
@@ -386,6 +471,14 @@ def solve_finite_rotation_arc_path(
         raise ValueError("invalid arc-length controls")
     if reference_load.shape != (model.n_dofs,):
         raise ValueError("wrong shell load length")
+    if branch_switch not in (None, "critical_mode"):
+        raise ValueError("branch_switch must be None or 'critical_mode'")
+    if not 0.0 < branch_mode_fraction <= 1.0 or branch_sign not in (-1, 1):
+        raise ValueError("invalid branch-switch controls")
+    if critical_eigenvalue_ratio <= 0.0:
+        raise ValueError("critical_eigenvalue_ratio must be positive")
+    if augmented_scaling not in ("legacy", "normalized"):
+        raise ValueError("augmented_scaling must be 'legacy' or 'normalized'")
     fixed = torch.tensor(sorted(set(int(i) for i in fixed_dofs)), dtype=torch.long,
                          device=model.nodes.device)
     if bool(torch.any(fixed < 0)) or (len(fixed) and int(fixed.max()) >= model.n_dofs):
@@ -540,13 +633,40 @@ def solve_finite_rotation_arc_path(
         if previous is not None:
             dot = torch.dot(direction, previous)
             sign = 1.0 if float(dot) >= 0 else -1.0
-        increment_p = sign * ds / float(torch.linalg.vector_norm(direction))
-        trial_u = committed_reduced + increment_p * direction_u
-        trial_p = load_scale * committed_load + increment_p
+        mode_diagnostic = None
+        predictor = sign * direction / torch.linalg.vector_norm(direction)
+        if branch_switch == "critical_mode":
+            from .branch_switch import (
+                perturbed_arc_predictor, smallest_eligible_symmetric_mode,
+            )
+            # Shell drilling gauges are intentionally weak/zero and are not
+            # structural bifurcation modes. Require translational energy.
+            eligible = (free % 6) < 3
+            critical = smallest_eligible_symmetric_mode(
+                stiffness, eligible=eligible, minimum_eligible_fraction=.5,
+            )
+            activated = critical.relative_eigenvalue <= critical_eigenvalue_ratio
+            mode_diagnostic = {
+                "eigenvalue": critical.eigenvalue,
+                "relative_eigenvalue": critical.relative_eigenvalue,
+                "eligible_energy_fraction": critical.eligible_energy_fraction,
+                "activated": activated,
+                "sign": branch_sign,
+            }
+            if activated:
+                mode = torch.cat((critical.vector, critical.vector.new_zeros(1)))
+                predictor = perturbed_arc_predictor(
+                    predictor, mode, mode_fraction=branch_mode_fraction,
+                    sign=branch_sign,
+                )
+        increment = ds * predictor
+        trial_u = committed_reduced + increment[:-1]
+        trial_p = load_scale * committed_load + float(increment[-1])
         trial_load = trial_p / load_scale
         trace = {"attempt": attempt, "step": accepted + 1, "ds": ds,
                  "predictor_norm": float(torch.linalg.vector_norm(direction_u)),
-                 "iterations": [], "reason": None}
+                 "iterations": [], "reason": None,
+                 "critical_mode": mode_diagnostic}
         ok = False
         last = float("inf")
         for iteration in range(1, max_iterations + 1):
@@ -581,6 +701,17 @@ def solve_finite_rotation_arc_path(
             matrix[-1, :-1] = 2 * Du
             matrix[-1, -1] = 2 * Dp
             rhs = -torch.cat((residual, constraint.reshape(1)))
+            if augmented_scaling == "normalized":
+                # Row equilibration does not change the Newton equations, but
+                # avoids mixing O(GN/m) equilibrium rows with an O(m) arc row.
+                # This is essential once ds has been reduced near a turning
+                # point; otherwise the linear solve can satisfy equilibrium
+                # while effectively dropping the constraint equation.
+                matrix[:-1] /= residual_scale
+                rhs[:-1] /= residual_scale
+                arc_scale = max(ds**2, torch.finfo(model.nodes.dtype).tiny)
+                matrix[-1] /= arc_scale
+                rhs[-1] /= arc_scale
             try:
                 correction = linear_solve(matrix, rhs)
             except torch.linalg.LinAlgError:

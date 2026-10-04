@@ -16,7 +16,7 @@ from typing import Any, Callable, Generic, TypeVar
 
 import torch
 
-from .sparse_advanced import gmres
+from .sparse_advanced import gmres, sparse_diagonal
 
 
 State = TypeVar("State")
@@ -366,7 +366,10 @@ def solve_matrix_free_finite_rotation_shell4(
     initial_displacement: torch.Tensor | None = None, **controls,
 ):
     """Shell4 adapter that never assembles an element or global tangent."""
-    from .finite_rotation_layered_shell4 import assemble_finite_rotation_layered_shell4
+    from .finite_rotation_layered_shell4 import (
+        assemble_finite_rotation_layered_shell4,
+        assemble_finite_rotation_layered_shell4_sparse,
+    )
     from .layered_shell4_plasticity import LayeredShell4State
 
     model.validate()
@@ -388,8 +391,8 @@ def solve_matrix_free_finite_rotation_shell4(
     preconditioner = controls.pop("preconditioner", None)
     if linearization not in ("jvp", "frozen_tangent"):
         raise ValueError("linearization must be 'jvp' or 'frozen_tangent'")
-    if preconditioner not in (None, "jacobi", "block"):
-        raise ValueError("preconditioner must be None, 'jacobi' or 'block'")
+    if preconditioner not in (None, "jacobi", "block", "element"):
+        raise ValueError("preconditioner must be None, 'jacobi', 'block' or 'element'")
 
     def full_value(reduced):
         value = full.clone()
@@ -413,12 +416,12 @@ def solve_matrix_free_finite_rotation_shell4(
         if (tangent_cache.get("state") is committed
                 and torch.equal(tangent_cache["value"], reduced)):
             return tangent_cache["tangent"]
-        evaluated = assemble_finite_rotation_layered_shell4(
-            model, full_value(reduced), committed, tangent=True,
+        evaluated = assemble_finite_rotation_layered_shell4_sparse(
+            model, full_value(reduced), committed, active_dofs=free,
         )
         tangent_cache.clear()
         tangent_cache.update(state=committed, value=reduced.clone(),
-                             tangent=evaluated.tangent[free[:, None], free])
+                             tangent=evaluated.tangent)
         return tangent_cache["tangent"]
 
     step_operator = assembled_tangent if linearization == "frozen_tangent" else None
@@ -426,26 +429,51 @@ def solve_matrix_free_finite_rotation_shell4(
     if preconditioner is not None:
         tangent = assembled_tangent(full[free], state)
         if preconditioner == "jacobi":
-            diagonal = torch.diagonal(tangent)
+            diagonal = sparse_diagonal(tangent)
             floor = max(float(diagonal.abs().max()) * 1e-10, 1e-12)
             safe = torch.where(diagonal.abs() > floor, diagonal,
                                torch.full_like(diagonal, floor))
             inverse = safe.reciprocal()
         else:
-            # Node blocks preserve translation/rotation coupling while staying
-            # cheap.  Pseudoinverses fail closed on constrained/singular modes.
+            # Node or overlapping element blocks preserve translational/
+            # rotational coupling.  Element Schwarz is more expensive but is
+            # substantially stronger for thin-shell membrane/bending scaling.
             positions = {int(dof): i for i, dof in enumerate(free.tolist())}
             blocks = []
-            for node in range(len(model.nodes)):
-                indices = [positions[d] for d in range(6*node, 6*node+6) if d in positions]
+            coalesced = tangent.coalesce()
+            sparse_indices = coalesced.indices()
+            sparse_values = coalesced.values()
+            if preconditioner == "block":
+                groups = [range(6*node, 6*node+6) for node in range(len(model.nodes))]
+            else:
+                groups = [
+                    [6*int(node)+component for node in conn for component in range(6)]
+                    for conn in model.elements
+                ]
+            multiplicity = torch.zeros(len(free), dtype=model.nodes.dtype,
+                                       device=model.nodes.device)
+            for group in groups:
+                indices = [positions[d] for d in group if d in positions]
                 if indices:
                     ids = torch.tensor(indices, dtype=torch.long, device=free.device)
-                    blocks.append((ids, torch.linalg.pinv(tangent[ids[:, None], ids], rtol=1e-10)))
+                    # Extract only a small principal block without densifying
+                    # the global sparse matrix.
+                    block = torch.zeros((len(ids), len(ids)), dtype=tangent.dtype,
+                                        device=tangent.device)
+                    for local_row, row in enumerate(ids):
+                        for local_column, column in enumerate(ids):
+                            mask = ((sparse_indices[0] == row)
+                                    & (sparse_indices[1] == column))
+                            if bool(torch.any(mask)):
+                                block[local_row, local_column] = sparse_values[mask].sum()
+                    blocks.append((ids, torch.linalg.pinv(block, rtol=1e-10)))
+                    multiplicity[ids] += 1
+            multiplicity = torch.clamp(multiplicity, min=1)
             def inverse(vector):
                 result = torch.zeros_like(vector)
                 for ids, block_inverse in blocks:
-                    result[ids] = block_inverse @ vector[ids]
-                return result
+                    result.index_add_(0, ids, block_inverse @ vector[ids])
+                return result / multiplicity
 
     reduced = solve_matrix_free_arc(
         shell_response, reference_load.to(model.nodes)[free], full[free], state,

@@ -14,11 +14,12 @@ def test_energy_payload_uses_relaxed_baseline_and_enriches_each_point(monkeypatc
         relaxed_initial_displacement=relaxed_u,
         relaxed_initial_state=relaxed_state,
     )
-    case = SimpleNamespace(model=object(), reference_load=object())
+    case = SimpleNamespace(model=SimpleNamespace(thickness=.01), reference_load=object())
     captured = {}
     point = SimpleNamespace(
         external_work=12., recoverable_energy=8., plastic_dissipation=3.,
         internal_energy=11., energy_residual=1., relative_energy_residual=.08,
+        absolute_energy_residual=1., mixed_energy_residual=.04, energy_scale=25.,
         failure_mode="interactive_buckling_yielding", is_peak=False,
         is_post_peak=True,
     )
@@ -31,6 +32,8 @@ def test_energy_payload_uses_relaxed_baseline_and_enriches_each_point(monkeypatc
         )
 
     monkeypatch.setattr(execution, "evaluate_panel_path", fake_evaluate)
+    monkeypatch.setattr(execution, "classical_panel_references",
+                        lambda case: {"gross_section_squash_force": 2.5e6})
     history = [{"step": 1}]
     summary = execution._accepted_path_energy_payload(case, path, history)
 

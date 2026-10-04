@@ -276,6 +276,26 @@ def test_arc_restart_preserves_branch_direction_and_matches_single_run():
                           rtol=2e-8, atol=2e-10)
 
 
+def test_normalized_augmented_rows_preserve_solution_and_transaction():
+    shell = model(); virgin = LayeredShell4State.virgin(shell)
+    fixed = torch.tensor([0,1,2,3,4,5, 8,9,10,11, 14,15,16,17,
+                          18,19,20,21,22,23])
+    load = torch.zeros(shell.n_dofs, dtype=D); load[6] = load[12] = 2.
+    options = dict(steps=1, step_size=.01, maximum_step=.01,
+                   load_scale=.1, initial_state=virgin, tolerance=2e-7)
+    legacy = solve_finite_rotation_arc_path(shell, load, fixed, **options)
+    scaled = solve_finite_rotation_arc_path(
+        shell, load, fixed, augmented_scaling="normalized", **options,
+    )
+    assert legacy.converged and scaled.converged
+    assert scaled.load_factor == pytest.approx(legacy.load_factor, rel=2e-9)
+    assert torch.allclose(scaled.displacement, legacy.displacement,
+                          rtol=2e-9, atol=2e-11)
+    # The caller-owned checkpoint remains virgin; only accepted returned
+    # states are committed by either formulation.
+    assert max(float(p.alpha) for e in virgin.points for q in e for p in q) == 0.
+
+
 def test_arc_relaxes_unbalanced_residual_stress_and_reports_attempt_diagnostics():
     from tensorfem.marine_panel_ultimate_fe import (
         build_panel_case, classical_panel_references,

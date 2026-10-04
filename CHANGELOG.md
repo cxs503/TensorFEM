@@ -2,6 +2,15 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.34.0
+
+- Added connectivity-graph sparse Shell4 tangent assembly with dense-equivalent force/action checks and a measured 4x4 storage gate; this establishes the storage/assembly foundation, not production-scale distributed solving.
+- Corrected the augmented arc-length predictor so displacement and load coordinates use one normalized metric, with regression coverage for non-unit load scales and branch direction.
+- Added a resumable 8x8 peak-window scheduler with hashed one-point checkpoints and conservative coarse/approach/peak step selection; a real three-point 8x8 window has executed, but that mesh has not yet reached a peak or descending branch.
+- Confirmed a 4x4 elastic geometric peak and accepted post-peak points across normalized arc steps 0.10 and 0.02. The fine path peaks at 508.999 kN (point 334) and ends at 507.570 kN after 355 accepted points, a 0.28072% drop; its peak differs from the 508.686 kN coarse result by 0.06156%. The run stopped at its 240 s wall limit rather than solver failure, with two rejected late attempts, zero yielded material and continuous accepted history. Qualification remains blocked because the 360-point target was not completed, the terminal absolute energy residual is 0.107968 J and cross-mesh convergence is unverified.
+- Added cross-chunk accepted-state energy ledgers and a dimensionful absolute/relative energy gate while retaining raw near-zero relative residuals for audit.
+- Kept marine-panel peak/post-peak strength qualification, complete 4/8/12 mesh-control convergence and production sparse throughput explicitly unqualified.
+
 ## 0.33.0
 
 - Added branch-preserving, atomically hashed long-path checkpoints whose target length and persistence cadence can change without recomputing a validated prefix.

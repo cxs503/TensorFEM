@@ -6,7 +6,9 @@ import torch
 from tensorfem.finite_rotation_layered_shell4 import assemble_finite_rotation_layered_shell4
 from tensorfem.layered_shell4_plasticity import LayeredShell4Model, LayeredShell4State
 from tensorfem.panel_path_evidence import (
-    evaluate_panel_path, plastic_dissipation_increment, shell_stored_energy,
+    energy_balance_gate, energy_residual_metrics, evaluate_panel_path,
+    plastic_dissipation_increment,
+    shell_stored_energy,
     yielded_fraction,
 )
 from tensorfem.plasticity import J2State
@@ -136,3 +138,48 @@ def test_chunked_energy_continuation_matches_single_path_exactly():
     for name in ("external_work", "recoverable_energy", "plastic_dissipation",
                  "internal_energy", "energy_residual", "relative_energy_residual"):
         assert getattr(actual, name) == pytest.approx(getattr(expected, name), abs=1e-12)
+
+
+def test_first_point_step_sequence_keeps_absolute_and_mixed_diagnostics():
+    # Regression evidence from the 4x4 fresh runs: the absolute defect falls
+    # with the arc increment, while division by near-zero first-point work
+    # alone reverses that trend.  A dimensionful floor exposes both facts.
+    samples = (
+        (.10, .2271762794622421, .22990113501035836),
+        (.02, .009915024923340192, .010439508372151352),
+    )
+    measures = [energy_residual_metrics(w, u, absolute_scale_floor=.25)
+                for _, w, u in samples]
+    assert measures[1][0] < measures[0][0]  # absolute defect converges
+    assert measures[1][1] > measures[0][1]  # raw near-zero percentage is ill-conditioned
+    assert measures[1][2] < measures[0][2]  # mixed dimensional scale restores the trend
+    assert measures[1][0] == pytest.approx(5.244834488111593e-4)
+    fine_gate = energy_balance_gate(
+        samples[1][1], samples[1][2], characteristic_energy=25_000.,
+    )
+    assert fine_gate["criterion"] == "absolute"
+    assert fine_gate["absolute_tolerance_j"] == pytest.approx(.025)
+    assert fine_gate["absolute_residual_j"] == pytest.approx(.0005244834488111593)
+    assert fine_gate["passed"] is True
+
+
+def test_energy_gate_switches_to_relative_above_characteristic_scale():
+    passed = energy_balance_gate(25_001., 25_002., characteristic_energy=25_000.,
+                                 relative_tolerance=1e-4)
+    failed = energy_balance_gate(25_001., 25_011., characteristic_energy=25_000.,
+                                 relative_tolerance=1e-4)
+    assert passed["criterion"] == failed["criterion"] == "relative"
+    assert passed["passed"] is True
+    assert failed["passed"] is False
+
+
+def test_energy_scale_floor_is_explicit_and_does_not_hide_raw_relative_error():
+    shell = model(); state = LayeredShell4State.virgin(shell)
+    load = torch.zeros(shell.n_dofs, dtype=D); load[6] = 1.
+    u = torch.zeros(shell.n_dofs, dtype=D); u[6] = .01
+    point = SimpleNamespace(step=1, load_factor=1., displacement=u, state=state)
+    raw = evaluate_panel_path(shell, load, [point]).points[0]
+    mixed = evaluate_panel_path(shell, load, [point], energy_scale_floor=1.).points[0]
+    assert mixed.relative_energy_residual == raw.relative_energy_residual
+    assert mixed.mixed_energy_residual <= mixed.relative_energy_residual
+    assert mixed.energy_scale == 1.

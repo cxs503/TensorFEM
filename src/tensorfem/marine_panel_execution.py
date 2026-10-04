@@ -20,7 +20,9 @@ from .finite_rotation_layered_shell4 import solve_finite_rotation_arc_path
 from .finite_rotation_layered_shell4 import assemble_finite_rotation_layered_shell4
 from .layered_shell4_plasticity import LayeredShell4State, layered_shell4_local_frame
 from .marine_panel_ultimate_fe import build_panel_case, classical_panel_references
-from .panel_path_evidence import evaluate_panel_path, shell_stored_energy
+from .panel_path_evidence import (
+    energy_balance_gate, evaluate_panel_path, shell_stored_energy,
+)
 
 
 SCHEMA = "tensorfem.marine-panel-execution/1.0"
@@ -78,6 +80,7 @@ def dimensional_arc_controls(case, normalized_arc_step: float) -> dict[str, floa
         raise ValueError("normalized arc step must be positive")
     force = classical_panel_references(case)["gross_section_squash_force"]
     displacement = case.model.thickness
+    characteristic_energy = force*displacement
     return {
         "normalized_arc_step": float(normalized_arc_step),
         "characteristic_displacement_m": displacement,
@@ -85,6 +88,10 @@ def dimensional_arc_controls(case, normalized_arc_step: float) -> dict[str, floa
         "solver_step_size": normalized_arc_step * displacement,
         "solver_load_scale_m_per_n": displacement / force,
         "nominal_elastic_load_increment_n": normalized_arc_step * force,
+        "characteristic_energy_j": characteristic_energy,
+        "energy_absolute_tolerance_ratio": 1e-6,
+        "energy_absolute_tolerance_j": 1e-6*characteristic_energy,
+        "energy_relative_tolerance": 1e-4,
     }
 
 
@@ -174,16 +181,27 @@ def _accepted_path_energy_payload(case, path,
     if len(evidence.points) != len(point_history):
         raise RuntimeError("accepted path/evidence point count mismatch")
     for record, point in zip(point_history, evidence.points):
+        gate = energy_balance_gate(
+            point.external_work, point.internal_energy,
+            characteristic_energy=(
+                classical_panel_references(case)["gross_section_squash_force"]
+                * case.model.thickness
+            ),
+        )
         record.update({
             "external_work_j": point.external_work,
             "recoverable_energy_j": point.recoverable_energy,
             "plastic_dissipation_j": point.plastic_dissipation,
             "internal_energy_j": point.internal_energy,
             "energy_residual_j": point.energy_residual,
+            "absolute_energy_residual_j": point.absolute_energy_residual,
             "relative_energy_residual": point.relative_energy_residual,
+            "mixed_energy_residual": point.mixed_energy_residual,
+            "energy_scale_j": point.energy_scale,
             "failure_mode": point.failure_mode,
             "is_peak": point.is_peak,
             "is_post_peak": point.is_post_peak,
+            "energy_balance_gate": gate,
         })
     terminal = evidence.points[-1] if evidence.points else None
     return {
@@ -199,6 +217,10 @@ def _accepted_path_energy_payload(case, path,
         ),
         "failure_mode": evidence.failure_mode,
         "energy_post_peak_confirmed": evidence.post_peak_confirmed,
+        "energy_balance_passed": all(
+            bool(record["energy_balance_gate"]["passed"])
+            for record in point_history
+        ),
         "energy_boundary": (
             "trapezoidal external work, recoverable energy and associative J2 "
             "plastic dissipation use accepted points only and are measured from "
@@ -234,6 +256,9 @@ def execute_panel_job(divisions: int, normalized_arc_step: float, *, steps: int 
         case, relative_tolerance=relative_equilibrium_tolerance,
     ) if preflight["passed"] else None)
     controls = dimensional_arc_controls(case, normalized_arc_step)
+    controls["augmented_scaling"] = (
+        "normalized" if solver == "dense" else "matrix_free_not_applicable"
+    )
     controls["relative_equilibrium_tolerance"] = relative_equilibrium_tolerance
     controls["absolute_equilibrium_tolerance_n"] = (
         relative_equilibrium_tolerance
@@ -287,6 +312,8 @@ def execute_panel_job(divisions: int, normalized_arc_step: float, *, steps: int 
                 # tolerance.  The dimensional value above is evidence only.
                 "tolerance": relative_equilibrium_tolerance,
             }
+            if solver == "dense":
+                solver_controls["augmented_scaling"] = "normalized"
             diagnostics = []
             solver_controls["diagnostics"] = diagnostics
             if solver == "matrix_free":
@@ -465,6 +492,7 @@ def execute_panel_chunked_job(
         raise ValueError("steps and chunk_size must be positive")
     case = build_panel_case(divisions)
     controls = dimensional_arc_controls(case, normalized_arc_step)
+    controls["augmented_scaling"] = "normalized"
     identity = {"schema": CHUNKED_SCHEMA, "divisions": divisions,
                 "normalized_arc_step": normalized_arc_step,
                 "relative_equilibrium_tolerance": relative_equilibrium_tolerance}
@@ -564,6 +592,7 @@ def execute_panel_chunked_job(
                 tolerance=relative_equilibrium_tolerance,
                 minimum_step=controls["solver_step_size"] / 128,
                 maximum_step=controls["solver_step_size"], diagnostics=diagnostics,
+                augmented_scaling="normalized",
             )
         except TimeoutError as exc:
             status, error = "incomplete", str(exc)
@@ -599,6 +628,12 @@ def execute_panel_chunked_job(
         reference_norm = float(torch.linalg.vector_norm(case.reference_load))
         for local, (point, point_energy) in enumerate(
                 zip(path.points, energy.points), 1):
+            energy_gate = energy_balance_gate(
+                point_energy.external_work, point_energy.internal_energy,
+                characteristic_energy=controls["characteristic_energy_j"],
+                absolute_ratio=controls["energy_absolute_tolerance_ratio"],
+                relative_tolerance=controls["energy_relative_tolerance"],
+            )
             materials = [material for element in point.state.points
                          for gauss in element for material in gauss]
             relative = float(point.residual_norm) / max(
@@ -620,6 +655,7 @@ def execute_panel_chunked_job(
                 "energy_residual_j": point_energy.energy_residual,
                 "relative_energy_residual": point_energy.relative_energy_residual,
                 "failure_mode": point_energy.failure_mode,
+                "energy_balance_gate": energy_gate,
             })
         cumulative_external_work = energy.points[-1].external_work
         cumulative_plastic_dissipation = energy.points[-1].plastic_dissipation
@@ -651,6 +687,7 @@ def execute_panel_chunked_job(
         status = "executed" if len(history) >= steps else "running"
         manifest = {
             **key_payload, "job_key": key, "status": status, "passed": False,
+            "controls": controls,
             "replayed": False, "accepted_points": len(history),
             "point_history": history, "chunks": chunks,
             "reference_recoverable_energy_j": reference_recoverable_energy,
@@ -672,6 +709,7 @@ def execute_panel_chunked_job(
                                   for value in forces[peak_index+1:peak_index+3]))
     manifest = {
         **key_payload, "job_key": key, "status": status, "passed": False,
+        "controls": controls,
         "replayed": False, "accepted_points": len(history),
         "new_points_this_run": len(history)-initial_offset,
         "point_history": history, "chunks": chunks,
@@ -694,6 +732,11 @@ def execute_panel_chunked_job(
         "maximum_relative_energy_residual": max(
             (float(x["relative_energy_residual"]) for x in history
              if x.get("relative_energy_residual") is not None), default=None),
+        "energy_balance_passed": bool(
+            history and energy_prefix_complete
+            and all(x.get("energy_balance_gate", {}).get("passed", False)
+                    for x in history)
+        ),
         "elapsed_seconds_this_run": time.monotonic()-started,
         "error": error,
     }
