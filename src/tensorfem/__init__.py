@@ -77,7 +77,8 @@ from .finite_strain_plasticity import (
     solve_finite_plastic_path,
 )
 from .mortar_contact3d import (
-    MortarContactResult, integrate_mortar_contact, self_contact_candidates,
+    MortarContactResult, MortarContactAssembly, integrate_mortar_contact,
+    assemble_mortar_contact, self_contact_candidates,
 )
 from .pinched_cylinder import (
     PinchedCylinderResult, pinched_cylinder_model,
@@ -202,7 +203,7 @@ from .result_db_v2 import (
     query_history_series, migrate_v1, read_result_db_compatible,
 )
 
-__version__ = "0.30.0"
+__version__ = "0.31.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -252,7 +253,8 @@ __all__ = [
     "MultiplicativeJ2State", "FinitePlasticState", "FinitePlasticResult",
     "update_multiplicative_j2", "assemble_finite_plastic",
     "solve_finite_plastic_path",
-    "MortarContactResult", "integrate_mortar_contact",
+    "MortarContactResult", "MortarContactAssembly", "integrate_mortar_contact",
+    "assemble_mortar_contact",
     "self_contact_candidates",
     "PinchedCylinderResult", "pinched_cylinder_model",
     "solve_pinched_cylinder_linear", "solve_pinched_cylinder_nonlinear",

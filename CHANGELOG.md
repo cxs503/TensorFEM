@@ -2,6 +2,14 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.31.0
+
+- Added guarded best-fit midsurface projection for shallow-warp layered Shell4 facets, fixing stress-free sinusoidal panel imperfections while rejecting deeply folded elements.
+- Accelerated finite-rotation layered-shell evaluation by using an AD kinematic Jacobian and skipping nested material tangents during outer residual differentiation, with identical force and tangent evidence.
+- Added a dimensionally normalized, resumable marine-panel qualification executor; real 2x2 and 4x4 trials expose the remaining first-step tangent performance blocker instead of overstating peak/post-peak capability.
+- Added an energy-consistent two-sided deformable 3-D facet-contact residual and exact active-set tangent with objectivity and force/moment audits.
+- Added strict fail-closed three-dimensional deformable Hertz qualification gates; complete curved-solid convergence evidence remains blocked.
+
 ## 0.30.0
 
 - Added a finite-rotation corotational Shell4 wrapper with layered plane-stress J2 plasticity, stress-free imperfections, residual stress, numerical algorithmic tangent and transactional Crisfield continuation.

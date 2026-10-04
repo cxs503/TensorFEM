@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.30)
+## Capability maturity (v0.31)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -86,6 +86,10 @@ analytical or recognized benchmark evidence.
 | finite-rotation layered Shell4 arc integration | qualified integration primitive | corotational small-strain J2 layers, residual stress, imperfections, algorithmic tangent and transactional accept/reject history; not a finite-membrane-strain claim |
 | marine panel ultimate-strength FE contract | blocked execution evidence | real 4/8/12 Shell4 meshes and two arc controls are defined; peak/post-peak mesh, step, equilibrium and energy evidence remains to execute |
 | industrial P0 phase-3 qualification | stable verification view | hashed executable report qualifies the Shell4 integration primitive and axisymmetric Hertz scope while keeping panel ultimate and general 3-D double-deformable contact blocked |
+| shallow-warp layered Shell4 geometry | qualified integration primitive | ordered best-fit midsurface, stress-free warped references, rigid-motion objectivity and explicit deep-fold rejection |
+| marine panel qualification execution | blocked performance evidence | dimensionless force/displacement scaling, resumable six-cell matrix and fail-closed timeouts; current nested tangent accepts no first point within 180 s even on 2x2 |
+| two-sided 3-D facet contact assembly | stable kernel | reference-area quadrature, deformable slave/master residual, exact active-set tangent, objectivity and force/moment balance; full 3-D Hertz remains blocked |
+| deformable-to-deformable 3-D Hertz | blocked qualification | strict three-mesh/domain/pressure/equilibrium contract exists; curved solid coupling and complete convergence evidence remain |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

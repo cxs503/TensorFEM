@@ -59,6 +59,30 @@ def _jacobian(function, value: torch.Tensor, *, relative_step: float = 2e-6) -> 
     return torch.stack(columns, 1)
 
 
+def _kinematic_mapping(reference: torch.Tensor, dofs: torch.Tensor) -> torch.Tensor:
+    """Exact AD Jacobian of the corotated deformation map.
+
+    This replaces 48 SVD/frame evaluations per force evaluation.  Material
+    history is not involved in this derivative, and ``create_graph=False``
+    ensures that no graph or mutable trial state escapes the call.
+    """
+    with torch.enable_grad():
+        independent = dofs.detach().requires_grad_(True)
+        result = torch.autograd.functional.jacobian(
+            lambda value: _corotated_deformation(reference, value),
+            independent,
+            create_graph=False,
+            vectorize=True,
+        ).detach()
+    # A perfectly planar patch makes the covariance rank deficient.  Its polar
+    # rotation is well-defined, but the generic SVD backward may return NaNs at
+    # the repeated/zero singular value.  Retain the verified centred difference
+    # for precisely that exceptional geometry.
+    if not bool(torch.all(torch.isfinite(result))):
+        return _jacobian(lambda value: _corotated_deformation(reference, value), dofs)
+    return result
+
+
 def _element_force(
     model: LayeredShell4Model,
     element: int,
@@ -68,9 +92,9 @@ def _element_force(
     conn = model.elements[element].long()
     reference = model.nodes[conn]
     deformation = _corotated_deformation(reference, dofs)
-    mapping = _jacobian(lambda value: _corotated_deformation(reference, value), dofs)
+    mapping = _kinematic_mapping(reference, dofs)
     local_force, _, stress, trial = element_response(
-        model, element, deformation, committed
+        model, element, deformation, committed, compute_tangent=False
     )
     return mapping.T @ local_force, stress, trial
 

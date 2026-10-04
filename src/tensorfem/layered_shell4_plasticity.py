@@ -13,7 +13,53 @@ import math
 import torch
 
 from .plasticity import J2State, update_j2
-from .shell4 import shell4_local_frame
+
+
+def layered_shell4_local_frame(
+    xyz: torch.Tensor, *, maximum_warp_ratio: float = 0.25
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Project a shallow warped Q4 facet onto its best-fit reference plane.
+
+    Initial plate imperfections generally make the four corners non-coplanar.
+    A flat-facet constitutive law can still represent such a mesh when each
+    facet is shallow: its integration geometry is the orthogonal projection
+    onto the total-least-squares plane.  The normal sign follows the element
+    node ordering and the first axis is the projected 0--1 edge, making the
+    construction deterministic and objective under rigid transformations.
+
+    This is deliberately *not* an arbitrary warped-shell formulation.  Deeply
+    folded facets are rejected rather than silently projected.
+    """
+    if xyz.shape != (4, 3):
+        raise ValueError("xyz must have shape (4, 3)")
+    centred = xyz - xyz.mean(0)
+    _, singular, vh = torch.linalg.svd(centred, full_matrices=False)
+    scale = singular[0]
+    if bool(scale <= torch.finfo(xyz.dtype).eps):
+        raise ValueError("degenerate layered Shell4 element")
+    normal = vh[-1]
+    ordered_normal = torch.linalg.cross(xyz[1]-xyz[0], xyz[3]-xyz[0], dim=0)
+    if bool(torch.dot(normal, ordered_normal) < 0):
+        normal = -normal
+    edge = xyz[1] - xyz[0]
+    e1 = edge - torch.dot(edge, normal) * normal
+    e1_norm = torch.linalg.vector_norm(e1)
+    if bool(e1_norm <= torch.finfo(xyz.dtype).eps * scale):
+        raise ValueError("degenerate layered Shell4 0-1 edge")
+    e1 = e1 / e1_norm
+    e2 = torch.linalg.cross(normal, e1, dim=0)
+    basis = torch.stack((e1, e2, normal))
+    local = centred @ basis.T
+    in_plane_scale = torch.linalg.vector_norm(local[:, :2], dim=1).max()
+    if bool(in_plane_scale <= torch.finfo(xyz.dtype).eps):
+        raise ValueError("degenerate layered Shell4 projected area")
+    warp = local[:, 2].abs().max() / in_plane_scale
+    if bool(warp > maximum_warp_ratio):
+        raise ValueError(
+            f"layered Shell4 warp ratio {float(warp):.3g} exceeds "
+            f"limit {maximum_warp_ratio:.3g}"
+        )
+    return local[:, :2], basis
 
 
 @dataclass(frozen=True)
@@ -99,7 +145,8 @@ def _residual_strain(stress: torch.Tensor, young: float, poisson: float) -> torc
 
 
 def plane_stress_j2_update(strain: torch.Tensor, model: LayeredShell4Model,
-                           committed: J2State, residual_stress: torch.Tensor | None = None):
+                           committed: J2State, residual_stress: torch.Tensor | None = None,
+                           *, tangent: bool = True):
     """Return ``[sx,sy,txy]``, numerical consistent tangent and trial state.
 
     The out-of-plane strain is locally condensed by enforcing ``sigma_zz=0``.
@@ -140,6 +187,8 @@ def plane_stress_j2_update(strain: torch.Tensor, model: LayeredShell4Model,
         return torch.stack((sigma[0, 0], sigma[1, 1], sigma[0, 1])), trial
 
     stress, trial = response(strain)
+    if not tangent:
+        return stress, None, trial
     # Symmetric difference differentiates the actual return map including the
     # plane-stress condensation and active plastic branch.
     columns = []
@@ -205,9 +254,9 @@ def _elastic_shear_drilling(xy: torch.Tensor, local: torch.Tensor,
 
 
 def element_response(model: LayeredShell4Model, element: int, local_global: torch.Tensor,
-                     committed: tuple[tuple[J2State, ...], ...]):
+                     committed: tuple[tuple[J2State, ...], ...], *, compute_tangent: bool = True):
     conn = model.elements[element].long(); xyz = model.nodes[conn]
-    xy, basis = shell4_local_frame(xyz); transform = _transform(basis, dtype=xyz.dtype, device=xyz.device)
+    xy, basis = layered_shell4_local_frame(xyz); transform = _transform(basis, dtype=xyz.dtype, device=xyz.device)
     local = transform @ local_global
     force, tangent = _elastic_shear_drilling(xy, local, model)
     gp = 1/math.sqrt(3); points = ((-gp,-gp),(gp,-gp),(gp,gp),(-gp,gp))
@@ -221,10 +270,13 @@ def element_response(model: LayeredShell4Model, element: int, local_global: torc
         for layer, z in enumerate(zvalues):
             strain = generalized[:3] + z*generalized[3:]
             initial = None if residual is None else residual[element, q, layer]
-            stress, material, trial = plane_stress_j2_update(strain, model, committed[q][layer], initial)
+            stress, material, trial = plane_stress_j2_update(
+                strain, model, committed[q][layer], initial, tangent=compute_tangent
+            )
             bz = b[:3] + z*b[3:]
             force += bz.T @ stress * det*dz
-            tangent += bz.T @ material @ bz * det*dz
+            if compute_tangent:
+                tangent += bz.T @ material @ bz * det*dz
             qstresses.append(stress); qtrials.append(trial)
         stresses.append(torch.stack(qstresses)); trial_points.append(tuple(qtrials))
     return transform.T@force, transform.T@tangent@transform, torch.stack(stresses), tuple(trial_points)

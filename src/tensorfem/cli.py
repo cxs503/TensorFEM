@@ -90,6 +90,8 @@ def main() -> None:
                 "finite-rotation layered Shell4 transactional arc integration",
                 "axisymmetric rigid-indenter/deformable-halfspace Hertz qualification",
                 "hashed industrial P0 phase-3 qualification view",
+                "shallow-warp layered Shell4 reference geometry",
+                "two-sided deformable 3-D facet contact assembly",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
@@ -99,6 +101,7 @@ def main() -> None:
                 "general crack propagation", "multi-node distributed production runs",
                 "marine panel peak/post-peak qualification evidence",
                 "general 3-D deformable-to-deformable Hertz qualification",
+                "marine panel scalable tangent and peak/post-peak execution evidence",
             ],
         }, indent=2))
         return

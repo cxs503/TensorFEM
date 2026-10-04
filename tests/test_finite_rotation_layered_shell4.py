@@ -15,6 +15,8 @@ from tensorfem.layered_shell4_plasticity import (
     LayeredShell4Model,
     LayeredShell4State,
     assemble_layered_shell4,
+    layered_shell4_local_frame,
+    plane_stress_j2_update,
 )
 
 D = torch.float64
@@ -78,6 +80,59 @@ def test_imperfection_is_stress_free_reference_and_residual_stress_is_active():
         stressed, zero, LayeredShell4State.virgin(stressed), tangent=False
     )
     assert torch.allclose(response.stress[..., 0], residual[..., 0], atol=2e-7)
+
+
+def test_shallow_warped_reference_is_stress_free_objective_and_deep_warp_rejected():
+    nodes = torch.tensor([[0., 0., 0.], [1., 0., .012],
+                          [1., 1., -.007], [0., 1., .004]], dtype=D)
+    shell = model(nodes=nodes)
+    state = LayeredShell4State.virgin(shell)
+    zero = assemble_finite_rotation_layered_shell4(
+        shell, torch.zeros(shell.n_dofs, dtype=D), state, tangent=False
+    )
+    assert float(zero.internal_force.abs().max()) < 1e-10
+    assert float(zero.stress.abs().max()) < 1e-10
+
+    axis = torch.tensor([.2, -.7, .4], dtype=D)
+    angle = .83
+    rotation = axis_angle(axis, angle)
+    shift = torch.tensor([.6, -1.2, 2.], dtype=D)
+    dofs = torch.zeros(shell.n_dofs, dtype=D)
+    for node, X in enumerate(nodes):
+        dofs[6*node:6*node+3] = rotation @ X + shift - X
+        dofs[6*node+3:6*node+6] = axis / torch.linalg.vector_norm(axis) * angle
+    moved = assemble_finite_rotation_layered_shell4(shell, dofs, state, tangent=False)
+    assert float(torch.linalg.vector_norm(moved.internal_force)) < 4e-7
+    assert float(moved.stress.abs().max()) < 4e-7
+
+    folded = nodes.clone(); folded[:, 2] = torch.tensor([0., 2., -2., 2.], dtype=D)
+    with pytest.raises(ValueError, match="warp ratio"):
+        layered_shell4_local_frame(folded)
+
+
+def test_force_only_material_update_skips_nested_numerical_tangent(monkeypatch):
+    # The outer finite-rotation difference needs stresses, not the small-strain
+    # material Jacobian.  Count actual return-map calls to lock in that speedup.
+    import tensorfem.layered_shell4_plasticity as layered
+    shell = model(); state = LayeredShell4State.virgin(shell).points[0][0][0]
+    strain = torch.tensor([2e-4, -1e-4, 3e-5], dtype=D)
+    original = layered.update_j2
+    calls = 0
+
+    def counted(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(layered, "update_j2", counted)
+    fast = plane_stress_j2_update(strain, shell, state, tangent=False)
+    fast_calls = calls
+    calls = 0
+    full = plane_stress_j2_update(strain, shell, state, tangent=True)
+    full_calls = calls
+    assert torch.equal(fast[0], full[0])
+    assert fast[1] is None
+    assert full_calls >= 7 * fast_calls
 
 
 def test_plastic_loading_then_unloading_keeps_committed_material_history():

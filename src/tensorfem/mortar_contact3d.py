@@ -23,6 +23,25 @@ class MortarContactResult:
     penalty_energy: torch.Tensor
 
 
+@dataclass(frozen=True)
+class MortarContactAssembly:
+    """Energy-consistent two-sided contact contribution.
+
+    ``residual`` is ordered as all slave degrees of freedom followed by all
+    master degrees of freedom.  It is the gradient of the discrete penalty
+    potential; ``tangent`` is its exact active-set linearisation.  Physical
+    nodal contact forces are therefore ``-residual``.
+    """
+    residual: torch.Tensor
+    tangent: torch.Tensor
+    slave_forces: torch.Tensor
+    master_forces: torch.Tensor
+    active_quadrature_points: int
+    integrated_area: torch.Tensor
+    maximum_penetration: torch.Tensor
+    penalty_energy: torch.Tensor
+
+
 def _quadrature(x: torch.Tensor):
     """Yield `(point, shape, differential_area)` for TRI3 or QUAD4."""
     if len(x)==3:
@@ -65,6 +84,76 @@ def integrate_mortar_contact(slave_vertices: torch.Tensor,slave_faces: torch.Ten
             mf[master_faces[projection.face]] -= projection.weights[:,None]*traction*da
             energy += .5*normal_penalty*penetration**2*da
     return MortarContactResult(sf,mf,active,area,maxpen,energy)
+
+
+def _mortar_potential(slave_reference: torch.Tensor, slave_vertices: torch.Tensor, slave_faces: torch.Tensor,
+                      master_vertices: torch.Tensor, master_faces: torch.Tensor,
+                      normal_penalty: float) -> torch.Tensor:
+    """Discrete current-configuration penalty potential.
+
+    Candidate selection and the open/closed decision form the active set and
+    are intentionally held fixed during one linearisation.  Within that set,
+    projection coordinates and normals remain in the autograd graph, yielding
+    the geometric as well as material contact terms.  Integration uses the
+    slave reference-area measure (a total-Lagrangian surface convention).
+    """
+    energy=slave_vertices.new_zeros(())
+    for face in slave_faces:
+        # A reference-area measure avoids spurious membrane traction from the
+        # variation of an otherwise purely normal penalty potential.
+        for _reference_point,shape,da in _quadrature(slave_reference[face]):
+            point=shape@slave_vertices[face]
+            projection=project_point_to_facets(point,master_vertices,master_faces)
+            penetration=torch.clamp(-projection.gap,min=0.)
+            energy=energy+.5*normal_penalty*penetration**2*da
+    return energy
+
+
+def assemble_mortar_contact(
+    slave_reference: torch.Tensor, slave_faces: torch.Tensor,
+    master_reference: torch.Tensor, master_faces: torch.Tensor,
+    slave_displacement: torch.Tensor, master_displacement: torch.Tensor,
+    *, normal_penalty: float, tangent: bool = True,
+) -> MortarContactAssembly:
+    """Assemble a frictionless facet-quadrature contact residual and tangent.
+
+    Both surfaces are deformable: current coordinates, projection, normal and
+    area are functions of both displacement fields.  The implementation is a
+    primal penalty/active-set formulation, not a dual mortar multiplier method.
+    It is intended as a compact, consistent kernel for solid surface coupling.
+    """
+    if normal_penalty<=0: raise ValueError("normal_penalty must be positive")
+    if slave_reference.shape!=slave_displacement.shape or master_reference.shape!=master_displacement.shape:
+        raise ValueError("reference coordinates and displacements must match")
+    if slave_reference.ndim!=2 or slave_reference.shape[1]!=3 or master_reference.ndim!=2 or master_reference.shape[1]!=3:
+        raise ValueError("surface coordinates must have shape (n,3)")
+    if slave_faces.ndim!=2 or slave_faces.shape[1] not in (3,4) or slave_faces.dtype!=torch.long:
+        raise ValueError("invalid slave connectivity")
+    if master_faces.ndim!=2 or master_faces.shape[1] not in (3,4) or master_faces.dtype!=torch.long:
+        raise ValueError("invalid master connectivity")
+    ns=slave_reference.numel()
+    q=torch.cat((slave_displacement.reshape(-1),master_displacement.reshape(-1))).detach().requires_grad_(True)
+
+    def potential(dofs: torch.Tensor) -> torch.Tensor:
+        slave=slave_reference+dofs[:ns].reshape_as(slave_reference)
+        master=master_reference+dofs[ns:].reshape_as(master_reference)
+        return _mortar_potential(slave_reference,slave,slave_faces,master,master_faces,normal_penalty)
+
+    energy=potential(q)
+    residual=torch.autograd.grad(energy,q,create_graph=tangent)[0]
+    if tangent:
+        matrix=torch.autograd.functional.hessian(potential,q)
+    else:
+        matrix=q.new_zeros((q.numel(),q.numel()))
+    current_slave=slave_reference+slave_displacement
+    current_master=master_reference+master_displacement
+    diagnostic=integrate_mortar_contact(current_slave,slave_faces,current_master,master_faces,
+                                         normal_penalty=normal_penalty)
+    physical=-residual.detach()
+    return MortarContactAssembly(
+        residual.detach(),matrix.detach(),physical[:ns].reshape_as(slave_reference),
+        physical[ns:].reshape_as(master_reference),diagnostic.active_quadrature_points,
+        diagnostic.integrated_area,diagnostic.maximum_penetration,energy.detach())
 
 
 def self_contact_candidates(vertices: torch.Tensor,faces: torch.Tensor,*,search_distance: float):

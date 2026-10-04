@@ -885,8 +885,22 @@
     {
       "introduced": "0.9.0",
       "module": "tensorfem.mortar_contact3d",
+      "name": "MortarContactAssembly",
+      "object": "MortarContactAssembly",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.mortar_contact3d",
       "name": "integrate_mortar_contact",
       "object": "integrate_mortar_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.mortar_contact3d",
+      "name": "assemble_mortar_contact",
+      "object": "assemble_mortar_contact",
       "stability": "experimental"
     },
     {
@@ -2171,7 +2185,7 @@
       "stability": "beta"
     }
   ],
-  "package_version": "0.30.0",
+  "package_version": "0.31.0",
   "policy": {
     "beta": "deprecate before removal",
     "experimental": "may change with release notes",
