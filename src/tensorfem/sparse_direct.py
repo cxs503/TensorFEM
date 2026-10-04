@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from importlib.util import find_spec
+from time import perf_counter
 from typing import Callable
 
 import torch
@@ -32,6 +33,54 @@ def scipy_sparse_status() -> SparseBackendStatus:
     if find_spec("scipy") is None:
         return SparseBackendStatus("scipy", False, "SciPy is not installed")
     return SparseBackendStatus("scipy", True, "available")
+
+
+def sparse_backend_statuses() -> tuple[SparseBackendStatus, ...]:
+    """Probe supported industrial sparse backends without importing them.
+
+    Availability means that the Python binding required by TensorFEM exists;
+    finding a system shared library alone is deliberately not sufficient.
+    """
+    scipy = scipy_sparse_status()
+    optional = (
+        ("petsc", "petsc4py", "petsc4py is not installed"),
+        ("pardiso", "pypardiso", "pypardiso is not installed"),
+        ("suitesparse", "sksparse", "scikit-sparse is not installed"),
+        ("amg", "pyamg", "pyamg is not installed"),
+    )
+    rows = [SparseBackendStatus(
+        "superlu", scipy.available,
+        "SciPy SuperLU available" if scipy.available else scipy.reason,
+    )]
+    for name, module, absent in optional:
+        rows.append(SparseBackendStatus(
+            name, find_spec(module) is not None,
+            "available" if find_spec(module) is not None else absent,
+        ))
+    # MUMPS has several incompatible bindings.  Only a supported binding may
+    # be selected; a bare libdmumps cannot satisfy the Python tensor contract.
+    mumps_modules = ("mumps", "pymumps", "mumpspy")
+    found = next((module for module in mumps_modules if find_spec(module)), None)
+    rows.append(SparseBackendStatus(
+        "mumps", found is not None,
+        f"{found} available" if found else "no supported MUMPS Python binding is installed",
+    ))
+    return tuple(rows)
+
+
+@dataclass(frozen=True)
+class SparseSolveDiagnostics:
+    backend: str
+    shape: tuple[int, int]
+    matrix_nnz: int
+    factor_nnz: int
+    factorization_seconds: float
+    solve_seconds: float
+    solve_calls: int
+    right_hand_sides: int
+    estimated_matrix_bytes: int
+    estimated_factor_bytes: int
+    last_relative_residual: float | None
 
 
 def _scipy_modules():
@@ -72,7 +121,7 @@ def _to_scipy_csc(matrix: torch.Tensor):
     return sp.coo_matrix((data, (rows, columns)), shape=matrix.shape).tocsc(), sla
 
 
-@dataclass(frozen=True)
+@dataclass
 class SparseFactorization:
     """Reusable optional factorization retaining tensor dtype/device contract."""
     method: str
@@ -81,6 +130,12 @@ class SparseFactorization:
     matrix_nnz: int
     factor_nnz: int
     _solve_numpy: Callable
+    factorization_seconds: float = 0.0
+    solve_seconds: float = 0.0
+    solve_calls: int = 0
+    right_hand_sides: int = 0
+    last_relative_residual: float | None = None
+    _matrix_action: Callable | None = None
 
     def solve(self, rhs: torch.Tensor) -> torch.Tensor:
         if rhs.device.type != "cpu":
@@ -91,6 +146,7 @@ class SparseFactorization:
             raise ValueError("rhs has incompatible shape")
         if not bool(torch.all(torch.isfinite(rhs))):
             raise ValueError("rhs contains non-finite values")
+        started = perf_counter()
         try:
             result = self._solve_numpy(rhs.detach().numpy())
         except Exception as exc:
@@ -98,10 +154,33 @@ class SparseFactorization:
         answer = torch.from_numpy(result).to(dtype=self.dtype)
         if not bool(torch.all(torch.isfinite(answer))):
             raise RuntimeError(f"{self.method} solve returned non-finite values")
+        self.solve_seconds += perf_counter() - started
+        self.solve_calls += 1
+        self.right_hand_sides += 1 if rhs.ndim == 1 else rhs.shape[1]
+        if self._matrix_action is not None:
+            residual = self._matrix_action(answer) - rhs
+            scale = max(float(torch.linalg.vector_norm(rhs)), 1.0)
+            self.last_relative_residual = float(torch.linalg.vector_norm(residual)) / scale
         return answer
 
     def __call__(self, rhs: torch.Tensor) -> torch.Tensor:
         return self.solve(rhs)
+
+    @property
+    def diagnostics(self) -> SparseSolveDiagnostics:
+        value_bytes = torch.empty((), dtype=self.dtype).element_size()
+        # CSC uses one integer per row index and n+1 column pointers.  SuperLU
+        # exposes only aggregate L/U nnz, so factor storage is an estimate.
+        index_bytes = 4
+        n = self.shape[0]
+        return SparseSolveDiagnostics(
+            self.method, self.shape, self.matrix_nnz, self.factor_nnz,
+            self.factorization_seconds, self.solve_seconds, self.solve_calls,
+            self.right_hand_sides,
+            self.matrix_nnz*(value_bytes+index_bytes)+(n+1)*index_bytes,
+            self.factor_nnz*(value_bytes+index_bytes)+2*(n+1)*index_bytes,
+            self.last_relative_residual,
+        )
 
 
 def factorize_sparse(matrix: torch.Tensor, *, method: str = "splu",
@@ -117,6 +196,7 @@ def factorize_sparse(matrix: torch.Tensor, *, method: str = "splu",
     if drop_tolerance < 0 or fill_factor < 1:
         raise ValueError("invalid ILU controls")
     csc, sla = _to_scipy_csc(matrix)
+    started = perf_counter()
     try:
         if method == "splu":
             factor = sla.splu(csc)
@@ -126,5 +206,34 @@ def factorize_sparse(matrix: torch.Tensor, *, method: str = "splu",
     except Exception as exc:
         raise RuntimeError(f"{method} factorization failed: {exc}") from exc
     factor_nnz = int(factor.L.nnz + factor.U.nnz)
+    elapsed = perf_counter() - started
+    coalesced = matrix.coalesce() if matrix.layout == torch.sparse_coo else matrix.to_sparse_coo().coalesce()
+    action = lambda value: torch.sparse.mm(
+        coalesced, value[:, None] if value.ndim == 1 else value
+    ).squeeze(1) if value.ndim == 1 else torch.sparse.mm(coalesced, value)
     return SparseFactorization(method, tuple(matrix.shape), matrix.dtype,
-                               int(csc.nnz), factor_nnz, factor.solve)
+                               int(csc.nnz), factor_nnz, factor.solve,
+                               factorization_seconds=elapsed,
+                               _matrix_action=action)
+
+
+class SparseLinearSolver:
+    """Explicit, reusable sparse linear solver adapter.
+
+    No dense or alternate-backend fallback is performed. ``auto`` selects a
+    backend only when exactly the documented priority candidate is available;
+    in this release that candidate is SciPy SuperLU.
+    """
+    def __init__(self, backend: str = "auto") -> None:
+        if backend not in ("auto", "superlu"):
+            known = {row.name: row for row in sparse_backend_statuses()}
+            if backend in known and not known[backend].available:
+                raise SparseBackendUnavailable(known[backend].reason)
+            raise SparseBackendUnavailable(f"backend '{backend}' is not implemented")
+        status = next(row for row in sparse_backend_statuses() if row.name == "superlu")
+        if not status.available:
+            raise SparseBackendUnavailable(status.reason)
+        self.backend = "superlu"
+
+    def factorize(self, matrix: torch.Tensor) -> SparseFactorization:
+        return factorize_sparse(matrix, method="splu")

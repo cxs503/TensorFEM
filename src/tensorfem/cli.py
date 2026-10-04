@@ -105,6 +105,8 @@ def main() -> None:
                 "generalized refined-panel peak-window execution foundation",
                 "dimensionally consistent panel arc metric and immutable checkpoint generations",
                 "optional fail-closed sparse direct and ILU adapter",
+                "advisory nonlinear-control evidence with hashed restart decisions",
+                "marine stiffening, corrosion and residual-stress screening qualifications",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

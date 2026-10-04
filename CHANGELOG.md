@@ -2,6 +2,14 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.37.0
+
+- Added a deterministic advisory-only nonlinear controller that classifies accepted chunks from Newton contraction, rejected attempts, path curvature, equilibrium and energy evidence; restart verifies a SHA-256 decision chain and no unqualified algorithm switch is activated.
+- Added a unified optional sparse linear-solver adapter with factor reuse, multi-RHS support and fill/time/memory/residual diagnostics. Existing SuperLU passes real 4x4/8x8 linear accuracy checks but does not yet qualify full nonlinear acceleration.
+- Added executable marine screening qualifications for smeared longitudinal stiffening, uniform corrosion thickness sensitivity and self-equilibrated residual-stress first yield, with errors of 0.0755%, machine precision and 0.0110% respectively.
+- Continued the dimensionally consistent 8x8 panel path beyond 800 kN while retaining equilibrium and energy gates; its continued monotone response invalidates transfer of the former coarse 4x4 peak and keeps mesh convergence fail-closed.
+- Started a fresh dimensionally consistent 4x4 path so future 4/8/12 comparisons use the same continuation metric and checkpoint semantics.
+
 ## 0.36.0
 
 - Replaced the dimensionally invalid shell continuation norm with an opt-in thickness-integrated metric: bending rotations use `t^2/12`, drilling does not consume arc length, and all DOFs remain in equilibrium.

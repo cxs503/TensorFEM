@@ -2185,7 +2185,7 @@
       "stability": "beta"
     }
   ],
-  "package_version": "0.36.0",
+  "package_version": "0.37.0",
   "policy": {
     "beta": "deprecate before removal",
     "experimental": "may change with release notes",

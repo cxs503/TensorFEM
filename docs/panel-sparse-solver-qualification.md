@@ -90,3 +90,35 @@ factor-memory, and end-to-end wall-time comparisons.  Industrial-grade ILU or
 AMG also needs explicit drilling-nullspace handling.  Promotion requires a
 measured advantage on larger meshes; availability and linear accuracy alone
 are insufficient.
+
+## v0.37 unified adapter and reproducible audit
+
+`SparseLinearSolver` adds one explicit entry point for factorization reuse,
+vector or multiple-right-hand-side solves, timing, fill, estimated storage,
+solve counts, and independently evaluated residual diagnostics. `auto`
+currently selects only SciPy SuperLU. It never converts to dense and never
+selects another algorithm after failure. PETSc, MUMPS, SuiteSparse, PARDISO,
+and AMG requests fail closed when their supported Python binding is absent.
+
+The server audit found SciPy 1.17.1/SuperLU in an existing Hermes environment.
+The TensorFEM virtual environment itself has no NumPy/SciPy. No package was
+installed or upgraded. `scripts/benchmark_sparse_panel_solver.py` reproduces
+the audit when the existing optional site-packages directory is exposed. Its
+bordered case uses a real panel tangent and reference-load column plus a
+deterministic normalized constraint row; it tests the corrector topology but
+is not an accepted nonlinear increment.
+
+| mesh | system | relative solution difference | dense solve | factor | reused sparse solve | dense bytes | sparse input bytes | estimated factors |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| 4x4 | 128 DOF, 2 RHS | 3.20e-12 | 0.280 ms | 161.5 ms* | 0.656 ms | 131,072 | 114,768 | 151,644 |
+| 4x4 | 129 DOF bordered | 2.93e-15 | 0.341 ms | 2.37 ms | 0.455 ms | 133,128 | 117,816 | 151,556 |
+| 8x8 | 444 DOF, 2 RHS | 3.24e-12 | 1.50 ms | 6.27 ms | 1.31 ms | 1,577,088 | 476,208 | 812,504 |
+| 8x8 | 445 DOF bordered | 9.86e-16 | 1.60 ms | 12.1 ms | 1.30 ms | 1,584,200 | 486,144 | 1,475,560 |
+
+`*` includes the first SciPy/SuperLU initialization in that process. Each
+factorization was reused three times; the tangent solve used two RHS per call.
+The largest independently evaluated relative residual was 1.56e-11. Input
+storage improves materially at 8x8, but bordered factor storage nearly reaches
+the dense matrix size and factorization dominates. Therefore v0.37 qualifies
+the adapter contract and linear accuracy only: it makes no nonlinear-path,
+speedup, or industrial-scale performance claim.

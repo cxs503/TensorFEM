@@ -2,7 +2,8 @@ import pytest
 import torch
 
 from tensorfem.sparse_direct import (
-    SparseBackendUnavailable, factorize_sparse, scipy_sparse_status,
+    SparseBackendUnavailable, SparseLinearSolver, factorize_sparse,
+    scipy_sparse_status, sparse_backend_statuses,
 )
 
 
@@ -55,3 +56,36 @@ def test_sparse_direct_rejects_nonfinite_inputs_when_backend_is_available():
     factor = factorize_sparse(torch.eye(2, dtype=torch.float64).to_sparse_coo())
     with pytest.raises(ValueError, match="non-finite"):
         factor.solve(torch.tensor([1., float("inf")], dtype=torch.float64))
+
+
+def test_unified_solver_reuses_factorization_for_vector_and_multiple_rhs():
+    if not scipy_sparse_status().available:
+        pytest.skip("optional SciPy backend is absent")
+    dense = torch.tensor([[5., 1., 0.], [1., 4., 1.], [0., 1., 3.]],
+                         dtype=torch.float64)
+    factor = SparseLinearSolver("auto").factorize(dense.to_sparse_coo())
+    vector = torch.tensor([1., 2., 3.], dtype=torch.float64)
+    multiple = torch.stack((vector, 2*vector), dim=1)
+    assert torch.allclose(factor.solve(vector), torch.linalg.solve(dense, vector),
+                          rtol=2e-13, atol=2e-13)
+    assert torch.allclose(factor.solve(multiple), torch.linalg.solve(dense, multiple),
+                          rtol=2e-13, atol=2e-13)
+    diagnostics = factor.diagnostics
+    assert diagnostics.solve_calls == 2
+    assert diagnostics.right_hand_sides == 3
+    assert diagnostics.factorization_seconds >= 0.
+    assert diagnostics.solve_seconds >= 0.
+    assert diagnostics.estimated_factor_bytes > 0
+    assert diagnostics.last_relative_residual is not None
+    assert diagnostics.last_relative_residual < 1e-13
+
+
+def test_unavailable_unified_backends_fail_closed():
+    statuses = {row.name: row for row in sparse_backend_statuses()}
+    assert "superlu" in statuses and "petsc" in statuses and "mumps" in statuses
+    for name in ("petsc", "mumps", "pardiso", "suitesparse", "amg"):
+        if not statuses[name].available:
+            with pytest.raises(SparseBackendUnavailable):
+                SparseLinearSolver(name)
+    with pytest.raises(SparseBackendUnavailable, match="not implemented"):
+        SparseLinearSolver("unknown")

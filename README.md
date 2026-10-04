@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.36)
+## Capability maturity (v0.37)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -104,6 +104,8 @@ analytical or recognized benchmark evidence.
 | refined panel peak-window scheduling | verified execution foundation | energy/metric-versioned immutable generations, stale-manifest replay protection and coarse/approach/peak scheduling support 8x8 and 12x12; refined-mesh descending branches remain open |
 | panel 4/8/12 mesh-convergence gate | verified fail-closed evaluator | requires explicit peak and post-peak evidence on every mesh and rejects missing data without extrapolation; current status is blocked by 8x8/12x12 paths |
 | optional sparse direct/ILU backend | verified internal adapter | fail-closed lazy SciPy integration matches dense 4x4/8x8 correctors, but is slower at current sizes and is not a production-performance claim |
+| advisory nonlinear control policy | verified execution foundation | deterministic Newton/rejection/curvature/equilibrium/energy classifications, hashed restart chain and explicit recommendations; automatic solver switching remains disabled |
+| marine stiffening and degradation screening | qualified analytical/numerical prototypes | smeared stiffener buckling, uniform-corrosion thickness sensitivity and self-balanced residual-stress first-yield errors remain below 0.08%; discrete tripping, pitting and collapse remain unqualified |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

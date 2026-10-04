@@ -23,6 +23,11 @@ from .marine_panel_ultimate_fe import build_panel_case, classical_panel_referenc
 from .panel_path_evidence import (
     ENERGY_DEFINITION, energy_balance_gate, evaluate_panel_path, shell_stored_energy,
 )
+from .nonlinear_controller import (
+    SCHEMA as NONLINEAR_CONTROLLER_SCHEMA,
+    recommend_nonlinear_controls,
+    verify_decision_chain,
+)
 
 
 SCHEMA = "tensorfem.marine-panel-execution/1.0"
@@ -526,6 +531,7 @@ def execute_panel_chunked_job(
     current_step_size = controls["solver_step_size"]
     history: list[dict[str, object]] = []
     chunks: list[dict[str, object]] = []
+    controller_decisions: list[dict[str, object]] = []
     reference_recoverable_energy = None
     cumulative_external_work = 0.0
     cumulative_plastic_dissipation = 0.0
@@ -566,6 +572,9 @@ def execute_panel_chunked_job(
         current_step_size = float(saved.get("step_size", current_step_size))
         history = manifest.get("point_history", [])
         chunks = manifest.get("chunks", [])
+        controller_decisions = manifest.get("nonlinear_controller_decisions", [])
+        if not verify_decision_chain(controller_decisions):
+            raise ValueError("nonlinear controller decision-chain integrity mismatch")
         migration = manifest.get("migration")
         required_energy = {"reference_recoverable_energy", "cumulative_external_work",
                            "cumulative_plastic_dissipation", "energy_definition"}
@@ -689,6 +698,14 @@ def execute_panel_chunked_job(
         displacement, state = path.displacement, path.committed_state
         previous, load_factor = path.previous_increment, path.load_factor
         current_step_size = float(path.step_size)
+        decision = recommend_nonlinear_controls(
+            history, diagnostics,
+            prior_decision_sha256=(
+                controller_decisions[-1]["decision_sha256"]
+                if controller_decisions else None
+            ),
+        )
+        controller_decisions.append(decision)
         chunks.append({
             "first_step": offset + 1, "last_step": len(history),
             "accepted": len(path.points),
@@ -699,6 +716,7 @@ def execute_panel_chunked_job(
             "terminal_external_work_j": cumulative_external_work,
             "terminal_plastic_dissipation_j": cumulative_plastic_dissipation,
             "terminal_energy_residual_j": energy.points[-1].energy_residual,
+            "nonlinear_controller_decision_sha256": decision["decision_sha256"],
         })
         generation = len(history)
         checkpoint_path = root / f"chunked-{key}-g{generation:06d}.pt"
@@ -722,6 +740,9 @@ def execute_panel_chunked_job(
             "controls": controls,
             "replayed": False, "accepted_points": len(history),
             "point_history": history, "chunks": chunks,
+            "nonlinear_controller_schema": NONLINEAR_CONTROLLER_SCHEMA,
+            "nonlinear_controller_decisions": controller_decisions,
+            "nonlinear_controller_latest": decision,
             "reference_recoverable_energy_j": reference_recoverable_energy,
             "external_work_j": cumulative_external_work,
             "plastic_dissipation_j": cumulative_plastic_dissipation,
@@ -746,6 +767,11 @@ def execute_panel_chunked_job(
         "replayed": False, "accepted_points": len(history),
         "new_points_this_run": len(history)-initial_offset,
         "point_history": history, "chunks": chunks,
+        "nonlinear_controller_schema": NONLINEAR_CONTROLLER_SCHEMA,
+        "nonlinear_controller_decisions": controller_decisions,
+        "nonlinear_controller_latest": (
+            controller_decisions[-1] if controller_decisions else None
+        ),
         "peak_force_n": max(forces) if forces else None,
         "peak_point_index": peak_index, "peak_confirmed": peak_confirmed,
         "post_peak_observed": peak_confirmed,
