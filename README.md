@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.31)
+## Capability maturity (v0.32)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -90,6 +90,11 @@ analytical or recognized benchmark evidence.
 | marine panel qualification execution | blocked performance evidence | dimensionless force/displacement scaling, resumable six-cell matrix and fail-closed timeouts; current nested tangent accepts no first point within 180 s even on 2x2 |
 | two-sided 3-D facet contact assembly | stable kernel | reference-area quadrature, deformable slave/master residual, exact active-set tangent, objectivity and force/moment balance; full 3-D Hertz remains blocked |
 | deformable-to-deformable 3-D Hertz | blocked qualification | strict three-mesh/domain/pressure/equilibrium contract exists; curved solid coupling and complete convergence evidence remain |
+| finite-rotation layered Shell4 consistent tangent | qualified integration primitive | one material integration per element, corotational material/geometric chain rule and directional errors below 4e-9 |
+| transactional residual-stress equilibration | qualified panel foundation | initial free residual is relaxed from about 139 kN before continuation, with rollback and deterministic displacement/material-state hashes |
+| dimensionally scaled shell arc continuation | qualified panel foundation | scaled load coordinate, relative force/constraint gates, minimum-norm drilling gauge and attempt diagnostics |
+| marine panel first-point performance gate | qualified pre-peak foundation | real 2x2/4x4 first points in 3.26/12.89 s with balance near 1e-13; three-point paths pass, peak/post-peak remains blocked |
+| matrix-free shell arc continuation | stable experimental solver | transactional finite-difference JVP, GMRES, frozen-tangent/Jacobi/block options and fail-fast initial-equilibrium diagnostics |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

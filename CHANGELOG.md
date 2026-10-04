@@ -2,6 +2,14 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.32.0
+
+- Replaced repeated finite-rotation material reintegration with a chain-rule tangent containing the transformed local algorithmic tangent and corotational geometric Hessian.
+- Added transactional initial residual-stress equilibration, a scaled load coordinate and dimensionally consistent continuation convergence checks.
+- Added auditable 2x2/4x4 marine-panel first-point gates; accepted points complete in 3.26/12.89 seconds and short three-point pre-peak paths converge with near-machine balance.
+- Added a matrix-free Crisfield/GMRES continuation option with fail-fast initial-equilibrium checks, frozen-tangent and block/Jacobi preconditioning paths, rollback and detailed termination statistics.
+- Kept marine-panel peak, plastic post-peak and 4/8/12 convergence qualification explicitly blocked pending long-path execution.
+
 ## 0.31.0
 
 - Added guarded best-fit midsurface projection for shallow-warp layered Shell4 facets, fixing stress-free sinusoidal panel imperfections while rejecting deeply folded elements.

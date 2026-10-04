@@ -99,6 +99,66 @@ def _element_force(
     return mapping.T @ local_force, stress, trial
 
 
+def _chain_rule_tangent(
+    reference: torch.Tensor,
+    dofs: torch.Tensor,
+    deformation: torch.Tensor,
+    mapping: torch.Tensor,
+    local_force: torch.Tensor,
+    local_tangent: torch.Tensor,
+    *,
+    relative_step: float,
+) -> torch.Tensor:
+    """Linearize ``J(q).T f(d(q))`` without reintegrating the material.
+
+    ``local_tangent`` is the condensed plane-stress algorithmic tangent of the
+    accepted return-map branch.  A contracted Hessian differentiates only the
+    corotational frame.  Thus each element performs one layered material
+    integration instead of 48, while retaining both ``J.T K J`` and the frame
+    (initial-stress/geometric) contribution ``d(J.T)/dq f``.  A centred,
+    kinematics-only fallback covers the rank-deficient planar-SVD derivative.
+    """
+    # The geometric part is one reverse-over-reverse Hessian contraction,
+    # rather than 48 Jacobian constructions.  Detaching the already integrated
+    # force is intentional: constitutive variation belongs to J.T K J below.
+    with torch.enable_grad():
+        independent = dofs.detach().requires_grad_(True)
+        fixed_force = local_force.detach()
+        geometric = torch.autograd.functional.hessian(
+            lambda value: torch.dot(
+                fixed_force, _corotated_deformation(reference, value)
+            ),
+            independent,
+            create_graph=False,
+            vectorize=True,
+        ).detach()
+    if bool(torch.all(torch.isfinite(geometric))):
+        return mapping.T @ local_tangent @ mapping + geometric
+
+    # A rigorously planar reference has a zero singular value, for which the
+    # generic SVD second derivative is undefined although the polar rotation
+    # itself is unique.  Keep a fail-safe kinematics-only difference there.
+    columns = []
+    for j in range(dofs.numel()):
+        h = relative_step * max(1.0, abs(float(dofs[j])))
+        delta = torch.zeros_like(dofs)
+        delta[j] = h
+        plus_q = dofs + delta
+        minus_q = dofs - delta
+        plus_d = _corotated_deformation(reference, plus_q)
+        minus_d = _corotated_deformation(reference, minus_q)
+        plus_j = _kinematic_mapping(reference, plus_q)
+        minus_j = _kinematic_mapping(reference, minus_q)
+        plus_force = plus_j.T @ (
+            local_force + local_tangent @ (plus_d - deformation)
+        )
+        minus_force = minus_j.T @ (
+            local_force + local_tangent @ (minus_d - deformation)
+        )
+        columns.append((plus_force - minus_force) / (2 * h))
+    return torch.stack(columns, 1)
+
+
 def finite_rotation_element_response(
     model: LayeredShell4Model,
     element: int,
@@ -116,17 +176,22 @@ def finite_rotation_element_response(
     """
     if dofs.shape != (24,):
         raise ValueError("finite-rotation Shell4 element requires 24 DOFs")
-    force, stress, trial = _element_force(model, element, dofs, committed)
+    conn = model.elements[element].long()
+    reference = model.nodes[conn]
+    deformation = _corotated_deformation(reference, dofs)
+    mapping = _kinematic_mapping(reference, dofs)
+    local_force, local_tangent, stress, trial = element_response(
+        model, element, deformation, committed, compute_tangent=tangent
+    )
+    force = mapping.T @ local_force
     stiffness = None
     if tangent:
-        stiffness = _jacobian(
-            lambda value: _element_force(model, element, value, committed)[0],
-            dofs,
+        stiffness = _chain_rule_tangent(
+            reference, dofs, deformation, mapping, local_force, local_tangent,
             relative_step=tangent_step,
         )
-        # Numerical frame derivatives introduce only round-off skew.  Keep the
-        # actual derivative: plastic algorithmic tangents need not be exactly
-        # symmetric at an active-set transition.
+        # Do not symmetrize: active-set transitions and numerical local
+        # condensation can legitimately leave a small algorithmic skew.
     return force, stiffness, stress, trial
 
 
@@ -205,6 +270,11 @@ class FiniteRotationArcResult:
     committed_state: LayeredShell4State
     displacement: torch.Tensor
     load_factor: float
+    initial_equilibrium_iterations: int = 0
+    initial_equilibrium_residual_norm: float = float("inf")
+    initial_equilibrium_relative_norm: float = float("inf")
+    relaxed_initial_displacement: torch.Tensor | None = None
+    relaxed_initial_state: LayeredShell4State | None = None
 
 
 def solve_finite_rotation_increment(
@@ -262,6 +332,7 @@ def solve_finite_rotation_arc_path(
     max_iterations: int = 15,
     minimum_step: float = 1e-5,
     maximum_step: float | None = None,
+    diagnostics: list[dict[str, object]] | None = None,
 ) -> FiniteRotationArcResult:
     """Path-dependent Crisfield continuation with transactional J2 history.
 
@@ -296,62 +367,167 @@ def solve_finite_rotation_arc_path(
     previous = None
     points = []
 
+    def linear_solve(matrix: torch.Tensor, rhs: torch.Tensor) -> torch.Tensor:
+        """Minimum-norm solve tolerating physically inactive drilling gauges."""
+        try:
+            condition = torch.linalg.cond(matrix)
+            if bool(torch.isfinite(condition)) and float(condition) < 1e12:
+                return torch.linalg.solve(matrix, rhs)
+        except torch.linalg.LinAlgError:
+            pass
+        return torch.linalg.lstsq(matrix, rhs, driver="gelsd").solution
+
     def response(reduced: torch.Tensor, committed: LayeredShell4State):
         value = displacement.clone()
         value[free] = reduced
         evaluated = assemble_finite_rotation_layered_shell4(model, value, committed)
         return evaluated, evaluated.internal_force[free], evaluated.tangent[free[:, None], free]
 
+    # Imported residual stresses need not be nodally self-equilibrated even if
+    # their section resultant is zero.  Arc continuation requires an actual
+    # equilibrium base point, so relax it at the prescribed initial load before
+    # constructing a predictor.  Every iterate starts from the same committed
+    # history and only the converged trial state is committed.
+    initial_trace = {"phase": "initial_equilibrium", "iterations": [], "reason": None}
+    initial_base = displacement[free].clone()
+    initial_state_base = state
+    initial_force_scale = max(1.0, maximum_step / load_scale,
+                              abs(load_factor) * float(torch.linalg.vector_norm(load_vector)))
+    for initial_iteration in range(1, max_iterations + 1):
+        initial_eval, initial_internal, initial_stiffness = response(
+            initial_base, initial_state_base
+        )
+        initial_residual = initial_internal - load_factor * load_vector
+        initial_norm = float(torch.linalg.vector_norm(initial_residual))
+        force_scale = initial_force_scale
+        initial_trace["iterations"].append({"iteration": initial_iteration,
+                                            "residual_norm": initial_norm,
+                                            "residual_relative": initial_norm / force_scale})
+        if initial_norm <= tolerance * force_scale:
+            displacement[free] = initial_base
+            state = initial_eval.trial_state
+            initial_trace["reason"] = "accepted"
+            break
+        correction = linear_solve(initial_stiffness, -initial_residual)
+        baseline = initial_norm
+        relaxed = False
+        for backtrack in range(9):
+            fraction = .5**backtrack
+            candidate = initial_base + fraction * correction
+            candidate_eval, candidate_internal, _ = response(candidate, initial_state_base)
+            candidate_norm = float(torch.linalg.vector_norm(
+                candidate_internal - load_factor * load_vector
+            ))
+            if candidate_norm < baseline:
+                initial_base = candidate
+                relaxed = True
+                break
+        if not relaxed:
+            initial_trace["reason"] = "line_search_failed"
+            break
+    else:
+        initial_trace["reason"] = "maximum_iterations"
+    if diagnostics is not None:
+        diagnostics.append(initial_trace)
+    initial_iterations = len(initial_trace["iterations"])
+    initial_residual_norm = (float(initial_trace["iterations"][-1]["residual_norm"])
+                             if initial_iterations else float("inf"))
+    initial_relative_norm = (float(initial_trace["iterations"][-1]["residual_relative"])
+                             if initial_iterations else float("inf"))
+    if initial_trace["reason"] != "accepted":
+        return FiniteRotationArcResult(
+            tuple(points), False, ds, state, displacement, load_factor,
+            initial_iterations, initial_residual_norm, initial_relative_norm,
+            displacement.clone(), state,
+        )
+    relaxed_initial_displacement = displacement.clone()
+    relaxed_initial_state = state
+
+    def arc_result(converged: bool) -> FiniteRotationArcResult:
+        return FiniteRotationArcResult(
+            tuple(points), converged, ds, state, displacement, load_factor,
+            initial_iterations, initial_residual_norm, initial_relative_norm,
+            relaxed_initial_displacement, relaxed_initial_state,
+        )
+
     accepted = 0
+    attempt = 0
     while accepted < steps:
+        attempt += 1
         committed_u = displacement.clone()
         committed_reduced = committed_u[free].clone()
         committed_load = load_factor
         committed_state = state
         evaluated, internal, stiffness = response(committed_reduced, committed_state)
         try:
-            direction_u = torch.linalg.solve(stiffness, load_vector)
+            # Continue in the dimensioned arc coordinate p=load_scale*lambda.
+            # Solving directly for lambda leaves the bordered column in N and
+            # its constraint derivative in m^2/N, which is catastrophically
+            # ill-conditioned for industrial MN loads.
+            direction_u = linear_solve(stiffness, load_vector / load_scale)
         except torch.linalg.LinAlgError:
-            return FiniteRotationArcResult(tuple(points), False, ds, state,
-                                           displacement, load_factor)
+            if diagnostics is not None:
+                diagnostics.append({"attempt": attempt, "step": accepted + 1,
+                                    "ds": ds, "reason": "predictor_singular"})
+            return arc_result(False)
         direction = torch.cat((direction_u, direction_u.new_tensor([1.])))
-        metric = torch.cat((direction_u, direction_u.new_tensor([load_scale])))
         sign = 1.0
         if previous is not None:
-            dot = (torch.dot(direction[:-1], previous[:-1])
-                   + load_scale**2 * direction[-1] * previous[-1])
+            dot = torch.dot(direction, previous)
             sign = 1.0 if float(dot) >= 0 else -1.0
-        increment_load = sign * ds / float(torch.linalg.vector_norm(metric))
-        trial_u = committed_reduced + increment_load * direction_u
-        trial_load = committed_load + increment_load
+        increment_p = sign * ds / float(torch.linalg.vector_norm(direction))
+        trial_u = committed_reduced + increment_p * direction_u
+        trial_p = load_scale * committed_load + increment_p
+        trial_load = trial_p / load_scale
+        trace = {"attempt": attempt, "step": accepted + 1, "ds": ds,
+                 "predictor_norm": float(torch.linalg.vector_norm(direction_u)),
+                 "iterations": [], "reason": None}
         ok = False
         last = float("inf")
         for iteration in range(1, max_iterations + 1):
             evaluated, internal, stiffness = response(trial_u, committed_state)
             residual = internal - trial_load * load_vector
             Du = trial_u - committed_reduced
-            Dl = trial_load - committed_load
-            constraint = torch.dot(Du, Du) + (load_scale * Dl)**2 - ds**2
+            Dp = trial_p - load_scale * committed_load
+            constraint = torch.dot(Du, Du) + Dp**2 - ds**2
+            residual_norm = float(torch.linalg.vector_norm(residual))
+            residual_scale = max(float(torch.linalg.vector_norm(internal)),
+                                 abs(trial_load) * float(torch.linalg.vector_norm(load_vector)),
+                                 1.0)
+            constraint_relative = abs(float(constraint)) / max(ds**2, torch.finfo(model.nodes.dtype).eps)
             last = float(torch.linalg.vector_norm(
-                torch.cat((residual, constraint.reshape(1)))
+                torch.cat((residual / residual_scale,
+                           (constraint / max(ds**2, torch.finfo(model.nodes.dtype).eps)).reshape(1)))
             ))
-            if (float(torch.linalg.vector_norm(residual)) <= tolerance
-                    and abs(float(constraint)) <= tolerance * max(ds, 1.0)):
+            trace["iterations"].append({"iteration": iteration,
+                                        "residual_norm": residual_norm,
+                                        "residual_relative": residual_norm / residual_scale,
+                                        "constraint": float(constraint),
+                                        "constraint_relative": constraint_relative})
+            if (residual_norm <= tolerance * residual_scale
+                    and constraint_relative <= tolerance):
                 ok = True
+                trace["reason"] = "accepted"
                 break
             matrix = torch.zeros((len(free)+1, len(free)+1), dtype=model.nodes.dtype,
                                  device=model.nodes.device)
             matrix[:-1, :-1] = stiffness
-            matrix[:-1, -1] = -load_vector
+            matrix[:-1, -1] = -load_vector / load_scale
             matrix[-1, :-1] = 2 * Du
-            matrix[-1, -1] = 2 * load_scale**2 * Dl
+            matrix[-1, -1] = 2 * Dp
             rhs = -torch.cat((residual, constraint.reshape(1)))
             try:
-                correction = torch.linalg.solve(matrix, rhs)
+                correction = linear_solve(matrix, rhs)
             except torch.linalg.LinAlgError:
+                trace["reason"] = "corrector_singular"
                 break
             trial_u = trial_u + correction[:-1]
-            trial_load += float(correction[-1])
+            trial_p += float(correction[-1])
+            trial_load = trial_p / load_scale
+        if diagnostics is not None:
+            if trace["reason"] is None:
+                trace["reason"] = "maximum_iterations"
+            diagnostics.append(trace)
         if ok:
             displacement = committed_u.clone()
             displacement[free] = trial_u
@@ -361,7 +537,7 @@ def solve_finite_rotation_arc_path(
             state = evaluated.trial_state
             accepted += 1
             previous = torch.cat((trial_u-committed_reduced,
-                                  trial_u.new_tensor([trial_load-committed_load])))
+                                  trial_u.new_tensor([load_scale*(trial_load-committed_load)])))
             points.append(FiniteRotationArcPoint(
                 accepted, load_factor, displacement.clone(), state,
                 evaluated.stress, iteration, last
@@ -375,7 +551,5 @@ def solve_finite_rotation_arc_path(
             # point; no trial material state is reachable outside this branch.
             ds *= .5
             if ds < minimum_step:
-                return FiniteRotationArcResult(tuple(points), False, ds, state,
-                                               displacement, load_factor)
-    return FiniteRotationArcResult(tuple(points), True, ds, state,
-                                   displacement, load_factor)
+                return arc_result(False)
+    return arc_result(True)

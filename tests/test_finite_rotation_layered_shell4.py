@@ -135,6 +135,29 @@ def test_force_only_material_update_skips_nested_numerical_tangent(monkeypatch):
     assert full_calls >= 7 * fast_calls
 
 
+def test_finite_rotation_tangent_reintegrates_material_only_once(monkeypatch):
+    """The 24-DOF tangent must not execute 48 layered return mappings."""
+    import tensorfem.layered_shell4_plasticity as layered
+
+    shell = model()
+    committed = LayeredShell4State.virgin(shell).points[0]
+    original = layered.update_j2
+    calls = 0
+
+    def counted(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(layered, "update_j2", counted)
+    q = torch.zeros(24, dtype=D)
+    q[6] = q[12] = 2e-4
+    finite_rotation_element_response(shell, 0, q, committed, tangent=True)
+    # Four Gauss points x three layers x one stress plus six centred material
+    # columns.  Allow a little room for local plane-stress Newton iterations.
+    assert calls <= 100
+
+
 def test_plastic_loading_then_unloading_keeps_committed_material_history():
     shell = model(); virgin = LayeredShell4State.virgin(shell)
     loaded = torch.zeros(shell.n_dofs, dtype=D)
@@ -202,3 +225,76 @@ def test_arc_correctors_commit_only_accepted_material_state_and_failure_is_close
     )
     after = tuple(p.plastic_strain for e in rejected.committed_state.points for q in e for p in q)
     assert not rejected.converged and all(torch.equal(a,b) for a,b in zip(before,after))
+    assert rejected.relaxed_initial_state is point.state
+    assert torch.equal(rejected.relaxed_initial_displacement, point.displacement)
+    assert rejected.initial_equilibrium_iterations == 0
+    assert math.isinf(rejected.initial_equilibrium_residual_norm)
+
+    # Failure after a successfully audited base-point check must likewise
+    # return that base and leave its material history untouched.
+    failed_after_base = solve_finite_rotation_arc_path(
+        shell, 1000*load, fixed, steps=1, step_size=.2, load_scale=.1,
+        minimum_step=.15, max_iterations=1, initial_state=point.state,
+        initial_displacement=point.displacement,
+        initial_load_factor=point.load_factor,
+    )
+    assert not failed_after_base.converged
+    assert failed_after_base.initial_equilibrium_iterations == 1
+    assert failed_after_base.relaxed_initial_state is not None
+    base_after = tuple(
+        p.plastic_strain for e in failed_after_base.relaxed_initial_state.points
+        for q in e for p in q
+    )
+    assert all(torch.equal(a, b) for a, b in zip(before, base_after))
+
+
+def test_arc_relaxes_unbalanced_residual_stress_and_reports_attempt_diagnostics():
+    from tensorfem.marine_panel_ultimate_fe import (
+        build_panel_case, classical_panel_references,
+    )
+
+    case = build_panel_case(2)
+    squash = classical_panel_references(case)["gross_section_squash_force"]
+    trace = []
+    result = solve_finite_rotation_arc_path(
+        case.model, case.reference_load, case.fixed_dofs,
+        steps=1, step_size=.02 * case.model.thickness,
+        load_scale=case.model.thickness / squash,
+        minimum_step=.02 * case.model.thickness / 128,
+        maximum_step=.02 * case.model.thickness,
+        diagnostics=trace,
+    )
+    assert result.converged and len(result.points) == 1
+    assert trace[0]["phase"] == "initial_equilibrium"
+    assert trace[0]["reason"] == "accepted"
+    initial = trace[0]["iterations"]
+    assert initial[0]["residual_norm"] > 1e5
+    assert initial[-1]["residual_norm"] < 1e-2
+    assert trace[-1]["reason"] == "accepted"
+    assert trace[-1]["iterations"][-1]["residual_relative"] < 1e-7
+    assert trace[-1]["iterations"][-1]["constraint_relative"] < 1e-7
+    assert result.initial_equilibrium_iterations == len(initial)
+    assert result.initial_equilibrium_residual_norm == pytest.approx(
+        initial[-1]["residual_norm"]
+    )
+    assert result.initial_equilibrium_relative_norm == pytest.approx(
+        initial[-1]["residual_relative"]
+    )
+    assert result.relaxed_initial_state is not None
+    relaxed = assemble_finite_rotation_layered_shell4(
+        case.model, result.relaxed_initial_displacement,
+        result.relaxed_initial_state, tangent=False,
+    )
+    mask = torch.ones(case.model.n_dofs, dtype=torch.bool)
+    mask[case.fixed_dofs] = False
+    assert torch.linalg.vector_norm(relaxed.internal_force[mask]) < 1e-2
+
+    # The first point must be reproducible from the audited relaxed committed
+    # state; this also proves no corrector trial was committed prematurely.
+    replay = assemble_finite_rotation_layered_shell4(
+        case.model, result.points[0].displacement,
+        result.relaxed_initial_state, tangent=False,
+    )
+    free_residual = (replay.internal_force
+                     - result.points[0].load_factor * case.reference_load)[mask]
+    assert torch.linalg.vector_norm(free_residual) < 1e-2

@@ -92,6 +92,9 @@ def main() -> None:
                 "hashed industrial P0 phase-3 qualification view",
                 "shallow-warp layered Shell4 reference geometry",
                 "two-sided deformable 3-D facet contact assembly",
+                "transactional residual-stress equilibration and scaled shell continuation",
+                "marine panel 2x2/4x4 first-point performance qualification",
+                "matrix-free transactional shell arc continuation",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
