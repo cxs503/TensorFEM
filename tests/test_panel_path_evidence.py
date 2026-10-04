@@ -47,6 +47,35 @@ def test_elastic_affine_path_closes_external_and_internal_energy():
     assert abs(evidence.external_work-evidence.recoverable_energy) < 1e-10
 
 
+def test_imperfect_facet_stored_energy_gradient_is_assembled_internal_force():
+    """The energy observer must use the same tilted local basis as Shell4."""
+    shell = model()
+    shell = LayeredShell4Model(
+        shell.nodes + torch.tensor([[0., 0., 0.00], [0., 0., 0.02],
+                                    [0., 0., 0.03], [0., 0., 0.01]], dtype=D),
+        shell.elements, shell.young, shell.poisson, shell.thickness,
+        shell.yield_stress, shell.hardening, layers=shell.layers,
+    )
+    virgin = LayeredShell4State.virgin(shell)
+    u = torch.tensor([
+        0., 0., 0., 0., 0., 0.,
+        2e-4, -1e-4, 3e-4, 2e-4, -1e-4, 1e-4,
+        3e-4, 2e-4, -2e-4, -1e-4, 2e-4, -2e-4,
+        -1e-4, 1e-4, 2e-4, 1e-4, 1e-4, 2e-4,
+    ], dtype=D)
+    response = assemble_finite_rotation_layered_shell4(
+        shell, u, virgin, tangent=False,
+    )
+    direction = torch.linspace(-1., 1., shell.n_dofs, dtype=D)
+    direction /= torch.linalg.vector_norm(direction)
+    h = 1e-7
+    plus = shell_stored_energy(shell, u+h*direction, response.trial_state).recoverable
+    minus = shell_stored_energy(shell, u-h*direction, response.trial_state).recoverable
+    gradient_action = (plus-minus)/(2*h)
+    force_action = float(torch.dot(response.internal_force, direction))
+    assert gradient_action == pytest.approx(force_action, rel=2e-7, abs=2e-7)
+
+
 def test_plastic_dissipation_is_hand_integrated_sigma_y_delta_alpha():
     shell = model(layers=2); before = state_with_alpha(shell, .01)
     after = state_with_alpha(shell, .013)

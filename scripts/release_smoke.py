@@ -75,12 +75,18 @@ def build_and_smoke() -> dict[str, object]:
              "--force-reinstall", str(wheel)], env=install_env)
         env = dict(os.environ)
         env.pop("PYTHONPATH", None)
-        code = ("import importlib.metadata as m, importlib.resources as r, json, tensorfem; "
+        code = ("import warnings; "
+                "warnings.filterwarnings('ignore', message='Failed to initialize NumPy.*', "
+                "category=UserWarning); "
+                "import importlib.metadata as m, importlib.resources as r, json, tensorfem; "
                 "assert m.version('tensorfem') == tensorfem.__version__; "
                 "assert json.loads(r.files('tensorfem').joinpath('public_api_manifest.json').read_text())['entries']")
         # NumPy is optional for the declared PyTorch-only core.  Keep all
         # package warnings fatal while allowing PyTorch's missing-bridge note.
-        run([str(python), "-Werror", "-Wignore:Failed to initialize NumPy", "-c", code],
+        # Install the narrow exception in-process after ``-Werror`` has been
+        # parsed.  This is more portable than command-line filter ordering
+        # across the CPython versions used by the offline build environment.
+        run([str(python), "-Werror", "-c", code],
             cwd=temp, env=env)
         run([str(venv / "bin/tensorfem"), "capabilities"], cwd=temp, env=env,
             stdout=subprocess.DEVNULL)

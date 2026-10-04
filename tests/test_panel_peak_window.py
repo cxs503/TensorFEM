@@ -9,6 +9,7 @@ from tensorfem.panel_peak_window import (
     PeakTargetEstimate, PeakWindowPolicy, estimate_peak_window_target,
     retune_next_arc_step, select_peak_window,
 )
+from tensorfem.panel_path_evidence import ENERGY_DEFINITION
 
 
 def test_unfinished_4x4_uses_conservative_mechanics_anchor_not_false_peak():
@@ -32,6 +33,18 @@ def test_confirmed_4x4_peak_drives_three_nested_windows():
     assert select_peak_window(950_000., target, policy) == ("peak", .02)
 
 
+def test_running_manifest_preserves_peak_after_sustained_accepted_descent():
+    forces = [100_000., 300_000., 500_000., 510_000., 509_800., 509_400.,
+              509_000., 508_700., 508_500., 508_400.]
+    target = estimate_peak_window_target({
+        "status": "running",
+        "point_history": [{"force_n": force} for force in forces],
+    })
+    assert target.force_n == 510_000.
+    assert target.is_confirmed_peak
+    assert target.source == "observed_4x4_peak_from_running_history"
+
+
 def test_checkpoint_retune_preserves_state_and_renews_hashes(tmp_path):
     checkpoint = tmp_path / "path.pt"
     manifest_path = tmp_path / "path.json"
@@ -53,6 +66,16 @@ def test_checkpoint_retune_preserves_state_and_renews_hashes(tmp_path):
     assert renewed["evidence_sha256"] != "old"
 
 
+def test_scheduler_checkpoint_identity_tracks_energy_definition(tmp_path):
+    manifest, _ = window._checkpoint_paths(tmp_path, .1, 1e-6, divisions=8)
+    identity = {"schema": window.CHUNKED_SCHEMA,
+                "energy_definition": ENERGY_DEFINITION,
+                "divisions": 8, "normalized_arc_step": .1,
+                "relative_equilibrium_tolerance": 1e-6}
+    expected = hashlib.sha256(window._canonical(identity).encode()).hexdigest()[:20]
+    assert manifest.name == f"chunked-{expected}.json"
+
+
 def test_executor_advances_only_one_recoverable_point_per_call(tmp_path, monkeypatch):
     accepted = 0
     calls = []
@@ -70,3 +93,53 @@ def test_executor_advances_only_one_recoverable_point_per_call(tmp_path, monkeyp
     assert calls == [(8, .1, 1, 1), (8, .1, 2, 1), (8, .1, 3, 1)]
     assert result["path"]["accepted_points"] == 3
     assert [item["zone"] for item in result["schedule"]] == ["coarse"] * 3
+
+
+def test_scheduler_does_not_replay_when_disk_manifest_lags_returned_result(
+        tmp_path, monkeypatch):
+    manifest_path = tmp_path / "lagging.json"
+    checkpoint_path = tmp_path / "lagging.pt"
+    manifest_path.write_text(json.dumps({"accepted_points": 0,
+                                         "point_history": []}))
+    calls = []
+
+    monkeypatch.setattr(
+        window, "_checkpoint_paths",
+        lambda *args, **kwargs: (manifest_path, checkpoint_path),
+    )
+
+    def fake_execute(divisions, normalized_arc_step, *, steps, **kwargs):
+        calls.append(steps)
+        # Deliberately do not update the on-disk manifest: this models a stale
+        # path lookup after the executor has returned a newer accepted prefix.
+        return {"accepted_points": steps, "point_history": [
+            {"force_n": 100_000. * number} for number in range(1, steps + 1)
+        ]}
+
+    monkeypatch.setattr(window, "execute_panel_chunked_job", fake_execute)
+    result = window.execute_8x8_peak_window(cache_dir=tmp_path, target_steps=2)
+    assert calls == [1, 2]
+    assert result["path"]["accepted_points"] == 2
+
+
+def test_generic_executor_preserves_requested_mesh_identity(tmp_path, monkeypatch):
+    calls = []
+
+    def fake_execute(divisions, normalized_arc_step, *, steps, **kwargs):
+        calls.append((divisions, normalized_arc_step, steps))
+        return {"accepted_points": steps, "point_history": [{"force_n": 1.}]}
+
+    monkeypatch.setattr(window, "execute_panel_chunked_job", fake_execute)
+    result = window.execute_panel_peak_window(
+        divisions=12, cache_dir=tmp_path, target_steps=1,
+    )
+    assert calls == [(12, .1, 1)]
+    assert result["mesh_divisions"] == 12
+
+
+@pytest.mark.parametrize("divisions", [2, 5])
+def test_generic_executor_rejects_unsupported_meshes(tmp_path, divisions):
+    with pytest.raises(ValueError, match="even integer >= 4"):
+        window.execute_panel_peak_window(
+            divisions=divisions, cache_dir=tmp_path, target_steps=1,
+        )

@@ -2,6 +2,15 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.35.0
+
+- Fixed the panel stored-energy observer to use the same projected facet basis as the Shell4 internal force. The 4x4 coarse/fine terminal residuals are now 0.001526/0.0000611 J, both below the 0.025 J gate, with the expected 24.98x second-order reduction under fivefold step refinement.
+- Versioned the energy definition in checkpoint identities so an older non-conjugate energy ledger cannot be silently resumed.
+- Completed the 4x4 fine path to 400 accepted points, preserving the 508.999 kN elastic geometric peak and extending the snap-back evidence to 66 post-peak points.
+- Generalized peak-window scheduling to even refined meshes, added a fail-closed 4/8/12 convergence evaluator, and executed a real 12x12 first point with equilibrium and energy gates passing.
+- Advanced the corrected 8x8 path to ten recoverable points and fixed stale-manifest replay after checkpoint-identity migrations.
+- Recorded negative sparse-solver qualification evidence: current GMRES preconditioners do not reliably complete the nonlinear corrector, so no production sparse speedup is claimed.
+
 ## 0.34.0
 
 - Added connectivity-graph sparse Shell4 tangent assembly with dense-equivalent force/action checks and a measured 4x4 storage gate; this establishes the storage/assembly foundation, not production-scale distributed solving.

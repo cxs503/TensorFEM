@@ -21,7 +21,7 @@ from .finite_rotation_layered_shell4 import assemble_finite_rotation_layered_she
 from .layered_shell4_plasticity import LayeredShell4State, layered_shell4_local_frame
 from .marine_panel_ultimate_fe import build_panel_case, classical_panel_references
 from .panel_path_evidence import (
-    energy_balance_gate, evaluate_panel_path, shell_stored_energy,
+    ENERGY_DEFINITION, energy_balance_gate, evaluate_panel_path, shell_stored_energy,
 )
 
 
@@ -493,7 +493,8 @@ def execute_panel_chunked_job(
     case = build_panel_case(divisions)
     controls = dimensional_arc_controls(case, normalized_arc_step)
     controls["augmented_scaling"] = "normalized"
-    identity = {"schema": CHUNKED_SCHEMA, "divisions": divisions,
+    identity = {"schema": CHUNKED_SCHEMA, "energy_definition": ENERGY_DEFINITION,
+                "divisions": divisions,
                 "normalized_arc_step": normalized_arc_step,
                 "relative_equilibrium_tolerance": relative_equilibrium_tolerance}
     key_payload = {**identity, "steps": steps, "chunk_size": chunk_size}
@@ -543,8 +544,9 @@ def execute_panel_chunked_job(
         history = manifest.get("point_history", [])
         chunks = manifest.get("chunks", [])
         required_energy = {"reference_recoverable_energy", "cumulative_external_work",
-                           "cumulative_plastic_dissipation"}
-        if required_energy <= set(saved):
+                           "cumulative_plastic_dissipation", "energy_definition"}
+        if (required_energy <= set(saved)
+                and saved["energy_definition"] == ENERGY_DEFINITION):
             reference_recoverable_energy = float(saved["reference_recoverable_energy"])
             cumulative_external_work = float(saved["cumulative_external_work"])
             cumulative_plastic_dissipation = float(saved["cumulative_plastic_dissipation"])
@@ -680,6 +682,7 @@ def execute_panel_chunked_job(
                     "reference_recoverable_energy": reference_recoverable_energy,
                     "cumulative_external_work": cumulative_external_work,
                     "cumulative_plastic_dissipation": cumulative_plastic_dissipation,
+                    "energy_definition": ENERGY_DEFINITION,
                     "energy_prefix_complete": energy_prefix_complete},
                    temporary)
         os.replace(temporary, checkpoint_path)

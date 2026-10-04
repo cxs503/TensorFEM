@@ -17,8 +17,13 @@ import torch
 from .finite_rotation_layered_shell4 import _corotated_deformation
 from .layered_shell4_plasticity import (
     LayeredShell4Model, LayeredShell4State, _elastic_shear_drilling,
-    _generalized_b, _residual_strain, layered_shell4_local_frame,
+    _generalized_b, _residual_strain, _transform, layered_shell4_local_frame,
 )
+
+
+# Persisted ledgers must identify the energy definition.  Version 1 omitted
+# the projected facet-basis transform and cannot be continued as v2 evidence.
+ENERGY_DEFINITION = "corotated-projected-facet-basis/2"
 
 
 @dataclass(frozen=True)
@@ -130,8 +135,16 @@ def shell_stored_energy(model: LayeredShell4Model, displacement: torch.Tensor,
     for e, conn in enumerate(model.elements):
         ids = _element_ids(conn)
         xyz = model.nodes[conn.long()]
-        xy, _ = layered_shell4_local_frame(xyz)
-        local = _corotated_deformation(xyz, displacement[ids])
+        xy, basis = layered_shell4_local_frame(xyz)
+        # ``element_response`` first expresses the corotated deformation in
+        # the element's reference-plane basis.  Energy reconstruction must use
+        # that identical coordinate map: an imperfect facet generally has a
+        # tilted basis, even when the panel as a whole is axis aligned.  Using
+        # the corotated global components directly made the reported energy
+        # fail the defining identity grad(U) == f_int and left a step-size-
+        # independent residual on imperfect panels.
+        local_global = _corotated_deformation(xyz, displacement[ids])
+        local = _transform(basis, dtype=xyz.dtype, device=xyz.device) @ local_global
         shear_force, _ = _elastic_shear_drilling(xy, local, model)
         elastic = elastic + .5 * torch.dot(local, shear_force)
         for q, (xi, eta) in enumerate(gauss):

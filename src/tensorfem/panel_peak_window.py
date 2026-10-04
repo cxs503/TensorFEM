@@ -24,6 +24,7 @@ from .marine_panel_execution import (
     execute_panel_chunked_job,
 )
 from .marine_panel_ultimate_fe import build_panel_case, classical_panel_references
+from .panel_path_evidence import ENERGY_DEFINITION
 
 
 WINDOW_SCHEMA = "tensorfem.panel-peak-window/1.0"
@@ -73,12 +74,26 @@ def estimate_peak_window_target(
     squash = float(references["gross_section_squash_force"])
     manifest = coarse_manifest or {}
     history = manifest.get("point_history") or []
-    observed = max((float(point["force_n"]) for point in history), default=0.0)
+    forces = [float(point["force_n"]) for point in history]
+    observed = max(forces, default=0.0)
     confirmed = bool(manifest.get("peak_confirmed"))
     reported_peak = manifest.get("peak_force_n")
     if confirmed and reported_peak is not None and float(reported_peak) > 0:
         return PeakTargetEstimate(float(reported_peak), "confirmed_4x4_peak", True,
                                   len(history))
+    # A resumable writer intentionally omits derived peak fields while its
+    # manifest is ``running``.  Preserve a physically observed peak when a
+    # sufficiently long accepted suffix has already fallen by at least 0.2%,
+    # instead of incorrectly reverting the refined mesh to a higher classical
+    # buckling anchor during that write window.
+    if forces:
+        peak_index = forces.index(observed)
+        post_peak_points = len(forces) - peak_index - 1
+        if post_peak_points >= 5 and forces[-1] <= observed * .998:
+            return PeakTargetEstimate(
+                observed, "observed_4x4_peak_from_running_history", True,
+                len(history),
+            )
     anchor = min(squash, max(buckling, observed))
     return PeakTargetEstimate(anchor, "4x4_lower_bound_plus_classical_buckling_anchor",
                               False, len(history))
@@ -99,8 +114,11 @@ def select_peak_window(force_n: float, target: PeakTargetEstimate,
 
 
 def _checkpoint_paths(cache_dir: str | Path, normalized_arc_step: float,
-                      relative_equilibrium_tolerance: float) -> tuple[Path, Path]:
-    identity = {"schema": CHUNKED_SCHEMA, "divisions": 8,
+                      relative_equilibrium_tolerance: float, *,
+                      divisions: int = 8) -> tuple[Path, Path]:
+    identity = {"schema": CHUNKED_SCHEMA,
+                "energy_definition": ENERGY_DEFINITION,
+                "divisions": divisions,
                 "normalized_arc_step": normalized_arc_step,
                 "relative_equilibrium_tolerance": relative_equilibrium_tolerance}
     key = hashlib.sha256(_canonical(identity).encode()).hexdigest()[:20]
@@ -132,8 +150,9 @@ def retune_next_arc_step(manifest_path: str | Path, checkpoint_path: str | Path,
     _atomic_json(manifest_path, manifest)
 
 
-def execute_8x8_peak_window(
+def execute_panel_peak_window(
     *,
+    divisions: int,
     cache_dir: str | Path,
     target_steps: int,
     coarse_4x4_manifest: Mapping[str, object] | None = None,
@@ -141,7 +160,7 @@ def execute_8x8_peak_window(
     maximum_wall_seconds: float | None = None,
     relative_equilibrium_tolerance: float = 1e-6,
 ) -> dict[str, object]:
-    """Advance a hashed 8x8 path one recoverable point at a time.
+    """Advance a hashed refined-mesh path one recoverable point at a time.
 
     The physical checkpoint identity uses the coarse radius, while the saved
     next-step radius is reset before every one-point chunk.  Hence the solver's
@@ -149,18 +168,28 @@ def execute_8x8_peak_window(
     persisted before another expensive 8x8 solve starts.
     """
     policy.validate()
+    if divisions < 4 or divisions % 2:
+        raise ValueError("divisions must be an even integer >= 4")
     if target_steps < 1:
         raise ValueError("target_steps must be positive")
-    target = estimate_peak_window_target(coarse_4x4_manifest)
+    target = estimate_peak_window_target(coarse_4x4_manifest, divisions=divisions)
     started = time.monotonic()
-    thickness = build_panel_case(8).model.thickness
+    thickness = build_panel_case(divisions).model.thickness
     manifest_path, checkpoint_path = _checkpoint_paths(
-        cache_dir, policy.coarse_arc_step, relative_equilibrium_tolerance)
+        cache_dir, policy.coarse_arc_step, relative_equilibrium_tolerance,
+        divisions=divisions)
     schedule: list[dict[str, object]] = []
     last_result: Mapping[str, object] = {}
     while True:
-        existing = (json.loads(manifest_path.read_text(encoding="utf-8"))
-                    if manifest_path.exists() else last_result)
+        disk_result = (json.loads(manifest_path.read_text(encoding="utf-8"))
+                       if manifest_path.exists() else {})
+        # A writer may have returned a newly accepted point before its manifest
+        # is visible through a renamed/migrated path.  Never let a stale disk
+        # prefix move the scheduler backwards and replay the same target.
+        existing = max(
+            (disk_result, last_result),
+            key=lambda item: int(item.get("accepted_points", 0)),
+        )
         accepted = int(existing.get("accepted_points", 0))
         if accepted >= target_steps:
             result = existing
@@ -179,7 +208,7 @@ def execute_8x8_peak_window(
             result = existing
             break
         result = execute_panel_chunked_job(
-            8, policy.coarse_arc_step, steps=accepted + 1,
+            divisions, policy.coarse_arc_step, steps=accepted + 1,
             cache_dir=cache_dir, chunk_size=1, resume=True,
             maximum_wall_seconds=remaining_wall,
             relative_equilibrium_tolerance=relative_equilibrium_tolerance,
@@ -191,6 +220,27 @@ def execute_8x8_peak_window(
                          "accepted_after": int(result.get("accepted_points", accepted))})
         if int(result.get("accepted_points", accepted)) <= accepted:
             break
-    return {"schema": WINDOW_SCHEMA, "mesh_divisions": 8,
+    return {"schema": WINDOW_SCHEMA, "mesh_divisions": divisions,
             "target": asdict(target), "policy": asdict(policy),
             "schedule": schedule, "path": result}
+
+
+def execute_8x8_peak_window(
+    *,
+    cache_dir: str | Path,
+    target_steps: int,
+    coarse_4x4_manifest: Mapping[str, object] | None = None,
+    policy: PeakWindowPolicy = PeakWindowPolicy(),
+    maximum_wall_seconds: float | None = None,
+    relative_equilibrium_tolerance: float = 1e-6,
+) -> dict[str, object]:
+    """Backward-compatible 8x8 qualification-window entry point."""
+    return execute_panel_peak_window(
+        divisions=8,
+        cache_dir=cache_dir,
+        target_steps=target_steps,
+        coarse_4x4_manifest=coarse_4x4_manifest,
+        policy=policy,
+        maximum_wall_seconds=maximum_wall_seconds,
+        relative_equilibrium_tolerance=relative_equilibrium_tolerance,
+    )

@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.34)
+## Capability maturity (v0.35)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -84,7 +84,7 @@ analytical or recognized benchmark evidence.
 | external P0 benchmark contracts | stable evidence governance | qualified Bathe-Bolourchi elastic large rotation; shell snap-through and deformable Hertz FE remain explicitly blocked |
 | industrial P0 phase-2 qualification | stable verification view | hashed layered-shell/contact report with finite-rotation plastic postbuckling and general mortar/self-contact kept unqualified |
 | finite-rotation layered Shell4 arc integration | qualified integration primitive | corotational small-strain J2 layers, residual stress, imperfections, algorithmic tangent and transactional accept/reject history; not a finite-membrane-strain claim |
-| marine panel ultimate-strength FE contract | blocked execution evidence | real 4/8/12 Shell4 meshes and two arc controls are defined; peak/post-peak mesh, step, equilibrium and energy evidence remains to execute |
+| marine panel ultimate-strength FE contract | partial execution evidence | 4x4 peak/post-peak and energy gates are established; complete 8x8/12x12 peak paths and cross-mesh convergence remain to execute |
 | industrial P0 phase-3 qualification | stable verification view | hashed executable report qualifies the Shell4 integration primitive and axisymmetric Hertz scope while keeping panel ultimate and general 3-D double-deformable contact blocked |
 | shallow-warp layered Shell4 geometry | qualified integration primitive | ordered best-fit midsurface, stress-free warped references, rigid-motion objectivity and explicit deep-fold rejection |
 | marine panel qualification execution | stable execution foundation | dimensionless force/displacement scaling, resumable hashed cells and fail-closed timeouts; accepted pre-peak paths exist, but the declared peak/post-peak matrix remains incomplete |
@@ -98,10 +98,11 @@ analytical or recognized benchmark evidence.
 | sparse Shell4 tangent assembly | verified storage foundation | connectivity-graph COO tangent matches dense force and directional action; 4x4 storage gate passes, while production sparse throughput remains unqualified |
 | normalized augmented arc predictor | verified continuation correction | displacement and scaled-load coordinates share one normalized metric with non-unit-load-scale and branch-direction regression gates |
 | resumable panel long-path continuation | stable execution foundation | branch-direction restart, atomic hashed mechanical/energy checkpoints and dynamically extendable targets/checkpoint cadence |
-| panel path energy and failure evidence | qualified observer | cross-chunk accepted-state recoverable/hardening energy, plastic dissipation, external work and dimensionful balance gates; raw near-zero relative residuals remain visible |
-| marine panel long-path localization | 4x4 peak/post-peak observed; qualification blocked | fine ds=0.02 peaks at 508.999 kN on point 334 and ends at 507.570 kN on point 355 (0.28072% drop), differing 0.06156% from the 508.686 kN coarse peak; zero yield and continuous accepted history, but the 360-point wall-limited target, 0.107968 J failed energy gate and cross-mesh convergence remain open |
-| large panel short-path scalability | qualified pre-peak foundation | 8x8 first point 48.36 s, 12x12 106.96 s and a real 8x8 three-point window; these do not establish peak or post-peak response |
-| 8x8 panel peak-window scheduling | verified execution foundation | hashed one-point persistence and conservative coarse/approach/peak step scheduling have executed for three points; no 8x8 peak or descending branch has been reached |
+| panel path energy and failure evidence | qualified observer | projected-facet stored energy is force-conjugate; coarse/fine 4x4 residuals pass the 0.025 J gate and show 24.98x second-order reduction, with versioned ledgers preventing stale resume |
+| marine panel long-path localization | 4x4 peak/post-peak and energy qualified | fine ds=0.02 peaks at 508.999 kN on point 334 and completes 400 points with 66 post-peak points; the coarse/fine peak difference is 0.0615%, zero yield confirms an elastic geometric snap-back, while cross-mesh convergence remains open |
+| large panel short-path scalability | qualified pre-peak foundation | corrected 8x8 path has ten recoverable points and 12x12 has one real point; both pass equilibrium/energy gates, but neither establishes a refined-mesh peak |
+| refined panel peak-window scheduling | verified execution foundation | energy-versioned one-point persistence, stale-manifest replay protection and coarse/approach/peak scheduling support 8x8 and 12x12; refined-mesh descending branches remain open |
+| panel 4/8/12 mesh-convergence gate | verified fail-closed evaluator | requires explicit peak and post-peak evidence on every mesh and rejects missing data without extrapolation; current status is blocked by 8x8/12x12 paths |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 
