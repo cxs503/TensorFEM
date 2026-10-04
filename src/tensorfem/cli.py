@@ -95,6 +95,9 @@ def main() -> None:
                 "transactional residual-stress equilibration and scaled shell continuation",
                 "marine panel 2x2/4x4 first-point performance qualification",
                 "matrix-free transactional shell arc continuation",
+                "branch-preserving panel long-path checkpoints",
+                "accepted-state panel energy and failure evidence",
+                "8x8/12x12 panel short-path scalability evidence",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",

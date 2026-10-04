@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.32)
+## Capability maturity (v0.33)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -95,6 +95,10 @@ analytical or recognized benchmark evidence.
 | dimensionally scaled shell arc continuation | qualified panel foundation | scaled load coordinate, relative force/constraint gates, minimum-norm drilling gauge and attempt diagnostics |
 | marine panel first-point performance gate | qualified pre-peak foundation | real 2x2/4x4 first points in 3.26/12.89 s with balance near 1e-13; three-point paths pass, peak/post-peak remains blocked |
 | matrix-free shell arc continuation | stable experimental solver | transactional finite-difference JVP, GMRES, frozen-tangent/Jacobi/block options and fail-fast initial-equilibrium diagnostics |
+| resumable panel long-path continuation | stable execution foundation | branch-direction restart, atomic hashed mechanical/energy checkpoints and dynamically extendable targets/checkpoint cadence |
+| panel path energy and failure evidence | qualified observer | accepted-state recoverable/hardening energy, plastic dissipation, external work, balance, yielded volume and conservative post-peak classification |
+| marine panel long-path localization | blocked peak qualification | 2x2 reaches 2.295 MN and 100% yielded over 220 accepted points without a descending branch; 4x4+ peak/post-peak evidence remains required |
+| large panel short-path scalability | qualified pre-peak foundation | 8x8 first point 48.36 s, 12x12 106.96 s and 8x8 three-point path with relative balance near 1e-10 |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

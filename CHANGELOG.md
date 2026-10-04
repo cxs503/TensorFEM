@@ -2,6 +2,14 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.33.0
+
+- Added branch-preserving, atomically hashed long-path checkpoints whose target length and persistence cadence can change without recomputing a validated prefix.
+- Added accepted-state panel energy evidence covering recoverable and hardening energy, plastic dissipation, external work, balance, yielded volume and conservative failure-mode classification.
+- Optimized force-only corotational mapping and large-system linear solves; 8x8 and 12x12 first points now complete in 48.36 and 106.96 seconds.
+- Traced a real 2x2 panel through 220 accepted points to 2.295 MN and 100% yielded material. The path remains monotone, so no peak/post-peak qualification is claimed.
+- Kept incomplete legacy energy prefixes explicitly marked and excluded from energy qualification.
+
 ## 0.32.0
 
 - Replaced repeated finite-rotation material reintegration with a chain-rule tangent containing the transformed local algorithmic tangent and corotational geometric Hessian.

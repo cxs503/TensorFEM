@@ -248,6 +248,34 @@ def test_arc_correctors_commit_only_accepted_material_state_and_failure_is_close
     assert all(torch.equal(a, b) for a, b in zip(before, base_after))
 
 
+def test_arc_restart_preserves_branch_direction_and_matches_single_run():
+    shell = model(); state = LayeredShell4State.virgin(shell)
+    fixed = torch.tensor([0,1,2,3,4,5, 8,9,10,11, 14,15,16,17,
+                          18,19,20,21,22,23])
+    load = torch.zeros(shell.n_dofs, dtype=D); load[6] = load[12] = 2.
+    options = dict(step_size=.01, maximum_step=.01, load_scale=.1,
+                   tolerance=2e-7)
+    whole = solve_finite_rotation_arc_path(
+        shell, load, fixed, steps=3, initial_state=state, **options,
+    )
+    first = solve_finite_rotation_arc_path(
+        shell, load, fixed, steps=1, initial_state=state, **options,
+    )
+    resumed = solve_finite_rotation_arc_path(
+        shell, load, fixed, steps=2,
+        initial_state=first.committed_state,
+        initial_displacement=first.displacement,
+        initial_load_factor=first.load_factor,
+        initial_previous_increment=first.previous_increment,
+        **options,
+    )
+    assert whole.converged and first.converged and resumed.converged
+    assert resumed.previous_increment is not None
+    assert resumed.load_factor == pytest.approx(whole.load_factor, rel=2e-8)
+    assert torch.allclose(resumed.displacement, whole.displacement,
+                          rtol=2e-8, atol=2e-10)
+
+
 def test_arc_relaxes_unbalanced_residual_stress_and_reports_attempt_diagnostics():
     from tensorfem.marine_panel_ultimate_fe import (
         build_panel_case, classical_panel_references,

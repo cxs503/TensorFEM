@@ -99,6 +99,38 @@ def _element_force(
     return mapping.T @ local_force, stress, trial
 
 
+def _mapped_force_without_jacobian(
+    reference: torch.Tensor,
+    dofs: torch.Tensor,
+    local_force: torch.Tensor,
+) -> torch.Tensor:
+    """Apply ``J(q).T`` without material replay or forming the 24x24 Jacobian.
+
+    A residual-only evaluation is the dominant operation in matrix-free
+    continuation.  Forming the complete kinematic Jacobian there computes 24
+    columns although only its transpose product with the already integrated
+    section force is required.  One reverse-mode scalar gradient evaluates the
+    identical virtual-work product.  ``local_force`` is detached deliberately:
+    its constitutive derivative belongs to a tangent action, not to the force
+    value itself.
+    """
+    with torch.enable_grad():
+        independent = dofs.detach().requires_grad_(True)
+        virtual_work = torch.dot(
+            local_force.detach(),
+            _corotated_deformation(reference, independent),
+        )
+        result = torch.autograd.grad(
+            virtual_work, independent, create_graph=False,
+        )[0].detach()
+    # As for ``_kinematic_mapping``, an exactly planar facet exposes an
+    # undefined generic SVD derivative at its repeated/zero singular value.
+    # The centred fallback is finite and already covered by objectivity tests.
+    if not bool(torch.all(torch.isfinite(result))):
+        return _kinematic_mapping(reference, dofs).T @ local_force
+    return result
+
+
 def _chain_rule_tangent(
     reference: torch.Tensor,
     dofs: torch.Tensor,
@@ -179,11 +211,17 @@ def finite_rotation_element_response(
     conn = model.elements[element].long()
     reference = model.nodes[conn]
     deformation = _corotated_deformation(reference, dofs)
-    mapping = _kinematic_mapping(reference, dofs)
     local_force, local_tangent, stress, trial = element_response(
         model, element, deformation, committed, compute_tangent=tangent
     )
-    force = mapping.T @ local_force
+    if tangent:
+        mapping = _kinematic_mapping(reference, dofs)
+        force = mapping.T @ local_force
+    else:
+        # Matrix-free continuation needs only J.T@f.  Avoid material replay and
+        # avoid constructing the full element Jacobian for this force-only path.
+        mapping = None
+        force = _mapped_force_without_jacobian(reference, dofs, local_force)
     stiffness = None
     if tangent:
         stiffness = _chain_rule_tangent(
@@ -275,6 +313,7 @@ class FiniteRotationArcResult:
     initial_equilibrium_relative_norm: float = float("inf")
     relaxed_initial_displacement: torch.Tensor | None = None
     relaxed_initial_state: LayeredShell4State | None = None
+    previous_increment: torch.Tensor | None = None
 
 
 def solve_finite_rotation_increment(
@@ -328,6 +367,7 @@ def solve_finite_rotation_arc_path(
     initial_state: LayeredShell4State | None = None,
     initial_displacement: torch.Tensor | None = None,
     initial_load_factor: float = 0.0,
+    initial_previous_increment: torch.Tensor | None = None,
     tolerance: float = 1e-7,
     max_iterations: int = 15,
     minimum_step: float = 1e-5,
@@ -365,14 +405,39 @@ def solve_finite_rotation_arc_path(
     maximum_step = step_size if maximum_step is None else maximum_step
     ds = step_size
     previous = None
+    if initial_previous_increment is not None:
+        expected = len(free) + 1
+        if initial_previous_increment.shape != (expected,):
+            raise ValueError("wrong previous arc increment length")
+        previous = initial_previous_increment.to(model.nodes).clone()
     points = []
 
     def linear_solve(matrix: torch.Tensor, rhs: torch.Tensor) -> torch.Tensor:
         """Minimum-norm solve tolerating physically inactive drilling gauges."""
+        # Small benchmark systems retain the explicit rank/conditioning gate:
+        # their free drilling gauges can admit a low-residual but non-minimum-
+        # norm pivoted solution, which is a poor Newton direction.
+        if matrix.shape[0] <= 200:
+            try:
+                condition = torch.linalg.cond(matrix)
+                if bool(torch.isfinite(condition)) and float(condition) < 1e12:
+                    return torch.linalg.solve(matrix, rhs)
+            except torch.linalg.LinAlgError:
+                pass
+            return torch.linalg.lstsq(matrix, rhs, driver="gelsd").solution
         try:
-            condition = torch.linalg.cond(matrix)
-            if bool(torch.isfinite(condition)) and float(condition) < 1e12:
-                return torch.linalg.solve(matrix, rhs)
+            # A full SVD condition estimate costs as much as (and for larger
+            # panels materially more than) the solve itself.  Try the pivoted
+            # dense solve first and validate its backward error; use the SVD
+            # minimum-norm path only for an actually singular/unstable system.
+            answer = torch.linalg.solve(matrix, rhs)
+            defect = matrix @ answer - rhs
+            scale = (float(torch.linalg.vector_norm(matrix))
+                     * float(torch.linalg.vector_norm(answer))
+                     + float(torch.linalg.vector_norm(rhs)))
+            relative = float(torch.linalg.vector_norm(defect)) / max(scale, 1.0)
+            if bool(torch.all(torch.isfinite(answer))) and relative <= 1e-10:
+                return answer
         except torch.linalg.LinAlgError:
             pass
         return torch.linalg.lstsq(matrix, rhs, driver="gelsd").solution
@@ -438,7 +503,7 @@ def solve_finite_rotation_arc_path(
         return FiniteRotationArcResult(
             tuple(points), False, ds, state, displacement, load_factor,
             initial_iterations, initial_residual_norm, initial_relative_norm,
-            displacement.clone(), state,
+            displacement.clone(), state, previous,
         )
     relaxed_initial_displacement = displacement.clone()
     relaxed_initial_state = state
@@ -447,7 +512,7 @@ def solve_finite_rotation_arc_path(
         return FiniteRotationArcResult(
             tuple(points), converged, ds, state, displacement, load_factor,
             initial_iterations, initial_residual_norm, initial_relative_norm,
-            relaxed_initial_displacement, relaxed_initial_state,
+            relaxed_initial_displacement, relaxed_initial_state, previous,
         )
 
     accepted = 0
