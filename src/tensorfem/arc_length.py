@@ -49,11 +49,11 @@ def general_shell_arc_problem(mesh, reference_load: torch.Tensor, fixed_dofs):
     return ArcLengthProblem(response,reference_load[free]),free
 
 
-def _write_checkpoint(path,u,load,direction,step_size,completed):
+def _write_checkpoint(path,u,load,direction,step_size,completed,*,line_search=None):
     Path(path).write_text(json.dumps({"schema":"tensorfem.arc-length.v1",
         "displacement":u.detach().cpu().tolist(),"load_factor":load,
         "direction":direction.detach().cpu().tolist(),"step_size":step_size,
-        "completed_steps":completed},indent=2)+"\n")
+        "completed_steps":completed,"line_search":line_search},indent=2)+"\n")
 
 
 def solve_arc_length(problem: ArcLengthProblem, initial: torch.Tensor, *, steps: int,
@@ -63,11 +63,18 @@ def solve_arc_length(problem: ArcLengthProblem, initial: torch.Tensor, *, steps:
                      checkpoint: str|Path|None=None, restart: str|Path|None=None,
                      branch_switch: str|None=None, branch_mode_fraction: float=.25,
                      branch_sign: int=1, critical_eigenvalue_ratio: float=1e-6,
-                     diagnostics: list[dict[str, object]]|None=None):
+                     diagnostics: list[dict[str, object]]|None=None,
+                     line_search: str|None=None,
+                     line_search_minimum: float=1/128,
+                     line_search_armijo: float=1e-4):
     """Trace equilibrium through limit points using an augmented Newton solve."""
     if steps<1 or step_size<=0 or load_scale<=0: raise ValueError("invalid arc-length controls")
     if branch_switch not in (None,"critical_mode"):
         raise ValueError("branch_switch must be None or 'critical_mode'")
+    if line_search not in (None, "backtracking"):
+        raise ValueError("line_search must be None or 'backtracking'")
+    if not 0 < line_search_minimum <= 1 or not 0 < line_search_armijo < 1:
+        raise ValueError("invalid line-search controls")
     if not 0<branch_mode_fraction<=1 or branch_sign not in (-1,1) or critical_eigenvalue_ratio<=0:
         raise ValueError("invalid branch-switch controls")
     f=problem.reference_load
@@ -76,6 +83,8 @@ def solve_arc_length(problem: ArcLengthProblem, initial: torch.Tensor, *, steps:
     if restart:
         p=json.loads(Path(restart).read_text())
         if p.get("schema")!="tensorfem.arc-length.v1": raise ValueError("invalid arc-length checkpoint")
+        if p.get("line_search") is not None and p.get("line_search") != line_search:
+            raise ValueError("arc-length checkpoint line-search identity mismatch")
         u=torch.tensor(p["displacement"],dtype=initial.dtype,device=initial.device)
         load=float(p["load_factor"]);previous=torch.tensor(p["direction"],dtype=initial.dtype,device=initial.device)
         ds=float(p["step_size"]);offset=int(p["completed_steps"])
@@ -119,13 +128,24 @@ def solve_arc_length(problem: ArcLengthProblem, initial: torch.Tensor, *, steps:
                     mode_fraction=branch_mode_fraction,sign=branch_sign)
         du=ds*predictor[:-1];dl=float(ds*predictor[-1]/load_scale)
         trial_u=u+du;trial_load=load+dl;ok=False;last=float("inf")
+        iteration_trace=[]
         for iteration in range(1,max_iterations+1):
             if problem.residual_tangent is None:
                 internal,K=problem.internal_tangent(trial_u);res=internal-trial_load*f;load_derivative=-f
             else:res,K,load_derivative=problem.residual_tangent(trial_u,trial_load)
             Du=trial_u-committed_u;Dl=trial_load-committed_load
             constraint=torch.dot(Du,Du)+(load_scale*Dl)**2-ds**2
-            last=float(torch.linalg.vector_norm(torch.cat((res,constraint.reshape(1)))).detach())
+            internal_scale=(float(torch.linalg.vector_norm(internal).detach())
+                            if problem.residual_tangent is None else
+                            float(torch.linalg.vector_norm(
+                                res-trial_load*load_derivative).detach()))
+            residual_scale=max(internal_scale,
+                               abs(trial_load)*float(torch.linalg.vector_norm(f)),1.)
+            constraint_scale=max(ds**2,torch.finfo(u.dtype).eps)
+            last=float(torch.linalg.vector_norm(
+                torch.cat((res,constraint.reshape(1)))).detach())
+            current_merit=float(torch.linalg.vector_norm(torch.cat(
+                (res/residual_scale,(constraint/constraint_scale).reshape(1)))).detach())
             if float(torch.linalg.vector_norm(res).detach())<=tolerance and abs(float(constraint.detach()))<=tolerance*max(ds,1.):
                 ok=True;break
             A=torch.zeros((len(u)+1,len(u)+1),dtype=u.dtype,device=u.device)
@@ -133,7 +153,54 @@ def solve_arc_length(problem: ArcLengthProblem, initial: torch.Tensor, *, steps:
             rhs=-torch.cat((res,constraint.reshape(1)))
             try:correction=torch.linalg.solve(A,rhs)
             except torch.linalg.LinAlgError:break
-            trial_u=trial_u+correction[:-1];trial_load+=float(correction[-1].detach())
+            alpha=1.; evaluations=0
+            if line_search=="backtracking":
+                best=None
+                while alpha>=line_search_minimum:
+                    candidate_u=trial_u+alpha*correction[:-1]
+                    candidate_load=trial_load+alpha*float(correction[-1].detach())
+                    if problem.residual_tangent is None:
+                        candidate_internal,_,=problem.internal_tangent(candidate_u)
+                        candidate_res=candidate_internal-candidate_load*f
+                        candidate_internal_scale=float(
+                            torch.linalg.vector_norm(candidate_internal).detach())
+                    else:
+                        candidate_res,_,candidate_load_derivative=problem.residual_tangent(
+                            candidate_u,candidate_load)
+                        candidate_internal_scale=float(torch.linalg.vector_norm(
+                            candidate_res-candidate_load*candidate_load_derivative).detach())
+                    candidate_Du=candidate_u-committed_u
+                    candidate_Dl=candidate_load-committed_load
+                    candidate_constraint=(torch.dot(candidate_Du,candidate_Du)
+                                          +(load_scale*candidate_Dl)**2-ds**2)
+                    candidate_residual_scale=max(
+                        candidate_internal_scale,
+                        abs(candidate_load)*float(torch.linalg.vector_norm(f)),1.)
+                    merit=float(torch.linalg.vector_norm(torch.cat((
+                        candidate_res/candidate_residual_scale,
+                        (candidate_constraint/constraint_scale).reshape(1)))).detach())
+                    evaluations+=1
+                    if best is None or merit<best[0]:
+                        best=(merit,alpha,candidate_u,candidate_load)
+                    if merit <= current_merit*(1-line_search_armijo*alpha):
+                        break
+                    alpha*=.5
+                if best is None or best[0]>=current_merit:
+                    iteration_trace.append({"iteration":iteration,"merit":current_merit,
+                                            "residual_relative":float(
+                                                torch.linalg.vector_norm(res).detach())/residual_scale,
+                                            "line_search_alpha":0.,
+                                            "line_search_evaluations":evaluations})
+                    break
+                _,alpha,trial_u,trial_load=best
+            else:
+                trial_u=trial_u+correction[:-1]
+                trial_load+=float(correction[-1].detach())
+            iteration_trace.append({"iteration":iteration,"merit":current_merit,
+                                    "residual_relative":float(
+                                        torch.linalg.vector_norm(res).detach())/residual_scale,
+                                    "line_search_alpha":alpha,
+                                    "line_search_evaluations":evaluations})
         if ok:
             u=trial_u;load=trial_load;accepted+=1
             direction=torch.cat((u-committed_u,u.new_tensor([load-committed_load])))
@@ -141,13 +208,20 @@ def solve_arc_length(problem: ArcLengthProblem, initial: torch.Tensor, *, steps:
             points.append(ArcLengthPoint(offset+accepted,load,u.clone(),iteration,last))
             if iteration<=4:ds=min(maximum_step,ds*1.25)
             elif iteration>8:ds=max(minimum_step,ds*.75)
-            if checkpoint:_write_checkpoint(checkpoint,u,load,previous,ds,offset+accepted)
+            if checkpoint:_write_checkpoint(checkpoint,u,load,previous,ds,
+                                             offset+accepted,line_search=line_search)
             if diagnostics is not None:
                 diagnostics.append({"step":offset+accepted,"reason":"accepted",
-                                    "critical_mode":mode_diagnostic})
+                                    "attempt":offset+accepted,
+                                    "iterations":iteration_trace,
+                                    "critical_mode":mode_diagnostic,
+                                    "line_search":line_search})
         else:
             if diagnostics is not None:
                 diagnostics.append({"step":offset+accepted+1,"reason":"rejected",
+                                    "attempt":offset+accepted+1,
+                                    "iterations":iteration_trace,
+                                    "line_search":line_search,
                                     "critical_mode":mode_diagnostic})
             u=committed_u;load=committed_load;ds*=.5
             if ds<minimum_step:return ArcLengthResult(tuple(points),False,ds)

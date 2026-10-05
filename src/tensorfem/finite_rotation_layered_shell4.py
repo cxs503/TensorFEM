@@ -427,6 +427,10 @@ def solve_finite_rotation_increment(
     tolerance: float = 1e-7,
     max_iterations: int = 20,
     linear_solver: str = "dense",
+    ilu_drop_tolerance: float = 1e-4,
+    ilu_fill_factor: float = 10.0,
+    krylov_tolerance: float = 1e-8,
+    krylov_max_iterations: int | None = None,
     diagnostics: list[dict[str, object]] | None = None,
 ) -> FiniteRotationShell4Step:
     """Full Newton increment; state is returned only after convergence."""
@@ -437,10 +441,10 @@ def solve_finite_rotation_increment(
     load = external_force.to(model.nodes) * load_factor
     value = displacement.clone()
     scale = max(float(torch.linalg.vector_norm(load[free])), 1.0)
-    if linear_solver not in ("dense", "superlu"):
-        raise ValueError("linear_solver must be 'dense' or 'superlu'")
-    if linear_solver == "superlu" and model.nodes.device.type != "cpu":
-        raise ValueError("SuperLU Shell4 paths require a CPU model")
+    if linear_solver not in ("dense", "superlu", "ilu_gmres"):
+        raise ValueError("linear_solver must be 'dense', 'superlu' or 'ilu_gmres'")
+    if linear_solver != "dense" and model.nodes.device.type != "cpu":
+        raise ValueError("SciPy sparse Shell4 paths require a CPU model")
     for iteration in range(1, max_iterations + 1):
         response = (assemble_finite_rotation_layered_shell4(model, value, committed)
                     if linear_solver == "dense" else
@@ -459,12 +463,34 @@ def solve_finite_rotation_increment(
                     response.tangent[free[:, None], free], residual[free]
                 )
             else:
-                from .sparse_direct import SparseLinearSolver
-                factor = SparseLinearSolver("superlu").factorize(response.tangent)
-                increment = factor.solve(residual[free])
+                from .sparse_direct import SparseLinearSolver, factorize_sparse
+                if linear_solver == "superlu":
+                    factor = SparseLinearSolver("superlu").factorize(response.tangent)
+                    increment = factor.solve(residual[free])
+                    krylov = None
+                else:
+                    from .sparse_advanced import gmres
+                    factor = factorize_sparse(
+                        response.tangent, method="spilu",
+                        drop_tolerance=ilu_drop_tolerance,
+                        fill_factor=ilu_fill_factor,
+                    )
+                    krylov = gmres(
+                        response.tangent, residual[free], rtol=krylov_tolerance,
+                        maxiter=krylov_max_iterations,
+                        inverse_preconditioner=factor.solve,
+                    )
+                    if not krylov.converged:
+                        raise RuntimeError("ILU-GMRES failed to converge")
+                    increment = krylov.x
                 if diagnostics is not None:
-                    diagnostics.append({"phase": "newton_linear_solve", "iteration": iteration,
-                                        **asdict(factor.diagnostics)})
+                    diagnostics.append({
+                        "phase": "newton_linear_solve", "iteration": iteration,
+                        "krylov_iterations": (None if krylov is None else krylov.iterations),
+                        "krylov_relative_residual": (
+                            None if krylov is None else krylov.relative_residual),
+                        **asdict(factor.diagnostics),
+                    })
         except (torch.linalg.LinAlgError, RuntimeError) as error:
             if error.__class__.__name__ == "SparseBackendUnavailable":
                 raise
@@ -500,6 +526,10 @@ def solve_finite_rotation_arc_path(
     arc_metric: str = "full",
     linear_solver: str = "dense",
     sparse_drilling_regularization: float = 1e-12,
+    ilu_drop_tolerance: float = 1e-4,
+    ilu_fill_factor: float = 10.0,
+    krylov_tolerance: float = 1e-8,
+    krylov_max_iterations: int | None = None,
 ) -> FiniteRotationArcResult:
     """Path-dependent Crisfield continuation with transactional J2 history.
 
@@ -521,12 +551,12 @@ def solve_finite_rotation_arc_path(
         raise ValueError("critical_eigenvalue_ratio must be positive")
     if augmented_scaling not in ("legacy", "normalized"):
         raise ValueError("augmented_scaling must be 'legacy' or 'normalized'")
-    if linear_solver not in ("dense", "superlu"):
-        raise ValueError("linear_solver must be 'dense' or 'superlu'")
-    if linear_solver == "superlu" and model.nodes.device.type != "cpu":
-        raise ValueError("SuperLU Shell4 paths require a CPU model")
-    if linear_solver == "superlu" and branch_switch is not None:
-        raise ValueError("critical-mode branch switching is not available with SuperLU")
+    if linear_solver not in ("dense", "superlu", "ilu_gmres"):
+        raise ValueError("linear_solver must be 'dense', 'superlu' or 'ilu_gmres'")
+    if linear_solver != "dense" and model.nodes.device.type != "cpu":
+        raise ValueError("SciPy sparse Shell4 paths require a CPU model")
+    if linear_solver != "dense" and branch_switch is not None:
+        raise ValueError("critical-mode branch switching is not available with sparse solvers")
     if sparse_drilling_regularization < 0.0:
         raise ValueError("sparse_drilling_regularization must be non-negative")
     fixed = torch.tensor(sorted(set(int(i) for i in fixed_dofs)), dtype=torch.long,
@@ -559,8 +589,8 @@ def solve_finite_rotation_arc_path(
     def linear_solve(matrix: torch.Tensor, rhs: torch.Tensor,
                      phase: str = "linear_solve") -> torch.Tensor:
         """Minimum-norm solve tolerating physically inactive drilling gauges."""
-        if linear_solver == "superlu":
-            from .sparse_direct import SparseLinearSolver
+        if linear_solver != "dense":
+            from .sparse_direct import SparseLinearSolver, factorize_sparse
             # Free drilling gauges make the shell tangent rank deficient.  A
             # sparse LU has no minimum-norm mode analogous to dense SVD, so
             # add an explicitly reported, scale-relative gauge penalty.  It
@@ -577,11 +607,34 @@ def solve_finite_rotation_arc_path(
                     matrix.shape, check_invariants=True,
                 )
                 matrix = (matrix + penalty).coalesce()
-            factor = SparseLinearSolver("superlu").factorize(matrix)
-            answer = factor.solve(rhs)
+            if linear_solver == "superlu":
+                factor = SparseLinearSolver("superlu").factorize(matrix)
+                answer = factor.solve(rhs)
+                krylov = None
+            else:
+                from .sparse_advanced import gmres
+                factor = factorize_sparse(
+                    matrix, method="spilu", drop_tolerance=ilu_drop_tolerance,
+                    fill_factor=ilu_fill_factor,
+                )
+                krylov = gmres(
+                    matrix, rhs, rtol=krylov_tolerance,
+                    maxiter=krylov_max_iterations,
+                    inverse_preconditioner=factor.solve,
+                )
+                if not krylov.converged:
+                    raise RuntimeError(
+                        f"ILU-GMRES failed after {krylov.iterations} iterations "
+                        f"with relative residual {krylov.relative_residual:.3e}"
+                    )
+                answer = krylov.x
             if diagnostics is not None:
                 diagnostics.append({"phase": phase,
                                     "drilling_regularization": regularization,
+                                    "krylov_iterations": (
+                                        None if krylov is None else krylov.iterations),
+                                    "krylov_relative_residual": (
+                                        None if krylov is None else krylov.relative_residual),
                                     **asdict(factor.diagnostics)})
             return answer
         # Small benchmark systems retain the explicit rank/conditioning gate:
@@ -615,7 +668,7 @@ def solve_finite_rotation_arc_path(
     def response(reduced: torch.Tensor, committed: LayeredShell4State):
         value = displacement.clone()
         value[free] = reduced
-        if linear_solver == "superlu":
+        if linear_solver != "dense":
             evaluated = assemble_finite_rotation_layered_shell4_sparse(
                 model, value, committed, active_dofs=free)
             stiffness = evaluated.tangent

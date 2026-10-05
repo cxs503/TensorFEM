@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.39)
+## Capability maturity (v0.40)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -110,6 +110,9 @@ analytical or recognized benchmark evidence.
 | automatic nonlinear step control | experimental opt-in | 20 real panel transactions include four step changes, remain within 0.123% of the fixed path and restart exactly; Newton iterations fall from 66 to 65, with no rejected-step improvement |
 | discrete stiffener and nonuniform corrosion screening | qualified reduced-order prototypes | explicit compatible line stiffeners match an independent Ritz oracle; smooth corrosion converges below 3%, while tripping, welds, isolated pits and collapse remain out of scope |
 | stiffener instability and local-pit screening | qualified reduced-order prototypes | finite-difference lateral-torsional buckling converges to 0.0518% and sharp circular-pit area to 0.139%; coupled nonlinear panel collapse remains out of scope |
+| arc-length backtracking line search | qualified opt-in strategy | a difficult von Mises arch step changes from one rejection to acceptance at alpha=0.5, matches the high-iteration reference below 1e-12 and restarts consistently |
+| double-deformable 3-D contact | qualified planar prototype | a two-compliant-body global Newton solve matches the series-compliance oracle, force/moment balance, objectivity, interchange and rollback gates; general curved/mortar/frictional contact remains open |
+| ILU-GMRES Shell4 path | qualified storage route | 12x12 error is 4.07e-5 and matrix/factor storage is 22.3% below SuperLU and 67.3% below dense; current runtime is not faster |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

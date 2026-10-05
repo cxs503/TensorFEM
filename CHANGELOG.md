@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.40.0
+
+- Added opt-in backtracking line search to arc-length continuation with fail-closed merit descent and checkpoint identity. A difficult public von Mises arch step is accepted instead of rejected, matches a high-iteration reference below 1e-12 and retains the 0.0255% analytic peak error.
+- Added a two-compliant-body 3-D contact Newton closure. Its reaction matches an independent series-compliance oracle to machine precision and passes force, moment, objectivity, master/slave interchange and failed-step rollback gates, while general curved, frictional and double-sided mortar contact remain unqualified.
+- Added a fully sparse ILU-GMRES route for Shell4 Newton and bordered arc-length solves. A 12x12 gate remains below 1% error while reducing matrix-plus-factor storage by 22.3% versus SuperLU and 67.3% versus dense; measured runtime remains slightly slower, so no speedup is claimed.
+- Preserved the recoverable 8x8 panel qualification checkpoint while its first post-yield continuation point remains computationally difficult; no peak or mesh-convergence claim is inferred from an in-progress solve.
+
 ## 0.39.0
 
 - Qualified dense/SuperLU equivalence through an 80-point finite-rotation Shell4 path with all integration points yielded. Load, displacement, recoverable/hardening energy and plastic-history differences are around 1e-15; the measured small case remains slower and uses more peak RSS with SuperLU, so no acceleration claim is made.
