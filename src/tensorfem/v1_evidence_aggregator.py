@@ -17,6 +17,8 @@ RELEASE_SCHEMA = "tensorfem.release-quality-evidence/1.0"
 CONTACT_SCHEMAS = {
     "tensorfem.curved-surface-contact3d-qualification/1.0",
     "tensorfem.frictional-surface-path-qualification/1.0",
+    "tensorfem.frictional-surface-mesh-qualification/1.0",
+    "tensorfem.curved-finite-strain-friction-qualification/1.0",
     "tensorfem.general-contact3d-composite/1.0",
 }
 
@@ -37,6 +39,51 @@ def _read_hashed(path: str | Path, schemas: set[str]) -> dict[str, object]:
     if digest != hashlib.sha256(_canonical(payload).encode()).hexdigest():
         raise ValueError("evidence SHA-256 mismatch")
     return {**payload, "evidence_sha256": digest}
+
+
+def _read_contact_hashed(path: str | Path) -> dict[str, object]:
+    """Verify contact physics hashes; runners may append wall-clock metadata."""
+    try:
+        payload = json.loads(Path(path).read_text())
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(f"evidence cannot be read: {path}: {error}") from error
+    if payload.get("schema") not in CONTACT_SCHEMAS:
+        raise ValueError(f"unsupported evidence schema: {payload.get('schema')}")
+    digest = payload.get("evidence_sha256")
+    body = {key: value for key, value in payload.items()
+            if key != "evidence_sha256"}
+    candidates = [body]
+    if "wall_time_seconds" in body:
+        candidates.append({key: value for key, value in body.items()
+                           if key != "wall_time_seconds"})
+    if digest not in {hashlib.sha256(_canonical(item).encode()).hexdigest()
+                      for item in candidates}:
+        raise ValueError("evidence SHA-256 mismatch")
+    return payload
+
+
+def _contact_scope_and_error(report: Mapping[str, object]) -> tuple[object, object]:
+    schema = report["schema"]
+    if schema == "tensorfem.general-contact3d-composite/1.0":
+        return report.get("scope"), report.get("maximum_relative_error")
+    scope = report.get("general_surface_to_surface")
+    errors: list[float] = []
+    rows = report.get("mesh_sequence")
+    if isinstance(rows, list):
+        for row in rows:
+            if isinstance(row, Mapping):
+                errors.extend(float(row[name]) for name in (
+                    "relative_error", "normal_relative_error",
+                    "coulomb_relative_error") if row.get(name) is not None)
+    interchange = report.get("master_slave_interchange_relative_error")
+    if interchange is not None:
+        errors.append(float(interchange))
+    measured = max(errors) if errors else report.get(
+        "maximum_relative_error",
+        report.get("complete_newton_role_exchange_relative_error"))
+    if schema == "tensorfem.curved-finite-strain-friction-qualification/1.0":
+        scope = "qualified_curved_nonmatching_finite_strain_friction_subset"
+    return scope, measured
 
 
 def _validate_release_evidence(report: Mapping[str, object], source: Path) -> None:
@@ -118,13 +165,11 @@ def aggregate_v1_evidence(
             "sha256": release["evidence_sha256"]}
 
     if contact_report is not None and Path(contact_report).exists():
-        contact = _read_hashed(contact_report, CONTACT_SCHEMAS)
-        scope = contact.get("general_surface_to_surface", contact.get("scope"))
+        contact = _read_contact_hashed(contact_report)
+        scope, maximum_error = _contact_scope_and_error(contact)
         capabilities["general_double_deformable_contact_3d"] = {
             "passed": bool(contact.get("passed")),
-            "maximum_relative_error": contact.get(
-                "maximum_relative_error",
-                contact.get("complete_newton_role_exchange_relative_error")),
+            "maximum_relative_error": maximum_error,
             "restart_or_rollback": bool(contact.get("rollback_exact")),
             "scope": scope,
         }
