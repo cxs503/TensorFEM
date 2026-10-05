@@ -2,6 +2,14 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.44.0
+
+- Added a consistent two-sided frictional Mortar assembly and a transactional curved, nonmatching stick-slip path with force, moment, objectivity, tangent and rollback gates. The slow curved two-pass qualification remains fail-closed, and general surface-to-surface contact remains blocked.
+- Added a hash-verified 10,882-active-DOF Shell4 sparse release report. ILU-GMRES retains sub-1% accuracy and reduces storage 16.9% versus SuperLU and 90.7% versus dense, but remains slower; the machine-readable claim is therefore `memory_only`.
+- Added explicit legacy sparse-cache migration by full tangent reassembly, coefficient/action comparison and atomic SHA-256 publication. Unknown or modified caches and qualification reports fail closed before promotion.
+- Added generation-scheduled panel supervision and readiness evidence with event-chain, checkpoint and status integrity. Refined panel paths remain in progress, so no peak, post-peak convergence or TensorFEM 1.0 claim is made.
+- Preserved the v1 boundary: the curved slow contact suite has not qualified, general contact remains blocked, and the 4/8/12 panel matrix is still generating.
+
 ## 0.43.0
 
 - Added a SHA-chained, one-generation-at-a-time panel scheduler with per-point wall limits and stop-on-failure semantics. The migrated 8x8 path advances from point 659 to 680 at 1.0111 MN and 2.03125% yielded integration points; 12x12 advances from 25 to 30 at 414.48 kN. Both remain monotone, so no peak is claimed.

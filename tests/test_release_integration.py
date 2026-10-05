@@ -5,7 +5,7 @@ from tensorfem.cli import main
 
 
 def test_v0340_public_industrial_api_is_importable():
-    assert tensorfem.__version__ == "0.43.0"
+    assert tensorfem.__version__ == "0.44.0"
     required = {
         "DofManager", "MPC", "assemble_coo", "solve_sparse_static",
         "ModelDB", "solve_adaptive", "save_checkpoint", "load_checkpoint",
@@ -42,6 +42,10 @@ def test_v0340_public_industrial_api_is_importable():
         "run_project", "write_result_db", "run_classical_shell_suite",
         "run_mesh_project", "StepExecutor", "write_result_db_v2",
         "MortarContactAssembly", "assemble_mortar_contact",
+        "FrictionalMortarAssembly", "assemble_frictional_mortar",
+        "FrictionalSurfaceState", "FrictionalSurfaceLoad", "FrictionalSurfaceStep",
+        "initial_frictional_surface_state", "solve_frictional_surface_path",
+        "run_frictional_surface_path_qualification",
     }
     assert required <= set(tensorfem.__all__)
     assert all(hasattr(tensorfem, name) for name in required)
@@ -51,7 +55,10 @@ def test_capabilities_cli_separates_stable_and_experimental(monkeypatch, capsys)
     monkeypatch.setattr("sys.argv", ["tensorfem", "capabilities"])
     main()
     payload = json.loads(capsys.readouterr().out)
-    assert payload["version"] == "0.43.0"
+    assert payload["version"] == "0.44.0"
+    assert any("10k-active-DOF" in item for item in payload["stable"])
+    assert any("generation-scheduled panel" in item for item in payload["stable"])
+    assert any("general curved frictional" in item for item in payload["experimental"])
     assert any("sparse" in item for item in payload["stable"])
     assert any("sparse Shell4" in item for item in payload["stable"])
     assert any("ten-point" in item for item in payload["stable"])

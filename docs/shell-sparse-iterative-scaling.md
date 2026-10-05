@@ -132,3 +132,42 @@ from 17.25 kN to 8.74 kN despite converging its equations. It violated the 1%
 path gate and was removed. This negative result rules out unsafe modified
 Newton reuse for the current arc metric. Analytic or batched evaluation must
 preserve the full algorithmic tangent at every corrector.
+
+## Automated v1 release gate
+
+The scaling runner now emits schema
+`tensorfem.shell-sparse-scaling-qualification/1` and exits with status 2 when
+any mandatory gate fails. The gates require at least 10,000 active DOFs,
+solution error below 1%, true residual below `1e-8`, and measured memory
+advantages over both SuperLU and a dense matrix. Timing is reported separately:
+the claim is `memory_only` unless ILU is actually faster. The canonical report
+has an evidence SHA-256 and records Python, PyTorch and device identity.
+
+With the optimized elastic material tangent, the fresh 42x42 release run
+assembled in 80.479 s and reproduced the qualification with solution error
+`1.332e-6`, true residual `1.312e-10`, and the same 16.9%/90.7% memory
+reductions. ILU linear time was 2.417 s versus 1.551 s for SuperLU, so the
+machine-readable performance claim correctly remains `memory_only`. The
+report is written atomically with `--report`.
+
+New caches receive a SHA-256 sidecar. Missing or mismatched sidecars fail
+before deserialization. A legacy cache is never legitimized by hashing its
+unknown bytes: `--verify-legacy-cache` explicitly reassembles the current
+tangent, verifies connectivity identity, every coefficient and a deterministic
+tangent action, then replaces it with the fresh tensor and sidecar. Failed
+verification leaves the legacy artifact unendorsed.
+
+`--verify-report PATH` recomputes the canonical evidence hash and verifies
+schema and gate-result consistency. Consequently, editing a timing, residual,
+memory value, performance claim, or `passed` flag is detected even if the JSON
+remains syntactically valid. Rehashing a semantically inconsistent `passed`
+flag is also rejected.
+
+Both the 14 MB tangent cache and the machine-specific report remain under the
+ignored `.qualification/` directory and are not release-source artifacts.
+Committing the cache would unnecessarily enlarge Git history; committing the
+report would turn Python/PyTorch versions and wall-clock timings from one host
+into misleading golden values. The tracked artifacts are instead the runner,
+gate/verifier implementation, tests, documented command and threshold policy.
+Any release host can reproduce its own atomically written, hash-verifiable
+report with the same command.

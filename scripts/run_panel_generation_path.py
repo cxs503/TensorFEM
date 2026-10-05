@@ -23,6 +23,16 @@ def atomic_json(path: Path, value: object) -> None:
     os.replace(temporary, path)
 
 
+def publish_status(path: Path, *, state: str, current: int, target: int,
+                   event_sha256: str | None, reason: str | None = None) -> None:
+    value = {"schema": "tensorfem.panel-generation-status/1.0",
+             "state": state, "current_generation": current,
+             "target_generation": target, "last_event_sha256": event_sha256,
+             "reason": reason, "updated_unix_seconds": time.time()}
+    value["status_sha256"] = hashlib.sha256(canonical(value).encode()).hexdigest()
+    atomic_json(path, value)
+
+
 def latest_event_hash(events: Path) -> str | None:
     paths = sorted(events.glob("g*.json"))
     previous = None
@@ -51,14 +61,23 @@ def main() -> None:
     events = args.cache_dir/"events"
     events.mkdir(parents=True, exist_ok=True)
     previous_hash = latest_event_hash(events)
+    status_path = args.cache_dir/"generation-status.json"
     while True:
         manifests = sorted(args.cache_dir.glob("chunked-*.json"))
         if len(manifests) != 1:
             raise RuntimeError("cache must contain exactly one committed manifest")
         current = json.loads(manifests[0].read_text())
         accepted = int(current["accepted_points"])
+        publish_status(status_path, state="running", current=accepted,
+                       target=args.target, event_sha256=previous_hash)
         if accepted >= args.target or (args.stop_at_post_peak
                                         and current.get("post_peak_observed")):
+            publish_status(
+                status_path,
+                state=("post_peak" if current.get("post_peak_observed")
+                       else "target_reached"),
+                current=accepted, target=args.target, event_sha256=previous_hash,
+            )
             break
         requested = accepted+1
         started = time.monotonic()
@@ -91,6 +110,10 @@ def main() -> None:
         previous_hash = event["event_sha256"]
         if (result.get("status") != "executed"
                 or int(result.get("accepted_points", accepted)) < requested):
+            publish_status(status_path, state="stopped",
+                           current=int(result.get("accepted_points", accepted)),
+                           target=args.target, event_sha256=previous_hash,
+                           reason=str(result.get("error")))
             break
 
 

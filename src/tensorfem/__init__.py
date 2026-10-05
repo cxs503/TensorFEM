@@ -91,8 +91,14 @@ from .nonproportional_plasticity import (
 )
 from .frictional_mortar import (
     MortarPointState, FrictionalMortarState, FrictionalMortarResult,
+    FrictionalMortarAssembly,
     SelfContactResult, initial_frictional_mortar_state,
-    update_frictional_mortar, update_self_contact,
+    update_frictional_mortar, assemble_frictional_mortar, update_self_contact,
+)
+from .frictional_surface_path import (
+    FrictionalSurfaceState, FrictionalSurfaceLoad, FrictionalSurfaceStep,
+    initial_frictional_surface_state, solve_frictional_surface_path,
+    run_frictional_surface_path_qualification,
 )
 from .spherical_shell import (
     HemisphereResult, projected_shell4_stiffness, hemisphere_with_hole,
@@ -203,7 +209,7 @@ from .result_db_v2 import (
     query_history_series, migrate_v1, read_result_db_compatible,
 )
 
-__version__ = "0.43.0"
+__version__ = "0.44.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -262,8 +268,11 @@ __all__ = [
     "integrate_adaptive", "integrate_path", "richardson_algorithmic_tangent",
     "fixed_substep_reference",
     "MortarPointState", "FrictionalMortarState", "FrictionalMortarResult",
-    "SelfContactResult", "initial_frictional_mortar_state",
-    "update_frictional_mortar", "update_self_contact",
+    "FrictionalMortarAssembly", "SelfContactResult", "initial_frictional_mortar_state",
+    "update_frictional_mortar", "assemble_frictional_mortar", "update_self_contact",
+    "FrictionalSurfaceState", "FrictionalSurfaceLoad", "FrictionalSurfaceStep",
+    "initial_frictional_surface_state", "solve_frictional_surface_path",
+    "run_frictional_surface_path_qualification",
     "HemisphereResult", "projected_shell4_stiffness", "hemisphere_with_hole",
     "AdaptiveGlobalState", "AdaptiveGlobalResult",
     "assemble_adaptive_global", "solve_adaptive_global_path",

@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.43)
+## Capability maturity (v0.44)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -63,7 +63,7 @@ analytical or recognized benchmark evidence.
 | multistep execution | stable initial subset | linear, thermal, modal and sequential thermoelastic steps with resume |
 | ResultDB v2 | stable core | multistep/multiframe/IP fields, histories, lazy queries and atomic HDF5 publication |
 | engineering case packages | stable examples | pressurized component, thin-wall panel and stopped connector with checkpoints, ResultDB, VTK and reports |
-| public API and release gates | stable infrastructure | versioned 312-symbol manifest, drift audit and offline wheel/sdist installation smoke test |
+| public API and release gates | stable infrastructure | versioned 320-symbol manifest, drift audit and offline wheel/sdist installation smoke test |
 | ship structural screening | stable benchmarks | hull-girder longitudinal bending and equivalent-orthotropic stiffened-panel analytical checks |
 | box-barge hydrostatics | stable initial subset | displacement, KB/BM/KM/GM and small-angle restoring moment for intact rectangular hulls |
 | marine environmental loads | stable initial subset | Airy-wave/Morison pile actions and audited TensorLBM-to-TensorFEM nodal force histories |
@@ -123,6 +123,9 @@ analytical or recognized benchmark evidence.
 | immutable panel generation scheduler | qualified execution infrastructure | SHA-chained one-point generations advance 8x8 to point 680/1.0111 MN and 12x12 to point 30/414.48 kN with all equilibrium and energy gates passing; both paths remain monotone |
 | analytic elastic Shell4 material tangent | qualified performance path | conservative elastic use with automatic numerical fallback near yield cuts assembly time 31-34% and a real 8x8 first point 27.9%, while an 80-point yielded path remains physically equivalent |
 | curved nonmatching two-pass contact | experimental fail-closed subset | symmetric bidirectional Mortar residual/tangent and a fast curved smoke gate are implemented; 4/5 one-pass oracle brackets are below 1.75%, but the full two-pass qualification remains opt-in and incomplete |
+| frictional Mortar consistent assembly and curved path | qualified bounded prototype | planar tangent/action, balance, objectivity, rollback and one curved nonmatching stick-slip path pass; the slow curved two-pass qualification fails closed and general surface contact remains blocked |
+| 10k-active-DOF Shell4 sparse release gate | qualified memory route | 42x42/10,882-active-DOF true residual and error pass with 16.9% lower storage than SuperLU and hash-verified reports; `performance_claim=memory_only` because SuperLU remains faster |
+| generation-scheduled panel readiness | stable evidence adapter | SHA-chained generations, checkpoint/status integrity and monotonic-prefix reporting are reproducible; 4/8/12 peak/post-peak convergence is still generating and no v1 readiness is claimed |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

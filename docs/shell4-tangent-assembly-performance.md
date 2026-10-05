@@ -53,3 +53,30 @@ algorithmic tangent by design. Further safe acceleration must target batched
 corotational Jacobian/Hessian evaluation, which is now the largest measured
 cost. A step-frozen tangent was separately rejected because it changed a real
 panel path by more than 1%.
+
+## Corotational AD optimization experiments
+
+The remaining Jacobian and contracted Hessian were evaluated with both legacy
+`torch.autograd.functional` vectorization and `torch.func` transforms. On a
+representative imperfect facet, `jacrev` reduced the isolated mapping time
+from 8.60 ms to 7.89 ms, but `torch.func.hessian` increased the geometric term
+from 19.32 ms to 53.22 ms. Retaining the legacy Hessian and changing only the
+Jacobian produced no repeatable assembly benefit: the 8x8 run regressed from
+3.216 s to 4.092 s due partly to transform startup, while 20x20 changed only
+from 17.757 s to 17.694 s (0.35%, within run noise). The experimental change
+was reverted.
+
+Reference-frame, projected-shape and Gauss-operator caching was also assessed.
+Those quantities are immutable, but after the analytical material improvement
+they account for much less time than the AD Jacobian/Hessian; a process-global
+tensor-identity cache would introduce stale-model and lifecycle risks for a
+small upper-bound gain. It was not implemented. `vmap` batching is not safely
+applicable to the current SVD frame code because it contains data-dependent
+normal orientation, degeneracy and finite-difference fallback branches.
+
+The accepted optimization therefore remains the analytical elastic material
+tangent. No corotational AD rewrite is merged: the tested alternatives either
+slowed the Hessian, showed no reproducible whole-assembly gain, or could not
+preserve the existing fail-closed geometry branches. Future work requires a
+dedicated analytical polar-rotation derivative, including repeated-singular-
+value handling, rather than replacing one AD frontend with another.

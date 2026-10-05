@@ -28,6 +28,13 @@ Run the full three-grid oracle/objectivity/interchange qualification explicitly:
 
 or `PYTHONPATH=src python examples/contact/curved_surface_contact3d.py`.
 
+For an atomic machine-readable report suitable for a detached job, use:
+
+`TENSORFEM_RUN_SLOW_CURVED_CONTACT=1 PYTHONPATH=src python scripts/run_curved_contact_qualification.py`
+
+The runner writes `.qualification/curved-surface-contact3d/report.json` only
+after every fail-closed gate has passed.
+
 This qualifies a curved, nonmatching, frictionless, double-deformable subset.
 It is a Hertz-type sphere geometry with Winkler compliance, not classical
 Hertz elastic halfspaces. Frictional two-pass contact, self-contact,

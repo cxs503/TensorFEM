@@ -1011,6 +1011,13 @@
     {
       "introduced": "0.10.0",
       "module": "tensorfem.frictional_mortar",
+      "name": "FrictionalMortarAssembly",
+      "object": "FrictionalMortarAssembly",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
       "name": "SelfContactResult",
       "object": "SelfContactResult",
       "stability": "experimental"
@@ -1032,8 +1039,57 @@
     {
       "introduced": "0.10.0",
       "module": "tensorfem.frictional_mortar",
+      "name": "assemble_frictional_mortar",
+      "object": "assemble_frictional_mortar",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
       "name": "update_self_contact",
       "object": "update_self_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "FrictionalSurfaceState",
+      "object": "FrictionalSurfaceState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "FrictionalSurfaceLoad",
+      "object": "FrictionalSurfaceLoad",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "FrictionalSurfaceStep",
+      "object": "FrictionalSurfaceStep",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "initial_frictional_surface_state",
+      "object": "initial_frictional_surface_state",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "solve_frictional_surface_path",
+      "object": "solve_frictional_surface_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "run_frictional_surface_path_qualification",
+      "object": "run_frictional_surface_path_qualification",
       "stability": "experimental"
     },
     {
@@ -2185,7 +2241,7 @@
       "stability": "beta"
     }
   ],
-  "package_version": "0.43.0",
+  "package_version": "0.44.0",
   "policy": {
     "beta": "deprecate before removal",
     "experimental": "may change with release notes",

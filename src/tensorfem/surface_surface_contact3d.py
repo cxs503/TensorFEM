@@ -220,9 +220,10 @@ def run_surface_surface_contact_qualification():
         foundation, foundation, penalty)
     state_r=SurfacePatchState(step.state.slave_displacement@r.T,
                               step.state.master_displacement@r.T)
-    contact_r=assemble_mortar_contact(rotated.slave,rotated.slave_faces,
-        rotated.master,rotated.master_faces,state_r.slave_displacement,
-        state_r.master_displacement,normal_penalty=penalty,tangent=False)
+    # Compare like with like: the curved qualification model is symmetric
+    # two-pass, so its rotated audit must use the same complete assembly rather
+    # than a single directional mortar pass.
+    contact_r,_,_,_=_assemble(rotated,state_r,applied,tangent=False)
     expected=step.contact.slave_forces@r.T
     objectivity=float(torch.linalg.vector_norm(contact_r.slave_forces-expected)
                       /torch.linalg.vector_norm(expected))
@@ -331,10 +332,13 @@ def run_curved_surface_contact_qualification():
     effective=1/(1/penalty+2/foundation)
     oracle=math.pi*effective*radius*target_indentation**2
     rows=[]
+    audit_model=None; audit_step=None
     for slave_cells,master_cells in ((2,3),(3,4),(4,5)):
         model=build_parabolic_surface_model(cells=slave_cells,master_cells=master_cells,
             radius=radius,clearance=gap,foundation=foundation,normal_penalty=penalty)
         step=solve_surface_patch_path(model,[applied])[0]
+        if (slave_cells,master_cells)==(3,4):
+            audit_model,audit_step=model,step
         forces=torch.cat((step.contact.slave_forces,step.contact.master_forces))
         points=torch.cat((model.slave+step.state.slave_displacement,
                           model.master+step.state.master_displacement))
@@ -345,9 +349,8 @@ def run_curved_surface_contact_qualification():
             "force_imbalance":float(torch.linalg.vector_norm(forces.sum(0))),
             "moment_imbalance":float(torch.linalg.vector_norm(
                 torch.linalg.cross(points,forces).sum(0))),"iterations":step.iterations})
-    model=build_parabolic_surface_model(cells=3,master_cells=4,radius=radius,
-        clearance=gap,foundation=foundation,normal_penalty=penalty)
-    step=solve_surface_patch_path(model,[applied])[0]
+    assert audit_model is not None and audit_step is not None
+    model,step=audit_model,audit_step
     angle=.43;c,s=math.cos(angle),math.sin(angle)
     rotation=torch.tensor([[c,-s,0.],[s,c,0.],[0.,0.,1.]],dtype=torch.float64)
     rotated=SurfacePatchModel(model.slave@rotation.T,model.slave_faces,model.slave_weights,
@@ -355,9 +358,10 @@ def run_curved_surface_contact_qualification():
         foundation,foundation,penalty)
     state_r=SurfacePatchState(step.state.slave_displacement@rotation.T,
                               step.state.master_displacement@rotation.T)
-    contact_r=assemble_mortar_contact(rotated.slave,rotated.slave_faces,
-        rotated.master,rotated.master_faces,state_r.slave_displacement,
-        state_r.master_displacement,normal_penalty=penalty,tangent=False)
+    # Compare like with like: the curved qualification model is symmetric
+    # two-pass, so its rotated audit must use the same complete assembly rather
+    # than a single directional mortar pass.
+    contact_r,_,_,_=_assemble(rotated,state_r,applied,tangent=False)
     expected=step.contact.slave_forces@rotation.T
     objectivity=float(torch.linalg.vector_norm(contact_r.slave_forces-expected)
                       /torch.linalg.vector_norm(expected))
@@ -377,7 +381,11 @@ def run_curved_surface_contact_qualification():
         and max(row["force_imbalance"] for row in rows)<1.e-9
         and max(row["moment_imbalance"] for row in rows)<1.e-9
         and objectivity<1.e-10 and interchange<.03 and rollback)
-    if not passed: raise AssertionError("curved surface contact qualification failed")
+    if not passed:
+        raise AssertionError("curved surface contact qualification failed: "
+            f"errors={errors}, force={max(row['force_imbalance'] for row in rows)}, "
+            f"moment={max(row['moment_imbalance'] for row in rows)}, "
+            f"objectivity={objectivity}, interchange={interchange}, rollback={rollback}")
     return {"schema":"tensorfem.curved-surface-contact3d-qualification/1.0",
         "model":"shallow parabolic sphere on two-sided Winkler foundations",
         "mesh_sequence":rows,"target_indentation":target_indentation,

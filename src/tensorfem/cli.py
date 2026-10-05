@@ -107,6 +107,9 @@ def main() -> None:
                 "optional fail-closed sparse direct and ILU adapter",
                 "advisory nonlinear-control evidence with hashed restart decisions",
                 "marine stiffening, corrosion and residual-stress screening qualifications",
+                "10k-active-DOF Shell4 ILU-GMRES memory qualification with hashed reports",
+                "consistent two-sided frictional Mortar assembly and bounded curved stick-slip path",
+                "generation-scheduled panel integrity and readiness evidence",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
@@ -120,6 +123,8 @@ def main() -> None:
                 "4x4 cross-step elastic peak/post-peak and energy qualification; mesh convergence blocked",
                 "complete 8x8 peak localization and descending-branch evidence",
                 "complete 12x12 peak localization and 4/8/12 convergence evidence",
+                "slow curved two-pass frictional qualification; fail-closed on current evidence",
+                "general curved frictional surface-to-surface contact remains blocked",
             ],
         }, indent=2))
         return
