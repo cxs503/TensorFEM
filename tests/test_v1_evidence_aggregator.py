@@ -141,3 +141,25 @@ def test_semantically_forged_nonlinear_and_release_fail_closed(tmp_path):
         aggregate_v1_evidence(
             sparse_report=None, release_report=release, contact_report=None,
             panel_directories={})
+
+
+def test_finite_strain_contact_report_preserves_subset_scope(tmp_path):
+    contact = tmp_path/"finite-contact.json"
+    body = {
+        "schema": "tensorfem.curved-finite-strain-friction-qualification/1.0",
+        "passed": True, "rollback_exact": True,
+        "mesh_sequence": [{"coulomb_relative_error": 2e-4}],
+        "master_slave_interchange_relative_error": 3e-4,
+    }
+    digest = hashlib.sha256(canonical(body).encode()).hexdigest()
+    contact.write_text(json.dumps({**body, "evidence_sha256": digest,
+                                   "wall_time_seconds": 1.25}))
+    report = aggregate_v1_evidence(
+        sparse_report=None, release_report=None, contact_report=contact,
+        panel_directories={})
+    gate = report["readiness"]["gates"][
+        "general_double_deformable_contact_3d"]
+    assert gate == {"status": "blocked",
+                    "reason": "incomplete_or_out_of_scope"}
+    assert report["sources"]["general_double_deformable_contact_3d"][
+        "schema"] == body["schema"]
