@@ -43,7 +43,19 @@ def main() -> None:
             if status.get("state") in {"target_reached", "post_peak", "stopped"}:
                 break
         time.sleep(args.poll_seconds)
-    readiness = panel_generation_readiness(args.cache_dir)
+    # A scheduler commits the checkpoint and manifest atomically, but the
+    # supervisor may observe the short interval between those replacements.
+    # Treat an incomplete snapshot as transient instead of crashing the
+    # long-running supervisor (the readiness validator remains fail-closed).
+    readiness = None
+    for _ in range(12):
+        try:
+            readiness = panel_generation_readiness(args.cache_dir)
+            break
+        except (KeyError, ValueError):
+            time.sleep(5.)
+    if readiness is None:
+        raise SystemExit("panel readiness snapshot remained incomplete")
     atomic_json(args.cache_dir/"panel-readiness.json", readiness)
     if readiness["post_peak_observed"]:
         refined_step = (args.refined_maximum_step if args.refined_maximum_step
