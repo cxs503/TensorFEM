@@ -105,6 +105,10 @@ def main() -> None:
     parser.add_argument("--cache-dir", type=Path, required=True)
     parser.add_argument("--point-wall-seconds", type=float, default=300.)
     parser.add_argument("--stop-at-post-peak", action="store_true")
+    parser.add_argument("--automatic-step-control", action="store_true",
+                        help="apply the hashed continuation step controller")
+    parser.add_argument("--minimum-solver-step-divisor", type=int, default=128,
+                        help="minimum arc step is nominal/divisor (robust mode may use 1024)")
     args = parser.parse_args()
     events = args.cache_dir/"events"
     events.mkdir(parents=True, exist_ok=True)
@@ -137,6 +141,8 @@ def main() -> None:
             maximum_wall_seconds=args.point_wall_seconds,
             maximum_solver_step=args.maximum_solver_step,
             line_search="backtracking",
+            automatic_step_control=args.automatic_step_control,
+            minimum_solver_step_divisor=args.minimum_solver_step_divisor,
         )
         event = {
             "schema": "tensorfem.panel-generation-event/1.0",

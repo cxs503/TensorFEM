@@ -617,6 +617,7 @@ def execute_panel_chunked_job(
     relative_equilibrium_tolerance: float = 1e-6,
     automatic_step_control: bool = False,
     line_search: str | None = None,
+    minimum_solver_step_divisor: int = 128,
 ) -> dict[str, object]:
     """Run a long dense path with exact, branch-preserving checkpoints.
 
@@ -629,6 +630,8 @@ def execute_panel_chunked_job(
     """
     if steps < 1 or chunk_size < 1:
         raise ValueError("steps and chunk_size must be positive")
+    if minimum_solver_step_divisor < 1:
+        raise ValueError("minimum_solver_step_divisor must be positive")
     case = build_panel_case(divisions)
     controls = dimensional_arc_controls(case, normalized_arc_step)
     if maximum_solver_step is not None:
@@ -652,6 +655,8 @@ def execute_panel_chunked_job(
     # default field that would orphan qualified long-running prefixes.
     if automatic_step_control:
         identity["automatic_step_control"] = True
+    if minimum_solver_step_divisor != 128:
+        identity["minimum_solver_step_divisor"] = minimum_solver_step_divisor
     if line_search is not None:
         if line_search != "backtracking":
             raise ValueError("line_search must be None or 'backtracking'")
@@ -780,7 +785,12 @@ def execute_panel_chunked_job(
                 initial_load_factor=load_factor,
                 initial_previous_increment=previous,
                 tolerance=relative_equilibrium_tolerance,
-                minimum_step=controls["solver_step_size"] / 128,
+                # Near a limit point the bordered corrector can need several
+                # successive halvings before it finds the post-peak branch.
+                # The default remains the qualified 1/128 floor; the explicit
+                # robust continuation mode may lower it, while every rejected
+                # trial remains uncommitted and is retained in diagnostics.
+                minimum_step=controls["solver_step_size"] / minimum_solver_step_divisor,
                 maximum_step=controls["solver_maximum_step"], diagnostics=diagnostics,
                 augmented_scaling="normalized",
                 arc_metric="dimensionally_scaled",
