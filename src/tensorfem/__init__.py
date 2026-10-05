@@ -116,6 +116,7 @@ from .finite_strain_contact3d import (
 )
 from .general_contact_qualification import qualify_general_contact3d
 from .hertz_3d_fe import Hertz3DFEResult, solve_hertz_cap_block
+from .hertz_quarter_patch import HertzQuarterPatch, build_hertz_quarter_patch, quarter_patch_quality
 from .spherical_shell import (
     HemisphereResult, projected_shell4_stiffness, hemisphere_with_hole,
 )
@@ -302,6 +303,7 @@ __all__ = [
     "run_curved_finite_strain_friction_qualification",
     "qualify_general_contact3d",
     "Hertz3DFEResult", "solve_hertz_cap_block",
+    "HertzQuarterPatch", "build_hertz_quarter_patch", "quarter_patch_quality",
     "HemisphereResult", "projected_shell4_stiffness", "hemisphere_with_hole",
     "AdaptiveGlobalState", "AdaptiveGlobalResult",
     "assemble_adaptive_global", "solve_adaptive_global_path",
