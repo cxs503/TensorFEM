@@ -83,7 +83,7 @@ def build_curved_nonmatching_two_block_contact(*, master_cells: int,
     slave_cells: int, clearance: float=.02, radius: float=8.,young: float=1.e3,
     poisson: float=.3,normal_penalty: float=1.e5,lateral_size: float=1.,
     block_depth: float=1.,center_grading: float=0.,vertical_cells: int=1,
-    vertical_grading: float=1.):
+    vertical_grading: float=1., symmetry_planes: bool=False):
     """Build independently meshed TET4 blocks with a shallow curved slave face."""
     for name,value in (("master_cells",master_cells),("slave_cells",slave_cells)):
         if isinstance(value,bool) or not isinstance(value,int) or value<1:
@@ -134,6 +134,13 @@ def build_curved_nonmatching_two_block_contact(*, master_cells: int,
 
     master_nodes,master_faces=block(master_cells,upper=False)
     slave_nodes,slave_faces=block(slave_cells,upper=True)
+    # x>=0,y>=0 is a quarter-domain. Reflection planes constrain the normal
+    # displacement on every solid node lying on x=0 or y=0.
+    if symmetry_planes:
+        tol=max(1.e-12,lateral_size*1.e-12)
+        for node,(x,y,_z) in enumerate(nodes):
+            if abs(x)<=tol: fixed.append(3*node)
+            if abs(y)<=tol: fixed.append(3*node+1)
     solid=FiniteStrainTet4Model(torch.tensor(nodes,dtype=torch.float64),
         torch.tensor(elements,dtype=torch.long),young,poisson,
         torch.tensor(sorted(set(fixed)),dtype=torch.long))

@@ -23,14 +23,16 @@ class Hertz3DFEResult:
 def solve_hertz_cap_block(*,cells:int,approach:float=.005,radius:float=8.,
     young:float=1.e3,poisson:float=.3,normal_penalty:float=1.e4,
     lateral_size:float=1.,block_depth:float=1.,center_grading:float=0.,
-    vertical_cells:int=1,vertical_grading:float=1.,maximum_edge_ratio:float=12.):
+    vertical_cells:int=1,vertical_grading:float=1.,maximum_edge_ratio:float=12.,
+    symmetry_planes: bool=True):
     """Solve imposed approach of two real TET4 solids with a faceted cap."""
     if approach<=0: raise ValueError("approach must be positive")
     model=build_curved_nonmatching_two_block_contact(master_cells=cells,
         slave_cells=cells+1,clearance=-approach,radius=radius,young=young,
         poisson=poisson,normal_penalty=normal_penalty,lateral_size=lateral_size,
         block_depth=block_depth,center_grading=center_grading,
-        vertical_cells=vertical_cells,vertical_grading=vertical_grading)
+        vertical_cells=vertical_cells,vertical_grading=vertical_grading,
+        symmetry_planes=symmetry_planes)
     tet=model.solid.reference_nodes[model.solid.elements]
     pairs=((0,1),(0,2),(0,3),(1,2),(1,3),(2,3))
     lengths=torch.stack(tuple(torch.linalg.vector_norm(tet[:,i]-tet[:,j],dim=1)

@@ -27,10 +27,11 @@ def main(output: str = ".qualification/hertz-3d-fe/multilevel-evidence.json"):
     clean={"schema":"tensorfem.hertz-3d-fe-multilevel-evidence/1.0",
            "qualification_status":"qualified" if passed else "blocked","passed":passed,
            "required_maximum_relative_error":.03,"required_levels":3,
+           "symmetry_planes":True,
            "monotone_relative_error":monotone,"cases":cases,
            "blockers":[] if passed else [
                "real TET4/Mortar Hertz multilevel sequence does not meet the <=3% gate",
-               "symmetric quarter-domain boundary conditions are not yet part of this evidence"],
+               "symmetric quarter-domain boundary conditions or the <=3% convergence gate remain incomplete"],
            "wall_time_seconds":time.time()-started}
     clean["evidence_sha256"]=hashlib.sha256(_canonical(clean).encode()).hexdigest()
     target=Path(output); target.parent.mkdir(parents=True,exist_ok=True)
