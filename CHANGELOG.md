@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.39.0
+
+- Qualified dense/SuperLU equivalence through an 80-point finite-rotation Shell4 path with all integration points yielded. Load, displacement, recoverable/hardening energy and plastic-history differences are around 1e-15; the measured small case remains slower and uses more peak RSS with SuperLU, so no acceleration claim is made.
+- Qualified opt-in automatic step control on a 20-transaction real panel path containing four actual step changes. Interpolated force, displacement, external-work and internal-energy differences remain below 0.123%, interrupted restart is exact, and Newton iterations fall from 66 to 65 without a rejected-step improvement.
+- Added reduced-order lateral-torsional buckling and sharp circular-pit screening. The independent spatial/oracle errors converge to 0.0518% and 0.139%, while coupled plate-stiffener collapse, weld failure, cracks and postbuckling remain explicitly excluded.
+- Extended the corrected-metric 12x12 panel path from 20 to 25 accepted points and 369.285 kN with equilibrium and energy gates passing. It remains elastic and does not establish an ultimate-load peak; the longer 8x8 continuation remains a recoverable background qualification.
+
 ## 0.38.0
 
 - Added an explicit SuperLU route to the finite-rotation Shell4 increment and full arc-length path. Real 2x2 and 4x4 prefixes match dense loads and displacements far below 1%, with auditable sparse factorization diagnostics and no speedup claim.

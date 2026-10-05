@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.38)
+## Capability maturity (v0.39)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -106,9 +106,10 @@ analytical or recognized benchmark evidence.
 | optional sparse direct/ILU backend | verified internal adapter | fail-closed lazy SciPy integration matches dense 4x4/8x8 correctors, but is slower at current sizes and is not a production-performance claim |
 | advisory nonlinear control policy | verified execution foundation | deterministic Newton/rejection/curvature/equilibrium/energy classifications, hashed restart chain and explicit recommendations; automatic solver switching remains disabled |
 | marine stiffening and degradation screening | qualified analytical/numerical prototypes | smeared stiffener buckling, uniform-corrosion thickness sensitivity and self-balanced residual-stress first-yield errors remain below 0.08%; discrete tripping, pitting and collapse remain unqualified |
-| sparse Shell4 nonlinear path | verified experimental route | explicit SuperLU increment/arc solves match dense 2x2/4x4 paths far below 1%; no speedup or long plastic-path equivalence is claimed |
-| automatic nonlinear step control | experimental opt-in | bounded step-only control preserves short arch/panel paths and deterministic restart; it does not switch algorithms and has not yet demonstrated fewer iterations or rejections |
+| sparse Shell4 nonlinear path | qualified accuracy route | dense/SuperLU paths match through 80 accepted points and 100% yielded integration points at about 1e-15 physical-history differences; current small case is slower and uses more peak RSS, so no performance claim is made |
+| automatic nonlinear step control | experimental opt-in | 20 real panel transactions include four step changes, remain within 0.123% of the fixed path and restart exactly; Newton iterations fall from 66 to 65, with no rejected-step improvement |
 | discrete stiffener and nonuniform corrosion screening | qualified reduced-order prototypes | explicit compatible line stiffeners match an independent Ritz oracle; smooth corrosion converges below 3%, while tripping, welds, isolated pits and collapse remain out of scope |
+| stiffener instability and local-pit screening | qualified reduced-order prototypes | finite-difference lateral-torsional buckling converges to 0.0518% and sharp circular-pit area to 0.139%; coupled nonlinear panel collapse remains out of scope |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

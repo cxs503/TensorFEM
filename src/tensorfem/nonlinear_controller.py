@@ -87,7 +87,13 @@ def recommend_nonlinear_controls(
     curvature = _path_curvature(point_history)
     terminal = point_history[-1] if point_history else None
     balance = terminal.get("equilibrium_relative_norm") if terminal else None
-    gate = terminal.get("energy_balance_gate") if terminal else None
+    # Whole-path energy remains a qualification result, but cannot guide a
+    # controller after one coarse increment has left an irreversible
+    # quadrature residual.  Prefer the explicitly reported latest-increment
+    # gate when the runner provides it.
+    gate = (terminal.get("controller_incremental_energy_balance_gate",
+                         terminal.get("energy_balance_gate"))
+            if terminal else None)
     energy_passed = gate.get("passed") if isinstance(gate, Mapping) else None
 
     invalid = []

@@ -674,10 +674,21 @@ def execute_panel_chunked_job(
             reference_recoverable_energy=reference_recoverable_energy,
         )
         reference_norm = float(torch.linalg.vector_norm(case.reference_load))
+        previous_external = (float(history[-1]["external_work_j"])
+                             if history else float(cumulative_external_work))
+        previous_internal = (float(history[-1]["internal_energy_j"])
+                             if history else 0.0)
         for local, (point, point_energy) in enumerate(
                 zip(path.points, energy.points), 1):
             energy_gate = energy_balance_gate(
                 point_energy.external_work, point_energy.internal_energy,
+                characteristic_energy=controls["characteristic_energy_j"],
+                absolute_ratio=controls["energy_absolute_tolerance_ratio"],
+                relative_tolerance=controls["energy_relative_tolerance"],
+            )
+            controller_energy_gate = energy_balance_gate(
+                point_energy.external_work - previous_external,
+                point_energy.internal_energy - previous_internal,
                 characteristic_energy=controls["characteristic_energy_j"],
                 absolute_ratio=controls["energy_absolute_tolerance_ratio"],
                 relative_tolerance=controls["energy_relative_tolerance"],
@@ -704,7 +715,10 @@ def execute_panel_chunked_job(
                 "relative_energy_residual": point_energy.relative_energy_residual,
                 "failure_mode": point_energy.failure_mode,
                 "energy_balance_gate": energy_gate,
+                "controller_incremental_energy_balance_gate": controller_energy_gate,
             })
+            previous_external = point_energy.external_work
+            previous_internal = point_energy.internal_energy
         cumulative_external_work = energy.points[-1].external_work
         cumulative_plastic_dissipation = energy.points[-1].plastic_dissipation
         displacement, state = path.displacement, path.committed_state

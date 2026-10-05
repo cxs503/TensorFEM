@@ -49,3 +49,38 @@ No speedup is claimed: the 4x4 measurement is slightly slower, and these
 prefixes are too small to establish scaling.  Long peak/post-peak paths,
 plastic-history equivalence, process peak RSS, and larger meshes remain open
 qualification work.
+
+## Yielding-path qualification (v0.39)
+
+The reproducible runner
+`scripts/run_sparse_shell4_plastic_qualification.py` drives a three-layer,
+finite-rotation Shell4 facet through 80 accepted arc-length points.  The final
+state has yielded at every integration point, so this comparison exercises
+trial/commit history and the consistent plastic tangent rather than only an
+elastic prefix.
+
+| Quantity | dense | SuperLU | relative difference |
+|---|---:|---:|---:|
+| accepted points | 80 | 80 | 0 |
+| load factor | 7.719914400896420 | 7.719914400896421 | 1.15e-16 |
+| displacement norm | 0.1238170125666957 | 0.1238170125666961 | 3.03e-15 |
+| recoverable energy | 0.4308711361111206 J | 0.4308711361111226 J | 4.64e-15 |
+| hardening energy | 0.4013992076224942 J | 0.4013992076224965 J | 5.81e-15 |
+| sum of equivalent plastic strain | 1.015320107085858 | 1.015320107085861 | 3.06e-15 |
+| plastic-strain tensor norm | 0.3591806137340720 | 0.3591806137340731 | 2.94e-15 |
+| yielded fraction | 1.0 | 1.0 | 0 |
+
+Both histories have monotonically nondecreasing equivalent plastic strain.
+The maximum SuperLU backward residual is `3.07e-16`.  State SHA-256 values are
+not byte-identical due to the floating-point differences shown above; physical
+history invariants pass the 1% gate by more than twelve orders of magnitude.
+
+Independent CPU processes measured 50.80 s for dense and 54.91 s for SuperLU
+inside the qualification region. External `/usr/bin/time -v` peak RSS was
+710,252 KiB and 734,168 KiB respectively. SuperLU performed 197 numerical
+factorizations. At this four-free-DOF size its maximum reported sparse matrix
+and factor storage estimates are 324 B and 408 B, versus a 200 B dense 5x5
+bordered matrix. Thus this case qualifies nonlinear plastic-path equivalence,
+but explicitly **fails to demonstrate either speed or memory improvement**.
+Sparse performance qualification requires substantially larger yielding
+models and symbolic/numerical factor reuse across compatible tangent updates.

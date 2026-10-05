@@ -127,3 +127,16 @@ def test_automatic_step_decision_is_restart_deterministic_and_fails_closed():
                                      automatic_step_control=True,
                                      current_step_size=.04,
                                      minimum_step_size=0., maximum_step_size=.08)
+
+
+def test_controller_uses_latest_increment_without_hiding_whole_path_energy_failure():
+    history = [_point(10, .001), _point(20, .002), _point(30, .003, energy=False)]
+    history[-1]["controller_incremental_energy_balance_gate"] = {"passed": True}
+    decision = recommend_nonlinear_controls(
+        history, [_diagnostic([1e-2, 1e-4, 1e-7])],
+        automatic_step_control=True, current_step_size=.04,
+        minimum_step_size=.01, maximum_step_size=.08,
+    )
+    assert history[-1]["energy_balance_gate"]["passed"] is False
+    assert decision["classification"] == "stable"
+    assert decision["observations"]["terminal_energy_gate_passed"] is True
