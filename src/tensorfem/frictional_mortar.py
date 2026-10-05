@@ -1,6 +1,7 @@
 """Incremental frictional mortar and two-sided self-contact foundations."""
 from __future__ import annotations
 from dataclasses import dataclass
+import math
 import torch
 
 from .contact3d import project_point_to_facets
@@ -43,6 +44,36 @@ class FrictionalMortarAssembly:
     result: FrictionalMortarResult
 
 
+@dataclass(frozen=True)
+class SymmetricFrictionalMortarState:
+    """Independent histories for the two mortar integration directions."""
+    forward: FrictionalMortarState
+    reverse: FrictionalMortarState
+    forward_weight: float = 0.5
+    reverse_weight: float = 0.5
+
+
+@dataclass(frozen=True)
+class SymmetricFrictionalMortarResult:
+    slave_forces: torch.Tensor
+    master_forces: torch.Tensor
+    state: SymmetricFrictionalMortarState
+    normal_resultant: torch.Tensor
+    tangential_resultant: torch.Tensor
+    stored_energy: torch.Tensor
+    dissipation_increment: torch.Tensor
+    active_points: int
+    forward: FrictionalMortarResult
+    reverse: FrictionalMortarResult
+
+
+@dataclass(frozen=True)
+class SymmetricFrictionalMortarAssembly:
+    residual: torch.Tensor
+    tangent: torch.Tensor
+    result: SymmetricFrictionalMortarResult
+
+
 def _detached_result(result: FrictionalMortarResult) -> FrictionalMortarResult:
     """Deeply detach a trial result before it crosses the assembly boundary."""
     def tensor(value: torch.Tensor | None):
@@ -73,6 +104,17 @@ def initial_frictional_mortar_state(slave_vertices,slave_faces,master_vertices,m
             p=project_point_to_facets(point,master_vertices,master_faces)
             points.append(MortarPointState(torch.zeros_like(point),point.new_zeros(()),p.point,p.face,point,p.weights))
     return FrictionalMortarState(_topology(slave_faces,master_faces),tuple(points))
+
+
+def initial_symmetric_frictional_mortar_state(
+    slave_vertices,slave_faces,master_vertices,master_faces,
+) -> SymmetricFrictionalMortarState:
+    """Create equal-weight directional histories for a two-pass interface."""
+    forward=initial_frictional_mortar_state(
+        slave_vertices,slave_faces,master_vertices,master_faces)
+    reverse=initial_frictional_mortar_state(
+        master_vertices,master_faces,slave_vertices,torch.flip(slave_faces,[1]))
+    return SymmetricFrictionalMortarState(forward,reverse)
 
 
 def update_frictional_mortar(slave_vertices,slave_faces,master_vertices,master_faces,state,
@@ -160,6 +202,51 @@ def assemble_frictional_mortar(
             if tangent else q.new_zeros((q.numel(),q.numel())))
     return FrictionalMortarAssembly(
         residual.detach().clone(),matrix.detach().clone(),_detached_result(result))
+
+
+def assemble_symmetric_frictional_mortar(
+    slave_reference: torch.Tensor, slave_faces: torch.Tensor,
+    master_reference: torch.Tensor, master_faces: torch.Tensor,
+    slave_displacement: torch.Tensor, master_displacement: torch.Tensor,
+    committed: SymmetricFrictionalMortarState, *, normal_penalty: float,
+    tangential_penalty: float, friction: float, tangent: bool = True,
+) -> SymmetricFrictionalMortarAssembly:
+    """Assemble equal-weight directional friction without double counting.
+
+    The two integration directions own separate material-point histories. Each
+    contributes exactly one half of residual, tangent, stored energy and
+    dissipation. Reversing roles therefore swaps histories but leaves the
+    physical interface response unchanged in the converged-mesh limit.
+    """
+    wf,wr=committed.forward_weight,committed.reverse_weight
+    if not math.isclose(wf+wr,1.0,rel_tol=0.,abs_tol=1e-14) or min(wf,wr)<=0:
+        raise ValueError("symmetric mortar weights must be positive and sum to one")
+    forward=assemble_frictional_mortar(slave_reference,slave_faces,
+        master_reference,master_faces,slave_displacement,master_displacement,
+        committed.forward,normal_penalty=normal_penalty,
+        tangential_penalty=tangential_penalty,friction=friction,tangent=tangent)
+    reverse=assemble_frictional_mortar(master_reference,master_faces,
+        slave_reference,torch.flip(slave_faces,[1]),master_displacement,
+        slave_displacement,committed.reverse,normal_penalty=normal_penalty,
+        tangential_penalty=tangential_penalty,friction=friction,tangent=tangent)
+    ns,nm=slave_reference.numel(),master_reference.numel()
+    order=torch.cat((torch.arange(nm,nm+ns),torch.arange(0,nm)))
+    residual=wf*forward.residual+wr*reverse.residual[order]
+    matrix=wf*forward.tangent+wr*reverse.tangent[order][:,order]
+    sf=wf*forward.result.slave_forces+wr*reverse.result.master_forces
+    mf=wf*forward.result.master_forces+wr*reverse.result.slave_forces
+    normal=wf*forward.result.normal_resultant-wr*reverse.result.normal_resultant
+    tangential=wf*forward.result.tangential_resultant-wr*reverse.result.tangential_resultant
+    state=SymmetricFrictionalMortarState(
+        forward.result.state,reverse.result.state,wf,wr)
+    result=SymmetricFrictionalMortarResult(
+        sf,mf,state,normal,tangential,
+        wf*forward.result.stored_energy+wr*reverse.result.stored_energy,
+        wf*forward.result.dissipation_increment+wr*reverse.result.dissipation_increment,
+        forward.result.active_points+reverse.result.active_points,
+        forward.result,reverse.result)
+    return SymmetricFrictionalMortarAssembly(
+        residual.detach().clone(),matrix.detach().clone(),result)
 
 
 @dataclass(frozen=True)

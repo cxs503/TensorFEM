@@ -701,6 +701,9 @@ def execute_panel_chunked_job(
         if candidates:
             _, load_manifest_path, load_checkpoint_path = max(candidates)
     if resume and load_manifest_path.exists() and load_checkpoint_path.exists():
+        # Retain the last committed immutable generation as the manifest head
+        # when a later attempt times out before publishing a new checkpoint.
+        checkpoint_path = load_checkpoint_path
         manifest = json.loads(load_manifest_path.read_text(encoding="utf-8"))
         binary_hash = hashlib.sha256(load_checkpoint_path.read_bytes()).hexdigest()
         if (manifest.get("schema") != CHUNKED_SCHEMA

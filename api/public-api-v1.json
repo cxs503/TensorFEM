@@ -1051,6 +1051,41 @@
       "stability": "experimental"
     },
     {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "SymmetricFrictionalMortarState",
+      "object": "SymmetricFrictionalMortarState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "SymmetricFrictionalMortarResult",
+      "object": "SymmetricFrictionalMortarResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "SymmetricFrictionalMortarAssembly",
+      "object": "SymmetricFrictionalMortarAssembly",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "initial_symmetric_frictional_mortar_state",
+      "object": "initial_symmetric_frictional_mortar_state",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "assemble_symmetric_frictional_mortar",
+      "object": "assemble_symmetric_frictional_mortar",
+      "stability": "experimental"
+    },
+    {
       "introduced": "0.44.0",
       "module": "tensorfem.frictional_surface_path",
       "name": "FrictionalSurfaceState",
@@ -1090,6 +1125,118 @@
       "module": "tensorfem.frictional_surface_path",
       "name": "run_frictional_surface_path_qualification",
       "object": "run_frictional_surface_path_qualification",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "run_frictional_surface_mesh_qualification",
+      "object": "run_frictional_surface_mesh_qualification",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "FiniteStrainContactModel",
+      "object": "FiniteStrainContactModel",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "FiniteStrainContactStep",
+      "object": "FiniteStrainContactStep",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "FiniteStrainFrictionState",
+      "object": "FiniteStrainFrictionState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "FiniteStrainFrictionStep",
+      "object": "FiniteStrainFrictionStep",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "build_two_block_contact",
+      "object": "build_two_block_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "build_curved_nonmatching_two_block_contact",
+      "object": "build_curved_nonmatching_two_block_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "balanced_face_load",
+      "object": "balanced_face_load",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "solve_finite_strain_contact_path",
+      "object": "solve_finite_strain_contact_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "initial_finite_strain_friction_state",
+      "object": "initial_finite_strain_friction_state",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "solve_finite_strain_friction_path",
+      "object": "solve_finite_strain_friction_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "solve_finite_strain_friction_adaptive_path",
+      "object": "solve_finite_strain_friction_adaptive_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "run_curved_finite_strain_friction_qualification",
+      "object": "run_curved_finite_strain_friction_qualification",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.general_contact_qualification",
+      "name": "qualify_general_contact3d",
+      "object": "qualify_general_contact3d",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_3d_fe",
+      "name": "Hertz3DFEResult",
+      "object": "Hertz3DFEResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_3d_fe",
+      "name": "solve_hertz_cap_block",
+      "object": "solve_hertz_cap_block",
       "stability": "experimental"
     },
     {
@@ -2241,7 +2388,7 @@
       "stability": "beta"
     }
   ],
-  "package_version": "0.44.0",
+  "package_version": "0.45.0",
   "policy": {
     "beta": "deprecate before removal",
     "experimental": "may change with release notes",

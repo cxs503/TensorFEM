@@ -109,7 +109,9 @@ def main() -> None:
                 "marine stiffening, corrosion and residual-stress screening qualifications",
                 "10k-active-DOF Shell4 ILU-GMRES memory qualification with hashed reports",
                 "consistent two-sided frictional Mortar assembly and bounded curved stick-slip path",
-                "generation-scheduled panel integrity and readiness evidence",
+                "bounded finite-strain double-deformable friction paths",
+                "generation-scheduled panel dual-head transaction integrity and readiness evidence",
+                "hashed executable v1 evidence aggregation and release-log verification",
             ],
             "experimental": [
                 "general nonlinear doubly-curved shell engineering solver",
@@ -125,6 +127,8 @@ def main() -> None:
                 "complete 12x12 peak localization and 4/8/12 convergence evidence",
                 "slow curved two-pass frictional qualification; fail-closed on current evidence",
                 "general curved frictional surface-to-surface contact remains blocked",
+                "general contact composite awaits deformable-to-deformable Hertz evidence",
+                "4/8/12 panel peak/post-peak matrix remains incomplete",
             ],
         }, indent=2))
         return

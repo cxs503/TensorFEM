@@ -1,5 +1,9 @@
+import os
+import pytest
 import torch
-from tensorfem.frictional_surface_path import run_frictional_surface_path_qualification
+from tensorfem.frictional_surface_path import (
+    run_frictional_surface_mesh_qualification,
+    run_frictional_surface_path_qualification)
 from tensorfem.surface_surface_contact3d import build_parabolic_surface_model
 
 
@@ -11,6 +15,8 @@ def test_nonmatching_curved_double_deformable_stick_slip_path():
     assert report["coulomb_relative_error"]<.03
     assert report["force_imbalance"]<1e-9
     assert report["equilibrium_moment_residual"]<1e-7
+    assert report["two_pass_energy_partition_error"]<1e-12
+    assert report["master_slave_interchange_relative_error"]<.03
     assert report["rollback_exact"]
     assert report["general_surface_to_surface"]=="blocked"
 
@@ -24,8 +30,22 @@ def test_all_committed_path_history_tensors_are_detached():
         FrictionalSurfaceLoad(250.,80.)],tangential_penalty=5e4,friction=.3)
     for step in steps:
         tensors=[step.state.slave_displacement,step.state.master_displacement]
-        for point in step.state.contact.points:
+        contact=step.state.contact
+        points=(contact.forward.points+contact.reverse.points
+                if hasattr(contact,"forward") else contact.points)
+        for point in points:
             tensors.extend([point.elastic_slip,point.dissipated_energy_density,
                 point.projection,point.slave_point,point.master_weights])
         assert all(value is not None and not value.requires_grad for value in tensors)
         assert all(value.grad_fn is None for value in tensors)
+
+
+@pytest.mark.skipif(os.environ.get("TENSORFEM_RUN_SLOW_FRICTIONAL_SURFACE")!="1",
+    reason="set TENSORFEM_RUN_SLOW_FRICTIONAL_SURFACE=1 for 4/5 curved path")
+def test_curved_frictional_three_mesh_slow_qualification():
+    report=run_frictional_surface_mesh_qualification()
+    errors=[row["normal_relative_error"] for row in report["mesh_sequence"]]
+    assert errors[-1]<.03 and errors[-1]<errors[-2]<errors[-3]
+    assert max(row["coulomb_relative_error"] for row in report["mesh_sequence"])<.03
+    assert report["master_slave_interchange_relative_error"]<.03
+    assert report["rollback_exact"]

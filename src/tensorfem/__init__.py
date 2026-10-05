@@ -92,14 +92,30 @@ from .nonproportional_plasticity import (
 from .frictional_mortar import (
     MortarPointState, FrictionalMortarState, FrictionalMortarResult,
     FrictionalMortarAssembly,
+    SymmetricFrictionalMortarState, SymmetricFrictionalMortarResult,
+    SymmetricFrictionalMortarAssembly,
     SelfContactResult, initial_frictional_mortar_state,
-    update_frictional_mortar, assemble_frictional_mortar, update_self_contact,
+    initial_symmetric_frictional_mortar_state,
+    update_frictional_mortar, assemble_frictional_mortar,
+    assemble_symmetric_frictional_mortar, update_self_contact,
 )
 from .frictional_surface_path import (
     FrictionalSurfaceState, FrictionalSurfaceLoad, FrictionalSurfaceStep,
     initial_frictional_surface_state, solve_frictional_surface_path,
     run_frictional_surface_path_qualification,
+    run_frictional_surface_mesh_qualification,
 )
+from .finite_strain_contact3d import (
+    FiniteStrainContactModel, FiniteStrainContactStep,
+    FiniteStrainFrictionState, FiniteStrainFrictionStep,
+    build_two_block_contact, build_curved_nonmatching_two_block_contact,
+    balanced_face_load,
+    solve_finite_strain_contact_path, initial_finite_strain_friction_state,
+    solve_finite_strain_friction_path, solve_finite_strain_friction_adaptive_path,
+    run_curved_finite_strain_friction_qualification,
+)
+from .general_contact_qualification import qualify_general_contact3d
+from .hertz_3d_fe import Hertz3DFEResult, solve_hertz_cap_block
 from .spherical_shell import (
     HemisphereResult, projected_shell4_stiffness, hemisphere_with_hole,
 )
@@ -209,7 +225,7 @@ from .result_db_v2 import (
     query_history_series, migrate_v1, read_result_db_compatible,
 )
 
-__version__ = "0.44.0"
+__version__ = "0.45.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
@@ -270,9 +286,22 @@ __all__ = [
     "MortarPointState", "FrictionalMortarState", "FrictionalMortarResult",
     "FrictionalMortarAssembly", "SelfContactResult", "initial_frictional_mortar_state",
     "update_frictional_mortar", "assemble_frictional_mortar", "update_self_contact",
+    "SymmetricFrictionalMortarState", "SymmetricFrictionalMortarResult",
+    "SymmetricFrictionalMortarAssembly", "initial_symmetric_frictional_mortar_state",
+    "assemble_symmetric_frictional_mortar",
     "FrictionalSurfaceState", "FrictionalSurfaceLoad", "FrictionalSurfaceStep",
     "initial_frictional_surface_state", "solve_frictional_surface_path",
     "run_frictional_surface_path_qualification",
+    "run_frictional_surface_mesh_qualification",
+    "FiniteStrainContactModel", "FiniteStrainContactStep",
+    "FiniteStrainFrictionState", "FiniteStrainFrictionStep",
+    "build_two_block_contact", "build_curved_nonmatching_two_block_contact",
+    "balanced_face_load",
+    "solve_finite_strain_contact_path", "initial_finite_strain_friction_state",
+    "solve_finite_strain_friction_path", "solve_finite_strain_friction_adaptive_path",
+    "run_curved_finite_strain_friction_qualification",
+    "qualify_general_contact3d",
+    "Hertz3DFEResult", "solve_hertz_cap_block",
     "HemisphereResult", "projected_shell4_stiffness", "hemisphere_with_hole",
     "AdaptiveGlobalState", "AdaptiveGlobalResult",
     "assemble_adaptive_global", "solve_adaptive_global_path",

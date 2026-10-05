@@ -34,6 +34,7 @@ def main() -> None:
     parser.add_argument("--point-wall-seconds", type=float, required=True)
     parser.add_argument("--poll-seconds", type=float, default=30.)
     parser.add_argument("--maximum-extension-seconds", type=float, default=7200.)
+    parser.add_argument("--refined-maximum-step", type=float)
     args = parser.parse_args()
     while True:
         status_path = args.cache_dir/"generation-status.json"
@@ -44,7 +45,24 @@ def main() -> None:
         time.sleep(args.poll_seconds)
     readiness = panel_generation_readiness(args.cache_dir)
     atomic_json(args.cache_dir/"panel-readiness.json", readiness)
-    if readiness["post_peak_observed"] or status.get("state") != "target_reached":
+    if readiness["post_peak_observed"]:
+        refined_step = (args.refined_maximum_step if args.refined_maximum_step
+                        is not None else min(5e-5, args.maximum_solver_step/2))
+        if not (args.cache_dir/"peak-step-sensitivity.json").exists():
+            command = [
+                sys.executable,
+                str(Path(__file__).with_name("run_panel_peak_step_refinement.py")),
+                "--cache-dir", str(args.cache_dir),
+                "--refined-maximum-step", str(refined_step),
+                "--wall-seconds", str(args.maximum_extension_seconds),
+            ]
+            completed = subprocess.run(command, check=False)
+            if completed.returncode:
+                raise SystemExit(completed.returncode)
+        final = panel_generation_readiness(args.cache_dir)
+        atomic_json(args.cache_dir/"panel-readiness.json", final)
+        return
+    if status.get("state") != "target_reached":
         return
     events = [json.loads(path.read_text()) for path in
               sorted((args.cache_dir/"events").glob("g*.json"))[-10:]]
@@ -84,4 +102,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

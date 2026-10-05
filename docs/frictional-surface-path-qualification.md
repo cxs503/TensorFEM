@@ -13,5 +13,24 @@ equilibrium residual. Rigid-motion objectivity and tangent consistency are
 covered by the frictional-Mortar assembly qualification.
 
 This is a real curved, nonmatching, double-deformable Newton path, but
-`general_surface_to_surface` remains blocked pending curved frictional mesh
-convergence, symmetric two-pass friction history and finite-strain contact.
+the symmetric mode keeps separate forward/reverse integration histories with
+explicit weights `0.5 + 0.5 = 1`. Residuals, tangents, stored energy and
+dissipation use the same weights, so the physical interface is not counted
+twice. Exchanging roles swaps the histories and reverses the applied relative
+shear while preserving the converged result.
+
+Until the opt-in mesh report passes, `general_surface_to_surface` remains
+blocked. A passing report qualifies only the curved frictional small-strain
+subset; finite-strain contact and self-contact remain outside the claim.
+
+## Opt-in mesh qualification
+
+The slow qualification runs complete 2/3, 3/4 and 4/5 nonmatching paths. The
+normal closure step is compared with the axisymmetric Winkler oracle
+`F=pi*keff*R*delta^2`; the sliding step is checked against `|T|=mu*N`.
+It also gates monotone normal-load error, positive non-duplicated dissipation,
+force balance, a complete role-exchanged path and rejected-step rollback.
+
+Default tests skip the expensive 4/5 Hessians. Run explicitly with:
+
+`TENSORFEM_RUN_SLOW_FRICTIONAL_SURFACE=1 PYTHONPATH=src python scripts/run_frictional_surface_mesh_qualification.py`

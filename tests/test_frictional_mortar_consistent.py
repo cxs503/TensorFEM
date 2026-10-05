@@ -3,7 +3,9 @@ import pytest
 import torch
 
 from tensorfem.frictional_mortar import (
-    assemble_frictional_mortar, initial_frictional_mortar_state)
+    SymmetricFrictionalMortarState, assemble_frictional_mortar,
+    assemble_symmetric_frictional_mortar, initial_frictional_mortar_state,
+    initial_symmetric_frictional_mortar_state)
 
 D=torch.float64
 
@@ -78,3 +80,26 @@ def test_assembled_trial_result_and_nested_history_are_fully_detached():
             point.projection,point.slave_point,point.master_weights])
     assert all(value is not None and not value.requires_grad for value in tensors)
     assert all(value.grad_fn is None for value in tensors)
+
+
+def test_symmetric_two_pass_weights_energy_and_objectivity():
+    slave,sf,master,mf=surfaces()
+    state=initial_symmetric_frictional_mortar_state(slave,sf,master,mf)
+    us=torch.zeros_like(slave);us[:,0]=.01;um=torch.zeros_like(master)
+    kwargs=dict(normal_penalty=1e5,tangential_penalty=1e4,friction=.3,tangent=False)
+    a=assemble_symmetric_frictional_mortar(slave,sf,master,mf,us,um,state,**kwargs)
+    expected=.5*(a.result.forward.dissipation_increment+a.result.reverse.dissipation_increment)
+    assert torch.equal(a.result.dissipation_increment,expected)
+    assert torch.equal(a.result.stored_energy,
+        .5*(a.result.forward.stored_energy+a.result.reverse.stored_energy))
+    angle=.41;c,s=math.cos(angle),math.sin(angle)
+    rotation=torch.tensor([[c,-s,0.],[s,c,0.],[0.,0.,1.]],dtype=D)
+    sr=slave@rotation.T;mr=master@rotation.T
+    rotated_state=initial_symmetric_frictional_mortar_state(sr,sf,mr,mf)
+    ar=assemble_symmetric_frictional_mortar(sr,sf,mr,mf,us@rotation.T,um,
+        rotated_state,**kwargs)
+    assert torch.allclose(ar.result.slave_forces,a.result.slave_forces@rotation.T,
+                          atol=2e-10,rtol=2e-10)
+    bad=SymmetricFrictionalMortarState(state.forward,state.reverse,.6,.6)
+    with pytest.raises(ValueError,match="sum to one"):
+        assemble_symmetric_frictional_mortar(slave,sf,master,mf,us,um,bad,**kwargs)

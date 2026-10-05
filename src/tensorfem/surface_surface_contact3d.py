@@ -355,7 +355,7 @@ def run_curved_surface_contact_qualification():
     rotation=torch.tensor([[c,-s,0.],[s,c,0.],[0.,0.,1.]],dtype=torch.float64)
     rotated=SurfacePatchModel(model.slave@rotation.T,model.slave_faces,model.slave_weights,
         model.master@rotation.T,model.master_faces,model.master_weights,
-        foundation,foundation,penalty)
+        foundation,foundation,penalty,model.two_pass)
     state_r=SurfacePatchState(step.state.slave_displacement@rotation.T,
                               step.state.master_displacement@rotation.T)
     # Compare like with like: the curved qualification model is symmetric

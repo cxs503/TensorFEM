@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.44)
+## Capability maturity (v0.45)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -63,7 +63,7 @@ analytical or recognized benchmark evidence.
 | multistep execution | stable initial subset | linear, thermal, modal and sequential thermoelastic steps with resume |
 | ResultDB v2 | stable core | multistep/multiframe/IP fields, histories, lazy queries and atomic HDF5 publication |
 | engineering case packages | stable examples | pressurized component, thin-wall panel and stopped connector with checkpoints, ResultDB, VTK and reports |
-| public API and release gates | stable infrastructure | versioned 320-symbol manifest, drift audit and offline wheel/sdist installation smoke test |
+| public API and release gates | stable infrastructure | versioned 341-symbol manifest, drift audit, executable release logs and offline wheel/sdist installation smoke test |
 | ship structural screening | stable benchmarks | hull-girder longitudinal bending and equivalent-orthotropic stiffened-panel analytical checks |
 | box-barge hydrostatics | stable initial subset | displacement, KB/BM/KM/GM and small-angle restoring moment for intact rectangular hulls |
 | marine environmental loads | stable initial subset | Airy-wave/Morison pile actions and audited TensorLBM-to-TensorFEM nodal force histories |
@@ -125,7 +125,10 @@ analytical or recognized benchmark evidence.
 | curved nonmatching two-pass contact | experimental fail-closed subset | symmetric bidirectional Mortar residual/tangent and a fast curved smoke gate are implemented; 4/5 one-pass oracle brackets are below 1.75%, but the full two-pass qualification remains opt-in and incomplete |
 | frictional Mortar consistent assembly and curved path | qualified bounded prototype | planar tangent/action, balance, objectivity, rollback and one curved nonmatching stick-slip path pass; the slow curved two-pass qualification fails closed and general surface contact remains blocked |
 | 10k-active-DOF Shell4 sparse release gate | qualified memory route | 42x42/10,882-active-DOF true residual and error pass with 16.9% lower storage than SuperLU and hash-verified reports; `performance_claim=memory_only` because SuperLU remains faster |
-| generation-scheduled panel readiness | stable evidence adapter | SHA-chained generations, checkpoint/status integrity and monotonic-prefix reporting are reproducible; 4/8/12 peak/post-peak convergence is still generating and no v1 readiness is claimed |
+| finite-strain double-deformable friction | qualified bounded prototype | matching and curved nonmatching two-pass paths pass balance, positive-Jacobian, Coulomb, dissipation, interchange and transactional rollback gates; self-contact, impact and production segmentation remain excluded |
+| generation-scheduled panel readiness | stable evidence adapter | SHA-chained attempts use separate committed/attempt heads so a failed wall-time attempt cannot replace the last valid checkpoint; 4/8/12 peak/post-peak convergence remains incomplete and no v1 readiness is claimed |
+| executable v1 evidence aggregation | stable governance | independently hashed nonlinear-Shell4, sparse, contact, panel and release artifacts are schema/log verified; missing or forged evidence fails closed |
+| general double-deformable surface contact composite | blocked qualification | bounded frictional subsets are available, but the full composite still awaits deformable-to-deformable Hertz evidence; no general-contact or v1 claim is made |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

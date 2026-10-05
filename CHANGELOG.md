@@ -2,6 +2,14 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.45.0
+
+- Added matching and curved nonmatching finite-strain, double-deformable friction paths with adaptive continuation, positive-Jacobian, Coulomb, dissipation, master/slave interchange and transactional rollback gates. This remains a bounded subset: deformable-to-deformable Hertz is blocked, so the general surface-contact composite is not qualified.
+- Separated generation-scheduler committed and attempt heads. A wall-time failure is recorded in the immutable attempt chain without replacing the last valid manifest/checkpoint; readiness follows committed events and fails closed on detached or modified state.
+- Added independent hashed nonlinear-Shell4 robustness evidence and a unified v1 evidence aggregator. Release evidence is produced by executed regression/API/offline-install commands with atomically stored logs and verified output hashes rather than hand-authored pass flags.
+- Added local panel peak-step refinement and strict 4/8/12 aggregation contracts. The required refined peak/post-peak matrix is still incomplete, so panel convergence and TensorFEM 1.0 remain blocked.
+- Preserved qualification boundaries: sparse scalability remains a memory-only claim, deformable Hertz remains blocked, and bounded contact subsets are not promoted to general contact.
+
 ## 0.44.0
 
 - Added a consistent two-sided frictional Mortar assembly and a transactional curved, nonmatching stick-slip path with force, moment, objectivity, tangent and rollback gates. The slow curved two-pass qualification remains fail-closed, and general surface-to-surface contact remains blocked.
