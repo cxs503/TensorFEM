@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from time import perf_counter
 
 import torch
@@ -59,7 +60,9 @@ def _drilling_stabilized(tangent: torch.Tensor, free: torch.Tensor,
 def benchmark_shell_sparse_scaling(mesh: int, *, drop_tolerance: float = 1e-4,
                                    fill_factor: float = 10.,
                                    rtol: float = 1e-8,
-                                   maxiter: int = 300) -> ShellSparseScalingPoint:
+                                   maxiter: int = 300,
+                                   tangent_cache: str | Path | None = None
+                                   ) -> ShellSparseScalingPoint:
     """Compare ILU-GMRES and SuperLU on the same real assembled panel tangent."""
     if mesh < 2:
         raise ValueError("mesh must be at least 2")
@@ -67,13 +70,27 @@ def benchmark_shell_sparse_scaling(mesh: int, *, drop_tolerance: float = 1e-4,
     mask = torch.ones(case.model.n_dofs, dtype=torch.bool)
     mask[case.fixed_dofs] = False
     free = torch.nonzero(mask).flatten()
-    started = perf_counter()
-    response = assemble_finite_rotation_layered_shell4_sparse(
-        case.model, torch.zeros(case.model.n_dofs, dtype=case.model.nodes.dtype),
-        LayeredShell4State.virgin(case.model), active_dofs=free,
-    )
-    tangent = _drilling_stabilized(response.tangent, free)
-    assembly_seconds = perf_counter()-started
+    cache = None if tangent_cache is None else Path(tangent_cache)
+    if cache is not None and cache.exists():
+        payload = torch.load(cache, map_location="cpu", weights_only=True)
+        if payload.get("mesh") != mesh or not torch.equal(payload.get("free"), free):
+            raise RuntimeError("sparse tangent cache identity mismatch")
+        tangent = payload["tangent"].coalesce()
+        assembly_seconds = float(payload["assembly_seconds"])
+    else:
+        started = perf_counter()
+        response = assemble_finite_rotation_layered_shell4_sparse(
+            case.model, torch.zeros(case.model.n_dofs, dtype=case.model.nodes.dtype),
+            LayeredShell4State.virgin(case.model), active_dofs=free,
+        )
+        tangent = _drilling_stabilized(response.tangent, free)
+        assembly_seconds = perf_counter()-started
+        if cache is not None:
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            temporary = cache.with_suffix(cache.suffix+".tmp")
+            torch.save({"mesh": mesh, "free": free, "tangent": tangent,
+                        "assembly_seconds": assembly_seconds}, temporary)
+            temporary.replace(cache)
     exact = torch.sin(torch.arange(len(free), dtype=case.model.nodes.dtype)*.31)
     rhs = tangent @ exact
 

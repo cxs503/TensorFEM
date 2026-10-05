@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.41)
+## Capability maturity (v0.42)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -117,6 +117,9 @@ analytical or recognized benchmark evidence.
 | double-deformable surface contact | qualified planar matched prototype | matching QUAD4 mortar points converge from 2.436% to 0.360% error with balance, objectivity, interchange and rollback gates; curved/nonmatching/frictional contact remains open |
 | native ILU-GMRES scaling | qualified storage prototype | 20x20/2544-DOF error is 3.04e-5 and storage is 9.286 MB versus 12.652 MB SuperLU and 51.775 MB dense; assembly consumes over 99% of measured time |
 | TensorFEM 1.0 readiness contract | stable governance | fail-closed hashed gates require difficult-shell robustness, general surface contact, at least 10k Shell4 sparse DOFs, release quality and explicit 4/8/12 peak/post-peak convergence |
+| panel solver-strategy migration | qualified execution infrastructure | fixed-Newton generation 658 migrates without mechanical or energy changes to an immutable backtracking identity; 8x8 point 659 then accepts in three Newton iterations with all gates passing |
+| nonmatching double-deformable surface contact | qualified planar prototype | 1/2, 2/3 and 3/4 QUAD4 grids converge from 5.173% to 0.1515%, with full-solve interchange error 0.564%; curved and frictional contact remains open |
+| 10k-DOF Shell4 sparse qualification | qualified storage scale | 42x42/10882 active DOFs achieves 1.33e-6 solution error and 1.34e-10 residual using 87.65 MB versus 105.54 MB SuperLU and 947.34 MB dense |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

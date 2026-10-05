@@ -1,6 +1,7 @@
 import pytest
 from tensorfem.surface_surface_contact3d import (
     build_surface_patch_model, initial_surface_patch_state,
+    run_nonmatching_surface_contact_qualification,
     run_surface_surface_contact_qualification, solve_surface_patch_path)
 
 
@@ -23,3 +24,12 @@ def test_failed_surface_increment_does_not_mutate_state():
     with pytest.raises(RuntimeError,match="committed state unchanged"):
         solve_surface_patch_path(m,[180.],initial_state=state,max_iterations=1)
     assert state.slave_displacement.count_nonzero()==0
+
+
+def test_nonmatching_complete_newton_paths_remain_fail_closed_general_scope():
+    r=run_nonmatching_surface_contact_qualification()
+    errors=[row["relative_error"] for row in r["mesh_sequence"]]
+    assert errors[-1]<.03 and all(a>b for a,b in zip(errors,errors[1:]))
+    assert r["complete_newton_role_exchange_relative_error"]<.03
+    assert r["objectivity_relative_error"]<1e-10 and r["rollback_exact"]
+    assert r["general_surface_to_surface"]=="blocked"

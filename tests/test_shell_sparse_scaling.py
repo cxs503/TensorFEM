@@ -2,7 +2,9 @@ import pytest
 import torch
 
 from tensorfem.finite_rotation_layered_shell4 import solve_finite_rotation_arc_path
-from tensorfem.shell_sparse_scaling import _drilling_stabilized
+from tensorfem.shell_sparse_scaling import (
+    _drilling_stabilized, benchmark_shell_sparse_scaling,
+)
 from tensorfem.sparse_shell4_plastic_qualification import yielding_shell4_case
 
 
@@ -13,6 +15,15 @@ def test_drilling_stabilization_preserves_sparse_layout_and_other_diagonal():
     assert result[0, 0] == 1 and result[2, 2] == 1
     assert result[1, 1] == pytest.approx(1.001)
     assert result[3, 3] == pytest.approx(1.001)
+
+
+def test_tangent_cache_identity_mismatch_fails_closed(tmp_path):
+    cache = tmp_path / "wrong.pt"
+    torch.save({"mesh": 4, "free": torch.tensor([1]),
+                "tangent": torch.eye(1).to_sparse_coo(),
+                "assembly_seconds": 0.}, cache)
+    with pytest.raises(RuntimeError, match="identity mismatch"):
+        benchmark_shell_sparse_scaling(2, tangent_cache=cache)
 
 
 def test_ilu_gmres_complete_arc_path_matches_dense_when_scipy_available():

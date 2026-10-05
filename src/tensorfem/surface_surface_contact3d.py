@@ -57,15 +57,25 @@ def _patch_mesh(cells: int, z: float, *, reverse: bool = False):
     return vertices, connectivity, weights
 
 
-def build_surface_patch_model(*, cells: int, clearance: float = .01,
+def build_surface_patch_model(*, cells: int, master_cells: int | None = None,
+                              clearance: float = .01,
                               foundation: float = 2.e4,
                               normal_penalty: float = 1.e6):
     if clearance <= 0 or foundation <= 0 or normal_penalty <= 0:
         raise ValueError("clearance, foundation and penalty must be positive")
-    master, mf, mw = _patch_mesh(cells, 0.)
+    mcells = cells if master_cells is None else master_cells
+    master, mf, mw = _patch_mesh(mcells, 0.)
     slave, sf, sw = _patch_mesh(cells, clearance)
     return SurfacePatchModel(slave, sf, sw, master, mf, mw,
                              foundation, foundation, normal_penalty)
+
+
+def _reflected_role_exchange(model: SurfacePatchModel):
+    """Exchange surface discretisations and reverse the new master normal."""
+    return SurfacePatchModel(
+        model.master, torch.flip(model.master_faces, [1]), model.master_weights,
+        model.slave, torch.flip(model.slave_faces, [1]), model.slave_weights,
+        model.master_foundation, model.slave_foundation, model.normal_penalty)
 
 
 def initial_surface_patch_state(model: SurfacePatchModel):
@@ -86,8 +96,12 @@ def _assemble(model: SurfacePatchModel, state: SurfacePatchState, pressure: floa
     stiffness[:ns].reshape(-1, 3)[:, 2] = model.slave_foundation*model.slave_weights
     stiffness[ns:].reshape(-1, 3)[:, 2] = model.master_foundation*model.master_weights
     external = torch.zeros_like(u)
-    external[:ns].reshape(-1, 3)[:, 2] = -pressure*model.slave_weights
-    external[ns:].reshape(-1, 3)[:, 2] = pressure*model.master_weights
+    face = model.master_faces[0]
+    triangle = model.master[face[:3]]
+    normal = torch.linalg.cross(triangle[1]-triangle[0], triangle[2]-triangle[0])
+    normal = normal/torch.linalg.vector_norm(normal)
+    external[:ns].reshape(-1, 3)[:] = -pressure*model.slave_weights[:,None]*normal
+    external[ns:].reshape(-1, 3)[:] = pressure*model.master_weights[:,None]*normal
     residual = stiffness*u-external+contact.residual
     matrix = contact.tangent + torch.diag(stiffness) if tangent else contact.tangent
     free = torch.cat((torch.arange(2, ns, 3), torch.arange(ns+2, len(u), 3)))
@@ -198,3 +212,74 @@ def run_surface_surface_contact_qualification():
                      "with multiple quadrature points and two Winkler-compliant bodies; not "
                      "curved Hertz contact, nonmatching production mortar, friction, "
                      "self-contact, finite strain or impact"),"passed":True}
+
+
+def run_nonmatching_surface_contact_qualification():
+    """Qualify complete Newton paths with unequal slave/master meshes."""
+    applied, clearance, foundation, penalty = 180., .01, 2.e4, 1.e6
+    oracle = _pressure_oracle(applied=applied, clearance=clearance,
+        slave_foundation=foundation, master_foundation=foundation,
+        normal_penalty=penalty)
+    meshes = ((1, 2), (2, 3), (3, 4))
+    rows=[]
+    for slave_cells, master_cells in meshes:
+        model=build_surface_patch_model(cells=slave_cells,master_cells=master_cells,
+            clearance=clearance,foundation=foundation,normal_penalty=penalty)
+        step=solve_surface_patch_path(model,[applied])[0]
+        force=torch.cat((step.contact.slave_forces,step.contact.master_forces))
+        points=torch.cat((model.slave+step.state.slave_displacement,
+                          model.master+step.state.master_displacement))
+        pressure=float(torch.sum(step.contact.slave_forces[:,2]))
+        rows.append({"slave_cells":slave_cells,"master_cells":master_cells,
+            "contact_pressure":pressure,"oracle_pressure":oracle,
+            "relative_error":abs(pressure/oracle-1),
+            "force_imbalance":float(torch.linalg.vector_norm(force.sum(0))),
+            "moment_imbalance":float(torch.linalg.vector_norm(
+                torch.linalg.cross(points,force).sum(0))),"iterations":step.iterations})
+
+    model=build_surface_patch_model(cells=2,master_cells=3,clearance=clearance,
+        foundation=foundation,normal_penalty=penalty)
+    step=solve_surface_patch_path(model,[applied])[0]
+    exchanged_model=_reflected_role_exchange(model)
+    exchanged_step=solve_surface_patch_path(exchanged_model,[applied])[0]
+    p=float(torch.sum(step.contact.slave_forces[:,2]))
+    pe=float(torch.sum(exchanged_step.contact.slave_forces[:,2]))
+    interchange=abs(abs(pe)/abs(p)-1)
+
+    angle=.57;c,s=math.cos(angle),math.sin(angle)
+    rotation=torch.tensor([[c,0.,s],[0.,1.,0.],[-s,0.,c]],dtype=torch.float64)
+    rotated=SurfacePatchModel(model.slave@rotation.T,model.slave_faces,model.slave_weights,
+        model.master@rotation.T,model.master_faces,model.master_weights,
+        foundation,foundation,penalty)
+    rotated_state=SurfacePatchState(step.state.slave_displacement@rotation.T,
+                                    step.state.master_displacement@rotation.T)
+    rotated_contact=assemble_mortar_contact(rotated.slave,rotated.slave_faces,
+        rotated.master,rotated.master_faces,rotated_state.slave_displacement,
+        rotated_state.master_displacement,normal_penalty=penalty,tangent=False)
+    expected=step.contact.slave_forces@rotation.T
+    objectivity=float(torch.linalg.vector_norm(rotated_contact.slave_forces-expected)
+                      /torch.linalg.vector_norm(expected))
+
+    initial=initial_surface_patch_state(model); before_s=initial.slave_displacement.clone()
+    before_m=initial.master_displacement.clone(); failed=False
+    try:
+        solve_surface_patch_path(model,[applied],initial_state=initial,max_iterations=1,
+                                 tolerance=1.e-14)
+    except RuntimeError: failed=True
+    rollback=bool(failed and torch.equal(initial.slave_displacement,before_s)
+                  and torch.equal(initial.master_displacement,before_m))
+    errors=[row["relative_error"] for row in rows]
+    passed=(errors[-1]<.03 and all(a>b for a,b in zip(errors,errors[1:]))
+        and max(row["force_imbalance"] for row in rows)<1.e-9
+        and max(row["moment_imbalance"] for row in rows)<1.e-9
+        and objectivity<1.e-10 and interchange<.03 and rollback)
+    if not passed: raise AssertionError("nonmatching surface contact qualification failed")
+    return {"schema":"tensorfem.nonmatching-surface-contact3d-qualification/1.0",
+        "mesh_sequence":rows,"objectivity_relative_error":objectivity,
+        "complete_newton_role_exchange_relative_error":interchange,
+        "rollback_exact":rollback,"general_surface_to_surface":"blocked",
+        "remaining_blockers":["curved-surface public benchmark",
+            "production segmentation integration","frictional two-pass contact"],
+        "scope":("planar nonmatching QUAD4 frictionless penalty-Mortar with two "
+                 "compliant bodies; general curved/frictional surface-to-surface remains blocked"),
+        "passed":True}

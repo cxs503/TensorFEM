@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.42.0
+
+- Added immutable, hash-audited panel solver-strategy migration. The 8x8 generation-658 mechanical state and energy ledger migrate exactly from fixed Newton to a distinct backtracking identity, after which point 659 accepts in three Newton iterations at 969.736 kN with equilibrium and energy gates passing.
+- Extended the two-compliant-surface contact closure to nonmatching 1/2, 2/3 and 3/4 QUAD4 meshes. Fine-grid oracle error reaches 0.1515% and a complete swapped-discretization solve differs by 0.564%, while curved, frictional and production segmentation contact remain blocked.
+- Qualified Shell4 sparse storage beyond the 1.0 contract threshold: a 42x42 model has 10,882 active DOFs, 1.33e-6 solution error and 1.34e-10 true residual, using 87.65 MB versus 105.54 MB SuperLU and 947.34 MB dense.
+- Recorded and rejected a frozen-tangent optimization after it changed a real 8x8 first-point load by about 49%. Assembly remains 98.2% of the measured 42x42 ILU path, so runtime acceleration remains open despite the storage qualification.
+
 ## 0.41.0
 
 - Integrated opt-in backtracking into the transactional finite-rotation layered Shell4 arc path and panel checkpoint identity. A yielding Shell4 step rejected by fixed Newton converges in 13 iterations and remains within 1% of a strict reference without leaking trial material history.

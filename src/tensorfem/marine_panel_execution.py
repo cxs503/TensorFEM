@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 import signal
 import time
+from dataclasses import fields, is_dataclass
 from typing import Iterable
 
 import torch
@@ -33,6 +34,7 @@ from .nonlinear_controller import (
 SCHEMA = "tensorfem.marine-panel-execution/1.0"
 PERFORMANCE_GATE_SCHEMA = "tensorfem.marine-panel-performance-gate/1.0"
 CHUNKED_SCHEMA = "tensorfem.marine-panel-chunked-execution/1.0"
+STRATEGY_MIGRATION_SCHEMA = "tensorfem.panel-strategy-migration/1.0"
 
 
 def _canonical(value: object) -> str:
@@ -45,6 +47,135 @@ def _atomic_json(path: Path, value: object) -> None:
     temporary.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n",
                          encoding="utf-8")
     os.replace(temporary, path)
+
+
+def _exact_checkpoint_value(left: object, right: object) -> bool:
+    """Recursively compare trusted checkpoint state without numeric tolerance."""
+    if isinstance(left, torch.Tensor) and isinstance(right, torch.Tensor):
+        return (left.dtype == right.dtype and left.device == right.device
+                and torch.equal(left, right))
+    if is_dataclass(left) and type(left) is type(right):
+        return all(_exact_checkpoint_value(getattr(left, item.name),
+                                           getattr(right, item.name))
+                   for item in fields(left))
+    if isinstance(left, dict) and isinstance(right, dict):
+        return left.keys() == right.keys() and all(
+            _exact_checkpoint_value(left[key], right[key]) for key in left)
+    if isinstance(left, (tuple, list)) and type(left) is type(right):
+        return len(left) == len(right) and all(
+            _exact_checkpoint_value(a, b) for a, b in zip(left, right))
+    return left == right
+
+
+def migrate_panel_checkpoint_strategy(
+    source_manifest: str | Path, destination: str | Path, *,
+    line_search: str = "backtracking",
+) -> dict[str, object]:
+    """Derive an immutable strategy checkpoint without changing mechanics.
+
+    This is a controlled one-way migration from a legacy/fixed-Newton panel
+    generation.  Source hashes are verified first; the new strategy receives
+    an independent job identity and a provenance hash chain.
+    """
+    if line_search != "backtracking":
+        raise ValueError("only the qualified backtracking strategy can be migrated")
+    source_path = Path(source_manifest)
+    source = json.loads(source_path.read_text(encoding="utf-8"))
+    if source.get("schema") != CHUNKED_SCHEMA:
+        raise ValueError("invalid source panel checkpoint schema")
+    if source.get("line_search") is not None:
+        raise ValueError("source checkpoint already has a nonlinear strategy")
+    source_binary = source_path.parent / str(source.get("checkpoint_file", ""))
+    source_bytes = source_binary.read_bytes()
+    source_binary_hash = hashlib.sha256(source_bytes).hexdigest()
+    if source_binary_hash != source.get("checkpoint_sha256"):
+        raise ValueError("source panel checkpoint integrity mismatch")
+    source_manifest_hash = hashlib.sha256(source_path.read_bytes()).hexdigest()
+    saved = torch.load(source_binary, map_location="cpu", weights_only=False)
+
+    identity_names = (
+        "schema", "energy_definition", "divisions", "normalized_arc_step",
+        "arc_metric", "solver_maximum_step", "relative_equilibrium_tolerance",
+    )
+    if any(name not in source for name in identity_names):
+        raise ValueError("source panel checkpoint identity is incomplete")
+    identity = {name: source[name] for name in identity_names}
+    if source.get("automatic_step_control"):
+        identity["automatic_step_control"] = True
+    identity["line_search"] = line_search
+    target_key = hashlib.sha256(_canonical(identity).encode()).hexdigest()[:20]
+    generation = int(source.get("accepted_points", -1))
+    if generation < 0:
+        raise ValueError("source accepted-point generation is invalid")
+    state_hash = (source.get("point_history", [{}])[-1].get("state_sha256")
+                  if source.get("point_history") else None)
+    energy = {name: saved.get(name) for name in (
+        "reference_recoverable_energy", "cumulative_external_work",
+        "cumulative_plastic_dissipation", "energy_definition",
+        "energy_prefix_complete",
+    )}
+    migration = {
+        "schema": STRATEGY_MIGRATION_SCHEMA,
+        "source_manifest": source_path.name,
+        "source_manifest_sha256": source_manifest_hash,
+        "source_checkpoint_file": source_binary.name,
+        "source_checkpoint_sha256": source_binary_hash,
+        "source_job_key": source.get("job_key"),
+        "source_generation": generation,
+        "source_state_sha256": state_hash,
+        "target_job_key": target_key,
+        "target_line_search": line_search,
+        "mechanical_state_exact": True,
+        "energy_ledger_exact": True,
+        "energy_ledger": energy,
+    }
+    migration["migration_sha256"] = hashlib.sha256(
+        _canonical(migration).encode()).hexdigest()
+
+    target_saved = dict(saved)
+    target_saved["line_search"] = line_search
+    target_saved["strategy_migration"] = migration
+    mechanical_keys = ("displacement", "state", "previous_increment", "load_factor",
+                       "step_size", "reference_recoverable_energy",
+                       "cumulative_external_work", "cumulative_plastic_dissipation",
+                       "energy_definition", "energy_prefix_complete")
+    if not all(_exact_checkpoint_value(saved.get(name), target_saved.get(name))
+               for name in mechanical_keys):
+        raise RuntimeError("strategy migration changed mechanical or energy state")
+
+    root = Path(destination); root.mkdir(parents=True, exist_ok=True)
+    target_binary = root / f"chunked-{target_key}-g{generation:06d}.pt"
+    target_manifest = root / f"chunked-{target_key}.json"
+    if target_binary.exists() or target_manifest.exists():
+        raise FileExistsError(
+            "strategy migration target already exists; immutable generations "
+            "must be replayed or migrated into a new destination"
+        )
+    temporary = target_binary.with_suffix(".pt.tmp")
+    torch.save(target_saved, temporary)
+    os.replace(temporary, target_binary)
+    target_binary_hash = hashlib.sha256(target_binary.read_bytes()).hexdigest()
+    reloaded = torch.load(target_binary, map_location="cpu", weights_only=False)
+    if not all(_exact_checkpoint_value(saved.get(name), reloaded.get(name))
+               for name in mechanical_keys):
+        raise RuntimeError("persisted strategy migration changed checkpoint state")
+
+    target = dict(source)
+    target.update(identity)
+    target_controls = dict(source.get("controls", {}))
+    target_controls["line_search"] = line_search
+    target.update({
+        "job_key": target_key,
+        "checkpoint_file": target_binary.name,
+        "checkpoint_sha256": target_binary_hash,
+        "line_search": line_search,
+        "controls": target_controls,
+        "strategy_migration": migration,
+        "replayed": False,
+    })
+    _atomic_json(target_manifest, target)
+    return {**migration, "target_manifest": str(target_manifest),
+            "target_checkpoint_sha256": target_binary_hash}
 
 
 def panel_geometry_preflight(case) -> dict[str, object]:
@@ -548,6 +679,7 @@ def execute_panel_chunked_job(
     cumulative_plastic_dissipation = 0.0
     energy_prefix_complete = True
     migration = None
+    strategy_migration = None
     load_manifest_path, load_checkpoint_path = manifest_path, checkpoint_path
     if resume and manifest_path.exists():
         committed = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -595,6 +727,7 @@ def execute_panel_chunked_job(
         if not verify_decision_chain(controller_decisions):
             raise ValueError("nonlinear controller decision-chain integrity mismatch")
         migration = manifest.get("migration")
+        strategy_migration = manifest.get("strategy_migration")
         required_energy = {"reference_recoverable_energy", "cumulative_external_work",
                            "cumulative_plastic_dissipation", "energy_definition"}
         if (required_energy <= set(saved)
@@ -748,6 +881,11 @@ def execute_panel_chunked_job(
             current_step_size = float(
                 decision["step_application"]["applied_step_size"]
             )
+        line_search_iterations = [
+            iteration for item in diagnostics if item.get("attempt") is not None
+            for iteration in item.get("iterations", [])
+            if iteration.get("line_search_alpha") is not None
+        ]
         chunks.append({
             "first_step": offset + 1, "last_step": len(history),
             "accepted": len(path.points),
@@ -759,6 +897,16 @@ def execute_panel_chunked_job(
             "terminal_plastic_dissipation_j": cumulative_plastic_dissipation,
             "terminal_energy_residual_j": energy.points[-1].energy_residual,
             "nonlinear_controller_decision_sha256": decision["decision_sha256"],
+            "line_search": line_search,
+            "line_search_evaluations": sum(
+                int(item.get("line_search_evaluations", 0))
+                for item in line_search_iterations),
+            "line_search_reduced_corrections": sum(
+                float(item["line_search_alpha"]) < 1.0
+                for item in line_search_iterations),
+            "minimum_line_search_alpha": min(
+                (float(item["line_search_alpha"])
+                 for item in line_search_iterations), default=None),
         })
         generation = len(history)
         checkpoint_path = root / f"chunked-{key}-g{generation:06d}.pt"
@@ -774,6 +922,7 @@ def execute_panel_chunked_job(
                     "arc_metric": "dimensionally_scaled",
                     "line_search": line_search,
                     "migration": migration,
+                    "strategy_migration": strategy_migration,
                     "energy_prefix_complete": energy_prefix_complete},
                    temporary)
         os.replace(temporary, checkpoint_path)
@@ -794,6 +943,7 @@ def execute_panel_chunked_job(
             "checkpoint_file": checkpoint_path.name,
             "checkpoint_sha256": checkpoint_hash,
             "migration": migration,
+            "strategy_migration": strategy_migration,
             "elapsed_seconds_this_run": time.monotonic() - started,
         }
         _atomic_json(manifest_path, manifest)
@@ -824,6 +974,7 @@ def execute_panel_chunked_job(
         "reference_recoverable_energy_j": reference_recoverable_energy,
         "energy_prefix_complete": energy_prefix_complete,
         "migration": migration,
+        "strategy_migration": strategy_migration,
         "energy_boundary": (None if energy_prefix_complete else
                             "energy ledger begins at a legacy mechanical checkpoint"),
         "external_work_j": (cumulative_external_work if history and

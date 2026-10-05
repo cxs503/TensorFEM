@@ -95,3 +95,40 @@ bottleneck is element tangent assembly: 9.98 s at 12x12 and 26.90 s at 20x20,
 compared with at most 0.20 s for either complete linear phase. Meaningful path
 acceleration therefore requires analytic/AD element tangents, batched element
 assembly, or tangent reuse—not additional Krylov tuning alone.
+
+## 10,000-active-DOF qualification
+
+The reproducible scaling runner now accepts `--drop-tolerance`,
+`--fill-factor`, `--maxiter`, and `--cache-dir`. A cache stores only the
+assembled sparse tangent, mesh number, active-DOF identity, and measured
+assembly time. Loading fails closed if the requested mesh or active set differs.
+This permits repeatable preconditioner studies without hiding the original
+assembly cost.
+
+The nominal 40x40 panel contains only 9,884 active DOFs and therefore does not
+meet the 10,000-DOF gate. Its default ILU configuration also failed closed at
+a true residual of `9.91e-5`. Qualification consequently uses a 42x42 real
+panel with 1,764 Shell4 elements, 10,882 active DOFs and 566,460 tangent
+nonzeros. The qualified command is:
+
+```bash
+PYTHONPATH=src python scripts/run_shell_sparse_scaling.py \
+  --meshes 42 --drop-tolerance 1e-6 --fill-factor 20 --maxiter 500 \
+  --cache-dir .qualification/v1-shell-sparse-scaling
+```
+
+The 42x42 ILU-GMRES solve converged in seven iterations with true residual
+`1.34e-10` and exact-solution error `1.33e-6`, well below 1%. Sparse matrix
+storage is 6,841,052 B. ILU factors require 80,813,512 B versus 98,694,808 B
+for SuperLU; matrix plus factor storage is therefore 87.65 MB versus
+105.54 MB (16.9% lower). A dense tangent alone would require 947.34 MB, so the
+qualified iterative representation uses 90.7% less storage.
+
+There is still no time crossover: ILU factor plus solve takes 2.181 s and
+SuperLU 1.441 s. More importantly, tangent assembly takes 121.206 s, or 98.2%
+of the ILU assembly-plus-linear total. A step-frozen tangent experiment reduced
+the number of tangent constructions, but changed the real 8x8 first-point load
+from 17.25 kN to 8.74 kN despite converging its equations. It violated the 1%
+path gate and was removed. This negative result rules out unsafe modified
+Newton reuse for the current arc metric. Analytic or batched evaluation must
+preserve the full algorithmic tangent at every corrector.
