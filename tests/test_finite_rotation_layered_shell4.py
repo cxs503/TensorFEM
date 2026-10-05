@@ -149,7 +149,9 @@ def test_force_only_material_update_skips_nested_numerical_tangent(monkeypatch):
     full_calls = calls
     assert torch.equal(fast[0], full[0])
     assert fast[1] is None
-    assert full_calls >= 7 * fast_calls
+    # A safely elastic point now takes the exact analytical condensed tangent,
+    # so it needs no repeated finite-difference return maps.
+    assert full_calls == fast_calls
 
 
 def test_finite_rotation_tangent_reintegrates_material_only_once(monkeypatch):

@@ -35,6 +35,23 @@ def test_plane_stress_material_point_matches_uniaxial_j2_oracle_and_tangent():
     assert torch.allclose(tangent, tangent.T, rtol=2e-5, atol=.1)
 
 
+def test_analytical_elastic_plane_stress_tangent_matches_force_difference():
+    model = one_element()
+    state = LayeredShell4State.virgin(model).points[0][0][0]
+    strain = torch.tensor([2e-4, -1e-4, 3e-5], dtype=D)
+    stress, tangent, trial = plane_stress_j2_update(strain, model, state)
+    direction = torch.tensor([.7, -.2, .3], dtype=D)
+    h = 2e-7
+    plus = plane_stress_j2_update(
+        strain+h*direction, model, state, tangent=False)[0]
+    minus = plane_stress_j2_update(
+        strain-h*direction, model, state, tangent=False)[0]
+    numerical = (plus-minus)/(2*h)
+    assert torch.allclose(tangent@direction, numerical, rtol=2e-10, atol=2e-9)
+    assert torch.equal(trial.plastic_strain, state.plastic_strain)
+    assert torch.equal(trial.alpha, state.alpha)
+
+
 def test_pure_membrane_and_pure_bending_reach_independent_layers():
     model = one_element(layers=5)
     state = LayeredShell4State.virgin(model)

@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.42)
+## Capability maturity (v0.43)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -120,6 +120,9 @@ analytical or recognized benchmark evidence.
 | panel solver-strategy migration | qualified execution infrastructure | fixed-Newton generation 658 migrates without mechanical or energy changes to an immutable backtracking identity; 8x8 point 659 then accepts in three Newton iterations with all gates passing |
 | nonmatching double-deformable surface contact | qualified planar prototype | 1/2, 2/3 and 3/4 QUAD4 grids converge from 5.173% to 0.1515%, with full-solve interchange error 0.564%; curved and frictional contact remains open |
 | 10k-DOF Shell4 sparse qualification | qualified storage scale | 42x42/10882 active DOFs achieves 1.33e-6 solution error and 1.34e-10 residual using 87.65 MB versus 105.54 MB SuperLU and 947.34 MB dense |
+| immutable panel generation scheduler | qualified execution infrastructure | SHA-chained one-point generations advance 8x8 to point 680/1.0111 MN and 12x12 to point 30/414.48 kN with all equilibrium and energy gates passing; both paths remain monotone |
+| analytic elastic Shell4 material tangent | qualified performance path | conservative elastic use with automatic numerical fallback near yield cuts assembly time 31-34% and a real 8x8 first point 27.9%, while an 80-point yielded path remains physically equivalent |
+| curved nonmatching two-pass contact | experimental fail-closed subset | symmetric bidirectional Mortar residual/tangent and a fast curved smoke gate are implemented; 4/5 one-pass oracle brackets are below 1.75%, but the full two-pass qualification remains opt-in and incomplete |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

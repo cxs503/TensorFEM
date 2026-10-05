@@ -189,6 +189,28 @@ def plane_stress_j2_update(strain: torch.Tensor, model: LayeredShell4Model,
     stress, trial = response(strain)
     if not tangent:
         return stress, None, trial
+    # Away from the yield surface the condensed J2 update is exactly linear
+    # elastic.  Use its analytical plane-stress derivative instead of six
+    # repeated return maps and local zz condensations.  The margin is many
+    # finite-difference perturbations wide; points near an active-set change
+    # retain the numerical algorithmic tangent below.
+    equivalent = torch.sqrt(torch.clamp(
+        stress[0]**2-stress[0]*stress[1]+stress[1]**2+3*stress[2]**2,
+        min=0.,
+    ))
+    current_yield = model.yield_stress+model.hardening*trial.alpha
+    margin = float(current_yield-equivalent)
+    elastic_margin = 32*(torch.finfo(strain.dtype).eps**(1/3))*max(
+        model.young, model.yield_stress, 1.)
+    if (abs(float(trial.alpha-committed.alpha)) <= 16*torch.finfo(strain.dtype).eps
+            and margin > elastic_margin):
+        factor = model.young/(1-model.poisson**2)
+        material = strain.new_tensor((
+            (1., model.poisson, 0.),
+            (model.poisson, 1., 0.),
+            (0., 0., (1-model.poisson)/2),
+        ))*factor
+        return stress, material, trial
     # Symmetric difference differentiates the actual return map including the
     # plane-stress condensation and active plastic branch.
     columns = []

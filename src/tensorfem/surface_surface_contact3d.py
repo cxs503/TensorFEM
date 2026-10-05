@@ -21,6 +21,7 @@ class SurfacePatchModel:
     slave_foundation: float
     master_foundation: float
     normal_penalty: float
+    two_pass: bool = False
 
 
 @dataclass(frozen=True)
@@ -70,12 +71,30 @@ def build_surface_patch_model(*, cells: int, master_cells: int | None = None,
                              foundation, foundation, normal_penalty)
 
 
+def build_parabolic_surface_model(*, cells: int, master_cells: int | None = None,
+                                  radius: float = 2.0, clearance: float = .005,
+                                  foundation: float = 2.e4,
+                                  normal_penalty: float = 1.e6):
+    """Build a shallow spherical/parabolic cap above a deformable flat patch."""
+    if radius <= 0:
+        raise ValueError("radius must be positive")
+    model=build_surface_patch_model(cells=cells,master_cells=master_cells,
+        clearance=clearance,foundation=foundation,normal_penalty=normal_penalty)
+    slave=model.slave.clone()
+    radial=(slave[:,0]-.5)**2+(slave[:,1]-.5)**2
+    slave[:,2]=clearance+radial/(2*radius)
+    return SurfacePatchModel(slave,model.slave_faces,model.slave_weights,
+        model.master,model.master_faces,model.master_weights,
+        model.slave_foundation,model.master_foundation,model.normal_penalty,True)
+
+
 def _reflected_role_exchange(model: SurfacePatchModel):
     """Exchange surface discretisations and reverse the new master normal."""
     return SurfacePatchModel(
         model.master, torch.flip(model.master_faces, [1]), model.master_weights,
         model.slave, torch.flip(model.slave_faces, [1]), model.slave_weights,
-        model.master_foundation, model.slave_foundation, model.normal_penalty)
+        model.master_foundation, model.slave_foundation, model.normal_penalty,
+        model.two_pass)
 
 
 def initial_surface_patch_state(model: SurfacePatchModel):
@@ -89,6 +108,26 @@ def _assemble(model: SurfacePatchModel, state: SurfacePatchState, pressure: floa
         model.slave, model.slave_faces, model.master, model.master_faces,
         state.slave_displacement, state.master_displacement,
         normal_penalty=model.normal_penalty, tangent=tangent)
+    if model.two_pass:
+        reverse = assemble_mortar_contact(
+            model.master, torch.flip(model.master_faces, [1]),
+            model.slave, torch.flip(model.slave_faces, [1]),
+            state.master_displacement, state.slave_displacement,
+            normal_penalty=model.normal_penalty, tangent=tangent)
+        ns, nm = model.slave.numel(), model.master.numel()
+        order = torch.cat((torch.arange(nm, nm+ns), torch.arange(0, nm)))
+        reverse_residual = reverse.residual[order]
+        reverse_tangent = reverse.tangent[order][:, order]
+        residual = .5*(contact.residual+reverse_residual)
+        matrix = .5*(contact.tangent+reverse_tangent)
+        slave_forces = .5*(contact.slave_forces+reverse.master_forces)
+        master_forces = .5*(contact.master_forces+reverse.slave_forces)
+        contact = MortarContactAssembly(
+            residual, matrix, slave_forces, master_forces,
+            contact.active_quadrature_points+reverse.active_quadrature_points,
+            .5*(contact.integrated_area+reverse.integrated_area),
+            torch.maximum(contact.maximum_penetration,reverse.maximum_penetration),
+            .5*(contact.penalty_energy+reverse.penalty_energy))
     ns = model.slave.numel()
     u = torch.cat((state.slave_displacement.reshape(-1),
                    state.master_displacement.reshape(-1)))
@@ -250,7 +289,7 @@ def run_nonmatching_surface_contact_qualification():
     rotation=torch.tensor([[c,0.,s],[0.,1.,0.],[-s,0.,c]],dtype=torch.float64)
     rotated=SurfacePatchModel(model.slave@rotation.T,model.slave_faces,model.slave_weights,
         model.master@rotation.T,model.master_faces,model.master_weights,
-        foundation,foundation,penalty)
+        foundation,foundation,penalty,model.two_pass)
     rotated_state=SurfacePatchState(step.state.slave_displacement@rotation.T,
                                     step.state.master_displacement@rotation.T)
     rotated_contact=assemble_mortar_contact(rotated.slave,rotated.slave_faces,
@@ -283,3 +322,90 @@ def run_nonmatching_surface_contact_qualification():
         "scope":("planar nonmatching QUAD4 frictionless penalty-Mortar with two "
                  "compliant bodies; general curved/frictional surface-to-surface remains blocked"),
         "passed":True}
+
+
+def run_curved_surface_contact_qualification():
+    """Qualify a shallow spherical cap against a compliant plane."""
+    applied,gap,radius,foundation,penalty=250.,.005,4.,2.e4,1.e6
+    target_indentation=2*applied/foundation-gap
+    effective=1/(1/penalty+2/foundation)
+    oracle=math.pi*effective*radius*target_indentation**2
+    rows=[]
+    for slave_cells,master_cells in ((2,3),(3,4),(4,5)):
+        model=build_parabolic_surface_model(cells=slave_cells,master_cells=master_cells,
+            radius=radius,clearance=gap,foundation=foundation,normal_penalty=penalty)
+        step=solve_surface_patch_path(model,[applied])[0]
+        forces=torch.cat((step.contact.slave_forces,step.contact.master_forces))
+        points=torch.cat((model.slave+step.state.slave_displacement,
+                          model.master+step.state.master_displacement))
+        load=float(torch.linalg.vector_norm(torch.sum(step.contact.slave_forces,dim=0)))
+        rows.append({"slave_cells":slave_cells,"master_cells":master_cells,
+            "contact_load":load,"winkler_paraboloid_oracle":oracle,
+            "relative_error":abs(load/oracle-1),
+            "force_imbalance":float(torch.linalg.vector_norm(forces.sum(0))),
+            "moment_imbalance":float(torch.linalg.vector_norm(
+                torch.linalg.cross(points,forces).sum(0))),"iterations":step.iterations})
+    model=build_parabolic_surface_model(cells=3,master_cells=4,radius=radius,
+        clearance=gap,foundation=foundation,normal_penalty=penalty)
+    step=solve_surface_patch_path(model,[applied])[0]
+    angle=.43;c,s=math.cos(angle),math.sin(angle)
+    rotation=torch.tensor([[c,-s,0.],[s,c,0.],[0.,0.,1.]],dtype=torch.float64)
+    rotated=SurfacePatchModel(model.slave@rotation.T,model.slave_faces,model.slave_weights,
+        model.master@rotation.T,model.master_faces,model.master_weights,
+        foundation,foundation,penalty)
+    state_r=SurfacePatchState(step.state.slave_displacement@rotation.T,
+                              step.state.master_displacement@rotation.T)
+    contact_r=assemble_mortar_contact(rotated.slave,rotated.slave_faces,
+        rotated.master,rotated.master_faces,state_r.slave_displacement,
+        state_r.master_displacement,normal_penalty=penalty,tangent=False)
+    expected=step.contact.slave_forces@rotation.T
+    objectivity=float(torch.linalg.vector_norm(contact_r.slave_forces-expected)
+                      /torch.linalg.vector_norm(expected))
+    exchanged_model=_reflected_role_exchange(model)
+    exchanged=solve_surface_patch_path(exchanged_model,[applied])[0]
+    load=float(torch.linalg.vector_norm(step.contact.slave_forces.sum(0)))
+    exchanged_load=float(torch.linalg.vector_norm(exchanged.contact.slave_forces.sum(0)))
+    interchange=abs(exchanged_load/load-1)
+    initial=initial_surface_patch_state(model);bs=initial.slave_displacement.clone()
+    bm=initial.master_displacement.clone();failed=False
+    try: solve_surface_patch_path(model,[applied],initial_state=initial,max_iterations=1)
+    except RuntimeError: failed=True
+    rollback=bool(failed and torch.equal(initial.slave_displacement,bs)
+                  and torch.equal(initial.master_displacement,bm))
+    errors=[row["relative_error"] for row in rows]
+    passed=(errors[-1]<.03 and errors[-1]<errors[0]
+        and max(row["force_imbalance"] for row in rows)<1.e-9
+        and max(row["moment_imbalance"] for row in rows)<1.e-9
+        and objectivity<1.e-10 and interchange<.03 and rollback)
+    if not passed: raise AssertionError("curved surface contact qualification failed")
+    return {"schema":"tensorfem.curved-surface-contact3d-qualification/1.0",
+        "model":"shallow parabolic sphere on two-sided Winkler foundations",
+        "mesh_sequence":rows,"target_indentation":target_indentation,
+        "objectivity_relative_error":objectivity,
+        "complete_newton_role_exchange_relative_error":interchange,
+        "rollback_exact":rollback,"general_surface_to_surface":"qualified_curved_frictionless_subset",
+        "remaining_blockers":["frictional two-pass contact","self-contact",
+            "classical elastic-halfspace Hertz solid discretisation"],
+        "scope":("nonmatching faceted parabolic-cap/plane double-deformable complete "
+                 "Newton contact with a Winkler sphere-indentation oracle; not classical "
+                 "Hertz elastic halfspaces, friction, self-contact, finite strain or impact"),
+        "passed":True}
+
+
+def run_curved_surface_contact_smoke():
+    """Fast default gate for the expensive symmetric curved-contact path."""
+    model=build_parabolic_surface_model(cells=2,master_cells=3,radius=4.,
+        clearance=.005,foundation=2.e4,normal_penalty=1.e6)
+    step=solve_surface_patch_path(model,[250.])[0]
+    forces=torch.cat((step.contact.slave_forces,step.contact.master_forces))
+    imbalance=float(torch.linalg.vector_norm(forces.sum(0)))
+    initial=initial_surface_patch_state(model);before=initial.slave_displacement.clone()
+    failed=False
+    try: solve_surface_patch_path(model,[250.],initial_state=initial,max_iterations=1)
+    except RuntimeError: failed=True
+    rollback=bool(failed and torch.equal(initial.slave_displacement,before))
+    if imbalance>=1.e-9 or not rollback or step.contact.active_quadrature_points<2:
+        raise AssertionError("curved surface contact smoke gate failed")
+    return {"schema":"tensorfem.curved-surface-contact3d-smoke/1.0",
+        "two_pass":model.two_pass,"active_quadrature_points":step.contact.active_quadrature_points,
+        "force_imbalance":imbalance,"rollback_exact":rollback,"passed":True}

@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.43.0
+
+- Added a SHA-chained, one-generation-at-a-time panel scheduler with per-point wall limits and stop-on-failure semantics. The migrated 8x8 path advances from point 659 to 680 at 1.0111 MN and 2.03125% yielded integration points; 12x12 advances from 25 to 30 at 414.48 kN. Both remain monotone, so no peak is claimed.
+- Added a conservative analytic elastic plane-stress material tangent with automatic fallback near yield and in plasticity. Shell4 assembly improves by 31-34% and a real 8x8 first point by 27.9%, while an 80-point fully yielded path retains load, displacement, energy and plastic history to roundoff.
+- Added curved, nonmatching, symmetric two-pass Mortar infrastructure and a default fail-closed smoke gate. Independent 4/5 one-pass brackets are within 1.75% of a Winkler paraboloid oracle, but their raw role bias exceeds 3%; the expensive full two-pass qualification remains opt-in and is not yet promoted.
+- Kept TensorFEM 1.0 blocked: the 4/8/12 panel paths still lack peaks/post-peak convergence, and the curved two-pass contact suite has not completed every interchange and objectivity gate.
+
 ## 0.42.0
 
 - Added immutable, hash-audited panel solver-strategy migration. The 8x8 generation-658 mechanical state and energy ledger migrate exactly from fixed Newton to a distinct backtracking identity, after which point 659 accepts in three Newton iterations at 969.736 kN with equilibrium and energy gates passing.

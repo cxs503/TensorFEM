@@ -203,7 +203,7 @@ from .result_db_v2 import (
     query_history_series, migrate_v1, read_result_db_compatible,
 )
 
-__version__ = "0.42.0"
+__version__ = "0.43.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
     "FrameModel", "FrameResult", "solve_frame_static",
