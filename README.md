@@ -5,7 +5,7 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
-## Capability maturity (v0.40)
+## Capability maturity (v0.41)
 
 | Capability | Maturity | Verification |
 |---|---|---|
@@ -113,6 +113,10 @@ analytical or recognized benchmark evidence.
 | arc-length backtracking line search | qualified opt-in strategy | a difficult von Mises arch step changes from one rejection to acceptance at alpha=0.5, matches the high-iteration reference below 1e-12 and restarts consistently |
 | double-deformable 3-D contact | qualified planar prototype | a two-compliant-body global Newton solve matches the series-compliance oracle, force/moment balance, objectivity, interchange and rollback gates; general curved/mortar/frictional contact remains open |
 | ILU-GMRES Shell4 path | qualified storage route | 12x12 error is 4.07e-5 and matrix/factor storage is 22.3% below SuperLU and 67.3% below dense; current runtime is not faster |
+| Shell4 arc backtracking | qualified opt-in strategy | a yielding finite-rotation Shell4 step rejected by fixed Newton converges in 13 iterations with line search and stays within 1% of a strict reference, with transactional history and restart gates |
+| double-deformable surface contact | qualified planar matched prototype | matching QUAD4 mortar points converge from 2.436% to 0.360% error with balance, objectivity, interchange and rollback gates; curved/nonmatching/frictional contact remains open |
+| native ILU-GMRES scaling | qualified storage prototype | 20x20/2544-DOF error is 3.04e-5 and storage is 9.286 MB versus 12.652 MB SuperLU and 51.775 MB dense; assembly consumes over 99% of measured time |
+| TensorFEM 1.0 readiness contract | stable governance | fail-closed hashed gates require difficult-shell robustness, general surface contact, at least 10k Shell4 sparse DOFs, release quality and explicit 4/8/12 peak/post-peak convergence |
 | general self-contact, mortar contact and crack growth | experimental/planned | not advertised as stable |
 | distributed sparse solvers and production CAD meshing | planned | not implemented |
 

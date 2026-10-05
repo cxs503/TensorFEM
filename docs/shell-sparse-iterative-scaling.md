@@ -2,15 +2,16 @@
 
 TensorFEM's finite-rotation Shell4 Newton and arc-length paths now accept
 `linear_solver="ilu_gmres"`. The route retains the reduced COO tangent and
-bordered arc matrix, constructs a SciPy ILU preconditioner, and solves with the
-public PyTorch restarted GMRES implementation. The default remains `dense`.
+bordered arc matrix, constructs a SciPy ILU preconditioner, and solves with
+SciPy's native restarted GMRES while independently checking the true residual
+as a PyTorch tensor. The default remains `dense`.
 Missing or broken NumPy/SciPy support fails closed; there is no implicit dense
 or SuperLU fallback.
 
 Controls are explicit: `ilu_drop_tolerance`, `ilu_fill_factor`,
 `krylov_tolerance`, and `krylov_max_iterations`. Diagnostics expose ILU
-nonzeros/storage, factor and solve timings, preconditioner applications,
-Krylov iterations, and true unpreconditioned residuals. The same audited
+nonzeros/storage, factor and solve timings, preconditioner refresh/reuse
+decisions, Krylov iterations, and true unpreconditioned residuals. The same audited
 drilling-gauge stabilization used by the qualified SuperLU route is applied.
 
 The full nonlinear integration test traces three accepted Shell4 arc points
@@ -62,3 +63,35 @@ Consequently ILU-GMRES is qualified as an optional memory-oriented path, not
 as the default solver and not as a general acceleration claim. Larger models,
 adaptive ILU controls, reusable symbolic structure, and stronger Schwarz/AMG
 preconditioners remain necessary before claiming an industrial time crossover.
+
+## Native iterative execution and refresh study
+
+The next scaling increment keeps GMRES, sparse matrix actions, and ILU
+applications inside SciPy for the entire linear solve. This removes one
+Python/Torch/NumPy boundary crossing per Krylov iteration while preserving a
+PyTorch tensor result and an independently recomputed true residual. The
+optional dependency contract is unchanged.
+
+On 12x12, native ILU-GMRES used 20 iterations, 0.0385 s factorization and
+0.0171 s solve time, versus 0.0203 s and 0.0025 s for SuperLU. On 20x20
+(2,544 free DOFs and 127,230 nonzeros), it used 43 iterations, 0.1271 s
+factorization and 0.0733 s solve time, versus 0.0973 s and 0.0068 s for
+SuperLU. The respective solution errors were `1.38e-6` and `3.04e-5`, safely
+below 1%. At 20x20, ILU matrix-plus-factor storage is 9,286,080 B versus
+12,652,176 B for SuperLU and 51,775,488 B dense.
+
+Refreshing an ILU preconditioner every fourth solve was also tested on the
+complete 8x8 first arc point. It reduced fresh ILU constructions from six to
+three, but increased total Krylov iterations from 65 to 83 and changed elapsed
+time from 53.62 s to 53.77 s. An inexact `1e-6` linear tolerance reduced
+iterations to 57 but took 54.55 s. Both variants preserved the path far inside
+the 1% gate, yet neither improved wall time.
+
+No measured time crossover exists through 2,544 free DOFs. A coarse trend
+extrapolation suggests that direct-factor fill would need models on the order
+of tens of thousands of free DOFs before ILU-GMRES might cross SuperLU, but
+this is explicitly not qualification evidence. The dominant measured
+bottleneck is element tangent assembly: 9.98 s at 12x12 and 26.90 s at 20x20,
+compared with at most 0.20 s for either complete linear phase. Meaningful path
+acceleration therefore requires analytic/AD element tangents, batched element
+assembly, or tangent reuse—not additional Krylov tuning alone.

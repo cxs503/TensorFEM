@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## 0.41.0
+
+- Integrated opt-in backtracking into the transactional finite-rotation layered Shell4 arc path and panel checkpoint identity. A yielding Shell4 step rejected by fixed Newton converges in 13 iterations and remains within 1% of a strict reference without leaking trial material history.
+- Added a multi-integration-point, two-compliant-surface Newton closure. Matching QUAD4 contact errors converge from 2.436% to 0.360% with force/moment balance, objectivity, master/slave interchange and rollback gates; curved, nonmatching and frictional contact remain unqualified.
+- Added native SciPy ILU-GMRES and auditable preconditioner refresh. The 20x20, 2544-DOF gate stays below 1% error and uses 9.286 MB versus 12.652 MB for SuperLU and 51.775 MB dense, but no runtime crossover is observed.
+- Added a hashed, fail-closed TensorFEM 1.0 readiness contract. It prevents package health or bounded prototypes from being promoted to 1.0 before general contact, 10k-DOF Shell4 sparse evidence and explicit 4/8/12 peak/post-peak convergence are present.
+
 ## 0.40.0
 
 - Added opt-in backtracking line search to arc-length continuation with fail-closed merit descent and checkpoint identity. A difficult public von Mises arch step is accepted instead of rejected, matches a high-iteration reference below 1e-12 and retains the 0.0255% analytic peak error.

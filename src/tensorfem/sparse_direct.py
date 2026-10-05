@@ -83,6 +83,14 @@ class SparseSolveDiagnostics:
     last_relative_residual: float | None
 
 
+@dataclass(frozen=True)
+class SparseIterativeSolve:
+    x: torch.Tensor
+    converged: bool
+    iterations: int
+    relative_residual: float
+
+
 def _scipy_modules():
     status = scipy_sparse_status()
     if not status.available:
@@ -136,6 +144,7 @@ class SparseFactorization:
     right_hand_sides: int = 0
     last_relative_residual: float | None = None
     _matrix_action: Callable | None = None
+    _gmres_numpy: Callable | None = None
 
     def solve(self, rhs: torch.Tensor) -> torch.Tensor:
         if rhs.device.type != "cpu":
@@ -165,6 +174,35 @@ class SparseFactorization:
 
     def __call__(self, rhs: torch.Tensor) -> torch.Tensor:
         return self.solve(rhs)
+
+    def solve_gmres(self, rhs: torch.Tensor, *, rtol: float = 1e-8,
+                    atol: float = 0., maxiter: int | None = None,
+                    restart: int | None = None) -> SparseIterativeSolve:
+        """Run native SciPy GMRES with this ILU as a reusable preconditioner."""
+        if self._gmres_numpy is None:
+            raise ValueError("GMRES is available only for an spilu factorization")
+        if rhs.ndim != 1 or rhs.shape[0] != self.shape[0] or rhs.dtype != self.dtype:
+            raise ValueError("rhs has incompatible shape or dtype")
+        if rhs.device.type != "cpu" or not bool(torch.all(torch.isfinite(rhs))):
+            raise ValueError("rhs must be a finite CPU tensor")
+        if rtol <= 0 or atol < 0 or (maxiter is not None and maxiter < 1):
+            raise ValueError("invalid GMRES controls")
+        started = perf_counter()
+        answer, info, iterations = self._gmres_numpy(
+            rhs.detach().numpy(), rtol, atol, maxiter, restart,
+        )
+        elapsed = perf_counter()-started
+        result = torch.from_numpy(answer).to(dtype=self.dtype)
+        if not bool(torch.all(torch.isfinite(result))):
+            raise RuntimeError("GMRES returned non-finite values")
+        residual = self._matrix_action(result)-rhs
+        relative = float(torch.linalg.vector_norm(residual))/max(
+            float(torch.linalg.vector_norm(rhs)), 1e-300)
+        self.solve_seconds += elapsed
+        self.solve_calls += 1
+        self.right_hand_sides += 1
+        self.last_relative_residual = relative
+        return SparseIterativeSolve(result, info == 0, iterations, relative)
 
     @property
     def diagnostics(self) -> SparseSolveDiagnostics:
@@ -211,10 +249,24 @@ def factorize_sparse(matrix: torch.Tensor, *, method: str = "splu",
     action = lambda value: torch.sparse.mm(
         coalesced, value[:, None] if value.ndim == 1 else value
     ).squeeze(1) if value.ndim == 1 else torch.sparse.mm(coalesced, value)
+    gmres_numpy = None
+    if method == "spilu":
+        def gmres_numpy(rhs, rtol, atol, maxiter, restart):
+            count = [0]
+            preconditioner = sla.LinearOperator(csc.shape, matvec=factor.solve,
+                                                dtype=csc.dtype)
+            def callback(_):
+                count[0] += 1
+            answer, info = sla.gmres(
+                csc, rhs, M=preconditioner, rtol=rtol, atol=atol,
+                maxiter=maxiter, restart=restart, callback=callback,
+                callback_type="pr_norm",
+            )
+            return answer, info, count[0]
     return SparseFactorization(method, tuple(matrix.shape), matrix.dtype,
                                int(csc.nnz), factor_nnz, factor.solve,
                                factorization_seconds=elapsed,
-                               _matrix_action=action)
+                               _matrix_action=action, _gmres_numpy=gmres_numpy)
 
 
 class SparseLinearSolver:

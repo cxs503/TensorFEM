@@ -9,7 +9,6 @@ import torch
 from .finite_rotation_layered_shell4 import assemble_finite_rotation_layered_shell4_sparse
 from .layered_shell4_plasticity import LayeredShell4State
 from .marine_panel_ultimate_fe import build_panel_case
-from .sparse_advanced import gmres
 from .sparse_direct import factorize_sparse
 
 
@@ -81,8 +80,7 @@ def benchmark_shell_sparse_scaling(mesh: int, *, drop_tolerance: float = 1e-4,
     ilu = factorize_sparse(tangent, method="spilu",
                            drop_tolerance=drop_tolerance, fill_factor=fill_factor)
     started = perf_counter()
-    iterative = gmres(tangent, rhs, rtol=rtol, maxiter=maxiter, restart=40,
-                      inverse_preconditioner=ilu.solve)
+    iterative = ilu.solve_gmres(rhs, rtol=rtol, maxiter=maxiter, restart=40)
     ilu_solve_seconds = perf_counter()-started
     if not iterative.converged:
         raise RuntimeError(

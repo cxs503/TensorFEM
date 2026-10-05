@@ -469,16 +469,14 @@ def solve_finite_rotation_increment(
                     increment = factor.solve(residual[free])
                     krylov = None
                 else:
-                    from .sparse_advanced import gmres
                     factor = factorize_sparse(
                         response.tangent, method="spilu",
                         drop_tolerance=ilu_drop_tolerance,
                         fill_factor=ilu_fill_factor,
                     )
-                    krylov = gmres(
-                        response.tangent, residual[free], rtol=krylov_tolerance,
+                    krylov = factor.solve_gmres(
+                        residual[free], rtol=krylov_tolerance,
                         maxiter=krylov_max_iterations,
-                        inverse_preconditioner=factor.solve,
                     )
                     if not krylov.converged:
                         raise RuntimeError("ILU-GMRES failed to converge")
@@ -530,6 +528,10 @@ def solve_finite_rotation_arc_path(
     ilu_fill_factor: float = 10.0,
     krylov_tolerance: float = 1e-8,
     krylov_max_iterations: int | None = None,
+    ilu_refresh_interval: int = 1,
+    line_search: str | None = None,
+    line_search_minimum: float = 1/128,
+    line_search_armijo: float = 1e-4,
 ) -> FiniteRotationArcResult:
     """Path-dependent Crisfield continuation with transactional J2 history.
 
@@ -551,6 +553,10 @@ def solve_finite_rotation_arc_path(
         raise ValueError("critical_eigenvalue_ratio must be positive")
     if augmented_scaling not in ("legacy", "normalized"):
         raise ValueError("augmented_scaling must be 'legacy' or 'normalized'")
+    if line_search not in (None, "backtracking"):
+        raise ValueError("line_search must be None or 'backtracking'")
+    if not 0 < line_search_minimum <= 1 or not 0 < line_search_armijo < 1:
+        raise ValueError("invalid line-search controls")
     if linear_solver not in ("dense", "superlu", "ilu_gmres"):
         raise ValueError("linear_solver must be 'dense', 'superlu' or 'ilu_gmres'")
     if linear_solver != "dense" and model.nodes.device.type != "cpu":
@@ -559,6 +565,8 @@ def solve_finite_rotation_arc_path(
         raise ValueError("critical-mode branch switching is not available with sparse solvers")
     if sparse_drilling_regularization < 0.0:
         raise ValueError("sparse_drilling_regularization must be non-negative")
+    if ilu_refresh_interval < 1:
+        raise ValueError("ilu_refresh_interval must be positive")
     fixed = torch.tensor(sorted(set(int(i) for i in fixed_dofs)), dtype=torch.long,
                          device=model.nodes.device)
     if bool(torch.any(fixed < 0)) or (len(fixed) and int(fixed.max()) >= model.n_dofs):
@@ -586,6 +594,8 @@ def solve_finite_rotation_arc_path(
         previous = initial_previous_increment.to(model.nodes).clone()
     points = []
 
+    ilu_cache: dict[tuple[str, tuple[int, int]], tuple[object, int]] = {}
+
     def linear_solve(matrix: torch.Tensor, rhs: torch.Tensor,
                      phase: str = "linear_solve") -> torch.Tensor:
         """Minimum-norm solve tolerating physically inactive drilling gauges."""
@@ -612,15 +622,21 @@ def solve_finite_rotation_arc_path(
                 answer = factor.solve(rhs)
                 krylov = None
             else:
-                from .sparse_advanced import gmres
-                factor = factorize_sparse(
-                    matrix, method="spilu", drop_tolerance=ilu_drop_tolerance,
-                    fill_factor=ilu_fill_factor,
-                )
-                krylov = gmres(
-                    matrix, rhs, rtol=krylov_tolerance,
+                cache_key = (phase, tuple(matrix.shape))
+                cached = ilu_cache.get(cache_key)
+                reuse = cached is not None and cached[1] < ilu_refresh_interval-1
+                if reuse:
+                    factor, age = cached
+                    ilu_cache[cache_key] = (factor, age+1)
+                else:
+                    factor = factorize_sparse(
+                        matrix, method="spilu", drop_tolerance=ilu_drop_tolerance,
+                        fill_factor=ilu_fill_factor,
+                    )
+                    ilu_cache[cache_key] = (factor, 0)
+                krylov = factor.solve_gmres(
+                    rhs, rtol=krylov_tolerance,
                     maxiter=krylov_max_iterations,
-                    inverse_preconditioner=factor.solve,
                 )
                 if not krylov.converged:
                     raise RuntimeError(
@@ -635,6 +651,10 @@ def solve_finite_rotation_arc_path(
                                         None if krylov is None else krylov.iterations),
                                     "krylov_relative_residual": (
                                         None if krylov is None else krylov.relative_residual),
+                                    "preconditioner_reused": (
+                                        False if krylov is None else reuse),
+                                    "preconditioner_age": (
+                                        0 if krylov is None else ilu_cache[cache_key][1]),
                                     **asdict(factor.diagnostics)})
             return answer
         # Small benchmark systems retain the explicit rank/conditioning gate:
@@ -848,7 +868,7 @@ def solve_finite_rotation_arc_path(
         trace = {"attempt": attempt, "step": accepted + 1, "ds": ds,
                  "predictor_norm": float(torch.linalg.vector_norm(direction_u)),
                  "iterations": [], "reason": None,
-                 "critical_mode": mode_diagnostic}
+                 "critical_mode": mode_diagnostic, "line_search": line_search}
         ok = False
         last = float("inf")
         for iteration in range(1, max_iterations + 1):
@@ -897,9 +917,56 @@ def solve_finite_rotation_arc_path(
                 trace["reason"] = "corrector_singular"
                 trace["linear_solver_error"] = str(error)
                 break
-            trial_u = trial_u + correction[:-1]
-            trial_p += float(correction[-1])
-            trial_load = trial_p / load_scale
+            alpha = 1.0
+            evaluations = 0
+            if line_search == "backtracking":
+                best = None
+                while alpha >= line_search_minimum:
+                    candidate_u = trial_u + alpha * correction[:-1]
+                    candidate_p = trial_p + alpha * float(correction[-1])
+                    candidate_load = candidate_p / load_scale
+                    candidate_eval, candidate_internal, _ = response(
+                        candidate_u, committed_state
+                    )
+                    candidate_residual = candidate_internal-candidate_load*load_vector
+                    candidate_Du = candidate_u-committed_reduced
+                    candidate_Dp = candidate_p-load_scale*committed_load
+                    candidate_increment = torch.cat((
+                        candidate_Du, candidate_Du.new_tensor([candidate_Dp])))
+                    candidate_constraint = (
+                        torch.dot(metric*candidate_increment, candidate_increment)-ds**2)
+                    candidate_merit = float(torch.linalg.vector_norm(torch.cat((
+                        # Keep the merit scaling fixed during this search;
+                        # changing the denominator with alpha can reward a
+                        # physically larger residual merely because its force
+                        # scale grew.
+                        candidate_residual/residual_scale,
+                        (candidate_constraint/max(
+                            ds**2, torch.finfo(model.nodes.dtype).eps)).reshape(1),
+                    ))))
+                    evaluations += 1
+                    if best is None or candidate_merit < best[0]:
+                        best = (candidate_merit, alpha, candidate_u,
+                                candidate_p, candidate_load, candidate_eval)
+                    if candidate_merit <= last*(1-line_search_armijo*alpha):
+                        break
+                    alpha *= .5
+                if best is None or best[0] >= last:
+                    trace["reason"] = "line_search_failed"
+                    trace["iterations"][-1].update({
+                        "line_search_alpha": 0.0,
+                        "line_search_evaluations": evaluations,
+                    })
+                    break
+                _, alpha, trial_u, trial_p, trial_load, _ = best
+            else:
+                trial_u = trial_u + correction[:-1]
+                trial_p += float(correction[-1])
+                trial_load = trial_p / load_scale
+            trace["iterations"][-1].update({
+                "line_search_alpha": alpha,
+                "line_search_evaluations": evaluations,
+            })
         if diagnostics is not None:
             if trace["reason"] is None:
                 trace["reason"] = "maximum_iterations"

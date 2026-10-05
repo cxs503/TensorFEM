@@ -485,6 +485,7 @@ def execute_panel_chunked_job(
     maximum_solver_step: float | None = None,
     relative_equilibrium_tolerance: float = 1e-6,
     automatic_step_control: bool = False,
+    line_search: str | None = None,
 ) -> dict[str, object]:
     """Run a long dense path with exact, branch-preserving checkpoints.
 
@@ -520,6 +521,10 @@ def execute_panel_chunked_job(
     # default field that would orphan qualified long-running prefixes.
     if automatic_step_control:
         identity["automatic_step_control"] = True
+    if line_search is not None:
+        if line_search != "backtracking":
+            raise ValueError("line_search must be None or 'backtracking'")
+        identity["line_search"] = line_search
     key_payload = {**identity, "steps": steps, "chunk_size": chunk_size}
     # Target length and persistence cadence are deliberately absent: a
     # validated prefix can be extended and checkpointed more frequently near
@@ -573,6 +578,8 @@ def execute_panel_chunked_job(
             raise ValueError("chunked panel checkpoint controls mismatch")
         saved = torch.load(load_checkpoint_path, map_location=case.model.nodes.device,
                            weights_only=False)
+        if line_search is not None and saved.get("line_search") != line_search:
+            raise ValueError("panel checkpoint line-search identity mismatch")
         if automatic_step_control:
             expected_decision = manifest.get("nonlinear_controller_latest", {}).get(
                 "decision_sha256"
@@ -641,6 +648,7 @@ def execute_panel_chunked_job(
                 maximum_step=controls["solver_maximum_step"], diagnostics=diagnostics,
                 augmented_scaling="normalized",
                 arc_metric="dimensionally_scaled",
+                line_search=line_search,
             )
         except TimeoutError as exc:
             status, error = "incomplete", str(exc)
@@ -764,6 +772,7 @@ def execute_panel_chunked_job(
                     "cumulative_plastic_dissipation": cumulative_plastic_dissipation,
                     "energy_definition": ENERGY_DEFINITION,
                     "arc_metric": "dimensionally_scaled",
+                    "line_search": line_search,
                     "migration": migration,
                     "energy_prefix_complete": energy_prefix_complete},
                    temporary)

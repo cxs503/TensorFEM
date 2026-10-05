@@ -28,6 +28,12 @@ def test_sparse_direct_matches_dense_when_scipy_is_available():
     ilu = factorize_sparse(dense.to_sparse_coo(), method="spilu",
                            drop_tolerance=0., fill_factor=20.).solve(rhs)
     assert torch.allclose(ilu, direct, rtol=2e-13, atol=2e-13)
+    preconditioner = factorize_sparse(
+        dense.to_sparse_coo(), method="spilu", drop_tolerance=0., fill_factor=20.,
+    )
+    iterative = preconditioner.solve_gmres(rhs, rtol=1e-12)
+    assert iterative.converged and iterative.relative_residual < 1e-12
+    assert torch.allclose(iterative.x, direct, rtol=2e-12, atol=2e-12)
 
 
 def test_sparse_direct_rejects_dense_and_unknown_method():
