@@ -116,9 +116,14 @@ def main() -> None:
     status_path = args.cache_dir/"generation-status.json"
     while True:
         manifests = sorted(args.cache_dir.glob("chunked-*.json"))
-        if len(manifests) != 1:
+        if len(manifests) > 1:
             raise RuntimeError("cache must contain exactly one committed manifest")
-        current = json.loads(manifests[0].read_text())
+        # A new robust branch has no manifest yet.  Let the execution adapter
+        # create its first immutable checkpoint; subsequent iterations enforce
+        # the single-head invariant above.
+        current = json.loads(manifests[0].read_text()) if manifests else {
+            "accepted_points": 0, "post_peak_observed": False,
+        }
         accepted = int(current["accepted_points"])
         publish_status(status_path, state="running", current=accepted,
                        target=args.target, event_sha256=committed_hash,
