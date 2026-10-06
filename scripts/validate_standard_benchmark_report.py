@@ -15,6 +15,13 @@ def validate(path: Path):
     required={"cantilever_beam_tip_load","simply_supported_plate_uniform_pressure","hertz_spherical_contact"}
     if not required.issubset(cases): raise ValueError("benchmark case missing")
     if report.get("error_policy",{}).get("target_relative_error")!=.03: raise ValueError("invalid error gate")
+    for name,case in cases.items():
+        if "finite_element" in case:
+            error=case.get("relative_error"); status=case.get("status")
+            if not isinstance(error,(int,float)) or status not in {"qualified","blocked"}:
+                raise ValueError(f"incomplete FE result: {name}")
+            if (error<=.03) != (status=="qualified"):
+                raise ValueError(f"FE status/error mismatch: {name}")
     return report
 def main():
     p=argparse.ArgumentParser(); p.add_argument("report",type=Path); a=p.parse_args()
