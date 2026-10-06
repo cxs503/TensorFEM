@@ -24,11 +24,14 @@ def main(output: str = ".qualification/hertz-3d-fe/multilevel-evidence.json"):
     monotone=len(errors)>=2 and all(b<=a for a,b in zip(errors,errors[1:]))
     finest_ok=bool(errors) and errors[-1]<=.03
     passed=bool(len(converged)==3 and monotone and finest_ok)
-    clean={"schema":"tensorfem.hertz-3d-fe-multilevel-evidence/1.0",
+    clean={"schema":"tensorfem.hertz-3d-fe-multilevel-evidence/1.1",
            "qualification_status":"qualified" if passed else "blocked","passed":passed,
            "required_maximum_relative_error":.03,"required_levels":3,
            "symmetry_planes":True,
-           "monotone_relative_error":monotone,"cases":cases,
+           "monotone_relative_error":monotone,
+           "command":"PYTHONPATH=src .venv/bin/python scripts/run_hertz_3d_multilevel_evidence.py",
+           "result_fields":{"stress_field":"TET4 Neo-Hookean Cauchy stress is assembled internally; scalar extrema are not exposed by the current qualification API", "contact_pressure":"peak_contact_pressure", "reaction":"reaction_force", "mesh_error":"relative_error"},
+           "cases":cases,
            "blockers":[] if passed else [
                "real TET4/Mortar Hertz multilevel sequence does not meet the <=3% gate",
                "symmetric quarter-domain boundary conditions or the <=3% convergence gate remain incomplete"],

@@ -19,6 +19,11 @@ class Hertz3DFEResult:
     contact_radius_reference: float
     domain_radii: float
     maximum_tet_edge_ratio: float
+    active_quadrature_points: int
+    integrated_contact_area: float
+    maximum_penetration: float
+    peak_contact_pressure: float
+    reaction_force: float
 
 def solve_hertz_cap_block(*,cells:int,approach:float=.005,radius:float=8.,
     young:float=1.e3,poisson:float=.3,normal_penalty:float=1.e4,
@@ -56,4 +61,9 @@ def solve_hertz_cap_block(*,cells:int,approach:float=.005,radius:float=8.,
     return Hertz3DFEResult(cells,force,reference_force,
         abs(force/reference_force-1),step.residual_norm,
         float(torch.min(step.jacobian)),imbalance,contact_radius,
-        lateral_size/(2*contact_radius),edge_ratio)
+        lateral_size/(2*contact_radius),edge_ratio,
+        step.contact.active_quadrature_points,
+        float(step.contact.integrated_area),
+        float(step.contact.maximum_penetration),
+        normal_penalty*float(step.contact.maximum_penetration),
+        force)
