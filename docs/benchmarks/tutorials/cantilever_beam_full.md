@@ -57,6 +57,30 @@ scripts/render_benchmark_report.py results/standard-benchmarks.json \
 
 ![弯曲应力场](../../assets/benchmark-clouds/cantilever_bending_stress.png)
 
+### 4.1 真实 Q4 有限元结果
+
+使用 `scripts/run_cantilever_fe_benchmark.py` 对同一 SI 案例进行 `20×4` 和 `40×8` Q4 网格计算。结果如下：
+
+| 网格 | 节点/单元 | FE 端部位移 (m) | 参考值 (m) | 相对误差 | 状态 |
+|---|---:|---:|---:|---:|---|
+| 20×4 | 105 / 80 | -9.10256e-5 | -1.00000e-4 | 8.974% | `blocked` |
+| 40×8 | 369 / 320 | -9.79774e-5 | -1.00000e-4 | 2.023% | `qualified` |
+
+左端竖向反力为 `100.000 N`，与施加载荷平衡。细网格真实 FE 云图如下：
+
+![Q4 FE 位移云图](../../assets/benchmark-clouds/cantilever_fe_displacement.png)
+
+![Q4 FE von Mises 应力云图](../../assets/benchmark-clouds/cantilever_fe_von_mises.png)
+
+结果 JSON 由以下命令生成：
+
+```bash
+PYTHONPATH=src .venv/bin/python scripts/run_cantilever_fe_benchmark.py \
+  --output results/cantilever-fe.json
+python scripts/render_cantilever_fe_clouds.py results/cantilever-fe.json \
+  --output-dir results/cantilever-clouds
+```
+
 这些图是独立参考场，不替代 FE 云图。FE 报告必须另外给出节点/积分点云图，并在收敛表中列出：
 
 | 网格 | FE 端部位移 | 相对误差 | 状态 |
