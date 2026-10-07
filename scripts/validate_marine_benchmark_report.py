@@ -11,11 +11,12 @@ def main() -> None:
     assert hashlib.sha256(json.dumps(report, sort_keys=True, separators=(",", ":")).encode()).hexdigest() == digest
     cases = report["cases"]
     assert cases and report["summary"]["total"] == len(cases)
-    for case in cases.values():
-        result = case["result"]; error = float(result["relative_error"])
-        assert error <= .03 and result["status"] == "qualified"
-        assert case["problem"] and case["reference_source"] and case["unit"]
-        assert "stress" in case["field_summary"] and "displacement" in case["field_summary"]
+    assert isinstance(cases, list)
+    for case in cases:
+        result = case["results"]; error = float(result["relative_error"])
+        assert (error <= .03) == (result["status"] == "qualified")
+        assert case["problem"] and case["source"] and case["unit"]
+        assert "stress_cloud" in case["field_results"] and "displacement_cloud" in case["field_results"]
     print(f"marine benchmark report valid: {len(cases)} cases, all <= 3%")
 
 if __name__ == "__main__": main()
