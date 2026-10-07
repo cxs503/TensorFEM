@@ -1,0 +1,1 @@
+{"nodes":[{"id":1,"coordinates":[0,0,0]},{"id":2,"coordinates":[1,0,0]},{"id":3,"coordinates":[1,1,0]},{"id":4,"coordinates":[0,1,0]},{"id":5,"coordinates":[0,0,1]},{"id":6,"coordinates":[1,0,1]},{"id":7,"coordinates":[1,1,1]},{"id":8,"coordinates":[0,1,1]}],"elements":[{"id":1,"type":"hex8_linear","connectivity":[1,2,3,4,5,6,7,8]}]}

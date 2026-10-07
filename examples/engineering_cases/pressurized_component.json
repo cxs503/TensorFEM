@@ -1,0 +1,7 @@
+{
+  "schema": "tensorfem.engineering-case.v1",
+  "name": "Internally pressurized thick component",
+  "kind": "pressurized_thick_cylinder",
+  "parameters": {"inner_radius": 1.0, "outer_radius": 2.0, "length": 1.0, "young": 200000.0, "poisson": 0.3, "pressure": 100.0, "radial_elements": 24},
+  "units": {"length": "mm", "force": "N", "stress": "MPa"}
+}
