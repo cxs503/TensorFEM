@@ -1,0 +1,16 @@
+{
+  "schema": "tensorfem.marine-hydrostatics.v1",
+  "name": "Box barge operating load case",
+  "units": "SI",
+  "geometry": {"length": 60.0, "beam": 18.0, "depth": 6.0},
+  "fluid": {"density": 1025.0, "gravity": 9.80665},
+  "condition": {
+    "mode": "load_case",
+    "heel_angle_deg": 5.0,
+    "lightship": {"name": "lightship", "mass": 1800000.0, "kg": 2.8},
+    "loads": [
+      {"name": "deck cargo", "mass": 750000.0, "kg": 4.2},
+      {"name": "consumables", "mass": 150000.0, "kg": 1.2}
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "tensorfem.marine-case.v1",
+  "name": "Smeared longitudinally stiffened rectangular panel",
+  "kind": "orthotropic_stiffened_panel_sine",
+  "parameters": {
+    "length": 4.0,
+    "width": 2.0,
+    "plate_thickness": 0.012,
+    "plate_young": 206000000000.0,
+    "plate_poisson": 0.3,
+    "stiffener_spacing": 0.5,
+    "stiffener_area": 0.0025,
+    "stiffener_young": 206000000000.0,
+    "stiffener_eccentricity": 0.09,
+    "pressure_amplitude": 120000.0,
+    "quadrature_order": 16
+  },
+  "units": {"length": "m", "pressure": "Pa", "young_modulus": "Pa"}
+}

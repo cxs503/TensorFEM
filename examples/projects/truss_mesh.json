@@ -1,0 +1,1 @@
+{"nodes":[{"id":1,"coordinates":[0,0]},{"id":2,"coordinates":[2,0]}],"elements":[{"id":1,"type":"truss2d","connectivity":[1,2]}]}

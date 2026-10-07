@@ -1,0 +1,8 @@
+{
+  "schema": "tensorfem.marine-hydrostatics.v1",
+  "name": "Box barge specified-draft check",
+  "units": "SI",
+  "geometry": {"length": 40.0, "beam": 12.0, "depth": 4.0},
+  "fluid": {"density": 1000.0, "gravity": 9.81},
+  "condition": {"mode": "specified_draft", "draft": 2.0, "kg": 2.1, "heel_angle_deg": 8.0}
+}

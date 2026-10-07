@@ -1,0 +1,15 @@
+{
+  "schema": "tensorfem.marine-case.v1",
+  "name": "Equivalent hull girder under still-water and wave loads",
+  "kind": "hull_girder_uniform_load",
+  "parameters": {
+    "length": 180.0,
+    "young": 206000000000.0,
+    "area": 8.0,
+    "inertia": 850.0,
+    "still_water_load": 650000.0,
+    "wave_load": 350000.0,
+    "elements": 20
+  },
+  "units": {"length": "m", "force": "N", "stress": "Pa"}
+}
