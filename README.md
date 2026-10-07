@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# TensorFEM
-=======
 # TensorFEM
 
 TensorFEM is a verification-first finite-element toolkit built on PyTorch for
@@ -183,4 +180,3 @@ judgement or code-required certification. Validation contracts, sources and
 known limitations are recorded under `docs/`. The curved-shell implementation
 is explicitly experimental until its recognized benchmark errors are below
 the project threshold.
->>>>>>> origin/master
