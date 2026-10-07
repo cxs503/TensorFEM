@@ -52,7 +52,22 @@ def render_pdf(report, output, title="TensorFEM Benchmark Report"):
     try:
         import matplotlib.pyplot as plt
         from matplotlib.backends.backend_pdf import PdfPages
-    except Exception as exc: raise RuntimeError("PDF rendering requires matplotlib") from exc
+    except Exception:
+        # Dependency-free fallback: emit a valid single-page PDF containing
+        # the case/status table.  This keeps offline release environments
+        # usable; HTML remains the rich cloud-rendering format.
+        output=Path(output); output.parent.mkdir(parents=True,exist_ok=True)
+        lines=[title,"Acceptance target: relative error <= 3%"]
+        for name,c in _cases(report):
+            err = c.get("relative_error")
+            lines.append(f"{name}: {_status(c)} | error: {'n/a' if err is None else format(float(err)*100, '.4f')+'%'}")
+        esc=lambda s: str(s).replace('\\','\\\\').replace('(','\\(').replace(')','\\)')
+        stream='BT /F1 11 Tf 50 760 Td '+ ' '.join(f'({esc(line)}) Tj 0 -18 Td' for line in lines) +' ET'
+        objects=['<< /Type /Catalog /Pages 2 0 R >>','<< /Type /Pages /Kids [3 0 R] /Count 1 >>','<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>','<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',f'<< /Length {len(stream.encode())} >>\nstream\n{stream}\nendstream']
+        pdf='%PDF-1.4\n'; offsets=[]
+        for i,obj in enumerate(objects,1): offsets.append(len(pdf.encode())); pdf+=f'{i} 0 obj\n{obj}\nendobj\n'
+        xref=len(pdf.encode()); pdf+=f'xref\n0 {len(objects)+1}\n0000000000 65535 f \n'+''.join(f'{o:010d} 00000 n \n' for o in offsets)+f'trailer << /Size {len(objects)+1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n'
+        output.write_bytes(pdf.encode()); return output
     output=Path(output); output.parent.mkdir(parents=True,exist_ok=True)
     with PdfPages(output) as pdf:
         fig=plt.figure(figsize=(8.27,11.69)); fig.text(.08,.94,title,fontsize=18,weight="bold"); fig.text(.08,.90,"Acceptance target: relative error <= 3%. Blocked results remain blocked.")
