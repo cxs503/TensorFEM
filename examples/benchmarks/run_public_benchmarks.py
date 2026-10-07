@@ -8,8 +8,10 @@ the report gate will not claim qualification without real FE fields.
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from tensorfem.standard_benchmarks import benchmark_case_catalog
 from scripts.run_standard_benchmark_report import main as generate_report
 
