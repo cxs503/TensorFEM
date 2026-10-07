@@ -81,6 +81,12 @@ python scripts/render_cantilever_fe_clouds.py results/cantilever-fe.json \
   --output-dir results/cantilever-clouds
 ```
 
+仓库内已固化本次真实计算产物：
+
+- [原始 FE 结果 JSON](../../assets/benchmark-clouds/cantilever-fe/results.json)
+- [FE 位移云图](../../assets/benchmark-clouds/cantilever-fe/cantilever_fe_displacement.png)
+- [FE von Mises 云图](../../assets/benchmark-clouds/cantilever-fe/cantilever_fe_von_mises.png)
+
 这些图是独立参考场，不替代 FE 云图。FE 报告必须另外给出节点/积分点云图，并在收敛表中列出：
 
 | 网格 | FE 端部位移 | 相对误差 | 状态 |
