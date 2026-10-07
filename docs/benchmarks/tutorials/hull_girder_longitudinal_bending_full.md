@@ -54,21 +54,21 @@ M_root = |P|L = 100 N·m
 
 粗网格位移场已显示正确的悬臂弯曲形态，但幅值不足，因此仍为 `blocked`。
 
-![20×4 船体梁竖向位移云图](../../assets/benchmark-clouds/hull-girder/hull_girder_20x4_displacement.svg)
+![20×4 船体梁竖向位移云图](../../assets/benchmark-clouds/hull-girder/hull_girder_20x4_displacement.png)
 
 粗网格应力场在固支端上下外纤维达到最大，并向自由端衰减。
 
-![20×4 船体梁 von Mises 应力云图](../../assets/benchmark-clouds/hull-girder/hull_girder_20x4_von_mises.svg)
+![20×4 船体梁 von Mises 应力云图](../../assets/benchmark-clouds/hull-girder/hull_girder_20x4_von_mises.png)
 
 ### 4.4 细网格场结果
 
 细网格最小节点竖向位移为 `-0.155532135 mm`，自由端中点位移为 `-0.155519679 mm`；两者的轻微差别来自二维泊松效应和端部局部变形。
 
-![40×8 船体梁竖向位移云图](../../assets/benchmark-clouds/hull-girder/hull_girder_40x8_displacement.svg)
+![40×8 船体梁竖向位移云图](../../assets/benchmark-clouds/hull-girder/hull_girder_40x8_displacement.png)
 
 细网格最大单元中心 von Mises 应力为 `4.102177 MPa`。其位置在固支端附近；解析的 `5.0 MPa` 是边界外纤维点值，两者采样位置不同，因此本报告不把二者伪装成同点应力误差。
 
-![40×8 船体梁 von Mises 应力云图](../../assets/benchmark-clouds/hull-girder/hull_girder_40x8_von_mises.svg)
+![40×8 船体梁 von Mises 应力云图](../../assets/benchmark-clouds/hull-girder/hull_girder_40x8_von_mises.png)
 
 ## 5. 误差分析与适用边界
 
