@@ -17,10 +17,16 @@ def solve_case(nx: int, ny: int):
     nodes, elements = rectangular_q4_mesh(L, H, nx, ny)
     forces = torch.zeros(2 * len(nodes), dtype=torch.float64)
     right = torch.where(torch.isclose(nodes[:, 0], nodes.new_tensor(L)))[0]
-    forces[2 * right] = load / len(right)
+    # Consistent edge traction integration (trapezoidal rule): ``ny`` edge
+    # segments carry the prescribed *total* load.  Dividing by the number of
+    # nodes and then halving the end nodes under-loads every mesh.
+    forces[2 * right] = load / ny
     forces[2 * right[0]] *= .5; forces[2 * right[-1]] *= .5
     left = torch.where(torch.isclose(nodes[:, 0], nodes.new_tensor(0.)))[0]
-    fixed = torch.cat((2*left, 2*left+1))
+    # The analytical membrane solution permits Poisson contraction.  Constrain
+    # u_x on the loaded-opposite edge and pin one u_y DOF only to remove rigid
+    # translation; clamping every u_y on the edge would be a different problem.
+    fixed = torch.cat((2*left, (2*left[:1] + 1)))
     result = solve_continuum(ContinuumModel(nodes, elements, nodes.new_tensor(E),
         nodes.new_tensor(nu), nodes.new_tensor(t), forces, fixed))
     tip = float(result.displacement[2*right,].mean())
@@ -34,7 +40,9 @@ def solve_case(nx: int, ny: int):
       "tip_axial_displacement":tip,"reference_tip_displacement":ref_tip,
       "reference_axial_stress":ref_stress,"relative_error":err,
       "status":"qualified" if err < .03 else "blocked",
+      "applied_load_x":float(forces[2*right].sum()),
       "reaction_left_x":float(result.reaction[2*left].sum()),
+      "reaction_left_y":float(result.reaction[2*left+1].sum()),
       "field":{"nodes":[{"x":float(p[0]),"y":float(p[1]),"ux":float(result.displacement[2*i]),"uy":float(result.displacement[2*i+1])} for i,p in enumerate(nodes)],
                "element_stress":[{"x":float(p[0]),"y":float(p[1]),"sigma_x":float(s[0]),"sigma_y":float(s[1]),"tau_xy":float(s[2]),"von_mises":float(v)} for p,s,v in zip(centers,result.stress,vm)]}}
 
