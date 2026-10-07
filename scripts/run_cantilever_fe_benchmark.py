@@ -5,7 +5,7 @@ import torch
 from tensorfem.continuum import ContinuumModel, rectangular_q4_mesh, solve_continuum
 
 def solve(nx,ny):
-    L,H,T,E,P=10.,1.,.2,200e9,-1000.; nodes,elements=rectangular_q4_mesh(L,H,nx,ny)
+    L,H,T,E,P=1.,.1,.012,210e9,-100.; nodes,elements=rectangular_q4_mesh(L,H,nx,ny)
     forces=torch.zeros(2*len(nodes),dtype=torch.float64); right=torch.where(torch.isclose(nodes[:,0],torch.tensor(L,dtype=nodes.dtype)))[0]
     forces[2*right+1]=P/ny; forces[2*right[[0,-1]]+1]*=.5
     left=torch.where(nodes[:,0]==0)[0]; fixed=torch.stack((2*left,2*left+1),1).reshape(-1)
