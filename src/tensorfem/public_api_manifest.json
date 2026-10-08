@@ -1240,6 +1240,41 @@
       "stability": "experimental"
     },
     {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "HertzQuarterPatch",
+      "object": "HertzQuarterPatch",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "HertzQuarterVolume",
+      "object": "HertzQuarterVolume",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "build_hertz_quarter_patch",
+      "object": "build_hertz_quarter_patch",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "build_hertz_quarter_volume",
+      "object": "build_hertz_quarter_volume",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "quarter_patch_quality",
+      "object": "quarter_patch_quality",
+      "stability": "experimental"
+    },
+    {
       "introduced": "0.10.0",
       "module": "tensorfem.spherical_shell",
       "name": "HemisphereResult",

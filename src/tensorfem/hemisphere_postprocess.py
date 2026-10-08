@@ -72,9 +72,9 @@ def build_hemisphere_post(result,*,length_unit="benchmark_length",
     validation={"reference_displacement":float(result.reference),"computed_displacement":float(result.displacement),
         "relative_error":error,"error_tolerance":tolerance,"free_residual_norm":free_residual,
         "normalized_force_balance_error":force_balance,"force_balance_tolerance":1e-7,
-        "normalized_moment_balance_error":moment_balance,"moment_balance_tolerance":.03,
+        "normalized_moment_balance_error":moment_balance,"moment_balance_tolerance":1e-7,
         "balance_force":balance_force.tolist(),"balance_moment":balance_moment.tolist(),
-        "passed":error<tolerance and free_residual<1e-7 and force_balance<1e-7 and moment_balance<.03}
+        "passed":error<tolerance and free_residual<1e-7 and force_balance<1e-7 and moment_balance<1e-7}
     metadata={"case":"MacNeal-Harder hemisphere with 18-degree hole","schema":"tensorfem.hemisphere-post.v1",
         "dof_order":["ux","uy","uz","rx","ry","rz"],"coordinate_system":"global Cartesian",
         "units":{"length":length_unit,"force":force_unit,"rotation":"radian",

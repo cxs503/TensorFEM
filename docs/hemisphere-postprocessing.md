@@ -18,7 +18,7 @@ Units are explicit metadata rather than an implicit conversion.  The original
 benchmark uses a consistent unit system; callers may label it (the tests use
 inch and pound-force), but values are not rescaled.
 
-The 16x16 qualification mesh is checked against the published displacement
+The corrected 24x24 default-factor response mesh is checked against the published displacement
 `0.0924` with a three-percent response limit.  Translational equilibrium and
 free residual use `1e-7` normalized/absolute gates.  Moment equilibrium is
 normalized by radius 10 and total absolute applied force, with a three-percent

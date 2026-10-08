@@ -4,16 +4,18 @@ from tensorfem.spherical_shell import hemisphere_with_hole
 
 
 def test_hemisphere_with_hole_converges_and_fine_mesh_is_below_three_percent():
-    results=[hemisphere_with_hole(n) for n in (6,8,12)]
+    results=[hemisphere_with_hole(n) for n in (12,20,24)]
     displacements=[r.displacement for r in results]
-    assert displacements[0] < displacements[1] < displacements[2]
+    assert displacements[0] > displacements[1] > displacements[2]
     assert results[-1].relative_error < .03
 
 
-def test_hemisphere_qualification_is_not_drilling_factor_calibration():
-    # A two-decade bracket around the inherited fixed factor remains below 3%.
-    results=[hemisphere_with_hole(12,drilling_factor=d) for d in (1e-7,1e-6,1e-5)]
-    assert max(r.relative_error for r in results) < .03
+def test_hemisphere_coarse_sensitivity_failure_is_retained():
+    # The corrected coarse model does not support the old robustness claim.
+    results=[hemisphere_with_hole(24,drilling_factor=d) for d in (1e-7,1e-6,1e-5)]
+    assert results[0].relative_error > .03
+    assert results[1].relative_error < .03
+    assert results[2].relative_error < .03
 
 
 def test_hemisphere_free_residual_and_vertical_gauge_reaction():

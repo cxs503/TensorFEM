@@ -6,7 +6,7 @@ from tensorfem.spherical_shell import hemisphere_with_hole
 
 
 if __name__=="__main__":
-    post=build_hemisphere_post(hemisphere_with_hole(16))
+    post=build_hemisphere_post(hemisphere_with_hole(24))
     db=hemisphere_result_db(post);out=Path("hemisphere_resultdb")
     body=write_result_db(out,db,chunk_rows=64)
     ids,u=db.query_nodes("displacement",[0,16,272,288])

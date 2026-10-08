@@ -15,8 +15,10 @@ reproduce the accepted state. No external reference is asserted for this
 integration panel.
 
 Spatial accuracy remains tied to the public MacNeal--Harder hemisphere with an
-18-degree hole: 12x12, 16x16 and 20x20 errors are 0.690%, 0.869% and 1.404%,
-and the last two meshes differ by 0.53%. Scordelis--Lo Roof and Pinched
+18-degree hole: corrected 20x20, 24x24 and 28x28 errors are 2.693%, 2.473%
+and 2.317%. The last two displacements differ by approximately 0.152%.
+The skew-gradient correction supersedes the earlier 12/16/20 results.
+Scordelis--Lo Roof and Pinched
 Cylinder retain their separate sourced gates.
 
 This does **not** yet qualify a universal nonlinear curved shell: the three

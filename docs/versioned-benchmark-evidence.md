@@ -32,8 +32,7 @@ no volatile timestamp, so identical inputs produce identical hashes.
   tests with `TENSORFEM_FULL_BENCHMARKS=1` and is intended for release/nightly
   qualification.
 
-The complete 4/6/8/12/16 run currently takes about 2.6 seconds on the reference
-CPU, but remains opt-in so additional future expensive cases do not accumulate
+The complete 4/6/8/12/16/20/24 run remains opt-in so additional future expensive cases do not accumulate
 in the ordinary test gate.
 
 ## 18-degree-hole hemisphere evidence
@@ -42,17 +41,12 @@ Source: MacNeal and Harder, *Finite Elements in Analysis and Design* 1 (1985),
 3--20, DOI `10.1016/0168-874X(85)90003-4`. The reference loaded-equator radial
 displacement magnitude is `0.0924`.
 
-| quarter mesh | computed | relative error | evidence role | status |
-|---:|---:|---:|---|---|
-| 4x4 | 0.0611878311 | 33.7794% | convergence | fail |
-| 6x6 | 0.0750594098 | 18.7669% | convergence | fail |
-| 8x8 | 0.0859761246 | 6.95225% | convergence | fail |
-| 12x12 | 0.0917626744 | 0.68975% | qualification | pass |
-| 16x16 | 0.0932028030 | 0.86883% | qualification | pass |
-
-Coarse failures remain visible evidence rather than being removed from the
-archive. Only 12x12 and 16x16 determine qualification, and both must remain
-strictly below 3% or execution raises.
+Case version 2.0.0 supersedes the old skew-gradient numerical baseline.
+Meshes 4/6/8/12/16/20/24 give errors 9.938%, 6.859%, 5.200%, 3.682%,
+3.040%, 2.693%, 2.473%. Only 20 and 24 are formal default-factor response
+qualification meshes. All coarse failures remain in the archive. Parameter
+robustness and complete FE fields are separate from this scalar archive;
+see [the complete report](benchmarks/tutorials/hemisphere_hole_full.md).
 
 ## Drift comparison
 

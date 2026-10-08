@@ -48,3 +48,16 @@ def test_thick_mindlin_plate_below_three_percent():
                                                 thickness=t, q0=q)
     exact = mindlin_sine_center_deflection(1., E, nu, t, q)
     assert abs(_center_w(result, n)-exact)/exact < .03
+
+
+def test_skew_plate_affine_rigid_tilt_has_no_shear_or_bending_energy():
+    # This test detects a transpose error hidden by axis-aligned square meshes.
+    xy = torch.tensor([[0., 0.], [2., .3], [2.4, 1.3], [.4, 1.]], dtype=torch.float64)
+    q = torch.zeros((4, 3), dtype=torch.float64)
+    q[:, 0] = .2*xy[:, 0]-.3*xy[:, 1]+.4
+    q[:, 1] = -.2
+    q[:, 2] = .3
+    k = q4_mindlin_stiffness(xy, 210e9, .3, .01)
+    residual = torch.linalg.vector_norm(k@q.flatten())
+    scale = torch.linalg.matrix_norm(k)*torch.linalg.vector_norm(q)
+    assert float(residual/scale) < 1e-13

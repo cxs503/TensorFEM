@@ -56,7 +56,8 @@ def build_report() -> dict:
                 "computed": item.computed,
                 "reference": item.reference,
                 "relative_error": item.error,
-                "status": "qualified" if item.passed else "blocked",
+                "status": "reference-only" if item.passed else "blocked",
+                "scalar_status": "qualified" if item.passed else "blocked",
             },
             # A cloud is intentionally absent for scalar qualification kernels.
             # FE stress/displacement fields are accepted later by the renderer.
@@ -75,7 +76,9 @@ def build_report() -> dict:
         "calculation_conditions": {"unit_system": "SI", "solver": "TensorFEM",
                                     "reference_data": "independent closed-form or refined oracle"},
         "cases": cases,
-        "summary": {"total": len(cases), "qualified": sum(x["passed"] for x in cases),
+        "summary": {"total": len(cases), "qualified": 0,
+                     "scalar_qualified": sum(x["passed"] for x in cases),
+                     "reference_only": sum(x["passed"] for x in cases),
                      "blocked": sum(not x["passed"] for x in cases)},
     }
     clean = json.loads(json.dumps(report, sort_keys=True))

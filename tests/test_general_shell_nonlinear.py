@@ -65,6 +65,6 @@ def test_failed_increment_rolls_back():
 
 
 def test_hemisphere_spatial_convergence_stays_below_three_percent():
-    results=[hemisphere_with_hole(n) for n in (12,16,20)]
+    results=[hemisphere_with_hole(n) for n in (20,24,28)]
     assert max(r.relative_error for r in results)<.03
     assert abs(results[-1].displacement/results[-2].displacement-1.)<.03

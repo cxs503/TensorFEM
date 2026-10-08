@@ -9,6 +9,7 @@ import argparse, json
 from pathlib import Path
 import torch
 from tensorfem.continuum import ContinuumModel, rectangular_q4_mesh, solve_continuum
+from tensorfem.benchmark_fields import verify_case, verify_mesh_study
 
 
 def solve_case(nx: int, ny: int):
@@ -36,7 +37,9 @@ def solve_case(nx: int, ny: int):
     vm = torch.sqrt(result.stress[:,0]**2 - result.stress[:,0]*result.stress[:,1]
                     + result.stress[:,1]**2 + 3*result.stress[:,2]**2)
     err = abs(tip-ref_tip)/abs(ref_tip)
-    return {"mesh":{"nx":nx,"ny":ny,"nodes":len(nodes),"elements":len(elements)},
+    case = {"mesh":{"nx":nx,"ny":ny,"nodes":len(nodes),"elements":len(elements)},
+      "problem": {"length_m": L, "height_m": H, "thickness_m": t,
+                  "young_modulus_pa": E, "poisson": nu, "load_n": load},
       "tip_axial_displacement":tip,"reference_tip_displacement":ref_tip,
       "reference_axial_stress":ref_stress,"relative_error":err,
       "status":"qualified" if err < .03 else "blocked",
@@ -45,14 +48,22 @@ def solve_case(nx: int, ny: int):
       "reaction_left_y":float(result.reaction[2*left+1].sum()),
       "field":{"nodes":[{"x":float(p[0]),"y":float(p[1]),"ux":float(result.displacement[2*i]),"uy":float(result.displacement[2*i+1])} for i,p in enumerate(nodes)],
                "element_stress":[{"x":float(p[0]),"y":float(p[1]),"sigma_x":float(s[0]),"sigma_y":float(s[1]),"tau_xy":float(s[2]),"von_mises":float(v)} for p,s,v in zip(centers,result.stress,vm)]}}
+    case["verification"] = verify_case(case, "membrane")
+    case["status"] = "qualified" if case["verification"]["passed"] else "blocked"
+    return case
 
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument('--output',type=Path,required=True); a=ap.parse_args()
     cases=[solve_case(10,5),solve_case(20,10),solve_case(40,20)]
     report={"schema":"tensorfem.marine-stiffened-panel-fe-benchmark/1.0","title":"Stiffened marine panel longitudinal membrane benchmark",
+      "physical_case_id": "uniform-q4-membrane-patch", "independent_case": True,
       "problem":{"length_m":2.0,"width_m":1.0,"plate_thickness_m":.01,"stiffener_equivalent_thickness_m":.006,"young_modulus_pa":210e9,"poisson":.3,"axial_load_n":1e6},
       "reference":"uniform axial strain, sigma=P/(H*t_eff), u=PL/(EA)","cases":cases,
       "acceptance":{"relative_error_lt":.03,"required_fields":["displacement","stress","reaction","mesh_convergence"]}}
+    report["mesh_convergence"] = verify_mesh_study(cases, "membrane")
+    report["status"] = "qualified" if report["mesh_convergence"]["passed"] else "blocked"
     a.output.parent.mkdir(parents=True,exist_ok=True); a.output.write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps({"output":str(a.output),"errors":[c["relative_error"] for c in cases],"statuses":[c["status"] for c in cases]}))
+    if report["status"] != "qualified":
+        raise SystemExit(1)
 if __name__=='__main__': main()

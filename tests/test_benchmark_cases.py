@@ -14,11 +14,12 @@ def test_hemisphere_schema_and_quick_evidence_are_fail_closed():
     assert archive["qualification_passed"]
     rows={x["mesh"]:x for x in archive["results"]}
     assert not rows[4]["passed"] and not rows[6]["passed"] and not rows[8]["passed"]
-    assert rows[12]["passed"] and rows[16]["passed"]
+    assert not rows[12]["passed"] and not rows[16]["passed"]
+    assert rows[20]["passed"] and rows[24]["passed"]
     assert len(archive["case_hash"])==len(archive["evidence_hash"])==64
     bad=replace(case,citation=replace(case.citation,doi=""))
     with pytest.raises(ValueError):validate_case(bad)
-    failing=replace(case,quick_values=(.01,)*5)
+    failing=replace(case,quick_values=(.01,)*len(case.mesh_sequence))
     with pytest.raises(RuntimeError):run_case(failing)
 
 
@@ -40,7 +41,7 @@ def test_cross_version_drift_comparison_and_legacy_adapter():
     assert drift["passed"] and drift["current_version"]=="1.0.1"
     current["results"][-1]["computed"]*=1.1;current=seal_archive(current)
     assert not compare_archives(baseline,current,drift_tolerance=.01)["passed"]
-    legacy=to_legacy_evidence(baseline,16)
+    legacy=to_legacy_evidence(baseline,24)
     assert legacy.passed and legacy.error<.03 and "10.1016" in legacy.source
 
 

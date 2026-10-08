@@ -49,15 +49,18 @@ def main() -> None:
             if ref is not None and value is not None:
                 error=abs(float(value)-float(ref))/abs(float(ref))
                 target["relative_error"]=error
-                target["status"]="qualified" if error<=.03 else "blocked"
+                target["scalar_status"] = "qualified" if error < .03 else "blocked"
+                # This legacy builder only checks a supplied scalar snapshot.
+                # Complete FE studies are qualified by the field report validator.
+                target["status"] = "reference-only" if error < .03 else "blocked"
                 # Preserve solver-produced fields for report renderers.  Missing
-                # fields intentionally keep a result blocked at validation time.
+                # fields keep a result reference-only; field certification uses a separate gate.
                 for key in ("displacement_field", "stress_field", "mesh_convergence",
                             "reaction", "contact_pressure", "figures"):
                     if key in payload:
                         target[key] = payload[key]
     clean=json.loads(json.dumps(report,sort_keys=True,default=list))
-    clean["evidence_sha256"]=hashlib.sha256(json.dumps(clean,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+    clean["evidence_sha256"]=hashlib.sha256(json.dumps(clean,sort_keys=True,separators=(",",":"),allow_nan=False).encode()).hexdigest()
     a.output.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.NamedTemporaryFile("w",dir=a.output.parent,delete=False,suffix=".tmp") as f:
         json.dump(clean,f,indent=2,sort_keys=True); f.write("\n"); tmp=Path(f.name)

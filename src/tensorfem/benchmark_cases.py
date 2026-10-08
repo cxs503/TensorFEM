@@ -79,19 +79,20 @@ def case_hash(case):validate_case(case);return _hash(case.to_dict())
 
 
 def hemisphere_case():
-    return BenchmarkCase(SCHEMA_VERSION,"shell.hemisphere_18deg","1.0.0",
+    return BenchmarkCase(SCHEMA_VERSION,"shell.hemisphere_18deg","2.0.0",
         "MacNeal--Harder hemispherical shell with 18-degree hole",
         Citation("MacNeal and Harder","A proposed standard set of problems to test finite element accuracy",
                  "Finite Elements in Analysis and Design 1, 3--20",1985,"10.1016/0168-874X(85)90003-4"),
         {"midsurface":"quarter hemisphere","radius":10.,"hole_polar_angle_deg":18.,"thickness":.04},
         {"young_modulus":6.825e7,"poisson_ratio":.3},
         ("meridional symmetry constraints","one vertical rigid-translation gauge"),
-        ("alternating unit radial equator point loads",),(4,6,8,12,16),
+        ("alternating unit radial equator point loads",),(4,6,8,12,16,20,24),
         ReferenceQuantity("loaded-equator radial displacement",.0924,"length","magnitude"),
         "absolute_relative",.03,"qualified",
         ("linear small-strain quarter model","projected MITC-like Q4 shell","not nonlinear doubly-curved shell"),
-        "hemisphere_18deg",(.061187831142486326,.07505940982508462,.08597612461589936,
-                            .09176267439836297,.09320280296640622),(12,16))
+        "hemisphere_18deg",(.1015827104289639,.09873806252562636,.09720500004786899,
+                            .0958018428478389,.09520900652004827,.0948885396800606,
+                            .09468459406197954),(20,24))
 
 
 def _computed(case,tier):
@@ -166,7 +167,7 @@ def compare_archives(baseline,current,*,drift_tolerance=.01):
 
 
 def to_legacy_evidence(archive,mesh=16):
-    """Adapt one qualified result to the existing BenchmarkEvidence contract."""
+    """Adapt one recorded result to the existing BenchmarkEvidence contract."""
     validate_archive(archive);row=next((x for x in archive["results"] if x["mesh"]==mesh),None)
     if row is None:raise ValueError("mesh is absent from archive")
     from .benchmark_registry import BenchmarkEvidence

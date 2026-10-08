@@ -10,7 +10,7 @@ from tensorfem.spherical_shell import hemisphere_with_hole
 
 @pytest.fixture(scope="module")
 def solved():
-    result=hemisphere_with_hole(16)
+    result=hemisphere_with_hole(24)
     return result,build_hemisphere_post(result,length_unit="in",force_unit="lbf")
 
 
@@ -19,10 +19,10 @@ def test_coordinate_dof_probe_and_path_mapping(solved):
     assert torch.equal(post.displacement,result.solution.reshape(n,6)[:,:3])
     assert torch.equal(post.rotation,result.solution.reshape(n,6)[:,3:])
     assert torch.allclose(post.deformed,post.nodes+post.displacement,rtol=0,atol=0)
-    a=16*17
+    a=result.meridional_elements*(result.circumferential_elements+1)
     assert post.probe["node_index"]==a and post.probe["dof"]==0
     assert post.probe["value"]==float(result.solution[6*a])==result.displacement
-    assert [x["node_index"] for x in post.path]==[i*17 for i in range(17)]
+    assert [x["node_index"] for x in post.path]==[i*(result.circumferential_elements+1) for i in range(result.meridional_elements+1)]
 
 
 def test_equilibrium_and_qualification_report_pass(solved):

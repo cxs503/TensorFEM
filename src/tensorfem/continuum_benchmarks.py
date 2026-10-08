@@ -3,7 +3,7 @@
 The Cook membrane follows the conventional tapered panel with corners
 ``(0, 0), (48, 44), (48, 60), (0, 44)``.  A unit resultant vertical shear
 traction is applied on the right edge.  The reported response is the vertical
-displacement at its upper-right corner.
+displacement at its loaded-edge midpoint.
 """
 
 from dataclasses import dataclass
@@ -41,6 +41,8 @@ def mapped_q4_mesh(corners: torch.Tensor, nx: int, ny: int) -> tuple[torch.Tenso
 def cook_membrane(nx: int, ny: int | None = None, *, dtype=torch.float64) -> tuple[ContinuumModel, int]:
     """Build the classical Cook membrane model and return its response DOF."""
     ny = nx if ny is None else ny
+    if ny % 2:
+        raise ValueError("Cook reference requires an even edge subdivision count")
     corners = torch.tensor(((0., 0.), (48., 44.), (48., 60.), (0., 44.)), dtype=dtype)
     nodes, elements = mapped_q4_mesh(corners, nx, ny)
     forces = torch.zeros(2 * len(nodes), dtype=dtype)
@@ -56,7 +58,7 @@ def cook_membrane(nx: int, ny: int | None = None, *, dtype=torch.float64) -> tup
         torch.tensor(1.0/3.0, dtype=dtype), torch.tensor(1.0, dtype=dtype),
         forces, fixed, element_type="q4", plane="stress",
     )
-    response_dof = 2 * int(right[-1]) + 1
+    response_dof = 2 * int(right[ny // 2]) + 1
     return model, response_dof
 
 
@@ -64,4 +66,4 @@ def run_cook_membrane(nx: int = 16, *, reference: float = 23.96) -> ContinuumBen
     model, dof = cook_membrane(nx)
     value = float(solve_continuum(model).displacement[dof])
     error = abs(value-reference) / abs(reference)
-    return ContinuumBenchmarkResult(value, reference, error, "upper-right vertical displacement")
+    return ContinuumBenchmarkResult(value, reference, error, "loaded-edge midpoint vertical displacement")

@@ -18,22 +18,32 @@ facet normals vary in both surface directions. `projected_shell4_stiffness`
 uses diagonal centre tangents and a centre-normal projection. Membrane natural shear and
 plate transverse shear retain the existing selective-integration treatment.
 
+## Corrected coordinate-gradient qualification
+
+The Mindlin gradient transformation on skew facets now uses the inverse
+transpose for a Jacobian with natural-coordinate rows. The previous values
+are superseded: they contained spurious rigid-rotation stiffness.
+
 | quarter mesh | displacement | relative error |
 |---:|---:|---:|
-| 4x4 | 0.061188 | 33.779% |
-| 6x6 | 0.075059 | 18.767% |
-| 8x8 | 0.085976 | 6.952% |
-| 12x12 | 0.091763 | 0.690% |
-| 16x16 | 0.093203 | 0.869% |
-| 20x20 | 0.093697 | 1.404% |
+| 4x4 | 0.1015827104 | 9.937998% |
+| 6x6 | 0.0987380625 | 6.859375% |
+| 8x8 | 0.0972050000 | 5.200217% |
+| 12x12 | 0.0958018428 | 3.681648% |
+| 16x16 | 0.0952090065 | 3.040050% |
+| 20x20 | 0.0948885397 | 2.693225% |
+| 24x24 | 0.0946845941 | 2.472504% |
+| 28x28 | 0.0945409711 | 2.317068% |
+| 32x32 | 0.0944331456 | 2.200374% |
 
-Displacement converges monotonically through the qualification mesh; 12x12
-and finer are below 3%. The 12x12 result also stays below 3% for drilling
-factors `1e-7`, `1e-6`, and `1e-5`, so qualification is not based on tuning a
-single penalty to the answer. Free-DOF residual and the vertical gauge reaction
-are independently required at roundoff.
+The default fixed drilling factor remains 1e-6. The loaded-point displacement
+converges; 12x12 and 16x16 fail the 3% gate after correction. At 24x24 the
+1e-7 factor still gives 4.0051% error, so the old coarse robustness claim is
+withdrawn. The complete report checks the same two-decade bracket at 40x40,
+retaining the failed coarse bracket. Force and moment equilibrium must each
+be below 1e-7, independent of the displacement comparison.
 
-Together with sourced Scordelis--Lo and Pinched Cylinder results, this closes
-the three classical response cases. The projected linear spherical element is
-still separate from the cylindrical finite-rotation nonlinear formulation;
-general nonlinear doubly curved shells remain experimental.
+This is response qualification, not independent shell stress qualification.
+General nonlinear doubly curved shells remain experimental.
+
+[Full report and raw evidence](benchmarks/tutorials/hemisphere_hole_full.md).

@@ -5,6 +5,10 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
+## Published benchmark report scope
+
+The registry contains scalar checks; it does not certify complete stress fields or research reports. Three independent linear cases now have revalidated displacement/stress fields, three mesh levels, and complete Markdown/HTML/PDF/Word reports. Beam stress qualification is limited to the declared sampling region and model. TensorFEM remains below the 1.0 gate. See [benchmark qualification status and downloads](docs/benchmark-qualification-status.md).
+
 ## Capability maturity (v0.45)
 
 | Capability | Maturity | Verification |
@@ -33,7 +37,7 @@ analytical or recognized benchmark evidence.
 | general nonproportional finite plasticity/self-contact | experimental | broader path benchmarks and full contact solve remain |
 | adaptive nonproportional finite J2 integration | stable prototype | independent 400-substep reference, path dependence and restart gates |
 | frictional Mortar and self-contact force update | stable prototype | Coulomb return, rollback, dissipation, force and moment balance |
-| Hemispherical Shell with 18-degree hole | qualified evidence | MacNeal-Harder 12x12 error 0.690%; coarse locking evidence retained |
+| Hemispherical Shell with 18-degree hole | qualified evidence | corrected MacNeal-Harder 24x24 response error 2.473%; stress accuracy pending |
 | global adaptive cyclic finite plasticity | stable prototype | multi-TET Newton, 500-substep reference, rollback and restart |
 | vertex-triangle continuous collision detection | stable foundation | analytical TOI, no-tunnelling, impulse conservation and pair history |
 | general nonlinear doubly-curved shell | experimental solver | objective energy/tangent, multi-element Newton and mesh convergence gates |
@@ -180,3 +184,14 @@ judgement or code-required certification. Validation contracts, sources and
 known limitations are recorded under `docs/`. The curved-shell implementation
 is explicitly experimental until its recognized benchmark errors are below
 the project threshold.
+
+### Additional field benchmark reports
+
+- [3-D thick sphere pressure / Lamé exact fields](docs/benchmarks/tutorials/sphere_pressure_full.md).
+- [Mindlin plate / exact displacement, moment, shear and bending stress](docs/benchmarks/tutorials/mindlin_navier_full.md).
+- [Cook membrane / corrected midpoint response; stress accuracy pending](docs/benchmarks/tutorials/cook_membrane_full.md).
+- [18-degree-hole hemisphere / corrected response convergence and drilling sensitivity](docs/benchmarks/tutorials/hemisphere_hole_full.md).
+
+Each report has HTML, PDF and Word exports in `docs/benchmarks/tutorials/exports`.
+Rebuild with `scripts/rebuild_additional_benchmarks.py`; reproduce and check
+fields/exports with `scripts/validate_additional_benchmark_reports.py`.

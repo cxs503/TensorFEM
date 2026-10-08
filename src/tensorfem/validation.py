@@ -1,6 +1,7 @@
 """Fail-closed benchmark evidence for TensorFEM capabilities."""
 from dataclasses import asdict, dataclass
 import json
+import math
 from pathlib import Path
 from typing import Iterable
 
@@ -17,6 +18,8 @@ class Reference:
     tolerance: float = 0.03
 
     def __post_init__(self) -> None:
+        if not math.isfinite(self.value):
+            raise ValueError("benchmark reference must be finite")
         if not self.source.strip():
             raise ValueError("benchmark reference source is required")
         if not 0 < self.tolerance <= 0.03:
@@ -40,6 +43,8 @@ def validate(reference: Reference, computed: float) -> ValidationResult:
     """Compare a computed scalar to a nonzero standard reference value."""
     if reference.value == 0:
         raise ValueError("relative benchmark reference must be nonzero")
+    if not math.isfinite(float(computed)):
+        raise ValueError("computed benchmark value must be finite")
     error = abs(float(computed) - reference.value) / abs(reference.value)
     return ValidationResult(reference, float(computed), error, error < reference.tolerance)
 
@@ -47,7 +52,10 @@ def validate(reference: Reference, computed: float) -> ValidationResult:
 def require_all(results: Iterable[ValidationResult]) -> tuple[ValidationResult, ...]:
     """Fail when any advertised benchmark does not meet its declared tolerance."""
     materialized = tuple(results)
-    failed = [item for item in materialized if not item.passed]
+    if not materialized:
+        raise AssertionError("benchmark accuracy gate requires nonempty evidence")
+    failed = [item for item in materialized if not item.passed or
+              item != validate(item.reference, item.computed)]
     if failed:
         summary = ", ".join(
             f"{item.reference.benchmark}/{item.reference.quantity}={item.relative_error:.3%}"

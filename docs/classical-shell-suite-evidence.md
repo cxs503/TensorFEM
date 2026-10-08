@@ -10,8 +10,7 @@ compare every common mesh inside every case after verifying both total and
 per-case hashes.
 
 Quick evidence is the default CI tier. Full release evidence is enabled with
-`TENSORFEM_FULL_SHELL_BENCHMARKS=1`; it reruns all 19 meshes and currently
-takes about 19 seconds on the reference CPU. Thus ordinary CI verifies schema,
+`TENSORFEM_FULL_SHELL_BENCHMARKS=1`; it reruns all declared meshes; runtime depends on the machine. Thus ordinary CI verifies schema,
 hashes, status and recorded reproduced values without repeatedly paying the
 nonlinear pure-bending cost.
 
@@ -59,8 +58,10 @@ replace the 12x12 qualification.
 
 Radius 10, thickness 0.04, `E=6.825e7`, `nu=0.3`, quarter symmetry and
 alternating unit equator loads. Reference radial displacement magnitude is
-`0.0924`, again from MacNeal--Harder. Errors for 4/6/8/12/16 are respectively
-`33.779%`, `18.767%`, `6.952%`, `0.690%`, `0.869%`; only 12 and 16 qualify.
+`0.0924`, again from MacNeal--Harder. Corrected errors for 4/6/8/12/16/20/24 are respectively
+`9.938%`, `6.859%`, `5.200%`, `3.682%`, `3.040%`, `2.693%`, `2.473%`;
+only 20 and 24 qualify for the default-factor scalar response.
+Parameter robustness is verified separately in the full hemisphere report.
 
 Capability boundary: linear projected MITC-like Q4 quarter model, not general
 nonlinear doubly curved response.
@@ -79,8 +80,7 @@ nonlinearity with linear elasticity, not load-controlled post-buckling.
 
 ## Current archive
 
-The quick suite total hash is
-`11a6ed5b9e6cac9b81609011171274e82453c197344348a24289059d180a28c9`.
+The suite hash is generated from the current case definitions and numerical evidence.
 All formal fine meshes are strictly below 3%; all stated coarse failures remain
 in the archive. Any formal failure raises instead of producing a passing suite.
 

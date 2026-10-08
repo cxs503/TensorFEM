@@ -2,6 +2,15 @@
 
 All notable user-visible changes are recorded here.
 
+## Unreleased
+
+- Corrected the Mindlin derivative transformation on skew elements; retained a rigid-tilt regression and replaced invalid hemisphere response baselines.
+- Corrected the Cook membrane reference probe to the loaded-edge midpoint.
+- Added real-field benchmark reports and Markdown/HTML/PDF/Word exports, with independent reference formulas, coarse failures, mesh convergence and hashed artifacts.
+- Added full 3-D HEX8 spherical pressure validation against Lamé elasticity and exact Mindlin plate displacement, moment, shear and bending stress fields.
+- Strengthened spherical radial stress and hull-girder fibre stress qualification with pointwise maximum errors, alongside the existing L2 checks. Shell stress oracles for Cook and the hole hemisphere remain incomplete; TensorFEM 1.0 is not qualified.
+- Synchronized the public and packaged API manifests for five existing experimental Hertz mesh exports.
+
 ## 0.45.0
 
 - Added matching and curved nonmatching finite-strain, double-deformable friction paths with adaptive continuation, positive-Jacobian, Coulomb, dissipation, master/slave interchange and transactional rollback gates. This remains a bounded subset: deformable-to-deformable Hertz is blocked, so the general surface-contact composite is not qualified.

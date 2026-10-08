@@ -65,7 +65,9 @@ def q4_mindlin_stiffness(
             detJ = torch.linalg.det(J)
             if bool((detJ <= 0).item()):
                 raise ValueError("plate element has non-positive Jacobian")
-            dN = dN_nat @ torch.linalg.inv(J)
+            # J has natural-coordinate rows and physical-coordinate columns.
+            # Row gradients therefore transform with J^{-T}, not J^{-1}.
+            dN = dN_nat @ torch.linalg.inv(J).T
             Bb = torch.zeros((3, 12), dtype=dtype, device=device)
             for i in range(4):
                 # kappa_x=d(theta_x)/dx, kappa_y=d(theta_y)/dy
@@ -79,7 +81,7 @@ def q4_mindlin_stiffness(
     N, dN_nat = _shape(xi, eta)
     J = dN_nat.T @ xy
     detJ = torch.linalg.det(J)
-    dN = dN_nat @ torch.linalg.inv(J)
+    dN = dN_nat @ torch.linalg.inv(J).T
     Bs = torch.zeros((2, 12), dtype=dtype, device=device)
     for i in range(4):
         Bs[0, 3*i] = dN[i, 0]

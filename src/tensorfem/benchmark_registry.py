@@ -11,6 +11,7 @@ class BenchmarkEvidence:
 
 def _evidence(id,capability,quantity,unit,source,computed,reference,tolerance=.03):
     if not source.strip(): raise ValueError("benchmark source is required")
+    if not all(math.isfinite(float(v)) for v in (computed, reference)): raise ValueError("benchmark values must be finite")
     if reference == 0: raise ValueError("zero-reference checks must be registered as invariants")
     if not 0 < tolerance <= .03: raise ValueError("tolerance must be in (0, 3%]")
     error=abs(float(computed)-float(reference))/abs(float(reference))
@@ -24,7 +25,7 @@ def run_registered_benchmarks():
     from .advanced_buckling import column_buckling,exact_critical_load
     from .dynamics import newmark_linear
     from .solid3d_benchmarks import longitudinal_bar_frequency_benchmark
-    from .plate import kirchhoff_sine_center_deflection,solve_simply_supported_sine_square
+    from .plate import mindlin_sine_center_deflection,solve_simply_supported_sine_square
     from .nonlinear_truss import two_bar_shallow_arch_reaction
     from .contact import solve_rigid_plane_contact
     out=[]
@@ -38,7 +39,7 @@ def run_registered_benchmarks():
     r=newmark_linear(M,M*w*w,torch.zeros((len(t),1),dtype=torch.float64),t,torch.tensor([.02]),torch.tensor([0.])); out.append(_evidence("dynamics.newmark","dynamics","one-period displacement","m","SDOF u=u0 cos(omega*t)",r.displacement[-1,0],.02))
     c,r,_=longitudinal_bar_frequency_benchmark(6); out.append(_evidence("solid.hex8","HEX8 solid","axial frequency","rad/s","omega=pi/(2L)sqrt(E/rho)",c,r))
     n=16; r=solve_simply_supported_sine_square(n,young=1e7,poisson=.3,thickness=.01,q0=1.); i=(n//2)*(n+1)+n//2
-    out.append(_evidence("plate.mindlin","Mindlin plate","centre deflection","m","Navier/Kirchhoff sine-load solution",r.displacement[3*i],kirchhoff_sine_center_deflection(1.,1e7,.3,.01,1.)))
+    out.append(_evidence("plate.mindlin","Mindlin plate","centre deflection","m","Navier exact Mindlin sine-load solution including shear",r.displacement[3*i],mindlin_sine_center_deflection(1.,1e7,.3,.01,1.)))
     a,h,E,A=1.,.2,2000.,.01; v=torch.linspace(0.,.35,10001,dtype=torch.float64); y=h/math.sqrt(3); ref=E*A*(h*h-y*y)*y/(a*a+h*h)**1.5
     out.append(_evidence("nonlinear.arch","nonlinear truss","limit load","force","Two-bar arch closed form",two_bar_shallow_arch_reaction(a,h,E,A,v).max(),ref))
     r=solve_rigid_plane_contact(torch.tensor([[1000.]],dtype=torch.float64),torch.tensor([-20.],dtype=torch.float64),torch.tensor([[1.]],dtype=torch.float64),torch.tensor([.01],dtype=torch.float64),method="penalty",penalty=1e5)
@@ -112,4 +113,4 @@ def run_registered_benchmarks():
     return tuple(out)
 
 def verification_report():
-    r=run_registered_benchmarks(); return {"schema_version":1,"policy":"error < tolerance <= 0.03; zero references use invariants","passed":all(x.passed for x in r),"summary":{"total":len(r),"passed":sum(x.passed for x in r)},"results":[x.to_dict() for x in r]}
+    r=run_registered_benchmarks(); return {"schema_version":1,"qualification_scope":"registered scalar checks; not complete field reports","policy":"error < tolerance <= 0.03; zero references use invariants","passed":all(x.passed for x in r),"summary":{"total":len(r),"passed":sum(x.passed for x in r)},"results":[x.to_dict() for x in r]}
