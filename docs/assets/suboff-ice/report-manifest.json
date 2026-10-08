@@ -1,0 +1,22 @@
+{
+  "schema": "tensorfem.suboff-ice-report/1",
+  "physical_accuracy_qualified": false,
+  "artifacts": {
+    "docs/benchmarks/tutorials/suboff_upward_ice_collision.md": "89653add8c77334cfa739e5a4663e252c781b36c7065907a45c2c975e88c150a",
+    "docs/assets/suboff-ice/history.png": "b52d49c1561211d5053cbffd0fd12dea96c4dec20fb3f1093d42e4c9eeebe2c2",
+    "docs/assets/suboff-ice/fields.png": "39d99a2fcb8fbad8fe1917d3fa3feb016422a501c61f7ffda83dc50eb29b025d",
+    "docs/assets/suboff-ice/mesh-force.png": "c527e9090eeee2860e454b10e79693d10efc647730346147b184a359e2b3c5f4",
+    "docs/assets/suboff-ice/frame-001.vtk": "34852bd8475133e2e8999c332f93548b07dc29da6462f13a2a2be004d41f0836",
+    "docs/assets/suboff-ice/frame-002.vtk": "d8ecf98753bd2513fc32ea703f75406580d089ad26eb415e28c4e43d8a966675",
+    "docs/assets/suboff-ice/frame-000.vtk": "74f9100ae7f9fb36940a48459426c3c84790dc83644722012cfce19aaf87203f",
+    "docs/assets/suboff-ice/frame-003.vtk": "52feaa6c40101311e57d9cc1941868811539fd85d5f601e2e83e87b2ca692029",
+    "docs/assets/suboff-ice/frame-004.vtk": "106199096d6891ea65ee0767c30c16f03f9c3c69ca862c1a6ec98008fe6df18a",
+    "docs/assets/suboff-ice/impact.pvd": "1802710c8bad43c964099f182c770d7b5040ed1ea019821c291bc5c52f31cc29",
+    "docs/assets/suboff-ice/study.json": "236204ccd1b71c4caa3ea7e8d7cca925e83d34ae02fae10960632ef7ef5cd588",
+    "docs/assets/suboff-ice/fracture-topology.json": "e78d7120ebd7c36fbed7233f3711abb6ff2f9a77109fea48fac5c867151be1de",
+    "docs/assets/suboff-ice/default-config.json": "ed90660ca271edb4e0ee792b23e13196f17980caf28bfac789ef3f828348c188",
+    "docs/benchmarks/tutorials/exports/suboff_upward_ice_collision.pdf": "3c0e4c6baa34dd2c2034ae4822546382901928221071a52fc360cd9a25daba0e",
+    "docs/benchmarks/tutorials/exports/suboff_upward_ice_collision.html": "5525766ba243520e0ed8f20d81aa2c66076fdcdee5080159346c43d58e4b2fde",
+    "docs/benchmarks/tutorials/exports/suboff_upward_ice_collision.docx": "ad5dc4322ee434417c74f3354764ab2b49d51683e19b2608f50fb71f2cd3e249"
+  }
+}

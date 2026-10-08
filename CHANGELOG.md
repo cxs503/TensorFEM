@@ -4,6 +4,7 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Added an experimental SUBOFF upward ice-impact case using numerical outer geometry exported from TensorLBM, closed quadrilateral pole caps, a declared steel shell/equipment mass, physical rotary inertia, deformable ice tiles, irreversible cohesive seams and dynamic contact. Added raw fields, mesh/time/contact/ice-grid sensitivity runs and energy/impulse audits. Physical breaking-ice accuracy remains unqualified.
 - Corrected the Mindlin derivative transformation on skew elements; retained a rigid-tilt regression and replaced invalid hemisphere response baselines.
 - Corrected the Cook membrane reference probe to the loaded-edge midpoint.
 - Added real-field benchmark reports and Markdown/HTML/PDF/Word exports, with independent reference formulas, coarse failures, mesh convergence and hashed artifacts.

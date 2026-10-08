@@ -9,6 +9,19 @@ analytical or recognized benchmark evidence.
 
 The registry contains scalar checks; it does not certify complete stress fields or research reports. Three independent linear cases now have revalidated displacement/stress fields, three mesh levels, and complete Markdown/HTML/PDF/Word reports. Beam stress qualification is limited to the declared sampling region and model. TensorFEM remains below the 1.0 gate. See [benchmark qualification status and downloads](docs/benchmark-qualification-status.md).
 
+## Experimental SUBOFF upward ice impact
+
+An artificial SUBOFF bare-hull steel shell can collide upward with independently
+meshed ice tiles joined by irreversible cohesive seams. The case reuses exported
+TensorLBM CAD geometry and records physical mass, contact action/reaction,
+fracture work, energy and support impulse. It is an initial dry-impact research
+demonstration with unqualified physical accuracy and retained mesh/contact
+sensitivities. See the [case report](docs/benchmarks/tutorials/suboff_upward_ice_collision.md).
+
+```bash
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python examples/suboff_upward_ice_collision.py
+```
+
 ## Capability maturity (v0.45)
 
 | Capability | Maturity | Verification |
