@@ -22,6 +22,18 @@ sensitivities. See the [case report](docs/benchmarks/tutorials/suboff_upward_ice
 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python examples/suboff_upward_ice_collision.py
 ```
 
+The appended model adds a welded equivalent sail and four tail fins. Configurable
+ice supports thickness maps, open water, prescribed cracks, elastic/cohesive
+modes, free/supported boundaries, clipped hydrostatic buoyancy, declared water
+added mass and drag, and fragment mass/connectivity diagnostics. Six saved runs
+pass conservation and applicability checks. Mesh sensitivity still exceeds 3%;
+physical breaking-ice accuracy remains unqualified. See the
+[appended SUBOFF and ice report](docs/benchmarks/tutorials/suboff_appended_ice_simulation.md).
+
+```bash
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python examples/suboff_appended_ice_simulation.py
+```
+
 ## Capability maturity (v0.45)
 
 | Capability | Maturity | Verification |

@@ -4,6 +4,8 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Added welded equivalent SUBOFF sail/fins and configurable ice thickness, open water, precracks, boundaries, buoyancy, added water inertia, drag and conservative fragment diagnostics. Published six actual runs, field/hash audits and four report formats. Time-step sensitivity passes; structural mesh sensitivity remains above 3%, and full breaking-ice physics is unqualified.
+
 - Added an experimental SUBOFF upward ice-impact case using numerical outer geometry exported from TensorLBM, closed quadrilateral pole caps, a declared steel shell/equipment mass, physical rotary inertia, deformable ice tiles, irreversible cohesive seams and dynamic contact. Added raw fields, mesh/time/contact/ice-grid sensitivity runs and energy/impulse audits. Physical breaking-ice accuracy remains unqualified.
 - Corrected the Mindlin derivative transformation on skew elements; retained a rigid-tilt regression and replaced invalid hemisphere response baselines.
 - Corrected the Cook membrane reference probe to the loaded-edge midpoint.

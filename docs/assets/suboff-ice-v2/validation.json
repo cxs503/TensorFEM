@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "file": "docs/assets/suboff-ice-v2/baseline.json",
+      "passed": true,
+      "status": "demonstration-audited",
+      "physical_accuracy_qualified": false
+    },
+    {
+      "file": "docs/assets/suboff-ice-v2/mesh-24.json",
+      "passed": true,
+      "status": "demonstration-audited",
+      "physical_accuracy_qualified": false
+    },
+    {
+      "file": "docs/assets/suboff-ice-v2/time-half.json",
+      "passed": true,
+      "status": "demonstration-audited",
+      "physical_accuracy_qualified": false
+    },
+    {
+      "file": "docs/assets/suboff-ice-v2/elastic.json",
+      "passed": true,
+      "status": "demonstration-audited",
+      "physical_accuracy_qualified": false
+    },
+    {
+      "file": "docs/assets/suboff-ice-v2/open-water.json",
+      "passed": true,
+      "status": "demonstration-audited",
+      "physical_accuracy_qualified": false
+    },
+    {
+      "file": "docs/assets/suboff-ice-v2/floating-precracked.json",
+      "passed": true,
+      "status": "demonstration-audited",
+      "physical_accuracy_qualified": false
+    }
+  ]
+}

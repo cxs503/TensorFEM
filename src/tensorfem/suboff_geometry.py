@@ -11,7 +11,7 @@ import torch
 
 
 def closed_revolved_mesh(profile, length: float, radius: float,
-                         axial: int, circumferential: int):
+                         axial: int, circumferential: int, *, axial_coordinates=None):
     """Mesh a revolved outer surface with square-to-disc all-quad pole caps."""
     if axial < 8 or circumferential < 8 or circumferential % 8:
         raise ValueError("axial >= 8 and circumferential must be a multiple of 8")
@@ -21,10 +21,18 @@ def closed_revolved_mesh(profile, length: float, radius: float,
     nodes, cells = [], []
     # Avoid coincident ring nodes at either pole. Caps lie on the same profile.
     ends = (.015, .99)
+    stations = ([ends[0]+(ends[1]-ends[0])*i/axial for i in range(axial+1)]
+                if axial_coordinates is None else list(axial_coordinates))
+    if (len(stations)<9 or abs(stations[0]-ends[0])>1e-12 or
+            abs(stations[-1]-ends[1])>1e-12 or
+            any(not math.isfinite(s) for s in stations) or
+            any(b<=a for a,b in zip(stations,stations[1:]))):
+        raise ValueError('invalid ordered axial coordinates')
+    axial=len(stations)-1
     angles = [-math.pi/4 + 2*math.pi*j/circumferential
               for j in range(circumferential)]
     for i in range(axial + 1):
-        xi = ends[0] + (ends[1] - ends[0])*i/axial
+        xi = stations[i]
         r = radius*float(profile(xi))
         nodes.extend((length*xi, r*math.cos(a), r*math.sin(a)) for a in angles)
     for i in range(axial):
