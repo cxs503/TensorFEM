@@ -236,3 +236,5 @@ The next coupling iteration adds [recorded LBM–DEM hull-load replay](docs/reco
 [Location-preserving point-force exchange](docs/point-load-exchange.md) retains application-point moments and returns work-conjugate velocities; its actual marker-force fixture remains an interface verification with no fluid motion feedback.
 
 [Actual rigid fluid feedback](docs/live-rigid-feedback.md) includes raw restart and motion evidence; time/EOS sensitivity and energy passivity fail.
+
+[Energy-budget gate and atomic rollback](docs/passive-rigid-feedback.md) detects density-energy growth at the first real node conversion; rejected runs remain incomplete and unqualified.
