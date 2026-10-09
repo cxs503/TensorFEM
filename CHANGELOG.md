@@ -4,6 +4,8 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Add location-preserving point-force transfer and motion return for reference Q4 carriers, with actual calibrated-wet marker-force and exact replay evidence.
+
 - Add recorded LBM–DEM resultant replay on the appended SUBOFF linear shell, midpoint energy/restart checks, and second-round multiphysics acceptance records.
 
 - Added current Q4 surface force/velocity transfer with offset couples, explicit 2-D/3-D frame embedding, ownership checks and a vehicle-only linear hull coupling receiver. Published synthetic sail-load fields, timestep and complete restart audits. Coordinated actual LBM–DEM and independent FVM evidence; full 3-D icebreaking remains unqualified.

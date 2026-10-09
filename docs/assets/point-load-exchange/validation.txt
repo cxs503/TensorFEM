@@ -1,0 +1,29 @@
+PASS source force extraction and exact point-map/motion replay
+{
+  "checks": {
+    "force": true,
+    "moment": true,
+    "power": true,
+    "source_wrench": true,
+    "motion_roundtrip": true
+  },
+  "metrics": {
+    "force_N": [
+      -8.634274393549968e-15,
+      0.0,
+      0.5968836206622636
+    ],
+    "moment_N_m": [
+      -0.0008953254387758704,
+      -0.6611903523016631,
+      -1.2951319051975464e-17
+    ],
+    "force_error_N": 1.11022304323672e-16,
+    "moment_error_N_m": 2.168404748867755e-19,
+    "power_error_W": 0.0,
+    "maximum_carrier_offset_m": 0.0015000000130385269,
+    "physical_accuracy_qualified": false,
+    "source_wrench_error_N_Nm": 1.1102256074963207e-16,
+    "source_vs_probe_velocity_max_difference_m_s": 0.1377319615441061
+  }
+}
