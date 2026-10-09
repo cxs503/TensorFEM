@@ -1,0 +1,63 @@
+{
+  "schema": "tensorfem.independent-fvm-wall-audit/1",
+  "cases": [
+    {
+      "case": "cpu",
+      "point_count": 96,
+      "mapping_errors": {
+        "pressure": {
+          "generalized_force_error": 4.0496354094737193e-16,
+          "force_error_N": 3.1086244689504383e-15,
+          "moment_error_Nm": 3.552713678800501e-15,
+          "power_error_W": 3.3306690738754696e-16
+        },
+        "viscous": {
+          "generalized_force_error": 2.006089419287217e-18,
+          "force_error_N": 1.0408340855860843e-17,
+          "moment_error_Nm": 2.7755575615628914e-17,
+          "power_error_W": 0.0
+        },
+        "total": {
+          "generalized_force_error": 4.0548138212982054e-16,
+          "force_error_N": 7.549516567451064e-15,
+          "moment_error_Nm": 7.105427357601002e-15,
+          "power_error_W": 2.220446049250313e-16
+        }
+      },
+      "returned_motion_error_m_s": 5.551115123125783e-17,
+      "pressure_time_s": 0.2500000000000001,
+      "viscous_time_s": 0.2450000000000001
+    },
+    {
+      "case": "cuda",
+      "point_count": 96,
+      "mapping_errors": {
+        "pressure": {
+          "generalized_force_error": 4.049635409473716e-16,
+          "force_error_N": 4.440892098500626e-16,
+          "moment_error_Nm": 7.105427357601002e-15,
+          "power_error_W": 1.1102230246251565e-16
+        },
+        "viscous": {
+          "generalized_force_error": 2.006089419287226e-18,
+          "force_error_N": 1.0408340855860843e-17,
+          "moment_error_Nm": 1.3877787807814457e-17,
+          "power_error_W": 8.673617379884035e-19
+        },
+        "total": {
+          "generalized_force_error": 4.054813821298202e-16,
+          "force_error_N": 8.43769498715119e-15,
+          "moment_error_Nm": 7.105427357601002e-15,
+          "power_error_W": 0.0
+        }
+      },
+      "returned_motion_error_m_s": 5.551115123125783e-17,
+      "pressure_time_s": 0.2500000000000001,
+      "viscous_time_s": 0.2450000000000001
+    }
+  ],
+  "study_sha256": "33a3cb7bcb72fd2f223717783039b83e395c36b83e01b314866d89d464912b89",
+  "auditor_sha256": "b79f4b82c312443018ffbd540aebe0439d05262e71996f7160041381cf43f617",
+  "physical_accuracy_qualified": false,
+  "scope": "NumPy point force/moment/work transfer only; no CFD or flexible response integration"
+}

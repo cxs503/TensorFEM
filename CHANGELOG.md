@@ -4,6 +4,8 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Add actual CPU/CUDA FVM wall pressure and viscous point-load transfer, separate explicit sampling clocks, SI/ownership/traction validation, exact replay and independent NumPy force/moment/work audits. This is a one-way carrier interface, not flexible FSI qualification.
+
 - Add an atomic macroscopic energy-budget gate for unforced local rigid-fluid feedback. Actual first-node conversions are rejected with complete rollback and exact restart; the moving-boundary physics remains unqualified.
 
 - Add actual LBM motion feedback through a translating Q4 carrier, local boundary and global reference runs, complete restart and independent raw audits. Time/EOS sensitivity (46.34%) and unforced energy growth fail; physical wet icebreaking remains unqualified.

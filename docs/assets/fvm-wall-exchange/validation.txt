@@ -1,0 +1,134 @@
+{
+  "schema": "tensorfem.actual-fvm-wall-study/1",
+  "source_sha256": {
+    "TensorFEM/src/tensorfem/fvm_wall_loads.py": "6369b42dc266c6b19f2de33d7a33395b9d391434292dca7f6dd4c7466722f863",
+    "TensorFEM/src/tensorfem/point_surface_coupling.py": "f360f2e814735852965700d48d36388db4a05f98243b4ceaeda3ec63112db721",
+    "TensorFEM/src/tensorfem/surface_coupling.py": "ab28ec663225fa5d1bdc981bdb71c2350a693a3ac38d2f44e21abf5e97ffcebc",
+    "TensorFEM/src/tensorfem/plate.py": "26992717396ce0b1f1e9062ac00f62f210bd81f3e89829b521dd71f04abaadc3",
+    "TensorFEM/scripts/run_fvm_wall_exchange.py": "1c17d8dfe53385d3983f763ad7ee59d0b29fe109dafbe6d02dfa176beaf08a8b",
+    "TensorFVM/src/tensorfvm/conservative3d.py": "2ab9293e9a01ba8ed33a86ec879ea32037526509cd54e56c6e3b03c66e9ed886",
+    "TensorFVM/src/tensorfvm/solver3d.py": "95d4711fd52ad9f2d8dd7300a999814633de986a2d579dcc997d17aa01603a37",
+    "TensorFVM/src/tensorfvm/runtime.py": "ff383730f34f82030f28da424819eea670f28c663d5be834f30bebc6c74a2da5",
+    "TensorFVM/src/tensorfvm/mesh3d.py": "ad7fe310537e70dcb65a34b42b335ea8bd7f9abd2bf24453a907c7f43a2b7c56",
+    "TensorFVM/scripts/run_conservative_transport.py": "1ed3da78231eb7a6f3c2467ca87b6efaa995d35fd8bab91ae71ba649f501f44a"
+  },
+  "cases": {
+    "cpu": {
+      "artifact_sha256": "422f34206e49bef9d044182dab86a2aff4083145e59e5aafcf4f39252148cd56",
+      "source_raw_sha256": "8b9e46dad462239d5bc8e1913808cde8a00d66725a60f5dbb606c5c845cd9063",
+      "audits": {
+        "pressure": {
+          "force_N": [
+            3.0810726606612726,
+            -2.220446049250313e-16,
+            0.0
+          ],
+          "moment_N_m": [
+            0.0,
+            4.621608990991909,
+            -18.486435963967637
+          ],
+          "force_error_N": 1.7979101253009106e-15,
+          "moment_error_N_m": 1.0805299415593293e-14,
+          "power_error_W": 3.3306690738754696e-16,
+          "maximum_carrier_offset_m": 1.3750000000000002,
+          "physical_accuracy_qualified": false
+        },
+        "viscous": {
+          "force_N": [
+            0.013064404726666347,
+            2.168404344971009e-19,
+            0.0
+          ],
+          "moment_N_m": [
+            -5.421010862427522e-19,
+            0.01959660708999952,
+            -0.07838642835999808
+          ],
+          "force_error_N": 3.476216610979977e-18,
+          "moment_error_N_m": 5.421010862427522e-19,
+          "power_error_W": 0.0,
+          "maximum_carrier_offset_m": 1.3750000000000002,
+          "physical_accuracy_qualified": false
+        },
+        "total": {
+          "force_N": [
+            3.0941370653879394,
+            0.0,
+            0.0
+          ],
+          "moment_N_m": [
+            -4.440892098500626e-16,
+            4.641205598081909,
+            -18.564822392327635
+          ],
+          "force_error_N": 4.577566798522237e-16,
+          "moment_error_N_m": 1.432833034877994e-14,
+          "power_error_W": 2.220446049250313e-16,
+          "maximum_carrier_offset_m": 1.3750000000000002,
+          "physical_accuracy_qualified": false
+        }
+      },
+      "rigid_velocity_error_m_s": 5.551115123125783e-17
+    },
+    "cuda": {
+      "artifact_sha256": "196e2d14a4e40f41e86cc2573b2b0f0303c549fad6e5b55665709ce1e393d346",
+      "source_raw_sha256": "96f5289b888c5dd284b0ac7dc5e35929fb8c8a7bc4b179572ef27ee527ed1a5f",
+      "audits": {
+        "pressure": {
+          "force_N": [
+            3.0810726606612677,
+            1.1102230246251565e-16,
+            0.0
+          ],
+          "moment_N_m": [
+            -6.661338147750939e-16,
+            4.621608990991902,
+            -18.486435963967605
+          ],
+          "force_error_N": 1.3506446028928519e-15,
+          "moment_error_N_m": 1.0829228293358307e-14,
+          "power_error_W": 3.3306690738754696e-16,
+          "maximum_carrier_offset_m": 1.3750000000000002,
+          "physical_accuracy_qualified": false
+        },
+        "viscous": {
+          "force_N": [
+            0.013064404726666349,
+            1.6263032587282567e-19,
+            0.0
+          ],
+          "moment_N_m": [
+            -3.2526065174565133e-19,
+            0.019596607089999524,
+            -0.0783864283599981
+          ],
+          "force_error_N": 1.742330095302999e-18,
+          "moment_error_N_m": 3.484660190605998e-18,
+          "power_error_W": 4.336808689942018e-19,
+          "maximum_carrier_offset_m": 1.3750000000000002,
+          "physical_accuracy_qualified": false
+        },
+        "total": {
+          "force_N": [
+            3.0941370653879345,
+            0.0,
+            0.0
+          ],
+          "moment_N_m": [
+            -2.220446049250313e-16,
+            4.6412055980819025,
+            -18.56482239232761
+          ],
+          "force_error_N": 0.0,
+          "moment_error_N_m": 3.6771686055379495e-15,
+          "power_error_W": 1.1102230246251565e-16,
+          "maximum_carrier_offset_m": 1.3750000000000002,
+          "physical_accuracy_qualified": false
+        }
+      },
+      "rigid_velocity_error_m_s": 5.551115123125783e-17
+    }
+  },
+  "physical_accuracy_qualified": false
+}

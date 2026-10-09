@@ -238,3 +238,5 @@ The next coupling iteration adds [recorded LBM–DEM hull-load replay](docs/reco
 [Actual rigid fluid feedback](docs/live-rigid-feedback.md) includes raw restart and motion evidence; time/EOS sensitivity and energy passivity fail.
 
 [Energy-budget gate and atomic rollback](docs/passive-rigid-feedback.md) detects density-energy growth at the first real node conversion; rejected runs remain incomplete and unqualified.
+
+[Actual FVM pressure/viscous wall-force exchange](docs/fvm-wall-exchange.md) preserves force points, moments and virtual work; one-way interface verification, no flexible response or feedback.
