@@ -34,6 +34,16 @@ physical breaking-ice accuracy remains unqualified. See the
 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python examples/suboff_appended_ice_simulation.py
 ```
 
+## Multiphysics development
+
+The coordinated FEM/LBM/DEM/FVM foundation now includes conservative shell-surface
+exchange and a vehicle-only load receiver, an actual 2-D LBM–DEM exchange fixture,
+complete DEM restart/accounting, and independent SI fluid-channel evidence.
+The joint fixture uses slipping point coupling in periodic single-phase liquid;
+particle sensitivity still fails, and physical icebreaking accuracy is unqualified.
+See [development status and reproduction](docs/multiphysics-development-status.md)
+and the [FEM surface interface](docs/surface-coupling-interface.md).
+
 ## Capability maturity (v0.45)
 
 | Capability | Maturity | Verification |
