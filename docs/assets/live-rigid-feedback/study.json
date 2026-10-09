@@ -1,0 +1,151 @@
+{
+  "schema": "tensorfem.live-rigid-feedback-study/1",
+  "source_sha256": {
+    "TensorFEM/src/tensorfem/fluid_rigid_feedback.py": "87e6e3c6e0e0dc93a16a37a4269936cc92a683c098a3a4b1bc9e868d92be59a8",
+    "TensorFEM/src/tensorfem/point_surface_coupling.py": "f360f2e814735852965700d48d36388db4a05f98243b4ceaeda3ec63112db721",
+    "TensorFEM/src/tensorfem/surface_coupling.py": "ab28ec663225fa5d1bdc981bdb71c2350a693a3ac38d2f44e21abf5e97ffcebc",
+    "TensorFEM/src/tensorfem/plate.py": "26992717396ce0b1f1e9062ac00f62f210bd81f3e89829b521dd71f04abaadc3",
+    "TensorFEM/scripts/run_live_rigid_feedback.py": "1544775ee04cd754b2d057f62238773a3be1c5a6db880048213225c99559f9be",
+    "TensorLBM/src/tensorlbm/local_moving_boundary_2d.py": "acd46ed7158e900557abd1ca8ba6899db0c51efa8c814d8c1bb3dd856a8fc171",
+    "TensorLBM/src/tensorlbm/feedback_moving_disk.py": "2b2c5c9b04f5ad453b305de660b0031ee832197fe772e339442795321aadb516",
+    "TensorLBM/src/tensorlbm/moving_boundary_2d.py": "0d66e0afc75d84df3da2eeb0a003e90c4ed973dad2c6d58ce3b65fed40d10059",
+    "TensorLBM/src/tensorlbm/d2q9.py": "1065c3093e07dfa186d729412c4081c7e4ba0925db223e8083ff007d457adf4d",
+    "TensorLBM/src/tensorlbm/solver.py": "6cef9523e393f4d584ef01620074c945fc94e44521884ff308ce25b7b59c39b3"
+  },
+  "physical_accuracy_qualified": false,
+  "cases": {
+    "local": {
+      "metrics": {
+        "max_momentum_residual_Ns": 2.5229818234606682e-14,
+        "max_body_energy_identity_error_J": 5.573476792933296e-19,
+        "max_staggered_body_work_defect_J": 0.0006345042760555182,
+        "max_force_mapping_error_N": 7.944109290391274e-15,
+        "max_moment_mapping_error_N_m": 3.552713678800501e-15,
+        "max_power_mapping_error_W": 5.551115123125783e-17,
+        "max_motion_feedback_error_m_s": 3.469446951953614e-18,
+        "covered_events": 8,
+        "exposed_events": 8,
+        "final_body_velocity_m_s": [
+          0.00010870340226140597,
+          0.014259821702599332
+        ],
+        "final_body_position_m": [
+          0.1616747442990134,
+          0.16584056500434108
+        ],
+        "total_body_impulse_Ns": [
+          0.0005435170113070298,
+          -0.07870089148700334
+        ],
+        "global_reservoir_impulse_Ns": [
+          0.0,
+          0.0
+        ],
+        "total_kinetic_change_J": 0.00045779332846449623
+      },
+      "checks": {
+        "momentum": true,
+        "body_energy_identity": true,
+        "force_mapping": true,
+        "moment_mapping": true,
+        "power_mapping": true,
+        "actual_motion_feedback": true,
+        "velocity_changes": true,
+        "node_conversion_exercised": true,
+        "restart_bitwise": true,
+        "no_global_reservoir": true
+      }
+    },
+    "local-time-half": {
+      "metrics": {
+        "max_momentum_residual_Ns": 9.212075546827236e-14,
+        "max_body_energy_identity_error_J": 1.734723475976807e-18,
+        "max_staggered_body_work_defect_J": 0.003986064334165495,
+        "max_force_mapping_error_N": 8.038873388460929e-14,
+        "max_moment_mapping_error_N_m": 1.4210854715202004e-14,
+        "max_power_mapping_error_W": 1.7763568394002505e-15,
+        "max_motion_feedback_error_m_s": 6.938893903907228e-18,
+        "covered_events": 20,
+        "exposed_events": 22,
+        "final_body_velocity_m_s": [
+          -0.002347504387316979,
+          0.021553378352162263
+        ],
+        "final_body_position_m": [
+          0.1600632900929441,
+          0.16760808627067508
+        ],
+        "total_body_impulse_Ns": [
+          -0.011737521936584895,
+          -0.04223310823918868
+        ],
+        "global_reservoir_impulse_Ns": [
+          0.0,
+          0.0
+        ],
+        "total_kinetic_change_J": 0.02276481159118976
+      },
+      "checks": {
+        "momentum": true,
+        "body_energy_identity": true,
+        "force_mapping": true,
+        "moment_mapping": true,
+        "power_mapping": true,
+        "actual_motion_feedback": true,
+        "velocity_changes": true,
+        "node_conversion_exercised": true,
+        "restart_bitwise": true,
+        "no_global_reservoir": true
+      }
+    },
+    "global-reference": {
+      "metrics": {
+        "max_momentum_residual_Ns": 2.7369822726217835e-13,
+        "max_body_energy_identity_error_J": 4.87890977618477e-19,
+        "max_staggered_body_work_defect_J": 1.1664000000000043e-05,
+        "max_force_mapping_error_N": 4.440892098500626e-16,
+        "max_moment_mapping_error_N_m": 1.1102230246251565e-16,
+        "max_power_mapping_error_W": 1.3877787807814457e-17,
+        "max_motion_feedback_error_m_s": 3.469446951953614e-18,
+        "covered_events": 3,
+        "exposed_events": 3,
+        "final_body_velocity_m_s": [
+          1.615719211752642e-05,
+          0.01013936975123149
+        ],
+        "final_body_position_m": [
+          0.16201677732237105,
+          0.16506128560913844
+        ],
+        "total_body_impulse_Ns": [
+          8.078596058763211e-05,
+          -0.09930315124384255
+        ],
+        "global_reservoir_impulse_Ns": [
+          -2.063698758547626e-08,
+          -4.160304091982427e-05
+        ],
+        "total_kinetic_change_J": -0.0016903600126662414
+      },
+      "checks": {
+        "momentum": true,
+        "body_energy_identity": true,
+        "force_mapping": true,
+        "moment_mapping": true,
+        "power_mapping": true,
+        "actual_motion_feedback": true,
+        "velocity_changes": true,
+        "node_conversion_exercised": true,
+        "restart_bitwise": true
+      }
+    }
+  },
+  "artifacts_sha256": {
+    "local.json": "a6909e69bb27032a6a7afba72f14bb1ff1a4b86959be51708bc983974a5c2bdf",
+    "local-time-half.json": "7fbdca396ff51f509e1352b70b8f51519ff7f2f56f47d035db0b2bd1bf4bd422",
+    "global-reference.json": "097c297464a8705c4bb7153dfd01f0ccaed0819a00577f04623a1736da601782"
+  },
+  "sensitivity_type": "combined time-step/compressibility; dx and SI nu fixed but sound speed changes",
+  "time_eos_half_impulse_change_percent": 46.33719206832231,
+  "time_eos_sensitivity_pass_3percent": false
+}

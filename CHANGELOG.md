@@ -4,6 +4,8 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Add actual LBM motion feedback through a translating Q4 carrier, local boundary and global reference runs, complete restart and independent raw audits. Time/EOS sensitivity (46.34%) and unforced energy growth fail; physical wet icebreaking remains unqualified.
+
 - Add location-preserving point-force transfer and motion return for reference Q4 carriers, with actual calibrated-wet marker-force and exact replay evidence.
 
 - Add recorded LBM–DEM resultant replay on the appended SUBOFF linear shell, midpoint energy/restart checks, and second-round multiphysics acceptance records.
