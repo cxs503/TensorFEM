@@ -1,0 +1,55 @@
+{
+  "schema": "tensorfem.hull-coupling-study/1",
+  "physical_accuracy_qualified": false,
+  "resolved_fluid_in_this_case": false,
+  "ice_solver_in_this_case": null,
+  "intended_coupled_ownership": {
+    "ice_owner": "TensorDEM",
+    "resolved_fluid": true,
+    "simplified_water_terms": []
+  },
+  "time_half_peak_stress_change_percent": 0.9950688492803561,
+  "cases": {
+    "baseline": {
+      "status": "interface-verified",
+      "checks": {
+        "force_mapping": true,
+        "moment_mapping": true,
+        "power_mapping": true,
+        "momentum_balance": true,
+        "energy_balance": true,
+        "small_rotation": true,
+        "vehicle_only": true,
+        "restart_exact": true
+      },
+      "metrics": {
+        "maximum_force_transfer_error_N": 2.2737367544323206e-13,
+        "maximum_moment_transfer_error_N_m": 1.1368705456184373e-13,
+        "maximum_power_transfer_error_W": 1.1102230246251565e-16,
+        "maximum_gauss_von_mises_Pa": 5380.60844913604,
+        "maximum_energy_residual_J": 8.26277845115062e-09,
+        "maximum_energy_relative_residual": 0.005507334878283045
+      }
+    },
+    "time-half": {
+      "status": "interface-verified",
+      "checks": {
+        "force_mapping": true,
+        "moment_mapping": true,
+        "power_mapping": true,
+        "momentum_balance": true,
+        "energy_balance": true,
+        "small_rotation": true,
+        "vehicle_only": true
+      },
+      "metrics": {
+        "maximum_force_transfer_error_N": 2.2737367544323206e-13,
+        "maximum_moment_transfer_error_N_m": 2.2737378386342346e-13,
+        "maximum_power_transfer_error_W": 1.1102230246251565e-16,
+        "maximum_gauss_von_mises_Pa": 5434.149207715139,
+        "maximum_energy_residual_J": 2.0687416434349236e-09,
+        "maximum_energy_relative_residual": 0.0013558827657469009
+      }
+    }
+  }
+}

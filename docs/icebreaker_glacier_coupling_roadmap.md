@@ -47,7 +47,7 @@ Do not transfer the FEM cohesive-ice force into DEM as well; that would double-c
 
 ### Stage A — reproduce and freeze the existing SUBOFF baseline
 
-1. Run both documented SUBOFF examples and the independent evidence validators on the active `master` branch.
+1. Run both documented SUBOFF examples and the independent evidence validators on the active `main` branch.
 2. Store the exact source commit, configuration, geometry hashes and solver outputs with each run.
 3. Keep time-step sensitivity, mesh sensitivity and physical-validation status as separate fields. Existing conservation checks verify numerical bookkeeping, not real-world accuracy.
 
@@ -84,4 +84,6 @@ Do not transfer the FEM cohesive-ice force into DEM as well; that would double-c
 
 ## Repository note
 
-At the time of writing, the detailed TensorFEM implementation and the SUBOFF case are on the `master` branch, while the repository default branch `main` contains only the short project README. Keep this roadmap targeted at `master` so it stays alongside the implementation; reconcile branch/default-branch policy separately rather than silently transplanting or replacing the code tree.
+Development history has been merged into `main`, which is now the active and default branch. New work and pull requests should target `main`; the retained `master` branch is not the development target.
+
+The executable P0/P1 foundation and remaining qualification gates are summarized in [multiphysics development status](multiphysics-development-status.md). Glacier drawing digitization and ship geometry reconstruction remain separate planned work; the current coupled P1 fixture uses a circular tool, not a reconstructed Glacier hull.
