@@ -1,0 +1,41 @@
+{
+  "schema": "tensorfem.pointwise-audit/1.0",
+  "relative_error_limit": 0.03,
+  "source_sha256": {
+    "docs/assets/benchmark-clouds/sphere-pressure/results.json": "e4bdd6dcc020d2bc9f2c8041af71720c6f02369945783b7c7dc692dd5e2f81a1",
+    "docs/assets/benchmark-clouds/hull-girder/hull-girder-fe.json": "8b236f00d0d8a30463dfa5ebca883b7b0136a506c8c79dbe56aedda05b5d5194",
+    "docs/assets/benchmark-clouds/cantilever-fe/results.json": "d475a6fa4ea0ed8bc8287c7066c74c285faa804f058b6f896e70e2751bc76236",
+    "docs/assets/benchmark-clouds/mindlin-navier/results.json": "176183dcd0146b655edb698beb912177b4bee41dadac76355e245d85a2344306"
+  },
+  "sphere_pressure": {
+    "criterion": "all HEX8 centre radial relative errors < 3%",
+    "max_radial_relative_error": 0.029790106155683824,
+    "max_stress_tensor_relative_error": 0.0015727223607353222,
+    "max_radial_absolute_error_over_pressure": 0.0034126018929095006,
+    "worst_element_index": 145376,
+    "worst_radius_m": 9.830935251192495,
+    "worst_reference_radial_stress_pa": -55065.15591982426,
+    "worst_fe_radial_stress_pa": -53424.759079493415,
+    "pointwise_radial_passed": true
+  },
+  "hull_girder": {
+    "criterion": "all declared span samples: moment and nonzero fibre stress relative errors < 3%",
+    "max_moment_and_sigma_x_relative_error": 0.018023887123425446,
+    "worst_x_m": 119.921875,
+    "pointwise_passed": true
+  },
+  "cantilever": {
+    "scope": "declared interior 0.2L <= x <= 0.8L; full domain and clamp peaks unqualified",
+    "max_sigma_x_relative_error": 0.00635538189516117,
+    "max_tau_xy_relative_error": 0.0179489817423181,
+    "declared_interior_components_passed": true
+  },
+  "mindlin_plate": {
+    "scope": "nonzero nodal w and element-centre top bending stress vector within Mindlin model",
+    "max_w_relative_error": 0.0005413893292210956,
+    "max_top_stress_vector_relative_error": 0.0013450990667298588,
+    "checked_pointwise_metrics_passed": true
+  },
+  "all_cases_pointwise_qualified": false,
+  "note": "Published L2 passes do not certify every component at every point. Cook and hemisphere have no independent stress oracle; the membrane case is only a patch test."
+}

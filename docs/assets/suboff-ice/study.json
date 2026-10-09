@@ -1,0 +1,336 @@
+{
+  "schema": "tensorfem.suboff-ice-study/1",
+  "physical_accuracy_qualified": false,
+  "status": "demonstration; independent physical reference absent",
+  "solver_source_sha256": "c016b07cf4fae7831ce91ab09b318de135f38592d6c829f668534e183a9f6705",
+  "cases": [
+    {
+      "name": "hull-16",
+      "path": "docs/assets/suboff-ice/hull-16.json",
+      "sha256": "72f3663e0f145f9cd1d80091ef8ebc9cb55ca63ca99cbcf57a010d47cdb97706",
+      "status": "demonstration-audited",
+      "metrics": {
+        "peak_contact_force_N": 74437.0362106465,
+        "peak_contact_time_s": 0.00018361634633327112,
+        "maximum_penetration_m": 4.050969072206449e-06,
+        "maximum_energy_relative_error": 6.192212353983706e-07,
+        "maximum_vertical_momentum_relative_error": 2.526582118126238e-13,
+        "fracture_dissipation_J": 0.14402548452266017,
+        "fully_failed_cohesive_points": 28,
+        "damaged_seams": 10,
+        "maximum_ice_vertical_displacement_m": 0.0023567418705668134,
+        "hull_deformation_without_translation_m": 6.815904563628293e-05,
+        "maximum_rotation_rad": 0.007847786966145956,
+        "maximum_hull_gauss_von_mises_Pa": 13999969.308067,
+        "hull_mass_kg": 700.0,
+        "ice_mass_kg": 53.5248,
+        "steel_shell_mass_kg": 138.41887562475137,
+        "attached_equipment_and_ballast_mass_kg": 561.5811243752487,
+        "initial_kinetic_energy_J": 31.5,
+        "initial_vertical_momentum_kg_m_s": 210.00000000000003,
+        "support_vertical_impulse_N_s": 0.9016698649857846
+      },
+      "checks": {
+        "geometry_closed": true,
+        "contact_occurred": true,
+        "energy_balance": true,
+        "vertical_momentum_balance": true,
+        "penetration_small": true,
+        "cohesive_fracture_occurred": true,
+        "small_rotation": true,
+        "small_ice_displacement": true,
+        "elastic_hull_gauss_stress": true
+      },
+      "solver": {
+        "method": "velocity Verlet, lumped physical mass, no mass scaling",
+        "time_step_s": 2.799029669714499e-07,
+        "steps": 21436,
+        "conservative_time_step_bound_s": 5.089173585246577e-07,
+        "drilling_rotary_inertia": "isotropic rho*t^3/12 lumped on each rotational DOF"
+      }
+    },
+    {
+      "name": "hull-24",
+      "path": "docs/assets/suboff-ice/hull-24.json",
+      "sha256": "2621de55168f2e38163d7d9beb21306f015389ccf729fdbed88d452defd41338",
+      "status": "demonstration-audited",
+      "metrics": {
+        "peak_contact_force_N": 60908.24134262215,
+        "peak_contact_time_s": 0.00018789028169665574,
+        "maximum_penetration_m": 4.363815484364205e-06,
+        "maximum_energy_relative_error": 3.923622170498575e-07,
+        "maximum_vertical_momentum_relative_error": 1.6738250996879633e-13,
+        "fracture_dissipation_J": 0.1399075341225043,
+        "fully_failed_cohesive_points": 25,
+        "damaged_seams": 13,
+        "maximum_ice_vertical_displacement_m": 0.002934377144270352,
+        "hull_deformation_without_translation_m": 7.704336220891721e-05,
+        "maximum_rotation_rad": 0.008792708531398921,
+        "maximum_hull_gauss_von_mises_Pa": 9642224.357453056,
+        "hull_mass_kg": 700.0,
+        "ice_mass_kg": 53.5248,
+        "steel_shell_mass_kg": 139.3015184298317,
+        "attached_equipment_and_ballast_mass_kg": 560.6984815701683,
+        "initial_kinetic_energy_J": 31.5,
+        "initial_vertical_momentum_kg_m_s": 210.0,
+        "support_vertical_impulse_N_s": 1.045310459497742
+      },
+      "checks": {
+        "geometry_closed": true,
+        "contact_occurred": true,
+        "energy_balance": true,
+        "vertical_momentum_balance": true,
+        "penetration_small": true,
+        "cohesive_fracture_occurred": true,
+        "small_rotation": true,
+        "small_ice_displacement": true,
+        "elastic_hull_gauss_stress": true
+      },
+      "solver": {
+        "method": "velocity Verlet, lumped physical mass, no mass scaling",
+        "time_step_s": 2.7753365095517833e-07,
+        "steps": 21619,
+        "conservative_time_step_bound_s": 5.046164447689686e-07,
+        "drilling_rotary_inertia": "isotropic rho*t^3/12 lumped on each rotational DOF"
+      }
+    },
+    {
+      "name": "hull-32",
+      "path": "docs/assets/suboff-ice/hull-32.json",
+      "sha256": "00d40316968866836496254cf2ac41eff6eed3fcbc885de4cad0bb912fd16234",
+      "status": "demonstration-audited",
+      "metrics": {
+        "peak_contact_force_N": 50885.626250074594,
+        "peak_contact_time_s": 0.00019107770315349376,
+        "maximum_penetration_m": 5.413052798932731e-06,
+        "maximum_energy_relative_error": 2.6856163193311744e-07,
+        "maximum_vertical_momentum_relative_error": 6.734031321982349e-13,
+        "fracture_dissipation_J": 0.1426159046487097,
+        "fully_failed_cohesive_points": 28,
+        "damaged_seams": 11,
+        "maximum_ice_vertical_displacement_m": 0.00286184325128721,
+        "hull_deformation_without_translation_m": 7.815117237570607e-05,
+        "maximum_rotation_rad": 0.008639651445820018,
+        "maximum_hull_gauss_von_mises_Pa": 7795922.210409906,
+        "hull_mass_kg": 699.9999999999999,
+        "ice_mass_kg": 53.5248,
+        "steel_shell_mass_kg": 139.62476267851156,
+        "attached_equipment_and_ballast_mass_kg": 560.3752373214884,
+        "initial_kinetic_energy_J": 31.5,
+        "initial_vertical_momentum_kg_m_s": 210.0,
+        "support_vertical_impulse_N_s": 0.959506813223252
+      },
+      "checks": {
+        "geometry_closed": true,
+        "contact_occurred": true,
+        "energy_balance": true,
+        "vertical_momentum_balance": true,
+        "penetration_small": true,
+        "cohesive_fracture_occurred": true,
+        "small_rotation": true,
+        "small_ice_displacement": true,
+        "elastic_hull_gauss_stress": true
+      },
+      "solver": {
+        "method": "velocity Verlet, lumped physical mass, no mass scaling",
+        "time_step_s": 2.6686830049370637e-07,
+        "steps": 22483,
+        "conservative_time_step_bound_s": 4.852361597174864e-07,
+        "drilling_rotary_inertia": "isotropic rho*t^3/12 lumped on each rotational DOF"
+      }
+    },
+    {
+      "name": "time-half",
+      "path": "docs/assets/suboff-ice/time-half.json",
+      "sha256": "bd2b8a7b1698a4fc30a234c31fe8ee9ee965b89001dfe99fe5b61698460a898e",
+      "status": "demonstration-audited",
+      "metrics": {
+        "peak_contact_force_N": 50887.73362832026,
+        "peak_contact_time_s": 0.00019121538974758146,
+        "maximum_penetration_m": 5.413144881339677e-06,
+        "maximum_energy_relative_error": 5.256487889404582e-08,
+        "maximum_vertical_momentum_relative_error": 6.759312686285955e-13,
+        "fracture_dissipation_J": 0.1426156611150602,
+        "fully_failed_cohesive_points": 28,
+        "damaged_seams": 11,
+        "maximum_ice_vertical_displacement_m": 0.0028618503923672194,
+        "hull_deformation_without_translation_m": 7.81463887696943e-05,
+        "maximum_rotation_rad": 0.008639875303341166,
+        "maximum_hull_gauss_von_mises_Pa": 7796292.448895128,
+        "hull_mass_kg": 699.9999999999999,
+        "ice_mass_kg": 53.5248,
+        "steel_shell_mass_kg": 139.62476267851156,
+        "attached_equipment_and_ballast_mass_kg": 560.3752373214884,
+        "initial_kinetic_energy_J": 31.5,
+        "initial_vertical_momentum_kg_m_s": 210.0,
+        "support_vertical_impulse_N_s": 0.9595070023390879
+      },
+      "checks": {
+        "geometry_closed": true,
+        "contact_occurred": true,
+        "energy_balance": true,
+        "vertical_momentum_balance": true,
+        "penetration_small": true,
+        "cohesive_fracture_occurred": true,
+        "small_rotation": true,
+        "small_ice_displacement": true,
+        "elastic_hull_gauss_stress": true
+      },
+      "solver": {
+        "method": "velocity Verlet, lumped physical mass, no mass scaling",
+        "time_step_s": 1.3343711775825644e-07,
+        "steps": 44965,
+        "conservative_time_step_bound_s": 4.852361597174864e-07,
+        "drilling_rotary_inertia": "isotropic rho*t^3/12 lumped on each rotational DOF"
+      }
+    },
+    {
+      "name": "contact-double",
+      "path": "docs/assets/suboff-ice/contact-double.json",
+      "sha256": "242efd7256280c38bb66180b7cd19a6c6350936f6459a031140068a37f696f98",
+      "status": "demonstration-audited",
+      "metrics": {
+        "peak_contact_force_N": 71060.14330743167,
+        "peak_contact_time_s": 0.00018360539073967,
+        "maximum_penetration_m": 3.8124184725002604e-06,
+        "maximum_energy_relative_error": 5.332839524418986e-07,
+        "maximum_vertical_momentum_relative_error": 6.71188501602923e-13,
+        "fracture_dissipation_J": 0.14787908650337375,
+        "fully_failed_cohesive_points": 28,
+        "damaged_seams": 13,
+        "maximum_ice_vertical_displacement_m": 0.002861437125463592,
+        "hull_deformation_without_translation_m": 7.737462790072512e-05,
+        "maximum_rotation_rad": 0.008788333346412837,
+        "maximum_hull_gauss_von_mises_Pa": 10477195.226756332,
+        "hull_mass_kg": 699.9999999999999,
+        "ice_mass_kg": 53.5248,
+        "steel_shell_mass_kg": 139.62476267851156,
+        "attached_equipment_and_ballast_mass_kg": 560.3752373214884,
+        "initial_kinetic_energy_J": 31.5,
+        "initial_vertical_momentum_kg_m_s": 210.0,
+        "support_vertical_impulse_N_s": 0.991154458397365
+      },
+      "checks": {
+        "geometry_closed": true,
+        "contact_occurred": true,
+        "energy_balance": true,
+        "vertical_momentum_balance": true,
+        "penetration_small": true,
+        "cohesive_fracture_occurred": true,
+        "small_rotation": true,
+        "small_ice_displacement": true,
+        "elastic_hull_gauss_stress": true
+      },
+      "solver": {
+        "method": "velocity Verlet, lumped physical mass, no mass scaling",
+        "time_step_s": 2.6686830049370637e-07,
+        "steps": 22483,
+        "conservative_time_step_bound_s": 4.852361597174864e-07,
+        "drilling_rotary_inertia": "isotropic rho*t^3/12 lumped on each rotational DOF"
+      }
+    },
+    {
+      "name": "ice-fine",
+      "path": "docs/assets/suboff-ice/ice-fine.json",
+      "sha256": "7f173f727177c76abb1b627fccea07895ae83b28fe7b3851f815f56bead10c1c",
+      "status": "demonstration-audited",
+      "metrics": {
+        "peak_contact_force_N": 36522.293026469575,
+        "peak_contact_time_s": 0.0001844059956411511,
+        "maximum_penetration_m": 4.066803833988709e-06,
+        "maximum_energy_relative_error": 2.666421451413825e-07,
+        "maximum_vertical_momentum_relative_error": 6.673867807600281e-13,
+        "fracture_dissipation_J": 0.1150607929228463,
+        "fully_failed_cohesive_points": 33,
+        "damaged_seams": 28,
+        "maximum_ice_vertical_displacement_m": 0.002003834636138949,
+        "hull_deformation_without_translation_m": 8.16026890690337e-05,
+        "maximum_rotation_rad": 0.007795085352254563,
+        "maximum_hull_gauss_von_mises_Pa": 6971129.79349876,
+        "hull_mass_kg": 699.9999999999999,
+        "ice_mass_kg": 53.52480000000002,
+        "steel_shell_mass_kg": 139.62476267851156,
+        "attached_equipment_and_ballast_mass_kg": 560.3752373214884,
+        "initial_kinetic_energy_J": 31.5,
+        "initial_vertical_momentum_kg_m_s": 210.0,
+        "support_vertical_impulse_N_s": 1.3881698777927094
+      },
+      "checks": {
+        "geometry_closed": true,
+        "contact_occurred": true,
+        "energy_balance": true,
+        "vertical_momentum_balance": true,
+        "penetration_small": true,
+        "cohesive_fracture_occurred": true,
+        "small_rotation": true,
+        "small_ice_displacement": true,
+        "elastic_hull_gauss_stress": true
+      },
+      "solver": {
+        "method": "velocity Verlet, lumped physical mass, no mass scaling",
+        "time_step_s": 2.6686830049370637e-07,
+        "steps": 22483,
+        "conservative_time_step_bound_s": 4.852361597174864e-07,
+        "drilling_rotary_inertia": "isotropic rho*t^3/12 lumped on each rotational DOF"
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "from": "hull-16",
+      "to": "hull-24",
+      "relative_changes": {
+        "peak_contact_force_N": 0.18174816672898875,
+        "fracture_dissipation_J": 0.028591817717564916,
+        "maximum_ice_vertical_displacement_m": 0.2450990840013434,
+        "maximum_hull_gauss_von_mises_Pa": 0.3112681788597168
+      },
+      "all_below_3_percent": false
+    },
+    {
+      "from": "hull-24",
+      "to": "hull-32",
+      "relative_changes": {
+        "peak_contact_force_N": 0.16455269224025293,
+        "fracture_dissipation_J": 0.01935828933868522,
+        "maximum_ice_vertical_displacement_m": 0.024718667511697046,
+        "maximum_hull_gauss_von_mises_Pa": 0.19148093620286188
+      },
+      "all_below_3_percent": false
+    },
+    {
+      "from": "hull-32",
+      "to": "time-half",
+      "relative_changes": {
+        "peak_contact_force_N": 4.141401808266387e-05,
+        "fracture_dissipation_J": 1.707619147528483e-06,
+        "maximum_ice_vertical_displacement_m": 2.4952729351657155e-06,
+        "maximum_hull_gauss_von_mises_Pa": 4.749130060943685e-05
+      },
+      "all_below_3_percent": true
+    },
+    {
+      "from": "hull-32",
+      "to": "contact-double",
+      "relative_changes": {
+        "peak_contact_force_N": 0.39646789366825375,
+        "fracture_dissipation_J": 0.03690459256720535,
+        "maximum_ice_vertical_displacement_m": 0.0001419105757924921,
+        "maximum_hull_gauss_von_mises_Pa": 0.34393275663604217
+      },
+      "all_below_3_percent": false
+    },
+    {
+      "from": "hull-32",
+      "to": "ice-fine",
+      "relative_changes": {
+        "peak_contact_force_N": 0.2822670031222022,
+        "fracture_dissipation_J": 0.1932120529876169,
+        "maximum_ice_vertical_displacement_m": 0.2998097868436165,
+        "maximum_hull_gauss_von_mises_Pa": 0.10579792802573107
+      },
+      "all_below_3_percent": false
+    }
+  ],
+  "all_numerical_sensitivity_gates_passed": false
+}

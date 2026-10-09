@@ -1,0 +1,2434 @@
+{
+  "entries": [
+    {
+      "introduced": "0.1.0",
+      "module": "tensorfem.model",
+      "name": "TrussModel",
+      "object": "TrussModel",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.1.0",
+      "module": "tensorfem.solvers",
+      "name": "StaticResult",
+      "object": "StaticResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.1.0",
+      "module": "tensorfem.solvers",
+      "name": "solve_linear_static",
+      "object": "solve_linear_static",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.frame2d",
+      "name": "FrameModel",
+      "object": "FrameModel",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.frame2d",
+      "name": "FrameResult",
+      "object": "FrameResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.frame2d",
+      "name": "solve_frame_static",
+      "object": "solve_frame_static",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.continuum",
+      "name": "ContinuumModel",
+      "object": "ContinuumModel",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.continuum",
+      "name": "ContinuumResult",
+      "object": "ContinuumResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.continuum",
+      "name": "solve_continuum",
+      "object": "solve_continuum",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.modal",
+      "name": "ModalResult",
+      "object": "ModalResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.modal",
+      "name": "cantilever_beam_modes",
+      "object": "cantilever_beam_modes",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.modal",
+      "name": "solve_modes",
+      "object": "solve_modes",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.buckling",
+      "name": "BucklingResult",
+      "object": "BucklingResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.buckling",
+      "name": "pinned_pinned_column_buckling",
+      "object": "pinned_pinned_column_buckling",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.2.0",
+      "module": "tensorfem.buckling",
+      "name": "solve_linear_buckling",
+      "object": "solve_linear_buckling",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.benchmark_registry",
+      "name": "BenchmarkEvidence",
+      "object": "BenchmarkEvidence",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.benchmark_registry",
+      "name": "run_registered_benchmarks",
+      "object": "run_registered_benchmarks",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.benchmark_registry",
+      "name": "verification_report",
+      "object": "verification_report",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.sparse_core",
+      "name": "DofManager",
+      "object": "DofManager",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.sparse_core",
+      "name": "MPC",
+      "object": "MPC",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.sparse_core",
+      "name": "IterativeResult",
+      "object": "IterativeResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.sparse_core",
+      "name": "SparseStaticResult",
+      "object": "SparseStaticResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.sparse_core",
+      "name": "assemble_coo",
+      "object": "assemble_coo",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.sparse_core",
+      "name": "conjugate_gradient",
+      "object": "conjugate_gradient",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.sparse_core",
+      "name": "solve_sparse_static",
+      "object": "solve_sparse_static",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.modeldb",
+      "name": "ModelDB",
+      "object": "ModelDB",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.modeldb",
+      "name": "ElementBlock",
+      "object": "ElementBlock",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.modeldb",
+      "name": "Material",
+      "object": "Material",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.modeldb",
+      "name": "Section",
+      "object": "Section",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.nonlinear_step",
+      "name": "NonlinearConvergenceError",
+      "object": "NonlinearConvergenceError",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.nonlinear_step",
+      "name": "StepState",
+      "object": "StepState",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.nonlinear_step",
+      "name": "solve_adaptive",
+      "object": "solve_adaptive",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.nonlinear_step",
+      "name": "save_checkpoint",
+      "object": "save_checkpoint",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.nonlinear_step",
+      "name": "load_checkpoint",
+      "object": "load_checkpoint",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.thermal",
+      "name": "ThermalModel",
+      "object": "ThermalModel",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.thermal",
+      "name": "ThermalTransientResult",
+      "object": "ThermalTransientResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.thermal",
+      "name": "ThermoelasticBarResult",
+      "object": "ThermoelasticBarResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.thermal",
+      "name": "solve_steady_thermal",
+      "object": "solve_steady_thermal",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.thermal",
+      "name": "solve_transient_thermal",
+      "object": "solve_transient_thermal",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.thermal",
+      "name": "solve_thermoelastic_bar",
+      "object": "solve_thermoelastic_bar",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.explicit_dynamics",
+      "name": "ExplicitResult",
+      "object": "ExplicitResult",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.explicit_dynamics",
+      "name": "central_difference",
+      "object": "central_difference",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.explicit_dynamics",
+      "name": "critical_time_step",
+      "object": "critical_time_step",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.solid_plasticity",
+      "name": "Tet4J2Model",
+      "object": "Tet4J2Model",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.solid_plasticity",
+      "name": "PlasticSolidState",
+      "object": "PlasticSolidState",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.solid_plasticity",
+      "name": "solve_load_steps",
+      "object": "solve_load_steps",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.quadratic_solid",
+      "name": "Tet10Model",
+      "object": "Tet10Model",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.3.0",
+      "module": "tensorfem.quadratic_solid",
+      "name": "solve_tet10",
+      "object": "solve_tet10",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.hex20",
+      "name": "Hex20Model",
+      "object": "Hex20Model",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.hex20",
+      "name": "solve_hex20",
+      "object": "solve_hex20",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.finite_sliding_contact",
+      "name": "PolylineProjection",
+      "object": "PolylineProjection",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.finite_sliding_contact",
+      "name": "FrictionState",
+      "object": "FrictionState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.finite_sliding_contact",
+      "name": "ContactUpdate",
+      "object": "ContactUpdate",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.finite_sliding_contact",
+      "name": "project_point_to_polyline",
+      "object": "project_point_to_polyline",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.finite_sliding_contact",
+      "name": "update_node_polyline_contact",
+      "object": "update_node_polyline_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.sparse_advanced",
+      "name": "gmres",
+      "object": "gmres",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.sparse_advanced",
+      "name": "jacobi_inverse",
+      "object": "jacobi_inverse",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.sparse_advanced",
+      "name": "solve_multiple_rhs",
+      "object": "solve_multiple_rhs",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.coupled_nonlinear",
+      "name": "PlasticBarContact",
+      "object": "PlasticBarContact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.4.0",
+      "module": "tensorfem.coupled_nonlinear",
+      "name": "coupled_bar_contact_problem",
+      "object": "coupled_bar_contact_problem",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.domain_decomposition",
+      "name": "Subdomain",
+      "object": "Subdomain",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.domain_decomposition",
+      "name": "AdditiveSchwarz",
+      "object": "AdditiveSchwarz",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.domain_decomposition",
+      "name": "solve_schwarz",
+      "object": "solve_schwarz",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.contact3d",
+      "name": "FacetProjection",
+      "object": "FacetProjection",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.contact3d",
+      "name": "Contact3DState",
+      "object": "Contact3DState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.contact3d",
+      "name": "Contact3DUpdate",
+      "object": "Contact3DUpdate",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.contact3d",
+      "name": "project_point_to_facets",
+      "object": "project_point_to_facets",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.contact3d",
+      "name": "update_node_facet_contact",
+      "object": "update_node_facet_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.contact3d",
+      "name": "update_contact_nodes",
+      "object": "update_contact_nodes",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.mesh_pipeline",
+      "name": "MeshReport",
+      "object": "MeshReport",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.mesh_pipeline",
+      "name": "diagnose_model",
+      "object": "diagnose_model",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.mesh_pipeline",
+      "name": "read_gmsh",
+      "object": "read_gmsh",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.5.0",
+      "module": "tensorfem.mesh_pipeline",
+      "name": "convert_model",
+      "object": "convert_model",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.corotational_shell",
+      "name": "CorotationalState",
+      "object": "CorotationalState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.corotational_shell",
+      "name": "axis_angle",
+      "object": "axis_angle",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.corotational_shell",
+      "name": "corotational_cylindrical_shell4",
+      "object": "corotational_cylindrical_shell4",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.corotational_shell",
+      "name": "cylindrical_nodes",
+      "object": "cylindrical_nodes",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.coupled_3d_demo",
+      "name": "Coupled3DModel",
+      "object": "Coupled3DModel",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.coupled_3d_demo",
+      "name": "Coupled3DState",
+      "object": "Coupled3DState",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.coupled_3d_demo",
+      "name": "Coupled3DResponse",
+      "object": "Coupled3DResponse",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.coupled_3d_demo",
+      "name": "default_coupled_3d_model",
+      "object": "default_coupled_3d_model",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.coupled_3d_demo",
+      "name": "coupled_3d_problem",
+      "object": "coupled_3d_problem",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.coupled_3d_demo",
+      "name": "coupled_3d_response",
+      "object": "coupled_3d_response",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.coupled_3d_demo",
+      "name": "monotonic_reference_displacement",
+      "object": "monotonic_reference_displacement",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.structural_grid_benchmark",
+      "name": "GridBenchmarkResult",
+      "object": "GridBenchmarkResult",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.structural_grid_benchmark",
+      "name": "grid_spring_stiffness",
+      "object": "grid_spring_stiffness",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.structural_grid_benchmark",
+      "name": "analytical_mode",
+      "object": "analytical_mode",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.structural_grid_benchmark",
+      "name": "manufactured_solution",
+      "object": "manufactured_solution",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.6.0",
+      "module": "tensorfem.structural_grid_benchmark",
+      "name": "run_grid_benchmark",
+      "object": "run_grid_benchmark",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.global_plasticity",
+      "name": "GlobalPlasticResult",
+      "object": "GlobalPlasticResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.global_plasticity",
+      "name": "solve_tet4_j2_path",
+      "object": "solve_tet4_j2_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.surface_contact3d",
+      "name": "SurfaceContactState",
+      "object": "SurfaceContactState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.surface_contact3d",
+      "name": "SurfaceContactUpdate",
+      "object": "SurfaceContactUpdate",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.surface_contact3d",
+      "name": "HertzReference",
+      "object": "HertzReference",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.surface_contact3d",
+      "name": "tributary_areas",
+      "object": "tributary_areas",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.surface_contact3d",
+      "name": "initial_surface_contact_state",
+      "object": "initial_surface_contact_state",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.surface_contact3d",
+      "name": "update_surface_contact",
+      "object": "update_surface_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.surface_contact3d",
+      "name": "hertz_sphere_halfspace_reference",
+      "object": "hertz_sphere_halfspace_reference",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.surface_contact3d",
+      "name": "integrate_hertz_pressure",
+      "object": "integrate_hertz_pressure",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.shell_consistent",
+      "name": "ShellTangentResult",
+      "object": "ShellTangentResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.shell_consistent",
+      "name": "rotation_matrix_from_vector",
+      "object": "rotation_matrix_from_vector",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.shell_consistent",
+      "name": "shell_energy",
+      "object": "shell_energy",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.7.0",
+      "module": "tensorfem.shell_consistent",
+      "name": "consistent_internal_force_tangent",
+      "object": "consistent_internal_force_tangent",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.finite_strain_elasticity",
+      "name": "FiniteStrainTet4Model",
+      "object": "FiniteStrainTet4Model",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.finite_strain_elasticity",
+      "name": "FiniteElasticResult",
+      "object": "FiniteElasticResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.finite_strain_elasticity",
+      "name": "neo_hookean_response",
+      "object": "neo_hookean_response",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.finite_strain_elasticity",
+      "name": "assemble_finite_tet4",
+      "object": "assemble_finite_tet4",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.finite_strain_elasticity",
+      "name": "solve_finite_elastic_path",
+      "object": "solve_finite_elastic_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.hertz_axisymmetric",
+      "name": "AxisymmetricHertzResult",
+      "object": "AxisymmetricHertzResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.hertz_axisymmetric",
+      "name": "hertz_reference",
+      "object": "hertz_reference",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.hertz_axisymmetric",
+      "name": "axisymmetric_mesh",
+      "object": "axisymmetric_mesh",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.hertz_axisymmetric",
+      "name": "solve_axisymmetric_hertz",
+      "object": "solve_axisymmetric_hertz",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.shell_nonlinear_step",
+      "name": "CylindricalShellMesh",
+      "object": "CylindricalShellMesh",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.shell_nonlinear_step",
+      "name": "ShellIncrement",
+      "object": "ShellIncrement",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.shell_nonlinear_step",
+      "name": "ShellStepResult",
+      "object": "ShellStepResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.shell_nonlinear_step",
+      "name": "assemble_shell",
+      "object": "assemble_shell",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.shell_nonlinear_step",
+      "name": "solve_shell_step",
+      "object": "solve_shell_step",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.shell_nonlinear_step",
+      "name": "write_shell_checkpoint",
+      "object": "write_shell_checkpoint",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.8.0",
+      "module": "tensorfem.shell_nonlinear_step",
+      "name": "read_shell_checkpoint",
+      "object": "read_shell_checkpoint",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.finite_strain_plasticity",
+      "name": "MultiplicativeJ2State",
+      "object": "MultiplicativeJ2State",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.finite_strain_plasticity",
+      "name": "FinitePlasticState",
+      "object": "FinitePlasticState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.finite_strain_plasticity",
+      "name": "FinitePlasticResult",
+      "object": "FinitePlasticResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.finite_strain_plasticity",
+      "name": "update_multiplicative_j2",
+      "object": "update_multiplicative_j2",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.finite_strain_plasticity",
+      "name": "assemble_finite_plastic",
+      "object": "assemble_finite_plastic",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.finite_strain_plasticity",
+      "name": "solve_finite_plastic_path",
+      "object": "solve_finite_plastic_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.mortar_contact3d",
+      "name": "MortarContactResult",
+      "object": "MortarContactResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.mortar_contact3d",
+      "name": "MortarContactAssembly",
+      "object": "MortarContactAssembly",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.mortar_contact3d",
+      "name": "integrate_mortar_contact",
+      "object": "integrate_mortar_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.mortar_contact3d",
+      "name": "assemble_mortar_contact",
+      "object": "assemble_mortar_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.mortar_contact3d",
+      "name": "self_contact_candidates",
+      "object": "self_contact_candidates",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.pinched_cylinder",
+      "name": "PinchedCylinderResult",
+      "object": "PinchedCylinderResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.pinched_cylinder",
+      "name": "pinched_cylinder_model",
+      "object": "pinched_cylinder_model",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.pinched_cylinder",
+      "name": "solve_pinched_cylinder_linear",
+      "object": "solve_pinched_cylinder_linear",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.9.0",
+      "module": "tensorfem.pinched_cylinder",
+      "name": "solve_pinched_cylinder_nonlinear",
+      "object": "solve_pinched_cylinder_nonlinear",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.nonproportional_plasticity",
+      "name": "AdaptiveFiniteJ2State",
+      "object": "AdaptiveFiniteJ2State",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.nonproportional_plasticity",
+      "name": "AdaptiveUpdate",
+      "object": "AdaptiveUpdate",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.nonproportional_plasticity",
+      "name": "virgin_adaptive_state",
+      "object": "virgin_adaptive_state",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.nonproportional_plasticity",
+      "name": "integrate_adaptive",
+      "object": "integrate_adaptive",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.nonproportional_plasticity",
+      "name": "integrate_path",
+      "object": "integrate_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.nonproportional_plasticity",
+      "name": "richardson_algorithmic_tangent",
+      "object": "richardson_algorithmic_tangent",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.nonproportional_plasticity",
+      "name": "fixed_substep_reference",
+      "object": "fixed_substep_reference",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "MortarPointState",
+      "object": "MortarPointState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "FrictionalMortarState",
+      "object": "FrictionalMortarState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "FrictionalMortarResult",
+      "object": "FrictionalMortarResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "FrictionalMortarAssembly",
+      "object": "FrictionalMortarAssembly",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "SelfContactResult",
+      "object": "SelfContactResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "initial_frictional_mortar_state",
+      "object": "initial_frictional_mortar_state",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "update_frictional_mortar",
+      "object": "update_frictional_mortar",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "assemble_frictional_mortar",
+      "object": "assemble_frictional_mortar",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "update_self_contact",
+      "object": "update_self_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "SymmetricFrictionalMortarState",
+      "object": "SymmetricFrictionalMortarState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "SymmetricFrictionalMortarResult",
+      "object": "SymmetricFrictionalMortarResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "SymmetricFrictionalMortarAssembly",
+      "object": "SymmetricFrictionalMortarAssembly",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "initial_symmetric_frictional_mortar_state",
+      "object": "initial_symmetric_frictional_mortar_state",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.frictional_mortar",
+      "name": "assemble_symmetric_frictional_mortar",
+      "object": "assemble_symmetric_frictional_mortar",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "FrictionalSurfaceState",
+      "object": "FrictionalSurfaceState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "FrictionalSurfaceLoad",
+      "object": "FrictionalSurfaceLoad",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "FrictionalSurfaceStep",
+      "object": "FrictionalSurfaceStep",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "initial_frictional_surface_state",
+      "object": "initial_frictional_surface_state",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "solve_frictional_surface_path",
+      "object": "solve_frictional_surface_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "run_frictional_surface_path_qualification",
+      "object": "run_frictional_surface_path_qualification",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.44.0",
+      "module": "tensorfem.frictional_surface_path",
+      "name": "run_frictional_surface_mesh_qualification",
+      "object": "run_frictional_surface_mesh_qualification",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "FiniteStrainContactModel",
+      "object": "FiniteStrainContactModel",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "FiniteStrainContactStep",
+      "object": "FiniteStrainContactStep",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "FiniteStrainFrictionState",
+      "object": "FiniteStrainFrictionState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "FiniteStrainFrictionStep",
+      "object": "FiniteStrainFrictionStep",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "build_two_block_contact",
+      "object": "build_two_block_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "build_curved_nonmatching_two_block_contact",
+      "object": "build_curved_nonmatching_two_block_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "balanced_face_load",
+      "object": "balanced_face_load",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "solve_finite_strain_contact_path",
+      "object": "solve_finite_strain_contact_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "initial_finite_strain_friction_state",
+      "object": "initial_finite_strain_friction_state",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "solve_finite_strain_friction_path",
+      "object": "solve_finite_strain_friction_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "solve_finite_strain_friction_adaptive_path",
+      "object": "solve_finite_strain_friction_adaptive_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.finite_strain_contact3d",
+      "name": "run_curved_finite_strain_friction_qualification",
+      "object": "run_curved_finite_strain_friction_qualification",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.general_contact_qualification",
+      "name": "qualify_general_contact3d",
+      "object": "qualify_general_contact3d",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_3d_fe",
+      "name": "Hertz3DFEResult",
+      "object": "Hertz3DFEResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_3d_fe",
+      "name": "solve_hertz_cap_block",
+      "object": "solve_hertz_cap_block",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "HertzQuarterPatch",
+      "object": "HertzQuarterPatch",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "HertzQuarterVolume",
+      "object": "HertzQuarterVolume",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "build_hertz_quarter_patch",
+      "object": "build_hertz_quarter_patch",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "build_hertz_quarter_volume",
+      "object": "build_hertz_quarter_volume",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hertz_quarter_patch",
+      "name": "quarter_patch_quality",
+      "object": "quarter_patch_quality",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.spherical_shell",
+      "name": "HemisphereResult",
+      "object": "HemisphereResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.spherical_shell",
+      "name": "projected_shell4_stiffness",
+      "object": "projected_shell4_stiffness",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.10.0",
+      "module": "tensorfem.spherical_shell",
+      "name": "hemisphere_with_hole",
+      "object": "hemisphere_with_hole",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.adaptive_global_plasticity",
+      "name": "AdaptiveGlobalState",
+      "object": "AdaptiveGlobalState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.adaptive_global_plasticity",
+      "name": "AdaptiveGlobalResult",
+      "object": "AdaptiveGlobalResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.adaptive_global_plasticity",
+      "name": "assemble_adaptive_global",
+      "object": "assemble_adaptive_global",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.adaptive_global_plasticity",
+      "name": "solve_adaptive_global_path",
+      "object": "solve_adaptive_global_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.self_contact_ccd",
+      "name": "CCDEvent",
+      "object": "CCDEvent",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.self_contact_ccd",
+      "name": "DynamicPairHistory",
+      "object": "DynamicPairHistory",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.self_contact_ccd",
+      "name": "DynamicSelfContactState",
+      "object": "DynamicSelfContactState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.self_contact_ccd",
+      "name": "DynamicSelfContactUpdate",
+      "object": "DynamicSelfContactUpdate",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.self_contact_ccd",
+      "name": "vertex_triangle_ccd",
+      "object": "vertex_triangle_ccd",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.self_contact_ccd",
+      "name": "swept_vertex_face_candidates",
+      "object": "swept_vertex_face_candidates",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.self_contact_ccd",
+      "name": "earliest_self_contact",
+      "object": "earliest_self_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.self_contact_ccd",
+      "name": "update_dynamic_self_contact",
+      "object": "update_dynamic_self_contact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.general_shell_nonlinear",
+      "name": "GeneralShellMesh",
+      "object": "GeneralShellMesh",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.general_shell_nonlinear",
+      "name": "GeneralShellResult",
+      "object": "GeneralShellResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.general_shell_nonlinear",
+      "name": "general_shell_energy",
+      "object": "general_shell_energy",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.general_shell_nonlinear",
+      "name": "general_shell_force_tangent",
+      "object": "general_shell_force_tangent",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.general_shell_nonlinear",
+      "name": "assemble_general_shell",
+      "object": "assemble_general_shell",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.11.0",
+      "module": "tensorfem.general_shell_nonlinear",
+      "name": "solve_general_shell",
+      "object": "solve_general_shell",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.ad_plastic_tangent",
+      "name": "ADMetrics",
+      "object": "ADMetrics",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.ad_plastic_tangent",
+      "name": "assemble_ad_global",
+      "object": "assemble_ad_global",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.ad_plastic_tangent",
+      "name": "benchmark_tangents",
+      "object": "benchmark_tangents",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.dynamic_contact_extended",
+      "name": "AmbiguousCoplanarContactError",
+      "object": "AmbiguousCoplanarContactError",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.dynamic_contact_extended",
+      "name": "EdgeEdgeEvent",
+      "object": "EdgeEdgeEvent",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.dynamic_contact_extended",
+      "name": "UnifiedEvent",
+      "object": "UnifiedEvent",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.dynamic_contact_extended",
+      "name": "ImpactResult",
+      "object": "ImpactResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.dynamic_contact_extended",
+      "name": "edge_edge_ccd",
+      "object": "edge_edge_ccd",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.dynamic_contact_extended",
+      "name": "spatial_hash_edge_pairs",
+      "object": "spatial_hash_edge_pairs",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.dynamic_contact_extended",
+      "name": "earliest_edge_contacts",
+      "object": "earliest_edge_contacts",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.dynamic_contact_extended",
+      "name": "earliest_unified_contacts",
+      "object": "earliest_unified_contacts",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.dynamic_contact_extended",
+      "name": "coulomb_impact",
+      "object": "coulomb_impact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.large_rotation_shell_benchmark",
+      "name": "LargeRotationResult",
+      "object": "LargeRotationResult",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.12.0",
+      "module": "tensorfem.large_rotation_shell_benchmark",
+      "name": "pure_bending_shell",
+      "object": "pure_bending_shell",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.implicit_plastic_tangent",
+      "name": "smooth_spd_log",
+      "object": "smooth_spd_log",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.implicit_plastic_tangent",
+      "name": "implicit_update",
+      "object": "implicit_update",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.implicit_plastic_tangent",
+      "name": "implicit_material_tangent",
+      "object": "implicit_material_tangent",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.implicit_plastic_tangent",
+      "name": "tet4_implicit_response",
+      "object": "tet4_implicit_response",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.multi_contact_impulse",
+      "name": "ContactConstraint",
+      "object": "ContactConstraint",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.multi_contact_impulse",
+      "name": "ContactImpulseHistory",
+      "object": "ContactImpulseHistory",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.multi_contact_impulse",
+      "name": "MultiContactState",
+      "object": "MultiContactState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.multi_contact_impulse",
+      "name": "MultiContactResult",
+      "object": "MultiContactResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.multi_contact_impulse",
+      "name": "solve_multi_contact_impulses",
+      "object": "solve_multi_contact_impulses",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.multi_contact_impulse",
+      "name": "build_vertex_face_manifold",
+      "object": "build_vertex_face_manifold",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.multi_contact_impulse",
+      "name": "constraints_from_unified_events",
+      "object": "constraints_from_unified_events",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.arc_length",
+      "name": "ArcLengthPoint",
+      "object": "ArcLengthPoint",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.arc_length",
+      "name": "ArcLengthResult",
+      "object": "ArcLengthResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.arc_length",
+      "name": "ArcLengthProblem",
+      "object": "ArcLengthProblem",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.arc_length",
+      "name": "general_shell_arc_problem",
+      "object": "general_shell_arc_problem",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.arc_length",
+      "name": "solve_arc_length",
+      "object": "solve_arc_length",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.von_mises_arch",
+      "name": "ArchReference",
+      "object": "ArchReference",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.von_mises_arch",
+      "name": "arch_load",
+      "object": "arch_load",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.von_mises_arch",
+      "name": "arch_limit_reference",
+      "object": "arch_limit_reference",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.13.0",
+      "module": "tensorfem.von_mises_arch",
+      "name": "trace_von_mises_arch",
+      "object": "trace_von_mises_arch",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.hybrid_plastic_tangent",
+      "name": "HybridMetrics",
+      "object": "HybridMetrics",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.hybrid_plastic_tangent",
+      "name": "assemble_hybrid",
+      "object": "assemble_hybrid",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.rigid_contact_graph",
+      "name": "RigidContact",
+      "object": "RigidContact",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.rigid_contact_graph",
+      "name": "RigidImpulseHistory",
+      "object": "RigidImpulseHistory",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.rigid_contact_graph",
+      "name": "RigidContactState",
+      "object": "RigidContactState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.rigid_contact_graph",
+      "name": "RigidContactResult",
+      "object": "RigidContactResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.rigid_contact_graph",
+      "name": "contact_islands",
+      "object": "contact_islands",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.rigid_contact_graph",
+      "name": "solve_rigid_contact_graph",
+      "object": "solve_rigid_contact_graph",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.snapthrough_shell_qualification",
+      "name": "QualificationAudit",
+      "object": "QualificationAudit",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.14.0",
+      "module": "tensorfem.snapthrough_shell_qualification",
+      "name": "karatas_yuksel_ring_load_audit",
+      "object": "karatas_yuksel_ring_load_audit",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.hybrid_global_solver",
+      "name": "HybridGlobalResult",
+      "object": "HybridGlobalResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.hybrid_global_solver",
+      "name": "solve_hybrid_global_path",
+      "object": "solve_hybrid_global_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.colored_contact_graph",
+      "name": "ColoredContactData",
+      "object": "ColoredContactData",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.colored_contact_graph",
+      "name": "ColoredContactState",
+      "object": "ColoredContactState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.colored_contact_graph",
+      "name": "ColoredContactResult",
+      "object": "ColoredContactResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.colored_contact_graph",
+      "name": "prepare_colored_contacts",
+      "object": "prepare_colored_contacts",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.colored_contact_graph",
+      "name": "solve_colored_contacts",
+      "object": "solve_colored_contacts",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.follower_shell_load",
+      "name": "follower_pressure_force",
+      "object": "follower_pressure_force",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.follower_shell_load",
+      "name": "follower_pressure_force_tangent",
+      "object": "follower_pressure_force_tangent",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.follower_shell_load",
+      "name": "assemble_follower_pressure",
+      "object": "assemble_follower_pressure",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.15.0",
+      "module": "tensorfem.follower_shell_load",
+      "name": "general_shell_pressure_arc_problem",
+      "object": "general_shell_pressure_arc_problem",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.substep_tape_tangent",
+      "name": "SubstepTape",
+      "object": "SubstepTape",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.substep_tape_tangent",
+      "name": "RetapeRequired",
+      "object": "RetapeRequired",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.substep_tape_tangent",
+      "name": "build_tape",
+      "object": "build_tape",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.substep_tape_tangent",
+      "name": "replay_tape",
+      "object": "replay_tape",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.substep_tape_tangent",
+      "name": "taped_material_tangent",
+      "object": "taped_material_tangent",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.colored_frictional_contact",
+      "name": "ColoredFrictionState",
+      "object": "ColoredFrictionState",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.colored_frictional_contact",
+      "name": "ColoredFrictionResult",
+      "object": "ColoredFrictionResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.colored_frictional_contact",
+      "name": "solve_colored_frictional_contacts",
+      "object": "solve_colored_frictional_contacts",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "IslandJob",
+      "object": "IslandJob",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "IslandExecution",
+      "object": "IslandExecution",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "IslandWorkerError",
+      "object": "IslandWorkerError",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "colored_island_jobs",
+      "object": "colored_island_jobs",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "deterministic_partitions",
+      "object": "deterministic_partitions",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "execute_island_jobs",
+      "object": "execute_island_jobs",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "serialize_jobs",
+      "object": "serialize_jobs",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "deserialize_jobs",
+      "object": "deserialize_jobs",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "serialize_executions",
+      "object": "serialize_executions",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "deserialize_executions",
+      "object": "deserialize_executions",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.16.0",
+      "module": "tensorfem.contact_island_scheduler",
+      "name": "available_execution_devices",
+      "object": "available_execution_devices",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.industrial_workflow",
+      "name": "ModelSpec",
+      "object": "ModelSpec",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.industrial_workflow",
+      "name": "StepSpec",
+      "object": "StepSpec",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.industrial_workflow",
+      "name": "WorkflowSpec",
+      "object": "WorkflowSpec",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.industrial_workflow",
+      "name": "WorkflowResult",
+      "object": "WorkflowResult",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.industrial_workflow",
+      "name": "deterministic_job_id",
+      "object": "deterministic_job_id",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.industrial_workflow",
+      "name": "run_job",
+      "object": "run_job",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.industrial_workflow",
+      "name": "spec_from_json",
+      "object": "spec_from_json",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.hemisphere_postprocess",
+      "name": "HemispherePost",
+      "object": "HemispherePost",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.hemisphere_postprocess",
+      "name": "build_hemisphere_post",
+      "object": "build_hemisphere_post",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.hemisphere_postprocess",
+      "name": "write_hemisphere_json",
+      "object": "write_hemisphere_json",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.hemisphere_postprocess",
+      "name": "read_hemisphere_json",
+      "object": "read_hemisphere_json",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.hemisphere_postprocess",
+      "name": "write_hemisphere_vtk",
+      "object": "write_hemisphere_vtk",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.hemisphere_postprocess",
+      "name": "write_hemisphere_markdown",
+      "object": "write_hemisphere_markdown",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "Citation",
+      "object": "Citation",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "ReferenceQuantity",
+      "object": "ReferenceQuantity",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "BenchmarkCase",
+      "object": "BenchmarkCase",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "validate_case",
+      "object": "validate_case",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "case_hash",
+      "object": "case_hash",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "hemisphere_case",
+      "object": "hemisphere_case",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "run_case",
+      "object": "run_case",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "write_archive",
+      "object": "write_archive",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "read_archive",
+      "object": "read_archive",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "compare_archives",
+      "object": "compare_archives",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.17.0",
+      "module": "tensorfem.benchmark_cases",
+      "name": "to_legacy_evidence",
+      "object": "to_legacy_evidence",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "Project",
+      "object": "Project",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "ProjectModel",
+      "object": "ProjectModel",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "ProjectMaterial",
+      "object": "Material",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "ProjectSection",
+      "object": "Section",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "ProjectStep",
+      "object": "ProjectStep",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "Load",
+      "object": "Load",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "Constraint",
+      "object": "Constraint",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "OutputRequest",
+      "object": "OutputRequest",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "project_id",
+      "object": "project_id",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "validate_project",
+      "object": "validate_project",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "run_project",
+      "object": "run_project",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.project_workflow",
+      "name": "project_from_json",
+      "object": "project_from_json",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.result_db",
+      "name": "ResultDB",
+      "object": "ResultDB",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.result_db",
+      "name": "write_result_db",
+      "object": "write_result_db",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.result_db",
+      "name": "read_result_db",
+      "object": "read_result_db",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.result_db",
+      "name": "query_result_nodes",
+      "object": "query_result_nodes",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.result_db",
+      "name": "iter_result_node_chunks",
+      "object": "iter_result_node_chunks",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.result_db",
+      "name": "hemisphere_result_db",
+      "object": "hemisphere_result_db",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.shell_benchmark_suite",
+      "name": "scordelis_case",
+      "object": "scordelis_case",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.shell_benchmark_suite",
+      "name": "pinched_cylinder_case",
+      "object": "pinched_cylinder_case",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.shell_benchmark_suite",
+      "name": "pure_bending_case",
+      "object": "pure_bending_case",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.shell_benchmark_suite",
+      "name": "classical_shell_cases",
+      "object": "classical_shell_cases",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.shell_benchmark_suite",
+      "name": "run_classical_shell_suite",
+      "object": "run_classical_shell_suite",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.shell_benchmark_suite",
+      "name": "write_suite",
+      "object": "write_suite",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.shell_benchmark_suite",
+      "name": "read_suite",
+      "object": "read_suite",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.18.0",
+      "module": "tensorfem.shell_benchmark_suite",
+      "name": "compare_suites",
+      "object": "compare_suites",
+      "stability": "internal_candidate"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.mesh_project",
+      "name": "load_mesh_project",
+      "object": "load_mesh_project",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.mesh_project",
+      "name": "run_mesh_project",
+      "object": "run_mesh_project",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.step_executor",
+      "name": "ExecutionStepSpec",
+      "object": "StepSpec",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.step_executor",
+      "name": "StepResult",
+      "object": "StepResult",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.step_executor",
+      "name": "StepContext",
+      "object": "StepContext",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.step_executor",
+      "name": "ExecutionResult",
+      "object": "ExecutionResult",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.step_executor",
+      "name": "StepExecutor",
+      "object": "StepExecutor",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.step_executor",
+      "name": "execution_result_db",
+      "object": "execution_result_db",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "FieldSpec",
+      "object": "FieldSpec",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "ResultFrame",
+      "object": "ResultFrame",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "ResultStep",
+      "object": "ResultStep",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "HistorySeries",
+      "object": "HistorySeries",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "ResultDBv2",
+      "object": "ResultDBv2",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "write_result_db_v2",
+      "object": "write_result_db_v2",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "read_result_db_v2",
+      "object": "read_result_db_v2",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "query_frame_field",
+      "object": "query_frame_field",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "query_history_series",
+      "object": "query_history_series",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "migrate_v1",
+      "object": "migrate_v1",
+      "stability": "beta"
+    },
+    {
+      "introduced": "0.19.0",
+      "module": "tensorfem.result_db_v2",
+      "name": "read_result_db_compatible",
+      "object": "read_result_db_compatible",
+      "stability": "beta"
+    }
+  ],
+  "package_version": "0.45.0",
+  "policy": {
+    "beta": "deprecate before removal",
+    "experimental": "may change with release notes",
+    "internal_candidate": "kept for compatibility; move to submodules after deprecation",
+    "stable": "semver compatibility"
+  },
+  "schema": "tensorfem.public-api-manifest/1.0"
+}

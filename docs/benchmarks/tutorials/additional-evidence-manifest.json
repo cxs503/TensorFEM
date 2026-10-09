@@ -1,0 +1,67 @@
+{
+  "schema": "tensorfem.additional-reports/1.0",
+  "all_benchmarks_complete": false,
+  "reports": [
+    {
+      "case_id": "sphere-pressure-hex8-lame",
+      "status": "qualified",
+      "scope": "All nodal displacement and all HEX8 centre tensor/radial/hoop/von Mises pointwise maxima plus L2 against Lame",
+      "files": {
+        "docs/assets/benchmark-clouds/sphere-pressure/results.json": "e4bdd6dcc020d2bc9f2c8041af71720c6f02369945783b7c7dc692dd5e2f81a1",
+        "docs/benchmarks/tutorials/sphere_pressure_full.md": "9ac13f16e3281f9ded998c5d9d7b5f13f8ff4b75b35da89db3b6de4e9a16db05",
+        "docs/benchmarks/tutorials/exports/sphere_pressure_full.html": "9d970d48b3afdb5445be05b22f62b79578a0ba0cc48a31e34526085173adaa07",
+        "docs/benchmarks/tutorials/exports/sphere_pressure_full.pdf": "2e47d060b828ab04f8beba8c3f9c12a57258ebb1f506b828a696658ed58cdda0",
+        "docs/benchmarks/tutorials/exports/sphere_pressure_full.docx": "7ac9dd0209361b4cd1b94cfa9ff9a7b46f1adc2dea73a9ded9615bb824af0632",
+        "docs/assets/benchmark-clouds/sphere-pressure/displacement.png": "f876f06849c2fed1de94a3c26c71f805ab0c71892536f3c3b54d9397bfc81dd4",
+        "docs/assets/benchmark-clouds/sphere-pressure/von_mises.png": "f0cff65ed6fed0854356ef40421e3c251e91f913bee0581fe9ab05522440be64",
+        "docs/assets/benchmark-clouds/sphere-pressure/convergence.png": "81135c384c7ee8c3807430348a4362939c166b1c7bf59a876c3b30515423f905"
+      }
+    },
+    {
+      "case_id": "mindlin-navier",
+      "status": "qualified",
+      "scope": "displacement, rotation, moment, shear and top bending stress against exact Mindlin solution",
+      "files": {
+        "docs/assets/benchmark-clouds/mindlin-navier/results.json": "176183dcd0146b655edb698beb912177b4bee41dadac76355e245d85a2344306",
+        "docs/benchmarks/tutorials/mindlin_navier_full.md": "a6123bbc508e27f621e42ff21ea7f3236a2ab988e59f1ff12405cdc2e02eb7de",
+        "docs/benchmarks/tutorials/exports/mindlin_navier_full.html": "e337266f9a4f5b795ca5307bdb6c365fa96f19c30ef7a281b2b9409d0a0ce9f3",
+        "docs/benchmarks/tutorials/exports/mindlin_navier_full.pdf": "20162a7ea2604b32714abfc6a2f03e35201b842c3a10f377fc6964aab3531ed6",
+        "docs/benchmarks/tutorials/exports/mindlin_navier_full.docx": "bb0285d565dc9da43629ffc649d6773e38f6a733d779ab3b1bb6e8ca21df254e",
+        "docs/assets/benchmark-clouds/mindlin-navier/displacement.png": "18075784790d1ca7a86f507a22368823aacc796f19969e9b0be4e62fa931e2b5",
+        "docs/assets/benchmark-clouds/mindlin-navier/von_mises.png": "95e739660bc0e810f6e0f9cfd1ece07755b4d93d05542364a52ae3b98f728e42",
+        "docs/assets/benchmark-clouds/mindlin-navier/shear.png": "be0558b81d53f7b0edab162f1c61d412795d972a7f56dcbcc5a41253c43333b8",
+        "docs/assets/benchmark-clouds/mindlin-navier/convergence.png": "565608cf4daf322c948d0d5b981c754400228f24810eb22e61bf760e7d7f65e1"
+      }
+    },
+    {
+      "case_id": "cook-membrane",
+      "status": "response-qualified",
+      "scope": "published scalar displacement reference; stress fields have no independent accuracy oracle",
+      "files": {
+        "docs/assets/benchmark-clouds/cook-membrane/results.json": "2e590fa1537d1d7668e2e855b729bf595e66d4ed07940e4a004fdf8af9c82bb6",
+        "docs/benchmarks/tutorials/cook_membrane_full.md": "fd944162a9178fcfb8e75eff196946e4748e878ef891efc9868a78686e1df44e",
+        "docs/benchmarks/tutorials/exports/cook_membrane_full.html": "0d2e70eeacfed8ecdce8c2e63671db2d5ca1ccbd8ac52201695e41630b008dbe",
+        "docs/benchmarks/tutorials/exports/cook_membrane_full.pdf": "35030d97e0a75953a5bac065ccc3d00058942a3a2a76158dcd9835e3ee348292",
+        "docs/benchmarks/tutorials/exports/cook_membrane_full.docx": "d5e79a87cc13494b1f264d980fc655ec90a12f13c56c370d3c311821eb6e2509",
+        "docs/assets/benchmark-clouds/cook-membrane/displacement.png": "e2fa3efc0ec96debe0cda4e5d43a96e8525cd5511144ad0f9b36793662728a06",
+        "docs/assets/benchmark-clouds/cook-membrane/von_mises.png": "9f10cd4ae27ba41cb647376fdff14b0fc6d35fbd418bf88414834062660ac650",
+        "docs/assets/benchmark-clouds/cook-membrane/convergence.png": "40210ac44486d9f8de74c99b3ded6486a8a99323db2a8628eec51e4251d4b787"
+      }
+    },
+    {
+      "case_id": "hemisphere-hole",
+      "status": "response-qualified",
+      "scope": "loaded-equator radial displacement only; recovered shell stresses have no independent oracle",
+      "files": {
+        "docs/assets/benchmark-clouds/hemisphere-hole/results.json": "4852bcb952395936930dbe27e682821f5a28f6da6f4a2c255743ed923c4a2b0c",
+        "docs/benchmarks/tutorials/hemisphere_hole_full.md": "69d7c094ab8b3dd8070c8850957a593aa3b89ce1b2b8abe17c7d0ef5ab647754",
+        "docs/benchmarks/tutorials/exports/hemisphere_hole_full.html": "d01752c6f7d58719b284ee85dc8fb3b533d78e91efbc17a92668a4decfa78ae1",
+        "docs/benchmarks/tutorials/exports/hemisphere_hole_full.pdf": "4862d7b169614d85a5e2a451312b65d4acc96ee5a860ddbe4c3e866617cc948f",
+        "docs/benchmarks/tutorials/exports/hemisphere_hole_full.docx": "c2d001cb6b74ce00c8173856ae70644339426bcdf96d7e88e0d865178511f9e2",
+        "docs/assets/benchmark-clouds/hemisphere-hole/displacement.png": "023a6069d8bc4b14fc2eaa349cce3c5c4243d176a06b0f7112d54e208a7af966",
+        "docs/assets/benchmark-clouds/hemisphere-hole/von_mises.png": "36311e7def0914d8ed56ba5230311128a8a74546905cefd754625b5999aa9e0c",
+        "docs/assets/benchmark-clouds/hemisphere-hole/convergence.png": "f1fe35b75858926450daf7d7868b9321d9423e458c2649441fa0891ed724e986"
+      }
+    }
+  ]
+}

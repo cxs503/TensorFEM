@@ -1,0 +1,45 @@
+{
+  "schema": "tensorfem.suboff-ice-study/2",
+  "physical_accuracy_qualified": false,
+  "sensitivity": {
+    "mesh_peak_force_change_percent": 7.043508410216848,
+    "mesh_peak_stress_change_percent": 15.503048341780179,
+    "time_half_peak_force_change_percent": 0.0004925464128002766,
+    "time_half_peak_stress_change_percent": 6.332232393990722e-05,
+    "acceptance_percent": 3.0,
+    "physical_accuracy_qualified": false,
+    "mesh_converged": false
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "path": "docs/assets/suboff-ice-v2/baseline.json",
+      "status": "demonstration-audited"
+    },
+    {
+      "name": "mesh-24",
+      "path": "docs/assets/suboff-ice-v2/mesh-24.json",
+      "status": "demonstration-audited"
+    },
+    {
+      "name": "time-half",
+      "path": "docs/assets/suboff-ice-v2/time-half.json",
+      "status": "demonstration-audited"
+    },
+    {
+      "name": "elastic",
+      "path": "docs/assets/suboff-ice-v2/elastic.json",
+      "status": "demonstration-audited"
+    },
+    {
+      "name": "open-water",
+      "path": "docs/assets/suboff-ice-v2/open-water.json",
+      "status": "demonstration-audited"
+    },
+    {
+      "name": "floating-precracked",
+      "path": "docs/assets/suboff-ice-v2/floating-precracked.json",
+      "status": "demonstration-audited"
+    }
+  ]
+}

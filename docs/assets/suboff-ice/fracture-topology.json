@@ -1,0 +1,44 @@
+{
+  "hull-16": {
+    "fully_severed_seams": 6,
+    "ice_connected_components": 1,
+    "component_tile_counts": [
+      48
+    ]
+  },
+  "hull-24": {
+    "fully_severed_seams": 4,
+    "ice_connected_components": 1,
+    "component_tile_counts": [
+      48
+    ]
+  },
+  "hull-32": {
+    "fully_severed_seams": 5,
+    "ice_connected_components": 1,
+    "component_tile_counts": [
+      48
+    ]
+  },
+  "time-half": {
+    "fully_severed_seams": 5,
+    "ice_connected_components": 1,
+    "component_tile_counts": [
+      48
+    ]
+  },
+  "contact-double": {
+    "fully_severed_seams": 4,
+    "ice_connected_components": 1,
+    "component_tile_counts": [
+      48
+    ]
+  },
+  "ice-fine": {
+    "fully_severed_seams": 1,
+    "ice_connected_components": 1,
+    "component_tile_counts": [
+      192
+    ]
+  }
+}

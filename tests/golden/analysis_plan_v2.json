@@ -1,0 +1,21 @@
+{
+  "metadata": {"trace": {"requirement": "UNIFIED-001"}},
+  "model": {
+    "boundaries": [{"dof_end": 1, "dof_start": 1, "target": "LEFT", "value": 0.0}, {"dof_end": 2, "dof_start": 2, "target": "ALL", "value": 0.0}],
+    "element_sets": {"BARS": [101, 102]},
+    "elements": [{"connectivity": [[10, 20], [20, 30]], "element_type": "T2D2", "ids": [101, 102], "name": "bars"}],
+    "loads": [{"dof": 1, "target": "RIGHT", "value": 40.0}],
+    "materials": {"STEEL": {"elastic": [200.0, 0.3], "name": "steel"}},
+    "metadata": {"owner": {"purpose": "golden", "tags": ["lossless", 7]}, "thermal": {"conductivity": 5.0, "density": 1.0, "fixed_temperature": {"10": 100.0, "30": 20.0}, "nodal_heat": {}, "specific_heat": 1.0, "thickness": 1.0}},
+    "node_sets": {"ALL": [10, 20, 30], "LEFT": [10], "RIGHT": [30]},
+    "nodes": [{"coordinates": [0.0, 0.0], "id": 10}, {"coordinates": [1.0, 0.0], "id": 20}, {"coordinates": [2.0, 0.0], "id": 30}],
+    "output_requests": [{"variables": ["U", "S"]}],
+    "schema": "tensorfem.model-db.v1",
+    "sections": [{"elset": "BARS", "kind": "truss", "material": "STEEL", "properties": [2.0]}],
+    "steps": [{"kind": "static", "name": "Step-1"}]
+  },
+  "name": "bar multiphysics",
+  "schema": "tensorfem.analysis-plan.v2",
+  "steps": [{"dependencies": {}, "inputs": {}, "kind": "modeldb.linear_static", "name": "structure"}, {"dependencies": {}, "inputs": {}, "kind": "modeldb.thermal_steady", "name": "heat"}],
+  "units": {"force": "N", "heat_rate": "W", "length": "m", "stress": "Pa", "temperature": "K"}
+}
