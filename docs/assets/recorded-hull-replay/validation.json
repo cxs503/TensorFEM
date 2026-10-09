@@ -1,0 +1,15 @@
+{
+  "schema": "tensorfem.recorded-hull-replay-audit/1",
+  "cases": [
+    {
+      "case": "baseline",
+      "raw_field_audit": "passed",
+      "physical_accuracy_qualified": false
+    },
+    {
+      "case": "time-half",
+      "raw_field_audit": "passed",
+      "physical_accuracy_qualified": false
+    }
+  ]
+}

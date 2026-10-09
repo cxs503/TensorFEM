@@ -4,6 +4,8 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Add recorded LBM–DEM resultant replay on the appended SUBOFF linear shell, midpoint energy/restart checks, and second-round multiphysics acceptance records.
+
 - Added current Q4 surface force/velocity transfer with offset couples, explicit 2-D/3-D frame embedding, ownership checks and a vehicle-only linear hull coupling receiver. Published synthetic sail-load fields, timestep and complete restart audits. Coordinated actual LBM–DEM and independent FVM evidence; full 3-D icebreaking remains unqualified.
 
 - Added welded equivalent SUBOFF sail/fins and configurable ice thickness, open water, precracks, boundaries, buoyancy, added water inertia, drag and conservative fragment diagnostics. Published six actual runs, field/hash audits and four report formats. Time-step sensitivity passes; structural mesh sensitivity remains above 3%, and full breaking-ice physics is unqualified.
