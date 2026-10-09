@@ -1,0 +1,5 @@
+*.pdf binary
+*.docx binary
+*.png binary
+# Large scientific field evidence: preserve exact bytes and avoid text merges.
+docs/assets/benchmark-clouds/sphere-pressure/results.json binary

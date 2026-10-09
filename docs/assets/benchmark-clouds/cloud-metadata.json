@@ -1,0 +1,29 @@
+{
+  "schema": "tensorfem.benchmark-clouds/1.0",
+  "fields": [
+    {
+      "name": "cantilever_displacement",
+      "path": "docs/assets/benchmark-clouds/cantilever_displacement.png",
+      "field": "u_y [m]",
+      "min": 0.0,
+      "max": 0.00015873015873015873,
+      "source": "closed_form"
+    },
+    {
+      "name": "cantilever_bending_stress",
+      "path": "docs/assets/benchmark-clouds/cantilever_bending_stress.png",
+      "field": "sigma_xx [Pa]",
+      "min": -20000000.0,
+      "max": 20000000.0,
+      "source": "closed_form"
+    },
+    {
+      "name": "hertz_contact_pressure",
+      "path": "docs/assets/benchmark-clouds/hertz_contact_pressure.png",
+      "field": "normalized pressure",
+      "min": 0.0,
+      "max": 1.5,
+      "source": "Hertz closed form"
+    }
+  ]
+}

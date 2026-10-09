@@ -1,0 +1,7 @@
+{
+  "schema": "tensorfem.engineering-case.v1",
+  "name": "Two-support contact connector",
+  "kind": "contact_connector",
+  "parameters": {"ground_stiffness_1": 1000.0, "ground_stiffness_2": 1500.0, "coupling_stiffness": 500.0, "compressive_force": 50.0, "clearance": 0.01},
+  "units": {"length": "mm", "force": "N", "stiffness": "N/mm"}
+}

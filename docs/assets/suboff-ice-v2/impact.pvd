@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<VTKFile type="Collection" version="0.1" byte_order="LittleEndian"><Collection>
+<DataSet timestep="0.0" file="frame-000.vtk"/>
+<DataSet timestep="0.00037486248624862486" file="frame-001.vtk"/>
+<DataSet timestep="0.00075" file="frame-002.vtk"/>
+<DataSet timestep="0.0011248624862486248" file="frame-003.vtk"/>
+<DataSet timestep="0.0015" file="frame-004.vtk"/>
+</Collection></VTKFile>
