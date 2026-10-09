@@ -234,3 +234,5 @@ fields/exports with `scripts/validate_additional_benchmark_reports.py`.
 The next coupling iteration adds [recorded LBM–DEM hull-load replay](docs/recorded-hull-replay.md), with conservative wrench transfer and independently audited linear shell response. Physical wet icebreaking remains unqualified.
 
 [Location-preserving point-force exchange](docs/point-load-exchange.md) retains application-point moments and returns work-conjugate velocities; its actual marker-force fixture remains an interface verification with no fluid motion feedback.
+
+[Actual rigid fluid feedback](docs/live-rigid-feedback.md) includes raw restart and motion evidence; time/EOS sensitivity and energy passivity fail.
