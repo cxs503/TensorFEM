@@ -1,0 +1,55 @@
+{
+  "schema": "tensorfem.energy-budget-study/1",
+  "source_sha256": {
+    "TensorFEM/src/tensorfem/fluid_rigid_feedback.py": "87e6e3c6e0e0dc93a16a37a4269936cc92a683c098a3a4b1bc9e868d92be59a8",
+    "TensorFEM/src/tensorfem/point_surface_coupling.py": "f360f2e814735852965700d48d36388db4a05f98243b4ceaeda3ec63112db721",
+    "TensorFEM/src/tensorfem/surface_coupling.py": "ab28ec663225fa5d1bdc981bdb71c2350a693a3ac38d2f44e21abf5e97ffcebc",
+    "TensorFEM/src/tensorfem/plate.py": "26992717396ce0b1f1e9062ac00f62f210bd81f3e89829b521dd71f04abaadc3",
+    "TensorFEM/scripts/run_live_rigid_feedback.py": "1544775ee04cd754b2d057f62238773a3be1c5a6db880048213225c99559f9be",
+    "TensorLBM/src/tensorlbm/local_moving_boundary_2d.py": "acd46ed7158e900557abd1ca8ba6899db0c51efa8c814d8c1bb3dd856a8fc171",
+    "TensorLBM/src/tensorlbm/feedback_moving_disk.py": "2b2c5c9b04f5ad453b305de660b0031ee832197fe772e339442795321aadb516",
+    "TensorLBM/src/tensorlbm/moving_boundary_2d.py": "0d66e0afc75d84df3da2eeb0a003e90c4ed973dad2c6d58ce3b65fed40d10059",
+    "TensorLBM/src/tensorlbm/d2q9.py": "1065c3093e07dfa186d729412c4081c7e4ba0925db223e8083ff007d457adf4d",
+    "TensorLBM/src/tensorlbm/solver.py": "6cef9523e393f4d584ef01620074c945fc94e44521884ff308ce25b7b59c39b3",
+    "TensorFEM/src/tensorfem/passive_rigid_feedback.py": "1bf3761a0dc5f920c22a7f9cd62a42571f0efcc935d9a36fd9649c7dfeb2f028",
+    "TensorFEM/scripts/run_passive_rigid_feedback.py": "452651922f32104d220aa3a9d0e829e15a7051cd770df1080b0e6bcf9e151f73"
+  },
+  "cases": {
+    "local": {
+      "artifact_sha256": "6b3c5d123d30d81fd7135f39833141fc8525b72942d9c75fc1bd605fd04a2c01",
+      "rejection": {
+        "candidate_time_s": 0.017,
+        "kinetic_J": 0.0016440468524996814,
+        "density_free_energy_J": 0.2566561640152319,
+        "total_J": 0.2583002108677316,
+        "initial_energy_J": 0.00225,
+        "allowed_energy_J": 0.0022522500009999995,
+        "excess_J": 0.2560479608667316,
+        "accepted": false,
+        "physical_accuracy_qualified": false
+      },
+      "accepted_time_s": 0.016,
+      "rollback_exact": true,
+      "restart_exact": true
+    },
+    "local-time-half": {
+      "artifact_sha256": "598d7a7728ec502a7af817b98997db65cc71d40f010752ce43eade102bdb156c",
+      "rejection": {
+        "candidate_time_s": 0.0175,
+        "kinetic_J": 0.0015848762668735437,
+        "density_free_energy_J": 1.029121589662326,
+        "total_J": 1.0307064659291996,
+        "initial_energy_J": 0.00225,
+        "allowed_energy_J": 0.0022522500009999995,
+        "excess_J": 1.0284542159281995,
+        "accepted": false,
+        "physical_accuracy_qualified": false
+      },
+      "accepted_time_s": 0.017,
+      "rollback_exact": true,
+      "restart_exact": true
+    }
+  },
+  "physical_accuracy_qualified": false,
+  "scope": "unforced local rigid translation; kinetic plus isothermal density free energy budget; integer mask volume error unresolved"
+}

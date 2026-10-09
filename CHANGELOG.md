@@ -4,6 +4,8 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Add an atomic macroscopic energy-budget gate for unforced local rigid-fluid feedback. Actual first-node conversions are rejected with complete rollback and exact restart; the moving-boundary physics remains unqualified.
+
 - Add actual LBM motion feedback through a translating Q4 carrier, local boundary and global reference runs, complete restart and independent raw audits. Time/EOS sensitivity (46.34%) and unforced energy growth fail; physical wet icebreaking remains unqualified.
 
 - Add location-preserving point-force transfer and motion return for reference Q4 carriers, with actual calibrated-wet marker-force and exact replay evidence.
