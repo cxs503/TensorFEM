@@ -230,3 +230,5 @@ the project threshold.
 Each report has HTML, PDF and Word exports in `docs/benchmarks/tutorials/exports`.
 Rebuild with `scripts/rebuild_additional_benchmarks.py`; reproduce and check
 fields/exports with `scripts/validate_additional_benchmark_reports.py`.
+
+The next coupling iteration adds [recorded LBM–DEM hull-load replay](docs/recorded-hull-replay.md), with conservative wrench transfer and independently audited linear shell response. Physical wet icebreaking remains unqualified.

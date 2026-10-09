@@ -1,0 +1,57 @@
+{
+  "schema": "tensorfem.recorded-hull-replay-study/1",
+  "physical_accuracy_qualified": false,
+  "source_artifact_sha256": "3f8c4e5c34d152107053dd65d4e02ebacbad7a178cc468dc0e4896fa68e0e783",
+  "source_project": "TensorLBM + TensorDEM",
+  "source_commit": "04b247489b87c7f38a4cd95ae64d79903556cebf",
+  "cases": {
+    "baseline": {
+      "checks": {
+        "wrench": true,
+        "power": true,
+        "energy": true,
+        "momentum": true,
+        "restart_exact": true,
+        "small_rotation": true
+      },
+      "metrics": {
+        "wrench_error_N_Nm": 3.225922179174549e-14,
+        "power_mapping_error_W": 6.938893903907228e-18,
+        "maximum_energy_residual_J": 5.92004743837915e-14,
+        "relative_energy_residual": 4.7768919840357144e-11,
+        "maximum_momentum_residual_kg_m_s": 1.0055452658794457e-10,
+        "peak_von_mises_Pa": 1828343.9959672915,
+        "maximum_rotation_rad": 6.069349547215317e-05,
+        "maximum_displacement_m": 0.00018267470665404796
+      }
+    },
+    "time-half": {
+      "checks": {
+        "wrench": true,
+        "power": true,
+        "energy": true,
+        "momentum": true,
+        "restart_exact": true,
+        "small_rotation": true
+      },
+      "metrics": {
+        "wrench_error_N_Nm": 3.225922179174549e-14,
+        "power_mapping_error_W": 6.938893903907228e-18,
+        "maximum_energy_residual_J": 6.909750549510818e-14,
+        "relative_energy_residual": 5.5755111874239065e-11,
+        "maximum_momentum_residual_kg_m_s": 1.0125358261630766e-10,
+        "peak_von_mises_Pa": 1828479.6331459056,
+        "maximum_rotation_rad": 6.0683333364786684e-05,
+        "maximum_displacement_m": 0.000182673875456645
+      }
+    }
+  },
+  "artifacts_sha256": {
+    "source-ledger.json": "97b1944ae9e0353be26b34bbce14116ac95a5bb2f7e61560cb4d62a873934927",
+    "baseline.json": "8ca31bee307cac5983f3eae26c9869ef6db55f9dc96e9f68623cbb6c934a9c21",
+    "time-half.json": "63001f53cb6c7578572cf420348734a08178243b0ac8bf8c69a01bfa008cadc9"
+  },
+  "time_half_peak_stress_change_percent": 0.007418580907825323,
+  "time_sensitivity_pass_3percent": true,
+  "scope": "real recorded resultant history, one-way linear shell replay; no actual SUBOFF wet collision prediction"
+}
