@@ -240,3 +240,7 @@ The next coupling iteration adds [recorded LBM–DEM hull-load replay](docs/reco
 [Energy-budget gate and atomic rollback](docs/passive-rigid-feedback.md) detects density-energy growth at the first real node conversion; rejected runs remain incomplete and unqualified.
 
 [Actual FVM pressure/viscous wall-force exchange](docs/fvm-wall-exchange.md) preserves force points, moments and virtual work; one-way interface verification, no flexible response or feedback.
+
+## Tensor ecosystem integration
+
+This repository's role, interface boundaries, data-exchange requirements and recommended integration path are documented in [Ecosystem Integration](docs/ecosystem-integration.md).
