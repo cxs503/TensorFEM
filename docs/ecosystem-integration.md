@@ -30,3 +30,12 @@ TensorFEM is the specialist finite-element layer for structural and solid-mechan
 3. Let TensorPhysics coordinate coupled runs and store a reproducible run manifest.
 4. Let TensorPlatform catalog validated outputs and derived training datasets.
 5. Promote coupled capabilities only after independent reference comparisons and sensitivity gates pass.
+
+## Repository map
+
+- [TensorPlatform](https://github.com/cxs503/TensorPlatform) — shared data and AI services.
+- [TensorPhysics](https://github.com/cxs503/TensorPhysics) — scientific workflow orchestration and multiphysics coordination.
+- [TensorLBM](https://github.com/cxs503/TensorLBM) — lattice Boltzmann solver.
+- [TensorFVM](https://github.com/cxs503/TensorFVM) — finite-volume solver.
+- [TensorFEM](https://github.com/cxs503/TensorFEM) — finite-element solver.
+- [TensorDEM](https://github.com/cxs503/TensorDEM) — discrete-element solver.
