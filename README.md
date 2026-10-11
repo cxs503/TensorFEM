@@ -5,6 +5,9 @@ engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
 analytical or recognized benchmark evidence.
 
+**System-wide overview:** [Tensor Ecosystem System Overview](https://github.com/cxs503/TensorPhysics/blob/main/docs/SYSTEM_OVERVIEW.md) — architecture, repository boundaries, shared contracts, end-to-end workflow and icebreaker application roadmap.
+
+
 ## Published benchmark report scope
 
 The registry contains scalar checks; it does not certify complete stress fields or research reports. Three independent linear cases now have revalidated displacement/stress fields, three mesh levels, and complete Markdown/HTML/PDF/Word reports. Beam stress qualification is limited to the declared sampling region and model. TensorFEM remains below the 1.0 gate. See [benchmark qualification status and downloads](docs/benchmark-qualification-status.md).
