@@ -8,6 +8,14 @@ analytical or recognized benchmark evidence.
 **System-wide overview:** [Tensor Ecosystem System Overview](https://github.com/cxs503/TensorPhysics/blob/main/docs/SYSTEM_OVERVIEW.md) — architecture, repository boundaries, shared contracts, end-to-end workflow and icebreaker application roadmap.
 
 
+## Role as a programmable scientific instrument
+
+Within the Agent-first science factory, TensorFEM is the **specialist finite-element instrument** for structural and solid mechanics research. It owns discretization, mechanics kernels, and solver-specific verification. TensorPhysics coordinates research workflows and coupling; TensorPlatform manages governed artifacts, datasets, lineage, and research records.
+
+Agents may propose parameters and experiments, but accepted evidence must come from reproducible runs and independent checks. Analytical solutions, recognized benchmarks, mesh sensitivity, and clearly stated model limitations remain part of the solver contract. A successful run or coupled fixture alone does not qualify an engineering prediction.
+
+**Architecture:** [Science Factory Architecture](https://github.com/cxs503/TensorPhysics/blob/main/docs/SCIENCE_FACTORY_ARCHITECTURE.md) · [System Overview](https://github.com/cxs503/TensorPhysics/blob/main/docs/SYSTEM_OVERVIEW.md)
+
 ## Role in the Tensor ecosystem
 
 TensorFEM is the specialist **finite-element and structural mechanics solver**. It owns structural discretization, mechanics kernels, and solver-specific verification. TensorPhysics coordinates it with TensorDEM, TensorLBM, and TensorFVM through explicit workflow and field-exchange contracts; TensorPlatform provides shared data, experiment, and model services.
