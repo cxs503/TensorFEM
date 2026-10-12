@@ -8,6 +8,12 @@ analytical or recognized benchmark evidence.
 **System-wide overview:** [Tensor Ecosystem System Overview](https://github.com/cxs503/TensorPhysics/blob/main/docs/SYSTEM_OVERVIEW.md) — architecture, repository boundaries, shared contracts, end-to-end workflow and icebreaker application roadmap.
 
 
+## Role in the Tensor ecosystem
+
+TensorFEM is the specialist **finite-element and structural mechanics solver**. It owns structural discretization, mechanics kernels, and solver-specific verification. TensorPhysics coordinates it with TensorDEM, TensorLBM, and TensorFVM through explicit workflow and field-exchange contracts; TensorPlatform provides shared data, experiment, and model services.
+
+For the icebreaker workflow, FEM can represent hull/structure response and support structural loads, while DEM represents particulate ice, bonds, contact, and fracture. Coupling must document units, sign conventions, geometry mapping, time advancement, conservation, and acceptance criteria. A runnable coupled fixture demonstrates interface behavior, not automatically a validated physical prediction.
+
 ## Published benchmark report scope
 
 The registry contains scalar checks; it does not certify complete stress fields or research reports. Three independent linear cases now have revalidated displacement/stress fields, three mesh levels, and complete Markdown/HTML/PDF/Word reports. Beam stress qualification is limited to the declared sampling region and model. TensorFEM remains below the 1.0 gate. See [benchmark qualification status and downloads](docs/benchmark-qualification-status.md).
