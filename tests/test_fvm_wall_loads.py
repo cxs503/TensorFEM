@@ -1,12 +1,27 @@
 import copy
+import hashlib
 import json
 from pathlib import Path
 import pytest
 import torch
 from tensorfem.fvm_wall_loads import read_wall_loads
-SOURCE=Path('/home/jsyc/tensor-suite-development/TensorFVM/docs/conservative-transport/cpu/wall-facets.json')
 
-def source():return json.loads(SOURCE.read_text())
+ROOT=Path(__file__).resolve().parents[1]
+STUDY=ROOT/'docs/assets/fvm-wall-exchange/study.json'
+SOURCE=ROOT/'docs/assets/fvm-wall-exchange/raw-cpu-wall-facets.json'
+
+def source():
+    """Load the vendored TensorFVM CPU wall-load artifact.
+
+    The artifact is vendored into this repository (rather than read from a
+    sibling checkout) so this test always runs: an unrun test is worse than
+    no test.  ``study.json`` records the sha256 of the upstream file, so a
+    drifted copy fails loudly here instead of silently testing stale data.
+    """
+    digest=hashlib.sha256(SOURCE.read_bytes()).hexdigest()
+    expected=json.loads(STUDY.read_text())['cases']['cpu']['source_raw_sha256']
+    assert digest==expected,'vendored wall-load artifact drifted from study.json'
+    return json.loads(SOURCE.read_text())
 
 def test_actual_pressure_viscous_force_and_clocks():
     raw=source();wall=read_wall_loads(raw)

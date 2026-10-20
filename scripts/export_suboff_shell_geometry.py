@@ -9,6 +9,7 @@ import subprocess
 import sys
 
 from tensorfem.suboff_geometry import closed_revolved_mesh
+from tensorfem.repo_layout import sibling_file
 
 
 def export(source, destination, axial, circumferential, length):
@@ -44,9 +45,11 @@ def export(source, destination, axial, circumferential, length):
 
 if __name__ == '__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--source',default='/data/TensorLBM/src/tensorlbm/suboff_cad.py')
+    p.add_argument('--source',default=None,help='TensorLBM suboff_cad.py (default: $TENSORLBM_ROOT or a sibling TensorLBM checkout)')
     p.add_argument('--output',default='docs/assets/suboff-ice/geometry-24.json')
     p.add_argument('--axial',type=int,default=24)
     p.add_argument('--circumferential',type=int,default=24)
     p.add_argument('--length',type=float,default=4.356)
-    a=p.parse_args();export(a.source,a.output,a.axial,a.circumferential,a.length)
+    a=p.parse_args()
+    if a.source is None:a.source=str(sibling_file('TensorLBM','src/tensorlbm/suboff_cad.py'))
+    export(a.source,a.output,a.axial,a.circumferential,a.length)
