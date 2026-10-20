@@ -122,26 +122,24 @@ def _same_evidence(stored, recomputed):
     comparison rejects a study that is in fact the same study.  A meaningful
     edit of the stored evidence moves a value far more than this tolerance.
     """
-    if not isinstance(stored, dict):
-        return False
-    for key, value in recomputed.items():
-        if key not in stored:
+    if isinstance(recomputed, dict):
+        if not isinstance(stored, dict):
             return False
-        other = stored[key]
-        if isinstance(value, bool) or isinstance(other, bool):
-            if value != other:
+        for key, value in recomputed.items():
+            if key not in stored or not _same_evidence(stored[key], value):
                 return False
-        elif isinstance(value, float) and isinstance(other, float):
-            if value != other and not math.isclose(
-                value, other, rel_tol=_EVIDENCE_RTOL, abs_tol=_EVIDENCE_ATOL
-            ):
-                return False
-        elif isinstance(value, dict) and isinstance(other, dict):
-            if not _same_evidence(value, other):
-                return False
-        elif value != other:
+        return True
+    if isinstance(recomputed, (list, tuple)):
+        if not isinstance(stored, (list, tuple)) or len(stored) != len(recomputed):
             return False
-    return True
+        return all(_same_evidence(s, r) for s, r in zip(stored, recomputed))
+    if isinstance(recomputed, bool) or isinstance(stored, bool):
+        return stored is recomputed
+    if isinstance(recomputed, float) and isinstance(stored, float):
+        return stored == recomputed or math.isclose(
+            stored, recomputed, rel_tol=_EVIDENCE_RTOL, abs_tol=_EVIDENCE_ATOL
+        )
+    return stored == recomputed
 
 
 def verify_mesh_study(cases, kind):
