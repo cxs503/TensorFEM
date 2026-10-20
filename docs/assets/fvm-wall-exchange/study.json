@@ -5,7 +5,7 @@
     "TensorFEM/src/tensorfem/point_surface_coupling.py": "f360f2e814735852965700d48d36388db4a05f98243b4ceaeda3ec63112db721",
     "TensorFEM/src/tensorfem/surface_coupling.py": "ab28ec663225fa5d1bdc981bdb71c2350a693a3ac38d2f44e21abf5e97ffcebc",
     "TensorFEM/src/tensorfem/plate.py": "26992717396ce0b1f1e9062ac00f62f210bd81f3e89829b521dd71f04abaadc3",
-    "TensorFEM/scripts/run_fvm_wall_exchange.py": "1c17d8dfe53385d3983f763ad7ee59d0b29fe109dafbe6d02dfa176beaf08a8b",
+    "TensorFEM/scripts/run_fvm_wall_exchange.py": "70cdf8e83cd12146e382a232adbe94a232262d09319b82cc644c89f55ae01b48",
     "TensorFVM/src/tensorfvm/conservative3d.py": "2ab9293e9a01ba8ed33a86ec879ea32037526509cd54e56c6e3b03c66e9ed886",
     "TensorFVM/src/tensorfvm/solver3d.py": "95d4711fd52ad9f2d8dd7300a999814633de986a2d579dcc997d17aa01603a37",
     "TensorFVM/src/tensorfvm/runtime.py": "ff383730f34f82030f28da424819eea670f28c663d5be834f30bebc6c74a2da5",

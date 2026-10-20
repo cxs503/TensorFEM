@@ -10,6 +10,7 @@ import sys
 import numpy as np
 
 from tensorfem.suboff_appendages import appended_shell_mesh
+from tensorfem.repo_layout import sibling_file
 
 
 def export(source,output,*,length=4.356,axial=16,circumferential=16,sail_chord=6,fin_chord=6,layers=3):
@@ -50,7 +51,7 @@ def export(source,output,*,length=4.356,axial=16,circumferential=16,sail_chord=6
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--source',default='/data/TensorLBM/src/tensorlbm/suboff_cad.py')
+    p.add_argument('--source',default=None,help='TensorLBM suboff_cad.py (default: $TENSORLBM_ROOT or a sibling TensorLBM checkout)')
     p.add_argument('--output',default='docs/assets/suboff-ice-v2/appended-16.json')
     p.add_argument('--length',type=float,default=4.356)
     p.add_argument('--axial',type=int,default=16)
@@ -58,5 +59,7 @@ if __name__=='__main__':
     p.add_argument('--sail-chord',type=int,default=6)
     p.add_argument('--fin-chord',type=int,default=6)
     p.add_argument('--layers',type=int,default=3)
-    a=p.parse_args();export(a.source,a.output,length=a.length,axial=a.axial,circumferential=a.circumferential,
+    a=p.parse_args()
+    if a.source is None:a.source=str(sibling_file('TensorLBM','src/tensorlbm/suboff_cad.py'))
+    export(a.source,a.output,length=a.length,axial=a.axial,circumferential=a.circumferential,
                            sail_chord=a.sail_chord,fin_chord=a.fin_chord,layers=a.layers)

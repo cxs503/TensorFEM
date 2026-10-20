@@ -5,6 +5,7 @@ from pathlib import Path
 import torch
 from tensorfem.fvm_wall_loads import read_wall_loads
 from tensorfem.point_surface_coupling import PointSurfaceExchange
+from tensorfem.repo_layout import sibling_repo
 ROOT=Path(__file__).resolve().parents[1];D=torch.float64
 
 def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -32,7 +33,8 @@ def run(path):
             'flexible_response_solved':False,'fluid_feedback':False,'scope':'actual one-way wall force transfer, explicit clocks; virtual motion probes only'}
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--fvm',type=Path,default=Path('/home/jsyc/tensor-suite-development/TensorFVM'));p.add_argument('--audit',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--fvm',type=Path,default=None,help='TensorFVM checkout (default: $TENSORFVM_ROOT or a sibling checkout)');p.add_argument('--audit',action='store_true');a=p.parse_args()
+    if a.fvm is None:a.fvm=sibling_repo('TensorFVM')
     out=ROOT/'docs/assets/fvm-wall-exchange';out.mkdir(parents=True,exist_ok=True)
     sources={f'TensorFEM/{name}':digest(ROOT/name) for name in ['src/tensorfem/fvm_wall_loads.py','src/tensorfem/point_surface_coupling.py','src/tensorfem/surface_coupling.py','src/tensorfem/plate.py','scripts/run_fvm_wall_exchange.py']}
     sources.update({f'TensorFVM/{name}':digest(a.fvm/name) for name in ['src/tensorfvm/conservative3d.py','src/tensorfvm/solver3d.py','src/tensorfvm/runtime.py','src/tensorfvm/mesh3d.py','scripts/run_conservative_transport.py']})
