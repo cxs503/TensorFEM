@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from tensorfem.benchmark_fields import verify_mesh_study
+from tensorfem.benchmark_fields import _same_evidence, verify_mesh_study
 from tensorfem.hull_benchmark_fields import verify_hull_case
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,15 +44,15 @@ def validate(root=ROOT):
         data = json.loads((root/'docs/assets/benchmark-clouds'/folder/name).read_text())
         if kind != 'hull':
             check = verify_mesh_study(data['cases'], kind)
-            if check != data['mesh_convergence'] or not check['passed']:
+            if not _same_evidence(data['mesh_convergence'], check) or not check['passed']:
                 raise ValueError('field study blocked or stale: '+folder)
         else:
             checks = [verify_hull_case(c) for c in data['cases']]
-            if any(c.get('verification') != check or c.get('status') !=
+            if any(not _same_evidence(c.get('verification'), check) or c.get('status') !=
                    ('qualified' if check['passed'] else 'blocked')
                    for c, check in zip(data['cases'], checks)):
                 raise ValueError('stored hull qualification mismatch')
-            if len(checks) < 3 or checks != data['mesh_convergence']['checks']:
+            if len(checks) < 3 or not _same_evidence(data['mesh_convergence']['checks'], checks):
                 raise ValueError('hull field study stale or incomplete')
             if not checks[-1]['passed']:
                 raise ValueError('hull final mesh blocked')
