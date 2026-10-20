@@ -108,13 +108,49 @@ def verify_case(case, kind):
             "force_balance_relative_error": balance, "passed": passed}
 
 
+_EVIDENCE_RTOL = 1.0e-9
+_EVIDENCE_ATOL = 1.0e-15
+
+
+def _same_evidence(stored, recomputed):
+    """Compare a stored verification record with a recomputed one.
+
+    The qualification outcome, the schema and the scope have to match
+    exactly.  The numeric evidence is compared with a relative tolerance:
+    the same case recomputed on a different CPU or BLAS build lands a few
+    units in the last place away from the stored value, so an exact
+    comparison rejects a study that is in fact the same study.  A meaningful
+    edit of the stored evidence moves a value far more than this tolerance.
+    """
+    if not isinstance(stored, dict):
+        return False
+    for key, value in recomputed.items():
+        if key not in stored:
+            return False
+        other = stored[key]
+        if isinstance(value, bool) or isinstance(other, bool):
+            if value != other:
+                return False
+        elif isinstance(value, float) and isinstance(other, float):
+            if value != other and not math.isclose(
+                value, other, rel_tol=_EVIDENCE_RTOL, abs_tol=_EVIDENCE_ATOL
+            ):
+                return False
+        elif isinstance(value, dict) and isinstance(other, dict):
+            if not _same_evidence(value, other):
+                return False
+        elif value != other:
+            return False
+    return True
+
+
 def verify_mesh_study(cases, kind):
     """Require three genuinely refined meshes and a passing final field check."""
     if len(cases) < 3:
         raise ValueError("three mesh levels required for a published study")
     checks = [verify_case(c, kind) for c in cases]
     for case, check in zip(cases, checks):
-        if (case.get("verification") != check or
+        if (not _same_evidence(case.get("verification"), check) or
                 case.get("status") != ("qualified" if check["passed"] else "blocked")):
             raise ValueError("stored field qualification does not match recomputed errors")
     for a, b in zip(cases, cases[1:]):
