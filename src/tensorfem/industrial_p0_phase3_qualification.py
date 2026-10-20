@@ -9,8 +9,15 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
+from contextlib import contextmanager
 
 import torch
+
+try:  # pragma: no cover - exercised by the presence or absence of the extra
+    from threadpoolctl import threadpool_limits
+except ImportError:  # pragma: no cover
+    threadpool_limits = None
 
 from .finite_rotation_layered_shell4 import (
     assemble_finite_rotation_layered_shell4, solve_finite_rotation_arc_path,
@@ -24,11 +31,68 @@ SCHEMA = "tensorfem.industrial-p0-phase3/1.0"
 _HERTZ_MESHES = (16, 24, 48)
 _HERTZ_LIMIT = 0.03
 _EQUILIBRIUM_LIMIT = 1.0e-10
+_SIGNIFICANT_DIGITS = 12
+
+
+@contextmanager
+def _single_threaded():
+    """Pin the numerical libraries to one thread for a reproducible report.
+
+    This report is signed by hashing its own content, so the same inputs must
+    produce the same bytes everywhere.  The linear algebra behind the Hertz
+    and shell evidence reduces in a different order depending on how many
+    threads the BLAS/OpenMP pools use, which changes the last bits of the
+    result and therefore the signature.  Measured on the n=24 Hertz mesh, the
+    same run produced two different hashes on an unpinned two-thread host.
+
+    ``torch.set_num_threads`` alone does not help: it controls torch's own
+    intra-op pool, while ``torch.linalg.lstsq`` dispatches to the OpenBLAS and
+    OpenMP pools.  ``threadpoolctl`` reaches those.  The thread counts are
+    restored afterwards so the rest of the process is unaffected.
+    """
+    previous = torch.get_num_threads()
+    torch.set_num_threads(1)
+    try:
+        if threadpool_limits is None:
+            yield
+        else:
+            with threadpool_limits(limits=1):
+                yield
+    finally:
+        torch.set_num_threads(previous)
+
+
+def _canonical(value: object) -> object:
+    """Return a canonical form of *value* suitable for hashing.
+
+    Floating point results are not bit-reproducible in practice.  The
+    alignment of a tensor allocation decides which vectorised path the BLAS
+    kernels take, and with it the last bits of the result.  Measured on this
+    report, allocating a large unrelated block between two runs changed two
+    of the Hertz error values by one or two units in the last place, and the
+    signature changed with them.
+
+    Rounding to a fixed number of significant digits removes that noise from
+    the signature while keeping every meaningful difference visible: the two
+    values above agree to fifteen significant digits, while a real change in
+    the evidence moves a value by far more than the twelfth digit.
+    """
+    if value is None or isinstance(value, bool):
+        return value
+    if isinstance(value, float):
+        if value == 0.0:
+            return 0.0
+        return float(f"{value:.{_SIGNIFICANT_DIGITS - 1}e}")
+    if isinstance(value, Mapping):
+        return {k: _canonical(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_canonical(v) for v in value]
+    return value
 
 
 def _digest(value: object) -> str:
     encoded = json.dumps(
-        value, sort_keys=True, separators=(",", ":"), allow_nan=False
+        _canonical(value), sort_keys=True, separators=(",", ":"), allow_nan=False
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
 
@@ -136,7 +200,18 @@ def _finite_rotation_evidence() -> dict[str, object]:
 
 
 def run_industrial_p0_phase3_qualification() -> dict[str, object]:
-    """Execute phase-3 evidence and return a deterministic signed report."""
+    """Execute phase-3 evidence and return a deterministic signed report.
+
+    The report is signed by hashing its own content, so it must be
+    byte-identical wherever it is produced.  The numerical work runs pinned to
+    a single thread so the signature does not depend on the machine's core
+    count or on what ran before in the same process.
+    """
+    with _single_threaded():
+        return _run_industrial_p0_phase3_qualification()
+
+
+def _run_industrial_p0_phase3_qualification() -> dict[str, object]:
     hertz = _hertz_evidence()
     finite_rotation = _finite_rotation_evidence()
     panel = run_panel_ultimate_qualification()

@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # A new push to the same ref supersedes in-flight runs; main is never
+  # cancelled so the signal on the default branch stays intact.
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    name: test (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # pyproject declares requires-python >=3.11; test what we advertise.
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install package with dev extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Install the optional TensorLBM fixture dependency
+        # tensorfem.fluid_rigid_feedback couples to the sibling TensorLBM
+        # checkout.  Installing it keeps that fixture under test here instead
+        # of it silently not running.  It stays an optional extra so
+        # TensorFEM itself remains installable without the sibling repo.
+        run: pip install "git+https://github.com/cxs503/TensorLBM.git"
+      - name: Run tests
+        # --timeout activates pytest-timeout so a hung solver fails the job
+        # instead of burning the runner limit.
+        run: pytest -q --timeout=1800 --cov=tensorfem --cov-report=term-missing --cov-report=xml
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: coverage.xml
+
+  lint:
+    name: lint (advisory)
+    runs-on: ubuntu-latest
+    # Advisory on purpose: the tree carries a large pre-existing ruff backlog
+    # (unused imports, import ordering, semicolon-packed statements).  Making
+    # it blocking would hide every other signal.  Fix the backlog, then drop
+    # this continue-on-error and promote it to a gate.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install package with dev extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Lint (ruff)
+        run: ruff check src tests scripts examples
+      - name: Format check (ruff format)
+        run: ruff format --check src tests scripts examples
