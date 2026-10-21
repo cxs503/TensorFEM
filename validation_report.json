@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-10-21T12:44:47Z",
+  "benchmark": "cohesive_failure_ledger",
+  "description": "Library-level verification of cohesive failure and fracture energy ledger",
+  "anchors": [
+    {
+      "anchor": "mass_audit",
+      "description": "Mass audit ledger conservation: |\u0394|/\u03a3 \u2264 1e-12",
+      "passed": true,
+      "total_energy": 15.0,
+      "expected_mass": 1.6689750840804277e-16,
+      "actual_mass": 1.6689750840804277e-16,
+      "absolute_error": 0.0,
+      "relative_error": 0.0,
+      "tolerance": 1e-12
+    },
+    {
+      "anchor": "fracture_energy",
+      "description": "Fracture energy conservation: |\u2211G\u00b7A - ledger| \u2264 1e-12",
+      "passed": true,
+      "sum_GA": 14.0,
+      "ledger_total": 14.0,
+      "absolute_error": 0.0,
+      "tolerance": 1e-12
+    },
+    {
+      "anchor": "analytical_enumeration",
+      "description": "Analytical enumeration: uniform stress \u2192 failed face count exact match",
+      "passed": true,
+      "n_failed_analytical": 16,
+      "n_failed_fem": 16,
+      "total_area_fem": 0.08,
+      "expected_total_area": 0.08,
+      "area_relative_error": 0.0,
+      "total_energy_fem": 0.08,
+      "expected_total_energy": 0.08,
+      "energy_relative_error": 0.0,
+      "tolerance": 1e-12
+    }
+  ],
+  "all_passed": true
+}
