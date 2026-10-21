@@ -14,8 +14,14 @@ authors = [{name = "TensorFEM Contributors"}]
 dependencies = ["torch>=2.1"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = ["pytest>=8", "ruff>=0.6", "pytest-timeout>=2.3", "pytest-cov>=5.0", "numpy>=1.26", "matplotlib>=3.8"]
 reports = ["numpy>=1.26", "matplotlib>=3.8", "python-docx>=1.1", "reportlab>=4", "markdown>=3.5"]
+# The fluid/rigid feedback fixture couples to the sibling TensorLBM checkout.
+# It stays optional so TensorFEM remains installable on its own.
+fvm-fixture = ["tensorlbm @ git+https://github.com/cxs503/TensorLBM.git"]
+# Optional: lets the signed evidence report pin the BLAS thread pools.  The
+# report does not depend on it; the canonical digest provides the guarantee.
+reproducible = ["threadpoolctl>=3.1"]
 
 [project.scripts]
 tensorfem = "tensorfem.cli:main"
@@ -30,7 +36,7 @@ where = ["src"]
 tensorfem = ["public_api_manifest.json"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 testpaths = ["tests"]
 
 [tool.ruff]
