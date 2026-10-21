@@ -2,10 +2,12 @@
 import argparse,hashlib,json
 from pathlib import Path
 import numpy as np
+from tensorfem.repo_layout import sibling_repo
 ROOT=Path(__file__).resolve().parents[1]
 def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 def main():
-    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--fvm',type=Path,default=Path('/home/jsyc/tensor-suite-development/TensorFVM'));args=parser.parse_args()
+    parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--fvm',type=Path,default=None,help='TensorFVM checkout (default: $TENSORFVM_ROOT or a sibling checkout)');args=parser.parse_args()
+    if args.fvm is None:args.fvm=sibling_repo('TensorFVM')
     folder=ROOT/'docs/assets/fvm-wall-exchange';study=json.loads((folder/'study.json').read_text())
     if study['physical_accuracy_qualified'] is not False:raise ValueError('false wall exchange qualification')
     for name,sha in study['source_sha256'].items():

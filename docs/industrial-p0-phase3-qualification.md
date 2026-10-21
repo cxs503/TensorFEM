@@ -29,6 +29,16 @@ Both evidence sections and the canonical complete report have SHA-256 hashes.
 Validation recomputes all three hashes and rejects attempts to promote either
 blocked claim.
 
+The hashes are computed over a canonical form of the evidence in which
+floating point values are rounded to twelve significant digits.  Raw
+floating point bits are not reproducible in practice: the alignment of a
+tensor allocation changes which vectorised path the BLAS kernels take, and
+with it the last bits of the result.  Measured on this report, allocating an
+unrelated block between two runs changed two of the Hertz error values by one
+or two units in the last place, and the raw signature changed with them.
+Rounding keeps the signature stable while leaving every meaningful difference
+in the evidence visible.
+
 ```bash
 PYTHONWARNINGS='error,ignore:Failed to initialize NumPy' PYTHONPATH=src \
   python -m pytest -q tests/test_industrial_p0_phase3_qualification.py

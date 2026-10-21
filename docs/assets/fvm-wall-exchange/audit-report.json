@@ -56,8 +56,8 @@
       "viscous_time_s": 0.2450000000000001
     }
   ],
-  "study_sha256": "33a3cb7bcb72fd2f223717783039b83e395c36b83e01b314866d89d464912b89",
-  "auditor_sha256": "b79f4b82c312443018ffbd540aebe0439d05262e71996f7160041381cf43f617",
+  "study_sha256": "7ca7b7baacc737cb241cd7b011df1a5a62076ef25311c4812e000e1a6a6e7b4e",
+  "auditor_sha256": "ce2e17d744f4ebfcc405bdf3766877596dacd6a0013a91d5616d4c35e97b3159",
   "physical_accuracy_qualified": false,
   "scope": "NumPy point force/moment/work transfer only; no CFD or flexible response integration"
 }
