@@ -1,5 +1,8 @@
 # TensorFEM
 
+**Tensor ecosystem vision and boundary contract:** [AI-era ecosystem vision](https://github.com/cxs503/TensorPlatform/blob/main/docs/architecture/TENSOR_ECOSYSTEM_AI_ERA_VISION.md). Read this before adding cross-project features.
+**Project charter:** [TensorFEM — finite-element solver charter](docs/PROJECT_CHARTER.md) — ownership, non-goals, integration contract, and quality gates.
+
 TensorFEM is a verification-first finite-element toolkit built on PyTorch for
 engineering analysis, inverse problems, design optimization, and AI-assisted
 digital twins. Stable capabilities are admitted only with executable
