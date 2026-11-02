@@ -1,0 +1,228 @@
+{
+  "schema": "tensorfem.h-convergence-gci/1.0",
+  "bending": {
+    "oracle": "pure bending (Navier), closed form U = E k^2 L I / 2",
+    "case": {
+      "length": 2.0,
+      "width": 0.4,
+      "height": 0.6,
+      "young_modulus": 210000000000.0,
+      "poisson_ratio": 0.3,
+      "curvature": 0.001,
+      "second_moment": 0.003200000000000001,
+      "bending_moment": 672000.0000000002,
+      "exact_strain_energy": 672.0000000000002
+    },
+    "levels": [
+      {
+        "divisions": 1,
+        "mesh": [
+          2,
+          1,
+          1
+        ],
+        "mesh_size": 1.0,
+        "n_nodes": 12,
+        "n_free_dofs": 0,
+        "relative_l2_displacement_error": 0.0,
+        "strain_energy": 2421.1384615383895,
+        "exact_strain_energy": 672.0000000000002,
+        "relative_strain_energy_error": 2.602884615384507,
+        "energy_above_exact": true
+      },
+      {
+        "divisions": 2,
+        "mesh": [
+          4,
+          2,
+          2
+        ],
+        "mesh_size": 0.5,
+        "n_nodes": 45,
+        "n_free_dofs": 9,
+        "relative_l2_displacement_error": 5.728578947591267e-17,
+        "strain_energy": 1109.284615384398,
+        "exact_strain_energy": 672.0000000000002,
+        "relative_strain_energy_error": 0.6507211538458297,
+        "energy_above_exact": true
+      },
+      {
+        "divisions": 4,
+        "mesh": [
+          8,
+          4,
+          4
+        ],
+        "mesh_size": 0.25,
+        "n_nodes": 225,
+        "n_free_dofs": 189,
+        "relative_l2_displacement_error": 1.5816814959492126e-16,
+        "strain_energy": 781.3211538456703,
+        "exact_strain_energy": 672.0000000000002,
+        "relative_strain_energy_error": 0.16268028846081853,
+        "energy_above_exact": true
+      }
+    ],
+    "nodal_exactness_max_relative_error": 1.5816814959492126e-16,
+    "strain_energy_order": [
+      2.000000000000658,
+      2.0000000000056657
+    ],
+    "note": "The bending field is reproduced nodally to machine precision on a uniform mesh (superconvergence), so it is used as a consistency oracle; the strain-energy error shown is the interpolation error of the element, which still decays at order 2."
+  },
+  "manufactured": {
+    "oracle": "manufactured trigonometric field, body force from autograd of div(sigma)",
+    "case": {
+      "length": 2.0,
+      "width": 0.4,
+      "height": 0.6,
+      "young_modulus": 210000000000.0,
+      "poisson_ratio": 0.3,
+      "amplitude": 0.0001,
+      "exact_strain_energy": 16978.999928841346
+    },
+    "levels": [
+      {
+        "divisions": 2,
+        "mesh": [
+          4,
+          2,
+          3
+        ],
+        "mesh_size": 0.5,
+        "n_nodes": 60,
+        "n_free_dofs": 18,
+        "relative_l2_displacement_error": 0.034772670704084345,
+        "strain_energy": 12668.82565317607,
+        "exact_strain_energy": 16978.999928841346,
+        "relative_strain_energy_error": 0.25385324776071205
+      },
+      {
+        "divisions": 4,
+        "mesh": [
+          8,
+          4,
+          3
+        ],
+        "mesh_size": 0.25,
+        "n_nodes": 180,
+        "n_free_dofs": 126,
+        "relative_l2_displacement_error": 0.01042075133766178,
+        "strain_energy": 15880.368254758354,
+        "exact_strain_energy": 16978.999928841346,
+        "relative_strain_energy_error": 0.06470532296880471
+      },
+      {
+        "divisions": 8,
+        "mesh": [
+          16,
+          8,
+          3
+        ],
+        "mesh_size": 0.125,
+        "n_nodes": 612,
+        "n_free_dofs": 630,
+        "relative_l2_displacement_error": 0.002725491077158935,
+        "strain_energy": 16704.57362774138,
+        "exact_strain_energy": 16978.999928841346,
+        "relative_strain_energy_error": 0.016162689336832507
+      }
+    ],
+    "l2_observed_orders": [
+      1.7384945771765408,
+      1.934871197634678
+    ],
+    "energy_study": {
+      "schema": "tensorfem.convergence-verification/1.0",
+      "qoi": "strain_energy",
+      "levels": [
+        {
+          "label": "n=2",
+          "mesh_size": 0.5,
+          "value": 12668.82565317607
+        },
+        {
+          "label": "n=4",
+          "mesh_size": 0.25,
+          "value": 15880.368254758354
+        },
+        {
+          "label": "n=8",
+          "mesh_size": 0.125,
+          "value": 16704.57362774138
+        }
+      ],
+      "refinement_ratios": [
+        2.0,
+        2.0
+      ],
+      "checks": [
+        {
+          "name": "measured_order",
+          "passed": true,
+          "detail": "observed order per triple: 1.962"
+        },
+        {
+          "name": "asymptotic_range_drift",
+          "passed": true,
+          "detail": "order drift between first and last triple = 0.000 (band 0.150)"
+        },
+        {
+          "name": "expected_order",
+          "passed": true,
+          "detail": "finest observed order 1.962 vs theoretical 2.000 (rel. deviation 0.019, band 0.150)"
+        },
+        {
+          "name": "gci_band_contracts",
+          "passed": true,
+          "detail": "single evaluable pair, band contract not applicable"
+        },
+        {
+          "name": "reference_tolerance",
+          "passed": true,
+          "detail": "Richardson 16989.1226595 vs analytic int sigma:eps/2 dV 16978.9999288: rel. error 5.962e-04 (<= 3.000e-02); finest-level error 1.616e-02"
+        },
+        {
+          "name": "finest_error_inside_gci_band",
+          "passed": true,
+          "detail": "finest-mesh true error 1.616e-02 vs GCI band 2.129e-02 -> inside the band"
+        }
+      ],
+      "observed_orders": [
+        1.9621906604621915
+      ],
+      "mean_observed_order": 1.9621906604621915,
+      "finest_order": 1.9621906604621915,
+      "expected_order": 2.0,
+      "gci": {
+        "refinement_ratio": 2.0,
+        "observed_order": 1.9621906604621915,
+        "safety_factor": 1.25,
+        "relative_gci": 0.021292748777162734,
+        "absolute_gci": 355.6862896851152,
+        "richardson_value": 16989.122659489472,
+        "band_lower": 16348.887338056267,
+        "band_upper": 17060.259917426498
+      },
+      "richardson_value": 16989.122659489472,
+      "reference": {
+        "label": "analytic int sigma:eps/2 dV",
+        "value": 16978.999928841346,
+        "extrapolated_value": 16989.122659489472,
+        "extrapolated_relative_error": 0.0005961912180076008,
+        "finest_relative_error": 0.016162689336832507,
+        "tolerance": 0.03,
+        "within_tolerance": true,
+        "detail": "Richardson 16989.1226595 vs analytic int sigma:eps/2 dV 16978.9999288: rel. error 5.962e-04 (<= 3.000e-02); finest-level error 1.616e-02",
+        "finest_inside_gci": true,
+        "relative_gci": 0.021292748777162734,
+        "gci_detail": "finest-mesh true error 1.616e-02 vs GCI band 2.129e-02 -> inside the band"
+      },
+      "status": "passed",
+      "passed": true
+    },
+    "pass": true
+  },
+  "figure": "convergence.png",
+  "pass": true
+}
