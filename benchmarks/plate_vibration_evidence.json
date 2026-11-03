@@ -1,0 +1,243 @@
+{
+  "module": "tensorfem.plate_vibration",
+  "gate": 0.03,
+  "simply_supported": {
+    "case": "simply supported square panel, a/h=100, hard simple support",
+    "parameters": {
+      "a_m": 1.0,
+      "b_m": 1.0,
+      "young": 200000000000.0,
+      "poisson": 0.3,
+      "density": 7850.0,
+      "thickness": 0.01
+    },
+    "reference_definition": "Navier double-sine: omega_mn=pi^2*sqrt(D/(rho h))*((m/a)^2+(n/b)^2)",
+    "reference_hz": [
+      47.986461117141864,
+      119.96615279285467,
+      119.96615279285467,
+      191.94584446856746
+    ],
+    "modes": [
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        2
+      ]
+    ],
+    "levels": [
+      {
+        "elements": 6,
+        "frequencies_hz": [
+          49.46833397773228,
+          134.57122423968562,
+          134.57122425095042,
+          217.36769237979647
+        ],
+        "relative_errors": [
+          0.03088106157636732,
+          0.12174326763691003,
+          0.12174326773080987,
+          0.1324428146991847
+        ]
+      },
+      {
+        "elements": 8,
+        "frequencies_hz": [
+          48.80376969168306,
+          127.74895128719909,
+          127.74895129641907,
+          205.520767821293
+        ],
+        "relative_errors": [
+          0.017032066035168252,
+          0.06487495275257316,
+          0.06487495282942796,
+          0.0707226738370391
+        ]
+      },
+      {
+        "elements": 10,
+        "frequencies_hz": [
+          48.50073547071119,
+          124.80110624776025,
+          124.80110624801809,
+          200.36439855072408
+        ],
+        "relative_errors": [
+          0.010717071890629927,
+          0.040302646557767656,
+          0.040302646559916944,
+          0.043859006718612335
+        ]
+      },
+      {
+        "elements": 12,
+        "frequencies_hz": [
+          48.33731633862282,
+          123.25138699523903,
+          123.25138699826779,
+          197.6447351178398
+        ],
+        "relative_errors": [
+          0.007311546075974791,
+          0.02738467580982585,
+          0.027384675835072633,
+          0.029690096522019593
+        ]
+      },
+      {
+        "elements": 16,
+        "frequencies_hz": [
+          48.1756506128872,
+          121.74500706048448,
+          121.74500706526342,
+          194.9953335178033
+        ],
+        "relative_errors": [
+          0.003942559866698651,
+          0.014827967941102145,
+          0.01482796798093788,
+          0.015887236619676896
+        ]
+      }
+    ],
+    "observed_order_first_mode": 2.0973012057674896,
+    "shear_bias_first_mode": -0.0002818694767660057
+  },
+  "clamped": {
+    "case": "fully clamped square panel, a/h=100",
+    "reference_definition": "Leissa NASA SP-160 (1969) clamped square coefficient lambda_1=35.9853",
+    "reference_hz": 87.4810746744869,
+    "levels": [
+      {
+        "elements": 6,
+        "frequency_hz": 94.17968063086931,
+        "relative_errors": [
+          0.07657205837156912
+        ]
+      },
+      {
+        "elements": 8,
+        "frequency_hz": 91.06426214592453,
+        "relative_errors": [
+          0.04095957308218381
+        ]
+      },
+      {
+        "elements": 10,
+        "frequency_hz": 89.6980007622439,
+        "relative_errors": [
+          0.025341779304907597
+        ]
+      },
+      {
+        "elements": 12,
+        "frequency_hz": 88.9745355719835,
+        "relative_errors": [
+          0.01707181699646112
+        ]
+      },
+      {
+        "elements": 16,
+        "frequency_hz": 88.26772488959423,
+        "relative_errors": [
+          0.008992233097666195
+        ]
+      }
+    ]
+  },
+  "winkler": {
+    "case": "simply supported square panel on a uniform Winkler bed, 8x8 mesh",
+    "reference_definition": "exact sine eigenvalue: omega^2=(D*R^2+k_w)/(rho h)",
+    "levels": [
+      {
+        "winkler_k_n_per_m3": 0.0,
+        "frequency_hz": 48.80376969168306,
+        "reference_hz": 47.986461117141864,
+        "relative_errors": [
+          0.017032066035168252
+        ]
+      },
+      {
+        "winkler_k_n_per_m3": 500000000.0,
+        "frequency_hz": 404.5912405323693,
+        "reference_hz": 404.52708790533916,
+        "relative_errors": [
+          0.0001585867274360068
+        ]
+      },
+      {
+        "winkler_k_n_per_m3": 2000000000.0,
+        "frequency_hz": 804.7551563537875,
+        "reference_hz": 804.7736067025653,
+        "relative_errors": [
+          2.2926135529506675e-05
+        ]
+      },
+      {
+        "winkler_k_n_per_m3": 8000000000.0,
+        "frequency_hz": 1607.2890182193019,
+        "reference_hz": 1607.399804289082,
+        "relative_errors": [
+          6.892253531737799e-05
+        ]
+      }
+    ]
+  },
+  "rectangular": {
+    "case": "simply supported rectangular panel a/b=2, 12x12 mesh",
+    "reference_hz": [
+      29.991538198213668,
+      47.986461117141864,
+      77.97799931535552,
+      101.97122987392646
+    ],
+    "half_wave_labels": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "computed_hz": [
+      30.225173356466307,
+      48.90367682760498,
+      82.22699263127501,
+      105.26345278249934
+    ],
+    "relative_errors": [
+      0.007790035866401632,
+      0.01911405194527812,
+      0.05448964263286472,
+      0.03228580171724188
+    ]
+  },
+  "figures": [
+    "docs/assets/plate_vibration_convergence.png",
+    "docs/assets/plate_vibration_mode_shapes.png",
+    "docs/assets/plate_vibration_winkler.png"
+  ]
+}
