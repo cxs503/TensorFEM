@@ -76,12 +76,23 @@ def map_point(xi, eta) -> np.ndarray:
     return shape @ CORNERS
 
 
+def _bilinear_derivative(xi: float, eta: float) -> np.ndarray:
+    """Parent derivatives of the four bilinear shape functions, row 0 = d/dxi.
+
+    Unnormalised on purpose: every entry is ``4 * dN/d(xi or eta)``, so the common
+    factor cancels in ``derivative @ inv(derivative @ coordinates)``.
+    """
+    return np.array(
+        (
+            (-(1 - eta), 1 - eta, 1 + eta, -(1 + eta)),
+            (-(1 - xi), -(1 + xi), 1 + xi, 1 - xi),
+        )
+    )
+
+
 def _bilinear_jacobian(xi: float, eta: float) -> np.ndarray:
     """Jacobian of the bilinear map, row 0 = d/dxi, row 1 = d/deta."""
-    derivative = np.array(
-        ((-(1 - eta), 1 - eta, eta, -eta), (-(1 - xi), -xi, xi, 1 - xi))
-    )
-    return derivative @ CORNERS
+    return _bilinear_derivative(xi, eta) @ CORNERS
 
 
 def inverse_map(point, tolerance: float = 1e-14, iterations: int = 60) -> tuple[float, float]:
@@ -92,7 +103,7 @@ def inverse_map(point, tolerance: float = 1e-14, iterations: int = 60) -> tuple[
         residual = target - map_point(xi, eta)
         if float(np.linalg.norm(residual)) < tolerance:
             break
-        step = np.linalg.solve(_bilinear_jacobian(xi, eta), residual)
+        step = np.linalg.solve(_bilinear_jacobian(xi, eta).T, residual)
         xi += step[0]
         eta += step[1]
     return float(xi), float(eta)
@@ -596,4 +607,115 @@ def compare_platform(platform_cases: list[dict], reference: dict) -> dict:
         "finest_passed": bool(rows[-1]["passed"]),
         "monotone": bool(monotone),
         "qualified": bool(rows[-1]["passed"] and monotone),
+    }
+
+# --------------------------------------------------------------------------------------
+# Independent verification of the strain-displacement matrices used above.
+#
+# The 2026-11 audit of the Cook stress field could not certify its own pointwise
+# recovery: the pointwise Q4 stress disagreed with the stored element-centre field by
+# several hundred percent and the loaded-edge profile of the Q8 reference stayed strongly
+# tilted.  Root cause (verified in this section): the module inverted the element
+# Jacobian without transposing it, i.e. it built ``dN/dx = N'_{,xi} * dxi/dx`` with the
+# parent/physical index roles exchanged.  Rectangular elements are insensitive to that
+# swap (their Jacobian is diagonal), distorted elements are not.  The linear-field patch
+# test below is the machine-checkable criterion: a consistent B matrix reproduces any
+# constant strain state on *any* element geometry.
+# --------------------------------------------------------------------------------------
+
+PATCH_FIELD = ((0.01, 0.02), (0.005, 0.03))
+
+
+def _patch_field(nodes: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """A linear displacement field and the constant strain state it produces."""
+    (a, b), (c, d) = PATCH_FIELD
+    displacement = np.stack((a * nodes[:, 0] + b * nodes[:, 1],
+                             c * nodes[:, 0] + d * nodes[:, 1]), axis=1)
+    exact = np.array((a, d, b + c))
+    return displacement.ravel(), exact
+
+
+def q4_patch_check(coordinates: np.ndarray, xi: float = 0.0, eta: float = 0.0) -> dict:
+    """Constant-strain patch test of :func:`q4_strain_matrix` on one quadrilateral."""
+    coordinates = np.asarray(coordinates, dtype=np.float64)
+    displacement, exact = _patch_field(coordinates)
+    matrix, _ = q4_strain_matrix(xi, eta, coordinates)
+    computed = matrix @ displacement
+    return {
+        "element": "q4",
+        "local": [xi, eta],
+        "strain": computed.tolist(),
+        "exact": exact.tolist(),
+        "max_abs_error": float(np.max(np.abs(computed - exact))),
+    }
+
+
+def q8_patch_check(coordinates: np.ndarray, xi: float = 0.0, eta: float = 0.0) -> dict:
+    """Constant-strain patch test of :func:`q8_strain_matrix` on one serendipity patch."""
+    coordinates = np.asarray(coordinates, dtype=np.float64)
+    displacement, exact = _patch_field(coordinates)
+    matrix, _ = q8_strain_matrix(xi, eta, coordinates)
+    computed = matrix @ displacement
+    return {
+        "element": "q8",
+        "local": [xi, eta],
+        "strain": computed.tolist(),
+        "exact": exact.tolist(),
+        "max_abs_error": float(np.max(np.abs(computed - exact))),
+    }
+
+
+def distorted_q4_patch() -> np.ndarray:
+    """A trapezoidal quadrilateral with a Jacobian that is not diagonal."""
+    return np.array(((12.0, 29.5), (24.0, 37.0), (24.0, 44.5), (12.0, 38.75)))
+
+
+def distorted_q8_patch() -> np.ndarray:
+    """An eight-node distorted patch: corners followed by edge mid-side nodes.
+
+    The mid-side nodes sit on the bilinear map, exactly as in :func:`q8_mesh`, so the
+    patch is isoparametric and any constant strain state must be reproduced.
+    """
+    corners = distorted_q4_patch()
+    mids = 0.5 * (corners + np.roll(corners, -1, axis=0))
+    return np.vstack((corners, mids))
+
+
+def inverse_map_error(samples=((0.31, 0.62), (0.77, 0.18), (0.05, 0.95))) -> dict:
+    """Round-trip error of :func:`inverse_map` against :func:`map_point`."""
+    errors = []
+    for xi, eta in samples:
+        target = map_point(xi, eta)
+        back = np.array(inverse_map(target))
+        errors.append(float(np.max(np.abs(back - np.array((xi, eta))))))
+    return {"samples": len(errors), "max_parent_error": max(errors)}
+
+
+def strain_recovery_agreement(divisions: int = 8) -> dict:
+    """Compare the audit's Q4 recovery with the production element-centre field.
+
+    ``tensorfem.additional_benchmark_fields.cook_fields`` evaluates ``C @ B @ u`` with the
+    centre-point B matrix of :func:`tensorfem.continuum.q4_stiffness`.  The audit must
+    reproduce those values before any of its pointwise statements can be used.
+    """
+    from .additional_benchmark_fields import cook_fields
+
+    case = cook_fields(divisions)
+    nodes = np.asarray(case["nodes"], dtype=np.float64)
+    elements = np.asarray(case["elements"], dtype=np.int64)
+    displacement = np.asarray(case["displacement"], dtype=np.float64).reshape(-1, 2)
+    stored = np.asarray(case["stress"], dtype=np.float64)
+    matrix = plane_stress_matrix()
+    differences = []
+    for index, connectivity in enumerate(elements):
+        b, _ = q4_strain_matrix(0.0, 0.0, nodes[connectivity])
+        computed = matrix @ b @ displacement[connectivity].ravel()
+        differences.append(float(np.linalg.norm(computed - stored[index])
+                                 / max(float(np.linalg.norm(stored[index])), 1e-12)))
+    return {
+        "divisions": divisions,
+        "elements": int(len(elements)),
+        "max_relative_difference": max(differences),
+        "tolerance": 1e-12,
+        "passed": max(differences) <= 1e-12,
     }
