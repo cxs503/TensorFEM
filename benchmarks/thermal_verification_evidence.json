@@ -1,0 +1,96 @@
+{
+  "schema": "tensorfem.thermal-verification/1.0",
+  "timestamp": "2026-11-03T00:00:00Z",
+  "policy": "relative_error < declared tolerance <= 3%",
+  "anchors": [
+    {
+      "anchor": "steady_rod_prescribed_temperature",
+      "description": "1D steady rod with prescribed T at both ends; LINE2 exact",
+      "max_absolute_error": 1.4210854715202004e-14,
+      "tolerance": 1e-11,
+      "passed": true,
+      "reference": "T(x) = T0 + (TL-T0)*x/L"
+    },
+    {
+      "anchor": "steady_rod_convection",
+      "description": "1D steady rod with convection at right end; series resistance",
+      "computed_T_right": 50.76923076923074,
+      "reference_T_right": 50.769230769230774,
+      "relative_error": 6.99776936733432e-16,
+      "tolerance": 0.03,
+      "passed": true,
+      "reference": "q=(T0-Tinf)/(L/(kA)+1/(hA)); T(L)=T0-qL/(kA)"
+    },
+    {
+      "anchor": "steady_rod_heat_generation_nodal_exact",
+      "description": "1D steady rod with uniform heat generation; nodal superconvergence",
+      "mesh_study": [
+        {
+          "n": 2,
+          "max_error": 0.0
+        },
+        {
+          "n": 4,
+          "max_error": 0.0
+        },
+        {
+          "n": 8,
+          "max_error": 0.0
+        },
+        {
+          "n": 16,
+          "max_error": 0.0
+        },
+        {
+          "n": 32,
+          "max_error": 0.0
+        },
+        {
+          "n": 64,
+          "max_error": 0.0
+        }
+      ],
+      "final_max_error": 0.0,
+      "tolerance": 1e-10,
+      "passed": true,
+      "reference": "T(x) = T0 + q_dot/(2k)*(L^2 - x^2); nodal values exact for LINE2"
+    },
+    {
+      "anchor": "q4_linear_patch_test",
+      "description": "2D Q4 element must reproduce linear T(x,y) exactly",
+      "max_absolute_error": 0.0,
+      "tolerance": 1e-11,
+      "passed": true,
+      "reference": "T(x,y) = a + b*x + c*y (patch test)"
+    },
+    {
+      "anchor": "transient_rod_analytical_decay",
+      "description": "1D transient rod, single element vs exp(-t/tau)",
+      "max_relative_error": 0.0018317711576766981,
+      "tolerance": 0.03,
+      "passed": true,
+      "reference": "T(t) = T0*exp(-t/tau), tau=rho*cp*L^2/(3k)"
+    },
+    {
+      "anchor": "energy_balance_heat_generation",
+      "description": "Global energy balance: reactions = -total heat generation",
+      "total_generated": 1000.0,
+      "total_reaction": -1000.0000000000009,
+      "relative_error": 9.094947017729283e-16,
+      "tolerance": 1e-10,
+      "passed": true,
+      "reference": "integral(q_dot dV) = -sum(reactions)"
+    },
+    {
+      "anchor": "reaction_flux_verification",
+      "description": "Reaction heat flux at x=0 matches analytical -k*dT/dx",
+      "computed_flux": 150.0,
+      "reference_flux": 150.0,
+      "relative_error": 0.0,
+      "tolerance": 1e-11,
+      "passed": true,
+      "reference": "q = -k*(TL-T0)/L"
+    }
+  ],
+  "all_passed": true
+}
