@@ -187,7 +187,7 @@ def test_input_validation_and_result_metadata():
     assert result.frequencies_hz.shape == (3,)
     assert torch.all(result.frequencies_hz[1:] > result.frequencies_hz[:-1])
     with pytest.raises(ValueError):
-        solve_plate_vibration(2, 2, boundary="free", modes=1, **STEEL)
+        solve_plate_vibration(2, 2, boundary="glued", modes=1, **STEEL)
     with pytest.raises(ValueError):
         solve_plate_vibration(2, 2, winkler_k=-1.0, modes=1, **STEEL)
     with pytest.raises(TypeError):
