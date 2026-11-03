@@ -1,0 +1,103 @@
+{
+  "case": {
+    "E": 206000000000.0,
+    "nu": 0.3,
+    "t": 0.014,
+    "k_foundation": 20000000.0,
+    "strip_width": 0.7,
+    "EI": 36234.871794871804,
+    "k_b": 14000000.0,
+    "lam": 3.134984001148487,
+    "characteristic_length": 0.3189808942034966,
+    "beam_length": 0.6379617884069932,
+    "lam_L": 2.0,
+    "load": 1000000.0
+  },
+  "max_deflection": {
+    "free": 0.1319538491696383,
+    "clamped": 0.033223850428480965,
+    "simply_supported": 0.09093365294396547,
+    "guided": 0.12155180590956573
+  },
+  "max_moment": {
+    "free": 73454.8644650682,
+    "clamped": 73454.86446506823,
+    "simply_supported": 108108.678717464,
+    "guided": 51865.70177098619
+  },
+  "infinite_beam_max_deflection": 0.11196371432673168,
+  "checks": {
+    "series_vs_bvp_simply_supported": 5.266719478006626e-10,
+    "infinite_limit": {
+      "free": 9.297510501711746e-10,
+      "clamped": 3.476611354728094e-09,
+      "simply_supported": 5.480946734472361e-10,
+      "guided": 5.482205667207857e-10
+    },
+    "equilibrium": {
+      "free": {
+        "foundation_share": 0.999999996952755,
+        "identity_residual": 3.0472451229002218e-09
+      },
+      "clamped": {
+        "foundation_share": 0.1475510479717617,
+        "identity_residual": 1.1102230246251565e-16
+      },
+      "simply_supported": {
+        "foundation_share": 0.5016629632876898,
+        "identity_residual": 6.157123477734672e-09
+      },
+      "guided": {
+        "foundation_share": 1.0000000000000004,
+        "identity_residual": 0.0
+      }
+    },
+    "rigid_limit": 2.9999999151542056e-09
+  },
+  "fe_convergence": {
+    "free": [
+      {
+        "elements": 4,
+        "relative_error": 0.00030119673691830773
+      },
+      {
+        "elements": 8,
+        "relative_error": 1.878019762091565e-05
+      },
+      {
+        "elements": 16,
+        "relative_error": 1.173014122390903e-06
+      },
+      {
+        "elements": 32,
+        "relative_error": 7.333778362372811e-08
+      },
+      {
+        "elements": 64,
+        "relative_error": 4.739242887019657e-09
+      }
+    ],
+    "clamped": [
+      {
+        "elements": 4,
+        "relative_error": 3.6925557026501465e-05
+      },
+      {
+        "elements": 8,
+        "relative_error": 2.3591639406461695e-06
+      },
+      {
+        "elements": 16,
+        "relative_error": 1.4811329318575872e-07
+      },
+      {
+        "elements": 32,
+        "relative_error": 9.273557477484928e-09
+      },
+      {
+        "elements": 64,
+        "relative_error": 6.052850443083457e-10
+      }
+    ]
+  }
+}
