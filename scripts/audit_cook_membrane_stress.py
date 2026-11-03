@@ -1,10 +1,10 @@
-"""Independent Q8 reference audit of the production Cook-membrane stress field.
+"""Cook membrane stress audit: independent Q8 reference against the production Q4 field.
 
 Writes ``benchmarks/cook_membrane_stress_reference.json``: the independent quadratic
 (Q8) reference solution, its Richardson/GCI uncertainty, the convergence of the
-published displacement probe, the loaded-edge profile comparison (where the traction
-discontinuity makes pointwise values non-convergent) and the pointwise interior stress
-comparison against ``tensorfem.additional_benchmark_fields.cook_fields``.
+published displacement probe, the loaded-edge profile comparison, the pointwise interior
+stress comparison against ``tensorfem.additional_benchmark_fields.cook_fields``, and the
+accuracy of the *stored* element-centre field with the mesh a 3 % gate would need.
 
 Run: ``OMP_NUM_THREADS=1 PYTHONPATH=src python scripts/audit_cook_membrane_stress.py``
 """
@@ -41,6 +41,7 @@ def loaded_edge_profile(nodes: np.ndarray, displacement: np.ndarray) -> dict:
 def main() -> dict:
     reference_solution = reference.build_reference(REFERENCE_LEVELS)
     solutions = reference_solution.pop("solutions")
+    finest = solutions[-1]
 
     platform_cases = []
     for level in PLATFORM_LEVELS:
@@ -70,6 +71,22 @@ def main() -> dict:
     )
     strain_matrix_verification["passed"] = strain_ok
 
+    # Where the accuracy question actually lives: the stored element-centre field is the
+    # artefact production writes, so it is scored directly against the Q8 reference.  The
+    # five fixed interior sample points above stay as the arbitrary-point criterion.
+    centre_accuracy = [
+        reference.element_centre_accuracy(case, finest) for case in platform_cases[2:]
+    ]
+    convergence = reference.convergence_analysis(
+        [case["divisions"] for case in comparison["cases"]],
+        [case["max_von_mises_error"] for case in comparison["cases"]],
+    )
+    centre_convergence = reference.convergence_analysis(
+        [entry["divisions"] for entry in centre_accuracy],
+        [entry["all_elements"]["p95_relative_error"] for entry in centre_accuracy],
+    )
+    edge_agreement = reference.loaded_edge_agreement(finest, platform_cases[-1])
+
     profiles = {
         "reference_levels": [
             {"divisions": solution["divisions"], **loaded_edge_profile(solution["nodes"], solution["displacement"])}
@@ -80,6 +97,11 @@ def main() -> dict:
             for case in platform_cases
         ],
     }
+
+    if cross_check["passed"] and strain_ok:
+        status = "qualified" if comparison["qualified"] else "measured-not-qualified"
+    else:
+        status = "withheld"
 
     evidence = {
         "case": "Cook membrane stress field",
@@ -128,16 +150,22 @@ def main() -> dict:
         "recovery_cross_check": cross_check,
         "strain_matrix_verification": strain_matrix_verification,
         "loaded_edge_profiles": profiles,
-        "status": (
-            "withheld"
-            if not (comparison["qualified"] and cross_check["passed"])
-            else "qualified"
-        ),
+        "loaded_edge_agreement": edge_agreement,
+        "element_centre_accuracy": centre_accuracy,
+        "convergence": {
+            "arbitrary_point_max_von_mises": convergence,
+            "element_centre_p95": centre_convergence,
+        },
+        "status": status,
         "scope": (
-            "Pointwise interior stress components and von Mises at five fixed material points, "
-            "against an independently coded Q8 plane-stress solution with Richardson extrapolation. "
-            "Element-centre/nodal peak values on the loaded-edge traction discontinuity and at the "
-            "clamped corner are excluded: those are singular and do not converge pointwise."
+            "Pointwise interior stress components and von Mises at five fixed material points "
+            "(arbitrary-point criterion) and the stored element-centre von Mises field "
+            "(production artefact criterion), both against an independently coded Q8 plane-stress "
+            "solution with Richardson extrapolation. Element-centre/nodal peak values on the "
+            "loaded-edge traction discontinuity and at the clamped corner are excluded from the "
+            "pointwise criteria: those are singular and do not converge pointwise. The reported "
+            "element-centre measures are a scoped measurement, not a change of the production "
+            "``stress_accuracy_qualified`` flag."
         ),
     }
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
@@ -148,12 +176,27 @@ def main() -> dict:
           f"(published {probe['reference']}, error {100 * probe['relative_error']:.3f}%)")
     print(f"reference GCI(finest) {100 * comparison['reference_gci_relative']:.3f}%")
     for entry in comparison["cases"]:
-        print(f"Q4 {entry['divisions']:>3}: max von Mises error "
+        print(f"Q4 {entry['divisions']:>3}: arbitrary-point max von Mises error "
               f"{100 * entry['max_von_mises_error']:.3f}% passed={entry['passed']}")
     print("monotone", comparison["monotone"], "qualified", comparison["qualified"])
     print("strain-matrix verification passed", strain_ok)
     print("recovery cross-check max relative difference "
           f"{100 * cross_check['max_relative_difference']:.3f}% passed={cross_check['passed']}")
+    for entry in centre_accuracy:
+        stats = entry["all_elements"]
+        print(f"stored element-centre field n={entry['divisions']:>3}: "
+              f"median {100 * stats['median_relative_error']:.3f}% "
+              f"p95 {100 * stats['p95_relative_error']:.3f}% "
+              f"scale-normalised max {100 * stats['max_scale_normalized_error']:.3f}% "
+              f"passed={entry['passed']}")
+    print("loaded-edge agreement: max |dv| "
+          f"{edge_agreement['max_absolute_difference']:.4f} "
+          f"({100 * edge_agreement['max_relative_to_probe']:.3f}% of probe) "
+          f"passed={edge_agreement['passed']}")
+    print(f"arbitrary-point order p={convergence['observed_order']:.3f}, "
+          f"divisions for 3% = {convergence['divisions_for_tolerance']:.0f}; "
+          f"element-centre p95 order p={centre_convergence['observed_order']:.3f}")
+    print("status", status)
     print("written", OUTPUT.relative_to(ROOT))
     return evidence
 
