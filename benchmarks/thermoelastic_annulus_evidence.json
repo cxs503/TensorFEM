@@ -1,0 +1,109 @@
+{
+  "note": "relative errors are normalised by the peak magnitude of the same field",
+  "case": {
+    "inner_radius": 0.5,
+    "outer_radius": 0.8,
+    "inner_temperature": 500.0,
+    "outer_temperature": 100.0,
+    "young_modulus": 210000000000.0,
+    "poisson_ratio": 0.3,
+    "expansion_coefficient": 1.2e-05
+  },
+  "meshes": [
+    {
+      "n_theta": 8,
+      "n_radial": 4,
+      "radial_grading": 1.0,
+      "elements": 32,
+      "dofs": 90,
+      "hoop_peak_reference_pa": 723955779.6265157,
+      "radial_peak_reference_pa": 83105975.62789415,
+      "axial_peak_reference_pa": 1423584143.45226,
+      "bore_hoop_fem_pa": -823603273.4996669,
+      "bore_hoop_reference_pa": -723955779.6265157,
+      "bore_hoop_rel_error": 0.13764306699030526,
+      "bore_axial_rel_error": 0.07569138383526489,
+      "hoop_max_rel_error": 0.15916012091174514,
+      "radial_max_rel_error": 3.2554509444266646,
+      "axial_max_rel_error": 0.0764328861254974
+    },
+    {
+      "n_theta": 8,
+      "n_radial": 8,
+      "radial_grading": 1.0,
+      "elements": 64,
+      "dofs": 162,
+      "hoop_peak_reference_pa": 782805505.8206003,
+      "radial_peak_reference_pa": 83555987.6250381,
+      "axial_peak_reference_pa": 1471016827.7995157,
+      "bore_hoop_fem_pa": -830426642.7481542,
+      "bore_hoop_reference_pa": -782805505.8206003,
+      "bore_hoop_rel_error": 0.060833932022020656,
+      "bore_axial_rel_error": 0.035013764337217604,
+      "hoop_max_rel_error": 0.08739372309939418,
+      "radial_max_rel_error": 1.721879371106041,
+      "axial_max_rel_error": 0.04433695027235106
+    },
+    {
+      "n_theta": 8,
+      "n_radial": 16,
+      "radial_grading": 1.0,
+      "elements": 128,
+      "dofs": 306,
+      "hoop_peak_reference_pa": 812994259.9212546,
+      "radial_peak_reference_pa": 83510651.380063,
+      "axial_peak_reference_pa": 1495011418.302304,
+      "bore_hoop_fem_pa": -831778277.7532356,
+      "bore_hoop_reference_pa": -812994259.9212546,
+      "bore_hoop_rel_error": 0.023104736106993345,
+      "bore_axial_rel_error": 0.014519135307247298,
+      "hoop_max_rel_error": 0.05115423889382671,
+      "radial_max_rel_error": 0.9067670460204944,
+      "axial_max_rel_error": 0.026088153581696586
+    },
+    {
+      "n_theta": 8,
+      "n_radial": 32,
+      "radial_grading": 1.0,
+      "elements": 256,
+      "dofs": 594,
+      "hoop_peak_reference_pa": 828286022.1621519,
+      "radial_peak_reference_pa": 83579479.73670362,
+      "axial_peak_reference_pa": 1507079552.2364197,
+      "bore_hoop_fem_pa": -831935984.1376961,
+      "bore_hoop_reference_pa": -828286022.1621519,
+      "bore_hoop_rel_error": 0.0044066444173673,
+      "bore_axial_rel_error": 0.004226022424424098,
+      "hoop_max_rel_error": 0.03278379079602079,
+      "radial_max_rel_error": 0.48266814439486105,
+      "axial_max_rel_error": 0.016326097248825663
+    },
+    {
+      "n_theta": 12,
+      "n_radial": 24,
+      "radial_grading": 1.6,
+      "elements": 288,
+      "dofs": 650,
+      "hoop_peak_reference_pa": 833680837.569161,
+      "radial_peak_reference_pa": 83570110.88150953,
+      "axial_peak_reference_pa": 1511323387.063791,
+      "bore_hoop_fem_pa": -830924926.9094629,
+      "bore_hoop_reference_pa": -833680837.569161,
+      "bore_hoop_rel_error": 0.0033057142919750773,
+      "bore_axial_rel_error": 0.0007726803907745733,
+      "hoop_max_rel_error": 0.02348341443143752,
+      "radial_max_rel_error": 0.4309003819968561,
+      "axial_max_rel_error": 0.0127890853635687
+    }
+  ],
+  "gates": {
+    "bore_hoop": 0.03,
+    "field_hoop": 0.03,
+    "field_axial": 0.03,
+    "field_radial": 0.03
+  },
+  "worst": 0.13764306699030526,
+  "figures": [
+    "/root/tp-agent/work/m2790/docs/assets/thermoelastic_annulus_stress.png"
+  ]
+}
