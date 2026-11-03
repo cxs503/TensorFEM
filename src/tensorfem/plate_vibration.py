@@ -91,7 +91,8 @@ SHEAR_CORRECTION = 5.0 / 6.0
 
 BOUNDARY_SIMPLE = "simple"
 BOUNDARY_CLAMPED = "clamped"
-_SUPPORTED_BOUNDARIES = (BOUNDARY_SIMPLE, BOUNDARY_CLAMPED)
+BOUNDARY_FREE = "free"
+_SUPPORTED_BOUNDARIES = (BOUNDARY_SIMPLE, BOUNDARY_CLAMPED, BOUNDARY_FREE)
 
 
 @dataclass(frozen=True)
@@ -108,6 +109,7 @@ class PlateVibrationResult:
     element_counts: tuple[int, int]
     boundary: str
     winkler_k: float
+    rigid_body_modes: int = 0         # zero-energy eigenpairs discarded before the elastic modes
 
 
 @dataclass(frozen=True)
@@ -302,6 +304,8 @@ def _edge_flags(nodes: torch.Tensor, length: float, width: float, dtype) -> tupl
 
 
 def _fixed_dofs(nodes: torch.Tensor, length: float, width: float, boundary: str, dtype) -> torch.Tensor:
+    if boundary == BOUNDARY_FREE:  # every dof is free; three rigid-body modes remain
+        return torch.zeros(0, dtype=torch.long)
     x_edge, y_edge = _edge_flags(nodes, length, width, dtype)
     on_boundary = x_edge | y_edge
     transverse = 3 * torch.nonzero(on_boundary, as_tuple=False).flatten()
@@ -327,7 +331,7 @@ def solve_plate_vibration(
     width: float | None = None, young: float = 200.0e9, poisson: float = 0.3,
     thickness: float = 0.01, density: float = 7850.0, winkler_k: float = 0.0,
     boundary: str = BOUNDARY_SIMPLE, modes: int = 4, rotary_inertia: bool = True,
-    dtype=torch.float64,
+    rigid_body_relative_tolerance: float = 1e-9, dtype=torch.float64,
 ) -> PlateVibrationResult:
     """Solve the free-vibration eigenproblem ``K phi = omega^2 M phi``.
 
@@ -388,12 +392,33 @@ def solve_plate_vibration(
     inverse_factor = torch.linalg.inv(factor)
     standard = inverse_factor @ reduced_stiffness @ inverse_factor.T
     standard = 0.5 * (standard + standard.T)
+    if isinstance(rigid_body_relative_tolerance, bool) or not isinstance(
+        rigid_body_relative_tolerance, (int, float)
+    ):
+        raise TypeError("rigid_body_relative_tolerance must be a real number")
+    rigid_body_relative_tolerance = float(rigid_body_relative_tolerance)
+    if not math.isfinite(rigid_body_relative_tolerance) or rigid_body_relative_tolerance < 0.0:
+        raise ValueError("rigid_body_relative_tolerance must be finite and non-negative")
     eigenvalues, eigenvectors = torch.linalg.eigh(standard)
-    if bool((eigenvalues[:modes] <= 0.0).any().item()):
+    scale = float(eigenvalues[-1])
+    threshold = rigid_body_relative_tolerance * scale
+    rigid = int(torch.sum(eigenvalues <= threshold).item())
+    selected = eigenvalues[rigid : rigid + modes]
+    if selected.numel() < modes:
+        raise ValueError(
+            "requested modes exceed the elastic spectrum"
+            f" ({eigenvalues.numel() - rigid} elastic modes available)"
+        )
+    if bool((selected <= 0.0).any().item()):
         raise ValueError("negative eigenvalue: retained set still holds a mechanism")
-    angular = torch.sqrt(eigenvalues[:modes])
+    if boundary != BOUNDARY_FREE and rigid:
+        raise ValueError(
+            "spurious near-zero eigenvalue on a supported boundary: "
+            "the element set still holds a mechanism"
+        )
+    angular = torch.sqrt(selected)
     full_modes = torch.zeros((ndof, modes), dtype=dtype)
-    full_modes[free] = inverse_factor.T @ eigenvectors[:, :modes]
+    full_modes[free] = inverse_factor.T @ eigenvectors[:, rigid : rigid + modes]
     total_mass = float(density * thickness * length * width)
     return PlateVibrationResult(
         frequencies_hz=angular / (2.0 * math.pi),
@@ -406,6 +431,7 @@ def solve_plate_vibration(
         element_counts=(elements_x, elements_y),
         boundary=boundary,
         winkler_k=winkler_k,
+        rigid_body_modes=rigid,
     )
 
 
