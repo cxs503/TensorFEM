@@ -164,6 +164,16 @@ def plane_stress_j2_update(strain: torch.Tensor, model: LayeredShell4Model,
     if residual_stress is not None:
         initial = _residual_strain(residual_stress, model.young, model.poisson)
     scale = max(model.young, model.yield_stress, 1.)
+    # Both acceptance tests below are scaled by the arithmetic unit round-off and
+    # by the size of the quantity actually being cancelled.  Fixed absolute
+    # thresholds (formerly 1e-15*E on sigma_zz and 1e-17 on the Newton step) are
+    # unreachable in double precision as soon as the trial strain is large: the
+    # Newton iteration then stalls inside one unit in the last place of eps_zz
+    # with a residual that is already pure round-off, and the element aborted with
+    # "plane-stress local condensation did not converge" even though the
+    # condensed state was exact to working precision (issue #8).
+    unit_roundoff = torch.finfo(strain.dtype).eps
+    accept = 256. * unit_roundoff
 
     def response(value: torch.Tensor):
         """Stress, exact condensed tangent and trial state at in-plane ``value``."""
@@ -176,11 +186,17 @@ def plane_stress_j2_update(strain: torch.Tensor, model: LayeredShell4Model,
             material = j2_consistent_tangent(
                 full, model.young, model.poisson, model.hardening, committed, dgamma)
             residual = float(sigma[2, 2])
-            if abs(residual) <= 1e-15 * scale:
+            stress_scale = max(scale, float(sigma.abs().max()))
+            if abs(residual) <= accept * stress_scale:
                 break
-            step = residual / float(material[2, 2])
+            slope = float(material[2, 2])
+            if not math.isfinite(slope) or slope <= 0.:
+                raise RuntimeError(
+                    "plane-stress local condensation has a non-positive "
+                    f"sigma_zz tangent ({slope:g})")
+            step = residual / slope
             zz -= step
-            if abs(step) <= 1e-17 * max(1.0, abs(zz)):
+            if abs(step) <= accept * max(1.0, abs(zz)):
                 full = _tensor_from_inplane(value, zz) + initial
                 sigma, trial, dgamma = update_j2(
                     full, model.young, model.poisson, model.yield_stress,
