@@ -12,6 +12,8 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Added an independent Kirsch circular-hole verification of the production Q4 plane-stress path: closed-form stress/displacement reference validated against equilibrium, traction-free hole, strain compatibility and plane-strain compliance oracles; quarter-annulus case with exact outer-arc tractions. On 578-4802 dofs the nodal displacement L2 error is 3.2e-3 to 3.8e-4, the pointwise hoop-stress error 1.23% to 0.19%, and the stress concentration factor 2.9955 to 3.0030 against the exact 3 (0.15% / 0.10%), so the 3% gate passes at every level. Evidence in `benchmarks/kirsch_hole_reference.json`, write-up in `docs/kirsch-hole-stress-concentration.md`. Scope: 2-D plane stress Q4 only; shell/3-D stress concentration and finite-width (Howland) corrections remain open.
+
 - Add actual CPU/CUDA FVM wall pressure and viscous point-load transfer, separate explicit sampling clocks, SI/ownership/traction validation, exact replay and independent NumPy force/moment/work audits. This is a one-way carrier interface, not flexible FSI qualification.
 
 - Add an atomic macroscopic energy-budget gate for unforced local rigid-fluid feedback. Actual first-node conversions are rejected with complete rollback and exact restart; the moving-boundary physics remains unqualified.
