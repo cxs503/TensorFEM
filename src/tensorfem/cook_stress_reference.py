@@ -127,38 +127,59 @@ def q8_shape(xi: float, eta: float) -> tuple[np.ndarray, np.ndarray]:
     return shape, derivative
 
 
-def q8_strain_matrix(xi: float, eta: float, coordinates: np.ndarray) -> tuple[np.ndarray, float]:
-    """Strain-displacement matrix and measure (Jacobian determinant times thickness)."""
-    _, derivative = q8_shape(xi, eta)
+def _strain_matrix(derivative: np.ndarray, coordinates: np.ndarray, size: int):
+    """Strain-displacement matrix from parent derivatives and a physical gradient.
+
+    Convention (documented because it was the defect this oracle carried until
+    2026-11-03): with ``J[a, b] = dX_b / dxi_a`` (rows = parent coordinate, columns =
+    physical coordinate) the chain rule reads ``dN/dx_b = sum_a (J^-1)_{b a}
+    dN/dxi_a``, i.e. ``dN/dx = derivative @ inv(J).T``.  Applying ``inv(J)`` without
+    the transpose is only equivalent when the Jacobian is symmetric, which is the case
+    for rectangles but not for the tapered Cook map - the error that made this Q8
+    reference disagree with the production Q4 field.
+    """
     jacobian = derivative.T @ coordinates
     determinant = float(np.linalg.det(jacobian))
     if determinant <= 0.0:
-        raise ValueError("inverted Q8 element")
-    global_derivative = derivative @ np.linalg.inv(jacobian)
-    matrix = np.zeros((3, 16))
+        raise ValueError("inverted element")
+    global_derivative = derivative @ np.linalg.inv(jacobian).T
+    matrix = np.zeros((3, size))
     matrix[0, 0::2] = global_derivative[:, 0]
     matrix[1, 1::2] = global_derivative[:, 1]
     matrix[2, 0::2] = global_derivative[:, 1]
     matrix[2, 1::2] = global_derivative[:, 0]
     return matrix, determinant * THICKNESS
+
+
+def q8_strain_matrix(xi: float, eta: float, coordinates: np.ndarray) -> tuple[np.ndarray, float]:
+    """Strain-displacement matrix and measure (Jacobian determinant times thickness)."""
+    _, derivative = q8_shape(xi, eta)
+    return _strain_matrix(derivative, coordinates, 16)
+
+
+#: Bilinear parent derivatives, node order (-1,-1), (1,-1), (1,1), (-1,1), i.e. the
+#: same layout as :func:`q8_shape`'s derivative table (one row per node).
+def q4_shape_derivative(xi: float, eta: float) -> np.ndarray:
+    """Parent-coordinate derivatives of the four bilinear shape functions."""
+    return 0.25 * np.array(
+        (
+            (-(1 - eta), -(1 - xi)),
+            (1 - eta, -(1 + xi)),
+            (1 + eta, 1 + xi),
+            (-(1 + eta), 1 - xi),
+        )
+    )
 
 
 def q4_strain_matrix(xi: float, eta: float, coordinates: np.ndarray) -> tuple[np.ndarray, float]:
-    """Strain-displacement matrix of the four-node bilinear element at a parent point."""
-    derivative = np.array(
-        ((-(1 - eta), 1 - eta, eta, -eta), (-(1 - xi), -xi, xi, 1 - xi))
-    )
-    jacobian = derivative @ coordinates
-    determinant = float(np.linalg.det(jacobian))
-    if determinant <= 0.0:
-        raise ValueError("inverted Q4 element")
-    global_derivative = derivative.T @ np.linalg.inv(jacobian)
-    matrix = np.zeros((3, 8))
-    matrix[0, 0::2] = global_derivative[:, 0]
-    matrix[1, 1::2] = global_derivative[:, 1]
-    matrix[2, 0::2] = global_derivative[:, 1]
-    matrix[2, 1::2] = global_derivative[:, 0]
-    return matrix, determinant * THICKNESS
+    """Strain-displacement matrix of the four-node bilinear element at a parent point.
+
+    The derivative table and the Jacobian scaling were both wrong before 2026-11-03
+    (terms of nodes 3/4 used ``eta`` instead of ``1+eta`` and the missing 1/4 left the
+    measure 16x too large), which is why the old pointwise cross-check of the stored
+    Q4 stress disagreed by hundreds of percent.
+    """
+    return _strain_matrix(q4_shape_derivative(xi, eta), coordinates, 8)
 
 
 def q8_mesh(divisions: int) -> tuple[np.ndarray, np.ndarray]:
