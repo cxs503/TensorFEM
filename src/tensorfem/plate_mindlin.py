@@ -21,6 +21,7 @@ from typing import Optional
 
 import torch
 
+from .hetenyi_reference import infinite_plate_point_load
 from .plate import q4_mindlin_stiffness, _shape, structured_square_mesh
 
 
@@ -133,64 +134,47 @@ def hetenyi_reference(
     t: float,
     k_f: float,
 ) -> float:
-    """Hetényi 无限地基板集中力解析解。
-    
-    参考：Hetényi, M. (1946). Beams on Elastic Foundation.
-    以及 Timoshenko & Woinowsky-Krieger, Theory of Plates and Shells, Ch. 9.
-    
-    对于无限大板受集中力 P，挠度使用 Kelvin 函数：
-        w(r) = P * beta^2 / (8 * k_f) * f1(beta*r)  (中心)
-    其中 f1(0) = 1, 且 f1 单调衰减。
-    
-    简化实现：使用指数衰减近似
-        w(r) = w_0 * exp(-beta*r) * (cos(beta*r) + sin(beta*r))
-    这是梁 on elastic foundation 的经典解的二维推广近似。
-    
-    其中：
-        D = E * t^3 / (12 * (1 - nu^2))  弯曲刚度
-        beta = (k_f / (4 * D))^(1/4)     特征参数
-        w_0 = P * beta / (2 * k_f)       中心挠度（简化）
-    
+    """无限 Winkler 地基板集中力精确解（Kelvin kei 函数）。
+
+    控制方程（轴对称）：``D∇⁴w + k_f·w = P·δ(r)/(2πr)``，
+    ``D = E t³/(12(1-ν²))``，特征长度 ``l = (D/k_f)^(1/4)``：
+
+        w(r) = -P/(2π·k_f·l²) · kei(r/l),   w(0) = P/(8·√(D·k_f))
+
+    参考：Timoshenko & Woinowsky-Krieger, *Theory of Plates and Shells*, §62；
+    Hetényi (1946)。数值实现见 :func:`tensorfem.hetenyi_reference.kelvin_kei`。
+
+    注意点（审计结论，2026-11-02）
+    ------------------------------
+    本函数此前返回 ``w0·exp(-βr)``——一个自行声明的「简化指数衰减近似」，
+    既不是 Kelvin 解，也不是 kei 的任何渐近形式：它在 r≈1.2·l 处与精确解
+    偏差 >80%，且丢失了精确解在载荷外围的抬升环（w 变号）。现改为精确解，
+    校验见 ``tests/test_foundation_reference_audit.py`` 与
+    ``docs/hetanyi-reference-audit.md``。
+
     Parameters
     ----------
     x, y : float
-        评估点坐标（相对于力作用点）
+        评估点坐标（相对于力作用点，单位 m）。
     P : float
-        集中力大小 [N]
+        集中力大小 [N]（向下为正）。
     E : float
-        弹性模量 [Pa]
+        弹性模量 [Pa]。
     nu : float
-        泊松比
+        泊松比。
     t : float
-        板厚 [m]
+        板厚 [m]。
     k_f : float
-        Winkler 地基系数 [N/m^3]
-    
+        Winkler 地基系数 [N/m³]。
+
     Returns
     -------
     w : float
-        挠度 [m]
+        挠度 [m]（向下为正）。
     """
-    D = E * t**3 / (12 * (1 - nu**2))
-    r = math.sqrt(x**2 + y**2)
-    beta = (k_f / (4 * D))**0.25
-    
-    # 中心挠度：w_0 = P / (8 * sqrt(D * k_f))
-    # 这等价于 P * beta^2 / (2 * k_f) 因为 beta^2 = sqrt(k_f/(4D))
-    # 所以 beta^2 / k_f = 1/sqrt(4*D*k_f) = 1/(2*sqrt(D*k_f))
-    # 因此 P * beta^2 / (2*k_f) = P / (4*sqrt(D*k_f))
-    # 但经典解是 P / (8*sqrt(D*k_f))，所以 w_0 = P / (8*sqrt(D*k_f))
-    w_0 = P / (8 * math.sqrt(D * k_f))
-    
-    if r < 1e-12:
-        return w_0
-    
-    # 衰减：使用 exp(-beta*r) 近似（单调衰减，保证 w(r) < w(0)）
-    # 这是保守近似，确保单调性
-    beta_r = beta * r
-    w = w_0 * math.exp(-beta_r)
-    
-    return w
+    D = E * t**3 / (12.0 * (1.0 - nu**2))
+    r = math.sqrt(x * x + y * y)
+    return float(infinite_plate_point_load(torch.tensor([r], dtype=torch.float64), P, D, k_f)[0])
 
 
 def solve_plate_on_winkler_foundation(
