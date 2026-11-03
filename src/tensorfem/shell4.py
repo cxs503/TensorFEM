@@ -40,8 +40,14 @@ def shell4_stiffness(
     thickness: torch.Tensor | float,
     *,
     drilling_factor: float = 1e-6,
+    plate_shear: str = "sri",
 ) -> torch.Tensor:
-    """Return the 24x24 global stiffness of a flat four-node shell facet."""
+    """Return the 24x24 global stiffness of a flat four-node shell facet.
+
+    ``plate_shear`` is forwarded to :func:`tensorfem.plate.q4_mindlin_stiffness`;
+    ``"mitc"`` selects the assumed natural transverse shear strain field and
+    removes the two spurious zero-energy plate mechanisms of the default rule.
+    """
     xy, basis = shell4_local_frame(xyz)
     dtype, device = xyz.dtype, xyz.device
     E = torch.as_tensor(young, dtype=dtype, device=device)
@@ -51,7 +57,7 @@ def shell4_stiffness(
         raise ValueError("young and thickness must be positive")
     D = elasticity_matrix(E.reshape(1), nu.reshape(1), "stress")
     km, _ = q4_stiffness(xy.unsqueeze(0), D, t.reshape(1))
-    kp = q4_mindlin_stiffness(xy, E, nu, t)
+    kp = q4_mindlin_stiffness(xy, E, nu, t, shear_treatment=plate_shear)
     kl = torch.zeros((24, 24), dtype=dtype, device=device)
     membrane = torch.stack(tuple(6*torch.arange(4, device=device) + i for i in (0, 1)), 1).reshape(-1)
     # Plate ordering is (w, theta_x, theta_y), with theta_x=ry and theta_y=-rx.
