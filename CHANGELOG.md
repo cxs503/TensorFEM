@@ -232,3 +232,11 @@ All notable user-visible changes are recorded here.
 - Added offline wheel/sdist build and clean-environment installation smoke checks.
 
 Earlier releases predate the formal changelog; their history remains available in Git.
+
+## 2026-11-03 (m2430)
+
+- 修复审计模块 `cook_stress_reference` 的单元算子缺陷：物理梯度漏用逆转置 Jacobian（Q8/Q4）、
+  Q4 父坐标导数表错项且 measure 偏大 16 倍。常应变能量恒等式由 +747% 回到 1.0e-13，审计 Q8
+  与生产 Q4 的 Cook 膜加载边型线由相差 6.8 倍收敛到 <0.3%，m2125 留下的分歧闭环。
+- 新增 `tests/test_cook_oracle_operator.py`（10 项，含约定无关 patch/能量/FD 判据与 fail-closed 断言）。
+- 生产 Q4 路径未改动；Cook 膜逐点应力仍为 5.02%（n=64）> 3%，`stress_accuracy_qualified` 保持 False。
