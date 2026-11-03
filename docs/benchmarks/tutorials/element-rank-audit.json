@@ -1,0 +1,618 @@
+{
+  "description": "Zero-energy (rank-deficiency) audit of the TensorFEM element library",
+  "parameters": {
+    "young": 200000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.01,
+    "density": 7800.0,
+    "side": 1.0,
+    "rtol": 1e-10
+  },
+  "element_audit": [
+    {
+      "element": "hex8 (2x2x2 integration)",
+      "dofs": 24,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.051282051282051225,
+      "min_eigenvalue": -4.8079562491940583e-05,
+      "scale": 250000000000.00003,
+      "note": ""
+    },
+    {
+      "element": "hex8 (distorted)",
+      "dofs": 24,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.04542937918376473,
+      "min_eigenvalue": -4.250566887013284e-05,
+      "scale": 256228963358.9787,
+      "note": ""
+    },
+    {
+      "element": "tet4",
+      "dofs": 12,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.18406504001182664,
+      "min_eigenvalue": -1.1004545020149358e-05,
+      "scale": 160935670949.1713,
+      "note": ""
+    },
+    {
+      "element": "hex8 B-bar (unit cube)",
+      "dofs": 24,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.05128205128205132,
+      "min_eigenvalue": -1.2597619945034917e-05,
+      "scale": 249999999999.99982,
+      "note": ""
+    },
+    {
+      "element": "hex8 B-bar (distorted)",
+      "dofs": 24,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.045396670179810875,
+      "min_eigenvalue": -9.970180803330403e-06,
+      "scale": 256169017651.09882,
+      "note": ""
+    },
+    {
+      "element": "hex20 (2x2x2 integration)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.011895515609490773,
+      "min_eigenvalue": -8.490779381677919e-05,
+      "scale": 637104224860.33,
+      "note": ""
+    },
+    {
+      "element": "q4 membrane (2x2 integration)",
+      "dofs": 8,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive_ratio": 0.3461538461538461,
+      "min_eigenvalue": -3.1811292955417095e-07,
+      "scale": 2857142857.1428566,
+      "note": ""
+    },
+    {
+      "element": "cst membrane",
+      "dofs": 6,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive_ratio": 0.38884103258037284,
+      "min_eigenvalue": -4.265256300186711e-07,
+      "scale": 2911748680.439435,
+      "note": ""
+    },
+    {
+      "element": "q4 Mindlin plate SRI (square)",
+      "dofs": 12,
+      "null_dim": 5,
+      "expected_rigid_dim": 3,
+      "spurious": 2,
+      "first_positive_ratio": 1.0285714285714051e-05,
+      "min_eigenvalue": -3.509794003530918e-08,
+      "scale": 801282051.2820517,
+      "note": ""
+    },
+    {
+      "element": "q4 Mindlin plate SRI (distorted)",
+      "dofs": 12,
+      "null_dim": 5,
+      "expected_rigid_dim": 3,
+      "spurious": 2,
+      "first_positive_ratio": 4.791891816552624e-06,
+      "min_eigenvalue": -9.401151993983528e-08,
+      "scale": 1369542300.4580693,
+      "note": ""
+    },
+    {
+      "element": "q4 Mindlin plate MITC (square)",
+      "dofs": 12,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive_ratio": 1.028571428569626e-05,
+      "min_eigenvalue": -6.437440535317841e-08,
+      "scale": 801282051.2820516,
+      "note": ""
+    },
+    {
+      "element": "q4 Mindlin plate MITC (distorted)",
+      "dofs": 12,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive_ratio": 4.783855586795135e-06,
+      "min_eigenvalue": -8.926810476597636e-08,
+      "scale": 1370104035.5669467,
+      "note": ""
+    },
+    {
+      "element": "shell4 facet, plate shear SRI (square)",
+      "dofs": 24,
+      "null_dim": 9,
+      "expected_rigid_dim": 7,
+      "spurious": 2,
+      "first_positive_ratio": 6.999999999930036e-07,
+      "min_eigenvalue": -3.3316780921974666e-07,
+      "scale": 2857142857.1428566,
+      "note": ""
+    },
+    {
+      "element": "shell4 facet, plate shear SRI (distorted)",
+      "dofs": 24,
+      "null_dim": 9,
+      "expected_rigid_dim": 7,
+      "spurious": 2,
+      "first_positive_ratio": 9.755713459842224e-07,
+      "min_eigenvalue": -6.399269243351392e-07,
+      "scale": 3977156582.110961,
+      "note": ""
+    },
+    {
+      "element": "shell4 facet, plate shear MITC (square)",
+      "dofs": 24,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 6.999999999991423e-07,
+      "min_eigenvalue": -3.370653668976464e-07,
+      "scale": 2857142857.1428566,
+      "note": ""
+    },
+    {
+      "element": "shell4 facet, plate shear MITC (distorted)",
+      "dofs": 24,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 9.755713459842228e-07,
+      "min_eigenvalue": -6.56383437034279e-07,
+      "scale": 3977156582.1109576,
+      "note": ""
+    },
+    {
+      "element": "shell4m facet, plate shear SRI (square)",
+      "dofs": 24,
+      "null_dim": 9,
+      "expected_rigid_dim": 7,
+      "spurious": 2,
+      "first_positive_ratio": 6.999999999955435e-07,
+      "min_eigenvalue": -2.9214625402322527e-07,
+      "scale": 2857142857.1428566,
+      "note": ""
+    },
+    {
+      "element": "shell4m facet, plate shear SRI (distorted)",
+      "dofs": 24,
+      "null_dim": 9,
+      "expected_rigid_dim": 7,
+      "spurious": 2,
+      "first_positive_ratio": 9.759821271134377e-07,
+      "min_eigenvalue": -5.434211243861513e-07,
+      "scale": 3975482636.6293,
+      "note": ""
+    },
+    {
+      "element": "shell4m facet, plate shear MITC (square)",
+      "dofs": 24,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 7.000000000033513e-07,
+      "min_eigenvalue": -3.0577572139198934e-07,
+      "scale": 2857142857.1428576,
+      "note": ""
+    },
+    {
+      "element": "shell4m facet, plate shear MITC (distorted)",
+      "dofs": 24,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 9.759821271060237e-07,
+      "min_eigenvalue": -4.264990228680399e-07,
+      "scale": 3975482636.6293,
+      "note": ""
+    }
+  ],
+  "plate_mesh_scan_sri": [
+    {
+      "element": "q4 Mindlin plate SRI",
+      "n": 1,
+      "dofs": 12,
+      "null_dim": 5,
+      "expected_rigid_dim": 3,
+      "spurious": 2,
+      "first_positive": 8241.758241743924,
+      "first_positive_ratio": 1.0285714285696416e-05
+    },
+    {
+      "element": "q4 Mindlin plate SRI",
+      "n": 2,
+      "dofs": 27,
+      "null_dim": 4,
+      "expected_rigid_dim": 3,
+      "spurious": 1,
+      "first_positive": 4795.00058983878,
+      "first_positive_ratio": 2.937010754862135e-06
+    },
+    {
+      "element": "q4 Mindlin plate SRI",
+      "n": 3,
+      "dofs": 48,
+      "null_dim": 4,
+      "expected_rigid_dim": 3,
+      "spurious": 1,
+      "first_positive": 4737.101273988203,
+      "first_positive_ratio": 2.4951496393850025e-06
+    },
+    {
+      "element": "q4 Mindlin plate SRI",
+      "n": 4,
+      "dofs": 75,
+      "null_dim": 4,
+      "expected_rigid_dim": 3,
+      "spurious": 1,
+      "first_positive": 3743.5215929530386,
+      "first_positive_ratio": 1.7687201959839717e-06
+    },
+    {
+      "element": "q4 Mindlin plate SRI",
+      "n": 6,
+      "dofs": 147,
+      "null_dim": 4,
+      "expected_rigid_dim": 3,
+      "spurious": 1,
+      "first_positive": 2170.7907950238264,
+      "first_positive_ratio": 9.351122981039643e-07
+    },
+    {
+      "element": "q4 Mindlin plate SRI",
+      "n": 8,
+      "dofs": 243,
+      "null_dim": 4,
+      "expected_rigid_dim": 3,
+      "spurious": 1,
+      "first_positive": 1385.0401494634862,
+      "first_positive_ratio": 5.738232531160105e-07
+    }
+  ],
+  "plate_mesh_scan_mitc": [
+    {
+      "element": "q4 Mindlin plate MITC",
+      "n": 1,
+      "dofs": 12,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive": 8241.75824179063,
+      "first_positive_ratio": 1.0285714285754707e-05
+    },
+    {
+      "element": "q4 Mindlin plate MITC",
+      "n": 2,
+      "dofs": 27,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive": 7476.775444859784,
+      "first_positive_ratio": 3.8280580346432875e-06
+    },
+    {
+      "element": "q4 Mindlin plate MITC",
+      "n": 3,
+      "dofs": 48,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive": 5285.114764250158,
+      "first_positive_ratio": 2.522804469889294e-06
+    },
+    {
+      "element": "q4 Mindlin plate MITC",
+      "n": 4,
+      "dofs": 75,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive": 3827.240588613023,
+      "first_positive_ratio": 1.7023741050814757e-06
+    },
+    {
+      "element": "q4 Mindlin plate MITC",
+      "n": 6,
+      "dofs": 147,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive": 2181.5518663100534,
+      "first_positive_ratio": 9.109790043450228e-07
+    },
+    {
+      "element": "q4 Mindlin plate MITC",
+      "n": 8,
+      "dofs": 243,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive": 1386.810644166133,
+      "first_positive_ratio": 5.637236969138576e-07
+    }
+  ],
+  "shell_mesh_scan_plate_sri": [
+    {
+      "element": "shell4 SRI facet, plate shear SRI",
+      "n": 1,
+      "dofs": 24,
+      "null_dim": 9,
+      "expected_rigid_dim": 7,
+      "spurious": 2,
+      "first_positive": 1999.9999999903216,
+      "first_positive_ratio": 6.999999999966127e-07
+    },
+    {
+      "element": "shell4 SRI facet, plate shear SRI",
+      "n": 2,
+      "dofs": 54,
+      "null_dim": 8,
+      "expected_rigid_dim": 7,
+      "spurious": 1,
+      "first_positive": 316.9872981483845,
+      "first_positive_ratio": 5.761010817058295e-08
+    },
+    {
+      "element": "shell4 SRI facet, plate shear SRI",
+      "n": 3,
+      "dofs": 96,
+      "null_dim": 8,
+      "expected_rigid_dim": 7,
+      "spurious": 1,
+      "first_positive": 93.41789284951444,
+      "first_positive_ratio": 1.3576809502987745e-08
+    },
+    {
+      "element": "shell4 SRI facet, plate shear SRI",
+      "n": 4,
+      "dofs": 150,
+      "null_dim": 8,
+      "expected_rigid_dim": 7,
+      "spurious": 1,
+      "first_positive": 36.968001845845926,
+      "first_positive_ratio": 4.936271400167571e-09
+    }
+  ],
+  "shell_mesh_scan_plate_mitc": [
+    {
+      "element": "shell4 SRI facet, plate shear MITC",
+      "n": 1,
+      "dofs": 24,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive": 1999.9999999548418,
+      "first_positive_ratio": 6.999999999841949e-07
+    },
+    {
+      "element": "shell4 SRI facet, plate shear MITC",
+      "n": 2,
+      "dofs": 54,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive": 316.9872978219963,
+      "first_positive_ratio": 5.7610108111264275e-08
+    },
+    {
+      "element": "shell4 SRI facet, plate shear MITC",
+      "n": 3,
+      "dofs": 96,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive": 93.41789252841257,
+      "first_positive_ratio": 1.3576809456320692e-08
+    },
+    {
+      "element": "shell4 SRI facet, plate shear MITC",
+      "n": 4,
+      "dofs": 150,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive": 36.96800203825455,
+      "first_positive_ratio": 4.936271425859557e-09
+    }
+  ],
+  "modal_study": {
+    "reference_simply_supported_omega11": 302.47265494858067,
+    "reference_free_free_omega1_literature": 206.71325564001245,
+    "reference_note": "Simply supported value is the exact Navier frequency from tensorfem.plate_vibration.kirchhoff_angular_frequency. The free-free value uses the classical Leissa frequency parameter 13.49 for a square plate (thin-plate theory).",
+    "rows": [
+      {
+        "n": 4,
+        "shear_treatment": "sri",
+        "dofs": 75,
+        "free_free_zero_modes": 4,
+        "free_free_lowest": [
+          0.0,
+          0.0,
+          0.0,
+          0.006603574953366404,
+          211.6957819437848,
+          320.09413271594053
+        ],
+        "free_free_omega1": 211.6957819437848,
+        "simply_supported_omega11": 324.26894491708,
+        "simply_supported_error_percent": 7.206036516657879
+      },
+      {
+        "n": 4,
+        "shear_treatment": "mitc",
+        "dofs": 75,
+        "free_free_zero_modes": 3,
+        "free_free_lowest": [
+          0.0,
+          0.0029211428251904327,
+          0.013968490103952494,
+          211.75169726947175,
+          320.168953603439,
+          412.1351053207606
+        ],
+        "free_free_omega1": 211.75169726947175,
+        "simply_supported_omega11": 324.2746552287362,
+        "simply_supported_error_percent": 7.207924393648677
+      },
+      {
+        "n": 6,
+        "shear_treatment": "sri",
+        "dofs": 147,
+        "free_free_zero_modes": 4,
+        "free_free_lowest": [
+          0.0,
+          0.0,
+          0.0011577214485568206,
+          0.00740445582284769,
+          208.72830962590567,
+          309.7427084085272
+        ],
+        "free_free_omega1": 208.72830962590567,
+        "simply_supported_omega11": 311.8133315560252,
+        "simply_supported_error_percent": 3.0881061327783277
+      },
+      {
+        "n": 6,
+        "shear_treatment": "mitc",
+        "dofs": 147,
+        "free_free_zero_modes": 3,
+        "free_free_lowest": [
+          0.0,
+          0.008455308605674729,
+          0.014319537890757123,
+          208.86983273167164,
+          309.80071784160634,
+          390.7242514195228
+        ],
+        "free_free_omega1": 208.86983273167164,
+        "simply_supported_omega11": 311.81551702983637,
+        "simply_supported_error_percent": 3.088828668774689
+      },
+      {
+        "n": 8,
+        "shear_treatment": "sri",
+        "dofs": 243,
+        "free_free_zero_modes": 4,
+        "free_free_lowest": [
+          0.0,
+          0.0021193959661728818,
+          0.0031397316680711563,
+          0.00756045118906384,
+          207.49943963049625,
+          305.6925301637229
+        ],
+        "free_free_omega1": 207.49943963049625,
+        "simply_supported_omega11": 307.62438911096615,
+        "simply_supported_error_percent": 1.7032065801985499
+      },
+      {
+        "n": 8,
+        "shear_treatment": "mitc",
+        "dofs": 243,
+        "free_free_zero_modes": 3,
+        "free_free_lowest": [
+          0.0,
+          0.006381508618063637,
+          0.012999146043650572,
+          207.755193713096,
+          305.7315489764096,
+          382.5907045576821
+        ],
+        "free_free_omega1": 207.755193713096,
+        "simply_supported_omega11": 307.6255571469519,
+        "simply_supported_error_percent": 1.7035927427050266
+      },
+      {
+        "n": 10,
+        "shear_treatment": "sri",
+        "dofs": 363,
+        "free_free_zero_modes": 4,
+        "free_free_lowest": [
+          0.0,
+          0.0009600253664472804,
+          0.005272110080070648,
+          0.009205821740433214,
+          206.83245590161548,
+          303.7439243472563
+        ],
+        "free_free_omega1": 206.83245590161548,
+        "simply_supported_omega11": 305.71427621907605,
+        "simply_supported_error_percent": 1.071707216325539
+      },
+      {
+        "n": 10,
+        "shear_treatment": "mitc",
+        "dofs": 363,
+        "free_free_zero_modes": 3,
+        "free_free_lowest": [
+          0.0,
+          0.00900814951460744,
+          0.01060612326277351,
+          207.2139141285024,
+          303.7719813928135,
+          378.7320884779707
+        ],
+        "free_free_omega1": 207.2139141285024,
+        "simply_supported_omega11": 305.7150062667604,
+        "simply_supported_error_percent": 1.0719485762211807
+      },
+      {
+        "n": 12,
+        "shear_treatment": "sri",
+        "dofs": 507,
+        "free_free_zero_modes": 4,
+        "free_free_lowest": [
+          0.0,
+          0.0,
+          0.0,
+          0.008174659331135908,
+          206.41275743499148,
+          302.66569341034267
+        ],
+        "free_free_omega1": 206.41275743499148,
+        "simply_supported_omega11": 304.684197587079,
+        "simply_supported_error_percent": 0.7311545696169692
+      },
+      {
+        "n": 12,
+        "shear_treatment": "mitc",
+        "dofs": 507,
+        "free_free_zero_modes": 3,
+        "free_free_lowest": [
+          0.0,
+          0.0,
+          0.006943646159227665,
+          206.90771645229339,
+          302.68761901637066,
+          376.61314644302496
+        ],
+        "free_free_omega1": 206.90771645229339,
+        "simply_supported_omega11": 304.6846985967049,
+        "simply_supported_error_percent": 0.7313202076069528
+      }
+    ]
+  }
+}
