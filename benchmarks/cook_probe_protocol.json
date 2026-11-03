@@ -1,0 +1,1927 @@
+{
+ "case": "cook-membrane",
+ "generated_utc": "2026-11-03T13:19:42.124275+00:00",
+ "reference": {
+  "source": "benchmarks/cook_membrane_stress_reference.json",
+  "levels": [
+   12,
+   24,
+   48
+  ],
+  "max_gci_fine_relative": 0.0006758547594691302,
+  "documented_residual": 0.0502
+ },
+ "levels": [
+  8,
+  16,
+  32,
+  64
+ ],
+ "probe_protocol": {
+  "merged_tie_break": "floor(xi*n), floor(eta*n) in cook_stress_reference.platform_q4_stress_at",
+  "symmetrised": "arithmetic mean of all admissible one-sided Q4 values at the point",
+  "recovered": "2x2 Gauss-point stress extrapolated to nodes, area-weighted nodal average, bilinear interpolation at the point",
+  "error_convention": "|computed-reference| / max(|reference|, 0.05*von Mises scale)"
+ },
+ "probe_sites": {
+  "on_element_edge_at_all_levels": true,
+  "ambiguous_points_finest": 5,
+  "candidate_spread_relative_finest": [
+   0.1991935849512584,
+   0.045452483114701445,
+   0.04932320557571372,
+   0.04163474884239021,
+   0.0752306226889856
+  ],
+  "max_spread_relative_finest": 0.1991935849512584,
+  "reference_inside_span_finest": 4
+ },
+ "protocols": {
+  "merged": {
+   "max_relative_error_by_level": [
+    0.3052192338330011,
+    0.2883004232360768,
+    0.08018730268173596,
+    0.0502225582119854
+   ],
+   "finest_max_relative_error": 0.0502225582119854,
+   "monotone": true,
+   "per_point": {
+    "xi0.5_eta0.5": {
+     "errors_by_level": [
+      0.3052192338330011,
+      0.1489989446512485,
+      0.07143710634514225,
+      0.03467036061253383
+     ],
+     "limit_relative_error": 0.0015341791139666019,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.08965599841697748,
+      0.07892516819587532,
+      0.0735974164495508,
+      0.07107189490362642
+     ],
+     "observed_order": 1.0769455098290173,
+     "richardson_limit": 0.0687957581758096
+    },
+    "xi0.3_eta0.5": {
+     "errors_by_level": [
+      0.24122780117945328,
+      0.000939640802975495,
+      0.029357609207771425,
+      0.046448229159724276
+     ],
+     "limit_relative_error": 0.06856509690280094,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.09084493654652,
+      0.07312080413535259,
+      0.07533824701904,
+      0.07658910224770997
+     ],
+     "observed_order": 0.8259821197414184,
+     "richardson_limit": 0.07820782642132126
+    },
+    "xi0.7_eta0.5": {
+     "errors_by_level": [
+      0.09627925653731774,
+      0.2883004232360768,
+      0.08018730268173596,
+      0.016818180076817766
+     ],
+     "limit_relative_error": 0.10151140074014889,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.09516003343459364,
+      0.11182799511884502,
+      0.09376320789238475,
+      0.08534286706444659
+     ],
+     "observed_order": 1.1012297271142364,
+     "richardson_limit": 0.07799126421148167
+    },
+    "xi0.5_eta0.25": {
+     "errors_by_level": [
+      0.05671194774914573,
+      0.0555168458010305,
+      0.06090041018541627,
+      0.0502225582119854
+     ],
+     "limit_relative_error": 0.0502225582119854,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.14762801989720697,
+      0.14781505771005168,
+      0.14697251025261326,
+      0.14864363302346956
+     ],
+     "observed_order": null,
+     "richardson_limit": 0.14864363302346956
+    },
+    "xi0.5_eta0.75": {
+     "errors_by_level": [
+      0.11852527534864678,
+      0.05024934184411243,
+      0.023203969980750142,
+      0.011116173032203793
+     ],
+     "limit_relative_error": 0.001347555064290061,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.0735639309815936,
+      0.0792619344745673,
+      0.08151902003072416,
+      0.08252781340343725
+     ],
+     "observed_order": 1.161830402773264,
+     "richardson_limit": 0.08334305848974576
+    }
+   },
+   "qualified_at_finest": false
+  },
+  "symmetrised": {
+   "max_relative_error_by_level": [
+    0.3076350159188984,
+    0.17916948219599424,
+    0.02968318392504731,
+    0.040076925379294144
+   ],
+   "finest_max_relative_error": 0.040076925379294144,
+   "monotone": false,
+   "per_point": {
+    "xi0.5_eta0.5": {
+     "errors_by_level": [
+      0.3076350159188984,
+      0.08753939383420616,
+      0.02189128541515588,
+      0.005441925232066693
+     ],
+     "limit_relative_error": 5.783767115323239e-05,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.08982193939398325,
+      0.07470348861291423,
+      0.07019409543824316,
+      0.0690641827214313
+     ],
+     "observed_order": 1.996721972224537,
+     "richardson_limit": 0.06868640194609228
+    },
+    "xi0.3_eta0.5": {
+     "errors_by_level": [
+      0.06973221901783741,
+      0.042706052518044754,
+      0.00913991847750281,
+      0.02319484962790191
+     ],
+     "limit_relative_error": 0.8722821912505074,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.07829324759411628,
+      0.07006393816890721,
+      0.07252062928888331,
+      0.07488719725810755
+     ],
+     "observed_order": 0.0539201211867132,
+     "richardson_limit": 0.13703153981864527
+    },
+    "xi0.7_eta0.5": {
+     "errors_by_level": [
+      0.06619980010012963,
+      0.17916948219599424,
+      0.02968318392504731,
+      0.040076925379294144
+     ],
+     "limit_relative_error": 0.10111675323550925,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.08105640758393484,
+      0.1023551313971283,
+      0.08937931245624267,
+      0.08332394445195346
+     ],
+     "observed_order": 1.0995390491109835,
+     "richardson_limit": 0.07802552069267699
+    },
+    "xi0.5_eta0.25": {
+     "errors_by_level": [
+      0.03437127169300562,
+      0.011536707602640077,
+      0.003084090308590939,
+      0.0007779805963199721
+     ],
+     "limit_relative_error": 8.724928166742829e-05,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.1618828758768009,
+      0.158309183329935,
+      0.15698631790076753,
+      0.156625403321519
+     ],
+     "observed_order": 1.8739369807612678,
+     "richardson_limit": 0.15648999169053482
+    },
+    "xi0.5_eta0.75": {
+     "errors_by_level": [
+      0.0921502985092586,
+      0.03268309646856364,
+      0.008935992381872872,
+      0.0022897055707160993
+     ],
+     "limit_relative_error": 0.00029339485451065846,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.0911459704222826,
+      0.08618310418885719,
+      0.08420127728311466,
+      0.08364660796522447
+     ],
+     "observed_order": 1.83713113334584,
+     "richardson_limit": 0.08343103397758113
+    }
+   },
+   "qualified_at_finest": false
+  },
+  "recovered": {
+   "max_relative_error_by_level": [
+    0.08023114522351446,
+    0.019514392023253443,
+    0.004837918704974441,
+    0.0012019046867308028
+   ],
+   "finest_max_relative_error": 0.0012019046867308028,
+   "monotone": true,
+   "per_point": {
+    "xi0.5_eta0.5": {
+     "errors_by_level": [
+      0.007396502779291249,
+      0.001392782145506565,
+      0.0002965936157004393,
+      7.478044966307548e-05
+     ],
+     "limit_relative_error": 1.8510473785199875e-05,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.06818230628900811,
+      0.06859470410976183,
+      0.06867000171076668,
+      0.06868523814028565
+     ],
+     "observed_order": 2.3050790375631753,
+     "richardson_limit": 0.0686891033460208
+    },
+    "xi0.3_eta0.5": {
+     "errors_by_level": [
+      0.029287694223210866,
+      0.0036565650151685705,
+      3.519258665807368e-05,
+      0.0003354184419645551
+     ],
+     "limit_relative_error": 0.00037767086151824545,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.07104602212375767,
+      0.07292195360410937,
+      0.07318700031686165,
+      0.07321412518092502
+     ],
+     "observed_order": 3.2885588350628914,
+     "richardson_limit": 0.07321721761759913
+    },
+    "xi0.7_eta0.5": {
+     "errors_by_level": [
+      0.033207882884481475,
+      0.0062594741655032276,
+      0.0014387781567458124,
+      0.0005679788415919468
+     ],
+     "limit_relative_error": 0.0003760013024071058,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.08392019610003686,
+      0.08625939157364908,
+      0.08667784115265537,
+      0.0867534289113863
+     ],
+     "observed_order": 2.468829278784458,
+     "richardson_limit": 0.08677009308608319
+    },
+    "xi0.5_eta0.25": {
+     "errors_by_level": [
+      0.07020478805734315,
+      0.018246916375344143,
+      0.004605493543806845,
+      0.001158529069971535
+     ],
+     "limit_relative_error": 6.96336395516977e-06,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.14551634118704487,
+      0.15364793757076206,
+      0.15578286998763619,
+      0.1563223324972207
+     ],
+     "observed_order": 1.984595793848403,
+     "richardson_limit": 0.15650473631312317
+    },
+    "xi0.5_eta0.75": {
+     "errors_by_level": [
+      0.08023114522351446,
+      0.019514392023253443,
+      0.004837918704974441,
+      0.0012019046867308028
+     ],
+     "limit_relative_error": 4.436575886709999e-06,
+     "levels": [
+      8,
+      16,
+      32,
+      64
+     ],
+     "values": [
+      0.07675978750106399,
+      0.0818269356755248,
+      0.0830517683792261,
+      0.08335521381765541
+     ],
+     "observed_order": 2.0130756707583934,
+     "richardson_limit": 0.08345514914080791
+    }
+   },
+   "qualified_at_finest": true
+  }
+ },
+ "cases": [
+  {
+   "divisions": 8,
+   "points": [
+    {
+     "xi": 0.5,
+     "eta": 0.5,
+     "point": [
+      24.0,
+      37.0
+     ],
+     "grid_contact": {
+      "divisions": 8,
+      "scaled": [
+       4.0,
+       4.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.06869037483740352,
+     "candidates": [
+      {
+       "element": 27,
+       "local": [
+        1.0,
+        0.9999999999999989
+       ],
+       "von_mises": 0.057593616213847655
+      },
+      {
+       "element": 28,
+       "local": [
+        -1.0,
+        1.0000000000000009
+       ],
+       "von_mises": 0.14015881380085599
+      },
+      {
+       "element": 35,
+       "local": [
+        1.0,
+        -1.0000000000000027
+       ],
+       "von_mises": 0.07187932914425209
+      },
+      {
+       "element": 36,
+       "local": [
+        -0.9999999999999988,
+        -0.9999999999999986
+       ],
+       "von_mises": 0.08965599841697727
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.057593616213847655,
+     "candidate_max": 0.14015881380085599,
+     "candidate_spread_relative": 0.9192096958055549,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.08965599841697748,
+      "element": 36,
+      "local": [
+       -1.0,
+       -1.0
+      ],
+      "relative_error": 0.3052192338330011
+     },
+     "symmetrised": {
+      "von_mises": 0.08982193939398325,
+      "relative_error": 0.3076350159188984
+     },
+     "recovered": {
+      "von_mises": 0.06818230628900811,
+      "element": 27,
+      "alternate_element_spread": 4.163336342344337e-17,
+      "relative_error": 0.007396502779291249
+     }
+    },
+    {
+     "xi": 0.3,
+     "eta": 0.5,
+     "point": [
+      14.399999999999999,
+      31.0
+     ],
+     "grid_contact": {
+      "divisions": 8,
+      "scaled": [
+       2.4,
+       4.0
+      ],
+      "on_element_edge": [
+       false,
+       true
+      ],
+      "on_grid_node": false
+     },
+     "reference_von_mises": 0.07318957604735916,
+     "candidates": [
+      {
+       "element": 26,
+       "local": [
+        -0.20000000000000107,
+        0.999999999999999
+       ],
+       "von_mises": 0.09084493610474167
+      },
+      {
+       "element": 34,
+       "local": [
+        -0.20000000000000048,
+        -0.9999999999999979
+       ],
+       "von_mises": 0.06574155908349089
+      }
+     ],
+     "candidate_count": 2,
+     "candidate_min": 0.06574155908349089,
+     "candidate_max": 0.09084493610474167,
+     "candidate_spread_relative": 0.3206327211177954,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.09084493654652,
+      "element": 26,
+      "local": [
+       -0.20000001461597527,
+       0.9999999929499674
+      ],
+      "relative_error": 0.24122780117945328
+     },
+     "symmetrised": {
+      "von_mises": 0.07829324759411628,
+      "relative_error": 0.06973221901783741
+     },
+     "recovered": {
+      "von_mises": 0.07104602212375767,
+      "element": 26,
+      "alternate_element_spread": 8.326672684688674e-17,
+      "relative_error": 0.029287694223210866
+     }
+    },
+    {
+     "xi": 0.7,
+     "eta": 0.5,
+     "point": [
+      33.599999999999994,
+      43.0
+     ],
+     "grid_contact": {
+      "divisions": 8,
+      "scaled": [
+       5.6,
+       4.0
+      ],
+      "on_element_edge": [
+       false,
+       true
+      ],
+      "on_grid_node": false
+     },
+     "reference_von_mises": 0.08680273102600146,
+     "candidates": [
+      {
+       "element": 29,
+       "local": [
+        0.1999999999999981,
+        1.0000000000000022
+       ],
+       "von_mises": 0.09520201460182025
+      },
+      {
+       "element": 37,
+       "local": [
+        0.19999999999999574,
+        -0.9999999999999991
+       ],
+       "von_mises": 0.06691080056604942
+      }
+     ],
+     "candidate_count": 2,
+     "candidate_min": 0.06691080056604942,
+     "candidate_max": 0.09520201460182025,
+     "candidate_spread_relative": 0.34903118555402235,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.09516003343459364,
+      "element": 29,
+      "local": [
+       0.20078876947888347,
+       0.9987891699166607
+      ],
+      "relative_error": 0.09627925653731774
+     },
+     "symmetrised": {
+      "von_mises": 0.08105640758393484,
+      "relative_error": 0.06619980010012963
+     },
+     "recovered": {
+      "von_mises": 0.08392019610003686,
+      "element": 29,
+      "alternate_element_spread": 1.3877787807814457e-17,
+      "relative_error": 0.033207882884481475
+     }
+    },
+    {
+     "xi": 0.5,
+     "eta": 0.25,
+     "point": [
+      24.0,
+      29.5
+     ],
+     "grid_contact": {
+      "divisions": 8,
+      "scaled": [
+       4.0,
+       2.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.15650364652127213,
+     "candidates": [
+      {
+       "element": 11,
+       "local": [
+        1.0,
+        0.9999999999999988
+       ],
+       "von_mises": 0.13915577279166982
+      },
+      {
+       "element": 12,
+       "local": [
+        -0.9999999999999988,
+        0.9999999999999997
+       ],
+       "von_mises": 0.19585923374215086
+      },
+      {
+       "element": 19,
+       "local": [
+        1.0,
+        -1.0000000000000007
+       ],
+       "von_mises": 0.15171675103081347
+      },
+      {
+       "element": 20,
+       "local": [
+        -0.9999999999999988,
+        -0.9999999999999989
+       ],
+       "von_mises": 0.1607997459425694
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.13915577279166982,
+     "candidate_max": 0.19585923374215086,
+     "candidate_spread_relative": 0.3502746083757158,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.14762801989720697,
+      "element": 20,
+      "local": [
+       -0.5811605789459033,
+       -0.6484257757781773
+      ],
+      "relative_error": 0.05671194774914573
+     },
+     "symmetrised": {
+      "von_mises": 0.1618828758768009,
+      "relative_error": 0.03437127169300562
+     },
+     "recovered": {
+      "von_mises": 0.14551634118704487,
+      "element": 11,
+      "alternate_element_spread": 2.7755575615628914e-17,
+      "relative_error": 0.07020478805734315
+     }
+    },
+    {
+     "xi": 0.5,
+     "eta": 0.75,
+     "point": [
+      24.0,
+      44.5
+     ],
+     "grid_contact": {
+      "divisions": 8,
+      "scaled": [
+       4.0,
+       6.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.08345551939755289,
+     "candidates": [
+      {
+       "element": 43,
+       "local": [
+        1.0,
+        0.9999999999999988
+       ],
+       "von_mises": 0.07356393098160272
+      },
+      {
+       "element": 44,
+       "local": [
+        -0.9999999999999988,
+        1.0000000000000002
+       ],
+       "von_mises": 0.12258251343769011
+      },
+      {
+       "element": 51,
+       "local": [
+        1.0,
+        -1.0000000000000027
+       ],
+       "von_mises": 0.08297148028824607
+      },
+      {
+       "element": 52,
+       "local": [
+        -0.9999999999999988,
+        -0.9999999999999983
+       ],
+       "von_mises": 0.08546595698159155
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.07356393098160272,
+     "candidate_max": 0.12258251343769011,
+     "candidate_spread_relative": 0.5378030672006948,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.0735639309815936,
+      "element": 43,
+      "local": [
+       0.9999999999998836,
+       0.9999999999996909
+      ],
+      "relative_error": 0.11852527534864678
+     },
+     "symmetrised": {
+      "von_mises": 0.0911459704222826,
+      "relative_error": 0.0921502985092586
+     },
+     "recovered": {
+      "von_mises": 0.07675978750106399,
+      "element": 43,
+      "alternate_element_spread": 5.551115123125783e-17,
+      "relative_error": 0.08023114522351446
+     }
+    }
+   ]
+  },
+  {
+   "divisions": 16,
+   "points": [
+    {
+     "xi": 0.5,
+     "eta": 0.5,
+     "point": [
+      24.0,
+      37.0
+     ],
+     "grid_contact": {
+      "divisions": 16,
+      "scaled": [
+       8.0,
+       8.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.06869037483740352,
+     "candidates": [
+      {
+       "element": 119,
+       "local": [
+        1.0,
+        1.0000000000000044
+       ],
+       "von_mises": 0.06119091438306268
+      },
+      {
+       "element": 120,
+       "local": [
+        -1.0,
+        1.0000000000000027
+       ],
+       "von_mises": 0.1031689260484521
+      },
+      {
+       "element": 135,
+       "local": [
+        1.0,
+        -1.0000000000000042
+       ],
+       "von_mises": 0.05552894582426633
+      },
+      {
+       "element": 136,
+       "local": [
+        -1.0000000000000024,
+        -1.0000000000000004
+       ],
+       "von_mises": 0.07892516819587582
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.05552894582426633,
+     "candidate_max": 0.1031689260484521,
+     "candidate_spread_relative": 0.6377209566615888,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.07892516819587532,
+      "element": 136,
+      "local": [
+       -1.0,
+       -1.0
+      ],
+      "relative_error": 0.1489989446512485
+     },
+     "symmetrised": {
+      "von_mises": 0.07470348861291423,
+      "relative_error": 0.08753939383420616
+     },
+     "recovered": {
+      "von_mises": 0.06859470410976183,
+      "element": 119,
+      "alternate_element_spread": 8.326672684688674e-17,
+      "relative_error": 0.001392782145506565
+     }
+    },
+    {
+     "xi": 0.3,
+     "eta": 0.5,
+     "point": [
+      14.399999999999999,
+      31.0
+     ],
+     "grid_contact": {
+      "divisions": 16,
+      "scaled": [
+       4.8,
+       8.0
+      ],
+      "on_element_edge": [
+       false,
+       true
+      ],
+      "on_grid_node": false
+     },
+     "reference_von_mises": 0.07318957604735916,
+     "candidates": [
+      {
+       "element": 116,
+       "local": [
+        0.5999999999999979,
+        1.0000000000000007
+       ],
+       "von_mises": 0.07312080376923591
+      },
+      {
+       "element": 132,
+       "local": [
+        0.5999999999999979,
+        -0.9999999999999972
+       ],
+       "von_mises": 0.06700707256857853
+      }
+     ],
+     "candidate_count": 2,
+     "candidate_min": 0.06700707256857853,
+     "candidate_max": 0.07312080376923591,
+     "candidate_spread_relative": 0.08725931428402796,
+     "ambiguous": true,
+     "reference_inside_candidate_span": false,
+     "merged": {
+      "von_mises": 0.07312080413535259,
+      "element": 116,
+      "local": [
+       0.5999999707680495,
+       0.9999999858999349
+      ],
+      "relative_error": 0.000939640802975495
+     },
+     "symmetrised": {
+      "von_mises": 0.07006393816890721,
+      "relative_error": 0.042706052518044754
+     },
+     "recovered": {
+      "von_mises": 0.07292195360410937,
+      "element": 116,
+      "alternate_element_spread": 4.163336342344337e-17,
+      "relative_error": 0.0036565650151685705
+     }
+    },
+    {
+     "xi": 0.7,
+     "eta": 0.5,
+     "point": [
+      33.599999999999994,
+      43.0
+     ],
+     "grid_contact": {
+      "divisions": 16,
+      "scaled": [
+       11.2,
+       8.0
+      ],
+      "on_element_edge": [
+       false,
+       true
+      ],
+      "on_grid_node": false
+     },
+     "reference_von_mises": 0.08680273102600146,
+     "candidates": [
+      {
+       "element": 123,
+       "local": [
+        -0.6000000000000038,
+        0.9999999999999978
+       ],
+       "von_mises": 0.11187634450929167
+      },
+      {
+       "element": 139,
+       "local": [
+        -0.6000000000000038,
+        -0.9999999999999886
+       ],
+       "von_mises": 0.09283391828496494
+      }
+     ],
+     "candidate_count": 2,
+     "candidate_min": 0.09283391828496494,
+     "candidate_max": 0.11187634450929167,
+     "candidate_spread_relative": 0.18604271192270663,
+     "ambiguous": true,
+     "reference_inside_candidate_span": false,
+     "merged": {
+      "von_mises": 0.11182799511884502,
+      "element": 123,
+      "local": [
+       -0.5984224610422331,
+       0.9975783398333213
+      ],
+      "relative_error": 0.2883004232360768
+     },
+     "symmetrised": {
+      "von_mises": 0.1023551313971283,
+      "relative_error": 0.17916948219599424
+     },
+     "recovered": {
+      "von_mises": 0.08625939157364908,
+      "element": 123,
+      "alternate_element_spread": 8.326672684688674e-17,
+      "relative_error": 0.0062594741655032276
+     }
+    },
+    {
+     "xi": 0.5,
+     "eta": 0.25,
+     "point": [
+      24.0,
+      29.5
+     ],
+     "grid_contact": {
+      "divisions": 16,
+      "scaled": [
+       8.0,
+       4.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.15650364652127213,
+     "candidates": [
+      {
+       "element": 55,
+       "local": [
+        1.0,
+        1.0000000000000007
+       ],
+       "von_mises": 0.1492567429384823
+      },
+      {
+       "element": 56,
+       "local": [
+        -1.0,
+        0.9999999999999988
+       ],
+       "von_mises": 0.17421581774473638
+      },
+      {
+       "element": 71,
+       "local": [
+        1.0000000000000024,
+        -0.9999999999999998
+       ],
+       "von_mises": 0.14933635658387645
+      },
+      {
+       "element": 72,
+       "local": [
+        -1.0,
+        -0.9999999999999988
+       ],
+       "von_mises": 0.16042781605264486
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.1492567429384823,
+     "candidate_max": 0.17421581774473638,
+     "candidate_spread_relative": 0.15766030928374153,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.14781505771005168,
+      "element": 72,
+      "local": [
+       -0.16232115789180668,
+       -0.29685155155635456
+      ],
+      "relative_error": 0.0555168458010305
+     },
+     "symmetrised": {
+      "von_mises": 0.158309183329935,
+      "relative_error": 0.011536707602640077
+     },
+     "recovered": {
+      "von_mises": 0.15364793757076206,
+      "element": 55,
+      "alternate_element_spread": 2.7755575615628914e-17,
+      "relative_error": 0.018246916375344143
+     }
+    },
+    {
+     "xi": 0.5,
+     "eta": 0.75,
+     "point": [
+      24.0,
+      44.5
+     ],
+     "grid_contact": {
+      "divisions": 16,
+      "scaled": [
+       8.0,
+       12.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.08345551939755289,
+     "candidates": [
+      {
+       "element": 183,
+       "local": [
+        1.0,
+        1.0000000000000044
+       ],
+       "von_mises": 0.07926193447457754
+      },
+      {
+       "element": 184,
+       "local": [
+        -1.0,
+        1.0000000000000027
+       ],
+       "von_mises": 0.10142661339065506
+      },
+      {
+       "element": 199,
+       "local": [
+        1.0000000000000024,
+        -0.9999999999999987
+       ],
+       "von_mises": 0.07796547377559541
+      },
+      {
+       "element": 200,
+       "local": [
+        -1.0,
+        -0.999999999999995
+       ],
+       "von_mises": 0.08607839511460076
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.07796547377559541,
+     "candidate_max": 0.10142661339065506,
+     "candidate_spread_relative": 0.27222435111699067,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.0792619344745673,
+      "element": 183,
+      "local": [
+       0.9999999999997673,
+       0.9999999999993818
+      ],
+      "relative_error": 0.05024934184411243
+     },
+     "symmetrised": {
+      "von_mises": 0.08618310418885719,
+      "relative_error": 0.03268309646856364
+     },
+     "recovered": {
+      "von_mises": 0.0818269356755248,
+      "element": 183,
+      "alternate_element_spread": 2.7755575615628914e-17,
+      "relative_error": 0.019514392023253443
+     }
+    }
+   ]
+  },
+  {
+   "divisions": 32,
+   "points": [
+    {
+     "xi": 0.5,
+     "eta": 0.5,
+     "point": [
+      24.0,
+      37.0
+     ],
+     "grid_contact": {
+      "divisions": 32,
+      "scaled": [
+       16.0,
+       16.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.06869037483740352,
+     "candidates": [
+      {
+       "element": 495,
+       "local": [
+        1.0,
+        1.000000000000004
+       ],
+       "von_mises": 0.06448626599490016
+      },
+      {
+       "element": 496,
+       "local": [
+        -1.0,
+        0.9999999999999937
+       ],
+       "von_mises": 0.08469792942146631
+      },
+      {
+       "element": 527,
+       "local": [
+        1.0,
+        -1.000000000000004
+       ],
+       "von_mises": 0.0579947698870555
+      },
+      {
+       "element": 528,
+       "local": [
+        -1.0,
+        -0.9999999999999937
+       ],
+       "von_mises": 0.0735974164495507
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.0579947698870555,
+     "candidate_max": 0.08469792942146631,
+     "candidate_spread_relative": 0.38041888520244954,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.0735974164495508,
+      "element": 528,
+      "local": [
+       -1.0,
+       -1.0
+      ],
+      "relative_error": 0.07143710634514225
+     },
+     "symmetrised": {
+      "von_mises": 0.07019409543824316,
+      "relative_error": 0.02189128541515588
+     },
+     "recovered": {
+      "von_mises": 0.06867000171076668,
+      "element": 495,
+      "alternate_element_spread": 5.551115123125783e-17,
+      "relative_error": 0.0002965936157004393
+     }
+    },
+    {
+     "xi": 0.3,
+     "eta": 0.5,
+     "point": [
+      14.399999999999999,
+      31.0
+     ],
+     "grid_contact": {
+      "divisions": 32,
+      "scaled": [
+       9.6,
+       16.0
+      ],
+      "on_element_edge": [
+       false,
+       true
+      ],
+      "on_grid_node": false
+     },
+     "reference_von_mises": 0.07318957604735916,
+     "candidates": [
+      {
+       "element": 489,
+       "local": [
+        0.1999999999999981,
+        1.000000000000004
+       ],
+       "von_mises": 0.07533824659017023
+      },
+      {
+       "element": 521,
+       "local": [
+        0.19999999999999574,
+        -0.9999999999999989
+       ],
+       "von_mises": 0.06970301198759639
+      }
+     ],
+     "candidate_count": 2,
+     "candidate_min": 0.06970301198759639,
+     "candidate_max": 0.07533824659017023,
+     "candidate_spread_relative": 0.07770526342409534,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.07533824701904,
+      "element": 489,
+      "local": [
+       0.1999999415360989,
+       0.9999999717998698
+      ],
+      "relative_error": 0.029357609207771425
+     },
+     "symmetrised": {
+      "von_mises": 0.07252062928888331,
+      "relative_error": 0.00913991847750281
+     },
+     "recovered": {
+      "von_mises": 0.07318700031686165,
+      "element": 489,
+      "alternate_element_spread": 0.0,
+      "relative_error": 3.519258665807368e-05
+     }
+    },
+    {
+     "xi": 0.7,
+     "eta": 0.5,
+     "point": [
+      33.599999999999994,
+      43.0
+     ],
+     "grid_contact": {
+      "divisions": 32,
+      "scaled": [
+       22.4,
+       16.0
+      ],
+      "on_element_edge": [
+       false,
+       true
+      ],
+      "on_grid_node": false
+     },
+     "reference_von_mises": 0.08680273102600146,
+     "candidates": [
+      {
+       "element": 502,
+       "local": [
+        -0.2000000000000076,
+        1.0000000000000047
+       ],
+       "von_mises": 0.0938054472794228
+      },
+      {
+       "element": 534,
+       "local": [
+        -0.19999999999999812,
+        -0.9999999999999973
+       ],
+       "von_mises": 0.08495317763306255
+      }
+     ],
+     "candidate_count": 2,
+     "candidate_min": 0.08495317763306255,
+     "candidate_max": 0.0938054472794228,
+     "candidate_spread_relative": 0.09904159478396132,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.09376320789238475,
+      "element": 502,
+      "local": [
+       -0.19684492208446613,
+       0.9951566796666427
+      ],
+      "relative_error": 0.08018730268173596
+     },
+     "symmetrised": {
+      "von_mises": 0.08937931245624267,
+      "relative_error": 0.02968318392504731
+     },
+     "recovered": {
+      "von_mises": 0.08667784115265537,
+      "element": 502,
+      "alternate_element_spread": 4.163336342344337e-17,
+      "relative_error": 0.0014387781567458124
+     }
+    },
+    {
+     "xi": 0.5,
+     "eta": 0.25,
+     "point": [
+      24.0,
+      29.5
+     ],
+     "grid_contact": {
+      "divisions": 32,
+      "scaled": [
+       16.0,
+       8.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.15650364652127213,
+     "candidates": [
+      {
+       "element": 239,
+       "local": [
+        1.0,
+        0.9999999999999963
+       ],
+       "von_mises": 0.1532682972234599
+      },
+      {
+       "element": 240,
+       "local": [
+        -1.0,
+        1.0000000000000013
+       ],
+       "von_mises": 0.1643441242735414
+      },
+      {
+       "element": 271,
+       "local": [
+        1.0,
+        -0.9999999999999963
+       ],
+       "von_mises": 0.1514296156366893
+      },
+      {
+       "element": 272,
+       "local": [
+        -1.0,
+        -1.0000000000000013
+       ],
+       "von_mises": 0.15890323446937948
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.1514296156366893,
+     "candidate_max": 0.1643441242735414,
+     "candidate_spread_relative": 0.08226518596999942,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.14697251025261326,
+      "element": 272,
+      "local": [
+       0.6753576842163866,
+       0.40629689688729087
+      ],
+      "relative_error": 0.06090041018541627
+     },
+     "symmetrised": {
+      "von_mises": 0.15698631790076753,
+      "relative_error": 0.003084090308590939
+     },
+     "recovered": {
+      "von_mises": 0.15578286998763619,
+      "element": 239,
+      "alternate_element_spread": 2.7755575615628914e-17,
+      "relative_error": 0.004605493543806845
+     }
+    },
+    {
+     "xi": 0.5,
+     "eta": 0.75,
+     "point": [
+      24.0,
+      44.5
+     ],
+     "grid_contact": {
+      "divisions": 32,
+      "scaled": [
+       16.0,
+       24.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.08345551939755289,
+     "candidates": [
+      {
+       "element": 751,
+       "local": [
+        1.0,
+        1.000000000000004
+       ],
+       "von_mises": 0.08151902003073266
+      },
+      {
+       "element": 752,
+       "local": [
+        -1.0,
+        0.9999999999999937
+       ],
+       "von_mises": 0.09132691280070233
+      },
+      {
+       "element": 783,
+       "local": [
+        1.0,
+        -1.000000000000004
+       ],
+       "von_mises": 0.07893131245648878
+      },
+      {
+       "element": 784,
+       "local": [
+        -1.0,
+        -0.9999999999999937
+       ],
+       "von_mises": 0.0850278638445349
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.07893131245648878,
+     "candidate_max": 0.09132691280070233,
+     "candidate_spread_relative": 0.14721392292583796,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.08151902003072416,
+      "element": 751,
+      "local": [
+       0.9999999999995346,
+       0.9999999999987637
+      ],
+      "relative_error": 0.023203969980750142
+     },
+     "symmetrised": {
+      "von_mises": 0.08420127728311466,
+      "relative_error": 0.008935992381872872
+     },
+     "recovered": {
+      "von_mises": 0.0830517683792261,
+      "element": 751,
+      "alternate_element_spread": 5.551115123125783e-17,
+      "relative_error": 0.004837918704974441
+     }
+    }
+   ]
+  },
+  {
+   "divisions": 64,
+   "points": [
+    {
+     "xi": 0.5,
+     "eta": 0.5,
+     "point": [
+      24.0,
+      37.0
+     ],
+     "grid_contact": {
+      "divisions": 64,
+      "scaled": [
+       32.0,
+       32.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.06869037483740352,
+     "candidates": [
+      {
+       "element": 2015,
+       "local": [
+        1.0,
+        1.0000000000000082
+       ],
+       "von_mises": 0.06648524925064864
+      },
+      {
+       "element": 2016,
+       "local": [
+        -1.0,
+        0.9999999999999968
+       ],
+       "von_mises": 0.07622836443972933
+      },
+      {
+       "element": 2079,
+       "local": [
+        0.9999999999999906,
+        -0.9999999999999986
+       ],
+       "von_mises": 0.06247122229171867
+      },
+      {
+       "element": 2080,
+       "local": [
+        -1.0000000000000095,
+        -1.0000000000000178
+       ],
+       "von_mises": 0.0710718949036286
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.06247122229171867,
+     "candidate_max": 0.07622836443972933,
+     "candidate_spread_relative": 0.1991935849512584,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.07107189490362642,
+      "element": 2080,
+      "local": [
+       -1.0,
+       -1.0
+      ],
+      "relative_error": 0.03467036061253383
+     },
+     "symmetrised": {
+      "von_mises": 0.0690641827214313,
+      "relative_error": 0.005441925232066693
+     },
+     "recovered": {
+      "von_mises": 0.06868523814028565,
+      "element": 2015,
+      "alternate_element_spread": 6.938893903907228e-17,
+      "relative_error": 7.478044966307548e-05
+     }
+    },
+    {
+     "xi": 0.3,
+     "eta": 0.5,
+     "point": [
+      14.399999999999999,
+      31.0
+     ],
+     "grid_contact": {
+      "divisions": 64,
+      "scaled": [
+       19.2,
+       32.0
+      ],
+      "on_element_edge": [
+       false,
+       true
+      ],
+      "on_grid_node": false
+     },
+     "reference_von_mises": 0.07318957604735916,
+     "candidates": [
+      {
+       "element": 2003,
+       "local": [
+        -0.6000000000000038,
+        1.0000000000000013
+       ],
+       "von_mises": 0.07658910179254827
+      },
+      {
+       "element": 2067,
+       "local": [
+        -0.6000000000000038,
+        -0.9999999999999949
+       ],
+       "von_mises": 0.07318529272366682
+      }
+     ],
+     "candidate_count": 2,
+     "candidate_min": 0.07318529272366682,
+     "candidate_max": 0.07658910179254827,
+     "candidate_spread_relative": 0.045452483114701445,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.07658910224770997,
+      "element": 2003,
+      "local": [
+       -0.6000001169278022,
+       0.9999999435997395
+      ],
+      "relative_error": 0.046448229159724276
+     },
+     "symmetrised": {
+      "von_mises": 0.07488719725810755,
+      "relative_error": 0.02319484962790191
+     },
+     "recovered": {
+      "von_mises": 0.07321412518092502,
+      "element": 2003,
+      "alternate_element_spread": 1.3877787807814457e-17,
+      "relative_error": 0.0003354184419645551
+     }
+    },
+    {
+     "xi": 0.7,
+     "eta": 0.5,
+     "point": [
+      33.599999999999994,
+      43.0
+     ],
+     "grid_contact": {
+      "divisions": 64,
+      "scaled": [
+       44.8,
+       32.0
+      ],
+      "on_element_edge": [
+       false,
+       true
+      ],
+      "on_grid_node": false
+     },
+     "reference_von_mises": 0.08680273102600146,
+     "candidates": [
+      {
+       "element": 2028,
+       "local": [
+        0.5999999999999849,
+        1.0000000000000342
+       ],
+       "von_mises": 0.08537884647274499
+      },
+      {
+       "element": 2092,
+       "local": [
+        0.5999999999999659,
+        -0.9999999999999738
+       ],
+       "von_mises": 0.08126904243116194
+      }
+     ],
+     "candidate_count": 2,
+     "candidate_min": 0.08126904243116194,
+     "candidate_max": 0.08537884647274499,
+     "candidate_spread_relative": 0.04932320557571372,
+     "ambiguous": true,
+     "reference_inside_candidate_span": false,
+     "merged": {
+      "von_mises": 0.08534286706444659,
+      "element": 2028,
+      "local": [
+       0.6063101558310677,
+       0.9903133593332853
+      ],
+      "relative_error": 0.016818180076817766
+     },
+     "symmetrised": {
+      "von_mises": 0.08332394445195346,
+      "relative_error": 0.040076925379294144
+     },
+     "recovered": {
+      "von_mises": 0.0867534289113863,
+      "element": 2028,
+      "alternate_element_spread": 1.3877787807814457e-17,
+      "relative_error": 0.0005679788415919468
+     }
+    },
+    {
+     "xi": 0.5,
+     "eta": 0.25,
+     "point": [
+      24.0,
+      29.5
+     ],
+     "grid_contact": {
+      "divisions": 64,
+      "scaled": [
+       32.0,
+       16.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.15650364652127213,
+     "candidates": [
+      {
+       "element": 991,
+       "local": [
+        1.0,
+        0.999999999999993
+       ],
+       "von_mises": 0.15498681507159529
+      },
+      {
+       "element": 992,
+       "local": [
+        -1.0,
+        0.9999999999999968
+       ],
+       "von_mises": 0.16011310041716847
+      },
+      {
+       "element": 1055,
+       "local": [
+        1.0,
+        -0.999999999999993
+       ],
+       "von_mises": 0.15359204108753896
+      },
+      {
+       "element": 1056,
+       "local": [
+        -1.0,
+        -0.9999999999999968
+       ],
+       "von_mises": 0.15780965670977332
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.15359204108753896,
+     "candidate_max": 0.16011310041716847,
+     "candidate_spread_relative": 0.04163474884239021,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.14864363302346956,
+      "element": 1121,
+      "local": [
+       0.3507153684327733,
+       -0.18740620622541826
+      ],
+      "relative_error": 0.0502225582119854
+     },
+     "symmetrised": {
+      "von_mises": 0.156625403321519,
+      "relative_error": 0.0007779805963199721
+     },
+     "recovered": {
+      "von_mises": 0.1563223324972207,
+      "element": 991,
+      "alternate_element_spread": 2.7755575615628914e-17,
+      "relative_error": 0.001158529069971535
+     }
+    },
+    {
+     "xi": 0.5,
+     "eta": 0.75,
+     "point": [
+      24.0,
+      44.5
+     ],
+     "grid_contact": {
+      "divisions": 64,
+      "scaled": [
+       32.0,
+       48.0
+      ],
+      "on_element_edge": [
+       true,
+       true
+      ],
+      "on_grid_node": true
+     },
+     "reference_von_mises": 0.08345551939755289,
+     "candidates": [
+      {
+       "element": 3039,
+       "local": [
+        1.0,
+        1.0000000000000082
+       ],
+       "von_mises": 0.08252781340344637
+      },
+      {
+       "element": 3040,
+       "local": [
+        -1.0,
+        0.9999999999999968
+       ],
+       "von_mises": 0.08702825439109489
+      },
+      {
+       "element": 3103,
+       "local": [
+        1.0,
+        -1.0000000000000082
+       ],
+       "von_mises": 0.08073546798804959
+      },
+      {
+       "element": 3104,
+       "local": [
+        -1.0,
+        -0.9999999999999968
+       ],
+       "von_mises": 0.08429489607830706
+      }
+     ],
+     "candidate_count": 4,
+     "candidate_min": 0.08073546798804959,
+     "candidate_max": 0.08702825439109489,
+     "candidate_spread_relative": 0.0752306226889856,
+     "ambiguous": true,
+     "reference_inside_candidate_span": true,
+     "merged": {
+      "von_mises": 0.08252781340343725,
+      "element": 3039,
+      "local": [
+       0.9999999999990692,
+       0.9999999999975273
+      ],
+      "relative_error": 0.011116173032203793
+     },
+     "symmetrised": {
+      "von_mises": 0.08364660796522447,
+      "relative_error": 0.0022897055707160993
+     },
+     "recovered": {
+      "von_mises": 0.08335521381765541,
+      "element": 3039,
+      "alternate_element_spread": 5.551115123125783e-17,
+      "relative_error": 0.0012019046867308028
+     }
+    }
+   ]
+  }
+ ],
+ "verdict": {
+  "merged_residual_reproduced": 0.0502225582119854,
+  "merged_residual_matches_documented": true,
+  "ambiguity_exceeds_residual": true,
+  "recovered_qualified": true,
+  "symmetrised_qualified": false
+ },
+ "status": "probe-protocol-artifact"
+}
