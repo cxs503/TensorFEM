@@ -32,10 +32,10 @@ def _membrane_sri(xy, E, nu, t):
     return kn+ks
 
 
-def shell4_mitc_stiffness(xyz, young, poisson, thickness, *, drilling_factor=1e-6):
+def shell4_mitc_stiffness(xyz, young, poisson, thickness, *, drilling_factor=1e-6, plate_shear="sri"):
     xy,basis=shell4_local_frame(xyz); dtype,device=xyz.dtype,xyz.device
     E=torch.as_tensor(young,dtype=dtype,device=device); nu=torch.as_tensor(poisson,dtype=dtype,device=device); t=torch.as_tensor(thickness,dtype=dtype,device=device)
-    km=_membrane_sri(xy,E,nu,t); kp=q4_mindlin_stiffness(xy,E,nu,t)
+    km=_membrane_sri(xy,E,nu,t); kp=q4_mindlin_stiffness(xy,E,nu,t,shear_treatment=plate_shear)
     kl=torch.zeros((24,24),dtype=dtype,device=device); ids=torch.arange(4,device=device)
     membrane=torch.stack((6*ids,6*ids+1),1).reshape(-1)
     plate=torch.stack((6*ids+2,6*ids+4,6*ids+3),1).reshape(-1); sign=xyz.new_tensor([1.,1.,-1.]).repeat(4)
