@@ -50,6 +50,26 @@ def main() -> dict:
     comparison = reference.compare_platform(platform_cases, reference_solution)
     cross_check = reference.cross_check_pointwise_recovery(platform_cases[0])
 
+    # Independent verification of the recovery algebra itself: a consistent B matrix
+    # reproduces any constant strain state on a distorted element, the Newton inverse
+    # mapping must round-trip, and the audit's Q4 recovery must reproduce the stored
+    # element-centre field before pointwise comparisons can be trusted.
+    strain_matrix_verification = {
+        "q4_patch_test": reference.q4_patch_check(reference.distorted_q4_patch()),
+        "q8_patch_test": reference.q8_patch_check(reference.distorted_q8_patch()),
+        "inverse_map": reference.inverse_map_error(),
+        "q4_recovery_vs_stored": [
+            reference.strain_recovery_agreement(level) for level in (8, 16)
+        ],
+    }
+    strain_ok = (
+        strain_matrix_verification["q4_patch_test"]["max_abs_error"] <= 1e-12
+        and strain_matrix_verification["q8_patch_test"]["max_abs_error"] <= 1e-12
+        and strain_matrix_verification["inverse_map"]["max_parent_error"] <= 1e-10
+        and all(entry["passed"] for entry in strain_matrix_verification["q4_recovery_vs_stored"])
+    )
+    strain_matrix_verification["passed"] = strain_ok
+
     profiles = {
         "reference_levels": [
             {"divisions": solution["divisions"], **loaded_edge_profile(solution["nodes"], solution["displacement"])}
@@ -106,6 +126,7 @@ def main() -> dict:
         },
         "comparison": comparison,
         "recovery_cross_check": cross_check,
+        "strain_matrix_verification": strain_matrix_verification,
         "loaded_edge_profiles": profiles,
         "status": (
             "withheld"
@@ -130,6 +151,7 @@ def main() -> dict:
         print(f"Q4 {entry['divisions']:>3}: max von Mises error "
               f"{100 * entry['max_von_mises_error']:.3f}% passed={entry['passed']}")
     print("monotone", comparison["monotone"], "qualified", comparison["qualified"])
+    print("strain-matrix verification passed", strain_ok)
     print("recovery cross-check max relative difference "
           f"{100 * cross_check['max_relative_difference']:.3f}% passed={cross_check['passed']}")
     print("written", OUTPUT.relative_to(ROOT))
