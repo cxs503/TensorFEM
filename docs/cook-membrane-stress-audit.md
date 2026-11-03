@@ -67,3 +67,57 @@ Q8 独立解（容差 1e-13）：
    一次性判定 Q4 点式恢复与 Q8 应力回代孰对孰错——这是解开型线分歧的最短路径。
 2. 分歧定位后，再把 `cook_fields` 的 `stress_accuracy_qualified` 与
    `scripts/validate_additional_benchmark_reports.py` 的硬性禁止条款一并改为「有证据才放行」的门禁。
+
+## 定谳（m2430，2026-11-03）：型线分歧已闭环，缺陷在审计自身
+
+上一节两条开放问题由同一根因解释，且**生产代码无缺陷**。审计模块 `src/tensorfem/cook_stress_reference.py`
+的两处单元算子把物理梯度写成了 `dN @ inv(J)`，正确形式是 `dN @ inv(J).T`（行存 `J[a,b]=dX_b/dxi_a`
+时链式法则为 `dN/dx_b = sum_a (J^-1)_{b,a} dN/dxi_a`）；两者仅在 Jacobian 对称（矩形单元）时等价。
+Cook 梯形映射的 Jacobian 非对称，因此差异被放大到 O(1)。此外 Q4 的父坐标导数表把节点 3/4 的
+`1+eta`、节点 2/3 的 `1+xi` 误写为 `eta`、`xi`，且缺 1/4，使返回的 measure 偏大 16 倍。
+
+### 判据一：与代码约定无关的三项独立性检验（skew 四边形 (0,0),(10,6),(10,9),(0,7)）
+
+| 检验 | 修复前 | 修复后 |
+|---|---|---|
+| 常应变 patch（线性位移场在 4/9 个 Gauss 点的恢复应变 vs 解析值） | 偏差 1.1e-3 ~ 2.4e-3（量级等于应变本身） | 6.3e-18（Q4）/ 6.1e-18（Q8） |
+| 常应变能量恒等式 `½uᵀKu = ½σ:ε·A·t`（不用被测代码的任何约定） | 单元能量/精确值 = **8.466**（+747%） | **1.000**（−6.4e-14） |
+| 恢复梯度 vs 位移插值的有限差分（Newton 反演物理点） | 不一致 | 一致至 1e-12 |
+
+### 判据二：两套离散的加载边型线
+
+| 来源 | y=44 处 u_y | y=60 处 u_y | 加载边中点(48,52) |
+|---|---:|---:|---:|
+| 生产 Q4，n=64 | 23.160 | 25.043 | 23.925（对 23.96：0.148%） |
+| 审计 Q8，d=24（修复后） | 23.186 | 25.110 | 23.949（0.046%） |
+| 审计 Q8，d=12（修复后） | 23.138 | 25.016 | 23.919（0.172%） |
+| 审计 Q8，d=12（修复前） | 7.569 | 51.605 | 24.210 |
+
+修复后两套离散在加载边全长上相对差 < 0.3%（离散度水平），修复前相差 6.8 倍。d=48 时 Q8 中点
+23.9605（0.002%），Richardson/GCI(finest)=0.068%。
+
+### 判据三：生产 Q4 未被改动
+
+`src/tensorfem/continuum.py::q4_stiffness` 的 `deriv` 使用 `jac = Jᵀ` 与 `dN @ inv(jac)`，等价于
+`dN @ inv(J).T`，本身正确：同一常应变能量检验下其单元能量相对误差 **+5.5e-14**，且矩形单元上与
+独立实现逐位一致（差值 0.0）。本单只改审计模块，未动生产路径。
+
+### 残留欠账（honest，不粉饰）
+
+1. **Q4 逐点应力仍未 3% 闭环**：n=8/16/32/64 的最大 von Mises 相对误差 30.52% / 28.83% / 8.02% / 5.02%，
+   最细网格仍 > 3%，故 `cook_fields` 的 `stress_accuracy_qualified` 保持 False。该比较是「单元中心存盘
+   应力 vs 内部材料点」，含一阶采样偏差（误差随 h 近似线性下降，30.5%→5.0% 对应 n 增大 8 倍），
+   因此 5.02% 不能直接当作单元精度结论；要闭环需按材料点做单元内插值恢复。
+2. **点式恢复交叉校验仍 fail-closed**：`recovery_cross_check` 仍报 inf（16 个样本中有分量为 0 的
+   除数），说明采样集合包含近零应力分量，需要改为按尺度归一化后再比较；本单未改该项判据。
+
+### 复现
+
+```
+OMP_NUM_THREADS=1 PYTHONPATH=src python scripts/audit_cook_membrane_stress.py   # → benchmarks/cook_membrane_stress_reference.json
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src python -m pytest tests/test_cook_oracle_operator.py -q  # 10 passed
+```
+
+图：`docs/assets/cook-oracle-resolution.png`（左：加载边型线三套离散对照；中：响应收敛；
+右：常应变能量恒等式修复前后）。回归测试 `tests/test_cook_oracle_operator.py` 用 patch/能量/FD 三项
+约定无关判据锁死该缺陷，并用 fail-closed 断言保持第 1 条欠账为 False。
