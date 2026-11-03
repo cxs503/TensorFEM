@@ -2,9 +2,9 @@
 
 The tests encode the two *positive* results (the independent Q8 code reproduces the
 published deflection and is self-converged at fixed interior points) and the *negative*
-result: the audit could not certify the production Q4 stress field, so the recorded
-evidence must stay ``withheld``.  The negative test is deliberate - it forbids turning an
-unresolved discrepancy into a certification.
+result: the audit does not certify the production Q4 stress field on the arbitrary-point
+criterion, so the recorded evidence must never read ``qualified``.  The negative test is
+deliberate - it forbids turning an unresolved discrepancy into a certification.
 """
 
 import json
@@ -85,10 +85,15 @@ def test_audit_evidence_must_not_claim_stress_certification():
     if not EVIDENCE.exists():
         pytest.skip("audit evidence has not been generated in this checkout")
     evidence = json.loads(EVIDENCE.read_text())
-    assert evidence["status"] == "withheld"
+    assert evidence["status"] in ("withheld", "measured-not-qualified")
     assert evidence["comparison"]["qualified"] is False
+    assert evidence["status"] != "qualified"
+    # The committed evidence must describe the code as it is.  After the element-Jacobian
+    # repair the audit reproduces the stored element-centre field to machine precision, so
+    # a failing cross-check or strain-matrix record in this file is stale data, not a
+    # finding: regenerate with scripts/audit_cook_membrane_stress.py.
     cross_check = evidence.get("recovery_cross_check", {"passed": False})
-    if not cross_check["passed"]:
-        assert evidence["status"] != "qualified"
+    assert cross_check["passed"] is True
+    assert evidence["strain_matrix_verification"]["passed"] is True
     for point in evidence["reference"]["points"]:
         assert point["von_mises"]["gci_fine_relative"] < 0.01
