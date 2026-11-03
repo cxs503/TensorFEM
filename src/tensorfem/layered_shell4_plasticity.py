@@ -12,7 +12,8 @@ from dataclasses import dataclass
 import math
 import torch
 
-from .plasticity import J2State, update_j2
+from .plasticity import (J2State, condense_plane_stress,
+                         j2_consistent_tangent, update_j2)
 
 
 def layered_shell4_local_frame(
@@ -147,82 +148,55 @@ def _residual_strain(stress: torch.Tensor, young: float, poisson: float) -> torc
 def plane_stress_j2_update(strain: torch.Tensor, model: LayeredShell4Model,
                            committed: J2State, residual_stress: torch.Tensor | None = None,
                            *, tangent: bool = True):
-    """Return ``[sx,sy,txy]``, numerical consistent tangent and trial state.
+    """Return ``[sx,sy,txy]``, exact condensed tangent and trial state.
 
-    The out-of-plane strain is locally condensed by enforcing ``sigma_zz=0``.
-    The tangent is the derivative of that same fully condensed update, rather
-    than the uncondensed 3-D material matrix.
+    The out-of-plane strain is locally condensed by enforcing ``sigma_zz = 0``.
+    Both the local condensation and the returned tangent use the analytical
+    algorithmic tangent of the radial return (``plasticity.j2_consistent_tangent``
+    plus a Schur condensation), never a finite difference of the return map: a
+    centred difference straddles the yield surface, so just below yield it mixed
+    the elastic and plastic branches and biased the tangent by tens of percent
+    exactly where Newton needs it.
     """
     if strain.shape != (3,):
         raise ValueError("plane-stress strain must be [ex,ey,gxy]")
     initial = torch.zeros((3, 3), dtype=strain.dtype, device=strain.device)
     if residual_stress is not None:
         initial = _residual_strain(residual_stress, model.young, model.poisson)
+    scale = max(model.young, model.yield_stress, 1.)
 
     def response(value: torch.Tensor):
-        # Elastic plane-stress value is a reliable initial guess, including
-        # plastic loading because the scalar local solve is convex.
+        """Stress, exact condensed tangent and trial state at in-plane ``value``."""
         zz = -model.poisson/(1-model.poisson) * (value[0]+value[1])
-        for _ in range(30):
+        for _ in range(40):
             full = _tensor_from_inplane(value, zz) + initial
-            sigma, trial, _ = update_j2(full, model.young, model.poisson,
-                                        model.yield_stress, model.hardening, committed)
-            residual = sigma[2, 2]
-            if abs(float(residual)) <= 2e-12 * max(model.yield_stress, 1.0):
+            sigma, trial, dgamma = update_j2(
+                full, model.young, model.poisson, model.yield_stress,
+                model.hardening, committed)
+            material = j2_consistent_tangent(
+                full, model.young, model.poisson, model.hardening, committed, dgamma)
+            residual = float(sigma[2, 2])
+            if abs(residual) <= 1e-15 * scale:
                 break
-            h = math.sqrt(torch.finfo(value.dtype).eps) * max(1.0, abs(float(zz)))
-            hp = value.new_tensor(h)
-            sp = update_j2(_tensor_from_inplane(value, zz+hp)+initial,
-                           model.young, model.poisson, model.yield_stress,
-                           model.hardening, committed)[0][2, 2]
-            sm = update_j2(_tensor_from_inplane(value, zz-hp)+initial,
-                           model.young, model.poisson, model.yield_stress,
-                           model.hardening, committed)[0][2, 2]
-            derivative = (sp-sm)/(2*hp)
-            if abs(float(derivative)) < torch.finfo(value.dtype).eps:
-                raise RuntimeError("plane-stress local condensation has singular tangent")
-            zz = zz-residual/derivative
+            step = residual / float(material[2, 2])
+            zz -= step
+            if abs(step) <= 1e-17 * max(1.0, abs(zz)):
+                full = _tensor_from_inplane(value, zz) + initial
+                sigma, trial, dgamma = update_j2(
+                    full, model.young, model.poisson, model.yield_stress,
+                    model.hardening, committed)
+                material = j2_consistent_tangent(
+                    full, model.young, model.poisson, model.hardening, committed, dgamma)
+                break
         else:
             raise RuntimeError("plane-stress local condensation did not converge")
-        return torch.stack((sigma[0, 0], sigma[1, 1], sigma[0, 1])), trial
+        stress = torch.stack((sigma[0, 0], sigma[1, 1], sigma[0, 1]))
+        return stress, condense_plane_stress(material), trial
 
-    stress, trial = response(strain)
+    stress, material, trial = response(strain)
     if not tangent:
         return stress, None, trial
-    # Away from the yield surface the condensed J2 update is exactly linear
-    # elastic.  Use its analytical plane-stress derivative instead of six
-    # repeated return maps and local zz condensations.  The margin is many
-    # finite-difference perturbations wide; points near an active-set change
-    # retain the numerical algorithmic tangent below.
-    equivalent = torch.sqrt(torch.clamp(
-        stress[0]**2-stress[0]*stress[1]+stress[1]**2+3*stress[2]**2,
-        min=0.,
-    ))
-    current_yield = model.yield_stress+model.hardening*trial.alpha
-    margin = float(current_yield-equivalent)
-    elastic_margin = 32*(torch.finfo(strain.dtype).eps**(1/3))*max(
-        model.young, model.yield_stress, 1.)
-    if (abs(float(trial.alpha-committed.alpha)) <= 16*torch.finfo(strain.dtype).eps
-            and margin > elastic_margin):
-        factor = model.young/(1-model.poisson**2)
-        material = strain.new_tensor((
-            (1., model.poisson, 0.),
-            (model.poisson, 1., 0.),
-            (0., 0., (1-model.poisson)/2),
-        ))*factor
-        return stress, material, trial
-    # Symmetric difference differentiates the actual return map including the
-    # plane-stress condensation and active plastic branch.
-    columns = []
-    # A strain-scale step avoids cancellation from the nested local Newton
-    # solve (sqrt(eps) is too small for this condensed finite difference).
-    base = torch.finfo(strain.dtype).eps ** (1.0/3.0)
-    for j in range(3):
-        h = base * max(1.0, abs(float(strain[j])))
-        delta = torch.zeros_like(strain); delta[j] = h
-        columns.append((response(strain+delta)[0]-response(strain-delta)[0])/(2*h))
-    tangent = torch.stack(columns, 1)
-    return stress, tangent, trial
+    return stress, material, trial
 
 
 def _shape_derivatives(xy: torch.Tensor, xi: float, eta: float):
