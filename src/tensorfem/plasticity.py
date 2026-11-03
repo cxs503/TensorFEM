@@ -58,3 +58,55 @@ def update_j2(strain: torch.Tensor, young: float, poisson: float, yield_stress: 
     s = s_trial - 2.0 * G * dgamma * flow
     stress = K * torch.trace(elastic_strain) * eye + s
     return stress, new_state, dgamma
+
+
+_VOIGT_PAIRS = ((0, 0), (1, 1), (2, 2), (0, 1), (1, 2), (2, 0))
+
+
+def j2_consistent_tangent(strain: torch.Tensor, young: float, poisson: float,
+                          hardening: float, state: J2State, dgamma: torch.Tensor):
+    """Exact algorithmic tangent of the radial return returned by ``update_j2``.
+
+    ``dgamma`` is the third value returned by ``update_j2`` for the same strain
+    and committed state, so the operator always belongs to the branch that was
+    actually integrated (elastic when ``dgamma == 0``).  Voigt order is
+    ``[xx, yy, zz, xy, yz, zx]`` and shear columns act on engineering shear
+    strains ``gamma = 2*eps``:
+    ``C = K (1 x 1) + 2G a I_dev + c s_trial (x) s_trial`` with
+    ``a = 1 - 3G dgamma/seq`` and ``c = 3G (da/dseq)/seq``.
+    """
+    if strain.shape != (3, 3):
+        raise ValueError("strain must be 3x3")
+    dtype, device = strain.dtype, strain.device
+    G = young / (2.0 * (1.0 + poisson))
+    K = young / (3.0 * (1.0 - 2.0 * poisson))
+    eye3 = torch.eye(3, dtype=dtype, device=device)
+    tangent = torch.zeros((6, 6), dtype=dtype, device=device)
+    elastic_strain = strain - state.plastic_strain
+    s_trial = 2.0 * G * (elastic_strain - torch.trace(elastic_strain) / 3.0 * eye3)
+    seq = torch.sqrt(1.5 * torch.sum(s_trial * s_trial))
+    hydrostatic = K * torch.ones((3, 3), dtype=dtype, device=device)
+    if float(dgamma) == 0.:
+        tangent[:3, :3] = hydrostatic + 2.0 * G * (eye3 - torch.ones((3, 3), dtype=dtype, device=device) / 3.0)
+        tangent[3, 3] = tangent[4, 4] = tangent[5, 5] = G
+        return tangent
+    if not bool(seq > 0.):
+        raise RuntimeError("plastic return reported zero trial stress")
+    a = 1.0 - 3.0 * G * float(dgamma) / float(seq)
+    da = -3.0 * G * (1.0 / ((3.0 * G + hardening) * float(seq))
+                     - float(dgamma) / (float(seq) ** 2))
+    c = 2.0 * G * (1.5 / float(seq)) * da
+    tangent[:3, :3] = hydrostatic + 2.0 * G * a * (eye3 - torch.ones((3, 3), dtype=dtype, device=device) / 3.0)
+    tangent[3, 3] = tangent[4, 4] = tangent[5, 5] = G * a
+    vector = torch.stack([s_trial[i, j] for i, j in _VOIGT_PAIRS])
+    return tangent + c * torch.outer(vector, vector)
+
+
+def condense_plane_stress(tangent: torch.Tensor) -> torch.Tensor:
+    """Schur-condense a Voigt 6x6 tangent to ``[xx, yy, xy]`` with ``sigma_zz = 0``."""
+    in_plane = torch.tensor([0, 1, 3], dtype=torch.long, device=tangent.device)
+    normal = tangent[2, 2]
+    if abs(float(normal)) <= torch.finfo(tangent.dtype).eps * max(1.0, float(tangent.abs().max())):
+        raise RuntimeError("plane-stress condensation has singular sigma_zz tangent")
+    return (tangent[in_plane][:, in_plane]
+            - torch.outer(tangent[in_plane, 2], tangent[2, in_plane]) / normal)
