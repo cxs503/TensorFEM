@@ -1942,5 +1942,64 @@
     ]
   },
   "status": "withheld",
-  "scope": "Pointwise interior stress components and von Mises at five fixed material points, against an independently coded Q8 plane-stress solution with Richardson extrapolation. Element-centre/nodal peak values on the loaded-edge traction discontinuity and at the clamped corner are excluded: those are singular and do not converge pointwise."
+  "scope": "Pointwise interior stress components and von Mises at five fixed material points, against an independently coded Q8 plane-stress solution with Richardson extrapolation. Element-centre/nodal peak values on the loaded-edge traction discontinuity and at the clamped corner are excluded: those are singular and do not converge pointwise.",
+  "strain_matrix_verification": {
+    "q4_patch_test": {
+      "element": "q4",
+      "local": [
+        0.0,
+        0.0
+      ],
+      "strain": [
+        0.009999999999999995,
+        0.02999999999999999,
+        0.024999999999999994
+      ],
+      "exact": [
+        0.01,
+        0.03,
+        0.025
+      ],
+      "max_abs_error": 1.0408340855860843e-17
+    },
+    "q8_patch_test": {
+      "element": "q8",
+      "local": [
+        0.0,
+        0.0
+      ],
+      "strain": [
+        0.010000000000000004,
+        0.03000000000000003,
+        0.02499999999999997
+      ],
+      "exact": [
+        0.01,
+        0.03,
+        0.025
+      ],
+      "max_abs_error": 3.122502256758253e-17
+    },
+    "inverse_map": {
+      "samples": 3,
+      "max_parent_error": 5.551115123125783e-16
+    },
+    "q4_recovery_vs_stored": [
+      {
+        "divisions": 8,
+        "elements": 64,
+        "max_relative_difference": 2.5002043107331006e-14,
+        "tolerance": 1e-12,
+        "passed": true
+      },
+      {
+        "divisions": 16,
+        "elements": 256,
+        "max_relative_difference": 1.615690095160977e-13,
+        "tolerance": 1e-12,
+        "passed": true
+      }
+    ],
+    "passed": true
+  }
 }
