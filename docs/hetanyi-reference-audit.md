@@ -97,7 +97,12 @@ exact single-mode response to 6.6e-9, and the truncated series reproduces it to
   cross-check. A quantitative FE-vs-exact plate comparison over mesh pairs is open
   and compute-bound (Mindlin Q4 resolving `l = 0.37 m` on a multi-metre plate).
 * Free-end finite beam on a Winkler foundation (Hetenyi end-conditioning forces) is
-  not implemented; the API now fails closed instead of mislabelling.
+  not implemented; the API now fails closed instead of mislabelling.  **Closed** (see
+  [hetanyi-free-end-reference.md](hetanyi-free-end-reference.md)):
+  `hetenyi_reference.finite_beam_bvp` implements the general end-conditioning
+  solution (free / simply supported / clamped / guided) with multiple shooting,
+  pinned by the Fourier series, the infinite-beam Green's function, the global
+  equilibrium invariant and an independent FE model.
 * `kelvin_kei` has a ~1e-7 relative accuracy floor set by the series/asymptotic
   branch split; it is a reference helper, not a production hot path.
 * These references are qualification oracles only. No panel/contact/1.0-readiness
