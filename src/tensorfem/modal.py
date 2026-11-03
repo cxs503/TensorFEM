@@ -3,6 +3,24 @@
 The module is deliberately self-contained so it can also serve as a numerical
 reference for future frame elements.  Each node has transverse displacement
 and rotation degrees of freedom.
+
+Analytical frequency references
+-------------------------------
+For a uniform Euler--Bernoulli beam the natural frequencies are
+
+    omega_n = (beta_n L)^2 sqrt(EI / (rho_a L^4))
+
+where ``beta_n L`` are the roots of the characteristic equation determined by
+the boundary conditions.  The roots below are taken from R.D. Blevins,
+*Formulas for Natural Frequency and Mode Shape*, Van Nostrand Reinhold, 1979,
+Table 8-1 (cross-checked against W.T. Thomson & M.D. Dahleh, *Theory of
+Vibration with Applications*, 5th ed., Prentice Hall, 1998, Table 9.1-1).
+
+* Cantilever (clamped--free):  ``cos(beta L) cosh(beta L) = -1``
+* Simply supported (pinned--pinned):  ``beta_n L = n pi``
+* Clamped--clamped:  ``cos(beta L) cosh(beta L) = 1``
+* Clamped--pinned:  ``tan(beta L) = tanh(beta L)``
+* Free--free:  same roots as clamped--clamped (rigid-body modes at omega=0)
 """
 
 from dataclasses import dataclass
@@ -92,6 +110,10 @@ def solve_modes(
     return ModalResult(omega, omega / (2.0 * math.pi), full_modes)
 
 
+# ---------------------------------------------------------------------------
+# Convenience solvers for standard boundary conditions
+# ---------------------------------------------------------------------------
+
 def cantilever_beam_modes(
     length: float, elements: int, EI: float, rho_a: float, modes: int = 6
 ) -> ModalResult:
@@ -100,9 +122,103 @@ def cantilever_beam_modes(
     return solve_modes(K, M, (0, 1), modes)
 
 
-def cantilever_exact_angular_frequency(length: float, EI: float, rho_a: float, mode: int = 1) -> float:
+def simply_supported_beam_modes(
+    length: float, elements: int, EI: float, rho_a: float, modes: int = 6
+) -> ModalResult:
+    """Convenience solver for a beam pinned at both ends (w=0 at x=0 and x=L)."""
+    K, M = uniform_beam_matrices(length, elements, EI, rho_a)
+    # Pinned: transverse displacement fixed, rotation free.
+    return solve_modes(K, M, (0, 2 * elements), modes)
+
+
+def clamped_clamped_beam_modes(
+    length: float, elements: int, EI: float, rho_a: float, modes: int = 6
+) -> ModalResult:
+    """Convenience solver for a beam clamped at both ends."""
+    K, M = uniform_beam_matrices(length, elements, EI, rho_a)
+    return solve_modes(K, M, (0, 1, 2 * elements, 2 * elements + 1), modes)
+
+
+def clamped_pinned_beam_modes(
+    length: float, elements: int, EI: float, rho_a: float, modes: int = 6
+) -> ModalResult:
+    """Convenience solver for a beam clamped at x=0 and pinned at x=L."""
+    K, M = uniform_beam_matrices(length, elements, EI, rho_a)
+    return solve_modes(K, M, (0, 1, 2 * elements), modes)
+
+
+# ---------------------------------------------------------------------------
+# Analytical frequency references (Blevins 1979, Thomson & Dahleh 1998)
+# ---------------------------------------------------------------------------
+
+#: Cantilever (clamped--free) characteristic roots: cos(beta L) cosh(beta L) = -1.
+_CANTILEVER_ROOTS = (
+    1.875104068711961,
+    4.694091132974174,
+    7.854757438237612,
+    10.99554073487547,
+)
+
+#: Simply supported (pinned--pinned): beta_n L = n pi.
+def _ss_root(n: int) -> float:
+    return n * math.pi
+
+#: Clamped--clamped characteristic roots: cos(beta L) cosh(beta L) = 1.
+_CLAMPED_ROOTS = (
+    4.730040744862704,
+    7.853204624095838,
+    10.99560783800167,
+    14.13716549125746,
+)
+
+#: Clamped--pinned characteristic roots: tan(beta L) = tanh(beta L).
+_CLAMPED_PINNED_ROOTS = (
+    3.926602312047917,
+    7.068582746011180,
+    10.21017612281498,
+    13.35177147933869,
+)
+
+
+def _beam_angular_frequency(beta_l: float, EI: float, rho_a: float, length: float) -> float:
+    """Compute ``omega = (beta L)^2 sqrt(EI / (rho_a L^4))``."""
+    return beta_l ** 2 * math.sqrt(EI / (rho_a * length ** 4))
+
+
+def cantilever_exact_angular_frequency(
+    length: float, EI: float, rho_a: float, mode: int = 1
+) -> float:
     """Analytical Euler--Bernoulli cantilever frequency for modes 1--4."""
-    beta_l = (1.875104068711961, 4.694091132974174, 7.854757438237612, 10.99554073487547)
-    if not 1 <= mode <= len(beta_l):
+    if not 1 <= mode <= len(_CANTILEVER_ROOTS):
         raise ValueError("analytical roots are provided for modes 1 through 4")
-    return beta_l[mode - 1] ** 2 * math.sqrt(EI / (rho_a * length**4))
+    return _beam_angular_frequency(_CANTILEVER_ROOTS[mode - 1], EI, rho_a, length)
+
+
+def simply_supported_exact_angular_frequency(
+    length: float, EI: float, rho_a: float, mode: int = 1
+) -> float:
+    """Analytical Euler--Bernoulli simply-supported beam frequency.
+
+    The roots are exactly ``n pi``, so any mode number is supported.
+    """
+    if mode < 1:
+        raise ValueError("mode must be >= 1")
+    return _beam_angular_frequency(_ss_root(mode), EI, rho_a, length)
+
+
+def clamped_clamped_exact_angular_frequency(
+    length: float, EI: float, rho_a: float, mode: int = 1
+) -> float:
+    """Analytical Euler--Bernoulli clamped--clamped beam frequency for modes 1--4."""
+    if not 1 <= mode <= len(_CLAMPED_ROOTS):
+        raise ValueError("analytical roots are provided for modes 1 through 4")
+    return _beam_angular_frequency(_CLAMPED_ROOTS[mode - 1], EI, rho_a, length)
+
+
+def clamped_pinned_exact_angular_frequency(
+    length: float, EI: float, rho_a: float, mode: int = 1
+) -> float:
+    """Analytical Euler--Bernoulli clamped--pinned beam frequency for modes 1--4."""
+    if not 1 <= mode <= len(_CLAMPED_PINNED_ROOTS):
+        raise ValueError("analytical roots are provided for modes 1 through 4")
+    return _beam_angular_frequency(_CLAMPED_PINNED_ROOTS[mode - 1], EI, rho_a, length)
