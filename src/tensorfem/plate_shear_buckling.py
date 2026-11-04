@@ -106,8 +106,16 @@ def _smallest_positive_from_symmetric_indefinite(
     """
     n = stiffness.shape[0]
     factor = np.linalg.cholesky(stiffness)
+    # congruent transform L^-1 G L^-T of the L L^T = K_b pencil.  The earlier
+    # version built L^-T G L^-T (``solve(factor.T, reduced.T)`` on the
+    # unsymmetrised product), which is a *different* matrix: it coincides only
+    # when the Cholesky factor of the bending matrix is diagonal, i.e. exactly
+    # in the isotropic/orthotropic cases this module ships. Any pencil with a
+    # non-diagonal stiffness (the Hermite-element reference of
+    # ``plate_bending_buckling.infinite_plate_bending_coefficient``, for one)
+    # was therefore solved for the wrong eigenvalues.
     reduced = np.linalg.solve(factor, geometric)
-    reduced = np.linalg.solve(factor.T, reduced.T)
+    reduced = np.linalg.solve(factor, reduced.T).T
     reduced = 0.5 * (reduced + reduced.T)
     mu, vectors = np.linalg.eigh(reduced)
     positive = mu > 0.0
@@ -116,7 +124,7 @@ def _smallest_positive_from_symmetric_indefinite(
     index = int(np.argmax(np.where(positive, mu, -np.inf)))
     if not math.isfinite(mu[index]) or mu[index] <= 0.0:
         return math.inf, np.zeros(n)
-    phi = np.linalg.solve(factor, vectors[:, index])
+    phi = np.linalg.solve(factor.T, vectors[:, index])
     return 1.0 / float(mu[index]), phi
 
 
