@@ -6,6 +6,15 @@ prescribed temperature and convection. Transient integration uses the theta
 method and rejects `theta < 0.5`, so the stable route cannot silently select a
 conditionally unstable scheme.
 
+## Two-dimensional verification
+
+The anchors below are 1-D apart from a linear Q4 patch, which any consistent
+element reproduces. The two-dimensional truncation, mapping and flux behaviour
+is verified separately in [thermal-2d-analytic-verification.md](thermal-2d-analytic-verification.md): a harmonic field on a Cartesian and on a
+sheared mesh, a logarithmic radial field on a curvilinear annulus and a 2-D
+transient decay, all against closed forms and all passing the 3% gate with
+observed second-order convergence.
+
 ## Analytical benchmarks
 
 | Case | Reference | Recorded error |
