@@ -5,6 +5,12 @@ from .plate import structured_square_mesh, solve_simply_supported_sine_square, _
 from .continuum_benchmarks import cook_membrane
 from .continuum import elasticity_matrix, q4_stiffness
 from .sparse_core import assemble_coo, solve_sparse_static
+from .stress_recovery import (
+    interpolate_nodal_field,
+    probe_errors,
+    q4_gauss_stresses,
+    recover_nodal_stress,
+)
 
 
 def relative(a, b):
@@ -60,7 +66,25 @@ def mindlin_fields(n):
                             'passed':max(errors.values())<.03 and max(residual,balance)<1e-8}}
 
 
-def cook_fields(n):
+# Cook membrane material (plane stress, unit thickness) as assembled by ``cook_membrane``.
+COOK_YOUNG = 1.0
+COOK_POISSON = 1.0/3.0
+
+
+def cook_fields(n, reference=None):
+    """Production Cook membrane payload.
+
+    ``stress``/``von_mises`` remain the raw constant-per-element field (the historical,
+    fail-closed ``stress_accuracy_qualified=False`` protocol).  The payload now also
+    carries the recovered nodal field:
+
+    * ``nodal_stress`` — Gauss-point (Barlow) extrapolation plus area-weighted nodal
+      averaging, i.e. a continuous single-valued stress field;
+    * ``stress_recovery`` — the well-posed pointwise criterion at the reference probe
+      sites when an independent reference is supplied, otherwise the field only.
+
+    Nothing here relaxes the fail-closed flag of the raw protocol.
+    """
     model, probe = cook_membrane(n)
     nodes, cells = model.nodes, model.elements
     ne = len(cells)
@@ -74,9 +98,31 @@ def cook_fields(n):
     stress = (C@B@u[edofs].unsqueeze(-1)).squeeze(-1)
     vm = torch.sqrt(stress[:,0]**2-stress[:,0]*stress[:,1]+stress[:,1]**2+3*stress[:,2]**2)
     response = float(u[probe]); error = abs(response-23.96)/23.96
+    gauss = q4_gauss_stresses(nodes, cells, u, COOK_YOUNG, COOK_POISSON)
+    nodal = recover_nodal_stress(nodes, cells, gauss)
+    recovery = {
+        'method': '2x2 Gauss (Barlow) extrapolation + area-weighted nodal averaging',
+        'gauss_points_per_element': 4,
+        'nodal_von_mises_scale': float(
+            torch.sqrt(nodal[:,0]**2-nodal[:,0]*nodal[:,1]+nodal[:,1]**2+3*nodal[:,2]**2).max()
+        ),
+        'single_valued_on_interfaces': True,
+        'passed': None,
+    }
+    if reference is not None:
+        points = [
+            {'point': point['point'], 'von_mises_reference': point['von_mises']['extrapolated']}
+            for point in reference['points']
+        ]
+        scale = max(point['von_mises_reference'] for point in points)
+        block = probe_errors(nodes, cells, nodal, points, scale)
+        recovery.update(block)
+        recovery['passed'] = bool(block['worst_site_error'] < 0.03)
+        recovery['criterion'] = 'worst probe-site normalised von Mises error < 3% on the recovered field'
     return {'mesh':n,'nodes':nodes.tolist(),'elements':cells.tolist(),
             'displacement':u.reshape(-1,2).tolist(),'centers':nodes[cells].mean(1).tolist(),
             'stress':stress.tolist(),'von_mises':vm.tolist(), 'reference':23.96,
+            'nodal_stress':nodal.tolist(),'stress_recovery':recovery,
             'verification':{'response':response,'response_relative_error':error,
                             'relative_residual':result.iterative.relative_residual,
                             'passed':error<.03},'stress_accuracy_qualified':False}
