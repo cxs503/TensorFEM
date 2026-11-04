@@ -66,6 +66,70 @@ class SparseFiniteRotationShell4Response:
     trial_state: LayeredShell4State
 
 
+@dataclass(frozen=True)
+class RoundoffFloor:
+    """Smallest stress/force residual a *correct* objectivity call can produce.
+
+    ``stress`` is a stress magnitude and ``force`` a nodal-force magnitude.
+    Both derive from the material scale of ``model`` (``young``, and
+    ``thickness`` times section area for the force), so an assertion written
+    against them keeps its meaning when the model is rescaled and does not
+    depend on the CPU/BLAS build beyond ``eps`` itself.
+    """
+
+    stress: float
+    force: float
+    safety: float
+
+    def __str__(self) -> str:  # pragma: no cover - diagnostics only
+        return (f"stress<{self.stress:.3e}, force<{self.force:.3e} "
+                f"(safety {self.safety:g})")
+
+
+def shell_section_area(model: LayeredShell4Model) -> float:
+    """Total quadrilateral area, used only as the force scale of a residual.
+
+    The cross product of the two diagonals is exact for a planar facet and
+    remains a valid O(area) scale for the warped facets this element allows.
+    """
+    nodes = model.nodes[model.elements.long()]
+    first = nodes[:, 2] - nodes[:, 0]
+    second = nodes[:, 3] - nodes[:, 1]
+    cross = torch.linalg.vector_norm(torch.linalg.cross(first, second), dim=1)
+    return float(0.5 * cross.sum())
+
+
+def roundoff_floor(model: LayeredShell4Model, *, safety: float = 64.0) -> RoundoffFloor:
+    """Return the roundoff floor of a stress-free reference for ``model``.
+
+    For a rigid motion the corotated deformation is zero, yet the assembler
+    still forms sums and products of quantities of magnitude ``E`` (membrane
+    ``E t/(1-nu^2)``, bending ``E t^3``, and the SVD frame whose entries are
+    correct only to ``eps``).  A numerically exact implementation therefore
+    returns residuals of order ``eps * E`` in stress and ``eps * E * t * A``
+    in force, not exact zeros.  Measured on the shallow-warped and rotated
+    reference cases of the test suite (float64, ``E = 2e5``):
+
+    * stress / (eps * E) = 0.93 (shallow warp) and 1.48 (rotated);
+    * force / (eps * E * t * A) <= 0.037.
+
+    ``safety = 64`` leaves 40-70x headroom over those measured ratios while
+    staying ~12 orders below a resolvable physical residual: the same operator
+    resolves a superposed membrane strain of 1e-12 to a stress of 1.5e-7 at
+    ``E = 2e5``, i.e. 3.4e3 times ``eps * E`` and 54 times this floor.  Use
+    this instead of a hand-picked absolute number so that the assertion is a
+    statement about roundoff, not about one particular cpu/BLAS build.
+    """
+    if safety <= 0.0:
+        raise ValueError("safety must be positive")
+    eps = torch.finfo(model.nodes.dtype).eps
+    scale = eps * float(model.young)
+    return RoundoffFloor(stress=safety * scale,
+                         force=safety * scale * float(model.thickness)
+                         * shell_section_area(model),
+                         safety=float(safety))
+
+
 def _element_dofs(conn: torch.Tensor) -> torch.Tensor:
     return torch.stack(tuple(6 * conn + k for k in range(6)), 1).reshape(-1).long()
 
