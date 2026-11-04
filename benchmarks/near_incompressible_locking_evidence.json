@@ -1,0 +1,341 @@
+{
+  "bbar_refinement_at_poisson_0_4999": [
+    {
+      "deviatoric_stress_l2": 0.12569898482637326,
+      "displacement_l2": 0.059290644646162315,
+      "displacement_max_relative": 0.11627393438791166,
+      "dofs": 882,
+      "elements": 192,
+      "face_divisions": 4,
+      "formulation": "bbar",
+      "inner_radius_displacement_relative": 0.03178338919858375,
+      "mean_stress_l2": 0.04678931220311773,
+      "poisson_ratio": 0.4999,
+      "radial_layers": 2,
+      "radial_stress_l2": 0.31900924236583333,
+      "radial_stress_max_relative": 0.5969713792537449
+    },
+    {
+      "deviatoric_stress_l2": 0.06077326059983288,
+      "displacement_l2": 0.03364552886930366,
+      "displacement_max_relative": 0.06888152150449141,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "bbar",
+      "inner_radius_displacement_relative": 0.016844607724223578,
+      "mean_stress_l2": 0.025088559512429023,
+      "poisson_ratio": 0.4999,
+      "radial_layers": 3,
+      "radial_stress_l2": 0.16326887455803718,
+      "radial_stress_max_relative": 0.5019298524849687
+    },
+    {
+      "deviatoric_stress_l2": 0.03536506418325674,
+      "displacement_l2": 0.02060302991143843,
+      "displacement_max_relative": 0.04330736287157415,
+      "dofs": 5790,
+      "elements": 1536,
+      "face_divisions": 8,
+      "formulation": "bbar",
+      "inner_radius_displacement_relative": 0.010158360693607428,
+      "mean_stress_l2": 0.015068750929969427,
+      "poisson_ratio": 0.4999,
+      "radial_layers": 4,
+      "radial_stress_l2": 0.09657373675013103,
+      "radial_stress_max_relative": 0.4332126120524511
+    }
+  ],
+  "case": "thick hollow sphere under internal pressure, exact 3-D Lame field",
+  "notes": [
+    "stress state of the Lame field is Poisson-ratio independent, so any nu-dependence of a stress error is a formulation bias, not physics",
+    "the residual 16.3 % radial-stress error of the B-bar solution at the 6x3 mesh is discretisation error: it is identical at nu = 0.3 and shrinks with h",
+    "2-D Q4 plane strain has no B-bar/EAS counterpart in this repository; its near-incompressible error is recorded as an open debt"
+  ],
+  "observed_orders_at_poisson_0_4999": {
+    "bbar_displacement_l2_observed_order": 1.704805667530778,
+    "bbar_radial_stress_l2_observed_order": 1.8252494726021173,
+    "standard_displacement_l2_observed_order": 0.3153393468376498,
+    "standard_radial_stress_l2_observed_order": 0.18711435509988356
+  },
+  "plane_strain_q4_sweep": [
+    {
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.0015373602751837046,
+        "radial_stress_l2": 0.007662763749396865
+      },
+      "formulation": "q4 plane strain",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.3
+    },
+    {
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.004089510712959751,
+        "radial_stress_l2": 0.013655655056628212
+      },
+      "formulation": "q4 plane strain",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.45
+    },
+    {
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.01685764403552238,
+        "radial_stress_l2": 0.04543339302779937
+      },
+      "formulation": "q4 plane strain",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.49
+    },
+    {
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.1404407046897031,
+        "radial_stress_l2": 0.35457338807108824
+      },
+      "formulation": "q4 plane strain",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.499
+    },
+    {
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.619175377546959,
+        "radial_stress_l2": 1.5522964719677548
+      },
+      "formulation": "q4 plane strain",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999
+    }
+  ],
+  "problem": {
+    "face_divisions": 6,
+    "inner_radius_m": 8.0,
+    "internal_pressure_pa": 1000000.0,
+    "outer_radius_m": 10.0,
+    "radial_layers": 3,
+    "young_modulus_pa": 210000000000.0
+  },
+  "reference_checks": {
+    "0.3": {
+      "constitutive": 3.17034099469031e-16,
+      "equilibrium": 6.031533703207969e-10,
+      "poisson_ratio": 0.3,
+      "stress_state_poisson_invariant": 0.0,
+      "traction": 0.0
+    },
+    "0.4999": {
+      "constitutive": 1.1575420101301762e-16,
+      "equilibrium": 6.031533703207969e-10,
+      "poisson_ratio": 0.4999,
+      "stress_state_poisson_invariant": 0.0,
+      "traction": 0.0
+    }
+  },
+  "standard_refinement_at_poisson_0_4999": [
+    {
+      "deviatoric_stress_l2": 0.9471183342085207,
+      "displacement_l2": 0.9412752160090652,
+      "displacement_max_relative": 0.9433061565666178,
+      "dofs": 882,
+      "elements": 192,
+      "face_divisions": 4,
+      "formulation": "standard",
+      "inner_radius_displacement_relative": 0.9412926375055469,
+      "mean_stress_l2": 0.7316312753617604,
+      "poisson_ratio": 0.4999,
+      "radial_layers": 2,
+      "radial_stress_l2": 3.6792397931917202,
+      "radial_stress_max_relative": 6.3251919895785855
+    },
+    {
+      "deviatoric_stress_l2": 0.8830579181508749,
+      "displacement_l2": 0.8774318559031685,
+      "displacement_max_relative": 0.8796652887155493,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "standard",
+      "inner_radius_displacement_relative": 0.8774477727111871,
+      "mean_stress_l2": 0.6816262296457288,
+      "poisson_ratio": 0.4999,
+      "radial_layers": 3,
+      "radial_stress_l2": 3.790890815152695,
+      "radial_stress_max_relative": 9.301034759085493
+    },
+    {
+      "deviatoric_stress_l2": 0.806527740531944,
+      "displacement_l2": 0.8013371888964895,
+      "displacement_max_relative": 0.8035885859605149,
+      "dofs": 5790,
+      "elements": 1536,
+      "face_divisions": 8,
+      "formulation": "standard",
+      "inner_radius_displacement_relative": 0.8013511879697428,
+      "mean_stress_l2": 0.6222737415665486,
+      "poisson_ratio": 0.4999,
+      "radial_layers": 4,
+      "radial_stress_l2": 3.592224288433458,
+      "radial_stress_max_relative": 11.560617262704575
+    }
+  ],
+  "sweep": [
+    {
+      "deviatoric_stress_l2": 0.06233901369940209,
+      "displacement_l2": 0.027567425735522646,
+      "displacement_max_relative": 0.05122270237448889,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "standard",
+      "inner_radius_displacement_relative": 0.016029939463384567,
+      "mean_stress_l2": 0.018512625376571775,
+      "poisson_ratio": 0.3,
+      "radial_layers": 3,
+      "radial_stress_l2": 0.17423921339995968,
+      "radial_stress_max_relative": 0.5006646402605752
+    },
+    {
+      "deviatoric_stress_l2": 0.06031450400292238,
+      "displacement_l2": 0.028058652472970503,
+      "displacement_max_relative": 0.05239190852041341,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "bbar",
+      "inner_radius_displacement_relative": 0.014045520368621327,
+      "mean_stress_l2": 0.019675709297206002,
+      "poisson_ratio": 0.3,
+      "radial_layers": 3,
+      "radial_stress_l2": 0.16328738670583492,
+      "radial_stress_max_relative": 0.4953106611527434
+    },
+    {
+      "deviatoric_stress_l2": 0.07089934649052242,
+      "displacement_l2": 0.03499708616596866,
+      "displacement_max_relative": 0.06455843306178477,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "standard",
+      "inner_radius_displacement_relative": 0.027488430343073675,
+      "mean_stress_l2": 0.024685146374171782,
+      "poisson_ratio": 0.45,
+      "radial_layers": 3,
+      "radial_stress_l2": 0.2159479233796394,
+      "radial_stress_max_relative": 0.5920937365575604
+    },
+    {
+      "deviatoric_stress_l2": 0.06061636644067252,
+      "displacement_l2": 0.0322992079993308,
+      "displacement_max_relative": 0.06425726497591183,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "bbar",
+      "inner_radius_displacement_relative": 0.01615774916659514,
+      "mean_stress_l2": 0.023507998125105827,
+      "poisson_ratio": 0.45,
+      "radial_layers": 3,
+      "radial_stress_l2": 0.1632921214393048,
+      "radial_stress_max_relative": 0.5001930000691261
+    },
+    {
+      "deviatoric_stress_l2": 0.11858885877657728,
+      "displacement_l2": 0.07906085387802964,
+      "displacement_max_relative": 0.10430307742285182,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "standard",
+      "inner_radius_displacement_relative": 0.07782503906695187,
+      "mean_stress_l2": 0.056607703643861626,
+      "poisson_ratio": 0.49,
+      "radial_layers": 3,
+      "radial_stress_l2": 0.4322494992894611,
+      "radial_stress_max_relative": 1.0311847015703048
+    },
+    {
+      "deviatoric_stress_l2": 0.06073900913099021,
+      "displacement_l2": 0.03338454631855268,
+      "displacement_max_relative": 0.06793280436924216,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "bbar",
+      "inner_radius_displacement_relative": 0.01670999531223779,
+      "mean_stress_l2": 0.024759382886378942,
+      "poisson_ratio": 0.49,
+      "radial_layers": 3,
+      "radial_stress_l2": 0.1632745751272225,
+      "radial_stress_max_relative": 0.5015757491806464
+    },
+    {
+      "deviatoric_stress_l2": 0.4469835069018944,
+      "displacement_l2": 0.4206562660208396,
+      "displacement_max_relative": 0.4323384646678804,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "standard",
+      "inner_radius_displacement_relative": 0.42069269404939813,
+      "mean_stress_l2": 0.3236077397706508,
+      "poisson_ratio": 0.499,
+      "radial_layers": 3,
+      "radial_stress_l2": 1.8781335944472441,
+      "radial_stress_max_relative": 4.358800565671941
+    },
+    {
+      "deviatoric_stress_l2": 0.06077007652102612,
+      "displacement_l2": 0.03362195527283754,
+      "displacement_max_relative": 0.06879460751482597,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "bbar",
+      "inner_radius_displacement_relative": 0.01683241166347641,
+      "mean_stress_l2": 0.025058291941177414,
+      "poisson_ratio": 0.499,
+      "radial_layers": 3,
+      "radial_stress_l2": 0.1632694155376495,
+      "radial_stress_max_relative": 0.5018974250786694
+    },
+    {
+      "deviatoric_stress_l2": 0.8830579181508749,
+      "displacement_l2": 0.8774318559031685,
+      "displacement_max_relative": 0.8796652887155493,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "standard",
+      "inner_radius_displacement_relative": 0.8774477727111871,
+      "mean_stress_l2": 0.6816262296457288,
+      "poisson_ratio": 0.4999,
+      "radial_layers": 3,
+      "radial_stress_l2": 3.790890815152695,
+      "radial_stress_max_relative": 9.301034759085493
+    },
+    {
+      "deviatoric_stress_l2": 0.06077326059983288,
+      "displacement_l2": 0.03364552886930366,
+      "displacement_max_relative": 0.06888152150449141,
+      "dofs": 2616,
+      "elements": 648,
+      "face_divisions": 6,
+      "formulation": "bbar",
+      "inner_radius_displacement_relative": 0.016844607724223578,
+      "mean_stress_l2": 0.025088559512429023,
+      "poisson_ratio": 0.4999,
+      "radial_layers": 3,
+      "radial_stress_l2": 0.16326887455803718,
+      "radial_stress_max_relative": 0.5019298524849687
+    }
+  ]
+}
