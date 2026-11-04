@@ -1,0 +1,562 @@
+{
+  "schema": "tensorfem.combined-panel-buckling-audit/1.0",
+  "material": {
+    "young": 210000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.012,
+    "rigidity": 33230.769230769234
+  },
+  "tolerance": 0.03,
+  "qualification": {
+    "schema": "tensorfem.combined-panel-buckling/1.0",
+    "scope": "thin-plate eigenproblem for simply supported panels; the shear branch is anchored on the classical square-panel coefficient, not on a closed form",
+    "tolerance": 0.03,
+    "young": 210000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.012,
+    "cases": [
+      {
+        "gate": "equal_biaxial_square_exact",
+        "measured": 655949.0925031697,
+        "expected": 655949.0925031697,
+        "relative_error": 0.0,
+        "tolerance": 1e-12,
+        "passed": true,
+        "note": "Navier oracle vs 2 pi^2 D / b^2 for Nx = Ny"
+      },
+      {
+        "gate": "biaxial_reduces_to_uniaxial",
+        "measured": 1311898.1850063393,
+        "expected": 1311898.1850063393,
+        "relative_error": 0.0,
+        "tolerance": 1e-12,
+        "passed": true,
+        "note": "mode (2, 1) shared with marine_plate_buckling"
+      },
+      {
+        "gate": "assembled_matches_separable_uniaxial",
+        "measured": 1308192.7998883217,
+        "expected": 1308192.7998878334,
+        "relative_error": 3.7325698087897763e-13,
+        "tolerance": 1e-10,
+        "passed": true,
+        "note": "Kronecker assembly vs closed-form sin^2 eigenvalues, 16x16"
+      },
+      {
+        "gate": "biaxial_ratio_0.5_convergence",
+        "grids": [
+          [
+            8,
+            8
+          ],
+          [
+            16,
+            16
+          ],
+          [
+            32,
+            32
+          ]
+        ],
+        "loads": [
+          676370.4530318712,
+          681337.9649570984,
+          682764.4132468967
+        ],
+        "errors": [
+          0.010112762817095278,
+          0.0028426689901188684,
+          0.0007550216805073395
+        ],
+        "reference_load": 683280.3046908019,
+        "tolerance": 0.03,
+        "passed": true,
+        "note": "Nx + 0.5 Ny, a/b = 2, exact Navier reference"
+      },
+      {
+        "gate": "pure_shear_square_literature",
+        "grids": [
+          [
+            16,
+            16
+          ],
+          [
+            24,
+            24
+          ],
+          [
+            32,
+            32
+          ]
+        ],
+        "loads": [
+          3112063.2989704493,
+          3082748.897087062,
+          3072214.0702162087
+        ],
+        "coefficients": [
+          9.488734215926707,
+          9.399354103297782,
+          9.367233236019343
+        ],
+        "errors": [
+          0.015924434253394626,
+          0.0063548290468715685,
+          0.0029157640277668317
+        ],
+        "reference_coefficient": 9.34,
+        "reference_load": 3063282.2619898026,
+        "tolerance": 0.03,
+        "passed": true,
+        "note": "tau_cr = k_s pi^2 D / b^2 from Timoshenko & Gere"
+      }
+    ],
+    "passed": true
+  },
+  "biaxial": [
+    {
+      "case": "biaxial_ratio_1.0_aspect_1",
+      "biaxial_ratio": 1.0,
+      "length": 1.0,
+      "width": 1.0,
+      "reference_line_load": 655949.0925031697,
+      "reference_mode": [
+        1,
+        1
+      ],
+      "grids": [
+        {
+          "grid": [
+            8,
+            8
+          ],
+          "line_load": 649315.634910609,
+          "relative_error": 0.010112762817075849
+        },
+        {
+          "grid": [
+            16,
+            16
+          ],
+          "line_load": 654084.446358525,
+          "relative_error": 0.00284266899055996
+        },
+        {
+          "grid": [
+            32,
+            32
+          ],
+          "line_load": 655453.8367128224,
+          "relative_error": 0.0007550216869075532
+        },
+        {
+          "grid": [
+            48,
+            48
+          ],
+          "line_load": 655724.4266953724,
+          "relative_error": 0.00034250494491860906
+        }
+      ],
+      "richardson": {
+        "observed_order": 1.9126561273083775,
+        "extrapolated_error": 0.0001933135149921111
+      }
+    },
+    {
+      "case": "biaxial_ratio_0.5_aspect_1.5",
+      "biaxial_ratio": 0.5,
+      "length": 1.5,
+      "width": 1.0,
+      "reference_line_load": 724545.0760329128,
+      "reference_mode": [
+        1,
+        1
+      ],
+      "grids": [
+        {
+          "grid": [
+            8,
+            8
+          ],
+          "line_load": 717217.9235287086,
+          "relative_error": 0.010112762817080179
+        },
+        {
+          "grid": [
+            16,
+            16
+          ],
+          "line_load": 722485.4342125907,
+          "relative_error": 0.0028426689911402736
+        },
+        {
+          "grid": [
+            32,
+            32
+          ],
+          "line_load": 723998.0287869152,
+          "relative_error": 0.0007550216875295002
+        },
+        {
+          "grid": [
+            48,
+            48
+          ],
+          "line_load": 724296.9157589811,
+          "relative_error": 0.0003425049484712117
+        }
+      ],
+      "richardson": {
+        "observed_order": 1.912656126414479,
+        "extrapolated_error": 0.00019331351947874786
+      }
+    },
+    {
+      "case": "biaxial_ratio_0.5_aspect_2",
+      "biaxial_ratio": 0.5,
+      "length": 2.0,
+      "width": 1.0,
+      "reference_line_load": 683280.3046908019,
+      "reference_mode": [
+        1,
+        1
+      ],
+      "grids": [
+        {
+          "grid": [
+            8,
+            8
+          ],
+          "line_load": 676370.4530318712,
+          "relative_error": 0.010112762817095278
+        },
+        {
+          "grid": [
+            16,
+            16
+          ],
+          "line_load": 681337.9649570984,
+          "relative_error": 0.0028426689901188684
+        },
+        {
+          "grid": [
+            32,
+            32
+          ],
+          "line_load": 682764.4132468967,
+          "relative_error": 0.0007550216805073395
+        },
+        {
+          "grid": [
+            48,
+            48
+          ],
+          "line_load": 683046.2778333818,
+          "relative_error": 0.00034250490730303174
+        }
+      ],
+      "richardson": {
+        "observed_order": 1.912656139314042,
+        "extrapolated_error": 0.00019331346777767526
+      }
+    },
+    {
+      "case": "biaxial_ratio_0.1_aspect_3",
+      "biaxial_ratio": 0.1,
+      "length": 3.0,
+      "width": 1.0,
+      "reference_line_load": 1192634.7136421266,
+      "reference_mode": [
+        3,
+        1
+      ],
+      "grids": [
+        {
+          "grid": [
+            8,
+            8
+          ],
+          "line_load": 1173438.6577896252,
+          "relative_error": 0.016095503202216532
+        },
+        {
+          "grid": [
+            16,
+            16
+          ],
+          "line_load": 1186907.4794114134,
+          "relative_error": 0.004802169654464561
+        },
+        {
+          "grid": [
+            32,
+            32
+          ],
+          "line_load": 1191088.4309608543,
+          "relative_error": 0.0012965266427221733
+        },
+        {
+          "grid": [
+            48,
+            48
+          ],
+          "line_load": 1191931.0168359166,
+          "relative_error": 0.0005900354887885539
+        }
+      ],
+      "richardson": {
+        "observed_order": 1.8890345201479666,
+        "extrapolated_error": 0.00032874687472992975
+      }
+    }
+  ],
+  "shear": [
+    {
+      "case": "pure_shear_aspect_1",
+      "aspect_ratio": 1.0,
+      "coefficient_fit": 9.34,
+      "finest_coefficient": 9.352117690030086,
+      "grids": [
+        {
+          "grid": [
+            24,
+            24
+          ],
+          "line_load": 3082748.897087062,
+          "coefficient": 9.399354103297782,
+          "relative_error_vs_fit": 0.0063548290468715685
+        },
+        {
+          "grid": [
+            32,
+            32
+          ],
+          "line_load": 3072214.0702162087,
+          "coefficient": 9.367233236019343,
+          "relative_error_vs_fit": 0.0029157640277668317
+        },
+        {
+          "grid": [
+            40,
+            40
+          ],
+          "line_load": 3067256.5558790374,
+          "coefficient": 9.352117690030086,
+          "relative_error_vs_fit": 0.0012973972194951777
+        }
+      ],
+      "richardson": {
+        "observed_order": 1.1239793480364761,
+        "extrapolated_error": -7.471284445432873e-05
+      }
+    },
+    {
+      "case": "pure_shear_aspect_1.5",
+      "aspect_ratio": 1.5,
+      "coefficient_fit": 7.1177777777777775,
+      "finest_coefficient": 7.087884412958149,
+      "grids": [
+        {
+          "grid": [
+            24,
+            36
+          ],
+          "line_load": 2334716.4693065104,
+          "coefficient": 7.118590439379954,
+          "relative_error_vs_fit": 0.0001141735001495281
+        },
+        {
+          "grid": [
+            32,
+            48
+          ],
+          "line_load": 2327867.4634619895,
+          "coefficient": 7.097707703439625,
+          "relative_error_vs_fit": 0.0028197107249979814
+        },
+        {
+          "grid": [
+            40,
+            60
+          ],
+          "line_load": 2324645.6742236298,
+          "coefficient": 7.087884412958149,
+          "relative_error_vs_fit": 0.004199817099229786
+        }
+      ],
+      "richardson": {
+        "observed_order": -4.626247420821725,
+        "extrapolated_error": 0.0027614703231001493
+      }
+    },
+    {
+      "case": "pure_shear_aspect_2",
+      "aspect_ratio": 2.0,
+      "coefficient_fit": 6.34,
+      "finest_coefficient": 6.565333259233591,
+      "grids": [
+        {
+          "grid": [
+            24,
+            48
+          ],
+          "line_load": 2164090.1112492476,
+          "coefficient": 6.598347755893237,
+          "relative_error_vs_fit": 0.040748857396409655
+        },
+        {
+          "grid": [
+            32,
+            64
+          ],
+          "line_load": 2156728.821210381,
+          "coefficient": 6.575903056684111,
+          "relative_error_vs_fit": 0.037208684019576
+        },
+        {
+          "grid": [
+            40,
+            80
+          ],
+          "line_load": 2153262.1966875754,
+          "coefficient": 6.565333259233591,
+          "relative_error_vs_fit": 0.03554152353842133
+        }
+      ],
+      "richardson": {
+        "observed_order": 0.13112023978237866,
+        "extrapolated_error": 0.018018978467848855
+      }
+    },
+    {
+      "case": "pure_shear_aspect_3",
+      "aspect_ratio": 3.0,
+      "coefficient_fit": 5.7844444444444445,
+      "finest_coefficient": 5.888686644888485,
+      "grids": [
+        {
+          "grid": [
+            16,
+            48
+          ],
+          "line_load": 1976798.6253357844,
+          "coefficient": 6.027292812593478,
+          "relative_error_vs_fit": 0.04198300640302155
+        },
+        {
+          "grid": [
+            24,
+            72
+          ],
+          "line_load": 1943334.3973135664,
+          "coefficient": 5.925259809103786,
+          "relative_error_vs_fit": 0.024343801035998425
+        },
+        {
+          "grid": [
+            32,
+            96
+          ],
+          "line_load": 1931339.3303750684,
+          "coefficient": 5.888686644888485,
+          "relative_error_vs_fit": 0.018021125701044305
+        }
+      ],
+      "richardson": {
+        "observed_order": 0.7862510339775062,
+        "extrapolated_error": 0.00929522523292624
+      }
+    }
+  ],
+  "interaction": {
+    "case": "interaction_aspect_2",
+    "grid": [
+      24,
+      24
+    ],
+    "axial_only_load": 1310177.8163144437,
+    "shear_only_load": 2167095.231557384,
+    "points": [
+      {
+        "shear_share": 0.0,
+        "normalised_axial": 1.0,
+        "normalised_shear": 0.0,
+        "sum": 1.0,
+        "sum_of_squares": 1.0
+      },
+      {
+        "shear_share": 0.15,
+        "normalised_axial": 0.9920479896822216,
+        "normalised_shear": 0.08996553888406515,
+        "sum": 1.0820135285662869,
+        "sum_of_squares": 0.9922530120192375
+      },
+      {
+        "shear_share": 0.3,
+        "normalised_axial": 0.9695618598692988,
+        "normalised_shear": 0.17585269283700483,
+        "sum": 1.1454145527063035,
+        "sum_of_squares": 0.9709743696912397
+      },
+      {
+        "shear_share": 0.45,
+        "normalised_axial": 0.9360160244801154,
+        "normalised_shear": 0.25465255790734964,
+        "sum": 1.190668582387465,
+        "sum_of_squares": 0.9409739233323161
+      },
+      {
+        "shear_share": 0.6,
+        "normalised_axial": 0.8956017954958373,
+        "normalised_shear": 0.32487661482234953,
+        "sum": 1.220478410318187,
+        "sum_of_squares": 0.9076473909537969
+      },
+      {
+        "shear_share": 0.8,
+        "normalised_axial": 0.8373125542942895,
+        "normalised_shear": 0.40497651159320075,
+        "sum": 1.2422890658874903,
+        "sum_of_squares": 0.8650982885210254
+      },
+      {
+        "shear_share": 1.0,
+        "normalised_axial": 0.7793274907623682,
+        "normalised_shear": 0.47116415336628786,
+        "sum": 1.250491644128656,
+        "sum_of_squares": 0.8293469972753399
+      },
+      {
+        "shear_share": 1.4,
+        "normalised_axial": 0.6748972590843748,
+        "normalised_shear": 0.5712391250621869,
+        "sum": 1.2461363841465616,
+        "sum_of_squares": 0.7818004483214145
+      },
+      {
+        "shear_share": 2.0,
+        "normalised_axial": 0.5534656523532911,
+        "normalised_shear": 0.669226168971045,
+        "sum": 1.2226918213243363,
+        "sum_of_squares": 0.7541878935705159
+      },
+      {
+        "shear_share": 4.0,
+        "normalised_axial": 0.33743650496631034,
+        "normalised_shear": 0.8160265719450118,
+        "sum": 1.153463076911322,
+        "sum_of_squares": 0.7797627610042063
+      }
+    ]
+  },
+  "uniaxial_reference": {
+    "navier": 1311898.1850063393,
+    "checked_by": "tests/test_marine_plate_combined_buckling.py"
+  },
+  "figures": [
+    "docs/assets/combined_panel_buckling/convergence.png",
+    "docs/assets/combined_panel_buckling/interaction.png",
+    "docs/assets/combined_panel_buckling/shear_mode.png"
+  ]
+}
