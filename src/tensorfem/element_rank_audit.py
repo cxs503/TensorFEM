@@ -33,6 +33,7 @@ plate kernel ``(w, theta_x, theta_y)`` per node and the shell facets
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
+import math
 from typing import Callable, Iterable, Sequence
 
 import torch
@@ -516,3 +517,358 @@ def summary_table(records: Sequence[RankRecord | MeshRecord]) -> str:
             f"{r.spurious} | {ratio_text} |"
         )
     return head + "\n".join(rows) + "\n"
+
+# --------------------------------------------------------------------------- #
+# HEX20 geometry / integration-variant audit (curved, distorted, reduced)
+# --------------------------------------------------------------------------- #
+#: Gauss rules used by the audit of the twenty-node brick, as
+#: ``(points, weights)`` per natural axis.
+_HEX20_GAUSS: dict[int, tuple[tuple[float, ...], tuple[float, ...]]] = {
+    2: ((-1.0 / 3.0 ** 0.5, 1.0 / 3.0 ** 0.5), (1.0, 1.0)),
+    3: ((-(3.0 / 5.0) ** 0.5, 0.0, (3.0 / 5.0) ** 0.5), (5.0 / 9.0, 8.0 / 9.0, 5.0 / 9.0)),
+}
+
+
+def hex20_gauss_rule(order: int) -> tuple[tuple[float, ...], tuple[float, ...]]:
+    """Return the ``(points, weights)`` of the ``order``-point 1-D Gauss rule used here."""
+    if order not in _HEX20_GAUSS:
+        raise ValueError(f"audit supports the 2- and 3-point rules, got {order}")
+    return _HEX20_GAUSS[order]
+
+
+def hex20_jacobian_bounds(nodes: torch.Tensor, *, order: int = 3) -> tuple[float, float]:
+    """Return ``(min, max)`` isoparametric Jacobian determinant over the Gauss points.
+
+    The production element only inspects the 3x3x3 quadrature points
+    (:func:`tensorfem.hex20._gradient`); the audit reproduces that sampling so the
+    reported bounds are the ones the element itself would see.
+    """
+    from .hex20 import _gradient, hex20_shape_gradients
+
+    x = nodes.reshape(-1, 20, 3)
+    points, _ = hex20_gauss_rule(order)
+    low, high = float("inf"), float("-inf")
+    for r in points:
+        for s in points:
+            for t in points:
+                _, dn = hex20_shape_gradients(r, s, t, like=x)
+                _, det = _gradient(x, dn)
+                low = min(low, float(det.min()))
+                high = max(high, float(det.max()))
+    return low, high
+
+
+def hex20_stiffness_variant(
+    nodes: torch.Tensor, d: torch.Tensor, *, order: int = 3
+) -> torch.Tensor:
+    """Audit-only element stiffness for an arbitrary Gauss order.
+
+    ``order=3`` reproduces :func:`tensorfem.hex20.hex20_stiffness` (the production
+    full integration); ``order=2`` is the reduced-integration variant that the
+    production module deliberately does *not* offer, instantiated here so its rank
+    deficiency can be quantified instead of argued.
+    """
+    from .hex20 import _b, _gradient, hex20_shape_gradients
+
+    x = nodes.reshape(-1, 20, 3)
+    points, weights = hex20_gauss_rule(order)
+    ke = x.new_zeros((x.shape[0], 60, 60))
+    for i, r in enumerate(points):
+        for j, s in enumerate(points):
+            for k, t in enumerate(points):
+                _, dn = hex20_shape_gradients(r, s, t, like=x)
+                g, det = _gradient(x, dn)
+                b = _b(g)
+                ke = ke + (b.transpose(1, 2) @ d @ b) * (det * weights[i] * weights[j] * weights[k])[:, None, None]
+    return ke[0] if nodes.ndim == 2 else ke
+
+
+def _hex20_corner_grid(dtype=torch.float64) -> torch.Tensor:
+    return torch.tensor(
+        [
+            [0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [1.0, 1.0, 0.0], [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0], [1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 1.0, 1.0],
+        ],
+        dtype=dtype,
+    )
+
+
+def hex20_from_corners(
+    corners: torch.Tensor, midside: dict[int, torch.Tensor] | None = None
+) -> torch.Tensor:
+    """Complete eight corners to the twenty-node ordering of ``hex20.py``.
+
+    ``midside`` maps an edge index (``0..11`` in ``hex20._EDGES`` order) to an explicit
+    mid-edge node; the default is the straight-edge midpoint.  Explicit positions are
+    how a *curved* (sub-parametric-only-in-position) element is described: the shape
+    functions stay the standard 20-node serendipity ones.
+    """
+    from .hex20 import _EDGES
+
+    corners = corners.reshape(8, 3)
+    nodes = [corners[i] for i in range(8)]
+    for edge, (a, b) in enumerate(_EDGES):
+        if midside is not None and edge in midside:
+            nodes.append(midside[edge].reshape(3))
+        else:
+            nodes.append(0.5 * (corners[a] + corners[b]))
+    return torch.stack(nodes)
+
+
+def _polar(radius: float, angle: float, z: float, dtype=torch.float64) -> torch.Tensor:
+    return torch.tensor([radius * torch.cos(torch.tensor(angle)).item(),
+                         radius * torch.sin(torch.tensor(angle)).item(), z], dtype=dtype)
+
+
+def hex20_arc_block(
+    angle_deg: float, *, radius: float = 1.0, thickness: float = 0.2, height: float = 1.0,
+    dtype: torch.dtype = torch.float64,
+) -> torch.Tensor:
+    """A single HEX20 block wrapped onto a circular arc of ``angle_deg`` degrees.
+
+    Corner order follows ``hex20.py``: the four ``z = 0`` corners run
+    ``(R,0) -> (R,angle) -> (R-t,angle) -> (R-t,0)``, and the arc mid-edge nodes sit on
+    the arc at the mean radius, i.e. the element is genuinely curved, not a straight
+    chord block.  ``angle_deg = 0`` degenerates to the straight block.
+    """
+    span = math.radians(abs(angle_deg)) * (1.0 if angle_deg >= 0.0 else -1.0)
+    corners = torch.stack(
+        [
+            _polar(radius, 0.0, 0.0, dtype), _polar(radius, span, 0.0, dtype),
+            _polar(radius - thickness, span, 0.0, dtype), _polar(radius - thickness, 0.0, 0.0, dtype),
+            _polar(radius, 0.0, height, dtype), _polar(radius, span, height, dtype),
+            _polar(radius - thickness, span, height, dtype), _polar(radius - thickness, 0.0, height, dtype),
+        ]
+    )
+    midside: dict[int, torch.Tensor] = {}
+    from .hex20 import _EDGES
+
+    for edge, (a, b) in enumerate(_EDGES):
+        pa, pb = corners[a], corners[b]
+        ra, rb = float(pa[:2].norm()), float(pb[:2].norm())
+        same_radius = abs(ra - rb) <= 1e-12 * max(ra, 1.0)
+        same_height = abs(float(pa[2] - pb[2])) <= 1e-12
+        if same_radius and same_height and abs(span) > 1e-15:
+            angle = 0.5 * (math.atan2(float(pa[1]), float(pa[0])) + math.atan2(float(pb[1]), float(pb[0])))
+            midside[edge] = _polar(0.5 * (ra + rb), angle, float(pa[2]), dtype)
+    return hex20_from_corners(corners, midside)
+
+
+def hex20_straight_block(
+    width: float = 1.0, *, thickness: float = 0.2, height: float = 1.0, dtype: torch.dtype = torch.float64
+) -> torch.Tensor:
+    """The flat control block with the same dimensions as :func:`hex20_arc_block`."""
+    corners = torch.tensor(
+        [
+            [0.0, 0.0, 0.0], [width, 0.0, 0.0], [width, thickness, 0.0], [0.0, thickness, 0.0],
+            [0.0, 0.0, height], [width, 0.0, height], [width, thickness, height], [0.0, thickness, height],
+        ],
+        dtype=dtype,
+    )
+    return hex20_from_corners(corners)
+
+
+def hex20_arc_mesh(
+    sectors: int, angle_deg: float, *, radius: float = 1.0, thickness: float = 0.2, height: float = 1.0,
+    dtype: torch.dtype = torch.float64,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Conforming ``sectors``-element HEX20 mesh on an arc (shared mid-edge nodes).
+
+    Conformity matters for the audit: if neighbouring curved elements did not share
+    the interpolated arc nodes exactly, the assembled free-free spectrum would gain
+    spurious zero modes for reasons unrelated to the element formulation.
+    """
+    nodes: list[torch.Tensor] = []
+    lookup: dict[tuple[float, float, float], int] = {}
+
+    def index(point: torch.Tensor) -> int:
+        key = tuple(round(float(v), 12) for v in point.tolist())
+        if key not in lookup:
+            lookup[key] = len(nodes)
+            nodes.append(point)
+        return lookup[key]
+
+    cells: list[list[int]] = []
+    step = math.radians(abs(angle_deg)) / sectors
+    for s in range(sectors):
+        element = hex20_arc_block(
+            math.degrees(step), radius=radius, thickness=thickness, height=height, dtype=dtype
+        )
+        shifted = element.clone()
+        angle = s * step
+        c, sn = math.cos(angle), math.sin(angle)
+        rot = torch.tensor([[c, -sn, 0.0], [sn, c, 0.0], [0.0, 0.0, 1.0]], dtype=dtype)
+        shifted = shifted @ rot.T
+        cells.append([index(p) for p in shifted])
+    return torch.stack(nodes), torch.tensor(cells, dtype=torch.long)
+
+
+def _hex20_free_element_record(
+    name: str, nodes: torch.Tensor, d: torch.Tensor, *, order: int = 3, rtol: float = DEFAULT_RTOL,
+    family: str = "geometry", note: str = "",
+) -> dict:
+    record = audit_element(name, hex20_stiffness_variant(nodes, d, order=order),
+                           rigid_body_basis_solid3d(nodes), note=note, rtol=rtol).as_dict()
+    low, high = hex20_jacobian_bounds(nodes, order=order)
+    record.update(
+        {"family": family, "integration_order": order, "jacobian_min": low, "jacobian_max": high,
+         "jacobian_ratio": high / low if low > 0.0 else None}
+    )
+    return record
+
+
+def audit_hex20_geometry_sweep(
+    *, young: float = 200.0e9, poisson: float = 0.3, rtol: float = DEFAULT_RTOL,
+    angles: Sequence[float] = (15.0, 30.0, 45.0, 60.0, 75.0, 90.0),
+    curvature: float = 0.2,
+) -> list[dict]:
+    """Rank audit of the single HEX20 over distorted / warped / curved geometries."""
+    from .solid3d import elasticity_matrix_3d
+
+    dtype = torch.float64
+    d = elasticity_matrix_3d(torch.tensor([young], dtype=dtype), torch.tensor([poisson], dtype=dtype))
+    records: list[dict] = []
+
+    cube = _hex20_cube(dtype)
+    records.append(_hex20_free_element_record("HEX20 unit cube", cube, d, rtol=rtol, note="baseline"))
+
+    rotated = cube @ torch.tensor(
+        [[0.36, -0.48, 0.8], [0.8, 0.6, 0.0], [-0.48, 0.64, 0.6]], dtype=dtype
+    )
+    records.append(
+        _hex20_free_element_record("HEX20 unit cube, rigidly rotated", rotated, d, rtol=rtol,
+                                   note="rank must be rotation invariant")
+    )
+
+    perturbed = _hex20_corner_grid(dtype) + 0.6 * torch.tensor(
+        [[0.0, 0.0, 0.0], [0.25, 0.1, 0.0], [0.2, 0.05, 0.1], [0.0, 0.2, 0.0],
+         [0.05, 0.0, 0.15], [0.3, 0.0, 0.05], [0.2, 0.3, 0.1], [0.0, 0.25, 0.2]], dtype=dtype
+    )
+    records.append(
+        _hex20_free_element_record("HEX20 distorted (straight edges)", hex20_from_corners(perturbed), d,
+                                   rtol=rtol)
+    )
+
+    warped = _hex20_corner_grid(dtype).clone()
+    warped[4:8, 2] = warped[4:8, 2] + torch.tensor([1.0, -0.8, 0.9, -0.7], dtype=dtype)
+    records.append(
+        _hex20_free_element_record("HEX20 warped (non-planar top face)", hex20_from_corners(warped), d, rtol=rtol)
+    )
+
+    for angle in angles:
+        nodes = hex20_arc_block(angle, thickness=curvature, dtype=dtype)
+        records.append(
+            _hex20_free_element_record(f"HEX20 curved arc {angle:g} deg", nodes, d, rtol=rtol,
+                                       family="curvature", note="mid-edge nodes on the arc")
+        )
+
+    width = 2.0 * math.sin(math.radians(30.0) / 2.0)  # chord of the 30 deg arc at R = 1
+    control = hex20_straight_block(width, thickness=curvature, dtype=dtype)
+    records.append(
+        _hex20_free_element_record("HEX20 straight block, 30 deg chord", control, d, rtol=rtol,
+                                   family="curvature", note="aspect-ratio control for the 30 deg arc")
+    )
+    return records
+
+
+def audit_hex20_integration_variants(
+    *, young: float = 200.0e9, poisson: float = 0.3, rtol: float = DEFAULT_RTOL
+) -> list[dict]:
+    """Rank audit of full (3x3x3) versus reduced (2x2x2) HEX20 integration."""
+    from .solid3d import elasticity_matrix_3d
+
+    dtype = torch.float64
+    d = elasticity_matrix_3d(torch.tensor([young], dtype=dtype), torch.tensor([poisson], dtype=dtype))
+    records: list[dict] = []
+    geometries = (
+        ("unit cube", _hex20_cube(dtype)),
+        ("distorted", hex20_arc_block(30.0, dtype=dtype)),
+    )
+    for shape, nodes in geometries:
+        for order in (3, 2):
+            label = "3x3x3 full" if order == 3 else "2x2x2 reduced"
+            records.append(
+                _hex20_free_element_record(f"HEX20 {label} ({shape})", nodes, d, order=order, rtol=rtol,
+                                           family="integration")
+            )
+    return records
+
+
+def audit_hex20_curved_mesh(
+    *, sectors: Sequence[int] = (2, 4, 6), angle_deg: float = 90.0, radius: float = 1.0,
+    thickness: float = 0.2, height: float = 1.0, young: float = 200.0e9, poisson: float = 0.3,
+    rtol: float = DEFAULT_RTOL,
+) -> list[MeshRecord]:
+    """Free-free spectrum of a conforming curved HEX20 mesh (rigid modes must stay 6)."""
+    from .solid3d import elasticity_matrix_3d
+
+    dtype = torch.float64
+    d = elasticity_matrix_3d(torch.tensor([young], dtype=dtype), torch.tensor([poisson], dtype=dtype))
+    records: list[MeshRecord] = []
+    for n in sectors:
+        nodes, cells = hex20_arc_mesh(n, angle_deg, radius=radius, thickness=thickness, height=height, dtype=dtype)
+        elements = [hex20_stiffness_variant(nodes[cell], d) for cell in cells]
+        k = _assemble(elements, [tuple(int(i) for i in cell.tolist()) for cell in cells], 3 * len(nodes), 3)
+        report = classify_null_space(k, rigid_body_basis_solid3d(nodes), rtol=rtol)
+        records.append(
+            MeshRecord(
+                element=f"HEX20 curved arc mesh {angle_deg:g} deg",
+                n=n,
+                dofs=int(k.shape[0]),
+                null_dim=report["null_dim"],
+                expected_rigid_dim=report["expected_rigid_dim"],
+                spurious=report["spurious"],
+                first_positive=float(report["first_positive"] or 0.0),
+                first_positive_ratio=float(report["first_positive_ratio"] or 0.0),
+            )
+        )
+    return records
+
+
+def probe_hex20_jacobian_guard(
+    *, young: float = 200.0e9, poisson: float = 0.3, angles: Sequence[float] = (30.0, 90.0)
+) -> list[dict]:
+    """Check that the production HEX20 refuses invalid geometry instead of returning junk.
+
+    Two invalid descriptions are probed: a clockwise-wound arc block (reversed
+    corner ordering, which inverts the mapping) and a corner pulled through the
+    element so the Jacobian turns negative at a quadrature point.
+    """
+    from .solid3d import elasticity_matrix_3d
+
+    dtype = torch.float64
+    d = elasticity_matrix_3d(torch.tensor([young], dtype=dtype), torch.tensor([poisson], dtype=dtype))
+    probes: list[dict] = []
+    for angle in angles:
+        nodes = hex20_arc_block(-float(angle), dtype=dtype)
+        probes.append(_guard_record(f"HEX20 arc {angle:g} deg, reversed winding", nodes, d))
+    folded = hex20_arc_block(90.0, dtype=dtype).clone()
+    folded[0, 0] -= 0.9
+    folded[3, 0] -= 0.9
+    probes.append(_guard_record("HEX20 arc 90 deg, corner folded inside", folded, d))
+    return probes
+
+
+def _guard_record(name: str, nodes: torch.Tensor, d: torch.Tensor) -> dict:
+    try:
+        k = hex20_stiffness_variant(nodes, d, order=3)
+    except ValueError as exc:
+        return {"element": name, "raised": True, "message": str(exc), "jacobian_min": None}
+    low, _ = hex20_jacobian_bounds(nodes, order=3)
+    return {"element": name, "raised": False, "message": "accepted", "jacobian_min": low,
+            "min_eigenvalue": float(torch.linalg.eigvalsh(0.5 * (k + k.T)).min())}
+
+
+__all__ = sorted(set(__all__) | {
+    "hex20_gauss_rule",
+    "hex20_jacobian_bounds",
+    "hex20_stiffness_variant",
+    "hex20_from_corners",
+    "hex20_arc_block",
+    "hex20_straight_block",
+    "hex20_arc_mesh",
+    "audit_hex20_geometry_sweep",
+    "audit_hex20_integration_variants",
+    "audit_hex20_curved_mesh",
+    "probe_hex20_jacobian_guard",
+})

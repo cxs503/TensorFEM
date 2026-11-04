@@ -288,8 +288,8 @@
       "null_dim": 4,
       "expected_rigid_dim": 3,
       "spurious": 1,
-      "first_positive": 1385.0401494634862,
-      "first_positive_ratio": 5.738232531160105e-07
+      "first_positive": 1385.0401495055244,
+      "first_positive_ratio": 5.738232531334282e-07
     }
   ],
   "plate_mesh_scan_mitc": [
@@ -350,8 +350,8 @@
       "null_dim": 3,
       "expected_rigid_dim": 3,
       "spurious": 0,
-      "first_positive": 1386.810644166133,
-      "first_positive_ratio": 5.637236969138576e-07
+      "first_positive": 1386.8106440604292,
+      "first_positive_ratio": 5.637236968708894e-07
     }
   ],
   "shell_mesh_scan_plate_sri": [
@@ -452,13 +452,13 @@
           0.0,
           0.0,
           0.0,
-          0.006603574953366404,
-          211.6957819437848,
-          320.09413271594053
+          0.005551033255906519,
+          211.6957818911801,
+          320.0941326063754
         ],
-        "free_free_omega1": 211.6957819437848,
-        "simply_supported_omega11": 324.26894491708,
-        "simply_supported_error_percent": 7.206036516657879
+        "free_free_omega1": 211.6957818911801,
+        "simply_supported_omega11": 324.2689448089357,
+        "simply_supported_error_percent": 7.206036480904477
       },
       {
         "n": 4,
@@ -467,15 +467,15 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.0029211428251904327,
-          0.013968490103952494,
-          211.75169726947175,
-          320.168953603439,
-          412.1351053207606
+          0.011488699192432629,
+          0.015511223555010395,
+          211.75169724911285,
+          320.1689536230924,
+          412.1351053639189
         ],
-        "free_free_omega1": 211.75169726947175,
-        "simply_supported_omega11": 324.2746552287362,
-        "simply_supported_error_percent": 7.207924393648677
+        "free_free_omega1": 211.75169724911285,
+        "simply_supported_omega11": 324.2746549945189,
+        "simply_supported_error_percent": 7.207924316214477
       },
       {
         "n": 6,
@@ -484,15 +484,15 @@
         "free_free_zero_modes": 4,
         "free_free_lowest": [
           0.0,
-          0.0,
-          0.0011577214485568206,
-          0.00740445582284769,
-          208.72830962590567,
-          309.7427084085272
+          0.004298903901144244,
+          0.006552630480343266,
+          0.006639633505264084,
+          208.72830971146863,
+          309.7427085246786
         ],
-        "free_free_omega1": 208.72830962590567,
-        "simply_supported_omega11": 311.8133315560252,
-        "simply_supported_error_percent": 3.0881061327783277
+        "free_free_omega1": 208.72830971146863,
+        "simply_supported_omega11": 311.81333173625404,
+        "simply_supported_error_percent": 3.0881061923634907
       },
       {
         "n": 6,
@@ -501,15 +501,15 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.008455308605674729,
-          0.014319537890757123,
-          208.86983273167164,
-          309.80071784160634,
-          390.7242514195228
+          0.0034135116720612133,
+          0.016144135866166993,
+          208.86983270533207,
+          309.80071766636655,
+          390.7242513223538
         ],
-        "free_free_omega1": 208.86983273167164,
-        "simply_supported_omega11": 311.81551702983637,
-        "simply_supported_error_percent": 3.088828668774689
+        "free_free_omega1": 208.86983270533207,
+        "simply_supported_omega11": 311.81551728292425,
+        "simply_supported_error_percent": 3.0888287524476663
       },
       {
         "n": 8,
@@ -518,15 +518,15 @@
         "free_free_zero_modes": 4,
         "free_free_lowest": [
           0.0,
-          0.0021193959661728818,
-          0.0031397316680711563,
-          0.00756045118906384,
-          207.49943963049625,
-          305.6925301637229
+          0.0,
+          0.001232956664715563,
+          0.006906302216823574,
+          207.49943960787422,
+          305.6925300957931
         ],
-        "free_free_omega1": 207.49943963049625,
-        "simply_supported_omega11": 307.62438911096615,
-        "simply_supported_error_percent": 1.7032065801985499
+        "free_free_omega1": 207.49943960787422,
+        "simply_supported_omega11": 307.62438917257595,
+        "simply_supported_error_percent": 1.703206600567266
       },
       {
         "n": 8,
@@ -535,15 +535,15 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.006381508618063637,
-          0.012999146043650572,
-          207.755193713096,
-          305.7315489764096,
-          382.5907045576821
+          0.0,
+          0.01543042259716925,
+          207.7551937660138,
+          305.7315489588618,
+          382.5907043314454
         ],
-        "free_free_omega1": 207.755193713096,
-        "simply_supported_omega11": 307.6255571469519,
-        "simply_supported_error_percent": 1.7035927427050266
+        "free_free_omega1": 207.7551937660138,
+        "simply_supported_omega11": 307.6255567893845,
+        "simply_supported_error_percent": 1.7035926244902455
       },
       {
         "n": 10,
@@ -552,15 +552,15 @@
         "free_free_zero_modes": 4,
         "free_free_lowest": [
           0.0,
-          0.0009600253664472804,
-          0.005272110080070648,
-          0.009205821740433214,
-          206.83245590161548,
-          303.7439243472563
+          0.0,
+          0.004337632057293159,
+          0.005208553264457789,
+          206.83245582004588,
+          303.74392431276874
         ],
-        "free_free_omega1": 206.83245590161548,
-        "simply_supported_omega11": 305.71427621907605,
-        "simply_supported_error_percent": 1.071707216325539
+        "free_free_omega1": 206.83245582004588,
+        "simply_supported_omega11": 305.71427620215803,
+        "simply_supported_error_percent": 1.0717072107322987
       },
       {
         "n": 10,
@@ -569,15 +569,15 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.00900814951460744,
-          0.01060612326277351,
-          207.2139141285024,
-          303.7719813928135,
-          378.7320884779707
+          0.0,
+          0.00846401843916149,
+          207.2139139321604,
+          303.77198146904044,
+          378.7320883051932
         ],
-        "free_free_omega1": 207.2139141285024,
-        "simply_supported_omega11": 305.7150062667604,
-        "simply_supported_error_percent": 1.0719485762211807
+        "free_free_omega1": 207.2139139321604,
+        "simply_supported_omega11": 305.7150064832828,
+        "simply_supported_error_percent": 1.0719486478053168
       },
       {
         "n": 12,
@@ -588,13 +588,13 @@
           0.0,
           0.0,
           0.0,
-          0.008174659331135908,
-          206.41275743499148,
-          302.66569341034267
+          0.0014780747933590866,
+          206.41275748338816,
+          302.6656934337463
         ],
-        "free_free_omega1": 206.41275743499148,
-        "simply_supported_omega11": 304.684197587079,
-        "simply_supported_error_percent": 0.7311545696169692
+        "free_free_omega1": 206.41275748338816,
+        "simply_supported_omega11": 304.6841976111064,
+        "simply_supported_error_percent": 0.731154577560639
       },
       {
         "n": 12,
@@ -603,16 +603,312 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.0,
-          0.006943646159227665,
-          206.90771645229339,
-          302.68761901637066,
-          376.61314644302496
+          0.009284615573999174,
+          0.012821644537920117,
+          206.90771622288662,
+          302.6876193417551,
+          376.6131464836526
         ],
-        "free_free_omega1": 206.90771645229339,
-        "simply_supported_omega11": 304.6846985967049,
-        "simply_supported_error_percent": 0.7313202076069528
+        "free_free_omega1": 206.90771622288662,
+        "simply_supported_omega11": 304.6846985884714,
+        "simply_supported_error_percent": 0.7313202048848936
       }
     ]
-  }
+  },
+  "hex20_geometry_sweep": [
+    {
+      "element": "HEX20 unit cube",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.011895515609490773,
+      "min_eigenvalue": -8.490779381677919e-05,
+      "scale": 637104224860.33,
+      "note": "baseline",
+      "family": "geometry",
+      "integration_order": 3,
+      "jacobian_min": 0.12499999999999992,
+      "jacobian_max": 0.12500000000000008,
+      "jacobian_ratio": 1.0000000000000013
+    },
+    {
+      "element": "HEX20 unit cube, rigidly rotated",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.011895515609490948,
+      "min_eigenvalue": -8.318437361525868e-05,
+      "scale": 637104224860.3295,
+      "note": "rank must be rotation invariant",
+      "family": "geometry",
+      "integration_order": 3,
+      "jacobian_min": 0.12499999999999982,
+      "jacobian_max": 0.12500000000000017,
+      "jacobian_ratio": 1.0000000000000029
+    },
+    {
+      "element": "HEX20 distorted (straight edges)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.010476872738716447,
+      "min_eigenvalue": -7.29951219030244e-05,
+      "scale": 727747593086.832,
+      "note": "",
+      "family": "geometry",
+      "integration_order": 3,
+      "jacobian_min": 0.14278201518603814,
+      "jacobian_max": 0.17885931981396183,
+      "jacobian_ratio": 1.2526740120659923
+    },
+    {
+      "element": "HEX20 warped (non-planar top face)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.0021475065916323395,
+      "min_eigenvalue": -8.23383306839223e-05,
+      "scale": 968969212038.0527,
+      "note": "",
+      "family": "geometry",
+      "integration_order": 3,
+      "jacobian_min": 0.06890877081724066,
+      "jacobian_max": 0.20609122918275935,
+      "jacobian_ratio": 2.990783709222633
+    },
+    {
+      "element": "HEX20 curved arc 15 deg",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.0005566228897056582,
+      "min_eigenvalue": -2.7657129711797757e-05,
+      "scale": 668355460661.9382,
+      "note": "mid-edge nodes on the arc",
+      "family": "curvature",
+      "integration_order": 3,
+      "jacobian_min": 0.0053681528811901835,
+      "jacobian_max": 0.00641194940549008,
+      "jacobian_ratio": 1.1944423989781146
+    },
+    {
+      "element": "HEX20 curved arc 30 deg",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.0003210548471857618,
+      "min_eigenvalue": -0.00013402856651580826,
+      "scale": 1278505284980.025,
+      "note": "mid-edge nodes on the arc",
+      "family": "curvature",
+      "integration_order": 3,
+      "jacobian_min": 0.010644455178250054,
+      "jacobian_max": 0.01290786670763179,
+      "jacobian_ratio": 1.2126376119283768
+    },
+    {
+      "element": "HEX20 curved arc 45 deg",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.0001768349710392251,
+      "min_eigenvalue": -7.717114692355469e-05,
+      "scale": 1879043258466.4976,
+      "note": "mid-edge nodes on the arc",
+      "family": "curvature",
+      "integration_order": 3,
+      "jacobian_min": 0.015738627896009518,
+      "jacobian_max": 0.01955708424468151,
+      "jacobian_ratio": 1.2426168516024292
+    },
+    {
+      "element": "HEX20 curved arc 60 deg",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.0001142762514236972,
+      "min_eigenvalue": -0.00024009801642285988,
+      "scale": 2451739892092.2324,
+      "note": "mid-edge nodes on the arc",
+      "family": "curvature",
+      "integration_order": 3,
+      "jacobian_min": 0.020563508326896247,
+      "jacobian_max": 0.026400813136001115,
+      "jacobian_ratio": 1.2838671648976312
+    },
+    {
+      "element": "HEX20 curved arc 75 deg",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 8.40599135323647e-05,
+      "min_eigenvalue": -0.00012023438501791553,
+      "scale": 2988815366844.7,
+      "note": "mid-edge nodes on the arc",
+      "family": "curvature",
+      "integration_order": 3,
+      "jacobian_min": 0.02503654142902821,
+      "jacobian_max": 0.03344087644424149,
+      "jacobian_ratio": 1.335682747516756
+    },
+    {
+      "element": "HEX20 curved arc 90 deg",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 6.77591279830055e-05,
+      "min_eigenvalue": -0.00018893459171918507,
+      "scale": 3486040355534.8564,
+      "note": "mid-edge nodes on the arc",
+      "family": "curvature",
+      "integration_order": 3,
+      "jacobian_min": 0.02908119236586877,
+      "jacobian_max": 0.040631573701610524,
+      "jacobian_ratio": 1.3971770204751952
+    },
+    {
+      "element": "HEX20 straight block, 30 deg chord",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.0002722746484739563,
+      "min_eigenvalue": -9.215754369428025e-05,
+      "scale": 1408635288169.792,
+      "note": "aspect-ratio control for the 30 deg arc",
+      "family": "curvature",
+      "integration_order": 3,
+      "jacobian_min": 0.01294095225512603,
+      "jacobian_max": 0.012940952255126044,
+      "jacobian_ratio": 1.000000000000001
+    }
+  ],
+  "hex20_integration_variants": [
+    {
+      "element": "HEX20 3x3x3 full (unit cube)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.011895515609490773,
+      "min_eigenvalue": -8.490779381677919e-05,
+      "scale": 637104224860.33,
+      "note": "",
+      "family": "integration",
+      "integration_order": 3,
+      "jacobian_min": 0.12499999999999992,
+      "jacobian_max": 0.12500000000000008,
+      "jacobian_ratio": 1.0000000000000013
+    },
+    {
+      "element": "HEX20 2x2x2 reduced (unit cube)",
+      "dofs": 60,
+      "null_dim": 12,
+      "expected_rigid_dim": 6,
+      "spurious": 6,
+      "first_positive_ratio": 0.01037937805978204,
+      "min_eigenvalue": -0.00017810755575248014,
+      "scale": 614935013094.2725,
+      "note": "",
+      "family": "integration",
+      "integration_order": 2,
+      "jacobian_min": 0.12499999999999994,
+      "jacobian_max": 0.12499999999999999,
+      "jacobian_ratio": 1.0000000000000004
+    },
+    {
+      "element": "HEX20 3x3x3 full (distorted)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.0003210548471857618,
+      "min_eigenvalue": -0.00013402856651580826,
+      "scale": 1278505284980.025,
+      "note": "",
+      "family": "integration",
+      "integration_order": 3,
+      "jacobian_min": 0.010644455178250054,
+      "jacobian_max": 0.01290786670763179,
+      "jacobian_ratio": 1.2126376119283768
+    },
+    {
+      "element": "HEX20 2x2x2 reduced (distorted)",
+      "dofs": 60,
+      "null_dim": 12,
+      "expected_rigid_dim": 6,
+      "spurious": 6,
+      "first_positive_ratio": 0.00014714819171747387,
+      "min_eigenvalue": -0.00013246094721985335,
+      "scale": 1276660494074.729,
+      "note": "",
+      "family": "integration",
+      "integration_order": 2,
+      "jacobian_min": 0.011023510349237941,
+      "jacobian_max": 0.012534775063064522,
+      "jacobian_ratio": 1.137094688166284
+    }
+  ],
+  "hex20_curved_mesh": [
+    {
+      "element": "HEX20 curved arc mesh 90 deg",
+      "n": 2,
+      "dofs": 96,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive": 150175133.99355325,
+      "first_positive_ratio": 5.209550079026744e-05
+    },
+    {
+      "element": "HEX20 curved arc mesh 90 deg",
+      "n": 4,
+      "dofs": 168,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive": 97728717.89042512,
+      "first_positive_ratio": 5.519735139512555e-05
+    },
+    {
+      "element": "HEX20 curved arc mesh 90 deg",
+      "n": 6,
+      "dofs": 240,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive": 72445903.6754151,
+      "first_positive_ratio": 5.7493348001541734e-05
+    }
+  ],
+  "hex20_jacobian_guard": [
+    {
+      "element": "HEX20 arc 30 deg, reversed winding",
+      "raised": true,
+      "message": "HEX20 element has non-positive or degenerate Jacobian",
+      "jacobian_min": null
+    },
+    {
+      "element": "HEX20 arc 90 deg, reversed winding",
+      "raised": true,
+      "message": "HEX20 element has non-positive or degenerate Jacobian",
+      "jacobian_min": null
+    },
+    {
+      "element": "HEX20 arc 90 deg, corner folded inside",
+      "raised": true,
+      "message": "HEX20 element has non-positive or degenerate Jacobian",
+      "jacobian_min": null
+    }
+  ]
 }

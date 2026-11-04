@@ -8,12 +8,19 @@ import torch
 
 from tensorfem.element_rank_audit import (
     audit_element,
+    audit_hex20_curved_mesh,
+    audit_hex20_geometry_sweep,
+    audit_hex20_integration_variants,
     audit_library,
     audit_plate_mesh_scan,
     audit_shell_mesh_scan,
     classify_null_space,
     rigid_body_basis_plate,
     rigid_body_basis_shell,
+    hex20_arc_block,
+    hex20_jacobian_bounds,
+    hex20_stiffness_variant,
+    probe_hex20_jacobian_guard,
     rigid_body_basis_solid3d,
     summary_table,
 )
@@ -218,3 +225,72 @@ def test_summary_table_renders():
     table = summary_table(records)
     assert table.startswith("| element |")
     assert table.count("\n") == len(records) + 2
+
+
+# --------------------------------------------------------------------------- #
+# HEX20 geometry / integration-variant debt closure
+# --------------------------------------------------------------------------- #
+def _hex20_elasticity():
+    from tensorfem.solid3d import elasticity_matrix_3d
+
+    return elasticity_matrix_3d(torch.tensor([YOUNG]), torch.tensor([POISSON]))
+
+
+def test_hex20_curved_and_distorted_geometries_keep_exact_rigid_rank():
+    """Curved, warped and distorted HEX20 must keep null dimension exactly 6."""
+    records = audit_hex20_geometry_sweep(young=YOUNG, poisson=POISSON, angles=(15.0, 45.0, 90.0))
+    assert len(records) == 8
+    for row in records:
+        assert row["null_dim"] == 6, row["element"]
+        assert row["expected_rigid_dim"] == 6, row["element"]
+        assert row["spurious"] == 0, row["element"]
+        assert row["jacobian_min"] > 0.0, row["element"]
+
+
+def test_hex20_rank_and_soft_mode_are_rotation_invariant():
+    records = {row["element"]: row for row in audit_hex20_geometry_sweep(young=YOUNG, poisson=POISSON, angles=())}
+    cube = records["HEX20 unit cube"]
+    rotated = records["HEX20 unit cube, rigidly rotated"]
+    assert cube["null_dim"] == rotated["null_dim"] == 6
+    assert math.isclose(cube["first_positive_ratio"], rotated["first_positive_ratio"], rel_tol=1e-10)
+    assert math.isclose(cube["jacobian_min"], rotated["jacobian_min"], rel_tol=1e-10)
+
+
+def test_hex20_reduced_integration_carries_six_hourglass_modes():
+    """The 2x2x2 variant is rank deficient by exactly six: reason for 3x3x3."""
+    records = audit_hex20_integration_variants(young=YOUNG, poisson=POISSON)
+    full = [r for r in records if r["integration_order"] == 3]
+    reduced = [r for r in records if r["integration_order"] == 2]
+    assert [r["spurious"] for r in full] == [0, 0]
+    assert [r["null_dim"] for r in reduced] == [12, 12]
+    assert [r["spurious"] for r in reduced] == [6, 6]
+
+
+def test_hex20_curved_arc_mesh_keeps_six_rigid_modes():
+    """Conforming curved patch: free-free spectrum has six and only six zero modes."""
+    records = audit_hex20_curved_mesh(sectors=(2, 3), young=YOUNG, poisson=POISSON)
+    assert [r.null_dim for r in records] == [6, 6]
+    assert [r.spurious for r in records] == [0, 0]
+    assert all(r.first_positive_ratio > 0.0 for r in records)
+
+
+def test_hex20_rejects_inverted_and_folded_geometry():
+    """The Jacobian guard must be fail-closed, not silently returning junk."""
+    probes = probe_hex20_jacobian_guard(young=YOUNG, poisson=POISSON)
+    assert len(probes) == 3
+    assert all(p["raised"] for p in probes)
+    assert all("Jacobian" in p["message"] for p in probes)
+
+
+def test_hex20_jacobian_bounds_match_production_integration():
+    """The audit's order-3 stiffness must reproduce the production element matrix."""
+    from tensorfem.hex20 import hex20_stiffness
+
+    nodes = hex20_arc_block(45.0)
+    d = _hex20_elasticity()
+    reference, _ = hex20_stiffness(nodes.unsqueeze(0), d)
+    audit = hex20_stiffness_variant(nodes, d, order=3)
+    scale = reference[0].abs().max()
+    assert float((audit - reference[0]).abs().max()) / float(scale) < 1e-14
+    low, high = hex20_jacobian_bounds(nodes, order=3)
+    assert 0.0 < low < high

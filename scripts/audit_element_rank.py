@@ -212,6 +212,37 @@ def figure_scaling(plate_scan, shell_scan_sri, shell_scan_mitc, path: Path):
     plt.close(fig)
 
 
+def figure_hex20(geometry, integration, path: Path):
+    fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
+    curved = [r for r in geometry if r["family"] == "curvature" and "arc" in r["element"]]
+    control = [r for r in geometry if r["family"] == "curvature" and "straight" in r["element"]]
+    angles = [float(r["element"].split()[3]) for r in curved]
+    ax[0].semilogy(angles, [r["first_positive_ratio"] for r in curved], "o-", color="#4c72b0",
+                   label="curved HEX20 (mid-edge on arc)")
+    if control:
+        ax[0].semilogy(angles, [control[0]["first_positive_ratio"]] * len(angles), "s--", color="#55a868",
+                       label="straight control (30 deg chord width)")
+    ax[0].set_xlabel("arc angle per element [deg]")
+    ax[0].set_ylabel("lambda_softest / lambda_max")
+    ax[0].set_title("Softest elastic mode of the free HEX20 (63 DOF) ")
+    ax[0].grid(alpha=0.3, which="both")
+    ax[0].legend(fontsize=8)
+    labels, spurious = [], []
+    for row in integration:
+        labels.append(row["element"].replace("HEX20 ", "").replace(" integration", ""))
+        spurious.append(row["spurious"])
+    positions = range(len(labels))
+    ax[1].bar(list(positions), spurious, width=0.55, color="#c44e52")
+    ax[1].set_xticks(list(positions))
+    ax[1].set_xticklabels(labels, rotation=20, ha="right", fontsize=8)
+    ax[1].set_ylabel("spurious zero-energy modes")
+    ax[1].set_title("Full (3x3x3) vs reduced (2x2x2) HEX20 integration")
+    ax[1].grid(axis="y", alpha=0.3)
+    fig.tight_layout()
+    fig.savefig(path, dpi=160)
+    plt.close(fig)
+
+
 def main():
     root = Path(__file__).resolve().parents[1]
     evidence_dir = root / "docs" / "benchmarks" / "tutorials"
@@ -228,6 +259,18 @@ def main():
     )
     modal = modal_study()
 
+    from tensorfem.element_rank_audit import (
+        audit_hex20_curved_mesh,
+        audit_hex20_geometry_sweep,
+        audit_hex20_integration_variants,
+        probe_hex20_jacobian_guard,
+    )
+
+    hex20_geometry = audit_hex20_geometry_sweep(young=YOUNG, poisson=POISSON)
+    hex20_integration = audit_hex20_integration_variants(young=YOUNG, poisson=POISSON)
+    hex20_mesh = audit_hex20_curved_mesh(young=YOUNG, poisson=POISSON)
+    hex20_guard = probe_hex20_jacobian_guard(young=YOUNG, poisson=POISSON)
+
     payload = {
         "description": "Zero-energy (rank-deficiency) audit of the TensorFEM element library",
         "parameters": {
@@ -240,6 +283,10 @@ def main():
         "shell_mesh_scan_plate_sri": [r.as_dict() for r in shell_scan_sri],
         "shell_mesh_scan_plate_mitc": [r.as_dict() for r in shell_scan_mitc],
         "modal_study": modal,
+        "hex20_geometry_sweep": hex20_geometry,
+        "hex20_integration_variants": hex20_integration,
+        "hex20_curved_mesh": [r.as_dict() for r in hex20_mesh],
+        "hex20_jacobian_guard": hex20_guard,
     }
     path = evidence_dir / "element-rank-audit.json"
     path.write_text(json.dumps(payload, indent=2, sort_keys=False) + "\n")
@@ -247,6 +294,7 @@ def main():
     figure_elements(elements, asset_dir / "element_rank_element_nullspace.png")
     figure_free_free(modal, asset_dir / "element_rank_free_free_modes.png")
     figure_scaling(plate_scan, shell_scan_sri, shell_scan_mitc, asset_dir / "element_rank_mesh_scaling.png")
+    figure_hex20(hex20_geometry, hex20_integration, asset_dir / "element_rank_hex20_geometry.png")
 
     print(summary_table(elements))
     print("--- plate free-mesh scan (SRI)")
@@ -259,6 +307,22 @@ def main():
     print(summary_table(shell_scan_mitc))
     print("--- modal study")
     for row in modal["rows"]:
+        print(row)
+    print("--- HEX20 geometry sweep")
+    for row in hex20_geometry:
+        print(f"{row['element']:<42s} null={row['null_dim']} spurious={row['spurious']} "
+              f"lambda1_ratio={row['first_positive_ratio']:.3e} " 
+              f"jac_min={row['jacobian_min']:.4e} jac_max={row['jacobian_max']:.4e}")
+    print("--- HEX20 integration variants")
+    for row in hex20_integration:
+        print(f"{row['element']:<42s} null={row['null_dim']} spurious={row['spurious']} "
+              f"lambda1_ratio={row['first_positive_ratio']:.3e}")
+    print("--- HEX20 curved arc mesh (free-free)")
+    for row in hex20_mesh:
+        print(f"{row.element} sectors={row.n} dofs={row.dofs} null={row.null_dim} spurious={row.spurious} "
+              f"lambda1_ratio={row.first_positive_ratio:.3e}")
+    print("--- HEX20 Jacobian guard")
+    for row in hex20_guard:
         print(row)
     print(f"evidence written to {path}")
 
