@@ -58,6 +58,11 @@ three machine-dependent xfail marks live in files outside the covered set.
   rounding. The repo already declares three such cases as `xfail`
   (`test_finite_rotation_layered_shell4.py`, `test_shell4_arc_line_search.py`,
   `test_v1_evidence_aggregator.py` ×2, all "machine-dependent … See issue #8").
+
+Update: all four historical marks are now retired — the round-off ones by the
+scale-relative bound `roundoff_scale.roundoff_bound` documented in
+`docs/layered-shell4-roundoff-floor.md`, the Newton-stall ones by deterministic
+line-search/evidence fixtures.  No `xfail` mark remains anywhere in `tests/`.
 * **Budget red** — the test did not finish inside the re-run budget on the
   loaded host; this is *not* classified as red, it is reported as uncovered.
 

@@ -19,6 +19,14 @@
 
 # Changelog
 
+## Unreleased
+
+* Retire the last machine-dependent `xfail` in `tests/`: the layered Shell4 stress-free
+  assertion now uses the objective bound `roundoff_bound(scale) = ops * eps * scale`
+  (`src/tensorfem/roundoff_scale.py`) instead of the absolute `1e-10`, which sat inside
+  the `< 4 eps E` noise band of the assembly.  Evidence: `scripts/audit_roundoff_floor.py`,
+  `artifacts/layered-shell4-roundoff-audit.json`, `docs/layered-shell4-roundoff-floor.md`.
+
 All notable user-visible changes are recorded here.
 
 ## Unreleased

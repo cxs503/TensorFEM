@@ -12,6 +12,7 @@ from tensorfem.finite_rotation_layered_shell4 import (
     solve_finite_rotation_arc_path,
     solve_finite_rotation_increment,
 )
+from tensorfem.roundoff_scale import roundoff_bound
 from tensorfem.layered_shell4_plasticity import (
     LayeredShell4Model,
     LayeredShell4State,
@@ -21,6 +22,9 @@ from tensorfem.layered_shell4_plasticity import (
 )
 
 D = torch.float64
+# Mirror model()'s material parameters; they set the term scale of the
+# round-off criterion (docs/layered-shell4-roundoff-floor.md).
+YOUNG, THICKNESS = 200000., .08
 
 
 def test_dimensionally_scaled_arc_metric_comes_from_shell_kinematics():
@@ -99,12 +103,6 @@ def test_imperfection_is_stress_free_reference_and_residual_stress_is_active():
     assert torch.allclose(response.stress[..., 0], residual[..., 0], atol=2e-7)
 
 
-@pytest.mark.xfail(
-    reason=(
-        "machine-dependent: the stress-free reference lands at 1.5e-10 instead of below 1e-10 on a different CPU/BLAS build.  The assertion is an absolute threshold with no margin for the last-bit difference, while the physical claim is 'zero to within roundoff'.  See issue #8."
-    ),
-    strict=False,
-)
 def test_shallow_warped_reference_is_stress_free_objective_and_deep_warp_rejected():
     nodes = torch.tensor([[0., 0., 0.], [1., 0., .012],
                           [1., 1., -.007], [0., 1., .004]], dtype=D)
@@ -113,8 +111,11 @@ def test_shallow_warped_reference_is_stress_free_objective_and_deep_warp_rejecte
     zero = assemble_finite_rotation_layered_shell4(
         shell, torch.zeros(shell.n_dofs, dtype=D), state, tangent=False
     )
-    assert float(zero.internal_force.abs().max()) < 1e-10
-    assert float(zero.stress.abs().max()) < 1e-10
+    # Objective platform-independent criterion: the assembled floor is
+    # O(ops * eps * scale), not an absolute constant.  The retired 1e-10
+    # sat inside that noise band on other CPUs (issue #8).
+    assert float(zero.internal_force.abs().max()) <= roundoff_bound(YOUNG * THICKNESS)
+    assert float(zero.stress.abs().max()) <= roundoff_bound(YOUNG)
 
     axis = torch.tensor([.2, -.7, .4], dtype=D)
     angle = .83
