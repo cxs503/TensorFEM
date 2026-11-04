@@ -21,7 +21,15 @@ from tensorfem.torsion_bar import (
     torsion_shear_stress,
     torsion_warping_function,
 )
-
+from tensorfem.saint_venant_torsion import (
+    AnnulusCircleSection,
+    CircleSection,
+    EllipseSection,
+    RectSection,
+    default_sections,
+    prism_mesh,
+    torsion_run,
+)
 SIDE = 1.0
 LENGTH = 4.0
 YOUNG = 1.0e9
@@ -221,3 +229,159 @@ def test_invalid_arguments_are_rejected():
         rectangular_torsion_constant(0.5, 1.0)  # sides passed the wrong way round
     with pytest.raises(ValueError):
         max_shear_stress(SIDE, SIDE, samples=3)
+
+# ---------------------------------------------------------------------------
+# Independent section-library oracle suite (tensorfem.saint_venant_torsion):
+# the oracle sections are checked before they judge the merged HEX8 path.
+# ---------------------------------------------------------------------------
+def _interior_points(section, count=7):
+    half = 0.3 * section.scale
+    axis = torch.linspace(-half, half, count, dtype=torch.float64)
+    return torch.meshgrid(axis, axis, indexing="ij")
+
+
+# --------------------------------------------------------------------------- #
+# 1. the oracle itself
+# --------------------------------------------------------------------------- #
+@pytest.mark.parametrize("section", [CircleSection(1.0), EllipseSection(1.0, 0.5),
+                                     RectSection(1.0, 1.0), RectSection(1.0, 0.4)])
+def test_prandtl_field_solves_the_torsion_boundary_value_problem(section):
+    xx, yy = _interior_points(section)
+    residual = section.laplacian_residual(xx, yy)
+    assert float(residual.abs().max()) < 1e-4 * section.g * section.theta
+
+
+@pytest.mark.parametrize("section", [CircleSection(1.0), EllipseSection(1.0, 0.5),
+                                     RectSection(1.0, 1.0), RectSection(1.0, 0.4)])
+def test_phi_vanishes_on_the_section_boundary(section):
+    edge = torch.linspace(-1.0, 1.0, 15, dtype=torch.float64)
+    if section.name == "circle":
+        values = section.phi(section.a * torch.cos(edge), section.a * torch.sin(edge))
+    elif section.name == "ellipse":
+        values = section.phi(section.a * torch.cos(edge), section.b * torch.sin(edge))
+    else:
+        values = torch.cat((section.phi(torch.full_like(edge, section.a), edge * section.b),
+                            section.phi(edge * section.a, torch.full_like(edge, section.b)),
+                            section.phi(torch.full_like(edge, -section.a), edge * section.b),
+                            section.phi(edge * section.a, torch.full_like(edge, -section.b))))
+    scale = section.g * section.theta * section.scale ** 2
+    assert float(values.abs().max()) / scale < 1e-6
+
+
+@pytest.mark.parametrize("section", [CircleSection(1.0), EllipseSection(1.0, 0.5),
+                                     RectSection(1.0, 1.0), RectSection(1.0, 0.4),
+                                     AnnulusCircleSection(0.5, 1.0)])
+def test_torque_identities_reproduce_the_section_torsion_constant(section):
+    """``T = integral(x tau_yz - y tau_xz) dA = G theta J`` from the exact field."""
+    reference = section.g * section.theta * section.j
+    assert section.torque_from_stress() / reference == pytest.approx(1.0, abs=5e-3)
+
+
+@pytest.mark.parametrize("section", [CircleSection(1.0), EllipseSection(1.0, 0.5),
+                                     RectSection(1.0, 1.0), RectSection(1.0, 0.4)])
+def test_prandtl_area_identity_equals_the_stress_integral(section):
+    """``2 integral(phi dA)`` agrees with ``integral(x tau_yz - y tau_xz) dA``."""
+    reference = section.g * section.theta * section.j
+    assert section.torque_from_phi() / reference == pytest.approx(1.0, abs=1e-5)
+
+
+def test_rectangle_series_matches_the_textbook_torsion_constants():
+    """Square section of side ``c``: ``J = 0.1406 c^4``, ``tau_max = T/(0.208 c^3)``."""
+    section = RectSection(0.5, 0.5)
+    side = 1.0
+    assert section.j / side ** 4 == pytest.approx(0.1406, rel=2e-4)
+    torque = section.g * section.theta * section.j
+    assert torque / (side ** 3 * section.tau_max) == pytest.approx(0.208, rel=2e-3)
+
+
+def test_rectangle_series_truncation_is_negligible_at_extremes():
+    coarse = RectSection(1.0, 0.5, terms=21)
+    fine = RectSection(1.0, 0.5, terms=121)
+    assert coarse.j == pytest.approx(fine.j, rel=2e-6)
+    assert coarse.tau_max == pytest.approx(fine.tau_max, rel=2e-6)
+
+
+def test_ellipse_peak_shear_matches_the_closed_form():
+    """``tau_max = 2T/(pi a b^2)`` at the ends of the minor axis."""
+    section = EllipseSection(1.0, 0.6)
+    torque = section.g * section.theta * section.j
+    predicted = 2.0 * torque / (math.pi * section.a * section.b ** 2)
+    assert section.tau_max == pytest.approx(predicted, rel=1e-12)
+    txz, tyz = section.tau(torch.zeros(1, dtype=torch.float64),
+                           torch.tensor([section.b], dtype=torch.float64))
+    assert float(torch.hypot(txz, tyz)[0]) == pytest.approx(section.tau_max, rel=1e-12)
+
+
+def test_annulus_uses_the_multiply_connected_solution():
+    """The annular section is warping free: ``J = pi(a^4-c^4)/2`` and ``tau = G theta r``."""
+    section = AnnulusCircleSection(0.4, 1.2)
+    assert section.j == pytest.approx(math.pi * (1.2 ** 4 - 0.4 ** 4) / 2.0)
+    assert section.tau_max == pytest.approx(section.g * section.theta * 1.2)
+    with pytest.raises(NotImplementedError):
+        section.phi(torch.zeros(1, dtype=torch.float64), torch.zeros(1, dtype=torch.float64))
+
+
+# --------------------------------------------------------------------------- #
+# 2. the production path
+# --------------------------------------------------------------------------- #
+def test_prism_mesh_is_watertight_and_positive():
+    section = RectSection(1.0, 0.5)
+    nodes, hexes, m, nz = prism_mesh(section, n=6, layers=2, length=4.0)
+    assert nodes.shape == (m * nz, 3)
+    assert hexes.shape == (2 * 36, 8)
+    assert int(hexes.max()) == len(nodes) - 1
+    assert len(set(hexes.reshape(-1).tolist())) == len(nodes)
+    # element volume by the four subtetrahedra decomposition adds up to L * area
+    x = nodes[hexes]
+    volume = torch.zeros(len(hexes), dtype=torch.float64)
+    for a, b, c, d in ((0, 1, 2, 6), (0, 2, 3, 6), (0, 3, 7, 6),
+                       (0, 7, 4, 6), (0, 4, 5, 6), (0, 5, 1, 6)):
+        volume += torch.abs(torch.linalg.det(
+            torch.stack((x[:, a] - x[:, d], x[:, b] - x[:, d], x[:, c] - x[:, d]), 2))) / 6.0
+    assert float(volume.sum()) == pytest.approx(4.0 * section.area, rel=2e-3)
+
+
+def test_square_section_meets_the_three_percent_gate():
+    result = torsion_run(RectSection(1.0, 1.0), n=24, layers=7, length=4.0)
+    assert abs(result.torsional_rigidity_ratio - 1.0) < GATE
+    assert result.shear_l2_error < GATE
+    assert result.shear_max_error < GATE
+    assert abs(result.torque_end_a + result.torque_end_b) / result.torque_exact < 1e-9
+
+
+def test_rectangle_two_to_one_meets_the_gate_on_the_finest_mesh():
+    result = torsion_run(RectSection(1.0, 0.5), n=24, layers=7, length=4.0)
+    assert abs(result.torsional_rigidity_ratio - 1.0) < GATE
+    assert result.shear_l2_error < GATE
+    # the pointwise maximum is the honest weak spot of HEX8 torsion: it is gated
+    # at 3 % only from n = 24 upwards (n = 8 gives 5.6 %, retained in the record)
+    assert result.shear_max_error < GATE
+
+
+def test_coarse_mesh_failure_is_retained_not_hidden():
+    """The 2:1 rectangle at n = 8 fails the pointwise gate; the record keeps it."""
+    result = torsion_run(RectSection(1.0, 0.5), n=8, layers=3, length=4.0)
+    assert result.shear_max_error > GATE
+    assert abs(result.torsional_rigidity_ratio - 1.0) < 0.02
+
+
+def test_annulus_rigidity_converges_second_order():
+    coarse = torsion_run(AnnulusCircleSection(0.5, 1.0), n=8, layers=3, length=4.0)
+    fine = torsion_run(AnnulusCircleSection(0.5, 1.0), n=16, layers=5, length=4.0)
+    error_coarse = abs(coarse.torsional_rigidity_ratio - 1.0)
+    error_fine = abs(fine.torsional_rigidity_ratio - 1.0)
+    assert error_fine < error_coarse
+    order = math.log(error_coarse / error_fine) / math.log(2.0)
+    assert 1.5 < order < 2.5
+    # the warping-free shear field is recovered exactly at element centroids
+    assert fine.shear_l2_error < 1e-12
+
+
+def test_default_sections_cover_three_sections():
+    names = [section.name for section in default_sections()]
+    assert names == ["rectangle", "rectangle", "annulus"]
+
+
+def test_shear_modulus_must_match_the_elastic_constants():
+    with pytest.raises(ValueError, match="shear modulus"):
+        torsion_run(CircleSection(1.0, shear_modulus=5.0), n=6, layers=2, length=4.0)
