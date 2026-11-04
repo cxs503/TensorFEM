@@ -129,8 +129,11 @@ PYTHONPATH=src pytest tests/test_incompressible_locking.py -q
 
 ## 6 由此暴露的未完成项（下次自找活的线索）
 
-1. **2D 平面应变 Q4 无 B-bar/EAS/BF 对照实现**，`nu >= 0.499` 时误差 14 %–155 %；
-   船舶结构里橡胶支座、近不可压涂层、复合基体都用平面应变/平面应力 Q4 路径求解。
+1. ~~**2D 平面应变 Q4 无 B-bar/EAS/BF 对照实现**，`nu >= 0.499` 时误差 14 %–155 %；
+   船舶结构里橡胶支座、近不可压涂层、复合基体都用平面应变/平面应力 Q4 路径求解。~~
+   **已结清（2026-11-03）**：`src/tensorfem/q4_volumetric.py` 补上 B-bar 与 SRI，
+   对照同一 Lamé 基准 `nu=0.4999` 时位移 0.45 %→0.0071 %、`sigma_r` 2.30 %→0.0358 %（阶 2.00），
+   见 [`plane-strain-q4-locking.md`](plane-strain-q4-locking.md)。
 2. **B-bar 只有稠密装配**（`solve_solid_bbar` 直接建 `n_dofs^2` 稠密矩阵），
    要把它用到 64×64×6 级别的认证网格必须先加 `assemble_coo` 稀疏路径。
 3. 径向应力 3 % 门限需要应力恢复（单元外推 / Barlow 点），当前单元中心取值在粗网格上封顶 9.7 %。

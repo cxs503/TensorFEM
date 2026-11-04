@@ -1,0 +1,691 @@
+{
+  "case": {
+    "inner_radius": 0.5,
+    "outer_radius": 0.8,
+    "pressure": 100000000.0,
+    "sector_angle": 1.5707963267948966,
+    "young_modulus": 210000000000.0
+  },
+  "fine_poisson": 0.4999,
+  "flatness_displacement_l2": {
+    "bbar": 1.2546165257888389,
+    "sri": 1.2546165320460172,
+    "standard": 402.73655616301306
+  },
+  "flatness_radial_stress_l2": {
+    "bbar": 1.002351670956606,
+    "sri": 1.0023516694773968,
+    "standard": 202.56641904578535
+  },
+  "locking_sweep": [
+    {
+      "bore_displacement": 0.0005863169235297081,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643816337,
+        "bore_displacement_relative": 0.0016765896656320473,
+        "displacement_l2": 0.0015373430336280893,
+        "displacement_max_relative": 0.001676589665821824,
+        "energy_balance_relative": 3.3234183276921624e-15,
+        "hoop_stress_l2": 0.0020703373884119686,
+        "mean_stress_l2": 0.0003400311246326808,
+        "radial_stress_l2": 0.007662763631118024,
+        "radial_stress_max_relative": 0.0682741787886609
+      },
+      "exact_bore_displacement": 0.0005873015873015873,
+      "formulation": "standard",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.3,
+      "solve_seconds": 0.042492059990763664
+    },
+    {
+      "bore_displacement": 0.0005867283829761783,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643813678,
+        "bore_displacement_relative": 0.0009759965540746774,
+        "displacement_l2": 0.0008993624963186604,
+        "displacement_max_relative": 0.0009759965541247061,
+        "energy_balance_relative": 8.223645706119095e-15,
+        "hoop_stress_l2": 0.0015890911253806015,
+        "mean_stress_l2": 9.73092579334247e-05,
+        "radial_stress_l2": 0.005724861780415588,
+        "radial_stress_max_relative": 0.05822280172721026
+      },
+      "exact_bore_displacement": 0.0005873015873015873,
+      "formulation": "bbar",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.3,
+      "solve_seconds": 0.02128267101943493
+    },
+    {
+      "bore_displacement": 0.0005867283829761732,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643815398,
+        "bore_displacement_relative": 0.000975996554083354,
+        "displacement_l2": 0.0008993624963274125,
+        "displacement_max_relative": 0.0009759965540973842,
+        "energy_balance_relative": 1.2651762624798719e-15,
+        "hoop_stress_l2": 0.0015890911253900308,
+        "mean_stress_l2": 9.730925792965547e-05,
+        "radial_stress_l2": 0.005724861780420648,
+        "radial_stress_max_relative": 0.058222801727310466
+      },
+      "exact_bore_displacement": 0.0005873015873015873,
+      "formulation": "sri",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.3,
+      "solve_seconds": 0.017586810514330864
+    },
+    {
+      "bore_displacement": 0.000586204575726723,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643808697,
+        "bore_displacement_relative": 0.004196945770938761,
+        "displacement_l2": 0.0040895025204203544,
+        "displacement_max_relative": 0.004196945771019615,
+        "energy_balance_relative": 1.4562527851408506e-14,
+        "hoop_stress_l2": 0.0034824531565852794,
+        "mean_stress_l2": 0.001356823425898739,
+        "radial_stress_l2": 0.013655656966705924,
+        "radial_stress_max_relative": 0.0985981101562859
+      },
+      "exact_bore_displacement": 0.0005886752136752137,
+      "formulation": "standard",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.45,
+      "solve_seconds": 0.0210199486464262
+    },
+    {
+      "bore_displacement": 0.0005880358696651035,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643828066,
+        "bore_displacement_relative": 0.0010860725834176872,
+        "displacement_l2": 0.0010612127924226212,
+        "displacement_max_relative": 0.0010860725834454979,
+        "energy_balance_relative": 1.798867512792319e-14,
+        "hoop_stress_l2": 0.0015861949766995242,
+        "mean_stress_l2": 0.0001238754767777573,
+        "radial_stress_l2": 0.005734045978723488,
+        "radial_stress_max_relative": 0.05824721114464602
+      },
+      "exact_bore_displacement": 0.0005886752136752137,
+      "formulation": "bbar",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.45,
+      "solve_seconds": 0.022976599633693695
+    },
+    {
+      "bore_displacement": 0.0005880358696650987,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643823469,
+        "bore_displacement_relative": 0.001086072583425791,
+        "displacement_l2": 0.001061212792430745,
+        "displacement_max_relative": 0.001086072583458206,
+        "energy_balance_relative": 2.051340146166695e-14,
+        "hoop_stress_l2": 0.0015861949767072743,
+        "mean_stress_l2": 0.0001238754767753691,
+        "radial_stress_l2": 0.005734045978728201,
+        "radial_stress_max_relative": 0.05824721114437654
+      },
+      "exact_bore_displacement": 0.0005886752136752137,
+      "formulation": "sri",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.45,
+      "solve_seconds": 0.021165858954191208
+    },
+    {
+      "bore_displacement": 0.0005767757914165156,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643810716,
+        "bore_displacement_relative": 0.016951515175846855,
+        "displacement_l2": 0.01685760954430789,
+        "displacement_max_relative": 0.016951515176350598,
+        "energy_balance_relative": 1.259658681059937e-13,
+        "hoop_stress_l2": 0.010938553030203215,
+        "mean_stress_l2": 0.006697424343036609,
+        "radial_stress_l2": 0.04543335557988933,
+        "radial_stress_max_relative": 0.25787155811148477
+      },
+      "exact_bore_displacement": 0.0005867216117216119,
+      "formulation": "standard",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.49,
+      "solve_seconds": 0.016368091106414795
+    },
+    {
+      "bore_displacement": 0.000586064630362887,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643772032,
+        "bore_displacement_relative": 0.0011197497170712953,
+        "displacement_l2": 0.0011143867199663196,
+        "displacement_max_relative": 0.0011197497182702124,
+        "energy_balance_relative": 3.0081967286388015e-14,
+        "hoop_stress_l2": 0.0015851946820474117,
+        "mean_stress_l2": 0.00013360199149080226,
+        "radial_stress_l2": 0.005737409169036316,
+        "radial_stress_max_relative": 0.05825614780161455
+      },
+      "exact_bore_displacement": 0.0005867216117216119,
+      "formulation": "bbar",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.49,
+      "solve_seconds": 0.06159421056509018
+    },
+    {
+      "bore_displacement": 0.0005860646303629596,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.001605606964383327,
+        "bore_displacement_relative": 0.0011197497169474861,
+        "displacement_l2": 0.0011143867198402395,
+        "displacement_max_relative": 0.0011197497178531415,
+        "energy_balance_relative": 6.649698031727093e-15,
+        "hoop_stress_l2": 0.0015851946819017795,
+        "mean_stress_l2": 0.00013360199153646625,
+        "radial_stress_l2": 0.005737409169031296,
+        "radial_stress_max_relative": 0.058256147805980506
+      },
+      "exact_bore_displacement": 0.0005867216117216119,
+      "formulation": "sri",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.49,
+      "solve_seconds": 0.03097924031317234
+    },
+    {
+      "bore_displacement": 0.0005037828217942256,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643842596,
+        "bore_displacement_relative": 0.14051859491137045,
+        "displacement_l2": 0.1404391403244099,
+        "displacement_max_relative": 0.1405185949144426,
+        "energy_balance_relative": 7.809453577854747e-14,
+        "hoop_stress_l2": 0.08342401171576108,
+        "mean_stress_l2": 0.05855613441387345,
+        "radial_stress_l2": 0.35456952139173326,
+        "radial_stress_max_relative": 1.8044607317879642
+      },
+      "exact_bore_displacement": 0.0005861474358974358,
+      "formulation": "standard",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.499,
+      "solve_seconds": 0.01988983154296875
+    },
+    {
+      "bore_displacement": 0.0005854864861271685,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643780606,
+        "bore_displacement_relative": 0.001127616926712877,
+        "displacement_l2": 0.0011270711882418098,
+        "displacement_max_relative": 0.0011276169394590363,
+        "energy_balance_relative": 3.7893161991053956e-13,
+        "hoop_stress_l2": 0.0015849525492242825,
+        "mean_stress_l2": 0.00013600474069480514,
+        "radial_stress_l2": 0.005738240033322994,
+        "radial_stress_max_relative": 0.05825835545257172
+      },
+      "exact_bore_displacement": 0.0005861474358974358,
+      "formulation": "bbar",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.499,
+      "solve_seconds": 0.03234389051795006
+    },
+    {
+      "bore_displacement": 0.0005854864861271953,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069644053606,
+        "bore_displacement_relative": 0.0011276169266671893,
+        "displacement_l2": 0.0011270711881945935,
+        "displacement_max_relative": 0.0011276169298479485,
+        "energy_balance_relative": 2.4437999075785913e-13,
+        "hoop_stress_l2": 0.0015849525491145348,
+        "mean_stress_l2": 0.0001360047409777741,
+        "radial_stress_l2": 0.00573824003365276,
+        "radial_stress_max_relative": 0.05825835554547738
+      },
+      "exact_bore_displacement": 0.0005861474358974358,
+      "formulation": "sri",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.499,
+      "solve_seconds": 0.030474931001663208
+    },
+    {
+      "bore_displacement": 0.0002231941611317342,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643059902,
+        "bore_displacement_relative": 0.6191793241557816,
+        "displacement_l2": 0.6191442390045758,
+        "displacement_max_relative": 0.6191793241615967,
+        "energy_balance_relative": 3.0255026019436905e-12,
+        "hoop_stress_l2": 0.36423960480828343,
+        "mean_stress_l2": 0.2594518305787122,
+        "radial_stress_l2": 1.5522185887498574,
+        "radial_stress_max_relative": 7.795799666260407
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "standard",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.026214031502604485
+    },
+    {
+      "bore_displacement": 0.0005854259519301625,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.00160560696479839,
+        "bore_displacement_relative": 0.001128409720342683,
+        "displacement_l2": 0.001128355050556095,
+        "displacement_max_relative": 0.0011284097659832004,
+        "energy_balance_relative": 1.1102211965697253e-11,
+        "hoop_stress_l2": 0.0015849279512022557,
+        "mean_stress_l2": 0.00013624978340261523,
+        "radial_stress_l2": 0.005738324771595175,
+        "radial_stress_max_relative": 0.058258580973460976
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "bbar",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.019921690225601196
+    },
+    {
+      "bore_displacement": 0.0005854259519270941,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.001605606963852117,
+        "bore_displacement_relative": 0.0011284097255780815,
+        "displacement_l2": 0.001128355056194547,
+        "displacement_max_relative": 0.0011284097613710328,
+        "energy_balance_relative": 1.3425805424583691e-11,
+        "hoop_stress_l2": 0.0015849279590403715,
+        "mean_stress_l2": 0.00013624978343598963,
+        "radial_stress_l2": 0.005738324763131978,
+        "radial_stress_max_relative": 0.05825858112026428
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "sri",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.026560019701719284
+    }
+  ],
+  "meshes": [
+    [
+      8,
+      4
+    ],
+    [
+      16,
+      8
+    ],
+    [
+      32,
+      16
+    ],
+    [
+      64,
+      32
+    ]
+  ],
+  "observed_orders": {
+    "displacement_l2/bbar": 1.9998495330234887,
+    "displacement_l2/sri": 1.9998530951744802,
+    "displacement_l2/standard": 1.64620675236833,
+    "hoop_stress_l2/bbar": 2.0001735282843787,
+    "hoop_stress_l2/sri": 2.0001767398759958,
+    "hoop_stress_l2/standard": 1.64664129512378,
+    "mean_stress_l2/bbar": 1.994445405095216,
+    "mean_stress_l2/sri": 1.9944230137892311,
+    "mean_stress_l2/standard": 1.6413931150328662,
+    "radial_stress_l2/bbar": 2.000383526078473,
+    "radial_stress_l2/sri": 2.0003834541104615,
+    "radial_stress_l2/standard": 1.645768166182219
+  },
+  "poissons": [
+    0.3,
+    0.45,
+    0.49,
+    0.499,
+    0.4999
+  ],
+  "reference_self_check": {
+    "0.3": {
+      "constitutive": 1.8460739693672103e-16,
+      "equilibrium": 2.393960952758789e-10,
+      "poisson_ratio": 0.3,
+      "traction": 0.0,
+      "volumetric_strain_over_strain_scale": 0.2702702702702703
+    },
+    "0.45": {
+      "constitutive": 1.8417663038955212e-16,
+      "equilibrium": 2.393960952758789e-10,
+      "poisson_ratio": 0.45,
+      "traction": 0.0,
+      "volumetric_strain_over_strain_scale": 0.07518796992481216
+    },
+    "0.499": {
+      "constitutive": 3.699417948747005e-16,
+      "equilibrium": 2.393960952758789e-10,
+      "poisson_ratio": 0.499,
+      "traction": 0.0,
+      "volumetric_strain_over_strain_scale": 0.0015612802498050666
+    },
+    "0.4999": {
+      "constitutive": 2.774848154522318e-16,
+      "equilibrium": 2.393960952758789e-10,
+      "poisson_ratio": 0.4999,
+      "traction": 0.0,
+      "volumetric_strain_over_strain_scale": 0.00015623779392243839
+    }
+  },
+  "refinement": [
+    {
+      "bore_displacement": 7.86885324412229e-05,
+      "dofs": 90,
+      "elements": 32,
+      "errors": {
+        "analytic_work_relative": 0.006413148855790803,
+        "bore_displacement_relative": 0.8657392292275538,
+        "displacement_l2": 0.8656933814543879,
+        "displacement_max_relative": 0.8657392292277929,
+        "energy_balance_relative": 1.315242932016787e-13,
+        "hoop_stress_l2": 0.5117277111166635,
+        "mean_stress_l2": 0.34413232399553273,
+        "radial_stress_l2": 2.160241723642934,
+        "radial_stress_max_relative": 5.7399896309269485
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "standard",
+      "n_radial": 4,
+      "n_theta": 8,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.014260999858379364
+    },
+    {
+      "bore_displacement": 0.0005834460895224963,
+      "dofs": 90,
+      "elements": 32,
+      "errors": {
+        "analytic_work_relative": 0.006413148855985374,
+        "bore_displacement_relative": 0.004506511263603825,
+        "displacement_l2": 0.0045063033357581285,
+        "displacement_max_relative": 0.004506511295083368,
+        "energy_balance_relative": 1.4181204980653157e-12,
+        "hoop_stress_l2": 0.006351505406786229,
+        "mean_stress_l2": 0.0005127683643926605,
+        "radial_stress_l2": 0.023043287359114057,
+        "radial_stress_max_relative": 0.11215273061802249
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "bbar",
+      "n_radial": 4,
+      "n_theta": 8,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.037117550149559975
+    },
+    {
+      "bore_displacement": 0.0005834460895224377,
+      "dofs": 90,
+      "elements": 32,
+      "errors": {
+        "analytic_work_relative": 0.006413148855853119,
+        "bore_displacement_relative": 0.004506511263703905,
+        "displacement_l2": 0.0045063033359472185,
+        "displacement_max_relative": 0.004506511268927278,
+        "energy_balance_relative": 5.903242190503838e-13,
+        "hoop_stress_l2": 0.006351505406435068,
+        "mean_stress_l2": 0.0005127683624579733,
+        "radial_stress_l2": 0.02304328736004658,
+        "radial_stress_max_relative": 0.11215273054305068
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "sri",
+      "n_radial": 4,
+      "n_theta": 8,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.020957620814442635
+    },
+    {
+      "bore_displacement": 0.0002231941611317342,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.0016056069643059902,
+        "bore_displacement_relative": 0.6191793241557816,
+        "displacement_l2": 0.6191442390045758,
+        "displacement_max_relative": 0.6191793241615967,
+        "energy_balance_relative": 3.0255026019436905e-12,
+        "hoop_stress_l2": 0.36423960480828343,
+        "mean_stress_l2": 0.2594518305787122,
+        "radial_stress_l2": 1.5522185887498574,
+        "radial_stress_max_relative": 7.795799666260407
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "standard",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.03466353006660938
+    },
+    {
+      "bore_displacement": 0.0005854259519301625,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.00160560696479839,
+        "bore_displacement_relative": 0.001128409720342683,
+        "displacement_l2": 0.001128355050556095,
+        "displacement_max_relative": 0.0011284097659832004,
+        "energy_balance_relative": 1.1102211965697253e-11,
+        "hoop_stress_l2": 0.0015849279512022557,
+        "mean_stress_l2": 0.00013624978340261523,
+        "radial_stress_l2": 0.005738324771595175,
+        "radial_stress_max_relative": 0.058258580973460976
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "bbar",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.04162216931581497
+    },
+    {
+      "bore_displacement": 0.0005854259519270941,
+      "dofs": 306,
+      "elements": 128,
+      "errors": {
+        "analytic_work_relative": 0.001605606963852117,
+        "bore_displacement_relative": 0.0011284097255780815,
+        "displacement_l2": 0.001128355056194547,
+        "displacement_max_relative": 0.0011284097613710328,
+        "energy_balance_relative": 1.3425805424583691e-11,
+        "hoop_stress_l2": 0.0015849279590403715,
+        "mean_stress_l2": 0.00013624978343598963,
+        "radial_stress_l2": 0.005738324763131978,
+        "radial_stress_max_relative": 0.05825858112026428
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "sri",
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.03154304064810276
+    },
+    {
+      "bore_displacement": 0.0004164436053833438,
+      "dofs": 1122,
+      "elements": 512,
+      "errors": {
+        "analytic_work_relative": 0.0004015468501820448,
+        "bore_displacement_relative": 0.28945123631847874,
+        "displacement_l2": 0.2894342995697297,
+        "displacement_max_relative": 0.28945123634064773,
+        "energy_balance_relative": 1.1965817872497603e-11,
+        "hoop_stress_l2": 0.1700677877898614,
+        "mean_stress_l2": 0.1229117625677535,
+        "radial_stress_l2": 0.7264967141352886,
+        "radial_stress_max_relative": 7.114589318198029
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "standard",
+      "n_radial": 16,
+      "n_theta": 32,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.1366638597100973
+    },
+    {
+      "bore_displacement": 0.0005859218939155077,
+      "dofs": 1122,
+      "elements": 512,
+      "errors": {
+        "analytic_work_relative": 0.000401546850099699,
+        "bore_displacement_relative": 0.00028221839938243775,
+        "displacement_l2": 0.00028220439948165927,
+        "displacement_max_relative": 0.0002822186342485454,
+        "energy_balance_relative": 1.1112353119962024e-11,
+        "hoop_stress_l2": 0.0003960414101873,
+        "mean_stress_l2": 3.459053841338324e-05,
+        "radial_stress_l2": 0.0014330817135619785,
+        "radial_stress_max_relative": 0.029726347920056528
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "bbar",
+      "n_radial": 16,
+      "n_theta": 32,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.0951633807271719
+    },
+    {
+      "bore_displacement": 0.0005859218938894954,
+      "dofs": 1122,
+      "elements": 512,
+      "errors": {
+        "analytic_work_relative": 0.00040154684966374883,
+        "bore_displacement_relative": 0.000282218443765394,
+        "displacement_l2": 0.0002822044440021048,
+        "displacement_max_relative": 0.0002822187335065288,
+        "energy_balance_relative": 1.6579477743322542e-11,
+        "hoop_stress_l2": 0.00039604145948819925,
+        "mean_stress_l2": 3.4590507643374784e-05,
+        "radial_stress_l2": 0.0014330817325773888,
+        "radial_stress_max_relative": 0.029726338557444148
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "sri",
+      "n_radial": 16,
+      "n_theta": 32,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 0.12790227122604847
+    },
+    {
+      "bore_displacement": 0.0005318896423340986,
+      "dofs": 4290,
+      "elements": 2048,
+      "errors": {
+        "analytic_work_relative": 0.00010039578373497552,
+        "bore_displacement_relative": 0.09247369177969317,
+        "displacement_l2": 0.0924681959420851,
+        "displacement_max_relative": 0.09247369210351683,
+        "energy_balance_relative": 2.5059794159945142e-11,
+        "hoop_stress_l2": 0.05431673301728077,
+        "mean_stress_l2": 0.03939897144713914,
+        "radial_stress_l2": 0.23217105264621188,
+        "radial_stress_max_relative": 4.493837918775193
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "standard",
+      "n_radial": 32,
+      "n_theta": 64,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 2.223722590133548
+    },
+    {
+      "bore_displacement": 0.0005860459430432202,
+      "dofs": 4290,
+      "elements": 2048,
+      "errors": {
+        "analytic_work_relative": 0.00010039578325638144,
+        "bore_displacement_relative": 7.056199935013562e-05,
+        "displacement_l2": 7.055845843475932e-05,
+        "displacement_max_relative": 7.056233284341116e-05,
+        "energy_balance_relative": 7.287432036905969e-11,
+        "hoop_stress_l2": 9.899844423433274e-05,
+        "mean_stress_l2": 8.680993486430598e-06,
+        "radial_stress_l2": 0.0003581751984311865,
+        "radial_stress_max_relative": 0.015019772680757442
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "bbar",
+      "n_radial": 32,
+      "n_theta": 64,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 2.443717110902071
+    },
+    {
+      "bore_displacement": 0.0005860459431385492,
+      "dofs": 4290,
+      "elements": 2048,
+      "errors": {
+        "analytic_work_relative": 0.0001003957838968604,
+        "bore_displacement_relative": 7.056183669686134e-05,
+        "displacement_l2": 7.055829535068816e-05,
+        "displacement_max_relative": 7.056283214773819e-05,
+        "energy_balance_relative": 7.605862646828553e-11,
+        "hoop_stress_l2": 9.899823617729455e-05,
+        "mean_stress_l2": 8.6811204982841e-06,
+        "radial_stress_l2": 0.00035817522105113965,
+        "radial_stress_max_relative": 0.015019803208508339
+      },
+      "exact_bore_displacement": 0.0005860872985347986,
+      "formulation": "sri",
+      "n_radial": 32,
+      "n_theta": 64,
+      "poisson_ratio": 0.4999,
+      "solve_seconds": 2.3320496305823326
+    }
+  ],
+  "sector_mesh": {
+    "n_radial": 8,
+    "n_theta": 16
+  }
+}

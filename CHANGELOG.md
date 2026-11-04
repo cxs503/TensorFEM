@@ -1,3 +1,15 @@
+## 2026-11-03 平面应变 Q4 锁定治理（结清二维欠账）
+
+- 新增 `src/tensorfem/q4_volumetric.py`：Q4 的 B-bar 体应变投影与选择性减缩积分（SRI），
+  `ContinuumModel` 增加 `formulation` 字段（默认 `"standard"`，既有行为逐位不变）。
+- 对照平面应变 Lamé 闭式解，`nu = 0.4999` 时位移 L2 误差由标准 Q4 的 61.9 % 降至 0.11 %
+  （16x8）、0.0071 %（64x32），观测阶 2.00；`sigma_r` 误差对 `nu` 平坦度 1.00（标准 Q4 为 202.6）。
+  证据见 `docs/plane-strain-q4-locking.md` 与 `benchmarks/plane_strain_q4_locking_evidence.json`。
+- 记录 B-bar 与 SRI 对双线性四边形恒等（`max|K_bbar-K_sri|/max|K| = 5.4e-16`），
+  二者不得当作两条独立证据；独立证据为 patch test（<1e-10）与网格收敛阶。
+- 记录默认 float32 常数在 `nu -> 1/2` 下被 `1/(1-2nu)` 放大为 1.3e-4 应力误差的陷阱。
+- 标准 Q4 以 fail-closed 测试锁死（位移 > 50 %、`sigma_r` > 100 %，且须逐位复现 61.9175 %/155.2296 %）。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 - 重新生成 `benchmarks/cook_membrane_stress_reference.json`：旧文件是单元 Jacobian 转置缺陷修复前的产物，

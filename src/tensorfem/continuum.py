@@ -20,6 +20,11 @@ class ContinuumModel:
     element_type: str = "q4"
     plane: str = "stress"
     prescribed_values: torch.Tensor | None = None
+    #: volumetric treatment of the element: ``"standard"`` (fully integrated),
+    #: ``"bbar"`` (B-bar projection) or ``"sri"`` (selective reduced integration).
+    #: The locking-free variants exist for Q4 only; see
+    #: :mod:`tensorfem.q4_volumetric`.
+    formulation: str = "standard"
 
     def __post_init__(self) -> None:
         nen = {"q4": 4, "cst": 3}.get(self.element_type.lower())
@@ -37,6 +42,10 @@ class ContinuumModel:
             raise ValueError("prescribed_values must match fixed_dofs")
         if self.elements.numel() and (self.elements.min() < 0 or self.elements.max() >= len(self.nodes)):
             raise ValueError("invalid node in element connectivity")
+        if self.formulation not in ("standard", "bbar", "sri"):
+            raise ValueError("formulation must be 'standard', 'bbar' or 'sri'")
+        if self.formulation != "standard" and self.element_type.lower() != "q4":
+            raise ValueError("locking-free volumetric formulations are implemented for Q4 only")
 
     @property
     def n_dofs(self) -> int:
@@ -119,7 +128,12 @@ def solve_continuum(model: ContinuumModel) -> ContinuumResult:
     young, poisson, thickness = map(expand, (model.young_modulus, model.poisson_ratio, model.thickness))
     dmat = elasticity_matrix(young, poisson, model.plane)
     coords = model.nodes[model.elements.long()]
-    ke, b = (q4_stiffness if model.element_type.lower() == "q4" else cst_stiffness)(coords, dmat, thickness)
+    if model.element_type.lower() == "q4":
+        from .q4_volumetric import q4_stiffness as _q4
+
+        ke, b = _q4(coords, dmat, thickness, model.formulation)
+    else:
+        ke, b = cst_stiffness(coords, dmat, thickness)
     edofs = torch.stack(tuple(2*model.elements + i for i in (0,1)), 2).reshape(ne, 2*nn).long()
     rows = edofs[:,:,None].expand(-1,-1,2*nn).reshape(-1)
     cols = edofs[:,None,:].expand(-1,2*nn,-1).reshape(-1)
