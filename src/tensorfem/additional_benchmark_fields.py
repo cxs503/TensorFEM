@@ -5,6 +5,7 @@ from .plate import structured_square_mesh, solve_simply_supported_sine_square, _
 from .continuum_benchmarks import cook_membrane
 from .continuum import elasticity_matrix, q4_stiffness
 from .sparse_core import assemble_coo, solve_sparse_static
+from .stress_recovery import recover_nodal_stress
 
 
 def relative(a, b):
@@ -74,9 +75,16 @@ def cook_fields(n):
     stress = (C@B@u[edofs].unsqueeze(-1)).squeeze(-1)
     vm = torch.sqrt(stress[:,0]**2-stress[:,0]*stress[:,1]+stress[:,1]**2+3*stress[:,2]**2)
     response = float(u[probe]); error = abs(response-23.96)/23.96
+    nodal = recover_nodal_stress(nodes, cells, C, u)
+    nodal_vm = torch.sqrt(nodal[:,0]**2-nodal[:,0]*nodal[:,1]+nodal[:,1]**2+3*nodal[:,2]**2)
     return {'mesh':n,'nodes':nodes.tolist(),'elements':cells.tolist(),
             'displacement':u.reshape(-1,2).tolist(),'centers':nodes[cells].mean(1).tolist(),
             'stress':stress.tolist(),'von_mises':vm.tolist(), 'reference':23.96,
+            'stress_nodal':nodal.tolist(),'von_mises_nodal':nodal_vm.tolist(),
+            'recovery':{'method':'q4_gauss_extrapolation_area_weighted_nodal',
+                        'superconvergent_points':'2x2 Gauss points (Barlow)',
+                        'stored_element_centre_field_unchanged':True,
+                        'use':'interpolate with tensorfem.stress_recovery.interpolate_nodal_stress'},
             'verification':{'response':response,'response_relative_error':error,
                             'relative_residual':result.iterative.relative_residual,
                             'passed':error<.03},'stress_accuracy_qualified':False}
@@ -91,7 +99,10 @@ def build_additional_reports():
              'scope':'displacement, rotation, moment, shear and top bending stress against exact Mindlin solution',
              'monotone':monotone,'status':'qualified' if monotone and plate[-1]['verification']['passed'] else 'blocked'},
             'cook-membrane':{'physical_case_id':'cook-membrane','cases':cook,
-             'scope':'published scalar displacement reference; stress fields have no independent accuracy oracle',
+             'scope':'published scalar displacement reference; the element-centre stress field '
+                     'has no independent accuracy certification (stress_accuracy_qualified stays False), '
+                     'while the recovered nodal field (stress_nodal) is certified against the independent Q8 '
+                     'reference in benchmarks/cook_stress_recovery_evidence.json',
              'status':'response-qualified' if cook[-1]['verification']['passed'] and all(
                  b['verification']['response_relative_error']<a['verification']['response_relative_error']
                  for a,b in zip(cook,cook[1:])) else 'blocked'}}

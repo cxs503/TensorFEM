@@ -1,77 +1,133 @@
-"""Figures for docs/cook-membrane-stress-audit.md revision R2.
+"""Figures for the production Q4 stress-recovery certification.
 
-Left panel: loaded-edge vertical displacement profile, pre-fix (transposed element
-Jacobian) versus post-fix Q8 reference and the production Q4 run.  Right panel: pointwise
-von Mises error of the production Q4 field against the fixed Q8 reference.
+Writes:
 
-Run: ``OMP_NUM_THREADS=1 PYTHONPATH=src python scripts/plot_cook_stress_recovery.py``
+* ``docs/assets/cook_recovery_convergence.png`` - worst-site relative error vs mesh,
+  recovered field against the stored element-centre field, with the 3 % gate and a
+  second-order reference slope;
+* ``docs/assets/cook_recovery_field.png`` - the discontinuous element-centre von Mises
+  field and the recovered nodal field on the n=32 Cook membrane, with the five frozen
+  probe sites marked.
+
+Reproduce::
+
+    OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 PYTHONPATH=src \
+        python scripts/plot_cook_stress_recovery.py
 """
 
 from __future__ import annotations
 
 import json
-import subprocess
+import math
+import sys
 from pathlib import Path
 
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import torch  # noqa: E402
+from matplotlib.collections import PolyCollection  # noqa: E402
+from matplotlib.tri import Triangulation  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-EVIDENCE = ROOT / "benchmarks" / "cook_membrane_stress_reference.json"
-OUTPUT = ROOT / "outputs" / "cook_stress_recovery"
+sys.path.insert(0, str(ROOT / "src"))
+
+from tensorfem.additional_benchmark_fields import cook_fields  # noqa: E402
+
+EVIDENCE = ROOT / "benchmarks" / "cook_stress_recovery_evidence.json"
+ASSETS = ROOT / "docs" / "assets"
+FIELD_LEVEL = 32
 
 
-def main() -> None:
-    evidence = json.loads(EVIDENCE.read_text())
-    old = json.loads(
-        subprocess.run(
-            ["git", "show", "HEAD:benchmarks/cook_membrane_stress_reference.json"],
-            cwd=ROOT, check=True, capture_output=True, text=True,
-        ).stdout
-    )
-    OUTPUT.mkdir(parents=True, exist_ok=True)
-    profiles = evidence["loaded_edge_profiles"]
+def convergence_figure(evidence: dict, path: Path) -> None:
+    ladder = evidence["ladder"]
+    divisions = [level["divisions"] for level in ladder]
+    recovered = [100.0 * level["max_recovered_relative_error"] for level in ladder]
+    raw = [100.0 * level["max_raw_relative_error"] for level in ladder]
+    gate = 100.0 * evidence["problem"]["gate"]
 
-    figure, axes = plt.subplots(1, 2, figsize=(11, 4.2))
-
-    axis = axes[0]
-    for entry in old["loaded_edge_profiles"]["reference_levels"]:
-        axis.plot(entry["y"], entry["v"], "--", color="tab:red", alpha=0.45,
-                  label="Q8 pre-fix (transposed Jacobian)" if entry["divisions"] == 12 else None)
-    fixed = profiles["reference_levels"][-1]
-    axis.plot(fixed["y"], fixed["v"], "-o", ms=3, color="tab:blue",
-              label=f"Q8 fixed reference n={fixed['divisions']}")
-    platform = profiles["platform_levels"][-1]
-    axis.plot(platform["y"], platform["v"], "-", lw=2, color="tab:green",
-              label=f"production Q4 n={platform['divisions']}")
-    axis.set_xlabel("y along loaded edge x = 48")
-    axis.set_ylabel("vertical displacement v")
-    axis.set_title("loaded-edge profile: pre-fix vs post-fix")
-    axis.grid(alpha=0.3)
-    axis.legend(fontsize=8)
-
-    axis = axes[1]
-    cases = evidence["comparison"]["cases"]
-    levels = np.array([case["divisions"] for case in cases], dtype=float)
-    errors = np.array([[point["von_mises_error"] for point in case["points"]] for case in cases])
-    for index in range(errors.shape[1]):
-        axis.loglog(levels, 100 * errors[:, index], "-o", ms=3,
-                    label=f"point {index + 1}")
-    axis.axhline(3.0, color="k", ls=":", lw=1, label="3% platform gate")
-    axis.set_xlabel("Q4 divisions per direction")
-    axis.set_ylabel("pointwise von Mises error [%]")
-    axis.set_title("Q4 pointwise stress error vs Q8 reference")
-    axis.grid(alpha=0.3, which="both")
-    axis.legend(fontsize=8)
-
+    figure, axes = plt.subplots(figsize=(6.4, 4.6))
+    axes.loglog(divisions, raw, "s--", color="#c0392b", label="stored element-centre field")
+    axes.loglog(divisions, recovered, "o-", color="#1f6feb", label="recovered nodal field (production)")
+    axes.axhline(gate, color="k", linestyle=":", linewidth=1.2)
+    axes.annotate("3 % gate", xy=(divisions[0], gate), xytext=(0, 4),
+                  textcoords="offset points", fontsize=9)
+    # Second-order reference slope anchored on the finest recovered point.
+    anchor = divisions[-1]
+    slope = [recovered[-1] * (anchor / n) ** 2 for n in divisions]
+    axes.loglog(divisions, slope, "-", color="0.6", linewidth=1.0)
+    axes.annotate("O(h$^2$)", xy=(divisions[1], slope[1]), xytext=(4, 6),
+                  textcoords="offset points", fontsize=9, color="0.4")
+    axes.set_xlabel("mesh divisions n (n x n Q4)")
+    axes.set_xticks(divisions)
+    axes.set_xticklabels([str(n) for n in divisions])
+    axes.set_ylabel("worst-site von Mises error [%]")
+    axes.set_title("Cook membrane: stress recovery vs raw element-centre field")
+    axes.grid(True, which="both", alpha=0.3)
+    axes.legend(fontsize=9, loc="upper right")
     figure.tight_layout()
-    path = OUTPUT / "cook-stress-recovery.png"
-    figure.savefig(path, dpi=140)
-    print("written", path.relative_to(ROOT))
+    figure.savefig(path, dpi=130)
+    plt.close(figure)
+
+
+def field_figure(evidence: dict, path: Path) -> None:
+    case = cook_fields(FIELD_LEVEL)
+    nodes = np.asarray(case["nodes"], dtype=float)
+    elements = np.asarray(case["elements"], dtype=int)
+    raw_vm = np.asarray(case["von_mises"], dtype=float)
+    nodal_vm = np.asarray(case["von_mises_nodal"], dtype=float)
+    probes = [(np.asarray(p["point"]), p["von_mises"]) for p in evidence["reference"]["probes"]]
+
+    vmin = min(raw_vm.min(), nodal_vm.min())
+    vmax = max(raw_vm.max(), nodal_vm.max())
+    figure, axes = plt.subplots(1, 2, figsize=(11.0, 4.6))
+
+    patches = nodes[elements]
+    collection = PolyCollection(
+        patches,
+        array=raw_vm,
+        cmap="viridis",
+        edgecolors="0.75",
+        linewidths=0.2,
+        clim=(vmin, vmax),
+    )
+    axes[0].add_collection(collection)
+    axes[0].set_xlim(nodes[:, 0].min(), nodes[:, 0].max())
+    axes[0].set_ylim(nodes[:, 1].min(), nodes[:, 1].max())
+    axes[0].set_title("element-centre field (discontinuous, O(h))")
+
+    triangles = np.vstack((elements[:, [0, 1, 2]], elements[:, [0, 2, 3]]))
+    triangulation = Triangulation(nodes[:, 0], nodes[:, 1], triangles)
+    filled = axes[1].tricontourf(triangulation, nodal_vm, levels=20, cmap="viridis",
+                                 vmin=vmin, vmax=vmax)
+    axes[1].triplot(triangulation, color="0.8", linewidth=0.25)
+    axes[1].set_title("recovered nodal field (single valued, O(h$^2$))")
+
+    for axis in axes:
+        for point, _ in probes:
+            axis.plot(point[0], point[1], "o", markerfacecolor="none",
+                      markeredgecolor="w", markersize=7, markeredgewidth=1.2)
+        axis.set_aspect("equal")
+        axis.set_xlabel("x")
+    axes[0].set_ylabel("y")
+    figure.colorbar(filled, ax=axes, label="von Mises stress", shrink=0.9)
+    figure.suptitle(f"Cook membrane n={FIELD_LEVEL}: raw vs recovered von Mises", fontsize=11)
+    figure.savefig(path, dpi=130, bbox_inches="tight")
+    plt.close(figure)
+
+
+def main() -> int:
+    evidence = json.loads(EVIDENCE.read_text())
+    ASSETS.mkdir(parents=True, exist_ok=True)
+    convergence_figure(evidence, ASSETS / "cook_recovery_convergence.png")
+    field_figure(evidence, ASSETS / "cook_recovery_field.png")
+    for name in ("cook_recovery_convergence.png", "cook_recovery_field.png"):
+        size = (ASSETS / name).stat().st_size
+        print(f"{name}: {size / 1024:.1f} KiB")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -1,3 +1,16 @@
+## 2026-11-03 (m3540)
+
+- 新增生产模块 `tensorfem.stress_recovery`：Q4 2×2 Gauss（Barlow）应力线性外推到节点 +
+  面积加权节点平均 + 多起点 Newton 定位插值，含 fail-closed 的 `recovery_verdict`。
+  `additional_benchmark_fields.cook_fields` 新增 `stress_nodal`/`von_mises_nodal`/`recovery`，
+  存盘单元中心场与 `stress_accuracy_qualified=False` 原样保留。
+- Cook 膜应力恢复认证：对冻结 Q8 独立参考，恢复场逐点 von Mises 误差 8.1759%/1.9868%/
+  0.4910%/0.1210%（n=8/16/32/64，实测阶 2.02），n=16 起 <3% 门限；原始单元中心场 n=64
+  仍 3.0530% 不达标。证据 `benchmarks/cook_stress_recovery_evidence.json`，
+  报告 `docs/cook-stress-recovery-production.md`。
+- 新增 `tests/test_stress_recovery.py`（12 项，含与审计 numpy 实现的 1e-12 逐位一致、
+  斜单元常应变 patch、界面单值性、fail-closed 阶梯、原始场未被洗白）。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 - 重新生成 `benchmarks/cook_membrane_stress_reference.json`：旧文件是单元 Jacobian 转置缺陷修复前的产物，
