@@ -1,0 +1,254 @@
+{
+  "length": 4.0,
+  "mesh_levels": [
+    [
+      8,
+      3
+    ],
+    [
+      12,
+      4
+    ],
+    [
+      16,
+      5
+    ],
+    [
+      24,
+      7
+    ]
+  ],
+  "oracle": [
+    {
+      "section": "rectangle",
+      "j": 2.2492322411701196,
+      "tau_max": 1.3506289666271352,
+      "torque_from_stress_over_GJ": 0.9999925199431248,
+      "laplacian_residual_max": 6.826818889305031e-06,
+      "torque_from_phi_over_GJ": 1.0000073730131682
+    },
+    {
+      "section": "rectangle",
+      "j": 0.4573633543571203,
+      "tau_max": 0.9300602697970924,
+      "torque_from_stress_over_GJ": 0.9999886279238375,
+      "laplacian_residual_max": 7.205922538666698e-07,
+      "torque_from_phi_over_GJ": 1.0000082091699618
+    },
+    {
+      "section": "annulus",
+      "j": 1.4726215563702154,
+      "tau_max": 1.0,
+      "torque_from_stress_over_GJ": 1.0001893284098602
+    }
+  ],
+  "rows": [
+    {
+      "section": "rectangle",
+      "ratio": 1.0,
+      "n_section": 8,
+      "layers": 3,
+      "elements": 192,
+      "dofs": 972,
+      "h": 0.125,
+      "rigidity_ratio": 1.0135367007610265,
+      "rigidity_error": 0.013536700761026532,
+      "shear_l2_error": 0.014661812577185757,
+      "shear_max_error": 0.03247238864019946,
+      "shear_peak_ratio": 1.0119206370208937,
+      "torque_equilibrium": 4.87677674297881e-13,
+      "displacement_error": 1.4362642448959795e-13
+    },
+    {
+      "section": "rectangle",
+      "ratio": 1.0,
+      "n_section": 12,
+      "layers": 4,
+      "elements": 576,
+      "dofs": 2535,
+      "h": 0.08333333333333333,
+      "rigidity_ratio": 1.0060650324441973,
+      "rigidity_error": 0.006065032444197316,
+      "shear_l2_error": 0.006833076078440647,
+      "shear_max_error": 0.02560788133142227,
+      "shear_peak_ratio": 1.0050753819398204,
+      "torque_equilibrium": 5.632973298671477e-13,
+      "displacement_error": 1.3836462049122319e-13
+    },
+    {
+      "section": "rectangle",
+      "ratio": 1.0,
+      "n_section": 16,
+      "layers": 5,
+      "elements": 1280,
+      "dofs": 5202,
+      "h": 0.0625,
+      "rigidity_ratio": 1.0034222381268227,
+      "rigidity_error": 0.003422238126822741,
+      "shear_l2_error": 0.003973844130789954,
+      "shear_max_error": 0.02243628172688156,
+      "shear_peak_ratio": 1.0027876044482509,
+      "torque_equilibrium": 1.5726124193451915e-12,
+      "displacement_error": 3.3801943321156636e-13
+    },
+    {
+      "section": "rectangle",
+      "ratio": 1.0,
+      "n_section": 24,
+      "layers": 7,
+      "elements": 4032,
+      "dofs": 15000,
+      "h": 0.041666666666666664,
+      "rigidity_ratio": 1.0015246922032757,
+      "rigidity_error": 0.0015246922032756682,
+      "shear_l2_error": 0.0018475172768385821,
+      "shear_max_error": 0.019235100904392923,
+      "shear_peak_ratio": 1.0012075579890516,
+      "torque_equilibrium": 1.224525075301805e-12,
+      "displacement_error": 3.5130934968418566e-13
+    },
+    {
+      "section": "rectangle",
+      "ratio": 0.5,
+      "n_section": 8,
+      "layers": 3,
+      "elements": 192,
+      "dofs": 972,
+      "h": 0.125,
+      "rigidity_ratio": 1.01444418973853,
+      "rigidity_error": 0.0144441897385299,
+      "shear_l2_error": 0.021479615443190315,
+      "shear_max_error": 0.05616378350284386,
+      "shear_peak_ratio": 1.0071466303032874,
+      "torque_equilibrium": 3.10469834316202e-13,
+      "displacement_error": 2.2290372369122906e-13
+    },
+    {
+      "section": "rectangle",
+      "ratio": 0.5,
+      "n_section": 12,
+      "layers": 4,
+      "elements": 576,
+      "dofs": 2535,
+      "h": 0.08333333333333333,
+      "rigidity_ratio": 1.0065537652981407,
+      "rigidity_error": 0.006553765298140668,
+      "shear_l2_error": 0.01032036009676537,
+      "shear_max_error": 0.04113948707224423,
+      "shear_peak_ratio": 1.0030083705252852,
+      "torque_equilibrium": 3.534841069048111e-12,
+      "displacement_error": 2.7635745254491247e-13
+    },
+    {
+      "section": "rectangle",
+      "ratio": 0.5,
+      "n_section": 16,
+      "layers": 5,
+      "elements": 1280,
+      "dofs": 5202,
+      "h": 0.0625,
+      "rigidity_ratio": 1.0037164832507819,
+      "rigidity_error": 0.003716483250781888,
+      "shear_l2_error": 0.006099568460114816,
+      "shear_max_error": 0.03467948067273578,
+      "shear_peak_ratio": 1.0016501298674072,
+      "torque_equilibrium": 1.8186395611391598e-12,
+      "displacement_error": 2.728614297467677e-13
+    },
+    {
+      "section": "rectangle",
+      "ratio": 0.5,
+      "n_section": 24,
+      "layers": 7,
+      "elements": 4032,
+      "dofs": 15000,
+      "h": 0.041666666666666664,
+      "rigidity_ratio": 1.001662338981777,
+      "rigidity_error": 0.001662338981776923,
+      "shear_l2_error": 0.0028877394655647164,
+      "shear_max_error": 0.028863734503094332,
+      "shear_peak_ratio": 1.0007157876305117,
+      "torque_equilibrium": 8.037381899238942e-12,
+      "displacement_error": 5.723791456188587e-13
+    },
+    {
+      "section": "annulus",
+      "ratio": 1.0,
+      "n_section": 8,
+      "layers": 3,
+      "elements": 48,
+      "dofs": 288,
+      "h": 0.125,
+      "rigidity_ratio": 0.8124174682272616,
+      "rigidity_error": -0.18758253177273843,
+      "shear_l2_error": 8.791141292206634e-15,
+      "shear_max_error": 1.8191323231982296e-14,
+      "shear_peak_ratio": 1.0000000000000073,
+      "torque_equilibrium": 1.3871930344042361e-14,
+      "displacement_error": 4.3208696992809876e-15
+    },
+    {
+      "section": "annulus",
+      "ratio": 1.0,
+      "n_section": 12,
+      "layers": 4,
+      "elements": 144,
+      "dofs": 720,
+      "h": 0.08333333333333333,
+      "rigidity_ratio": 0.9122842200784829,
+      "rigidity_error": -0.08771577992151713,
+      "shear_l2_error": 2.654528981307803e-14,
+      "shear_max_error": 7.138205048870004e-14,
+      "shear_peak_ratio": 1.0000000000000082,
+      "torque_equilibrium": 3.3925916602277514e-14,
+      "displacement_error": 6.988089890360507e-15
+    },
+    {
+      "section": "annulus",
+      "ratio": 1.0,
+      "n_section": 16,
+      "layers": 5,
+      "elements": 320,
+      "dofs": 1440,
+      "h": 0.0625,
+      "rigidity_ratio": 0.9497690109886541,
+      "rigidity_error": -0.05023098901134593,
+      "shear_l2_error": 7.552776257621929e-14,
+      "shear_max_error": 2.2735360621400055e-13,
+      "shear_peak_ratio": 1.0000000000000198,
+      "torque_equilibrium": 1.055472960959745e-14,
+      "displacement_error": 1.0342725472812281e-14
+    },
+    {
+      "section": "annulus",
+      "ratio": 1.0,
+      "n_section": 24,
+      "layers": 7,
+      "elements": 1008,
+      "dofs": 4032,
+      "h": 0.041666666666666664,
+      "rigidity_ratio": 0.9773871724940346,
+      "rigidity_error": -0.022612827505965383,
+      "shear_l2_error": 8.814758995393174e-14,
+      "shear_max_error": 2.78553614300098e-13,
+      "shear_peak_ratio": 1.00000000000003,
+      "torque_equilibrium": 2.1863368477023287e-14,
+      "displacement_error": 9.365193783874881e-15
+    }
+  ],
+  "orders": {
+    "rectangle": {
+      "rigidity_order": 1.9842699324190702,
+      "shear_l2_order": 1.844163666056471
+    },
+    "annulus": {
+      "rigidity_order": 1.9683933271750649,
+      "shear_l2_order": -0.38107412990831313
+    }
+  },
+  "figures": [
+    "convergence.png",
+    "rectangle-field.png",
+    "annulus-field.png"
+  ]
+}
