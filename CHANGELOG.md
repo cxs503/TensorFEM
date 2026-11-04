@@ -1,3 +1,32 @@
+## 2026-11-04 Wall-sided large-angle stability: 10-degree cap audited and closed
+
+- `tensorfem.marine_hydrostatics` only covers `|heel| <= 10 deg` with `GZ = GM sin(phi)`. For a
+  rectangular wall-sided barge the intact arm has the exact classical closed form
+  `GZ = sin(phi) * (GM + 0.5 * BM * tan^2(phi))`; the new
+  `tensorfem.marine_large_angle_stability` implements it and cross-checks it against an
+  independent polygon/shoelace oracle that clips the tilted section and solves the
+  constant-displacement waterplane. Agreement over 5 barges and 198 heel angles is
+  `9.1e-15 m` absolute (`1.4e-13` relative), displacement residual `<= 2.8e-13 m^2`.
+- The classical angle-of-loll identity `tan^2(phi) = -2 GM / BM` is recovered from the zero
+  crossing of the oracle arm to `4.1e-13 deg` (GZ at loll `6.2e-15 m`).
+- Audit finding: the merged `GM sin(phi)` model is a lower bound, and its 10-degree cap does
+  **not** bound the arm error at 3%. Error `= [0.5 (BM/GM) tan^2(phi)] / [1 + ...]` is
+  1.87-2.03% at 10 degrees for `BM/GM ~ 1.2-1.3`, but 15.01% (first crossing above 3% at
+  4.5 degrees) for a wide shallow barge with `BM/GM = 11.4`. Exact arms are now available for
+  that regime instead of a model that silently degrades.
+- Two distinct deck limits are recorded: the upright-draft bound that ends the closed form
+  (`deck_immersion_limit_deg`, used by the closed-form guard) and the constant-displacement
+  bound (`equilibrium_deck_immersion_deg`, 36.870 vs 33.690 deg for the shallow barge, because
+  the hull rises by 0.50 m once the keel emerges). Extrapolating the closed form past keel
+  emergence overestimates the arm by 6.2% / 20.0% / 39.6% at 23.4 / 28.4 / 33.4 deg, so
+  `gz_closed_form` fails closed with the binding limit named.
+- Scope: rectangular wall-sided sections only; cross-curves, free surface, downflooding and
+  real hull forms remain out of scope. Evidence:
+  `benchmarks/marine_large_angle_stability_evidence.json`,
+  `docs/assets/marine_large_angle_stability/`; 31 tests in
+  `tests/test_marine_large_angle_stability.py` including an anti-drift assertion against the
+  stored evidence.
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 - 重新生成 `benchmarks/cook_membrane_stress_reference.json`：旧文件是单元 Jacobian 转置缺陷修复前的产物，
