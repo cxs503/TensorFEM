@@ -88,25 +88,113 @@ def _bilinear_derivative(xi: float, eta: float) -> np.ndarray:
             (-(1 - xi), -(1 + xi), 1 + xi, 1 - xi),
         )
     )
-
-
 def _bilinear_jacobian(xi: float, eta: float) -> np.ndarray:
     """Jacobian of the bilinear map, row 0 = d/dxi, row 1 = d/deta."""
-    return _bilinear_derivative(xi, eta) @ CORNERS
+    derivative = np.array(
+        ((-(1 - eta), 1 - eta, eta, -eta), (-(1 - xi), -xi, xi, 1 - xi))
+    )
+    return derivative @ CORNERS
+
+
+def _bilinear_coefficients() -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Coefficients ``p(xi, eta) = a + b*xi + c*eta + d*xi*eta`` of the map."""
+    c0, c1, c2, c3 = CORNERS
+    return c0, c1 - c0, c3 - c0, c0 - c1 + c2 - c3
+
+
+def _newton_polish(xi: float, eta: float, target: np.ndarray, iterations: int = 8):
+    """Local Newton refinement of a parent-coordinate guess (no globalisation)."""
+    for _ in range(iterations):
+        residual = target - map_point(xi, eta)
+        if float(np.linalg.norm(residual)) < 1e-15:
+            break
+        try:
+            step = np.linalg.solve(_bilinear_jacobian(xi, eta), residual)
+        except np.linalg.LinAlgError:  # pragma: no cover - degenerate mapping
+            break
+        if not np.all(np.isfinite(step)) or float(np.linalg.norm(step)) > 4.0:
+            break
+        xi += float(step[0])
+        eta += float(step[1])
+    return float(xi), float(eta)
+
+
+def inverse_map_candidates(point) -> list[tuple[float, float]]:
+    """All real pre-images of a physical point under the bilinear map.
+
+    ``map_point`` is bilinear, so isolating ``eta`` along one component leaves a
+    quadratic whose (up to) two roots are the only candidates.  A plain Newton
+    iteration from the centre of the square was previously used here and does not
+    converge globally: for the Cook trapezoid it silently returned a point in a
+    *different* element for 2 of the 5 stress probes and for 4 of the 16 element
+    centres, which corrupted every pointwise Q4 stress comparison downstream.
+    """
+    target = np.asarray(point, dtype=np.float64)
+    a, b, c, d = _bilinear_coefficients()
+    delta = target - a
+    # x-component: b0*xi + c0*eta + d0*xi*eta = delta0  ->  xi(eta)
+    # substituted into the y-component gives a quadratic in eta.
+    quad_a = c[1] * d[0] - d[1] * c[0]
+    quad_b = c[1] * b[0] - b[1] * c[0] + d[1] * delta[0] - delta[1] * d[0]
+    quad_c = b[1] * delta[0] - delta[1] * b[0]
+    etas: list[float] = []
+    if abs(quad_a) > 1e-14 * max(1.0, abs(quad_b), abs(quad_c)):
+        discriminant = quad_b * quad_b - 4.0 * quad_a * quad_c
+        if discriminant < 0.0:
+            if discriminant > -1e-12 * max(1.0, quad_b * quad_b):
+                discriminant = 0.0
+            else:
+                return []
+        root = math.sqrt(discriminant)
+        etas = [(-quad_b + root) / (2.0 * quad_a), (-quad_b - root) / (2.0 * quad_a)]
+    elif abs(quad_b) > 1e-14:
+        etas = [-quad_c / quad_b]
+    candidates: list[tuple[float, float]] = []
+    for eta in etas:
+        denominator = b[0] + d[0] * eta
+        if abs(denominator) > 1e-14:
+            xi = (delta[0] - c[0] * eta) / denominator
+        else:  # x-component is degenerate on this line: isolate from the y-component
+            denominator = b[1] + d[1] * eta
+            if abs(denominator) <= 1e-14:
+                continue
+            xi = (delta[1] - c[1] * eta) / denominator
+        candidates.append(_newton_polish(xi, eta, target))
+    return candidates
+
+
+def inverse_map_checked(point, tolerance: float = 1e-12) -> dict:
+    """Robust inversion with an explicit convergence verdict.
+
+    Returns the best pre-image together with the residual of the bilinear map, so
+    callers can refuse to sample when the localisation failed instead of silently
+    reading stress from the wrong element.
+    """
+    target = np.asarray(point, dtype=np.float64)
+    candidates = inverse_map_candidates(target)
+    if not candidates:
+        return {"point": target.tolist(), "xi": float("nan"), "eta": float("nan"),
+                "residual": float("inf"), "converged": False, "candidates": 0}
+    scored = sorted(
+        ((float(np.linalg.norm(target - map_point(xi, eta))), xi, eta) for xi, eta in candidates),
+        key=lambda item: item[0],
+    )
+    residual, xi, eta = scored[0]
+    return {
+        "point": target.tolist(),
+        "xi": xi,
+        "eta": eta,
+        "residual": residual,
+        "converged": bool(residual <= tolerance),
+        "candidates": len(candidates),
+    }
 
 
 def inverse_map(point, tolerance: float = 1e-14, iterations: int = 60) -> tuple[float, float]:
-    """Newton inversion of the bilinear map for one interior physical point."""
-    target = np.asarray(point, dtype=np.float64)
-    xi = eta = 0.5
-    for _ in range(iterations):
-        residual = target - map_point(xi, eta)
-        if float(np.linalg.norm(residual)) < tolerance:
-            break
-        step = np.linalg.solve(_bilinear_jacobian(xi, eta).T, residual)
-        xi += step[0]
-        eta += step[1]
-    return float(xi), float(eta)
+    """Invert the bilinear map for one physical point (closed form + Newton polish)."""
+    del iterations  # kept for backwards compatibility of the public signature
+    result = inverse_map_checked(point, tolerance=max(tolerance, 1e-14))
+    return float(result["xi"]), float(result["eta"])
 
 
 def q8_shape(xi: float, eta: float) -> tuple[np.ndarray, np.ndarray]:
@@ -486,9 +574,18 @@ def platform_q4_stress_at(nodes, elements, displacement, point) -> dict | None:
     divisions = int(round(math.sqrt(len(connectivity_all))))
     if divisions * divisions != len(connectivity_all):
         raise ValueError("structured square grid required")
-    xi, eta = inverse_map(target)
-    if not (0.0 <= xi <= 1.0 and 0.0 <= eta <= 1.0):
+    located = inverse_map_checked(target)
+    if not located["converged"]:
+        raise ValueError(
+            "bilinear localisation failed for point "
+            f"{target.tolist()} (residual {located['residual']:.3e}); "
+            "refusing to sample stress from an unverified element"
+        )
+    xi, eta = located["xi"], located["eta"]
+    if not (-1e-9 <= xi <= 1.0 + 1e-9 and -1e-9 <= eta <= 1.0 + 1e-9):
         return None
+    xi = min(max(xi, 0.0), 1.0)
+    eta = min(max(eta, 0.0), 1.0)
     i = min(int(math.floor(xi * divisions)), divisions - 1)
     j = min(int(math.floor(eta * divisions)), divisions - 1)
     local_xi = 2.0 * (xi * divisions - i) - 1.0
@@ -524,24 +621,36 @@ def cross_check_pointwise_recovery(case: dict, tolerance: float = 1e-6) -> dict:
     displacement = np.asarray(case["displacement"], dtype=np.float64)
     stored = np.asarray(case["stress"], dtype=np.float64)
     divisions = case["mesh"]
+    # One global stress scale: a per-sample denominator made the measure blow up on
+    # samples whose own stress norm is near zero, which reported `inf` and hid the
+    # real (localisation) defect behind a divisibility artefact.
+    scale = float(np.max(np.linalg.norm(stored, axis=1)))
     differences = []
+    worst = None
     for j in range(0, divisions, max(1, divisions // 4)):
         for i in range(0, divisions, max(1, divisions // 4)):
             point = map_point((i + 0.5) / divisions, (j + 0.5) / divisions)
             actual = platform_q4_stress_at(nodes, elements, displacement, point)
             reference_values = stored[j * divisions + i]
             if actual is None:
-                differences.append(float("inf"))
-                continue
-            scale = max(float(np.linalg.norm(reference_values)), 1e-12)
-            differences.append(
-                float(np.linalg.norm(np.array((actual["sxx"], actual["syy"], actual["sxy"]))
-                                     - reference_values)) / scale
-            )
+                difference = float("inf")
+            else:
+                recovery = np.array((actual["sxx"], actual["syy"], actual["sxy"]))
+                difference = float(np.linalg.norm(recovery - reference_values)) / scale
+            differences.append(difference)
+            if worst is None or difference > worst["difference"]:
+                worst = {
+                    "grid_index": [i, j],
+                    "point": np.asarray(point).tolist(),
+                    "stored": np.asarray(reference_values).tolist(),
+                    "difference": difference,
+                }
     largest = max(differences)
     return {
         "levels": divisions,
         "samples": len(differences),
+        "stress_scale": scale,
+        "worst_sample": worst,
         "max_relative_difference": largest,
         "tolerance": tolerance,
         "passed": largest <= tolerance,
