@@ -1,3 +1,14 @@
+## Unreleased
+
+### Verification
+- **均布压力板的精度复核**（`docs/plate-uniform-load-verification.md`）：已合并的 Q4 Mindlin
+  板路径此前只对一条与第一阶模态同形的正弦载荷复核过，无法发现载荷向量、高阶模态刚度、
+  剪切分解或边界条件错误。新增 `tensorfem.plate_uniform_load`（精确 Navier 双级数 +
+  可分离 Rayleigh-Ritz 固支参考，Ritz 以正弦模态自检到 0.008 %）与
+  `scripts/verify_plate_uniform_load.py`：简支/固支、$t/a=0.01/0.10$、均布压力下
+  中心挠度、中心弯矩全部 < 3 %（最差 0.4886 %）；夹支边峰值弯矩不认证。
+  3 个负控（4×4 粗网格保留失败、固支对简支参考、厚板对 Kirchhoff 参考）按设计失败。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 - 重新生成 `benchmarks/cook_membrane_stress_reference.json`：旧文件是单元 Jacobian 转置缺陷修复前的产物，
