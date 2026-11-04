@@ -1,3 +1,21 @@
+## 2026-11-04 大倾角稳性：盒形驳 GZ 曲线与 KN 横交曲线（精确截面几何）
+
+- 新增 `tensorfem.marine_large_angle_gz`：补齐 `marine_hydrostatics` 文档里声明的
+  「不支持大倾角 GZ / 横交曲线」欠账。浸水剖面用凸多边形裁剪 + shoelace 质心精确求值，
+  等排水量（`Area = B T`）二分求水线偏置，`GZ = xB cos + (zB - KG) sin`；
+  支持 0–90°、任意 KG、`KN` 横交曲线族与动稳性积分。
+- 验证锚（`tests/test_marine_large_angle_gz.py`）：墙侧公式
+  `sin(phi)(GM + BM tan^2 phi / 2)` 机精度复现（带内最大残差
+  1.33e-15 m，相对 8.3e-16）；90° 精确几何
+  `xB = B/2 - B T/(2D)`、`GZ = D/2 - KG`；初始斜率回到 `GM`（Richardson 1e-6）；
+  排水体积守恒 1e-12；独立第二套列式（水线高度截断原函数 + 20 万点积分）在三个几何区
+  一致到 1e-8；动稳性积分对闭式 `GM(1-cos) + BM(sec+cos-2)/2` 达 1e-6 且二阶收敛。
+- 发现并记录：闭式甲板入水角只在墙侧假设 `h = T` 下成立，当 `D > 2T` 时龙骨先出水，
+  真实甲板入水角晚于估计（基准驳闭式估计 33.69°，几何求解首个 0.5° 采样点 37.00°），必须用几何求解器而非闭式。
+- 证据/图：`benchmarks/large_angle_gz_reference.json`（0.5° 步长全表）、
+  `docs/assets/marine_large_angle_gz.png`、`docs/marine-large-angle-stability.md`；
+  由 `scripts/plot_large_angle_gz.py` 生成，并有防漂移测试钉住。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 - 重新生成 `benchmarks/cook_membrane_stress_reference.json`：旧文件是单元 Jacobian 转置缺陷修复前的产物，

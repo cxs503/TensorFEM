@@ -30,6 +30,11 @@ and fail-closed validation.
 
 ## Deliberate limitations
 
+Large-angle `GZ` curves and `KN` cross-curves are provided separately by
+`tensorfem.marine_large_angle_gz` (see `docs/marine-large-angle-stability.md`),
+which solves the exact clipped-section geometry for prismatic barges and is
+verified against the wall-sided closed form to machine precision.
+
 This is not a large-angle `GZ` curve, cross-curves, free-surface, damage
 stability, compartment flooding, trim, arbitrary-hull integration, wave-load,
 seakeeping, mooring, or classification-rule implementation. Passing its tests
