@@ -1,0 +1,185 @@
+{
+  "benchmark": "rotating_annular_disk_centrifugal_body_force",
+  "solver_cross_check_dense_vs_pcg_relative": 9.011955726964984e-13,
+  "description": "Thin rotating annular disk, free rims, plane stress: HEX8 solid path under a linear centrifugal body force against the closed form of Timoshenko & Goodier (Theory of Elasticity, 3rd ed., sec. 32).",
+  "geometry": {
+    "outer_radius": 1.0,
+    "inner_radius": 0.5,
+    "thickness": 0.02,
+    "element": "HEX8 2x2x2 full integration",
+    "mesh": "quarter annulus, mid-plane symmetry, polar blocks"
+  },
+  "material": {
+    "young_modulus": 200000000000.0,
+    "poisson_ratio": 0.3,
+    "density": 7850.0
+  },
+  "loading": {
+    "omega": 314.1592653589793,
+    "rpm": 3000.0,
+    "body_force": "b = rho*omega^2*(x, y, 0)",
+    "consistent_nodal_loads": "independent trilinear Gauss quadrature"
+  },
+  "acceptance_gate": {
+    "relative_error": 0.03
+  },
+  "reference": {
+    "disk": {
+      "outer_radius": 1.0,
+      "inner_radius": 0.5,
+      "young_modulus": 200000000000.0,
+      "poisson_ratio": 0.3,
+      "density": 7850.0,
+      "omega": 314.1592653589793,
+      "thickness": 0.02,
+      "rpm": 3000.0,
+      "peak_hoop_stress": 673076177.6405408,
+      "peak_radial_displacement": 0.0016826652059281169
+    },
+    "oracle": {
+      "equilibrium_residual_max": 3.187165895035896e-11,
+      "compatibility_residual_max": 2.476634348991258e-13,
+      "inner_rim_traction": 0.0,
+      "outer_rim_traction": 0.0,
+      "hoop_force_balance_lhs": 225972817.4337619,
+      "hoop_force_balance_rhs": 225972817.4332751,
+      "hoop_force_balance_relative_error": 2.1542021709064814e-12
+    }
+  },
+  "ladder": [
+    {
+      "radial": 8,
+      "angular": 4,
+      "layers": 1,
+      "elements": 32,
+      "dofs": 270,
+      "relative_l2_displacement_error": 0.03325261297890432,
+      "relative_l2_hoop_stress_error": 0.052826617230927006,
+      "relative_l2_radial_stress_error": 0.09543474969704085,
+      "bore_ring_hoop_error": 0.05349158202473895,
+      "hoop_peak_fe": 609391343.5544722,
+      "hoop_peak_exact": 673076177.6405408,
+      "rim_radial_stress_over_peak_hoop": 0.015462925358371777,
+      "max_sigma_zz_over_peak_hoop": 0.005647316668454053,
+      "reaction_max": 179552.72982447813,
+      "rtol": 1e-10,
+      "applied_load_resultant": 3074107.6873444263,
+      "reaction_closure": 2.888993724123317e-14,
+      "cg_iterations": 159,
+      "cg_relative_residual": 3.805230303772921e-11,
+      "h": 0.000625
+    },
+    {
+      "radial": 16,
+      "angular": 8,
+      "layers": 2,
+      "elements": 256,
+      "dofs": 1377,
+      "relative_l2_displacement_error": 0.008392504700731102,
+      "relative_l2_hoop_stress_error": 0.013466301640184291,
+      "relative_l2_radial_stress_error": 0.02430788274434912,
+      "bore_ring_hoop_error": 0.014205939729139713,
+      "hoop_peak_fe": 645186072.6913431,
+      "hoop_peak_exact": 673076177.6405408,
+      "rim_radial_stress_over_peak_hoop": 0.004429925546072828,
+      "max_sigma_zz_over_peak_hoop": 0.0032994009467119715,
+      "reaction_max": 97755.63117801082,
+      "rtol": 1e-10,
+      "applied_load_resultant": 3165035.6244072854,
+      "reaction_closure": 4.8641435127818705e-14,
+      "cg_iterations": 465,
+      "cg_relative_residual": 9.911790840427246e-11,
+      "h": 0.0003125
+    },
+    {
+      "radial": 32,
+      "angular": 16,
+      "layers": 2,
+      "elements": 1024,
+      "dofs": 5049,
+      "relative_l2_displacement_error": 0.0021037883061667323,
+      "relative_l2_hoop_stress_error": 0.003384602395320344,
+      "relative_l2_radial_stress_error": 0.006128665270361625,
+      "bore_ring_hoop_error": 0.003850683380249563,
+      "hoop_peak_fe": 660206045.7179781,
+      "hoop_peak_exact": 673076177.6405408,
+      "rim_radial_stress_over_peak_hoop": 0.001311360262531207,
+      "max_sigma_zz_over_peak_hoop": 0.0017516084643237444,
+      "reaction_max": 50764.41601116876,
+      "rtol": 1e-10,
+      "applied_load_resultant": 3188044.054883778,
+      "reaction_closure": 2.4265409909236463e-14,
+      "cg_iterations": 514,
+      "cg_relative_residual": 9.8572410742267e-11,
+      "h": 0.00015625
+    },
+    {
+      "radial": 64,
+      "angular": 32,
+      "layers": 2,
+      "elements": 4096,
+      "dofs": 19305,
+      "relative_l2_displacement_error": 0.0005276516238240767,
+      "relative_l2_hoop_stress_error": 0.000847857108568961,
+      "relative_l2_radial_stress_error": 0.0015607779604852622,
+      "bore_ring_hoop_error": 0.0010859725633807669,
+      "hoop_peak_fe": 666925710.7986348,
+      "hoop_peak_exact": 673076177.6405408,
+      "rim_radial_stress_over_peak_hoop": 0.0004121593737820281,
+      "max_sigma_zz_over_peak_hoop": 0.0008602305999063484,
+      "reaction_max": 25839.928901464038,
+      "rtol": 1e-10,
+      "applied_load_resultant": 3193813.5280896975,
+      "reaction_closure": 3.296780451452421e-14,
+      "cg_iterations": 657,
+      "cg_relative_residual": 9.125763820903331e-11,
+      "h": 7.8125e-05
+    }
+  ],
+  "anchors": [
+    {
+      "name": "peak hoop stress (bore) vs Timoshenko & Goodier sec. 32",
+      "reference": 673076177.6405408,
+      "measured_ring_max": 666925710.7986348,
+      "relative_error": 0.00913784657104705,
+      "note": "FE value is the largest centroid hoop stress of the finest mesh; the closed-form peak sits exactly on the bore, half an element inside",
+      "passed": true
+    },
+    {
+      "name": "hoop stress field, L2 at element centroids (finest mesh)",
+      "reference": 0.0,
+      "measured": 0.000847857108568961,
+      "relative_error": 0.000847857108568961,
+      "passed": true
+    },
+    {
+      "name": "radial stress field, L2 at element centroids (finest mesh)",
+      "reference": 0.0,
+      "measured": 0.0015607779604852622,
+      "relative_error": 0.0015607779604852622,
+      "passed": true
+    },
+    {
+      "name": "radial displacement field, L2 (finest mesh)",
+      "reference": 0.0,
+      "measured": 0.0005276516238240767,
+      "relative_error": 0.0005276516238240767,
+      "passed": true
+    },
+    {
+      "name": "plane stress: max|sigma_zz|/peak hoop (finest mesh)",
+      "reference": 0.0,
+      "measured": 0.0008602305999063484,
+      "relative_error": 0.0008602305999063484,
+      "passed": true
+    },
+    {
+      "name": "reaction closure |sum R + sum F|/|sum F| (finest mesh)",
+      "reference": 0.0,
+      "measured": 3.296780451452421e-14,
+      "relative_error": 3.296780451452421e-14,
+      "passed": true
+    }
+  ],
+  "all_passed": true
+}
