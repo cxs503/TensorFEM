@@ -1,0 +1,315 @@
+{
+  "schema": "tensorfem.thermal-transient-reference/1.0",
+  "generated_by": "benchmarks/thermal_transient_reference.py",
+  "units": {
+    "length": "m",
+    "conductivity": "W/(m*K)",
+    "alpha": "m^2/s"
+  },
+  "properties": {
+    "k": 1.0,
+    "rho": 1.0,
+    "cp": 1.0,
+    "alpha": 1.0,
+    "L": 1.0,
+    "thickness": 1.0
+  },
+  "anchors": [
+    {
+      "anchor": "dirichlet_step_fourier_series",
+      "description": "slab, T(x,0)=1, T(0,t)=T(L,t)=0, Fo=0.10, 32 LINE2 elements, backward Euler, 1000 steps",
+      "reference": "T(x,t)=sum_{n odd} 4/(n*pi)*sin(n*pi*x/L)*exp(-n^2*pi^2*alpha*t/L^2)",
+      "relative_l2_error": 0.0011084985882929427,
+      "max_absolute_error": 0.0005241831095413318,
+      "gate": 0.03,
+      "values": {
+        "n": 32,
+        "t_end": 0.1,
+        "n_steps": 1000,
+        "theta": 1.0
+      },
+      "profile": {
+        "x": [
+          0.0,
+          0.03125,
+          0.0625,
+          0.09375,
+          0.125,
+          0.15625,
+          0.1875,
+          0.21875,
+          0.25,
+          0.28125,
+          0.3125,
+          0.34375,
+          0.375,
+          0.40625,
+          0.4375,
+          0.46875,
+          0.5,
+          0.53125,
+          0.5625,
+          0.59375,
+          0.625,
+          0.65625,
+          0.6875,
+          0.71875,
+          0.75,
+          0.78125,
+          0.8125,
+          0.84375,
+          0.875,
+          0.90625,
+          0.9375,
+          0.96875,
+          1.0
+        ],
+        "numeric": [
+          0.0,
+          0.04647867809350113,
+          0.09250847437413631,
+          0.13764493909671235,
+          0.18145243457333707,
+          0.22350841231757776,
+          0.2634075391146595,
+          0.3007656273986635,
+          0.3352233297773319,
+          0.3664495625902357,
+          0.39414462872922845,
+          0.4180430153044465,
+          0.4379158468413417,
+          0.45357297932551655,
+          0.4648647244146924,
+          0.4716831964256453,
+          0.4739632772702078,
+          0.4716831964256448,
+          0.46486472441469195,
+          0.4535729793255157,
+          0.4379158468413406,
+          0.41804301530444504,
+          0.3941446287292266,
+          0.3664495625902334,
+          0.3352233297773294,
+          0.30076562739866086,
+          0.263407539114657,
+          0.22350841231757534,
+          0.18145243457333513,
+          0.1376449390967108,
+          0.09250847437413523,
+          0.04647867809350057,
+          0.0
+        ],
+        "exact": [
+          0.0,
+          0.04653077445736495,
+          0.09261212436163793,
+          0.13779906598723846,
+          0.18165544479694345,
+          0.22375822020996708,
+          0.26370159824745665,
+          0.30110096721491053,
+          0.33559659613630327,
+          0.3668570608031182,
+          0.39458236774685324,
+          0.4185067518903951,
+          0.4384011288109451,
+          0.4540751872298639,
+          0.46537911137095506,
+          0.47220492611122866,
+          0.47448746037974915,
+          0.47220492611122866,
+          0.46537911137095506,
+          0.4540751872298639,
+          0.4384011288109451,
+          0.4185067518903951,
+          0.3945823677468534,
+          0.36685706080311825,
+          0.33559659613630327,
+          0.30110096721491053,
+          0.26370159824745665,
+          0.22375822020996722,
+          0.1816554447969435,
+          0.13779906598723848,
+          0.0926121243616381,
+          0.04653077445736505,
+          5.813680699633804e-17
+        ]
+      }
+    },
+    {
+      "anchor": "step_problem_h_convergence",
+      "description": "Dirichlet step problem, Fo=0.10, backward Euler with 2000 steps, LINE2 h-refinement",
+      "reference": "Fourier series (Carslaw & Jaeger 3.4)",
+      "levels": [
+        8,
+        16,
+        32,
+        64
+      ],
+      "errors": [
+        0.025144402254418954,
+        0.00613112084287529,
+        0.001351879935741389,
+        0.00015546873736350047
+      ],
+      "orders": [
+        2.0360145121385576,
+        2.1811838125832455,
+        3.120270619112038
+      ],
+      "observed_order": 3.120270619112038,
+      "richardson_limit_error": 2.020252596278924e-05
+    },
+    {
+      "anchor": "spatial_order_sine_mode",
+      "description": "sine initial mode, Fo=0.10, Crank-Nicolson (3000 steps), LINE2 h-refinement",
+      "reference": "T=sin(pi*x/L)*exp(-pi^2*alpha*t/L^2)",
+      "levels": [
+        4,
+        8,
+        16,
+        32
+      ],
+      "errors": [
+        0.05038987255867454,
+        0.012666727826484328,
+        0.0031699019370982954,
+        0.0007926662417954613
+      ],
+      "orders": [
+        1.992089923847108,
+        1.998533768243582,
+        1.9996527693061144
+      ],
+      "observed_order": 1.9996527693061144,
+      "expected_order": 2.0
+    },
+    {
+      "anchor": "temporal_order_theta_method",
+      "description": "sine initial mode on 256 LINE2 elements (spatial floor ~1e-6), dt refinement by factor 2",
+      "reference": "T=sin(pi*x/L)*exp(-pi^2*alpha*t/L^2)",
+      "schemes": {
+        "theta=1.0": {
+          "steps": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "errors": [
+            0.11051244833858404,
+            0.05789835225177138,
+            0.029663511001343765,
+            0.015013860044094537
+          ],
+          "orders": [
+            0.9326146909852335,
+            0.9648329240120046,
+            0.9823944269686563
+          ],
+          "observed_order": 0.9823944269686563,
+          "expected_order": 1.0
+        },
+        "theta=0.5": {
+          "steps": [
+            2,
+            4,
+            8
+          ],
+          "errors": [
+            0.0205921820946367,
+            0.005053232001987089,
+            0.0012663056834626852
+          ],
+          "orders": [
+            2.0268183933051027,
+            1.9965807076385365
+          ],
+          "observed_order": 1.9965807076385365,
+          "expected_order": 2.0
+        }
+      }
+    },
+    {
+      "anchor": "q4_strip_matches_line2",
+      "description": "same Dirichlet step problem discretised with 16 Q4 elements (1 element thick) vs 16 LINE2 elements",
+      "reference": "LINE2 solution on the same node set",
+      "relative_l2_error": 4.440660587191209e-14,
+      "through_thickness_relative_l2": 2.121965242055405e-15,
+      "max_absolute_error": 2.070565940925917e-14,
+      "values": {
+        "n": 16,
+        "n_steps": 1000,
+        "theta": 1.0
+      }
+    },
+    {
+      "anchor": "adiabatic_mean_temperature_conservation",
+      "description": "insulated slab, cos(pi*x) initial field, 20 LINE2 elements, Crank-Nicolson, 50 steps",
+      "reference": "1^T C T is invariant when every boundary flux is zero",
+      "initial_mean": 1.0,
+      "final_mean": 0.999999999999988,
+      "relative_drift": 1.199040866595169e-14,
+      "gate": 1e-10
+    },
+    {
+      "anchor": "capacity_scaling_and_null_space",
+      "description": "sum of the assembled capacity matrix vs rho*cp*A*L (conductivity 2.50, rho 3.00, cp 4.00, A 5.00, L 1.00, 7 LINE2 elements)",
+      "reference": "sum(C) = rho*cp*A*L and K @ 1 = 0",
+      "total_capacity": 60.00000000000001,
+      "analytic_capacity": 60.0,
+      "relative_error": 1.1842378929335003e-16,
+      "null_space_max_abs": 0.0,
+      "gate": 1e-12
+    }
+  ],
+  "checks": {
+    "dirichlet_step_fourier_series": {
+      "criterion": "relative L2 error vs Fourier series < 3%",
+      "value": 0.0011084985882929427,
+      "passed": true
+    },
+    "spatial_order_sine_mode": {
+      "criterion": "observed L2 order >= 1.85 (expected 2)",
+      "value": 1.9996527693061144,
+      "passed": true
+    },
+    "temporal_order_theta_method/theta=1.0": {
+      "criterion": "observed order in [0.85, 1.15] (expected 1)",
+      "value": 0.9823944269686563,
+      "passed": true
+    },
+    "temporal_order_theta_method/theta=0.5": {
+      "criterion": "observed order in [1.8, 2.2] (expected 2)",
+      "value": 1.9965807076385365,
+      "passed": true
+    },
+    "q4_strip_matches_line2": {
+      "criterion": "Q4 strip vs LINE2 relative L2 < 1e-8",
+      "value": 4.440660587191209e-14,
+      "passed": true
+    },
+    "step_problem_h_convergence": {
+      "criterion": "observed L2 order >= 1.85 and Richardson limit error < 1e-4",
+      "value": {
+        "order": 3.120270619112038,
+        "limit": 2.020252596278924e-05
+      },
+      "passed": true
+    },
+    "capacity_scaling_and_null_space": {
+      "criterion": "sum(C) matches rho*cp*A*L within 1e-12 and K@1 = 0",
+      "value": {
+        "capacity": 1.1842378929335003e-16,
+        "null": 0.0
+      },
+      "passed": true
+    },
+    "adiabatic_mean_temperature_conservation": {
+      "criterion": "relative drift of mean temperature < 1e-10",
+      "value": 1.199040866595169e-14,
+      "passed": true
+    }
+  },
+  "all_passed": true
+}
