@@ -91,7 +91,7 @@ HTML 内嵌全部 PNG，可独立打开；Word、PDF 也包含图像。原始 FE
 
 ## 尚未闭环的工作
 
-Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳仍缺独立应力参考；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；仍缺：壳单元几何刚度、非均匀预屈曲应力、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。
+Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳仍缺独立应力参考；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；壳单元几何刚度、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告仍缺。**非均匀预屈曲应力**（应力梯度）已补出参考端：线性斜变载荷的变分参考解对文献锚点 `k=4.00/7.81/23.9` 误差 0.000%/0.025%/0.076%，并与连续 Navier 精确解在机器精度内一致，见 [marine-plate-stress-gradient-buckling.md](marine-plate-stress-gradient-buckling.md)；但仓内没有带非均匀膜应力几何刚度的板单元，有限元端仍未闭环（WITHHELD），因此不增加完整报告通过数量。
 
 既有 `.qualification/v1-readiness/aggregate-v045.json` 记录的 1.0 阻塞项仍为三维双变形体接触，以及加筋板 4/8/12 网格的峰值和峰后响应收敛。本次补齐线性 benchmark 场验证及报告，没有重新认证这两个工业能力，也没有提升版本到 1.0。
 
