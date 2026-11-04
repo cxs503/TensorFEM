@@ -1,0 +1,380 @@
+{
+ "benchmark": "saint_venant_surface_stress",
+ "case": {
+  "side": 1.0,
+  "length": 4.0,
+  "young": 1000000000.0,
+  "poisson": 0.3,
+  "torque": 1.0,
+  "shear_modulus": 384615384.6153846,
+  "gate": 0.03
+ },
+ "anchors": [
+  {
+   "anchor": "reference.boundary_peak_vs_table",
+   "description": "closed-form on-boundary peak tau_max = G theta (8b/pi^2) sum (-1)^((n-1)/2)/n^2 tanh(n pi a/2b) against the Timoshenko table alpha = 0.208",
+   "measured": 4.803857519253761,
+   "reference": 4.8076923076923075,
+   "relative_error": 0.0007976359952177319,
+   "tolerance": 0.005,
+   "source": "Timoshenko & Goodier 3rd ed. Sec. 117 (three-digit alpha)",
+   "passed": true
+  },
+  {
+   "anchor": "reference.boundary_peak_interior_limit",
+   "description": "|tau| sampled at (0, a/2 - eps) for eps = 1e-2 .. 1e-5, first-order Richardson extrapolated to eps -> 0, against the closed-form boundary value",
+   "measured": 4.803857083021805,
+   "reference": 4.803857519253761,
+   "relative_error": 9.080867900411043e-08,
+   "tolerance": 1e-05,
+   "source": "the interior field must tend to the boundary value",
+   "samples": [
+    4.662791996039124,
+    4.789655187325109,
+    4.802437042996409,
+    4.803715079019265
+   ],
+   "passed": true
+  },
+  {
+   "anchor": "reference.grid_scan_is_lower_bound",
+   "description": "max_shear_stress is an interior grid scan, so it must increase monotonically with the sample count and stay below the on-boundary value; a scan reported as 'the peak' would understate it",
+   "measured": 4.794999342516083,
+   "reference": 4.803857519253761,
+   "relative_error": 0.0018439715795429967,
+   "tolerance": 0.005,
+   "source": "monotone convergence from below",
+   "monotone": true,
+   "scan": [
+    {
+     "samples": 101,
+     "value": 4.733735464101436,
+     "relative_error": 0.014597030588704435
+    },
+    {
+     "samples": 201,
+     "value": 4.768558276441179,
+     "relative_error": 0.007348103616958488
+    },
+    {
+     "samples": 401,
+     "value": 4.7861545014968545,
+     "relative_error": 0.0036851671153761045
+    },
+    {
+     "samples": 801,
+     "value": 4.794999342516083,
+     "relative_error": 0.0018439715795429967
+    }
+   ],
+   "passed": true
+  },
+  {
+   "anchor": "reference.thin_strip_limit",
+   "description": "coefficient of G theta b for a/b = 50 against the strip limit (8/pi^2) * Catalan",
+   "measured": 0.7424537413686972,
+   "reference": 0.7424537454215443,
+   "relative_error": 5.458719930970045e-09,
+   "tolerance": 0.002,
+   "source": "tanh(n pi a/2b) -> 1 leaves the Catalan series",
+   "passed": true
+  },
+  {
+   "anchor": "reference.square_coefficient",
+   "description": "tau_max/(G theta a) for the square section (0.6753 by the series)",
+   "measured": 0.6753119503314685,
+   "reference": 0.675,
+   "relative_error": 0.0004621486392125467,
+   "tolerance": 0.001,
+   "source": "closed form, three-digit literature value 0.675",
+   "passed": true
+  },
+  {
+   "anchor": "reference.free_face_traction_zero",
+   "description": "on the free face y = a/2 the traction component tau_zy must vanish while the section shear |(tau_xz, tau_zy)| peaks there -- the peak is not a traction, so a traction projection cannot read it",
+   "measured": 0.007207506333091436,
+   "reference": 0.0,
+   "relative_error": 0.0015003580568748972,
+   "tolerance": 0.003,
+   "source": "traction-free lateral surface (psi = 0 along the face); the residual is the truncation level of a 200-mode derivative series, not a modelling error",
+   "section_peak": 4.803857519253761,
+   "passed": true
+  },
+  {
+   "anchor": "operator.partition_of_unity.hex8",
+   "description": "every row of the extrapolation matrix sums to one, so a constant stress is reproduced exactly at the nodes",
+   "measured": 1.1102230246251565e-16,
+   "reference": 0.0,
+   "tolerance": 1e-14,
+   "passed": true
+  },
+  {
+   "anchor": "operator.polynomial_reproduction.hex8",
+   "description": "the operator reproduces the separable monomial of degree 1 per natural coordinate exactly; 1 is the number of Gauss points minus one, i.e. the order the operator can claim",
+   "measured": 1.1102230246251565e-16,
+   "reference": 0.0,
+   "tolerance": 1e-12,
+   "passed": true
+  },
+  {
+   "anchor": "operator.order_control.hex8",
+   "description": "negative control: the separable monomial of degree 2 must *not* be reproduced by hex8 (2-point Gauss per direction), so the stated order is the operator's real limit",
+   "measured": 0.43054486185169,
+   "reference": 0.0,
+   "tolerance": 1e-06,
+   "expected": "fail",
+   "passed": true
+  },
+  {
+   "anchor": "operator.partition_of_unity.hex20",
+   "description": "every row of the extrapolation matrix sums to one, so a constant stress is reproduced exactly at the nodes",
+   "measured": 1.7763568394002505e-15,
+   "reference": 0.0,
+   "tolerance": 1e-14,
+   "passed": true
+  },
+  {
+   "anchor": "operator.polynomial_reproduction.hex20",
+   "description": "the operator reproduces the separable monomial of degree 2 per natural coordinate exactly; 2 is the number of Gauss points minus one, i.e. the order the operator can claim",
+   "measured": 5.551115123125783e-17,
+   "reference": 0.0,
+   "tolerance": 1e-12,
+   "passed": true
+  },
+  {
+   "anchor": "operator.order_control.hex20",
+   "description": "negative control: the separable monomial of degree 3 must *not* be reproduced by hex20 (3-point Gauss per direction), so the stated order is the operator's real limit",
+   "measured": 0.17203160291796402,
+   "reference": 0.0,
+   "tolerance": 1e-06,
+   "expected": "fail",
+   "passed": true
+  }
+ ],
+ "patch_tests": [
+  {
+   "element": "hex8",
+   "segments": 4,
+   "n_nodes": 425,
+   "relative_error": 3.512010319542339e-15,
+   "tolerance": 1e-12,
+   "passed": true
+  },
+  {
+   "element": "hex20",
+   "segments": 4,
+   "n_nodes": 1505,
+   "relative_error": 3.1423250227484086e-14,
+   "tolerance": 1e-12,
+   "passed": true
+  }
+ ],
+ "ladder": {
+  "hex8": [
+   {
+    "element": "hex8",
+    "segments": 4,
+    "n_dofs": 1275,
+    "h_over_side": 0.25,
+    "exact_peak": 4.565482832315105,
+    "recovered_peak": 4.394366884896559,
+    "recovered_peak_error": 0.037480361596667046,
+    "recovered_position": [
+     0.0,
+     -0.5
+    ],
+    "exact_at_position": 4.565482639609008,
+    "centroid_peak": 3.0609758375293206,
+    "centroid_error": 0.32953951422983796,
+    "n_boundary_nodes": 16,
+    "extrapolation_residual": 1.4493655736277695,
+    "twist_rate": 1.7577440112222072e-08,
+    "twist_rate_error": 0.04962151478957376,
+    "wall_seconds": 2.797818422317505
+   },
+   {
+    "element": "hex8",
+    "segments": 6,
+    "n_dofs": 3675,
+    "h_over_side": 0.16666666666666666,
+    "exact_peak": 4.692076465039883,
+    "recovered_peak": 4.613039604624325,
+    "recovered_peak_error": 0.016844751146843463,
+    "recovered_position": [
+     -0.5,
+     0.0
+    ],
+    "exact_at_position": 4.692094259857384,
+    "centroid_peak": 3.6181927570125394,
+    "centroid_error": 0.22887174069491975,
+    "n_boundary_nodes": 24,
+    "extrapolation_residual": 1.3722287468079823,
+    "twist_rate": 1.8064834782082226e-08,
+    "twist_rate_error": 0.023269019484000415,
+    "wall_seconds": 4.168415069580078
+   },
+   {
+    "element": "hex8",
+    "segments": 8,
+    "n_dofs": 8019,
+    "h_over_side": 0.125,
+    "exact_peak": 4.739682678852404,
+    "recovered_peak": 4.695864031983227,
+    "recovered_peak_error": 0.009245059181849364,
+    "recovered_position": [
+     0.5,
+     0.0
+    ],
+    "exact_at_position": 4.739700654217662,
+    "centroid_peak": 3.910367190355822,
+    "centroid_error": 0.17497278714392325,
+    "n_boundary_nodes": 32,
+    "extrapolation_residual": 1.4674870361561454,
+    "twist_rate": 1.8248122158903856e-08,
+    "twist_rate_error": 0.01335902244064185,
+    "wall_seconds": 7.7721171379089355
+   },
+   {
+    "element": "hex8",
+    "segments": 12,
+    "n_dofs": 24843,
+    "h_over_side": 0.08333333333333333,
+    "exact_peak": 4.774883545475963,
+    "recovered_peak": 4.755514013870407,
+    "recovered_peak_error": 0.004056545342117961,
+    "recovered_position": [
+     -0.5,
+     0.0
+    ],
+    "exact_at_position": 4.77490165434139,
+    "centroid_peak": 4.207303391436406,
+    "centroid_error": 0.11886785272016093,
+    "n_boundary_nodes": 48,
+    "extrapolation_residual": 1.5520007303012604,
+    "twist_rate": 1.8383648049088876e-08,
+    "twist_rate_error": 0.006031397405453962,
+    "wall_seconds": 24.006535053253174
+   }
+  ],
+  "hex20": [
+   {
+    "element": "hex20",
+    "segments": 2,
+    "n_dofs": 783,
+    "h_over_side": 0.5,
+    "exact_peak": 4.733286335368477,
+    "recovered_peak": 5.52780394344212,
+    "recovered_peak_error": 0.1678574993734858,
+    "recovered_position": [
+     0.0,
+     -0.5
+    ],
+    "exact_at_position": 4.7332861355795,
+    "centroid_peak": 1.7640383817719285,
+    "centroid_error": 0.6273121343641254,
+    "n_boundary_nodes": 16,
+    "extrapolation_residual": 4.028070610473129,
+    "twist_rate": 1.8223495772461192e-08,
+    "twist_rate_error": 0.014690523938821426,
+    "wall_seconds": 3.3152360916137695
+   },
+   {
+    "element": "hex20",
+    "segments": 4,
+    "n_dofs": 4515,
+    "h_over_side": 0.25,
+    "exact_peak": 4.798203565587105,
+    "recovered_peak": 4.953393957800219,
+    "recovered_peak_error": 0.032343436474047284,
+    "recovered_position": [
+     0.0,
+     -0.5
+    ],
+    "exact_at_position": 4.798203363058015,
+    "centroid_peak": 2.9988010822774323,
+    "centroid_error": 0.375015869734051,
+    "n_boundary_nodes": 32,
+    "extrapolation_residual": 2.133290890120953,
+    "twist_rate": 1.847343181829244e-08,
+    "twist_rate_error": 0.0011769611492420363,
+    "wall_seconds": 13.701115369796753
+   },
+   {
+    "element": "hex20",
+    "segments": 6,
+    "n_dofs": 13503,
+    "h_over_side": 0.16666666666666666,
+    "exact_peak": 4.802575471233007,
+    "recovered_peak": 4.863028110971891,
+    "recovered_peak_error": 0.012587546015880366,
+    "recovered_position": [
+     0.0,
+     -0.5
+    ],
+    "exact_at_position": 4.802575268519381,
+    "centroid_peak": 3.5974978907239605,
+    "centroid_error": 0.250923194799822,
+    "n_boundary_nodes": 48,
+    "extrapolation_residual": 1.5683357701319829,
+    "twist_rate": 1.849026397219371e-08,
+    "twist_rate_error": 0.0002668788605022593,
+    "wall_seconds": 50.791736364364624
+   }
+  ]
+ },
+ "orders": {
+  "hex8": [
+   {
+    "from_segments": 4,
+    "to_segments": 6,
+    "error_ratio": 2.2250469163915483,
+    "observed_order": 1.9724952540212566
+   },
+   {
+    "from_segments": 6,
+    "to_segments": 8,
+    "error_ratio": 1.8220274003128525,
+    "observed_order": 2.0854613295942346
+   },
+   {
+    "from_segments": 8,
+    "to_segments": 12,
+    "error_ratio": 2.279047416495148,
+    "observed_order": 2.0316361122277433
+   }
+  ],
+  "hex20": [
+   {
+    "from_segments": 2,
+    "to_segments": 4,
+    "error_ratio": 5.18984739015523,
+    "observed_order": 2.375692116096971
+   },
+   {
+    "from_segments": 4,
+    "to_segments": 6,
+    "error_ratio": 2.5694791052396564,
+    "observed_order": 2.327458458709899
+   }
+  ]
+ },
+ "sampling_probe": {
+  "element": "hex8",
+  "segments": 3,
+  "recovered_peak": 3.776417478410109,
+  "exact_peak": 4.408079833675362,
+  "recovered_peak_error": 0.1432964871551763,
+  "centroid_error": 0.3717829057805484,
+  "node_at_side_midpoint": false,
+  "n_boundary_nodes": 12,
+  "note": "odd division of a HEX8 mesh has no node at the side midpoint where the exact peak sits, so the nodal maximum is a sampling value, not the recovery accuracy; a quadratic element puts an edge-midpoint node there and does not have this floor"
+ },
+ "all_anchors_passed": true,
+ "wall_seconds": 119.99962306022644,
+ "environment": {
+  "python": "3.11.6",
+  "torch": "2.7.1",
+  "machine": "loongarch64"
+ },
+ "digest": "0394ab432aa2b5c81e3e5b02f2d475b24c6083a7766c90ab3efd2684127af2db"
+}

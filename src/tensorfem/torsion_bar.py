@@ -62,6 +62,7 @@ from .sparse_core import assemble_coo, solve_sparse_static
 
 __all__ = [
     "TorsionBarResult",
+    "boundary_shear_peak",
     "max_shear_stress",
     "prandtl_stress_function",
     "rectangular_torsion_constant",
@@ -169,6 +170,40 @@ def max_shear_stress(a: float, b: float, *, torque: float = 1.0, samples: int = 
     return float(magnitude[index]), (float(X.reshape(-1)[index]), float(Y.reshape(-1)[index]))
 
 
+def boundary_shear_peak(a: float, b: float, *, shear_modulus: float = 1.0,
+                        twist_rate: float = 1.0, terms: int = _TERMS):
+    """Exact peak ``|tau|`` *on* the lateral surface of an ``a x b`` rectangle.
+
+    The maximum of ``|grad psi|`` of the torsional problem is attained on the
+    boundary, so it cannot be approached by any interior sampling: an interior
+    grid scan (``max_shear_stress``) returns a monotone lower bound, and an
+    element centroid returns a value that is wrong by tens of percent.  On the
+    long-side midpoint ``y = +-a/2, x = 0`` the series differentiates in closed
+    form (``tau_zx = G theta dpsi/dy``, ``tau_zy = -G theta dpsi/dx = 0`` there,
+    which is the traction-free condition of that face)::
+
+        tau_max = G theta (8 b / pi^2)
+                  sum_{n odd} (-1)^((n-1)/2) / n^2 * tanh(n pi a / (2 b))
+
+    For a square section this returns ``0.6753 G theta a``, i.e. the Timoshenko
+    coefficient ``alpha = 0.208`` of ``tau_max = T/(alpha a b^2)`` to the three
+    digits of the table.  The series converges like ``1/n^2`` only while
+    ``tanh(n pi a / (2 b))`` saturates quickly, so it is the peak of the *long
+    side*; for a strip (``a >> b``) the coefficient approaches
+    ``(8/pi^2) * Catalan = 0.7424``, which is the slowly converging thin-strip
+    limit and is reported as such rather than as a converged value.
+    """
+    if not (a > 0 and b > 0):
+        raise ValueError("section sides must be positive")
+    if b > a * (1.0 + 1e-12):
+        raise ValueError("expects a >= b (long side first)")
+    n, sign, upper = _series_arguments(a, b, terms)
+    coefficient = (8.0 * b / math.pi**2) * float(torch.sum(sign / n**2 * torch.tanh(upper)))
+    return {"shear_modulus": shear_modulus, "twist_rate": twist_rate,
+            "coefficient": coefficient, "tau_max": shear_modulus * twist_rate * coefficient,
+            "location": (0.0, a / 2.0)}
+
+
 def _dtype_of(*values):
     for value in values:
         if isinstance(value, torch.Tensor) and value.is_floating_point():
@@ -208,6 +243,10 @@ class TorsionBarResult:
     warping_fe: torch.Tensor
     warping_exact: torch.Tensor
     warping_relative_error: float
+    nodes: torch.Tensor | None = None
+    cells: torch.Tensor | None = None
+    displacement: torch.Tensor | None = None
+    modulus: torch.Tensor | None = None
 
     @property
     def twist_rate_relative_error(self) -> float:
@@ -346,4 +385,5 @@ def solve_torsion_bar(*, element: str = "hex8", segments: int = 4, side: float =
         shear_peak_exact_sampled=peak_sampled, shear_peak_exact_global=peak_global,
         warping_xy=warping_xy, warping_fe=fe_centred + ref_centred.mean(), warping_exact=warping_ref,
         warping_relative_error=warping_error,
+        nodes=nodes, cells=cells, displacement=displacement, modulus=modulus,
     )

@@ -1,4 +1,17 @@
-## 2026-11-03 Cook 膜应力审计证据收尾
+## Unreleased
+
+- Closed the free-surface stress gap left by the Saint-Venant torsion study. New `tensorfem.surface_stress_recovery`
+  extrapolates Gauss-point brick stresses to the nodes (tensor-product Lagrange: linear order for HEX8,
+  quadratic for HEX20) and averages the incident elements, so a boundary quantity becomes observable at all;
+  its order, patch test and negative controls are asserted in `tests/test_surface_stress_recovery.py`.
+  New `tensorfem.torsion_bar.boundary_shear_peak` differentiates the Prandtl series *on* the boundary in
+  closed form (4.8039 Pa for the benchmark prism) instead of quoting the interior grid lower bound (4.7862 Pa,
+  i.e. 0.37% low). With the recovery the previously withheld surface peak reaches 0.41% error on HEX8 at
+  12 elements/side and 1.26% on HEX20 at 6 elements/side, while the centroid readout of the same meshes stays
+  12-38% low; evidence in `benchmarks/saint_venant_surface_stress.json`, report in
+  `docs/saint-vanant-surface-stress-recovery.md`.
+
+2026-11-03 Cook 膜应力审计证据收尾
 
 - 重新生成 `benchmarks/cook_membrane_stress_reference.json`：旧文件是单元 Jacobian 转置缺陷修复前的产物，
   冒记 `recovery_cross_check = Infinity` 与「加载边型线分歧」；现行代码下交叉校验 2.5e-14 通过，

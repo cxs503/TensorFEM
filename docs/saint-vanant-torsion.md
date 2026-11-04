@@ -127,7 +127,7 @@ compared with the exact field at the same centroids
 (`3.0576` Pa, error
 `1.92%`); the true peak
 (`4.7862` Pa) needs a surface stress
-recovery/extrapolation step, which this repository does not yet have. Claiming
+recovery/extrapolation step, which this repository now provides: see `docs/saint-vanant-surface-stress-recovery.md`, where the same prism's surface peak is recovered and compared against the exact *on-boundary* value `4.8039` Pa (the `4.7862` Pa quoted above is an interior grid lower bound, 0.37% low). Claiming
 the peak from centroid data would be wrong by roughly
 `37%`.
 
