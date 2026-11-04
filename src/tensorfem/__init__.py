@@ -62,6 +62,10 @@ from .finite_strain_elasticity import (
     FiniteStrainTet4Model, FiniteElasticResult, neo_hookean_response,
     assemble_finite_tet4, solve_finite_elastic_path,
 )
+from .thick_cylinder_3d import (
+    CylinderQualification, LameCylinderReference, field_errors, qualify_thick_cylinder,
+    quarter_cylinder_mesh, solve_thick_cylinder, stress_in_cylindrical_frame,
+)
 from .hertz_axisymmetric import (
     AxisymmetricHertzResult, hertz_reference, axisymmetric_mesh,
     solve_axisymmetric_hertz,
@@ -269,6 +273,9 @@ __all__ = [
     "consistent_internal_force_tangent",
     "FiniteStrainTet4Model", "FiniteElasticResult", "neo_hookean_response",
     "assemble_finite_tet4", "solve_finite_elastic_path",
+    "CylinderQualification", "LameCylinderReference", "field_errors",
+    "qualify_thick_cylinder", "quarter_cylinder_mesh", "solve_thick_cylinder",
+    "stress_in_cylindrical_frame",
     "AxisymmetricHertzResult", "hertz_reference", "axisymmetric_mesh",
     "solve_axisymmetric_hertz",
     "CylindricalShellMesh", "ShellIncrement", "ShellStepResult",
