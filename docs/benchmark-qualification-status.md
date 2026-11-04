@@ -110,3 +110,12 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python scripts/vali
 ```
 
 第一条命令重新求解三组案例、生成全部报告格式并执行验证。第二条检查原始场、网格收敛、独立案例数量及文件哈希，不会把缺失证据的其余 benchmark 标记通过。
+
+## 新增：Cook 膜恢复场已进入生产路径（原始协议仍 fail-closed）
+
+[恢复场生产化报告](cook-recovered-stress-production.md)：Cook 膜的 Barlow（Gauss 点外推 + 面积加权节点平均）
+恢复已落在 `src/tensorfem/stress_recovery.py`，并由 `cook_fields(n, reference=...)` 输出 `nodal_stress` 与
+`stress_recovery` 两个字段。逐点最差误差 n=8/16/32/64 为 8.0231%/1.9514%/0.4838%/0.1202%（二阶，p=2.009），
+5 个规范探针在界面上的插值离散度 ≤9.4e-17（单值）；原始逐单元协议同期仍为 3.51%–4.02%（一阶，p=0.981），
+故 `cook_fields['stress_accuracy_qualified']` **保持 `False`**，两个口径并存互不覆盖。证据
+`docs/cook-recovery-evidence.json`（含 Torch vs NumPy 两条实现的应变矩阵 2.8e-17、恢复场 4.7e-14 交叉校验）。
