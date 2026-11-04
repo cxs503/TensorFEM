@@ -153,7 +153,11 @@ a universal constant. Where a coefficient is needed, use
 
 ## 5. Caveats and scope
 
-* **In-phase limit only.** The operator is the `k → 0` Rayleigh integral. It is
+* **In-phase limit only.** (The finite-`ka` continuation, including the radiation
+  damping this bullet says is missing, is now implemented and verified against
+  Rayleigh's piston closed form in
+  `docs/piston-radiation-impedance-verification.md`.) The operator is the `k → 0`
+  Rayleigh integral. It is
   valid when the acoustic wavelength is long compared with the panel
   (`k a << 1`); here `f = 16 Hz` in water gives `k a ≈ 0.04`, so the assumption is
   comfortable. At higher modes / higher frequency the full
