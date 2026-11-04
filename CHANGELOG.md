@@ -23,6 +23,23 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Audited the linear righting arm of `tensorfem.marine_hydrostatics` against a new
+  independent large-angle oracle (`tensorfem.marine_large_angle_stability`): the exact
+  wall-sided arm is rebuilt from immersed-section geometry (bisected flotation
+  equilibrium plus exact half-plane polygon clipping), never from the textbook formula.
+  Seven machine anchors close at 1e-12..1e-15, including the free-surface closure
+  `h0 = T*cos(phi)`, the waterplane chord `B/cos(phi)`, the closed-form trapezoid
+  centroid, the wall-sided arm, the dynamic-stability integral and the lurch angle of a
+  near-neutral section. Findings: the merged `GM*sin(phi)` arm is 2.09% off at 10
+  degrees for the shipped proportions but 3.27% for a low-`GM` barge of the same
+  geometry, so the documented "<3% over the declared range" holds only for
+  `GM >= 0.5027*BM`; and the textbook wall-sided closed form is valid only inside
+  `min(phi_deck, atan(2*T/B))`, where the bilge-surfacing limit is the binding one for
+  deep narrow sections (5.1% divergence just past it). Evidence
+  `benchmarks/marine_large_angle_stability_evidence.json`, report
+  `docs/marine-large-angle-stability-audit.md`, gate
+  `tests/test_marine_large_angle_stability.py` (19 tests).
+
 - Added an independent Saint-Venant torsion verification of the 3-D solid paths, the one elementary load case that no stored HEX8/HEX20/TET4/TET10 check had ever exercised. `tensorfem.torsion_bar` carries the closed-form series (torsion constant, Prandtl stress function, shear stress, warping), self-validated against the Timoshenko coefficient table (beta = 0.141, alpha = 0.208), the governing PDE, the traction-free boundary, `J = 2 int psi dA` and the thin-strip limit, plus a driver that twists a prism with an exact end torque and recovers the twist rate from the interior window. HEX20 reaches 0.118% twist-rate error at 4515 dofs and 1.47% at 783 dofs; fully integrated HEX8 needs 8019 dofs for 1.34%. The boundary peak of |tau| is reported as WITHHELD because centroid sampling cannot reach the lateral surface. Evidence in `benchmarks/saint_venant_torsion_evidence.json`, report in `docs/saint-vanant-torsion.md`.
 
 ## Curved-bar pure bending verified against the exact Airy solution
