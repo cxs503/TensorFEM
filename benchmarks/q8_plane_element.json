@@ -1,0 +1,303 @@
+{
+ "element": "Q8 serendipity, 3x3 Gauss, plane stress/strain",
+ "scope": "production tensorfem.quadratic_plane vs independently coded Q8 Richardson reference, published Cook scalar and closed-form Lame field",
+ "algebra": {
+  "shape_derivative_vs_central_difference": 4.222685534571724e-10,
+  "constant_strain_patch_max_abs_error": 6.071532165918825e-18,
+  "full_integration_null_modes": 3,
+  "reduced_2x2_null_modes": 4,
+  "rigid_body_modes_expected": 3
+ },
+ "cook": {
+  "levels": [
+   {
+    "divisions": 2,
+    "nodes": 21,
+    "elements": 4,
+    "dofs": 42,
+    "displacement": 22.717747347874663,
+    "displacement_relative_error": 0.051846938736449806,
+    "worst_probe_relative_error": 0.40594295598429153,
+    "probes": [
+     {
+      "xi": 0.5121,
+      "eta": 0.5073,
+      "computed": 0.0943011387067564,
+      "reference": 0.06707323245610401,
+      "relative_error": 0.40594295598429153
+     },
+     {
+      "xi": 0.3121,
+      "eta": 0.5073,
+      "computed": 0.059670301212797115,
+      "reference": 0.06975678568565485,
+      "relative_error": 0.14459502933966145
+     },
+     {
+      "xi": 0.7121,
+      "eta": 0.5073,
+      "computed": 0.10525861873120862,
+      "reference": 0.08733232108296697,
+      "relative_error": 0.20526532932992134
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.2573,
+      "computed": 0.1553459064442127,
+      "reference": 0.15450050808627308,
+      "relative_error": 0.00547181603744338
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.7573,
+      "computed": 0.10060206683117663,
+      "reference": 0.08626165478909296,
+      "relative_error": 0.16624318275768676
+     }
+    ],
+    "relative_residual": 6.072269653856161e-14,
+    "load_resultant": 1.0
+   },
+   {
+    "divisions": 4,
+    "nodes": 65,
+    "elements": 16,
+    "dofs": 130,
+    "displacement": 23.708288809433903,
+    "displacement_relative_error": 0.010505475399252848,
+    "worst_probe_relative_error": 0.05425014713585557,
+    "probes": [
+     {
+      "xi": 0.5121,
+      "eta": 0.5073,
+      "computed": 0.06676551045901738,
+      "reference": 0.06707323245610401,
+      "relative_error": 0.0045878510073004255
+     },
+     {
+      "xi": 0.3121,
+      "eta": 0.5073,
+      "computed": 0.07260855970774016,
+      "reference": 0.06975678568565485,
+      "relative_error": 0.04088167185535558
+     },
+     {
+      "xi": 0.7121,
+      "eta": 0.5073,
+      "computed": 0.08763751594774777,
+      "reference": 0.08733232108296697,
+      "relative_error": 0.0034946381934685754
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.2573,
+      "computed": 0.1565274306854821,
+      "reference": 0.15450050808627308,
+      "relative_error": 0.01311919698074518
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.7573,
+      "computed": 0.09094136225358364,
+      "reference": 0.08626165478909296,
+      "relative_error": 0.05425014713585557
+     }
+    ],
+    "relative_residual": 9.954832426606439e-13,
+    "load_resultant": 1.0
+   },
+   {
+    "divisions": 8,
+    "nodes": 225,
+    "elements": 64,
+    "dofs": 450,
+    "displacement": 23.883744169961403,
+    "displacement_relative_error": 0.0031826306360015688,
+    "worst_probe_relative_error": 0.010700523550377235,
+    "probes": [
+     {
+      "xi": 0.5121,
+      "eta": 0.5073,
+      "computed": 0.06678206270224639,
+      "reference": 0.06707323245610401,
+      "relative_error": 0.004341072335348958
+     },
+     {
+      "xi": 0.3121,
+      "eta": 0.5073,
+      "computed": 0.07050321981368282,
+      "reference": 0.06975678568565485,
+      "relative_error": 0.010700523550377235
+     },
+     {
+      "xi": 0.7121,
+      "eta": 0.5073,
+      "computed": 0.08742846917765999,
+      "reference": 0.08733232108296697,
+      "relative_error": 0.0011009451426543383
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.2573,
+      "computed": 0.1547485994771546,
+      "reference": 0.15450050808627308,
+      "relative_error": 0.0016057642395777313
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.7573,
+      "computed": 0.08635285492514781,
+      "reference": 0.08626165478909296,
+      "relative_error": 0.0010572500177260572
+     }
+    ],
+    "relative_residual": 9.914941694572815e-13,
+    "load_resultant": 1.0
+   },
+   {
+    "divisions": 16,
+    "nodes": 833,
+    "elements": 256,
+    "dofs": 1666,
+    "displacement": 23.934595636646275,
+    "displacement_relative_error": 0.0010602822768666844,
+    "worst_probe_relative_error": 0.0023706440950711062,
+    "probes": [
+     {
+      "xi": 0.5121,
+      "eta": 0.5073,
+      "computed": 0.06705763577589897,
+      "reference": 0.06707323245610401,
+      "relative_error": 0.00023253210906817442
+     },
+     {
+      "xi": 0.3121,
+      "eta": 0.5073,
+      "computed": 0.06992215419773169,
+      "reference": 0.06975678568565485,
+      "relative_error": 0.0023706440950711062
+     },
+     {
+      "xi": 0.7121,
+      "eta": 0.5073,
+      "computed": 0.08736232846140578,
+      "reference": 0.08733232108296697,
+      "relative_error": 0.00034359991886966096
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.2573,
+      "computed": 0.1545133691023723,
+      "reference": 0.15450050808627308,
+      "relative_error": 8.324254889845804e-05
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.7573,
+      "computed": 0.08626954358297667,
+      "reference": 0.08626165478909296,
+      "relative_error": 9.14519191985615e-05
+     }
+    ],
+    "relative_residual": 9.87628888671757e-13,
+    "load_resultant": 1.0
+   },
+   {
+    "divisions": 32,
+    "nodes": 3201,
+    "elements": 1024,
+    "dofs": 6402,
+    "displacement": 23.95512540863654,
+    "displacement_relative_error": 0.0002034470518973484,
+    "worst_probe_relative_error": 0.0010804486606096507,
+    "probes": [
+     {
+      "xi": 0.5121,
+      "eta": 0.5073,
+      "computed": 0.06708822738525336,
+      "reference": 0.06707323245610401,
+      "relative_error": 0.00022356055613032358
+     },
+     {
+      "xi": 0.3121,
+      "eta": 0.5073,
+      "computed": 0.06983215431131735,
+      "reference": 0.06975678568565485,
+      "relative_error": 0.0010804486606096507
+     },
+     {
+      "xi": 0.7121,
+      "eta": 0.5073,
+      "computed": 0.08732509364428741,
+      "reference": 0.08733232108296697,
+      "relative_error": 8.275789066338068e-05
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.2573,
+      "computed": 0.15449842721255844,
+      "reference": 0.15450050808627308,
+      "relative_error": 1.3468393990535406e-05
+     },
+     {
+      "xi": 0.5121,
+      "eta": 0.7573,
+      "computed": 0.08626010822235855,
+      "reference": 0.08626165478909296,
+      "relative_error": 1.7928785834166435e-05
+     }
+    ],
+    "relative_residual": 9.982389049316209e-13,
+    "load_resultant": 1.0
+   }
+  ],
+  "q4_element_centre_ladder": [
+   {
+    "divisions": 8,
+    "worst_probe_relative_error": 0.2789046128595104
+   },
+   {
+    "divisions": 16,
+    "worst_probe_relative_error": 0.08468099626605698
+   },
+   {
+    "divisions": 32,
+    "worst_probe_relative_error": 0.0997373629171022
+   },
+   {
+    "divisions": 64,
+    "worst_probe_relative_error": 0.040375730815076234
+   }
+  ],
+  "stress_convergence_order": 1.8833082078729948,
+  "displacement_convergence_order": 1.8967814213459089
+ },
+ "lame": {
+  "levels": [
+   {
+    "n_theta": 8,
+    "n_radial": 2,
+    "elements": 16,
+    "worst_relative_error": 0.04739863521424035,
+    "relative_residual": 7.0511756494012975e-15
+   },
+   {
+    "n_theta": 16,
+    "n_radial": 4,
+    "elements": 64,
+    "worst_relative_error": 0.01457261167817211,
+    "relative_residual": 3.7633455775001927e-13
+   },
+   {
+    "n_theta": 32,
+    "n_radial": 8,
+    "elements": 256,
+    "worst_relative_error": 0.0044226748841219915,
+    "relative_residual": 6.460487593128579e-13
+   }
+  ],
+  "convergence_order": 1.7109272109966347
+ },
+ "gate": 0.03,
+ "seconds": 83.76342916488647
+}
