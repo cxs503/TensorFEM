@@ -1,0 +1,314 @@
+{
+  "schema": "tensorfem.plate-shear-buckling-evidence/1.0",
+  "parameters": {
+    "young_pa": 210000000000.0,
+    "poisson": 0.3,
+    "thickness_m": 0.012
+  },
+  "literature": {
+    "k_s_square": 9.34,
+    "k_s_long_panel": 5.34
+  },
+  "aspect_sweep": [
+    {
+      "aspect_ratio": 0.5,
+      "basis": 18,
+      "critical_shear_load": 8587800.00936343,
+      "critical_shear_stress": 715650000.7802858,
+      "coefficient_k_s": 26.184349082918907,
+      "classical_k_s": 21.34,
+      "relative_error_vs_classical": 0.2270079232857969,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 0.75,
+      "basis": 18,
+      "critical_shear_load": 4357459.00702998,
+      "critical_shear_stress": 363121583.919165,
+      "coefficient_k_s": 13.285967026500382,
+      "classical_k_s": 12.45111111111111,
+      "relative_error_vs_classical": 0.06705071603162094,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.0,
+      "basis": 18,
+      "critical_shear_load": 3058233.8324120585,
+      "critical_shear_stress": 254852819.36767155,
+      "coefficient_k_s": 9.324607251887556,
+      "classical_k_s": 9.34,
+      "relative_error_vs_classical": 0.0016480458364500628,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.25,
+      "basis": 18,
+      "critical_shear_load": 2547245.631152109,
+      "critical_shear_stress": 212270469.26267573,
+      "coefficient_k_s": 7.7665954881698385,
+      "classical_k_s": 7.9,
+      "relative_error_vs_classical": 0.016886647067109073,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.5,
+      "basis": 18,
+      "critical_shear_load": 2318794.5831115646,
+      "critical_shear_stress": 193232881.92596373,
+      "coefficient_k_s": 7.070044336101768,
+      "classical_k_s": 7.1177777777777775,
+      "relative_error_vs_classical": 0.006706228146801219,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "basis": 18,
+      "critical_shear_load": 2146950.002340856,
+      "critical_shear_stress": 178912500.19507134,
+      "coefficient_k_s": 6.546087270729722,
+      "classical_k_s": 6.34,
+      "relative_error_vs_classical": 0.032505878663994014,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.5,
+      "basis": 18,
+      "critical_shear_load": 1978698.4552601133,
+      "critical_shear_stress": 164891537.93834278,
+      "coefficient_k_s": 6.033085426520509,
+      "classical_k_s": 5.9799999999999995,
+      "relative_error_vs_classical": 0.008877161625503227,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 3.0,
+      "basis": 18,
+      "critical_shear_load": 1915461.0795559795,
+      "critical_shear_stress": 159621756.62966496,
+      "coefficient_k_s": 5.840273586617466,
+      "classical_k_s": 5.7844444444444445,
+      "relative_error_vs_classical": 0.009651599684156631,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "basis": 18,
+      "critical_shear_load": 1844801.7730563893,
+      "critical_shear_stress": 153733481.08803242,
+      "coefficient_k_s": 5.624832152801476,
+      "classical_k_s": 5.59,
+      "relative_error_vs_classical": 0.006231154347312362,
+      "dominant_mode": [
+        3,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "basis": 18,
+      "critical_shear_load": 1797087.9955787626,
+      "critical_shear_stress": 149757332.9648969,
+      "coefficient_k_s": 5.479352029349987,
+      "classical_k_s": 5.451111111111111,
+      "relative_error_vs_classical": 0.005180763639418773,
+      "dominant_mode": [
+        5,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 8.0,
+      "basis": 18,
+      "critical_shear_load": 1775995.5775805174,
+      "critical_shear_stress": 147999631.46504313,
+      "coefficient_k_s": 5.415040886185647,
+      "classical_k_s": 5.4025,
+      "relative_error_vs_classical": 0.002321311649356339,
+      "dominant_mode": [
+        6,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 10.0,
+      "basis": 18,
+      "critical_shear_load": 1767313.3732465913,
+      "critical_shear_stress": 147276114.43721592,
+      "coefficient_k_s": 5.38856869670279,
+      "classical_k_s": 5.38,
+      "relative_error_vs_classical": 0.001592694554422014,
+      "dominant_mode": [
+        8,
+        1
+      ]
+    }
+  ],
+  "basis_convergence": [
+    {
+      "basis": 4,
+      "coefficient_k_s": 9.40443260899032
+    },
+    {
+      "basis": 6,
+      "coefficient_k_s": 9.338387234678628
+    },
+    {
+      "basis": 8,
+      "coefficient_k_s": 9.328349293898755
+    },
+    {
+      "basis": 10,
+      "coefficient_k_s": 9.325899640347613
+    },
+    {
+      "basis": 12,
+      "coefficient_k_s": 9.325111679004946
+    },
+    {
+      "basis": 16,
+      "coefficient_k_s": 9.324672700247282
+    },
+    {
+      "basis": 20,
+      "coefficient_k_s": 9.324572796901252
+    }
+  ],
+  "converged_square_k_s": 9.324572796901252,
+  "square_literature_relative_error": 0.001651734807146421,
+  "interaction": [
+    {
+      "shear_to_axial_ratio": 0.25,
+      "axial_utilisation": 0.9888864204866907,
+      "shear_utilisation": 0.1060505234098422,
+      "interaction_residual": 0.0001331340021921701,
+      "classical_shear_utilisation": 0.10542096334842169
+    },
+    {
+      "shear_to_axial_ratio": 0.5,
+      "axial_utilisation": 0.9581816556706821,
+      "shear_utilisation": 0.205515343320366,
+      "interaction_residual": 0.0004182120107700804,
+      "classical_shear_utilisation": 0.20449534060539828
+    },
+    {
+      "shear_to_axial_ratio": 1.0,
+      "axial_utilisation": 0.8634727967509609,
+      "shear_utilisation": 0.3704034766724037,
+      "interaction_residual": 0.0006715322819648151,
+      "classical_shear_utilisation": 0.36949587717461624
+    },
+    {
+      "shear_to_axial_ratio": 2.0,
+      "axial_utilisation": 0.6695323352557359,
+      "shear_utilisation": 0.574417875482519,
+      "interaction_residual": -0.0005117690704135036,
+      "classical_shear_utilisation": 0.5748631704538604
+    },
+    {
+      "shear_to_axial_ratio": 4.0,
+      "axial_utilisation": 0.43654282568521596,
+      "shear_utilisation": 0.7490541958409145,
+      "interaction_residual": -0.002374986007904978,
+      "classical_shear_utilisation": 0.7506378449790445
+    },
+    {
+      "shear_to_axial_ratio": 8.0,
+      "axial_utilisation": 0.25163133671513865,
+      "shear_utilisation": 0.8635373094297347,
+      "interaction_residual": -0.002671978507715833,
+      "classical_shear_utilisation": 0.8650830383754275
+    },
+    {
+      "shear_to_axial_ratio": 16.0,
+      "axial_utilisation": 0.13532905631778544,
+      "shear_utilisation": 0.9288325588209209,
+      "interaction_residual": -0.0019410213563950673,
+      "classical_shear_utilisation": 0.9298768432874401
+    }
+  ],
+  "closed_form_vs_quadrature": {
+    "bending": 3.0209917820119383e-15,
+    "uniaxial": 1.453218702240301e-15,
+    "shear": 2.5689327208687654e-15
+  },
+  "qualification": {
+    "schema": "tensorfem.plate-shear-buckling/1.0",
+    "scope": "TensorFEM variational plate buckling; no TensorLBM/CFD",
+    "tolerance": 0.03,
+    "young": 210000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.012,
+    "basis": 16,
+    "cases": [
+      {
+        "case": "square_shear",
+        "aspect_ratio": 1.0,
+        "literature_k_s": 9.34,
+        "coefficient_k_s": 9.324672700247282,
+        "dominant_mode": [
+          1,
+          1
+        ],
+        "critical_shear_load": 3058255.297808143,
+        "critical_shear_stress": 254854608.15067858,
+        "relative_error": 0.0016410385174215891,
+        "passed": true
+      },
+      {
+        "case": "long_panel_shear",
+        "aspect_ratio": 6.0,
+        "literature_k_s": 5.34,
+        "coefficient_k_s": 5.479724241907011,
+        "dominant_mode": [
+          5,
+          1
+        ],
+        "critical_shear_load": 1797210.0718232614,
+        "critical_shear_stress": 149767505.98527178,
+        "relative_error": 0.02616558837209948,
+        "passed": true
+      },
+      {
+        "case": "orthotropic_panel_shear",
+        "aspect_ratio": 2.0,
+        "literature_k_s": null,
+        "coefficient_k_s": 9.165636682127579,
+        "dominant_mode": [
+          1,
+          1
+        ],
+        "critical_shear_load": 3006095.531927674,
+        "critical_shear_stress": 250507960.99397284,
+        "relative_error": null,
+        "stiffened_to_isotropic_gain": 0.40016137081074077,
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "figure": "docs/assets/plate_shear_buckling.png"
+}
