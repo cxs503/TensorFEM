@@ -97,3 +97,124 @@ def test_audit_evidence_must_not_claim_stress_certification():
     assert evidence["strain_matrix_verification"]["passed"] is True
     for point in evidence["reference"]["points"]:
         assert point["von_mises"]["gci_fine_relative"] < 0.01
+
+
+# --------------------------------------------------------------------------------------
+# Element-interface aware sampling (2026-11-03 closure of the "not certifiable" debt).
+#
+# The original sample points lie exactly on inter-element interfaces for every dyadic
+# mesh, so their pointwise Q4 stress is two-valued.  These tests lock the machine-checkable
+# facts: the legacy points are degenerate, the interior points are not, the two-sided
+# bracket reproduces the stored element-centre field, and the recorded evidence may not
+# claim certification while the finest error is still above 3 %.
+# --------------------------------------------------------------------------------------
+
+
+def test_legacy_sample_points_sit_on_element_interfaces_on_the_whole_ladder():
+    for divisions in (8, 16, 32, 64, 128):
+        margins = reference.sample_margins(reference.SAMPLE_POINTS, divisions)
+        assert margins["on_interface"] is True
+        assert margins["min_margin_cells"] <= reference.INTERFACE_TOLERANCE
+
+
+def test_interior_sample_points_keep_a_margin_from_every_interface():
+    for divisions in (8, 16, 32, 64, 128):
+        margins = reference.sample_margins(reference.INTERIOR_POINTS, divisions)
+        assert margins["on_interface"] is False
+        assert margins["min_margin_cells"] >= 0.1
+
+
+def test_two_sided_bracket_reproduces_the_stored_field_at_element_centres():
+    from tensorfem.additional_benchmark_fields import cook_fields
+
+    case = cook_fields(8)
+    divisions = case["mesh"]
+    stored = np.asarray(case["stress"], dtype=np.float64)
+    checked = 0
+    for j in range(0, divisions, 2):
+        for i in range(0, divisions, 2):
+            point = reference.map_point((i + 0.5) / divisions, (j + 0.5) / divisions)
+            sides = reference.platform_q4_stress_sides(
+                case["nodes"], case["elements"], case["displacement"], point
+            )
+            assert sides["inside"] is True
+            assert sides["on_interface"] is False
+            assert len(sides["sides"]) == 1
+            target = stored[j * divisions + i]
+            recomputed = np.array(
+                [sides["sides"][0][key] for key in ("sxx", "syy", "sxy")]
+            )
+            assert np.allclose(recomputed, target, rtol=0, atol=1e-12)
+            checked += 1
+    assert checked == 16
+
+
+def test_interface_point_returns_two_sides_with_a_finite_bracket():
+    from tensorfem.additional_benchmark_fields import cook_fields
+
+    case = cook_fields(8)
+    point = reference.map_point(0.5, 0.5)  # exactly on an interface
+    sides = reference.platform_q4_stress_sides(
+        case["nodes"], case["elements"], case["displacement"], point
+    )
+    assert sides["on_interface"] is True
+    assert len(sides["sides"]) >= 2
+    low, high = sides["von_mises_bracket"]
+    assert low <= high
+    assert sides["von_mises_spread"] >= 0.0
+
+
+def test_bracket_error_is_zero_inside_the_bracket_and_counts_outside():
+    inside = reference.bracket_error(1.0, [0.9, 1.1], 1.0)
+    assert inside["inside"] is True and inside["normalized"] == 0.0
+    outside = reference.bracket_error(1.0, [1.1, 1.2], 1.0)
+    assert outside["inside"] is False
+    assert outside["gap"] == pytest.approx(0.1)
+
+
+def test_convergence_prediction_recovers_a_first_order_sequence():
+    levels = [8, 16, 32, 64]
+    errors = [0.32 / n for n in levels]
+    prediction = reference.convergence_prediction(levels, errors, target=0.03)
+    assert prediction["observed_order"] == pytest.approx(1.0, abs=1e-9)
+    assert prediction["predicted_divisions"] == pytest.approx(64 * (errors[-1] / 0.03), rel=1e-9)
+    assert prediction["valid"] is True
+    flat = reference.convergence_prediction(levels, [0.05, 0.05, 0.05, 0.05])
+    assert flat["valid"] is False and flat["predicted_divisions"] is None
+
+
+def test_profile_agreement_is_zero_for_identical_profiles_and_flags_a_shift():
+    profile = {"y": [0.0, 1.0, 2.0], "v": [1.0, 2.0, 3.0]}
+    assert reference.profile_agreement(profile, profile)["max_abs_difference"] == 0.0
+    shifted = {"y": [0.0, 1.0, 2.0], "v": [1.1, 2.1, 3.1]}
+    agreement = reference.profile_agreement(profile, shifted)
+    assert agreement["max_abs_difference"] == pytest.approx(0.1)
+    assert agreement["max_relative_difference"] > 0.03
+
+
+def test_evidence_records_a_trustworthy_ladder_and_an_honest_verdict():
+    if not EVIDENCE.exists():
+        pytest.skip("audit evidence has not been generated in this checkout")
+    evidence = json.loads(EVIDENCE.read_text())
+    cross_check = evidence["recovery_cross_check"]
+    assert cross_check["passed"] is True
+    assert np.isfinite(cross_check["max_relative_difference"])
+    assert cross_check["max_relative_difference"] <= 1e-12
+    ambiguity = evidence["interface_ambiguity"]
+    assert ambiguity["interior_points_clear_interfaces"] is True
+    assert ambiguity["legacy_points_on_interface"] is True
+    comparison = evidence["comparison"]
+    assert comparison["cases"][0]["divisions"] == 8
+    assert comparison["cases"][-1]["divisions"] >= 64
+    finest = comparison["cases"][-1]
+    assert finest["max_bracket_error"] > 0.03
+    assert comparison["finest_passed"] is False
+    # ASSERTION-REBASELINE (rebuild arbitration, flagged for owner): the union keeps
+    # main/m2814's three-state status vocabulary ("withheld" = tool untrusted,
+    # "measured-not-qualified" = measured, misses the 3 %% gate); the fail-closed
+    # intent of this test (never "qualified") is preserved by set membership.
+    assert evidence["status"] in ("withheld", "measured-not-qualified")
+    assert evidence["loaded_edge_profiles"]["agreement_finest"]["max_relative_difference"] < 0.01
+    convergence = evidence["convergence"]
+    if convergence["valid"]:
+        assert convergence["predicted_divisions"] > convergence["levels"][-1]
