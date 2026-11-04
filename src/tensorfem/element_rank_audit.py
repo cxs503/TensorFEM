@@ -366,7 +366,7 @@ def audit_library(
     hex20 = _hex20_cube(dtype)
     k20, _ = hex20_stiffness(hex20.unsqueeze(0), d3)
     records.append(
-        audit_element("hex20 (2x2x2 integration)", k20[0], rigid_body_basis_solid3d(hex20), rtol=rtol)
+        audit_element("hex20 (3x3x3 integration)", k20[0], rigid_body_basis_solid3d(hex20), rtol=rtol)
     )
 
     # --- plane elements --------------------------------------------------- #
