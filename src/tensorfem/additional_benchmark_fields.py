@@ -60,7 +60,15 @@ def mindlin_fields(n):
                             'passed':max(errors.values())<.03 and max(residual,balance)<1e-8}}
 
 
-def cook_fields(n):
+def cook_fields(n, *, include_recovery=False):
+    """Merged Cook-membrane field payload.
+
+    ``include_recovery`` additionally exposes the audited 2x2-Gauss to nodal
+    stress recovery (:mod:`tensorfem.cook_stress_recovery`).  The raw
+    element-centre field and its ``stress_accuracy_qualified = False`` verdict
+    are unchanged: the recovered field is a post-processing of the same
+    displacement solution and never certifies the raw field.
+    """
     model, probe = cook_membrane(n)
     nodes, cells = model.nodes, model.elements
     ne = len(cells)
@@ -74,12 +82,20 @@ def cook_fields(n):
     stress = (C@B@u[edofs].unsqueeze(-1)).squeeze(-1)
     vm = torch.sqrt(stress[:,0]**2-stress[:,0]*stress[:,1]+stress[:,1]**2+3*stress[:,2]**2)
     response = float(u[probe]); error = abs(response-23.96)/23.96
-    return {'mesh':n,'nodes':nodes.tolist(),'elements':cells.tolist(),
+    payload = {'mesh':n,'nodes':nodes.tolist(),'elements':cells.tolist(),
             'displacement':u.reshape(-1,2).tolist(),'centers':nodes[cells].mean(1).tolist(),
             'stress':stress.tolist(),'von_mises':vm.tolist(), 'reference':23.96,
             'verification':{'response':response,'response_relative_error':error,
                             'relative_residual':result.iterative.relative_residual,
                             'passed':error<.03},'stress_accuracy_qualified':False}
+    if include_recovery:
+        from .cook_stress_recovery import recovered_nodal_stress
+        recovered = recovered_nodal_stress(
+            payload['nodes'], payload['elements'], payload['displacement'])
+        payload['recovered_nodal_stress'] = recovered['field'].tolist()
+        payload['recovered_von_mises'] = recovered['von_mises'].tolist()
+        payload['recovered_stress_protocol'] = recovered['protocol']
+    return payload
 
 
 def build_additional_reports():
