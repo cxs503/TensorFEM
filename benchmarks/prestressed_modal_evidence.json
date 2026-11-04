@@ -1,0 +1,191 @@
+{
+  "module": "tensorfem.prestressed_modal",
+  "beam_parameters": {
+    "length": 2.0,
+    "EI": 50000.0,
+    "rho_a": 12.0
+  },
+  "plate_parameters": {
+    "length": 1.0,
+    "width": 1.0,
+    "young": 200000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.01,
+    "density": 7850.0
+  },
+  "beam_euler_load": 123370.05501361698,
+  "plate_navier_buckling_resultant": -723047.9414717479,
+  "beam_load_law": [
+    {
+      "load_factor": -0.8,
+      "axial_force": -98696.04401089359,
+      "fe_angular_frequency": 71.2278068880956,
+      "exact_angular_frequency": 71.2277344720507,
+      "relative_error": 1.0166832546030578e-06
+    },
+    {
+      "load_factor": -0.5,
+      "axial_force": -61685.02750680849,
+      "fe_angular_frequency": 112.62098278775899,
+      "exact_angular_frequency": 112.62093675268557,
+      "relative_error": 4.0876123704662546e-07
+    },
+    {
+      "load_factor": 0.0,
+      "axial_force": 0.0,
+      "fe_angular_frequency": 159.2700886191026,
+      "exact_angular_frequency": 159.27005616281048,
+      "relative_error": 2.0378150742241565e-07
+    },
+    {
+      "load_factor": 0.5,
+      "axial_force": 61685.02750680849,
+      "fe_angular_frequency": 195.06521099438257,
+      "exact_angular_frequency": 195.06518445165247,
+      "relative_error": 1.3607107886527244e-07
+    },
+    {
+      "load_factor": 1.0,
+      "axial_force": 123370.05501361698,
+      "fe_angular_frequency": 225.24189650979102,
+      "exact_angular_frequency": 225.24187350537113,
+      "relative_error": 1.021320748634275e-07
+    },
+    {
+      "load_factor": 2.0,
+      "axial_force": 246740.11002723395,
+      "fe_angular_frequency": 275.86384818910557,
+      "exact_angular_frequency": 275.8638293983363,
+      "relative_error": 6.811610393353947e-08
+    }
+  ],
+  "beam_convergence": [
+    {
+      "elements": 6,
+      "element_size": 0.3333333333333333,
+      "fe_angular_frequency": 195.0719408991261,
+      "relative_error": 3.4636870196121336e-05,
+      "critical_load_relative_error": 0.00010292137253893667
+    },
+    {
+      "elements": 12,
+      "element_size": 0.16666666666666666,
+      "fe_angular_frequency": 195.06560819628476,
+      "relative_error": 2.1723232337810773e-06,
+      "critical_load_relative_error": 6.501116505987527e-06
+    },
+    {
+      "elements": 24,
+      "element_size": 0.08333333333333333,
+      "fe_angular_frequency": 195.06521099438257,
+      "relative_error": 1.3607107886527244e-07,
+      "critical_load_relative_error": 4.074080008016015e-07
+    },
+    {
+      "elements": 48,
+      "element_size": 0.041666666666666664,
+      "fe_angular_frequency": 195.06518583488523,
+      "relative_error": 7.091130898977007e-09,
+      "critical_load_relative_error": 2.546489194862677e-08
+    }
+  ],
+  "beam_convergence_order": 4.084668408326528,
+  "beam_reference_frequency_at_half_euler": 195.06518445165247,
+  "plate_convergence": [
+    {
+      "elements_per_side": 4,
+      "element_size": 0.25,
+      "fe_angular_frequency": 275.2908565645301,
+      "exact_angular_frequency": 252.25954690180637,
+      "relative_error": 0.09130005165548322,
+      "critical_resultant": -789786.1739649707,
+      "critical_relative_error": 0.09230125509710826
+    },
+    {
+      "elements_per_side": 6,
+      "element_size": 0.16666666666666666,
+      "fe_angular_frequency": 262.1304753491987,
+      "exact_angular_frequency": 252.25954690180637,
+      "relative_error": 0.03913004906503961,
+      "critical_resultant": -751212.018799024,
+      "critical_relative_error": 0.03895188093606734
+    },
+    {
+      "elements_per_side": 8,
+      "element_size": 0.125,
+      "fe_angular_frequency": 257.7020119256718,
+      "exact_angular_frequency": 252.25954690180637,
+      "relative_error": 0.02157486244111878,
+      "critical_resultant": -738475.6150279136,
+      "critical_relative_error": 0.02133699948687077
+    },
+    {
+      "elements_per_side": 10,
+      "element_size": 0.1,
+      "fe_angular_frequency": 255.68220790840073,
+      "exact_angular_frequency": 252.25954690180637,
+      "relative_error": 0.01356801377244464,
+      "critical_resultant": -732706.3931953894,
+      "critical_relative_error": 0.013357968634807147
+    }
+  ],
+  "plate_convergence_order": 2.0806019235419786,
+  "plate_load_law": [
+    {
+      "load_factor": -0.5,
+      "tension_x": 361523.97073587397,
+      "fe_angular_frequency": 374.24966345918295,
+      "exact_angular_frequency": 369.2701653351551,
+      "relative_error": 0.013484701964775195
+    },
+    {
+      "load_factor": 0.0,
+      "tension_x": -0.0,
+      "fe_angular_frequency": 306.643128549753,
+      "exact_angular_frequency": 301.50782743477026,
+      "relative_error": 0.017032065663680724
+    },
+    {
+      "load_factor": 0.3,
+      "tension_x": -216914.3824415244,
+      "fe_angular_frequency": 257.7020119256718,
+      "exact_angular_frequency": 252.25954690180637,
+      "relative_error": 0.02157486244111878
+    },
+    {
+      "load_factor": 0.6,
+      "tension_x": -433828.7648830488,
+      "fe_angular_frequency": 196.95340968421314,
+      "exact_angular_frequency": 190.69029341257536,
+      "relative_error": 0.03284444194590952
+    }
+  ],
+  "plate_reference_frequency_at_minus_0p3_critical": 252.25954690180637,
+  "exact_discrete_identity": {
+    "beam": {
+      "critical_tension": -123370.85705671797,
+      "unloaded_smallest_squared_frequency": 25367.115971742853,
+      "at_critical_smallest_squared_frequency": -5.452821278436539e-07,
+      "ratio": -2.1495629556432786e-11
+    },
+    "plate": {
+      "critical_tension": -751212.018799024,
+      "unloaded_smallest_squared_frequency": 96608.26997880978,
+      "at_critical_smallest_squared_frequency": 3.800494868182743e-05,
+      "ratio": 3.9339229126205757e-10
+    }
+  },
+  "figures": [
+    "docs/assets/prestressed_modal_load_law.png",
+    "docs/assets/prestressed_modal_convergence.png"
+  ],
+  "gates": {
+    "relative_error_gate": 0.03,
+    "beam_worst_relative_error": 3.4636870196121336e-05,
+    "plate_worst_relative_error": 0.09130005165548322,
+    "plate_worst_critical_relative_error": 0.09230125509710826,
+    "beam_pass": true,
+    "plate_pass": false,
+    "plate_critical_pass": false
+  }
+}
