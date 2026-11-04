@@ -1,0 +1,1412 @@
+{
+  "case": "Cook membrane pointwise stress protocol",
+  "generated_utc": "2026-11-03T13:35:26+00:00",
+  "environment": {
+    "tensorfem": "0.45.0",
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "elapsed_seconds": 121.1
+  },
+  "problem": {
+    "corners": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        48.0,
+        44.0
+      ],
+      [
+        48.0,
+        60.0
+      ],
+      [
+        0.0,
+        44.0
+      ]
+    ],
+    "young": 1.0,
+    "poisson": 0.3333333333333333,
+    "thickness": 1.0,
+    "loaded_edge_resultant": 1.0,
+    "gate": 0.03
+  },
+  "probes": {
+    "nominal_material_points": [
+      [
+        0.5,
+        0.5
+      ],
+      [
+        0.3,
+        0.5
+      ],
+      [
+        0.7,
+        0.5
+      ],
+      [
+        0.5,
+        0.25
+      ],
+      [
+        0.5,
+        0.75
+      ]
+    ],
+    "offset": [
+      0.0026041666666666665,
+      0.0015625
+    ],
+    "off_interface": [
+      [
+        0.5026041666666666,
+        0.5015625
+      ],
+      [
+        0.3026041666666667,
+        0.5015625
+      ],
+      [
+        0.7026041666666666,
+        0.5015625
+      ],
+      [
+        0.5026041666666666,
+        0.2515625
+      ],
+      [
+        0.5026041666666666,
+        0.7515625
+      ]
+    ],
+    "aligned_interface_distance": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "locator": {
+    "cross_check": {
+      "levels": 16,
+      "samples": 16,
+      "stress_scale": 0.308910631322666,
+      "worst_sample": {
+        "grid_index": [
+          12,
+          0
+        ],
+        "point": [
+          37.5,
+          35.06640625
+        ],
+        "stored": [
+          0.12319809219599095,
+          0.10592354957612928,
+          0.11456082035923718
+        ],
+        "difference": 7.351920167718586e-15
+      },
+      "max_relative_difference": 7.351920167718586e-15,
+      "tolerance": 1e-06,
+      "passed": true,
+      "meaning": "pointwise Q4 recovery of this audit reproduces the stored element-centre stress"
+    },
+    "round_trip": [
+      {
+        "parent": [
+          0.5026041666666666,
+          0.5015625
+        ],
+        "residual": 7.944109290391274e-15,
+        "candidates": 1,
+        "converged": true
+      },
+      {
+        "parent": [
+          0.3026041666666667,
+          0.5015625
+        ],
+        "residual": 0.0,
+        "candidates": 1,
+        "converged": true
+      },
+      {
+        "parent": [
+          0.7026041666666666,
+          0.5015625
+        ],
+        "residual": 0.0,
+        "candidates": 1,
+        "converged": true
+      },
+      {
+        "parent": [
+          0.5026041666666666,
+          0.2515625
+        ],
+        "residual": 5.0242958677880805e-15,
+        "candidates": 1,
+        "converged": true
+      },
+      {
+        "parent": [
+          0.5026041666666666,
+          0.7515625
+        ],
+        "residual": 0.0,
+        "candidates": 1,
+        "converged": true
+      }
+    ],
+    "first_probe_located": {
+      "point": [
+        24.124999999999996,
+        37.12488606770833
+      ],
+      "xi": 0.5026041666666665,
+      "eta": 0.5015624999999999,
+      "residual": 7.944109290391274e-15,
+      "converged": true,
+      "candidates": 1
+    }
+  },
+  "reference": {
+    "levels": [
+      12,
+      24,
+      48
+    ],
+    "scale_von_mises": 0.15608450843512053,
+    "probes": [
+      {
+        "xi": 0.5026041666666666,
+        "eta": 0.5015625,
+        "point": [
+          24.124999999999996,
+          37.12488606770833
+        ],
+        "levels": [
+          12,
+          24,
+          48
+        ],
+        "values": [
+          0.0680909538701355,
+          0.06827366378032824,
+          0.06831665196762099
+        ],
+        "von_mises": {
+          "levels": [
+            12,
+            24,
+            48
+          ],
+          "values": [
+            0.0680909538701355,
+            0.06827366378032824,
+            0.06831665196762099
+          ],
+          "observed_order": 2.0875427061465897,
+          "order_source": "observed",
+          "extrapolated": 0.06832987814468466,
+          "gci_fine_relative": 0.00024200134013329907
+        },
+        "components": {
+          "sxx": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.011360201553231725,
+              0.011285678101161677,
+              0.011279016866823982
+            ],
+            "observed_order": 3.4838330632961574,
+            "order_source": "observed",
+            "extrapolated": 0.011278363011934113,
+            "gci_fine_relative": 7.246363951639177e-05
+          },
+          "syy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.03308511573618716,
+              0.0330908976583724,
+              0.03310797978507921
+            ],
+            "observed_order": 2.0,
+            "order_source": "assumed_quadratic",
+            "extrapolated": 0.03311367382731482,
+            "gci_fine_relative": 0.00021497997886640052
+          },
+          "sxy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.03553661266690575,
+              0.03564815257952958,
+              0.03567088379222899
+            ],
+            "observed_order": 2.2948134875212154,
+            "order_source": "observed",
+            "extrapolated": 0.03567670200633668,
+            "gci_fine_relative": 0.00020388526611716013
+          }
+        }
+      },
+      {
+        "xi": 0.3026041666666667,
+        "eta": 0.5015625,
+        "point": [
+          14.525,
+          31.133636067708334
+        ],
+        "levels": [
+          12,
+          24,
+          48
+        ],
+        "values": [
+          0.07286952534025347,
+          0.07258464105367363,
+          0.07249770824327481
+        ],
+        "von_mises": {
+          "levels": [
+            12,
+            24,
+            48
+          ],
+          "values": [
+            0.07286952534025347,
+            0.07258464105367363,
+            0.07249770824327481
+          ],
+          "observed_order": 1.7124033583297709,
+          "order_source": "observed",
+          "extrapolated": 0.07245953063697635,
+          "gci_fine_relative": 0.0006582553990938087
+        },
+        "components": {
+          "sxx": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.027432983444422517,
+              0.027602224440787755,
+              0.027591767513417815
+            ],
+            "observed_order": 2.0,
+            "order_source": "assumed_quadratic",
+            "extrapolated": 0.027588281870961167,
+            "gci_fine_relative": 0.00015791134325445446
+          },
+          "syy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.008513925740000202,
+              0.009102261287375858,
+              0.009272376082477031
+            ],
+            "observed_order": 1.7901305873773024,
+            "order_source": "observed",
+            "extrapolated": 0.00934157170071197,
+            "gci_fine_relative": 0.009328193984401845
+          },
+          "sxy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.03965885607283747,
+              0.03947589484415438,
+              0.03943127503628851
+            ],
+            "observed_order": 2.0357817529448172,
+            "order_source": "observed",
+            "extrapolated": 0.039416883632454235,
+            "gci_fine_relative": 0.00045621793300583695
+          }
+        }
+      },
+      {
+        "xi": 0.7026041666666666,
+        "eta": 0.5015625,
+        "point": [
+          33.724999999999994,
+          43.116136067708325
+        ],
+        "levels": [
+          12,
+          24,
+          48
+        ],
+        "values": [
+          0.08694751095266601,
+          0.08685853459196143,
+          0.08688610994287552
+        ],
+        "von_mises": {
+          "levels": [
+            12,
+            24,
+            48
+          ],
+          "values": [
+            0.08694751095266601,
+            0.08685853459196143,
+            0.08688610994287552
+          ],
+          "observed_order": 2.0,
+          "order_source": "assumed_quadratic",
+          "extrapolated": 0.08689530172651355,
+          "gci_fine_relative": 0.00013223896840464084
+        },
+        "components": {
+          "sxx": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              -2.1754296485487767e-05,
+              -5.1237824327275694e-05,
+              -6.200944744941608e-05
+            ],
+            "observed_order": 1.4526735011805634,
+            "order_source": "observed",
+            "extrapolated": -6.821019859815403e-05,
+            "gci_fine_relative": 0.12499609744539693
+          },
+          "syy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.0496115543618471,
+              0.0494991800848819,
+              0.049483804776384276
+            ],
+            "observed_order": 2.8696245704441243,
+            "order_source": "observed",
+            "extrapolated": 0.04948136763591637,
+            "gci_fine_relative": 6.156409351793445e-05
+          },
+          "sxy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.041220883044695344,
+              0.041197481099290584,
+              0.041220855794507266
+            ],
+            "observed_order": 2.0,
+            "order_source": "assumed_quadratic",
+            "extrapolated": 0.04122864735957949,
+            "gci_fine_relative": 0.000236274966944819
+          }
+        }
+      },
+      {
+        "xi": 0.5026041666666666,
+        "eta": 0.2515625,
+        "point": [
+          24.124999999999996,
+          29.643115234375
+        ],
+        "levels": [
+          12,
+          24,
+          48
+        ],
+        "values": [
+          0.15622125055119823,
+          0.15610511158677853,
+          0.1560876127446809
+        ],
+        "von_mises": {
+          "levels": [
+            12,
+            24,
+            48
+          ],
+          "values": [
+            0.15622125055119823,
+            0.15610511158677853,
+            0.1560876127446809
+          ],
+          "observed_order": 2.7305207082118805,
+          "order_source": "observed",
+          "extrapolated": 0.15608450843512053,
+          "gci_fine_relative": 2.4860313270238627e-05
+        },
+        "components": {
+          "sxx": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.08574265722455916,
+              0.08538566534528096,
+              0.08529318477597375
+            ],
+            "observed_order": 1.948669072564465,
+            "order_source": "observed",
+            "extrapolated": 0.08526085097633274,
+            "gci_fine_relative": 0.00047386259121904895
+          },
+          "syy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.0642238566290381,
+              0.06430953840783213,
+              0.06433850940994124
+            ],
+            "observed_order": 1.5643788430271277,
+            "order_source": "observed",
+            "extrapolated": 0.06435330940056505,
+            "gci_fine_relative": 0.00028754144989414455
+          },
+          "sxy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.07839068018611993,
+              0.07838683990704154,
+              0.07839346924611516
+            ],
+            "observed_order": 2.0,
+            "order_source": "assumed_quadratic",
+            "extrapolated": 0.07839567902580637,
+            "gci_fine_relative": 3.523539193473121e-05
+          }
+        }
+      },
+      {
+        "xi": 0.5026041666666666,
+        "eta": 0.7515625,
+        "point": [
+          24.125,
+          44.60665690104167
+        ],
+        "levels": [
+          12,
+          24,
+          48
+        ],
+        "values": [
+          0.08413349897529847,
+          0.08407449754643617,
+          0.08406346022184426
+        ],
+        "von_mises": {
+          "levels": [
+            12,
+            24,
+            48
+          ],
+          "values": [
+            0.08413349897529847,
+            0.08407449754643617,
+            0.08406346022184426
+          ],
+          "observed_order": 2.418359382882909,
+          "order_source": "observed",
+          "extrapolated": 0.08406092035299857,
+          "gci_fine_relative": 3.776713507534955e-05
+        },
+        "components": {
+          "sxx": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              -0.07892245783462157,
+              -0.07892888269671752,
+              -0.07893121464655703
+            ],
+            "observed_order": 1.4621287321058398,
+            "order_source": "observed",
+            "extrapolated": -0.07893254328243125,
+            "gci_fine_relative": 2.10410399766342e-05
+          },
+          "syy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              0.005558769729397662,
+              0.00557946202669873,
+              0.005585582094058423
+            ],
+            "observed_order": 1.7574743880915173,
+            "order_source": "observed",
+            "extrapolated": 0.005588152409283879,
+            "gci_fine_relative": 0.0005752120330016335
+          },
+          "sxy": {
+            "levels": [
+              12,
+              24,
+              48
+            ],
+            "values": [
+              -0.01125580751854649,
+              -0.01106407871763454,
+              -0.011021996074020601
+            ],
+            "observed_order": 2.187769828421434,
+            "order_source": "observed",
+            "extrapolated": -0.011010161831661735,
+            "gci_fine_relative": 0.0013421165140360537
+          }
+        }
+      }
+    ]
+  },
+  "ladder": [
+    {
+      "divisions": 16,
+      "response_relative_error": 0.022103035890315065,
+      "solver_seconds": 0.26113247871398926,
+      "max_relative_error": 0.13307764610817444,
+      "probes": [
+        {
+          "point": [
+            24.124999999999996,
+            37.12488606770833
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            8,
+            8
+          ],
+          "computed": 0.07742305748703769,
+          "reference": 0.06832987814468466,
+          "relative_error": 0.13307764610817444
+        },
+        {
+          "point": [
+            14.525,
+            31.133636067708334
+          ],
+          "parent": [
+            0.3026041666666667,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            4,
+            8
+          ],
+          "computed": 0.06627323317630923,
+          "reference": 0.07245953063697635,
+          "relative_error": 0.08537589750147007
+        },
+        {
+          "point": [
+            33.724999999999994,
+            43.116136067708325
+          ],
+          "parent": [
+            0.7026041666666666,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            11,
+            8
+          ],
+          "computed": 0.09144682254801036,
+          "reference": 0.08689530172651355,
+          "relative_error": 0.05237936609992853
+        },
+        {
+          "point": [
+            24.124999999999996,
+            29.643115234375
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.2515625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            8,
+            4
+          ],
+          "computed": 0.15924675187619478,
+          "reference": 0.15608450843512053,
+          "relative_error": 0.020259816126394683
+        },
+        {
+          "point": [
+            24.125,
+            44.60665690104167
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.7515625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            8,
+            12
+          ],
+          "computed": 0.08600893438244285,
+          "reference": 0.08406092035299857,
+          "relative_error": 0.02317383656119808
+        }
+      ]
+    },
+    {
+      "divisions": 32,
+      "response_relative_error": 0.005941821548014162,
+      "solver_seconds": 1.4955437183380127,
+      "max_relative_error": 0.05520119037859834,
+      "probes": [
+        {
+          "point": [
+            24.124999999999996,
+            37.12488606770833
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            16,
+            16
+          ],
+          "computed": 0.07210176875669583,
+          "reference": 0.06832987814468466,
+          "relative_error": 0.05520119037859834
+        },
+        {
+          "point": [
+            14.525,
+            31.133636067708334
+          ],
+          "parent": [
+            0.3026041666666667,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            9,
+            16
+          ],
+          "computed": 0.06857782008994763,
+          "reference": 0.07245953063697635,
+          "relative_error": 0.05357073821629026
+        },
+        {
+          "point": [
+            33.724999999999994,
+            43.116136067708325
+          ],
+          "parent": [
+            0.7026041666666666,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            22,
+            16
+          ],
+          "computed": 0.08355337294161896,
+          "reference": 0.08689530172651355,
+          "relative_error": 0.03845925750292776
+        },
+        {
+          "point": [
+            24.124999999999996,
+            29.643115234375
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.2515625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            16,
+            8
+          ],
+          "computed": 0.1578011280734909,
+          "reference": 0.15608450843512053,
+          "relative_error": 0.010998014188473447
+        },
+        {
+          "point": [
+            24.125,
+            44.60665690104167
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.7515625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            16,
+            24
+          ],
+          "computed": 0.08507967605394566,
+          "reference": 0.08406092035299857,
+          "relative_error": 0.012119254662797035
+        }
+      ]
+    },
+    {
+      "divisions": 64,
+      "response_relative_error": 0.0014809587269155183,
+      "solver_seconds": 12.26600980758667,
+      "max_relative_error": 0.08049656232166322,
+      "probes": [
+        {
+          "point": [
+            24.124999999999996,
+            37.12488606770833
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            32,
+            32
+          ],
+          "computed": 0.06959857258285847,
+          "reference": 0.06832987814468466,
+          "relative_error": 0.018567198897785454
+        },
+        {
+          "point": [
+            14.525,
+            31.133636067708334
+          ],
+          "parent": [
+            0.3026041666666667,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            19,
+            32
+          ],
+          "computed": 0.07191499161934292,
+          "reference": 0.07245953063697635,
+          "relative_error": 0.007515077904128085
+        },
+        {
+          "point": [
+            33.724999999999994,
+            43.116136067708325
+          ],
+          "parent": [
+            0.7026041666666666,
+            0.5015625
+          ],
+          "interface_distance": 0.0005208333333334147,
+          "element": [
+            44,
+            32
+          ],
+          "computed": 0.07990052865562552,
+          "reference": 0.08689530172651355,
+          "relative_error": 0.08049656232166322
+        },
+        {
+          "point": [
+            24.124999999999996,
+            29.643115234375
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.2515625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            32,
+            16
+          ],
+          "computed": 0.15675585150220422,
+          "reference": 0.15608450843512053,
+          "relative_error": 0.004301151176465069
+        },
+        {
+          "point": [
+            24.125,
+            44.60665690104167
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.7515625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            32,
+            48
+          ],
+          "computed": 0.08440964404742943,
+          "reference": 0.08406092035299857,
+          "relative_error": 0.004148463911249763
+        }
+      ]
+    },
+    {
+      "divisions": 128,
+      "response_relative_error": 0.00021845350139711257,
+      "solver_seconds": 84.9680426120758,
+      "max_relative_error": 0.036871648403907276,
+      "probes": [
+        {
+          "point": [
+            24.124999999999996,
+            37.12488606770833
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            64,
+            64
+          ],
+          "computed": 0.06840250722389597,
+          "reference": 0.06832987814468466,
+          "relative_error": 0.001062918318945642
+        },
+        {
+          "point": [
+            14.525,
+            31.133636067708334
+          ],
+          "parent": [
+            0.3026041666666667,
+            0.5015625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            38,
+            64
+          ],
+          "computed": 0.07143972032506604,
+          "reference": 0.07245953063697635,
+          "relative_error": 0.014074205324618819
+        },
+        {
+          "point": [
+            33.724999999999994,
+            43.116136067708325
+          ],
+          "parent": [
+            0.7026041666666666,
+            0.5015625
+          ],
+          "interface_distance": 0.0005208333333334147,
+          "element": [
+            89,
+            64
+          ],
+          "computed": 0.08369132871330211,
+          "reference": 0.08689530172651355,
+          "relative_error": 0.036871648403907276
+        },
+        {
+          "point": [
+            24.124999999999996,
+            29.643115234375
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.2515625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            64,
+            32
+          ],
+          "computed": 0.15615502768369952,
+          "reference": 0.15608450843512053,
+          "relative_error": 0.00045180171489148454
+        },
+        {
+          "point": [
+            24.125,
+            44.60665690104167
+          ],
+          "parent": [
+            0.5026041666666666,
+            0.7515625
+          ],
+          "interface_distance": 0.0015625000000000222,
+          "element": [
+            64,
+            96
+          ],
+          "computed": 0.08403313761357713,
+          "reference": 0.08406092035299857,
+          "relative_error": 0.0003305072000731867
+        }
+      ]
+    }
+  ],
+  "q4_richardson": [
+    {
+      "point": [
+        24.124999999999996,
+        37.12488606770833
+      ],
+      "observed_order": 1.0654751307924932,
+      "order_source": "observed",
+      "extrapolated": 0.06730807021221323,
+      "reference": 0.06832987814468466,
+      "extrapolated_relative_error": 0.014954042948939735
+    },
+    {
+      "point": [
+        14.525,
+        31.133636067708334
+      ],
+      "observed_order": 2.0,
+      "order_source": "assumed_quadratic",
+      "extrapolated": 0.07128129656030709,
+      "reference": 0.07245953063697635,
+      "extrapolated_relative_error": 0.016260581131449
+    },
+    {
+      "point": [
+        33.724999999999994,
+        43.116136067708325
+      ],
+      "observed_order": 2.0,
+      "order_source": "assumed_quadratic",
+      "extrapolated": 0.08495492873252763,
+      "reference": 0.08689530172651355,
+      "extrapolated_relative_error": 0.022330010431321965
+    },
+    {
+      "point": [
+        24.124999999999996,
+        29.643115234375
+      ],
+      "observed_order": 0.7988708056791569,
+      "order_source": "observed",
+      "extrapolated": 0.15534281702998426,
+      "reference": 0.15608450843512053,
+      "extrapolated_relative_error": 0.00475185790423636
+    },
+    {
+      "point": [
+        24.125,
+        44.60665690104167
+      ],
+      "observed_order": 0.8315554944897513,
+      "order_source": "observed",
+      "extrapolated": 0.08355019129497994,
+      "reference": 0.08406092035299857,
+      "extrapolated_relative_error": 0.006075701477855811
+    }
+  ],
+  "mesh_aligned_protocol": [
+    {
+      "divisions": 16,
+      "solver_seconds": 0.26113247871398926,
+      "max_spread": 0.8579305990159866,
+      "probes": [
+        {
+          "parent": [
+            0.5,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.06119096501238887,
+            0.05552889317151251,
+            0.10316882975284296,
+            0.07892511404194291
+          ],
+          "spread_relative_to_min": 0.8579305990159866,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.3,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.07312085176528454,
+            0.06700704039937111,
+            0.07312078636361043,
+            0.06700702859320223
+          ],
+          "spread_relative_to_min": 0.09124152048584572,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.7,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.11187639931077899,
+            0.092833988077092,
+            0.11187625554552817,
+            0.09283386897735593
+          ],
+          "spread_relative_to_min": 0.20512481644030064,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.5,
+            0.25
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.14925678263828118,
+            0.14933630666059633,
+            0.17421577110602535,
+            0.16042776408557502
+          ],
+          "spread_relative_to_min": 0.1672218041054217,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.5,
+            0.75
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.07926189872047541,
+            0.07796550338616988,
+            0.10142651317695092,
+            0.08607841206074301
+          ],
+          "spread_relative_to_min": 0.3009152608760394,
+          "one_sided_count": 4
+        }
+      ]
+    },
+    {
+      "divisions": 32,
+      "solver_seconds": 1.4955437183380127,
+      "max_spread": 0.4604392229571341,
+      "probes": [
+        {
+          "parent": [
+            0.5,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.06448632013494132,
+            0.05799477694086914,
+            0.08469784697109524,
+            0.07359736068862355
+          ],
+          "spread_relative_to_min": 0.4604392229571341,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.3,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.07533829892808233,
+            0.06970302088713498,
+            0.07533821507651142,
+            0.06970295980465395
+          ],
+          "spread_relative_to_min": 0.0808479172078446,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.7,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.09380550260089747,
+            0.08495324328082164,
+            0.09380536796578541,
+            0.0849531264368536
+          ],
+          "spread_relative_to_min": 0.10420306509406596,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.5,
+            0.25
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.1532683414930343,
+            0.15142959135398024,
+            0.16434409770657796,
+            0.15890318403047676
+          ],
+          "spread_relative_to_min": 0.08528390149590317,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.5,
+            0.75
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.08151898796984226,
+            0.07893136900452447,
+            0.091326818801184,
+            0.08502788624867097
+          ],
+          "spread_relative_to_min": 0.15704085654398073,
+          "one_sided_count": 4
+        }
+      ]
+    },
+    {
+      "divisions": 64,
+      "solver_seconds": 12.26600980758667,
+      "max_spread": 0.2202138859484461,
+      "probes": [
+        {
+          "parent": [
+            0.5,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.06648530444171065,
+            0.062471255718921065,
+            0.07622829370086376,
+            0.07107183891998337
+          ],
+          "spread_relative_to_min": 0.2202138859484461,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.3,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.07658915562697546,
+            0.0731853208563673,
+            0.07658906344447508,
+            0.07318523854335525
+          ],
+          "spread_relative_to_min": 0.04651097887183519,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.7,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.08537890007008653,
+            0.08126910321671603,
+            0.0853787775285391,
+            0.08126899137239398
+          ],
+          "spread_relative_to_min": 0.05057167104314075,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.5,
+            0.25
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.15498686127351816,
+            0.15359203016578263,
+            0.1601130855921475,
+            0.15780960742594233
+          ],
+          "spread_relative_to_min": 0.042456990895466735,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.5,
+            0.75
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.08252778350442803,
+            0.0807355367879797,
+            0.08702816660225945,
+            0.08429492111495043
+          ],
+          "spread_relative_to_min": 0.07794126433821674,
+          "one_sided_count": 4
+        }
+      ]
+    },
+    {
+      "divisions": 128,
+      "solver_seconds": 84.9680426120758,
+      "max_spread": 0.10597951096050502,
+      "probes": [
+        {
+          "parent": [
+            0.5,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.06756265275360035,
+            0.0653886670434019,
+            0.07231852599902093,
+            0.06985972460012287
+          ],
+          "spread_relative_to_min": 0.10597951096050502,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.3,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.07425472833982392,
+            0.07267990101539613,
+            0.0742546446610781,
+            0.07267982272654659
+          ],
+          "spread_relative_to_min": 0.021669089909627594,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.7,
+            0.5
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.08728114032993411,
+            0.0851306948493046,
+            0.08728101530336142,
+            0.08513057475016556
+          ],
+          "spread_relative_to_min": 0.025261964765066706,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.5,
+            0.25
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.1557708849502328,
+            0.15495632406318582,
+            0.15822476278694025,
+            0.15718258301506755
+          ],
+          "spread_relative_to_min": 0.021092644934076223,
+          "one_sided_count": 4
+        },
+        {
+          "parent": [
+            0.5,
+            0.75
+          ],
+          "interface_distance": 0.0,
+          "one_sided_values": [
+            0.08300153714703445,
+            0.08198291422561879,
+            0.08514163757724667,
+            0.08388692848454017
+          ],
+          "spread_relative_to_min": 0.038529044514507074,
+          "one_sided_count": 4
+        }
+      ]
+    }
+  ],
+  "verdict": {
+    "qualified": false,
+    "monotone": false,
+    "finest_divisions": 128,
+    "finest_max_relative_error": 0.036871648403907276,
+    "gate": 0.03,
+    "statement": "off-interface pointwise von Mises does not meet the 3 % gate at the finest level"
+  },
+  "scope": "Linear-elastic plane stress, E=1, nu=1/3, thickness 1, unit resultant shear on x=48. Five declared material points probed at fixed parent coordinates offset off the element interfaces; reference is an independently coded Q8 solution extrapolated over n=12/24/48. Clamped-corner and loaded-edge-endpoint singularities are excluded."
+}
