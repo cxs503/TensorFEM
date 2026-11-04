@@ -95,6 +95,9 @@ Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归�
 
 既有 `.qualification/v1-readiness/aggregate-v045.json` 记录的 1.0 阻塞项仍为三维双变形体接触，以及加筋板 4/8/12 网格的峰值和峰后响应收敛。本次补齐线性 benchmark 场验证及报告，没有重新认证这两个工业能力，也没有提升版本到 1.0。
 
+
+扭转（Saint-Venant 三个截面）已由闭式解独立判定，见 [saint-venant-torsion.md](saint-venant-torsion.md)：最细网格刚度与中跨剪应力均 < 3%，但逐点剪应力峰值需 `n >= 24` 才进 3%（2.886%），粗网格失败项保留。
+
 ## 复现
 
 在项目 Python 环境安装 `.[dev,reports]` 后运行：
