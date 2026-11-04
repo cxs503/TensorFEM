@@ -23,6 +23,25 @@ All notable user-visible changes are recorded here.
 
 ## Unreleased
 
+- Closed the quadratic-solid rank-deficiency debt and corrected a mislabelled evidence row: the
+  library audit had recorded the 20-node brick as `hex20 (2x2x2 integration)` with zero spurious
+  modes, but the shipped `hex20_stiffness` integrates with the exact-order 3x3x3 rule, and the
+  measured 8-point rule gives **six** zero-energy mechanisms, so the old label and conclusion could
+  not both stand. New `audit_quadratic_solids`, `audit_hex20_mesh_scan`, `hex20_stiffness_with_rule`
+  (orders 2-5, `order=3` locked to production to round-off), `hex20_reduced_stiffness`,
+  `quadrature_exactness` and `hex20_quadrature_convergence`; TET10 now enters the library-level
+  audit, which had skipped the quadratic tetrahedron entirely. Results: the shipped rule has exactly
+  the 6 rigid-body modes on regular, distorted and genuinely curved bricks (0 spurious) and
+  reproduces a 64-point reference to 5.5e-16 on the regular brick; the 8-point rule has 6
+  mechanisms on all three geometries and is 7.65%-8.84% too soft (measured against a converged
+  rule, above the 3% gate); its mechanisms do not survive conforming assembly (warped and jittered
+  free-free meshes keep a 6-dimensional null space). TET10 is rank sufficient with straight and
+  curved edges. The Keast degree-3 rule under-integrates curved quadratic tetrahedra - quantified
+  accuracy loss remains open, "rank sufficient" is explicitly not "integration accurate".
+  Evidence `docs/benchmarks/tutorials/quadratic-solid-rank-audit.json`, write-up
+  `docs/quadratic-solid-rank-audit.md`, gate `tests/test_quadratic_solid_rank_audit.py` (10 tests,
+  including the 8-point rule as negative control).
+
 - Added an independent Saint-Venant torsion verification of the 3-D solid paths, the one elementary load case that no stored HEX8/HEX20/TET4/TET10 check had ever exercised. `tensorfem.torsion_bar` carries the closed-form series (torsion constant, Prandtl stress function, shear stress, warping), self-validated against the Timoshenko coefficient table (beta = 0.141, alpha = 0.208), the governing PDE, the traction-free boundary, `J = 2 int psi dA` and the thin-strip limit, plus a driver that twists a prism with an exact end torque and recovers the twist rate from the interior window. HEX20 reaches 0.118% twist-rate error at 4515 dofs and 1.47% at 783 dofs; fully integrated HEX8 needs 8019 dofs for 1.34%. The boundary peak of |tau| is reported as WITHHELD because centroid sampling cannot reach the lateral surface. Evidence in `benchmarks/saint_venant_torsion_evidence.json`, report in `docs/saint-vanant-torsion.md`.
 
 ## Curved-bar pure bending verified against the exact Airy solution
