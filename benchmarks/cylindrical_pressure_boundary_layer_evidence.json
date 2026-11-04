@@ -1,0 +1,293 @@
+{
+  "case": {
+    "radius": 1.5,
+    "thickness": 0.015,
+    "young": 206000000000.0,
+    "poisson": 0.3,
+    "pressure": 1000000.0,
+    "length": 1.2
+  },
+  "derived": {
+    "beta": 8.569380022137814,
+    "decay_length": 0.11669455636424544,
+    "boundary_layer_thickness": 0.3666067609878335,
+    "beta_length": 10.283256026565377,
+    "bending_rigidity": 63667.58241758241,
+    "membrane_displacement": 0.0007281553398058253,
+    "membrane_hoop_force": 1500000.0,
+    "membrane_hoop_stress": 100000000.0,
+    "edge_moment_long_cylinder": 6808.8097425240285,
+    "edge_bending_stress": 181568259.8006408
+  },
+  "self_validation": {
+    "ode_residual_over_pressure": 8.149072527885437e-16,
+    "ode_residual_fd_over_pressure": 0.0008607858108826913,
+    "clamped_displacement_over_wp": 1.4234139649157371e-12,
+    "clamped_slope_over_wp_beta": 4.28674746163112e-12,
+    "edge_moment_vs_long_limit": 0.00010354525631806055,
+    "two_layer_superposition_gap": 5.610824130883568e-05,
+    "decay_at_far_end": 3.420098796096725e-05,
+    "work_energy_relative_gap": 5.3203335626318746e-09,
+    "beta_length": 10.283256026565377
+  },
+  "work_energy": {
+    "pressure_work": 3316.704158947707,
+    "strain_energy": 3316.7041765936797,
+    "relative_gap": 5.3203335626318746e-09
+  },
+  "reference_study": {
+    "parameters": {
+      "radius": 1.5,
+      "thickness": 0.015,
+      "young": 206000000000.0,
+      "poisson": 0.3,
+      "pressure": 1000000.0,
+      "length": 1.2,
+      "bending_rigidity": 63667.58241758241,
+      "beta": 8.569380022137814,
+      "decay_length": 0.11669455636424544,
+      "boundary_layer_thickness": 0.3666067609878335,
+      "beta_length": 10.283256026565377,
+      "membrane_displacement": 0.0007281553398058253,
+      "membrane_hoop_force": 1500000.0,
+      "membrane_hoop_stress": 100000000.0,
+      "edge_moment_long_cylinder": 6808.8097425240285,
+      "edge_bending_stress": 181568259.8006408
+    },
+    "self_validation": {
+      "ode_residual_over_pressure": 8.149072527885437e-16,
+      "ode_residual_fd_over_pressure": 0.0008607858108826913,
+      "clamped_displacement_over_wp": 1.4234139649157371e-12,
+      "clamped_slope_over_wp_beta": 4.28674746163112e-12,
+      "edge_moment_vs_long_limit": 0.00010354525631806055,
+      "two_layer_superposition_gap": 5.610824130883568e-05,
+      "decay_at_far_end": 3.420098796096725e-05,
+      "work_energy_relative_gap": 5.3203335626318746e-09,
+      "beta_length": 10.283256026565377
+    },
+    "work_energy": {
+      "pressure_work": 3316.704158947707,
+      "strain_energy": 3316.7041765936797,
+      "relative_gap": 5.3203335626318746e-09
+    },
+    "runs": [
+      {
+        "axes": 8,
+        "facets": 16,
+        "dofs": 864,
+        "axial_spacing_times_beta": 1.2854070033206721,
+        "displacement_l2_error": 0.08878784109960547,
+        "peak_displacement_error": 0.12170235801087233,
+        "moment_l2_error": 0.7466899110171473,
+        "edge_moment_error": 0.013879088271906648,
+        "moment_sign_correlation": 0.982933444431363,
+        "axial_force_over_hoop": 0.1785438259830682,
+        "circumferential_uniformity": 3.4425009139601076e-13
+      },
+      {
+        "axes": 16,
+        "facets": 16,
+        "dofs": 1632,
+        "axial_spacing_times_beta": 0.6427035016603361,
+        "displacement_l2_error": 0.02091137474293694,
+        "peak_displacement_error": 0.03629757341301735,
+        "moment_l2_error": 0.10852857111306631,
+        "edge_moment_error": 0.09413279764406934,
+        "moment_sign_correlation": 0.9996094860726733,
+        "axial_force_over_hoop": 0.08945022316953251,
+        "circumferential_uniformity": 2.60063671986277e-12
+      },
+      {
+        "axes": 32,
+        "facets": 16,
+        "dofs": 3168,
+        "axial_spacing_times_beta": 0.32135175083016804,
+        "displacement_l2_error": 0.014110773032614139,
+        "peak_displacement_error": 0.0164219905181313,
+        "moment_l2_error": 0.006370473998123707,
+        "edge_moment_error": 0.0011428261930451766,
+        "moment_sign_correlation": 0.9999806975201738,
+        "axial_force_over_hoop": 0.03400687811773038,
+        "circumferential_uniformity": 8.312776104043204e-12
+      }
+    ],
+    "observed_orders": {
+      "displacement_l2_error": [
+        2.086074212845963,
+        0.5674908843482207
+      ],
+      "peak_displacement_error": [
+        1.7454121122172221,
+        1.1442440959958342
+      ],
+      "moment_l2_error": [
+        2.7824343430470284,
+        4.0905303638862565
+      ],
+      "edge_moment_error": [
+        -2.7617846734646077,
+        6.364019559956888
+      ]
+    }
+  },
+  "facets_study_at_16_axes": [
+    {
+      "axes": 16,
+      "facets": 8,
+      "dofs": 816,
+      "axial_spacing_times_beta": 0.6427035016603361,
+      "displacement_l2_error": 0.058167371500429776,
+      "peak_displacement_error": 0.0637945331518067,
+      "edge_displacement_error": 0.18318261239495504,
+      "plateau_displacement_error": 0.06607999273773546,
+      "moment_l2_error": 0.06038505411777832,
+      "edge_moment_error": 0.0431917054154094,
+      "moment_sign_correlation": 0.9996094860726475,
+      "axial_force_over_hoop": 0.08528556228694617,
+      "circumferential_uniformity": 1.4550224451218932e-12
+    },
+    {
+      "axes": 16,
+      "facets": 12,
+      "dofs": 1224,
+      "axial_spacing_times_beta": 0.6427035016603361,
+      "displacement_l2_error": 0.02840925701298062,
+      "peak_displacement_error": 0.03899408838540798,
+      "edge_displacement_error": 0.15394114223780775,
+      "plateau_displacement_error": 0.03264633371475634,
+      "moment_l2_error": 0.09534564853831033,
+      "edge_moment_error": 0.08053721199385877,
+      "moment_sign_correlation": 0.9996094860726504,
+      "axial_force_over_hoop": 0.08833872357273989,
+      "circumferential_uniformity": 1.44504633953213e-12
+    },
+    {
+      "axes": 16,
+      "facets": 16,
+      "dofs": 1632,
+      "axial_spacing_times_beta": 0.6427035016603361,
+      "displacement_l2_error": 0.02091137474293694,
+      "peak_displacement_error": 0.03629757341301735,
+      "edge_displacement_error": 0.14329582106027994,
+      "plateau_displacement_error": 0.020474851344908118,
+      "moment_l2_error": 0.10852857111306631,
+      "edge_moment_error": 0.09413279764406934,
+      "moment_sign_correlation": 0.9996094860726733,
+      "axial_force_over_hoop": 0.08945022316953251,
+      "circumferential_uniformity": 2.60063671986277e-12
+    },
+    {
+      "axes": 16,
+      "facets": 24,
+      "dofs": 2448,
+      "axial_spacing_times_beta": 0.6427035016603361,
+      "displacement_l2_error": 0.018942258598934725,
+      "peak_displacement_error": 0.03433784360318794,
+      "edge_displacement_error": 0.13555918563898517,
+      "plateau_displacement_error": 0.011629057025853373,
+      "moment_l2_error": 0.11818661969321342,
+      "edge_moment_error": 0.10401357885850393,
+      "moment_sign_correlation": 0.9996094860726525,
+      "axial_force_over_hoop": 0.09025802098832236,
+      "circumferential_uniformity": 8.168494815737522e-13
+    }
+  ],
+  "axial_study_at_16_facets": [
+    {
+      "axes": 8,
+      "facets": 16,
+      "dofs": 864,
+      "axial_spacing_times_beta": 1.2854070033206721,
+      "displacement_l2_error": 0.08878784109960547,
+      "peak_displacement_error": 0.12170235801087233,
+      "edge_displacement_error": 0.1904775479665043,
+      "plateau_displacement_error": 0.04222311835192194,
+      "moment_l2_error": 0.7466899110171473,
+      "edge_moment_error": 0.013879088271906648,
+      "moment_sign_correlation": 0.982933444431363,
+      "axial_force_over_hoop": 0.1785438259830682,
+      "circumferential_uniformity": 3.4425009139601076e-13
+    },
+    {
+      "axes": 16,
+      "facets": 16,
+      "dofs": 1632,
+      "axial_spacing_times_beta": 0.6427035016603361,
+      "displacement_l2_error": 0.02091137474293694,
+      "peak_displacement_error": 0.03629757341301735,
+      "edge_displacement_error": 0.14329582106027994,
+      "plateau_displacement_error": 0.020474851344908118,
+      "moment_l2_error": 0.10852857111306631,
+      "edge_moment_error": 0.09413279764406934,
+      "moment_sign_correlation": 0.9996094860726733,
+      "axial_force_over_hoop": 0.08945022316953251,
+      "circumferential_uniformity": 2.60063671986277e-12
+    },
+    {
+      "axes": 32,
+      "facets": 16,
+      "dofs": 3168,
+      "axial_spacing_times_beta": 0.32135175083016804,
+      "displacement_l2_error": 0.014110773032614139,
+      "peak_displacement_error": 0.0164219905181313,
+      "edge_displacement_error": 0.055829922889901185,
+      "plateau_displacement_error": 0.01701031358901861,
+      "moment_l2_error": 0.006370473998123707,
+      "edge_moment_error": 0.0011428261930451766,
+      "moment_sign_correlation": 0.9999806975201738,
+      "axial_force_over_hoop": 0.03400687811773038,
+      "circumferential_uniformity": 8.312776104043204e-12
+    },
+    {
+      "axes": 48,
+      "facets": 16,
+      "dofs": 4704,
+      "axial_spacing_times_beta": 0.21423450055344534,
+      "displacement_l2_error": 0.014774692373556473,
+      "peak_displacement_error": 0.015928403623162297,
+      "edge_displacement_error": 0.00029656962062962755,
+      "plateau_displacement_error": 0.016499043785423106,
+      "moment_l2_error": 0.014971932201599172,
+      "edge_moment_error": 0.015923535972196534,
+      "moment_sign_correlation": 0.9999973109854653,
+      "axial_force_over_hoop": 0.01771991212080149,
+      "circumferential_uniformity": 8.957947231214014e-12
+    }
+  ],
+  "observed_orders_axial": {
+    "displacement_l2_error": [
+      2.086074212845963,
+      0.5674908843482207,
+      -0.11339370737118952
+    ],
+    "peak_displacement_error": [
+      1.7454121122172221,
+      1.1442440959958342,
+      0.07526520622207386
+    ],
+    "plateau_displacement_error": [
+      1.0441801542176623,
+      0.2674432397385366,
+      0.07526520622206961
+    ],
+    "moment_l2_error": [
+      2.7824343430470284,
+      4.0905303638862565,
+      -2.107464654229961
+    ]
+  },
+  "reproducibility": {
+    "production_displacement_l2_error": 0.014110773032614139,
+    "repeat_displacement_l2_error": 0.014110773032614139,
+    "bitwise_identical": true
+  },
+  "gates": {
+    "displacement_l2_below_3pct": true,
+    "moment_l2_below_3pct": true,
+    "facets_8_displacement_rejected": true
+  },
+  "environment": {
+    "torch": "2.7.1",
+    "threads": "8"
+  }
+}
