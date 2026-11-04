@@ -111,3 +111,19 @@ vm→0 处，绝对误差 ≈ 2.9%×全局尺度），其余 99.4% 单元的误�
 - `benchmarks/cook_membrane_stress_reference.json`：重新生成（旧文件为转置 Jacobian 修复前的产物）。
 - `scripts/plot_cook_stress_audit_closure.py`、`docs/assets/cook_stress_audit_closure.png`：本文件三图。
 - `tests/test_cook_stress_audit_closure.py`（新增）与 `tests/test_cook_stress_reference.py`（证据一致性断言）。
+
+## 定谳（m2571）：`inverse_map` 定位器缺陷 + 界面采样协议病态
+
+m2430 的两条残留欠账由 [Cook 膜逐点应力协议报告](cook-membrane-pointwise-protocol.md) 结清：
+
+1. `recovery_cross_check` 的 `inf` 不是除零，而是审计侧 `inverse_map`（裸 Newton）对 Cook
+   梯形不全局收敛——16 个单元中心里 4 个落错单元、1 个跑出父方框，5 个声明探针中
+   (0.5,0.25) 偏 2.62e-02（跨单元）。改闭式求根 + Newton 打磨后，交叉校验 **16/16 通过，
+   最大相对差 7.352e-15**，并反证 m2430 的 `dN @ inv(J).T` 修复正确。
+2. 本文件「Q4 逐点应力仍未 3% 闭环」的**指标病态**：5 个声明探针都是二进分数，对每一种
+   2 的幂网格都正好落在单元界面上（距离 0.0），单侧极限相差 22.0%–85.8%（n=64/16）。旧记录
+   的 30.5→28.8→8.0→5.0% 的非单调即由此产生。同次重跑 `benchmarks/cook_membrane_stress_reference.json`
+   后该表变为 30.522/14.900/7.144/6.375%（`recovery_cross_check` 由 `inf` 转为 7.35e-15 通过），
+   即旧记录中的 28.83% 与 5.02% 两个数字本身即被定位器污染。改用非对齐探针后：n=128 原始最大 **3.687%
+   （仍 >3%，fail-closed 保持）**，而 Q4 与 Q8 两套独立离散的 Richardson 外推互相一致到
+   **≤2.233%（<3%）**，说明剩余偏差是一阶离散误差而非格式偏差。
