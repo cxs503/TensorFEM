@@ -1,0 +1,405 @@
+{
+  "conditioning": [
+    {
+      "condition_number": 17404.90856762713,
+      "formulation": "standard",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.3
+    },
+    {
+      "condition_number": 17609.466188959308,
+      "formulation": "bbar",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.3
+    },
+    {
+      "condition_number": 42810.903567686764,
+      "formulation": "standard",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.45
+    },
+    {
+      "condition_number": 44675.664820854785,
+      "formulation": "bbar",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.45
+    },
+    {
+      "condition_number": 160547.39685108012,
+      "formulation": "standard",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.49
+    },
+    {
+      "condition_number": 193873.69700892683,
+      "formulation": "bbar",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.49
+    },
+    {
+      "condition_number": 753922.1538957122,
+      "formulation": "standard",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.499
+    },
+    {
+      "condition_number": 1875180.8957479687,
+      "formulation": "bbar",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.499
+    },
+    {
+      "condition_number": 2771292.564822735,
+      "formulation": "standard",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.4999
+    },
+    {
+      "condition_number": 18688825.429088898,
+      "formulation": "bbar",
+      "n_dofs_free": 288,
+      "poisson_ratio": 0.4999
+    }
+  ],
+  "figures": [
+    "error_vs_poisson.png",
+    "refinement_nu_4999.png",
+    "stress_profile_nu_4999.png",
+    "error_map_nu_4999.png"
+  ],
+  "headline_nu_0_4999_16x8": [
+    {
+      "displacement_l2": 0.6191442390045758,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "standard",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.36423960480828343,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 1.5522185887498574,
+      "support_equilibrium": 2.12188308828096e-12,
+      "trace_stress_l2": 0.2594518305787122
+    },
+    {
+      "displacement_l2": 0.001128355050556095,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "bbar",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.0015849279509362198,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 0.005738324772589861,
+      "support_equilibrium": 1.4339622268861475e-11,
+      "trace_stress_l2": 0.00013624978399711526
+    }
+  ],
+  "observed_orders_nu_0_4999": {
+    "bbar": {
+      "displacement_l2": 1.9997775378674179,
+      "radial_stress_l2": 2.0005708222824055,
+      "trace_stress_l2": 1.9917081482869818
+    },
+    "standard": {
+      "displacement_l2": 1.5059300364330015,
+      "radial_stress_l2": 1.5052770463714555,
+      "trace_stress_l2": 1.4987554340559603
+    }
+  },
+  "reference": "Lame (1852) closed form, plane strain: sigma_r = A - B/r^2, sigma_theta = A + B/r^2, u_r = (1+nu)/E [(1-2nu) A r + B/r]; A, B from the tractions only",
+  "reference_self_check": {
+    "0.3": {
+      "axial": 7.450580596923828e-17,
+      "constitutive": 3.725290298461914e-16,
+      "equilibrium": 5.960464477539063e-16,
+      "poisson_invariance": 0.0,
+      "traction": 0.0
+    },
+    "0.4999": {
+      "axial": 7.450580596923828e-17,
+      "constitutive": 5.964934825897217e-13,
+      "equilibrium": 5.960464477539063e-16,
+      "poisson_invariance": 0.0,
+      "traction": 0.0
+    }
+  },
+  "refinement_nu_0_4999": [
+    {
+      "displacement_l2": 0.6191442390045758,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "standard",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.36423960480828343,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 1.5522185887498574,
+      "support_equilibrium": 2.12188308828096e-12,
+      "trace_stress_l2": 0.2594518305787122
+    },
+    {
+      "displacement_l2": 0.001128355050556095,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "bbar",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.0015849279509362198,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 0.005738324772589861,
+      "support_equilibrium": 1.4339622268861475e-11,
+      "trace_stress_l2": 0.00013624978399711526
+    },
+    {
+      "displacement_l2": 0.4198589711480761,
+      "dofs": 650,
+      "elements": 288,
+      "formulation": "standard",
+      "h": 0.025000000000000005,
+      "hoop_stress_l2": 0.24678072001440965,
+      "n_radial": 12,
+      "n_theta": 24,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 1.0535395187289627,
+      "support_equilibrium": 3.6309509992135214e-12,
+      "trace_stress_l2": 0.1776831145482221
+    },
+    {
+      "displacement_l2": 0.0005016431434566301,
+      "dofs": 650,
+      "elements": 288,
+      "formulation": "bbar",
+      "h": 0.025000000000000005,
+      "hoop_stress_l2": 0.0007041619067075696,
+      "n_radial": 12,
+      "n_theta": 24,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 0.002548398429229497,
+      "support_equilibrium": 2.9534404094009e-12,
+      "trace_stress_l2": 6.124908535127693e-05
+    },
+    {
+      "displacement_l2": 0.2894342995697297,
+      "dofs": 1122,
+      "elements": 512,
+      "formulation": "standard",
+      "h": 0.018750000000000003,
+      "hoop_stress_l2": 0.1700677877898614,
+      "n_radial": 16,
+      "n_theta": 32,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 0.7264967141352886,
+      "support_equilibrium": 9.212668881753771e-12,
+      "trace_stress_l2": 0.12291176256775349
+    },
+    {
+      "displacement_l2": 0.00028220439948165927,
+      "dofs": 1122,
+      "elements": 512,
+      "formulation": "bbar",
+      "h": 0.018750000000000003,
+      "hoop_stress_l2": 0.0003960414100836419,
+      "n_radial": 16,
+      "n_theta": 32,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 0.0014330817139269058,
+      "support_equilibrium": 2.2657092088243858e-11,
+      "trace_stress_l2": 3.4590538538333956e-05
+    },
+    {
+      "displacement_l2": 0.20682845924513477,
+      "dofs": 1722,
+      "elements": 800,
+      "formulation": "standard",
+      "h": 0.015000000000000003,
+      "hoop_stress_l2": 0.1215121069945158,
+      "n_radial": 20,
+      "n_theta": 40,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 0.5192269621857688,
+      "support_equilibrium": 4.5928053025048894e-11,
+      "trace_stress_l2": 0.08797292620047856
+    },
+    {
+      "displacement_l2": 0.0001806197815905469,
+      "dofs": 1722,
+      "elements": 800,
+      "formulation": "bbar",
+      "h": 0.015000000000000003,
+      "hoop_stress_l2": 0.00025345178894776603,
+      "n_radial": 20,
+      "n_theta": 40,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 0.0009170554792464178,
+      "support_equilibrium": 1.5946470868339312e-11,
+      "trace_stress_l2": 2.2178943829227427e-05
+    }
+  ],
+  "setup": {
+    "constraints": "symmetry cuts only (tensorfem.lame_reference)",
+    "dense_solver": true,
+    "dtype": "float64",
+    "element": "Q4 plane strain, production continuum path",
+    "inner_pressure": 100000000.0,
+    "inner_radius": 0.5,
+    "loads": "consistent nodal pressure on the bore (tensorfem.lame_reference)",
+    "outer_radius": 0.8,
+    "sector": "quarter annulus (pi/2)",
+    "thickness": 1.0,
+    "threads": 4,
+    "young_modulus": 210000000000.0
+  },
+  "study": "plane-strain Q4 mean-dilatation (B-bar) locking qualification on the Lame annulus",
+  "sweep": [
+    {
+      "displacement_l2": 0.0015373430336280893,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "standard",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.0020703373884119686,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.3,
+      "radial_stress_l2": 0.007662763631118024,
+      "support_equilibrium": 4.214684851089403e-16,
+      "trace_stress_l2": 0.00034003112463262315
+    },
+    {
+      "displacement_l2": 0.0008993624963186604,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "bbar",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.001589091125380598,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.3,
+      "radial_stress_l2": 0.005724861780415767,
+      "support_equilibrium": 1.0115243642614567e-14,
+      "trace_stress_l2": 9.730925793400379e-05
+    },
+    {
+      "displacement_l2": 0.0040895025204203544,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "standard",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.0034824531565852794,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.45,
+      "radial_stress_l2": 0.013655656966705924,
+      "support_equilibrium": 2.4023703651209597e-14,
+      "trace_stress_l2": 0.0013568234258987367
+    },
+    {
+      "displacement_l2": 0.0010612127924226212,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "bbar",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.0015861949766997109,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.45,
+      "radial_stress_l2": 0.005734045978722923,
+      "support_equilibrium": 9.061572429842216e-15,
+      "trace_stress_l2": 0.0001238754767780512
+    },
+    {
+      "displacement_l2": 0.01685760954430789,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "standard",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.010938553030203215,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.49,
+      "radial_stress_l2": 0.04543335557988933,
+      "support_equilibrium": 9.377673793673921e-14,
+      "trace_stress_l2": 0.006697424343036567
+    },
+    {
+      "displacement_l2": 0.0011143867199663196,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "bbar",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.0015851946820477198,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.49,
+      "radial_stress_l2": 0.005737409169035424,
+      "support_equilibrium": 7.649653004727266e-14,
+      "trace_stress_l2": 0.00013360199149055745
+    },
+    {
+      "displacement_l2": 0.1404391403244099,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "standard",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.08342401171576108,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.499,
+      "radial_stress_l2": 0.35456952139173326,
+      "support_equilibrium": 1.1162592828110283e-12,
+      "trace_stress_l2": 0.058556134413873424
+    },
+    {
+      "displacement_l2": 0.0011270711882418098,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "bbar",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.0015849525492184293,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.499,
+      "radial_stress_l2": 0.005738240033340395,
+      "support_equilibrium": 3.890154117555519e-13,
+      "trace_stress_l2": 0.0001360047406773808
+    },
+    {
+      "displacement_l2": 0.6191442390045758,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "standard",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.36423960480828343,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 1.5522185887498574,
+      "support_equilibrium": 2.12188308828096e-12,
+      "trace_stress_l2": 0.2594518305787122
+    },
+    {
+      "displacement_l2": 0.001128355050556095,
+      "dofs": 306,
+      "elements": 128,
+      "formulation": "bbar",
+      "h": 0.037500000000000006,
+      "hoop_stress_l2": 0.0015849279509362198,
+      "n_radial": 8,
+      "n_theta": 16,
+      "poisson_ratio": 0.4999,
+      "radial_stress_l2": 0.005738324772589861,
+      "support_equilibrium": 1.4339622268861475e-11,
+      "trace_stress_l2": 0.00013624978399711526
+    }
+  ],
+  "thresholds": {
+    "gate_percent": 3.0,
+    "locking_flatness_allowed_ratio": 1.1,
+    "standard_failure_floor_percent": 50.0
+  }
+}

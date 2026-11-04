@@ -37,7 +37,9 @@
   各向同性本构（`du/dr` 与 `u/r` 对照 `epsilon_r, epsilon_theta`），并核验应力场对 `nu` 的不变性；
 - `solve_case`：给定 `nu` 与格式求解并打分（位移 L2/逐点最大、径向应力 L2/逐点最大、
   平均应力 L2、偏量应力 L2、内表面径向位移相对误差），应力在**单元中心**恢复、按单元体积加权；
-- `locking_sweep` / `plane_strain_sweep`：3D 扫描与 2D 平面应变 Q4 扫描（后者记录尚未治理的欠账）。
+- `locking_sweep` / `plane_strain_sweep`：3D 扫描与 2D 平面应变 Q4 扫描（后者记录的欠账已由
+[plane-strain-bbar-locking.md](plane-strain-bbar-locking.md) 的 B-bar Q4 清偿；本模块的扫描函数保留作全积分格式的
+fail-closed 基线）。
 
 复现：
 
@@ -107,7 +109,7 @@ PYTHONPATH=src pytest tests/test_incompressible_locking.py -q
 | B-bar 径向应力 L2 对 `nu` 的平坦度 | 自参照 | 16.329 % → 16.327 %（变化 0.01 %） | **是**（应力场本与 `nu` 无关，误差不变 = 无锁定偏置） |
 | 标准 HEX8 位移 L2，`nu=0.4999` | 三维 Lamé 闭式 | 87.74 % | **否**（锁定，且加密不收敛） |
 | 标准 HEX8 径向应力 L2，`nu=0.4999` | 三维 Lamé 闭式 | 379.1 % | **否** |
-| 2D Q4 平面应变径向应力 L2，`nu=0.4999` | 平面应变 Lamé | 155.2 % | **否**（未治理欠账） |
+| 2D Q4 全积分平面应变径向应力 L2，`nu=0.4999` | 平面应变 Lamé | 155.2 % | **否**（锁定，保留为 fail-closed 基线；同一网格的 B-bar Q4 为 0.574 %，见 [plane-strain-bbar-locking.md](plane-strain-bbar-locking.md)） |
 
 结论（限定范围）：B-bar HEX8 **在这套精确 Lamé 基准上锁定被治愈**——应力误差对 `nu` 完全不敏感
 （16.329 % vs 16.327 %），残余误差是**纯离散误差**，在 `nu = 0.3`（无锁定）时数值相同并随 `h` 收敛（阶约 1.8）。
@@ -129,8 +131,11 @@ PYTHONPATH=src pytest tests/test_incompressible_locking.py -q
 
 ## 6 由此暴露的未完成项（下次自找活的线索）
 
-1. **2D 平面应变 Q4 无 B-bar/EAS/BF 对照实现**，`nu >= 0.499` 时误差 14 %–155 %；
-   船舶结构里橡胶支座、近不可压涂层、复合基体都用平面应变/平面应力 Q4 路径求解。
+1. ~~**2D 平面应变 Q4 无 B-bar/EAS/BF 对照实现**，`nu >= 0.499` 时误差 14 %–155 %~~ —
+   **已清偿**：[plane-strain-bbar-locking.md](plane-strain-bbar-locking.md) 新增平均膨胀 B-bar Q4
+   （`src/tensorfem/plane_strain_bbar.py`），`nu = 0.4999` 径向应力误差 155.2 % → 0.574 %，
+   对 `nu` 平坦、二阶收敛，且 fail-closed 测试锁死全积分格式。剩余未覆盖：塑性不可压、
+   大变形 `F-bar`、平面应变迭代求解器的预条件（B-bar 条件数恶化 6.7 倍）。
 2. **B-bar 只有稠密装配**（`solve_solid_bbar` 直接建 `n_dofs^2` 稠密矩阵），
    要把它用到 64×64×6 级别的认证网格必须先加 `assemble_coo` 稀疏路径。
 3. 径向应力 3 % 门限需要应力恢复（单元外推 / Barlow 点），当前单元中心取值在粗网格上封顶 9.7 %。
