@@ -295,3 +295,45 @@ def probe_grid_contact(divisions: int, xi: float, eta: float, tolerance: float =
         "on_element_edge": on_edge,
         "on_grid_node": bool(on_edge[0] and on_edge[1]),
     }
+
+
+def admissible_error_band(candidates, references, scale: float) -> dict:
+    """Worst-site normalised error spanned by every admissible one-sided tie-break.
+
+    ``candidates[i]`` lists the von Mises values the pointwise protocol may return at
+    probe site ``i`` (:func:`one_sided_values`), ``references[i]`` is the reference value
+    at that site and ``scale`` the global von Mises scale of the 5 % error floor.
+
+    At a site that sits on an element edge the merged protocol's ``floor`` element choice
+    is decided by the last bit of the parent-coordinate inversion, which is not
+    reproducible across BLAS builds: the same source tree yields 0.0802 or 0.0943 at
+    ``n=32`` depending on the machine.  A single residual number is therefore an artefact
+    of the machine that produced it, while the band spanned by the admissible selections
+    is reproducible — and an accuracy verdict has to hold over the whole band.
+    """
+    if len(candidates) != len(references):
+        raise ValueError("one candidate list per reference value required")
+    if not candidates:
+        raise ValueError("at least one probe site required")
+    per_site = []
+    for values, reference in zip(candidates, references):
+        if not len(values):
+            raise ValueError("every probe site needs at least one admissible value")
+        errors = [
+            normalized_error(float(value), float(reference), float(scale)) for value in values
+        ]
+        per_site.append(
+            {
+                "candidate_count": len(errors),
+                "min_error": float(min(errors)),
+                "max_error": float(max(errors)),
+            }
+        )
+    return {
+        "scale": float(scale),
+        "per_site": per_site,
+        # Worst site under the most / least favourable admissible tie-break.
+        "worst_site_min_error": float(max(site["min_error"] for site in per_site)),
+        "worst_site_max_error": float(max(site["max_error"] for site in per_site)),
+        "ambiguous_sites": int(sum(site["candidate_count"] > 1 for site in per_site)),
+    }
