@@ -1,0 +1,420 @@
+{
+  "anchors": [
+    {
+      "description": "bisected free-floating equilibrium versus the wall-sided closure h0 = T*cos(phi)",
+      "gate": 1e-09,
+      "id": "flotation_offset_vs_closed_form",
+      "measured": "bisection on the clipped immersed area",
+      "reference": "wall-sided volume closure (B*h0/cos(phi) = B*T)",
+      "relative_error": 4.594164758444421e-15,
+      "verdict": "PASS"
+    },
+    {
+      "description": "unit-length displacement conservation over the solved heel range",
+      "gate": 1e-09,
+      "id": "immersed_area_closure",
+      "measured": "clipped immersed area",
+      "reference": "B*T",
+      "relative_error": 4.736951571734001e-15,
+      "verdict": "PASS"
+    },
+    {
+      "description": "waterplane breadth grows as B/cos(phi) while the vertical sides are cut",
+      "gate": 1e-09,
+      "id": "waterplane_chord_vs_b_over_cos",
+      "measured": "free-surface chord through the section boundary",
+      "reference": "B/cos(phi)",
+      "relative_error": 1.775837530230138e-16,
+      "verdict": "PASS"
+    },
+    {
+      "description": "2-D polygon clip versus closed-form trapezoid integrals y_B = BM tan, z_B = KB + BM tan^2/2",
+      "gate": 1e-09,
+      "id": "centroid_vs_trapezoid_integrals",
+      "measured": "shoelace centroid of the clipped section",
+      "reference": "analytic trapezoid integration",
+      "relative_error": 1.2143400640899198e-14,
+      "verdict": "PASS"
+    },
+    {
+      "description": "geometric righting arm versus sin(phi)*(GM + BM tan^2(phi)/2)",
+      "gate": 1e-09,
+      "id": "exact_gz_vs_wall_sided",
+      "measured": "immersed-section centroid righting arm",
+      "reference": "textbook wall-sided closed form",
+      "relative_error": 1.2422269088000862e-14,
+      "verdict": "PASS"
+    },
+    {
+      "description": "Simpson integral of the exact arm versus GM(1-cos) + BM(sec + cos - 2)/2",
+      "gate": 1e-08,
+      "id": "dynamic_stability_vs_closed_form",
+      "measured": "composite Simpson on the geometric arm (1024 panels)",
+      "reference": "closed-form integral of the wall-sided arm",
+      "relative_error": 1.1451587247495367e-12,
+      "verdict": "PASS"
+    },
+    {
+      "description": "bisected GZ = 0 lurch angle of an unstable section versus atan(sqrt(-2 GM/BM))",
+      "gate": 1e-09,
+      "id": "zero_arm_angle_vs_root",
+      "measured": 10.74340380177604,
+      "reference": 10.743403801775944,
+      "relative_error": 8.928573392331848e-15,
+      "verdict": "PASS"
+    },
+    {
+      "description": "upright KB/BM/GM of tensorfem.marine_hydrostatics versus the oracle",
+      "gate": 1e-12,
+      "id": "merged_hydrostatics_gm",
+      "measured": "analyze_box_barge on the same geometry",
+      "reference": "k_b = T/2, BM = B^2/(12T), GM = KB + BM - KG",
+      "relative_error": 0.0,
+      "verdict": "PASS"
+    }
+  ],
+  "audit": {
+    "declared_small_angle_limit_deg": 10.0,
+    "gate": 0.03,
+    "generator": "benchmarks/marine_large_angle_stability_audit.py",
+    "linear_gate_criterion_gm_over_bm": 0.502641133366508,
+    "tight_gate": 1e-09
+  },
+  "case": {
+    "main": {
+      "beam": 20.0,
+      "bm": 5.555555555555555,
+      "bottom_exposure_angle_deg": 30.96375653207352,
+      "deck_edge_angle_deg": 11.309932474020213,
+      "density": 1025.0,
+      "depth": 8.0,
+      "draft": 6.0,
+      "gm": 4.055555555555555,
+      "gravity": 9.80665,
+      "kb": 3.0,
+      "kg": 4.5,
+      "km": 8.555555555555555,
+      "length": 90.0
+    },
+    "narrow": {
+      "beam": 6.0,
+      "bm": 0.6,
+      "bottom_exposure_deg": 59.03624346792648,
+      "deck_edge_deg": 73.30075576600639,
+      "depth": 15.0,
+      "draft": 5.0,
+      "envelope_deg": 59.03624346792648,
+      "gm": 1.1,
+      "kg": 2.0
+    },
+    "tender": {
+      "bm": 5.555555555555555,
+      "deck_edge_angle_deg": 11.309932474020213,
+      "gm": 2.5555555555555554,
+      "kg": 6.0
+    },
+    "unstable": {
+      "beam": 20.0,
+      "depth": 12.0,
+      "draft": 6.0,
+      "envelope_deg": 30.96375653207352,
+      "gm": -0.09999999999999964,
+      "kg": 8.655555555555555,
+      "km": 8.555555555555555,
+      "zero_arm_angle_deg": 10.743403801775944
+    },
+    "wide": {
+      "beam": 30.0,
+      "bm": 25.0,
+      "deck_edge_angle_deg": 3.8140748342903543,
+      "depth": 4.0,
+      "draft": 3.0,
+      "gm": 25.3,
+      "kg": 1.2,
+      "length": 120.0
+    }
+  },
+  "envelope_sweep": [
+    {
+      "gm": 0.5555555555555554,
+      "gm_over_bm": 0.1,
+      "linear_error_at_10deg": 0.13454083742988962
+    },
+    {
+      "gm": 1.3888888888888893,
+      "gm_over_bm": 0.25,
+      "linear_error_at_10deg": 0.0585421183484696
+    },
+    {
+      "gm": 2.2222222222222223,
+      "gm_over_bm": 0.4,
+      "linear_error_at_10deg": 0.03741009888134583
+    },
+    {
+      "gm": 2.7944444444444443,
+      "gm_over_bm": 0.503,
+      "linear_error_at_10deg": 0.029979238086365226
+    },
+    {
+      "gm": 4.166666666666666,
+      "gm_over_bm": 0.75,
+      "linear_error_at_10deg": 0.020306565697707276
+    },
+    {
+      "gm": 5.555555555555555,
+      "gm_over_bm": 1.0,
+      "linear_error_at_10deg": 0.015307635650533988
+    }
+  ],
+  "findings": [
+    {
+      "description": "GM*sin(phi) versus the exact arm at phi = 10 deg (shipped proportions)",
+      "gate": 0.03,
+      "gm_over_bm": 0.73,
+      "heel_deg": 10.0,
+      "id": "merged_linear_arm_shipped_proportions",
+      "measured": 0.7042398316492174,
+      "reference": 0.7192368620322981,
+      "relative_error": 0.02085130945694937,
+      "verdict": "PASS"
+    },
+    {
+      "description": "GM*sin(phi) versus the exact arm at phi = 10 deg (tender section)",
+      "gate": 0.03,
+      "gm_over_bm": 0.45999999999999996,
+      "heel_deg": 10.0,
+      "id": "merged_linear_arm_tender_section",
+      "measured": 0.44376756514882193,
+      "reference": 0.4587645955319025,
+      "relative_error": 0.03269003434254267,
+      "verdict": "FAIL"
+    },
+    {
+      "description": "GM/BM above which the linear arm stays inside the 3% gate at the declared 10 degrees",
+      "gate": 0.03,
+      "id": "linear_arm_gate_criterion",
+      "measured": 0.73,
+      "reference": 0.502641133366508,
+      "relative_error": 0.0,
+      "verdict": "PASS"
+    },
+    {
+      "description": "wall-sided closed form versus exact geometry past the deck-edge angle",
+      "deviations": {
+        "0.98x_deck_edge": 1.8037816398204805e-15,
+        "1.02x_deck_edge": 0.00042319989049166784,
+        "1.10x_deck_edge": 0.009321977606324796,
+        "1.25x_deck_edge": 0.048081688669985266
+      },
+      "gate": 0.03,
+      "id": "closed_form_beyond_deck_edge_shipped_proportions",
+      "phi_deck_deg": 11.309932474020213,
+      "relative_error": 0.048081688669985266,
+      "verdict": "PASS"
+    },
+    {
+      "description": "wall-sided closed form versus exact geometry past the deck-edge angle",
+      "deviations": {
+        "0.98x_deck_edge": 8.060678032593918e-16,
+        "1.02x_deck_edge": 0.00028833010437786844,
+        "1.10x_deck_edge": 0.006315605751269864,
+        "1.25x_deck_edge": 0.032010109900219456
+      },
+      "gate": 0.03,
+      "id": "closed_form_beyond_deck_edge_wide_shallow_barge",
+      "phi_deck_deg": 3.8140748342903543,
+      "relative_error": 0.032010109900219456,
+      "verdict": "PASS"
+    },
+    {
+      "bottom_exposure_deg": 59.03624346792648,
+      "deck_edge_deg": 73.30075576600639,
+      "description": "wall-sided closed form versus exact geometry once the rising bilge surfaces",
+      "deviations": {
+        "0.99x_envelope": 8.523015007586508e-15,
+        "1.05x_envelope": 0.012151273849168484,
+        "1.10x_envelope": 0.05057536198695291,
+        "1.25x_envelope": 0.42838405768271315
+      },
+      "envelope_deg": 59.03624346792648,
+      "gate": 0.03,
+      "id": "closed_form_beyond_bottom_exposure_narrow_section",
+      "relative_error": 0.05057536198695291,
+      "verdict": "PASS"
+    },
+    {
+      "closed_form_deg": 10.743403801775944,
+      "description": "closed-form lurch angle of a near-neutral section versus the geometric root",
+      "envelope_deg": 30.96375653207352,
+      "gate": 1e-09,
+      "geometric_deg": 10.74340380177604,
+      "gm": -0.09999999999999964,
+      "id": "unstable_section_zero_arm_angle",
+      "relative_error": 8.928573392331848e-15,
+      "verdict": "PASS"
+    }
+  ],
+  "gz_curve": [
+    {
+      "exact_gz": 0.03480779222965669,
+      "heel_deg": 0.49173619452261796,
+      "linear_error": 5.045051999877126e-05,
+      "linear_gz": 0.03480603615843869,
+      "wall_sided_gz": 0.034807792229656555
+    },
+    {
+      "exact_gz": 0.06962355871671562,
+      "heel_deg": 0.9834723890452359,
+      "linear_error": 0.00020180126440654396,
+      "linear_gz": 0.0696095085945341,
+      "wall_sided_gz": 0.0696235587167156
+    },
+    {
+      "exact_gz": 0.10445528167244127,
+      "heel_deg": 1.475208583567854,
+      "linear_error": 0.00045404977998047294,
+      "linear_gz": 0.1044078537747801,
+      "wall_sided_gz": 0.10445528167244102
+    },
+    {
+      "exact_gz": 0.13931095922902498,
+      "heel_deg": 1.9669447780904719,
+      "linear_error": 0.000807191956155586,
+      "linear_gz": 0.139198508543331,
+      "wall_sided_gz": 0.13931095922902473
+    },
+    {
+      "exact_gz": 0.17419861343310042,
+      "heel_deg": 2.45868097261309,
+      "linear_error": 0.0012612219923792273,
+      "linear_gz": 0.17397891031079663,
+      "wall_sided_gz": 0.17419861343310009
+    },
+    {
+      "exact_gz": 0.20912629827901438,
+      "heel_deg": 2.950417167135708,
+      "linear_error": 0.0018161323522831283,
+      "linear_gz": 0.20874649724299665,
+      "wall_sided_gz": 0.20912629827901463
+    },
+    {
+      "exact_gz": 0.24410210779528085,
+      "heel_deg": 3.4421533616583257,
+      "linear_error": 0.0024719137047719236,
+      "linear_gz": 0.24349870844965799,
+      "wall_sided_gz": 0.24410210779528008
+    },
+    {
+      "exact_gz": 0.2791341841977649,
+      "heel_deg": 3.9338895561809437,
+      "linear_error": 0.003228554851893975,
+      "linear_gz": 0.27823298417304376,
+      "wall_sided_gz": 0.27913418419776437
+    },
+    {
+      "exact_gz": 0.3142307261233667,
+      "heel_deg": 4.425625750703562,
+      "linear_error": 0.004086042643597239,
+      "linear_gz": 0.3129467659764981,
+      "wall_sided_gz": 0.3142307261233675
+    },
+    {
+      "exact_gz": 0.34939999695814417,
+      "heel_deg": 4.91736194522618,
+      "linear_error": 0.005044361879204578,
+      "linear_gz": 0.3476374969328943,
+      "wall_sided_gz": 0.34939999695814405
+    },
+    {
+      "exact_gz": 0.3846503332740875,
+      "heel_deg": 5.409098139748798,
+      "linear_error": 0.006103495195578795,
+      "linear_gz": 0.3823026218129713,
+      "wall_sided_gz": 0.3846503332740886
+    },
+    {
+      "exact_gz": 0.4199901533890996,
+      "heel_deg": 5.900834334271416,
+      "linear_error": 0.007263422942033868,
+      "linear_gz": 0.4169395872735449,
+      "wall_sided_gz": 0.41999015338909956
+    },
+    {
+      "exact_gz": 0.45542796606497293,
+      "heel_deg": 6.3925705287940335,
+      "linear_error": 0.0085241230417502,
+      "linear_gz": 0.45154584204558107,
+      "wall_sided_gz": 0.4554279660649732
+    },
+    {
+      "exact_gz": 0.49097237935865434,
+      "heel_deg": 6.8843067233166515,
+      "linear_error": 0.009885570839808205,
+      "linear_gz": 0.4861188371221152,
+      "wall_sided_gz": 0.49097237935865445
+    },
+    {
+      "exact_gz": 0.5266321096424033,
+      "heel_deg": 7.37604291783927,
+      "linear_error": 0.011347738937634466,
+      "linear_gz": 0.5206560259460056,
+      "wall_sided_gz": 0.5266321096424021
+    },
+    {
+      "exact_gz": 0.5624159908089849,
+      "heel_deg": 7.867779112361887,
+      "linear_error": 0.012910597013847303,
+      "linear_gz": 0.5551548645975064,
+      "wall_sided_gz": 0.5624159908089847
+    },
+    {
+      "exact_gz": 0.5983329836785443,
+      "heel_deg": 8.359515306884505,
+      "linear_error": 0.01457411163143142,
+      "linear_gz": 0.5896128119816457,
+      "wall_sided_gz": 0.5983329836785445
+    },
+    {
+      "exact_gz": 0.63439218562433,
+      "heel_deg": 8.851251501407123,
+      "linear_error": 0.016338246031093278,
+      "linear_gz": 0.6240273300153967,
+      "wall_sided_gz": 0.6343921856243309
+    },
+    {
+      "exact_gz": 0.670602840435119,
+      "heel_deg": 9.342987695929741,
+      "linear_error": 0.01820295991077649,
+      "linear_gz": 0.6583958838146257,
+      "wall_sided_gz": 0.6706028404351173
+    },
+    {
+      "exact_gz": 0.7069743484327893,
+      "heel_deg": 9.83472389045236,
+      "linear_error": 0.020168209191170974,
+      "linear_gz": 0.692715941880805,
+      "wall_sided_gz": 0.7069743484327908
+    },
+    {
+      "exact_gz": 0.7435162768643273,
+      "heel_deg": 10.326460084974977,
+      "linear_error": 0.02223394576722438,
+      "linear_gz": 0.7269849762874773,
+      "wall_sided_gz": 0.7435162768643274
+    },
+    {
+      "exact_gz": 0.7802383705881585,
+      "heel_deg": 10.818196279497595,
+      "linear_error": 0.024400117245389985,
+      "linear_gz": 0.7612004628664554,
+      "wall_sided_gz": 0.7802383705881564
+    },
+    {
+      "exact_gz": 0.8171505630757672,
+      "heel_deg": 11.309932474020215,
+      "linear_error": 0.026666666666667095,
+      "linear_gz": 0.7953598813937464,
+      "wall_sided_gz": 0.8171505630757667
+    }
+  ]
+}
