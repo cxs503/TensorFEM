@@ -1,3 +1,16 @@
+## 2026-11-04 离心体力通道与旋转盘验证
+
+- 新增 `tensorfem.rotating_disk`：极性 Q4 环形网格、2x2 Gauss 一致离心体力向量
+  （`b = rho*omega^2*x`）、Timoshenko 旋转盘闭式 oracle（平面应力/平面应变）与组装式基准
+  `solve_rotating_disk`。此前仓库无任何离心/旋转体力通道（`centrifugal` 关键字 0 处）。
+- 验证：16x96 网格对闭式解 应力域误差 0.0269%、位移 0.0184%、平面应变 0.0291%、
+  近实心盘 a/b=0.05 为 0.327%；收敛阶反算 1.997；外力功=应变能 4.9e-15，
+  对称面反力 vs 解析合力 0.007%。
+- 负控：质量集中折算载荷 48.04%、载荷/参考 omega 失配 5% 为 10.19%，判据非空门。
+- 证据：`tests/test_rotating_disk.py`（15 项）、`scripts/verify_rotating_disk.py`、
+  `docs/benchmarks/tutorials/rotating-disk-verification.json`、
+  `docs/centrifugal-rotating-disk-verification.md`。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 - 重新生成 `benchmarks/cook_membrane_stress_reference.json`：旧文件是单元 Jacobian 转置缺陷修复前的产物，
