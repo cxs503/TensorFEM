@@ -201,12 +201,75 @@ def test_platform_q4_pointwise_stress_stays_uncertified():
     """Honest negative result: the element-centre Q4 stress is not yet a 3 % match.
 
     The audit compares element-centre stress with interior material points, which
-    contributes a first-order sampling bias on top of the element error, so the
-    margin is still 5 % at n = 64 (see docs/cook-membrane-stress-audit.md).  This
-    test fails closed: it must not be relaxed into a pass without a new oracle.
+    margin is still above 3 % at n = 128 once the probes are moved off the element
+    interfaces where the Q4 stress field is discontinuous; the extrapolated agreement
+    is 2.23 % but that does not certify raw values
+    (see docs/cook-membrane-pointwise-protocol.md).  This test fails closed: it must
+    not be relaxed into a pass without a new certification decision.
     """
     from tensorfem.additional_benchmark_fields import cook_fields
 
     fields = cook_fields(16)
     assert fields["stress_accuracy_qualified"] is False
     assert fields["verification"]["passed"] is True  # displacement response only
+
+# ---------------------------------------------------------------------------
+# m2571: the pointwise stress comparison also depended on a root finder.
+#
+# ``inverse_map`` used a bare Newton iteration from the centre of the parent
+# square.  For the tapered Cook map that iteration is not globally convergent: it
+# landed in a *different* element for 2 of the 5 declared stress probes and for 4
+# of the 16 element centres at n = 8, and left the unit square entirely for one
+# centre -- which is what surfaced as ``max_relative_difference = inf`` in
+# ``recovery_cross_check``.  The map is bilinear, so the pre-image is a quadratic
+# root; it is now solved in closed form and polished with Newton.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("parent", reference.SAMPLE_POINTS)
+def test_inverse_map_recovers_the_declared_stress_probes(parent):
+    """Round trip through ``map_point`` must be exact for every declared probe."""
+    located = reference.inverse_map_checked(reference.map_point(*parent))
+    assert located["converged"] is True
+    assert located["residual"] < 1e-12
+    assert abs(located["xi"] - parent[0]) < 1e-10
+    assert abs(located["eta"] - parent[1]) < 1e-10
+
+
+def test_inverse_map_is_globally_convergent_on_the_cook_trapezoid():
+    """Every element centre of the coarse audit mesh must invert (Newton failed on 4/16)."""
+    divisions = 8
+    failures = []
+    for j in range(divisions):
+        for i in range(divisions):
+            parent = ((i + 0.5) / divisions, (j + 0.5) / divisions)
+            located = reference.inverse_map_checked(reference.map_point(*parent))
+            error = max(abs(located["xi"] - parent[0]), abs(located["eta"] - parent[1]))
+            if not located["converged"] or error > 1e-10:
+                failures.append((i, j, located["xi"], located["eta"], located["residual"]))
+    assert failures == []
+
+
+def test_pointwise_recovery_reproduces_the_stored_q4_centre_stress():
+    """The ``inf`` cross-check debt is closed: recovery and stored field now agree."""
+    from tensorfem.additional_benchmark_fields import cook_fields
+
+    checked = reference.cross_check_pointwise_recovery(cook_fields(8))
+    assert checked["passed"] is True
+    assert checked["max_relative_difference"] < 1e-10
+    assert math.isfinite(checked["max_relative_difference"])
+    assert checked["samples"] == 16
+
+
+def test_pointwise_recovery_refuses_points_outside_the_material_square():
+    """A physical point outside the parent square must yield ``None``, never a wrong element."""
+    from tensorfem.additional_benchmark_fields import cook_fields
+
+    fields = cook_fields(8)
+    outside = reference.map_point(1.5, 0.4)
+    located = reference.inverse_map_checked(outside)
+    assert located["converged"] is True  # the inverse itself is well posed ...
+    assert located["xi"] > 1.0  # ... and it says the point is outside the square
+    assert reference.platform_q4_stress_at(
+        fields["nodes"], fields["elements"], fields["displacement"], outside
+    ) is None
