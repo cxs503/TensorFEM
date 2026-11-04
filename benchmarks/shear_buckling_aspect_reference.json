@@ -1,0 +1,395 @@
+{
+  "schema": "tensorfem.shear-buckling-aspect-reference/1.0",
+  "generated_utc": "2026-11-04T12:39:29+00:00",
+  "question": "pure-shear buckling at a/b = 1.5/2/3 was reported as unqualified against the asymptotic fit; is the solver or the fit at fault?",
+  "reference_method": "double-sine Galerkin on the exact admissible space of the simply supported plate; the truncation is a Ritz upper bound and is refined until the last two budgets agree to the reported residual",
+  "rigidity": 1.0,
+  "thickness_for_stress": 0.012,
+  "reference_qualification": {
+    "uniaxial_square_galerkin": 39.47841760435743,
+    "uniaxial_square_exact": 39.47841760435743,
+    "uniaxial_square_error": 0.0,
+    "equal_biaxial_square_galerkin": 19.739208802178716,
+    "equal_biaxial_square_exact": 19.739208802178716,
+    "equal_biaxial_square_error": 0.0,
+    "twist_quadrature_worst_error": 2.6645352591003757e-14
+  },
+  "spectral_coefficients": [
+    {
+      "aspect_ratio": 1.0,
+      "coefficient": 9.324542103220045,
+      "modes": [
+        24,
+        24
+      ],
+      "residual": 3.2916983838671143e-06,
+      "converged": true,
+      "asymptotic_fit": 9.34,
+      "fit_error": -0.0016550210685176703,
+      "truncation_table": [
+        {
+          "modes_x": 8,
+          "modes_y": 8,
+          "coefficient": 9.328349293898757
+        },
+        {
+          "modes_x": 12,
+          "modes_y": 12,
+          "coefficient": 9.325111679004948
+        },
+        {
+          "modes_x": 16,
+          "modes_y": 16,
+          "coefficient": 9.324672700247284
+        },
+        {
+          "modes_x": 20,
+          "modes_y": 20,
+          "coefficient": 9.32457279690125
+        },
+        {
+          "modes_x": 24,
+          "modes_y": 24,
+          "coefficient": 9.324542103220045
+        }
+      ]
+    },
+    {
+      "aspect_ratio": 1.5,
+      "coefficient": 7.069987727773694,
+      "modes": [
+        24,
+        24
+      ],
+      "residual": 3.7893402489164174e-06,
+      "converged": true,
+      "asymptotic_fit": 7.1177777777777775,
+      "fit_error": -0.006714181236914696,
+      "truncation_table": [
+        {
+          "modes_x": 8,
+          "modes_y": 8,
+          "coefficient": 7.073054901838867
+        },
+        {
+          "modes_x": 12,
+          "modes_y": 12,
+          "coefficient": 7.0704691123625185
+        },
+        {
+          "modes_x": 16,
+          "modes_y": 16,
+          "coefficient": 7.070100498469169
+        },
+        {
+          "modes_x": 20,
+          "modes_y": 20,
+          "coefficient": 7.070014518464269
+        },
+        {
+          "modes_x": 24,
+          "modes_y": 24,
+          "coefficient": 7.069987727773694
+        }
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "coefficient": 6.546044384117836,
+      "modes": [
+        24,
+        24
+      ],
+      "residual": 3.1268655745764207e-06,
+      "converged": true,
+      "asymptotic_fit": 6.34,
+      "fit_error": 0.03249911421416973,
+      "truncation_table": [
+        {
+          "modes_x": 8,
+          "modes_y": 8,
+          "coefficient": 6.548053338422898
+        },
+        {
+          "modes_x": 12,
+          "modes_y": 12,
+          "coefficient": 6.546389875120629
+        },
+        {
+          "modes_x": 16,
+          "modes_y": 16,
+          "coefficient": 6.546128805724986
+        },
+        {
+          "modes_x": 20,
+          "modes_y": 20,
+          "coefficient": 6.546064852782673
+        },
+        {
+          "modes_x": 24,
+          "modes_y": 24,
+          "coefficient": 6.546044384117836
+        }
+      ]
+    },
+    {
+      "aspect_ratio": 3.0,
+      "coefficient": 5.840186897327733,
+      "modes": [
+        24,
+        24
+      ],
+      "residual": 7.284761635584225e-06,
+      "converged": true,
+      "asymptotic_fit": 5.7844444444444445,
+      "fit_error": 0.009636613060883592,
+      "truncation_table": [
+        {
+          "modes_x": 8,
+          "modes_y": 8,
+          "coefficient": 5.843302365885321
+        },
+        {
+          "modes_x": 12,
+          "modes_y": 12,
+          "coefficient": 5.840795579916988
+        },
+        {
+          "modes_x": 16,
+          "modes_y": 16,
+          "coefficient": 5.840351551375403
+        },
+        {
+          "modes_x": 20,
+          "modes_y": 20,
+          "coefficient": 5.840229442007115
+        },
+        {
+          "modes_x": 24,
+          "modes_y": 24,
+          "coefficient": 5.840186897327733
+        }
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "coefficient": 5.624626676146833,
+      "modes": [
+        24,
+        24
+      ],
+      "residual": 1.7942776004642447e-05,
+      "converged": true,
+      "asymptotic_fit": 5.59,
+      "fit_error": 0.006194396448449657,
+      "truncation_table": [
+        {
+          "modes_x": 8,
+          "modes_y": 8,
+          "coefficient": 5.631782527130513
+        },
+        {
+          "modes_x": 12,
+          "modes_y": 12,
+          "coefficient": 5.626061997074296
+        },
+        {
+          "modes_x": 16,
+          "modes_y": 16,
+          "coefficient": 5.6250165651925474
+        },
+        {
+          "modes_x": 20,
+          "modes_y": 20,
+          "coefficient": 5.624727599374236
+        },
+        {
+          "modes_x": 24,
+          "modes_y": 24,
+          "coefficient": 5.624626676146833
+        }
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "coefficient": 5.478927879389525,
+      "modes": [
+        24,
+        24
+      ],
+      "residual": 3.839036780051153e-05,
+      "converged": true,
+      "asymptotic_fit": 5.451111111111111,
+      "fit_error": 0.005102953821967571,
+      "truncation_table": [
+        {
+          "modes_x": 8,
+          "modes_y": 8,
+          "coefficient": 5.490350454470375
+        },
+        {
+          "modes_x": 12,
+          "modes_y": 12,
+          "coefficient": 5.481816920174537
+        },
+        {
+          "modes_x": 16,
+          "modes_y": 16,
+          "coefficient": 5.479724241907019
+        },
+        {
+          "modes_x": 20,
+          "modes_y": 20,
+          "coefficient": 5.479138225521233
+        },
+        {
+          "modes_x": 24,
+          "modes_y": 24,
+          "coefficient": 5.478927879389525
+        }
+      ]
+    },
+    {
+      "aspect_ratio": 8.0,
+      "coefficient": 5.414756388197718,
+      "modes": [
+        24,
+        24
+      ],
+      "residual": 2.6278464696827264e-05,
+      "converged": true,
+      "asymptotic_fit": 5.4025,
+      "fit_error": 0.0022686512166067985,
+      "truncation_table": [
+        {
+          "modes_x": 8,
+          "modes_y": 8,
+          "coefficient": 5.44970500079586
+        },
+        {
+          "modes_x": 12,
+          "modes_y": 12,
+          "coefficient": 5.416971483729883
+        },
+        {
+          "modes_x": 16,
+          "modes_y": 16,
+          "coefficient": 5.415293183191956
+        },
+        {
+          "modes_x": 20,
+          "modes_y": 20,
+          "coefficient": 5.414898683421607
+        },
+        {
+          "modes_x": 24,
+          "modes_y": 24,
+          "coefficient": 5.414756388197718
+        }
+      ]
+    }
+  ],
+  "solver_comparison": [
+    {
+      "aspect_ratio": 1.0,
+      "grid": [
+        24,
+        24
+      ],
+      "line_load": 92.76790662536203,
+      "coefficient": 9.39935410330355,
+      "reference_coefficient": 9.324542103220045,
+      "error_vs_reference": 0.008023128562813842,
+      "asymptotic_fit": 9.34,
+      "error_vs_asymptotic_fit": 0.0063548290474892966
+    },
+    {
+      "aspect_ratio": 1.5,
+      "grid": [
+        24,
+        36
+      ],
+      "line_load": 70.2576715301489,
+      "coefficient": 7.118590439389263,
+      "reference_coefficient": 7.069987727773694,
+      "error_vs_reference": 0.006874511454190824,
+      "asymptotic_fit": 7.1177777777777775,
+      "error_vs_asymptotic_fit": 0.00011417350145759286
+    },
+    {
+      "aspect_ratio": 2.0,
+      "grid": [
+        32,
+        64
+      ],
+      "line_load": 64.90156174753172,
+      "coefficient": 6.575903056496186,
+      "reference_coefficient": 6.546044384117836,
+      "error_vs_reference": 0.0045613305725200615,
+      "asymptotic_fit": 6.34,
+      "error_vs_asymptotic_fit": 0.0372086839899346
+    },
+    {
+      "aspect_ratio": 3.0,
+      "grid": [
+        20,
+        60
+      ],
+      "line_load": 58.837675842416104,
+      "coefficient": 5.961502959117783,
+      "reference_coefficient": 5.840186897327733,
+      "error_vs_reference": 0.020772633465815815,
+      "asymptotic_fit": 5.7844444444444445,
+      "error_vs_asymptotic_fit": 0.030609424357665116
+    }
+  ],
+  "solver_refinement_at_aspect_two": {
+    "aspect_ratio": 2.0,
+    "reference_coefficient": 6.546044384117836,
+    "grids": [
+      {
+        "grid": [
+          16,
+          32
+        ],
+        "line_load": 65.73810070638304,
+        "coefficient": 6.66066217396993,
+        "error_vs_reference": 0.017509473374513362
+      },
+      {
+        "grid": [
+          24,
+          48
+        ],
+        "line_load": 65.12308205133606,
+        "coefficient": 6.598347755878452,
+        "error_vs_reference": 0.007990072888524047
+      },
+      {
+        "grid": [
+          32,
+          64
+        ],
+        "line_load": 64.90156174753172,
+        "coefficient": 6.575903056496186,
+        "error_vs_reference": 0.0045613305725200615
+      }
+    ],
+    "observed_order": 1.1318551239113432,
+    "finest_error": 0.0045613305725200615,
+    "monotone": true
+  },
+  "verdict": {
+    "max_abs_solver_error_vs_reference": 0.020772633465815815,
+    "max_abs_fit_error_vs_reference": 0.03249911421416973,
+    "solver_within_3_percent_at_every_aspect": true,
+    "asymptotic_fit_within_3_percent_at_every_aspect": false,
+    "aspect_two_previously_reported_error": 0.0355,
+    "note": "the previously reported 3.55 % at a/b=2 was a solver-vs-fit comparison; against the converged reference the same solver point is inside 1 %"
+  },
+  "figures": [
+    "docs/assets/shear_buckling_aspect/galerkin_convergence.png",
+    "docs/assets/shear_buckling_aspect/coefficient_vs_aspect.png",
+    "docs/assets/shear_buckling_aspect/error_attribution.png"
+  ]
+}

@@ -183,7 +183,14 @@ def classical_shear_buckling_coefficient(aspect_ratio: float) -> float:
     ``tau_cr = k_s pi^2 D / (b^2 t)`` with ``k_s = 5.34 + 4 (b/a)^2``.  The
     expression is asymptotic in ``a/b``; it is quoted as the literature anchor
     for the square panel (``k_s = 9.34``) and is *not* used as a reference for
-    intermediate aspect ratios, where the fit carries an error of a few percent.
+    intermediate aspect ratios.  Its error is now measured against the converged
+    double-sine Galerkin reference of
+    :mod:`tensorfem.plate_shear_buckling_spectral`
+    (``benchmarks/shear_buckling_aspect_reference.json``): ``+0.17 %`` at
+    ``a/b = 1``, ``-0.67 %`` at ``1.5``, ``+3.25 %`` at ``2`` (the worst case,
+    outside the 3 % acceptance band) and ``+0.96 %`` at ``3``.  For design
+    screening at ``a/b ~ 2`` this fit is therefore *non-conservative by about
+    3 %*; use the spectral reference instead of extrapolating the fit.
     """
     aspect = _finite("aspect_ratio", aspect_ratio, positive=True)
     if aspect < 1.0:
@@ -430,6 +437,49 @@ def run_combined_panel_buckling_qualification() -> dict[str, object]:
         "tolerance": 0.03,
         "passed": shear_passed,
         "note": "tau_cr = k_s pi^2 D / b^2 from Timoshenko & Gere",
+    })
+
+    # Gate 6: the shear branch at a/b = 2 that gate 5 used to leave unqualified.
+    # The reference is the converged double-sine Galerkin coefficient, not the
+    # asymptotic fit; the fit itself misses that reference by more than 3 %.
+    from .plate_shear_buckling_spectral import converged_shear_buckling_coefficient
+
+    spectral = converged_shear_buckling_coefficient(2.0, budgets=(16, 20, 24))
+    spectral_reference = float(spectral["coefficient"])
+    aspect_two = [
+        panel_buckling_error(replace(
+            panel_buckling_load(
+                length=2.0, width=1.0, thickness=t, rigidity_x=d, rigidity_y=d,
+                coupling_rigidity=h, grid_x=gx, grid_y=gy,
+                longitudinal_share=0.0, shear_share=1.0),
+            reference_line_load=spectral_reference * math.pi**2 * d))
+        for gx, gy in ((24, 48), (32, 64))
+    ]
+    aspect_two_errors = [item.relative_error for item in aspect_two]
+    fit_error = abs(classical_shear_buckling_coefficient(2.0) / spectral_reference - 1.0)
+    rows.append({
+        "gate": "pure_shear_aspect_two_spectral_reference",
+        "grids": [item.grid for item in aspect_two],
+        "loads": [item.critical_line_load for item in aspect_two],
+        "coefficients": [item.critical_line_load / (math.pi**2 * d) for item in aspect_two],
+        "errors": aspect_two_errors,
+        "reference_coefficient": spectral_reference,
+        "reference_modes": list(spectral["modes"]),
+        "reference_residual": float(spectral["residual"]),
+        "reference_converged": bool(spectral["converged"]),
+        "asymptotic_fit_error": fit_error,
+        "tolerance": 0.03,
+        "passed": (
+            bool(spectral["converged"])
+            and max(aspect_two_errors) < 0.03
+            and fit_error > 0.03
+        ),
+        "note": (
+            "a/b = 2, pure shear: the finite-difference solver is judged against the "
+            "converged Galerkin reference; the asymptotic fit is documented as the "
+            "party that exceeds 3 %, so this gate fails if a future edit makes the "
+            "fit look accurate again"
+        ),
     })
 
     if not all(bool(row["passed"]) for row in rows):
