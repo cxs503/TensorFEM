@@ -71,6 +71,7 @@ Cook 膜是线弹性平面应力的标准验证题：梯形膜左端固支，右
 - **坑 2：不要用「平均单侧值」冒充修好**。算术平均在 (0.3, 0.5)、(0.7, 0.5) 两点最细网格反而由 2.968 % 升到 4.008 %，斜边上两侧值权重不同，对称化不是一致估计。
 - **坑 3：恢复场的节点值是超收敛外推，不是原存盘场**。`cook_fields` 存的是单元中心常数应力（O(h)），恢复场是同一 `displacement` 的 2 阶后处理；引用 0.12 % 时必须同时说明协议，否则等同于拿更好的后处理冒充原始场精度。
 - **适用范围**：线弹性平面应力、E=1、ν=1/3、t=1、单位合力剪切载荷下的 Cook 梯形膜；结论限于结构化 Q4 网格与 2×2 Gauss 恢复。夹持角点与加载边端点的峰值应力（奇异区）不在覆盖范围内，任何在该处做的点式比较仍不可认证。
+- **后续（m3402）**：恢复场已作为生产模块 `src/tensorfem/stress_recovery.py` 落地，并由 `cook_recovery_qualification.py` 出具 n=64 五点 von Mises 0.120%、最差分量 1.068% 的资格记录，见 [cook-membrane-stress-recovery-qualification.md](cook-membrane-stress-recovery-qualification.md)。
 - **未做**：不改生产 `cook_fields` 的 `stress_accuracy_qualified`（保持 False，fail-closed），不改 `benchmarks/cook_membrane_stress_reference.json` 与既有文档哈希清单；Q8 参考只到 n=48，恢复场在 n=64 上已是 0.12 %，参考精度（GCI 0.068 %）仍是误差地板，故 0.12 % 应读作「≤0.12 %」而非精确值。
 
 ## 误差判定（逐项，显式回答是否 <3%）

@@ -312,3 +312,17 @@ Earlier releases predate the formal changelog; their history remains available i
   与生产 Q4 的 Cook 膜加载边型线由相差 6.8 倍收敛到 <0.3%，m2125 留下的分歧闭环。
 - 新增 `tests/test_cook_oracle_operator.py`（10 项，含约定无关 patch/能量/FD 判据与 fail-closed 断言）。
 - 生产 Q4 路径未改动；Cook 膜逐点应力仍为 5.02%（n=64）> 3%，`stress_accuracy_qualified` 保持 False。
+
+## 2026-11-04 (m3402)
+
+- Cook 膜应力恢复场进入生产路径：新增 `src/tensorfem/stress_recovery.py`（2×2 Gauss 点外推
+  + 面积加权节点平均 + 单值插值 + reference-scaled 误差口径），`cook_probe_protocol` 改为从它
+  再导出，审计数字与生产数字恢复单一真源。
+- 新增 `src/tensorfem/cook_recovery_qualification.py`：恢复场对冻结 Q8 参考的五点式资格记录，
+  门限同时加在 von Mises 与各分量上，参考缺失/场非有限/探针非单值一律 fail-closed。
+- n=64 恢复场 5 点 von Mises 最大误差 0.120%、最差分量 1.068%（均 <3%）；n=32 为 0.484%/2.393%；
+  n=16（分量 8.947%）与 n=8（von Mises 8.023%）失败项保留。存档单元中心场与
+  `stress_accuracy_qualified` 未改动，仍为 False。
+- 新增 `tests/test_cook_recovery_qualification.py`（13 项，含 4 个负控）、
+  `scripts/build_cook_recovery_qualification.py`、`benchmarks/cook_recovery_qualification.json`
+  与三张证据图；文档 `docs/cook-membrane-stress-recovery-qualification.md`。

@@ -1,0 +1,229 @@
+{
+ "case": "cook-membrane-stress-recovery",
+ "gate": 0.03,
+ "levels": [
+  8,
+  16,
+  32,
+  64
+ ],
+ "sample_points": [
+  [
+   0.5,
+   0.5
+  ],
+  [
+   0.3,
+   0.5
+  ],
+  [
+   0.7,
+   0.5
+  ],
+  [
+   0.5,
+   0.25
+  ],
+  [
+   0.5,
+   0.75
+  ]
+ ],
+ "rows": [
+  {
+   "mesh": 8,
+   "max_error": 0.08023114522351446,
+   "max_component_error": 0.3297503616078779,
+   "max_element_centre_error": 1.0404432809199962,
+   "recovery_qualified": false,
+   "fail_reasons": [
+    "pointwise_error 0.080231 >= gate 0.03",
+    "component_error 0.329750 >= gate 0.03"
+   ]
+  },
+  {
+   "mesh": 16,
+   "max_error": 0.019514392023253443,
+   "max_component_error": 0.08946803428695549,
+   "max_element_centre_error": 0.5019415208122318,
+   "recovery_qualified": false,
+   "fail_reasons": [
+    "component_error 0.089468 >= gate 0.03"
+   ]
+  },
+  {
+   "mesh": 32,
+   "max_error": 0.004837918704974441,
+   "max_component_error": 0.023927429785979972,
+   "max_element_centre_error": 0.23303926673794045,
+   "recovery_qualified": true,
+   "fail_reasons": []
+  },
+  {
+   "mesh": 64,
+   "max_error": 0.0012019046867308028,
+   "max_component_error": 0.010678587705546973,
+   "max_element_centre_error": 0.10973865873011945,
+   "recovery_qualified": true,
+   "fail_reasons": []
+  }
+ ],
+ "finest_max_error": 0.0012019046867308028,
+ "monotone": true,
+ "recovery_qualified": true,
+ "fail_reasons": [],
+ "reference": {
+  "path": "/root/tp-agent/work/m3402/benchmarks/cook_membrane_stress_reference.json",
+  "sha256": "758703050de62c52ba050b8cfd6d50048d167120096361eeba1435b3c430abf7",
+  "formulation": "Q8 serendipity plane stress, 3x3 Gauss, consistent quadratic edge traction",
+  "levels": [
+   12,
+   24,
+   48
+  ]
+ },
+ "finest_points": [
+  {
+   "xi": 0.5,
+   "eta": 0.5,
+   "point": [
+    24.0,
+    37.0
+   ],
+   "recovered_von_mises": 0.06868523814028565,
+   "recovered_stress": [
+    0.011901905624754128,
+    0.033038550942355666,
+    0.03595220182321298
+   ],
+   "reference_von_mises": 0.06869037483740352,
+   "reference_gci_fine_relative": 0.0003924262016535884,
+   "error": 7.478044966307548e-05,
+   "component_errors": {
+    "sxx": 0.002722012081407891,
+    "syy": 0.00011209789293333903,
+    "sxy": 4.885142101700793e-05
+   },
+   "well_posed_spread": 6.938893903907228e-17,
+   "candidate_count": 4,
+   "element_centre_error_min": 0.032102395597267006,
+   "element_centre_error_max": 0.10973865873011945,
+   "one_sided_spread_relative": 0.1991935849512584
+  },
+  {
+   "xi": 0.3,
+   "eta": 0.5,
+   "point": [
+    14.399999999999999,
+    31.0
+   ],
+   "recovered_von_mises": 0.07321412518092502,
+   "recovered_stress": [
+    0.028560077850028474,
+    0.009008017545122874,
+    0.03966843993856393
+   ],
+   "reference_von_mises": 0.07318957604735916,
+   "reference_gci_fine_relative": 0.0006758547594691302,
+   "error": 0.0003354184419645551,
+   "component_errors": {
+    "sxx": 0.0017062541422731411,
+    "syy": 0.010678587705546973,
+    "sxy": 0.0001469514085056262
+   },
+   "well_posed_spread": 1.3877787807814457e-17,
+   "candidate_count": 2,
+   "element_centre_error_min": 5.8523684979031546e-05,
+   "element_centre_error_max": 0.046448222940782664,
+   "one_sided_spread_relative": 0.045452483114701445
+  },
+  {
+   "xi": 0.7,
+   "eta": 0.5,
+   "point": [
+    33.599999999999994,
+    43.0
+   ],
+   "recovered_von_mises": 0.0867534289113863,
+   "recovered_stress": [
+    0.0005702195059253192,
+    0.0494516357914834,
+    0.041265668872452616
+   ],
+   "reference_von_mises": 0.08680273102600146,
+   "reference_gci_fine_relative": 7.2337294007576e-05,
+   "error": 0.0005679788415919468,
+   "component_errors": {
+    "sxx": 0.004452437605490363,
+    "syy": 0.00019115468620303753,
+    "sxy": 0.0009336023680088269
+   },
+   "well_posed_spread": 1.3877787807814457e-17,
+   "candidate_count": 2,
+   "element_centre_error_min": 0.016403683806099936,
+   "element_centre_error_max": 0.0637501669524882,
+   "one_sided_spread_relative": 0.04932320557571372
+  },
+  {
+   "xi": 0.5,
+   "eta": 0.25,
+   "point": [
+    24.0,
+    29.5
+   ],
+   "recovered_von_mises": 0.1563223324972207,
+   "recovered_stress": [
+    0.08564158263965299,
+    0.06418361078418594,
+    0.07848448057660067
+   ],
+   "reference_von_mises": 0.15650364652127213,
+   "reference_gci_fine_relative": 4.295089544398943e-05,
+   "error": 0.001158529069971535,
+   "component_errors": {
+    "sxx": 0.0013824355232597983,
+    "syy": 0.0013409494133397146,
+    "sxy": 0.001037904356096061
+   },
+   "well_posed_spread": 2.7755575615628914e-17,
+   "candidate_count": 4,
+   "element_centre_error_min": 0.008344918585163247,
+   "element_centre_error_max": 0.023063065788730623,
+   "one_sided_spread_relative": 0.04163474884239021
+  },
+  {
+   "xi": 0.5,
+   "eta": 0.75,
+   "point": [
+    24.0,
+    44.5
+   ],
+   "recovered_von_mises": 0.08335521381765541,
+   "recovered_stress": [
+    -0.07827422500749864,
+    0.005671003043677348,
+    -0.01072666034206541
+   ],
+   "reference_von_mises": 0.08345551939755289,
+   "reference_gci_fine_relative": 5.6083829226514695e-05,
+   "error": 0.0012019046867308028,
+   "component_errors": {
+    "sxx": 0.0013188868982280154,
+    "syy": 0.004914583878028102,
+    "sxy": 0.005571815427202442
+   },
+   "well_posed_spread": 5.551115123125783e-17,
+   "candidate_count": 4,
+   "element_centre_error_min": 0.010057773132483681,
+   "element_centre_error_max": 0.04281005042366039,
+   "one_sided_spread_relative": 0.0752306226889856
+  }
+ ],
+ "stored_element_centre_flag_unchanged": true,
+ "figures": [
+  "docs/assets/cook-recovery/cook-recovery-convergence.png",
+  "docs/assets/cook-recovery/cook-recovery-field.png",
+  "docs/assets/cook-recovery/cook-recovery-probes.png"
+ ],
+ "reproduce": "OMP_NUM_THREADS=2 PYTHONPATH=src python3 scripts/build_cook_recovery_qualification.py"
+}
