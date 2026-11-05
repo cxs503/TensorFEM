@@ -1,0 +1,158 @@
+{
+  "task": "independent cross-check of the PR #61 merge tree",
+  "shas": {
+    "base": "e8f6759aab2d203db641b2e94502ee5865848e3f",
+    "main": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+    "branch": "6b4c4fa48efea38e63303f1d5ae921392d468fe6",
+    "merge": "dcc632543167eb3fa8285c9cebb9eff17ccf01aa"
+  },
+  "obligation_a": {
+    "main_only_paths": 219,
+    "checked": 219,
+    "byte_identical": 218,
+    "mismatches": 0
+  },
+  "obligation_b": {
+    "shared_paths": 17,
+    "prose_reworded": [
+      "docs/marine-hydrostatics.md"
+    ],
+    "records": [
+      {
+        "path": "CHANGELOG.md",
+        "unit": "atoms",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "benchmarks/plate_shear_buckling.py",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "benchmarks/plate_shear_buckling_evidence.json",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "benchmarks/saint_venant_torsion.json",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "docs/assets/plate_shear_buckling.png",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "docs/assets/saint-venant/annulus-field.png",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "docs/assets/saint-venant/convergence.png",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "docs/assets/saint-venant/rectangle-field.png",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "docs/benchmark-qualification-status.md",
+        "unit": "atoms",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "docs/marine-hydrostatics.md",
+        "unit": "atoms",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {
+          "main": {
+            "not": 2,
+            "It": 1,
+            "is": 1,
+            "curve": 1
+          },
+          "branch": {
+            "Large-angle": 1,
+            "not": 1
+          }
+        },
+        "justification": "main's 'this module still is not a large-angle GZ curve' and the branch's 'large-angle GZ curves are provided separately' are merged into 'This module itself still provides no large-angle GZ curve; two separate services cover that question' + the module names; every backticked identifier, link target and number of both sides survives (see obligation B atoms), only the copula was rewritten."
+      },
+      {
+        "path": "docs/marine-plate-shear-buckling-validation.md",
+        "unit": "atoms",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "docs/saint-venant-torsion.md",
+        "unit": "atoms",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "scripts/audit_saint_venant_torsion.py",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "src/tensorfem/plate_shear_buckling.py",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "src/tensorfem/saint_venant_torsion.py",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "tests/test_plate_shear_buckling.py",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      },
+      {
+        "path": "tests/test_saint_venant_torsion.py",
+        "unit": "tokens",
+        "missing_main": {},
+        "missing_branch": {},
+        "word_drift": {}
+      }
+    ],
+    "mismatches": 0
+  },
+  "merge_diff_paths": 257,
+  "failures": [],
+  "verdict": "CROSSCHECK_OK"
+}
