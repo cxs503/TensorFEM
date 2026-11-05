@@ -1,5 +1,20 @@
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
+## 2026-11-04 湿面辐射阻抗：有限 ka 分支对 Rayleigh 活塞闭式解的验证
+
+- 新增 `tensorfem.hydro_radiation`：带 `exp(-jkr)/(2πr)` 核的挡板辐射阻抗算子（等面积圆片自项
+  解析积分 `(1-e^{-jka})/(jk)`），提供面元/模态阻抗、有限频率附加质量与辐射阻尼；行分块累加，
+  内存 `O(N)`。
+- `J1`、Struve `H1` 幂级数自实现（保持纯 torch 依赖），与 `scipy.special` 相对误差 ≤ 1e-11。
+- 对 Rayleigh 活塞闭式解 `ρcπa²[R1(2ka)+jX1(2ka)]` 逐项复核：`ka≤2` 时 64 面/边、`ka=3` 时
+  96 面/边，`Re Z`/`Im Z` 相对误差全部 < 3%（最差 2.026%，量级归一化误差 ≤ 0.56%），一阶收敛。
+- `k→0` 与 `hydro_added_mass.dipole_added_mass_matrix` 逐元素一致性 6.8e-14；模态反应质量与
+  `phi^T M phi` 一致性 5e-12%（该交叉校验抓出并修掉了模态自项漏乘 ρ 的缺陷）。
+- 应用量：1.2×0.8×8 mm 舷侧板格 (1,1) 阶在水中的辐射阻尼比 `ζ = 0.748%`（半功率带宽 0.243 Hz），
+  即原 in-phase 模型缺的那一项；同时给出附加质量随 ka 的塌陷（ka=2 仅剩 31%）。
+- 文档 `docs/piston-radiation-impedance-verification.md`，基准 `benchmarks/piston_radiation_impedance.py`，
+  15 条测试 `tests/test_hydro_radiation.py`。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 ## 2026-11-04 — plane-strain B-bar Q4 (near-incompressible locking cure)
