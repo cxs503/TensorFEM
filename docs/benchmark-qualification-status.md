@@ -52,17 +52,6 @@
 | Cook 参考值采样位置错误 | 23.96 对应加载边中点，修正右上角采样；重新运行三级网格 |
 | 字段为空也可被视为通过 | 空证据、字段缺失、NaN、重复网格、场数据与坐标不符及反力不平衡均触发门禁 |
 | 标量报告被渲染成完整通过 | 船海标量报告使用 scalar_status 与 reference-only，渲染器不能仅凭一个小误差提升为完整报告 |
-| 秩审计把 3×3×3 的 `hex20` 记作「2×2×2 积分」 | 标注错误已更正；代码一直是 3×3×3。同轮补齐畸变/曲面 20 节点体的精确性与秩证据，并判定 2×2×2 变体含 6 个伪零能模态、不可采用，见 [hex20-distortion-qualification.md](hex20-distortion-qualification.md) |
-
-## 新增：HEX20 畸变与曲率精确性鉴定
-
-[HEX20 畸变与曲率鉴定](hex20-distortion-qualification.md) 把 20 节点体的证据从「规则立方体 affine
-patch 测试」扩到畸变（二次翘曲、渐变剪切）与真实曲率（厚壳扇区，R=1 起）网格：线性场位移残差
-≤5.6e−16、形心应力 ≤4.5e−13、常应变能量恒等式 ≤3.6e−14，全部达到舍入精度；秩恒为 6 零能/0 伪零能。
-同一组门禁对「单元中心雅可比复用到 27 个 Gauss 点」的经典实现 bug 给出 2.955e−3（R=1）的拒绝
-响应，故门禁非空转；该对照在仿射（等雅可比）网格上天然失效，此局限已写入报告。曲面块体积对照
-解析扇区体积 L·W·(H+H²/2R)：R=1 时 2 单元 0.202%、4 单元 0.013%，为几何表示误差而非积分误差。
-本节仅为精确性/秩证据，不构成曲梁弯曲精度或非线性路径认证。
 
 ## 当前闭环案例与验收范围
 
@@ -102,12 +91,10 @@ HTML 内嵌全部 PNG，可独立打开；Word、PDF 也包含图像。原始 FE
 
 ## 尚未闭环的工作
 
-Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳（此前判定为「仍缺独立应力参考」）的独立应力参照**已补并给出否定结论**：[三维 HEX20 实体 oracle](hemisphere-hex20-stress-oracle.md) 逐站位复算后，内部区域表面 von Mises 相对误差平均 5.09%、最大 9.00%（孔边 6.87%、点载附近 7.56%），不满足 3% 门限，`stress_accuracy_qualified` 维持 `False`；oracle 自身先在 Lamé 圆环（最大 8.6e-7）与薄板弯曲（0.26%）上过标；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；仍缺：壳单元几何刚度、非均匀预屈曲应力、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。
+Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳的独立应力参照**已补并给出否定结论**：[三维 HEX20 实体 oracle](hemisphere-hex20-stress-oracle.md) 逐站位复算后，内部区域表面 von Mises 相对误差平均 5.09%、最大 9.00%（孔边 6.87%、点载附近 7.56%），不满足 3% 门限，`stress_accuracy_qualified` 维持 `False`；oracle 自身先在 Lamé 圆环（最大 8.6e-7）与薄板弯曲（0.26%）上过标；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；仍缺：壳单元几何刚度、非均匀预屈曲应力、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。
 
 既有 `.qualification/v1-readiness/aggregate-v045.json` 记录的 1.0 阻塞项仍为三维双变形体接触，以及加筋板 4/8/12 网格的峰值和峰后响应收敛。本次补齐线性 benchmark 场验证及报告，没有重新认证这两个工业能力，也没有提升版本到 1.0。
 
-
-非均匀预屈曲应力（线性边缘应力梯度：纯弯曲 / 三角形压缩 / 压-弯组合）已闭环，见 [plate-bending-buckling-validation.md](plate-bending-buckling-validation.md)：对 Timoshenko & Gere (1961) Table 9.1 的 4.00 / 7.81 / 23.9 / 25.6 四个锚点误差 0.076% / 0.025% / 0.076% / 0.280%，`psi=1` 退化极限舍入级回到 4.00，独立有限差分解一致到 0.33%；范围仅限四边简支平板线性梯度与**弹性临界载荷**，不含壳单元几何刚度、后屈曲强度与逐点场量认证。
 
 扭转（Saint-Venant 三个截面）已由闭式解独立判定，见 [saint-venant-torsion.md](saint-venant-torsion.md)：最细网格刚度与中跨剪应力均 < 3%，但逐点剪应力峰值需 `n >= 24` 才进 3%（2.886%），粗网格失败项保留。
 
