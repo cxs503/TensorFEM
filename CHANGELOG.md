@@ -1,4 +1,36 @@
+## 2026-11-05 CI：lint 门按「改动文件」棘轮化（PR #112 修红）
+
+- 归因：PR #112 的 `lint (advisory)` 红与 PR 无关——base 树（`b53e180`，不含 PR 内容）
+  本身 `ruff check` 4271 错、621 个文件待格式化；PR 自身 3 个文件 `ruff check` 0 错、
+  仅 3 个格式化违规。数据由 `artifacts/pr112_lint_attribution.py` 程序化产出
+  （`artifacts/pr112_lint_attribution.json/.md/.png`）。
+- 修红：①对 PR 自身 3 个文件跑 `ruff format`（AST 前后完全相同，纯版面，数值零影响）；
+  ②`ci.yml` 的 lint job 改为「只对本次 push/PR 触及的 `src|tests|scripts|examples` 下
+  `.py` 施加 `ruff check` / `ruff format --check`」，全树扫描降级为 informational，
+  保留 `continue-on-error` 与全树可观测性。新增 `scripts/ci_lint_scope.py`（diff 取
+  scope、fail-open、零列表即通过）与 `tests/test_ci_lint_scope.py`（7 例）。
+- 说明：`docs/pr112-lint-cure.md` 记录归因表、棘轮性质（只会更严，不豁免正在被编辑的
+  旧文件）、本地复现命令与负控（真错时闸门确实红）。
+
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
+
+## 2026-11-04 大倾角稳性：盒形驳 GZ 曲线与 KN 横交曲线（精确截面几何）
+
+- 新增 `tensorfem.marine_large_angle_gz`：补齐 `marine_hydrostatics` 文档里声明的
+  「不支持大倾角 GZ / 横交曲线」欠账。浸水剖面用凸多边形裁剪 + shoelace 质心精确求值，
+  等排水量（`Area = B T`）二分求水线偏置，`GZ = xB cos + (zB - KG) sin`；
+  支持 0–90°、任意 KG、`KN` 横交曲线族与动稳性积分。
+- 验证锚（`tests/test_marine_large_angle_gz.py`）：墙侧公式
+  `sin(phi)(GM + BM tan^2 phi / 2)` 机精度复现（带内最大残差
+  1.33e-15 m，相对 8.3e-16）；90° 精确几何
+  `xB = B/2 - B T/(2D)`、`GZ = D/2 - KG`；初始斜率回到 `GM`（Richardson 1e-6）；
+  排水体积守恒 1e-12；独立第二套列式（水线高度截断原函数 + 20 万点积分）在三个几何区
+  一致到 1e-8；动稳性积分对闭式 `GM(1-cos) + BM(sec+cos-2)/2` 达 1e-6 且二阶收敛。
+- 发现并记录：闭式甲板入水角只在墙侧假设 `h = T` 下成立，当 `D > 2T` 时龙骨先出水，
+  真实甲板入水角晚于估计（基准驳闭式估计 33.69°，几何求解首个 0.5° 采样点 37.00°），必须用几何求解器而非闭式。
+- 证据/图：`benchmarks/large_angle_gz_reference.json`（0.5° 步长全表）、
+  `docs/assets/marine_large_angle_gz.png`、`docs/marine-large-angle-stability.md`；
+  由 `scripts/plot_large_angle_gz.py` 生成，并有防漂移测试钉住。
 
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
