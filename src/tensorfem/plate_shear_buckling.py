@@ -53,6 +53,11 @@ __all__ = [
 #: ``N_xy,cr = k_s pi^2 D / b^2`` (Timoshenko & Gere 1961, Table 9.1).
 LITERATURE_KS_SQUARE = 9.34
 LITERATURE_KS_LONG_PANEL = 5.34
+#: Constants of the two-branch classical fit ``k_s(a/b)``; see
+#: :func:`classical_shear_coefficient` for the duality identity that fixes which
+#: constant belongs to which branch.
+SHEAR_KS_MULTI_WAVE_CONSTANT = 5.34
+SHEAR_KS_SINGLE_WAVE_CONSTANT = 4.0
 
 
 @dataclass(frozen=True)
@@ -280,9 +285,26 @@ def shear_buckling_coefficient(
 
 
 def classical_shear_coefficient(aspect_ratio: float) -> float:
-    """Classical approximation ``k_s = 5.34 + 4/(a/b)^2`` (Timoshenko & Gere)."""
+    """Classical two-branch shear coefficient ``k_s(a/b)`` (Timoshenko & Gere).
+
+    ``k_s = 5.34 + 4/(a/b)^2`` for ``a/b >= 1`` and
+    ``k_s = 4 + 5.34/(a/b)^2`` for ``a/b <= 1``; both branches give ``9.34`` at
+    ``a/b = 1``.  The second branch is not cosmetic: the coefficient is
+    normalised by the panel width ``b``, and rotating the same physical panel by
+    90 degrees maps a uniform shear state onto a uniform shear state, so the
+    exact coefficient obeys the duality ``k_s(a/b) * (a/b)^2 = k_s(b/a)``.  Using
+    the ``a/b >= 1`` branch below ``a/b = 1`` violates that identity by
+    ``(1 + 5.34 (b/a)^2) / (5.34 + 4 (b/a)^2)`` (18.8 % at ``a/b = 0.5``).
+
+    The fit itself is only approximate: it underestimates the converged value by
+    about 3.2 % near ``a/b = 2`` (see
+    ``docs/plate-shear-buckling-aspect-sweep-audit.md``), so it must not be used
+    as a 3 % reference far from ``a/b = 1`` or ``a/b -> inf``.
+    """
     ratio = _positive_finite("aspect_ratio", aspect_ratio)
-    return 5.34 + 4.0 / ratio**2
+    if ratio >= 1.0:
+        return SHEAR_KS_MULTI_WAVE_CONSTANT + SHEAR_KS_SINGLE_WAVE_CONSTANT / ratio**2
+    return SHEAR_KS_SINGLE_WAVE_CONSTANT + SHEAR_KS_MULTI_WAVE_CONSTANT / ratio**2
 
 
 def critical_shear_stress(*, shear_load: float, thickness: float) -> float:
@@ -310,17 +332,25 @@ def run_shear_buckling_qualification(
         coefficient = shear_buckling_coefficient(
             shear_load=mode.multiplier, rigidity=d, width=1.0)
         error = abs(coefficient / literature - 1.0)
+        # The long panel is compared with the ``a/b -> inf`` asymptote 5.34; that
+        # comparison carries the fit's own finite-aspect bias (2.1 % at a/b = 6),
+        # so the finite-aspect closed form is reported and gated as well instead
+        # of letting the asymptote absorb the difference.
+        closed_form = classical_shear_coefficient(aspect)
+        closed_form_error = abs(coefficient / closed_form - 1.0)
         rows.append({
             "case": name,
             "aspect_ratio": aspect,
             "literature_k_s": literature,
+            "closed_form_k_s": closed_form,
             "coefficient_k_s": coefficient,
             "dominant_mode": list(mode.dominant_mode),
             "critical_shear_load": mode.multiplier,
             "critical_shear_stress": critical_shear_stress(
                 shear_load=mode.multiplier, thickness=thickness),
             "relative_error": error,
-            "passed": bool(error < tolerance),
+            "relative_error_vs_closed_form": closed_form_error,
+            "passed": bool(error < tolerance and closed_form_error < tolerance),
         })
     # Orthotropic (smeared longitudinally stiffened) panel: no tabulated anchor
     # exists for this combination, so only self-consistency is reported.
