@@ -31,9 +31,7 @@ SIDE = 1.0
 
 
 def spectrum(thickness: float, **kwargs):
-    return mindlin_sss_spectrum(
-        length=SIDE, width=SIDE, thickness=thickness, **STEEL, **kwargs
-    )
+    return mindlin_sss_spectrum(length=SIDE, width=SIDE, thickness=thickness, **STEEL, **kwargs)
 
 
 def relative(value: float, reference: float) -> float:
@@ -44,9 +42,7 @@ def test_thin_limit_recovers_kirchhoff_navier():
     """a/h = 1e4 must collapse onto the Navier thin-plate frequency."""
     thickness = 1.0e-4
     exact = spectrum(thickness)
-    navier = kirchhoff_angular_frequency(
-        length=SIDE, width=SIDE, thickness=thickness, **STEEL
-    )
+    navier = kirchhoff_angular_frequency(length=SIDE, width=SIDE, thickness=thickness, **STEEL)
     assert relative(exact.kirchhoff_angular, navier) < 1e-12
     assert abs(relative(exact.flexural_angular, navier)) < 1e-5
 
@@ -123,12 +119,20 @@ def test_square_plate_degeneracy_and_ordering():
 def test_rectangular_plate_matches_wave_number_ordering():
     """An a/b = 2 plate has R(2,1) < R(1,2); the spectrum must follow."""
     wide = mindlin_sss_spectrum(
-        length=2.0, width=1.0, thickness=0.1, **STEEL,
-        half_waves_x=2, half_waves_y=1,
+        length=2.0,
+        width=1.0,
+        thickness=0.1,
+        **STEEL,
+        half_waves_x=2,
+        half_waves_y=1,
     )
     tall = mindlin_sss_spectrum(
-        length=2.0, width=1.0, thickness=0.1, **STEEL,
-        half_waves_x=1, half_waves_y=2,
+        length=2.0,
+        width=1.0,
+        thickness=0.1,
+        **STEEL,
+        half_waves_x=1,
+        half_waves_y=2,
     )
     assert wide.flexural_angular < tall.flexural_angular
 
@@ -166,8 +170,14 @@ def test_sri_mindlin_element_tracks_the_fsdt_branch(aspect, gate):
     thickness = SIDE / aspect
     reference = spectrum(thickness)
     result = solve_plate_vibration(
-        12, 12, length=SIDE, width=SIDE, thickness=thickness, modes=2,
-        boundary="simple", **STEEL,
+        12,
+        12,
+        length=SIDE,
+        width=SIDE,
+        thickness=thickness,
+        modes=2,
+        boundary="simple",
+        **STEEL,
     )
     fe = float(result.frequencies_hz[0])
     assert abs(relative(fe, reference.flexural_hz)) <= gate
