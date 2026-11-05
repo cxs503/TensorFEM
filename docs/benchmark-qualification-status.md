@@ -132,3 +132,12 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python scripts/vali
 5 个规范探针在界面上的插值离散度 ≤9.4e-17（单值）；原始逐单元协议同期仍为 3.51%–4.02%（一阶，p=0.981），
 故 `cook_fields['stress_accuracy_qualified']` **保持 `False`**，两个口径并存互不覆盖。证据
 `docs/cook-recovery-evidence.json`（含 Torch vs NumPy 两条实现的应变矩阵 2.8e-17、恢复场 4.7e-14 交叉校验）。
+
+资格判定本身现已提升为库级 fail-closed 门禁，可复算、可被负控反驳：
+[`cook-stress-recovery-promotion.md`](cook-stress-recovery-promotion.md)。
+`tensorfem.cook_stress_recovery.qualify` 只在该阶梯「逐级有限、逐级严格单调、最细 ≤ 3%、观测阶 > 1、
+参考 sha256 入账」四条全满足时给出 `stress_recovery_qualified=True`（当前为 `True`，观测阶 2.013，
+n=64 最差站点 0.1202%），`tolerance` 上限被钉死在 3%（传更大值直接 `ValueError`）。
+机器记录 `benchmarks/cook_stress_recovery.json`，生成器 `scripts/qualify_cook_stress_recovery.py`，
+负控在 `tests/test_cook_stress_recovery.py`（非单调 / 超差 / 一阶 / NaN / 单级 / 级别错位 / 放宽容差
+七类注入全部被拒）。原始逐单元场判定不变。
