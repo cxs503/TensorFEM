@@ -95,15 +95,15 @@ The exact rate is $-2\pi^2\alpha=-19.7392088$ for $\alpha=1$; the fitted slope c
 
 ## Figures
 
-![convergence](assets/thermal_2d/convergence.png)
+![convergence](assets/compact/thermal_2d/convergence.png)
 
 *Left:* relative $L_2$ temperature error against the element size for the Cartesian, sheared and annular cases, with a reference $h^2$ slope. *Right:* flux recovery and the polygon area defect, both second order.
 
-![field and error](assets/thermal_2d/field_and_error.png)
+![field and error](assets/compact/thermal_2d/field_and_error.png)
 
 Exact harmonic field, the Q4 error map on the 32x32 mesh, and the annular mesh error at the finest circumferential refinement.
 
-![radial and transient](assets/thermal_2d/radial_and_transient.png)
+![radial and transient](assets/compact/thermal_2d/radial_and_transient.png)
 
 Annular radial temperature against the closed form, and the transient decay against $e^{-2\pi^2\alpha t}$ for four meshes.
 

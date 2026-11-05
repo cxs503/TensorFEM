@@ -48,7 +48,7 @@
    OMP_NUM_THREADS=2 MPLBACKEND=Agg PYTHONPATH=src python scripts/audit_saint_venant_torsion.py
    OMP_NUM_THREADS=2 MPLBACKEND=Agg PYTHONPATH=src python -m pytest tests/test_saint_venant_torsion.py -q
    ```
-   产出 `benchmarks/saint_venant_torsion.json`、`docs/assets/saint-venant/*.png`；测试 28 项。
+   产出 `benchmarks/saint_venant_torsion.json`、`docs/assets/compact/saint-venant/*.png`；测试 28 项。
 
 ## 3. 计算结果（程序化注入，零手抄）
 
@@ -84,11 +84,11 @@
 剪应力 L2 1.844（矩形）。三者都 ≈ 2，与 HEX8 在 `H^1` 半范数下的最优阶一致，说明误差是
 **插值/几何**误差而非实现错误。
 
-![收敛性](assets/saint-venant/convergence.png)
+![收敛性](assets/compact/saint-venant/convergence.png)
 
-![2:1 矩形中跨剪应力场（左：FE，右：精确，右图：差值）](assets/saint-venant/rectangle-field.png)
+![2:1 矩形中跨剪应力场（左：FE，右：精确，右图：差值）](assets/compact/saint-venant/rectangle-field.png)
 
-![圆环中跨剪应力场](assets/saint-venant/annulus-field.png)
+![圆环中跨剪应力场](assets/compact/saint-venant/annulus-field.png)
 
 ## 4. 注意点（踩过的坑与适用范围）
 

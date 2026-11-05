@@ -6,7 +6,7 @@
 | 结论 | 双向压缩分支对标精确 Navier 解，Richardson 外推误差 0.019%（观测阶 1.91，二阶）；纯剪切 a/b=1 分支对标经典系数 k_s=9.34，外推偏差 −0.007%；a/b≈2 的剪切分支**未认证**（见「注意点」） |
 | 证据 | `benchmarks/combined_panel_buckling.json`（本页所有数字由 `scripts/audit_combined_panel_buckling.py` 程序化写入） |
 | 代码 | `src/tensorfem/marine_plate_combined_buckling.py`、`tests/test_marine_plate_combined_buckling.py`（31 项） |
-| 图 | [收敛曲线](assets/combined_panel_buckling/convergence.png)、[相互作用曲线](assets/combined_panel_buckling/interaction.png)、[纯剪模态](assets/combined_panel_buckling/shear_mode.png) |
+| 图 | [收敛曲线](assets/compact/combined_panel_buckling/convergence.png)、[相互作用曲线](assets/compact/combined_panel_buckling/interaction.png)、[纯剪模态](assets/compact/combined_panel_buckling/shear_mode.png) |
 
 ## 1. 缺口与本次增量
 

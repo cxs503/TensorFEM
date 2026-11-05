@@ -1,0 +1,97 @@
+{
+  "_doc": "Byte budgets for the committed evidence figures (see docs/figure-artifact-budget.md). Full-size renders are build artifacts; the committed tier lives in docs/assets/compact/ and is rebuilt with: python scripts/compact_figures.py --apply",
+  "total_budget_kb": 180,
+  "default_budget_kb": 10,
+  "figures": [
+    {
+      "src": "docs/assets/thermal_2d/field_and_error.png",
+      "budget_kb": 20,
+      "why": "two-panel field map + error map; palette pressure is visible at low budgets"
+    },
+    {
+      "src": "docs/assets/saint-venant/annulus-field.png",
+      "budget_kb": 18,
+      "why": "curved-boundary field map, smooth colormap"
+    },
+    {
+      "src": "docs/assets/saint-venant/rectangle-field.png",
+      "budget_kb": 12,
+      "why": "three-panel FE/analytic/difference comparison"
+    },
+    {
+      "src": "docs/assets/finite_width_hole/finite_width_sigma_xx_field.png",
+      "budget_kb": 12,
+      "why": "stress field map"
+    },
+    {
+      "src": "docs/assets/combined_panel_buckling/convergence.png",
+      "budget_kb": 12,
+      "why": "log-log convergence, fine line work"
+    },
+    {
+      "src": "docs/assets/near_incompressible_locking/refinement_and_2d_debt.png",
+      "budget_kb": 10,
+      "why": "multi-curve log axes"
+    },
+    {
+      "src": "docs/assets/thermal_2d/convergence.png",
+      "budget_kb": 8,
+      "why": "line plot"
+    },
+    {
+      "src": "docs/assets/near_incompressible_locking/stress_profile_nu_4999.png",
+      "budget_kb": 8,
+      "why": "line plot, two components"
+    },
+    {
+      "src": "docs/assets/finite_width_hole/finite_width_hole_edge_profile.png",
+      "budget_kb": 8,
+      "why": "line plot"
+    },
+    {
+      "src": "docs/assets/thermal_2d/radial_and_transient.png",
+      "budget_kb": 8,
+      "why": "two-panel line plot"
+    },
+    {
+      "src": "docs/assets/plate_shear_buckling.png",
+      "budget_kb": 8,
+      "why": "two-panel line plot"
+    },
+    {
+      "src": "docs/assets/finite_width_hole/finite_width_ktn_vs_ratio.png",
+      "budget_kb": 8,
+      "why": "line plot"
+    },
+    {
+      "src": "docs/assets/finite_width_hole/finite_width_convergence.png",
+      "budget_kb": 8,
+      "why": "line plot"
+    },
+    {
+      "src": "docs/assets/finite_width_hole/finite_width_L_sensitivity.png",
+      "budget_kb": 8,
+      "why": "line plot"
+    },
+    {
+      "src": "docs/assets/combined_panel_buckling/interaction.png",
+      "budget_kb": 8,
+      "why": "line plot"
+    },
+    {
+      "src": "docs/assets/combined_panel_buckling/shear_mode.png",
+      "budget_kb": 7,
+      "why": "mode shape, mostly white background"
+    },
+    {
+      "src": "docs/assets/near_incompressible_locking/error_vs_poisson.png",
+      "budget_kb": 8,
+      "why": "line plot with threshold rule"
+    },
+    {
+      "src": "docs/assets/saint-venant/convergence.png",
+      "budget_kb": 7,
+      "why": "single line plot, flat background"
+    }
+  ]
+}

@@ -11,9 +11,9 @@ Cases (see ``tensorfem.thermal_analytic`` for the derivations):
 Outputs
 -------
 * ``benchmarks/thermal_2d_analytic_evidence.json`` -- raw numbers and errors
-* ``docs/assets/thermal_2d/convergence.png``     -- log-log error vs h
-* ``docs/assets/thermal_2d/field_and_error.png`` -- FEM field and error map
-* ``docs/assets/thermal_2d/radial_and_transient.png`` -- radial profile and decay
+* ``docs/assets/compact/thermal_2d/convergence.png``     -- log-log error vs h
+* ``docs/assets/compact/thermal_2d/field_and_error.png`` -- FEM field and error map
+* ``docs/assets/compact/thermal_2d/radial_and_transient.png`` -- radial profile and decay
 
 Usage::
 
@@ -385,18 +385,18 @@ def render_markdown(evidence: dict) -> str:
     add("")
     add("## Figures")
     add("")
-    add("![convergence](assets/thermal_2d/convergence.png)")
+    add("![convergence](assets/compact/thermal_2d/convergence.png)")
     add("")
     add("*Left:* relative $L_2$ temperature error against the element size for the "
         "Cartesian, sheared and annular cases, with a reference $h^2$ slope. "
         "*Right:* flux recovery and the polygon area defect, both second order.")
     add("")
-    add("![field and error](assets/thermal_2d/field_and_error.png)")
+    add("![field and error](assets/compact/thermal_2d/field_and_error.png)")
     add("")
     add("Exact harmonic field, the Q4 error map on the 32x32 mesh, and the annular "
         "mesh error at the finest circumferential refinement.")
     add("")
-    add("![radial and transient](assets/thermal_2d/radial_and_transient.png)")
+    add("![radial and transient](assets/compact/thermal_2d/radial_and_transient.png)")
     add("")
     add("Annular radial temperature against the closed form, and the transient decay "
         "against $e^{-2\\pi^2\\alpha t}$ for four meshes.")

@@ -89,7 +89,7 @@ Navier 解即精确），因此纯剪切——`2 N_xy w,xy` 把两个半波数�
 
 ## 4. 图（④）
 
-![plate shear buckling evidence](assets/plate_shear_buckling.png)
+![plate shear buckling evidence](assets/compact/plate_shear_buckling.png)
 
 左：纯剪切收敛系数随 a/b 与经典式 `5.34+4/(a/b)²` 比较，红色虚线为文献锚点 9.34（a/b=1）与 5.34（长板）。
 右：压-剪组合利用度轨迹与经典交互式 `N_x/N_x,cr + (N_xy/N_xy,cr)² = 1` 比较。两图均由

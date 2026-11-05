@@ -9,3 +9,12 @@ dist/
 outputs/
 checkpoints/
 .qualification/
+# Full-size evidence renders are build artifacts.  The committed previews live
+# in docs/assets/compact/ and are rebuilt with scripts/compact_figures.py
+# (see docs/figure-artifact-budget.md).
+docs/assets/thermal_2d/*.png
+docs/assets/finite_width_hole/*.png
+docs/assets/combined_panel_buckling/*.png
+docs/assets/near_incompressible_locking/*.png
+docs/assets/saint-venant/*.png
+docs/assets/plate_shear_buckling.png

@@ -74,3 +74,23 @@ jobs:
         run: ruff check src tests scripts examples
       - name: Format check (ruff format)
         run: ruff format --check src tests scripts examples
+
+  figures:
+    name: figure budget (advisory)
+    runs-on: ubuntu-latest
+    # Advisory like the lint job: the tree still carries platform-level debt
+    # (a handful of pre-policy renders above the cap) that cannot be fixed from
+    # this repository.  New figures must be budgeted -- see
+    # docs/figure-artifact-budget.md and tests/test_figure_artifact_budget.py.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Pillow
+        run: pip install "pillow>=10"
+      - name: Check committed figure budgets and doc links
+        run: python scripts/compact_figures.py --check
+      - name: List renders above the per-file cap
+        run: python scripts/compact_figures.py --oversized

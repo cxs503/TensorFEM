@@ -90,9 +90,9 @@ PYTHONPATH=src pytest tests/test_incompressible_locking.py -q
 
 图：
 
-- [`error_vs_poisson.png`](assets/near_incompressible_locking/error_vs_poisson.png)：两格式误差-`nu` 曲线（对数纵轴，附 3 % 门限线）；
-- [`stress_profile_nu_4999.png`](assets/near_incompressible_locking/stress_profile_nu_4999.png)：`nu = 0.4999` 时径向/环向应力沿半径场量（单元中心采样）与精确解对照曲线；
-- [`refinement_and_2d_debt.png`](assets/near_incompressible_locking/refinement_and_2d_debt.png)：B-bar 与标准 HEX8 细化收敛，及 2D Q4 欠账曲线。
+- [`error_vs_poisson.png`](assets/compact/near_incompressible_locking/error_vs_poisson.png)：两格式误差-`nu` 曲线（对数纵轴，附 3 % 门限线）；
+- [`stress_profile_nu_4999.png`](assets/compact/near_incompressible_locking/stress_profile_nu_4999.png)：`nu = 0.4999` 时径向/环向应力沿半径场量（单元中心采样）与精确解对照曲线；
+- [`refinement_and_2d_debt.png`](assets/compact/near_incompressible_locking/refinement_and_2d_debt.png)：B-bar 与标准 HEX8 细化收敛，及 2D Q4 欠账曲线。
 
 机器可读证据：[`benchmarks/near_incompressible_locking_evidence.json`](../benchmarks/near_incompressible_locking_evidence.json)。
 

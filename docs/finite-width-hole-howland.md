@@ -3,7 +3,7 @@
 **Status:** verification report（把已合并的平面应力生产路径对文献基准复核）
 **Repository:** TensorFEM · **Module:** `tensorfem.finite_width_hole`（新）
 **Evidence:** `benchmarks/finite_width_hole_reference.json`、`scripts/audit_finite_width_hole.py`、
-`tests/test_finite_width_hole.py`（16 项）、图 `docs/assets/finite_width_hole/*.png`（5 张）
+`tests/test_finite_width_hole.py`（16 项）、图 `docs/assets/compact/finite_width_hole/*.png`（5 张）
 
 ## 1. 案例介绍（物理背景 / 几何 / 参数）
 
