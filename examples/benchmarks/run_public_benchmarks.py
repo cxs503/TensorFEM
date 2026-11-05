@@ -5,6 +5,7 @@ This example intentionally produces reference-only cases.  A solver run can be
 attached later with ``scripts/run_standard_benchmark_report.py --fe-results``;
 the report gate will not claim qualification without real FE fields.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -26,6 +27,7 @@ def main() -> None:
     if len(benchmark_case_catalog()) < 5:
         raise RuntimeError("public benchmark catalog is incomplete")
     import sys
+
     sys.argv = ["run_standard_benchmark_report.py", "--output", str(args.output)]
     generate_report()
 
