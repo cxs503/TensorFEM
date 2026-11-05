@@ -145,9 +145,7 @@ def _quadratic_roots(a: float, b: float, c: float) -> tuple[float, float]:
     """
     discriminant = b * b - 4.0 * a * c
     if discriminant < 0.0:
-        raise ValueError(
-            "FSDT quadratic has no real roots; check the shear correction factor"
-        )
+        raise ValueError("FSDT quadratic has no real roots; check the shear correction factor")
     root = math.sqrt(discriminant)
     q = -0.5 * (b + math.copysign(root, b))
     return c / q, q / a
@@ -223,8 +221,6 @@ def mindlin_sss_modal_frequencies(
     spectra = []
     for half_waves_x, half_waves_y in modal_indices:
         spectra.append(
-            mindlin_sss_spectrum(
-                half_waves_x=half_waves_x, half_waves_y=half_waves_y, **kwargs
-            )
+            mindlin_sss_spectrum(half_waves_x=half_waves_x, half_waves_y=half_waves_y, **kwargs)
         )
     return tuple(sorted(spectra, key=lambda item: item.flexural_angular))

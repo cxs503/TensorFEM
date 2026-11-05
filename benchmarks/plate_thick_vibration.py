@@ -78,9 +78,7 @@ def solve_first(thickness: float, elements: int, modes: int = 4) -> tuple[float,
 
 
 def _reference(thickness: float, **kwargs):
-    return mindlin_sss_spectrum(
-        length=SIDE, width=SIDE, thickness=thickness, **STEEL, **kwargs
-    )
+    return mindlin_sss_spectrum(length=SIDE, width=SIDE, thickness=thickness, **STEEL, **kwargs)
 
 
 def study_aspect_ratio(elements: int = 12) -> dict:
@@ -90,8 +88,11 @@ def study_aspect_ratio(elements: int = 12) -> dict:
         thickness = SIDE / aspect
         reference = _reference(thickness)
         first_order = shear_deformation_bias(
-            length=SIDE, width=SIDE, thickness=thickness,
-            young=STEEL["young"], poisson=STEEL["poisson"],
+            length=SIDE,
+            width=SIDE,
+            thickness=thickness,
+            young=STEEL["young"],
+            poisson=STEEL["poisson"],
         )
         fe_hz, elapsed = solve_first(thickness, elements)
         rows.append(
@@ -163,8 +164,7 @@ def study_mode_family(aspect: float = 10.0, elements: int = 16) -> dict:
     """First four FE modes vs the sorted closed-form (m, n) family."""
     thickness = SIDE / aspect
     pairs = [
-        (_reference(thickness, half_waves_x=m, half_waves_y=n), (m, n))
-        for m, n in MODE_FAMILY
+        (_reference(thickness, half_waves_x=m, half_waves_y=n), (m, n)) for m, n in MODE_FAMILY
     ]
     pairs.sort(key=lambda item: item[0].flexural_angular)
     result = solve_plate_vibration(
@@ -264,8 +264,7 @@ def figure_convergence(study: dict) -> Path:
     ax.loglog(sizes, errors, "C0o-", label="|FE - FSDT| / FSDT")
     slope = study["observed_order"]
     x = np.array(sizes)
-    ax.loglog(x, errors[0] * (x / x[0]) ** slope, "k--",
-              label=f"fitted slope {slope:.2f}")
+    ax.loglog(x, errors[0] * (x / x[0]) ** slope, "k--", label=f"fitted slope {slope:.2f}")
     ax.set_xlabel("element size h/L")
     ax.set_ylabel("relative error of f1")
     ax.set_title(f"Mesh convergence at a/h = {study['aspect_ratio']:.0f}")
@@ -284,7 +283,9 @@ def markdown_tables(payload: dict) -> str:
     family = payload["mode_family"]
     lines = []
     lines.append(f"### a/h sweep at {aspect['elements']}x{aspect['elements']} elements\n")
-    lines.append("| a/h | 网格 | f1 FE [Hz] | f1 FSDT 精确 [Hz] | f1 Kirchhoff [Hz] | FE vs FSDT | Kirchhoff vs FSDT | 一阶剪切偏置估计 | 一阶估计误差 | 判定 |")
+    lines.append(
+        "| a/h | 网格 | f1 FE [Hz] | f1 FSDT 精确 [Hz] | f1 Kirchhoff [Hz] | FE vs FSDT | Kirchhoff vs FSDT | 一阶剪切偏置估计 | 一阶估计误差 | 判定 |"
+    )
     lines.append("|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|")
     for row in aspect["rows"]:
         verdict = "PASS" if abs(row["fe_error"]) <= aspect["gate"] else "FAIL"
@@ -296,7 +297,9 @@ def markdown_tables(payload: dict) -> str:
             f"| {100 * row['first_order_bias_error']:+.1f}% | {verdict} |"
         )
     lines.append("")
-    lines.append(f"### 网格收敛（a/h = {convergence['aspect_ratio']:.0f}，FSDT 精确 f1 = {convergence['fsdt_hz']:.4f} Hz）\n")
+    lines.append(
+        f"### 网格收敛（a/h = {convergence['aspect_ratio']:.0f}，FSDT 精确 f1 = {convergence['fsdt_hz']:.4f} Hz）\n"
+    )
     lines.append("| 网格 | 单元数 | 自由度 | f1 FE [Hz] | 相对误差 | 求解 [s] |")
     lines.append("|---:|---:|---:|---:|---:|---:|")
     for row in convergence["rows"]:
@@ -304,9 +307,13 @@ def markdown_tables(payload: dict) -> str:
             f"| {row['elements']}x{row['elements']} | {row['elements_total']} | {row['dof']} "
             f"| {row['fe_hz']:.4f} | {100 * row['error']:+.3f}% | {row['solve_seconds']:.1f} |"
         )
-    lines.append(f"\n拟合收敛阶 = {convergence['observed_order']:.2f}；最细网格误差 = "
-                 f"{100 * convergence['finest_error']:+.3f}%\n")
-    lines.append(f"### 模态族（a/h = {family['aspect_ratio']:.0f}，{family['elements']}x{family['elements']}）\n")
+    lines.append(
+        f"\n拟合收敛阶 = {convergence['observed_order']:.2f}；最细网格误差 = "
+        f"{100 * convergence['finest_error']:+.3f}%\n"
+    )
+    lines.append(
+        f"### 模态族（a/h = {family['aspect_ratio']:.0f}，{family['elements']}x{family['elements']}）\n"
+    )
     lines.append("| 阶 | (m,n) | f FE [Hz] | f FSDT 精确 [Hz] | 相对误差 |")
     lines.append("|---:|---:|---:|---:|---:|")
     for row in family["rows"]:
@@ -338,7 +345,9 @@ def main() -> None:
     table = markdown_tables(payload)
     (OUTPUTS / "plate_thick_vibration_tables.md").write_text(table)
     print(table)
-    print(f"worst FE-vs-FSDT error over a/h sweep: {100 * payload['aspect_ratio']['worst_fe_error']:.3f}%")
+    print(
+        f"worst FE-vs-FSDT error over a/h sweep: {100 * payload['aspect_ratio']['worst_fe_error']:.3f}%"
+    )
     print(f"evidence: {EVIDENCE}")
 
 
