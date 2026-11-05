@@ -131,9 +131,14 @@ PYTHONPATH=src pytest tests/test_incompressible_locking.py -q
 
 1. ~~**2D 平面应变 Q4 无 B-bar/EAS/BF 对照实现**，`nu >= 0.499` 时误差 14 %–155 %；
    船舶结构里橡胶支座、近不可压涂层、复合基体都用平面应变/平面应力 Q4 路径求解。~~
-   **已结算**：新增平均膨胀 Q4（`src/tensorfem/continuum_bbar.py`），同一基准上
-   `nu = 0.4999` 位移 0.124 %、径向应力 0.600 %、平均应力 0.018 %，对 `nu` 平坦、观测阶 2.00，
-   见 [plane-strain-bbar-locking.md](plane-strain-bbar-locking.md)。平面应力路径仍被显式拒绝，未结算。
+   **已结算（两次独立复算，PR 合流后收敛到 `src/tensorfem/continuum_bbar.py` 的同一个元素核）：**
+   新增平均膨胀 Q4，两条证据链各自通过——
+   (a) `nu = 0.4999` 位移 0.124 %、径向应力 0.600 %、平均应力 0.018 %，对 `nu` 平坦、观测阶 2.00，
+   见 [plane-strain-bbar-locking.md](plane-strain-bbar-locking.md)；
+   (b) 同一套 306 DOF 网格上径向应力误差 155.2 % → 0.5738 %，对 `nu` 平坦 1.0024 倍、观测阶 2.00，
+   见 [plane-strain-locking-bbar.md](plane-strain-locking-bbar.md)。
+   平面应力路径默认**显式拒绝**（上述体积分解只对平面应变一致），仅由 `allow_plane_stress=True`
+   显式绕过、且不在资格包线内，故未结算。
 2. **B-bar 只有稠密装配**（`solve_solid_bbar` 直接建 `n_dofs^2` 稠密矩阵），
    要把它用到 64×64×6 级别的认证网格必须先加 `assemble_coo` 稀疏路径。
 3. 径向应力 3 % 门限需要应力恢复（单元外推 / Barlow 点），当前单元中心取值在粗网格上封顶 9.7 %。

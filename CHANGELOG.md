@@ -1,5 +1,54 @@
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
+## 2026-11-05 — PR #78 three-way union: two independent plane-strain B-bar Q4 cures
+
+- 分支 `agent/m3364` 落后 `main` 52 个提交且 `mergeable=false`，堵点是**语义**冲突而非文本冲突：两条线
+  各自独立结清了同一笔 2-D 平面应变近不可压欠账，都在 `src/tensorfem/continuum_bbar.py` 建了同名模块，
+  且对 `plane="stress"` 的要求相反（一侧要求拒绝、一侧要求可跑）。
+- 解冲突方式=**并集不覆盖**：元素核统一为 `q4_bbar_stiffness`（main 侧的偏量/体积分解，两报告的所有数字
+  均由这一个核产出）；保留本侧诊断 API `averaged_dilatation_row` / `volumetric_constraint_rank`；
+  平面应力改为**默认拒绝 + `allow_plane_stress=True` 显式绕过**（拒绝也是资格结论，不放松），
+  两侧断言因此可在同一个测试里同时成立。
+- 两报告在 `docs/assets/plane_strain_bbar_locking/` 下同名图 `error_vs_poisson.png` 内容不同：main 侧保留原名，
+  本侧改名 `error_vs_poisson_m3364.png` 并在文档中注明，两图均保留（md5 不同）。
+- 合并核验：`scripts/audit_union_m3364.py` 四门机器判定（路径存活 / 主张锚点存活 / 工件逐字节归属 /
+  公共 API 存活），结果存 `runs/m3364_merge/union_audit.json`；两侧测试套件
+  `tests/test_continuum_bbar.py` + `tests/test_plane_strain_bbar_locking.py` 共 19 项在同一核上全绿。
+- 文档：`docs/merge-union-m3364.md`（解冲台账）；`docs/near-incompressible-locking.md` 的欠账条目改为
+  同时引用两份独立证据链，并注明平面应力路径仍未结算。
+- 合并核复算（`scripts/union_kernel_drift.py`，16x8 扇区、306 DOF）：径向应力 L2 由本侧原报告的0.5738 % 变为 0.5999 %（漂移 +4.55 %），与 main 侧 0.5999 % 吻合到 0.0027 %；两种代写在有限 `nu` 下体积项系数不同所致，非精度回退（均远低于 3 % 门，对 `nu` 平坦度 1.0030，标准 Q4 仍 fail-closed 258.7 倍）。已如实写入 `docs/plane-strain-locking-bbar.md` 第 7 节。
+
+## 2026-11-05 — PR #78 round 2：`main` 前进到 `7a8f4af` 后的二次并集（1 处文本冲突 / 0 新增语义冲突）
+
+- 触发：`agent/m3364`（`b04bbf3`）与 `main`（`7a8f4af`）再次分叉，`mergeable=false`。本轮变更面 41 条路径里
+  双侧共改**只有** `CHANGELOG.md`，代码面零交集（主线新增的板面内线性变化压缩屈曲与本侧的 plane-strain
+  B-bar 面不相交，本侧也未触碰主线新增文件），因此与第 1 轮的语义冲突不同，本轮风险集中在「别丢东西」。
+- 解法：`CHANGELOG.md` 语义并集（两侧当日小节逐字全留，本侧在前）；其余 40 条单侧路径保持与产生它的分支
+  **逐字节相同**（blob 哈希比对），未用 `--ours/--theirs` 整体覆盖、未做机械 overlay。
+- 审计：新增 `scripts/audit_union_round2.py` 五门——路径存活 / 双侧行级文本存活 / 并集逐字性 / 无残留冲突标记 /
+  单侧字节同一，41 条路径全绿（`runs/m3364_merge_round2/union_audit_round2.json`）；第 1 轮四门审计在新树上
+  复跑仍 PASS（`union_audit_round1_recheck.json`：主张锚点 41/41 与 35/35、两图逐字节归属、公共符号可导入）。
+  因 `src/tensorfem/continuum_bbar.py` 与 `plane_strain_locking.py` 零字节改动，第 1 轮公布的
+  径向应力 L2 0.5999 %、位移 0.1236 %、均应力 0.0182 %、标准 Q4 258.7× fail-closed 未被扰动。
+- 测试：合并树核心 50 项（B-bar 19、锁定+单元秩 18、continuum 3、板屈曲 10）全绿 0 失败；`main` 基线
+  （`git archive` 到 `/tmp` + `PYTHONPATH=src`）同批文件同样全绿，无一块低于基线。台账
+  `docs/merge-union-m3364-round2.md`（含两张由证据生成的图），原始日志 `runs/m3364_merge_round2/`。
+- 踩坑：`scripts/audit_union_m3364.py` 默认把 `docs/merge-union-m3364.md` 当模板**重写**（索引文件数 1243→1264），
+  复跑即静默改写历史台账；复验必须 `--doc <tmp>` 重定向，本轮第 1 轮台账已冻结保留。
+
+## 2026-11-03 板面内线性变化压缩屈曲：非均匀预屈曲应力欠账清偿
+
+- 新增 `src/tensorfem/plate_bending_buckling.py`：简支正交各向异性板在 `N_x(y) = -N_0 (1 - gradient*y/b)`
+  下的屈曲，覆盖均匀压缩 (`gradient=0`)、三角形 (`1`) 与纯面内弯曲 (`2`)，对应应力比 `psi = 1 - gradient`。
+- 闭式宽度矩 `int t sin(n pi t) sin(q pi t) dt` 提供非对角几何矩阵；与 240 点 Gauss-Legendre 能量积分
+  逐元一致到 2.9e-15。
+- 独立第二路线 `strip_buckling_coefficient`：因 `N_x` 只依赖 `y`，`w = sin(m pi x/a) f(y)` 精确分离，
+  对 `f(y)` 作二阶中心差分即得同一特征值的独立离散，200 节点与变分解相差 1.6e-5（实测二阶收敛）。
+- 经典系数门槛（3%）：4.0 均匀（精确值 + `navier_uniaxial_buckling_load` 交叉）、7.81 三角形 0.025%、
+  23.9 纯弯长板 0.076%、25.6 纯弯方形 0.280%；资格报告在无文献锚点的正交各向异性算例上不作精度宣称。
+- 修复差分条路线斜率泛函漏掉边界半权项导致的 O(h) 泄漏（400 节点仍 5.0e-3，系统偏低 0.25%），
+  并新增收敛阶回归测试；`docs/benchmark-qualification-status.md` 的「非均匀预屈曲应力」欠账随本单收窄。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 ## 2026-11-04 — plane-strain B-bar Q4 (near-incompressible locking cure)
