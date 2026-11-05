@@ -5,6 +5,7 @@ damping and finite-frequency acoustics), so the tests are built around the one
 *exact* case available in closed form -- the circular piston in an infinite
 rigid baffle -- plus a strict consistency anchor against the in-phase operator.
 """
+
 import math
 
 import pytest
@@ -52,8 +53,10 @@ def test_small_argument_limits_reproduce_rayleigh_added_mass():
     assert float(piston_resistance_factor(0.0)) == pytest.approx(0.0, abs=1e-18)
     assert float(piston_reactance_factor(0.0)) == pytest.approx(0.0, abs=1e-18)
     # R1 ~ x^2/8, X1 ~ 4x/(3 pi)
-    assert float(piston_resistance_factor(tiny)) == pytest.approx(tiny ** 2 / 8.0, rel=1e-12)
-    assert float(piston_reactance_factor(tiny)) == pytest.approx(4.0 * tiny / (3.0 * math.pi), rel=1e-12)
+    assert float(piston_resistance_factor(tiny)) == pytest.approx(tiny**2 / 8.0, rel=1e-12)
+    assert float(piston_reactance_factor(tiny)) == pytest.approx(
+        4.0 * tiny / (3.0 * math.pi), rel=1e-12
+    )
 
 
 def test_exact_piston_impedance_limits():
@@ -165,7 +168,7 @@ def test_finite_frequency_added_mass_collapses_above_ka_one():
 
 def test_radiation_resistance_is_non_negative_and_bounded():
     centres, areas = disc_panels(RADIUS, 32)
-    scale = RHO * C_SOUND * math.pi * RADIUS ** 2
+    scale = RHO * C_SOUND * math.pi * RADIUS**2
     for ka in (0.05, 0.5, 1.0, 3.0):
         k = ka / RADIUS
         z = planar_radiation_impedance(centres, areas, k, RHO, C_SOUND)

@@ -48,6 +48,7 @@ are implemented here (power series) so that the module keeps the package's pure
 All quantities are SI (m, kg, s).  The impedance sums are accumulated in row
 blocks so that a few thousand panels need only ``O(N)`` memory.
 """
+
 from __future__ import annotations
 
 import math
@@ -101,7 +102,7 @@ def bessel_j1(x, *, dtype=torch.float64, max_terms: int = 200) -> torch.Tensor:
     """
     x = _as_tensor(x, dtype)
     half = 0.5 * x
-    term = half.clone()          # m = 0 term: (x/2) / (0! 1!)
+    term = half.clone()  # m = 0 term: (x/2) / (0! 1!)
     total = term.clone()
     half_sq = half * half
     for m in range(1, max_terms):
@@ -122,11 +123,9 @@ def struve_h1(z, *, dtype=torch.float64, max_terms: int = 300) -> torch.Tensor:
     """
     z = _as_tensor(z, dtype)
     if bool(torch.any(torch.abs(z) > _STRUVE_MAX_ARG)):
-        raise ValueError(
-            f"struve_h1 power series is limited to |z| <= {_STRUVE_MAX_ARG}"
-        )
+        raise ValueError(f"struve_h1 power series is limited to |z| <= {_STRUVE_MAX_ARG}")
     half = 0.5 * z
-    term = half * half / (math.gamma(1.5) * math.gamma(2.5))   # m = 0
+    term = half * half / (math.gamma(1.5) * math.gamma(2.5))  # m = 0
     total = term.clone()
     half_sq = half * half
     for m in range(1, max_terms):
@@ -335,8 +334,7 @@ def modal_radiation_impedance(
     else:
         jk = 1j * k
         self_terms = (
-            rho * weighted_area * weighted_area / areas
-            * (1.0 - torch.exp(-jk * radii)) / jk
+            rho * weighted_area * weighted_area / areas * (1.0 - torch.exp(-jk * radii)) / jk
         )
     total += complex(self_terms.sum().to(torch.complex128).item())
     omega = k * c

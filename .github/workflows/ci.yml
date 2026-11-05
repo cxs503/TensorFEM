@@ -55,12 +55,26 @@ jobs:
     name: lint (advisory)
     runs-on: ubuntu-latest
     # Advisory on purpose: the tree carries a large pre-existing ruff backlog
-    # (unused imports, import ordering, semicolon-packed statements).  Making
-    # it blocking would hide every other signal.  Fix the backlog, then drop
-    # this continue-on-error and promote it to a gate.
+    # (≈4.3k findings — mostly semicolon-packed E701/E702 statements that no
+    # safe autofix can split — plus ≈620 files older than `ruff format`).
+    # A whole-tree gate therefore stays red for *every* commit, including
+    # branches that add perfectly clean code, which is what made #125 report
+    # `lint (advisory)=failure` while its own diff was lint-clean.
+    #
+    # Two tiers instead of one blanket gate:
+    #   * changed-files tier = this job's verdict: `ruff check` +
+    #     `ruff format --check` on the Python files the PR / push actually
+    #     touches.  Enforceable today: new or modified code must be clean.
+    #   * repo tier = informational only: whole-tree counters are printed so
+    #     the backlog trend stays visible (and is the promotion criterion —
+    #     when it reaches zero, drop `continue-on-error` and gate the tree).
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The changed-files tier diffs against the base commit, so the base
+          # object has to exist in the local history.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -70,7 +84,33 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      - name: Lint (ruff)
-        run: ruff check src tests scripts examples
-      - name: Format check (ruff format)
-        run: ruff format --check src tests scripts examples
+      - name: Collect changed Python files
+        # Base commit: PR base sha, else the previous head of the branch.
+        # Falls back to HEAD~1 (and finally HEAD → empty set) when the event
+        # carries no usable base, e.g. workflow_dispatch.
+        run: |
+          set -u
+          base=""
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          elif [ -n "${{ github.event.before }}" ] &&
+               [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            base="${{ github.event.before }}"
+          fi
+          if [ -z "$base" ] || ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            base="$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)"
+          fi
+          echo "diff base: ${base}"
+          git diff --name-only --diff-filter=ACMR "${base}" HEAD -- '*.py' \
+            | grep -E '^(src|tests|scripts|examples)/' > "$RUNNER_TEMP/changed-py.txt" || true
+          echo "--- changed python files ---"
+          cat "$RUNNER_TEMP/changed-py.txt"
+          echo "--- end ---"
+      - name: Lint changed files (ruff)
+        run: xargs -r ruff check < "$RUNNER_TEMP/changed-py.txt"
+      - name: Format check changed files (ruff format)
+        run: xargs -r ruff format --check < "$RUNNER_TEMP/changed-py.txt"
+      - name: Repo-wide lint backlog (informational, never fails the job)
+        run: |
+          ruff check src tests scripts examples --statistics | tail -25 || true
+          ruff format --check src tests scripts examples | tail -2 || true

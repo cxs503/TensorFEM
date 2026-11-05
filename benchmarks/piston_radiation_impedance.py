@@ -29,6 +29,7 @@ Usage
 -----
     PYTHONPATH=src python benchmarks/piston_radiation_impedance.py
 """
+
 from __future__ import annotations
 
 import json
@@ -61,17 +62,18 @@ torch.set_num_threads(4)
 OUT_DIR = os.path.join("artifacts", "piston_radiation_impedance")
 ASSET_DIR = os.path.join("docs", "assets", "piston-radiation-impedance")
 
-RADIUS = 0.5          # piston radius [m]
-RHO_WATER = 1025.0    # sea water [kg/m^3]
+RADIUS = 0.5  # piston radius [m]
+RHO_WATER = 1025.0  # sea water [kg/m^3]
 SOUND_SPEED = 1500.0  # [m/s]
 
 KA_VALUES = (0.1, 0.5, 1.0, 2.0, 3.0)
 N_CELLS = (16, 32, 64, 96)
-TOL = 3.0             # percent, repository acceptance threshold
+TOL = 3.0  # percent, repository acceptance threshold
 
 # Ship side-shell strake between frames (same panel as the in-phase benchmark)
-PANEL = dict(lx=1.2, ly=0.8, thickness=0.008, rho_steel=7850.0,
-             dry_frequency=44.397, wet_frequency=16.250)
+PANEL = dict(
+    lx=1.2, ly=0.8, thickness=0.008, rho_steel=7850.0, dry_frequency=44.397, wet_frequency=16.250
+)
 
 
 def piston_rows() -> list[dict]:
@@ -81,30 +83,32 @@ def piston_rows() -> list[dict]:
     for ka in KA_VALUES:
         k = ka / RADIUS
         exact = piston_impedance_exact(RADIUS, k, RHO_WATER, SOUND_SPEED)
-        scale = RHO_WATER * SOUND_SPEED * math.pi * RADIUS ** 2  # rho c A
+        scale = RHO_WATER * SOUND_SPEED * math.pi * RADIUS**2  # rho c A
         for n in N_CELLS:
             centres, areas = panels[n]
             z = planar_radiation_impedance(centres, areas, k, RHO_WATER, SOUND_SPEED)
             omega = k * SOUND_SPEED
             added_mass = effective_added_mass(z, omega)
-            rows.append({
-                "ka": ka,
-                "n_cells": n,
-                "n_panels": int(areas.numel()),
-                "wavelength_over_radius": (2.0 * math.pi / k) / RADIUS,
-                "exact_re": exact.real,
-                "exact_im": exact.imag,
-                "fe_re": z.real,
-                "fe_im": z.imag,
-                "re_error_pct": (z.real - exact.real) / exact.real * 100.0,
-                "im_error_pct": (z.imag - exact.imag) / exact.imag * 100.0,
-                "re_error_of_scale_pct": (z.real - exact.real) / scale * 100.0,
-                "im_error_of_scale_pct": (z.imag - exact.imag) / scale * 100.0,
-                "abs_error_of_scale_pct": abs(z - exact) / scale * 100.0,
-                "added_mass": added_mass,
-                "added_mass_rel_to_lowfreq": added_mass
-                / piston_radiation_mass(RADIUS, RHO_WATER),
-            })
+            rows.append(
+                {
+                    "ka": ka,
+                    "n_cells": n,
+                    "n_panels": int(areas.numel()),
+                    "wavelength_over_radius": (2.0 * math.pi / k) / RADIUS,
+                    "exact_re": exact.real,
+                    "exact_im": exact.imag,
+                    "fe_re": z.real,
+                    "fe_im": z.imag,
+                    "re_error_pct": (z.real - exact.real) / exact.real * 100.0,
+                    "im_error_pct": (z.imag - exact.imag) / exact.imag * 100.0,
+                    "re_error_of_scale_pct": (z.real - exact.real) / scale * 100.0,
+                    "im_error_of_scale_pct": (z.imag - exact.imag) / scale * 100.0,
+                    "abs_error_of_scale_pct": abs(z - exact) / scale * 100.0,
+                    "added_mass": added_mass,
+                    "added_mass_rel_to_lowfreq": added_mass
+                    / piston_radiation_mass(RADIUS, RHO_WATER),
+                }
+            )
     return rows
 
 
@@ -116,20 +120,22 @@ def gate_summary(rows: list[dict]) -> list[dict]:
         candidate = [r for r in rows if r["ka"] == ka and r["n_cells"] >= required_cells]
         worst = max(candidate, key=lambda r: max(abs(r["re_error_pct"]), abs(r["im_error_pct"])))
         coarsest = min(candidate, key=lambda r: r["n_cells"])
-        gates.append({
-            "ka": ka,
-            "required_cells": required_cells,
-            "re_error_pct": coarsest["re_error_pct"],
-            "im_error_pct": coarsest["im_error_pct"],
-            "abs_error_of_scale_pct": coarsest["abs_error_of_scale_pct"],
-            "worst_component_error_pct": max(
-                abs(coarsest["re_error_pct"]), abs(coarsest["im_error_pct"])
-            ),
-            "worst_over_all_admissible_pct": max(
-                abs(worst["re_error_pct"]), abs(worst["im_error_pct"])
-            ),
-            "passed": max(abs(coarsest["re_error_pct"]), abs(coarsest["im_error_pct"])) < TOL,
-        })
+        gates.append(
+            {
+                "ka": ka,
+                "required_cells": required_cells,
+                "re_error_pct": coarsest["re_error_pct"],
+                "im_error_pct": coarsest["im_error_pct"],
+                "abs_error_of_scale_pct": coarsest["abs_error_of_scale_pct"],
+                "worst_component_error_pct": max(
+                    abs(coarsest["re_error_pct"]), abs(coarsest["im_error_pct"])
+                ),
+                "worst_over_all_admissible_pct": max(
+                    abs(worst["re_error_pct"]), abs(worst["im_error_pct"])
+                ),
+                "passed": max(abs(coarsest["re_error_pct"]), abs(coarsest["im_error_pct"])) < TOL,
+            }
+        )
     return gates
 
 
@@ -175,9 +181,7 @@ def panel_application() -> dict:
     in_phase = panel_added_mass_ratio(lx, ly, thickness, rho_steel, RHO_WATER)
     m_struct = in_phase["structural_generalised_mass"]
     k_small = 1.0e-6
-    z_small = modal_radiation_impedance(
-        centres, areas, phi, k_small, RHO_WATER, SOUND_SPEED
-    )
+    z_small = modal_radiation_impedance(centres, areas, phi, k_small, RHO_WATER, SOUND_SPEED)
     reactance_mass = z_small.imag / (k_small * SOUND_SPEED)
 
     # Radiation damping at the *wet* frequency (16.25 Hz measured in the
@@ -196,8 +200,9 @@ def panel_application() -> dict:
         "in_phase_mu": in_phase["mu"],
         "in_phase_wet_frequency_ratio": in_phase["wet_frequency_ratio"],
         "lowk_reactance_mass": reactance_mass,
-        "lowk_reactance_error_vs_in_phase_pct":
-            (reactance_mass - in_phase["mu"] * m_struct) / (in_phase["mu"] * m_struct) * 100.0,
+        "lowk_reactance_error_vs_in_phase_pct": (reactance_mass - in_phase["mu"] * m_struct)
+        / (in_phase["mu"] * m_struct)
+        * 100.0,
         "frequency_hz": frequency,
         "ka_equivalent": k * 0.5 * math.sqrt(lx * ly / math.pi),
         "radiation_resistance": resistance,
@@ -211,20 +216,27 @@ def panel_application() -> dict:
 def plot_impedance_vs_ka(rows: list[dict], path: str) -> None:
     """R/R0 and X/X0 over a dense ka sweep (exact curves) with FE points at 64."""
     ka_dense = [0.005 * i for i in range(1, 1201)]  # 0.005 .. 6
-    exact = [piston_impedance_exact(RADIUS, ka / RADIUS, RHO_WATER, SOUND_SPEED)
-             for ka in ka_dense]
-    scale = RHO_WATER * SOUND_SPEED * math.pi * RADIUS ** 2
+    exact = [piston_impedance_exact(RADIUS, ka / RADIUS, RHO_WATER, SOUND_SPEED) for ka in ka_dense]
+    scale = RHO_WATER * SOUND_SPEED * math.pi * RADIUS**2
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
-    axes[0].plot(ka_dense, [z.real / scale for z in exact], "-", lw=2,
-                 label="exact  $R_1(2ka)$")
-    axes[1].plot(ka_dense, [z.imag / scale for z in exact], "-", lw=2,
-                 label="exact  $X_1(2ka)$")
+    axes[0].plot(ka_dense, [z.real / scale for z in exact], "-", lw=2, label="exact  $R_1(2ka)$")
+    axes[1].plot(ka_dense, [z.imag / scale for z in exact], "-", lw=2, label="exact  $X_1(2ka)$")
     fe = [r for r in rows if r["n_cells"] == 64]
     fe_ka = sorted({r["ka"] for r in fe})
-    axes[0].plot(fe_ka, [next(r["fe_re"] for r in fe if r["ka"] == ka) / scale for ka in fe_ka],
-                 "o", ms=6, label="FE 64 panels/side")
-    axes[1].plot(fe_ka, [next(r["fe_im"] for r in fe if r["ka"] == ka) / scale for ka in fe_ka],
-                 "o", ms=6, label="FE 64 panels/side")
+    axes[0].plot(
+        fe_ka,
+        [next(r["fe_re"] for r in fe if r["ka"] == ka) / scale for ka in fe_ka],
+        "o",
+        ms=6,
+        label="FE 64 panels/side",
+    )
+    axes[1].plot(
+        fe_ka,
+        [next(r["fe_im"] for r in fe if r["ka"] == ka) / scale for ka in fe_ka],
+        "o",
+        ms=6,
+        label="FE 64 panels/side",
+    )
     axes[0].set_xlabel("$ka$")
     axes[0].set_ylabel("$R/(\\rho c \\pi a^2)$")
     axes[0].set_title("radiation resistance")
@@ -244,10 +256,12 @@ def plot_convergence(rows: list[dict], path: str) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
     for ka in KA_VALUES:
         sel = [r for r in rows if r["ka"] == ka]
-        axes[0].plot([r["n_panels"] for r in sel], [r["re_error_pct"] for r in sel],
-                     "o-", label=f"$ka={ka}$")
-        axes[1].plot([r["n_panels"] for r in sel], [r["im_error_pct"] for r in sel],
-                     "o-", label=f"$ka={ka}$")
+        axes[0].plot(
+            [r["n_panels"] for r in sel], [r["re_error_pct"] for r in sel], "o-", label=f"$ka={ka}$"
+        )
+        axes[1].plot(
+            [r["n_panels"] for r in sel], [r["im_error_pct"] for r in sel], "o-", label=f"$ka={ka}$"
+        )
     for ax, title in zip(axes, ("resistance", "reactance")):
         ax.axhline(0.0, color="k", lw=0.8)
         ax.axhline(TOL, color="r", ls="--", lw=1, label="3 % gate")
@@ -322,8 +336,9 @@ def main() -> dict:
         with open(src, "rb") as fh, open(dest, "wb") as out:
             out.write(fh.read())
 
-    passed = all(g["passed"] for g in gates) and lowk["elementwise_passed"] \
-        and lowk["added_mass_passed"]
+    passed = (
+        all(g["passed"] for g in gates) and lowk["elementwise_passed"] and lowk["added_mass_passed"]
+    )
     report = {
         "benchmark": "piston_radiation_impedance",
         "reference": "Rayleigh (1945) Sec. 302: Z = rho c pi a^2 [R1(2ka)+j X1(2ka)]",
