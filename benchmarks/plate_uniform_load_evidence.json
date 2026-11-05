@@ -1,0 +1,234 @@
+{
+  "benchmark": "plate_uniform_pressure",
+  "description": "Uniform lateral pressure on a Q4 Mindlin square plate (SS and clamped, thin and thick) against exact Navier series and a separable Rayleigh-Ritz reference",
+  "anchors": [
+    {
+      "anchor": "series_ss_centre_deflection_vs_timoshenko",
+      "description": "Navier series centre deflection coefficient vs Timoshenko 0.00406",
+      "fem": 0.004062352660676305,
+      "reference": 0.00406,
+      "relative_error": 0.0005794730729815436,
+      "tolerance": 0.01,
+      "passed": true,
+      "note": "table rounds to 3 digits; series converged to <1e-9 between 401/801 terms"
+    },
+    {
+      "anchor": "series_ss_centre_moment_vs_timoshenko",
+      "description": "Navier series centre moment coefficient vs Timoshenko 0.0479",
+      "fem": 0.04788638092420741,
+      "reference": 0.0479,
+      "relative_error": 0.000284323085440228,
+      "tolerance": 0.01,
+      "passed": true,
+      "note": ""
+    },
+    {
+      "anchor": "ritz_machinery_vs_navier_series",
+      "description": "Ritz with sine modes must reproduce the closed-form Navier value",
+      "fem": 0.21122545228457618,
+      "reference": 0.21124233835516787,
+      "relative_error": 7.993696113750574e-05,
+      "tolerance": 0.001,
+      "passed": true,
+      "note": "machinery anchor for the clamped Ritz reference"
+    },
+    {
+      "anchor": "ritz_clamped_centre_deflection_vs_timoshenko",
+      "description": "Clamped Ritz centre deflection coefficient vs Timoshenko 0.00126",
+      "fem": 0.0012655096653435053,
+      "reference": 0.00126,
+      "relative_error": 0.004372750272623198,
+      "tolerance": 0.01,
+      "passed": true,
+      "note": ""
+    },
+    {
+      "anchor": "ritz_clamped_centre_moment_vs_timoshenko",
+      "description": "Clamped Ritz centre moment coefficient vs Timoshenko 0.0231",
+      "fem": 0.023096631346061006,
+      "reference": 0.0231,
+      "relative_error": 0.00014582917484819716,
+      "tolerance": 0.01,
+      "passed": true,
+      "note": ""
+    },
+    {
+      "anchor": "ritz_clamped_mode_independence",
+      "description": "N=10 vs N=12 clamped Ritz centre deflection must agree",
+      "fem": 0.06580650259786226,
+      "reference": 0.06594901768263049,
+      "relative_error": 0.0021609887421532472,
+      "tolerance": 0.01,
+      "passed": true,
+      "note": "reference stability, not an FE comparison"
+    },
+    {
+      "anchor": "ss_thin_16x16_centre_deflection",
+      "description": "SS t/a=0.01, 16x16 Q4 Mindlin vs Navier series",
+      "fem": 0.2110852044477205,
+      "reference": 0.21124233835516787,
+      "relative_error": 0.0007438561259588843,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": ""
+    },
+    {
+      "anchor": "ss_thin_centre_moment",
+      "description": "SS t/a=0.01, 17x17, element-centre Mx at the plate centre vs exact series at the same point",
+      "fem": 47778.60432287212,
+      "reference": 47886.38092420741,
+      "relative_error": 0.002250673349190453,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": ""
+    },
+    {
+      "anchor": "ss_thick_16x16_centre_deflection",
+      "description": "SS t/a=0.10, 16x16 vs exact Mindlin series (bending + shear)",
+      "fem": 0.00022198912846557484,
+      "reference": 0.0002221877968521294,
+      "relative_error": 0.0008941462554164957,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": "shear share 4.926% of the total"
+    },
+    {
+      "anchor": "negative_control_thick_vs_kirchhoff",
+      "description": "Same FE result against the Kirchhoff (shear-free) value must exceed 3%%, proving the case discriminates the shear treatment",
+      "fem": 0.00022198912846557484,
+      "reference": 0.0002112423383551679,
+      "relative_error": 0.05087422433441369,
+      "tolerance": 0.03,
+      "passed": false,
+      "note": "control: expected to FAIL the gate"
+    },
+    {
+      "anchor": "clamped_thin_16x16_centre_deflection",
+      "description": "Clamped t/a=0.01, 16x16 vs clamped Ritz (N=10)",
+      "fem": 0.0657386420034551,
+      "reference": 0.06580650259786226,
+      "relative_error": 0.0010312141160556034,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": ""
+    },
+    {
+      "anchor": "retained_coarse_failure_clamped_4x4",
+      "description": "Clamped 4x4 must stay above the 3% gate (failure is kept, not hidden)",
+      "fem": 0.06311921290115537,
+      "reference": 0.06580650259786226,
+      "relative_error": 0.040836233360230165,
+      "tolerance": 0.03,
+      "passed": false,
+      "note": "control: expected to FAIL the gate"
+    },
+    {
+      "anchor": "clamped_thin_centre_moment",
+      "description": "Clamped t/a=0.01, 17x17, element-centre Mx at the plate centre vs clamped Ritz at the same point",
+      "fem": 22983.782252096586,
+      "reference": 23096.631346061007,
+      "relative_error": 0.00488595467770097,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": "edge hogging peak is NOT certified (pointwise series converge slowly on both sides)"
+    },
+    {
+      "anchor": "negative_control_clamped_vs_ss_reference",
+      "description": "Clamped FE result against the SS reference must exceed 3%, so the gate discriminates boundary conditions",
+      "fem": 0.2110852044477205,
+      "reference": 0.06580650259786226,
+      "relative_error": 2.207664837282777,
+      "tolerance": 0.03,
+      "passed": false,
+      "note": "control: expected to FAIL the gate"
+    }
+  ],
+  "convergence": {
+    "ss_thin": [
+      {
+        "nx": 4,
+        "h": 0.25,
+        "fem": 0.20651104348194818,
+        "relative_error": 0.022397474436515775,
+        "passed": true
+      },
+      {
+        "nx": 8,
+        "h": 0.125,
+        "fem": 0.21026631026307122,
+        "relative_error": 0.0046204188975395135,
+        "passed": true
+      },
+      {
+        "nx": 16,
+        "h": 0.0625,
+        "fem": 0.2110852044477205,
+        "relative_error": 0.0007438561259588843,
+        "passed": true
+      },
+      {
+        "nx": 24,
+        "h": 0.041666666666666664,
+        "fem": 0.21123370706194766,
+        "relative_error": 4.085967466282737e-05,
+        "passed": true
+      }
+    ],
+    "ss_thin_order": 2.4560843220344304,
+    "ss_thin_orders": [
+      2.277240500946754,
+      2.634928143122107,
+      7.1564826464789215
+    ],
+    "clamped_thin": [
+      {
+        "nx": 4,
+        "h": 0.25,
+        "fem": 0.06311921290115537,
+        "relative_error": 0.040836233360230165,
+        "passed": false
+      },
+      {
+        "nx": 8,
+        "h": 0.125,
+        "fem": 0.06517165944216098,
+        "relative_error": 0.00964711891134455,
+        "passed": true
+      },
+      {
+        "nx": 16,
+        "h": 0.0625,
+        "fem": 0.0657386420034551,
+        "relative_error": 0.0010312141160556034,
+        "passed": true
+      }
+    ],
+    "clamped_thin_order": 2.6537169893561323,
+    "clamped_thin_orders": [
+      2.081679747052367,
+      3.225754231659898
+    ],
+    "references": {
+      "ss_centre_deflection": 0.21124233835516787,
+      "ss_centre_moment": 47886.38092420741,
+      "clamped_centre_deflection": 0.06580650259786226,
+      "clamped_centre_moment": 23096.631346061007,
+      "clamped_mindlin_deflection": 0.0002221877968521294
+    },
+    "parameters": {
+      "side": 1.0,
+      "young": 210000000000.0,
+      "poisson": 0.3,
+      "pressure": 1000000.0,
+      "t_thin": 0.01,
+      "t_thick": 0.1,
+      "terms": 401,
+      "ritz_modes": 10
+    }
+  },
+  "figures": [
+    "docs/assets/plate_uniform_load/plate_uniform_convergence_profile.png",
+    "docs/assets/plate_uniform_load/plate_uniform_anchor_errors.png"
+  ],
+  "all_passed": true
+}
