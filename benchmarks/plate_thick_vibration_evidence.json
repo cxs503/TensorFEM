@@ -1,0 +1,198 @@
+{
+  "case": "plate_thick_vibration",
+  "material": {
+    "young": 200000000000.0,
+    "poisson": 0.3,
+    "density": 7850.0
+  },
+  "side_m": 1.0,
+  "shear_correction": 0.8333333333333334,
+  "aspect_ratio": {
+    "elements": 12,
+    "gate": 0.02,
+    "rows": [
+      {
+        "aspect_ratio": 100.0,
+        "thickness_m": 0.01,
+        "fe_hz": 48.33731633862282,
+        "fsdt_hz": 47.968994514641984,
+        "kirchhoff_hz": 47.986461117141864,
+        "fe_error": 0.007678331132590532,
+        "kirchhoff_error": 0.000364122756305596,
+        "exact_shear_bias": -0.00036399021918365193,
+        "first_order_shear_bias": -0.0002818694767660057,
+        "first_order_bias_error": -0.22561249750563228,
+        "solve_seconds": 2.095814960077405
+      },
+      {
+        "aspect_ratio": 50.0,
+        "thickness_m": 0.02,
+        "fe_hz": 96.56777994446782,
+        "fsdt_hz": 95.83347084225232,
+        "kirchhoff_hz": 95.97292223428373,
+        "fe_error": 0.00766234485469286,
+        "kirchhoff_error": 0.0014551428723785786,
+        "exact_shear_bias": -0.0014530285083013128,
+        "first_order_shear_bias": -0.0011260499463118245,
+        "first_order_bias_error": -0.22503244782977316,
+        "solve_seconds": 6.706922169774771
+      },
+      {
+        "aspect_ratio": 20.0,
+        "thickness_m": 0.05,
+        "fe_hz": 239.57953068640398,
+        "fsdt_hz": 237.78355516960306,
+        "kirchhoff_hz": 239.93230558570934,
+        "fe_error": 0.0075529845431066,
+        "kirchhoff_error": 0.00903658124958917,
+        "exact_shear_bias": -0.008955652765728517,
+        "first_order_shear_bias": -0.0069760348862071275,
+        "first_order_bias_error": -0.22104674347100517,
+        "solve_seconds": 3.7619418799877167
+      },
+      {
+        "aspect_ratio": 10.0,
+        "thickness_m": 0.1,
+        "fe_hz": 466.80842096356645,
+        "fsdt_hz": 463.47364523528864,
+        "kirchhoff_hz": 479.8646111714187,
+        "fe_error": 0.007195178760563303,
+        "kirchhoff_error": 0.03536547569562232,
+        "exact_shear_bias": -0.03415748016115905,
+        "first_order_shear_bias": -0.027059530196287707,
+        "first_order_bias_error": -0.2078007491004129,
+        "solve_seconds": 4.39453942887485
+      },
+      {
+        "aspect_ratio": 5.0,
+        "thickness_m": 0.2,
+        "fe_hz": 853.5531602704842,
+        "fsdt_hz": 848.358363763984,
+        "kirchhoff_hz": 959.7292223428374,
+        "fe_error": 0.0061233515556469165,
+        "kirchhoff_error": 0.13127808168793753,
+        "exact_shear_bias": -0.11604404240915056,
+        "first_order_shear_bias": -0.09670995092405033,
+        "first_order_bias_error": -0.1666099446702458,
+        "solve_seconds": 7.328859709203243
+      }
+    ],
+    "worst_fe_error": 0.007678331132590532,
+    "passed": true,
+    "thin_gate": 0.001,
+    "thin_reference_ok": true
+  },
+  "mesh_convergence": {
+    "aspect_ratio": 10.0,
+    "fsdt_hz": 463.47364523528864,
+    "rows": [
+      {
+        "elements": 6,
+        "elements_total": 36,
+        "dof": 147,
+        "fe_hz": 477.01024149295097,
+        "error": 0.029206830629582514,
+        "solve_seconds": 1.8721259403973818
+      },
+      {
+        "elements": 8,
+        "elements_total": 64,
+        "dof": 243,
+        "fe_hz": 471.0229466920314,
+        "error": 0.016288523704320212,
+        "solve_seconds": 4.3296175096184015
+      },
+      {
+        "elements": 12,
+        "elements_total": 144,
+        "dof": 507,
+        "fe_hz": 466.80842096356645,
+        "error": 0.007195178760563303,
+        "solve_seconds": 2.0932341292500496
+      },
+      {
+        "elements": 16,
+        "elements_total": 256,
+        "dof": 867,
+        "fe_hz": 465.3454463106309,
+        "error": 0.004038635410201108,
+        "solve_seconds": 3.868023779243231
+      },
+      {
+        "elements": 24,
+        "elements_total": 576,
+        "dof": 1875,
+        "fe_hz": 464.30428649927853,
+        "error": 0.0017922081924812705,
+        "solve_seconds": 11.221265099942684
+      }
+    ],
+    "observed_order": 2.012837758127035,
+    "finest_error": 0.0017922081924812705,
+    "finest_gate": 0.02,
+    "passed": true,
+    "notes": "slope = d log(error)/d log(h) of the first bending mode of a Q4 SRI Mindlin mesh; quadratic elements are expected to approach order 2 in the thin limit but the SRI shear term and the consistent mass matrix usually leave 0 < slope < 2"
+  },
+  "mode_family": {
+    "aspect_ratio": 10.0,
+    "elements": 16,
+    "rows": [
+      {
+        "index": 1,
+        "fe_hz": 465.3454463106309,
+        "fsdt_hz": 463.47364523528864,
+        "error": 0.004038635410201108,
+        "half_waves": [
+          1,
+          1
+        ]
+      },
+      {
+        "index": 2,
+        "fe_hz": 1121.0677561823381,
+        "fsdt_hz": 1105.6941910074613,
+        "error": 0.013903993798564773,
+        "half_waves": [
+          1,
+          2
+        ]
+      },
+      {
+        "index": 3,
+        "fe_hz": 1121.067756182736,
+        "fsdt_hz": 1105.6941910074613,
+        "error": 0.013903993798924708,
+        "half_waves": [
+          2,
+          1
+        ]
+      },
+      {
+        "index": 4,
+        "fe_hz": 1720.1745611904632,
+        "fsdt_hz": 1696.716727527968,
+        "error": 0.013825427239508636,
+        "half_waves": [
+          2,
+          2
+        ]
+      }
+    ],
+    "worst_error": 0.013903993798924708,
+    "gate": 0.02,
+    "passed": true
+  },
+  "branches": {
+    "aspect_ratio": 10.0,
+    "shear_correction": 0.8333333333333334,
+    "flexural_hz": 463.47364523528864,
+    "thickness_shear_hz": 16312.003518061161,
+    "rotation_hz": 15909.560636703916,
+    "kirchhoff_hz": 479.8646111714187,
+    "notes": "upper (thickness-shear) and pure-rotation branches scale with h^-3 and are asymptotic FSDT branches; a C0 displacement mesh needs a very fine grid to resolve them and they are not engineering panel frequencies. Exposed for branch ordering, not as FE targets."
+  },
+  "figures": [
+    "/root/tp-agent/work/m3706/docs/assets/plate_thick_vibration_aspect_ratio.png",
+    "/root/tp-agent/work/m3706/docs/assets/plate_thick_vibration_convergence.png"
+  ]
+}
