@@ -29,6 +29,31 @@
   `docs/assets/marine_large_angle_gz.png`、`docs/marine-large-angle-stability.md`；
   由 `scripts/plot_large_angle_gz.py` 生成，并有防漂移测试钉住。
 
+## 2026-11-04 板屈曲：线性应力梯度参考解（闭合一条验证欠账）
+
+- 新增 `src/tensorfem/plate_stress_gradient_buckling.py`：四边简支板在**线性斜变面内膜载荷**
+  （边应力比 `ψ = N₂/N₁ ∈ [-1,1]`）下的变分参考解。弯曲矩阵复用已合并的
+  `plate_shear_buckling.sine_energy_matrices`，新增几何矩阵的 `y` 向斜变积分闭式
+  `Ŷ[n,q] = I(|n-q|) - I(n+q)`；`ψ=-1` 时几何矩阵不定，沿用最小正乘子驱动。
+- 四腿判定（任一失败抛异常）：①`ψ=1` 复现连续 Navier 精确解与闭式 `k=((a/mb)+(mb/a))²`
+  （≤4.5e-14%）；②闭式 vs Gauss–Legendre 积分（≤1.5e-13%）；③文献锚点 `k=4.00/7.81/23.9`
+  误差 0.000%/0.025%/0.076%；④Rayleigh 商上界单调收敛。
+- 记录两处会致假失败的陷阱：几何矩阵必须在轴向半波数上块对角（`kron(diag(α),Ŷ)` 会把矩阵
+  膨胀到 `(M·N)²`）；纯弯曲表格值 23.9 是**沿长宽比的最小值**，方板为 25.53。
+- 新增 `tests/test_plate_stress_gradient_buckling.py`（15 项）、
+  `benchmarks/plate_stress_gradient_buckling.py`（证据 + 2 图）、
+  `docs/marine-plate-stress-gradient-buckling.md`。
+- 范围声明：仅参考端闭环；本仓无带非均匀膜应力几何刚度的板单元，有限元端维持 WITHHELD，
+  不提升 1.0 认证数量。
+- 第二轮补齐**跨实现互证**：与 m3255 合并的另一条独立路径（不同参数化 Galerkin + 强形式有限
+  差分）在同一物理问题上逐点比对，`ψ=+1/0.5/0/−0.5/−1`、`a/b=1/2` 共 10 点最大偏差 0.332%
+  （`ψ=±0.5` 无表格值，正是该腿覆盖的盲区）；生成器
+  `benchmarks/plate_stress_gradient_crosscheck.py`（证据
+  `benchmarks/plate_stress_gradient_crosscheck_evidence.json`），门为
+  `tests/test_plate_stress_gradient_buckling.py` 的两项（1% 容差 + 1e−10 防漂移复算）。
+  本轮同时确认原证据可复现：重跑 `benchmarks/plate_stress_gradient_buckling.py` 后
+  evidence JSON 与两张 PNG **零 diff**。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 ## 2026-11-04 — plane-strain B-bar Q4 (near-incompressible locking cure)
