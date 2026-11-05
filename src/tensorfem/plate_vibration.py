@@ -79,7 +79,7 @@ from dataclasses import dataclass
 
 import torch
 
-from .plate import _shape, q4_mindlin_stiffness
+from .plate import PlateRigidity, _shape, q4_mindlin_stiffness
 from .plate_mindlin import q4_winkler_foundation_stiffness
 
 #: Leissa (NASA SP-160, 1969) frequency coefficient for the fundamental mode of
@@ -332,16 +332,24 @@ def solve_plate_vibration(
     thickness: float = 0.01, density: float = 7850.0, winkler_k: float = 0.0,
     boundary: str = BOUNDARY_SIMPLE, modes: int = 4, rotary_inertia: bool = True,
     rigid_body_relative_tolerance: float = 1e-9, dtype=torch.float64,
+    rigidity: PlateRigidity | None = None,
 ) -> PlateVibrationResult:
     """Solve the free-vibration eigenproblem ``K phi = omega^2 M phi``.
 
     Parameters mirror the bending entry point of ``tensorfem.plate``.  Fixed
     degrees of freedom are removed before the eigen-solve; the remaining
     problem is reduced with the Cholesky factor of the mass matrix.
+
+    ``rigidity`` optionally replaces the isotropic ``(young, poisson,
+    thickness)`` stiffness by an orthotropic :class:`tensorfem.plate.PlateRigidity`;
+    ``thickness`` and ``density`` still define the consistent mass matrix, and
+    ``young``/``poisson`` are then only validated, not used.
     """
     elements_x = _count("elements_x", elements_x)
     elements_y = _count("elements_y", elements_y)
     modes = _count("modes", modes)
+    if rigidity is not None and not isinstance(rigidity, PlateRigidity):
+        raise TypeError("rigidity must be a tensorfem.plate.PlateRigidity")
     if boundary not in _SUPPORTED_BOUNDARIES:
         raise ValueError(f"boundary must be one of {_SUPPORTED_BOUNDARIES}")
     if isinstance(winkler_k, bool) or not isinstance(winkler_k, (int, float)):
@@ -363,7 +371,10 @@ def solve_plate_vibration(
     mass = torch.zeros_like(stiffness)
     for connectivity in elements:
         xy = nodes[connectivity]
-        element_stiffness = q4_mindlin_stiffness(xy, young, poisson, thickness)
+        element_stiffness = (
+            q4_mindlin_stiffness(xy, rigidity=rigidity) if rigidity is not None
+            else q4_mindlin_stiffness(xy, young, poisson, thickness)
+        )
         if winkler_k > 0.0:
             element_stiffness = element_stiffness + q4_winkler_foundation_stiffness(xy, winkler_k)
         element_mass = q4_plate_mass_matrix(
