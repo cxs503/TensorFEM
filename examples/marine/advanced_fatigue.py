@@ -1,4 +1,5 @@
 """TensorFEM-only variable-amplitude fatigue and crack-growth example."""
+
 from tensorfem.marine_fatigue_advanced import (
     CrackGrowthBlock,
     ParisLaw,
@@ -10,10 +11,7 @@ from tensorfem.marine_fatigue_advanced import (
 )
 from tensorfem.marine_fatigue_qualification import SNLogLogCurve
 
-path = tuple(
-    PathStressSample(x, 150e6 - 4e9 * x)
-    for x in (0.0, 0.003, 0.007, 0.012, 0.016)
-)
+path = tuple(PathStressSample(x, 150e6 - 4e9 * x) for x in (0.0, 0.003, 0.007, 0.012, 0.016))
 hot_spot_pa = hot_spot_stress_from_path_pa(path, thickness_m=0.01)
 
 cycles = rainflow_cycles((0.0, 80e6, -20e6, 120e6, 0.0))

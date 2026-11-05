@@ -1,4 +1,5 @@
 """Run the coupled structural grid benchmark at configurable scale."""
+
 import argparse
 import json
 from dataclasses import asdict
@@ -14,11 +15,12 @@ def main():
     args = parser.parse_args()
     result = run_grid_benchmark(args.nx, args.ny, rtol=args.rtol)
     evidence = asdict(result)
-    evidence["storage_mib"] = result.storage_bytes/2**20
-    evidence["passes_3_percent"] = result.relative_error < .03
+    evidence["storage_mib"] = result.storage_bytes / 2**20
+    evidence["passes_3_percent"] = result.relative_error < 0.03
     if not evidence["passes_3_percent"]:
         raise SystemExit("accuracy gate failed")
     print(json.dumps(evidence, indent=2))
 
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()

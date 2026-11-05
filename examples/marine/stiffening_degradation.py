@@ -1,4 +1,5 @@
 """Run the marine stiffening/degradation sensitivity qualification."""
+
 from pprint import pprint
 
 from tensorfem.marine_degradation_qualification import (
