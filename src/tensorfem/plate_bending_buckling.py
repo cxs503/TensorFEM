@@ -57,6 +57,7 @@ Scope and conventions
   plasticity, imperfection sensitivity, ``D16/D26`` bending-twisting coupling,
   combined compression + shear + gradient, and biaxial gradient loading.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -263,11 +264,13 @@ def stress_gradient_matrices(
     ky = flat_n * math.pi / b
     bending = np.diag(dx * kx**4 + 2.0 * h * kx**2 * ky**2 + dy * ky**4) * (a * b / 4.0)
 
-    coupling = stress_gradient_coupling_matrix(
-        n, edge_ratio=ratio, width=b
-    )
+    coupling = stress_gradient_coupling_matrix(n, edge_ratio=ratio, width=b)
     same_m = flat_m[:, None] == flat_m[None, :]
-    geometric = (kx**2)[:, None] * np.where(same_m, coupling[np.ix_(flat_n.astype(int) - 1, flat_n.astype(int) - 1)], 0.0) * (a / 2.0)
+    geometric = (
+        (kx**2)[:, None]
+        * np.where(same_m, coupling[np.ix_(flat_n.astype(int) - 1, flat_n.astype(int) - 1)], 0.0)
+        * (a / 2.0)
+    )
     return bending, geometric, modes
 
 
@@ -331,9 +334,7 @@ def stress_gradient_quadrature(
     weight = W.ravel()
     # energy densities per basis pair, integrated with the quadrature weights only
     bending = (
-        dx * (dxx * weight) @ dxx.T
-        + 2.0 * h * (dxy * weight) @ dxy.T
-        + dy * (dyy * weight) @ dyy.T
+        dx * (dxx * weight) @ dxx.T + 2.0 * h * (dxy * weight) @ dxy.T + dy * (dyy * weight) @ dyy.T
     )
     profile = 1.0 + (ratio - 1.0) * (flat_y / b)
     geometric = (dx1 * (weight * profile)) @ dx1.T
@@ -366,9 +367,7 @@ def ritz_stress_gradient_buckling_load(
     )
     multiplier, phi = _smallest_positive_generalized(bending, geometric)
     if not math.isfinite(multiplier):
-        return StressGradientBucklingMode(
-            math.inf, ratio, 0.0, 0.0, (nb_x, nb_y), (0, 0), False
-        )
+        return StressGradientBucklingMode(math.inf, ratio, 0.0, 0.0, (nb_x, nb_y), (0, 0), False)
     dominant = modes[int(np.argmax(np.abs(phi)))]
     return StressGradientBucklingMode(
         multiplier=float(multiplier),
@@ -411,8 +410,14 @@ def stress_gradient_mode_shape(
     if count < 8:
         raise ValueError("samples must be at least 8")
     bending, geometric, modes = stress_gradient_matrices(
-        length=a, width=b, rigidity_x=dx, rigidity_y=dy,
-        coupling_rigidity=h, basis_x=nb_x, basis_y=nb_y, edge_ratio=ratio,
+        length=a,
+        width=b,
+        rigidity_x=dx,
+        rigidity_y=dy,
+        coupling_rigidity=h,
+        basis_x=nb_x,
+        basis_y=nb_y,
+        edge_ratio=ratio,
     )
     multiplier, phi = _smallest_positive_generalized(bending, geometric)
     x = np.linspace(0.0, a, count)
@@ -431,9 +436,7 @@ def stress_gradient_mode_shape(
         "w": w,
         "critical_load": multiplier,
         "coefficient_k": (
-            bending_buckling_coefficient(
-                critical_load=multiplier, rigidity=dx, width=b
-            )
+            bending_buckling_coefficient(critical_load=multiplier, rigidity=dx, width=b)
             if math.isfinite(multiplier)
             else math.inf
         ),
@@ -442,9 +445,7 @@ def stress_gradient_mode_shape(
     }
 
 
-def bending_buckling_coefficient(
-    *, critical_load: float, rigidity: float, width: float
-) -> float:
+def bending_buckling_coefficient(*, critical_load: float, rigidity: float, width: float) -> float:
     """``k = N1 b^2 / (pi^2 D)`` referred to the **peak** edge resultant."""
     load = _positive_finite("critical_load", critical_load)
     stiffness = _positive_finite("rigidity", rigidity)
@@ -581,9 +582,7 @@ def run_bending_buckling_qualification(
             basis_y=basis_size,
             edge_ratio=ratio,
         )
-        return bending_buckling_coefficient(
-            critical_load=mode.multiplier, rigidity=d, width=1.0
-        )
+        return bending_buckling_coefficient(critical_load=mode.multiplier, rigidity=d, width=1.0)
 
     literature_cases = (
         ("uniform_limit", 1.0, 6.0, LITERATURE_K_UNIFORM_LONG),
@@ -594,16 +593,18 @@ def run_bending_buckling_qualification(
     for name, ratio, aspect, reference in literature_cases:
         coefficient = _coefficient(ratio, aspect)
         error = abs(coefficient / reference - 1.0)
-        rows.append({
-            "case": name,
-            "edge_ratio": ratio,
-            "aspect_ratio": aspect,
-            "reference_k": reference,
-            "coefficient_k": coefficient,
-            "reference_source": "Timoshenko & Gere (1961) Table 9.1",
-            "relative_error": error,
-            "passed": bool(error < tol),
-        })
+        rows.append(
+            {
+                "case": name,
+                "edge_ratio": ratio,
+                "aspect_ratio": aspect,
+                "reference_k": reference,
+                "coefficient_k": coefficient,
+                "reference_source": "Timoshenko & Gere (1961) Table 9.1",
+                "relative_error": error,
+                "passed": bool(error < tol),
+            }
+        )
 
     # independent discretisation: strong-form finite differences.  Run on the
     # square panel, where the graded load is carried by a fine isotropic grid
@@ -612,89 +613,113 @@ def run_bending_buckling_qualification(
     # grid inside a qualification budget.
     reference_bending = rows[2]["coefficient_k"]  # pure_bending_square
     fd = finite_difference_bending_buckling(
-        length=1.0, width=1.0, rigidity=d, edge_ratio=-1.0, divisions=32,
+        length=1.0,
+        width=1.0,
+        rigidity=d,
+        edge_ratio=-1.0,
+        divisions=32,
     )
     fd_error = abs(fd["coefficient"] / reference_bending - 1.0)
-    rows.append({
-        "case": "finite_difference_pure_bending",
-        "edge_ratio": -1.0,
-        "aspect_ratio": 1.0,
-        "variational_k": reference_bending,
-        "finite_difference_k": fd["coefficient"],
-        "grid_nodes": fd["grid"],
-        "relative_error": fd_error,
-        "tolerance": 0.05,
-        "passed": bool(fd_error < 0.05),
-    })
+    rows.append(
+        {
+            "case": "finite_difference_pure_bending",
+            "edge_ratio": -1.0,
+            "aspect_ratio": 1.0,
+            "variational_k": reference_bending,
+            "finite_difference_k": fd["coefficient"],
+            "grid_nodes": fd["grid"],
+            "relative_error": fd_error,
+            "tolerance": 0.05,
+            "passed": bool(fd_error < 0.05),
+        }
+    )
     # the same nodal solver on the degenerated (uniform) profile must return 4
     fd_uniform = finite_difference_bending_buckling(
-        length=1.0, width=1.0, rigidity=d, edge_ratio=1.0, divisions=32,
+        length=1.0,
+        width=1.0,
+        rigidity=d,
+        edge_ratio=1.0,
+        divisions=32,
     )
     fd_uniform_error = abs(fd_uniform["coefficient"] / LITERATURE_K_UNIFORM_LONG - 1.0)
-    rows.append({
-        "case": "finite_difference_uniform_limit",
-        "edge_ratio": 1.0,
-        "aspect_ratio": 1.0,
-        "reference_k": LITERATURE_K_UNIFORM_LONG,
-        "finite_difference_k": fd_uniform["coefficient"],
-        "grid_nodes": fd_uniform["grid"],
-        "relative_error": fd_uniform_error,
-        "tolerance": 0.05,
-        "passed": bool(fd_uniform_error < 0.05),
-    })
+    rows.append(
+        {
+            "case": "finite_difference_uniform_limit",
+            "edge_ratio": 1.0,
+            "aspect_ratio": 1.0,
+            "reference_k": LITERATURE_K_UNIFORM_LONG,
+            "finite_difference_k": fd_uniform["coefficient"],
+            "grid_nodes": fd_uniform["grid"],
+            "relative_error": fd_uniform_error,
+            "tolerance": 0.05,
+            "passed": bool(fd_uniform_error < 0.05),
+        }
+    )
 
     # independent integral: quadrature of the energy functionals
     bending_closed, geometric_closed, _ = stress_gradient_matrices(
-        length=6.0, width=1.0, rigidity_x=d, rigidity_y=d, coupling_rigidity=h,
-        basis_x=6, basis_y=6, edge_ratio=-1.0,
+        length=6.0,
+        width=1.0,
+        rigidity_x=d,
+        rigidity_y=d,
+        coupling_rigidity=h,
+        basis_x=6,
+        basis_y=6,
+        edge_ratio=-1.0,
     )
     bending_quad, geometric_quad, _ = stress_gradient_quadrature(
-        length=6.0, width=1.0, rigidity_x=d, rigidity_y=d, coupling_rigidity=h,
-        basis_x=6, basis_y=6, edge_ratio=-1.0,
+        length=6.0,
+        width=1.0,
+        rigidity_x=d,
+        rigidity_y=d,
+        coupling_rigidity=h,
+        basis_x=6,
+        basis_y=6,
+        edge_ratio=-1.0,
     )
     bending_drift = float(
         np.abs(bending_closed - bending_quad).max() / np.abs(bending_closed).max()
     )
     geometric_drift = float(
-        np.abs(geometric_closed - geometric_quad).max()
-        / np.abs(geometric_closed).max()
+        np.abs(geometric_closed - geometric_quad).max() / np.abs(geometric_closed).max()
     )
-    rows.append({
-        "case": "closed_form_vs_quadrature",
-        "bending_relative_difference": bending_drift,
-        "geometric_relative_difference": geometric_drift,
-        "tolerance": 1e-10,
-        "passed": bool(max(bending_drift, geometric_drift) < 1e-10),
-    })
+    rows.append(
+        {
+            "case": "closed_form_vs_quadrature",
+            "bending_relative_difference": bending_drift,
+            "geometric_relative_difference": geometric_drift,
+            "tolerance": 1e-10,
+            "passed": bool(max(bending_drift, geometric_drift) < 1e-10),
+        }
+    )
 
     # basis refinement stability
     coarse = _coefficient(-1.0, 6.0, 12)
     refined = _coefficient(-1.0, 6.0, nb)
     drift = abs(refined - coarse) / refined
-    rows.append({
-        "case": "basis_convergence_pure_bending",
-        "basis_coarse": 12,
-        "basis_refined": nb,
-        "coefficient_coarse": coarse,
-        "coefficient_refined": refined,
-        "relative_drift": drift,
-        "tolerance": 5e-3,
-        "passed": bool(drift < 5e-3),
-    })
+    rows.append(
+        {
+            "case": "basis_convergence_pure_bending",
+            "basis_coarse": 12,
+            "basis_refined": nb,
+            "coefficient_coarse": coarse,
+            "coefficient_refined": refined,
+            "relative_drift": drift,
+            "tolerance": 5e-3,
+            "passed": bool(drift < 5e-3),
+        }
+    )
 
     # monotonicity of k(psi): a gradient is less destabilising than its peak
-    samples = [
-        (ratio, _coefficient(ratio, 6.0)) for ratio in (1.0, 0.5, 0.0, -0.5, -1.0)
-    ]
-    monotone = all(
-        later[1] >= earlier[1] - 1e-12
-        for earlier, later in zip(samples, samples[1:])
+    samples = [(ratio, _coefficient(ratio, 6.0)) for ratio in (1.0, 0.5, 0.0, -0.5, -1.0)]
+    monotone = all(later[1] >= earlier[1] - 1e-12 for earlier, later in zip(samples, samples[1:]))
+    rows.append(
+        {
+            "case": "gradient_monotonicity",
+            "samples": [{"edge_ratio": r, "coefficient_k": k} for r, k in samples],
+            "passed": bool(monotone),
+        }
     )
-    rows.append({
-        "case": "gradient_monotonicity",
-        "samples": [{"edge_ratio": r, "coefficient_k": k} for r, k in samples],
-        "passed": bool(monotone),
-    })
 
     passed = all(bool(row["passed"]) for row in rows)
     if not passed:

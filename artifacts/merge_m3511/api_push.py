@@ -13,7 +13,6 @@ import base64
 import json
 import re
 import subprocess
-import sys
 import time
 import urllib.error
 import urllib.request
@@ -26,7 +25,9 @@ MAIN = "723e12cb594d36c9d366c06ea4237d99429688cd"
 OLD_TIP = "f9bd976b241ff797bc04759c8b35276676f41aa8"
 AUTHOR = {"name": "TensorFEM agent m4018", "email": "tp-agent@tensor.local"}
 
-TOKEN = re.search(r"//[^:@\s]+:([^@\s]+)@github\.com", Path("/root/.git-credentials").read_text()).group(1)
+TOKEN = re.search(
+    r"//[^:@\s]+:([^@\s]+)@github\.com", Path("/root/.git-credentials").read_text()
+).group(1)
 
 
 def api(method: str, path: str, body: dict | None = None) -> dict:
@@ -67,7 +68,10 @@ def local_commits() -> list[str]:
 def tree_entries(ref: str) -> list[dict]:
     """Entries that differ from MAIN (additions/modifications/deletions)."""
     raw = subprocess.run(
-        ["git", "diff", "--raw", "--no-abbrev", "-z", "--no-renames", MAIN, ref], cwd=WT, capture_output=True, check=True
+        ["git", "diff", "--raw", "--no-abbrev", "-z", "--no-renames", MAIN, ref],
+        cwd=WT,
+        capture_output=True,
+        check=True,
     ).stdout.split(b"\0")
     entries = []
     i = 0
@@ -122,7 +126,9 @@ def main() -> None:
                     {"content": base64.b64encode(content).decode(), "encoding": "base64"},
                 )
                 if created["sha"] != sha:
-                    raise SystemExit(f"blob sha mismatch for {e['path']}: local {sha} remote {created['sha']}")
+                    raise SystemExit(
+                        f"blob sha mismatch for {e['path']}: local {sha} remote {created['sha']}"
+                    )
                 known.add(sha)
                 uploaded += 1
             payload.append(
@@ -141,14 +147,22 @@ def main() -> None:
     merge_tree = build_tree(heads[0], main_tree)
     assert merge_tree == tree_merge, f"merge tree {merge_tree} != local {tree_merge}"
     merge_msg = subprocess.run(
-        ["git", "log", "-1", "--format=%B", heads[0]], cwd=WT, capture_output=True, text=True, check=True
+        ["git", "log", "-1", "--format=%B", heads[0]],
+        cwd=WT,
+        capture_output=True,
+        text=True,
+        check=True,
     ).stdout.strip()
     merge_commit = api(
         "POST",
         f"/repos/{REPO}/git/commits",
         {"message": merge_msg, "tree": merge_tree, "parents": [OLD_TIP, MAIN], "author": AUTHOR},
     )
-    print("merge commit:", merge_commit["sha"], "tree ok" if merge_commit["tree"]["sha"] == tree_merge else "TREE MISMATCH")
+    print(
+        "merge commit:",
+        merge_commit["sha"],
+        "tree ok" if merge_commit["tree"]["sha"] == tree_merge else "TREE MISMATCH",
+    )
 
     # commit 2: evidence files on top
     ev_tree_api = api("GET", f"/repos/{REPO}/git/trees/{merge_tree}?recursive=1")
@@ -159,27 +173,46 @@ def main() -> None:
         sha = e["sha"]
         if sha and sha not in ev_known:
             content = git("cat-file", "blob", sha, binary=True)
-            created = api("POST", f"/repos/{REPO}/git/blobs", {"content": base64.b64encode(content).decode(), "encoding": "base64"})
+            created = api(
+                "POST",
+                f"/repos/{REPO}/git/blobs",
+                {"content": base64.b64encode(content).decode(), "encoding": "base64"},
+            )
             if created["sha"] != sha:
-                raise SystemExit(f"blob sha mismatch for {e['path']}: local {sha} remote {created['sha']}")
+                raise SystemExit(
+                    f"blob sha mismatch for {e['path']}: local {sha} remote {created['sha']}"
+                )
             uploaded += 1
         payload.append({"path": e["path"], "mode": e["mode"], "type": "blob", "sha": sha})
     ev_tree = api("POST", f"/repos/{REPO}/git/trees", {"base_tree": merge_tree, "tree": payload})
     assert ev_tree["sha"] == tree_head, f"evidence tree {ev_tree['sha']} != local {tree_head}"
     ev_msg = subprocess.run(
-        ["git", "log", "-1", "--format=%B", heads[1]], cwd=WT, capture_output=True, text=True, check=True
+        ["git", "log", "-1", "--format=%B", heads[1]],
+        cwd=WT,
+        capture_output=True,
+        text=True,
+        check=True,
     ).stdout.strip()
     ev_commit = api(
         "POST",
         f"/repos/{REPO}/git/commits",
-        {"message": ev_msg, "tree": ev_tree["sha"], "parents": [merge_commit["sha"]], "author": AUTHOR},
+        {
+            "message": ev_msg,
+            "tree": ev_tree["sha"],
+            "parents": [merge_commit["sha"]],
+            "author": AUTHOR,
+        },
     )
     print(f"evidence commit: {ev_commit['sha']} ({uploaded} new blobs)")
 
     ref = api(
         "PATCH",
         f"/repos/{REPO}/git/{REF}",
-        {"sha": ev_commit["sha"], "force": False, "message": "merge main into agent/m3511 (PR #89 cure)"},
+        {
+            "sha": ev_commit["sha"],
+            "force": False,
+            "message": "merge main into agent/m3511 (PR #89 cure)",
+        },
     )
     print("ref updated:", ref.get("object", {}).get("sha"), "->", REF)
     print(json.dumps({"merge_commit": merge_commit["sha"], "evidence_commit": ev_commit["sha"]}))

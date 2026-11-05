@@ -30,12 +30,12 @@ def git(*args: str) -> str:
 
 
 def changed(ref: str) -> set[str]:
-    return {l for l in git("diff", "--name-only", f"{BASE}..{ref}").splitlines() if l}
+    return {ln for ln in git("diff", "--name-only", f"{BASE}..{ref}").splitlines() if ln}
 
 
 def added_lines(ref: str, path: str) -> list[str]:
     out = git("diff", "-U0", f"{BASE}..{ref}", "--", path)
-    return [l[1:] for l in out.splitlines() if l.startswith("+") and not l.startswith("+++")]
+    return [ln[1:] for ln in out.splitlines() if ln.startswith("+") and not ln.startswith("+++")]
 
 
 def side_lines(ref: str, path: str) -> list[str]:
@@ -93,13 +93,16 @@ def main() -> int:
             fails += len(lost)
         base = side_lines(BASE, path)
         for ref, other, label in ((OURS, THEIRS, "branch"), (THEIRS, OURS, "main")):
-            dropped = [l for l in base if l.strip() and l not in set(side_lines(ref, path))]
+            dropped = [ln for ln in base if ln.strip() and ln not in set(side_lines(ref, path))]
             kept_by_other = set(side_lines(other, path))
             for line in dropped:
                 if line in kept_by_other and line in merged_lines:
                     print(f"    RESURRECTED deletion by {label}: {line.strip()[:110]}")
                     fails += 1
-    print("\nRESULT:", "FAIL" if fails else "PASS (no added content lost, no dropped line resurrected)")
+    print(
+        "\nRESULT:",
+        "FAIL" if fails else "PASS (no added content lost, no dropped line resurrected)",
+    )
     return 1 if fails else 0
 
 

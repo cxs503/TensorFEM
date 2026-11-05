@@ -85,7 +85,9 @@ def resolve_test() -> None:
         raise SystemExit(f"expected 1 test conflict block, found {len(blocks)}")
     m = blocks[0]
     if m.group("ours") != "" or m.group("theirs") != TEST_UNION:
-        raise SystemExit(f"test block mismatch: ours={m.group('ours')!r} theirs={m.group('theirs')!r}")
+        raise SystemExit(
+            f"test block mismatch: ours={m.group('ours')!r} theirs={m.group('theirs')!r}"
+        )
     TEST.write_text(text[: m.start()] + TEST_UNION + text[m.end() :], encoding="utf-8")
 
 
@@ -94,7 +96,9 @@ resolve_test()
 for path in (DOC, TEST):
     if BLOCK.search(path.read_text(encoding="utf-8")):
         raise SystemExit(f"leftover conflict markers in {path}")
-    if "<<<<<<<" in path.read_text(encoding="utf-8") or ">>>>>>>" in path.read_text(encoding="utf-8"):
+    if "<<<<<<<" in path.read_text(encoding="utf-8") or ">>>>>>>" in path.read_text(
+        encoding="utf-8"
+    ):
         raise SystemExit(f"leftover raw markers in {path}")
 print("resolved:", DOC.name, TEST.name)
 sys.exit(0)

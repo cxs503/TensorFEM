@@ -21,8 +21,8 @@ CONFLICT_ROWS = [
     (
         "tests/test_element_rank_audit.py",
         "content (1 hunk)",
-        "语义并集：clean 元素清单同时包含 main 新增的 \"tet10 (3-D, straight edges)\" 与分支的 "
-        "\"hex20 (3x3x3 integration)\"，任一侧新增元素不得丢失。",
+        '语义并集：clean 元素清单同时包含 main 新增的 "tet10 (3-D, straight edges)" 与分支的 '
+        '"hex20 (3x3x3 integration)"，任一侧新增元素不得丢失。',
     ),
     (
         "docs/benchmark-qualification-status.md",
@@ -46,12 +46,14 @@ for name, g in data["groups"].items():
     )
 
 file_rows = [
-    f"| `{path}` | {v['checked']} | {v['reworded']} | {v['lost']} |" for path, v in loss["files"].items()
+    f"| `{path}` | {v['checked']} | {v['reworded']} | {v['lost']} |"
+    for path, v in loss["files"].items()
 ]
 
-report = f"""# PR #89（`agent/m3511`）与 main 的三方合并治愈
+report = (
+    f"""# PR #89（`agent/m3511`）与 main 的三方合并治愈
 
-仓库 TensorFEM · 任务 m4018 · 旧分支 SHA `{data['old_branch_sha']}` · 合并提交 `{data['merge_commit_sha']}`
+仓库 TensorFEM · 任务 m4018 · 旧分支 SHA `{data["old_branch_sha"]}` · 合并提交 `{data["merge_commit_sha"]}`
 
 ## 1. 案例与范围
 
@@ -67,7 +69,9 @@ PR #89 带来的是「秩亏审计 + HEX20 畸变/曲率鉴定」一批交付（
 
 | 文件 | 类型 | 解法 |
 |---|---|---|
-""" + "\n".join(f"| `{p}` | {k} | {v} |" for p, k, v in CONFLICT_ROWS) + f"""
+"""
+    + "\n".join(f"| `{p}` | {k} | {v} |" for p, k, v in CONFLICT_ROWS)
+    + """
 
 机械 overlay（整文件取一侧）在本仓有静默丢内容的前科，因此两处冲突均按**语义并集**逐块改写：
 两侧的措辞、结论、数字与链接全部落盘，冲突块以外的自动合并区域逐行复核。
@@ -82,9 +86,11 @@ PR #89 带来的是「秩亏审计 + HEX20 畸变/曲率鉴定」一批交付（
 
 | 文件 | 检查新增行 | 改写命中 | 丢失 |
 |---|---:|---:|---:|
-""" + "\n".join(file_rows) + f"""
+"""
+    + "\n".join(file_rows)
+    + f"""
 
-合计 {loss['checked']} 行新增内容，丢失 {loss['lost']} 行，删除复活 0 行 → **PASS**。
+合计 {loss["checked"]} 行新增内容，丢失 {loss["lost"]} 行，删除复活 0 行 → **PASS**。
 完整输出见 `loss_audit.txt`。
 
 ## 4. 测试证据（main 基线 vs 合并后）
@@ -94,12 +100,14 @@ main 基线在 `git worktree add /tmp/m4018_main origin/main`（`723e12c`）上�
 
 | 测试组 | main 基线通过 | 合并后通过 | 差值 | 文件 |
 |---|---:|---:|---:|---|
-""" + "\n".join(group_rows) + f"""
+"""
+    + "\n".join(group_rows)
+    + f"""
 
-- 双方共有的核心测试：基线 {tot['baseline_passed']} → 合并后 {tot['shared_tests_passed_after_merge']}
-  （回归 {tot['shared_tests_regression']}）。
-- PR 自带新测试 `tests/test_hex20_distortion.py`：{tot['branch_only_tests']} 项全部通过。
-- 合并后合计 {tot['merged_passed']} 项通过、0 失败。原始日志：`group_a_*.log`、`group_b_*.log`、
+- 双方共有的核心测试：基线 {tot["baseline_passed"]} → 合并后 {tot["shared_tests_passed_after_merge"]}
+  （回归 {tot["shared_tests_regression"]}）。
+- PR 自带新测试 `tests/test_hex20_distortion.py`：{tot["branch_only_tests"]} 项全部通过。
+- 合并后合计 {tot["merged_passed"]} 项通过、0 失败。原始日志：`group_a_*.log`、`group_b_*.log`、
   `branch_only_hex20_distortion.log`。
 
 ## 5. 注意点与局限
@@ -112,6 +120,7 @@ main 基线在 `git worktree add /tmp/m4018_main origin/main`（`723e12c`）上�
 - 本单只治愈合并面，不改变任何数值算法；`hex20` 积分规则与板壳 SRI/MITC 默认值均未动。
 - PR 合入 main 由 merge_governor / pr-gate 记账；本单的产物是「分支已可与 main 干净合并且测试不低于基线」。
 """
+)
 
 (HERE / "merge_report.md").write_text(report, encoding="utf-8")
 print("wrote", HERE / "merge_report.md", len(report), "chars")

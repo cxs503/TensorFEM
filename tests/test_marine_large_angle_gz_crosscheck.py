@@ -18,6 +18,7 @@ complementary and neither is a substitute for the other.
 Reference barge throughout: ``B = 12 m, D = 6 m, T = 2 m, KG = 2.1 m`` unless a
 case says otherwise.
 """
+
 import json
 from pathlib import Path
 
@@ -136,15 +137,21 @@ def test_crosscheck_evidence_matches_the_current_implementation():
     for row in evidence["geometries"]:
         primary = next(g for g in GEOMETRIES if g["name"] == row["name"])
         assert row["geometry"]["beam"] == primary["beam"]
-        curve = _curve(primary, [row["angle_of_max_difference_deg"], row["angle_of_max_difference_deg"] + 0.5])
+        curve = _curve(
+            primary, [row["angle_of_max_difference_deg"], row["angle_of_max_difference_deg"] + 0.5]
+        )
         oracle = _oracle(primary)
         replayed = abs(curve.gz[0] - oracle.gz(row["angle_of_max_difference_deg"]))
         assert replayed == pytest.approx(row["max_abs_gz_difference_m"], rel=1e-9, abs=1e-18)
     for row in evidence["ninety_degree_endpoint"]:
         assert row["merged_oracle_refuses_90_deg"] is True
         assert row["abs_error_m"] < 1e-12
-        assert row["xb_at_90_deg_m"] == pytest.approx(row["xb_at_90_deg_analytic_m"], rel=0, abs=1e-12)
-        assert row["zb_at_90_deg_m"] == pytest.approx(row["zb_at_90_deg_analytic_m"], rel=0, abs=1e-12)
+        assert row["xb_at_90_deg_m"] == pytest.approx(
+            row["xb_at_90_deg_analytic_m"], rel=0, abs=1e-12
+        )
+        assert row["zb_at_90_deg_m"] == pytest.approx(
+            row["zb_at_90_deg_analytic_m"], rel=0, abs=1e-12
+        )
 
 
 def test_crosscheck_gate_detects_an_injected_disagreement():

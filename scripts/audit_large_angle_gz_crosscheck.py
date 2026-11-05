@@ -28,6 +28,7 @@ Output: ``benchmarks/large_angle_gz_crosscheck.json`` (deterministic, sorted).
 Exit status is non-zero when any tolerance fails, so the audit is usable as a
 gate.  Tolerances are set from the problem scale, not fitted to the result.
 """
+
 from __future__ import annotations
 
 import json

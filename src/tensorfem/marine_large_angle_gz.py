@@ -92,6 +92,7 @@ damage stability, seakeeping, and any classification-society regulation.
 
 All quantities are SI (m, kg, s, N).
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass

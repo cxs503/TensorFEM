@@ -68,13 +68,13 @@ def parse_loss() -> dict:
             continue
         m = re.match(r"\s+additions from .*: (\d+) checked, (\d+) reworded, (\d+) lost", line)
         if m and current:
-            c, r, l = map(int, m.groups())
+            c, r, lost_count = map(int, m.groups())
             checked += c
             reworded += r
-            lost += l
+            lost += lost_count
             files[current]["checked"] += c
             files[current]["reworded"] += r
-            files[current]["lost"] += l
+            files[current]["lost"] += lost_count
     if lost:
         raise SystemExit("loss audit reports lost lines")
     if "PASS" not in text:
@@ -83,7 +83,9 @@ def parse_loss() -> dict:
 
 
 def sha(ref: str) -> str:
-    return subprocess.run(["git", "rev-parse", ref], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
+    return subprocess.run(
+        ["git", "rev-parse", ref], cwd=WT, capture_output=True, text=True, check=True
+    ).stdout.strip()
 
 
 def main() -> None:
@@ -116,22 +118,41 @@ def main() -> None:
         "loss_audit": loss,
     }
     data["totals"]["branch_only_tests"] = branch_only_total
-    (HERE / "merge_evidence.json").write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    (HERE / "merge_evidence.json").write_text(
+        json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
 
     # figure: (a) baseline vs merged tests, (b) per-file line preservation
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2))
-    labels = ["A: rank/quadrature\n(shared)", "A: branch-only\nhex20 distortion", "B: solid3D/B-bar/\nlocking (shared)"]
-    base = [groups["A_rank_quadrature_core"]["baseline_passed"], 0, groups["B_solid3d_bbar_locking"]["baseline_passed"]]
+    labels = [
+        "A: rank/quadrature\n(shared)",
+        "A: branch-only\nhex20 distortion",
+        "B: solid3D/B-bar/\nlocking (shared)",
+    ]
+    base = [
+        groups["A_rank_quadrature_core"]["baseline_passed"],
+        0,
+        groups["B_solid3d_bbar_locking"]["baseline_passed"],
+    ]
     merged_only = [0, branch_only_total, 0]
     extra = [
-        groups["A_rank_quadrature_core"]["merged_passed"] - groups["A_rank_quadrature_core"]["baseline_passed"] - branch_only_total,
+        groups["A_rank_quadrature_core"]["merged_passed"]
+        - groups["A_rank_quadrature_core"]["baseline_passed"]
+        - branch_only_total,
         0,
-        groups["B_solid3d_bbar_locking"]["merged_passed"] - groups["B_solid3d_bbar_locking"]["baseline_passed"],
+        groups["B_solid3d_bbar_locking"]["merged_passed"]
+        - groups["B_solid3d_bbar_locking"]["baseline_passed"],
     ]
     x = range(len(labels))
     axes[0].bar(x, base, label="main baseline", color="#4c72b0")
     axes[0].bar(x, merged_only, bottom=base, label="new tests from #89", color="#55a868")
-    axes[0].bar(x, extra, bottom=[b + m for b, m in zip(base, merged_only)], label="delta (0 expected)", color="#c44e52")
+    axes[0].bar(
+        x,
+        extra,
+        bottom=[b + m for b, m in zip(base, merged_only)],
+        label="delta (0 expected)",
+        color="#c44e52",
+    )
     axes[0].set_xticks(list(x), labels, fontsize=8)
     axes[0].set_ylabel("pytest tests passed")
     axes[0].set_title(f"tests: merged {merged_total} vs baseline {base_total}")
@@ -154,7 +175,13 @@ def main() -> None:
         axes[1].text(k + 3, i, str(k), va="center", fontsize=8)
     fig.tight_layout()
     fig.savefig(HERE / "merge_verification.png", dpi=100, optimize=True)
-    print(json.dumps({k: data[k] for k in ("old_branch_sha", "merge_commit_sha", "totals")}, ensure_ascii=False, indent=2))
+    print(
+        json.dumps(
+            {k: data[k] for k in ("old_branch_sha", "merge_commit_sha", "totals")},
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     print("loss:", loss["checked"], "checked /", loss["lost"], "lost")
     print("figure:", HERE / "merge_verification.png")
 
