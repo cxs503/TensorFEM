@@ -1,0 +1,11 @@
+== control --merge 7accc4b ==
+CROSSCHECK_FAIL -> /tmp/xc_7accc4b.json
+exit=1
+== control --merge 6b4c4fa ==
+CROSSCHECK_FAIL -> /tmp/xc_6b4c4fa.json
+exit=1
+== control: docs/marine-hydrostatics.md silently overlaid with main's version ==
+CROSSCHECK_FAIL -> /tmp/xc_ctl_prose.json
+exit=0
+  deletion deletion-propagated              .scratch/proto_ritz.py
+UNION_FAIL -> /tmp/uni_ctl_prose.json
