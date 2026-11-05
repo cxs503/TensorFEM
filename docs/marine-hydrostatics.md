@@ -64,3 +64,4 @@ large-angle `GZ` curve, cross-curves, free-surface, damage
 stability, compartment flooding, trim, arbitrary-hull integration, wave-load,
 seakeeping, mooring, or classification-rule implementation. Passing its tests
 does not constitute design approval or regulatory/classification certification.
+This is not a large-angle `GZ` curve, cross-curves, free-surface, damage
