@@ -1,0 +1,182 @@
+{
+ "qualification": {
+  "schema": "tensorfem.shell4-curved-buckling/1.1",
+  "reference": "long-tube external-pressure ring buckling, n = 2 (inextensional)",
+  "reference_pressure": 57692.3076923077,
+  "society_form_pressure": 57692.3076923077,
+  "society_form_relative_gap": 0.0,
+  "ring_wave_factors": {
+   "2": 1.0,
+   "3": 2.6666666666666665,
+   "4": 5.0,
+   "5": 8.0
+  },
+  "tolerance": 0.03,
+  "case": {
+   "radius": 1.0,
+   "length": 8.0,
+   "thickness": 0.01,
+   "young": 210000000000.0,
+   "poisson": 0.3,
+   "radius_over_thickness": 100.0
+  },
+  "flat_plate_solver_cross_check": {
+   "generic_solver": 757259.2749259335,
+   "production_flat_path": 757259.2749258071,
+   "navier": 759200.3385453355,
+   "generic_vs_flat_relative": 1.667997056815179e-13
+  },
+  "meshes": [
+   {
+    "n_circ": 16,
+    "dof": 480,
+    "pressure": 2158612.7070686626,
+    "relative_error": 36.415953589190146,
+    "circumferential_wave": 8,
+    "nyquist_wave": 8,
+    "elastic_fraction": 0.0007501544916367853,
+    "rayleigh_factor": 2158612.707068214
+   },
+   {
+    "n_circ": 32,
+    "dof": 960,
+    "pressure": 130252.6858263498,
+    "relative_error": 1.2577132209900628,
+    "circumferential_wave": 16,
+    "nyquist_wave": 16,
+    "elastic_fraction": 1.687771292888176e-05,
+    "rayleigh_factor": 130252.68582626907
+   },
+   {
+    "n_circ": 48,
+    "dof": 1440,
+    "pressure": 25551.376682987535,
+    "relative_error": -0.5571094708282162,
+    "circumferential_wave": 24,
+    "nyquist_wave": 24,
+    "elastic_fraction": 3.2376573631219126e-06,
+    "rayleigh_factor": 25551.376682978917
+   },
+   {
+    "n_circ": 64,
+    "dof": 1920,
+    "pressure": 8064.774053580565,
+    "relative_error": -0.8602105830712703,
+    "circumferential_wave": 32,
+    "nyquist_wave": 32,
+    "elastic_fraction": 1.0272191549398907e-06,
+    "rayleigh_factor": 8064.774053561792
+   }
+  ],
+  "refinement_ratios": [
+   16.572500546717944,
+   5.097677805872349,
+   3.1682693790588394
+  ],
+  "monotone_degradation": true,
+  "ends_study": [
+   {
+    "ends": "free",
+    "pressure": 130252.6858263498,
+    "relative_error": 1.2577132209900628,
+    "circumferential_wave": 16
+   },
+   {
+    "ends": "diaphragm",
+    "pressure": 17356534.859450474,
+    "relative_error": 299.84660423047484,
+    "circumferential_wave": 13
+   }
+  ],
+  "axial_subdivision_study": [
+   {
+    "n_axial": 1,
+    "pressure": 868656.1654689338,
+    "relative_error": 14.056706868128181,
+    "circumferential_wave": 15
+   },
+   {
+    "n_axial": 2,
+    "pressure": 14186.44605959974,
+    "relative_error": -0.7541016016336046,
+    "circumferential_wave": 16
+   },
+   {
+    "n_axial": 4,
+    "pressure": 130252.6858263498,
+    "relative_error": 1.2577132209900628,
+    "circumferential_wave": 16
+   },
+   {
+    "n_axial": 8,
+    "pressure": 717539.8248158259,
+    "relative_error": 11.437356963474313,
+    "circumferential_wave": 16
+   }
+  ],
+  "length_study": [
+   {
+    "length_over_radius": 2.0,
+    "pressure": 2311490.981425596,
+    "relative_error": 39.065843678043656,
+    "circumferential_wave": 16
+   },
+   {
+    "length_over_radius": 4.0,
+    "pressure": 534593.6794758381,
+    "relative_error": 8.26629044424786,
+    "circumferential_wave": 16
+   },
+   {
+    "length_over_radius": 8.0,
+    "pressure": 130252.6858263498,
+    "relative_error": 1.2577132209900628,
+    "circumferential_wave": 16
+   }
+  ],
+  "thickness_scaling": [
+   {
+    "radius_over_thickness": 50.0,
+    "reference": 461538.4615384616,
+    "pressure": 260505.37165260816,
+    "relative_error": -0.4355716947526824
+   },
+   {
+    "radius_over_thickness": 100.0,
+    "reference": 57692.3076923077,
+    "pressure": 130252.6858263498,
+    "relative_error": 1.2577132209900628
+   },
+   {
+    "radius_over_thickness": 200.0,
+    "reference": 7211.538461538463,
+    "pressure": 65126.342913134555,
+    "relative_error": 8.030852883954656
+   }
+  ],
+  "worst_absolute_relative_error": 36.415953589190146,
+  "passed": false,
+  "verdict": "curved-shell-geometric-stiffness-unqualified",
+  "blocking_mechanism": "lowest mode sits at the mesh Nyquist wave and its elastic energy is many orders below a stiff direction: faceted bilinear Shell4 admits a facet-scale near-mechanism under hoop compression, so the load factor falls with refinement instead of converging",
+  "boundary": "linear initial-stress eigenbuckling of isotropic Shell4 facets; uniform prestress supplied in closed form (no nonlinear prebuckling solve, no load-follower/pressure stiffness term, no imperfections, no postbuckling).  A failing verdict is a capability statement, not a discretisation tweak."
+ },
+ "mode_figure_case": {
+  "n_circ": 32,
+  "n_axial": 4,
+  "pressure": 130252.6858263498,
+  "circumferential_wave": 16,
+  "diagnostics": {
+   "rayleigh_factor": 130252.68582626907,
+   "elastic_energy_per_dof": 1403389.5933991314,
+   "stiffest_elastic_eigenvalue": 83150459977.16905,
+   "elastic_fraction": 1.687771292888176e-05,
+   "active_dof": 320,
+   "passive_dof": 640,
+   "mode_count": 159,
+   "n_circ": 32,
+   "n_axial": 4,
+   "ends": "free",
+   "dof": 960
+  }
+ }
+}
