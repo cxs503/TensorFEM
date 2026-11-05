@@ -321,3 +321,40 @@ def probe_errors(
         "worst_site_error": max(site["error"] for site in sites),
         "worst_boundary_spread": max(site["spread"] for site in sites),
     }
+
+def relative_error(value: float, reference: float, scale: float, floor_fraction: float = 0.05) -> float:
+    """Relative error with the audit's 5 %-of-scale floor (stable near zero stress)."""
+    return abs(value - reference) / max(abs(reference), floor_fraction * abs(scale))
+
+
+def recovery_verdict(
+    errors,
+    gate: float = 0.03,
+    require_monotone: bool = True,
+    gate_tolerance: float = 0.0,
+) -> dict:
+    """Fail-closed verdict for a recovered-stress accuracy ladder.
+
+    ``errors`` is the per-level worst-site relative error, coarsest level first.
+    The verdict is ``True`` only when every level is finite and non-negative, the
+    finest level is strictly below ``gate - gate_tolerance``, and (by default) the
+    ladder decreases monotonically.  Missing, NaN or ``withheld`` input is a
+    failure, never a pass.
+    """
+    values = [float(value) for value in errors]
+    if not values:
+        raise ValueError("an accuracy verdict needs at least one level")
+    if any(not math.isfinite(value) or value < 0.0 for value in values):
+        raise ValueError("accuracy ladder contains a non-finite or negative error")
+    monotone = all(b < a for a, b in zip(values, values[1:]))
+    qualified = (values[-1] is not None) and (values[-1] < gate - gate_tolerance)
+    if require_monotone and not monotone:
+        qualified = False
+    return {
+        "levels": len(values),
+        "finest": values[-1],
+        "gate": float(gate),
+        "monotone": bool(monotone),
+        "require_monotone": bool(require_monotone),
+        "qualified": bool(qualified),
+    }

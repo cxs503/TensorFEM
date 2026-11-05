@@ -122,8 +122,7 @@ def cook_fields(n, reference=None):
     return {'mesh':n,'nodes':nodes.tolist(),'elements':cells.tolist(),
             'displacement':u.reshape(-1,2).tolist(),'centers':nodes[cells].mean(1).tolist(),
             'stress':stress.tolist(),'von_mises':vm.tolist(), 'reference':23.96,
-            'nodal_stress':nodal.tolist(),'stress_recovery':recovery,
-            'verification':{'response':response,'response_relative_error':error,
+            'nodal_stress':nodal.tolist(),'stress_recovery':recovery,            'verification':{'response':response,'response_relative_error':error,
                             'relative_residual':result.iterative.relative_residual,
                             'passed':error<.03},'stress_accuracy_qualified':False}
 
@@ -137,7 +136,10 @@ def build_additional_reports():
              'scope':'displacement, rotation, moment, shear and top bending stress against exact Mindlin solution',
              'monotone':monotone,'status':'qualified' if monotone and plate[-1]['verification']['passed'] else 'blocked'},
             'cook-membrane':{'physical_case_id':'cook-membrane','cases':cook,
-             'scope':'published scalar displacement reference; stress fields have no independent accuracy oracle',
+             'scope':'published scalar displacement reference; the element-centre stress field '
+                     'has no independent accuracy certification (stress_accuracy_qualified stays False), '
+                     'while the recovered nodal field (stress_nodal) is certified against the independent Q8 '
+                     'reference in benchmarks/cook_stress_recovery_evidence.json',
              'status':'response-qualified' if cook[-1]['verification']['passed'] and all(
                  b['verification']['response_relative_error']<a['verification']['response_relative_error']
                  for a,b in zip(cook,cook[1:])) else 'blocked'}}

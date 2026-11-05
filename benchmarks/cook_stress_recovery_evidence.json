@@ -1,0 +1,512 @@
+{
+ "case": "cook-membrane-q4-stress-recovery",
+ "generated_utc": "2026-11-04T11:50:48.000143+00:00",
+ "environment": {
+  "tensorfem": "0.45.0",
+  "python": "3.11.6",
+  "numpy": "2.4.6",
+  "torch": "2.7.1"
+ },
+ "problem": {
+  "corners": [
+   [
+    0.0,
+    0.0
+   ],
+   [
+    48.0,
+    44.0
+   ],
+   [
+    48.0,
+    60.0
+   ],
+   [
+    0.0,
+    44.0
+   ]
+  ],
+  "young": 1.0,
+  "poisson": 0.3333333333333333,
+  "thickness": 1.0,
+  "loaded_edge_resultant": 1.0,
+  "gate": 0.03
+ },
+ "recovery": {
+  "method": "2x2 Gauss (Barlow) stresses -> linear extrapolation to nodes -> area-weighted nodal averaging -> bilinear interpolation",
+  "implementation": "tensorfem.stress_recovery.recover_nodal_stress",
+  "production_field": "additional_benchmark_fields.cook_fields()['stress_nodal']"
+ },
+ "reference": {
+  "source": "benchmarks/cook_q4_pointwise_protocol.json (independent Q8, Richardson over n=12/24/48)",
+  "levels": [
+   12,
+   24,
+   48
+  ],
+  "scale_von_mises": 0.15608450843512053,
+  "probes": [
+   {
+    "point": [
+     24.124999999999996,
+     37.12488606770833
+    ],
+    "parent": [
+     0.5026041666666666,
+     0.5015625
+    ],
+    "von_mises": 0.06832987814468466,
+    "gci": 0.00024200134013329907
+   },
+   {
+    "point": [
+     14.525,
+     31.133636067708334
+    ],
+    "parent": [
+     0.3026041666666667,
+     0.5015625
+    ],
+    "von_mises": 0.07245953063697635,
+    "gci": 0.0006582553990938087
+   },
+   {
+    "point": [
+     33.724999999999994,
+     43.116136067708325
+    ],
+    "parent": [
+     0.7026041666666666,
+     0.5015625
+    ],
+    "von_mises": 0.08689530172651355,
+    "gci": 0.00013223896840464084
+   },
+   {
+    "point": [
+     24.124999999999996,
+     29.643115234375
+    ],
+    "parent": [
+     0.5026041666666666,
+     0.2515625
+    ],
+    "von_mises": 0.15608450843512053,
+    "gci": 2.4860313270238627e-05
+   },
+   {
+    "point": [
+     24.125,
+     44.60665690104167
+    ],
+    "parent": [
+     0.5026041666666666,
+     0.7515625
+    ],
+    "von_mises": 0.08406092035299857,
+    "gci": 3.776713507534955e-05
+   }
+  ]
+ },
+ "ladder": [
+  {
+   "divisions": 8,
+   "nodes": 81,
+   "elements": 64,
+   "solver_seconds": 0.174,
+   "response_relative_error": 0.07849818908672017,
+   "max_recovered_relative_error": 0.08175852687643816,
+   "max_raw_relative_error": 0.24240856482937678,
+   "max_element_spread": 0.0,
+   "probes": [
+    {
+     "point": [
+      24.124999999999996,
+      37.12488606770833
+     ],
+     "reference": 0.06832987814468466,
+     "gci": 0.00024200134013329907,
+     "recovered": 0.0678850552908597,
+     "recovered_relative_error": 0.006509931905382287,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 36,
+     "raw": 0.06119530809987016,
+     "raw_relative_error": 0.10441362166207081
+    },
+    {
+     "point": [
+      14.525,
+      31.133636067708334
+     ],
+     "reference": 0.07245953063697635,
+     "gci": 0.0006582553990938087,
+     "recovered": 0.0703938831159517,
+     "recovered_relative_error": 0.028507602835210064,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 34,
+     "raw": 0.05489471980705666,
+     "raw_relative_error": 0.24240856482937678
+    },
+    {
+     "point": [
+      33.724999999999994,
+      43.116136067708325
+     ],
+     "reference": 0.08689530172651355,
+     "gci": 0.00013223896840464084,
+     "recovered": 0.08391457056475757,
+     "recovered_relative_error": 0.034302558395358,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 37,
+     "raw": 0.07642145812217725,
+     "raw_relative_error": 0.12053406106236597
+    },
+    {
+     "point": [
+      24.124999999999996,
+      29.643115234375
+     ],
+     "reference": 0.15608450843512053,
+     "gci": 2.4860313270238627e-05,
+     "recovered": 0.14504670524260854,
+     "recovered_relative_error": 0.07071683989125713,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 20,
+     "raw": 0.12830232361146862,
+     "raw_relative_error": 0.1779945050421202
+    },
+    {
+     "point": [
+      24.125,
+      44.60665690104167
+     ],
+     "reference": 0.08406092035299857,
+     "gci": 3.776713507534955e-05,
+     "recovered": 0.07718822333705981,
+     "recovered_relative_error": 0.08175852687643816,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 52,
+     "raw": 0.09556227244900704,
+     "raw_relative_error": 0.13682162945290904
+    }
+   ]
+  },
+  {
+   "divisions": 16,
+   "nodes": 289,
+   "elements": 256,
+   "solver_seconds": 0.343,
+   "response_relative_error": 0.022103035890315065,
+   "max_recovered_relative_error": 0.019867607093564818,
+   "max_raw_relative_error": 0.10945981698971997,
+   "max_element_spread": 0.0,
+   "probes": [
+    {
+     "point": [
+      24.124999999999996,
+      37.12488606770833
+     ],
+     "reference": 0.06832987814468466,
+     "gci": 0.00024200134013329907,
+     "recovered": 0.06825570313666589,
+     "recovered_relative_error": 0.0010855428113264662,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 136,
+     "raw": 0.062328013225878505,
+     "raw_relative_error": 0.08783661089073726
+    },
+    {
+     "point": [
+      14.525,
+      31.133636067708334
+     ],
+     "reference": 0.07245953063697635,
+     "gci": 0.0006582553990938087,
+     "recovered": 0.07223285276834901,
+     "recovered_relative_error": 0.00312833752350682,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 132,
+     "raw": 0.06458938624495851,
+     "raw_relative_error": 0.10861434407362393
+    },
+    {
+     "point": [
+      33.724999999999994,
+      43.116136067708325
+     ],
+     "reference": 0.08689530172651355,
+     "gci": 0.00013223896840464084,
+     "recovered": 0.08638297854397638,
+     "recovered_relative_error": 0.005895867467606186,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 139,
+     "raw": 0.08516539409371282,
+     "raw_relative_error": 0.01990795357665351
+    },
+    {
+     "point": [
+      24.124999999999996,
+      29.643115234375
+     ],
+     "reference": 0.15608450843512053,
+     "gci": 2.4860313270238627e-05,
+     "recovered": 0.15319899537413156,
+     "recovered_relative_error": 0.018486863878540438,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 72,
+     "raw": 0.14437399223264788,
+     "raw_relative_error": 0.07502676799818574
+    },
+    {
+     "point": [
+      24.125,
+      44.60665690104167
+     ],
+     "reference": 0.08406092035299857,
+     "gci": 3.776713507534955e-05,
+     "recovered": 0.08239083101550175,
+     "recovered_relative_error": 0.019867607093564818,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 200,
+     "raw": 0.09326221331082522,
+     "raw_relative_error": 0.10945981698971997
+    }
+   ]
+  },
+  {
+   "divisions": 32,
+   "nodes": 1089,
+   "elements": 1024,
+   "solver_seconds": 1.64,
+   "response_relative_error": 0.005941821548014162,
+   "max_recovered_relative_error": 0.004909541215742226,
+   "max_raw_relative_error": 0.059268426067743206,
+   "max_element_spread": 0.0,
+   "probes": [
+    {
+     "point": [
+      24.124999999999996,
+      37.12488606770833
+     ],
+     "reference": 0.06832987814468466,
+     "gci": 0.00024200134013329907,
+     "recovered": 0.06831595392374583,
+     "recovered_relative_error": 0.00020377939075716498,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 528,
+     "raw": 0.06498482951618693,
+     "raw_relative_error": 0.04895440646644763
+    },
+    {
+     "point": [
+      14.525,
+      31.133636067708334
+     ],
+     "reference": 0.07245953063697635,
+     "gci": 0.0006582553990938087,
+     "recovered": 0.07245967308480857,
+     "recovered_relative_error": 1.965895044560364e-06,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 521,
+     "raw": 0.06832943185967605,
+     "raw_relative_error": 0.05699869625145905
+    },
+    {
+     "point": [
+      33.724999999999994,
+      43.116136067708325
+     ],
+     "reference": 0.08689530172651355,
+     "gci": 0.00013223896840464084,
+     "recovered": 0.08677568795348606,
+     "recovered_relative_error": 0.0013765275066764298,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 534,
+     "raw": 0.08449132264148114,
+     "raw_relative_error": 0.027665236638437365
+    },
+    {
+     "point": [
+      24.124999999999996,
+      29.643115234375
+     ],
+     "reference": 0.15608450843512053,
+     "gci": 2.4860313270238627e-05,
+     "recovered": 0.1553481840261529,
+     "recovered_relative_error": 0.00471747270981532,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 272,
+     "raw": 0.15109317721773824,
+     "raw_relative_error": 0.03197838957513862
+    },
+    {
+     "point": [
+      24.125,
+      44.60665690104167
+     ],
+     "reference": 0.08406092035299857,
+     "gci": 3.776713507534955e-05,
+     "recovered": 0.0836482197998923,
+     "recovered_relative_error": 0.004909541215742226,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 784,
+     "raw": 0.08904307879612672,
+     "raw_relative_error": 0.059268426067743206
+    }
+   ]
+  },
+  {
+   "divisions": 64,
+   "nodes": 4225,
+   "elements": 4096,
+   "solver_seconds": 11.751,
+   "response_relative_error": 0.0014809587269155183,
+   "max_recovered_relative_error": 0.0012100624228371013,
+   "max_raw_relative_error": 0.0305303923134105,
+   "max_element_spread": 0.0,
+   "probes": [
+    {
+     "point": [
+      24.124999999999996,
+      37.12488606770833
+     ],
+     "reference": 0.06832987814468466,
+     "gci": 0.00024200134013329907,
+     "recovered": 0.06832450205895818,
+     "recovered_relative_error": 7.867840353965348e-05,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 2080,
+     "raw": 0.06672662399893534,
+     "raw_relative_error": 0.023463442190757716
+    },
+    {
+     "point": [
+      14.525,
+      31.133636067708334
+     ],
+     "reference": 0.07245953063697635,
+     "gci": 0.0006582553990938087,
+     "recovered": 0.07247875617203946,
+     "recovered_relative_error": 0.00026532789950604223,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 2067,
+     "raw": 0.07024731273978388,
+     "raw_relative_error": 0.0305303923134105
+    },
+    {
+     "point": [
+      33.724999999999994,
+      43.116136067708325
+     ],
+     "reference": 0.08689530172651355,
+     "gci": 0.00013223896840464084,
+     "recovered": 0.08683433008994178,
+     "recovered_relative_error": 0.0007016678158696202,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 2092,
+     "raw": 0.08460726785982195,
+     "raw_relative_error": 0.026330927233474074
+    },
+    {
+     "point": [
+      24.124999999999996,
+      29.643115234375
+     ],
+     "reference": 0.15608450843512053,
+     "gci": 2.4860313270238627e-05,
+     "recovered": 0.15589644244857992,
+     "recovered_relative_error": 0.0012048984772808982,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 1056,
+     "raw": 0.15398010500167672,
+     "raw_relative_error": 0.013482461869805281
+    },
+    {
+     "point": [
+      24.125,
+      44.60665690104167
+     ],
+     "reference": 0.08406092035299857,
+     "gci": 3.776713507534955e-05,
+     "recovered": 0.0839592013920503,
+     "recovered_relative_error": 0.0012100624228371013,
+     "recovered_element_spread": 0.0,
+     "recovered_candidates": 1,
+     "raw_containing_element": 3104,
+     "raw": 0.08638390095273123,
+     "raw_relative_error": 0.027634489248722468
+    }
+   ]
+  }
+ ],
+ "convergence": {
+  "level_ladder": [
+   8,
+   16,
+   32,
+   64
+  ],
+  "max_recovered_relative_error": [
+   0.08175852687643816,
+   0.019867607093564818,
+   0.004909541215742226,
+   0.0012100624228371013
+  ],
+  "max_raw_relative_error": [
+   0.24240856482937678,
+   0.10945981698971997,
+   0.059268426067743206,
+   0.0305303923134105
+  ],
+  "worst_probe_index": 4,
+  "recovered_observed_orders": [
+   2.0409510809622327,
+   2.0167580013616258,
+   2.0205067416718028
+  ],
+  "raw_observed_orders": [
+   0.3218949671975211,
+   0.8850656986411053,
+   1.1007937974534392
+  ]
+ },
+ "verdict": {
+  "recovered": {
+   "levels": 4,
+   "finest": 0.0012100624228371013,
+   "gate": 0.03,
+   "monotone": true,
+   "require_monotone": true,
+   "qualified": true
+  },
+  "raw_element_centre": {
+   "levels": 4,
+   "finest": 0.0305303923134105,
+   "gate": 0.03,
+   "monotone": true,
+   "require_monotone": false,
+   "qualified": false
+  },
+  "statement": "production recovered field meets the 3% pointwise gate at n=64 (0.1210%), the stored element-centre field does not (3.0530%)"
+ },
+ "scope": "Linear-elastic plane stress, E=1, nu=1/3, thickness 1, unit resultant shear on the x=48 edge of the Cook trapezoid; five fixed material points offset inside element interiors. Certifies the recovered nodal field that cook_fields now stores; the element-centre field keeps its separate stress_accuracy_qualified=False. Does not cover geometric nonlinearity, plasticity, plates/shells, or contact, nor stresses at the clamped corner or the loaded-edge endpoints."
+}

@@ -69,7 +69,7 @@ L2 是声明采样集上的相对范数误差，不表示每个节点的逐点�
 |---|---|---|
 | 三维厚球壳内压，64×64×6，147456 HEX8 | 位移向量 L2 0.104625%；应力张量 L2 0.082488%；径向应力 L2 0.415483% | 三维 Lamé 精确场比较；L2 和逐点最大误差均低于 3%；全部原有指标及细化段新增指标下降 |
 | Mindlin 简支正弦载荷板，32×32 | 挠度 L2 0.054139%；表面弯曲应力 L2 0.134510%；横向剪力 L2 0.000052% | Mindlin 模型独立精确场，不涵盖三维厚度应力 |
-| Cook 膜，32×32 | 加载边中点位移误差 0.594182% | 位移响应；独立 Q8 应力参考已建立（GCI 0.068%，见 [Cook 膜应力审计](cook-membrane-stress-audit.md)）：存盘单元中心场 n=64 p95 0.467%、尺度归一化最大 2.910%，但五固定样点的任意点提取判据仍 6.375%>3%，故应力不认证 |
+| Cook 膜，32×32 | 加载边中点位移误差 0.594182% | 位移响应；恢复节点场应力已在冻结 Q8 参考上通过 3% 门限（n=16 起），存盘单元中心场仍未认证；独立 Q8 应力参考已建立（GCI 0.068%，见 [Cook 膜应力审计](cook-membrane-stress-audit.md)）：存盘单元中心场 n=64 p95 0.467%、尺度归一化最大 2.910%，但五固定样点的任意点提取判据仍 6.375%>3%，故应力不认证 |
 | 18° 开孔半球壳 | 40×40 默认位移误差 2.035156%；参数误差 2.919689%/2.035156%/1.479970% | 位移响应及力/力矩平衡；表面应力已由独立三维 HEX20 参照判定为**不通过**（内部平均 5.09%，见 [oracle 报告](hemisphere-hex20-stress-oracle.md)） |
 
 新增报告和三种导出由同一正文生成，保留失败粗网格。新增文件哈希记录在
@@ -91,7 +91,7 @@ HTML 内嵌全部 PNG，可独立打开；Word、PDF 也包含图像。原始 FE
 
 ## 尚未闭环的工作
 
-Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳的独立应力参照**已补并给出否定结论**：[三维 HEX20 实体 oracle](hemisphere-hex20-stress-oracle.md) 逐站位复算后，内部区域表面 von Mises 相对误差平均 5.09%、最大 9.00%（孔边 6.87%、点载附近 7.56%），不满足 3% 门限，`stress_accuracy_qualified` 维持 `False`；oracle 自身先在 Lamé 圆环（最大 8.6e-7）与薄板弯曲（0.26%）上过标；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；仍缺：壳单元几何刚度、非均匀预屈曲应力、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。
+Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛；该恢复场现已进入生产路径（`tensorfem.stress_recovery`，`cook_fields(...)['stress_nodal']`），并在冻结 Q8 参考上通过 3% 逐点门限（n=16 1.9868%、n=32 0.4910%、n=64 0.1210%，实测阶 2.02），见 [cook-stress-recovery-production.md](cook-stress-recovery-production.md)；**存盘单元中心场**仍未认证（n=64 3.0530%），故 `stress_accuracy_qualified` 保持 False。开孔半球壳的独立应力参照**已补并给出否定结论**：[三维 HEX20 实体 oracle](hemisphere-hex20-stress-oracle.md) 逐站位复算后，内部区域表面 von Mises 相对误差平均 5.09%、最大 9.00%（孔边 6.87%、点载附近 7.56%），不满足 3% 门限，`stress_accuracy_qualified` 维持 `False`；oracle 自身先在 Lamé 圆环（最大 8.6e-7）与薄板弯曲（0.26%）上过标；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；仍缺：壳单元几何刚度、非均匀预屈曲应力、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。
 
 既有 `.qualification/v1-readiness/aggregate-v045.json` 记录的 1.0 阻塞项仍为三维双变形体接触，以及加筋板 4/8/12 网格的峰值和峰后响应收敛。本次补齐线性 benchmark 场验证及报告，没有重新认证这两个工业能力，也没有提升版本到 1.0。
 
