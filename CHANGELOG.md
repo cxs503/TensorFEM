@@ -367,3 +367,18 @@ Earlier releases predate the formal changelog; their history remains available i
   与生产 Q4 的 Cook 膜加载边型线由相差 6.8 倍收敛到 <0.3%，m2125 留下的分歧闭环。
 - 新增 `tests/test_cook_oracle_operator.py`（10 项，含约定无关 patch/能量/FD 判据与 fail-closed 断言）。
 - 生产 Q4 路径未改动；Cook 膜逐点应力仍为 5.02%（n=64）> 3%，`stress_accuracy_qualified` 保持 False。
+## 2026-11-03 波浪谱与短期统计（耐波链条补全 + 双重验证）
+- 新增 `tensorfem.wave_spectrum`：Pierson-Moskowitz 与 JONSWAP 谱（均以 `Hs = 4√m0` 归一化）、
+  谱矩 m0/m1/m2（`t = ln(ω/ωp)` 换元 + 嵌套复合 Gauss-Legendre，收敛层自证）、
+  `Hs/Tm/Tz/Tc`、Rayleigh 超越概率、精确与渐近两种短期极值、`irfft` 时域记录生成，
+  以及 `equivalent_design_wave` 把谱接进已有 `AiryWave`/Morison 载荷通道。
+  此前库里只能给规则波，海况无法表达。
+- 验证锚点见 `docs/marine-wave-spectrum-verification.md`（数字由 `scripts/build_wave_spectrum_doc.py`
+  从 `artifacts/wave_spectrum_verification/validation_report.json` 渲染，零手抄）：
+  PM 谱矩 vs 解析闭式解最差 3.3e-16；JONSWAP(γ=1) 与 PM 逐点为 0 差；α vs 文献
+  `5.061(Hs/Tp²)²(1-0.287 ln γ)` 最差 0.285%；`P(H>Hs) = exp(-2)`；时域 Tz 与全谱 `2π√(m0/m2)`
+  差 3~4%（限带效应），与同限带谱差 1.7~2.2%。
+- 如实记录的失败项：单条记录最大波高 vs Rayleigh `H_mp` 均值低 5%，单种子散度 -15.8%~+11.2%，
+  超 3% 门限；窄带/Rayleigh 对极值只是保守上界，不作认证结论。PM 的 m4 发散使 `Tc` 无定义，库中返回 `None`。
+- 新增 `tests/test_wave_spectrum.py`（14 项，含 fail-closed 反例：非法 Hs/Tp/γ、非 2 的幂
+  `n_samples`、`m4` 发散、非法 `period`）。
