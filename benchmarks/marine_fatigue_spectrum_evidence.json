@@ -1,0 +1,284 @@
+{
+  "timestamp": "2026-11-04T06:43:48Z",
+  "tensorfem_version": "0.45.0",
+  "python": "3.11.6",
+  "benchmark": "rainflow_spectrum_reference",
+  "description": "Spectral verification of the rainflow + Palmgren-Miner fatigue primitives against the narrow-band Rayleigh closed form and the Paris power-law branch",
+  "parameters": {
+    "sn_curve": {
+      "reference_stress_pa": 100000000.0,
+      "reference_cycles": 2000000.0,
+      "slope_m": 3.0
+    },
+    "rms_stress_pa": 40000000.0,
+    "cycles_per_case": 20000.0,
+    "bandwidth_sweep": [
+      0.4,
+      0.2,
+      0.1,
+      0.05
+    ],
+    "sampling_sweep": [
+      4.0,
+      6.0,
+      8.0,
+      12.0,
+      20.0,
+      40.0
+    ],
+    "tolerance": 0.03
+  },
+  "bandwidth_study": [
+    {
+      "relative_bandwidth": 0.4,
+      "spectral_width": 0.1158340265414894,
+      "samples_per_cycle": 40.0,
+      "samples": 960000.0,
+      "cycles_counted": 20880.5,
+      "count_rate_hz": 1.044025,
+      "upcrossing_rate_hz": 1.0067770358922576,
+      "count_rate_error": 0.036997232534938806,
+      "damage": 0.01943524668933949,
+      "damage_oracle": 0.02009842624835811,
+      "damage_ratio": 0.9670034085841523,
+      "relative_error": 0.032996591415847654,
+      "spectral_cycles": 20135.540717845153,
+      "damage_rate_oracle": 0.019381369224320422,
+      "damage_rate_ratio": 1.0027798585536187,
+      "sampling_factor_estimate": 0.9969189184068689,
+      "passed": false
+    },
+    {
+      "relative_bandwidth": 0.2,
+      "spectral_width": 0.058210644823941615,
+      "samples_per_cycle": 40.0,
+      "samples": 880000.0,
+      "cycles_counted": 20320.5,
+      "count_rate_hz": 1.016025,
+      "upcrossing_rate_hz": 1.0016985574512927,
+      "count_rate_error": 0.014302149526060237,
+      "damage": 0.01946576947878916,
+      "damage_oracle": 0.01955940090418146,
+      "damage_ratio": 0.9952129706911276,
+      "relative_error": 0.004787029308872426,
+      "spectral_cycles": 20033.971149025852,
+      "damage_rate_oracle": 0.01928360391755132,
+      "damage_rate_ratio": 1.0094466554082269,
+      "sampling_factor_estimate": 0.9969189184068689,
+      "passed": true
+    },
+    {
+      "relative_bandwidth": 0.1,
+      "spectral_width": 0.02914237659496186,
+      "samples_per_cycle": 40.0,
+      "samples": 840000.0,
+      "cycles_counted": 20120.5,
+      "count_rate_hz": 1.006025,
+      "upcrossing_rate_hz": 1.0004249097258626,
+      "count_rate_error": 0.005597711751971435,
+      "damage": 0.019486492172823677,
+      "damage_oracle": 0.0193668918526898,
+      "damage_ratio": 1.0061755041048193,
+      "relative_error": 0.006175504104819263,
+      "spectral_cycles": 20008.49819451725,
+      "damage_rate_oracle": 0.019259085045995612,
+      "damage_rate_ratio": 1.0118077845486926,
+      "sampling_factor_estimate": 0.9969189184068689,
+      "passed": true
+    },
+    {
+      "relative_bandwidth": 0.05,
+      "spectral_width": 0.014575831137323098,
+      "samples_per_cycle": 40.0,
+      "samples": 820000.0,
+      "cycles_counted": 20060.5,
+      "count_rate_hz": 1.003025,
+      "upcrossing_rate_hz": 1.0001062443560684,
+      "count_rate_error": 0.0029184455755606464,
+      "damage": 0.019491898903807894,
+      "damage_oracle": 0.019309139137242304,
+      "damage_ratio": 1.00946493602157,
+      "relative_error": 0.009464936021569947,
+      "spectral_cycles": 20002.12488712137,
+      "damage_rate_oracle": 0.019252950449187383,
+      "damage_rate_ratio": 1.0124110044977856,
+      "sampling_factor_estimate": 0.9969189184068689,
+      "passed": true
+    }
+  ],
+  "sampling_study": [
+    {
+      "samples_per_cycle": 4.0,
+      "samples": 82000.0,
+      "damage": 0.014890293755689794,
+      "damage_oracle": 0.01930865786461357,
+      "damage_ratio": 0.7711718680861197,
+      "sampling_factor_estimate": 0.7221969113304973
+    },
+    {
+      "samples_per_cycle": 6.0,
+      "samples": 123000.0,
+      "damage": 0.01722632726010358,
+      "damage_oracle": 0.019309139137242304,
+      "damage_ratio": 0.8921333642926876,
+      "sampling_factor_estimate": 0.8690902080182595
+    },
+    {
+      "samples_per_cycle": 8.0,
+      "samples": 164000.0,
+      "damage": 0.018193121742238926,
+      "damage_oracle": 0.019309139137242304,
+      "damage_ratio": 0.9422026333193244,
+      "sampling_factor_estimate": 0.9248585299028554
+    },
+    {
+      "samples_per_cycle": 12.0,
+      "samples": 246000.0,
+      "damage": 0.01892868699430377,
+      "damage_oracle": 0.019309139137242304,
+      "damage_ratio": 0.9802967838061336,
+      "sampling_factor_estimate": 0.9661205149746338
+    },
+    {
+      "samples_per_cycle": 20.0,
+      "samples": 410000.0,
+      "damage": 0.019320934651319076,
+      "damage_oracle": 0.019309139137242304,
+      "damage_ratio": 1.0006108772635038,
+      "sampling_factor_estimate": 0.9877136588552825
+    },
+    {
+      "samples_per_cycle": 40.0,
+      "samples": 820000.0,
+      "damage": 0.019491898903807894,
+      "damage_oracle": 0.019309139137242304,
+      "damage_ratio": 1.00946493602157,
+      "sampling_factor_estimate": 0.9969189184068689
+    }
+  ],
+  "start_point_study": {
+    "long_20000_cycles": [
+      {
+        "start_fraction": 0.0,
+        "cycles_counted": 20060.5,
+        "full_cycles": 20020.0,
+        "damage": 0.019491898903807894,
+        "damage_relative_to_first": 1.0
+      },
+      {
+        "start_fraction": 0.05,
+        "cycles_counted": 20060.0,
+        "full_cycles": 20013.0,
+        "damage": 0.019492185100733403,
+        "damage_relative_to_first": 1.0000146828652725
+      },
+      {
+        "start_fraction": 0.2,
+        "cycles_counted": 20060.5,
+        "full_cycles": 20021.0,
+        "damage": 0.019491898903807904,
+        "damage_relative_to_first": 1.0000000000000004
+      },
+      {
+        "start_fraction": 0.5,
+        "cycles_counted": 20060.5,
+        "full_cycles": 20020.0,
+        "damage": 0.019491898903807897,
+        "damage_relative_to_first": 1.0000000000000002
+      }
+    ],
+    "short_200_cycles": [
+      {
+        "start_fraction": 0.0,
+        "cycles_counted": 202.5,
+        "full_cycles": 165.0,
+        "damage": 0.00017454957938204568,
+        "damage_relative_to_first": 1.0
+      },
+      {
+        "start_fraction": 0.05,
+        "cycles_counted": 202.5,
+        "full_cycles": 167.0,
+        "damage": 0.00017475965698488202,
+        "damage_relative_to_first": 1.0012035411576474
+      },
+      {
+        "start_fraction": 0.2,
+        "cycles_counted": 202.5,
+        "full_cycles": 169.0,
+        "damage": 0.00017472342269990261,
+        "damage_relative_to_first": 1.0009959538056317
+      },
+      {
+        "start_fraction": 0.5,
+        "cycles_counted": 202.5,
+        "full_cycles": 157.0,
+        "damage": 0.0001747647035018797,
+        "damage_relative_to_first": 1.0012324528113767
+      }
+    ],
+    "full_cycle_multiset_agreement": 0.0
+  },
+  "counting_invariant": {
+    "trials": 300.0,
+    "violations": 0.0,
+    "worst_absolute_defect": 0.0,
+    "identity": "sum(count) = (n_reversals - 1) / 2 for a closed record"
+  },
+  "paris_study": [
+    {
+      "id": "paris.m2_exponential",
+      "exponent_m": 2.0,
+      "coefficient_c": 1e-24,
+      "produced_m": 0.010000667610723098,
+      "oracle_m": 0.010000667610723098,
+      "relative_error": 0.0,
+      "tolerance": 0.03,
+      "passed": true
+    },
+    {
+      "id": "paris.m2p5_power",
+      "exponent_m": 2.5,
+      "coefficient_c": 1e-24,
+      "produced_m": 0.013875669436793775,
+      "oracle_m": 0.013875669436793775,
+      "relative_error": 0.0,
+      "tolerance": 0.03,
+      "passed": true
+    },
+    {
+      "id": "paris.m3_power",
+      "exponent_m": 3.0,
+      "coefficient_c": 1e-30,
+      "produced_m": 0.010020698927452991,
+      "oracle_m": 0.010020698927452991,
+      "relative_error": 0.0,
+      "tolerance": 0.03,
+      "passed": true
+    },
+    {
+      "id": "paris.m4_power",
+      "exponent_m": 4.0,
+      "coefficient_c": 1e-38,
+      "produced_m": 0.010003486419142348,
+      "oracle_m": 0.010003486419142348,
+      "relative_error": 0.0,
+      "tolerance": 0.03,
+      "passed": true
+    }
+  ],
+  "figures": {
+    "range_histogram": "docs/assets/marine-fatigue-spectrum/range-histogram-rayleigh.png",
+    "bandwidth_convergence": "docs/assets/marine-fatigue-spectrum/bandwidth-convergence.png",
+    "sampling_bias": "docs/assets/marine-fatigue-spectrum/sampling-rate-bias.png",
+    "paris_branch": "docs/assets/marine-fatigue-spectrum/paris-power-law-branch.png"
+  },
+  "verdict": {
+    "narrow_band_within_3pct": true,
+    "narrow_band_spectral_width": 0.014575831137323098,
+    "wide_band_damage_rate_positive": true,
+    "counting_identity_holds": true,
+    "paris_power_branch_all_within_3pct": true,
+    "sampling_trap_documented": true
+  }
+}

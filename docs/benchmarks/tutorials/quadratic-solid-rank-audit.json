@@ -1,0 +1,547 @@
+{
+  "benchmark": "quadratic_solid_rank_audit",
+  "description": "Zero-energy (rank-deficiency) audit of the quadratic solid paths: shipped HEX20 27-point rule versus the 8-point rule, TET10, regular/distorted/curved geometry, assembled warped meshes and measured quadrature exactness.",
+  "young_modulus": 200000000000.0,
+  "poisson_ratio": 0.3,
+  "element_records": [
+    {
+      "element": "hex20 3x3x3 (unit cube)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.011895515609490773,
+      "min_eigenvalue": -8.490779381677919e-05,
+      "scale": 637104224860.33,
+      "note": ""
+    },
+    {
+      "element": "hex20 3x3x3 (distorted, straight mid-edges)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.009282728603012286,
+      "min_eigenvalue": -7.111423352868711e-05,
+      "scale": 696169885578.6025,
+      "note": ""
+    },
+    {
+      "element": "hex20 3x3x3 (distorted, curved edges)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.007147451420642724,
+      "min_eigenvalue": -7.483285805292364e-05,
+      "scale": 709897863205.0142,
+      "note": ""
+    },
+    {
+      "element": "hex20 2x2x2 reduced (unit cube)",
+      "dofs": 60,
+      "null_dim": 12,
+      "expected_rigid_dim": 6,
+      "spurious": 6,
+      "first_positive_ratio": 0.01037937805978204,
+      "min_eigenvalue": -0.00017810755575248014,
+      "scale": 614935013094.2725,
+      "note": ""
+    },
+    {
+      "element": "hex20 2x2x2 reduced (distorted, straight mid-edges)",
+      "dofs": 60,
+      "null_dim": 12,
+      "expected_rigid_dim": 6,
+      "spurious": 6,
+      "first_positive_ratio": 0.0073735414333272265,
+      "min_eigenvalue": -0.0001405422361541447,
+      "scale": 694317216551.261,
+      "note": ""
+    },
+    {
+      "element": "hex20 2x2x2 reduced (distorted, curved edges)",
+      "dofs": 60,
+      "null_dim": 12,
+      "expected_rigid_dim": 6,
+      "spurious": 6,
+      "first_positive_ratio": 0.00743316950587347,
+      "min_eigenvalue": -0.00012906919616787726,
+      "scale": 685054664219.5127,
+      "note": ""
+    },
+    {
+      "element": "tet10 (straight edges)",
+      "dofs": 30,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.006990805143476481,
+      "min_eigenvalue": -2.8955943679519926e-05,
+      "scale": 390759033543.94446,
+      "note": ""
+    },
+    {
+      "element": "tet10 (curved edges)",
+      "dofs": 30,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.006967032545601673,
+      "min_eigenvalue": -5.468612690689651e-05,
+      "scale": 398311154698.9573,
+      "note": ""
+    }
+  ],
+  "library_records": [
+    {
+      "element": "hex8 (2x2x2 integration)",
+      "dofs": 24,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.051282051282051225,
+      "min_eigenvalue": -4.8079562491940583e-05,
+      "scale": 250000000000.00003,
+      "note": ""
+    },
+    {
+      "element": "hex8 (distorted)",
+      "dofs": 24,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.04542937918376473,
+      "min_eigenvalue": -4.250566887013284e-05,
+      "scale": 256228963358.9787,
+      "note": ""
+    },
+    {
+      "element": "tet4",
+      "dofs": 12,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.18406504001182664,
+      "min_eigenvalue": -1.1004545020149358e-05,
+      "scale": 160935670949.1713,
+      "note": ""
+    },
+    {
+      "element": "hex8 B-bar (unit cube)",
+      "dofs": 24,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.05128205128205132,
+      "min_eigenvalue": -1.2597619945034917e-05,
+      "scale": 249999999999.99982,
+      "note": ""
+    },
+    {
+      "element": "hex8 B-bar (distorted)",
+      "dofs": 24,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.045396670179810875,
+      "min_eigenvalue": -9.970180803330403e-06,
+      "scale": 256169017651.09882,
+      "note": ""
+    },
+    {
+      "element": "tet10 (3-D, straight edges)",
+      "dofs": 30,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.006990805143476481,
+      "min_eigenvalue": -2.8955943679519926e-05,
+      "scale": 390759033543.94446,
+      "note": ""
+    },
+    {
+      "element": "hex20 (3x3x3 integration)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.011895515609490773,
+      "min_eigenvalue": -8.490779381677919e-05,
+      "scale": 637104224860.33,
+      "note": ""
+    },
+    {
+      "element": "q4 membrane (2x2 integration)",
+      "dofs": 8,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive_ratio": 0.3461538461538461,
+      "min_eigenvalue": -3.1811292955417095e-07,
+      "scale": 2857142857.1428566,
+      "note": ""
+    },
+    {
+      "element": "cst membrane",
+      "dofs": 6,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive_ratio": 0.38884103258037284,
+      "min_eigenvalue": -4.265256300186711e-07,
+      "scale": 2911748680.439435,
+      "note": ""
+    },
+    {
+      "element": "q4 Mindlin plate SRI (square)",
+      "dofs": 12,
+      "null_dim": 5,
+      "expected_rigid_dim": 3,
+      "spurious": 2,
+      "first_positive_ratio": 1.0285714285714051e-05,
+      "min_eigenvalue": -3.509794003530918e-08,
+      "scale": 801282051.2820517,
+      "note": ""
+    },
+    {
+      "element": "q4 Mindlin plate SRI (distorted)",
+      "dofs": 12,
+      "null_dim": 5,
+      "expected_rigid_dim": 3,
+      "spurious": 2,
+      "first_positive_ratio": 4.791891816552624e-06,
+      "min_eigenvalue": -9.401151993983528e-08,
+      "scale": 1369542300.4580693,
+      "note": ""
+    },
+    {
+      "element": "q4 Mindlin plate MITC (square)",
+      "dofs": 12,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive_ratio": 1.028571428569626e-05,
+      "min_eigenvalue": -6.437440535317841e-08,
+      "scale": 801282051.2820516,
+      "note": ""
+    },
+    {
+      "element": "q4 Mindlin plate MITC (distorted)",
+      "dofs": 12,
+      "null_dim": 3,
+      "expected_rigid_dim": 3,
+      "spurious": 0,
+      "first_positive_ratio": 4.783855586795135e-06,
+      "min_eigenvalue": -8.926810476597636e-08,
+      "scale": 1370104035.5669467,
+      "note": ""
+    },
+    {
+      "element": "shell4 facet, plate shear SRI (square)",
+      "dofs": 24,
+      "null_dim": 9,
+      "expected_rigid_dim": 7,
+      "spurious": 2,
+      "first_positive_ratio": 6.999999999930036e-07,
+      "min_eigenvalue": -3.3316780921974666e-07,
+      "scale": 2857142857.1428566,
+      "note": ""
+    },
+    {
+      "element": "shell4 facet, plate shear SRI (distorted)",
+      "dofs": 24,
+      "null_dim": 9,
+      "expected_rigid_dim": 7,
+      "spurious": 2,
+      "first_positive_ratio": 9.755713459842224e-07,
+      "min_eigenvalue": -6.399269243351392e-07,
+      "scale": 3977156582.110961,
+      "note": ""
+    },
+    {
+      "element": "shell4 facet, plate shear MITC (square)",
+      "dofs": 24,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 6.999999999991423e-07,
+      "min_eigenvalue": -3.370653668976464e-07,
+      "scale": 2857142857.1428566,
+      "note": ""
+    },
+    {
+      "element": "shell4 facet, plate shear MITC (distorted)",
+      "dofs": 24,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 9.755713459842228e-07,
+      "min_eigenvalue": -6.56383437034279e-07,
+      "scale": 3977156582.1109576,
+      "note": ""
+    },
+    {
+      "element": "shell4m facet, plate shear SRI (square)",
+      "dofs": 24,
+      "null_dim": 9,
+      "expected_rigid_dim": 7,
+      "spurious": 2,
+      "first_positive_ratio": 6.999999999955435e-07,
+      "min_eigenvalue": -2.9214625402322527e-07,
+      "scale": 2857142857.1428566,
+      "note": ""
+    },
+    {
+      "element": "shell4m facet, plate shear SRI (distorted)",
+      "dofs": 24,
+      "null_dim": 9,
+      "expected_rigid_dim": 7,
+      "spurious": 2,
+      "first_positive_ratio": 9.759821271134377e-07,
+      "min_eigenvalue": -5.434211243861513e-07,
+      "scale": 3975482636.6293,
+      "note": ""
+    },
+    {
+      "element": "shell4m facet, plate shear MITC (square)",
+      "dofs": 24,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 7.000000000033513e-07,
+      "min_eigenvalue": -3.0577572139198934e-07,
+      "scale": 2857142857.1428576,
+      "note": ""
+    },
+    {
+      "element": "shell4m facet, plate shear MITC (distorted)",
+      "dofs": 24,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 9.759821271060237e-07,
+      "min_eigenvalue": -4.264990228680399e-07,
+      "scale": 3975482636.6293,
+      "note": ""
+    }
+  ],
+  "mesh_records": [
+    {
+      "element": "hex20 3x3x3 warped mesh",
+      "n": 2,
+      "dofs": 243,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive": 2444858635.0829535,
+      "first_positive_ratio": 0.0024922892533282767
+    },
+    {
+      "element": "hex20 2x2x2 reduced warped mesh",
+      "n": 2,
+      "dofs": 243,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive": 2155676722.422193,
+      "first_positive_ratio": 0.0022398256625398186
+    },
+    {
+      "element": "hex20 3x3x3 warped mesh",
+      "n": 3,
+      "dofs": 624,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive": 1278620089.018936,
+      "first_positive_ratio": 0.0014804016744217948
+    },
+    {
+      "element": "hex20 2x2x2 reduced warped mesh",
+      "n": 3,
+      "dofs": 624,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive": 1205284336.9546864,
+      "first_positive_ratio": 0.0014122025349265343
+    },
+    {
+      "element": "hex20 3x3x3 warped mesh",
+      "n": 3,
+      "dofs": 624,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive": 1260593044.5955794,
+      "first_positive_ratio": 0.0013999865208253104
+    },
+    {
+      "element": "hex20 2x2x2 reduced warped mesh",
+      "n": 3,
+      "dofs": 624,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive": 1145146145.044914,
+      "first_positive_ratio": 0.0012904209288320367
+    }
+  ],
+  "quadrature_exactness": [
+    {
+      "rule": "hex20 3x3x3 Gauss (shipped)",
+      "points": 27,
+      "exact_through_total_degree": 5,
+      "per_degree": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "exact_through_per_axis": 5,
+      "per_axis": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "rule": "hex20 2x2x2 Gauss (audit only)",
+      "points": 8,
+      "exact_through_total_degree": 3,
+      "per_degree": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        true
+      ],
+      "exact_through_per_axis": 3,
+      "per_axis": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        true
+      ]
+    },
+    {
+      "rule": "tet10 five-point Keast (shipped)",
+      "points": 5,
+      "exact_through_total_degree": 3,
+      "per_degree": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "exact_through_per_axis": 3,
+      "per_axis": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "rule": "tet4 centroid rule (shipped)",
+      "points": 1,
+      "exact_through_total_degree": 1,
+      "per_degree": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "exact_through_per_axis": 1,
+      "per_axis": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  ],
+  "quadrature_convergence": [
+    {
+      "geometry": "unit cube",
+      "order3_vs_order4": 5.539009588764645e-16,
+      "order4_vs_order5": 5.568316613209444e-16,
+      "order2_vs_order3": 0.07654079936165688,
+      "order2_vs_order4": 0.07654079936165671
+    },
+    {
+      "geometry": "distorted, straight mid-edges",
+      "order3_vs_order4": 0.00019509873962482059,
+      "order4_vs_order5": 3.988021493291136e-07,
+      "order2_vs_order3": 0.07835247173604841,
+      "order2_vs_order4": 0.07850091224491605
+    },
+    {
+      "geometry": "distorted, curved edges",
+      "order3_vs_order4": 0.001794011479535664,
+      "order4_vs_order5": 6.350931677158416e-05,
+      "order2_vs_order3": 0.08771899308757762,
+      "order2_vs_order4": 0.08840863455443825
+    }
+  ],
+  "spectra": {
+    "hex20 3x3x3": [
+      -1.0541355585305145e-16,
+      -5.295426489261794e-17,
+      1.097119176889581e-17,
+      2.1355387860598802e-17,
+      6.642377993932783e-17,
+      1.6419601053674642e-16,
+      0.007147451420642724,
+      0.009042980177484596,
+      0.0092575163113883,
+      0.010372628670786027,
+      0.011588778844265237,
+      0.01291371557397028
+    ],
+    "hex20 2x2x2 reduced": [
+      -1.8840714896077183e-16,
+      -1.3166636793869668e-16,
+      -9.918740531559834e-17,
+      -9.587939826514163e-17,
+      -5.77305695981228e-17,
+      5.56603536175921e-19,
+      3.753053445831075e-17,
+      6.496302976462085e-17,
+      7.317057583851048e-17,
+      9.982557683892532e-17,
+      1.5002555834041627e-16,
+      1.9848101381024936e-16
+    ]
+  },
+  "reduced_curved_explained": 6,
+  "reduced_curved_cosines": [
+    1.0000000000000004,
+    1.0000000000000002,
+    0.9999999999999999,
+    0.9999999999999999,
+    0.9999999999999996,
+    0.9999999999999993
+  ],
+  "tables": {
+    "element": "| element | n | dofs | null dim | expected | spurious | lambda_1/lambda_max |\n|---|---:|---:|---:|---:|---:|---:|\n| hex20 3x3x3 (unit cube) | - | 60 | 6 | 6 | 0 | 1.190e-02 |\n| hex20 3x3x3 (distorted, straight mid-edges) | - | 60 | 6 | 6 | 0 | 9.283e-03 |\n| hex20 3x3x3 (distorted, curved edges) | - | 60 | 6 | 6 | 0 | 7.147e-03 |\n| hex20 2x2x2 reduced (unit cube) | - | 60 | 12 | 6 | 6 | 1.038e-02 |\n| hex20 2x2x2 reduced (distorted, straight mid-edges) | - | 60 | 12 | 6 | 6 | 7.374e-03 |\n| hex20 2x2x2 reduced (distorted, curved edges) | - | 60 | 12 | 6 | 6 | 7.433e-03 |\n| tet10 (straight edges) | - | 30 | 6 | 6 | 0 | 6.991e-03 |\n| tet10 (curved edges) | - | 30 | 6 | 6 | 0 | 6.967e-03 |\n",
+    "mesh": "| element | n | dofs | null dim | expected | spurious | lambda_1/lambda_max |\n|---|---:|---:|---:|---:|---:|---:|\n| hex20 3x3x3 warped mesh | 2 | 243 | 6 | 6 | 0 | 2.492e-03 |\n| hex20 2x2x2 reduced warped mesh | 2 | 243 | 6 | 6 | 0 | 2.240e-03 |\n| hex20 3x3x3 warped mesh | 3 | 624 | 6 | 6 | 0 | 1.480e-03 |\n| hex20 2x2x2 reduced warped mesh | 3 | 624 | 6 | 6 | 0 | 1.412e-03 |\n| hex20 3x3x3 warped mesh | 3 | 624 | 6 | 6 | 0 | 1.400e-03 |\n| hex20 2x2x2 reduced warped mesh | 3 | 624 | 6 | 6 | 0 | 1.290e-03 |\n"
+  }
+}
