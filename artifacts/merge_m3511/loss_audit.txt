@@ -1,0 +1,16 @@
+files changed by both sides: 4 -> docs/benchmark-qualification-status.md, docs/element-rank-deficiency-audit.md, src/tensorfem/element_rank_audit.py, tests/test_element_rank_audit.py
+
+[docs/benchmark-qualification-status.md]
+  additions from branch m3511: 9 checked, 0 reworded, 0 lost
+  additions from main: 10 checked, 0 reworded, 0 lost
+[docs/element-rank-deficiency-audit.md]
+  additions from branch m3511: 7 checked, 4 reworded, 0 lost
+  additions from main: 7 checked, 2 reworded, 0 lost
+[src/tensorfem/element_rank_audit.py]
+  additions from branch m3511: 1 checked, 0 reworded, 0 lost
+  additions from main: 328 checked, 0 reworded, 0 lost
+[tests/test_element_rank_audit.py]
+  additions from branch m3511: 1 checked, 0 reworded, 0 lost
+  additions from main: 2 checked, 0 reworded, 0 lost
+
+RESULT: PASS (no added content lost, no dropped line resurrected)
