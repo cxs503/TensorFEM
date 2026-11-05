@@ -71,8 +71,8 @@ COOK_YOUNG = 1.0
 COOK_POISSON = 1.0/3.0
 
 
-def cook_fields(n, reference=None):
-    """Production Cook membrane payload.
+def cook_fields(n, reference=None, *, include_recovery=False):
+    """Production Cook membrane payload: raw field plus both audited recoveries.
 
     ``stress``/``von_mises`` remain the raw constant-per-element field (the historical,
     fail-closed ``stress_accuracy_qualified=False`` protocol).  The payload now also
@@ -83,7 +83,14 @@ def cook_fields(n, reference=None):
     * ``stress_recovery`` — the well-posed pointwise criterion at the reference probe
       sites when an independent reference is supplied, otherwise the field only.
 
-    Nothing here relaxes the fail-closed flag of the raw protocol.
+    ``include_recovery=True`` additionally exposes the audited 2x2-Gauss to nodal
+    stress recovery (:mod:`tensorfem.cook_stress_recovery`) as
+    ``recovered_nodal_stress`` / ``recovered_von_mises`` / ``recovered_stress_protocol``;
+    the default ``False`` keeps earlier callers and their hash manifests unchanged.
+
+    Nothing here relaxes the fail-closed flag of the raw protocol: both recovered
+    fields are post-processing of the same displacement solution and never certify
+    the raw element-centre field.
     """
     model, probe = cook_membrane(n)
     nodes, cells = model.nodes, model.elements
@@ -119,13 +126,21 @@ def cook_fields(n, reference=None):
         recovery.update(block)
         recovery['passed'] = bool(block['worst_site_error'] < 0.03)
         recovery['criterion'] = 'worst probe-site normalised von Mises error < 3% on the recovered field'
-    return {'mesh':n,'nodes':nodes.tolist(),'elements':cells.tolist(),
+    payload = {'mesh':n,'nodes':nodes.tolist(),'elements':cells.tolist(),
             'displacement':u.reshape(-1,2).tolist(),'centers':nodes[cells].mean(1).tolist(),
             'stress':stress.tolist(),'von_mises':vm.tolist(), 'reference':23.96,
             'nodal_stress':nodal.tolist(),'stress_recovery':recovery,
             'verification':{'response':response,'response_relative_error':error,
                             'relative_residual':result.iterative.relative_residual,
                             'passed':error<.03},'stress_accuracy_qualified':False}
+    if include_recovery:
+        from .cook_stress_recovery import recovered_nodal_stress
+        recovered = recovered_nodal_stress(
+            payload['nodes'], payload['elements'], payload['displacement'])
+        payload['recovered_nodal_stress'] = recovered['field'].tolist()
+        payload['recovered_von_mises'] = recovered['von_mises'].tolist()
+        payload['recovered_stress_protocol'] = recovered['protocol']
+    return payload
 
 
 def build_additional_reports():

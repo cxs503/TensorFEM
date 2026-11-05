@@ -1,0 +1,279 @@
+{
+  "blocking_reasons": [],
+  "case": "cook-membrane",
+  "element_centre_field": {
+    "qualified": false,
+    "reason": "the raw element-centre field is O(h) accurate and reports 5.02% pointwise at n=64 under the merged protocol; the recovered field is a second-order post-processing and does not certify it"
+  },
+  "error_sequence": [
+    0.08023114522351446,
+    0.019514392023253443,
+    0.004837918704974441,
+    0.0012019046867308028
+  ],
+  "levels": [
+    {
+      "divisions": 8,
+      "max_relative_error": 0.08023114522351446,
+      "points": [
+        {
+          "eta": 0.5,
+          "point": [
+            24.0,
+            37.0
+          ],
+          "relative_error": 0.007396502779291249,
+          "von_mises": 0.06818230628900811,
+          "von_mises_reference": 0.06869037483740352,
+          "xi": 0.5
+        },
+        {
+          "eta": 0.5,
+          "point": [
+            14.399999999999999,
+            31.0
+          ],
+          "relative_error": 0.029287694223210866,
+          "von_mises": 0.07104602212375767,
+          "von_mises_reference": 0.07318957604735916,
+          "xi": 0.3
+        },
+        {
+          "eta": 0.5,
+          "point": [
+            33.599999999999994,
+            43.0
+          ],
+          "relative_error": 0.033207882884481475,
+          "von_mises": 0.08392019610003686,
+          "von_mises_reference": 0.08680273102600146,
+          "xi": 0.7
+        },
+        {
+          "eta": 0.25,
+          "point": [
+            24.0,
+            29.5
+          ],
+          "relative_error": 0.07020478805734315,
+          "von_mises": 0.14551634118704487,
+          "von_mises_reference": 0.15650364652127213,
+          "xi": 0.5
+        },
+        {
+          "eta": 0.75,
+          "point": [
+            24.0,
+            44.5
+          ],
+          "relative_error": 0.08023114522351446,
+          "von_mises": 0.07675978750106399,
+          "von_mises_reference": 0.08345551939755289,
+          "xi": 0.5
+        }
+      ]
+    },
+    {
+      "divisions": 16,
+      "max_relative_error": 0.019514392023253443,
+      "points": [
+        {
+          "eta": 0.5,
+          "point": [
+            24.0,
+            37.0
+          ],
+          "relative_error": 0.001392782145506565,
+          "von_mises": 0.06859470410976183,
+          "von_mises_reference": 0.06869037483740352,
+          "xi": 0.5
+        },
+        {
+          "eta": 0.5,
+          "point": [
+            14.399999999999999,
+            31.0
+          ],
+          "relative_error": 0.0036565650151685705,
+          "von_mises": 0.07292195360410937,
+          "von_mises_reference": 0.07318957604735916,
+          "xi": 0.3
+        },
+        {
+          "eta": 0.5,
+          "point": [
+            33.599999999999994,
+            43.0
+          ],
+          "relative_error": 0.0062594741655032276,
+          "von_mises": 0.08625939157364908,
+          "von_mises_reference": 0.08680273102600146,
+          "xi": 0.7
+        },
+        {
+          "eta": 0.25,
+          "point": [
+            24.0,
+            29.5
+          ],
+          "relative_error": 0.018246916375344143,
+          "von_mises": 0.15364793757076206,
+          "von_mises_reference": 0.15650364652127213,
+          "xi": 0.5
+        },
+        {
+          "eta": 0.75,
+          "point": [
+            24.0,
+            44.5
+          ],
+          "relative_error": 0.019514392023253443,
+          "von_mises": 0.0818269356755248,
+          "von_mises_reference": 0.08345551939755289,
+          "xi": 0.5
+        }
+      ]
+    },
+    {
+      "divisions": 32,
+      "max_relative_error": 0.004837918704974441,
+      "points": [
+        {
+          "eta": 0.5,
+          "point": [
+            24.0,
+            37.0
+          ],
+          "relative_error": 0.0002965936157004393,
+          "von_mises": 0.06867000171076668,
+          "von_mises_reference": 0.06869037483740352,
+          "xi": 0.5
+        },
+        {
+          "eta": 0.5,
+          "point": [
+            14.399999999999999,
+            31.0
+          ],
+          "relative_error": 3.519258665807368e-05,
+          "von_mises": 0.07318700031686165,
+          "von_mises_reference": 0.07318957604735916,
+          "xi": 0.3
+        },
+        {
+          "eta": 0.5,
+          "point": [
+            33.599999999999994,
+            43.0
+          ],
+          "relative_error": 0.0014387781567458124,
+          "von_mises": 0.08667784115265537,
+          "von_mises_reference": 0.08680273102600146,
+          "xi": 0.7
+        },
+        {
+          "eta": 0.25,
+          "point": [
+            24.0,
+            29.5
+          ],
+          "relative_error": 0.004605493543806845,
+          "von_mises": 0.15578286998763619,
+          "von_mises_reference": 0.15650364652127213,
+          "xi": 0.5
+        },
+        {
+          "eta": 0.75,
+          "point": [
+            24.0,
+            44.5
+          ],
+          "relative_error": 0.004837918704974441,
+          "von_mises": 0.0830517683792261,
+          "von_mises_reference": 0.08345551939755289,
+          "xi": 0.5
+        }
+      ]
+    },
+    {
+      "divisions": 64,
+      "max_relative_error": 0.0012019046867308028,
+      "points": [
+        {
+          "eta": 0.5,
+          "point": [
+            24.0,
+            37.0
+          ],
+          "relative_error": 7.478044966307548e-05,
+          "von_mises": 0.06868523814028565,
+          "von_mises_reference": 0.06869037483740352,
+          "xi": 0.5
+        },
+        {
+          "eta": 0.5,
+          "point": [
+            14.399999999999999,
+            31.0
+          ],
+          "relative_error": 0.0003354184419645551,
+          "von_mises": 0.07321412518092502,
+          "von_mises_reference": 0.07318957604735916,
+          "xi": 0.3
+        },
+        {
+          "eta": 0.5,
+          "point": [
+            33.599999999999994,
+            43.0
+          ],
+          "relative_error": 0.0005679788415919468,
+          "von_mises": 0.0867534289113863,
+          "von_mises_reference": 0.08680273102600146,
+          "xi": 0.7
+        },
+        {
+          "eta": 0.25,
+          "point": [
+            24.0,
+            29.5
+          ],
+          "relative_error": 0.001158529069971535,
+          "von_mises": 0.1563223324972207,
+          "von_mises_reference": 0.15650364652127213,
+          "xi": 0.5
+        },
+        {
+          "eta": 0.75,
+          "point": [
+            24.0,
+            44.5
+          ],
+          "relative_error": 0.0012019046867308028,
+          "von_mises": 0.08335521381765541,
+          "von_mises_reference": 0.08345551939755289,
+          "xi": 0.5
+        }
+      ]
+    }
+  ],
+  "monotone_decreasing": true,
+  "observed_order": 2.0130756707583934,
+  "protocol": "2x2 Gauss (Barlow) stress extrapolation to element nodes, area-weighted nodal averaging, bilinear re-interpolation at the declared physical points",
+  "reference": {
+    "formulation": "Q8 serendipity plane stress, 3x3 Gauss, consistent quadratic edge traction",
+    "levels": [
+      12,
+      24,
+      48
+    ],
+    "path": "/root/tp-agent/work/m3148/benchmarks/cook_membrane_stress_reference.json",
+    "sha256": "758703050de62c52ba050b8cfd6d50048d167120096361eeba1435b3c430abf7"
+  },
+  "schema": "tensorfem.cook-stress-recovery/1.0",
+  "scope": "linear-elastic plane stress Cook tapered membrane (E=1, nu=1/3, t=1, unit vertical resultant on the loaded edge), structured Q4 grids n=8..64; clamped-corner and loaded-edge singular zones excluded",
+  "stress_accuracy_qualified": false,
+  "stress_recovery_qualified": true,
+  "tolerance": 0.03,
+  "verdict_sha256": "c731630a5edc747c071687dfd77d3bd98541748cc7fa61275bfc2baf1a8fd6ed"
+}

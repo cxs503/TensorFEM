@@ -1,5 +1,19 @@
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
+## 2026-11-04 Cook 膜应力恢复场进入生产并附 fail-closed 门禁
+
+- 新增 `src/tensorfem/cook_stress_recovery.py`：把审计过的 2x2 Gauss（Barlow）外推 + 节点面积加权
+  恢复算子提升为生产入口 `recovered_nodal_stress`，并给出 fail-closed 判定 `qualify`
+  （最细网格 <3%、逐级严格单调、观测阶 >1、参考 sha256 入账，四条全满足才 True）。
+- `additional_benchmark_fields.cook_fields(n, include_recovery=True)` 直接返回
+  `recovered_nodal_stress` / `recovered_von_mises` / `recovered_stress_protocol`；默认 False，
+  原有调用与哈希清单不变。原始单元中心场与其 `stress_accuracy_qualified = False` 判定未改动。
+- 对冻结独立 Q8 参考（`benchmarks/cook_membrane_stress_reference.json`）n=8/16/32/64 最大点式
+  von Mises 误差 8.023%/1.951%/0.484%/0.120%，观测阶 2.01，判定在
+  `benchmarks/cook_stress_recovery.json`，报告见 `docs/cook-stress-recovery-promotion.md`。
+- 新增 `tests/test_cook_stress_recovery.py`（7 项）：制造均匀应力态的恢复算子精确性、节点场跨单元
+  单值性、生产载荷字段契约、以及向门禁注入非单调/超差/单级/松容差数据以证明它拒绝。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 ## 2026-11-04 — plane-strain B-bar Q4 (near-incompressible locking cure)
