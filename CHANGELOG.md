@@ -1,5 +1,17 @@
 ## Unreleased
 
+### Fixes
+- **PR #194 CI red (`test (3.11)`)**：`tests/test_lint_ratchet.py::test_shipped_baseline_describes_the_tree`
+  在 PR 合并树上必红——基线是某一棵树的快照，`main` 在冻结之后新增了带 lint 欠账的文件
+  （本地复现: 40 项「新欠账」，全部是 `main` 新文件，本分支未新增一行欠账）。修法不是把红测删掉，
+  而是给棘轮加**基准感知**：`python scripts/lint_ratchet.py --base-ref <ref>`（或
+  `$LINT_BASELINE_REF`）把该 ref 上提交的基线并入允许额度，逐文件逐规则取 `max(shipped, base)`，
+  未格式化集合取并集；CI 在 `pull_request` 上导出 `LINT_BASELINE_REF=origin/<base_ref>`。
+  于是「基分支自己带来的欠账」被容忍，「本分支新增的欠账」照旧判红（`2 -> 3` / `0 -> 1` 仍拒），
+  没有可读基分支基线时只用随包基线（fail-closed，绝不静默放行）。同时按当前合并树重新冻结
+  `scripts/lint_baseline.json`（4268→4151 violations / 616→568 unformatted，欠账只降不升），
+  `tests/test_lint_ratchet.py` 10→16 tests 覆盖新的额度合并、基分支容忍与 git 读取路径。
+
 ### Verification
 - **均布压力板的精度复核**（`docs/plate-uniform-load-verification.md`）：已合并的 Q4 Mindlin
   板路径此前只对一条与第一阶模态同形的正弦载荷复核过，无法发现载荷向量、高阶模态刚度、
@@ -8,6 +20,25 @@
   `scripts/verify_plate_uniform_load.py`：简支/固支、$t/a=0.01/0.10$、均布压力下
   中心挠度、中心弯矩全部 < 3 %（最差 0.4886 %）；夹支边峰值弯矩不认证。
   3 个负控（4×4 粗网格保留失败、固支对简支参考、厚板对 Kirchhoff 参考）按设计失败。
+
+## 2026-11-05 — CI: a ruff lint gate that can actually pass (fixes PR #137)
+
+- `.github/workflows/ci.yml`: the `lint` job ran a whole-tree `ruff check` plus
+  `ruff format --check` under `continue-on-error`, so it reported `failure` on
+  every pull request (4268 pre-existing violations in 344 files) while the
+  workflow itself stayed green. It now has two blocking gates — the bug-class
+  rule set `E9,F63,F7,F82,F811` (clean tree-wide today) and a ratchet over the
+  frozen backlog — with the full-tree report kept as advisory output.
+- `scripts/lint_ratchet.py` + `scripts/lint_baseline.json`: freeze 4268
+  violations in 344 files and 616 not-yet-formatted files (ruff 0.15.0). A new
+  violation, a new rule in an existing file, a new offending file, or a new
+  unformatted file fails `python scripts/lint_ratchet.py`; paying debt down is
+  accepted and shown as the improvement it is.
+- `pyproject.toml`: `ruff` pinned to `==0.15.0` in the `dev` extra — rule
+  counts are release specific, so the baseline and the pin move together.
+- `docs/lint-gate.md` documents the three layers, the drain procedure and the
+  re-freeze audit trail; `tests/test_lint_ratchet.py` covers the comparison
+  logic, the CLI exit codes and the shipped baseline (10 tests).
 
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
@@ -127,7 +158,7 @@ All notable user-visible changes are recorded here.
   discrete field keeps an O(h) parasitic shear (1.7e-3 of the hoop peak at the
   finest mesh) in a problem whose exact shear is identically zero.
 * `docs/curved-beam-pure-bending.md` and three figures are generated from the
-  computed evidence; `tests/test_curved_beam_pure_bending.py` (11 tests) locks
+  computed evidence; `tests/test_curved_beam_pure_bending.py` (10 tests) locks
   the reference's self-validation and the FE accuracy.
 
 - Closed the transient-conduction verification debt: `solve_transient_thermal` was only checked against a semi-discrete single-element formula (`tau = rho cp L^2/(3k)`), which cannot detect a mis-scaled capacity, a wrong element length, or a mislabelled time-integration order. New anchors compare the merged solver with the Carslaw & Jaeger Fourier series (relative L2 1.11e-3 at Fo=0.10, 32 LINE2 elements, 3% gate) and with the single sine mode, giving observed orders 2.00 (space), 0.98 (backward Euler, expected 1) and 2.00 (Crank-Nicolson, expected 2). Cross-checks: Q4 strip reproduces LINE2 to 4.4e-14, adiabatic mean temperature conserved to 1.2e-14, sum(C) equals `rho*cp*A*L` to 1e-15 and `K@1 = 0` exactly. Evidence `benchmarks/thermal_transient_reference_evidence.json`, generator `benchmarks/thermal_transient_reference.py`, write-up `docs/thermal-transient-reference-verification.md`, gate `tests/test_thermal_transient_reference.py` (includes a negative control that rejects a 20% diffusivity error).
@@ -150,7 +181,7 @@ All notable user-visible changes are recorded here.
   discrete field keeps an O(h) parasitic shear (1.7e-3 of the hoop peak at the
   finest mesh) in a problem whose exact shear is identically zero.
 * `docs/curved-beam-pure-bending.md` and three figures are generated from the
-  computed evidence; `tests/test_curved_beam_pure_bending.py` (11 tests) locks
+  computed evidence; `tests/test_curved_beam_pure_bending.py` (10 tests) locks
   the reference's self-validation and the FE accuracy.
 
 - Added independent two-dimensional analytical verification of the Q4 heat-conduction
