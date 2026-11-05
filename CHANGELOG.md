@@ -26,6 +26,25 @@ All notable user-visible changes are recorded here.
 ## Unreleased
 - Added the first pressure-load verification of the metric-consistent cylindrical Shell4 element: an exact four-constant axisymmetric shell solution (`D w'''' + (E t / R^2) w = p`, clamped--clamped, open ends) for a 1.5 m x 15 mm steel cylinder under 1.0 MPa internal pressure with beta*L = 10.28. `tensorfem.cylindrical_pressure_reference` carries the closed form (displacement, moment, shear, hoop force; derivatives by automatic differentiation), self-validated against the governing ODE (residual 8.2e-16), the clamped end conditions (1.4e-12), the semi-infinite limit `|M_x(0)| = p/(2 beta^2)` (1.0e-4), the classical two-layer superposition (5.6e-5) and the pressure-work/strain-energy identity (5.3e-9), plus a consistent 2x2-Gauss pressure load and the production-element driver. At 32x16 elements (3168 dofs) the radial displacement L2 error is 1.41 %, the peak 1.64 %, the plateau 1.70 % and the axial moment L2 0.64 % with |M_x(0)| at 0.11 %, so the field-level 3 % gate passes; the node adjacent to the clamped edge is reported as NOT qualified (5.58 %) and an 8-facet circumferential mesh is rejected (5.82 %), fixing a mesh requirement instead of hiding it. The edge bending stress (181.6 MPa on top of the 100.0 MPa membrane stress) is the ship-relevant number: a `pR/t` screen understates the clamped-edge surface stress by 2.8x. Evidence in `benchmarks/cylindrical_pressure_boundary_layer_evidence.json`, report in `docs/cylindrical-pressure-boundary-layer.md`, gate `tests/test_cylindrical_pressure_boundary_layer.py` (14 tests, including a negative control that rejects a 10 % thickness error in the reference).
 
+- Closed the quadratic-solid rank-deficiency debt and corrected a mislabelled evidence row: the
+  library audit had recorded the 20-node brick as `hex20 (2x2x2 integration)` with zero spurious
+  modes, but the shipped `hex20_stiffness` integrates with the exact-order 3x3x3 rule, and the
+  measured 8-point rule gives **six** zero-energy mechanisms, so the old label and conclusion could
+  not both stand. New `audit_quadratic_solids`, `audit_hex20_mesh_scan`, `hex20_stiffness_with_rule`
+  (orders 2-5, `order=3` locked to production to round-off), `hex20_reduced_stiffness`,
+  `quadrature_exactness` and `hex20_quadrature_convergence`; TET10 now enters the library-level
+  audit, which had skipped the quadratic tetrahedron entirely. Results: the shipped rule has exactly
+  the 6 rigid-body modes on regular, distorted and genuinely curved bricks (0 spurious) and
+  reproduces a 64-point reference to 5.5e-16 on the regular brick; the 8-point rule has 6
+  mechanisms on all three geometries and is 7.65%-8.84% too soft (measured against a converged
+  rule, above the 3% gate); its mechanisms do not survive conforming assembly (warped and jittered
+  free-free meshes keep a 6-dimensional null space). TET10 is rank sufficient with straight and
+  curved edges. The Keast degree-3 rule under-integrates curved quadratic tetrahedra - quantified
+  accuracy loss remains open, "rank sufficient" is explicitly not "integration accurate".
+  Evidence `docs/benchmarks/tutorials/quadratic-solid-rank-audit.json`, write-up
+  `docs/quadratic-solid-rank-audit.md`, gate `tests/test_quadratic_solid_rank_audit.py` (10 tests,
+  including the 8-point rule as negative control).
+
 - Added an independent Saint-Venant torsion verification of the 3-D solid paths, the one elementary load case that no stored HEX8/HEX20/TET4/TET10 check had ever exercised. `tensorfem.torsion_bar` carries the closed-form series (torsion constant, Prandtl stress function, shear stress, warping), self-validated against the Timoshenko coefficient table (beta = 0.141, alpha = 0.208), the governing PDE, the traction-free boundary, `J = 2 int psi dA` and the thin-strip limit, plus a driver that twists a prism with an exact end torque and recovers the twist rate from the interior window. HEX20 reaches 0.118% twist-rate error at 4515 dofs and 1.47% at 783 dofs; fully integrated HEX8 needs 8019 dofs for 1.34%. The boundary peak of |tau| is reported as WITHHELD because centroid sampling cannot reach the lateral surface. Evidence in `benchmarks/saint_venant_torsion_evidence.json`, report in `docs/saint-vanant-torsion.md`.
 
 ## Curved-bar pure bending verified against the exact Airy solution
