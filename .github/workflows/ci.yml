@@ -54,13 +54,23 @@ jobs:
   lint:
     name: lint (advisory)
     runs-on: ubuntu-latest
-    # Advisory on purpose: the tree carries a large pre-existing ruff backlog
-    # (unused imports, import ordering, semicolon-packed statements).  Making
-    # it blocking would hide every other signal.  Fix the backlog, then drop
-    # this continue-on-error and promote it to a gate.
-    continue-on-error: true
+    # The check name above is kept verbatim on purpose: branch protection and
+    # the PR gate key on the check context, so renaming it would silently drop
+    # the signal instead of turning it green.
+    #
+    # `main` still carries a large *pre-existing* ruff backlog (4268 findings
+    # in 344 of 546 python files, 619 files `ruff format` would rewrite), so a
+    # whole-tree lint is red for every commit and carries no information.  The
+    # gate is therefore a ratchet (scripts/lint_ratchet.py): a change set may
+    # not add findings and may not add newly unformatted code, while the
+    # backlog itself is printed as an advisory number that can be burned down
+    # deliberately.  See docs/pr131-lint-fix-m4155.md.
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The ratchet diffs against the base commit, so full history (or at
+          # least the base) has to be present.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -70,7 +80,28 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      - name: Lint (ruff)
-        run: ruff check src tests scripts examples
-      - name: Format check (ruff format)
-        run: ruff format --check src tests scripts examples
+      - name: Lint ratchet (no new findings, new files format clean)
+        env:
+          # pull_request -> the merge-base commit; push -> the previous tip.
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          base="${BASE_SHA:-}"
+          if [ -z "$base" ] || ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            # New ref / shallow history / workflow_dispatch: fall back to the
+            # immediate parent, and let the script skip if that is missing too.
+            base="$(git rev-parse HEAD~1 2>/dev/null || true)"
+          fi
+          echo "lint ratchet base: ${base:-<none>}"
+          python scripts/lint_ratchet.py --base "$base" --summary artifacts/lint-ratchet.json
+      - name: Upload ratchet summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-ratchet
+          path: artifacts/lint-ratchet.json
+      - name: Whole-tree backlog snapshot (advisory, never fails)
+        # Visibility only: this number is the burn-down target, not a gate.
+        continue-on-error: true
+        run: |
+          ruff check src tests scripts examples --statistics || true
+          ruff format --check src tests scripts examples || true
