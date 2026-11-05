@@ -1,0 +1,371 @@
+{
+  "schema": "tensorfem.plate-bending-buckling-evidence/1.0",
+  "mission_id": 3255,
+  "material": {
+    "young": 210000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.012
+  },
+  "literature": {
+    "k_uniform_long": 4.0,
+    "k_triangular_long": 7.81,
+    "kb_pure_bending_long": 23.9,
+    "kb_pure_bending_square": 25.6,
+    "source": "Timoshenko & Gere, Theory of Elastic Stability (1961), Table 9.1"
+  },
+  "psi_sweep": {
+    "a_over_b=1": [
+      {
+        "edge_ratio": -1.0,
+        "coefficient_k": 25.528348350977446
+      },
+      {
+        "edge_ratio": -0.75,
+        "coefficient_k": 19.02479980141054
+      },
+      {
+        "edge_ratio": -0.5,
+        "coefficient_k": 13.513659578526331
+      },
+      {
+        "edge_ratio": -0.25,
+        "coefficient_k": 10.024833958844729
+      },
+      {
+        "edge_ratio": 0.0,
+        "coefficient_k": 7.811957275609317
+      },
+      {
+        "edge_ratio": 0.25,
+        "coefficient_k": 6.344077245400881
+      },
+      {
+        "edge_ratio": 0.5,
+        "coefficient_k": 5.318762751693105
+      },
+      {
+        "edge_ratio": 0.75,
+        "coefficient_k": 4.569123675925967
+      },
+      {
+        "edge_ratio": 1.0,
+        "coefficient_k": 4.000000000000001
+      }
+    ],
+    "a_over_b=2": [
+      {
+        "edge_ratio": -1.0,
+        "coefficient_k": 23.88181312724104
+      },
+      {
+        "edge_ratio": -0.75,
+        "coefficient_k": 18.50380777808961
+      },
+      {
+        "edge_ratio": -0.5,
+        "coefficient_k": 13.513659578526326
+      },
+      {
+        "edge_ratio": -0.25,
+        "coefficient_k": 10.024833958844727
+      },
+      {
+        "edge_ratio": 0.0,
+        "coefficient_k": 7.811957275609314
+      },
+      {
+        "edge_ratio": 0.25,
+        "coefficient_k": 6.344077245400879
+      },
+      {
+        "edge_ratio": 0.5,
+        "coefficient_k": 5.318762751693102
+      },
+      {
+        "edge_ratio": 0.75,
+        "coefficient_k": 4.569123675925965
+      },
+      {
+        "edge_ratio": 1.0,
+        "coefficient_k": 3.999999999999999
+      }
+    ],
+    "a_over_b=6": [
+      {
+        "edge_ratio": -1.0,
+        "coefficient_k": 23.88181312724106
+      },
+      {
+        "edge_ratio": -0.75,
+        "coefficient_k": 18.17784885195844
+      },
+      {
+        "edge_ratio": -0.5,
+        "coefficient_k": 13.397184475572722
+      },
+      {
+        "edge_ratio": -0.25,
+        "coefficient_k": 10.024833958844727
+      },
+      {
+        "edge_ratio": 0.0,
+        "coefficient_k": 7.811957275609314
+      },
+      {
+        "edge_ratio": 0.25,
+        "coefficient_k": 6.344077245400879
+      },
+      {
+        "edge_ratio": 0.5,
+        "coefficient_k": 5.318762751693102
+      },
+      {
+        "edge_ratio": 0.75,
+        "coefficient_k": 4.569123675925965
+      },
+      {
+        "edge_ratio": 1.0,
+        "coefficient_k": 3.999999999999999
+      }
+    ]
+  },
+  "aspect_sweep": [
+    {
+      "aspect_ratio": 1.0,
+      "coefficient_k": 25.528348350977446
+    },
+    {
+      "aspect_ratio": 1.25,
+      "coefficient_k": 23.9794288539191
+    },
+    {
+      "aspect_ratio": 1.5,
+      "coefficient_k": 24.11183114337353
+    },
+    {
+      "aspect_ratio": 2.0,
+      "coefficient_k": 23.88181312724104
+    },
+    {
+      "aspect_ratio": 2.5,
+      "coefficient_k": 23.97942885391911
+    },
+    {
+      "aspect_ratio": 3.0,
+      "coefficient_k": 24.111831143373536
+    },
+    {
+      "aspect_ratio": 4.0,
+      "coefficient_k": 23.881813127241035
+    },
+    {
+      "aspect_ratio": 6.0,
+      "coefficient_k": 23.88181312724106
+    },
+    {
+      "aspect_ratio": 8.0,
+      "coefficient_k": 23.88181312724105
+    },
+    {
+      "aspect_ratio": 10.0,
+      "coefficient_k": 24.78472464644301
+    }
+  ],
+  "basis_convergence": [
+    {
+      "basis": 6,
+      "coefficient_k": 27.113883011078986
+    },
+    {
+      "basis": 8,
+      "coefficient_k": 24.111835410553983
+    },
+    {
+      "basis": 10,
+      "coefficient_k": 23.881813788457663
+    },
+    {
+      "basis": 12,
+      "coefficient_k": 23.88181312724106
+    },
+    {
+      "basis": 16,
+      "coefficient_k": 23.881812970474332
+    },
+    {
+      "basis": 20,
+      "coefficient_k": 23.881812958553795
+    }
+  ],
+  "finite_difference_convergence": [
+    {
+      "divisions": 12,
+      "unknowns": 121.0,
+      "graded_k": 24.936419426436093,
+      "graded_error_vs_variational": 0.023187107706222898,
+      "uniform_k": 3.9772058250541122,
+      "uniform_error_vs_classical": 0.005698543736471939
+    },
+    {
+      "divisions": 16,
+      "unknowns": 225.0,
+      "graded_k": 25.19310065050627,
+      "graded_error_vs_variational": 0.013132355073385393,
+      "uniform_k": 3.98716545618125,
+      "uniform_error_vs_classical": 0.0032086359546874554
+    },
+    {
+      "divisions": 24,
+      "unknowns": 529.0,
+      "graded_k": 25.37863857800036,
+      "graded_error_vs_variational": 0.005864437555381241,
+      "uniform_k": 3.9942916845917833,
+      "uniform_error_vs_classical": 0.0014270788520541755
+    },
+    {
+      "divisions": 32,
+      "unknowns": 961.0,
+      "graded_k": 25.44399799537216,
+      "graded_error_vs_variational": 0.00330416936170852,
+      "uniform_k": 3.9967882701753368,
+      "uniform_error_vs_classical": 0.0008029324561658058
+    }
+  ],
+  "closed_form_vs_quadrature": {
+    "bending_relative_difference": 2.0868819421136437e-15,
+    "geometric_relative_difference": 1.7628128157906325e-15
+  },
+  "mode_shape": {
+    "coefficient_k": 25.528347980624776,
+    "dominant_mode": [
+      2,
+      1
+    ],
+    "peak_location": [
+      0.25,
+      0.26666666666666666
+    ],
+    "edge_max_abs_w": 2.4492935982947064e-16
+  },
+  "qualification": {
+    "schema": "tensorfem.plate-bending-buckling/1.0",
+    "scope": "TensorFEM variational and finite-difference plate buckling; flat simply supported panel, linear edge-stress gradient",
+    "tolerance": 0.03,
+    "young": 210000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.012,
+    "basis": 16,
+    "cases": [
+      {
+        "case": "uniform_limit",
+        "edge_ratio": 1.0,
+        "aspect_ratio": 6.0,
+        "reference_k": 4.0,
+        "coefficient_k": 3.999999999999999,
+        "reference_source": "Timoshenko & Gere (1961) Table 9.1",
+        "relative_error": 2.220446049250313e-16,
+        "passed": true
+      },
+      {
+        "case": "pure_bending_long_panel",
+        "edge_ratio": -1.0,
+        "aspect_ratio": 6.0,
+        "reference_k": 23.9,
+        "coefficient_k": 23.881812970474332,
+        "reference_source": "Timoshenko & Gere (1961) Table 9.1",
+        "relative_error": 0.0007609635784797675,
+        "passed": true
+      },
+      {
+        "case": "pure_bending_square",
+        "edge_ratio": -1.0,
+        "aspect_ratio": 1.0,
+        "reference_k": 25.6,
+        "coefficient_k": 25.528347980624776,
+        "reference_source": "Timoshenko & Gere (1961) Table 9.1",
+        "relative_error": 0.0027989070068447086,
+        "passed": true
+      },
+      {
+        "case": "triangular_long_panel",
+        "edge_ratio": 0.0,
+        "aspect_ratio": 6.0,
+        "reference_k": 7.81,
+        "coefficient_k": 7.81195727525727,
+        "reference_source": "Timoshenko & Gere (1961) Table 9.1",
+        "relative_error": 0.0002506114285878436,
+        "passed": true
+      },
+      {
+        "case": "finite_difference_pure_bending",
+        "edge_ratio": -1.0,
+        "aspect_ratio": 1.0,
+        "variational_k": 25.528347980624776,
+        "finite_difference_k": 25.44399799537216,
+        "grid_nodes": 961.0,
+        "relative_error": 0.00330416936170852,
+        "tolerance": 0.05,
+        "passed": true
+      },
+      {
+        "case": "finite_difference_uniform_limit",
+        "edge_ratio": 1.0,
+        "aspect_ratio": 1.0,
+        "reference_k": 4.0,
+        "finite_difference_k": 3.9967882701753368,
+        "grid_nodes": 961.0,
+        "relative_error": 0.0008029324561658058,
+        "tolerance": 0.05,
+        "passed": true
+      },
+      {
+        "case": "closed_form_vs_quadrature",
+        "bending_relative_difference": 2.725957592070415e-15,
+        "geometric_relative_difference": 1.7550829857724642e-15,
+        "tolerance": 1e-10,
+        "passed": true
+      },
+      {
+        "case": "basis_convergence_pure_bending",
+        "basis_coarse": 12,
+        "basis_refined": 16,
+        "coefficient_coarse": 23.88181312724106,
+        "coefficient_refined": 23.881812970474332,
+        "relative_drift": 6.564272477681992e-09,
+        "tolerance": 0.005,
+        "passed": true
+      },
+      {
+        "case": "gradient_monotonicity",
+        "samples": [
+          {
+            "edge_ratio": 1.0,
+            "coefficient_k": 3.999999999999999
+          },
+          {
+            "edge_ratio": 0.5,
+            "coefficient_k": 5.318762751665792
+          },
+          {
+            "edge_ratio": 0.0,
+            "coefficient_k": 7.81195727525727
+          },
+          {
+            "edge_ratio": -0.5,
+            "coefficient_k": 13.397184469348096
+          },
+          {
+            "edge_ratio": -1.0,
+            "coefficient_k": 23.881812970474332
+          }
+        ],
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "figures": [
+    "docs/assets/plate_bending_buckling/k_vs_psi.png",
+    "docs/assets/plate_bending_buckling/mode_and_aspect.png"
+  ]
+}
