@@ -1,0 +1,119 @@
+{
+  "case": "cross-implementation agreement, linear stress-gradient buckling",
+  "description": "Double-sine Galerkin (closed-form ramp integral) against an independent strong-form finite-difference solve; neither path shares a basis or an energy matrix with the other.",
+  "material": {
+    "poisson_ratio": 0.3,
+    "thickness": 0.012,
+    "young_modulus": 210000000000.0
+  },
+  "passed": true,
+  "reference": {
+    "note": "k = N0 b^2 / (pi^2 D) on the larger edge; consistency leg only",
+    "pure_bending_minimum_over_aspect": 23.9,
+    "triangular": 7.81,
+    "uniform": 4.0
+  },
+  "rows": [
+    {
+      "aspect_ratio": 1.0,
+      "finite_difference_k": 3.9967882701747164,
+      "galerkin_k": 4.000000000000001,
+      "passed": true,
+      "relative_error": 0.000803577674917566,
+      "stress_gradient": 1.0
+    },
+    {
+      "aspect_ratio": 1.0,
+      "finite_difference_k": 5.314425507289253,
+      "galerkin_k": 5.318762751663113,
+      "passed": true,
+      "relative_error": 0.0008161266665438482,
+      "stress_gradient": 0.5
+    },
+    {
+      "aspect_ratio": 1.0,
+      "finite_difference_k": 7.8048632337058566,
+      "galerkin_k": 7.811957275222924,
+      "passed": true,
+      "relative_error": 0.0009089257946803819,
+      "stress_gradient": 0.0
+    },
+    {
+      "aspect_ratio": 1.0,
+      "finite_difference_k": 13.49465424073431,
+      "galerkin_k": 13.513659573638513,
+      "passed": true,
+      "relative_error": 0.0014083601228429554,
+      "stress_gradient": -0.5
+    },
+    {
+      "aspect_ratio": 1.0,
+      "finite_difference_k": 25.443997995371767,
+      "galerkin_k": 25.52834794901881,
+      "passed": true,
+      "relative_error": 0.0033151218476901168,
+      "stress_gradient": -1.0
+    },
+    {
+      "aspect_ratio": 2.0,
+      "finite_difference_k": 3.996788270174629,
+      "galerkin_k": 4.000000000000001,
+      "passed": true,
+      "relative_error": 0.0008035776749393264,
+      "stress_gradient": 1.0
+    },
+    {
+      "aspect_ratio": 2.0,
+      "finite_difference_k": 5.314425507289086,
+      "galerkin_k": 5.318762751663113,
+      "passed": true,
+      "relative_error": 0.0008161266665751565,
+      "stress_gradient": 0.5
+    },
+    {
+      "aspect_ratio": 2.0,
+      "finite_difference_k": 7.804863233705477,
+      "galerkin_k": 7.811957275222924,
+      "passed": true,
+      "relative_error": 0.0009089257947290097,
+      "stress_gradient": 0.0
+    },
+    {
+      "aspect_ratio": 2.0,
+      "finite_difference_k": 13.494654240733103,
+      "galerkin_k": 13.513659573638513,
+      "passed": true,
+      "relative_error": 0.0014083601229324394,
+      "stress_gradient": -0.5
+    },
+    {
+      "aspect_ratio": 2.0,
+      "finite_difference_k": 23.813718983742163,
+      "galerkin_k": 23.881812956984543,
+      "passed": true,
+      "relative_error": 0.002859443049985977,
+      "stress_gradient": -1.0
+    }
+  ],
+  "settings": {
+    "aspect_ratios": [
+      1.0,
+      2.0
+    ],
+    "finite_difference_divisions": 32,
+    "galerkin_basis": [
+      24,
+      24
+    ],
+    "stress_gradients": [
+      1.0,
+      0.5,
+      0.0,
+      -0.5,
+      -1.0
+    ],
+    "tolerance": 0.01
+  },
+  "worst_relative_error": 0.0033151218476901168,
+  "worst_relative_error_percent": 0.3315121847690117
+}

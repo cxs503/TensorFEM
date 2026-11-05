@@ -1,0 +1,640 @@
+{
+  "schema": "tensorfem.plate-stress-gradient-buckling-evidence/1.0",
+  "parameters": {
+    "young_pa": 210000000000.0,
+    "poisson": 0.3,
+    "thickness_m": 0.012,
+    "basis": 24,
+    "rigidity_d_nm": 33230.769230769234,
+    "coupling_rigidity_h_nm": 33230.769230769234
+  },
+  "literature_anchors": [
+    {
+      "stress_gradient": 1.0,
+      "aspect_ratio": 1.0,
+      "literature_k": 4.0,
+      "coefficient_k": 4.000000000000001,
+      "relative_error": 2.220446049250313e-16
+    },
+    {
+      "stress_gradient": 0.0,
+      "aspect_ratio": 1.0,
+      "literature_k": 7.81,
+      "coefficient_k": 7.811957275222924,
+      "relative_error": 0.00025061142419002813
+    },
+    {
+      "stress_gradient": -1.0,
+      "aspect_ratio": 2.0,
+      "literature_k": 23.9,
+      "coefficient_k": 23.881812956984543,
+      "relative_error": 0.000760964142906051
+    }
+  ],
+  "gradient_sweep": [
+    {
+      "stress_gradient": 1.0,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 4.000000000000001,
+      "critical_load": 1311898.1850063396,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "stress_gradient": 0.8,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 4.4430882779211585,
+      "critical_load": 1457219.8619069273,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "stress_gradient": 0.6,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 4.992296631463205,
+      "critical_load": 1637346.2224574601,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "stress_gradient": 0.4,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 5.6885769979473855,
+      "critical_load": 1865708.4597189964,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "stress_gradient": 0.2,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 6.595060107322057,
+      "critical_load": 2163011.84620088,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "stress_gradient": 0.0,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 7.811957275222924,
+      "critical_load": 2562123.1426780056,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "stress_gradient": -0.25,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 10.02483395753489,
+      "critical_load": 3287890.3684699847,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "stress_gradient": -0.5,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 13.513659573638513,
+      "critical_load": 4432136.366862477,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "stress_gradient": -0.75,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 19.024799780952712,
+      "critical_load": 6239650.075685216,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "stress_gradient": -1.0,
+      "aspect_ratio": 1.0,
+      "coefficient_k": 25.52834794901881,
+      "critical_load": 8372648.3351320205,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    }
+  ],
+  "aspect_sweep": [
+    {
+      "aspect_ratio": 0.5,
+      "psi_plus_1": 6.250000000000003,
+      "psi_zero": 11.626091224548095,
+      "psi_minus_1": 25.528347949018833
+    },
+    {
+      "aspect_ratio": 0.6,
+      "psi_plus_1": 5.13777777777778,
+      "psi_zero": 9.743460692920532,
+      "psi_minus_1": 24.121723984361687
+    },
+    {
+      "aspect_ratio": 0.7,
+      "psi_plus_1": 4.530816326530614,
+      "psi_zero": 8.697281665010268,
+      "psi_minus_1": 23.912333053855157
+    },
+    {
+      "aspect_ratio": 0.8,
+      "psi_plus_1": 4.202500000000001,
+      "psi_zero": 8.131543100560972,
+      "psi_minus_1": 24.46956196789145
+    },
+    {
+      "aspect_ratio": 0.9,
+      "psi_plus_1": 4.044567901234568,
+      "psi_zero": 7.868642510401305,
+      "psi_minus_1": 25.57646838486557
+    },
+    {
+      "aspect_ratio": 1.0,
+      "psi_plus_1": 4.000000000000001,
+      "psi_zero": 7.811957275222924,
+      "psi_minus_1": 25.52834794901881
+    },
+    {
+      "aspect_ratio": 1.2,
+      "psi_plus_1": 4.134444444444445,
+      "psi_zero": 8.114339620575679,
+      "psi_minus_1": 24.121723984361697
+    },
+    {
+      "aspect_ratio": 1.5,
+      "psi_plus_1": 4.340277777777779,
+      "psi_zero": 8.368077829720065,
+      "psi_minus_1": 24.11183101242504
+    },
+    {
+      "aspect_ratio": 2.0,
+      "psi_plus_1": 4.000000000000001,
+      "psi_zero": 7.811957275222924,
+      "psi_minus_1": 23.881812956984543
+    },
+    {
+      "aspect_ratio": 2.5,
+      "psi_plus_1": 4.134444444444444,
+      "psi_zero": 8.016171816670205,
+      "psi_minus_1": 23.979428652854065
+    },
+    {
+      "aspect_ratio": 3.0,
+      "psi_plus_1": 4.000000000000001,
+      "psi_zero": 7.811957275222924,
+      "psi_minus_1": 24.11183101242503
+    },
+    {
+      "aspect_ratio": 4.0,
+      "psi_plus_1": 4.000000000000001,
+      "psi_zero": 7.811957275222924,
+      "psi_minus_1": 23.881812956984543
+    }
+  ],
+  "pure_bending_minimum_k": 23.881812956984543,
+  "pure_bending_minimum_aspect": [
+    2.0,
+    4.0
+  ],
+  "basis_convergence": {
+    "triangular": {
+      "stress_gradient": 0.0,
+      "aspect_ratio": 1.0,
+      "series": [
+        {
+          "basis": 4,
+          "coefficient_k": 7.811959016472849
+        },
+        {
+          "basis": 6,
+          "coefficient_k": 7.811957366208386
+        },
+        {
+          "basis": 8,
+          "coefficient_k": 7.811957285255493
+        },
+        {
+          "basis": 10,
+          "coefficient_k": 7.811957276927884
+        },
+        {
+          "basis": 12,
+          "coefficient_k": 7.811957275609317
+        },
+        {
+          "basis": 16,
+          "coefficient_k": 7.811957275257273
+        },
+        {
+          "basis": 20,
+          "coefficient_k": 7.811957275227158
+        },
+        {
+          "basis": 24,
+          "coefficient_k": 7.811957275222924
+        }
+      ]
+    },
+    "pure_bending": {
+      "stress_gradient": -1.0,
+      "aspect_ratio": 2.0,
+      "series": [
+        {
+          "basis": 4,
+          "coefficient_k": 23.884542492505272
+        },
+        {
+          "basis": 6,
+          "coefficient_k": 23.881884041235356
+        },
+        {
+          "basis": 8,
+          "coefficient_k": 23.88181872743805
+        },
+        {
+          "basis": 10,
+          "coefficient_k": 23.881813788457677
+        },
+        {
+          "basis": 12,
+          "coefficient_k": 23.88181312724105
+        },
+        {
+          "basis": 16,
+          "coefficient_k": 23.881812970474343
+        },
+        {
+          "basis": 20,
+          "coefficient_k": 23.88181295855381
+        },
+        {
+          "basis": 24,
+          "coefficient_k": 23.881812956984543
+        }
+      ]
+    }
+  },
+  "mode_field": {
+    "stress_gradient": -1.0,
+    "aspect_ratio": 2.0,
+    "critical_load": 7832626.7682322245,
+    "coefficient_k": 23.881812956984543,
+    "dominant_mode": [
+      3,
+      1
+    ],
+    "energy_ratio_load": 7832626.768232228,
+    "energy_ratio_relative_deviation": 4.440892098500626e-16
+  },
+  "qualification": {
+    "schema": "tensorfem.plate-stress-gradient-buckling/1.0",
+    "scope": "Kirchhoff variational reference for a flat, simply supported, isotropic panel under a linearly varying in-plane load; shell geometry, imperfections, tension-field action, plasticity and D16/D26 coupling are not covered.  No element in this repository carries a geometric stiffness for a non-uniform membrane field, so this qualifies the reference only",
+    "tolerance": 0.03,
+    "young": 210000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.012,
+    "basis": 24,
+    "exact_navier": [
+      {
+        "case": "uniform_navier_a_over_b_0.5",
+        "aspect_ratio": 0.5,
+        "coefficient_k": 6.250000000000003,
+        "navier_coefficient_k": 6.250000000000001,
+        "analytic_k_single_mode": 6.25,
+        "navier_mode": [
+          1,
+          1
+        ],
+        "dominant_mode": [
+          1,
+          1
+        ],
+        "relative_error": 4.440892098500626e-16,
+        "passed": true
+      },
+      {
+        "case": "uniform_navier_a_over_b_0.75",
+        "aspect_ratio": 0.75,
+        "coefficient_k": 4.340277777777779,
+        "navier_coefficient_k": 4.340277777777779,
+        "analytic_k_single_mode": 4.340277777777777,
+        "navier_mode": [
+          1,
+          1
+        ],
+        "dominant_mode": [
+          1,
+          1
+        ],
+        "relative_error": 4.440892098500626e-16,
+        "passed": true
+      },
+      {
+        "case": "uniform_navier_a_over_b_1",
+        "aspect_ratio": 1.0,
+        "coefficient_k": 4.000000000000001,
+        "navier_coefficient_k": 4.0,
+        "analytic_k_single_mode": 4.0,
+        "navier_mode": [
+          1,
+          1
+        ],
+        "dominant_mode": [
+          1,
+          1
+        ],
+        "relative_error": 2.220446049250313e-16,
+        "passed": true
+      },
+      {
+        "case": "uniform_navier_a_over_b_2",
+        "aspect_ratio": 2.0,
+        "coefficient_k": 4.000000000000001,
+        "navier_coefficient_k": 4.0,
+        "analytic_k_single_mode": 4.0,
+        "navier_mode": [
+          2,
+          1
+        ],
+        "dominant_mode": [
+          2,
+          1
+        ],
+        "relative_error": 2.220446049250313e-16,
+        "passed": true
+      }
+    ],
+    "literature": [
+      {
+        "case": "gradient_psi_+1.00_a_over_b_1",
+        "stress_gradient": 1.0,
+        "aspect_ratio": 1.0,
+        "literature_k": 4.0,
+        "coefficient_k": 4.000000000000001,
+        "dominant_mode": [
+          1,
+          1
+        ],
+        "relative_error": 2.220446049250313e-16,
+        "passed": true
+      },
+      {
+        "case": "gradient_psi_+0.00_a_over_b_1",
+        "stress_gradient": 0.0,
+        "aspect_ratio": 1.0,
+        "literature_k": 7.81,
+        "coefficient_k": 7.811957275222924,
+        "dominant_mode": [
+          1,
+          1
+        ],
+        "relative_error": 0.00025061142419002813,
+        "passed": true
+      },
+      {
+        "case": "gradient_psi_-1.00_a_over_b_2",
+        "stress_gradient": -1.0,
+        "aspect_ratio": 2.0,
+        "literature_k": 23.9,
+        "coefficient_k": 23.881812956984543,
+        "dominant_mode": [
+          3,
+          1
+        ],
+        "relative_error": 0.000760964142906051,
+        "passed": true
+      }
+    ],
+    "quadrature": [
+      {
+        "case": "quadrature_psi_+1.00",
+        "stress_gradient": 1.0,
+        "max_relative_deviation": 1.453218702240301e-15,
+        "passed": true
+      },
+      {
+        "case": "quadrature_psi_+0.00",
+        "stress_gradient": 0.0,
+        "max_relative_deviation": 1.4493518890509824e-15,
+        "passed": true
+      },
+      {
+        "case": "quadrature_psi_-0.50",
+        "stress_gradient": -0.5,
+        "max_relative_deviation": 1.426430588230554e-15,
+        "passed": true
+      },
+      {
+        "case": "quadrature_psi_-1.00",
+        "stress_gradient": -1.0,
+        "max_relative_deviation": 1.4794458157105692e-15,
+        "passed": true
+      }
+    ],
+    "refinement": [
+      {
+        "stress_gradient": 0.0,
+        "aspect_ratio": 1.0,
+        "series": [
+          {
+            "basis": 4,
+            "coefficient_k": 7.811959016472849,
+            "dominant_mode": [
+              1,
+              1
+            ]
+          },
+          {
+            "basis": 8,
+            "coefficient_k": 7.811957285255493,
+            "dominant_mode": [
+              1,
+              1
+            ]
+          },
+          {
+            "basis": 12,
+            "coefficient_k": 7.811957275609317,
+            "dominant_mode": [
+              1,
+              1
+            ]
+          },
+          {
+            "basis": 24,
+            "coefficient_k": 7.811957275222924,
+            "dominant_mode": [
+              1,
+              1
+            ]
+          }
+        ],
+        "monotone_from_above": true,
+        "passed": true
+      },
+      {
+        "stress_gradient": -1.0,
+        "aspect_ratio": 2.0,
+        "series": [
+          {
+            "basis": 4,
+            "coefficient_k": 23.884542492505272,
+            "dominant_mode": [
+              3,
+              1
+            ]
+          },
+          {
+            "basis": 8,
+            "coefficient_k": 23.88181872743805,
+            "dominant_mode": [
+              3,
+              1
+            ]
+          },
+          {
+            "basis": 12,
+            "coefficient_k": 23.88181312724105,
+            "dominant_mode": [
+              3,
+              1
+            ]
+          },
+          {
+            "basis": 24,
+            "coefficient_k": 23.881812956984543,
+            "dominant_mode": [
+              3,
+              1
+            ]
+          }
+        ],
+        "monotone_from_above": true,
+        "passed": true
+      }
+    ],
+    "reference_sweep": [
+      {
+        "stress_gradient": 1.0,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 4.000000000000001,
+        "critical_load": 1311898.1850063396,
+        "dominant_mode": [
+          1,
+          1
+        ]
+      },
+      {
+        "stress_gradient": 0.8,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 4.4430882779211585,
+        "critical_load": 1457219.8619069273,
+        "dominant_mode": [
+          1,
+          1
+        ]
+      },
+      {
+        "stress_gradient": 0.6,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 4.992296631463205,
+        "critical_load": 1637346.2224574601,
+        "dominant_mode": [
+          1,
+          1
+        ]
+      },
+      {
+        "stress_gradient": 0.4,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 5.6885769979473855,
+        "critical_load": 1865708.4597189964,
+        "dominant_mode": [
+          1,
+          1
+        ]
+      },
+      {
+        "stress_gradient": 0.2,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 6.595060107322057,
+        "critical_load": 2163011.84620088,
+        "dominant_mode": [
+          1,
+          1
+        ]
+      },
+      {
+        "stress_gradient": 0.0,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 7.811957275222924,
+        "critical_load": 2562123.1426780056,
+        "dominant_mode": [
+          1,
+          1
+        ]
+      },
+      {
+        "stress_gradient": -0.25,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 10.02483395753489,
+        "critical_load": 3287890.3684699847,
+        "dominant_mode": [
+          1,
+          1
+        ]
+      },
+      {
+        "stress_gradient": -0.5,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 13.513659573638513,
+        "critical_load": 4432136.366862477,
+        "dominant_mode": [
+          1,
+          1
+        ]
+      },
+      {
+        "stress_gradient": -0.75,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 19.024799780952712,
+        "critical_load": 6239650.075685216,
+        "dominant_mode": [
+          1,
+          1
+        ]
+      },
+      {
+        "stress_gradient": -1.0,
+        "aspect_ratio": 1.0,
+        "coefficient_k": 25.52834794901881,
+        "critical_load": 8372648.3351320205,
+        "dominant_mode": [
+          2,
+          1
+        ]
+      }
+    ],
+    "passed": true
+  },
+  "figures": {
+    "coefficient_curves": "docs/assets/plate_stress_gradient/coefficient_curves.png",
+    "pure_bending_mode": "docs/assets/plate_stress_gradient/pure_bending_mode.png"
+  }
+}

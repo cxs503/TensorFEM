@@ -1,6 +1,24 @@
 ## Unreleased
 
 ### Verification
+- **板在面内线性斜变载荷下的屈曲参考解**（`docs/marine-plate-stress-gradient-buckling.md`）：已合并的两条屈曲路线
+  （`marine_plate_buckling` 单轴压缩、`plate_shear_buckling` 均匀剪切/压-剪组合）都假设面内膜应力**均匀**，
+  斜变预屈曲应力因此一直挂着欠账。新增 `tensorfem.plate_stress_gradient_buckling`：四边简支板在
+  `N_x(y) = N0 g(y/b)`、`g(t) = 1 + (psi-1) t` 下的变分参考解（双正弦 Galerkin），弯曲矩阵复用已合并的
+  `plate_shear_buckling.sine_energy_matrices`，新增几何矩阵的斜变积分闭式
+  `Yhat[n,q] = I(|n-q|) - I(n+q)`（`I(0)=(1+psi)/2`，`I(k)=(psi-1)((-1)^k-1)/(k^2 pi^2)`）。`psi=-1` 时几何矩阵不定，
+  沿用最小正乘子驱动；几何矩阵在轴向半波数上块对角（写成 `kron(diag(alpha), Yhat)` 会把谱问题膨胀到 `(M*N)^2`）。
+- 五腿判定，任一失败抛异常：①`psi=1` 复现连续 Navier 精确解与单模态闭式 `k=(a/b+b/a)^2`（相对偏差 ≤4.4e-14）；
+  ②闭式斜变积分 vs 无闭式的 Gauss–Legendre 求积（≤1.5e-13）；③文献锚点 `k=4.00/7.81/23.9`
+  误差 0.000%/0.025%/0.076%；④Rayleigh 商上界随基函数加密单调收敛（粗基不能冒充收敛）；
+  ⑤与**独立实现**交叉：`plate_bending_buckling` 的强形式有限差分（无 sine 基、无能量矩阵、无斜变积分）
+  在 `psi=+1/+0.5/0/-0.5/-1`、`a/b=1/2` 上最大偏差 0.332%。纯弯曲表格值 23.9 是**沿长宽比的最小值**，方板为 25.53。
+- 产物：`tests/test_plate_stress_gradient_buckling.py`（17 项门）、生成器
+  `benchmarks/plate_stress_gradient_buckling.py` 与 `benchmarks/plate_stress_gradient_crosscheck.py`、
+  证据 `benchmarks/plate_stress_gradient_buckling_evidence.json` / `..._crosscheck_evidence.json`、
+  报告图 `docs/assets/plate_stress_gradient/`。
+- 范围声明：闭环的是**参考端**（Ritz/半解析 + 独立差分互证）；仓内没有带非均匀膜应力几何刚度的板单元，
+  该子集的有限元端维持 WITHHELD，不提升 1.0 认证数量。
 - **均布压力板的精度复核**（`docs/plate-uniform-load-verification.md`）：已合并的 Q4 Mindlin
   板路径此前只对一条与第一阶模态同形的正弦载荷复核过，无法发现载荷向量、高阶模态刚度、
   剪切分解或边界条件错误。新增 `tensorfem.plate_uniform_load`（精确 Navier 双级数 +
