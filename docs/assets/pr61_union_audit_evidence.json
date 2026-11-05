@@ -1,0 +1,2062 @@
+{
+  "task": "TensorFEM PR #61 reconciliation (agent/m3202 <- main): union audit",
+  "shas": {
+    "merge_base": "e8f6759aab2d203db641b2e94502ee5865848e3f",
+    "main": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+    "branch_pre_merge": "2ff75a8158492b1d2232348d1a1d8e002ce1c009",
+    "merge_commit": "bafc0faf2b438de53fb2da52e8478997687c69ad",
+    "merge_tree": "19999fe5dc6726218d5a30cf501697a3c6bf0aef",
+    "tip": "9359014310965d7069998fca44c23315658e4334",
+    "tip_tree": "6d7d4e7d78b085d17f89ecd482e09a1798875cd5"
+  },
+  "git_version": "git version 2.41.0",
+  "counts": {
+    "files_main_side": 236,
+    "files_branch_side": 9,
+    "files_both_sides": 2,
+    "files_main_only": 234,
+    "files_branch_only": 7,
+    "files_changed_total": 243,
+    "files_carried_verbatim_or_hand": 243,
+    "files_added_after_merge": 4
+  },
+  "merge_tree_oracle": {
+    "auto_merge_tree": "0b05c9d87af5dd8288894e82388a29c399358910",
+    "conflicted_files": [
+      "CHANGELOG.md",
+      "docs/marine-hydrostatics.md"
+    ],
+    "merge_tree_exit_code": 1
+  },
+  "main_is_ancestor": true,
+  "hand_resolved": [
+    "CHANGELOG.md",
+    "docs/marine-hydrostatics.md"
+  ],
+  "union": [
+    {
+      "path": "CHANGELOG.md",
+      "tier": "atoms(multiset)+content-words(set)",
+      "atoms_unique_main": 200,
+      "atoms_lost_from_main": 0,
+      "words_unique_main": 552,
+      "words_lost_from_main": 0,
+      "words_occurrences_main": 909,
+      "atoms_unique_branch": 34,
+      "atoms_lost_from_branch": 0,
+      "words_unique_branch": 181,
+      "words_lost_from_branch": 0,
+      "words_occurrences_branch": 273,
+      "merged_equals_main": false,
+      "merged_equals_branch": false,
+      "merged_lines": 387,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "docs/marine-hydrostatics.md",
+      "tier": "atoms(multiset)+content-words(set)",
+      "atoms_unique_main": 18,
+      "atoms_lost_from_main": 0,
+      "words_unique_main": 58,
+      "words_lost_from_main": 0,
+      "words_occurrences_main": 71,
+      "atoms_unique_branch": 4,
+      "atoms_lost_from_branch": 0,
+      "words_unique_branch": 23,
+      "words_lost_from_branch": 0,
+      "words_occurrences_branch": 23,
+      "merged_equals_main": false,
+      "merged_equals_branch": false,
+      "merged_lines": 58,
+      "verdict": "union-preserved"
+    }
+  ],
+  "carried_files": [
+    {
+      "path": ".scratch/proto_ritz.py",
+      "status": "D",
+      "side": "main",
+      "expected_blob": null,
+      "merged_blob": null,
+      "verdict": "carried"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "status": "M",
+      "side": "both",
+      "merged_blob": "f32631a4eb00ea28f8b1ed268e375152b93cfc24",
+      "verdict": "hand-resolved"
+    },
+    {
+      "path": "benchmarks/combined_panel_buckling.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1650783a37fd20cc87a86729c294749d1c3cdabd",
+      "merged_blob": "1650783a37fd20cc87a86729c294749d1c3cdabd",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/cylindrical_pressure_boundary_layer.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "4b351b41eb336c5856bc0eb622ec70d44e153c9d",
+      "merged_blob": "4b351b41eb336c5856bc0eb622ec70d44e153c9d",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/cylindrical_pressure_boundary_layer_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "7323ee237c92643cfc64b2d61006c7a683392697",
+      "merged_blob": "7323ee237c92643cfc64b2d61006c7a683392697",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/finite_width_hole_audit.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a8a9ad9e6f6ccce572f076332c712c1704d65791",
+      "merged_blob": "a8a9ad9e6f6ccce572f076332c712c1704d65791",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/finite_width_hole_reference.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "3585504419d415b52a269f702238349863ea5ae7",
+      "merged_blob": "3585504419d415b52a269f702238349863ea5ae7",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/large_angle_gz_reference.json",
+      "status": "A",
+      "side": "branch",
+      "expected_blob": "e210431d5e7f51588f14a408f4795d57941a536f",
+      "merged_blob": "e210431d5e7f51588f14a408f4795d57941a536f",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/marine_fatigue_spectrum_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6a1b179677a7c142fe992cd7e7fa2fa2cc2a428f",
+      "merged_blob": "6a1b179677a7c142fe992cd7e7fa2fa2cc2a428f",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/marine_large_angle_stability_audit.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c591f6ff5c29b98456b2944588bccd8306dbc175",
+      "merged_blob": "c591f6ff5c29b98456b2944588bccd8306dbc175",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/marine_large_angle_stability_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a1aec402a98880202472f604da60c410be15d0f3",
+      "merged_blob": "a1aec402a98880202472f604da60c410be15d0f3",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/near_incompressible_locking.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "ecee7e4d45f181077e6863daad83eb72ce745804",
+      "merged_blob": "ecee7e4d45f181077e6863daad83eb72ce745804",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/near_incompressible_locking_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1dc8ec358cacb6effb77e54a991e971b34400b2d",
+      "merged_blob": "1dc8ec358cacb6effb77e54a991e971b34400b2d",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/plane_strain_bbar_locking.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "4ad0207084828e8bfc6e328a07e8620228493dd4",
+      "merged_blob": "4ad0207084828e8bfc6e328a07e8620228493dd4",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/plate_shear_buckling.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "21df92950d097071a5f1ccf7c651a08c6371b6cf",
+      "merged_blob": "21df92950d097071a5f1ccf7c651a08c6371b6cf",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/plate_shear_buckling_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "5386051037a0cf111db4d2f15db8eb58d188feb1",
+      "merged_blob": "5386051037a0cf111db4d2f15db8eb58d188feb1",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/prestressed_modal_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "17ed98a8ebf603cbdcb0079f17064b492bfc28a8",
+      "merged_blob": "17ed98a8ebf603cbdcb0079f17064b492bfc28a8",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/prestressed_modal_verification.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "51600a762af83102cca177fd9ed189b947c01284",
+      "merged_blob": "51600a762af83102cca177fd9ed189b947c01284",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/q8_plane_element.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0975bcc3028d4ebd75b9733f72dab2919809f070",
+      "merged_blob": "0975bcc3028d4ebd75b9733f72dab2919809f070",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/rotating_disc_michel_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "66e772fc5888a538cedcc799026fa0b9500117b7",
+      "merged_blob": "66e772fc5888a538cedcc799026fa0b9500117b7",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/rotating_disc_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "02a597b25f37cd632d8e7d78f4fa01cb326eb086",
+      "merged_blob": "02a597b25f37cd632d8e7d78f4fa01cb326eb086",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/rotating_disk.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "ac95061f802f4e1a1911928b999b1545c654b1ea",
+      "merged_blob": "ac95061f802f4e1a1911928b999b1545c654b1ea",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/rotating_disk_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d166375ab6425961101bfb48551762655687c831",
+      "merged_blob": "d166375ab6425961101bfb48551762655687c831",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/saint_venant_torsion.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c3730ea1959908bdc94f8b98a4bcdfdc4b7720a9",
+      "merged_blob": "c3730ea1959908bdc94f8b98a4bcdfdc4b7720a9",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/shear_plate_spectral.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "cef7ce1d459017677787737fb4dce41ed02d7595",
+      "merged_blob": "cef7ce1d459017677787737fb4dce41ed02d7595",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/solid3d_mass_audit.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "99ea858fa0743d760e3f282b7c388604e465fe61",
+      "merged_blob": "99ea858fa0743d760e3f282b7c388604e465fe61",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/stiffened_panel_vibration.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "60f962a7675cae3be91df89be9b3186feba19d35",
+      "merged_blob": "60f962a7675cae3be91df89be9b3186feba19d35",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/stiffened_panel_vibration_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "940e154c27ffe7637da9e9eaf323b0f6393c0ae9",
+      "merged_blob": "940e154c27ffe7637da9e9eaf323b0f6393c0ae9",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/structural_certification_materials.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "36ba159a5a6c4065d687559c96266bf17ad8c6cf",
+      "merged_blob": "36ba159a5a6c4065d687559c96266bf17ad8c6cf",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/structural_certification_materials.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "77cda27b646eacce6f3f1cce40749784de43ffa8",
+      "merged_blob": "77cda27b646eacce6f3f1cce40749784de43ffa8",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/thermal_2d_analytic.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "7cf2d9bcefc01b911fcabc64d582a734fd7c51f8",
+      "merged_blob": "7cf2d9bcefc01b911fcabc64d582a734fd7c51f8",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/thermal_2d_analytic_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "498c6ddca6000179f952cb5c315d46e897355246",
+      "merged_blob": "498c6ddca6000179f952cb5c315d46e897355246",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/thermal_2d_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0c29b64020846061feba31881b755efcecc74c37",
+      "merged_blob": "0c29b64020846061feba31881b755efcecc74c37",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/thermal_2d_reference_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "ad799e1db0643fdb038dce34351fa822b10b594a",
+      "merged_blob": "ad799e1db0643fdb038dce34351fa822b10b594a",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/timoshenko_beam_modal_reference.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "e0abd3f66fb800f434ae93aed6d677e2d2ae5637",
+      "merged_blob": "e0abd3f66fb800f434ae93aed6d677e2d2ae5637",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/torsion_boundary_extrapolation_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "37949a8bac3881f7aef4d8823ca1fc879fe616f7",
+      "merged_blob": "37949a8bac3881f7aef4d8823ca1fc879fe616f7",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/torsion_boundary_stress.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "18f3b8d976c3ebd157123fc3babb0ef24059a570",
+      "merged_blob": "18f3b8d976c3ebd157123fc3babb0ef24059a570",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/tutorials/hemisphere-hex20-oracle.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d0caceefb2bb5b66481fb078575d0958eb47a998",
+      "merged_blob": "d0caceefb2bb5b66481fb078575d0958eb47a998",
+      "verdict": "carried"
+    },
+    {
+      "path": "benchmarks/tutorials/q4_cantilever_airy.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "232881ee093a59e8acd6905b2e1a051a5db0250f",
+      "merged_blob": "232881ee093a59e8acd6905b2e1a051a5db0250f",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/combined_panel_buckling/convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "b8a2521d82a09688a1bb046ce832fe5eb3f340ac",
+      "merged_blob": "b8a2521d82a09688a1bb046ce832fe5eb3f340ac",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/combined_panel_buckling/interaction.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "753d3a9dee794e06a9b60cef0fcc5be76287b9b8",
+      "merged_blob": "753d3a9dee794e06a9b60cef0fcc5be76287b9b8",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/combined_panel_buckling/shear_mode.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "fd1407e20cf8d17a0bb1adec2ddb41e10b6811ee",
+      "merged_blob": "fd1407e20cf8d17a0bb1adec2ddb41e10b6811ee",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/cylindrical_pressure_boundary_layer_convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "9c3d56e34d779005ada087a14b0a271f78b389b3",
+      "merged_blob": "9c3d56e34d779005ada087a14b0a271f78b389b3",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/cylindrical_pressure_boundary_layer_profiles.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "776746e19abdf75d593654f66efd05ee4bf3aa24",
+      "merged_blob": "776746e19abdf75d593654f66efd05ee4bf3aa24",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/finite_width_hole/field_and_hoop.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "72f555c6c8848cc5e60b52f669ccef1c512ebc9e",
+      "merged_blob": "72f555c6c8848cc5e60b52f669ccef1c512ebc9e",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/finite_width_hole/finite_width_L_sensitivity.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "b74654cf6d273e1ba21ac0525eafe5a8ce5d41da",
+      "merged_blob": "b74654cf6d273e1ba21ac0525eafe5a8ce5d41da",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/finite_width_hole/finite_width_convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "f3cb3068aa6f248e01f1effa09b280aa35574b49",
+      "merged_blob": "f3cb3068aa6f248e01f1effa09b280aa35574b49",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/finite_width_hole/finite_width_hole_edge_profile.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d511d6b12f73636923a656a56384ab06ca3c38ef",
+      "merged_blob": "d511d6b12f73636923a656a56384ab06ca3c38ef",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/finite_width_hole/finite_width_ktn_vs_ratio.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "ff964d40718dc45990b436eb4d2ab10e44e7493f",
+      "merged_blob": "ff964d40718dc45990b436eb4d2ab10e44e7493f",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/finite_width_hole/finite_width_sigma_xx_field.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "817334205cba33fb297fcfeb6ed0eb6acb32b069",
+      "merged_blob": "817334205cba33fb297fcfeb6ed0eb6acb32b069",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/finite_width_hole/kt_vs_rho.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d19796265361d1da0a13b6a2c13df53f36ebe515",
+      "merged_blob": "d19796265361d1da0a13b6a2c13df53f36ebe515",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/hemisphere-hex20-oracle/hemisphere-oracle-displacement-convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "208273261d6350d7084042f90072a184a60c7350",
+      "merged_blob": "208273261d6350d7084042f90072a184a60c7350",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/hemisphere-hex20-oracle/hemisphere-oracle-error-map.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6fe6a5d212139aa79954938924e66c6e1a98061b",
+      "merged_blob": "6fe6a5d212139aa79954938924e66c6e1a98061b",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/hemisphere-hex20-oracle/hemisphere-oracle-surface-stress.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "be6af46acb93b4e20ec6a24de29146c7aa0c2da1",
+      "merged_blob": "be6af46acb93b4e20ec6a24de29146c7aa0c2da1",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/marine-fatigue-spectrum/bandwidth-convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "32c9929ee524b6fe54995f2f78d0f7bb89985896",
+      "merged_blob": "32c9929ee524b6fe54995f2f78d0f7bb89985896",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/marine-fatigue-spectrum/paris-power-law-branch.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "fa1bb8cbbe6289506f866f42fc14afc474f521ff",
+      "merged_blob": "fa1bb8cbbe6289506f866f42fc14afc474f521ff",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/marine-fatigue-spectrum/range-histogram-rayleigh.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "eccf30bdf185b08ab0b8a7e7d5dd3a17fe4e73ff",
+      "merged_blob": "eccf30bdf185b08ab0b8a7e7d5dd3a17fe4e73ff",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/marine-fatigue-spectrum/sampling-rate-bias.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "8626e7d70af3aa270e47c36f3bb50ba47cbad429",
+      "merged_blob": "8626e7d70af3aa270e47c36f3bb50ba47cbad429",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/marine_gz_audit.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "48b79758c6d7229d791f17ab70f53a668fe22662",
+      "merged_blob": "48b79758c6d7229d791f17ab70f53a668fe22662",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/marine_gz_linear_envelope.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "2388ff36ec2cbd110a1baacc3a42af34ee385404",
+      "merged_blob": "2388ff36ec2cbd110a1baacc3a42af34ee385404",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/marine_large_angle_gz.png",
+      "status": "A",
+      "side": "branch",
+      "expected_blob": "0aa1eada68d2f03bcccb1ebf5ce1fff1c547b161",
+      "merged_blob": "0aa1eada68d2f03bcccb1ebf5ce1fff1c547b161",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/marine_section_geometry.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "e96a408c54000bcebb7ffd59bf957f95d772019d",
+      "merged_blob": "e96a408c54000bcebb7ffd59bf957f95d772019d",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/near_incompressible_locking/error_vs_poisson.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "9a4200f206d2c7986a9a378af045d03d58b7ad31",
+      "merged_blob": "9a4200f206d2c7986a9a378af045d03d58b7ad31",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/near_incompressible_locking/refinement_and_2d_debt.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0bd0c21aa7c13199bb2c213f51f3f424318a59b7",
+      "merged_blob": "0bd0c21aa7c13199bb2c213f51f3f424318a59b7",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/near_incompressible_locking/stress_profile_nu_4999.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "2a564ca9a9e9bc52b7b83bfcd0021becefceb68c",
+      "merged_blob": "2a564ca9a9e9bc52b7b83bfcd0021becefceb68c",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/plane_strain_bbar_locking/error_vs_poisson.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "cef227117a97e07191d176ef4dffb81a18956e44",
+      "merged_blob": "cef227117a97e07191d176ef4dffb81a18956e44",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/plane_strain_bbar_locking/radial_stress_profile.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "711c493df4c96f42b0a3e301cc855d7e8b0341c9",
+      "merged_blob": "711c493df4c96f42b0a3e301cc855d7e8b0341c9",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/plane_strain_bbar_locking/refinement.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "2140a6ac702c866bdafe041cf50fb895f30e55cc",
+      "merged_blob": "2140a6ac702c866bdafe041cf50fb895f30e55cc",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/plate_shear_buckling.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "2275bbb3d3932cef4c074c0143ebe94990bb97ac",
+      "merged_blob": "2275bbb3d3932cef4c074c0143ebe94990bb97ac",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/prestressed_modal_convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "f85f978349876832f4032575af8465cbf6c80158",
+      "merged_blob": "f85f978349876832f4032575af8465cbf6c80158",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/prestressed_modal_load_law.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "9f3f8fde2a7345bb644cb5244cdb66902403c61a",
+      "merged_blob": "9f3f8fde2a7345bb644cb5244cdb66902403c61a",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/q4-cantilever-airy/error_convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0d1c2c882cdf93960e6ad467954ee47e0bb1306f",
+      "merged_blob": "0d1c2c882cdf93960e6ad467954ee47e0bb1306f",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/q4-cantilever-airy/stress_profiles.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "cbbdd248abb5ad0d06fe0838087fbd93718fb011",
+      "merged_blob": "cbbdd248abb5ad0d06fe0838087fbd93718fb011",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/q8-plane/convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d9bf042f784fa31e91bf5437f4f0c65d0b59076d",
+      "merged_blob": "d9bf042f784fa31e91bf5437f4f0c65d0b59076d",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/q8-plane/fields.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "25d8ac716979fbd7a66edb627f3115024da59347",
+      "merged_blob": "25d8ac716979fbd7a66edb627f3115024da59347",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/quadratic_rank_element_spurious.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "920869fa08b468ecde5bbcb0902e383c88c6254a",
+      "merged_blob": "920869fa08b468ecde5bbcb0902e383c88c6254a",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/quadratic_rank_mesh_scan.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d1ab361ab0d785f0bb2f245f5edbc9aae0b0915a",
+      "merged_blob": "d1ab361ab0d785f0bb2f245f5edbc9aae0b0915a",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/quadratic_rank_spectra.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "8cf2cdf56c93e903832c37fc44498008068e114b",
+      "merged_blob": "8cf2cdf56c93e903832c37fc44498008068e114b",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/rotating_disc/bore_ratio.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "9beca461b8e5d62412623f48d627b6bdae3499f5",
+      "merged_blob": "9beca461b8e5d62412623f48d627b6bdae3499f5",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/rotating_disc/convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0f0aabb66fdc70f32cb6f8fc8b6f480aab52325f",
+      "merged_blob": "0f0aabb66fdc70f32cb6f8fc8b6f480aab52325f",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/rotating_disc/field.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "24a6f8eef656aab7c3b417da6753e39a405034e3",
+      "merged_blob": "24a6f8eef656aab7c3b417da6753e39a405034e3",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/rotating_disc/profiles.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c0985945709e917009a1d37d116655bf13615946",
+      "merged_blob": "c0985945709e917009a1d37d116655bf13615946",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/rotating_disk_convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "4710430fbb90f70c4717093aa41c0b20aa12ba72",
+      "merged_blob": "4710430fbb90f70c4717093aa41c0b20aa12ba72",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/rotating_disk_stress.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "303c3daa1c087fbedada5d507cf8ad6117322388",
+      "merged_blob": "303c3daa1c087fbedada5d507cf8ad6117322388",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/saint-venant/annulus-field.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c253675c244180c16364246f75edaedb4c58c712",
+      "merged_blob": "c253675c244180c16364246f75edaedb4c58c712",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/saint-venant/convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d367b452473ee353cfea1564300ad4ce11c30417",
+      "merged_blob": "d367b452473ee353cfea1564300ad4ce11c30417",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/saint-venant/rectangle-field.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6a37dadec0eb17132037cd0767ce270cd6bbc2fd",
+      "merged_blob": "6a37dadec0eb17132037cd0767ce270cd6bbc2fd",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/shear_plate_spectral/convergence_and_comparison.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "2f56256634fd6fd564e555ca1611090895645e0d",
+      "merged_blob": "2f56256634fd6fd564e555ca1611090895645e0d",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/shear_plate_spectral/truncation_error.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "9323d5485392283523bcf55bf41cc53d14b4ec4c",
+      "merged_blob": "9323d5485392283523bcf55bf41cc53d14b4ec4c",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/solid-mass-modal/axial-rod-convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "b5316780df5dfc760a8b0cf1b55233857866de19",
+      "merged_blob": "b5316780df5dfc760a8b0cf1b55233857866de19",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/solid-mass-modal/mass-invariants.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c6505718e4b9ac69c2de3cb637d64e02d5dadd5e",
+      "merged_blob": "c6505718e4b9ac69c2de3cb637d64e02d5dadd5e",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/solid3d-mass/convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "86aedef67ebbfffe5df42d0c4e90e1a42c7939aa",
+      "merged_blob": "86aedef67ebbfffe5df42d0c4e90e1a42c7939aa",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/solid3d-mass/inertia.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "b0699f331927694311992f822cacf715156ae583",
+      "merged_blob": "b0699f331927694311992f822cacf715156ae583",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/solid3d-mass/mode-shape.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "48986a5d66ec6a90ba12be4ac5057dc611f192da",
+      "merged_blob": "48986a5d66ec6a90ba12be4ac5057dc611f192da",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/stiffened-panel-convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1518709c709439aec40559fce52d72d3334d16c2",
+      "merged_blob": "1518709c709439aec40559fce52d72d3334d16c2",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/stiffened-panel-mode-shape.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "f9e91cea299e20de569ea0f82c4b9c90998318c6",
+      "merged_blob": "f9e91cea299e20de569ea0f82c4b9c90998318c6",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/stiffened-panel-ship-mode1.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "2a5f3af2f301523146084882031f2a3d837cdf74",
+      "merged_blob": "2a5f3af2f301523146084882031f2a3d837cdf74",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/stiffened-panel-spectrum.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a7136b0002b97a38d24c385f9241356f6225070b",
+      "merged_blob": "a7136b0002b97a38d24c385f9241356f6225070b",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/structural-certification/finite_width_ktn.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a490ead8abe4bcaf98a2e7aa73fb943a27007423",
+      "merged_blob": "a490ead8abe4bcaf98a2e7aa73fb943a27007423",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/structural-certification/kirsch_convergence_uncertainty.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "f3036a606647c7bb60977b4ea7bd76e3a6776cca",
+      "merged_blob": "f3036a606647c7bb60977b4ea7bd76e3a6776cca",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/structural-certification/kirsch_field_clouds.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d901d9dd4104bd5a404226a26188ffcc80678769",
+      "merged_blob": "d901d9dd4104bd5a404226a26188ffcc80678769",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/structural-certification/kirsch_pointwise_comparison.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "60959ed68a85480961f64dfb25c9f7e264771067",
+      "merged_blob": "60959ed68a85480961f64dfb25c9f7e264771067",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/thermal_2d/convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "2081260e5c051cb93057a45ec4d80f53f931870a",
+      "merged_blob": "2081260e5c051cb93057a45ec4d80f53f931870a",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/thermal_2d/field_and_error.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "7f1c2560b2c1d76e65a5c47658c28352f6fed62f",
+      "merged_blob": "7f1c2560b2c1d76e65a5c47658c28352f6fed62f",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/thermal_2d/radial_and_transient.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6ac09f17fbfce91224365d296f8c2b6591ac3d93",
+      "merged_blob": "6ac09f17fbfce91224365d296f8c2b6591ac3d93",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/thermal_2d_convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "7e520c472187d9e53bf2af0393517fee0a04cb5d",
+      "merged_blob": "7e520c472187d9e53bf2af0393517fee0a04cb5d",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/thermal_2d_transient_field.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "60b89af7159d6b6aecc38a5bde6e3c1725dadb2f",
+      "merged_blob": "60b89af7159d6b6aecc38a5bde6e3c1725dadb2f",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/thermal_2d_wall_field.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "66968ed31e13656e8d70ea7a3e79d6fa2395b298",
+      "merged_blob": "66968ed31e13656e8d70ea7a3e79d6fa2395b298",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/timoshenko-beam-modal/convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "cb58507917390fb2c28cbff798cb70d5aab26eaf",
+      "merged_blob": "cb58507917390fb2c28cbff798cb70d5aab26eaf",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/timoshenko-beam-modal/mode-comparison.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "8d494cf675e9198cc29e4c3e6c13ca5d6f7009d7",
+      "merged_blob": "8d494cf675e9198cc29e4c3e6c13ca5d6f7009d7",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/timoshenko-beam-modal/slenderness-trend.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "89ba716b7d417185895d5fc7f69c1a1f3570d23b",
+      "merged_blob": "89ba716b7d417185895d5fc7f69c1a1f3570d23b",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/torsion_boundary_extrapolation.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "fb54db8d28c3a8b60327b6435cc61ce3478cd6a4",
+      "merged_blob": "fb54db8d28c3a8b60327b6435cc61ce3478cd6a4",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/torsion_boundary_stress/boundary_peak_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "13de2d5e539dc936f23b1cd4b29b8f51922e02d6",
+      "merged_blob": "13de2d5e539dc936f23b1cd4b29b8f51922e02d6",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/torsion_boundary_stress/error_vs_dofs.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "5f9e792a0a649dd9174f7428954a4b2530cc727a",
+      "merged_blob": "5f9e792a0a649dd9174f7428954a4b2530cc727a",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/assets/torsion_boundary_stress/estimator_bars.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "bee063430f87623de59b5163abd7db48732a5e07",
+      "merged_blob": "bee063430f87623de59b5163abd7db48732a5e07",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/benchmark-qualification-status.md",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "6d1ca69b869611b4b9c4fa91f2b570af1bdb41d6",
+      "merged_blob": "6d1ca69b869611b4b9c4fa91f2b570af1bdb41d6",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/benchmarks/timoshenko-beam-vibration-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "e5d59285949b5d6e0b1181fd2f53b41549b68771",
+      "merged_blob": "e5d59285949b5d6e0b1181fd2f53b41549b68771",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/benchmarks/tutorials/quadratic-solid-rank-audit.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a063503e5a3bbff1cca9acc3de095d2910a2a1fd",
+      "merged_blob": "a063503e5a3bbff1cca9acc3de095d2910a2a1fd",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/cook-recovered-stress-production.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "beac41c291d04231880d4520d8b76fbadd372b8a",
+      "merged_blob": "beac41c291d04231880d4520d8b76fbadd372b8a",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/cook-recovery-evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "32df8cc0aaa8ef328308a250b1ba5ea2b4cca81c",
+      "merged_blob": "32df8cc0aaa8ef328308a250b1ba5ea2b4cca81c",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/cylindrical-pressure-boundary-layer.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "836729e71cf6e8189760b53ce976e91299567ff2",
+      "merged_blob": "836729e71cf6e8189760b53ce976e91299567ff2",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/elastic-halfspace-boussinesq-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6819815ce45c06da4c601d522da959b254b73232",
+      "merged_blob": "6819815ce45c06da4c601d522da959b254b73232",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/element-rank-deficiency-audit.md",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "df55b4676379e09fc30c6dc3376809b156fa8c36",
+      "merged_blob": "df55b4676379e09fc30c6dc3376809b156fa8c36",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/figures/cook_recovery_error_ladder.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "e396b14ff82f34cbc6afc4c8ac58780613386913",
+      "merged_blob": "e396b14ff82f34cbc6afc4c8ac58780613386913",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/figures/cook_recovery_field.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "459c20d6a3871f761bd674085c66cfc296f7509a",
+      "merged_blob": "459c20d6a3871f761bd674085c66cfc296f7509a",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/figures/halfspace_settlement_convergence.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "4706147aae386d35b3d8de16f2a2028332a4df86",
+      "merged_blob": "4706147aae386d35b3d8de16f2a2028332a4df86",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/figures/halfspace_settlement_profile.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "cc2a393b7461acdf0536c445b2baeb1e73f12f6f",
+      "merged_blob": "cc2a393b7461acdf0536c445b2baeb1e73f12f6f",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/figures/halfspace_sigma_zz_field.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "182f5ea2a267bb67a0c7ac51c6306709ddfea514",
+      "merged_blob": "182f5ea2a267bb67a0c7ac51c6306709ddfea514",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/figures/halfspace_stress_profile.png",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "e37cb7d157b91de96d793e8294b432ee8d6a552a",
+      "merged_blob": "e37cb7d157b91de96d793e8294b432ee8d6a552a",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/finite-width-hole-howland.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "18a3983f4482067d6e55043ecdc26152d6ee3655",
+      "merged_blob": "18a3983f4482067d6e55043ecdc26152d6ee3655",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/halfspace_evidence.json",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a57a5f9089dbc75ae2e1972f68efa08bf302aabf",
+      "merged_blob": "a57a5f9089dbc75ae2e1972f68efa08bf302aabf",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/hemisphere-hex20-stress-oracle.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "788f3296246cfc8ab980b65cdcb266c4728ff084",
+      "merged_blob": "788f3296246cfc8ab980b65cdcb266c4728ff084",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/hetenyi_benchmark_report.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6af61434bac0f5ec4f9517723ab904c5333ceb1f",
+      "merged_blob": "6af61434bac0f5ec4f9517723ab904c5333ceb1f",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/kirsch-hole-stress-concentration.md",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "3814b611bc6da61aa2ac7f8729fede07fb92dbbf",
+      "merged_blob": "3814b611bc6da61aa2ac7f8729fede07fb92dbbf",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/marine-fatigue-advanced-qualification.md",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "4f307988498685ed9c55297a5d6211d3598ca6ff",
+      "merged_blob": "4f307988498685ed9c55297a5d6211d3598ca6ff",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/marine-fatigue-spectrum-validation.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0a447bbada458fb408dc8f5bc645fd625da776ae",
+      "merged_blob": "0a447bbada458fb408dc8f5bc645fd625da776ae",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/marine-hydrostatics.md",
+      "status": "M",
+      "side": "both",
+      "merged_blob": "f0d689ff1b5a9c25829d73ae0358fa0f235c3dea",
+      "verdict": "hand-resolved"
+    },
+    {
+      "path": "docs/marine-large-angle-stability-audit.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "38ade4aafe76d6d52250cf0123ff4cc8c9fe5df2",
+      "merged_blob": "38ade4aafe76d6d52250cf0123ff4cc8c9fe5df2",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/marine-large-angle-stability.md",
+      "status": "A",
+      "side": "branch",
+      "expected_blob": "534408a44417a43c72e9f10a63e4b5799611a177",
+      "merged_blob": "534408a44417a43c72e9f10a63e4b5799611a177",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/marine-plate-combined-loading-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "bc78d6b3affa94529e83d8979e07b969dafafee2",
+      "merged_blob": "bc78d6b3affa94529e83d8979e07b969dafafee2",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/marine-plate-shear-buckling-validation.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "b816266399f003c7523352cb992a6c55d324127d",
+      "merged_blob": "b816266399f003c7523352cb992a6c55d324127d",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/near-incompressible-locking.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a4bdf6bcfd7a2cd072c0a2a7dbe010dc51cae1c4",
+      "merged_blob": "a4bdf6bcfd7a2cd072c0a2a7dbe010dc51cae1c4",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/plane-strain-bbar-locking.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1a67a574b0b2b572129a68d3287e7e38059b76ce",
+      "merged_blob": "1a67a574b0b2b572129a68d3287e7e38059b76ce",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/prestressed-modal-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "aecac2319cf8a790f7a9b380b008cf14128ba787",
+      "merged_blob": "aecac2319cf8a790f7a9b380b008cf14128ba787",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/q4-cantilever-airy-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6f1e66f946dbbca56dad91d690887222eda0524f",
+      "merged_blob": "6f1e66f946dbbca56dad91d690887222eda0524f",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/q8-quadratic-plane-element.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "975902be24539a474870618c92cb6972a96463cf",
+      "merged_blob": "975902be24539a474870618c92cb6972a96463cf",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/quadratic-solid-rank-audit.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1ee054902c6e8d1b1e98ff205dcf4641f2667c43",
+      "merged_blob": "1ee054902c6e8d1b1e98ff205dcf4641f2667c43",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/rotating-disc-michel-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "f5bbc36a4d0789a829355f153841c0f2ac3cd68e",
+      "merged_blob": "f5bbc36a4d0789a829355f153841c0f2ac3cd68e",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/rotating-disk-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d96884659ccab8e9f66df7b1f61dfccf9091952d",
+      "merged_blob": "d96884659ccab8e9f66df7b1f61dfccf9091952d",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/saint-venant-torsion.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a13613f726eae5b50f59200c01824728f71a4aa5",
+      "merged_blob": "a13613f726eae5b50f59200c01824728f71a4aa5",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/shear-plate-spectral-reference.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c73b88d39b54dd442162d6e910047309865bd2a8",
+      "merged_blob": "c73b88d39b54dd442162d6e910047309865bd2a8",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/solid-mass-modal-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "e1f2b0ac7d20498f6bf3cda32abd0c7be543fb4a",
+      "merged_blob": "e1f2b0ac7d20498f6bf3cda32abd0c7be543fb4a",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/solid3d-consistent-mass-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "ea6b69430b5fda5d70eba00e49ac600d5aa75a1b",
+      "merged_blob": "ea6b69430b5fda5d70eba00e49ac600d5aa75a1b",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/stiffened-panel-vibration-validation.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "06096773179b49a2c077150cbb8576be0071b74e",
+      "merged_blob": "06096773179b49a2c077150cbb8576be0071b74e",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/structural-certification-materials.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "3043cba5964454dff7f01454e93466eae87e6710",
+      "merged_blob": "3043cba5964454dff7f01454e93466eae87e6710",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/thermal-2d-analytic-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "dd0daa8b5af0f2f27052cef867cd2234bd6f5f76",
+      "merged_blob": "dd0daa8b5af0f2f27052cef867cd2234bd6f5f76",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/thermal-2d-q4-verification.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c15b3e248c2204e769ca5f90d0b6c2fb5c5120a2",
+      "merged_blob": "c15b3e248c2204e769ca5f90d0b6c2fb5c5120a2",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/thermal-validation.md",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "7f4030cb46d9e7dec07b7b172727a31c0c16e07d",
+      "merged_blob": "7f4030cb46d9e7dec07b7b172727a31c0c16e07d",
+      "verdict": "carried"
+    },
+    {
+      "path": "docs/torsion-boundary-stress.md",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1aba12dcd040c391f2096c5a3d036e1a6d7198cc",
+      "merged_blob": "1aba12dcd040c391f2096c5a3d036e1a6d7198cc",
+      "verdict": "carried"
+    },
+    {
+      "path": "examples/halfspace_verification.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0f3218f67e65d9c0ddde34599f9c58effe3fa76f",
+      "merged_blob": "0f3218f67e65d9c0ddde34599f9c58effe3fa76f",
+      "verdict": "carried"
+    },
+    {
+      "path": "examples/marine/large_angle_box_barge.json",
+      "status": "A",
+      "side": "branch",
+      "expected_blob": "26fd1cc4af1d3324530c5e11a9563e7abd1a5423",
+      "merged_blob": "26fd1cc4af1d3324530c5e11a9563e7abd1a5423",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_combined_panel_buckling.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0b0cdbe1f9884c02cd752ac3f82dca6bf0f82634",
+      "merged_blob": "0b0cdbe1f9884c02cd752ac3f82dca6bf0f82634",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_finite_width_hole.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "3fca52272f883b08baf60f220919676c617a7ec2",
+      "merged_blob": "3fca52272f883b08baf60f220919676c617a7ec2",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_marine_fatigue_spectrum.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "91be58e4ae38d7c1079a3711e77f22f58ee463f7",
+      "merged_blob": "91be58e4ae38d7c1079a3711e77f22f58ee463f7",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_plane_strain_bbar_locking.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c55136678df59a3688cd1170378e157fa7840452",
+      "merged_blob": "c55136678df59a3688cd1170378e157fa7840452",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_q4_cantilever_airy.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "8cedd5c1f974e5aa1267b39a3e5efe8ea8587eab",
+      "merged_blob": "8cedd5c1f974e5aa1267b39a3e5efe8ea8587eab",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_q8_plane_element.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "378733101c04cdb960758a4ccd664777afedc948",
+      "merged_blob": "378733101c04cdb960758a4ccd664777afedc948",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_quadratic_solid_rank.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "5b6ad79ce5782d9778936f47a8e2ecd9242f4e72",
+      "merged_blob": "5b6ad79ce5782d9778936f47a8e2ecd9242f4e72",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_saint_venant_torsion.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a6882279f485a6a6f11e114b65004fbd2654ccad",
+      "merged_blob": "a6882279f485a6a6f11e114b65004fbd2654ccad",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_shear_plate_spectral.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "5709f0142869e1d03f7b5a5fef515daa63220468",
+      "merged_blob": "5709f0142869e1d03f7b5a5fef515daa63220468",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_solid3d_mass.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1646b7a6ad293aa6c887bd966fa9cc6ab636d4dc",
+      "merged_blob": "1646b7a6ad293aa6c887bd966fa9cc6ab636d4dc",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/audit_solid_mass_modal.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "ef99e3b66a176576bc7e9af6157a3e59e4ac6b71",
+      "merged_blob": "ef99e3b66a176576bc7e9af6157a3e59e4ac6b71",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/cook_recovery_production_evidence.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1cac9437cfe464a33f11a0fde1299384aa6745e1",
+      "merged_blob": "1cac9437cfe464a33f11a0fde1299384aa6745e1",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/hemisphere_hex20_oracle_study.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "5cf4d9d58958947b1e8e84d087af629be91d49e1",
+      "merged_blob": "5cf4d9d58958947b1e8e84d087af629be91d49e1",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/plot_large_angle_gz.py",
+      "status": "A",
+      "side": "branch",
+      "expected_blob": "46427676fb4b382cd3e60ec7bc9002caf9c8df08",
+      "merged_blob": "46427676fb4b382cd3e60ec7bc9002caf9c8df08",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/post_m3179_report.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "81be5fc8a25fffb483a17344777e75cff1c3f9fb",
+      "merged_blob": "81be5fc8a25fffb483a17344777e75cff1c3f9fb",
+      "verdict": "carried"
+    },
+    {
+      "path": "scripts/timoshenko_beam_modal_study.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "050de68dec328ff192f73d661fe83123d8ab4071",
+      "merged_blob": "050de68dec328ff192f73d661fe83123d8ab4071",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/__init__.py",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "30251300537da57ebb3cc191d51f031489fbb788",
+      "merged_blob": "30251300537da57ebb3cc191d51f031489fbb788",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/additional_benchmark_fields.py",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "3c7ba691f11ec98eebdf86dc574bedc9eb731b05",
+      "merged_blob": "3c7ba691f11ec98eebdf86dc574bedc9eb731b05",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/airy_cantilever.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "19146f51ed1ea1e8c52b8ae374de4054dc9a091a",
+      "merged_blob": "19146f51ed1ea1e8c52b8ae374de4054dc9a091a",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/certification_evidence.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c4b71e18868cc837b3b0d7593a4a3c9ad42df6e6",
+      "merged_blob": "c4b71e18868cc837b3b0d7593a4a3c9ad42df6e6",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/continuum_bbar.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "3a7bda70f26906019fdcb1c835f8d3627da0a206",
+      "merged_blob": "3a7bda70f26906019fdcb1c835f8d3627da0a206",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/cylindrical_pressure_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "564932855af44d5ae0ea5f302a2effc738a2946e",
+      "merged_blob": "564932855af44d5ae0ea5f302a2effc738a2946e",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/elastic_halfspace.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "7fd9f434159be08a9f24d12fd699c6aa649312bb",
+      "merged_blob": "7fd9f434159be08a9f24d12fd699c6aa649312bb",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/element_rank_audit.py",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "275496739f64dc677a621140e7be4c70dd0f9e47",
+      "merged_blob": "275496739f64dc677a621140e7be4c70dd0f9e47",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/finite_width_hole.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "f9822935b629ed12e327490ea47efdbd813d3e1a",
+      "merged_blob": "f9822935b629ed12e327490ea47efdbd813d3e1a",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/hemisphere_hex20_oracle.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "90c85a200e0f63340e8e5bd08168a59d34245951",
+      "merged_blob": "90c85a200e0f63340e8e5bd08168a59d34245951",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/hemisphere_hex20_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "ba073ca690c7afabab9c7b57efe8c230570e4bbe",
+      "merged_blob": "ba073ca690c7afabab9c7b57efe8c230570e4bbe",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/incompressible_locking.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "ddfcd89b1c6ed9c67aad1f480f188c37f7a4aa6d",
+      "merged_blob": "ddfcd89b1c6ed9c67aad1f480f188c37f7a4aa6d",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/marine_large_angle_gz.py",
+      "status": "A",
+      "side": "branch",
+      "expected_blob": "50c4e9d69ba66c22152ac5f15565ca4015e2327c",
+      "merged_blob": "50c4e9d69ba66c22152ac5f15565ca4015e2327c",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/marine_large_angle_stability.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0ea2e29eee4f2da1701c53f2486d41aafe3bc22c",
+      "merged_blob": "0ea2e29eee4f2da1701c53f2486d41aafe3bc22c",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/marine_plate_combined_buckling.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d93c254a4ab002f908d7c7c202e522ef821812e4",
+      "merged_blob": "d93c254a4ab002f908d7c7c202e522ef821812e4",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/plate.py",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "49d936569c56fbec0df459a8f5323ee99416b979",
+      "merged_blob": "49d936569c56fbec0df459a8f5323ee99416b979",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/plate_shear_buckling.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "ccabc5d32b92ad4b06a84813cb826c9ebea9ee3a",
+      "merged_blob": "ccabc5d32b92ad4b06a84813cb826c9ebea9ee3a",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/plate_vibration.py",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "9384071eca5a14f35d4ce1b23d4489c48cedb5a7",
+      "merged_blob": "9384071eca5a14f35d4ce1b23d4489c48cedb5a7",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/prestressed_modal.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c14b657c9f3469986574b2aef9c15bc25cb753b2",
+      "merged_blob": "c14b657c9f3469986574b2aef9c15bc25cb753b2",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/quadratic_plane.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d400d90eeda36961c4e72a5989473a30a79a13a9",
+      "merged_blob": "d400d90eeda36961c4e72a5989473a30a79a13a9",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/rainflow_spectrum_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "a8064e14f98edbedd846747f56e09923e3f3bdff",
+      "merged_blob": "a8064e14f98edbedd846747f56e09923e3f3bdff",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/rotating_disc_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "0e1dbd637acf242224898d01b1e36f5a6f53da84",
+      "merged_blob": "0e1dbd637acf242224898d01b1e36f5a6f53da84",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/rotating_disk.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d3bd5967fa7a06c4f9f3d266df9c001f20f0fb6b",
+      "merged_blob": "d3bd5967fa7a06c4f9f3d266df9c001f20f0fb6b",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/saint_venant_torsion.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "2f291081a27df24d5b25df74a811963450908457",
+      "merged_blob": "2f291081a27df24d5b25df74a811963450908457",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/shear_plate_spectral.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "aa3a8495a4b9bc5b9dc5ead5530a8cf2ae4a4d29",
+      "merged_blob": "aa3a8495a4b9bc5b9dc5ead5530a8cf2ae4a4d29",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/solid3d_mass.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "4d1667a7ff8cce22a82902720d4db6fea959430f",
+      "merged_blob": "4d1667a7ff8cce22a82902720d4db6fea959430f",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/solid_mass.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6d86a2f0cbbc7ca5a9dc45ea60f0cbcedd0215a4",
+      "merged_blob": "6d86a2f0cbbc7ca5a9dc45ea60f0cbcedd0215a4",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/solid_mass_audit.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "e609c80561f2c550513759bed69074df4382f212",
+      "merged_blob": "e609c80561f2c550513759bed69074df4382f212",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/stiffened_panel_vibration.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "80b80e2edca280810ccb0f23a11217ff96775756",
+      "merged_blob": "80b80e2edca280810ccb0f23a11217ff96775756",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/stress_recovery.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1609b94965883723cca2a75778661184db468fd3",
+      "merged_blob": "1609b94965883723cca2a75778661184db468fd3",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/thermal_2d_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6563735a8742f9effda19262a82d24f2906bbdd6",
+      "merged_blob": "6563735a8742f9effda19262a82d24f2906bbdd6",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/thermal_analytic.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "5a4cd5eb7426a34d82b21b9e200ee79e76920a64",
+      "merged_blob": "5a4cd5eb7426a34d82b21b9e200ee79e76920a64",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/timoshenko_beam_modal.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "be8afe06c6a6c4583333ad543c8e4247b1cd47b3",
+      "merged_blob": "be8afe06c6a6c4583333ad543c8e4247b1cd47b3",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/torsion_bar.py",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "d3cba62071d84655c936a7e3b02b0d5f55478908",
+      "merged_blob": "d3cba62071d84655c936a7e3b02b0d5f55478908",
+      "verdict": "carried"
+    },
+    {
+      "path": "src/tensorfem/torsion_boundary.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "1900926a47473e6139c5e64c45ab073437480b89",
+      "merged_blob": "1900926a47473e6139c5e64c45ab073437480b89",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_continuum_bbar.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "23e5c3fbd218844a5427fb6167cb22b83cb3888d",
+      "merged_blob": "23e5c3fbd218844a5427fb6167cb22b83cb3888d",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_cylindrical_pressure_boundary_layer.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "78bd5dc08cb53740313adb227861453c5eaf101a",
+      "merged_blob": "78bd5dc08cb53740313adb227861453c5eaf101a",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_elastic_halfspace.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "49c5f9cc580850f1fa954667dd4d00c980fb35bb",
+      "merged_blob": "49c5f9cc580850f1fa954667dd4d00c980fb35bb",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_element_rank_audit.py",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "449c784189dfe60b943a9a0d40039a02c93abd35",
+      "merged_blob": "449c784189dfe60b943a9a0d40039a02c93abd35",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_finite_width_hole.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "f21fcbedb06a62a8272f27881195e83baaa94b32",
+      "merged_blob": "f21fcbedb06a62a8272f27881195e83baaa94b32",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_hemisphere_hex20_oracle.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "efe62daae2cd4553f38779501ef279ad28de9007",
+      "merged_blob": "efe62daae2cd4553f38779501ef279ad28de9007",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_hetenyi_analytical_benchmark.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d04dfa9f3ac333b332b8e95500501de08cc0bf54",
+      "merged_blob": "d04dfa9f3ac333b332b8e95500501de08cc0bf54",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_incompressible_locking.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "e7737fcf130261f7debc261e59f9ce0405aea1ff",
+      "merged_blob": "e7737fcf130261f7debc261e59f9ce0405aea1ff",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_marine_fatigue_spectrum_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6b8906a073d72213ac5c20b3836b7b7309ed75be",
+      "merged_blob": "6b8906a073d72213ac5c20b3836b7b7309ed75be",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_marine_large_angle_gz.py",
+      "status": "A",
+      "side": "branch",
+      "expected_blob": "1977d1651baaa647e09067fd6b3f17fe6d915b1f",
+      "merged_blob": "1977d1651baaa647e09067fd6b3f17fe6d915b1f",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_marine_large_angle_stability.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "b0362e5ca12437a18134a2b3e7e53fff5d299a2f",
+      "merged_blob": "b0362e5ca12437a18134a2b3e7e53fff5d299a2f",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_marine_plate_combined_buckling.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "06f04c8ce604e49c68422227e2333011dc0a6c52",
+      "merged_blob": "06f04c8ce604e49c68422227e2333011dc0a6c52",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_plate_shear_buckling.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "51df99f7d5fcf298f8c118080f53edd884621f10",
+      "merged_blob": "51df99f7d5fcf298f8c118080f53edd884621f10",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_prestressed_modal.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "8aa6fce7c933fef3953b8208a9ae32beef25c6ca",
+      "merged_blob": "8aa6fce7c933fef3953b8208a9ae32beef25c6ca",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_q4_cantilever_airy.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "c4584e7640cce336a30e2af9cf59821f10fe6757",
+      "merged_blob": "c4584e7640cce336a30e2af9cf59821f10fe6757",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_quadratic_plane.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "bad2634f73d76536a99ba950f94ff627ae2f344a",
+      "merged_blob": "bad2634f73d76536a99ba950f94ff627ae2f344a",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_quadratic_solid_rank_audit.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "554b53381b0c892d4971f6f499d3ff86cfe82d42",
+      "merged_blob": "554b53381b0c892d4971f6f499d3ff86cfe82d42",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_rotating_disc_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "6cbd9d912424f5bf8a66c93c49e9061ea13a072d",
+      "merged_blob": "6cbd9d912424f5bf8a66c93c49e9061ea13a072d",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_rotating_disk.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "85e09c82958bf573ac6e1a39b7387a01ffb4a749",
+      "merged_blob": "85e09c82958bf573ac6e1a39b7387a01ffb4a749",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_saint_venant_torsion.py",
+      "status": "M",
+      "side": "main",
+      "expected_blob": "6bbcce3b8122498be31a55193f497d42505c4641",
+      "merged_blob": "6bbcce3b8122498be31a55193f497d42505c4641",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_shear_plate_spectral.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "f7d0d8a1ed5622d290fb4ac3f581d4db69f936c9",
+      "merged_blob": "f7d0d8a1ed5622d290fb4ac3f581d4db69f936c9",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_solid3d_mass.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "d8ecccbf12cd829065a2f250d8ceeeaf571cf050",
+      "merged_blob": "d8ecccbf12cd829065a2f250d8ceeeaf571cf050",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_solid_mass.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "29050a3188d95d1b9a0e213b412be497e2dedfcf",
+      "merged_blob": "29050a3188d95d1b9a0e213b412be497e2dedfcf",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_stiffened_panel_vibration.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "19bac6cc9bc9e417fb0f99c695c4dfef8af3a0de",
+      "merged_blob": "19bac6cc9bc9e417fb0f99c695c4dfef8af3a0de",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_stress_recovery.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "530abf6a321877b4a0b487c00aedb60d2edb9e50",
+      "merged_blob": "530abf6a321877b4a0b487c00aedb60d2edb9e50",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_structural_certification_materials.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "43b042bbbba95c2d0de4c5b776de3ae3cd2e9332",
+      "merged_blob": "43b042bbbba95c2d0de4c5b776de3ae3cd2e9332",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_thermal_2d_analytic.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "b99931d32c1d6425eec023e7bec348ceca9947a9",
+      "merged_blob": "b99931d32c1d6425eec023e7bec348ceca9947a9",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_thermal_2d_reference.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "3dd3494308858738290fbd65aa9bd5986b9083e2",
+      "merged_blob": "3dd3494308858738290fbd65aa9bd5986b9083e2",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_thermal_poisson_2d.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "129f7b7925e3bb1db1bc43683912375ae110db25",
+      "merged_blob": "129f7b7925e3bb1db1bc43683912375ae110db25",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_timoshenko_beam_modal.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "9d13a2abe1dfa83a7037a575beea03e77147ffe1",
+      "merged_blob": "9d13a2abe1dfa83a7037a575beea03e77147ffe1",
+      "verdict": "carried"
+    },
+    {
+      "path": "tests/test_torsion_boundary_stress.py",
+      "status": "A",
+      "side": "main",
+      "expected_blob": "956a07b9e99c7943aeb63a5ba787c93d1b81e8c5",
+      "merged_blob": "956a07b9e99c7943aeb63a5ba787c93d1b81e8c5",
+      "verdict": "carried"
+    }
+  ],
+  "deletions": [
+    {
+      "path": ".scratch/proto_ritz.py",
+      "status": "D",
+      "side": "main",
+      "present_in_merge": false
+    }
+  ],
+  "added_after_merge": [
+    "docs/assets/pr61_union_audit_evidence.json",
+    "docs/pr61-merge-reconciliation.md",
+    "scripts/pr61_union_audit.py",
+    "tests/test_pr61_merge_union_audit.py"
+  ],
+  "evolved_after_merge": [],
+  "unexpected_paths": [],
+  "unresolved_conflict_markers": [],
+  "negative_controls": [
+    {
+      "control": "main-only overlay",
+      "rejected_files": [
+        "CHANGELOG.md",
+        "docs/marine-hydrostatics.md"
+      ],
+      "verdict": "control-fires"
+    },
+    {
+      "control": "branch-only overlay",
+      "rejected_files": [
+        "CHANGELOG.md",
+        "docs/marine-hydrostatics.md"
+      ],
+      "verdict": "control-fires"
+    },
+    {
+      "control": "single-line deletion: 1.33e-15 m，相对 8.3e-16）；90° 精确几何",
+      "rejected_files": [
+        "CHANGELOG.md"
+      ],
+      "verdict": "control-fires"
+    }
+  ],
+  "failures": [],
+  "verdict": "UNION_OK"
+}
