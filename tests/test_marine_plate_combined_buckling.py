@@ -290,6 +290,7 @@ class TestQualification:
             "assembled_matches_separable_uniaxial",
             "biaxial_ratio_0.5_convergence",
             "pure_shear_square_literature",
+            "pure_shear_aspect_two_spectral_reference",
         ]
         assert all(case["passed"] for case in report["cases"])
         discretised = [case for case in report["cases"] if case["gate"].endswith("convergence")]
