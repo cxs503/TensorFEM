@@ -153,7 +153,7 @@ def main() -> None:
     for i, k in enumerate(kept):
         axes[1].text(k + 3, i, str(k), va="center", fontsize=8)
     fig.tight_layout()
-    fig.savefig(HERE / "merge_verification.png", dpi=140)
+    fig.savefig(HERE / "merge_verification.png", dpi=100, optimize=True)
     print(json.dumps({k: data[k] for k in ("old_branch_sha", "merge_commit_sha", "totals")}, ensure_ascii=False, indent=2))
     print("loss:", loss["checked"], "checked /", loss["lost"], "lost")
     print("figure:", HERE / "merge_verification.png")
