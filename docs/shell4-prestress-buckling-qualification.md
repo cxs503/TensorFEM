@@ -29,9 +29,20 @@ PYTHONPATH=src python examples/marine/shell4_buckling.py
 
 This evidence qualifies linear initial-stress eigenbuckling of flat isotropic
 Shell4 plates with constant element stress resultants. It does not yet qualify
-stress recovery from a nonlinear prebuckling solve, curved-shell geometric
-stiffness, mode switching, imperfections, material plasticity, or nonlinear
-postbuckling. The existing `general_shell_arc_problem` exposes the production
+stress recovery from a nonlinear prebuckling solve, mode switching,
+imperfections, material plasticity, or nonlinear postbuckling.
+
+Curved-shell geometric stiffness was subsequently put under test on a closed
+faceted cylinder under external pressure against the classical ``n = 2`` ring
+load ``E t^3 / (4 R^3 (1 - nu^2))`` and **failed**: the lowest mode is always a
+facet-scale (Nyquist-wave) near-mechanism whose load factor falls with mesh
+refinement instead of converging, while the same eigensolver reproduces the
+qualified flat-plate path to ~1e-13. See
+[shell4-curved-geometric-stiffness.md](shell4-curved-geometric-stiffness.md);
+the status is locked fail-closed by
+``tests/test_shell4_curved_buckling.py``.
+
+The existing `general_shell_arc_problem` exposes the production
 general-shell residual and consistent tangent to Crisfield continuation, but
 its published qualification remains an algorithm-level von Mises arch case.
 No plate/shell postbuckling claim is made here until a full discrete shell path
