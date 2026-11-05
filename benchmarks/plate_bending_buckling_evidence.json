@@ -1,0 +1,212 @@
+{
+  "schema": "tensorfem.plate_bending_buckling.evidence/1",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1"
+  },
+  "scope": {
+    "verified": "simply supported isotropic panel, linearly varying in-plane stress, k_b vs 23.9",
+    "not_verified": "FE shell geometric stiffness under non-uniform prestress; plasticity; stiffened panels"
+  },
+  "literature": {
+    "k_b_long_panel": 23.9,
+    "k_uniaxial": 4.0,
+    "source": "Timoshenko & Gere, Theory of Elastic Stability, 2nd ed., Sec. 9.2"
+  },
+  "qualification": {
+    "young": 210000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.012,
+    "width": 1.0,
+    "bending_rigidity": 33230.769230769234,
+    "gate": 0.03,
+    "literature_kb": 23.9,
+    "aspect_sweep": [
+      {
+        "aspect_ratio": 0.5,
+        "coefficient": 25.528348350977453,
+        "dominant_mode": [
+          1,
+          1
+        ],
+        "relative_error": 0.06813173016642068,
+        "within_literature_range": false,
+        "basis_shape": [
+          12,
+          12
+        ]
+      },
+      {
+        "aspect_ratio": 1.0,
+        "coefficient": 25.528348350977453,
+        "dominant_mode": [
+          2,
+          1
+        ],
+        "relative_error": 0.06813173016642068,
+        "within_literature_range": true,
+        "basis_shape": [
+          12,
+          12
+        ]
+      },
+      {
+        "aspect_ratio": 2.0,
+        "coefficient": 23.88181312724106,
+        "dominant_mode": [
+          3,
+          1
+        ],
+        "relative_error": 0.0007609570192024658,
+        "within_literature_range": true,
+        "basis_shape": [
+          12,
+          12
+        ]
+      },
+      {
+        "aspect_ratio": 4.0,
+        "coefficient": 23.88181312724106,
+        "dominant_mode": [
+          6,
+          1
+        ],
+        "relative_error": 0.0007609570192024658,
+        "within_literature_range": true,
+        "basis_shape": [
+          12,
+          12
+        ]
+      },
+      {
+        "aspect_ratio": 6.0,
+        "coefficient": 23.88181312724105,
+        "dominant_mode": [
+          9,
+          1
+        ],
+        "relative_error": 0.0007609570192029118,
+        "within_literature_range": true,
+        "basis_shape": [
+          16,
+          12
+        ]
+      },
+      {
+        "aspect_ratio": 10.0,
+        "coefficient": 23.88181312724105,
+        "dominant_mode": [
+          15,
+          1
+        ],
+        "relative_error": 0.0007609570192029118,
+        "within_literature_range": true,
+        "basis_shape": [
+          24,
+          12
+        ]
+      }
+    ],
+    "long_panel": {
+      "aspect_ratio": 10.0,
+      "coefficient": 23.88181312724105,
+      "relative_error": 0.0007609570192029118,
+      "passes_3pct": true
+    },
+    "independent_reference": {
+      "load": 7832237.857075183,
+      "coefficient": 23.880627160216203,
+      "half_wavelength": 0.6719701569940472,
+      "elements": 64,
+      "residual": 1.7913373355948619e-12
+    },
+    "ritz_vs_independent": 4.96623064749857e-05,
+    "uniform_limit": {
+      "coefficient": 3.999999999999999,
+      "literature": 4.0,
+      "relative_error": 2.220446049250313e-16
+    }
+  },
+  "basis_study": [
+    {
+      "basis_x": 8,
+      "coefficient": 32.444720326162745,
+      "dominant_mode": [
+        8,
+        1
+      ]
+    },
+    {
+      "basis_x": 12,
+      "coefficient": 24.784724646443014,
+      "dominant_mode": [
+        12,
+        1
+      ]
+    },
+    {
+      "basis_x": 16,
+      "coefficient": 23.88181312724107,
+      "dominant_mode": [
+        15,
+        1
+      ]
+    },
+    {
+      "basis_x": 24,
+      "coefficient": 23.881813127241074,
+      "dominant_mode": [
+        15,
+        1
+      ]
+    },
+    {
+      "basis_x": 32,
+      "coefficient": 23.881813127241074,
+      "dominant_mode": [
+        15,
+        1
+      ]
+    }
+  ],
+  "independent_reference_study": [
+    {
+      "elements": 8,
+      "bending_coefficient": 23.885398041434183,
+      "half_wavelength": 0.671952856244217,
+      "residual": 5.78707624257797e-15,
+      "uniform_coefficient": 4.000033123308495
+    },
+    {
+      "elements": 16,
+      "bending_coefficient": 23.880925432131402,
+      "half_wavelength": 0.6719700135672082,
+      "residual": 2.1946773682771802e-14,
+      "uniform_coefficient": 4.000002065867412
+    },
+    {
+      "elements": 32,
+      "bending_coefficient": 23.880644745093214,
+      "half_wavelength": 0.6719719302526981,
+      "residual": 4.0867302322273384e-13,
+      "uniform_coefficient": 4.000000129018023
+    },
+    {
+      "elements": 64,
+      "bending_coefficient": 23.880627160216203,
+      "half_wavelength": 0.6719701569940472,
+      "residual": 1.7913373355948619e-12,
+      "uniform_coefficient": 4.000000007463663
+    }
+  ],
+  "shear_regression": [
+    {
+      "aspect_ratio": 1.0,
+      "k_s": 9.324672700247278
+    },
+    {
+      "aspect_ratio": 6.0,
+      "k_s": 5.479724241907011
+    }
+  ]
+}
