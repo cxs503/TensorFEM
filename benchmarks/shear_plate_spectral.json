@@ -1,0 +1,507 @@
+{
+  "schema": "tensorfem.shear_plate_spectral.benchmark/1",
+  "model": {
+    "panel": "simply supported rectangular panel, w = 0 and M_n = 0 on all edges",
+    "basis": "w = sum c_mn sin(m pi x/a) sin(n pi y/b)",
+    "load": "pure in-plane shear N_xy",
+    "coefficient": "k_s = N_xy,cr b^2 / (pi^2 D)",
+    "literature": "Timoshenko & Gere, Theory of Elastic Stability, 2nd ed., Art. 9.3: k_s = 5.34 + 4 (b/a)^2"
+  },
+  "tolerance": 0.03,
+  "qualification": {
+    "schema": "tensorfem.shear_plate_spectral.qualification/1",
+    "tolerance": 0.03,
+    "gates": [
+      {
+        "name": "operators_vs_quadrature",
+        "value": 8.393286066166254e-15,
+        "reference": 0.0,
+        "relative_error": 8.393286066166254e-15,
+        "tolerance": 1e-10,
+        "passed": true,
+        "note": "max relative deviation of the closed-form operators from quadrature"
+      },
+      {
+        "name": "uniaxial_recovers_classical_k",
+        "value": 4.0,
+        "reference": 4.0,
+        "relative_error": 0.0,
+        "tolerance": 1e-10,
+        "passed": true,
+        "note": "k = 4 for the first uniaxial mode of a square panel"
+      },
+      {
+        "name": "biaxial_recovers_navier",
+        "value": 19.739208802178716,
+        "reference": 19.739208802178716,
+        "relative_error": 0.0,
+        "tolerance": 1e-10,
+        "passed": true,
+        "note": "Navier: N_x = 2 pi^2 D / b^2 for equal biaxial load on a square panel"
+      },
+      {
+        "name": "shear_sign_symmetry",
+        "value": 92.04294013449248,
+        "reference": 92.04294013449248,
+        "relative_error": 0.0,
+        "tolerance": 1e-12,
+        "passed": true,
+        "note": "pure shear up and down must buckle at the same magnitude"
+      },
+      {
+        "name": "shear_convergence[a/b=1.0]",
+        "value": 9.324542103220052,
+        "reference": 9.324519813510925,
+        "relative_error": 2.3904404272940714e-06,
+        "tolerance": 0.0001,
+        "passed": true,
+        "note": "monotone decreasing, shrinking gaps, Richardson stable"
+      },
+      {
+        "name": "shear_convergence[a/b=1.5]",
+        "value": 7.069984402137044,
+        "reference": 7.069934253973109,
+        "relative_error": 7.093158455758548e-06,
+        "tolerance": 0.0001,
+        "passed": true,
+        "note": "monotone decreasing, shrinking gaps, Richardson stable"
+      },
+      {
+        "name": "shear_convergence[a/b=2.0]",
+        "value": 6.546044899375228,
+        "reference": 6.546013960197158,
+        "relative_error": 4.726414923387281e-06,
+        "tolerance": 0.0001,
+        "passed": true,
+        "note": "monotone decreasing, shrinking gaps, Richardson stable"
+      },
+      {
+        "name": "shear_convergence[a/b=3.0]",
+        "value": 5.84018321812979,
+        "reference": 5.840167305215846,
+        "relative_error": 2.724735972982866e-06,
+        "tolerance": 0.0001,
+        "passed": true,
+        "note": "monotone decreasing, shrinking gaps, Richardson stable"
+      },
+      {
+        "name": "shear_reference_vs_classical_fit",
+        "value": 9.324542103220052,
+        "reference": 9.34,
+        "relative_error": 0.0016550210685168831,
+        "tolerance": 0.03,
+        "passed": true,
+        "note": "Timoshenko & Gere k_s = 9.34 for the square panel"
+      },
+      {
+        "name": "classical_fit_is_not_a_gate",
+        "value": 6.34,
+        "reference": 6.546044899375228,
+        "relative_error": 0.031476242913471834,
+        "tolerance": 0.03,
+        "passed": true,
+        "note": "the fit itself exceeds 3% at a/b = 2; it must not be used as a gate there"
+      },
+      {
+        "name": "shear_reference_vs_finite_difference[a/b=1.0]",
+        "value": 9.488734215924882,
+        "reference": 9.324542103220052,
+        "relative_error": 0.017608597922264692,
+        "tolerance": 0.03,
+        "passed": true,
+        "note": "finite-difference solver of marine_plate_combined_buckling"
+      },
+      {
+        "name": "shear_reference_vs_finite_difference[a/b=2.0]",
+        "value": 6.660662173969932,
+        "reference": 6.546044899375228,
+        "relative_error": 0.017509393283514394,
+        "tolerance": 0.03,
+        "passed": true,
+        "note": "finite-difference solver of marine_plate_combined_buckling"
+      }
+    ],
+    "passed": true,
+    "convergence": {
+      "1.0": {
+        "budgets": [
+          8,
+          12,
+          16,
+          20,
+          24
+        ],
+        "coefficients": [
+          9.328349293898741,
+          9.325111679004959,
+          9.324672700247287,
+          9.324572796901252,
+          9.324542103220052
+        ],
+        "gaps": [
+          0.0032376148937824922,
+          0.00043897875767129335,
+          9.990334603493523e-05,
+          3.0693681200233414e-05
+        ],
+        "monotone": true,
+        "shrinking_gaps": true,
+        "observed_order": 4.749045542213432,
+        "richardson_limit": 9.324519813510925,
+        "finest_deviation": 2.228970912732109e-05
+      },
+      "1.5": {
+        "budgets": [
+          8,
+          12,
+          16,
+          20,
+          24
+        ],
+        "coefficients": [
+          7.071990518392453,
+          7.0703756769573465,
+          7.0700767332779,
+          7.070014454000347,
+          7.069984402137044
+        ],
+        "gaps": [
+          0.0016148414351064844,
+          0.000298943679446495,
+          6.2279277552868e-05,
+          3.0051863302738013e-05
+        ],
+        "monotone": true,
+        "shrinking_gaps": true,
+        "observed_order": 2.5753507181502684,
+        "richardson_limit": 7.069934253973109,
+        "finest_deviation": 5.0148163935226364e-05
+      },
+      "2.0": {
+        "budgets": [
+          8,
+          12,
+          16,
+          20,
+          24
+        ],
+        "coefficients": [
+          6.548695601039327,
+          6.546660549471873,
+          6.546146560167925,
+          6.546073486602434,
+          6.546044899375228
+        ],
+        "gaps": [
+          0.0020350515674545377,
+          0.0005139893039478594,
+          7.307356549102195e-05,
+          2.8587227205889576e-05
+        ],
+        "monotone": true,
+        "shrinking_gaps": true,
+        "observed_order": 3.5892449157332313,
+        "richardson_limit": 6.546013960197158,
+        "finest_deviation": 3.093917807017732e-05
+      },
+      "3.0": {
+        "budgets": [
+          8,
+          12,
+          16,
+          20,
+          24
+        ],
+        "coefficients": [
+          5.843451001606398,
+          5.840903120576404,
+          5.840385265833821,
+          5.840218928583087,
+          5.84018321812979
+        ],
+        "gaps": [
+          0.002547881029993704,
+          0.0005178547425828128,
+          0.00016633725073411654,
+          3.571045329664457e-05
+        ],
+        "monotone": true,
+        "shrinking_gaps": true,
+        "observed_order": 6.454768524588236,
+        "richardson_limit": 5.840167305215846,
+        "finest_deviation": 1.591291394476002e-05
+      }
+    },
+    "cross_discretisation": {
+      "1.0": {
+        "finite_difference_grid": [
+          16,
+          16
+        ],
+        "finite_difference_k": 9.488734215924882,
+        "spectral_k": 9.324542103220052,
+        "relative_error": 0.017608597922264692
+      },
+      "2.0": {
+        "finite_difference_grid": [
+          16,
+          32
+        ],
+        "finite_difference_k": 6.660662173969932,
+        "spectral_k": 6.546044899375228,
+        "relative_error": 0.017509393283514394
+      }
+    },
+    "square_panel": {
+      "spectral_k": 9.324542103220052,
+      "classical_fit_k": 9.34,
+      "relative_error": 0.0016550210685168831
+    },
+    "aspect_two": {
+      "spectral_k": 6.546044899375228,
+      "classical_fit_k": 6.34,
+      "relative_error": 0.031476242913471834
+    },
+    "reduced_matrix_scale": 126242.18198006714
+  },
+  "convergence": {
+    "1.0": {
+      "budgets": [
+        4,
+        6,
+        8,
+        10,
+        12,
+        16,
+        20,
+        24
+      ],
+      "coefficients": [
+        9.404432608990318,
+        9.338387234678631,
+        9.328349293898741,
+        9.325899640347615,
+        9.325111679004959,
+        9.324672700247287,
+        9.324572796901252,
+        9.324542103220052
+      ],
+      "gaps": [
+        0.06604537431168644,
+        0.010037940779890064,
+        0.002449653551126474,
+        0.0007879613426560184,
+        0.00043897875767129335,
+        9.990334603493523e-05,
+        3.0693681200233414e-05
+      ],
+      "observed_order": 4.749045542213432,
+      "converged_k": 9.324519813510925,
+      "classical_fit_k": 9.34,
+      "deviation_vs_classical_fit": 0.0016601591072437558,
+      "merged_finite_difference": {
+        "grid": [
+          40,
+          40
+        ],
+        "k": 9.3521,
+        "richardson_k": 9.346
+      },
+      "deviation_of_merged_fd": 0.0029578130606910656,
+      "deviation_of_merged_fd_richardson": 0.0023036238775482193
+    },
+    "1.5": {
+      "budgets": [
+        4,
+        6,
+        8,
+        10,
+        12,
+        16,
+        20,
+        24
+      ],
+      "coefficients": [
+        7.1105806085332475,
+        7.077283444983657,
+        7.071990518392453,
+        7.071194015162957,
+        7.0703756769573465,
+        7.0700767332779,
+        7.070014454000347,
+        7.069984402137044
+      ],
+      "gaps": [
+        0.03329716354959089,
+        0.005292926591203617,
+        0.0007965032294956487,
+        0.0008183382056108357,
+        0.000298943679446495,
+        6.2279277552868e-05,
+        3.0051863302738013e-05
+      ],
+      "observed_order": 2.5753507181502684,
+      "converged_k": 7.069934253973109,
+      "classical_fit_k": 7.1177777777777775,
+      "deviation_vs_classical_fit": 0.006767180865618607,
+      "merged_finite_difference": {
+        "grid": [
+          40,
+          60
+        ],
+        "k": 7.0879,
+        "richardson_k": 7.0974
+      },
+      "deviation_of_merged_fd": 0.0025411475385071513,
+      "deviation_of_merged_fd_richardson": 0.0038848658332934606
+    },
+    "2.0": {
+      "budgets": [
+        4,
+        6,
+        8,
+        10,
+        12,
+        16,
+        20,
+        24
+      ],
+      "coefficients": [
+        6.5750951592189955,
+        6.5632288657404,
+        6.548695601039327,
+        6.546978729315813,
+        6.546660549471873,
+        6.546146560167925,
+        6.546073486602434,
+        6.546044899375228
+      ],
+      "gaps": [
+        0.01186629347859558,
+        0.014533264701072746,
+        0.0017168717235138686,
+        0.0003181798439406691,
+        0.0005139893039478594,
+        7.307356549102195e-05,
+        2.8587227205889576e-05
+      ],
+      "observed_order": 3.5892449157332313,
+      "converged_k": 6.546013960197158,
+      "classical_fit_k": 6.34,
+      "deviation_vs_classical_fit": 0.031471665268332685,
+      "merged_finite_difference": {
+        "grid": [
+          40,
+          80
+        ],
+        "k": 6.5653,
+        "richardson_k": 6.4553
+      },
+      "deviation_of_merged_fd": 0.0029462265006017763,
+      "deviation_of_merged_fd_richardson": 0.013857892871714132
+    },
+    "3.0": {
+      "budgets": [
+        4,
+        6,
+        8,
+        10,
+        12,
+        16,
+        20,
+        24
+      ],
+      "coefficients": [
+        6.197366833429286,
+        5.864215942720704,
+        5.843451001606398,
+        5.841996574891965,
+        5.840903120576404,
+        5.840385265833821,
+        5.840218928583087,
+        5.84018321812979
+      ],
+      "gaps": [
+        0.3331508907085823,
+        0.020764941114306268,
+        0.0014544267144325218,
+        0.001093454315561182,
+        0.0005178547425828128,
+        0.00016633725073411654,
+        3.571045329664457e-05
+      ],
+      "observed_order": 6.454768524588236,
+      "converged_k": 5.840167305215846,
+      "classical_fit_k": 5.7844444444444445,
+      "deviation_vs_classical_fit": 0.009541312407546113,
+      "merged_finite_difference": {
+        "grid": [
+          32,
+          96
+        ],
+        "k": 5.8887,
+        "richardson_k": 5.8384
+      },
+      "deviation_of_merged_fd": 0.008310154871900668,
+      "deviation_of_merged_fd_richardson": 0.0003026120868604539
+    }
+  },
+  "spectra": {
+    "1.0": {
+      "modes": [
+        24,
+        24
+      ],
+      "leading_k": [
+        9.324542103220052,
+        11.545928527341411,
+        24.80169414496124,
+        26.78173796364026
+      ],
+      "separation": 1.2382300813842908
+    },
+    "1.5": {
+      "modes": [
+        29,
+        20
+      ],
+      "leading_k": [
+        7.069984402137044,
+        7.954310635664438,
+        14.091488316360358,
+        16.028365543520064
+      ],
+      "separation": 1.1250817799909272
+    },
+    "2.0": {
+      "modes": [
+        34,
+        17
+      ],
+      "leading_k": [
+        6.546044899375228,
+        6.572811208806919,
+        9.925712052054088,
+        11.317902640504927
+      ],
+      "separation": 1.0040889284817227
+    },
+    "3.0": {
+      "modes": [
+        42,
+        14
+      ],
+      "leading_k": [
+        5.84018321812979,
+        5.950302720906673,
+        7.5630149819445425,
+        7.764807011438893
+      ],
+      "separation": 1.0188554876900155
+    }
+  },
+  "figures": [
+    "docs/assets/shear_plate_spectral/convergence_and_comparison.png",
+    "docs/assets/shear_plate_spectral/truncation_error.png"
+  ]
+}
