@@ -1,3 +1,19 @@
+## 2026-11-05 Cook 膜恢复应力资格判定提升为 fail-closed 库级门禁
+
+- 新增 `src/tensorfem/cook_stress_recovery.py`：`recovered_nodal_stress` 是恢复场的文档化入口
+  （仅调用生产原语 `stress_recovery.q4_gauss_stresses` + `recover_nodal_stress`，不新增第二份实现）；
+  `measure` 逐级驱动**生产载荷** `cook_fields(n, reference=...)`；`qualify` 是 fail-closed 判定：
+  逐级有限 + 逐级严格单调 + 最细 ≤ 容差 + 观测阶 > 1 + 参考 sha256 入账，任一缺失即拒绝并给出
+  `blocking_reasons` 与 `verdict_sha256`。`tolerance` 上限钉死 3%（更大值抛 `ValueError`）。
+- 参考值：对冻结独立 Q8 参考（`benchmarks/cook_membrane_stress_reference.json`，未重解）n=8/16/32/64
+  最差站点 von Mises 误差 8.0231%/1.9514%/0.4838%/0.1202%，观测阶 2.013，判定
+  `stress_recovery_qualified=True`；交叉校验：入口 vs 生产载荷最大差 0.0、生产载荷 vs 独立 NumPy
+  审计实现相对差 5.26e-15。**原始逐单元中心场 `stress_accuracy_qualified` 仍为 `False`**（口径替换不算提级）。
+- `scripts/qualify_cook_stress_recovery.py` 生成 `benchmarks/cook_stress_recovery.json` 与
+  `docs/assets/cook-stress-recovery/convergence.png`；报告 `docs/cook-stress-recovery-promotion.md`。
+- `tests/test_cook_stress_recovery.py`（19 项）：均匀应力态恢复精确性（<1e-13）、界面单值性、入口与
+  生产载荷逐位一致，以及对非单调 / 超差 / 一阶 / NaN / inf / 单级 / 级别错位 / 放宽容差七类注入的拒绝证明。
+
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
 ## 2026-11-03 Cook 膜应力审计证据收尾
