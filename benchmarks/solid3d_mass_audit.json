@@ -1,0 +1,468 @@
+{
+  "generated_by": "scripts/audit_solid3d_mass.py",
+  "patch": [
+    {
+      "operator": "hex8 consistent",
+      "measured": 11774.999999999998,
+      "reference": 11775.0,
+      "relative_error": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "operator": "hex8 lumped",
+      "measured": 11774.999999999998,
+      "reference": 11775.0,
+      "relative_error": 1.1102230246251565e-16,
+      "tolerance": 1e-12,
+      "passed": true
+    },
+    {
+      "operator": "tet4 consistent",
+      "measured": 11775.000000000002,
+      "reference": 11775.0,
+      "relative_error": 2.220446049250313e-16,
+      "tolerance": 1e-10,
+      "passed": true
+    },
+    {
+      "operator": "tet4 lumped",
+      "measured": 11775.0,
+      "reference": 11775.0,
+      "relative_error": 0.0,
+      "tolerance": 1e-10,
+      "passed": true
+    }
+  ],
+  "distorted": {
+    "centre_perturbation": 0.08392711123349826,
+    "rows": [
+      {
+        "rule": "1x1x1 Gauss",
+        "measured_mass": 7850.000000000001,
+        "reference_mass": 7850.0,
+        "relative_error": 2.220446049250313e-16,
+        "note": "reference = rho * exact volume (boundary nodes untouched)"
+      },
+      {
+        "rule": "2x2x2 Gauss",
+        "measured_mass": 7849.999999999996,
+        "reference_mass": 7850.0,
+        "relative_error": 4.440892098500626e-16,
+        "note": "reference = rho * exact volume (boundary nodes untouched)"
+      },
+      {
+        "rule": "3x3x3 Gauss",
+        "measured_mass": 7850.000000000002,
+        "reference_mass": 7850.0,
+        "relative_error": 2.220446049250313e-16,
+        "note": "reference = rho * exact volume (boundary nodes untouched)"
+      }
+    ]
+  },
+  "rigid": [
+    {
+      "mesh": "1x1x1",
+      "operator": "hex8 consistent",
+      "mass_relative_error": 2.220446049250313e-16,
+      "ixx_relative_error": 2.220446049250313e-16,
+      "iyy_relative_error": 0.0,
+      "izz_relative_error": 0.0,
+      "ixx_ratio_lumped_to_exact": 1.0000000000000002,
+      "offdiagonal_max_abs": 0.0
+    },
+    {
+      "mesh": "1x1x1",
+      "operator": "hex8 lumped",
+      "mass_relative_error": 2.220446049250313e-16,
+      "ixx_relative_error": 1.9999999999999982,
+      "iyy_relative_error": 1.9999999999999982,
+      "izz_relative_error": 1.9999999999999991,
+      "ixx_ratio_lumped_to_exact": 2.9999999999999982,
+      "offdiagonal_max_abs": 0.0
+    },
+    {
+      "mesh": "2x2x2",
+      "operator": "hex8 consistent",
+      "mass_relative_error": 1.1102230246251565e-16,
+      "ixx_relative_error": 1.1102230246251565e-16,
+      "iyy_relative_error": 2.220446049250313e-16,
+      "izz_relative_error": 3.3306690738754696e-16,
+      "ixx_ratio_lumped_to_exact": 0.9999999999999999,
+      "offdiagonal_max_abs": 0.0
+    },
+    {
+      "mesh": "2x2x2",
+      "operator": "hex8 lumped",
+      "mass_relative_error": 1.1102230246251565e-16,
+      "ixx_relative_error": 0.49999999999999956,
+      "iyy_relative_error": 0.49999999999999933,
+      "izz_relative_error": 0.4999999999999991,
+      "ixx_ratio_lumped_to_exact": 1.4999999999999996,
+      "offdiagonal_max_abs": 0.0
+    },
+    {
+      "mesh": "3x3x3",
+      "operator": "hex8 consistent",
+      "mass_relative_error": 2.220446049250313e-16,
+      "ixx_relative_error": 2.220446049250313e-16,
+      "iyy_relative_error": 4.440892098500626e-16,
+      "izz_relative_error": 3.3306690738754696e-16,
+      "ixx_ratio_lumped_to_exact": 1.0000000000000002,
+      "offdiagonal_max_abs": 0.0
+    },
+    {
+      "mesh": "3x3x3",
+      "operator": "hex8 lumped",
+      "mass_relative_error": 2.220446049250313e-16,
+      "ixx_relative_error": 0.22222222222222188,
+      "iyy_relative_error": 0.22222222222222165,
+      "izz_relative_error": 0.2222222222222212,
+      "ixx_ratio_lumped_to_exact": 1.2222222222222219,
+      "offdiagonal_max_abs": 0.0
+    },
+    {
+      "mesh": "4x4x4",
+      "operator": "hex8 consistent",
+      "mass_relative_error": 1.1102230246251565e-16,
+      "ixx_relative_error": 1.1102230246251565e-16,
+      "iyy_relative_error": 2.220446049250313e-16,
+      "izz_relative_error": 3.3306690738754696e-16,
+      "ixx_ratio_lumped_to_exact": 0.9999999999999999,
+      "offdiagonal_max_abs": 0.0
+    },
+    {
+      "mesh": "4x4x4",
+      "operator": "hex8 lumped",
+      "mass_relative_error": 1.1102230246251565e-16,
+      "ixx_relative_error": 0.12499999999999978,
+      "iyy_relative_error": 0.12499999999999978,
+      "izz_relative_error": 0.12499999999999956,
+      "ixx_ratio_lumped_to_exact": 1.1249999999999998,
+      "offdiagonal_max_abs": 0.0
+    },
+    {
+      "mesh": "6x6x6",
+      "operator": "hex8 consistent",
+      "mass_relative_error": 7.771561172376096e-16,
+      "ixx_relative_error": 2.220446049250313e-16,
+      "iyy_relative_error": 4.440892098500626e-16,
+      "izz_relative_error": 3.3306690738754696e-16,
+      "ixx_ratio_lumped_to_exact": 1.0000000000000002,
+      "offdiagonal_max_abs": 0.0
+    },
+    {
+      "mesh": "6x6x6",
+      "operator": "hex8 lumped",
+      "mass_relative_error": 7.771561172376096e-16,
+      "ixx_relative_error": 0.05555555555555536,
+      "iyy_relative_error": 0.055555555555554914,
+      "izz_relative_error": 0.05555555555555447,
+      "ixx_ratio_lumped_to_exact": 1.0555555555555554,
+      "offdiagonal_max_abs": 0.0
+    }
+  ],
+  "free_free": {
+    "mesh": "2x2x4",
+    "n_dofs": 135,
+    "rigid_eigenvalues": [
+      0.0,
+      0.0,
+      0.0,
+      1.1298166266378388e-06,
+      3.3760665414684535e-06,
+      6.291931856115868e-06
+    ],
+    "max_rigid_eigenvalue_ratio": 2.1824438375291615e-14,
+    "first_elastic_omega": 16979.326788668972,
+    "stiffness_annihilation_residual": [
+      2.86102294921875e-05
+    ],
+    "inertia_relative_error": {
+      "mass": 5.551115123125783e-16,
+      "ixx": 6.661338147750939e-16,
+      "iyy": 5.551115123125783e-16,
+      "izz": 2.220446049250313e-16
+    }
+  },
+  "ladder": [
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 2,
+      "h": 0.5,
+      "operator": "hex8 consistent",
+      "mode": 1,
+      "measured_omega": 9670.073010398033,
+      "reference_omega": 9426.317076964953,
+      "relative_error": 0.025859084883612216
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 2,
+      "h": 0.5,
+      "operator": "hex8 consistent",
+      "mode": 2,
+      "measured_omega": 33781.334579535884,
+      "reference_omega": 28278.95123089486,
+      "relative_error": 0.19457522677254202
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 2,
+      "h": 0.5,
+      "operator": "hex8 consistent",
+      "mode": 3,
+      "measured_omega": 111536.53702727293,
+      "reference_omega": 47131.58538482477,
+      "relative_error": 1.3664923663523738
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 2,
+      "h": 0.5,
+      "operator": "hex8 lumped",
+      "mode": 1,
+      "measured_omega": 9185.902238350747,
+      "reference_omega": 9426.317076964953,
+      "relative_error": 0.02550464159557142
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 2,
+      "h": 0.5,
+      "operator": "hex8 lumped",
+      "mode": 2,
+      "measured_omega": 22176.729766459848,
+      "reference_omega": 28278.95123089486,
+      "relative_error": 0.2157866964234626
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 2,
+      "h": 0.5,
+      "operator": "hex8 lumped",
+      "mode": 3,
+      "measured_omega": 35172.505878377204,
+      "reference_omega": 47131.58538482477,
+      "relative_error": 0.2537381123253728
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 4,
+      "h": 0.25,
+      "operator": "hex8 consistent",
+      "mode": 1,
+      "measured_omega": 9486.99713704814,
+      "reference_omega": 9426.317076964953,
+      "relative_error": 0.006437303093853153
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 4,
+      "h": 0.25,
+      "operator": "hex8 consistent",
+      "mode": 2,
+      "measured_omega": 29928.06080723606,
+      "reference_omega": 28278.95123089486,
+      "relative_error": 0.05831579689346955
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 4,
+      "h": 0.25,
+      "operator": "hex8 consistent",
+      "mode": 3,
+      "measured_omega": 54365.28204937476,
+      "reference_omega": 47131.58538482477,
+      "relative_error": 0.15347874690587138
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 4,
+      "h": 0.25,
+      "operator": "hex8 lumped",
+      "mode": 1,
+      "measured_omega": 9365.86470238848,
+      "reference_omega": 9426.317076964953,
+      "relative_error": 0.00641314885579225
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 4,
+      "h": 0.25,
+      "operator": "hex8 lumped",
+      "mode": 2,
+      "measured_omega": 26671.72610800169,
+      "reference_omega": 28278.95123089486,
+      "relative_error": 0.056834679255617915
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 4,
+      "h": 0.25,
+      "operator": "hex8 lumped",
+      "mode": 3,
+      "measured_omega": 35079.0530003758,
+      "reference_omega": 47131.58538482477,
+      "relative_error": 0.2557209201863512
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 8,
+      "h": 0.125,
+      "operator": "hex8 consistent",
+      "mode": 1,
+      "measured_omega": 9441.46654210834,
+      "reference_omega": 9426.317076964953,
+      "relative_error": 0.0016071457197643912
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 8,
+      "h": 0.125,
+      "operator": "hex8 consistent",
+      "mode": 2,
+      "measured_omega": 28689.365060900345,
+      "reference_omega": 28278.95123089486,
+      "relative_error": 0.014513049888395635
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 8,
+      "h": 0.125,
+      "operator": "hex8 consistent",
+      "mode": 3,
+      "measured_omega": 49039.43282466752,
+      "reference_omega": 47131.58538482477,
+      "relative_error": 0.040479169632537504
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 8,
+      "h": 0.125,
+      "operator": "hex8 lumped",
+      "mode": 1,
+      "measured_omega": 9411.18211661765,
+      "reference_omega": 9426.317076964953,
+      "relative_error": 0.001605606964387829
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 8,
+      "h": 0.125,
+      "operator": "hex8 lumped",
+      "mode": 2,
+      "measured_omega": 27871.87989896323,
+      "reference_omega": 28278.95123089486,
+      "relative_error": 0.014394852503826328
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 8,
+      "h": 0.125,
+      "operator": "hex8 lumped",
+      "mode": 3,
+      "measured_omega": 44120.869922061574,
+      "reference_omega": 47131.58538482477,
+      "relative_error": 0.06387893465032002
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 16,
+      "h": 0.0625,
+      "operator": "hex8 consistent",
+      "mode": 1,
+      "measured_omega": 9430.10309565892,
+      "reference_omega": 9426.317076964953,
+      "relative_error": 0.000401643469348123
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 16,
+      "h": 0.0625,
+      "operator": "hex8 consistent",
+      "mode": 2,
+      "measured_omega": 28381.269257792777,
+      "reference_omega": 28278.95123089486,
+      "relative_error": 0.00361816907785939
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 16,
+      "h": 0.0625,
+      "operator": "hex8 consistent",
+      "mode": 3,
+      "measured_omega": 47606.09581950586,
+      "reference_omega": 47131.58538482477,
+      "relative_error": 0.010067780041913776
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 16,
+      "h": 0.0625,
+      "operator": "hex8 lumped",
+      "mode": 1,
+      "measured_omega": 9422.531969032303,
+      "reference_omega": 9426.317076964953,
+      "relative_error": 0.0004015468503494324
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 16,
+      "h": 0.0625,
+      "operator": "hex8 lumped",
+      "mode": 2,
+      "measured_omega": 28176.851773355964,
+      "reference_omega": 28278.95123089486,
+      "relative_error": 0.003610440030299089
+    },
+    {
+      "case": "uniaxial-strain column",
+      "elements_along_axis": 16,
+      "h": 0.0625,
+      "operator": "hex8 lumped",
+      "mode": 3,
+      "measured_omega": 46659.81309206801,
+      "reference_omega": 47131.58538482477,
+      "relative_error": 0.010009684352961679
+    }
+  ],
+  "ladder_3d": [
+    {
+      "case": "3D slender block (lateral free)",
+      "elements_along_axis": 4,
+      "h": 0.25,
+      "operator": "hex8 consistent",
+      "mode": 1,
+      "identified_mode": 6,
+      "first_bending_omega": 857.4257779178513,
+      "measured_omega": 8375.028268818505,
+      "reference_omega": 8124.463577057186,
+      "relative_error": 0.030840767440805994
+    },
+    {
+      "case": "3D slender block (lateral free)",
+      "elements_along_axis": 8,
+      "h": 0.125,
+      "operator": "hex8 consistent",
+      "mode": 1,
+      "identified_mode": 6,
+      "first_bending_omega": 495.37262694460406,
+      "measured_omega": 8231.735052144253,
+      "reference_omega": 8124.463577057186,
+      "relative_error": 0.01320351480065618
+    },
+    {
+      "case": "3D slender block (lateral free)",
+      "elements_along_axis": 16,
+      "h": 0.0625,
+      "operator": "hex8 consistent",
+      "mode": 1,
+      "identified_mode": 8,
+      "first_bending_omega": 348.294138732207,
+      "measured_omega": 8175.346549975736,
+      "reference_omega": 8124.463577057186,
+      "relative_error": 0.006262933230722911
+    }
+  ]
+}

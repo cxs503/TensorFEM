@@ -35,3 +35,12 @@ mean-stress corrections, stress concentration factors, inspection intervals, or
 fracture toughness. The Paris model assumes constant geometry factor within each
 analysis and does not model threshold, retardation, closure, overload, or unstable
 fracture. TensorLBM and CFD are neither imported nor executed.
+
+## See also
+
+[`marine-fatigue-spectrum-validation.md`](marine-fatigue-spectrum-validation.md) verifies the
+same primitives in the *spectral* domain: rainflow + Miner against the Rayleigh
+narrow-band closed form (DNV-RP-C203 App. B), the ASTM E1049 bookkeeping identity
+`sum(count) = (n_rev-1)/2`, the sampling-rate trap, and the Paris power-law branch
+`m != 2`. A 20000-cycle record at spectral width 0.015 reproduces the Rayleigh damage
+within 0.95%.

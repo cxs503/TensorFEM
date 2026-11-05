@@ -1,0 +1,358 @@
+{
+  "module": "tensorfem.stiffened_panel_vibration",
+  "gate": 0.03,
+  "element_identity_max_relative_deviation": {
+    "sri": 0.0,
+    "mitc": 0.0
+  },
+  "isotropic_fsdt_vs_kirchhoff": [
+    {
+      "thickness_m": 0.01,
+      "a_over_h": 100.0,
+      "kirchhoff_hz": 47.986461117141864,
+      "fsdt_hz": 47.968994514622196,
+      "relative_bias": -0.0003639902195961084
+    },
+    {
+      "thickness_m": 0.02,
+      "a_over_h": 50.0,
+      "kirchhoff_hz": 95.97292223428373,
+      "fsdt_hz": 95.83347084224573,
+      "relative_bias": -0.0014530285083700681
+    },
+    {
+      "thickness_m": 0.05,
+      "a_over_h": 20.0,
+      "kirchhoff_hz": 239.93230558570934,
+      "fsdt_hz": 237.78355516960517,
+      "relative_bias": -0.008955652765719769
+    },
+    {
+      "thickness_m": 0.1,
+      "a_over_h": 10.0,
+      "kirchhoff_hz": 479.8646111714187,
+      "fsdt_hz": 463.4736452352883,
+      "relative_bias": -0.03415748016115978
+    }
+  ],
+  "panel_a_orthotropic": {
+    "rigidity": {
+      "dx": 109890.10989010992,
+      "dy": 18315.01831501832,
+      "dxy": 13458.734850457024,
+      "dt": 6410.256410256411,
+      "sx": 641025641.0256411,
+      "sy": 641025641.0256411,
+      "navier_twist": 26279.247670969846
+    },
+    "length_m": 1.2,
+    "width_m": 0.8,
+    "thickness_m": 0.01,
+    "reference_spectrum": [
+      {
+        "label": [
+          1,
+          1
+        ],
+        "reference_hz": 69.68894278706303
+      },
+      {
+        "label": [
+          1,
+          2
+        ],
+        "reference_hz": 176.7283563894247
+      },
+      {
+        "label": [
+          2,
+          1
+        ],
+        "reference_hz": 187.20752455403402
+      },
+      {
+        "label": [
+          2,
+          2
+        ],
+        "reference_hz": 278.14087135064034
+      },
+      {
+        "label": [
+          1,
+          3
+        ],
+        "reference_hz": 361.8028061987074
+      },
+      {
+        "label": [
+          3,
+          1
+        ],
+        "reference_hz": 388.27057759164154
+      }
+    ],
+    "levels": [
+      {
+        "elements": [
+          8,
+          6
+        ],
+        "modes": [
+          {
+            "label": [
+              1,
+              1
+            ],
+            "overlap": 0.9999999999999998,
+            "fe_hz": 71.3852238764739,
+            "reference_hz": 69.68894278706303,
+            "relative_error": 0.02434074935810003
+          },
+          {
+            "label": [
+              1,
+              2
+            ],
+            "overlap": 1.0,
+            "fe_hz": 198.95334398171744,
+            "reference_hz": 176.7283563894247,
+            "relative_error": 0.12575790352126345
+          },
+          {
+            "label": [
+              2,
+              1
+            ],
+            "overlap": 1.0,
+            "fe_hz": 200.67954849639108,
+            "reference_hz": 187.20752455403402,
+            "relative_error": 0.07196304728909869
+          },
+          {
+            "label": [
+              2,
+              2
+            ],
+            "overlap": 0.9999999999999999,
+            "fe_hz": 306.8519875328543,
+            "reference_hz": 278.14087135064034,
+            "relative_error": 0.10322508893710587
+          }
+        ]
+      },
+      {
+        "elements": [
+          12,
+          9
+        ],
+        "modes": [
+          {
+            "label": [
+              1,
+              1
+            ],
+            "overlap": 0.9999999999999999,
+            "fe_hz": 70.43437363960024,
+            "reference_hz": 69.68894278706303,
+            "relative_error": 0.010696544139217336
+          },
+          {
+            "label": [
+              1,
+              2
+            ],
+            "overlap": 1.0000000000000004,
+            "fe_hz": 186.00604319717743,
+            "reference_hz": 176.7283563894247,
+            "relative_error": 0.05249687711296963
+          },
+          {
+            "label": [
+              2,
+              1
+            ],
+            "overlap": 1.0000000000000002,
+            "fe_hz": 193.00145218704066,
+            "reference_hz": 187.20752455403402,
+            "relative_error": 0.03094922411270024
+          },
+          {
+            "label": [
+              2,
+              2
+            ],
+            "overlap": 1.0000000000000002,
+            "fe_hz": 290.3177967646939,
+            "reference_hz": 278.14087135064034,
+            "relative_error": 0.04377970542381258
+          }
+        ]
+      },
+      {
+        "elements": [
+          16,
+          12
+        ],
+        "modes": [
+          {
+            "label": [
+              1,
+              1
+            ],
+            "overlap": 1.0,
+            "fe_hz": 70.10660461376278,
+            "reference_hz": 69.68894278706303,
+            "relative_error": 0.005993229485141375
+          },
+          {
+            "label": [
+              1,
+              2
+            ],
+            "overlap": 1.0,
+            "fe_hz": 181.8376314794927,
+            "reference_hz": 176.7283563894247,
+            "relative_error": 0.02891032992356699
+          },
+          {
+            "label": [
+              2,
+              1
+            ],
+            "overlap": 1.0000000000000002,
+            "fe_hz": 190.43000235728178,
+            "reference_hz": 187.20752455403402,
+            "relative_error": 0.017213398932144134
+          },
+          {
+            "label": [
+              2,
+              2
+            ],
+            "overlap": 1.0,
+            "fe_hz": 284.8824632278117,
+            "reference_hz": 278.14087135064034,
+            "relative_error": 0.02423804831139868
+          }
+        ]
+      }
+    ],
+    "fundamental_convergence_order": 2.0219680618423594,
+    "worst_error_finest": 0.02891032992356699,
+    "gate_pass": true,
+    "mode12_shape_residual": 1.9763154124330384e-07
+  },
+  "panel_b_ship_grillage": {
+    "length_m": 3.2,
+    "width_m": 2.4,
+    "thickness_m": 0.012,
+    "stiffener": {
+      "depth_m": 0.2,
+      "web_thickness_m": 0.012,
+      "spacing_m": 0.8
+    },
+    "rigidity": {
+      "dx": 8773248.351648353,
+      "dy": 8773248.351648353,
+      "dxy": 2631974.5054945056,
+      "dt": 11076.923076923076,
+      "sx": 769230769.2307693,
+      "sy": 769230769.2307693,
+      "dx_over_plate_rigidity": 277.21027777777783
+    },
+    "modes": [
+      {
+        "label": [
+          1,
+          1
+        ],
+        "overlap": 1.0000000000000004,
+        "fe_hz": 106.4285564499066,
+        "reference_hz": 106.00751562748408,
+        "relative_error": 0.003971801621142328
+      },
+      {
+        "label": [
+          2,
+          1
+        ],
+        "overlap": 0.9999999999999994,
+        "fe_hz": 223.88149134447528,
+        "reference_hz": 221.71120532939884,
+        "relative_error": 0.009788797151014645
+      },
+      {
+        "label": [
+          1,
+          2
+        ],
+        "overlap": 1.0000000000000004,
+        "fe_hz": 342.70994477756483,
+        "reference_hz": 336.87877441492947,
+        "relative_error": 0.01730940268576607
+      },
+      {
+        "label": [
+          2,
+          2
+        ],
+        "overlap": 0.9999999999999998,
+        "fe_hz": 417.66951189931893,
+        "reference_hz": 411.452633081168,
+        "relative_error": 0.01510958569300127
+      }
+    ],
+    "elements": [
+      20,
+      16
+    ],
+    "worst_error": 0.01730940268576607,
+    "gate_pass": true,
+    "unsmeared_modes": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "sensitivity": {
+      "f1_plain_hz": 106.00751562748408,
+      "f1_with_stiffener_torsion_hz": 106.18579801704881,
+      "stiffener_torsion_shift": 0.0016817900929894621,
+      "f1_thickness_14mm_hz": 99.13757321149734,
+      "thickness_shift": -0.0648061826118827,
+      "f1_unstiffened_plate_hz": 7.809740856526323,
+      "stiffening_gain": 12.573755848620427
+    }
+  },
+  "figures": {
+    "mode_shape": "docs/assets/stiffened-panel-mode-shape.png",
+    "convergence": "docs/assets/stiffened-panel-convergence.png",
+    "spectrum": "docs/assets/stiffened-panel-spectrum.png",
+    "ship_mode1": "docs/assets/stiffened-panel-ship-mode1.png"
+  }
+}

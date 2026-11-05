@@ -1,4 +1,20 @@
+- Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
+
+## 2026-11-04 — plane-strain B-bar Q4 (near-incompressible locking cure)
+
+- `src/tensorfem/continuum_bbar.py`: mean-dilatation (B-bar) plane-strain Q4, the
+  counterpart of `solid3d_bbar`. Deviatoric part integrated at 2x2 Gauss (no hourglass),
+  volumetric part averaged; plane stress / non-Q4 refused explicitly.
+- Qualification against the exact plane-strain Lame cylinder, `nu = 0.4999`, 306 DOF:
+  displacement 0.1236 %, radial stress 0.5999 %, mean stress 0.0182 %, flat in `nu`,
+  observed order 2.00. The merged fully integrated Q4 stays fail-closed at 61.9 % / 155.2 %
+  and is still 38.5 % at 2450 DOF.
+- `scripts/audit_plane_strain_bbar_locking.py`, `benchmarks/plane_strain_bbar_locking.json`,
+  `docs/plane-strain-bbar-locking.md`, `tests/test_continuum_bbar.py`.
+- `incompressible_locking.plane_strain_sweep` gains `formulations=("standard", "bbar")`
+  and `plane_strain_case` also reports hoop and mean stress; default behaviour unchanged.
 
 - 重新生成 `benchmarks/cook_membrane_stress_reference.json`：旧文件是单元 Jacobian 转置缺陷修复前的产物，
   冒记 `recovery_cross_check = Infinity` 与「加载边型线分歧」；现行代码下交叉校验 2.5e-14 通过，
@@ -22,6 +38,45 @@
 All notable user-visible changes are recorded here.
 
 ## Unreleased
+- Added the first pressure-load verification of the metric-consistent cylindrical Shell4 element: an exact four-constant axisymmetric shell solution (`D w'''' + (E t / R^2) w = p`, clamped--clamped, open ends) for a 1.5 m x 15 mm steel cylinder under 1.0 MPa internal pressure with beta*L = 10.28. `tensorfem.cylindrical_pressure_reference` carries the closed form (displacement, moment, shear, hoop force; derivatives by automatic differentiation), self-validated against the governing ODE (residual 8.2e-16), the clamped end conditions (1.4e-12), the semi-infinite limit `|M_x(0)| = p/(2 beta^2)` (1.0e-4), the classical two-layer superposition (5.6e-5) and the pressure-work/strain-energy identity (5.3e-9), plus a consistent 2x2-Gauss pressure load and the production-element driver. At 32x16 elements (3168 dofs) the radial displacement L2 error is 1.41 %, the peak 1.64 %, the plateau 1.70 % and the axial moment L2 0.64 % with |M_x(0)| at 0.11 %, so the field-level 3 % gate passes; the node adjacent to the clamped edge is reported as NOT qualified (5.58 %) and an 8-facet circumferential mesh is rejected (5.82 %), fixing a mesh requirement instead of hiding it. The edge bending stress (181.6 MPa on top of the 100.0 MPa membrane stress) is the ship-relevant number: a `pR/t` screen understates the clamped-edge surface stress by 2.8x. Evidence in `benchmarks/cylindrical_pressure_boundary_layer_evidence.json`, report in `docs/cylindrical-pressure-boundary-layer.md`, gate `tests/test_cylindrical_pressure_boundary_layer.py` (14 tests, including a negative control that rejects a 10 % thickness error in the reference).
+
+- Closed the quadratic-solid rank-deficiency debt and corrected a mislabelled evidence row: the
+  library audit had recorded the 20-node brick as `hex20 (2x2x2 integration)` with zero spurious
+  modes, but the shipped `hex20_stiffness` integrates with the exact-order 3x3x3 rule, and the
+  measured 8-point rule gives **six** zero-energy mechanisms, so the old label and conclusion could
+  not both stand. New `audit_quadratic_solids`, `audit_hex20_mesh_scan`, `hex20_stiffness_with_rule`
+  (orders 2-5, `order=3` locked to production to round-off), `hex20_reduced_stiffness`,
+  `quadrature_exactness` and `hex20_quadrature_convergence`; TET10 now enters the library-level
+  audit, which had skipped the quadratic tetrahedron entirely. Results: the shipped rule has exactly
+  the 6 rigid-body modes on regular, distorted and genuinely curved bricks (0 spurious) and
+  reproduces a 64-point reference to 5.5e-16 on the regular brick; the 8-point rule has 6
+  mechanisms on all three geometries and is 7.65%-8.84% too soft (measured against a converged
+  rule, above the 3% gate); its mechanisms do not survive conforming assembly (warped and jittered
+  free-free meshes keep a 6-dimensional null space). TET10 is rank sufficient with straight and
+  curved edges. The Keast degree-3 rule under-integrates curved quadratic tetrahedra - quantified
+  accuracy loss remains open, "rank sufficient" is explicitly not "integration accurate".
+  Evidence `docs/benchmarks/tutorials/quadratic-solid-rank-audit.json`, write-up
+  `docs/quadratic-solid-rank-audit.md`, gate `tests/test_quadratic_solid_rank_audit.py` (10 tests,
+  including the 8-point rule as negative control).
+
+- Audited the linear righting arm of `tensorfem.marine_hydrostatics` against a new
+  independent large-angle oracle (`tensorfem.marine_large_angle_stability`): the exact
+  wall-sided arm is rebuilt from immersed-section geometry (bisected flotation
+  equilibrium plus exact half-plane polygon clipping), never from the textbook formula.
+  Seven machine anchors close at 1e-12..1e-15, including the free-surface closure
+  `h0 = T*cos(phi)`, the waterplane chord `B/cos(phi)`, the closed-form trapezoid
+  centroid, the wall-sided arm, the dynamic-stability integral and the lurch angle of a
+  near-neutral section. Findings: the merged `GM*sin(phi)` arm is 2.09% off at 10
+  degrees for the shipped proportions but 3.27% for a low-`GM` barge of the same
+  geometry, so the documented "<3% over the declared range" holds only for
+  `GM >= 0.5027*BM`; and the textbook wall-sided closed form is valid only inside
+  `min(phi_deck, atan(2*T/B))`, where the bilge-surfacing limit is the binding one for
+  deep narrow sections (5.1% divergence just past it). Evidence
+  `benchmarks/marine_large_angle_stability_evidence.json`, report
+  `docs/marine-large-angle-stability-audit.md`, gate
+  `tests/test_marine_large_angle_stability.py` (19 tests).
+
+- Closed the body-force verification debt of the continuum path. Every previous quantitative check of `tensorfem.continuum` loaded the model through edge tractions or point loads, so the consistent assembly `int N_a b dV` used by inertia, gravity and centrifugal loads had no reference value anywhere in the repository. New `tensorfem.rotating_disc_reference` carries Michel's exact plane-stress solution for a rotating annular disc (stress, displacement, bore hoop stress, sector resultants) and `centrifugal_nodal_loads` (2x2 Gauss consistent assembly plus the equal-split variant). `benchmarks/rotating_disc_reference.py` verifies the production Q4 plane-stress path on a quarter annulus: at 24x24 the hoop-stress relative L2 is 0.24 % (worst point 0.47 %), radial stress 0.11 % of the hoop peak, radial displacement 0.47 %, with observed orders 1.4-2.7 and a symmetry-cut reaction matching `t*int sigma_theta dr` to 2e-3. Findings: (i) the bore hoop stress is a post-processed quantity -- two-point linear extrapolation underestimates it by 6.7 % on a uniform 12x24 mesh and by 1.07 % even after radial grading, while a three-point quadratic extrapolation on the graded mesh reaches 0.81 %, so an ungraded burst margin is unsafe; (ii) the assembled load resultant matches an independent centroid-triangulated integral over the discretised polygon to 1e-16 but the exact annular sector only to O(dtheta^2), because the chordal mesh domain is smaller -- the two effects are reported separately; (iii) equal-split lumping is *not* detectable by field comparison for this smooth load (0.16 % error), which is recorded as a capability boundary rather than a pass. Three negative controls (20 % omega error, radius-free body force, plane strain) each break the 3 % gate. Evidence `benchmarks/rotating_disc_michel_evidence.json`, write-up `docs/rotating-disc-michel-verification.md`, gate `tests/test_rotating_disc_reference.py` (17 tests).
 
 - Added an independent Saint-Venant torsion verification of the 3-D solid paths, the one elementary load case that no stored HEX8/HEX20/TET4/TET10 check had ever exercised. `tensorfem.torsion_bar` carries the closed-form series (torsion constant, Prandtl stress function, shear stress, warping), self-validated against the Timoshenko coefficient table (beta = 0.141, alpha = 0.208), the governing PDE, the traction-free boundary, `J = 2 int psi dA` and the thin-strip limit, plus a driver that twists a prism with an exact end torque and recovers the twist rate from the interior window. HEX20 reaches 0.118% twist-rate error at 4515 dofs and 1.47% at 783 dofs; fully integrated HEX8 needs 8019 dofs for 1.34%. The boundary peak of |tau| is reported as WITHHELD because centroid sampling cannot reach the lateral surface. Evidence in `benchmarks/saint_venant_torsion_evidence.json`, report in `docs/saint-vanant-torsion.md`.
 
