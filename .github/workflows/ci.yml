@@ -52,13 +52,14 @@ jobs:
           path: coverage.xml
 
   lint:
-    name: lint (advisory)
+    name: lint
     runs-on: ubuntu-latest
-    # Advisory on purpose: the tree carries a large pre-existing ruff backlog
-    # (unused imports, import ordering, semicolon-packed statements).  Making
-    # it blocking would hide every other signal.  Fix the backlog, then drop
-    # this continue-on-error and promote it to a gate.
-    continue-on-error: true
+    # Two blocking gates plus the still-unpaid backlog as advisory signal.
+    # The tree is not ruff-clean (see scripts/lint_baseline.json), so a
+    # whole-tree `ruff check` cannot be a gate without blocking every pull
+    # request; the ratchet below rejects *new* debt instead, and the advisory
+    # steps keep the drain progress visible.  Reproduce locally with
+    # `pytest tests/test_lint_ratchet.py` and `python scripts/lint_ratchet.py`.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -70,7 +71,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      - name: Lint (ruff)
+      # Gate 1: bug-class rules.  They are clean tree-wide today (verified:
+      # `ruff check --select E9,F63,F7,F82,F811` passes on all four roots), so
+      # they are required outright: syntax errors, undefined names,
+      # comprehension rebindings, is-literal comparisons.
+      - name: Lint (ruff, bug-class gate)
+        run: ruff check --select E9,F63,F7,F82,F811 src tests scripts examples
+      # Gate 2: ratchet.  Pre-existing debt (E701/E702 semicolon packing, F401,
+      # E741, ...) is frozen in scripts/lint_baseline.json; any new violation,
+      # new rule, new file or new format debt fails the job.  Pay debt down,
+      # then re-freeze with `python scripts/lint_ratchet.py --update`.
+      - name: Lint (ruff, ratchet against the frozen backlog)
+        run: python scripts/lint_ratchet.py
+      - name: Lint (ruff, full tree, advisory)
+        continue-on-error: true
         run: ruff check src tests scripts examples
-      - name: Format check (ruff format)
+      - name: Format check (ruff format, full tree, advisory)
+        continue-on-error: true
         run: ruff format --check src tests scripts examples
