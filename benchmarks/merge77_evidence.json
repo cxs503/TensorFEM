@@ -1,0 +1,78 @@
+{
+  "mission": 3957,
+  "repo": "TensorFEM",
+  "pr": 77,
+  "branch": "agent/m3369",
+  "merge_commit": "c92d77cfe45c6f065b521885446e63afcdb49132",
+  "merge_parents": [
+    "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+    "ebfbdc40c0100255dba261bfc83781b0c9c084f9"
+  ],
+  "main_base": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+  "branch_tip_before": "ebfbdc40c0100255dba261bfc83781b0c9c084f9",
+  "merge_base": "14ca2fdc1fd06467f3edb33db1d9e549b6a901a2",
+  "conflict_files": [
+    "CHANGELOG.md"
+  ],
+  "branch_files": [
+    "benchmarks/plate_uniform_load_evidence.json",
+    "docs/assets/plate_uniform_load/plate_uniform_anchor_errors.png",
+    "docs/assets/plate_uniform_load/plate_uniform_convergence_profile.png",
+    "docs/plate-uniform-load-verification.md",
+    "scripts/verify_plate_uniform_load.py",
+    "src/tensorfem/plate_uniform_load.py",
+    "tests/test_plate_uniform_load.py"
+  ],
+  "blob_identical_to_branch_tip": {
+    "benchmarks/plate_uniform_load_evidence.json": true,
+    "docs/assets/plate_uniform_load/plate_uniform_anchor_errors.png": true,
+    "docs/assets/plate_uniform_load/plate_uniform_convergence_profile.png": true,
+    "docs/plate-uniform-load-verification.md": true,
+    "scripts/verify_plate_uniform_load.py": true,
+    "src/tensorfem/plate_uniform_load.py": true,
+    "tests/test_plate_uniform_load.py": true
+  },
+  "files_on_main_side_altered": [],
+  "changelog_union_checks": {
+    "Added `tensorfem.prestressed_modal`": 1,
+    "## Unreleased": 2,
+    "均布压力板的精度复核": 1,
+    "conflict_markers": 0
+  },
+  "pr_artifact_bytes": 198969,
+  "pr_artifact_cap_bytes": 204800,
+  "tests_baseline_main_full_suite": {
+    "totals": {
+      "failed": 3,
+      "passed": 1681,
+      "skipped": 7,
+      "xpassed": 1,
+      "seconds": 861.91
+    },
+    "failed_ids": [
+      "tests/test_finite_strain_curved_friction_contact3d.py::test_real_curved_nonmatching_tet4_friction_level_one_closure",
+      "tests/test_release_quality.py::test_api_audit_script_passes_with_warnings_as_errors",
+      "tests/test_rigid_contact_graph.py::test_thousand_constraint_sparse_islands_benchmark"
+    ]
+  },
+  "tests_branch_new_file": {
+    "failed": 0,
+    "passed": 15,
+    "skipped": 0,
+    "xpassed": 0,
+    "seconds": 522.63
+  },
+  "collection": {
+    "merged_tree": 1707,
+    "main_tree": 1692,
+    "delta": 15
+  },
+  "full_suite_reruns_on_merged_tree": {
+    "attempts": 3,
+    "shard_exit_codes": {
+      "143": 30,
+      "0": 2
+    },
+    "verdict": "incomplete: host load ~1700 + harness reaping (EXIT=143) killed every background shard"
+  }
+}
