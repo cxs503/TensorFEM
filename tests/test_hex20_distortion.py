@@ -5,7 +5,6 @@ Closes the debt recorded in ``docs/element-rank-deficiency-audit.md`` ("the
 reduced-integration variant are pending") and guards the exactness properties
 that the structured-mesh tests in ``tests/test_hex20.py`` cannot see.
 """
-import math
 
 import pytest
 import torch
@@ -70,7 +69,9 @@ def test_linear_patch_exact_for_distorted_and_curved_meshes(kind, amplitude, rad
     assert out["centroid_stress_relative_error"] < 1e-10
 
 
-@pytest.mark.parametrize("kind,amplitude,radius", [("warp", 0.3, 0.0), ("graded_shear", 0.4, 0.0), ("bent", 0.0, 1.5)])
+@pytest.mark.parametrize(
+    "kind,amplitude,radius", [("warp", 0.3, 0.0), ("graded_shear", 0.4, 0.0), ("bent", 0.0, 1.5)]
+)
 def test_constant_strain_energy_identity(kind, amplitude, radius):
     """u^T K u = V sigma:epsilon exactly for a constant-strain field."""
     nodes, cells, _ = _mesh(kind, amplitude, radius)
@@ -101,7 +102,9 @@ def test_center_jacobian_control_is_blind_on_affine_meshes():
     assert bad["displacement_relative_error"] < ROUNDOFF
 
 
-@pytest.mark.parametrize("kind,amplitude,radius", [("warp", 0.3, 0.0), ("graded_shear", 0.4, 0.0), ("bent", 0.0, 2.0)])
+@pytest.mark.parametrize(
+    "kind,amplitude,radius", [("warp", 0.3, 0.0), ("graded_shear", 0.4, 0.0), ("bent", 0.0, 2.0)]
+)
 def test_no_hourglass_on_distorted_and_curved_bricks(kind, amplitude, radius):
     nodes, cells, _ = _mesh(kind, amplitude, radius, nx=1, ny=1, nz=1)
     rec = rank_audit(nodes, cells, label=f"hex20 ({kind})")
