@@ -1,0 +1,729 @@
+{
+  "description": "Finite-width plate with a central hole: production Q4 plane-stress path vs Howland",
+  "criterion": "finest-mesh net-section K_t within 3 % of the Howland literature value",
+  "cases": [
+    {
+      "rho": 0.1,
+      "half_width": 10.0,
+      "half_length": 60.0,
+      "howland_kt_net": 2.721143,
+      "chart_kt_net": 2.73,
+      "levels": [
+        {
+          "rho": 0.1,
+          "n_theta": 24,
+          "n_radial": 18,
+          "grading": 4.0,
+          "half_length": 60.0,
+          "elements": 432,
+          "nodes": 475,
+          "dofs": 950,
+          "peak_hoop": 3.0221288723189863,
+          "kt_net": 2.7199159850870878,
+          "kt_gross": 3.0221288723189863,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            2.949019780913666,
+            2.84957919260842,
+            2.7268344605644903,
+            2.475628904210205
+          ],
+          "applied_resultant_x": 10.0,
+          "expected_resultant_x": 10.0,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -9.999999999999988,
+          "reaction_resultant_error": 1.2434497875801752e-15,
+          "reaction_fy": 6.073397701932678e-14
+        },
+        {
+          "rho": 0.1,
+          "n_theta": 32,
+          "n_radial": 24,
+          "grading": 4.0,
+          "half_length": 60.0,
+          "elements": 768,
+          "nodes": 825,
+          "dofs": 1650,
+          "peak_hoop": 3.0260681281908983,
+          "kt_net": 2.7234613153718086,
+          "kt_gross": 3.0260681281908983,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            2.94644048682663,
+            2.8451983277235673,
+            2.710505181221457,
+            2.447014125192508
+          ],
+          "applied_resultant_x": 10.0,
+          "expected_resultant_x": 10.0,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -10.000000000000014,
+          "reaction_resultant_error": 1.4210854715202005e-15,
+          "reaction_fy": 4.399837992681456e-15,
+          "observed_order_vs_previous": NaN
+        },
+        {
+          "rho": 0.1,
+          "n_theta": 40,
+          "n_radial": 30,
+          "grading": 4.0,
+          "half_length": 60.0,
+          "elements": 1200,
+          "nodes": 1271,
+          "dofs": 2542,
+          "peak_hoop": 3.0482474837419096,
+          "kt_net": 2.7434227353677185,
+          "kt_gross": 3.0482474837419096,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            2.943904605439655,
+            2.8798507970695058,
+            2.696778815867722,
+            2.4624405441338237
+          ],
+          "applied_resultant_x": 10.0,
+          "expected_resultant_x": 10.0,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -10.000000000000114,
+          "reaction_resultant_error": 1.1368683772161604e-14,
+          "reaction_fy": -6.270096799892713e-15,
+          "observed_order_vs_previous": NaN
+        }
+      ],
+      "finest": {
+        "rho": 0.1,
+        "n_theta": 48,
+        "n_radial": 36,
+        "grading": 4.0,
+        "half_length": 60.0,
+        "elements": 1728,
+        "nodes": 1813,
+        "dofs": 3626,
+        "peak_hoop": 3.024524342204703,
+        "kt_net": 2.7220719079842324,
+        "kt_gross": 3.024524342204703,
+        "delta_samples": [
+          0.0125,
+          0.025,
+          0.05,
+          0.1
+        ],
+        "sigma_xx_samples": [
+          2.9418030276935605,
+          2.872870937058785,
+          2.720780003205468,
+          2.470879973589512
+        ],
+        "applied_resultant_x": 10.000000000000004,
+        "expected_resultant_x": 10.0,
+        "applied_resultant_error": 3.552713678800501e-16,
+        "reaction_resultant_x": -10.000000000000192,
+        "reaction_resultant_error": 1.9184653865522706e-14,
+        "reaction_fy": -4.5596330995890565e-14
+      },
+      "finest_relative_error": 0.00034136683894682695,
+      "chart_relative_error": 0.002904063009438684
+    },
+    {
+      "rho": 0.2,
+      "half_width": 5.0,
+      "half_length": 30.0,
+      "howland_kt_net": 2.506464,
+      "chart_kt_net": 2.52,
+      "levels": [
+        {
+          "rho": 0.2,
+          "n_theta": 24,
+          "n_radial": 18,
+          "grading": 4.0,
+          "half_length": 30.0,
+          "elements": 432,
+          "nodes": 475,
+          "dofs": 950,
+          "peak_hoop": 3.1187950583641704,
+          "kt_net": 2.4950360466913364,
+          "kt_gross": 3.1187950583641704,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            3.0387231312286924,
+            2.9671160822194107,
+            2.8119654657017605,
+            2.528580464425464
+          ],
+          "applied_resultant_x": 5.0,
+          "expected_resultant_x": 5.0,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -5.000000000000037,
+          "reaction_resultant_error": 7.460698725481052e-15,
+          "reaction_fy": -1.801391823591149e-15
+        },
+        {
+          "rho": 0.2,
+          "n_theta": 32,
+          "n_radial": 24,
+          "grading": 4.0,
+          "half_length": 30.0,
+          "elements": 768,
+          "nodes": 825,
+          "dofs": 1650,
+          "peak_hoop": 3.116853552281405,
+          "kt_net": 2.493482841825124,
+          "kt_gross": 3.116853552281405,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            3.041445319851791,
+            2.9609828615785347,
+            2.821879108705611,
+            2.5569885752450983
+          ],
+          "applied_resultant_x": 5.0,
+          "expected_resultant_x": 5.0,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -5.000000000000019,
+          "reaction_resultant_error": 3.730349362740526e-15,
+          "reaction_fy": -3.0796727338410506e-14,
+          "observed_order_vs_previous": NaN
+        },
+        {
+          "rho": 0.2,
+          "n_theta": 40,
+          "n_radial": 30,
+          "grading": 4.0,
+          "half_length": 30.0,
+          "elements": 1200,
+          "nodes": 1271,
+          "dofs": 2542,
+          "peak_hoop": 3.161375845206942,
+          "kt_net": 2.5291006761655535,
+          "kt_gross": 3.161375845206942,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            3.0616253551927763,
+            2.9766959554319965,
+            2.80597361132378,
+            2.5517283754543594
+          ],
+          "applied_resultant_x": 5.0,
+          "expected_resultant_x": 5.0,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -4.999999999999905,
+          "reaction_resultant_error": 1.900701818158268e-14,
+          "reaction_fy": 2.2610853263432636e-16,
+          "observed_order_vs_previous": NaN
+        }
+      ],
+      "finest": {
+        "rho": 0.2,
+        "n_theta": 48,
+        "n_radial": 36,
+        "grading": 4.0,
+        "half_length": 30.0,
+        "elements": 1728,
+        "nodes": 1813,
+        "dofs": 3626,
+        "peak_hoop": 3.148550579484688,
+        "kt_net": 2.5188404635877504,
+        "kt_gross": 3.148550579484688,
+        "delta_samples": [
+          0.0125,
+          0.025,
+          0.05,
+          0.1
+        ],
+        "sigma_xx_samples": [
+          3.058734333061133,
+          2.9700880975218142,
+          2.8132022357686663,
+          2.5472637962187714
+        ],
+        "applied_resultant_x": 5.000000000000002,
+        "expected_resultant_x": 5.0,
+        "applied_resultant_error": 3.552713678800501e-16,
+        "reaction_resultant_x": -5.000000000000047,
+        "reaction_resultant_error": 9.414691248821327e-15,
+        "reaction_fy": 3.03504144343736e-14
+      },
+      "finest_relative_error": 0.0049378182123304285,
+      "chart_relative_error": 0.0004601334969244603
+    },
+    {
+      "rho": 0.3,
+      "half_width": 3.3333333333333335,
+      "half_length": 20.0,
+      "howland_kt_net": 2.3468009999999997,
+      "chart_kt_net": 2.36,
+      "levels": [
+        {
+          "rho": 0.3,
+          "n_theta": 24,
+          "n_radial": 18,
+          "grading": 4.0,
+          "half_length": 20.0,
+          "elements": 432,
+          "nodes": 475,
+          "dofs": 950,
+          "peak_hoop": 3.3603025545080056,
+          "kt_net": 2.352211788155604,
+          "kt_gross": 3.3603025545080056,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            3.258118230932863,
+            3.1683576254410264,
+            2.98869114928049,
+            2.70360997510554
+          ],
+          "applied_resultant_x": 3.333333333333334,
+          "expected_resultant_x": 3.3333333333333335,
+          "applied_resultant_error": 1.3322676295501878e-16,
+          "reaction_resultant_x": -3.3333333333333734,
+          "reaction_resultant_error": 1.199040866595169e-14,
+          "reaction_fy": -2.2368254451495946e-16
+        },
+        {
+          "rho": 0.3,
+          "n_theta": 32,
+          "n_radial": 24,
+          "grading": 4.0,
+          "half_length": 20.0,
+          "elements": 768,
+          "nodes": 825,
+          "dofs": 1650,
+          "peak_hoop": 3.3582263569576267,
+          "kt_net": 2.3507584498703387,
+          "kt_gross": 3.3582263569576267,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            3.2597243346056417,
+            3.162328827543826,
+            2.993442411269479,
+            2.714117866160379
+          ],
+          "applied_resultant_x": 3.333333333333333,
+          "expected_resultant_x": 3.3333333333333335,
+          "applied_resultant_error": 1.3322676295501878e-16,
+          "reaction_resultant_x": -3.3333333333333344,
+          "reaction_resultant_error": 2.6645352591003756e-16,
+          "reaction_fy": -2.983158923367839e-16,
+          "observed_order_vs_previous": 1.0872937574645838
+        },
+        {
+          "rho": 0.3,
+          "n_theta": 40,
+          "n_radial": 30,
+          "grading": 4.0,
+          "half_length": 20.0,
+          "elements": 1200,
+          "nodes": 1271,
+          "dofs": 2542,
+          "peak_hoop": 3.357397979062132,
+          "kt_net": 2.3501785853434924,
+          "kt_gross": 3.357397979062132,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            3.259443668151801,
+            3.1725201381171986,
+            2.995255632986605,
+            2.7000764178570167
+          ],
+          "applied_resultant_x": 3.333333333333334,
+          "expected_resultant_x": 3.3333333333333335,
+          "applied_resultant_error": 1.3322676295501878e-16,
+          "reaction_resultant_x": -3.3333333333333885,
+          "reaction_resultant_error": 1.6520118606422327e-14,
+          "reaction_fy": 3.953376307997879e-14,
+          "observed_order_vs_previous": 0.7100307671045857
+        }
+      ],
+      "finest": {
+        "rho": 0.3,
+        "n_theta": 48,
+        "n_radial": 36,
+        "grading": 4.0,
+        "half_length": 20.0,
+        "elements": 1728,
+        "nodes": 1813,
+        "dofs": 3626,
+        "peak_hoop": 3.37395029874997,
+        "kt_net": 2.361765209124979,
+        "kt_gross": 3.37395029874997,
+        "delta_samples": [
+          0.0125,
+          0.025,
+          0.05,
+          0.1
+        ],
+        "sigma_xx_samples": [
+          3.2698607654775667,
+          3.1787131618162934,
+          2.995987292163928,
+          2.7073258058663585
+        ],
+        "applied_resultant_x": 3.3333333333333335,
+        "expected_resultant_x": 3.3333333333333335,
+        "applied_resultant_error": 0.0,
+        "reaction_resultant_x": -3.3333333333333446,
+        "reaction_resultant_error": 3.3306690738754696e-15,
+        "reaction_fy": -2.6476896641488292e-14
+      },
+      "finest_relative_error": 0.006376428646902354,
+      "chart_relative_error": 0.0007479699682114008
+    },
+    {
+      "rho": 0.4,
+      "half_width": 2.5,
+      "half_length": 15.0,
+      "howland_kt_net": 2.232992,
+      "chart_kt_net": 2.23,
+      "levels": [
+        {
+          "rho": 0.4,
+          "n_theta": 24,
+          "n_radial": 18,
+          "grading": 4.0,
+          "half_length": 15.0,
+          "elements": 432,
+          "nodes": 475,
+          "dofs": 950,
+          "peak_hoop": 3.70013804588149,
+          "kt_net": 2.220082827528894,
+          "kt_gross": 3.70013804588149,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            3.590351150221266,
+            3.4764402019996568,
+            3.283224112574067,
+            2.9412592323898523
+          ],
+          "applied_resultant_x": 2.5,
+          "expected_resultant_x": 2.5,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -2.50000000000002,
+          "reaction_resultant_error": 7.993605777301127e-15,
+          "reaction_fy": -1.0818079036453575e-14
+        },
+        {
+          "rho": 0.4,
+          "n_theta": 32,
+          "n_radial": 24,
+          "grading": 4.0,
+          "half_length": 15.0,
+          "elements": 768,
+          "nodes": 825,
+          "dofs": 1650,
+          "peak_hoop": 3.72055038438515,
+          "kt_net": 2.23233023063109,
+          "kt_gross": 3.72055038438515,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            3.611754059961153,
+            3.493042432322882,
+            3.305654488515276,
+            2.971457404552296
+          ],
+          "applied_resultant_x": 2.5,
+          "expected_resultant_x": 2.5,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -2.5000000000000187,
+          "reaction_resultant_error": 7.460698725481052e-15,
+          "reaction_fy": 6.051600812722269e-14,
+          "observed_order_vs_previous": 10.3265950732573
+        },
+        {
+          "rho": 0.4,
+          "n_theta": 40,
+          "n_radial": 30,
+          "grading": 4.0,
+          "half_length": 15.0,
+          "elements": 1200,
+          "nodes": 1271,
+          "dofs": 2542,
+          "peak_hoop": 3.726814652158468,
+          "kt_net": 2.2360887912950806,
+          "kt_gross": 3.726814652158468,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            3.612068081184624,
+            3.5014438597923876,
+            3.3016521993013725,
+            2.969716540395916
+          ],
+          "applied_resultant_x": 2.5,
+          "expected_resultant_x": 2.5,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -2.49999999999997,
+          "reaction_resultant_error": 1.2079226507921703e-14,
+          "reaction_fy": -2.039277139207631e-15,
+          "observed_order_vs_previous": NaN
+        }
+      ],
+      "finest": {
+        "rho": 0.4,
+        "n_theta": 48,
+        "n_radial": 36,
+        "grading": 4.0,
+        "half_length": 15.0,
+        "elements": 1728,
+        "nodes": 1813,
+        "dofs": 3626,
+        "peak_hoop": 3.7309496161913005,
+        "kt_net": 2.2385697697147804,
+        "kt_gross": 3.7309496161913005,
+        "delta_samples": [
+          0.0125,
+          0.025,
+          0.05,
+          0.1
+        ],
+        "sigma_xx_samples": [
+          3.6205734540629044,
+          3.506305143494574,
+          3.3118120384941294,
+          2.9675599701260795
+        ],
+        "applied_resultant_x": 2.500000000000001,
+        "expected_resultant_x": 2.5,
+        "applied_resultant_error": 3.552713678800501e-16,
+        "reaction_resultant_x": -2.4999999999999933,
+        "reaction_resultant_error": 2.6645352591003757e-15,
+        "reaction_fy": -1.7998960871859268e-14
+      },
+      "finest_relative_error": 0.0024978905946732113,
+      "chart_relative_error": 0.003842946060439644
+    },
+    {
+      "rho": 0.5,
+      "half_width": 2.0,
+      "half_length": 12.0,
+      "howland_kt_net": 2.155875,
+      "chart_kt_net": 2.11,
+      "levels": [
+        {
+          "rho": 0.5,
+          "n_theta": 24,
+          "n_radial": 18,
+          "grading": 4.0,
+          "half_length": 12.0,
+          "elements": 432,
+          "nodes": 475,
+          "dofs": 950,
+          "peak_hoop": 4.298468444590109,
+          "kt_net": 2.1492342222950547,
+          "kt_gross": 4.298468444590109,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            4.1466459962676065,
+            3.998552606260591,
+            3.744590085976461,
+            3.34348791476094
+          ],
+          "applied_resultant_x": 2.0,
+          "expected_resultant_x": 2.0,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -2.0000000000000036,
+          "reaction_resultant_error": 1.7763568394002505e-15,
+          "reaction_fy": -2.0615837130896747e-14
+        },
+        {
+          "rho": 0.5,
+          "n_theta": 32,
+          "n_radial": 24,
+          "grading": 4.0,
+          "half_length": 12.0,
+          "elements": 768,
+          "nodes": 825,
+          "dofs": 1650,
+          "peak_hoop": 4.326334160543432,
+          "kt_net": 2.163167080271716,
+          "kt_gross": 4.326334160543432,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            4.170466223501029,
+            4.03234281773587,
+            3.766272140279664,
+            3.360950241178955
+          ],
+          "applied_resultant_x": 2.0000000000000004,
+          "expected_resultant_x": 2.0,
+          "applied_resultant_error": 2.220446049250313e-16,
+          "reaction_resultant_x": -1.9999999999999876,
+          "reaction_resultant_error": 6.217248937900877e-15,
+          "reaction_fy": 2.194416148389544e-14,
+          "observed_order_vs_previous": NaN
+        },
+        {
+          "rho": 0.5,
+          "n_theta": 40,
+          "n_radial": 30,
+          "grading": 4.0,
+          "half_length": 12.0,
+          "elements": 1200,
+          "nodes": 1271,
+          "dofs": 2542,
+          "peak_hoop": 4.319535916409525,
+          "kt_net": 2.1597679582047626,
+          "kt_gross": 4.319535916409525,
+          "delta_samples": [
+            0.0125,
+            0.025,
+            0.05,
+            0.1
+          ],
+          "sigma_xx_samples": [
+            4.172227579374748,
+            4.037520184559683,
+            3.7772302277562426,
+            3.3505056331210215
+          ],
+          "applied_resultant_x": 2.0,
+          "expected_resultant_x": 2.0,
+          "applied_resultant_error": 0.0,
+          "reaction_resultant_x": -2.0000000000001212,
+          "reaction_resultant_error": 6.061817714453355e-14,
+          "reaction_fy": 7.124701251653053e-14,
+          "observed_order_vs_previous": 2.8126267986472033
+        }
+      ],
+      "finest": {
+        "rho": 0.5,
+        "n_theta": 48,
+        "n_radial": 36,
+        "grading": 4.0,
+        "half_length": 12.0,
+        "elements": 1728,
+        "nodes": 1813,
+        "dofs": 3626,
+        "peak_hoop": 4.3277748234562505,
+        "kt_net": 2.1638874117281253,
+        "kt_gross": 4.3277748234562505,
+        "delta_samples": [
+          0.0125,
+          0.025,
+          0.05,
+          0.1
+        ],
+        "sigma_xx_samples": [
+          4.1806326116439765,
+          4.039843187304772,
+          3.783562870719419,
+          3.3597160265732637
+        ],
+        "applied_resultant_x": 2.0,
+        "expected_resultant_x": 2.0,
+        "applied_resultant_error": 0.0,
+        "reaction_resultant_x": -2.000000000000032,
+        "reaction_resultant_error": 1.5987211554602254e-14,
+        "reaction_fy": -4.780515508850898e-16
+      },
+      "finest_relative_error": 0.003716547447382283,
+      "chart_relative_error": 0.02553905769105469
+    }
+  ],
+  "kirsch_limit": {
+    "rho": 0.05,
+    "kt_net": 2.85732784284223,
+    "relative_error_vs_howland": 0.0018763189695601707,
+    "relative_error_vs_3": 0.04755738571925668
+  },
+  "length_study": [
+    {
+      "half_length_over_half_width": 3.0,
+      "kt_net": 2.351217092286425,
+      "relative_error_vs_howland": 0.0018817497889361495
+    },
+    {
+      "half_length_over_half_width": 4.0,
+      "kt_net": 2.350931781565536,
+      "relative_error_vs_howland": 0.0017601754752687839
+    },
+    {
+      "half_length_over_half_width": 6.0,
+      "kt_net": 2.3501785853434924,
+      "relative_error_vs_howland": 0.0014392295484332719
+    },
+    {
+      "half_length_over_half_width": 8.0,
+      "kt_net": 2.348733519996673,
+      "relative_error_vs_howland": 0.000823469905063668
+    }
+  ],
+  "max_error_all_cases": 0.006376428646902354,
+  "max_chart_error_all_cases": 0.02553905769105469,
+  "passes_3pct": true,
+  "field_case": {
+    "rho": 0.3,
+    "n_theta": 56,
+    "n_radial": 42,
+    "peak_over_net": 2.1295846026645187,
+    "dofs": 4902
+  }
+}
