@@ -1,0 +1,4510 @@
+{
+  "schema": "tensorfem.structural-certification-materials/1.0",
+  "generated_utc": "2026-11-04T11:43:58.992737+00:00",
+  "tensorfem_version": "0.45.0",
+  "python": "3.11.6",
+  "numpy": "2.4.6",
+  "torch": "2.7.1",
+  "criterion": {
+    "relative_tolerance": 0.03,
+    "denominator_floor_fraction_of_scale": 0.01
+  },
+  "verdict_states": [
+    "PASS",
+    "FAIL",
+    "WITHHELD"
+  ],
+  "cases": {
+    "kirsch": {
+      "problem": {
+        "radius": 1.0,
+        "outer_radius": 10.0,
+        "far_field": 1.0,
+        "young": 1.0,
+        "poisson": 0.3,
+        "plane": "stress",
+        "thickness": 1.0,
+        "grading": 5.0,
+        "levels": [
+          24,
+          32,
+          48,
+          64
+        ],
+        "element": "production Q4 plane-stress continuum",
+        "reference": "Kirsch (1898); Timoshenko & Goodier, Theory of Elasticity, 3rd ed., sec. 39"
+      },
+      "mesh_ladder": [
+        {
+          "level": 24,
+          "elements": 576,
+          "dofs": 1250,
+          "geometry": {
+            "elements": 576,
+            "nodes": 625,
+            "mesh_area": 77.69891752541,
+            "inscribed_polygon_annulus_area": 77.69891752540995,
+            "exact_quarter_annulus_area": 77.75441817634739,
+            "relative_area_error_vs_polygon": 5.4868929327958585e-16,
+            "relative_area_deficit_vs_exact": 0.0007137941770911836,
+            "expected_relative_area_deficit": 0.00071379417709172,
+            "deficit_closed_form_relative_error": 7.51413827602098e-13,
+            "min_signed_element_area": 0.0009314243949136713,
+            "orientation_consistent": true,
+            "verdict": "PASS"
+          },
+          "displacement_error_l2": 0.0014715459368207237,
+          "max_stress_relative_error": 0.27423255330056184,
+          "kt_hole_edge": 3.001494986211589,
+          "load_balance": {
+            "applied": [
+              9.947687307732288,
+              -0.04952615952038737
+            ],
+            "exact_arc": [
+              9.949500000000018,
+              -0.04950000000000131
+            ],
+            "reaction": [
+              -9.947687307732291,
+              0.04952615952038695
+            ],
+            "relative_error": 0.00018218928265042412
+          },
+          "recovery_cross_check": 5.199100450568639e-14
+        },
+        {
+          "level": 32,
+          "elements": 1024,
+          "dofs": 2178,
+          "geometry": {
+            "elements": 1024,
+            "nodes": 1089,
+            "mesh_area": 77.7231961346301,
+            "inscribed_polygon_annulus_area": 77.72319613463013,
+            "exact_quarter_annulus_area": 77.75441817634739,
+            "relative_area_error_vs_polygon": 3.656785984607819e-16,
+            "relative_area_deficit_vs_exact": 0.00040154685032139947,
+            "expected_relative_area_deficit": 0.0004015468503210107,
+            "deficit_closed_form_relative_error": 9.682429304139369e-13,
+            "min_signed_element_area": 0.0005092476395504031,
+            "orientation_consistent": true,
+            "verdict": "PASS"
+          },
+          "displacement_error_l2": 0.0008379226072280459,
+          "max_stress_relative_error": 0.12596052691652426,
+          "kt_hole_edge": 3.002832387284648,
+          "load_balance": {
+            "applied": [
+              9.948480465644364,
+              -0.049514711967476005
+            ],
+            "exact_arc": [
+              9.949500000000018,
+              -0.04950000000000131
+            ],
+            "reaction": [
+              -9.948480465644321,
+              0.049514711967453925
+            ],
+            "relative_error": 0.00010247091367950857
+          },
+          "recovery_cross_check": 3.259349279395419e-13
+        },
+        {
+          "level": 48,
+          "elements": 2304,
+          "dofs": 4802,
+          "geometry": {
+            "elements": 2304,
+            "nodes": 2401,
+            "mesh_area": 77.74054078454026,
+            "inscribed_polygon_annulus_area": 77.7405407845401,
+            "exact_quarter_annulus_area": 77.75441817634739,
+            "relative_area_error_vs_polygon": 2.0107835665880595e-15,
+            "relative_area_deficit_vs_exact": 0.00017847721239009213,
+            "expected_relative_area_deficit": 0.0001784772123920586,
+            "deficit_closed_form_relative_error": 1.1018054708440092e-11,
+            "min_signed_element_area": 0.00022004171615752632,
+            "orientation_consistent": true,
+            "verdict": "PASS"
+          },
+          "displacement_error_l2": 0.00037675876641275703,
+          "max_stress_relative_error": 0.023856141967130373,
+          "kt_hole_edge": 3.003036278986377,
+          "load_balance": {
+            "applied": [
+              9.949046906967865,
+              -0.04950653777699571
+            ],
+            "exact_arc": [
+              9.949500000000018,
+              -0.04950000000000131
+            ],
+            "reaction": [
+              -9.949046906967943,
+              0.04950653777696681
+            ],
+            "relative_error": 4.553927656192835e-05
+          },
+          "recovery_cross_check": 2.7771245371539136e-13
+        },
+        {
+          "level": 64,
+          "elements": 4096,
+          "dofs": 8450,
+          "geometry": {
+            "elements": 4096,
+            "nodes": 4225,
+            "mesh_area": 77.74661196058625,
+            "inscribed_polygon_annulus_area": 77.74661196058612,
+            "exact_quarter_annulus_area": 77.75441817634739,
+            "relative_area_error_vs_polygon": 1.6450580830667728e-15,
+            "relative_area_deficit_vs_exact": 0.00010039578385669443,
+            "expected_relative_area_deficit": 0.00010039578385834247,
+            "deficit_closed_form_relative_error": 1.6415445439541192e-11,
+            "min_signed_element_area": 0.00012205163292688948,
+            "orientation_consistent": true,
+            "verdict": "PASS"
+          },
+          "displacement_error_l2": 0.00021311110036914785,
+          "max_stress_relative_error": 0.0287465786269534,
+          "kt_hole_edge": 3.002709304191092,
+          "load_balance": {
+            "applied": [
+              9.949245141734902,
+              -0.04950367732745711
+            ],
+            "exact_arc": [
+              9.949500000000018,
+              -0.04950000000000131
+            ],
+            "reaction": [
+              -9.949245141734968,
+              0.049503677327466265
+            ],
+            "relative_error": 2.5615183186676936e-05
+          },
+          "recovery_cross_check": 1.2607520546808895e-12
+        }
+      ],
+      "pointwise_rows": [
+        {
+          "label": "ray 90 deg, r/a=1.02, hoop",
+          "component": "hoop",
+          "fe": 2.864049932114078,
+          "reference": 2.866352529658764,
+          "numerator_abs_error": 0.0023025975446859803,
+          "denominator_abs_reference": 2.866352529658764,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.0008033197315614566,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.02,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 2.8620719563075045
+            },
+            {
+              "level": 32,
+              "value": 2.8559305479784935
+            },
+            {
+              "level": 48,
+              "value": 2.861602238190349
+            },
+            {
+              "level": 64,
+              "value": 2.864049932114078
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.02, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              2.8620719563075045,
+              2.8559305479784935,
+              2.861602238190349,
+              2.864049932114078
+            ],
+            "errors": [
+              0.00428057335125942,
+              0.01042198168027042,
+              0.004750291468414769,
+              0.0023025975446859803
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              1.9378023041783017,
+              2.5172514881770107
+            ],
+            "observed_order": 2.5172514881770107,
+            "safety_factor": 1.25,
+            "reference": 2.866352529658764,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.02, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 2.8559305479784935,
+              "max": 2.864049932114078,
+              "centre": 2.8599902400462858,
+              "half_width": 0.00405969206779222,
+              "relative_half_width": 0.0014194775950447014
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['4.281e-03', '1.042e-02', '4.750e-03', '2.303e-03'] is not monotone decreasing with positive observed order (['nan', '1.938', '2.517']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.00405969206779222,
+            "relative_half_width": 0.0014194775950447014,
+            "band": [
+              2.8559305479784935,
+              2.864049932114078
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": false
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 90 deg, r/a=1.02, radial",
+          "component": "radial",
+          "fe": 0.051732101553563004,
+          "reference": 0.05598503281720685,
+          "numerator_abs_error": 0.004252931263643844,
+          "denominator_abs_reference": 0.05598503281720685,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.07596550452207143,
+          "verdict": "FAIL",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.02,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.06593350870001113
+            },
+            {
+              "level": 32,
+              "value": 0.035387602109361205
+            },
+            {
+              "level": 48,
+              "value": 0.04631650198470083
+            },
+            {
+              "level": 64,
+              "value": 0.051732101553563004
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.02, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.06593350870001113,
+              0.035387602109361205,
+              0.04631650198470083,
+              0.051732101553563004
+            ],
+            "errors": [
+              0.009948475882804286,
+              0.020597430707845643,
+              0.009668530832506017,
+              0.004252931263643844
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              1.8652405903861624,
+              2.8547761290091427
+            ],
+            "observed_order": 2.8547761290091427,
+            "safety_factor": 1.25,
+            "reference": 0.05598503281720685,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.02, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.035387602109361205,
+              "max": 0.06593350870001113,
+              "centre": 0.05066055540468617,
+              "half_width": 0.015272953295324965,
+              "relative_half_width": 0.30147623083327263
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['9.948e-03', '2.060e-02', '9.669e-03', '4.253e-03'] is not monotone decreasing with positive observed order (['nan', '1.865', '2.855']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.015272953295324965,
+            "relative_half_width": 0.30147623083327263,
+            "band": [
+              0.035387602109361205,
+              0.06593350870001113
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": false
+        },
+        {
+          "label": "ray 90 deg, r/a=1.02, shear",
+          "component": "shear",
+          "fe": -0.0018064228505200578,
+          "reference": -9.233915512169772e-18,
+          "numerator_abs_error": 0.0018064228505200485,
+          "denominator_abs_reference": 9.233915512169772e-18,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=9.234e-18 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 90.0,
+          "r_over_a": 1.02,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.004930193262761654
+            },
+            {
+              "level": 32,
+              "value": -0.0034578307944251535
+            },
+            {
+              "level": 48,
+              "value": -0.002374815515140553
+            },
+            {
+              "level": 64,
+              "value": -0.0018064228505200578
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.02, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.004930193262761654,
+              -0.0034578307944251535,
+              -0.002374815515140553,
+              -0.0018064228505200578
+            ],
+            "errors": [
+              0.004930193262761644,
+              0.0034578307944251444,
+              0.002374815515140544,
+              0.0018064228505200485
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.2330859938546883,
+              0.9266437241751512,
+              0.9509497418895206
+            ],
+            "observed_order": 0.9509497418895206,
+            "safety_factor": 1.25,
+            "reference": -9.233915512169772e-18,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.02, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.004930193262761654,
+              "max": -0.0018064228505200578,
+              "centre": -0.0033683080566408556,
+              "half_width": 0.001561885206120798,
+              "relative_half_width": 0.4637002257087002
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.0022580285631500596,
+            "relative_half_width": 1.249999999999993,
+            "band": [
+              -0.004064451413670117,
+              0.00045160571263000177
+            ],
+            "richardson_value": -1.0191500421363742e-17,
+            "relative_gci": 1.249999999999993,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 90 deg, r/a=1.05, hoop",
+          "component": "hoop",
+          "fe": 2.6849900734743097,
+          "reference": 2.6875684514168476,
+          "numerator_abs_error": 0.0025783779425379016,
+          "denominator_abs_reference": 2.6875684514168476,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.0009593720082473128,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.05,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 2.6701957473002103
+            },
+            {
+              "level": 32,
+              "value": 2.676774940780444
+            },
+            {
+              "level": 48,
+              "value": 2.682473719940666
+            },
+            {
+              "level": 64,
+              "value": 2.6849900734743097
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.05, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              2.6701957473002103,
+              2.676774940780444,
+              2.682473719940666,
+              2.6849900734743097
+            ],
+            "errors": [
+              0.017372704116637383,
+              0.010793510636403436,
+              0.005094731476181558,
+              0.0025783779425379016
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.6544484505207608,
+              1.851548036164409,
+              2.3673580328072843
+            ],
+            "observed_order": 2.3673580328072843,
+            "safety_factor": 1.25,
+            "reference": 2.6875684514168476,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.05, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 2.6701957473002103,
+              "max": 2.6849900734743097,
+              "centre": 2.67759291038726,
+              "half_width": 0.007397163087049741,
+              "relative_half_width": 0.002762616773578135
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.003222972428172376,
+            "relative_half_width": 0.001200366608432906,
+            "band": [
+              2.6817671010461375,
+              2.688213045902482
+            ],
+            "richardson_value": 2.6875684514168476,
+            "relative_gci": 0.001200366608432906,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 90 deg, r/a=1.05, radial",
+          "component": "radial",
+          "fe": 0.12062505261944245,
+          "reference": 0.12649050549925195,
+          "numerator_abs_error": 0.005865452879809496,
+          "denominator_abs_reference": 0.12649050549925195,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.046370696809684135,
+          "verdict": "FAIL",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.05,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.08973976694183494
+            },
+            {
+              "level": 32,
+              "value": 0.10216567211845451
+            },
+            {
+              "level": 48,
+              "value": 0.11449694703998359
+            },
+            {
+              "level": 64,
+              "value": 0.12062505261944245
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.05, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.08973976694183494,
+              0.10216567211845451,
+              0.11449694703998359,
+              0.12062505261944245
+            ],
+            "errors": [
+              0.036750738557417006,
+              0.02432483338079744,
+              0.01199355845926836,
+              0.005865452879809496
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.434432602637094,
+              1.743992401804176,
+              2.4863906465277523
+            ],
+            "observed_order": 2.4863906465277523,
+            "safety_factor": 1.25,
+            "reference": 0.12649050549925195,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.05, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.08973976694183494,
+              "max": 0.12062505261944245,
+              "centre": 0.1051824097806387,
+              "half_width": 0.015442642838803755,
+              "relative_half_width": 0.146817731890816
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.0073318160997618695,
+            "relative_half_width": 0.06078186861308876,
+            "band": [
+              0.11329323651968058,
+              0.1279568687192043
+            ],
+            "richardson_value": 0.12649050549925195,
+            "relative_gci": 0.06078186861308876,
+            "band_covers_reference": true
+          },
+          "within_3pct": false
+        },
+        {
+          "label": "ray 90 deg, r/a=1.05, shear",
+          "component": "shear",
+          "fe": -0.003502853587785733,
+          "reference": -2.118342184928941e-17,
+          "numerator_abs_error": 0.003502853587785712,
+          "denominator_abs_reference": 2.118342184928941e-17,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=2.118e-17 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 90.0,
+          "r_over_a": 1.05,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.008930847200077186
+            },
+            {
+              "level": 32,
+              "value": -0.006825272781034879
+            },
+            {
+              "level": 48,
+              "value": -0.004631302863923836
+            },
+            {
+              "level": 64,
+              "value": -0.003502853587785733
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.05, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.008930847200077186,
+              -0.006825272781034879,
+              -0.004631302863923836,
+              -0.003502853587785733
+            ],
+            "errors": [
+              0.008930847200077165,
+              0.006825272781034859,
+              0.004631302863923815,
+              0.003502853587785712
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              0.9346392395487474,
+              0.9564178910223988,
+              0.9707253396902875
+            ],
+            "observed_order": 0.9707253396902875,
+            "safety_factor": 1.25,
+            "reference": -2.118342184928941e-17,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.05, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.008930847200077186,
+              "max": -0.003502853587785733,
+              "centre": -0.00621685039393146,
+              "half_width": 0.0027139968061457263,
+              "relative_half_width": 0.436554948916734
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.0043785669847321365,
+            "relative_half_width": 1.2499999999999916,
+            "band": [
+              -0.00788142057251787,
+              0.0008757133969464035
+            ],
+            "richardson_value": -2.3418766925686896e-17,
+            "relative_gci": 1.2499999999999916,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 90 deg, r/a=1.1, hoop",
+          "component": "hoop",
+          "fe": 2.438197330269646,
+          "reference": 2.4377433235434736,
+          "numerator_abs_error": 0.0004540067261724623,
+          "denominator_abs_reference": 2.4377433235434736,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.00018624057823795974,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.1,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 2.4289854181480894
+            },
+            {
+              "level": 32,
+              "value": 2.4421063472768947
+            },
+            {
+              "level": 48,
+              "value": 2.4396777056083865
+            },
+            {
+              "level": 64,
+              "value": 2.438197330269646
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.1, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              2.4289854181480894,
+              2.4421063472768947,
+              2.4396777056083865,
+              2.438197330269646
+            ],
+            "errors": [
+              0.008757905395384125,
+              0.004363023733421123,
+              0.0019343820649129206,
+              0.0004540067261724623
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              2.4220884759121284,
+              2.0060355093005136,
+              5.038309069875242
+            ],
+            "observed_order": 5.038309069875242,
+            "safety_factor": 1.25,
+            "reference": 2.4377433235434736,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.1, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 2.4289854181480894,
+              "max": 2.4421063472768947,
+              "centre": 2.435545882712492,
+              "half_width": 0.006560464564402624,
+              "relative_half_width": 0.0026936320974155366
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.0005675084077155779,
+            "relative_half_width": 0.0002327573739295399,
+            "band": [
+              2.4376298218619303,
+              2.4387648386773617
+            ],
+            "richardson_value": 2.4377433235434736,
+            "relative_gci": 0.0002327573739295399,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 90 deg, r/a=1.1, radial",
+          "component": "radial",
+          "fe": 0.21830341790532526,
+          "reference": 0.21514923843999734,
+          "numerator_abs_error": 0.003154179465327922,
+          "denominator_abs_reference": 0.21514923843999734,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.014660425889481299,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.1,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.19813083348945937
+            },
+            {
+              "level": 32,
+              "value": 0.2372963198000797
+            },
+            {
+              "level": 48,
+              "value": 0.22468076895392208
+            },
+            {
+              "level": 64,
+              "value": 0.21830341790532526
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.1, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.19813083348945937,
+              0.2372963198000797,
+              0.22468076895392208,
+              0.21830341790532526
+            ],
+            "errors": [
+              0.01701840495053797,
+              0.022147081360082366,
+              0.009531530513924746,
+              0.003154179465327922
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              2.079341476162895,
+              3.8440939580694686
+            ],
+            "observed_order": 3.8440939580694686,
+            "safety_factor": 1.25,
+            "reference": 0.21514923843999734,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.1, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.19813083348945937,
+              "max": 0.2372963198000797,
+              "centre": 0.21771357664476954,
+              "half_width": 0.019582743155310167,
+              "relative_half_width": 0.08994727594440369
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['1.702e-02', '2.215e-02', '9.532e-03', '3.154e-03'] is not monotone decreasing with positive observed order (['nan', '2.079', '3.844']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.019582743155310167,
+            "relative_half_width": 0.08994727594440369,
+            "band": [
+              0.19813083348945937,
+              0.2372963198000797
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 90 deg, r/a=1.1, shear",
+          "component": "shear",
+          "fe": -0.005677044180247686,
+          "reference": -3.697528294263286e-17,
+          "numerator_abs_error": 0.005677044180247648,
+          "denominator_abs_reference": 3.697528294263286e-17,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=3.698e-17 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 90.0,
+          "r_over_a": 1.1,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.014797294874158507
+            },
+            {
+              "level": 32,
+              "value": -0.011482402534417594
+            },
+            {
+              "level": 48,
+              "value": -0.007599358009532092
+            },
+            {
+              "level": 64,
+              "value": -0.005677044180247686
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.1, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.014797294874158507,
+              -0.011482402534417594,
+              -0.007599358009532092,
+              -0.005677044180247686
+            ],
+            "errors": [
+              0.01479729487415847,
+              0.011482402534417558,
+              0.0075993580095320545,
+              0.005677044180247648
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              0.8816285774515326,
+              1.0179713850804173,
+              1.013733884518905
+            ],
+            "observed_order": 1.013733884518905,
+            "safety_factor": 1.25,
+            "reference": -3.697528294263286e-17,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.1, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.014797294874158507,
+              "max": -0.005677044180247686,
+              "centre": -0.010237169527203096,
+              "half_width": 0.0045601253469554105,
+              "relative_half_width": 0.4454478686552811
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.007096305225309562,
+            "relative_half_width": 1.249999999999992,
+            "band": [
+              -0.012773349405557247,
+              0.001419261045061876
+            ],
+            "richardson_value": -3.729655473350135e-17,
+            "relative_gci": 1.249999999999992,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 90 deg, r/a=1.25, hoop",
+          "component": "hoop",
+          "fe": 1.9310310083453794,
+          "reference": 1.9344000000000003,
+          "numerator_abs_error": 0.003368991654620901,
+          "denominator_abs_reference": 1.9344000000000003,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.0017416209959785465,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.25,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 1.925642029410907
+            },
+            {
+              "level": 32,
+              "value": 1.9362519833910639
+            },
+            {
+              "level": 48,
+              "value": 1.9328765374962507
+            },
+            {
+              "level": 64,
+              "value": 1.9310310083453794
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.25, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              1.925642029410907,
+              1.9362519833910639,
+              1.9328765374962507,
+              1.9310310083453794
+            ],
+            "errors": [
+              0.008757970589093445,
+              0.0018519833910635164,
+              0.001523462503749684,
+              0.003368991654620901
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              5.400778118985278,
+              0.481598679993559,
+              NaN
+            ],
+            "observed_order": NaN,
+            "safety_factor": 1.25,
+            "reference": 1.9344000000000003,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.25, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 1.925642029410907,
+              "max": 1.9362519833910639,
+              "centre": 1.9309470064009853,
+              "half_width": 0.0053049769900784804,
+              "relative_half_width": 0.0027473446824240995
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['8.758e-03', '1.852e-03', '1.523e-03', '3.369e-03'] is not monotone decreasing with positive observed order (['5.401', '0.482', 'nan']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.0053049769900784804,
+            "relative_half_width": 0.0027473446824240995,
+            "band": [
+              1.925642029410907,
+              1.9362519833910639
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 90 deg, r/a=1.25, radial",
+          "component": "radial",
+          "fe": 0.33462708133765734,
+          "reference": 0.3455999999999999,
+          "numerator_abs_error": 0.010972918662342568,
+          "denominator_abs_reference": 0.3455999999999999,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.03175034335168568,
+          "verdict": "FAIL",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.25,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.3175658754319087
+            },
+            {
+              "level": 32,
+              "value": 0.3501091318521911
+            },
+            {
+              "level": 48,
+              "value": 0.33990720567390426
+            },
+            {
+              "level": 64,
+              "value": 0.33462708133765734
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.25, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.3175658754319087,
+              0.3501091318521911,
+              0.33990720567390426,
+              0.33462708133765734
+            ],
+            "errors": [
+              0.028034124568091234,
+              0.004509131852191206,
+              0.0056927943260956515,
+              0.010972918662342568
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              6.351865606737465,
+              NaN,
+              NaN
+            ],
+            "observed_order": NaN,
+            "safety_factor": 1.25,
+            "reference": 0.3455999999999999,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.25, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.3175658754319087,
+              "max": 0.3501091318521911,
+              "centre": 0.3338375036420499,
+              "half_width": 0.01627162821014122,
+              "relative_half_width": 0.04874116308869876
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['2.803e-02', '4.509e-03', '5.693e-03', '1.097e-02'] is not monotone decreasing with positive observed order (['6.352', 'nan', 'nan']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.01627162821014122,
+            "relative_half_width": 0.04874116308869876,
+            "band": [
+              0.3175658754319087,
+              0.3501091318521911
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": false
+        },
+        {
+          "label": "ray 90 deg, r/a=1.25, shear",
+          "component": "shear",
+          "fe": -0.00872838358178183,
+          "reference": -6.436743576318487e-17,
+          "numerator_abs_error": 0.008728383581781766,
+          "denominator_abs_reference": 6.436743576318487e-17,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=6.437e-17 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 90.0,
+          "r_over_a": 1.25,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.022930209852323125
+            },
+            {
+              "level": 32,
+              "value": -0.01751851952638778
+            },
+            {
+              "level": 48,
+              "value": -0.011654031034285363
+            },
+            {
+              "level": 64,
+              "value": -0.00872838358178183
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.25, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.022930209852323125,
+              -0.01751851952638778,
+              -0.011654031034285363,
+              -0.00872838358178183
+            ],
+            "errors": [
+              0.02293020985232306,
+              0.017518519526387714,
+              0.011654031034285299,
+              0.008728383581781766
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              0.9357436366541895,
+              1.0052811948009854,
+              1.004831247372061
+            ],
+            "observed_order": 1.004831247372061,
+            "safety_factor": 1.25,
+            "reference": -6.436743576318487e-17,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.25, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.022930209852323125,
+              "max": -0.00872838358178183,
+              "centre": -0.01582929671705248,
+              "half_width": 0.0071009131352706475,
+              "relative_half_width": 0.4485930905332656
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.010910479477227205,
+            "relative_half_width": 1.2499999999999905,
+            "band": [
+              -0.019638863059009033,
+              0.0021820958954453743
+            ],
+            "richardson_value": -6.765421556309548e-17,
+            "relative_gci": 1.2499999999999905,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 90 deg, r/a=1.5, hoop",
+          "component": "hoop",
+          "fe": 1.5192985145712115,
+          "reference": 1.5185185185185186,
+          "numerator_abs_error": 0.0007799960526928551,
+          "denominator_abs_reference": 1.5185185185185186,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.0005136559371391972,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.5,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 1.5200936625112909
+            },
+            {
+              "level": 32,
+              "value": 1.5213324292687753
+            },
+            {
+              "level": 48,
+              "value": 1.5200259255938797
+            },
+            {
+              "level": 64,
+              "value": 1.5192985145712115
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.5, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              1.5200936625112909,
+              1.5213324292687753,
+              1.5200259255938797,
+              1.5192985145712115
+            ],
+            "errors": [
+              0.0015751439927722544,
+              0.0028139107502567207,
+              0.0015074070753611224,
+              0.0007799960526928551
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              1.5394277416547553,
+              2.29022761312217
+            ],
+            "observed_order": 2.29022761312217,
+            "safety_factor": 1.25,
+            "reference": 1.5185185185185186,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.5, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 1.5192985145712115,
+              "max": 1.5213324292687753,
+              "centre": 1.5203154719199934,
+              "half_width": 0.0010169573487819328,
+              "relative_half_width": 0.0006689120564547212
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['1.575e-03', '2.814e-03', '1.507e-03', '7.800e-04'] is not monotone decreasing with positive observed order (['nan', '1.539', '2.290']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.0010169573487819328,
+            "relative_half_width": 0.0006689120564547212,
+            "band": [
+              1.5192985145712115,
+              1.5213324292687753
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": false
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 90 deg, r/a=1.5, radial",
+          "component": "radial",
+          "fe": 0.3713529398311155,
+          "reference": 0.37037037037037035,
+          "numerator_abs_error": 0.000982569460745153,
+          "denominator_abs_reference": 0.37037037037037035,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.002652937544011913,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 1.5,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.3645539440042388
+            },
+            {
+              "level": 32,
+              "value": 0.3754758293279833
+            },
+            {
+              "level": 48,
+              "value": 0.37289261247280975
+            },
+            {
+              "level": 64,
+              "value": 0.3713529398311155
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.5, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.3645539440042388,
+              0.3754758293279833,
+              0.37289261247280975,
+              0.3713529398311155
+            ],
+            "errors": [
+              0.005816426366131555,
+              0.0051054589576129406,
+              0.002522242102439398,
+              0.000982569460745153
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              0.4531936748066185,
+              1.7391437829738152,
+              3.2769941515239185
+            ],
+            "observed_order": 3.2769941515239185,
+            "safety_factor": 1.25,
+            "reference": 0.37037037037037035,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.5, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.3645539440042388,
+              "max": 0.3754758293279833,
+              "centre": 0.37001488666611104,
+              "half_width": 0.005460942661872248,
+              "relative_half_width": 0.014758710686146037
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.0012282118259314412,
+            "relative_half_width": 0.0033073976107204357,
+            "band": [
+              0.37012472800518403,
+              0.37258115165704697
+            ],
+            "richardson_value": 0.37037037037037035,
+            "relative_gci": 0.0033073976107204357,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 90 deg, r/a=1.5, shear",
+          "component": "shear",
+          "fe": -0.009292740248900744,
+          "reference": -7.937525550029141e-17,
+          "numerator_abs_error": 0.009292740248900665,
+          "denominator_abs_reference": 7.937525550029141e-17,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=7.938e-17 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 90.0,
+          "r_over_a": 1.5,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.024518031227156983
+            },
+            {
+              "level": 32,
+              "value": -0.018564797964737544
+            },
+            {
+              "level": 48,
+              "value": -0.012388669199373458
+            },
+            {
+              "level": 64,
+              "value": -0.009292740248900744
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=1.5, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.024518031227156983,
+              -0.018564797964737544,
+              -0.012388669199373458,
+              -0.009292740248900744
+            ],
+            "errors": [
+              0.024518031227156904,
+              0.018564797964737464,
+              0.012388669199373379,
+              0.009292740248900665
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              0.9668367860488022,
+              0.9975825694286988,
+              0.999536749891429
+            ],
+            "observed_order": 0.999536749891429,
+            "safety_factor": 1.25,
+            "reference": -7.937525550029141e-17,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=1.5, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.024518031227156983,
+              "max": -0.009292740248900744,
+              "centre": -0.016905385738028862,
+              "half_width": 0.007612645489128119,
+              "relative_half_width": 0.450308890142825
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.011615925311125833,
+            "relative_half_width": 1.2499999999999893,
+            "band": [
+              -0.020908665560026577,
+              0.002323185062225088
+            ],
+            "richardson_value": -7.806255641895632e-17,
+            "relative_gci": 1.2499999999999893,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 90 deg, r/a=2, hoop",
+          "component": "hoop",
+          "fe": 1.2193161191857949,
+          "reference": 1.21875,
+          "numerator_abs_error": 0.0005661191857948555,
+          "denominator_abs_reference": 1.21875,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.00046450804988295836,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 2.0,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 1.2228825237524155
+            },
+            {
+              "level": 32,
+              "value": 1.2190218817925627
+            },
+            {
+              "level": 48,
+              "value": 1.2192127031814533
+            },
+            {
+              "level": 64,
+              "value": 1.2193161191857949
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=2, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              1.2228825237524155,
+              1.2190218817925627,
+              1.2192127031814533,
+              1.2193161191857949
+            ],
+            "errors": [
+              0.004132523752415462,
+              0.000271881792562656,
+              0.00046270318145325007,
+              0.0005661191857948555
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              9.459317949596484,
+              NaN,
+              NaN
+            ],
+            "observed_order": NaN,
+            "safety_factor": 1.25,
+            "reference": 1.21875,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 90 deg, r/a=2, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 1.2190218817925627,
+              "max": 1.2228825237524155,
+              "centre": 1.220952202772489,
+              "half_width": 0.0019303209799264032,
+              "relative_half_width": 0.0015809963531275902
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['4.133e-03', '2.719e-04', '4.627e-04', '5.661e-04'] is not monotone decreasing with positive observed order (['9.459', 'nan', 'nan']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.0019303209799264032,
+            "relative_half_width": 0.0015809963531275902,
+            "band": [
+              1.2190218817925627,
+              1.2228825237524155
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": false
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 90 deg, r/a=2, radial",
+          "component": "radial",
+          "fe": 0.28145181929166546,
+          "reference": 0.28125,
+          "numerator_abs_error": 0.00020181929166546153,
+          "denominator_abs_reference": 0.28125,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.0007175797036994188,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 90.0,
+          "r_over_a": 2.0,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.2841306162034257
+            },
+            {
+              "level": 32,
+              "value": 0.27636632279023854
+            },
+            {
+              "level": 48,
+              "value": 0.2798600538918117
+            },
+            {
+              "level": 64,
+              "value": 0.28145181929166546
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=2, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.2841306162034257,
+              0.27636632279023854,
+              0.2798600538918117,
+              0.28145181929166546
+            ],
+            "errors": [
+              0.0028806162034257232,
+              0.004883677209761461,
+              0.0013899461081883224,
+              0.00020181929166546153
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              3.0992395208966377,
+              6.707569702011596
+            ],
+            "observed_order": 6.707569702011596,
+            "safety_factor": 1.25,
+            "reference": 0.28125,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 90 deg, r/a=2, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.27636632279023854,
+              "max": 0.2841306162034257,
+              "centre": 0.28024846949683213,
+              "half_width": 0.003882146706593592,
+              "relative_half_width": 0.013852517066600697
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['2.881e-03', '4.884e-03', '1.390e-03', '2.018e-04'] is not monotone decreasing with positive observed order (['nan', '3.099', '6.708']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.003882146706593592,
+            "relative_half_width": 0.013852517066600697,
+            "band": [
+              0.27636632279023854,
+              0.2841306162034257
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 90 deg, r/a=2, shear",
+          "component": "shear",
+          "fe": -0.007014154887796377,
+          "reference": -8.036744619404505e-17,
+          "numerator_abs_error": 0.007014154887796296,
+          "denominator_abs_reference": 8.036744619404505e-17,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=8.037e-17 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 90.0,
+          "r_over_a": 2.0,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.01861420402551683
+            },
+            {
+              "level": 32,
+              "value": -0.013942380277619192
+            },
+            {
+              "level": 48,
+              "value": -0.009335387888172697
+            },
+            {
+              "level": 64,
+              "value": -0.007014154887796377
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 90 deg, r/a=2, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.01861420402551683,
+              -0.013942380277619192,
+              -0.009335387888172697,
+              -0.007014154887796377
+            ],
+            "errors": [
+              0.01861420402551675,
+              0.013942380277619112,
+              0.009335387888172618,
+              0.007014154887796296
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.0045527054418562,
+              0.9892856529447474,
+              0.9937431678802934
+            ],
+            "observed_order": 0.9937431678802934,
+            "safety_factor": 1.25,
+            "reference": -8.036744619404505e-17,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 90 deg, r/a=2, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.01861420402551683,
+              "max": -0.007014154887796377,
+              "centre": -0.012814179456656603,
+              "half_width": 0.005800024568860227,
+              "relative_half_width": 0.45262551445284144
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.008767693609745369,
+            "relative_half_width": 1.2499999999999853,
+            "band": [
+              -0.015781848497541745,
+              0.0017535387219489917
+            ],
+            "richardson_value": -8.153200337090993e-17,
+            "relative_gci": 1.2499999999999853,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 0 deg, r/a=1.02, hoop",
+          "component": "hoop",
+          "fe": -0.9038053714040807,
+          "reference": -0.9051837484207785,
+          "numerator_abs_error": 0.0013783770166978515,
+          "denominator_abs_reference": 0.9051837484207785,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.0015227593503557987,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.02,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.9009290483249063
+            },
+            {
+              "level": 32,
+              "value": -0.899037267718184
+            },
+            {
+              "level": 48,
+              "value": -0.9024184557712374
+            },
+            {
+              "level": 64,
+              "value": -0.9038053714040807
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.02, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.9009290483249063,
+              -0.899037267718184,
+              -0.9024184557712374,
+              -0.9038053714040807
+            ],
+            "errors": [
+              0.004254700095872255,
+              0.006146480702594492,
+              0.0027652926495411734,
+              0.0013783770166978515
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              1.9699184676955552,
+              2.4201707529014542
+            ],
+            "observed_order": 2.4201707529014542,
+            "safety_factor": 1.25,
+            "reference": -0.9051837484207785,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.02, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.9038053714040807,
+              "max": -0.899037267718184,
+              "centre": -0.9014213195611324,
+              "half_width": 0.0023840518429483204,
+              "relative_half_width": 0.0026447697555112455
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['4.255e-03', '6.146e-03', '2.765e-03', '1.378e-03'] is not monotone decreasing with positive observed order (['nan', '1.970', '2.420']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.0023840518429483204,
+            "relative_half_width": 0.0026447697555112455,
+            "band": [
+              -0.9038053714040807,
+              -0.899037267718184
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": false
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 0 deg, r/a=1.02, radial",
+          "component": "radial",
+          "fe": -0.014850653472811892,
+          "reference": -0.017153814055192174,
+          "numerator_abs_error": 0.0023031605823802814,
+          "denominator_abs_reference": 0.017153814055192174,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.13426521792587306,
+          "verdict": "FAIL",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.02,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.019175291229579006
+            },
+            {
+              "level": 32,
+              "value": -0.006235520564240371
+            },
+            {
+              "level": 48,
+              "value": -0.01208233580904522
+            },
+            {
+              "level": 64,
+              "value": -0.014850653472811892
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.02, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.019175291229579006,
+              -0.006235520564240371,
+              -0.01208233580904522,
+              -0.014850653472811892
+            ],
+            "errors": [
+              0.002021477174386832,
+              0.010918293490951803,
+              0.005071478246146954,
+              0.0023031605823802814
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              1.891179602524145,
+              2.743827551646469
+            ],
+            "observed_order": 2.743827551646469,
+            "safety_factor": 1.25,
+            "reference": -0.017153814055192174,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.02, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.019175291229579006,
+              "max": -0.006235520564240371,
+              "centre": -0.012705405896909688,
+              "half_width": 0.006469885332669317,
+              "relative_half_width": 0.5092230334996991
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['2.021e-03', '1.092e-02', '5.071e-03', '2.303e-03'] is not monotone decreasing with positive observed order (['nan', '1.891', '2.744']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.006469885332669317,
+            "relative_half_width": 0.5092230334996991,
+            "band": [
+              -0.019175291229579006,
+              -0.006235520564240371
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": false
+        },
+        {
+          "label": "ray 0 deg, r/a=1.02, shear",
+          "component": "shear",
+          "fe": -0.01360862357152818,
+          "reference": -0.0,
+          "numerator_abs_error": 0.01360862357152818,
+          "denominator_abs_reference": 0.0,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=0.000e+00 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 0.0,
+          "r_over_a": 1.02,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.03626542615970815
+            },
+            {
+              "level": 32,
+              "value": -0.02711952590000269
+            },
+            {
+              "level": 48,
+              "value": -0.01812467833247696
+            },
+            {
+              "level": 64,
+              "value": -0.01360862357152818
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.02, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.03626542615970815,
+              -0.02711952590000269,
+              -0.01812467833247696,
+              -0.01360862357152818
+            ],
+            "errors": [
+              0.03626542615970815,
+              0.02711952590000269,
+              0.01812467833247696,
+              0.01360862357152818
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.010180635104605,
+              0.9938698050412662,
+              0.996137065584773
+            ],
+            "observed_order": 0.996137065584773,
+            "safety_factor": 1.25,
+            "reference": -0.0,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.02, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.03626542615970815,
+              "max": -0.01360862357152818,
+              "centre": -0.024937024865618166,
+              "half_width": 0.011328401294089987,
+              "relative_half_width": 0.4542803864990719
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.017010779464410222,
+            "relative_half_width": 1.2499999999999998,
+            "band": [
+              -0.0306194030359384,
+              0.003402155892882043
+            ],
+            "richardson_value": 0.0,
+            "relative_gci": 1.2499999999999998,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 0 deg, r/a=1.05, hoop",
+          "component": "hoop",
+          "fe": -0.779216627975244,
+          "reference": -0.7805389729587979,
+          "numerator_abs_error": 0.0013223449835538803,
+          "denominator_abs_reference": 0.7805389729587979,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.001694143443653111,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.05,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.7711979339117517
+            },
+            {
+              "level": 32,
+              "value": -0.7749162050713074
+            },
+            {
+              "level": 48,
+              "value": -0.777954958425157
+            },
+            {
+              "level": 64,
+              "value": -0.779216627975244
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.05, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.7711979339117517,
+              -0.7749162050713074,
+              -0.777954958425157,
+              -0.779216627975244
+            ],
+            "errors": [
+              0.009341039047046196,
+              0.0056227678874904985,
+              0.002584014533640877,
+              0.0013223449835538803
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.7644250105662223,
+              1.917501218745895,
+              2.3287427732041763
+            ],
+            "observed_order": 2.3287427732041763,
+            "safety_factor": 1.25,
+            "reference": -0.7805389729587979,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.05, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.779216627975244,
+              "max": -0.7711979339117517,
+              "centre": -0.7752072809434979,
+              "half_width": 0.004009347031746158,
+              "relative_half_width": 0.0051719677179327015
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.0016529312294423502,
+            "relative_half_width": 0.002121273045388431,
+            "band": [
+              -0.7808695592046864,
+              -0.7775636967458017
+            ],
+            "richardson_value": -0.7805389729587979,
+            "relative_gci": 0.002121273045388431,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 0 deg, r/a=1.05, radial",
+          "component": "radial",
+          "fe": -0.030780377007727594,
+          "reference": -0.03351998395730177,
+          "numerator_abs_error": 0.002739606949574175,
+          "denominator_abs_reference": 0.03351998395730177,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.08173055670503676,
+          "verdict": "FAIL",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.05,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.01579591677859457
+            },
+            {
+              "level": 32,
+              "value": -0.022100613049225948
+            },
+            {
+              "level": 48,
+              "value": -0.027992993299554653
+            },
+            {
+              "level": 64,
+              "value": -0.030780377007727594
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.05, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.01579591677859457,
+              -0.022100613049225948,
+              -0.027992993299554653,
+              -0.030780377007727594
+            ],
+            "errors": [
+              0.017724067178707198,
+              0.011419370908075821,
+              0.005526990657747116,
+              0.002739606949574175
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.5281186067636063,
+              1.7897165965323094,
+              2.4395994353247237
+            ],
+            "observed_order": 2.4395994353247237,
+            "safety_factor": 1.25,
+            "reference": -0.03351998395730177,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.05, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.030780377007727594,
+              "max": -0.01579591677859457,
+              "centre": -0.023288146893161082,
+              "half_width": 0.0074922301145665116,
+              "relative_half_width": 0.3217186042727478
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.003424508686967719,
+            "relative_half_width": 0.11125622945124992,
+            "band": [
+              -0.03420488569469531,
+              -0.027355868320759875
+            ],
+            "richardson_value": -0.03351998395730177,
+            "relative_gci": 0.11125622945124992,
+            "band_covers_reference": true
+          },
+          "within_3pct": false
+        },
+        {
+          "label": "ray 0 deg, r/a=1.05, shear",
+          "component": "shear",
+          "fe": -0.014645812344007783,
+          "reference": -0.0,
+          "numerator_abs_error": 0.014645812344007783,
+          "denominator_abs_reference": 0.0,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=0.000e+00 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 0.0,
+          "r_over_a": 1.05,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.038803887488475686
+            },
+            {
+              "level": 32,
+              "value": -0.02918653504518813
+            },
+            {
+              "level": 48,
+              "value": -0.019506229241496073
+            },
+            {
+              "level": 64,
+              "value": -0.014645812344007783
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.05, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.038803887488475686,
+              -0.02918653504518813,
+              -0.019506229241496073,
+              -0.014645812344007783
+            ],
+            "errors": [
+              0.038803887488475686,
+              0.02918653504518813,
+              0.019506229241496073,
+              0.014645812344007783
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              0.9900267953875668,
+              0.9938552132727347,
+              0.9961670973124973
+            ],
+            "observed_order": 0.9961670973124973,
+            "safety_factor": 1.25,
+            "reference": -0.0,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.05, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.038803887488475686,
+              "max": -0.014645812344007783,
+              "centre": -0.026724849916241734,
+              "half_width": 0.012079037572233952,
+              "relative_half_width": 0.451977751422022
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.018307265430009732,
+            "relative_half_width": 1.2500000000000002,
+            "band": [
+              -0.032953077774017514,
+              0.003661453086001949
+            ],
+            "richardson_value": 1.734723475976807e-18,
+            "relative_gci": 1.2500000000000002,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 0 deg, r/a=1.1, hoop",
+          "component": "hoop",
+          "fe": -0.6112646202934747,
+          "reference": -0.6112970425517381,
+          "numerator_abs_error": 3.242225826338707e-05,
+          "denominator_abs_reference": 0.6112970425517381,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 5.303846740047489e-05,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.1,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.6072994961934681
+            },
+            {
+              "level": 32,
+              "value": -0.611692970412832
+            },
+            {
+              "level": 48,
+              "value": -0.6115439141484411
+            },
+            {
+              "level": 64,
+              "value": -0.6112646202934747
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.1, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.6072994961934681,
+              -0.611692970412832,
+              -0.6115439141484411,
+              -0.6112646202934747
+            ],
+            "errors": [
+              0.003997546358269988,
+              0.000395927861093881,
+              0.0002468715967030022,
+              3.242225826338707e-05
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              8.037358727451023,
+              1.1649921687596994,
+              7.056481352423323
+            ],
+            "observed_order": 7.056481352423323,
+            "safety_factor": 1.25,
+            "reference": -0.6112970425517381,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.1, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.611692970412832,
+              "max": -0.6072994961934681,
+              "centre": -0.6094962333031501,
+              "half_width": 0.0021967371096819344,
+              "relative_half_width": 0.003604184881958615
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 5.278249843871082e-05,
+            "relative_half_width": 8.634967031687417e-05,
+            "band": [
+              -0.6113174027919135,
+              -0.611211837795036
+            ],
+            "richardson_value": -0.6112223942947238,
+            "relative_gci": 8.634967031687417e-05,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 0 deg, r/a=1.1, radial",
+          "component": "radial",
+          "fe": -0.04219379208815491,
+          "reference": -0.041595519431732786,
+          "numerator_abs_error": 0.0005982726564221219,
+          "denominator_abs_reference": 0.041595519431732786,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.014383103386988984,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.1,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.03374289479115053
+            },
+            {
+              "level": 32,
+              "value": -0.04664839294743073
+            },
+            {
+              "level": 48,
+              "value": -0.04381938511244507
+            },
+            {
+              "level": 64,
+              "value": -0.04219379208815491
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.1, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.03374289479115053,
+              -0.04664839294743073,
+              -0.04381938511244507,
+              -0.04219379208815491
+            ],
+            "errors": [
+              0.007852624640582256,
+              0.005052873515697942,
+              0.0022238656807122836,
+              0.0005982726564221219
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.5325624110084919,
+              2.0241201988952047,
+              4.563911994102474
+            ],
+            "observed_order": 4.563911994102474,
+            "safety_factor": 1.25,
+            "reference": -0.041595519431732786,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.1, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.04664839294743073,
+              "max": -0.03374289479115053,
+              "centre": -0.04019564386929063,
+              "half_width": 0.006452749078140099,
+              "relative_half_width": 0.16053354187143606
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.0007478408205276524,
+            "relative_half_width": 0.017723953774176043,
+            "band": [
+              -0.04294163290868256,
+              -0.041445951267627255
+            ],
+            "richardson_value": -0.041595519431732786,
+            "relative_gci": 0.017723953774176043,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 0 deg, r/a=1.1, shear",
+          "component": "shear",
+          "fe": -0.015806876278054896,
+          "reference": -0.0,
+          "numerator_abs_error": 0.015806876278054896,
+          "denominator_abs_reference": 0.0,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=0.000e+00 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 0.0,
+          "r_over_a": 1.1,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.041924454082188506
+            },
+            {
+              "level": 32,
+              "value": -0.03160939372422217
+            },
+            {
+              "level": 48,
+              "value": -0.021077276716452105
+            },
+            {
+              "level": 64,
+              "value": -0.015806876278054896
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.1, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.041924454082188506,
+              -0.03160939372422217,
+              -0.021077276716452105,
+              -0.015806876278054896
+            ],
+            "errors": [
+              0.041924454082188506,
+              0.03160939372422217,
+              0.021077276716452105,
+              0.015806876278054896
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              0.9816911347701488,
+              0.9994912281309001,
+              1.0002377694993867
+            ],
+            "observed_order": 1.0002377694993867,
+            "safety_factor": 1.25,
+            "reference": -0.0,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.1, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.041924454082188506,
+              "max": -0.015806876278054896,
+              "centre": -0.0288656651801217,
+              "half_width": 0.013058788902066805,
+              "relative_half_width": 0.45239868267645955
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.019758595347568617,
+            "relative_half_width": 1.2499999999999998,
+            "band": [
+              -0.03556547162562351,
+              0.0039517190695137205
+            ],
+            "richardson_value": -3.469446951953614e-18,
+            "relative_gci": 1.2499999999999998,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 0 deg, r/a=1.25, hoop",
+          "component": "hoop",
+          "fe": -0.29478215787790196,
+          "reference": -0.2944000000000002,
+          "numerator_abs_error": 0.0003821578779017454,
+          "denominator_abs_reference": 0.2944000000000002,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.0012980906178727755,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.25,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.29538151572624405
+            },
+            {
+              "level": 32,
+              "value": -0.29489667206856407
+            },
+            {
+              "level": 48,
+              "value": -0.2948950981828383
+            },
+            {
+              "level": 64,
+              "value": -0.29478215787790196
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.25, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.29538151572624405,
+              -0.29489667206856407,
+              -0.2948950981828383,
+              -0.29478215787790196
+            ],
+            "errors": [
+              0.0009815157262438312,
+              0.0004966720685638526,
+              0.0004950981828381051,
+              0.0003821578779017454
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              2.367780668189248,
+              0.00782778686465134,
+              0.9000292360946568
+            ],
+            "observed_order": 0.9000292360946568,
+            "safety_factor": 1.25,
+            "reference": -0.2944000000000002,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.25, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.29538151572624405,
+              "max": -0.29478215787790196,
+              "centre": -0.295081836802073,
+              "half_width": 0.0002996789241710429,
+              "relative_half_width": 0.001015579025191081
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.00047769734737718156,
+            "relative_half_width": 0.0016205097038981668,
+            "band": [
+              -0.29525985522527914,
+              -0.2943044605305248
+            ],
+            "richardson_value": -0.2944000000000002,
+            "relative_gci": 0.0016205097038981668,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 0 deg, r/a=1.25, radial",
+          "component": "radial",
+          "fe": 0.013603748489949302,
+          "reference": 0.014399999999999968,
+          "numerator_abs_error": 0.0007962515100506662,
+          "denominator_abs_reference": 0.014399999999999968,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.05529524375351861,
+          "verdict": "FAIL",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.25,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.015073759189064076
+            },
+            {
+              "level": 32,
+              "value": 0.016867181330268086
+            },
+            {
+              "level": 48,
+              "value": 0.014484437257210658
+            },
+            {
+              "level": 64,
+              "value": 0.013603748489949302
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.25, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.015073759189064076,
+              0.016867181330268086,
+              0.014484437257210658,
+              0.013603748489949302
+            ],
+            "errors": [
+              0.0006737591890641076,
+              0.0024671813302681173,
+              8.443725721068995e-05,
+              0.0007962515100506662
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              8.323337343549566,
+              NaN
+            ],
+            "observed_order": NaN,
+            "safety_factor": 1.25,
+            "reference": 0.014399999999999968,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.25, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.013603748489949302,
+              "max": 0.016867181330268086,
+              "centre": 0.015235464910108694,
+              "half_width": 0.0016317164201593917,
+              "relative_half_width": 0.10709987714761181
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['6.738e-04', '2.467e-03', '8.444e-05', '7.963e-04'] is not monotone decreasing with positive observed order (['nan', '8.323', 'nan']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.0016317164201593917,
+            "relative_half_width": 0.10709987714761181,
+            "band": [
+              0.013603748489949302,
+              0.016867181330268086
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": false
+        },
+        {
+          "label": "ray 0 deg, r/a=1.25, shear",
+          "component": "shear",
+          "fe": -0.01663195993301436,
+          "reference": -0.0,
+          "numerator_abs_error": 0.01663195993301436,
+          "denominator_abs_reference": 0.0,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=0.000e+00 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 0.0,
+          "r_over_a": 1.25,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.044170064443141546
+            },
+            {
+              "level": 32,
+              "value": -0.033160643750829555
+            },
+            {
+              "level": 48,
+              "value": -0.022156312775115213
+            },
+            {
+              "level": 64,
+              "value": -0.01663195993301436
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.25, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.044170064443141546,
+              -0.033160643750829555,
+              -0.022156312775115213,
+              -0.01663195993301436
+            ],
+            "errors": [
+              0.044170064443141546,
+              0.033160643750829555,
+              0.022156312775115213,
+              0.01663195993301436
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              0.9965290453811527,
+              0.994515381151205,
+              0.9969210561255509
+            ],
+            "observed_order": 0.9969210561255509,
+            "safety_factor": 1.25,
+            "reference": -0.0,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.25, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.044170064443141546,
+              "max": -0.01663195993301436,
+              "centre": -0.030401012188077954,
+              "half_width": 0.013769052255063594,
+              "relative_half_width": 0.45291427041574817
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.02078994991626795,
+            "relative_half_width": 1.25,
+            "band": [
+              -0.03742190984928231,
+              0.0041579899832535905
+            ],
+            "richardson_value": 0.0,
+            "relative_gci": 1.25,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 0 deg, r/a=1.5, hoop",
+          "component": "hoop",
+          "fe": -0.07362996193389404,
+          "reference": -0.07407407407407407,
+          "numerator_abs_error": 0.00044411214018003076,
+          "denominator_abs_reference": 0.07407407407407407,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.005995513892430415,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.5,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.0799387075147112
+            },
+            {
+              "level": 32,
+              "value": -0.07025062194014102
+            },
+            {
+              "level": 48,
+              "value": -0.07252365241383539
+            },
+            {
+              "level": 64,
+              "value": -0.07362996193389404
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.5, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.0799387075147112,
+              -0.07025062194014102,
+              -0.07252365241383539,
+              -0.07362996193389404
+            ],
+            "errors": [
+              0.005864633440637132,
+              0.00382345213393305,
+              0.0015504216602386794,
+              0.00044411214018003076
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.4870105131382054,
+              2.22615155696757,
+              4.34578735689308
+            ],
+            "observed_order": 4.34578735689308,
+            "safety_factor": 1.25,
+            "reference": -0.07407407407407407,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.5, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.0799387075147112,
+              "max": -0.07025062194014102,
+              "centre": -0.07509466472742611,
+              "half_width": 0.004844042787285091,
+              "relative_half_width": 0.06450581815456122
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.0005551401752250383,
+            "relative_half_width": 0.007539596118811668,
+            "band": [
+              -0.07418510210911908,
+              -0.073074821758669
+            ],
+            "richardson_value": -0.07407407407407407,
+            "relative_gci": 0.007539596118811668,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 0 deg, r/a=1.5, radial",
+          "component": "radial",
+          "fe": 0.18855376946012178,
+          "reference": 0.18518518518518523,
+          "numerator_abs_error": 0.0033685842749365535,
+          "denominator_abs_reference": 0.18518518518518523,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.018190355084657384,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 1.5,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.17875967111950222
+            },
+            {
+              "level": 32,
+              "value": 0.20380705321177042
+            },
+            {
+              "level": 48,
+              "value": 0.1934251427817625
+            },
+            {
+              "level": 64,
+              "value": 0.18855376946012178
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.5, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.17875967111950222,
+              0.20380705321177042,
+              0.1934251427817625,
+              0.18855376946012178
+            ],
+            "errors": [
+              0.006425514065683008,
+              0.018621868026585192,
+              0.00823995759657728,
+              0.0033685842749365535
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              2.0108792996303237,
+              3.1093443904836517
+            ],
+            "observed_order": 3.1093443904836517,
+            "safety_factor": 1.25,
+            "reference": 0.18518518518518523,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.5, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.17875967111950222,
+              "max": 0.20380705321177042,
+              "centre": 0.19128336216563632,
+              "half_width": 0.0125236910461341,
+              "relative_half_width": 0.06547193077508524
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['6.426e-03', '1.862e-02', '8.240e-03', '3.369e-03'] is not monotone decreasing with positive observed order (['nan', '2.011', '3.109']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.0125236910461341,
+            "relative_half_width": 0.06547193077508524,
+            "band": [
+              0.17875967111950222,
+              0.20380705321177042
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 0 deg, r/a=1.5, shear",
+          "component": "shear",
+          "fe": -0.014727979698764491,
+          "reference": -0.0,
+          "numerator_abs_error": 0.014727979698764491,
+          "denominator_abs_reference": 0.0,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=0.000e+00 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 0.0,
+          "r_over_a": 1.5,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.039197803999991496
+            },
+            {
+              "level": 32,
+              "value": -0.02926552914453868
+            },
+            {
+              "level": 48,
+              "value": -0.019598486618451764
+            },
+            {
+              "level": 64,
+              "value": -0.014727979698764491
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=1.5, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.039197803999991496,
+              -0.02926552914453868,
+              -0.019598486618451764,
+              -0.014727979698764491
+            ],
+            "errors": [
+              0.039197803999991496,
+              0.02926552914453868,
+              0.019598486618451764,
+              0.014727979698764491
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.0157406702807004,
+              0.9888840883958137,
+              0.9931216149731241
+            ],
+            "observed_order": 0.9931216149731241,
+            "safety_factor": 1.25,
+            "reference": -0.0,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=1.5, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.039197803999991496,
+              "max": -0.014727979698764491,
+              "centre": -0.026962891849377994,
+              "half_width": 0.012234912150613501,
+              "relative_half_width": 0.45376854303911573
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.01840997462345562,
+            "relative_half_width": 1.2500000000000004,
+            "band": [
+              -0.03313795432222011,
+              0.0036819949246911284
+            ],
+            "richardson_value": 3.469446951953614e-18,
+            "relative_gci": 1.2500000000000004,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        },
+        {
+          "label": "ray 0 deg, r/a=2, hoop",
+          "component": "hoop",
+          "fe": 0.030351669417907706,
+          "reference": 0.03125,
+          "numerator_abs_error": 0.0008983305820922938,
+          "denominator_abs_reference": 0.03125,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.0287465786269534,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 2.0,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.022680232709357442
+            },
+            {
+              "level": 32,
+              "value": 0.03518626646614138
+            },
+            {
+              "level": 48,
+              "value": 0.031995504436472824
+            },
+            {
+              "level": 64,
+              "value": 0.030351669417907706
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=2, hoop",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.022680232709357442,
+              0.03518626646614138,
+              0.031995504436472824,
+              0.030351669417907706
+            ],
+            "errors": [
+              0.008569767290642558,
+              0.003936266466141383,
+              0.0007455044364728242,
+              0.0008983305820922938
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              2.7044017551396,
+              4.103748601661626,
+              NaN
+            ],
+            "observed_order": NaN,
+            "safety_factor": 1.25,
+            "reference": 0.03125,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 0 deg, r/a=2, hoop",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.022680232709357442,
+              "max": 0.03518626646614138,
+              "centre": 0.028933249587749413,
+              "half_width": 0.00625301687839197,
+              "relative_half_width": 0.21611872041637353
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['8.570e-03', '3.936e-03', '7.455e-04', '8.983e-04'] is not monotone decreasing with positive observed order (['2.704', '4.104', 'nan']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.00625301687839197,
+            "relative_half_width": 0.21611872041637353,
+            "band": [
+              0.022680232709357442,
+              0.03518626646614138
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 0 deg, r/a=2, radial",
+          "component": "radial",
+          "fe": 0.46738928077669595,
+          "reference": 0.46875,
+          "numerator_abs_error": 0.0013607192233040522,
+          "denominator_abs_reference": 0.46875,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": 0.0029028676763819777,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ray_degrees": 0.0,
+          "r_over_a": 2.0,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 0.4512306188420757
+            },
+            {
+              "level": 32,
+              "value": 0.48782160069004477
+            },
+            {
+              "level": 48,
+              "value": 0.47409518940424933
+            },
+            {
+              "level": 64,
+              "value": 0.46738928077669595
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=2, radial",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              0.4512306188420757,
+              0.48782160069004477,
+              0.47409518940424933,
+              0.46738928077669595
+            ],
+            "errors": [
+              0.017519381157924285,
+              0.019071600690044765,
+              0.005345189404249329,
+              0.0013607192233040522
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              3.1371463255993706,
+              4.755887523139689
+            ],
+            "observed_order": 4.755887523139689,
+            "safety_factor": 1.25,
+            "reference": 0.46875,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "ray 0 deg, r/a=2, radial",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 0.4512306188420757,
+              "max": 0.48782160069004477,
+              "centre": 0.46952610976606024,
+              "half_width": 0.018295490923984525,
+              "relative_half_width": 0.03896586482293858
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['1.752e-02', '1.907e-02', '5.345e-03', '1.361e-03'] is not monotone decreasing with positive observed order (['nan', '3.137', '4.756']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.018295490923984525,
+            "relative_half_width": 0.03896586482293858,
+            "band": [
+              0.4512306188420757,
+              0.48782160069004477
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "ray 0 deg, r/a=2, shear",
+          "component": "shear",
+          "fe": -0.010087343234659093,
+          "reference": -0.0,
+          "numerator_abs_error": 0.010087343234659093,
+          "denominator_abs_reference": 0.0,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.01,
+          "relative_error": null,
+          "verdict": "WITHHELD",
+          "withheld_reason": "|reference|=0.000e+00 is below 1% of the stress scale 1.000e+00: the relative criterion is ill-conditioned",
+          "ray_degrees": 0.0,
+          "r_over_a": 2.0,
+          "fe_level": 64,
+          "inside": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": -0.02696533824487322
+            },
+            {
+              "level": 32,
+              "value": -0.01995704093953158
+            },
+            {
+              "level": 48,
+              "value": -0.013403892283033403
+            },
+            {
+              "level": 64,
+              "value": -0.010087343234659093
+            }
+          ],
+          "uncertainty": {
+            "label": "ray 0 deg, r/a=2, shear",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              -0.02696533824487322,
+              -0.01995704093953158,
+              -0.013403892283033403,
+              -0.010087343234659093
+            ],
+            "errors": [
+              0.02696533824487322,
+              0.01995704093953158,
+              0.013403892283033403,
+              0.010087343234659093
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.0461905381281602,
+              0.9816797271803368,
+              0.9881173279875217
+            ],
+            "observed_order": 0.9881173279875217,
+            "safety_factor": 1.25,
+            "reference": -0.0,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "ray 0 deg, r/a=2, shear",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": -0.02696533824487322,
+              "max": -0.010087343234659093,
+              "centre": -0.018526340739766157,
+              "half_width": 0.008438997505107064,
+              "relative_half_width": 0.45551345641576396
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.01260917904332387,
+            "relative_half_width": 1.2500000000000004,
+            "band": [
+              -0.022696522277982963,
+              0.0025218358086647776
+            ],
+            "richardson_value": 3.469446951953614e-18,
+            "relative_gci": 1.2500000000000004,
+            "band_covers_reference": true
+          },
+          "within_3pct": null
+        }
+      ],
+      "quantities": {
+        "hoop_at_r1.05": {
+          "quantity": "hoop_at_r1.05",
+          "fe_level": 64,
+          "fe": 2.6849900734743097,
+          "reference": 2.6875684514168476,
+          "numerator_abs_error": 0.0025783779425379016,
+          "denominator_abs_reference": 2.6875684514168476,
+          "relative_error": 0.0009593720082473128,
+          "threshold_relative": 0.03,
+          "within_3pct": true,
+          "verdict": "PASS",
+          "discretisation": {
+            "label": "hoop_at_r1.05",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              2.6701957473002103,
+              2.676774940780444,
+              2.682473719940666,
+              2.6849900734743097
+            ],
+            "errors": [
+              0.017372704116637383,
+              0.010793510636403436,
+              0.005094731476181558,
+              0.0025783779425379016
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              1.6544484505207608,
+              1.851548036164409,
+              2.3673580328072843
+            ],
+            "observed_order": 2.3673580328072843,
+            "safety_factor": 1.25,
+            "reference": 2.6875684514168476,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "hoop_at_r1.05",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 2.6701957473002103,
+              "max": 2.6849900734743097,
+              "centre": 2.67759291038726,
+              "half_width": 0.007397163087049741,
+              "relative_half_width": 0.002762616773578135
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.003222972428172376,
+            "relative_half_width": 0.001200366608432906,
+            "band": [
+              2.6817671010461375,
+              2.688213045902482
+            ],
+            "richardson_value": 2.6875684514168476,
+            "relative_gci": 0.001200366608432906,
+            "band_covers_reference": true
+          },
+          "parametric": {
+            "label": "hoop_at_r1.05",
+            "method": "min/max envelope (non-statistical)",
+            "count": 6,
+            "min": 2.6813857204547267,
+            "max": 2.6880004384844036,
+            "centre": 2.6846930794695654,
+            "half_width": 0.0033073590148384735,
+            "relative_half_width": 0.0012319318882782432
+          },
+          "combined_uncertainty": {
+            "label": "hoop_at_r1.05 combined",
+            "method": "linear sum of half-widths (worst case, non-statistical)",
+            "half_width": 0.00653033144301085,
+            "contributions": [
+              {
+                "label": "discretisation",
+                "half_width": 0.003222972428172376
+              },
+              {
+                "label": "parametric/envelope",
+                "half_width": 0.0033073590148384735
+              }
+            ]
+          },
+          "combined_relative_half_width": 0.002429828881034882,
+          "envelope_covers_reference": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 2.6701957473002103
+            },
+            {
+              "level": 32,
+              "value": 2.676774940780444
+            },
+            {
+              "level": 48,
+              "value": 2.682473719940666
+            },
+            {
+              "level": 64,
+              "value": 2.6849900734743097
+            }
+          ]
+        },
+        "kt_hole_edge": {
+          "quantity": "kt_hole_edge",
+          "fe_level": 64,
+          "fe": 3.002709304191092,
+          "reference": 3.0,
+          "numerator_abs_error": 0.0027093041910921656,
+          "denominator_abs_reference": 3.0,
+          "relative_error": 0.0009031013970307219,
+          "threshold_relative": 0.03,
+          "within_3pct": true,
+          "verdict": "PASS",
+          "discretisation": {
+            "label": "kt_hole_edge",
+            "levels": [
+              24.0,
+              32.0,
+              48.0,
+              64.0
+            ],
+            "values": [
+              3.001494986211589,
+              3.002832387284648,
+              3.003036278986377,
+              3.002709304191092
+            ],
+            "errors": [
+              0.0014949862115889445,
+              0.0028323872846480747,
+              0.003036278986376928,
+              0.0027093041910921656
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.5,
+              1.3333333333333333
+            ],
+            "observed_orders": [
+              NaN,
+              NaN,
+              0.39606535512235064
+            ],
+            "observed_order": 0.39606535512235064,
+            "safety_factor": 1.25,
+            "reference": 3.0,
+            "monotone_error_decay": false,
+            "envelope": {
+              "label": "kt_hole_edge",
+              "method": "min/max envelope (non-statistical)",
+              "count": 4,
+              "min": 3.001494986211589,
+              "max": 3.003036278986377,
+              "centre": 3.002265632598983,
+              "half_width": 0.0007706463873939917,
+              "relative_half_width": 0.00025668827535652245
+            },
+            "status": "WITHHELD",
+            "reason": "the error sequence |value - reference| = ['1.495e-03', '2.832e-03', '3.036e-03', '2.709e-03'] is not monotone decreasing with positive observed order (['nan', 'nan', '0.396']): the GCI precondition is violated, so no analytic error band is claimed; the min/max envelope of the ladder is reported instead",
+            "half_width": 0.0007706463873939917,
+            "relative_half_width": 0.00025668827535652245,
+            "band": [
+              3.001494986211589,
+              3.003036278986377
+            ],
+            "richardson_value": null,
+            "relative_gci": null,
+            "band_covers_reference": false
+          },
+          "parametric": {
+            "label": "kt_hole_edge",
+            "method": "min/max envelope (non-statistical)",
+            "count": 6,
+            "min": 2.996414213097712,
+            "max": 3.020802086500636,
+            "centre": 3.008608149799174,
+            "half_width": 0.012193936701462071,
+            "relative_half_width": 0.0040530159111202375
+          },
+          "combined_uncertainty": {
+            "label": "kt_hole_edge combined",
+            "method": "linear sum of half-widths (worst case, non-statistical)",
+            "half_width": 0.012964583088856063,
+            "contributions": [
+              {
+                "label": "discretisation",
+                "half_width": 0.0007706463873939917
+              },
+              {
+                "label": "parametric/envelope",
+                "half_width": 0.012193936701462071
+              }
+            ]
+          },
+          "combined_relative_half_width": 0.004321527696285354,
+          "envelope_covers_reference": true,
+          "ladder": [
+            {
+              "level": 24,
+              "value": 3.001494986211589
+            },
+            {
+              "level": 32,
+              "value": 3.002832387284648
+            },
+            {
+              "level": 48,
+              "value": 3.003036278986377
+            },
+            {
+              "level": 64,
+              "value": 3.002709304191092
+            }
+          ]
+        }
+      },
+      "sensitivity": {
+        "level": 48,
+        "settings": [
+          {
+            "setting": "poisson=0.25",
+            "level": 48,
+            "hoop_at_r1.05": 2.683379653224098,
+            "kt_hole_edge": 3.001777401933641,
+            "max_stress_relative_error": 0.016955166614991843
+          },
+          {
+            "setting": "poisson=0.3",
+            "level": 48,
+            "hoop_at_r1.05": 2.682473719940666,
+            "kt_hole_edge": 3.003036278986377,
+            "max_stress_relative_error": 0.023856141967130373
+          },
+          {
+            "setting": "poisson=0.35",
+            "level": 48,
+            "hoop_at_r1.05": 2.6813857204547267,
+            "kt_hole_edge": 3.004522824171108,
+            "max_stress_relative_error": 0.03156515735729659
+          },
+          {
+            "setting": "grading=3",
+            "level": 48,
+            "hoop_at_r1.05": 2.6828055152304944,
+            "kt_hole_edge": 3.020802086500636,
+            "max_stress_relative_error": 0.10469679337652815
+          },
+          {
+            "setting": "grading=5",
+            "level": 48,
+            "hoop_at_r1.05": 2.682473719940666,
+            "kt_hole_edge": 3.003036278986377,
+            "max_stress_relative_error": 0.023856141967130373
+          },
+          {
+            "setting": "grading=8",
+            "level": 48,
+            "hoop_at_r1.05": 2.6880004384844036,
+            "kt_hole_edge": 2.996414213097712,
+            "max_stress_relative_error": 0.26359088484357773
+          }
+        ],
+        "envelopes": {
+          "hoop_at_r1.05": {
+            "label": "hoop_at_r1.05",
+            "method": "min/max envelope (non-statistical)",
+            "count": 6,
+            "min": 2.6813857204547267,
+            "max": 2.6880004384844036,
+            "centre": 2.6846930794695654,
+            "half_width": 0.0033073590148384735,
+            "relative_half_width": 0.0012319318882782432
+          },
+          "kt_hole_edge": {
+            "label": "kt_hole_edge",
+            "method": "min/max envelope (non-statistical)",
+            "count": 6,
+            "min": 2.996414213097712,
+            "max": 3.020802086500636,
+            "centre": 3.008608149799174,
+            "half_width": 0.012193936701462071,
+            "relative_half_width": 0.0040530159111202375
+          }
+        }
+      },
+      "summary": {
+        "ray_90_deg": {
+          "state": "FAIL",
+          "counts": {
+            "PASS": 9,
+            "FAIL": 3,
+            "WITHHELD": 6
+          },
+          "failed_labels": [
+            "ray 90 deg, r/a=1.02, radial",
+            "ray 90 deg, r/a=1.05, radial",
+            "ray 90 deg, r/a=1.25, radial"
+          ],
+          "withheld_labels": [
+            "ray 90 deg, r/a=1.02, shear",
+            "ray 90 deg, r/a=1.05, shear",
+            "ray 90 deg, r/a=1.1, shear",
+            "ray 90 deg, r/a=1.25, shear",
+            "ray 90 deg, r/a=1.5, shear",
+            "ray 90 deg, r/a=2, shear"
+          ]
+        },
+        "ray_0_deg": {
+          "state": "FAIL",
+          "counts": {
+            "PASS": 9,
+            "FAIL": 3,
+            "WITHHELD": 6
+          },
+          "failed_labels": [
+            "ray 0 deg, r/a=1.02, radial",
+            "ray 0 deg, r/a=1.05, radial",
+            "ray 0 deg, r/a=1.25, radial"
+          ],
+          "withheld_labels": [
+            "ray 0 deg, r/a=1.02, shear",
+            "ray 0 deg, r/a=1.05, shear",
+            "ray 0 deg, r/a=1.1, shear",
+            "ray 0 deg, r/a=1.25, shear",
+            "ray 0 deg, r/a=1.5, shear",
+            "ray 0 deg, r/a=2, shear"
+          ]
+        },
+        "component_hoop": {
+          "state": "PASS",
+          "counts": {
+            "PASS": 12,
+            "FAIL": 0,
+            "WITHHELD": 0
+          },
+          "failed_labels": [],
+          "withheld_labels": []
+        },
+        "component_radial": {
+          "state": "FAIL",
+          "counts": {
+            "PASS": 6,
+            "FAIL": 6,
+            "WITHHELD": 0
+          },
+          "failed_labels": [
+            "ray 90 deg, r/a=1.02, radial",
+            "ray 90 deg, r/a=1.05, radial",
+            "ray 90 deg, r/a=1.25, radial",
+            "ray 0 deg, r/a=1.02, radial",
+            "ray 0 deg, r/a=1.05, radial",
+            "ray 0 deg, r/a=1.25, radial"
+          ],
+          "withheld_labels": []
+        },
+        "component_shear": {
+          "state": "PASS_WITH_WITHHELD",
+          "counts": {
+            "PASS": 0,
+            "FAIL": 0,
+            "WITHHELD": 12
+          },
+          "failed_labels": [],
+          "withheld_labels": [
+            "ray 90 deg, r/a=1.02, shear",
+            "ray 90 deg, r/a=1.05, shear",
+            "ray 90 deg, r/a=1.1, shear",
+            "ray 90 deg, r/a=1.25, shear",
+            "ray 90 deg, r/a=1.5, shear",
+            "ray 90 deg, r/a=2, shear",
+            "ray 0 deg, r/a=1.02, shear",
+            "ray 0 deg, r/a=1.05, shear",
+            "ray 0 deg, r/a=1.1, shear",
+            "ray 0 deg, r/a=1.25, shear",
+            "ray 0 deg, r/a=1.5, shear",
+            "ray 0 deg, r/a=2, shear"
+          ]
+        },
+        "headline_quantities": {
+          "state": "PASS",
+          "counts": {
+            "PASS": 2,
+            "FAIL": 0,
+            "WITHHELD": 0
+          },
+          "failed_labels": [],
+          "withheld_labels": []
+        },
+        "all_pointwise_rows": {
+          "state": "FAIL",
+          "counts": {
+            "PASS": 18,
+            "FAIL": 6,
+            "WITHHELD": 12
+          },
+          "failed_labels": [
+            "ray 90 deg, r/a=1.02, radial",
+            "ray 90 deg, r/a=1.05, radial",
+            "ray 90 deg, r/a=1.25, radial",
+            "ray 0 deg, r/a=1.02, radial",
+            "ray 0 deg, r/a=1.05, radial",
+            "ray 0 deg, r/a=1.25, radial"
+          ],
+          "withheld_labels": [
+            "ray 90 deg, r/a=1.02, shear",
+            "ray 90 deg, r/a=1.05, shear",
+            "ray 90 deg, r/a=1.1, shear",
+            "ray 90 deg, r/a=1.25, shear",
+            "ray 90 deg, r/a=1.5, shear",
+            "ray 90 deg, r/a=2, shear",
+            "ray 0 deg, r/a=1.02, shear",
+            "ray 0 deg, r/a=1.05, shear",
+            "ray 0 deg, r/a=1.1, shear",
+            "ray 0 deg, r/a=1.25, shear",
+            "ray 0 deg, r/a=1.5, shear",
+            "ray 0 deg, r/a=2, shear"
+          ]
+        }
+      }
+    },
+    "finite_width": {
+      "model": {
+        "geometry": "quarter plate, central hole, half_length/width = 1.5, thickness 0.01 m",
+        "young_pa": 200000000000.0,
+        "poisson": 0.3,
+        "tension_pa": 1000000.0,
+        "convention": "K_tn = sigma_peak / sigma_net, sigma_net = T*W/(W-d)",
+        "levels": [
+          24,
+          32,
+          40
+        ],
+        "element": "production Q4 plane stress, starburst mesh"
+      },
+      "rows": [
+        {
+          "label": "d/W=0.1, K_tn vs Howland/Peterson",
+          "component": "ktn",
+          "fe": 2.718464145297033,
+          "reference": 2.73,
+          "numerator_abs_error": 0.011535854702966919,
+          "denominator_abs_reference": 2.73,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.0273,
+          "relative_error": 0.004225587803284586,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ratio": 0.1,
+          "half_length_over_width": 1.5,
+          "fe_level": 40,
+          "ktn_heywood": 2.729,
+          "error_vs_heywood_relative": 0.0038607016133994244,
+          "verdict_vs_heywood": "PASS",
+          "ladder": [
+            {
+              "level": 24,
+              "value": 2.692115893409034
+            },
+            {
+              "level": 32,
+              "value": 2.710028084558687
+            },
+            {
+              "level": 40,
+              "value": 2.718464145297033
+            }
+          ],
+          "load_balance": {
+            "applied": 5000.0,
+            "reacted": 4999.999999999992,
+            "relative_error": 1.6370904631912708e-15
+          },
+          "uncertainty": {
+            "label": "d/W=0.1, K_tn vs Howland/Peterson",
+            "levels": [
+              24.0,
+              32.0,
+              40.0
+            ],
+            "values": [
+              2.692115893409034,
+              2.710028084558687,
+              2.718464145297033
+            ],
+            "errors": [
+              0.03788410659096586,
+              0.019971915441312937,
+              0.011535854702966919
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.25
+            ],
+            "observed_orders": [
+              2.2253893290966476,
+              2.4597039446951823
+            ],
+            "observed_order": 2.4597039446951823,
+            "safety_factor": 1.25,
+            "reference": 2.73,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "d/W=0.1, K_tn vs Howland/Peterson",
+              "method": "min/max envelope (non-statistical)",
+              "count": 3,
+              "min": 2.692115893409034,
+              "max": 2.718464145297033,
+              "centre": 2.7052900193530336,
+              "half_width": 0.01317412594399947,
+              "relative_half_width": 0.0048697647386249715
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.014419818378708654,
+            "relative_half_width": 0.005304398957644914,
+            "band": [
+              2.7040443269183245,
+              2.7328839636757416
+            ],
+            "richardson_value": 2.73,
+            "relative_gci": 0.005304398957644914,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "d/W=0.2, K_tn vs Howland/Peterson",
+          "component": "ktn",
+          "fe": 2.5062764819841328,
+          "reference": 2.51,
+          "numerator_abs_error": 0.003723518015867011,
+          "denominator_abs_reference": 2.51,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.025099999999999997,
+          "relative_error": 0.0014834733130944268,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ratio": 0.2,
+          "half_length_over_width": 1.5,
+          "fe_level": 40,
+          "ktn_heywood": 2.512,
+          "error_vs_heywood_relative": 0.0022784705477178484,
+          "verdict_vs_heywood": "PASS",
+          "ladder": [
+            {
+              "level": 24,
+              "value": 2.4788688358183446
+            },
+            {
+              "level": 32,
+              "value": 2.4974106281870476
+            },
+            {
+              "level": 40,
+              "value": 2.5062764819841328
+            }
+          ],
+          "load_balance": {
+            "applied": 5000.0,
+            "reacted": 4999.999999999921,
+            "relative_error": 1.582520781084895e-14
+          },
+          "uncertainty": {
+            "label": "d/W=0.2, K_tn vs Howland/Peterson",
+            "levels": [
+              24.0,
+              32.0,
+              40.0
+            ],
+            "values": [
+              2.4788688358183446,
+              2.4974106281870476,
+              2.5062764819841328
+            ],
+            "errors": [
+              0.03113116418165518,
+              0.012589371812952166,
+              0.003723518015867011
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.25
+            ],
+            "observed_orders": [
+              3.147072816740476,
+              5.4591944035247
+            ],
+            "observed_order": 5.4591944035247,
+            "safety_factor": 1.25,
+            "reference": 2.51,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "d/W=0.2, K_tn vs Howland/Peterson",
+              "method": "min/max envelope (non-statistical)",
+              "count": 3,
+              "min": 2.4788688358183446,
+              "max": 2.5062764819841328,
+              "centre": 2.4925726589012385,
+              "half_width": 0.013703823082894084,
+              "relative_half_width": 0.0054978630347870885
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.004654397519833764,
+            "relative_half_width": 0.00185709659460597,
+            "band": [
+              2.501622084464299,
+              2.5109308795039667
+            ],
+            "richardson_value": 2.51,
+            "relative_gci": 0.00185709659460597,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "d/W=0.3, K_tn vs Howland/Peterson",
+          "component": "ktn",
+          "fe": 2.344048502064178,
+          "reference": 2.35,
+          "numerator_abs_error": 0.005951497935821948,
+          "denominator_abs_reference": 2.35,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.0235,
+          "relative_error": 0.0025325523131157226,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ratio": 0.3,
+          "half_length_over_width": 1.5,
+          "fe_level": 40,
+          "ktn_heywood": 2.343,
+          "error_vs_heywood_relative": 0.00044750408202226614,
+          "verdict_vs_heywood": "PASS",
+          "ladder": [
+            {
+              "level": 24,
+              "value": 2.313731359083409
+            },
+            {
+              "level": 32,
+              "value": 2.3341753696398304
+            },
+            {
+              "level": 40,
+              "value": 2.344048502064178
+            }
+          ],
+          "load_balance": {
+            "applied": 5000.0,
+            "reacted": 5000.000000000272,
+            "relative_error": 5.438778316602111e-14
+          },
+          "uncertainty": {
+            "label": "d/W=0.3, K_tn vs Howland/Peterson",
+            "levels": [
+              24.0,
+              32.0,
+              40.0
+            ],
+            "values": [
+              2.313731359083409,
+              2.3341753696398304,
+              2.344048502064178
+            ],
+            "errors": [
+              0.0362686409165911,
+              0.015824630360169678,
+              0.005951497935821948
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.25
+            ],
+            "observed_orders": [
+              2.882994635194678,
+              4.382491280784371
+            ],
+            "observed_order": 4.382491280784371,
+            "safety_factor": 1.25,
+            "reference": 2.35,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "d/W=0.3, K_tn vs Howland/Peterson",
+              "method": "min/max envelope (non-statistical)",
+              "count": 3,
+              "min": 2.313731359083409,
+              "max": 2.344048502064178,
+              "centre": 2.3288899305737933,
+              "half_width": 0.015158571490384576,
+              "relative_half_width": 0.006508925686603745
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.007439372419777437,
+            "relative_half_width": 0.0031737280236421293,
+            "band": [
+              2.3366091296444007,
+              2.3514878744839556
+            ],
+            "richardson_value": 2.35,
+            "relative_gci": 0.0031737280236421293,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "d/W=0.4, K_tn vs Howland/Peterson",
+          "component": "ktn",
+          "fe": 2.226419777750842,
+          "reference": 2.24,
+          "numerator_abs_error": 0.013580222249158336,
+          "denominator_abs_reference": 2.24,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.022400000000000003,
+          "relative_error": 0.006062599218374256,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ratio": 0.4,
+          "half_length_over_width": 1.5,
+          "fe_level": 40,
+          "ktn_heywood": 2.216,
+          "error_vs_heywood_relative": 0.0047020657720404715,
+          "verdict_vs_heywood": "PASS",
+          "ladder": [
+            {
+              "level": 24,
+              "value": 2.190245175539648
+            },
+            {
+              "level": 32,
+              "value": 2.2145835128671267
+            },
+            {
+              "level": 40,
+              "value": 2.226419777750842
+            }
+          ],
+          "load_balance": {
+            "applied": 5000.0,
+            "reacted": 4999.999999999853,
+            "relative_error": 2.9467628337442873e-14
+          },
+          "uncertainty": {
+            "label": "d/W=0.4, K_tn vs Howland/Peterson",
+            "levels": [
+              24.0,
+              32.0,
+              40.0
+            ],
+            "values": [
+              2.190245175539648,
+              2.2145835128671267,
+              2.226419777750842
+            ],
+            "errors": [
+              0.049754824460352065,
+              0.025416487132873478,
+              0.013580222249158336
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.25
+            ],
+            "observed_orders": [
+              2.334901734007501,
+              2.8088805236105747
+            ],
+            "observed_order": 2.8088805236105747,
+            "safety_factor": 1.25,
+            "reference": 2.24,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "d/W=0.4, K_tn vs Howland/Peterson",
+              "method": "min/max envelope (non-statistical)",
+              "count": 3,
+              "min": 2.190245175539648,
+              "max": 2.226419777750842,
+              "centre": 2.208332476645245,
+              "half_width": 0.018087301105596865,
+              "relative_half_width": 0.008190479149712961
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.01697527781144792,
+            "relative_half_width": 0.007624473147914885,
+            "band": [
+              2.209444499939394,
+              2.24339505556229
+            ],
+            "richardson_value": 2.24,
+            "relative_gci": 0.007624473147914885,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        },
+        {
+          "label": "d/W=0.5, K_tn vs Howland/Peterson",
+          "component": "ktn",
+          "fe": 2.1459265922895465,
+          "reference": 2.16,
+          "numerator_abs_error": 0.014073407710453623,
+          "denominator_abs_reference": 2.16,
+          "threshold_relative": 0.03,
+          "denominator_floor": 0.0216,
+          "relative_error": 0.006515466532617417,
+          "verdict": "PASS",
+          "withheld_reason": null,
+          "ratio": 0.5,
+          "half_length_over_width": 1.5,
+          "fe_level": 40,
+          "ktn_heywood": 2.125,
+          "error_vs_heywood_relative": 0.009847808136257186,
+          "verdict_vs_heywood": "PASS",
+          "ladder": [
+            {
+              "level": 24,
+              "value": 2.1002616508610013
+            },
+            {
+              "level": 32,
+              "value": 2.1309373364016326
+            },
+            {
+              "level": 40,
+              "value": 2.1459265922895465
+            }
+          ],
+          "load_balance": {
+            "applied": 5000.0,
+            "reacted": 4999.999999998802,
+            "relative_error": 2.395609044469893e-13
+          },
+          "uncertainty": {
+            "label": "d/W=0.5, K_tn vs Howland/Peterson",
+            "levels": [
+              24.0,
+              32.0,
+              40.0
+            ],
+            "values": [
+              2.1002616508610013,
+              2.1309373364016326,
+              2.1459265922895465
+            ],
+            "errors": [
+              0.05973834913899889,
+              0.02906266359836751,
+              0.014073407710453623
+            ],
+            "refinement_ratios": [
+              1.3333333333333333,
+              1.25
+            ],
+            "observed_orders": [
+              2.504569922083888,
+              3.249779209596685
+            ],
+            "observed_order": 3.249779209596685,
+            "safety_factor": 1.25,
+            "reference": 2.16,
+            "monotone_error_decay": true,
+            "envelope": {
+              "label": "d/W=0.5, K_tn vs Howland/Peterson",
+              "method": "min/max envelope (non-statistical)",
+              "count": 3,
+              "min": 2.1002616508610013,
+              "max": 2.1459265922895465,
+              "centre": 2.123094121575274,
+              "half_width": 0.022832470714272635,
+              "relative_half_width": 0.010754337493681914
+            },
+            "status": "ESTIMATED",
+            "reason": null,
+            "half_width": 0.017591759638067028,
+            "relative_half_width": 0.008197745300922857,
+            "band": [
+              2.1283348326514795,
+              2.1635183519276135
+            ],
+            "richardson_value": 2.16,
+            "relative_gci": 0.008197745300922857,
+            "band_covers_reference": true
+          },
+          "within_3pct": true
+        }
+      ],
+      "summary": {
+        "state": "PASS",
+        "counts": {
+          "PASS": 5,
+          "FAIL": 0,
+          "WITHHELD": 0
+        },
+        "failed_labels": [],
+        "withheld_labels": []
+      }
+    }
+  },
+  "field_cloud_summary": {
+    "level": 64,
+    "samples": 5751,
+    "hoop_fe_range": [
+      -1.0009378340230457,
+      3.0027093041910917
+    ],
+    "hoop_exact_range": [
+      -1.0,
+      3.0
+    ],
+    "difference_range": [
+      -0.05272387021182068,
+      0.05382100753058161
+    ]
+  },
+  "answers": {
+    "within_3pct": {
+      "hoop_at_r1.05": {
+        "relative_error": 0.0009593720082473128,
+        "reference": 2.6875684514168476,
+        "within_3pct": true
+      },
+      "kt_hole_edge": {
+        "relative_error": 0.0009031013970307219,
+        "reference": 3.0,
+        "within_3pct": true
+      }
+    },
+    "finite_width": {
+      "ratios": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5
+      ],
+      "max_relative_error": 0.006515466532617417,
+      "within_3pct": true
+    },
+    "pointwise_components": {
+      "hoop": "PASS",
+      "radial": "FAIL",
+      "shear": "PASS_WITH_WITHHELD"
+    }
+  },
+  "notes": [
+    "The hole-edge peak is a nodal-averaged recovered quantity: its ladder is not monotone and overshoots 3T by O(1e-3), so no GCI is claimed for it (WITHHELD, ladder envelope reported). The pointwise hoop stress at r/a=1.05 does satisfy the GCI preconditions and gets an analytic band.",
+    "WITHHELD rows are those whose |reference| falls below 1 % of the far-field tension (the shear component on both symmetry rays, where the exact value is identically zero). A relative-error criterion is meaningless there; the absolute residual is reported in the table instead of a fabricated percentage.",
+    "The Kirsch case is traction driven, so its stress field is independent of E; the Poisson sweep probes the sensitivity of the FE solution to nu, not a change of the reference solution.",
+    "The combined half-width is a linear (worst case) sum of the discretisation and parametric contributions. It is not a statistical confidence interval and must not be reported as one.",
+    "Pointwise radial stress fails the 3 % gate at three of the six probes per ray even at the finest level. That is a real limitation of bilinear Q4 stress recovery inside the near-hole gradient layer, where the exact radial stress vanishes at r=a; it is reported as FAIL rather than dropped, and it is why the certification claim is scoped to the hoop stress / stress concentration and not to every component.",
+    "The finite-width baseline is the Howland (1930) series as tabulated in Peterson's stress concentration charts, with the Heywood (1952) fit, whose own accuracy is about 2 %, as a secondary cross-check."
+  ],
+  "figures": [
+    {
+      "name": "kirsch_field_clouds",
+      "path": "docs/assets/structural-certification/kirsch_field_clouds.png",
+      "caption": "Quarter annulus, traction-driven Kirsch case at the finest level: FE hoop stress, Kirsch exact hoop stress, signed difference and FE von Mises field (all normalised by the far-field tension T).",
+      "fields": {
+        "hoop_fe": [
+          -1.0009378340230457,
+          3.0027093041910917
+        ],
+        "hoop_exact": [
+          -1.0,
+          3.0
+        ],
+        "difference": [
+          -0.05272387021182068,
+          0.05382100753058161
+        ],
+        "von_mises_fe": [
+          0.01913208883131728,
+          2.9961444659702834
+        ],
+        "samples": 5751
+      }
+    },
+    {
+      "name": "kirsch_pointwise_comparison",
+      "path": "docs/assets/structural-certification/kirsch_pointwise_comparison.png",
+      "caption": "Hoop stress along the \u03b8=90\u00b0 and \u03b8=0\u00b0 rays: Q4 FE values with the combined uncertainty as error bars against the Kirsch closed form and its \u00b13 % band."
+    },
+    {
+      "name": "kirsch_convergence_uncertainty",
+      "path": "docs/assets/structural-certification/kirsch_convergence_uncertainty.png",
+      "caption": "Refinement ladders of the pointwise hoop stress and of the nodal-averaged hole-edge peak, with the estimate uncertainty band and the analytic value."
+    },
+    {
+      "name": "finite_width_ktn",
+      "path": "docs/assets/structural-certification/finite_width_ktn.png",
+      "caption": "Net-section stress concentration of the finite-width plate: Q4 FE with uncertainty bars against the Howland/Peterson table and the Heywood fit."
+    }
+  ]
+}

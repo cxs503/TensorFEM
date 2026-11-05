@@ -29,6 +29,80 @@ class PlateResult:
     force: torch.Tensor
 
 
+@dataclass(frozen=True)
+class PlateRigidity:
+    """Per-unit-width bending, twisting and transverse-shear rigidities.
+
+    ``dx``/``dy`` are the flexural rigidities about the ``y``/``x`` axes,
+    ``dxy`` the Poisson coupling (``nu_xy*dx``), ``dt`` the twisting rigidity
+    multiplying the *engineering* twist curvature
+    ``kappa_xy = d(theta_x)/dy + d(theta_y)/dx``, and ``sx``/``sy`` the
+    transverse-shear rigidities (``kappa*G*h`` for a homogeneous plate).
+
+    The associated plate equation is::
+
+        dx w,xxxx + 2 (dxy + 2 dt) w,xxyy + dy w,yyyy = q
+
+    so the Navier twist coefficient is :attr:`navier_twist` ``= dxy + 2 dt``.
+    For an isotropic plate ``dxy = nu D`` and ``dt = D (1 - nu)/2`` reproduce
+    ``navier_twist = D`` exactly; that identity is asserted in the tests, which
+    is why the engineering-curvature convention is used here and matches the
+    ``Bb`` third row of :func:`q4_mindlin_stiffness`.
+    """
+
+    dx: float
+    dy: float
+    dxy: float
+    dt: float
+    sx: float
+    sy: float
+
+    def __post_init__(self) -> None:
+        for name in ("dx", "dy", "dt", "sx", "sy"):
+            value = getattr(self, name)
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise TypeError(f"{name} must be a real number")
+            if not float(value) > 0.0 or not float(value) < float("inf"):
+                raise ValueError(f"{name} must be positive and finite")
+        if isinstance(self.dxy, bool) or not isinstance(self.dxy, (int, float)):
+            raise TypeError("dxy must be a real number")
+        if not abs(float(self.dxy)) < float("inf"):
+            raise ValueError("dxy must be finite")
+        # Positive definiteness of the 3x3 bending block requires
+        # dx*dy > dxy^2 (dt > 0 is checked above).
+        if float(self.dxy) ** 2 >= float(self.dx) * float(self.dy):
+            raise ValueError("dxy^2 must be smaller than dx*dy for a positive definite rigidity")
+
+    @property
+    def navier_twist(self) -> float:
+        """Twist coefficient ``H = dxy + 2 dt`` of the orthotropic plate equation."""
+        return float(self.dxy) + 2.0 * float(self.dt)
+
+    @classmethod
+    def isotropic(
+        cls, young: float, poisson: float, thickness: float,
+        shear_correction: float = 5.0 / 6.0,
+    ) -> "PlateRigidity":
+        """Rigidity of a homogeneous isotropic plate (matches the built-in path)."""
+        for name, value in (("young", young), ("thickness", thickness)):
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise TypeError(f"{name} must be a real number")
+            if not float(value) > 0.0 or not float(value) < float("inf"):
+                raise ValueError(f"{name} must be positive and finite")
+        if isinstance(poisson, bool) or not isinstance(poisson, (int, float)):
+            raise TypeError("poisson must be a real number")
+        poisson = float(poisson)
+        if not -1.0 < poisson < 0.5:
+            raise ValueError("poisson must lie between -1 and 0.5")
+        young, thickness = float(young), float(thickness)
+        rigidity = young * thickness ** 3 / (12.0 * (1.0 - poisson ** 2))
+        shear = float(shear_correction) * young / (2.0 * (1.0 + poisson)) * thickness
+        return cls(
+            dx=rigidity, dy=rigidity, dxy=poisson * rigidity,
+            dt=rigidity * (1.0 - poisson) / 2.0, sx=shear, sy=shear,
+        )
+
+
 def _shape(xi: torch.Tensor, eta: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     one = xi.new_tensor(1.0)
     N = 0.25 * torch.stack(((one-xi)*(one-eta), (one+xi)*(one-eta),
@@ -44,34 +118,58 @@ def _shape(xi: torch.Tensor, eta: torch.Tensor) -> tuple[torch.Tensor, torch.Ten
 
 def q4_mindlin_stiffness(
     xy: torch.Tensor,
-    young: torch.Tensor | float,
-    poisson: torch.Tensor | float,
-    thickness: torch.Tensor | float,
+    young: torch.Tensor | float | None = None,
+    poisson: torch.Tensor | float | None = None,
+    thickness: torch.Tensor | float | None = None,
     shear_correction: float = 5.0 / 6.0,
     shear_treatment: str = "sri",
+    *,
+    rigidity: "PlateRigidity | None" = None,
 ) -> torch.Tensor:
     """Return the 12x12 Mindlin Q4 element stiffness.
 
     ``shear_treatment="sri"`` (default) is the historical one-point shear rule;
     ``"mitc"`` is the assumed natural transverse shear strain field.  Both use the
     same 2x2 bending rule, so only the shear block changes.
+
+    Pass either an isotropic ``(young, poisson, thickness)`` triple or a
+    :class:`PlateRigidity` as ``rigidity``; the latter admits orthotropic plates
+    and supersedes the material arguments.  With ``rigidity=None`` the produced
+    matrix is bit-for-bit the historical isotropic one, which the test suite
+    asserts as an exact identity.
     """
     if xy.shape != (4, 2):
         raise ValueError("xy must have shape (4, 2) in counter-clockwise order")
     dtype, device = xy.dtype, xy.device
-    E = torch.as_tensor(young, dtype=dtype, device=device)
-    nu = torch.as_tensor(poisson, dtype=dtype, device=device)
-    t = torch.as_tensor(thickness, dtype=dtype, device=device)
-    if bool((t <= 0).item()) or bool((nu <= -1).item()) or bool((nu >= .5).item()):
-        raise ValueError("invalid plate material or thickness")
     if shear_treatment not in ("sri", "mitc"):
         raise ValueError("shear_treatment must be 'sri' or 'mitc'")
-    Db = E*t**3/(12*(1-nu**2))*torch.stack((
-        torch.stack((torch.ones_like(nu), nu, torch.zeros_like(nu))),
-        torch.stack((nu, torch.ones_like(nu), torch.zeros_like(nu))),
-        torch.stack((torch.zeros_like(nu), torch.zeros_like(nu), (1-nu)/2)),
-    ))
-    Ds = shear_correction * E/(2*(1+nu))*t * torch.eye(2, dtype=dtype, device=device)
+    if rigidity is None:
+        if young is None or poisson is None or thickness is None:
+            raise ValueError("either (young, poisson, thickness) or rigidity must be given")
+        E = torch.as_tensor(young, dtype=dtype, device=device)
+        nu = torch.as_tensor(poisson, dtype=dtype, device=device)
+        t = torch.as_tensor(thickness, dtype=dtype, device=device)
+        if bool((t <= 0).item()) or bool((nu <= -1).item()) or bool((nu >= .5).item()):
+            raise ValueError("invalid plate material or thickness")
+        Db = E*t**3/(12*(1-nu**2))*torch.stack((
+            torch.stack((torch.ones_like(nu), nu, torch.zeros_like(nu))),
+            torch.stack((nu, torch.ones_like(nu), torch.zeros_like(nu))),
+            torch.stack((torch.zeros_like(nu), torch.zeros_like(nu), (1-nu)/2)),
+        ))
+        Ds = shear_correction * E/(2*(1+nu))*t * torch.eye(2, dtype=dtype, device=device)
+    else:
+        if not isinstance(rigidity, PlateRigidity):
+            raise TypeError("rigidity must be a tensorfem.plate.PlateRigidity")
+        zero = xy.new_tensor(0.0)
+        Db = torch.stack((
+            torch.stack((zero + rigidity.dx, zero + rigidity.dxy, zero)),
+            torch.stack((zero + rigidity.dxy, zero + rigidity.dy, zero)),
+            torch.stack((zero, zero, zero + rigidity.dt)),
+        ))
+        Ds = torch.stack((
+            torch.stack((zero + rigidity.sx, zero)),
+            torch.stack((zero, zero + rigidity.sy)),
+        ))
     ke = torch.zeros((12, 12), dtype=dtype, device=device)
     gp = 1.0 / 3.0**0.5
     for xif in (-gp, gp):

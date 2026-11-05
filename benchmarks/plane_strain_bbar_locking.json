@@ -1,0 +1,275 @@
+{
+  "case": "pressurised thick cylinder, plane strain, inner radius 0.5 m, outer 0.8 m, p = 100 MPa, E = 210 GPa",
+  "reference": "plane-strain Lame field (tensorfem.lame_reference.lame_state)",
+  "sweep": [
+    {
+      "poisson_ratio": 0.3,
+      "formulation": "q4 plane strain",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.0015373430336280893,
+        "radial_stress_l2": 0.007662763631118024,
+        "hoop_stress_l2": 0.0020703373884119686,
+        "mean_stress_l2": 0.0003400311246326399,
+        "inner_radius_displacement_relative": 0.0016765896656320473
+      }
+    },
+    {
+      "poisson_ratio": 0.3,
+      "formulation": "q4 plane strain bbar",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.0009844863487904886,
+        "radial_stress_l2": 0.005981237346287524,
+        "hoop_stress_l2": 0.0016533005536905412,
+        "mean_stress_l2": 0.00012970151453201394,
+        "inner_radius_displacement_relative": 0.0010694758379794147
+      }
+    },
+    {
+      "poisson_ratio": 0.45,
+      "formulation": "q4 plane strain",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.0040895025204203544,
+        "radial_stress_l2": 0.013655656966705924,
+        "hoop_stress_l2": 0.0034824531565852794,
+        "mean_stress_l2": 0.001356823425898722,
+        "inner_radius_displacement_relative": 0.004196945770938761
+      }
+    },
+    {
+      "poisson_ratio": 0.45,
+      "formulation": "q4 plane strain bbar",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.0011624740035299805,
+        "radial_stress_l2": 0.005993464153625975,
+        "hoop_stress_l2": 0.001649480467536639,
+        "mean_stress_l2": 0.00016511459973365245,
+        "inner_radius_displacement_relative": 0.0011900955989350914
+      }
+    },
+    {
+      "poisson_ratio": 0.49,
+      "formulation": "q4 plane strain",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.01685760954430789,
+        "radial_stress_l2": 0.04543335557988933,
+        "hoop_stress_l2": 0.010938553030203215,
+        "mean_stress_l2": 0.006697424343036585,
+        "inner_radius_displacement_relative": 0.016951515175846855
+      }
+    },
+    {
+      "poisson_ratio": 0.49,
+      "formulation": "q4 plane strain bbar",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.0012210357561966269,
+        "radial_stress_l2": 0.0059979419089411295,
+        "hoop_stress_l2": 0.0016481844758327955,
+        "mean_stress_l2": 0.00017808053667997694,
+        "inner_radius_displacement_relative": 0.0012269986129556894
+      }
+    },
+    {
+      "poisson_ratio": 0.499,
+      "formulation": "q4 plane strain",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.1404391403244099,
+        "radial_stress_l2": 0.35456952139173326,
+        "hoop_stress_l2": 0.08342401171576108,
+        "mean_stress_l2": 0.05855613441387344,
+        "inner_radius_displacement_relative": 0.14051859491137045
+      }
+    },
+    {
+      "poisson_ratio": 0.499,
+      "formulation": "q4 plane strain bbar",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.0012350125362590042,
+        "radial_stress_l2": 0.0059990481547905535,
+        "hoop_stress_l2": 0.0016478728279784127,
+        "mean_stress_l2": 0.0001812835540332031,
+        "inner_radius_displacement_relative": 0.0012356194183600403
+      }
+    },
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.6191442390045758,
+        "radial_stress_l2": 1.5522185887498574,
+        "hoop_stress_l2": 0.36423960480828343,
+        "mean_stress_l2": 0.25945183057871213,
+        "inner_radius_displacement_relative": 0.6191793241557816
+      }
+    },
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain bbar",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.001236427372905526,
+        "radial_stress_l2": 0.0059991609777646894,
+        "hoop_stress_l2": 0.0016478412362695984,
+        "mean_stress_l2": 0.0001816102024883456,
+        "inner_radius_displacement_relative": 0.0012364881686143167
+      }
+    }
+  ],
+  "refinement": [
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain",
+      "n_theta": 8,
+      "n_radial": 4,
+      "dofs": 90,
+      "errors": {
+        "displacement_l2": 0.8656933814543879,
+        "radial_stress_l2": 2.160241723642934,
+        "hoop_stress_l2": 0.5117277111166635,
+        "mean_stress_l2": 0.34413232399553273,
+        "inner_radius_displacement_relative": 0.8657392292275538
+      }
+    },
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain bbar",
+      "n_theta": 8,
+      "n_radial": 4,
+      "dofs": 90,
+      "errors": {
+        "displacement_l2": 0.004932058841075581,
+        "radial_stress_l2": 0.024065661617181405,
+        "hoop_stress_l2": 0.006599526613637809,
+        "mean_stress_l2": 0.0006828479868284938,
+        "inner_radius_displacement_relative": 0.004932289336911216
+      }
+    },
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.6191442390045758,
+        "radial_stress_l2": 1.5522185887498574,
+        "hoop_stress_l2": 0.36423960480828343,
+        "mean_stress_l2": 0.25945183057871213,
+        "inner_radius_displacement_relative": 0.6191793241557816
+      }
+    },
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain bbar",
+      "n_theta": 16,
+      "n_radial": 8,
+      "dofs": 306,
+      "errors": {
+        "displacement_l2": 0.001236427372905526,
+        "radial_stress_l2": 0.0059991609777646894,
+        "hoop_stress_l2": 0.0016478412362695984,
+        "mean_stress_l2": 0.0001816102024883456,
+        "inner_radius_displacement_relative": 0.0012364881686143167
+      }
+    },
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain",
+      "n_theta": 32,
+      "n_radial": 16,
+      "dofs": 1122,
+      "errors": {
+        "displacement_l2": 0.2894342995697297,
+        "radial_stress_l2": 0.7264967141352886,
+        "hoop_stress_l2": 0.1700677877898614,
+        "mean_stress_l2": 0.1229117625677535,
+        "inner_radius_displacement_relative": 0.28945123631847874
+      }
+    },
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain bbar",
+      "n_theta": 32,
+      "n_radial": 16,
+      "dofs": 1122,
+      "errors": {
+        "displacement_l2": 0.00030932651757856796,
+        "radial_stress_l2": 0.0014986220655611106,
+        "hoop_stress_l2": 0.00041182726633148944,
+        "mean_stress_l2": 4.6117115483951136e-05,
+        "inner_radius_displacement_relative": 0.00030934210514099486
+      }
+    },
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain",
+      "n_theta": 48,
+      "n_radial": 24,
+      "dofs": 2450,
+      "errors": {
+        "displacement_l2": 0.15333943189398946,
+        "radial_stress_l2": 0.3849773957932319,
+        "hoop_stress_l2": 0.09008012861256741,
+        "mean_stress_l2": 0.0652785455684975,
+        "inner_radius_displacement_relative": 0.1533484987763616
+      }
+    },
+    {
+      "poisson_ratio": 0.4999,
+      "formulation": "q4 plane strain bbar",
+      "n_theta": 48,
+      "n_radial": 24,
+      "dofs": 2450,
+      "errors": {
+        "displacement_l2": 0.00013749661697920704,
+        "radial_stress_l2": 0.0006659563318450558,
+        "hoop_stress_l2": 0.0001830232498123829,
+        "mean_stress_l2": 2.055603531274118e-05,
+        "inner_radius_displacement_relative": 0.00013750360141058588
+      }
+    }
+  ],
+  "observed_order": {
+    "standard": {
+      "displacement_l2": 1.566779337645448,
+      "radial_stress_l2": 1.5662243855083826
+    },
+    "bbar": {
+      "displacement_l2": 1.9996741543361485,
+      "radial_stress_l2": 2.0003626085910104
+    }
+  },
+  "figures": [
+    "error_vs_poisson.png",
+    "refinement.png",
+    "radial_stress_profile.png"
+  ]
+}

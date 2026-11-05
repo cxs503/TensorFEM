@@ -240,45 +240,91 @@ def locking_sweep(poissons=DEFAULT_POISSONS, *, face_divisions: int = 6, radial_
     return records
 
 
-def plane_strain_sweep(poissons=DEFAULT_POISSONS, *, n_theta: int = 16, n_radial: int = 8,
-                       inner_radius: float = 0.5, outer_radius: float = 0.8,
-                       pressure: float = 100.0e6, young_modulus: float = 210.0e9):
-    """Same question for the 2-D Q4 plane-strain path (no mitigation available).
+PLANE_STRAIN_FORMULATIONS = ("standard", "bbar")
 
-    The merged 2-D element set has no B-bar / EAS counterpart, so this sweep only
-    quantifies the locking debt; it cannot be cured by switching formulation.
+
+def plane_strain_case(poisson: float, *, formulation: str = "standard", n_theta: int = 16,
+                      n_radial: int = 8, inner_radius: float = 0.5, outer_radius: float = 0.8,
+                      pressure: float = 100.0e6, young_modulus: float = 210.0e9):
+    """Score one 2-D Q4 plane-strain formulation against the plane-strain Lame field.
+
+    ``formulation="standard"`` is the merged fully integrated Q4 path of
+    :mod:`tensorfem.continuum`; ``"bbar"`` is the mean-dilatation counterpart of
+    :mod:`tensorfem.continuum_bbar`.  Stress is recovered at element centres and
+    compared with the exact field at the same centres, exactly as in the 3-D case,
+    so the two families are scored by one metric.
     """
+    if formulation not in PLANE_STRAIN_FORMULATIONS:
+        raise ValueError(f"formulation must be one of {PLANE_STRAIN_FORMULATIONS}")
     from .continuum import ContinuumModel, solve_continuum
     from .lame_reference import (cartesian_to_polar_stress, circular_pressure_loads,
                                  lame_state, radial_component, sector_q4_mesh,
                                  symmetry_fixed_dofs)
 
+    nodes, cells = sector_q4_mesh(inner_radius, outer_radius, n_theta, n_radial)
+    forces = circular_pressure_loads(n_theta, n_radial, inner_radius, pressure, inner=True)
+    fixed = symmetry_fixed_dofs(nodes, n_theta=n_theta, n_radial=n_radial)
+    model = ContinuumModel(nodes, cells, torch.tensor(young_modulus),
+                           torch.tensor(float(poisson)), torch.tensor(1.0),
+                           forces, fixed, plane="strain")
+    if formulation == "bbar":
+        from .continuum_bbar import solve_continuum_bbar
+        result = solve_continuum_bbar(model)
+    else:
+        result = solve_continuum(model)
+    displacement = result.displacement.reshape(-1, 2)
+    radius = torch.linalg.vector_norm(nodes, dim=1)
+    state = lame_state(radius, inner_radius=inner_radius, outer_radius=outer_radius,
+                       inner_pressure=pressure, young_modulus=young_modulus,
+                       poisson_ratio=float(poisson), plane="strain")
+    exact_radial = state.radial_displacement
+    fe_radial = radial_component(displacement, nodes)
+    errors = {"displacement_l2": _relative((fe_radial - exact_radial) ** 2, exact_radial ** 2)}
+    centres = nodes[cells].mean(1)
+    sigma_r, sigma_theta, _ = cartesian_to_polar_stress(result.stress, centres)
+    exact_centres = lame_state(torch.linalg.vector_norm(centres, dim=1),
+                               inner_radius=inner_radius, outer_radius=outer_radius,
+                               inner_pressure=pressure, young_modulus=young_modulus,
+                               poisson_ratio=float(poisson), plane="strain")
+    errors["radial_stress_l2"] = _relative((sigma_r - exact_centres.radial_stress) ** 2,
+                                           exact_centres.radial_stress ** 2)
+    errors["hoop_stress_l2"] = _relative((sigma_theta - exact_centres.hoop_stress) ** 2,
+                                         exact_centres.hoop_stress ** 2)
+    # Plane strain: sigma_z = nu (sigma_r + sigma_theta), so the mean stress is a
+    # pure volumetric indicator.  Locking shows up here first and hardest.
+    mean_fe = (1.0 + float(poisson)) * (sigma_r + sigma_theta) / 3.0
+    mean_exact = (1.0 + float(poisson)) * (exact_centres.radial_stress
+                                           + exact_centres.hoop_stress) / 3.0
+    errors["mean_stress_l2"] = _relative((mean_fe - mean_exact) ** 2, mean_exact ** 2)
+    inner = torch.abs(radius - inner_radius) < 1e-12
+    errors["inner_radius_displacement_relative"] = abs(
+        float(fe_radial[inner].mean()) - float(exact_radial[inner].mean())) / abs(
+            float(exact_radial[inner].mean()))
+    return {"poisson_ratio": float(poisson),
+            "formulation": "q4 plane strain" if formulation == "standard" else "q4 plane strain bbar",
+            "n_theta": int(n_theta), "n_radial": int(n_radial),
+            "dofs": int(2 * len(nodes)), "errors": errors}
+
+
+def plane_strain_sweep(poissons=DEFAULT_POISSONS, *, n_theta: int = 16, n_radial: int = 8,
+                       inner_radius: float = 0.5, outer_radius: float = 0.8,
+                       pressure: float = 100.0e6, young_modulus: float = 210.0e9,
+                       formulations=("standard",)):
+    """Error-vs-Poisson tables for the 2-D Q4 plane-strain path.
+
+    The merged element set ships only the fully integrated Q4, which locks; the
+    default sweep still measures that debt.  Pass ``formulations=("standard",
+    "bbar")`` to add the mean-dilatation element of
+    :mod:`tensorfem.continuum_bbar`, which is the cure for the same problem.
+    """
+    for formulation in formulations:
+        if formulation not in PLANE_STRAIN_FORMULATIONS:
+            raise ValueError(f"formulation must be one of {PLANE_STRAIN_FORMULATIONS}")
     records = []
     for poisson in poissons:
-        nodes, cells = sector_q4_mesh(inner_radius, outer_radius, n_theta, n_radial)
-        forces = circular_pressure_loads(n_theta, n_radial, inner_radius, pressure, inner=True)
-        fixed = symmetry_fixed_dofs(nodes, n_theta=n_theta, n_radial=n_radial)
-        model = ContinuumModel(nodes, cells, torch.tensor(young_modulus),
-                               torch.tensor(float(poisson)), torch.tensor(1.0),
-                               forces, fixed, plane="strain")
-        result = solve_continuum(model)
-        displacement = result.displacement.reshape(-1, 2)
-        radius = torch.linalg.vector_norm(nodes, dim=1)
-        state = lame_state(radius, inner_radius=inner_radius, outer_radius=outer_radius,
-                           inner_pressure=pressure, young_modulus=young_modulus,
-                           poisson_ratio=float(poisson), plane="strain")
-        exact_radial = state.radial_displacement
-        fe_radial = radial_component(displacement, nodes)
-        errors = {"displacement_l2": _relative((fe_radial - exact_radial) ** 2, exact_radial ** 2)}
-        centres = nodes[cells].mean(1)
-        sigma_r, sigma_theta, _ = cartesian_to_polar_stress(result.stress, centres)
-        exact_centres = lame_state(torch.linalg.vector_norm(centres, dim=1),
-                                   inner_radius=inner_radius, outer_radius=outer_radius,
-                                   inner_pressure=pressure, young_modulus=young_modulus,
-                                   poisson_ratio=float(poisson), plane="strain")
-        errors["radial_stress_l2"] = _relative((sigma_r - exact_centres.radial_stress) ** 2,
-                                               exact_centres.radial_stress ** 2)
-        records.append({"poisson_ratio": float(poisson), "formulation": "q4 plane strain",
-                        "n_theta": int(n_theta), "n_radial": int(n_radial),
-                        "dofs": int(2 * len(nodes)), "errors": errors})
+        for formulation in formulations:
+            records.append(plane_strain_case(
+                poisson, formulation=formulation, n_theta=n_theta, n_radial=n_radial,
+                inner_radius=inner_radius, outer_radius=outer_radius,
+                pressure=pressure, young_modulus=young_modulus))
     return records

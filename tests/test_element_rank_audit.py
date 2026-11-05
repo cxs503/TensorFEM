@@ -75,6 +75,7 @@ def test_solids_and_membranes_are_rank_sufficient():
         "tet4",
         "hex8 B-bar (unit cube)",
         "hex8 B-bar (distorted)",
+        "tet10 (3-D, straight edges)",
         "hex20 (3x3x3 integration)",
         "q4 membrane (2x2 integration)",
         "cst membrane",
