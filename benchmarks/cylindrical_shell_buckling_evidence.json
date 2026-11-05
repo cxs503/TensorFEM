@@ -1,0 +1,242 @@
+{
+  "schema": "tensorfem.cylindrical-shell-buckling-audit/1.0",
+  "case": {
+    "radius": 1.0,
+    "length": 1.2,
+    "young": 200000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.01
+  },
+  "references": {
+    "donnell_finite_length": 12106132.931829931,
+    "classical_asymptotic": 12104550.653376048,
+    "donnell_over_classical": 1.000130717653153
+  },
+  "hoop_energy": [
+    {
+      "ntheta": 8,
+      "nz": 4,
+      "energy_fem": 8074199891.65904,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0708740202246518,
+      "facet_area_factor": 0.9744953584044327,
+      "ratio_over_facet_area": 1.0989010989010994
+    },
+    {
+      "ntheta": 16,
+      "nz": 4,
+      "energy_fem": 8232382819.14211,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0918536825760496,
+      "facet_area_factor": 0.9935868511442058,
+      "ratio_over_facet_area": 1.0989010989010983
+    },
+    {
+      "ntheta": 32,
+      "nz": 4,
+      "energy_fem": 8272215799.242038,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0971366956435367,
+      "facet_area_factor": 0.9983943930356184,
+      "ratio_over_facet_area": 1.0989010989010988
+    },
+    {
+      "ntheta": 64,
+      "nz": 4,
+      "energy_fem": 8282192062.298251,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0984598386260214,
+      "facet_area_factor": 0.9995984531496791,
+      "ratio_over_facet_area": 1.0989010989010992
+    }
+  ],
+  "prescribed_energy": [
+    {
+      "nz": 20,
+      "ntheta": 16,
+      "m": 5,
+      "energy_fem": 7706508540.656277,
+      "energy_donnell": 4783502787.9677925,
+      "ratio": 1.6110596945905167
+    },
+    {
+      "nz": 20,
+      "ntheta": 16,
+      "m": 6,
+      "energy_fem": 9898380902.218077,
+      "energy_donnell": 5871694733.657212,
+      "ratio": 1.6857792087656478
+    },
+    {
+      "nz": 20,
+      "ntheta": 16,
+      "m": 7,
+      "energy_fem": 13038605783.948242,
+      "energy_donnell": 7663724688.9281645,
+      "ratio": 1.7013405769632102
+    },
+    {
+      "nz": 20,
+      "ntheta": 16,
+      "m": 8,
+      "energy_fem": 17491527398.45243,
+      "energy_donnell": 10412585118.054195,
+      "ratio": 1.67984484161615
+    }
+  ],
+  "eigen": [
+    {
+      "nz": 10,
+      "ntheta": 16,
+      "elements": 160,
+      "N_cr": 25447033.86671515,
+      "error_vs_donnell": 1.101995245716226,
+      "error_vs_classical": 1.1022700136016852,
+      "faceting_ratio": 0.03806023374435662,
+      "circumferential_spread": 3.13784067901507e-10,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "nz": 10,
+      "ntheta": 24,
+      "elements": 240,
+      "N_cr": 19526248.28703862,
+      "error_vs_donnell": 0.6129220120902046,
+      "error_vs_classical": 0.6131328494703441,
+      "faceting_ratio": 0.01703708685546585,
+      "circumferential_spread": 6.517006498599922e-10,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "nz": 10,
+      "ntheta": 32,
+      "elements": 320,
+      "N_cr": 17493914.93092104,
+      "error_vs_donnell": 0.4450456664758187,
+      "error_vs_classical": 0.4452345594540396,
+      "faceting_ratio": 0.009607359798384776,
+      "circumferential_spread": 2.2093206323912275e-09,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "nz": 10,
+      "ntheta": 48,
+      "elements": 480,
+      "N_cr": 14772041.419673167,
+      "error_vs_donnell": 0.22021140052360752,
+      "error_vs_classical": 0.22037090369423468,
+      "faceting_ratio": 0.004277569313094794,
+      "circumferential_spread": 0.9893975175122081,
+      "axial_zero_crossings": 2,
+      "axisymmetric": false
+    },
+    {
+      "nz": 10,
+      "ntheta": 64,
+      "elements": 640,
+      "N_cr": 12988626.54857206,
+      "error_vs_donnell": 0.07289640892855562,
+      "error_vs_classical": 0.0730366554292072,
+      "faceting_ratio": 0.002407636663901557,
+      "circumferential_spread": 0.960812084549575,
+      "axial_zero_crossings": 2,
+      "axisymmetric": false
+    },
+    {
+      "nz": 10,
+      "ntheta": 96,
+      "elements": 960,
+      "N_cr": 11803117.221283605,
+      "error_vs_donnell": -0.025029934187293188,
+      "error_vs_classical": -0.024902488388395573,
+      "faceting_ratio": 0.0010705383806982464,
+      "circumferential_spread": 0.9388056020146748,
+      "axial_zero_crossings": 2,
+      "axisymmetric": false
+    },
+    {
+      "nz": 6,
+      "ntheta": 32,
+      "elements": 192,
+      "N_cr": 21200846.25447417,
+      "error_vs_donnell": 0.7512484270457707,
+      "error_vs_classical": 0.7514773461302422,
+      "faceting_ratio": 0.009607359798384776,
+      "circumferential_spread": 0.9403481728299085,
+      "axial_zero_crossings": 2,
+      "axisymmetric": false
+    },
+    {
+      "nz": 10,
+      "ntheta": 32,
+      "elements": 320,
+      "N_cr": 17493914.930920765,
+      "error_vs_donnell": 0.44504566647579596,
+      "error_vs_classical": 0.4452345594540168,
+      "faceting_ratio": 0.009607359798384776,
+      "circumferential_spread": 2.1407062836492898e-09,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "nz": 15,
+      "ntheta": 32,
+      "elements": 480,
+      "N_cr": 15777959.07053648,
+      "error_vs_donnell": 0.303302975391294,
+      "error_vs_classical": 0.3034733400975847,
+      "faceting_ratio": 0.009607359798384776,
+      "circumferential_spread": 0.9967666641117282,
+      "axial_zero_crossings": 2,
+      "axisymmetric": false
+    },
+    {
+      "nz": 20,
+      "ntheta": 32,
+      "elements": 640,
+      "N_cr": 15393751.389378173,
+      "error_vs_donnell": 0.2715663602953098,
+      "error_vs_classical": 0.2717325764657561,
+      "faceting_ratio": 0.009607359798384776,
+      "circumferential_spread": 0.9811202536330332,
+      "axial_zero_crossings": 2,
+      "axisymmetric": false
+    },
+    {
+      "nz": 30,
+      "ntheta": 32,
+      "elements": 960,
+      "N_cr": 14950174.49692438,
+      "error_vs_donnell": 0.23492568445343767,
+      "error_vs_classical": 0.23508711104072796,
+      "faceting_ratio": 0.009607359798384776,
+      "circumferential_spread": 6.12961383993568e-10,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    }
+  ],
+  "boundary": "linear initial-stress eigenbuckling, prescribed unit membrane resultant, flat-facet cylinder, diaphragm SS ends; no postbuckling/imperfection/plasticity claim",
+  "audit": {
+    "monotone_in_ntheta": true,
+    "monotone_in_nz": true,
+    "sign_change": true,
+    "min_error": -0.025029934187293188,
+    "max_error": 1.101995245716226,
+    "meshes_within_3pct": [
+      "nz=10,ntheta=96"
+    ],
+    "axisymmetry_lost_at": [
+      "nz=10,ntheta=48",
+      "nz=10,ntheta=64",
+      "nz=10,ntheta=96",
+      "nz=6,ntheta=32",
+      "nz=15,ntheta=32",
+      "nz=20,ntheta=32"
+    ],
+    "certified": false,
+    "reason": "flat-facet cylinder buckling is not certifiable within 3%: the error is monotone in ntheta at fixed nz but it overshoots and changes sign, the axial family is still 23% high at the finest affordable mesh, and the critical mode stops being axisymmetric once ntheta >= 48"
+  }
+}

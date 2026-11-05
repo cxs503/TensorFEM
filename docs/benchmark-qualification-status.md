@@ -111,6 +111,10 @@ Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归�
 
 扭转（Saint-Venant 三个截面）已由闭式解独立判定，见 [saint-venant-torsion.md](saint-venant-torsion.md)：最细网格刚度与中跨剪应力均 < 3%，但逐点剪应力峰值需 `n >= 24` 才进 3%（2.886%），粗网格失败项保留。
 
+### 壳单元几何刚度：已复核但仍未认证（m3652）
+
+曲面壳几何刚度已用轴向受压圆柱壳的经典解 `N_cr = E t^2/(R sqrt(3(1-nu^2)))` 独立复核，见 [圆柱壳几何刚度审计](cylindrical-shell-geometric-stiffness-audit.md)。结论：环向膜刚度与解析值一致（误差 ≤0.1%），但屈曲载荷在可负担网格内误差自 +110.2% 单调降至 −2.50% 并穿越零点，轴向族最细网格仍 +23.5%，且临界模态在 `n_theta≥48` 失去轴对称性，故该项**保持未认证**（`certified=False`），并以 fail-closed 测试锁死。
+
 ## 复现
 
 在项目 Python 环境安装 `.[dev,reports]` 后运行：

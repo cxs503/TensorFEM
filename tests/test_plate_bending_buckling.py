@@ -1,4 +1,5 @@
 """Buckling of a simply supported panel under a linearly varying edge stress."""
+
 import math
 
 import numpy as np
@@ -31,12 +32,16 @@ def _rigidities():
 def _coefficient(edge_ratio, aspect, basis=16, rigidities=None):
     d, _, h = rigidities if rigidities is not None else _rigidities()
     mode = ritz_stress_gradient_buckling_load(
-        length=aspect, width=1.0, rigidity_x=d, rigidity_y=d, coupling_rigidity=h,
-        basis_x=basis, basis_y=basis, edge_ratio=edge_ratio,
+        length=aspect,
+        width=1.0,
+        rigidity_x=d,
+        rigidity_y=d,
+        coupling_rigidity=h,
+        basis_x=basis,
+        basis_y=basis,
+        edge_ratio=edge_ratio,
     )
-    return bending_buckling_coefficient(
-        critical_load=mode.multiplier, rigidity=d, width=1.0
-    )
+    return bending_buckling_coefficient(critical_load=mode.multiplier, rigidity=d, width=1.0)
 
 
 # --------------------------------------------------------------------------
@@ -97,8 +102,14 @@ def test_bending_matrix_is_diagonal_and_matches_analytic_rigidity():
     d, _, h = _rigidities()
     a, b = 2.0, 1.0
     basis, _, modes = stress_gradient_matrices(
-        length=a, width=b, rigidity_x=d, rigidity_y=d, coupling_rigidity=h,
-        basis_x=4, basis_y=4, edge_ratio=-1.0,
+        length=a,
+        width=b,
+        rigidity_x=d,
+        rigidity_y=d,
+        coupling_rigidity=h,
+        basis_x=4,
+        basis_y=4,
+        edge_ratio=-1.0,
     )
     assert np.allclose(basis - np.diag(np.diag(basis)), 0.0)
     for index, (m, n) in enumerate(modes):
@@ -110,12 +121,24 @@ def test_bending_matrix_is_diagonal_and_matches_analytic_rigidity():
 def test_closed_form_matrices_match_quadrature():
     d, _, h = _rigidities()
     closed = stress_gradient_matrices(
-        length=3.0, width=1.0, rigidity_x=d, rigidity_y=d, coupling_rigidity=h,
-        basis_x=6, basis_y=6, edge_ratio=-0.7,
+        length=3.0,
+        width=1.0,
+        rigidity_x=d,
+        rigidity_y=d,
+        coupling_rigidity=h,
+        basis_x=6,
+        basis_y=6,
+        edge_ratio=-0.7,
     )
     quad = stress_gradient_quadrature(
-        length=3.0, width=1.0, rigidity_x=d, rigidity_y=d, coupling_rigidity=h,
-        basis_x=6, basis_y=6, edge_ratio=-0.7,
+        length=3.0,
+        width=1.0,
+        rigidity_x=d,
+        rigidity_y=d,
+        coupling_rigidity=h,
+        basis_x=6,
+        basis_y=6,
+        edge_ratio=-0.7,
     )
     for closed_matrix, quad_matrix in zip(closed[:2], quad[:2]):
         scale = np.abs(closed_matrix).max()
@@ -126,8 +149,15 @@ def test_quadrature_rejects_too_few_samples():
     d, _, h = _rigidities()
     with pytest.raises(ValueError):
         stress_gradient_quadrature(
-            length=1.0, width=1.0, rigidity_x=d, rigidity_y=d,
-            coupling_rigidity=h, basis_x=3, basis_y=3, edge_ratio=-1.0, samples=4,
+            length=1.0,
+            width=1.0,
+            rigidity_x=d,
+            rigidity_y=d,
+            coupling_rigidity=h,
+            basis_x=3,
+            basis_y=3,
+            edge_ratio=-1.0,
+            samples=4,
         )
 
 
@@ -179,8 +209,14 @@ def test_stiffened_panel_carries_a_higher_bending_load():
 
     def load(rigidity_x):
         return ritz_stress_gradient_buckling_load(
-            length=2.0, width=1.0, rigidity_x=rigidity_x, rigidity_y=d,
-            coupling_rigidity=h, basis_x=16, basis_y=16, edge_ratio=-1.0,
+            length=2.0,
+            width=1.0,
+            rigidity_x=rigidity_x,
+            rigidity_y=d,
+            coupling_rigidity=h,
+            basis_x=16,
+            basis_y=16,
+            edge_ratio=-1.0,
         ).multiplier
 
     assert load(stiffened) > load(d)
@@ -256,8 +292,14 @@ def test_basis_too_small_is_rejected(basis):
     d, _, h = _rigidities()
     with pytest.raises(ValueError):
         ritz_stress_gradient_buckling_load(
-            length=1.0, width=1.0, rigidity_x=d, rigidity_y=d,
-            coupling_rigidity=h, basis_x=basis, basis_y=4, edge_ratio=-1.0,
+            length=1.0,
+            width=1.0,
+            rigidity_x=d,
+            rigidity_y=d,
+            coupling_rigidity=h,
+            basis_x=basis,
+            basis_y=4,
+            edge_ratio=-1.0,
         )
 
 
@@ -265,8 +307,12 @@ def test_negative_thickness_is_rejected():
     with pytest.raises(ValueError):
         isotropic_plate_rigidities(E, NU, -0.01)
         ritz_stress_gradient_buckling_load(
-            length=1.0, width=-1.0, rigidity_x=1.0, rigidity_y=1.0,
-            coupling_rigidity=1.0, edge_ratio=-1.0,
+            length=1.0,
+            width=-1.0,
+            rigidity_x=1.0,
+            rigidity_y=1.0,
+            coupling_rigidity=1.0,
+            edge_ratio=-1.0,
         )
 
 
@@ -281,8 +327,15 @@ def test_coefficient_requires_positive_quantities():
 def test_mode_shape_is_normalised_and_vanishes_on_the_edges():
     d, _, h = _rigidities()
     field = stress_gradient_mode_shape(
-        length=1.0, width=1.0, rigidity_x=d, rigidity_y=d, coupling_rigidity=h,
-        basis_x=16, basis_y=16, edge_ratio=-1.0, samples=41,
+        length=1.0,
+        width=1.0,
+        rigidity_x=d,
+        rigidity_y=d,
+        coupling_rigidity=h,
+        basis_x=16,
+        basis_y=16,
+        edge_ratio=-1.0,
+        samples=41,
     )
     w = field["w"]
     assert abs(np.abs(w).max() - 1.0) < 1e-12

@@ -14,6 +14,7 @@ Outputs
 Everything here is a handful of 60-DOF element problems, so the script runs in
 seconds and is safe to run under load.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -28,9 +29,16 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "src"))
 from tensorfem.element_rank_audit import audit_element, rigid_body_basis_solid3d  # noqa: E402
 from tensorfem.hex20 import structured_hex20_mesh  # noqa: E402
 from tensorfem.hex20_distortion_audit import (  # noqa: E402
-    boundary_nodes, cylindrical_bend, element_stiffness, element_stiffness_reduced,
-    element_volume, energy_identity_residual, gauss_rule, graded_shear, patch_residual,
-    rank_audit, warp,
+    boundary_nodes,
+    cylindrical_bend,
+    element_stiffness,
+    element_stiffness_reduced,
+    element_volume,
+    energy_identity_residual,
+    gauss_rule,
+    graded_shear,
+    patch_residual,
+    warp,
 )
 from tensorfem.solid3d import elasticity_matrix_3d  # noqa: E402
 
@@ -63,13 +71,15 @@ def sweeps():
             nodes, cells, bnd = _mesh(kind, amplitude=a)
             good = patch_residual(nodes, cells, bnd, GRAD, OFFSET)
             bad = patch_residual(nodes, cells, bnd, GRAD, OFFSET, center_jacobian=True)
-            rows.append({
-                "amplitude": float(a),
-                "displacement_relative_error": good["displacement_relative_error"],
-                "centroid_stress_relative_error": good["centroid_stress_relative_error"],
-                "energy_identity_relative_error": energy_identity_residual(nodes, cells, GRAD),
-                "control_displacement_relative_error": bad["displacement_relative_error"],
-            })
+            rows.append(
+                {
+                    "amplitude": float(a),
+                    "displacement_relative_error": good["displacement_relative_error"],
+                    "centroid_stress_relative_error": good["centroid_stress_relative_error"],
+                    "energy_identity_relative_error": energy_identity_residual(nodes, cells, GRAD),
+                    "control_displacement_relative_error": bad["displacement_relative_error"],
+                }
+            )
         out[kind] = rows
     rows = []
     for r in RADII:
@@ -78,15 +88,19 @@ def sweeps():
         bad = patch_residual(nodes, cells, bnd, GRAD, OFFSET, center_jacobian=True)
         vol = float(element_volume(nodes[cells.long()]).sum())
         exact = 2.0 * (1.0 + 1.0 / (2.0 * r))
-        rows.append({
-            "radius": float(r), "curvature": 1.0 / r,
-            "displacement_relative_error": good["displacement_relative_error"],
-            "centroid_stress_relative_error": good["centroid_stress_relative_error"],
-            "energy_identity_relative_error": energy_identity_residual(nodes, cells, GRAD),
-            "control_displacement_relative_error": bad["displacement_relative_error"],
-            "volume": vol, "analytic_volume": exact,
-            "volume_relative_error": abs(vol - exact) / exact,
-        })
+        rows.append(
+            {
+                "radius": float(r),
+                "curvature": 1.0 / r,
+                "displacement_relative_error": good["displacement_relative_error"],
+                "centroid_stress_relative_error": good["centroid_stress_relative_error"],
+                "energy_identity_relative_error": energy_identity_residual(nodes, cells, GRAD),
+                "control_displacement_relative_error": bad["displacement_relative_error"],
+                "volume": vol,
+                "analytic_volume": exact,
+                "volume_relative_error": abs(vol - exact) / exact,
+            }
+        )
         nodes4, cells4, _ = _mesh("bent", radius=r, nx=4, ny=2, nz=2)
         vol4 = float(element_volume(nodes4[cells4.long()]).sum())
         rows[-1]["volume_relative_error_nx4"] = abs(vol4 - exact) / exact
@@ -110,36 +124,49 @@ def ranks():
         full = audit_element(f"hex20 3x3x3 ({label})", kf[0], rigid_body_basis_solid3d(x[0]))
         kr, _ = element_stiffness_reduced(x, d)
         red = audit_element(f"hex20 2x2x2 ({label})", kr[0], rigid_body_basis_solid3d(x[0]))
-        rows.append({
-            "geometry": label,
-            "full_null_dim": int(full.null_dim), "full_spurious": int(full.spurious),
-            "full_first_positive_ratio": float(full.first_positive_ratio),
-            "reduced_null_dim": int(red.null_dim), "reduced_spurious": int(red.spurious),
-            "reduced_first_positive_ratio": float(red.first_positive_ratio),
-        })
+        rows.append(
+            {
+                "geometry": label,
+                "full_null_dim": int(full.null_dim),
+                "full_spurious": int(full.spurious),
+                "full_first_positive_ratio": float(full.first_positive_ratio),
+                "reduced_null_dim": int(red.null_dim),
+                "reduced_spurious": int(red.spurious),
+                "reduced_first_positive_ratio": float(red.first_positive_ratio),
+            }
+        )
     return rows
 
 
 def markdown(data):
-    lines = ["### Distortion sweep (serendipity brick, 2x2x2 elements, 27 free nodes)", "",
-             "| warp a | displacement | centroid stress | energy identity | control (single Jacobian) |",
-             "|---:|---:|---:|---:|---:|"]
+    lines = [
+        "### Distortion sweep (serendipity brick, 2x2x2 elements, 27 free nodes)",
+        "",
+        "| warp a | displacement | centroid stress | energy identity | control (single Jacobian) |",
+        "|---:|---:|---:|---:|---:|",
+    ]
     for r in data["sweeps"]["warp"]:
         lines.append(
             f"| {r['amplitude']:.2f} | {r['displacement_relative_error']:.3e} | "
             f"{r['centroid_stress_relative_error']:.3e} | {r['energy_identity_relative_error']:.3e} | "
             f"{r['control_displacement_relative_error']:.3e} |"
         )
-    lines += ["", "| graded shear a | displacement | centroid stress | energy identity | control (single Jacobian) |",
-              "|---:|---:|---:|---:|---:|"]
+    lines += [
+        "",
+        "| graded shear a | displacement | centroid stress | energy identity | control (single Jacobian) |",
+        "|---:|---:|---:|---:|---:|",
+    ]
     for r in data["sweeps"]["graded_shear"]:
         lines.append(
             f"| {r['amplitude']:.2f} | {r['displacement_relative_error']:.3e} | "
             f"{r['centroid_stress_relative_error']:.3e} | {r['energy_identity_relative_error']:.3e} | "
             f"{r['control_displacement_relative_error']:.3e} |"
         )
-    lines += ["", "| bend radius R | displacement | centroid stress | volume error (2 elem) | volume error (4 elem) | control |",
-              "|---:|---:|---:|---:|---:|---:|"]
+    lines += [
+        "",
+        "| bend radius R | displacement | centroid stress | volume error (2 elem) | volume error (4 elem) | control |",
+        "|---:|---:|---:|---:|---:|---:|",
+    ]
     for r in data["sweeps"]["bent"]:
         lines.append(
             f"| {r['radius']:.1f} | {r['displacement_relative_error']:.3e} | "
@@ -157,6 +184,7 @@ def markdown(data):
 
 def figure(data, path: pathlib.Path):
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
@@ -164,10 +192,19 @@ def figure(data, path: pathlib.Path):
     ax = axes[0]
     for kind, style in (("warp", "o-"), ("graded_shear", "s-")):
         rows = data["sweeps"][kind]
-        ax.semilogy([r["amplitude"] for r in rows], [r["displacement_relative_error"] for r in rows],
-                    style, label=f"correct kernel, {kind.replace('_', ' ')}")
-        ax.semilogy([r["amplitude"] for r in rows], [r["control_displacement_relative_error"] for r in rows],
-                    style, mfc="none", label=f"single-Jacobian control, {kind.replace('_', ' ')}")
+        ax.semilogy(
+            [r["amplitude"] for r in rows],
+            [r["displacement_relative_error"] for r in rows],
+            style,
+            label=f"correct kernel, {kind.replace('_', ' ')}",
+        )
+        ax.semilogy(
+            [r["amplitude"] for r in rows],
+            [r["control_displacement_relative_error"] for r in rows],
+            style,
+            mfc="none",
+            label=f"single-Jacobian control, {kind.replace('_', ' ')}",
+        )
     ax.axhline(1e-11, color="k", ls=":", lw=1, label="roundoff gate 1e-11")
     ax.set_xlabel("distortion amplitude a")
     ax.set_ylabel("relative patch-test residual")
@@ -179,8 +216,12 @@ def figure(data, path: pathlib.Path):
     rows = data["sweeps"]["bent"]
     xr = [r["curvature"] for r in rows]
     ax.loglog(xr, [r["displacement_relative_error"] for r in rows], "o-", label="correct kernel")
-    ax.loglog(xr, [r["control_displacement_relative_error"] for r in rows], "s--",
-              label="single-Jacobian control")
+    ax.loglog(
+        xr,
+        [r["control_displacement_relative_error"] for r in rows],
+        "s--",
+        label="single-Jacobian control",
+    )
     ax.axhline(1e-11, color="k", ls=":", lw=1, label="roundoff gate 1e-11")
     ax.set_xlabel("curvature 1/R of the bent sector")
     ax.set_ylabel("relative patch-test residual")
