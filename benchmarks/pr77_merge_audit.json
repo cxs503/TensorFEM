@@ -1,0 +1,72 @@
+{
+  "benchmark": "pr77_merge_resolution_audit",
+  "merge_commit": "b7bbe3707838bc8bb25af16c77134efd58b2b75e",
+  "branch_old_head": "c441d91",
+  "main_merged": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+  "resolved_changelog_lines": 379,
+  "resolved_changelog_nonblank": 292,
+  "structural_audit": {
+    "file_lines": 379,
+    "sections": 35,
+    "unreleased_headings": 1,
+    "duplicate_headings": [
+      "## Curved-bar pure bending verified against the exact Airy solution"
+    ],
+    "empty_level2_sections": [],
+    "cook_membrane_bullets": 4,
+    "cook_bullets_in_bbar_section": 0,
+    "passed": true,
+    "findings": []
+  },
+  "preservation_vs_parents": {
+    "branch": {
+      "reference_nonblank_lines": 243,
+      "lost_lines": 1,
+      "allowed_dropped_lines": [
+        "## Unreleased"
+      ],
+      "unexpected_lost_lines": [],
+      "passed": true
+    },
+    "main": {
+      "reference_nonblank_lines": 283,
+      "lost_lines": 0,
+      "allowed_dropped_lines": [],
+      "unexpected_lost_lines": [],
+      "passed": true
+    }
+  },
+  "naive_textual_merge": {
+    "conflict_markers": 1,
+    "structural_findings": 4,
+    "naive_merge_is_structurally_broken": true
+  },
+  "carried_physics": {
+    "source": "benchmarks/plate_uniform_load_evidence.json",
+    "all_passed": true,
+    "anchors": 11,
+    "max_relative_error_percent": 0.488595467770097,
+    "declared_gate_percent": 3.0,
+    "per_anchor_gate_percent": [
+      0.1,
+      1.0,
+      3.0
+    ],
+    "anchors_within_own_gate": true,
+    "within_3_percent": true,
+    "parameters": {
+      "side": 1.0,
+      "young": 210000000000.0,
+      "poisson": 0.3,
+      "pressure": 1000000.0,
+      "t_thin": 0.01,
+      "t_thick": 0.1,
+      "terms": 401,
+      "ritz_modes": 10
+    }
+  },
+  "figures": [
+    "docs/assets/pr77_merge/merge_audit.png",
+    "docs/assets/pr77_merge/plate_gate.png"
+  ]
+}
