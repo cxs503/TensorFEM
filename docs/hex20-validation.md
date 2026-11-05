@@ -15,6 +15,17 @@ The implementation intentionally remains separate from the stable shared API
 until performance and distorted-mesh/cantilever convergence evidence has been
 reviewed.
 
+## Distorted-geometry evidence (added)
+
+The distorted-mesh half of that gate is now machine-checked in
+[hex20-distortion-robustness.md](hex20-distortion-robustness.md): a 35-point
+( corner distortion x midside curvature) sweep of the free element keeps exactly
+six rigid-body zero modes with no spurious mode, an affine patch on a warped
+conforming mesh is exact to round-off, and the warped `8 x 2 x 2` cantilever stays
+inside the 3% Timoshenko gate (worst case 1.7837%), with the fully integrated HEX8
+control at 40.2123%. Performance and shared-API integration remain unreviewed, so
+HEX20 is still not promoted.
+
 ## Cantilever A/B benchmark
 
 A `10 x 1 x 1` solid cantilever with a consistent uniform end shear is compared

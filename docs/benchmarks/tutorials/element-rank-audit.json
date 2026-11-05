@@ -76,6 +76,28 @@
       "note": ""
     },
     {
+      "element": "hex20 (distorted corners)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.011082804942064635,
+      "min_eigenvalue": -8.925408551883974e-05,
+      "scale": 645435293659.6111,
+      "note": ""
+    },
+    {
+      "element": "hex20 (curved faces, 4% midside bulge)",
+      "dofs": 60,
+      "null_dim": 6,
+      "expected_rigid_dim": 6,
+      "spurious": 0,
+      "first_positive_ratio": 0.013081979630855459,
+      "min_eigenvalue": -6.451268788803207e-05,
+      "scale": 678184984425.0188,
+      "note": ""
+    },
+    {
       "element": "q4 membrane (2x2 integration)",
       "dofs": 8,
       "null_dim": 3,
@@ -288,8 +310,8 @@
       "null_dim": 4,
       "expected_rigid_dim": 3,
       "spurious": 1,
-      "first_positive": 1385.0401494634862,
-      "first_positive_ratio": 5.738232531160105e-07
+      "first_positive": 1385.0401495055244,
+      "first_positive_ratio": 5.738232531334282e-07
     }
   ],
   "plate_mesh_scan_mitc": [
@@ -350,8 +372,8 @@
       "null_dim": 3,
       "expected_rigid_dim": 3,
       "spurious": 0,
-      "first_positive": 1386.810644166133,
-      "first_positive_ratio": 5.637236969138576e-07
+      "first_positive": 1386.8106440604292,
+      "first_positive_ratio": 5.637236968708894e-07
     }
   ],
   "shell_mesh_scan_plate_sri": [
@@ -452,13 +474,13 @@
           0.0,
           0.0,
           0.0,
-          0.006603574953366404,
-          211.6957819437848,
-          320.09413271594053
+          0.005551033255906519,
+          211.6957818911801,
+          320.0941326063754
         ],
-        "free_free_omega1": 211.6957819437848,
-        "simply_supported_omega11": 324.26894491708,
-        "simply_supported_error_percent": 7.206036516657879
+        "free_free_omega1": 211.6957818911801,
+        "simply_supported_omega11": 324.2689448089357,
+        "simply_supported_error_percent": 7.206036480904477
       },
       {
         "n": 4,
@@ -467,15 +489,15 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.0029211428251904327,
-          0.013968490103952494,
-          211.75169726947175,
-          320.168953603439,
-          412.1351053207606
+          0.011488699192432629,
+          0.015511223555010395,
+          211.75169724911285,
+          320.1689536230924,
+          412.1351053639189
         ],
-        "free_free_omega1": 211.75169726947175,
-        "simply_supported_omega11": 324.2746552287362,
-        "simply_supported_error_percent": 7.207924393648677
+        "free_free_omega1": 211.75169724911285,
+        "simply_supported_omega11": 324.2746549945189,
+        "simply_supported_error_percent": 7.207924316214477
       },
       {
         "n": 6,
@@ -484,15 +506,15 @@
         "free_free_zero_modes": 4,
         "free_free_lowest": [
           0.0,
-          0.0,
-          0.0011577214485568206,
-          0.00740445582284769,
-          208.72830962590567,
-          309.7427084085272
+          0.004298903901144244,
+          0.006552630480343266,
+          0.006639633505264084,
+          208.72830971146863,
+          309.7427085246786
         ],
-        "free_free_omega1": 208.72830962590567,
-        "simply_supported_omega11": 311.8133315560252,
-        "simply_supported_error_percent": 3.0881061327783277
+        "free_free_omega1": 208.72830971146863,
+        "simply_supported_omega11": 311.81333173625404,
+        "simply_supported_error_percent": 3.0881061923634907
       },
       {
         "n": 6,
@@ -501,15 +523,15 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.008455308605674729,
-          0.014319537890757123,
-          208.86983273167164,
-          309.80071784160634,
-          390.7242514195228
+          0.0034135116720612133,
+          0.016144135866166993,
+          208.86983270533207,
+          309.80071766636655,
+          390.7242513223538
         ],
-        "free_free_omega1": 208.86983273167164,
-        "simply_supported_omega11": 311.81551702983637,
-        "simply_supported_error_percent": 3.088828668774689
+        "free_free_omega1": 208.86983270533207,
+        "simply_supported_omega11": 311.81551728292425,
+        "simply_supported_error_percent": 3.0888287524476663
       },
       {
         "n": 8,
@@ -518,15 +540,15 @@
         "free_free_zero_modes": 4,
         "free_free_lowest": [
           0.0,
-          0.0021193959661728818,
-          0.0031397316680711563,
-          0.00756045118906384,
-          207.49943963049625,
-          305.6925301637229
+          0.0,
+          0.001232956664715563,
+          0.006906302216823574,
+          207.49943960787422,
+          305.6925300957931
         ],
-        "free_free_omega1": 207.49943963049625,
-        "simply_supported_omega11": 307.62438911096615,
-        "simply_supported_error_percent": 1.7032065801985499
+        "free_free_omega1": 207.49943960787422,
+        "simply_supported_omega11": 307.62438917257595,
+        "simply_supported_error_percent": 1.703206600567266
       },
       {
         "n": 8,
@@ -535,15 +557,15 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.006381508618063637,
-          0.012999146043650572,
-          207.755193713096,
-          305.7315489764096,
-          382.5907045576821
+          0.0,
+          0.01543042259716925,
+          207.7551937660138,
+          305.7315489588618,
+          382.5907043314454
         ],
-        "free_free_omega1": 207.755193713096,
-        "simply_supported_omega11": 307.6255571469519,
-        "simply_supported_error_percent": 1.7035927427050266
+        "free_free_omega1": 207.7551937660138,
+        "simply_supported_omega11": 307.6255567893845,
+        "simply_supported_error_percent": 1.7035926244902455
       },
       {
         "n": 10,
@@ -552,15 +574,15 @@
         "free_free_zero_modes": 4,
         "free_free_lowest": [
           0.0,
-          0.0009600253664472804,
-          0.005272110080070648,
-          0.009205821740433214,
-          206.83245590161548,
-          303.7439243472563
+          0.0,
+          0.004337632057293159,
+          0.005208553264457789,
+          206.83245582004588,
+          303.74392431276874
         ],
-        "free_free_omega1": 206.83245590161548,
-        "simply_supported_omega11": 305.71427621907605,
-        "simply_supported_error_percent": 1.071707216325539
+        "free_free_omega1": 206.83245582004588,
+        "simply_supported_omega11": 305.71427620215803,
+        "simply_supported_error_percent": 1.0717072107322987
       },
       {
         "n": 10,
@@ -569,15 +591,15 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.00900814951460744,
-          0.01060612326277351,
-          207.2139141285024,
-          303.7719813928135,
-          378.7320884779707
+          0.0,
+          0.00846401843916149,
+          207.2139139321604,
+          303.77198146904044,
+          378.7320883051932
         ],
-        "free_free_omega1": 207.2139141285024,
-        "simply_supported_omega11": 305.7150062667604,
-        "simply_supported_error_percent": 1.0719485762211807
+        "free_free_omega1": 207.2139139321604,
+        "simply_supported_omega11": 305.7150064832828,
+        "simply_supported_error_percent": 1.0719486478053168
       },
       {
         "n": 12,
@@ -588,13 +610,13 @@
           0.0,
           0.0,
           0.0,
-          0.008174659331135908,
-          206.41275743499148,
-          302.66569341034267
+          0.0014780747933590866,
+          206.41275748338816,
+          302.6656934337463
         ],
-        "free_free_omega1": 206.41275743499148,
-        "simply_supported_omega11": 304.684197587079,
-        "simply_supported_error_percent": 0.7311545696169692
+        "free_free_omega1": 206.41275748338816,
+        "simply_supported_omega11": 304.6841976111064,
+        "simply_supported_error_percent": 0.731154577560639
       },
       {
         "n": 12,
@@ -603,15 +625,15 @@
         "free_free_zero_modes": 3,
         "free_free_lowest": [
           0.0,
-          0.0,
-          0.006943646159227665,
-          206.90771645229339,
-          302.68761901637066,
-          376.61314644302496
+          0.009284615573999174,
+          0.012821644537920117,
+          206.90771622288662,
+          302.6876193417551,
+          376.6131464836526
         ],
-        "free_free_omega1": 206.90771645229339,
-        "simply_supported_omega11": 304.6846985967049,
-        "simply_supported_error_percent": 0.7313202076069528
+        "free_free_omega1": 206.90771622288662,
+        "simply_supported_omega11": 304.6846985884714,
+        "simply_supported_error_percent": 0.7313202048848936
       }
     ]
   }

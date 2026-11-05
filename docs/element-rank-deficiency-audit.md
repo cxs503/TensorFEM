@@ -210,7 +210,12 @@ Markdown 表生成）；测试 `tests/test_element_rank_audit.py`。
    [二次实体单元的零能审计](quadratic-solid-rank-audit.md) 中补齐：生产 27 点规则三种几何
    伪零能均为 0，8 点规则为 6 且刚度偏软 7.65%–8.84%，装配后机构不可传递；同时订正了本表
    原先把生产规则误标为 `2×2×2` 的错误。TET10 的积分精度损失（非秩问题）仍待办。
-7. **修复仍是 opt-in，默认未切换**。把默认改成 `"mitc"` 会改变全部已验收板/壳基准的数值，
+7. **已清偿（本轮）**：秩审计之外，`hex20` 此前只对规则立方体做过资格复核。现已在
+   `audit_library` 中补齐畸变角点体与 4% 中边凸起曲边体（`spurious = 0`、`null_dim = 6`），
+   并做了 35 组（角点畸变 × 中边曲率）扫描、畸变一致网格仿射 patch 与畸变悬臂 A/B，见
+   [HEX20 畸变与曲边几何资格复核](hex20-distortion-robustness.md)
+   与证据 JSON `docs/benchmarks/tutorials/hex20-distortion-audit.json`。
+8. **修复仍是 opt-in，默认未切换**。把默认改成 `"mitc"` 会改变全部已验收板/壳基准的数值，
    必须单独走一轮全基准复核，超出本单范围——这是明确的待办，不是已完成项。
 
 ---

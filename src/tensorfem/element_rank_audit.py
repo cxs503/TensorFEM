@@ -381,6 +381,20 @@ def audit_library(
         audit_element("hex20 (3x3x3 integration)", k20[0], rigid_body_basis_solid3d(hex20), rtol=rtol)
     )
 
+    # Distorted and curved-geometry bricks: the item left open by the first
+    # audit round (regular cube only).  Geometry degradation must not create an
+    # hourglass mode.
+    from .hex20_distortion import curved_brick, distorted_brick
+
+    for label, nodes20 in (
+        ("hex20 (distorted corners)", distorted_brick(0.10, dtype=dtype)),
+        ("hex20 (curved faces, 4% midside bulge)", curved_brick(0.04, dtype=dtype)),
+    ):
+        kd, _ = hex20_stiffness(nodes20.unsqueeze(0), d3)
+        records.append(
+            audit_element(label, kd[0], rigid_body_basis_solid3d(nodes20), rtol=rtol)
+        )
+
     # --- plane elements --------------------------------------------------- #
     square = _square(dtype)
     km, _ = q4_stiffness(square.unsqueeze(0), d2, t)

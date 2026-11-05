@@ -1,0 +1,248 @@
+{
+  "audit": "merge-cure PR #72 round 2 (agent/m3327 onto current main)",
+  "commits": {
+    "merge_base": "14ca2fdc1fd06467f3edb33db1d9e549b6a901a2",
+    "ours_before_merge": "784329263afed834a72b10801c100cfc89abd110",
+    "theirs_main_tip": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+    "merged_result": "7b31d51a66ae59ab173ba32b63e7ce224e5ee606"
+  },
+  "all_checks_pass": true,
+  "checks": [
+    {
+      "check": "merge_has_two_parents",
+      "pass": true,
+      "detail": {
+        "merge": "7b31d51a66ae59ab173ba32b63e7ce224e5ee606",
+        "parents": [
+          "784329263afed834a72b10801c100cfc89abd110",
+          "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b"
+        ]
+      }
+    },
+    {
+      "check": "merged_contains_ours_and_theirs",
+      "pass": true,
+      "detail": {
+        "ours": "784329263afed834a72b10801c100cfc89abd110",
+        "theirs": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b"
+      }
+    },
+    {
+      "check": "touched_path_partition",
+      "pass": true,
+      "detail": {
+        "base": "14ca2fdc1fd06467f3edb33db1d9e549b6a901a2",
+        "ours_only_count": 11,
+        "theirs_only_count": 190,
+        "both_count": 2,
+        "ours_only": [
+          "artifacts/merge_cure_pr72_evidence.json",
+          "benchmarks/plate_bending_buckling.py",
+          "benchmarks/plate_bending_buckling_evidence.json",
+          "docs/assets/merge_cure_pr72/verification.png",
+          "docs/assets/plate_bending_buckling.png",
+          "docs/marine-plate-linear-stress-buckling-validation.md",
+          "docs/merge-cure-pr72-m3327.md",
+          "runs/report_m3785.py",
+          "scripts/merge_cure_pr72_evidence.py",
+          "src/tensorfem/plate_bending_buckling.py",
+          "tests/test_plate_bending_buckling.py"
+        ],
+        "theirs_only_sample": [
+          "benchmarks/cylindrical_pressure_boundary_layer.py",
+          "benchmarks/cylindrical_pressure_boundary_layer_evidence.json",
+          "benchmarks/finite_width_hole_audit.json",
+          "benchmarks/marine_fatigue_spectrum_evidence.json",
+          "benchmarks/marine_large_angle_stability_audit.py",
+          "benchmarks/marine_large_angle_stability_evidence.json",
+          "benchmarks/plane_strain_bbar_locking.json",
+          "benchmarks/prestressed_modal_evidence.json",
+          "benchmarks/prestressed_modal_verification.py",
+          "benchmarks/q8_plane_element.json",
+          "benchmarks/rotating_disc_michel_evidence.json",
+          "benchmarks/rotating_disc_reference.py",
+          "benchmarks/rotating_disk.py",
+          "benchmarks/rotating_disk_evidence.json",
+          "benchmarks/shear_plate_spectral.json",
+          "benchmarks/solid3d_mass_audit.json",
+          "benchmarks/stiffened_panel_vibration.py",
+          "benchmarks/stiffened_panel_vibration_evidence.json",
+          "benchmarks/structural_certification_materials.json",
+          "benchmarks/structural_certification_materials.py",
+          "benchmarks/thermal_2d_reference.py",
+          "benchmarks/thermal_2d_reference_evidence.json",
+          "benchmarks/timoshenko_beam_modal_reference.json",
+          "benchmarks/torsion_boundary_extrapolation_evidence.json",
+          "benchmarks/torsion_boundary_stress.py",
+          "benchmarks/tutorials/hemisphere-hex20-oracle.json",
+          "benchmarks/tutorials/q4_cantilever_airy.json",
+          "docs/assets/combined_panel_buckling/convergence.png",
+          "docs/assets/combined_panel_buckling/interaction.png",
+          "docs/assets/combined_panel_buckling/shear_mode.png",
+          "docs/assets/cylindrical_pressure_boundary_layer_convergence.png",
+          "docs/assets/cylindrical_pressure_boundary_layer_profiles.png",
+          "docs/assets/finite_width_hole/field_and_hoop.png",
+          "docs/assets/finite_width_hole/kt_vs_rho.png",
+          "docs/assets/hemisphere-hex20-oracle/hemisphere-oracle-displacement-convergence.png",
+          "docs/assets/hemisphere-hex20-oracle/hemisphere-oracle-error-map.png",
+          "docs/assets/hemisphere-hex20-oracle/hemisphere-oracle-surface-stress.png",
+          "docs/assets/marine-fatigue-spectrum/bandwidth-convergence.png",
+          "docs/assets/marine-fatigue-spectrum/paris-power-law-branch.png",
+          "docs/assets/marine-fatigue-spectrum/range-histogram-rayleigh.png"
+        ],
+        "both": [
+          "CHANGELOG.md",
+          "docs/benchmark-qualification-status.md"
+        ]
+      }
+    },
+    {
+      "check": "both_touched_line_union_diagnostic",
+      "pass": true,
+      "detail": {
+        "informational": true,
+        "why_not_a_gate": "prose documents carry one paragraph per line; any faithful re-assembly differs at line level. Clause coverage is the gate.",
+        "rows": [
+          {
+            "path": "CHANGELOG.md",
+            "ours_added_lines": 11,
+            "ours_missing_lines": 0,
+            "ours_missing_sample": [],
+            "theirs_added_lines": 49,
+            "theirs_missing_lines": 0,
+            "theirs_missing_sample": []
+          },
+          {
+            "path": "docs/benchmark-qualification-status.md",
+            "ours_added_lines": 1,
+            "ours_missing_lines": 1,
+            "ours_missing_sample": [
+              "Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳仍缺独立应力参考；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；**沿板宽线性变化的预屈曲压缩**（含均匀、三角形、纯面内弯曲）已按经典系数 k=4.0/7.81/23.9/25.6 闭环，最大误差 0.28%，并由独立差分条路线二阶收敛旁证，见 [marine-plate-linear-stress-buckling-validation.md](marine-plate-linear-stress-buckling-validation.md)；仍缺：面内应力沿 x 变化或非线性的预屈曲分布、壳单元几何刚度、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。"
+            ],
+            "theirs_added_lines": 9,
+            "theirs_missing_lines": 1,
+            "theirs_missing_sample": [
+              "Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳的独立应力参照**已补并给出否定结论**：[三维 HEX20 实体 oracle](hemisphere-hex20-stress-oracle.md) 逐站位复算后，内部区域表面 von Mises 相对误差平均 5.09%、最大 9.00%（孔边 6.87%、点载附近 7.56%），不满足 3% 门限，`stress_accuracy_qualified` 维持 `False`；oracle 自身先在 Lamé 圆环（最大 8.6e-7）与薄板弯曲（0.26%）上过标；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；仍缺：壳单元几何刚度、非均匀预屈曲应力、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。"
+            ]
+          }
+        ],
+        "rows_with_line_level_difference": [
+          {
+            "path": "docs/benchmark-qualification-status.md",
+            "ours_added_lines": 1,
+            "ours_missing_lines": 1,
+            "ours_missing_sample": [
+              "Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳仍缺独立应力参考；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；**沿板宽线性变化的预屈曲压缩**（含均匀、三角形、纯面内弯曲）已按经典系数 k=4.0/7.81/23.9/25.6 闭环，最大误差 0.28%，并由独立差分条路线二阶收敛旁证，见 [marine-plate-linear-stress-buckling-validation.md](marine-plate-linear-stress-buckling-validation.md)；仍缺：面内应力沿 x 变化或非线性的预屈曲分布、壳单元几何刚度、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。"
+            ],
+            "theirs_added_lines": 9,
+            "theirs_missing_lines": 1,
+            "theirs_missing_sample": [
+              "Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳的独立应力参照**已补并给出否定结论**：[三维 HEX20 实体 oracle](hemisphere-hex20-stress-oracle.md) 逐站位复算后，内部区域表面 von Mises 相对误差平均 5.09%、最大 9.00%（孔边 6.87%、点载附近 7.56%），不满足 3% 门限，`stress_accuracy_qualified` 维持 `False`；oracle 自身先在 Lamé 圆环（最大 8.6e-7）与薄板弯曲（0.26%）上过标；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；仍缺：壳单元几何刚度、非均匀预屈曲应力、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "check": "both_touched_clause_union_lossless",
+      "pass": true,
+      "detail": {
+        "rows": [
+          {
+            "path": "CHANGELOG.md",
+            "ours_clauses": 216,
+            "ours_clauses_missing": 0,
+            "ours_missing_sample": [],
+            "theirs_clauses": 253,
+            "theirs_clauses_missing": 0,
+            "theirs_missing_sample": []
+          },
+          {
+            "path": "docs/benchmark-qualification-status.md",
+            "ours_clauses": 83,
+            "ours_clauses_missing": 0,
+            "ours_missing_sample": [],
+            "theirs_clauses": 93,
+            "theirs_clauses_missing": 0,
+            "theirs_missing_sample": []
+          }
+        ],
+        "documented_supersessions": [
+          {
+            "path": "docs/benchmark-qualification-status.md",
+            "side": "theirs",
+            "clause": "仍缺：壳单元几何刚度、非均匀预屈曲应力、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过",
+            "replacement_present": true,
+            "reason": "agent/m3327 closes the uniformly/triangularly/linearly varying pre-buckling stress debt (k = 4.0/7.81/23.9/25.6, max 0.28%), so the merged gap list narrows that item to what is still open (in-plane stress varying along x, or non-linear profiles) and keeps every other main-side gap verbatim; a superset, not a dropped claim"
+          }
+        ]
+      }
+    },
+    {
+      "check": "ours_only_blobs_preserved",
+      "pass": true,
+      "detail": {
+        "count": 11,
+        "drift": []
+      }
+    },
+    {
+      "check": "theirs_only_blobs_preserved",
+      "pass": true,
+      "detail": {
+        "count": 190,
+        "drift": []
+      }
+    },
+    {
+      "check": "no_main_deletion_resurrected",
+      "pass": true,
+      "detail": {
+        "main_deletions": [],
+        "resurrected": []
+      }
+    },
+    {
+      "check": "no_conflict_markers",
+      "pass": true,
+      "detail": {
+        "offenders": []
+      }
+    },
+    {
+      "check": "artifact_cap_200kb",
+      "pass": true,
+      "detail": {
+        "cap_bytes": 204800,
+        "pr_added_count": 15,
+        "over": []
+      }
+    },
+    {
+      "check": "both_sides_claims_present",
+      "pass": true,
+      "detail": [
+        {
+          "path": "CHANGELOG.md",
+          "markers": [
+            "板面内线性变化压缩屈曲",
+            "plate_bending_buckling.py",
+            "prestressed_modal",
+            "plane-strain B-bar"
+          ],
+          "missing": []
+        },
+        {
+          "path": "docs/benchmark-qualification-status.md",
+          "markers": [
+            "marine-plate-linear-stress-buckling-validation.md",
+            "23.9",
+            "hemisphere-hex20-stress-oracle.md",
+            "5.09%"
+          ],
+          "missing": []
+        }
+      ]
+    }
+  ]
+}

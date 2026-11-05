@@ -1,0 +1,960 @@
+{
+  "base": "14ca2fd",
+  "main": "main",
+  "branch": "51fa370",
+  "counts": {
+    "main_only": 209,
+    "branch_only": 10,
+    "both": 2
+  },
+  "branch_only": [
+    {
+      "path": "docs/assets/element_rank_element_nullspace.png",
+      "identical_to_branch": true,
+      "binary": true
+    },
+    {
+      "path": "docs/assets/element_rank_free_free_modes.png",
+      "identical_to_branch": true,
+      "binary": true
+    },
+    {
+      "path": "docs/assets/hex20_distortion_audit.png",
+      "identical_to_branch": true,
+      "binary": true
+    },
+    {
+      "path": "docs/benchmarks/tutorials/element-rank-audit.json",
+      "identical_to_branch": true,
+      "binary": false
+    },
+    {
+      "path": "docs/benchmarks/tutorials/hex20-distortion-audit.json",
+      "identical_to_branch": true,
+      "binary": false
+    },
+    {
+      "path": "docs/hex20-distortion-robustness.md",
+      "identical_to_branch": true,
+      "binary": false
+    },
+    {
+      "path": "docs/hex20-validation.md",
+      "identical_to_branch": true,
+      "binary": false
+    },
+    {
+      "path": "scripts/audit_hex20_distortion.py",
+      "identical_to_branch": true,
+      "binary": false
+    },
+    {
+      "path": "src/tensorfem/hex20_distortion.py",
+      "identical_to_branch": true,
+      "binary": false
+    },
+    {
+      "path": "tests/test_hex20_distortion.py",
+      "identical_to_branch": true,
+      "binary": false
+    }
+  ],
+  "both": [
+    {
+      "path": "CHANGELOG.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "artifacts/merge_cure_pr72_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "artifacts/merge_cure_pr72_round2_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "artifacts/merge_cure_pr72_round2_tests.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/cylindrical_pressure_boundary_layer.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/cylindrical_pressure_boundary_layer_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/finite_width_hole_audit.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/marine_fatigue_spectrum_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/marine_large_angle_stability_audit.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/marine_large_angle_stability_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/plane_strain_bbar_locking.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/plate_bending_buckling.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/plate_bending_buckling_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/prestressed_modal_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/prestressed_modal_verification.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/q8_plane_element.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/rotating_disc_michel_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/rotating_disc_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/rotating_disk.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/rotating_disk_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/shear_plate_spectral.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/solid3d_mass_audit.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/stiffened_panel_vibration.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/stiffened_panel_vibration_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/structural_certification_materials.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/structural_certification_materials.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/thermal_2d_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/thermal_2d_reference_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/timoshenko_beam_modal_reference.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/torsion_boundary_extrapolation_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/torsion_boundary_stress.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/tutorials/hemisphere-hex20-oracle.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "benchmarks/tutorials/q4_cantilever_airy.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/combined_panel_buckling/convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/combined_panel_buckling/interaction.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/combined_panel_buckling/shear_mode.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/cylindrical_pressure_boundary_layer_convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/cylindrical_pressure_boundary_layer_profiles.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/finite_width_hole/field_and_hoop.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/finite_width_hole/kt_vs_rho.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/hemisphere-hex20-oracle/hemisphere-oracle-displacement-convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/hemisphere-hex20-oracle/hemisphere-oracle-error-map.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/hemisphere-hex20-oracle/hemisphere-oracle-surface-stress.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/marine-fatigue-spectrum/bandwidth-convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/marine-fatigue-spectrum/paris-power-law-branch.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/marine-fatigue-spectrum/range-histogram-rayleigh.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/marine-fatigue-spectrum/sampling-rate-bias.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/marine_gz_audit.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/marine_gz_linear_envelope.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/marine_section_geometry.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/merge_cure_pr72/verification.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/merge_cure_pr72_round2/audit.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/merge_cure_pr72_round2/tests.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/plane_strain_bbar_locking/error_vs_poisson.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/plane_strain_bbar_locking/radial_stress_profile.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/plane_strain_bbar_locking/refinement.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/plate_bending_buckling.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/prestressed_modal_convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/prestressed_modal_load_law.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/q4-cantilever-airy/error_convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/q4-cantilever-airy/stress_profiles.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/q8-plane/convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/q8-plane/fields.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/quadratic_rank_element_spurious.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/quadratic_rank_mesh_scan.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/quadratic_rank_spectra.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/rotating_disc/bore_ratio.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/rotating_disc/convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/rotating_disc/field.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/rotating_disc/profiles.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/rotating_disk_convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/rotating_disk_stress.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/shear_plate_spectral/convergence_and_comparison.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/shear_plate_spectral/truncation_error.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/solid-mass-modal/axial-rod-convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/solid-mass-modal/mass-invariants.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/solid3d-mass/convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/solid3d-mass/inertia.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/solid3d-mass/mode-shape.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/stiffened-panel-convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/stiffened-panel-mode-shape.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/stiffened-panel-ship-mode1.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/stiffened-panel-spectrum.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/structural-certification/finite_width_ktn.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/structural-certification/kirsch_convergence_uncertainty.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/structural-certification/kirsch_field_clouds.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/structural-certification/kirsch_pointwise_comparison.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/thermal_2d_convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/thermal_2d_transient_field.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/thermal_2d_wall_field.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/timoshenko-beam-modal/convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/timoshenko-beam-modal/mode-comparison.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/timoshenko-beam-modal/slenderness-trend.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/torsion_boundary_extrapolation.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/torsion_boundary_stress/boundary_peak_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/torsion_boundary_stress/error_vs_dofs.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/assets/torsion_boundary_stress/estimator_bars.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/benchmark-qualification-status.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/benchmarks/timoshenko-beam-vibration-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/benchmarks/tutorials/quadratic-solid-rank-audit.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/cook-recovered-stress-production.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/cook-recovery-evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/cylindrical-pressure-boundary-layer.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/elastic-halfspace-boussinesq-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/figures/cook_recovery_error_ladder.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/figures/cook_recovery_field.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/figures/halfspace_settlement_convergence.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/figures/halfspace_settlement_profile.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/figures/halfspace_sigma_zz_field.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/figures/halfspace_stress_profile.png",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/halfspace_evidence.json",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/hemisphere-hex20-stress-oracle.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/hetenyi_benchmark_report.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/marine-fatigue-advanced-qualification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/marine-fatigue-spectrum-validation.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/marine-hydrostatics.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/marine-large-angle-stability-audit.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/marine-plate-combined-loading-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/marine-plate-linear-stress-buckling-validation.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/merge-cure-pr72-m3327.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/merge-cure-pr72-round2.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/near-incompressible-locking.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/plane-strain-bbar-locking.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/prestressed-modal-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/q4-cantilever-airy-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/q8-quadratic-plane-element.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/quadratic-solid-rank-audit.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/rotating-disc-michel-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/rotating-disk-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/shear-plate-spectral-reference.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/solid-mass-modal-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/solid3d-consistent-mass-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/stiffened-panel-vibration-validation.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/structural-certification-materials.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/thermal-2d-q4-verification.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/torsion-boundary-stress.md",
+      "identical_to_main": true
+    },
+    {
+      "path": "examples/halfspace_verification.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "runs/report_m3785.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/audit_marine_fatigue_spectrum.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/audit_plane_strain_bbar_locking.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/audit_q4_cantilever_airy.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/audit_q8_plane_element.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/audit_quadratic_solid_rank.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/audit_shear_plate_spectral.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/audit_solid3d_mass.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/audit_solid_mass_modal.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/cook_recovery_production_evidence.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/hemisphere_hex20_oracle_study.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/merge_cure_pr72_evidence.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/merge_cure_pr72_round2_audit.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/merge_cure_pr72_round2_conflicts.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/merge_cure_pr72_round2_report.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/post_m3179_report.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "scripts/timoshenko_beam_modal_study.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/__init__.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/additional_benchmark_fields.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/airy_cantilever.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/certification_evidence.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/continuum_bbar.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/cylindrical_pressure_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/elastic_halfspace.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/hemisphere_hex20_oracle.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/hemisphere_hex20_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/incompressible_locking.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/marine_large_angle_stability.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/plate.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/plate_bending_buckling.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/plate_vibration.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/prestressed_modal.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/quadratic_plane.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/rainflow_spectrum_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/rotating_disc_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/rotating_disk.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/shear_plate_spectral.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/solid3d_mass.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/solid_mass.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/solid_mass_audit.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/stiffened_panel_vibration.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/stress_recovery.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/thermal_2d_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/timoshenko_beam_modal.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/torsion_bar.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "src/tensorfem/torsion_boundary.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_continuum_bbar.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_cylindrical_pressure_boundary_layer.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_elastic_halfspace.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_element_rank_audit.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_hemisphere_hex20_oracle.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_hetenyi_analytical_benchmark.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_incompressible_locking.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_marine_fatigue_spectrum_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_marine_large_angle_stability.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_plate_bending_buckling.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_prestressed_modal.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_q4_cantilever_airy.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_quadratic_plane.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_quadratic_solid_rank_audit.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_rotating_disc_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_rotating_disk.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_shear_plate_spectral.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_solid3d_mass.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_solid_mass.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_stiffened_panel_vibration.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_stress_recovery.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_structural_certification_materials.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_thermal_2d_reference.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_thermal_poisson_2d.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_timoshenko_beam_modal.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "tests/test_torsion_boundary_stress.py",
+      "identical_to_main": true
+    },
+    {
+      "path": "docs/element-rank-deficiency-audit.md",
+      "only_side": null,
+      "per_side": {
+        "main": {
+          "added_lines": 7,
+          "verbatim_present": 7,
+          "superseded": 0,
+          "unaccounted_missing": []
+        },
+        "branch": {
+          "added_lines": 7,
+          "verbatim_present": 4,
+          "superseded": 3,
+          "unaccounted_missing": []
+        }
+      },
+      "superseded_detail": [
+        {
+          "dropped": "刚度；HEX20 的减缩积分变体在代码库中不存在，无法审计。",
+          "replaced_by": "二次实体单元的欠账（畸变/曲边 hex20、tet10、减缩积分变体）已在 quadratic-solid-rank-audit.md 中补齐",
+          "reason": "main resolved this open item: hex20_reduced_stiffness (order 2, 8-point) now exists as audit-only code and was audited there; keeping the branch's 'does not exist, cannot audit' sentence would be factually false"
+        },
+        {
+          "dropped": "7. **已清偿（本轮）**：`hex20` 此前只审了规则立方体。现已在 `audit_library` 中补齐",
+          "replaced_by": "7. **已清偿（本轮）**：秩审计之外，`hex20` 此前只对规则立方体做过资格复核。现已在 `audit_library` 中补齐",
+          "reason": "reworded only to avoid contradicting main's rank audit (§6); claim preserved"
+        },
+        {
+          "dropped": "畸变角点体与 4% 中边凸起曲边体（`spurious = 0`、`null_dim = 6`），并做了 35 组",
+          "replaced_by": "畸变角点体与 4% 中边凸起曲边体（`spurious = 0`、`null_dim = 6`），并做了 35 组",
+          "reason": "line reflowed by the reword above; text identical"
+        }
+      ]
+    },
+    {
+      "path": "src/tensorfem/element_rank_audit.py",
+      "only_side": null,
+      "per_side": {
+        "main": {
+          "added_lines": 327,
+          "verbatim_present": 327,
+          "superseded": 0,
+          "unaccounted_missing": []
+        },
+        "branch": {
+          "added_lines": 12,
+          "verbatim_present": 12,
+          "superseded": 0,
+          "unaccounted_missing": []
+        }
+      },
+      "superseded_detail": []
+    }
+  ],
+  "totals": {
+    "files_checked": 221,
+    "one_sided_mismatch": [],
+    "two_sided_unaccounted_missing": 0,
+    "verdict": "LOSSLESS_UNION"
+  }
+}

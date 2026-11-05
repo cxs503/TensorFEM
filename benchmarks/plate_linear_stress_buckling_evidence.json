@@ -1,0 +1,646 @@
+{
+  "schema": "tensorfem.plate-linear-stress-buckling-evidence/1.0",
+  "parameters": {
+    "young_pa": 210000000000.0,
+    "poisson": 0.3,
+    "thickness_m": 0.012
+  },
+  "literature": {
+    "k_uniform": 4.0,
+    "k_triangular": 7.81,
+    "k_pure_bending_long": 23.9,
+    "k_pure_bending_square": 25.6
+  },
+  "stress_ratio_sweep": [
+    {
+      "aspect_ratio": 1.0,
+      "stress_gradient": 0.0,
+      "psi": 1.0,
+      "k": 4.000000000000001,
+      "critical_edge_load_n_per_m": 1311898.1850063396,
+      "critical_edge_stress_pa": 109324848.75052829,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.0,
+      "stress_gradient": 0.25,
+      "psi": 0.75,
+      "k": 4.569123675921649,
+      "critical_edge_load_n_per_m": 1498556.264377776,
+      "critical_edge_stress_pa": 124879688.698148,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.0,
+      "stress_gradient": 0.5,
+      "psi": 0.5,
+      "k": 5.318762751665793,
+      "critical_edge_load_n_per_m": 1744418.8000974194,
+      "critical_edge_stress_pa": 145368233.34145162,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.0,
+      "stress_gradient": 0.75,
+      "psi": 0.25,
+      "k": 6.344077245296084,
+      "critical_edge_load_n_per_m": 2080695.8559109874,
+      "critical_edge_stress_pa": 173391321.3259156,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.0,
+      "stress_gradient": 1.0,
+      "psi": 0.0,
+      "k": 7.8119572752572735,
+      "critical_edge_load_n_per_m": 2562123.1426892714,
+      "critical_edge_stress_pa": 213510261.8907726,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.0,
+      "stress_gradient": 1.25,
+      "psi": -0.25,
+      "k": 10.024833957650195,
+      "critical_edge_load_n_per_m": 3287890.368507802,
+      "critical_edge_stress_pa": 273990864.04231685,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.0,
+      "stress_gradient": 1.5,
+      "psi": -0.5,
+      "k": 13.51365957406008,
+      "critical_edge_load_n_per_m": 4432136.36700074,
+      "critical_edge_stress_pa": 369344697.25006163,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.0,
+      "stress_gradient": 1.75,
+      "psi": -0.75,
+      "k": 19.024799782659148,
+      "critical_edge_load_n_per_m": 6239650.076244884,
+      "critical_edge_stress_pa": 519970839.68707365,
+      "dominant_mode": [
+        1,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 1.0,
+      "stress_gradient": 2.0,
+      "psi": -1.0,
+      "k": 25.5283479806248,
+      "critical_edge_load_n_per_m": 8372648.345497981,
+      "critical_edge_stress_pa": 697720695.458165,
+      "dominant_mode": [
+        2,
+        2
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "stress_gradient": 0.0,
+      "psi": 1.0,
+      "k": 3.999999999999999,
+      "critical_edge_load_n_per_m": 1311898.185006339,
+      "critical_edge_stress_pa": 109324848.75052826,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "stress_gradient": 0.25,
+      "psi": 0.75,
+      "k": 4.569123675921647,
+      "critical_edge_load_n_per_m": 1498556.2643777756,
+      "critical_edge_stress_pa": 124879688.69814797,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "stress_gradient": 0.5,
+      "psi": 0.5,
+      "k": 5.318762751665792,
+      "critical_edge_load_n_per_m": 1744418.800097419,
+      "critical_edge_stress_pa": 145368233.3414516,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "stress_gradient": 0.75,
+      "psi": 0.25,
+      "k": 6.344077245296081,
+      "critical_edge_load_n_per_m": 2080695.8559109864,
+      "critical_edge_stress_pa": 173391321.32591555,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "stress_gradient": 1.0,
+      "psi": 0.0,
+      "k": 7.81195727525727,
+      "critical_edge_load_n_per_m": 2562123.14268927,
+      "critical_edge_stress_pa": 213510261.8907725,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "stress_gradient": 1.25,
+      "psi": -0.25,
+      "k": 10.024833957650191,
+      "critical_edge_load_n_per_m": 3287890.368507801,
+      "critical_edge_stress_pa": 273990864.04231673,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "stress_gradient": 1.5,
+      "psi": -0.5,
+      "k": 13.513659574060075,
+      "critical_edge_load_n_per_m": 4432136.367000738,
+      "critical_edge_stress_pa": 369344697.2500615,
+      "dominant_mode": [
+        2,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "stress_gradient": 1.75,
+      "psi": -0.75,
+      "k": 18.503807730680343,
+      "critical_edge_load_n_per_m": 6068777.944396453,
+      "critical_edge_stress_pa": 505731495.3663711,
+      "dominant_mode": [
+        3,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 2.0,
+      "stress_gradient": 2.0,
+      "psi": -1.0,
+      "k": 23.881812970474343,
+      "critical_edge_load_n_per_m": 7832626.772656536,
+      "critical_edge_stress_pa": 652718897.721378,
+      "dominant_mode": [
+        3,
+        2
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "stress_gradient": 0.0,
+      "psi": 1.0,
+      "k": 4.000000000000001,
+      "critical_edge_load_n_per_m": 1311898.1850063396,
+      "critical_edge_stress_pa": 109324848.75052829,
+      "dominant_mode": [
+        4,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "stress_gradient": 0.25,
+      "psi": 0.75,
+      "k": 4.569123675921649,
+      "critical_edge_load_n_per_m": 1498556.264377776,
+      "critical_edge_stress_pa": 124879688.698148,
+      "dominant_mode": [
+        4,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "stress_gradient": 0.5,
+      "psi": 0.5,
+      "k": 5.318762751665793,
+      "critical_edge_load_n_per_m": 1744418.8000974194,
+      "critical_edge_stress_pa": 145368233.34145162,
+      "dominant_mode": [
+        4,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "stress_gradient": 0.75,
+      "psi": 0.25,
+      "k": 6.344077245296084,
+      "critical_edge_load_n_per_m": 2080695.8559109874,
+      "critical_edge_stress_pa": 173391321.3259156,
+      "dominant_mode": [
+        4,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "stress_gradient": 1.0,
+      "psi": 0.0,
+      "k": 7.8119572752572735,
+      "critical_edge_load_n_per_m": 2562123.1426892714,
+      "critical_edge_stress_pa": 213510261.8907726,
+      "dominant_mode": [
+        4,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "stress_gradient": 1.25,
+      "psi": -0.25,
+      "k": 10.024833957650195,
+      "critical_edge_load_n_per_m": 3287890.368507802,
+      "critical_edge_stress_pa": 273990864.04231685,
+      "dominant_mode": [
+        4,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "stress_gradient": 1.5,
+      "psi": -0.5,
+      "k": 13.51365957406008,
+      "critical_edge_load_n_per_m": 4432136.36700074,
+      "critical_edge_stress_pa": 369344697.25006163,
+      "dominant_mode": [
+        4,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "stress_gradient": 1.75,
+      "psi": -0.75,
+      "k": 18.160846769633476,
+      "critical_edge_load_n_per_m": 5956295.4788151,
+      "critical_edge_stress_pa": 496357956.567925,
+      "dominant_mode": [
+        5,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 4.0,
+      "stress_gradient": 2.0,
+      "psi": -1.0,
+      "k": 23.881812970474336,
+      "critical_edge_load_n_per_m": 7832626.772656534,
+      "critical_edge_stress_pa": 652718897.7213778,
+      "dominant_mode": [
+        6,
+        2
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "stress_gradient": 0.0,
+      "psi": 1.0,
+      "k": 3.999999999999999,
+      "critical_edge_load_n_per_m": 1311898.185006339,
+      "critical_edge_stress_pa": 109324848.75052826,
+      "dominant_mode": [
+        6,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "stress_gradient": 0.25,
+      "psi": 0.75,
+      "k": 4.569123675921646,
+      "critical_edge_load_n_per_m": 1498556.2643777751,
+      "critical_edge_stress_pa": 124879688.69814792,
+      "dominant_mode": [
+        6,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "stress_gradient": 0.5,
+      "psi": 0.5,
+      "k": 5.318762751665792,
+      "critical_edge_load_n_per_m": 1744418.800097419,
+      "critical_edge_stress_pa": 145368233.3414516,
+      "dominant_mode": [
+        6,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "stress_gradient": 0.75,
+      "psi": 0.25,
+      "k": 6.344077245296081,
+      "critical_edge_load_n_per_m": 2080695.8559109864,
+      "critical_edge_stress_pa": 173391321.32591555,
+      "dominant_mode": [
+        6,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "stress_gradient": 1.0,
+      "psi": 0.0,
+      "k": 7.81195727525727,
+      "critical_edge_load_n_per_m": 2562123.14268927,
+      "critical_edge_stress_pa": 213510261.8907725,
+      "dominant_mode": [
+        6,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "stress_gradient": 1.25,
+      "psi": -0.25,
+      "k": 10.024833957650191,
+      "critical_edge_load_n_per_m": 3287890.368507801,
+      "critical_edge_stress_pa": 273990864.04231673,
+      "dominant_mode": [
+        6,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "stress_gradient": 1.5,
+      "psi": -0.5,
+      "k": 13.397184469348096,
+      "critical_edge_load_n_per_m": 4393935.497383221,
+      "critical_edge_stress_pa": 366161291.4486017,
+      "dominant_mode": [
+        7,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "stress_gradient": 1.75,
+      "psi": -0.75,
+      "k": 18.17784881809787,
+      "critical_edge_load_n_per_m": 5961871.717945557,
+      "critical_edge_stress_pa": 496822643.16212976,
+      "dominant_mode": [
+        8,
+        1
+      ]
+    },
+    {
+      "aspect_ratio": 6.0,
+      "stress_gradient": 2.0,
+      "psi": -1.0,
+      "k": 23.881812970474332,
+      "critical_edge_load_n_per_m": 7832626.772656532,
+      "critical_edge_stress_pa": 652718897.7213776,
+      "dominant_mode": [
+        9,
+        2
+      ]
+    }
+  ],
+  "basis_convergence": [
+    {
+      "basis": 2,
+      "k": 7.8122494237487485
+    },
+    {
+      "basis": 4,
+      "k": 7.811959016472845
+    },
+    {
+      "basis": 6,
+      "k": 7.811957366208381
+    },
+    {
+      "basis": 8,
+      "k": 7.811957285255493
+    },
+    {
+      "basis": 10,
+      "k": 7.811957276927879
+    },
+    {
+      "basis": 12,
+      "k": 7.811957275609313
+    },
+    {
+      "basis": 16,
+      "k": 7.81195727525727
+    },
+    {
+      "basis": 20,
+      "k": 7.811957275227155
+    }
+  ],
+  "strip_convergence": [
+    {
+      "nodes": 25,
+      "strip_k": 7.784135148012172,
+      "ritz_k": 7.81195727525727,
+      "relative_difference": 0.0035614796989761333,
+      "dominant_half_wave": 2
+    },
+    {
+      "nodes": 50,
+      "strip_k": 7.804993264178033,
+      "ritz_k": 7.81195727525727,
+      "relative_difference": 0.0008914553464461905,
+      "dominant_half_wave": 2
+    },
+    {
+      "nodes": 100,
+      "strip_k": 7.810215742508236,
+      "ritz_k": 7.81195727525727,
+      "relative_difference": 0.00022293167866527241,
+      "dominant_half_wave": 2
+    },
+    {
+      "nodes": 200,
+      "strip_k": 7.811521881732441,
+      "ritz_k": 7.81195727525727,
+      "relative_difference": 5.5734242967231395e-05,
+      "dominant_half_wave": 2
+    },
+    {
+      "nodes": 400,
+      "strip_k": 7.811848468528536,
+      "ritz_k": 7.81195727525727,
+      "relative_difference": 1.3928228854820368e-05,
+      "dominant_half_wave": 2
+    }
+  ],
+  "closed_form_vs_quadrature": {
+    "0.00": {
+      "bending": 2.413515793382819e-15,
+      "geometric": 2.448803578809457e-15
+    },
+    "1.00": {
+      "bending": 2.413515793382819e-15,
+      "geometric": 2.4359587284514843e-15
+    },
+    "2.00": {
+      "bending": 2.413515793382819e-15,
+      "geometric": 2.8634255460562805e-15
+    }
+  },
+  "qualification": {
+    "schema": "tensorfem.plate-linear-stress-buckling/1.0",
+    "scope": "TensorFEM variational plate buckling; no TensorLBM/CFD",
+    "tolerance": 0.03,
+    "young": 210000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.012,
+    "basis": 16,
+    "cases": [
+      {
+        "case": "uniform_compression",
+        "aspect_ratio": 1.0,
+        "stress_gradient": 0.0,
+        "psi": 1.0,
+        "literature_k": 4.0,
+        "ritz_k": 4.000000000000001,
+        "ritz_dominant_mode": [
+          1,
+          1
+        ],
+        "strip_k": 3.99979440144525,
+        "strip_dominant_mode": 1,
+        "ritz_vs_strip_relative": 5.139963868772135e-05,
+        "relative_error": 2.220446049250313e-16,
+        "passed": true
+      },
+      {
+        "case": "triangular_compression",
+        "aspect_ratio": 2.0,
+        "stress_gradient": 1.0,
+        "psi": 0.0,
+        "literature_k": 7.81,
+        "ritz_k": 7.81195727525727,
+        "ritz_dominant_mode": [
+          2,
+          1
+        ],
+        "strip_k": 7.811521881732441,
+        "strip_dominant_mode": 2,
+        "ritz_vs_strip_relative": 5.5734242967231395e-05,
+        "relative_error": 0.0002506114285878436,
+        "passed": true
+      },
+      {
+        "case": "pure_bending_long_panel",
+        "aspect_ratio": 6.0,
+        "stress_gradient": 2.0,
+        "psi": -1.0,
+        "literature_k": 23.9,
+        "ritz_k": 23.881812970474332,
+        "ritz_dominant_mode": [
+          9,
+          2
+        ],
+        "strip_k": 23.878232061566873,
+        "strip_dominant_mode": 9,
+        "ritz_vs_strip_relative": 0.00014994292568515366,
+        "relative_error": 0.0007609635784797675,
+        "passed": true
+      },
+      {
+        "case": "pure_bending_square",
+        "aspect_ratio": 1.0,
+        "stress_gradient": 2.0,
+        "psi": -1.0,
+        "literature_k": 25.6,
+        "ritz_k": 25.5283479806248,
+        "ritz_dominant_mode": [
+          2,
+          2
+        ],
+        "strip_k": 25.524367299239486,
+        "strip_dominant_mode": 2,
+        "ritz_vs_strip_relative": 0.00015593180523609806,
+        "relative_error": 0.0027989070068437094,
+        "passed": true
+      }
+    ],
+    "stress_ratio_scan": [
+      {
+        "stress_gradient": 0.0,
+        "psi": 1.0,
+        "k": 4.000000000000001,
+        "monotone_increase": true
+      },
+      {
+        "stress_gradient": 0.5,
+        "psi": 0.5,
+        "k": 5.318762751665793,
+        "monotone_increase": true
+      },
+      {
+        "stress_gradient": 1.0,
+        "psi": 0.0,
+        "k": 7.8119572752572735,
+        "monotone_increase": true
+      },
+      {
+        "stress_gradient": 1.5,
+        "psi": -0.5,
+        "k": 13.51365957406008,
+        "monotone_increase": true
+      },
+      {
+        "stress_gradient": 2.0,
+        "psi": -1.0,
+        "k": 23.881812970474336,
+        "monotone_increase": true
+      }
+    ],
+    "passed": true
+  },
+  "figure": "docs/assets/plate_linear_stress_buckling.png"
+}

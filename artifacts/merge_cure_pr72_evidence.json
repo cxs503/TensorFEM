@@ -1,0 +1,320 @@
+{
+  "mission": 3785,
+  "repo": "TensorFEM",
+  "pr": 72,
+  "branch": "agent/m3785",
+  "cured_branch": "agent/m3327",
+  "shas": {
+    "m3327_old": "1f548955b84706f0be4d5196ee938d81d8ae5b57",
+    "main_tip": "14ca2fdc1fd06467f3edb33db1d9e549b6a901a2",
+    "merge_base": "dff97e7ff20dc11d13673c1367cb9304eb4d476d",
+    "merge_commit": "5f8b6d736a4b865a1516afcc0669402e56f634c3"
+  },
+  "file_sets": {
+    "branch_only": [
+      "benchmarks/plate_bending_buckling.py",
+      "benchmarks/plate_bending_buckling_evidence.json",
+      "docs/assets/plate_bending_buckling.png",
+      "docs/benchmark-qualification-status.md",
+      "docs/marine-plate-linear-stress-buckling-validation.md",
+      "src/tensorfem/plate_bending_buckling.py",
+      "tests/test_plate_bending_buckling.py"
+    ],
+    "main_only": [
+      ".scratch/proto_ritz.py",
+      "benchmarks/combined_panel_buckling.json",
+      "benchmarks/finite_width_hole_reference.json",
+      "benchmarks/near_incompressible_locking.py",
+      "benchmarks/near_incompressible_locking_evidence.json",
+      "docs/assets/combined_panel_buckling/convergence.png",
+      "docs/assets/combined_panel_buckling/interaction.png",
+      "docs/assets/combined_panel_buckling/shear_mode.png",
+      "docs/assets/finite_width_hole/finite_width_L_sensitivity.png",
+      "docs/assets/finite_width_hole/finite_width_convergence.png",
+      "docs/assets/finite_width_hole/finite_width_hole_edge_profile.png",
+      "docs/assets/finite_width_hole/finite_width_ktn_vs_ratio.png",
+      "docs/assets/finite_width_hole/finite_width_sigma_xx_field.png",
+      "docs/assets/near_incompressible_locking/error_vs_poisson.png",
+      "docs/assets/near_incompressible_locking/refinement_and_2d_debt.png",
+      "docs/assets/near_incompressible_locking/stress_profile_nu_4999.png",
+      "docs/finite-width-hole-howland.md",
+      "docs/kirsch-hole-stress-concentration.md",
+      "docs/marine-plate-combined-loading-verification.md",
+      "docs/near-incompressible-locking.md",
+      "scripts/audit_combined_panel_buckling.py",
+      "scripts/audit_finite_width_hole.py",
+      "src/tensorfem/finite_width_hole.py",
+      "src/tensorfem/incompressible_locking.py",
+      "src/tensorfem/marine_plate_combined_buckling.py",
+      "tests/test_finite_width_hole.py",
+      "tests/test_incompressible_locking.py",
+      "tests/test_marine_plate_combined_buckling.py"
+    ],
+    "both": [
+      "CHANGELOG.md"
+    ]
+  },
+  "invariants": {
+    "branch_only_verbatim": {
+      "side": "1f548955b84706f0be4d5196ee938d81d8ae5b57",
+      "files": [
+        {
+          "path": "benchmarks/plate_bending_buckling.py",
+          "identical": true,
+          "expected_blob": "eeceb078eab887170daca3a7f389a7de9a907608",
+          "merged_blob": "eeceb078eab887170daca3a7f389a7de9a907608"
+        },
+        {
+          "path": "benchmarks/plate_bending_buckling_evidence.json",
+          "identical": true,
+          "expected_blob": "020564901a119b5810e0f7007b56bbc423a17112",
+          "merged_blob": "020564901a119b5810e0f7007b56bbc423a17112"
+        },
+        {
+          "path": "docs/assets/plate_bending_buckling.png",
+          "identical": true,
+          "expected_blob": "4a74d10cf8aba1017cabe93e74c9062c12910870",
+          "merged_blob": "4a74d10cf8aba1017cabe93e74c9062c12910870"
+        },
+        {
+          "path": "docs/benchmark-qualification-status.md",
+          "identical": true,
+          "expected_blob": "a146728457c42ede771e1753fad100f9f6ef9eea",
+          "merged_blob": "a146728457c42ede771e1753fad100f9f6ef9eea"
+        },
+        {
+          "path": "docs/marine-plate-linear-stress-buckling-validation.md",
+          "identical": true,
+          "expected_blob": "e5907581488766b31d3fb07322578119727fbdf1",
+          "merged_blob": "e5907581488766b31d3fb07322578119727fbdf1"
+        },
+        {
+          "path": "src/tensorfem/plate_bending_buckling.py",
+          "identical": true,
+          "expected_blob": "5de7e02e0e13c105fee9e688bf70614f0feb228d",
+          "merged_blob": "5de7e02e0e13c105fee9e688bf70614f0feb228d"
+        },
+        {
+          "path": "tests/test_plate_bending_buckling.py",
+          "identical": true,
+          "expected_blob": "b98b2aec6615ae91342a7b5a0087ebde624d7d15",
+          "merged_blob": "b98b2aec6615ae91342a7b5a0087ebde624d7d15"
+        }
+      ],
+      "all_identical": true,
+      "count": 7
+    },
+    "main_only_verbatim": {
+      "side": "14ca2fdc1fd06467f3edb33db1d9e549b6a901a2",
+      "files": [
+        {
+          "path": ".scratch/proto_ritz.py",
+          "identical": true,
+          "expected_blob": null,
+          "merged_blob": null
+        },
+        {
+          "path": "benchmarks/combined_panel_buckling.json",
+          "identical": true,
+          "expected_blob": "1650783a37fd20cc87a86729c294749d1c3cdabd",
+          "merged_blob": "1650783a37fd20cc87a86729c294749d1c3cdabd"
+        },
+        {
+          "path": "benchmarks/finite_width_hole_reference.json",
+          "identical": true,
+          "expected_blob": "3585504419d415b52a269f702238349863ea5ae7",
+          "merged_blob": "3585504419d415b52a269f702238349863ea5ae7"
+        },
+        {
+          "path": "benchmarks/near_incompressible_locking.py",
+          "identical": true,
+          "expected_blob": "ecee7e4d45f181077e6863daad83eb72ce745804",
+          "merged_blob": "ecee7e4d45f181077e6863daad83eb72ce745804"
+        },
+        {
+          "path": "benchmarks/near_incompressible_locking_evidence.json",
+          "identical": true,
+          "expected_blob": "1dc8ec358cacb6effb77e54a991e971b34400b2d",
+          "merged_blob": "1dc8ec358cacb6effb77e54a991e971b34400b2d"
+        },
+        {
+          "path": "docs/assets/combined_panel_buckling/convergence.png",
+          "identical": true,
+          "expected_blob": "0679f24b446e156887c6ce7fcc3aa78e4450fd6b",
+          "merged_blob": "0679f24b446e156887c6ce7fcc3aa78e4450fd6b"
+        },
+        {
+          "path": "docs/assets/combined_panel_buckling/interaction.png",
+          "identical": true,
+          "expected_blob": "74244bc5ab858a858737246d664826e8b80380c6",
+          "merged_blob": "74244bc5ab858a858737246d664826e8b80380c6"
+        },
+        {
+          "path": "docs/assets/combined_panel_buckling/shear_mode.png",
+          "identical": true,
+          "expected_blob": "153b90a1e2e7e86f8800f7c9ceb08c3e5c1c434e",
+          "merged_blob": "153b90a1e2e7e86f8800f7c9ceb08c3e5c1c434e"
+        },
+        {
+          "path": "docs/assets/finite_width_hole/finite_width_L_sensitivity.png",
+          "identical": true,
+          "expected_blob": "b74654cf6d273e1ba21ac0525eafe5a8ce5d41da",
+          "merged_blob": "b74654cf6d273e1ba21ac0525eafe5a8ce5d41da"
+        },
+        {
+          "path": "docs/assets/finite_width_hole/finite_width_convergence.png",
+          "identical": true,
+          "expected_blob": "f3cb3068aa6f248e01f1effa09b280aa35574b49",
+          "merged_blob": "f3cb3068aa6f248e01f1effa09b280aa35574b49"
+        },
+        {
+          "path": "docs/assets/finite_width_hole/finite_width_hole_edge_profile.png",
+          "identical": true,
+          "expected_blob": "d511d6b12f73636923a656a56384ab06ca3c38ef",
+          "merged_blob": "d511d6b12f73636923a656a56384ab06ca3c38ef"
+        },
+        {
+          "path": "docs/assets/finite_width_hole/finite_width_ktn_vs_ratio.png",
+          "identical": true,
+          "expected_blob": "ff964d40718dc45990b436eb4d2ab10e44e7493f",
+          "merged_blob": "ff964d40718dc45990b436eb4d2ab10e44e7493f"
+        },
+        {
+          "path": "docs/assets/finite_width_hole/finite_width_sigma_xx_field.png",
+          "identical": true,
+          "expected_blob": "817334205cba33fb297fcfeb6ed0eb6acb32b069",
+          "merged_blob": "817334205cba33fb297fcfeb6ed0eb6acb32b069"
+        },
+        {
+          "path": "docs/assets/near_incompressible_locking/error_vs_poisson.png",
+          "identical": true,
+          "expected_blob": "9a4200f206d2c7986a9a378af045d03d58b7ad31",
+          "merged_blob": "9a4200f206d2c7986a9a378af045d03d58b7ad31"
+        },
+        {
+          "path": "docs/assets/near_incompressible_locking/refinement_and_2d_debt.png",
+          "identical": true,
+          "expected_blob": "0bd0c21aa7c13199bb2c213f51f3f424318a59b7",
+          "merged_blob": "0bd0c21aa7c13199bb2c213f51f3f424318a59b7"
+        },
+        {
+          "path": "docs/assets/near_incompressible_locking/stress_profile_nu_4999.png",
+          "identical": true,
+          "expected_blob": "2a564ca9a9e9bc52b7b83bfcd0021becefceb68c",
+          "merged_blob": "2a564ca9a9e9bc52b7b83bfcd0021becefceb68c"
+        },
+        {
+          "path": "docs/finite-width-hole-howland.md",
+          "identical": true,
+          "expected_blob": "18a3983f4482067d6e55043ecdc26152d6ee3655",
+          "merged_blob": "18a3983f4482067d6e55043ecdc26152d6ee3655"
+        },
+        {
+          "path": "docs/kirsch-hole-stress-concentration.md",
+          "identical": true,
+          "expected_blob": "3814b611bc6da61aa2ac7f8729fede07fb92dbbf",
+          "merged_blob": "3814b611bc6da61aa2ac7f8729fede07fb92dbbf"
+        },
+        {
+          "path": "docs/marine-plate-combined-loading-verification.md",
+          "identical": true,
+          "expected_blob": "4ac689591548464fbf4f0edec3c67e4ee792bfdc",
+          "merged_blob": "4ac689591548464fbf4f0edec3c67e4ee792bfdc"
+        },
+        {
+          "path": "docs/near-incompressible-locking.md",
+          "identical": true,
+          "expected_blob": "3fb6d387c068915902f35647bb4761943f1c2b96",
+          "merged_blob": "3fb6d387c068915902f35647bb4761943f1c2b96"
+        },
+        {
+          "path": "scripts/audit_combined_panel_buckling.py",
+          "identical": true,
+          "expected_blob": "0b0cdbe1f9884c02cd752ac3f82dca6bf0f82634",
+          "merged_blob": "0b0cdbe1f9884c02cd752ac3f82dca6bf0f82634"
+        },
+        {
+          "path": "scripts/audit_finite_width_hole.py",
+          "identical": true,
+          "expected_blob": "3fca52272f883b08baf60f220919676c617a7ec2",
+          "merged_blob": "3fca52272f883b08baf60f220919676c617a7ec2"
+        },
+        {
+          "path": "src/tensorfem/finite_width_hole.py",
+          "identical": true,
+          "expected_blob": "f9822935b629ed12e327490ea47efdbd813d3e1a",
+          "merged_blob": "f9822935b629ed12e327490ea47efdbd813d3e1a"
+        },
+        {
+          "path": "src/tensorfem/incompressible_locking.py",
+          "identical": true,
+          "expected_blob": "0fc961382f0aa3503b29102133eaeadc345f80f1",
+          "merged_blob": "0fc961382f0aa3503b29102133eaeadc345f80f1"
+        },
+        {
+          "path": "src/tensorfem/marine_plate_combined_buckling.py",
+          "identical": true,
+          "expected_blob": "d93c254a4ab002f908d7c7c202e522ef821812e4",
+          "merged_blob": "d93c254a4ab002f908d7c7c202e522ef821812e4"
+        },
+        {
+          "path": "tests/test_finite_width_hole.py",
+          "identical": true,
+          "expected_blob": "f21fcbedb06a62a8272f27881195e83baaa94b32",
+          "merged_blob": "f21fcbedb06a62a8272f27881195e83baaa94b32"
+        },
+        {
+          "path": "tests/test_incompressible_locking.py",
+          "identical": true,
+          "expected_blob": "eee8dcd3db835158b4700e34a06f46ec609e6293",
+          "merged_blob": "eee8dcd3db835158b4700e34a06f46ec609e6293"
+        },
+        {
+          "path": "tests/test_marine_plate_combined_buckling.py",
+          "identical": true,
+          "expected_blob": "06f04c8ce604e49c68422227e2333011dc0a6c52",
+          "merged_blob": "06f04c8ce604e49c68422227e2333011dc0a6c52"
+        }
+      ],
+      "all_identical": true,
+      "count": 28
+    },
+    "changelog_union": {
+      "path": "CHANGELOG.md",
+      "differs_from_both_parents": true,
+      "branch_marker_present": true,
+      "main_marker_present": true,
+      "auto_merge_hunks_disjoint": true,
+      "lossless": true
+    }
+  },
+  "tests": {
+    "merged": {
+      "passed": 1419,
+      "failed": 2,
+      "skipped": 6,
+      "xpassed": 1,
+      "log": "merged.log",
+      "failures": [
+        "tests/test_finite_strain_curved_friction_contact3d.py::test_real_curved_nonmatching_tet4_friction_level_one_closure",
+        "tests/test_release_quality.py::test_api_audit_script_passes_with_warnings_as_errors"
+      ],
+      "total": 1428
+    },
+    "baseline": {
+      "passed": 1389,
+      "failed": 2,
+      "skipped": 6,
+      "xpassed": 1,
+      "log": "base3.log",
+      "failures": [
+        "tests/test_finite_strain_curved_friction_contact3d.py::test_real_curved_nonmatching_tet4_friction_level_one_closure",
+        "tests/test_release_quality.py::test_api_audit_script_passes_with_warnings_as_errors"
+      ],
+      "total": 1398
+    },
+    "new_test_file": "tests/test_plate_bending_buckling.py",
+    "new_test_count": 30,
+    "all_new_tests_passed": true
+  }
+}

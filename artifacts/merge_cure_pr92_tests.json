@@ -1,0 +1,73 @@
+{
+  "merged_tree": "/root/tp-agent/work/m3545",
+  "sets": {
+    "element_rank_audit": {
+      "paths": [
+        "tests/test_element_rank_audit.py"
+      ],
+      "merged": {
+        "returncode": 0,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "summary_line": "11 passed, 2 warnings in 12.92s"
+      },
+      "baseline": {
+        "returncode": 0,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "summary_line": "11 passed, 2 warnings in 11.62s"
+      },
+      "baseline_comparable": {
+        "merged_passed": 11,
+        "baseline_passed": 11,
+        "merged_ge_baseline": true
+      }
+    },
+    "hex20_distortion": {
+      "paths": [
+        "tests/test_hex20_distortion.py"
+      ],
+      "merged": {
+        "returncode": 0,
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "summary_line": "10 passed, 2 warnings in 26.22s"
+      },
+      "baseline": null,
+      "baseline_comparable": null,
+      "baseline_note": "test file is branch-only (absent on main); baseline N/A"
+    },
+    "broad_hex20_rank_regression": {
+      "paths": [
+        "tests/test_hex20.py",
+        "tests/test_quadratic_solid_rank_audit.py",
+        "tests/test_hemisphere_hex20_oracle.py",
+        "tests/test_solid3d_mass.py"
+      ],
+      "merged": {
+        "returncode": 0,
+        "passed": 37,
+        "failed": 0,
+        "skipped": 0,
+        "summary_line": "37 passed, 2 warnings in 54.41s"
+      },
+      "baseline": {
+        "returncode": 0,
+        "passed": 37,
+        "failed": 0,
+        "skipped": 0,
+        "summary_line": "37 passed, 2 warnings in 26.57s"
+      },
+      "baseline_comparable": {
+        "merged_passed": 37,
+        "baseline_passed": 37,
+        "merged_ge_baseline": true
+      }
+    }
+  },
+  "verdict": "PASS",
+  "sets_incomplete": []
+}

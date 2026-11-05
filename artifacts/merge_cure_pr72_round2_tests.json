@@ -1,0 +1,36 @@
+{
+  "merged_core_subset": {
+    "log": "/tmp/m3327_merged_subset.log",
+    "seconds": 158.74,
+    "passed": 44,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "xpassed": 0
+  },
+  "baseline_core_subset": {
+    "log": "/tmp/fem_main_subset.log",
+    "seconds": 152.15,
+    "passed": 44,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "xpassed": 0
+  },
+  "pr_own_tests": {
+    "log": "/tmp/m3327_plate_test.log",
+    "seconds": 64.16,
+    "passed": 30,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "xpassed": 0
+  },
+  "core_subset_files": [
+    "tests/test_incompressible_locking.py",
+    "tests/test_element_rank_audit.py",
+    "tests/test_continuum_bbar.py",
+    "tests/test_prestressed_modal.py"
+  ],
+  "identical_outcome": true
+}

@@ -1,5 +1,18 @@
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
+## 2026-11-03 板面内线性变化压缩屈曲：非均匀预屈曲应力欠账清偿
+
+- 新增 `src/tensorfem/plate_bending_buckling.py`：简支正交各向异性板在 `N_x(y) = -N_0 (1 - gradient*y/b)`
+  下的屈曲，覆盖均匀压缩 (`gradient=0`)、三角形 (`1`) 与纯面内弯曲 (`2`)，对应应力比 `psi = 1 - gradient`。
+- 闭式宽度矩 `int t sin(n pi t) sin(q pi t) dt` 提供非对角几何矩阵；与 240 点 Gauss-Legendre 能量积分
+  逐元一致到 2.9e-15。
+- 独立第二路线 `strip_buckling_coefficient`：因 `N_x` 只依赖 `y`，`w = sin(m pi x/a) f(y)` 精确分离，
+  对 `f(y)` 作二阶中心差分即得同一特征值的独立离散，200 节点与变分解相差 1.6e-5（实测二阶收敛）。
+- 经典系数门槛（3%）：4.0 均匀（精确值 + `navier_uniaxial_buckling_load` 交叉）、7.81 三角形 0.025%、
+  23.9 纯弯长板 0.076%、25.6 纯弯方形 0.280%；资格报告在无文献锚点的正交各向异性算例上不作精度宣称。
+- 修复差分条路线斜率泛函漏掉边界半权项导致的 O(h) 泄漏（400 节点仍 5.0e-3，系统偏低 0.25%），
+  并新增收敛阶回归测试；`docs/benchmark-qualification-status.md` 的「非均匀预屈曲应力」欠账随本单收窄。
+
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
 ## 2026-11-04 — plane-strain B-bar Q4 (near-incompressible locking cure)

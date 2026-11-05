@@ -1,0 +1,103 @@
+{
+ "task": "PR #92 (agent/m3545) -> main, round-2 lossless three-way merge",
+ "revisions": {
+  "base": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+  "main": "723e12cb594d36c9d366c06ea4237d99429688cd",
+  "branch": "fb9c212a9a7c92c0c302777a944da3f1ce06cbdb",
+  "merged": "45d972ea550cb852e13549fba4a3c12d68de1bb5"
+ },
+ "counts": {
+  "branch_only_edit": 37,
+  "main_only_edit": 4,
+  "both_same": 0,
+  "conflict": 5,
+  "added_by_branch": 0,
+  "added_by_main": 0,
+  "deleted_by_main": 0,
+  "deleted_by_branch": 0,
+  "untouched": 1219
+ },
+ "plan": {
+  "branch_only_edit": [
+   "CHANGELOG.md",
+   "artifacts/merge_cure_pr72_evidence.json",
+   "artifacts/merge_cure_pr72_round2_evidence.json",
+   "artifacts/merge_cure_pr72_round2_tests.json",
+   "artifacts/merge_cure_pr92_evidence.json",
+   "artifacts/merge_cure_pr92_tests.json",
+   "docs/assets/element_rank_element_nullspace.png",
+   "docs/assets/element_rank_free_free_modes.png",
+   "docs/assets/hex20_distortion_audit.png",
+   "docs/assets/merge_cure_pr72/verification.png",
+   "docs/assets/merge_cure_pr72_round2/audit.png",
+   "docs/assets/merge_cure_pr72_round2/tests.png",
+   "docs/assets/merge_cure_pr92/audit.png",
+   "docs/assets/merge_cure_pr92/tests.png",
+   "docs/assets/plate_bending_buckling.png",
+   "docs/benchmarks/tutorials/element-rank-audit.json",
+   "docs/benchmarks/tutorials/hex20-distortion-audit.json",
+   "docs/element-rank-deficiency-audit.md",
+   "docs/hex20-distortion-robustness.md",
+   "docs/hex20-validation.md",
+   "docs/marine-plate-linear-stress-buckling-validation.md",
+   "docs/merge-cure-pr72-m3327.md",
+   "docs/merge-cure-pr72-round2.md",
+   "docs/merge-cure-pr92-round1.md",
+   "runs/report_m3785.py",
+   "scripts/audit_hex20_distortion.py",
+   "scripts/merge_cure_pr72_evidence.py",
+   "scripts/merge_cure_pr72_round2_audit.py",
+   "scripts/merge_cure_pr72_round2_conflicts.py",
+   "scripts/merge_cure_pr72_round2_report.py",
+   "scripts/merge_cure_pr92_audit.py",
+   "scripts/merge_cure_pr92_figures.py",
+   "scripts/merge_cure_pr92_report.py",
+   "scripts/merge_cure_pr92_tests.py",
+   "src/tensorfem/element_rank_audit.py",
+   "src/tensorfem/hex20_distortion.py",
+   "tests/test_hex20_distortion.py"
+  ],
+  "main_only_edit": [
+   ".scratch/proto_ritz.py",
+   "docs/assets/plate_bending_buckling/k_vs_psi.png",
+   "docs/assets/plate_bending_buckling/mode_and_aspect.png",
+   "docs/plate-bending-buckling-validation.md"
+  ],
+  "both_same": [],
+  "conflict": [
+   "benchmarks/plate_bending_buckling.py",
+   "benchmarks/plate_bending_buckling_evidence.json",
+   "docs/benchmark-qualification-status.md",
+   "src/tensorfem/plate_bending_buckling.py",
+   "tests/test_plate_bending_buckling.py"
+  ],
+  "added_by_branch": [],
+  "added_by_main": [],
+  "deleted_by_main": [],
+  "deleted_by_branch": []
+ },
+ "renamed_from_branch": {
+  "src/tensorfem/plate_linear_stress_buckling.py": "src/tensorfem/plate_bending_buckling.py",
+  "tests/test_plate_linear_stress_buckling.py": "tests/test_plate_bending_buckling.py",
+  "benchmarks/plate_linear_stress_buckling.py": "benchmarks/plate_bending_buckling.py",
+  "benchmarks/plate_linear_stress_buckling_evidence.json": "benchmarks/plate_bending_buckling_evidence.json",
+  "docs/assets/plate_linear_stress_buckling.png": "docs/assets/plate_bending_buckling.png"
+ },
+ "union_docs": {
+  "docs/benchmark-qualification-status.md": {
+   "conflict_markers": [],
+   "contains": {
+    "plate-bending-buckling-validation.md": true,
+    "marine-plate-linear-stress-buckling-validation.md": true,
+    "沿板宽线性变化的预屈曲压缩": true,
+    "0.28%": true
+   },
+   "main_len": 8569,
+   "branch_len": 8440,
+   "merged_len": 9143,
+   "ok": true
+  }
+ },
+ "status": "PASS",
+ "failures": []
+}
