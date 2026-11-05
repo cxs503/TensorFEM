@@ -14,7 +14,10 @@ authors = [{name = "TensorFEM Contributors"}]
 dependencies = ["torch>=2.1"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6", "pytest-timeout>=2.3", "pytest-cov>=5.0", "numpy>=1.26", "matplotlib>=3.8"]
+# ruff is pinned: the format ratchet (scripts/lint_gate.py) and the CI lint gate
+# compare against a fixed formatter, so an unpinned linter would make the gate
+# drift with upstream releases.  Bump deliberately, in its own change.
+dev = ["pytest>=8", "ruff==0.15.0", "pytest-timeout>=2.3", "pytest-cov>=5.0", "numpy>=1.26", "matplotlib>=3.8"]
 reports = ["numpy>=1.26", "matplotlib>=3.8", "python-docx>=1.1", "reportlab>=4", "markdown>=3.5"]
 # The fluid/rigid feedback fixture couples to the sibling TensorLBM checkout.
 # It stays optional so TensorFEM remains installable on its own.
@@ -42,3 +45,20 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+
+[tool.ruff.lint]
+# Blocking correctness gate (CI step "Lint (ruff correctness rules)"):
+#   E9  = syntax / IO / tokenisation errors (E999, E902, ...)
+#   F63 = invalid format strings (`%` mismatches, f-string errors)
+#   F7  = break/continue/return used outside a loop or function
+#   F81 = redefinition of an unused name (F811)
+#   F82 = undefined name / undefined export in `__all__` (F821, F822)
+# The whole tree passes this set with zero findings, so any finding is a real
+# regression rather than noise.
+#
+# The legacy *style* backlog is deliberately NOT part of the gate: it is 4000+
+# findings over 600+ files (E701/E702 one-liners, F401 unused imports, E741
+# ambiguous names, ...), which would keep the check permanently red and hide
+# every other signal.  CI counts it in the advisory "Legacy style backlog" step;
+# it is burned down separately, then widened here (see docs/ci-lint-gate.md).
+select = ["E9", "F63", "F7", "F81", "F82"]

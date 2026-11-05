@@ -11,3 +11,17 @@ Before making changes, read the [Tensor ecosystem vision](https://github.com/cxs
 - Include runnable tests/examples and quantitative evidence appropriate to the change. Report exact commands, results, failures, untested paths, assumptions, and limitations.
 - Distinguish implementation, unit tests, integration tests, benchmarks, domain validation, and production deployment evidence. Never claim more than the evidence establishes.
 - Keep changes scoped, reviewable, and reversible. Do not optimize for PR count, code volume, or workflow completion alone.
+
+## Lint before you push
+
+CI gates two things on every change (see [docs/ci-lint-gate.md](docs/ci-lint-gate.md)):
+
+```
+ruff check src tests scripts examples                    # correctness rules (E9/F63/F7/F81/F82)
+python scripts/lint_gate.py --base origin/main           # format ratchet on the files you changed
+ruff format <the files you touched>                      # fix the ratchet if it fails
+```
+
+A tree-wide `ruff format` is not required: pre-existing format debt in a file you
+touch is warned about, not blocked. Do not add `# noqa` or widen
+`[tool.ruff.lint] select` to silence a finding; fix it or report it.
