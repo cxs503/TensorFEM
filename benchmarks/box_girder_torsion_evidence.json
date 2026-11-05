@@ -1,0 +1,159 @@
+{
+  "case": {
+    "G": 1.0,
+    "a": 1.0,
+    "b": 0.6,
+    "section": "rectangular box girder, closed thin wall",
+    "t": 0.1,
+    "theta": 1.0
+  },
+  "fd_grid_study": [
+    {
+      "c": 0.07289064363585493,
+      "compat_residual": 0.0,
+      "h": 0.05,
+      "identity_gap_pct": 1.7732832905977127,
+      "j_bredt": 0.2912066666666666,
+      "j_energy": 0.31124146442576844,
+      "j_torque": 0.30581843717969387,
+      "j_vs_bredt_pct": 5.01766346226984,
+      "nodes": 360,
+      "residual": 8.9562416901126e-15,
+      "richardson_delta": 0.0017104904678024724,
+      "sweeps": 205,
+      "tau_bredt": 0.6966666666666665,
+      "tau_max_fd": 0.7789064363413826,
+      "tau_wall_fd": 0.728907250674039
+    },
+    {
+      "c": 0.07242174020236958,
+      "compat_residual": 1.2335811384723962e-16,
+      "h": 0.025,
+      "identity_gap_pct": 1.154506498015368,
+      "j_bredt": 0.2912066666666666,
+      "j_energy": 0.3076188927176613,
+      "j_torque": 0.3041079467118914,
+      "j_vs_bredt_pct": 4.430283205017554,
+      "nodes": 1200,
+      "residual": 9.507713826062721e-15,
+      "richardson_delta": 0.001070257851295553,
+      "sweeps": 413,
+      "tau_bredt": 0.6966666666666665,
+      "tau_max_fd": 0.9923607897397735,
+      "tau_wall_fd": 0.7242189326453242
+    },
+    {
+      "c": 0.07215544161930962,
+      "compat_residual": 2.4671622769447924e-16,
+      "h": 0.0125,
+      "identity_gap_pct": 0.7584798115865355,
+      "j_bredt": 0.2912066666666666,
+      "j_energy": 0.3053361685521019,
+      "j_torque": 0.30303768886059584,
+      "j_vs_bredt_pct": 4.0627580162756916,
+      "nodes": 4320,
+      "residual": 9.58183579940757e-15,
+      "sweeps": 823,
+      "tau_bredt": 0.6966666666666665,
+      "tau_max_fd": 1.246396590774946,
+      "tau_wall_fd": 0.7215562803994464
+    }
+  ],
+  "fd_observed_order": 0.6764516452692776,
+  "figures": [
+    "docs/assets/box-girder-torsion-fields.png",
+    "docs/assets/box-girder-torsion-convergence.png"
+  ],
+  "hex8_study": [
+    {
+      "dofs": 432,
+      "elements": 64,
+      "error_vs_bredt_pct": 11.812449394123735,
+      "error_vs_fd_pct": 7.447132408921903,
+      "j_bredt": 0.2912066666666666,
+      "j_fe": 0.3256053067989812,
+      "j_ratio_bredt": 1.1181244939412374,
+      "layers_z": 2,
+      "n_layers": 2,
+      "n_side": 4,
+      "nodes": 144,
+      "shear_wall_fe": 0.7749529847008156,
+      "tau_max_fe": 0.8409905566761395,
+      "warping_max": 0.18562437482114713
+    },
+    {
+      "dofs": 1152,
+      "elements": 192,
+      "error_vs_bredt_pct": 5.799380492895171,
+      "error_vs_fd_pct": 1.6688222662211845,
+      "j_bredt": 0.2912066666666666,
+      "j_fe": 0.30809484928734354,
+      "j_ratio_bredt": 1.0579938049289517,
+      "layers_z": 2,
+      "n_layers": 3,
+      "n_side": 8,
+      "nodes": 384,
+      "shear_wall_fe": 0.7333260117066027,
+      "tau_max_fe": 0.8137455461295354,
+      "warping_max": 0.17905733092060805
+    },
+    {
+      "dofs": 1920,
+      "elements": 384,
+      "error_vs_bredt_pct": 5.793069577445498,
+      "error_vs_fd_pct": 1.6627577378827312,
+      "j_bredt": 0.2912066666666666,
+      "j_fe": 0.3080764714808264,
+      "j_ratio_bredt": 1.057930695774455,
+      "layers_z": 3,
+      "n_layers": 4,
+      "n_side": 8,
+      "nodes": 640,
+      "shear_wall_fe": 0.7332813207136798,
+      "tau_max_fe": 0.8561006503443257,
+      "warping_max": 0.17901165034395494
+    },
+    {
+      "dofs": 2880,
+      "elements": 576,
+      "error_vs_bredt_pct": 4.383591322060039,
+      "error_vs_fd_pct": 0.30830751740614853,
+      "j_bredt": 0.2912066666666666,
+      "j_fe": 0.3039719768359269,
+      "j_ratio_bredt": 1.0438359132206003,
+      "layers_z": 3,
+      "n_layers": 4,
+      "n_side": 12,
+      "nodes": 960,
+      "shear_wall_fe": 0.7235715885172361,
+      "tau_max_fe": 0.9090830609472125,
+      "warping_max": 0.18830250085575945
+    }
+  ],
+  "thin_wall_asymptote": [
+    {
+      "error_pct": 10.150066030236388,
+      "h": 0.05,
+      "j_bredt": 0.46285714285714297,
+      "j_fd": 0.5098374484828085,
+      "ratio": 1.1015006603023638,
+      "t": 0.2
+    },
+    {
+      "error_pct": 4.430283205017554,
+      "h": 0.025,
+      "j_bredt": 0.2912066666666666,
+      "j_fd": 0.3041079467118914,
+      "ratio": 1.0443028320501755,
+      "t": 0.1
+    },
+    {
+      "error_pct": 2.0759316697772507,
+      "h": 0.0125,
+      "j_bredt": 0.16221955645161287,
+      "j_fd": 0.1655871235985641,
+      "ratio": 1.0207593166977724,
+      "t": 0.05
+    }
+  ]
+}
