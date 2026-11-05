@@ -56,11 +56,3 @@ free-surface, damage stability, compartment flooding, trim, arbitrary-hull
 integration, wave-load, seakeeping, mooring, or classification-rule
 implementation. Passing its tests does not constitute design approval or
 regulatory/classification certification.
-Large-angle `GZ` curves and `KN` cross-curves are provided separately by
-verified against the wall-sided closed form to machine precision. The exact
-wall-sided `GZ` oracle used by the audit lives in
-[the audit report](marine-large-angle-stability-audit.md). This is still not a
-large-angle `GZ` curve, cross-curves, free-surface, damage
-stability, compartment flooding, trim, arbitrary-hull integration, wave-load,
-seakeeping, mooring, or classification-rule implementation. Passing its tests
-does not constitute design approval or regulatory/classification certification.
