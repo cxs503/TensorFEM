@@ -1,0 +1,425 @@
+{
+  "dispatch": {
+    "q4_shape_max_difference": 0.0,
+    "q4_shape_numpy_type": "ndarray",
+    "q4_shape_sums_to_one": 1.0,
+    "q4_shape_torch_type": "Tensor",
+    "square_area_numpy": 2.0,
+    "square_area_torch": 2.0,
+    "tapered_area_numpy": 2.5100000000000002,
+    "tapered_area_torch": 2.5100000000000002
+  },
+  "gate": 0.03,
+  "levels": [
+    8,
+    16,
+    32,
+    64
+  ],
+  "max_abs_stored_delta": 0.0,
+  "observed_order_von_mises": 2.0202559977336683,
+  "purpose": "verify the merged (PR #79) union of the Torch and NumPy stress-recovery families",
+  "qualification": {
+    "monotone": true,
+    "recovery_qualified": true
+  },
+  "reference_sha256": "",
+  "rows": [
+    {
+      "elements": 64,
+      "max_abs_field_difference": 2.0539125955565396e-15,
+      "max_boundary_spread": 6.938893903907228e-17,
+      "max_component_error": 0.3297503616078779,
+      "max_path_delta_von_mises": 2.914335439641036e-16,
+      "max_rel_field_difference": 5.258521001731783e-15,
+      "max_von_mises_error": 0.08023114522351446,
+      "mesh": 8,
+      "points": [
+        {
+          "boundary_spread": 5.204170427930421e-17,
+          "component_errors": {
+            "sxx": 0.07284144726274523,
+            "sxy": 0.011621226873574253,
+            "syy": 0.006447096117418792
+          },
+          "path_delta_von_mises": 9.71445146547012e-17,
+          "point": [
+            24.0,
+            37.0
+          ],
+          "von_mises": 0.06818230628900811,
+          "von_mises_error": 0.007396502779291249,
+          "von_mises_reference": 0.06869037483740352
+        },
+        {
+          "boundary_spread": 6.938893903907228e-17,
+          "component_errors": {
+            "sxx": 0.05609738853700325,
+            "sxy": 0.02553605015461347,
+            "syy": 0.016906553622766215
+          },
+          "path_delta_von_mises": 0.0,
+          "point": [
+            14.399999999999999,
+            31.0
+          ],
+          "von_mises": 0.07104602212375767,
+          "von_mises_error": 0.029287694223210866,
+          "von_mises_reference": 0.07318957604735916
+        },
+        {
+          "boundary_spread": 6.938893903907228e-18,
+          "component_errors": {
+            "sxx": 0.26562000224057775,
+            "sxy": 0.026835821563898882,
+            "syy": 0.026705491167192806
+          },
+          "path_delta_von_mises": 2.914335439641036e-16,
+          "point": [
+            33.599999999999994,
+            43.0
+          ],
+          "von_mises": 0.08392019610003686,
+          "von_mises_error": 0.033207882884481475,
+          "von_mises_reference": 0.08680273102600146
+        },
+        {
+          "boundary_spread": 4.163336342344337e-17,
+          "component_errors": {
+            "sxx": 0.0978552649577033,
+            "sxy": 0.06423582577830168,
+            "syy": 0.06063826029688251
+          },
+          "path_delta_von_mises": 1.1102230246251565e-16,
+          "point": [
+            24.0,
+            29.5
+          ],
+          "von_mises": 0.14551634118704487,
+          "von_mises_error": 0.07020478805734315,
+          "von_mises_reference": 0.15650364652127213
+        },
+        {
+          "boundary_spread": 5.551115123125783e-17,
+          "component_errors": {
+            "sxx": 0.08623638618581031,
+            "sxy": 0.3297503616078779,
+            "syy": 0.25726567813245493
+          },
+          "path_delta_von_mises": 1.8041124150158794e-16,
+          "point": [
+            24.0,
+            44.5
+          ],
+          "von_mises": 0.07675978750106399,
+          "von_mises_error": 0.08023114522351446,
+          "von_mises_reference": 0.08345551939755289
+        }
+      ]
+    },
+    {
+      "elements": 256,
+      "max_abs_field_difference": 5.176414852314792e-15,
+      "max_boundary_spread": 8.326672684688674e-17,
+      "max_component_error": 0.08946803428695549,
+      "max_path_delta_von_mises": 2.0816681711721685e-16,
+      "max_rel_field_difference": 1.1005516725398773e-14,
+      "max_von_mises_error": 0.019514392023253443,
+      "mesh": 16,
+      "points": [
+        {
+          "boundary_spread": 7.28583859910259e-17,
+          "component_errors": {
+            "sxx": 0.032325380156203655,
+            "sxy": 0.0022461820061001575,
+            "syy": 0.0005576842109939218
+          },
+          "path_delta_von_mises": 8.326672684688674e-17,
+          "point": [
+            24.0,
+            37.0
+          ],
+          "von_mises": 0.06859470410976183,
+          "von_mises_error": 0.001392782145506565,
+          "von_mises_reference": 0.06869037483740352
+        },
+        {
+          "boundary_spread": 2.7755575615628914e-17,
+          "component_errors": {
+            "sxx": 0.0010143494438682172,
+            "sxy": 0.004585637757044387,
+            "syy": 0.03984599191819199
+          },
+          "path_delta_von_mises": 1.249000902703301e-16,
+          "point": [
+            14.399999999999999,
+            31.0
+          ],
+          "von_mises": 0.07292195360410937,
+          "von_mises_error": 0.0036565650151685705,
+          "von_mises_reference": 0.07318957604735916
+        },
+        {
+          "boundary_spread": 7.849623728795052e-17,
+          "component_errors": {
+            "sxx": 0.020889533517496197,
+            "sxy": 0.008646745288291879,
+            "syy": 0.002890887146003898
+          },
+          "path_delta_von_mises": 2.0816681711721685e-16,
+          "point": [
+            33.599999999999994,
+            43.0
+          ],
+          "von_mises": 0.08625939157364908,
+          "von_mises_error": 0.0062594741655032276,
+          "von_mises_reference": 0.08680273102600146
+        },
+        {
+          "boundary_spread": 1.3877787807814457e-17,
+          "component_errors": {
+            "sxx": 0.02426865831026094,
+            "sxy": 0.016799841119289848,
+            "syy": 0.017043099128810208
+          },
+          "path_delta_von_mises": 8.326672684688674e-17,
+          "point": [
+            24.0,
+            29.5
+          ],
+          "von_mises": 0.15364793757076206,
+          "von_mises_error": 0.018246916375344143,
+          "von_mises_reference": 0.15650364652127213
+        },
+        {
+          "boundary_spread": 8.326672684688674e-17,
+          "component_errors": {
+            "sxx": 0.020914884323314953,
+            "sxy": 0.08946803428695549,
+            "syy": 0.07718868006597139
+          },
+          "path_delta_von_mises": 6.938893903907228e-17,
+          "point": [
+            24.0,
+            44.5
+          ],
+          "von_mises": 0.0818269356755248,
+          "von_mises_error": 0.019514392023253443,
+          "von_mises_reference": 0.08345551939755289
+        }
+      ]
+    },
+    {
+      "elements": 1024,
+      "max_abs_field_difference": 1.0963452368173421e-14,
+      "max_boundary_spread": 8.565197162635485e-17,
+      "max_component_error": 0.023927429785979972,
+      "max_path_delta_von_mises": 9.159339953157541e-16,
+      "max_rel_field_difference": 1.9373914037876758e-14,
+      "max_von_mises_error": 0.004837918704974441,
+      "mesh": 32,
+      "points": [
+        {
+          "boundary_spread": 5.377642775528102e-17,
+          "component_errors": {
+            "sxx": 0.009756239334310895,
+            "sxy": 0.0003977139979284435,
+            "syy": 0.0002068596623495252
+          },
+          "path_delta_von_mises": 6.938893903907228e-17,
+          "point": [
+            24.0,
+            37.0
+          ],
+          "von_mises": 0.06867000171076668,
+          "von_mises_error": 0.0002965936157004393,
+          "von_mises_reference": 0.06869037483740352
+        },
+        {
+          "boundary_spread": 1.734723475976807e-17,
+          "component_errors": {
+            "sxx": 0.003865784491064468,
+            "sxy": 0.0010190109700462019,
+            "syy": 0.023927429785979972
+          },
+          "path_delta_von_mises": 2.7755575615628914e-17,
+          "point": [
+            14.399999999999999,
+            31.0
+          ],
+          "von_mises": 0.07318700031686165,
+          "von_mises_error": 3.519258665807368e-05,
+          "von_mises_reference": 0.07318957604735916
+        },
+        {
+          "boundary_spread": 8.565197162635485e-17,
+          "component_errors": {
+            "sxx": 0.01750143698657275,
+            "sxy": 0.0025126147002235053,
+            "syy": 0.0005850760070366398
+          },
+          "path_delta_von_mises": 9.159339953157541e-16,
+          "point": [
+            33.599999999999994,
+            43.0
+          ],
+          "von_mises": 0.08667784115265537,
+          "von_mises_error": 0.0014387781567458124,
+          "von_mises_reference": 0.08680273102600146
+        },
+        {
+          "boundary_spread": 2.7755575615628914e-17,
+          "component_errors": {
+            "sxx": 0.005883891865253625,
+            "sxy": 0.004226802143955071,
+            "syy": 0.004743736187091063
+          },
+          "path_delta_von_mises": 2.498001805406602e-16,
+          "point": [
+            24.0,
+            29.5
+          ],
+          "von_mises": 0.15578286998763619,
+          "von_mises_error": 0.004605493543806845,
+          "von_mises_reference": 0.15650364652127213
+        },
+        {
+          "boundary_spread": 5.551115123125783e-17,
+          "component_errors": {
+            "sxx": 0.005208638394496139,
+            "sxy": 0.022501928912088465,
+            "syy": 0.019948622007678638
+          },
+          "path_delta_von_mises": 5.551115123125783e-17,
+          "point": [
+            24.0,
+            44.5
+          ],
+          "von_mises": 0.0830517683792261,
+          "von_mises_error": 0.004837918704974441,
+          "von_mises_reference": 0.08345551939755289
+        }
+      ]
+    },
+    {
+      "elements": 4096,
+      "max_abs_field_difference": 3.223810107755298e-14,
+      "max_boundary_spread": 9.367506770274758e-17,
+      "max_component_error": 0.010678587705546973,
+      "max_path_delta_von_mises": 9.298117831235686e-16,
+      "max_rel_field_difference": 4.689529139578562e-14,
+      "max_von_mises_error": 0.0012019046867308028,
+      "mesh": 64,
+      "points": [
+        {
+          "boundary_spread": 9.367506770274758e-17,
+          "component_errors": {
+            "sxx": 0.002722012081407891,
+            "sxy": 4.885142101700793e-05,
+            "syy": 0.00011209789293333903
+          },
+          "path_delta_von_mises": 2.7755575615628914e-17,
+          "point": [
+            24.0,
+            37.0
+          ],
+          "von_mises": 0.06868523814028565,
+          "von_mises_error": 7.478044966307548e-05,
+          "von_mises_reference": 0.06869037483740352
+        },
+        {
+          "boundary_spread": 6.938893903907228e-18,
+          "component_errors": {
+            "sxx": 0.0017062541422731411,
+            "sxy": 0.0001469514085056262,
+            "syy": 0.010678587705546973
+          },
+          "path_delta_von_mises": 9.71445146547012e-17,
+          "point": [
+            14.399999999999999,
+            31.0
+          ],
+          "von_mises": 0.07321412518092502,
+          "von_mises_error": 0.0003354184419645551,
+          "von_mises_reference": 0.07318957604735916
+        },
+        {
+          "boundary_spread": 3.0357660829594124e-17,
+          "component_errors": {
+            "sxx": 0.004452437605490363,
+            "sxy": 0.0009336023680088269,
+            "syy": 0.00019115468620303753
+          },
+          "path_delta_von_mises": 4.996003610813204e-16,
+          "point": [
+            33.599999999999994,
+            43.0
+          ],
+          "von_mises": 0.0867534289113863,
+          "von_mises_error": 0.0005679788415919468,
+          "von_mises_reference": 0.08680273102600146
+        },
+        {
+          "boundary_spread": 2.7755575615628914e-17,
+          "component_errors": {
+            "sxx": 0.0013824355232597983,
+            "sxy": 0.001037904356096061,
+            "syy": 0.0013409494133397146
+          },
+          "path_delta_von_mises": 8.326672684688674e-17,
+          "point": [
+            24.0,
+            29.5
+          ],
+          "von_mises": 0.1563223324972207,
+          "von_mises_error": 0.001158529069971535,
+          "von_mises_reference": 0.15650364652127213
+        },
+        {
+          "boundary_spread": 4.163336342344337e-17,
+          "component_errors": {
+            "sxx": 0.0013188868982280154,
+            "sxy": 0.005571815427202442,
+            "syy": 0.004914583878028102
+          },
+          "path_delta_von_mises": 9.298117831235686e-16,
+          "point": [
+            24.0,
+            44.5
+          ],
+          "von_mises": 0.08335521381765541,
+          "von_mises_error": 0.0012019046867308028,
+          "von_mises_reference": 0.08345551939755289
+        }
+      ]
+    }
+  ],
+  "stored_error_reproduction": {
+    "16": {
+      "delta": 0.0,
+      "fresh": 0.019514392023253443,
+      "stored": 0.019514392023253443
+    },
+    "32": {
+      "delta": 0.0,
+      "fresh": 0.004837918704974441,
+      "stored": 0.004837918704974441
+    },
+    "64": {
+      "delta": 0.0,
+      "fresh": 0.0012019046867308028,
+      "stored": 0.0012019046867308028
+    },
+    "8": {
+      "delta": 0.0,
+      "fresh": 0.08023114522351446,
+      "stored": 0.08023114522351446
+    }
+  },
+  "study_max_errors": {
+    "16": 0.019514392023253443,
+    "32": 0.004837918704974441,
+    "64": 0.0012019046867308028,
+    "8": 0.08023114522351446
+  }
+}
