@@ -12,19 +12,52 @@ Two layers:
 from __future__ import annotations
 
 import json
+import re
+import shutil
+import subprocess
 import sys
+import tomllib
 from pathlib import Path
 
 import pytest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+LEDGER_PATH = REPO_ROOT / "docs" / "lint-baseline.json"
+CI_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ci.yml"
+
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 import lint_gate  # noqa: E402  (path bootstrap above)
 
 
-needs_ruff = pytest.mark.skipif(
-    __import__("shutil").which("ruff") is None, reason="ruff not installed"
-)
+def _ruff_mismatch_reason() -> str | None:
+    """``None`` when the installed ruff is the build the ledger was frozen with.
+
+    The end-to-end tests below assert on ruff's *own* diagnostics, so they are
+    only meaningful against the pinned build; a drifted binary used to surface
+    as a confusing "collected nothing" assertion instead of as a version
+    problem (that is exactly how this gate first landed red).
+    """
+    ruff = shutil.which("ruff")
+    if ruff is None:
+        return "ruff not installed"
+    try:
+        proc = subprocess.run([ruff, "--version"], capture_output=True, text=True, check=False)
+    except OSError as exc:  # pragma: no cover - ruff binary not runnable
+        return f"ruff not runnable: {exc}"
+    running = (proc.stdout or proc.stderr).strip()
+    frozen = json.loads(LEDGER_PATH.read_text(encoding="utf-8")).get("tool", "").strip()
+    if frozen and running != frozen:
+        return (
+            f"installed {running!r} != ledger {frozen!r}: ledger and end-to-end "
+            "expectations are ruff-version specific (pin 'ruff==...' in the dev "
+            "extra, or re-freeze with --update-baseline)"
+        )
+    return None
+
+
+_ruff_reason = _ruff_mismatch_reason()
+needs_ruff = pytest.mark.skipif(_ruff_reason is not None, reason=_ruff_reason or "")
 
 
 # --------------------------------------------------------------------------- #
@@ -113,6 +146,77 @@ def test_load_baseline_errors(tmp_path: Path) -> None:
     stale.write_text(json.dumps({"schema": 99}), encoding="utf-8")
     with pytest.raises(lint_gate.RuffError):
         lint_gate.load_baseline(stale)
+
+
+# --------------------------------------------------------------------------- #
+# tool pinning: the ledger is ruff-version specific
+# --------------------------------------------------------------------------- #
+def test_dev_extra_pins_the_same_ruff_as_the_lint_gate() -> None:
+    """CI's lint pin, the ``dev`` extra and the ledger must name one build.
+
+    Regression test for the red this gate first shipped with: the lint job
+    pinned ``ruff==0.15.0`` while the ``dev`` extra asked for ``ruff>=0.6``, so
+    the *test* job installed a newer ruff and the real-binary expectations
+    below silently collected nothing.
+    """
+    workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+    ci_pins = set(re.findall(r'pip install "ruff==([0-9][0-9.]*)"', workflow))
+    assert len(ci_pins) == 1, f"expected exactly one ruff pin in ci.yml, got {sorted(ci_pins)}"
+    ci_pin = ci_pins.pop()
+
+    pyproject = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    dev = pyproject["project"]["optional-dependencies"]["dev"]
+    ruff_reqs = [dep.replace(" ", "") for dep in dev if dep.replace(" ", "").startswith("ruff")]
+    assert ruff_reqs == [f"ruff=={ci_pin}"], (
+        f"dev extra declares {ruff_reqs} but the CI lint job pins ruff=={ci_pin}"
+    )
+
+    frozen = json.loads(LEDGER_PATH.read_text(encoding="utf-8")).get("tool")
+    assert frozen == f"ruff {ci_pin}", f"ledger frozen with {frozen!r}, CI pins ruff=={ci_pin}"
+
+
+def test_tool_drift_flags_version_bump_and_accepts_match() -> None:
+    assert lint_gate.tool_drift({"tool": "ruff 0.15.0"}, "ruff 0.15.0") is None
+    assert lint_gate.tool_drift({}, "ruff 0.15.0") is None  # legacy ledger, no tool field
+    msg = lint_gate.tool_drift({"tool": "ruff 0.15.0"}, "ruff 0.17.3")
+    assert msg is not None
+    assert "ruff 0.15.0" in msg
+    assert "ruff 0.17.3" in msg
+    assert "--update-baseline" in msg
+
+
+def test_check_refuses_to_compare_across_ruff_versions(tmp_path: Path) -> None:
+    """A drifted binary is a tooling problem (exit 2), never a silent pass."""
+    fake = tmp_path / "ruff"
+    fake.write_text('#!/bin/sh\nif [ "$1" = "--version" ]; then echo "ruff 9.9.9"; fi\n', "utf-8")
+    fake.chmod(0o755)
+    baseline = tmp_path / "docs" / "lint-baseline.json"
+    baseline.parent.mkdir()
+    baseline.write_text(
+        json.dumps(
+            {
+                "schema": lint_gate.SCHEMA,
+                "tool": "ruff 0.15.0",
+                "totals": {"check": 0, "files_with_check_debt": 0, "unformatted": 0},
+                "check": {},
+                "unformatted": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "pkg").mkdir()
+    (tmp_path / "pkg" / "ok.py").write_text("VALUE = 1\n", encoding="utf-8")
+    args = [
+        "--root",
+        str(tmp_path),
+        "--baseline",
+        str(baseline),
+        "--scopes",
+        "pkg",
+        "--ruff",
+        str(fake),
+    ]
+    assert lint_gate.main(args) == 2
 
 
 # --------------------------------------------------------------------------- #

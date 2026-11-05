@@ -118,6 +118,26 @@ def ruff_version(ruff: str, root: Path) -> str:
     return (proc.stdout or proc.stderr or "unknown").strip()
 
 
+def tool_drift(baseline: dict, running_tool: str) -> str | None:
+    """Return a message when the running ruff cannot be compared with *baseline*.
+
+    The ledger is a per-file, per-rule count frozen with one ruff build.  A
+    different build may add, drop or recategorise rules, so comparing across
+    versions reads as "new debt" (or as suspiciously *little* debt) when the
+    real problem is the tool.  That case is refused as a tooling problem
+    (exit code 2) instead of being guessed at.
+    """
+    frozen_tool = (baseline.get("tool") or "").strip()
+    running = (running_tool or "").strip()
+    if not frozen_tool or frozen_tool == running:
+        return None
+    return (
+        f"ruff version drift: ledger frozen with '{frozen_tool}', running '{running}'."
+        "  Pin the same build (pyproject 'dev' extra) or re-freeze deliberately"
+        " with --update-baseline"
+    )
+
+
 def totals(ledger: dict[str, dict[str, int]], unformatted: list[str]) -> dict[str, int]:
     return {
         "check": sum(sum(codes.values()) for codes in ledger.values()),
@@ -329,6 +349,11 @@ def main(argv: list[str] | None = None) -> int:
         baseline = load_baseline(baseline_path)
     except RuffError as exc:
         print(f"lint_gate: {exc}", file=sys.stderr)
+        return 2
+
+    drift = tool_drift(baseline, ruff_version(ruff, root))
+    if drift:
+        print(f"lint_gate: {drift}", file=sys.stderr)
         return 2
 
     problems = regressions(

@@ -137,6 +137,13 @@ file is removed: the gate reacts to debt, not to the probe.
 * The ledger is **ruff-version specific** - a newer ruff with new rules would look like new
   debt. The lint job therefore pins `ruff==0.15.0`; bumping the pin is a
   deliberate commit that also re-freezes the ledger (`--update-baseline`).
+  The pin lives in **two** places that must agree - the lint job's
+  `pip install "ruff==0.15.0"` and the `dev` extra in `pyproject.toml` (the `test`
+  job installs the gate's tests from that extra and drives the real binary
+  end-to-end).  They are held together by
+  `tests/test_lint_gate.py::test_dev_extra_pins_the_same_ruff_as_the_lint_gate`,
+  and `lint_gate.py --check` refuses to compare across versions (exit code 2)
+  instead of reporting fake new debt.
 * The ratchet blocks *new* debt, not *all* debt: 4271 violations remain. They are
   visible in every CI job summary (`Lint debt ratchet` table) and in
   `artifacts/lint-report.json`.
