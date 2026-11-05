@@ -1,0 +1,68 @@
+{
+  "pr": 89,
+  "branch": "agent/m3511",
+  "old_branch_sha": "f9bd976b241ff797bc04759c8b35276676f41aa8",
+  "merge_commit_sha": "ba2c944f975637dd9d3ddf613b59dbf0ffd3a618",
+  "merged_onto_sha": "f9bd976b241ff797bc04759c8b35276676f41aa8",
+  "main_sha": "723e12cb594d36c9d366c06ea4237d99429688cd",
+  "groups": {
+    "A_rank_quadrature_core": {
+      "files": [
+        "tests/test_element_rank_audit.py",
+        "tests/test_hex20.py",
+        "tests/test_quadratic_solid.py",
+        "tests/test_quadratic_solid_rank_audit.py",
+        "tests/test_quadratic_plane.py"
+      ],
+      "branch_only_files": [
+        "tests/test_hex20_distortion.py"
+      ],
+      "baseline_passed": 47,
+      "merged_passed": 66
+    },
+    "B_solid3d_bbar_locking": {
+      "files": [
+        "tests/test_solid3d.py",
+        "tests/test_continuum_bbar.py",
+        "tests/test_incompressible_locking.py"
+      ],
+      "branch_only_files": [],
+      "baseline_passed": 24,
+      "merged_passed": 24
+    }
+  },
+  "totals": {
+    "baseline_passed": 71,
+    "merged_passed": 90,
+    "shared_tests_passed_after_merge": 71,
+    "shared_tests_regression": 0,
+    "branch_only_tests": 19
+  },
+  "loss_audit": {
+    "files": {
+      "docs/benchmark-qualification-status.md": {
+        "checked": 19,
+        "reworded": 0,
+        "lost": 0
+      },
+      "docs/element-rank-deficiency-audit.md": {
+        "checked": 14,
+        "reworded": 6,
+        "lost": 0
+      },
+      "src/tensorfem/element_rank_audit.py": {
+        "checked": 329,
+        "reworded": 0,
+        "lost": 0
+      },
+      "tests/test_element_rank_audit.py": {
+        "checked": 3,
+        "reworded": 0,
+        "lost": 0
+      }
+    },
+    "checked": 365,
+    "reworded": 6,
+    "lost": 0
+  }
+}
