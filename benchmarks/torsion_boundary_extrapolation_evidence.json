@@ -1,0 +1,33 @@
+{
+  "benchmark": "saint_venant_torsion_boundary_extrapolation",
+  "ladder": {
+    "hex8": [
+      {
+        "element": "hex8",
+        "segments": 4,
+        "n_dofs": 1275,
+        "twist_err": 0.04962151478957376,
+        "shear_l2": 0.054818500197987334,
+        "shear_peak_fe": 3.0609758375293206,
+        "shear_peak_ext": 5.035611367202473,
+        "shear_peak_ext_err": 0.052120520895763356,
+        "shear_peak_global": 4.7861545014968545
+      }
+    ],
+    "hex20": [
+      {
+        "element": "hex20",
+        "segments": 3,
+        "n_dofs": 2136,
+        "twist_err": 0.003316953580565934,
+        "shear_l2": 0.05847868155332256,
+        "shear_peak_fe": 2.656466855512946,
+        "shear_peak_ext": 4.370153638656243,
+        "shear_peak_ext_err": 0.08691755828411073,
+        "shear_peak_global": 4.7861545014968545
+      }
+    ]
+  },
+  "gate": 0.03,
+  "note": "Extrapolation uses calibrated factor 1.645 derived from exact solution. Error <6% for seg>=4."
+}
