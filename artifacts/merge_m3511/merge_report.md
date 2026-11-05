@@ -67,3 +67,5 @@ main 基线在 `git worktree add /tmp/m4018_main origin/main`（`723e12c`）上�
   未见事实冲突（两侧都在讲同一组 3×3×3 生产规则，分支补充「此前误标」与畸变证据，main 补充 tet10 与 27/8 点规则）。
 - 本单只治愈合并面，不改变任何数值算法；`hex20` 积分规则与板壳 SRI/MITC 默认值均未动。
 - PR 合入 main 由 merge_governor / pr-gate 记账；本单的产物是「分支已可与 main 干净合并且测试不低于基线」。
+
+详见 `delivery_status.md`（GitHub 交付状态与 SHA 记录）。
