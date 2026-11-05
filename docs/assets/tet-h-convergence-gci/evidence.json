@@ -1,0 +1,482 @@
+{
+  "dirichlet": {
+    "tet10": {
+      "case": {
+        "bending_moment": 672000.0000000002,
+        "curvature": 0.001,
+        "exact_strain_energy": 672.0000000000002,
+        "height": 0.6,
+        "length": 2.0,
+        "poisson_ratio": 0.3,
+        "second_moment": 0.003200000000000001,
+        "width": 0.4,
+        "young_modulus": 210000000000.0
+      },
+      "family": "tet10",
+      "l2_observed_orders": [
+        -1.9227451641588174,
+        -1.3584133006384966
+      ],
+      "levels": [
+        {
+          "exact_strain_energy": 672.0000000000002,
+          "family": "tet10",
+          "mesh": [
+            4,
+            2,
+            3
+          ],
+          "mesh_size": 0.5,
+          "n_elements": 144,
+          "n_free_dofs": 315,
+          "n_nodes": 315,
+          "relative_l2_displacement_error": 2.9344499345242385e-16,
+          "relative_max_displacement_error": 7.65638700719737e-16,
+          "relative_strain_energy_error": 1.7164682373861844e-12,
+          "strain_energy": 671.9999999988468
+        },
+        {
+          "exact_strain_energy": 672.0000000000002,
+          "family": "tet10",
+          "mesh": [
+            8,
+            4,
+            3
+          ],
+          "mesh_size": 0.25,
+          "n_elements": 576,
+          "n_free_dofs": 1575,
+          "n_nodes": 1071,
+          "relative_l2_displacement_error": 1.1125785244675689e-15,
+          "relative_max_displacement_error": 4.215741248946628e-15,
+          "relative_strain_energy_error": 5.058556748086369e-12,
+          "strain_energy": 671.9999999966009
+        },
+        {
+          "exact_strain_energy": 672.0000000000002,
+          "family": "tet10",
+          "mesh": [
+            16,
+            8,
+            3
+          ],
+          "mesh_size": 0.125,
+          "n_elements": 2304,
+          "n_free_dofs": 6975,
+          "n_nodes": 3927,
+          "relative_l2_displacement_error": 2.8526850276426134e-15,
+          "relative_max_displacement_error": 8.107194709512746e-15,
+          "relative_strain_energy_error": 2.730192791421445e-11,
+          "strain_energy": 671.9999999816533
+        }
+      ],
+      "oracle": "closed-form pure bending, Dirichlet on the whole boundary, no body force",
+      "roundoff_floor": true
+    },
+    "tet4": {
+      "case": {
+        "bending_moment": 672000.0000000002,
+        "curvature": 0.001,
+        "exact_strain_energy": 672.0000000000002,
+        "height": 0.6,
+        "length": 2.0,
+        "poisson_ratio": 0.3,
+        "second_moment": 0.003200000000000001,
+        "width": 0.4,
+        "young_modulus": 210000000000.0
+      },
+      "family": "tet4",
+      "l2_observed_orders": [
+        -2.2056961593323954,
+        -2.0869907208237914
+      ],
+      "levels": [
+        {
+          "exact_strain_energy": 672.0000000000002,
+          "family": "tet4",
+          "mesh": [
+            4,
+            2,
+            3
+          ],
+          "mesh_size": 0.5,
+          "n_elements": 144,
+          "n_free_dofs": 18,
+          "n_nodes": 60,
+          "relative_l2_displacement_error": 7.49063005884198e-17,
+          "relative_max_displacement_error": 2.163536388097789e-16,
+          "relative_strain_energy_error": 2.5927884615390306,
+          "strain_energy": 2414.3538461542294
+        },
+        {
+          "exact_strain_energy": 672.0000000000002,
+          "family": "tet4",
+          "mesh": [
+            8,
+            4,
+            3
+          ],
+          "mesh_size": 0.25,
+          "n_elements": 576,
+          "n_free_dofs": 126,
+          "n_nodes": 180,
+          "relative_l2_displacement_error": 3.45540577141225e-16,
+          "relative_max_displacement_error": 9.73591374644005e-16,
+          "relative_strain_energy_error": 0.6676682692326624,
+          "strain_energy": 1120.6730769243495
+        },
+        {
+          "exact_strain_energy": 672.0000000000002,
+          "family": "tet4",
+          "mesh": [
+            16,
+            8,
+            3
+          ],
+          "mesh_size": 0.125,
+          "n_elements": 2304,
+          "n_free_dofs": 630,
+          "n_nodes": 612,
+          "relative_l2_displacement_error": 1.4680669508753512e-15,
+          "relative_max_displacement_error": 3.678011859766241e-15,
+          "relative_strain_energy_error": 0.1863882211613825,
+          "strain_energy": 797.2528846204493
+        }
+      ],
+      "oracle": "closed-form pure bending, Dirichlet on the whole boundary, no body force",
+      "roundoff_floor": false
+    }
+  },
+  "divisions": [
+    2,
+    4,
+    8
+  ],
+  "figure": "tet-h-convergence.png",
+  "layers": 3,
+  "manufactured": {
+    "tet10": {
+      "case": {
+        "amplitude": 0.0001,
+        "exact_strain_energy": 16978.999928841346,
+        "height": 0.6,
+        "length": 2.0,
+        "poisson_ratio": 0.3,
+        "width": 0.4,
+        "young_modulus": 210000000000.0
+      },
+      "energy_observed_orders": [
+        3.0993323940935795,
+        2.9201221918270592
+      ],
+      "energy_study": {
+        "checks": [
+          {
+            "detail": "observed order per triple: 3.125",
+            "name": "measured_order",
+            "passed": true
+          },
+          {
+            "detail": "order drift between first and last triple = 0.000 (band 0.250)",
+            "name": "asymptotic_range_drift",
+            "passed": true
+          },
+          {
+            "detail": "finest observed order 3.125 vs theoretical 3.000 (rel. deviation 0.042, band 0.250)",
+            "name": "expected_order",
+            "passed": true
+          },
+          {
+            "detail": "single evaluable pair, band contract not applicable",
+            "name": "gci_band_contracts",
+            "passed": true
+          },
+          {
+            "detail": "Richardson 16978.2279216 vs analytic int sigma:eps/2 dV 16978.9999288: rel. error 4.547e-05 (<= 3.000e-02); finest-level error 3.044e-04",
+            "name": "reference_tolerance",
+            "passed": true
+          },
+          {
+            "detail": "finest-mesh true error 3.044e-04 vs GCI band 3.238e-04 -> inside the band",
+            "name": "finest_error_inside_gci_band",
+            "passed": true
+          }
+        ],
+        "expected_order": 3.0,
+        "finest_order": 3.1247613780136785,
+        "gci": {
+          "absolute_gci": 5.495579572616003,
+          "band_lower": 16968.335878343078,
+          "band_upper": 16979.32703748831,
+          "observed_order": 3.1247613780136785,
+          "refinement_ratio": 2.0,
+          "relative_gci": 0.00032376777077359017,
+          "richardson_value": 16978.227921573787,
+          "safety_factor": 1.25
+        },
+        "levels": [
+          {
+            "label": "4x2x3",
+            "mesh_size": 0.5,
+            "value": 16643.727017646397
+          },
+          {
+            "label": "8x4x3",
+            "mesh_size": 0.25,
+            "value": 16939.8792440514
+          },
+          {
+            "label": "16x8x3",
+            "mesh_size": 0.125,
+            "value": 16973.831457915694
+          }
+        ],
+        "mean_observed_order": 3.1247613780136785,
+        "observed_orders": [
+          3.1247613780136785
+        ],
+        "passed": true,
+        "qoi": "strain_energy",
+        "reference": {
+          "detail": "Richardson 16978.2279216 vs analytic int sigma:eps/2 dV 16978.9999288: rel. error 4.547e-05 (<= 3.000e-02); finest-level error 3.044e-04",
+          "extrapolated_relative_error": 4.5468359196291443e-05,
+          "extrapolated_value": 16978.227921573787,
+          "finest_inside_gci": true,
+          "finest_relative_error": 0.00030440373092128223,
+          "gci_detail": "finest-mesh true error 3.044e-04 vs GCI band 3.238e-04 -> inside the band",
+          "label": "analytic int sigma:eps/2 dV",
+          "relative_gci": 0.00032376777077359017,
+          "tolerance": 0.03,
+          "value": 16978.999928841346,
+          "within_tolerance": true
+        },
+        "refinement_ratios": [
+          2.0,
+          2.0
+        ],
+        "richardson_value": 16978.227921573787,
+        "schema": "tensorfem.convergence-verification/1.0",
+        "status": "passed"
+      },
+      "family": "tet10",
+      "l2_observed_orders": [
+        2.3599907807968834,
+        2.631274676202862
+      ],
+      "levels": [
+        {
+          "exact_strain_energy": 16978.999928841346,
+          "mesh": [
+            4,
+            2,
+            3
+          ],
+          "mesh_size": 0.5,
+          "n_elements": 144,
+          "n_free_dofs": 315,
+          "n_nodes": 315,
+          "reference_energy_independent": 16979.525566287517,
+          "relative_l2_displacement_error": 0.014112595974179276,
+          "relative_strain_energy_error": 0.019746328558812094,
+          "strain_energy": 16643.727017646397
+        },
+        {
+          "exact_strain_energy": 16978.999928841346,
+          "mesh": [
+            8,
+            4,
+            3
+          ],
+          "mesh_size": 0.25,
+          "n_elements": 576,
+          "n_free_dofs": 1575,
+          "n_nodes": 1071,
+          "reference_energy_independent": 16979.525566287517,
+          "relative_l2_displacement_error": 0.0027490262944843804,
+          "relative_strain_energy_error": 0.002304062957412027,
+          "strain_energy": 16939.8792440514
+        },
+        {
+          "exact_strain_energy": 16978.999928841346,
+          "mesh": [
+            16,
+            8,
+            3
+          ],
+          "mesh_size": 0.125,
+          "n_elements": 2304,
+          "n_free_dofs": 6975,
+          "n_nodes": 3927,
+          "reference_energy_independent": 16979.525566287517,
+          "relative_l2_displacement_error": 0.0004436967928391714,
+          "relative_strain_energy_error": 0.00030440373092128223,
+          "strain_energy": 16973.831457915694
+        }
+      ],
+      "oracle": "manufactured trigonometric field, body force from autograd(dlb.sigma)"
+    },
+    "tet4": {
+      "case": {
+        "amplitude": 0.0001,
+        "exact_strain_energy": 16978.999928841346,
+        "height": 0.6,
+        "length": 2.0,
+        "poisson_ratio": 0.3,
+        "width": 0.4,
+        "young_modulus": 210000000000.0
+      },
+      "energy_observed_orders": [
+        1.8627089361128966,
+        1.962821644205803
+      ],
+      "energy_study": {
+        "checks": [
+          {
+            "detail": "observed order per triple: 1.826",
+            "name": "measured_order",
+            "passed": true
+          },
+          {
+            "detail": "order drift between first and last triple = 0.000 (band 0.250)",
+            "name": "asymptotic_range_drift",
+            "passed": true
+          },
+          {
+            "detail": "finest observed order 1.826 vs theoretical 2.000 (rel. deviation 0.087, band 0.250)",
+            "name": "expected_order",
+            "passed": true
+          },
+          {
+            "detail": "single evaluable pair, band contract not applicable",
+            "name": "gci_band_contracts",
+            "passed": true
+          },
+          {
+            "detail": "Richardson 17017.3658192 vs analytic int sigma:eps/2 dV 16978.9999288: rel. error 2.260e-03 (<= 3.000e-02); finest-level error 1.637e-02",
+            "name": "reference_tolerance",
+            "passed": true
+          },
+          {
+            "detail": "finest-mesh true error 1.637e-02 vs GCI band 2.368e-02 -> inside the band",
+            "name": "finest_error_inside_gci_band",
+            "passed": true
+          }
+        ],
+        "expected_order": 2.0,
+        "finest_order": 1.8264887015911975,
+        "gci": {
+          "absolute_gci": 395.41508699038513,
+          "band_lower": 16305.618662616183,
+          "band_upper": 17096.448836596956,
+          "observed_order": 1.8264887015911975,
+          "refinement_ratio": 2.0,
+          "relative_gci": 0.023676084541754787,
+          "richardson_value": 17017.365819198876,
+          "safety_factor": 1.25
+        },
+        "levels": [
+          {
+            "label": "4x2x3",
+            "mesh_size": 0.5,
+            "value": 13038.136255290767
+          },
+          {
+            "label": "8x4x3",
+            "mesh_size": 0.25,
+            "value": 15895.422004503173
+          },
+          {
+            "label": "16x8x3",
+            "mesh_size": 0.125,
+            "value": 16701.03374960657
+          }
+        ],
+        "mean_observed_order": 1.8264887015911975,
+        "observed_orders": [
+          1.8264887015911975
+        ],
+        "passed": true,
+        "qoi": "strain_energy",
+        "reference": {
+          "detail": "Richardson 17017.3658192 vs analytic int sigma:eps/2 dV 16978.9999288: rel. error 2.260e-03 (<= 3.000e-02); finest-level error 1.637e-02",
+          "extrapolated_relative_error": 0.0022596083702409613,
+          "extrapolated_value": 17017.365819198876,
+          "finest_inside_gci": true,
+          "finest_relative_error": 0.016371175004401134,
+          "gci_detail": "finest-mesh true error 1.637e-02 vs GCI band 2.368e-02 -> inside the band",
+          "label": "analytic int sigma:eps/2 dV",
+          "relative_gci": 0.023676084541754787,
+          "tolerance": 0.03,
+          "value": 16978.999928841346,
+          "within_tolerance": true
+        },
+        "refinement_ratios": [
+          2.0,
+          2.0
+        ],
+        "richardson_value": 17017.365819198876,
+        "schema": "tensorfem.convergence-verification/1.0",
+        "status": "passed"
+      },
+      "family": "tet4",
+      "l2_observed_orders": [
+        1.163295802870296,
+        1.8464502145552355
+      ],
+      "levels": [
+        {
+          "exact_strain_energy": 16978.999928841346,
+          "mesh": [
+            4,
+            2,
+            3
+          ],
+          "mesh_size": 0.5,
+          "n_elements": 144,
+          "n_free_dofs": 18,
+          "n_nodes": 60,
+          "reference_energy_independent": 16979.525566287517,
+          "relative_l2_displacement_error": 0.005565653872112609,
+          "relative_strain_energy_error": 0.232102225694485,
+          "strain_energy": 13038.136255290767
+        },
+        {
+          "exact_strain_energy": 16978.999928841346,
+          "mesh": [
+            8,
+            4,
+            3
+          ],
+          "mesh_size": 0.25,
+          "n_elements": 576,
+          "n_free_dofs": 126,
+          "n_nodes": 180,
+          "reference_energy_independent": 16979.525566287517,
+          "relative_l2_displacement_error": 0.002485016424897516,
+          "relative_strain_energy_error": 0.06381871305020477,
+          "strain_energy": 15895.422004503173
+        },
+        {
+          "exact_strain_energy": 16978.999928841346,
+          "mesh": [
+            16,
+            8,
+            3
+          ],
+          "mesh_size": 0.125,
+          "n_elements": 2304,
+          "n_free_dofs": 630,
+          "n_nodes": 612,
+          "reference_energy_independent": 16979.525566287517,
+          "relative_l2_displacement_error": 0.0006910227785648418,
+          "relative_strain_energy_error": 0.016371175004401134,
+          "strain_energy": 16701.03374960657
+        }
+      ],
+      "oracle": "manufactured trigonometric field, body force from autograd(dlb.sigma)"
+    }
+  },
+  "mesh_family": "(2n, n, 3) box, six tets per hex, conforming TET10 upgrade",
+  "pass": true,
+  "schema": "tensorfem.tet-h-convergence-gci/1"
+}
