@@ -54,13 +54,21 @@ jobs:
   lint:
     name: lint (advisory)
     runs-on: ubuntu-latest
-    # Advisory on purpose: the tree carries a large pre-existing ruff backlog
-    # (unused imports, import ordering, semicolon-packed statements).  Making
-    # it blocking would hide every other signal.  Fix the backlog, then drop
-    # this continue-on-error and promote it to a gate.
+    # Ratchet, not a relaxation.  The job used to lint the whole tree, so it was
+    # red on every ref -- including main -- because of a pre-existing backlog
+    # (semicolon/colon-packed statements, unused imports, star imports), which
+    # told reviewers nothing about the change under review.  scripts/lint_ratchet.py
+    # now measures only the Python files the change touches and compares each of
+    # them with its own version at the merge base: debt may be inherited, never
+    # added.  The whole-tree backlog is still printed for the record and can only
+    # shrink; once it is empty, delete continue-on-error to promote this job to a
+    # blocking gate (it is already precise enough for that).
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          # the ratchet needs a merge base against the target branch
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -70,7 +78,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      - name: Lint (ruff)
-        run: ruff check src tests scripts examples
-      - name: Format check (ruff format)
-        run: ruff format --check src tests scripts examples
+      - name: Lint ratchet on changed files (ruff check + ruff format)
+        # Fails only when this change increases a file's findings or leaves a
+        # previously formatted file unformatted.  Exit code 2 means the gate
+        # could not measure (no merge base, no ruff) and also fails the step.
+        run: python scripts/lint_ratchet.py --base "origin/${{ github.base_ref || 'main' }}"
+      - name: Whole-tree lint debt (report only)
+        if: always()
+        run: |
+          ruff check src tests scripts examples --statistics || true
+          ruff format --check src tests scripts examples || true

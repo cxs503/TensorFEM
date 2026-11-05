@@ -1,4 +1,38 @@
+## 2026-11-05 CI lint：全树 lint 改为「改动文件棘轮」门（PR #127 修红）
+
+- 症状：`lint (advisory)` 在**每个** ref 上都红，包括 `main`——job 原本对全树跑
+  `ruff check src tests scripts examples` 与 `ruff format --check`，而树里有 4268 条历史欠账
+  （E702/E701 占 3962 条）和 616 个未格式化文件，早于任何 PR 存在，因此红灯不携带被审改动的信息。
+- 修复：新增 `scripts/lint_ratchet.py`，只测本次改动触及的 `.py`，并与**该文件在 merge base 的自身版本**比较：
+  每条规则码的计数不得增长，原本已格式化的文件不得变回未格式化，新增文件从「干净」起算（必须干净）。
+  退出码 0=无新增欠账 / 1=本改动新增欠账 / 2=门无法测量（缺 merge base、缺 ruff、探针失灵），
+  即「看不见即失败」。全树欠账仍打印供记账，但不参与判红。
+- `.github/workflows/ci.yml`：lint job 改为跑棘轮（`fetch-depth: 0` 取 merge base）+ 全树欠账只报不判；
+  job 名保持 `lint (advisory)` 以免破坏既有 required-check 映射。
+- 证据：改动文件 0 新增 finding / 0 新增未格式化（PR #127 侧 4+3 个在范围内文件全 ok），
+  负控三条按预期失败（新增 finding → 1，格式回退 → 1，base 不可解析 → 2），
+  `tests/test_lint_ratchet.py` 7 passed。写 `docs/pr127-lint-ratchet.md`，图 `docs/assets/pr127_lint_ratchet.png`。
+- 局限：棘轮判「增量」不判「存量」；存量清欠（E701/E702 拆句器等）仍是独立任务，清完才可去掉 `continue-on-error`。
+
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
+
+## 2026-11-04 大倾角稳性：盒形驳 GZ 曲线与 KN 横交曲线（精确截面几何）
+
+- 新增 `tensorfem.marine_large_angle_gz`：补齐 `marine_hydrostatics` 文档里声明的
+  「不支持大倾角 GZ / 横交曲线」欠账。浸水剖面用凸多边形裁剪 + shoelace 质心精确求值，
+  等排水量（`Area = B T`）二分求水线偏置，`GZ = xB cos + (zB - KG) sin`；
+  支持 0–90°、任意 KG、`KN` 横交曲线族与动稳性积分。
+- 验证锚（`tests/test_marine_large_angle_gz.py`）：墙侧公式
+  `sin(phi)(GM + BM tan^2 phi / 2)` 机精度复现（带内最大残差
+  1.33e-15 m，相对 8.3e-16）；90° 精确几何
+  `xB = B/2 - B T/(2D)`、`GZ = D/2 - KG`；初始斜率回到 `GM`（Richardson 1e-6）；
+  排水体积守恒 1e-12；独立第二套列式（水线高度截断原函数 + 20 万点积分）在三个几何区
+  一致到 1e-8；动稳性积分对闭式 `GM(1-cos) + BM(sec+cos-2)/2` 达 1e-6 且二阶收敛。
+- 发现并记录：闭式甲板入水角只在墙侧假设 `h = T` 下成立，当 `D > 2T` 时龙骨先出水，
+  真实甲板入水角晚于估计（基准驳闭式估计 33.69°，几何求解首个 0.5° 采样点 37.00°），必须用几何求解器而非闭式。
+- 证据/图：`benchmarks/large_angle_gz_reference.json`（0.5° 步长全表）、
+  `docs/assets/marine_large_angle_gz.png`、`docs/marine-large-angle-stability.md`；
+  由 `scripts/plot_large_angle_gz.py` 生成，并有防漂移测试钉住。
 
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
