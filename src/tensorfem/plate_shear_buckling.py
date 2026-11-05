@@ -29,6 +29,7 @@ Scope and conventions
   ``D16/D26`` bending--twisting coupling and discrete stiffener tripping are
   **not** covered.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -53,6 +54,11 @@ __all__ = [
 #: ``N_xy,cr = k_s pi^2 D / b^2`` (Timoshenko & Gere 1961, Table 9.1).
 LITERATURE_KS_SQUARE = 9.34
 LITERATURE_KS_LONG_PANEL = 5.34
+#: Constants of the two-branch classical fit ``k_s(a/b)``; see
+#: :func:`classical_shear_coefficient` for the duality identity that fixes which
+#: constant belongs to which branch.
+SHEAR_KS_MULTI_WAVE_CONSTANT = 5.34
+SHEAR_KS_SINGLE_WAVE_CONSTANT = 4.0
 
 
 @dataclass(frozen=True)
@@ -136,8 +142,14 @@ def _modes(basis_x: int, basis_y: int) -> list[tuple[int, int]]:
 
 
 def sine_energy_matrices(
-    *, length: float, width: float, rigidity_x: float, rigidity_y: float,
-    coupling_rigidity: float, basis_x: int, basis_y: int,
+    *,
+    length: float,
+    width: float,
+    rigidity_x: float,
+    rigidity_y: float,
+    coupling_rigidity: float,
+    basis_x: int,
+    basis_y: int,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, list[tuple[int, int]]]:
     """Bending, uniaxial and shear energy matrices in the double-sine basis.
 
@@ -155,9 +167,7 @@ def sine_energy_matrices(
     alpha_root = np.sqrt(alpha)
     beta_root = np.sqrt(beta)
     bending = np.diag(
-        rigidity_x * alpha**2
-        + 2.0 * coupling_rigidity * alpha * beta
-        + rigidity_y * beta**2
+        rigidity_x * alpha**2 + 2.0 * coupling_rigidity * alpha * beta + rigidity_y * beta**2
     )
     uniaxial = np.diag(alpha)
     shear = np.zeros((size, size))
@@ -176,8 +186,14 @@ def sine_energy_matrices(
 
 
 def sine_energy_quadrature(
-    *, length: float, width: float, rigidity_x: float, rigidity_y: float,
-    coupling_rigidity: float, basis_x: int, basis_y: int,
+    *,
+    length: float,
+    width: float,
+    rigidity_x: float,
+    rigidity_y: float,
+    coupling_rigidity: float,
+    basis_x: int,
+    basis_y: int,
     samples: int = 90,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, list[tuple[int, int]]]:
     """Same matrices as :func:`sine_energy_matrices`, integrated numerically.
@@ -202,8 +218,8 @@ def sine_energy_quadrature(
         phis.append(s_x * s_y)
         phix.append(kx * c_x * s_y)
         phiy.append(ky * s_x * c_y)
-        phixx.append(-kx**2 * s_x * s_y)
-        phiyy.append(-ky**2 * s_x * s_y)
+        phixx.append(-(kx**2) * s_x * s_y)
+        phiyy.append(-(ky**2) * s_x * s_y)
     sqrt_w = np.sqrt(WQ)[:, None]
     xx = np.column_stack(phixx) * sqrt_w
     yy = np.column_stack(phiyy) * sqrt_w
@@ -247,8 +263,13 @@ def ritz_inplane_buckling_load(
         raise ValueError("basis_x and basis_y must be at least 2")
     ratio = _validate_direction(compression_ratio)
     bending, uniaxial, shear, modes = sine_energy_matrices(
-        length=a, width=b, rigidity_x=dx, rigidity_y=dy,
-        coupling_rigidity=h, basis_x=nb_x, basis_y=nb_y,
+        length=a,
+        width=b,
+        rigidity_x=dx,
+        rigidity_y=dy,
+        coupling_rigidity=h,
+        basis_x=nb_x,
+        basis_y=nb_y,
     )
     if compression_ratio is None:
         direction, compression = shear, 0.0
@@ -269,9 +290,7 @@ def ritz_inplane_buckling_load(
     )
 
 
-def shear_buckling_coefficient(
-    *, shear_load: float, rigidity: float, width: float
-) -> float:
+def shear_buckling_coefficient(*, shear_load: float, rigidity: float, width: float) -> float:
     """``k_s = N_xy b^2 / (pi^2 D)`` for comparison with tabulated values."""
     load = _positive_finite("shear_load", shear_load)
     bending = _positive_finite("rigidity", rigidity)
@@ -280,9 +299,26 @@ def shear_buckling_coefficient(
 
 
 def classical_shear_coefficient(aspect_ratio: float) -> float:
-    """Classical approximation ``k_s = 5.34 + 4/(a/b)^2`` (Timoshenko & Gere)."""
+    """Classical two-branch shear coefficient ``k_s(a/b)`` (Timoshenko & Gere).
+
+    ``k_s = 5.34 + 4/(a/b)^2`` for ``a/b >= 1`` and
+    ``k_s = 4 + 5.34/(a/b)^2`` for ``a/b <= 1``; both branches give ``9.34`` at
+    ``a/b = 1``.  The second branch is not cosmetic: the coefficient is
+    normalised by the panel width ``b``, and rotating the same physical panel by
+    90 degrees maps a uniform shear state onto a uniform shear state, so the
+    exact coefficient obeys the duality ``k_s(a/b) * (a/b)^2 = k_s(b/a)``.  Using
+    the ``a/b >= 1`` branch below ``a/b = 1`` violates that identity by
+    ``(1 + 5.34 (b/a)^2) / (5.34 + 4 (b/a)^2)`` (18.8 % at ``a/b = 0.5``).
+
+    The fit itself is only approximate: it underestimates the converged value by
+    about 3.2 % near ``a/b = 2`` (see
+    ``docs/plate-shear-buckling-aspect-sweep-audit.md``), so it must not be used
+    as a 3 % reference far from ``a/b = 1`` or ``a/b -> inf``.
+    """
     ratio = _positive_finite("aspect_ratio", aspect_ratio)
-    return 5.34 + 4.0 / ratio**2
+    if ratio >= 1.0:
+        return SHEAR_KS_MULTI_WAVE_CONSTANT + SHEAR_KS_SINGLE_WAVE_CONSTANT / ratio**2
+    return SHEAR_KS_SINGLE_WAVE_CONSTANT + SHEAR_KS_MULTI_WAVE_CONSTANT / ratio**2
 
 
 def critical_shear_stress(*, shear_load: float, thickness: float) -> float:
@@ -293,8 +329,12 @@ def critical_shear_stress(*, shear_load: float, thickness: float) -> float:
 
 
 def run_shear_buckling_qualification(
-    *, young: float = 210.0e9, poisson: float = 0.3, thickness: float = 0.012,
-    tolerance: float = 0.03, basis: int = 16,
+    *,
+    young: float = 210.0e9,
+    poisson: float = 0.3,
+    thickness: float = 0.012,
+    tolerance: float = 0.03,
+    basis: int = 16,
 ) -> dict[str, object]:
     """Qualify shear buckling against the classical coefficients (3 % gate)."""
     d, _, h = isotropic_plate_rigidities(young, poisson, thickness)
@@ -304,50 +344,79 @@ def run_shear_buckling_qualification(
         ("long_panel_shear", 6.0, LITERATURE_KS_LONG_PANEL),
     ):
         mode = ritz_inplane_buckling_load(
-            length=aspect, width=1.0, rigidity_x=d, rigidity_y=d,
-            coupling_rigidity=h, basis_x=basis, basis_y=basis,
+            length=aspect,
+            width=1.0,
+            rigidity_x=d,
+            rigidity_y=d,
+            coupling_rigidity=h,
+            basis_x=basis,
+            basis_y=basis,
         )
-        coefficient = shear_buckling_coefficient(
-            shear_load=mode.multiplier, rigidity=d, width=1.0)
+        coefficient = shear_buckling_coefficient(shear_load=mode.multiplier, rigidity=d, width=1.0)
         error = abs(coefficient / literature - 1.0)
-        rows.append({
-            "case": name,
-            "aspect_ratio": aspect,
-            "literature_k_s": literature,
-            "coefficient_k_s": coefficient,
-            "dominant_mode": list(mode.dominant_mode),
-            "critical_shear_load": mode.multiplier,
-            "critical_shear_stress": critical_shear_stress(
-                shear_load=mode.multiplier, thickness=thickness),
-            "relative_error": error,
-            "passed": bool(error < tolerance),
-        })
+        # The long panel is compared with the ``a/b -> inf`` asymptote 5.34; that
+        # comparison carries the fit's own finite-aspect bias (2.1 % at a/b = 6),
+        # so the finite-aspect closed form is reported and gated as well instead
+        # of letting the asymptote absorb the difference.
+        closed_form = classical_shear_coefficient(aspect)
+        closed_form_error = abs(coefficient / closed_form - 1.0)
+        rows.append(
+            {
+                "case": name,
+                "aspect_ratio": aspect,
+                "literature_k_s": literature,
+                "closed_form_k_s": closed_form,
+                "coefficient_k_s": coefficient,
+                "dominant_mode": list(mode.dominant_mode),
+                "critical_shear_load": mode.multiplier,
+                "critical_shear_stress": critical_shear_stress(
+                    shear_load=mode.multiplier, thickness=thickness
+                ),
+                "relative_error": error,
+                "relative_error_vs_closed_form": closed_form_error,
+                "passed": bool(error < tolerance and closed_form_error < tolerance),
+            }
+        )
     # Orthotropic (smeared longitudinally stiffened) panel: no tabulated anchor
     # exists for this combination, so only self-consistency is reported.
     stiffened = d + young * 3.0e-4 * 0.04**2 / 0.5
     ortho = ritz_inplane_buckling_load(
-        length=2.0, width=1.0, rigidity_x=stiffened, rigidity_y=d,
-        coupling_rigidity=h, basis_x=basis, basis_y=basis,
+        length=2.0,
+        width=1.0,
+        rigidity_x=stiffened,
+        rigidity_y=d,
+        coupling_rigidity=h,
+        basis_x=basis,
+        basis_y=basis,
     )
     isotropic_2to1 = ritz_inplane_buckling_load(
-        length=2.0, width=1.0, rigidity_x=d, rigidity_y=d,
-        coupling_rigidity=h, basis_x=basis, basis_y=basis,
+        length=2.0,
+        width=1.0,
+        rigidity_x=d,
+        rigidity_y=d,
+        coupling_rigidity=h,
+        basis_x=basis,
+        basis_y=basis,
     )
     gain = ortho.multiplier / isotropic_2to1.multiplier - 1.0
-    rows.append({
-        "case": "orthotropic_panel_shear",
-        "aspect_ratio": 2.0,
-        "literature_k_s": None,
-        "coefficient_k_s": shear_buckling_coefficient(
-            shear_load=ortho.multiplier, rigidity=d, width=1.0),
-        "dominant_mode": list(ortho.dominant_mode),
-        "critical_shear_load": ortho.multiplier,
-        "critical_shear_stress": critical_shear_stress(
-            shear_load=ortho.multiplier, thickness=thickness),
-        "relative_error": None,
-        "stiffened_to_isotropic_gain": gain,
-        "passed": bool(gain > 0.0),
-    })
+    rows.append(
+        {
+            "case": "orthotropic_panel_shear",
+            "aspect_ratio": 2.0,
+            "literature_k_s": None,
+            "coefficient_k_s": shear_buckling_coefficient(
+                shear_load=ortho.multiplier, rigidity=d, width=1.0
+            ),
+            "dominant_mode": list(ortho.dominant_mode),
+            "critical_shear_load": ortho.multiplier,
+            "critical_shear_stress": critical_shear_stress(
+                shear_load=ortho.multiplier, thickness=thickness
+            ),
+            "relative_error": None,
+            "stiffened_to_isotropic_gain": gain,
+            "passed": bool(gain > 0.0),
+        }
+    )
     passed = all(bool(row["passed"]) for row in rows)
     if not passed:
         raise AssertionError("shear buckling qualification failed")
