@@ -35,9 +35,9 @@
       },
       {
         "gate": "assembled_matches_separable_uniaxial",
-        "measured": 1308192.7998883217,
+        "measured": 1308192.7998883226,
         "expected": 1308192.7998878334,
-        "relative_error": 3.7325698087897763e-13,
+        "relative_error": 3.739231146937527e-13,
         "tolerance": 1e-10,
         "passed": true,
         "note": "Kronecker assembly vs closed-form sin^2 eigenvalues, 16x16"
@@ -60,13 +60,13 @@
         ],
         "loads": [
           676370.4530318712,
-          681337.9649570984,
-          682764.4132468967
+          681337.9649570986,
+          682764.4132468965
         ],
         "errors": [
           0.010112762817095278,
-          0.0028426689901188684,
-          0.0007550216805073395
+          0.0028426689901185354,
+          0.0007550216805076726
         ],
         "reference_load": 683280.3046908019,
         "tolerance": 0.03,
@@ -90,25 +90,61 @@
           ]
         ],
         "loads": [
-          3112063.2989704493,
-          3082748.897087062,
-          3072214.0702162087
+          3112063.298970449,
+          3082748.8970870604,
+          3072214.070216212
         ],
         "coefficients": [
-          9.488734215926707,
-          9.399354103297782,
-          9.367233236019343
+          9.488734215926705,
+          9.399354103297776,
+          9.367233236019352
         ],
         "errors": [
-          0.015924434253394626,
-          0.0063548290468715685,
-          0.0029157640277668317
+          0.015924434253394404,
+          0.006354829046871124,
+          0.002915764027767942
         ],
         "reference_coefficient": 9.34,
         "reference_load": 3063282.2619898026,
         "tolerance": 0.03,
         "passed": true,
         "note": "tau_cr = k_s pi^2 D / b^2 from Timoshenko & Gere"
+      },
+      {
+        "gate": "pure_shear_aspect_two_spectral_reference",
+        "grids": [
+          [
+            24,
+            48
+          ],
+          [
+            32,
+            64
+          ]
+        ],
+        "loads": [
+          2164090.1112492504,
+          2156728.82121038
+        ],
+        "coefficients": [
+          6.598347755893246,
+          6.575903056684108
+        ],
+        "errors": [
+          0.007990072890784017,
+          0.004561330601227542
+        ],
+        "reference_coefficient": 6.546044384117836,
+        "reference_modes": [
+          24,
+          24
+        ],
+        "reference_residual": 3.1268655745764207e-06,
+        "reference_converged": true,
+        "asymptotic_fit_error": 0.03147616667826847,
+        "tolerance": 0.03,
+        "passed": true,
+        "note": "a/b = 2, pure shear: the finite-difference solver is judged against the converged Galerkin reference; the asymptotic fit is documented as the party that exceeds 3 %, so this gate fails if a future edit makes the fit look accurate again"
       }
     ],
     "passed": true
@@ -138,29 +174,29 @@
             16,
             16
           ],
-          "line_load": 654084.446358525,
-          "relative_error": 0.00284266899055996
+          "line_load": 654084.4463585252,
+          "relative_error": 0.002842668990559627
         },
         {
           "grid": [
             32,
             32
           ],
-          "line_load": 655453.8367128224,
-          "relative_error": 0.0007550216869075532
+          "line_load": 655453.8367128229,
+          "relative_error": 0.0007550216869068871
         },
         {
           "grid": [
             48,
             48
           ],
-          "line_load": 655724.4266953724,
-          "relative_error": 0.00034250494491860906
+          "line_load": 655724.4266953727,
+          "relative_error": 0.000342504944918276
         }
       ],
       "richardson": {
-        "observed_order": 1.9126561273083775,
-        "extrapolated_error": 0.0001933135149921111
+        "observed_order": 1.912656127309481,
+        "extrapolated_error": 0.00019331351499205388
       }
     },
     {
@@ -187,29 +223,29 @@
             16,
             16
           ],
-          "line_load": 722485.4342125907,
-          "relative_error": 0.0028426689911402736
+          "line_load": 722485.4342125911,
+          "relative_error": 0.0028426689911396075
         },
         {
           "grid": [
             32,
             32
           ],
-          "line_load": 723998.0287869152,
-          "relative_error": 0.0007550216875295002
+          "line_load": 723998.0287869155,
+          "relative_error": 0.0007550216875291671
         },
         {
           "grid": [
             48,
             48
           ],
-          "line_load": 724296.9157589811,
-          "relative_error": 0.0003425049484712117
+          "line_load": 724296.9157589814,
+          "relative_error": 0.00034250494847087865
         }
       ],
       "richardson": {
-        "observed_order": 1.912656126414479,
-        "extrapolated_error": 0.00019331351947874786
+        "observed_order": 1.9126561264147772,
+        "extrapolated_error": 0.00019331351947845678
       }
     },
     {
@@ -236,29 +272,29 @@
             16,
             16
           ],
-          "line_load": 681337.9649570984,
-          "relative_error": 0.0028426689901188684
+          "line_load": 681337.9649570986,
+          "relative_error": 0.0028426689901185354
         },
         {
           "grid": [
             32,
             32
           ],
-          "line_load": 682764.4132468967,
-          "relative_error": 0.0007550216805073395
+          "line_load": 682764.4132468965,
+          "relative_error": 0.0007550216805076726
         },
         {
           "grid": [
             48,
             48
           ],
-          "line_load": 683046.2778333818,
-          "relative_error": 0.00034250490730303174
+          "line_load": 683046.2778333817,
+          "relative_error": 0.00034250490730314276
         }
       ],
       "richardson": {
-        "observed_order": 1.912656139314042,
-        "extrapolated_error": 0.00019331346777767526
+        "observed_order": 1.9126561393132366,
+        "extrapolated_error": 0.0001933134677775926
       }
     },
     {
@@ -285,8 +321,8 @@
             16,
             16
           ],
-          "line_load": 1186907.4794114134,
-          "relative_error": 0.004802169654464561
+          "line_load": 1186907.4794114127,
+          "relative_error": 0.004802169654465116
         },
         {
           "grid": [
@@ -301,13 +337,13 @@
             48,
             48
           ],
-          "line_load": 1191931.0168359166,
-          "relative_error": 0.0005900354887885539
+          "line_load": 1191931.0168359168,
+          "relative_error": 0.0005900354887884429
         }
       ],
       "richardson": {
-        "observed_order": 1.8890345201479666,
-        "extrapolated_error": 0.00032874687472992975
+        "observed_order": 1.8890345201481336,
+        "extrapolated_error": 0.00032874687472981905
       }
     }
   ],
@@ -323,18 +359,18 @@
             24,
             24
           ],
-          "line_load": 3082748.897087062,
-          "coefficient": 9.399354103297782,
-          "relative_error_vs_fit": 0.0063548290468715685
+          "line_load": 3082748.8970870604,
+          "coefficient": 9.399354103297776,
+          "relative_error_vs_fit": 0.006354829046871124
         },
         {
           "grid": [
             32,
             32
           ],
-          "line_load": 3072214.0702162087,
-          "coefficient": 9.367233236019343,
-          "relative_error_vs_fit": 0.0029157640277668317
+          "line_load": 3072214.070216212,
+          "coefficient": 9.367233236019352,
+          "relative_error_vs_fit": 0.002915764027767942
         },
         {
           "grid": [
@@ -347,8 +383,8 @@
         }
       ],
       "richardson": {
-        "observed_order": 1.1239793480364761,
-        "extrapolated_error": -7.471284445432873e-05
+        "observed_order": 1.1239793480358262,
+        "extrapolated_error": -7.471284445641213e-05
       }
     },
     {
@@ -362,18 +398,18 @@
             24,
             36
           ],
-          "line_load": 2334716.4693065104,
-          "coefficient": 7.118590439379954,
-          "relative_error_vs_fit": 0.0001141735001495281
+          "line_load": 2334716.4693065095,
+          "coefficient": 7.118590439379951,
+          "relative_error_vs_fit": 0.00011417350014930605
         },
         {
           "grid": [
             32,
             48
           ],
-          "line_load": 2327867.4634619895,
-          "coefficient": 7.097707703439625,
-          "relative_error_vs_fit": 0.0028197107249979814
+          "line_load": 2327867.4634619905,
+          "coefficient": 7.097707703439629,
+          "relative_error_vs_fit": 0.0028197107249975373
         },
         {
           "grid": [
@@ -386,8 +422,8 @@
         }
       ],
       "richardson": {
-        "observed_order": -4.626247420821725,
-        "extrapolated_error": 0.0027614703231001493
+        "observed_order": -4.6262474208243045,
+        "extrapolated_error": 0.0027614703230997946
       }
     },
     {
@@ -401,18 +437,18 @@
             24,
             48
           ],
-          "line_load": 2164090.1112492476,
-          "coefficient": 6.598347755893237,
-          "relative_error_vs_fit": 0.040748857396409655
+          "line_load": 2164090.1112492504,
+          "coefficient": 6.598347755893246,
+          "relative_error_vs_fit": 0.04074885739641099
         },
         {
           "grid": [
             32,
             64
           ],
-          "line_load": 2156728.821210381,
-          "coefficient": 6.575903056684111,
-          "relative_error_vs_fit": 0.037208684019576
+          "line_load": 2156728.82121038,
+          "coefficient": 6.575903056684108,
+          "relative_error_vs_fit": 0.037208684019575555
         },
         {
           "grid": [
@@ -425,47 +461,47 @@
         }
       ],
       "richardson": {
-        "observed_order": 0.13112023978237866,
-        "extrapolated_error": 0.018018978467848855
+        "observed_order": 0.13112023978244303,
+        "extrapolated_error": 0.01801897846786252
       }
     },
     {
       "case": "pure_shear_aspect_3",
       "aspect_ratio": 3.0,
       "coefficient_fit": 5.7844444444444445,
-      "finest_coefficient": 5.888686644888485,
+      "finest_coefficient": 5.888686644888482,
       "grids": [
         {
           "grid": [
             16,
             48
           ],
-          "line_load": 1976798.6253357844,
-          "coefficient": 6.027292812593478,
-          "relative_error_vs_fit": 0.04198300640302155
+          "line_load": 1976798.625335787,
+          "coefficient": 6.027292812593486,
+          "relative_error_vs_fit": 0.04198300640302288
         },
         {
           "grid": [
             24,
             72
           ],
-          "line_load": 1943334.3973135664,
-          "coefficient": 5.925259809103786,
-          "relative_error_vs_fit": 0.024343801035998425
+          "line_load": 1943334.397313567,
+          "coefficient": 5.925259809103788,
+          "relative_error_vs_fit": 0.024343801035998647
         },
         {
           "grid": [
             32,
             96
           ],
-          "line_load": 1931339.3303750684,
-          "coefficient": 5.888686644888485,
-          "relative_error_vs_fit": 0.018021125701044305
+          "line_load": 1931339.3303750674,
+          "coefficient": 5.888686644888482,
+          "relative_error_vs_fit": 0.01802112570104386
         }
       ],
       "richardson": {
-        "observed_order": 0.7862510339775062,
-        "extrapolated_error": 0.00929522523292624
+        "observed_order": 0.7862510339775387,
+        "extrapolated_error": 0.009295225232925345
       }
     }
   ],
@@ -475,8 +511,8 @@
       24,
       24
     ],
-    "axial_only_load": 1310177.8163144437,
-    "shear_only_load": 2167095.231557384,
+    "axial_only_load": 1310177.8163144435,
+    "shear_only_load": 2167095.2315573827,
     "points": [
       {
         "shear_share": 0.0,
@@ -487,66 +523,66 @@
       },
       {
         "shear_share": 0.15,
-        "normalised_axial": 0.9920479896822216,
-        "normalised_shear": 0.08996553888406515,
-        "sum": 1.0820135285662869,
-        "sum_of_squares": 0.9922530120192375
+        "normalised_axial": 0.9920479896822213,
+        "normalised_shear": 0.08996553888406518,
+        "sum": 1.0820135285662864,
+        "sum_of_squares": 0.9922530120192369
       },
       {
         "shear_share": 0.3,
-        "normalised_axial": 0.9695618598692988,
-        "normalised_shear": 0.17585269283700483,
-        "sum": 1.1454145527063035,
-        "sum_of_squares": 0.9709743696912397
+        "normalised_axial": 0.9695618598692984,
+        "normalised_shear": 0.17585269283700486,
+        "sum": 1.1454145527063033,
+        "sum_of_squares": 0.9709743696912391
       },
       {
         "shear_share": 0.45,
-        "normalised_axial": 0.9360160244801154,
-        "normalised_shear": 0.25465255790734964,
+        "normalised_axial": 0.9360160244801152,
+        "normalised_shear": 0.25465255790734975,
         "sum": 1.190668582387465,
-        "sum_of_squares": 0.9409739233323161
+        "sum_of_squares": 0.9409739233323158
       },
       {
         "shear_share": 0.6,
         "normalised_axial": 0.8956017954958373,
-        "normalised_shear": 0.32487661482234953,
+        "normalised_shear": 0.32487661482234964,
         "sum": 1.220478410318187,
-        "sum_of_squares": 0.9076473909537969
+        "sum_of_squares": 0.907647390953797
       },
       {
         "shear_share": 0.8,
-        "normalised_axial": 0.8373125542942895,
-        "normalised_shear": 0.40497651159320075,
-        "sum": 1.2422890658874903,
-        "sum_of_squares": 0.8650982885210254
+        "normalised_axial": 0.8373125542942896,
+        "normalised_shear": 0.404976511593201,
+        "sum": 1.2422890658874906,
+        "sum_of_squares": 0.8650982885210259
       },
       {
         "shear_share": 1.0,
         "normalised_axial": 0.7793274907623682,
-        "normalised_shear": 0.47116415336628786,
-        "sum": 1.250491644128656,
-        "sum_of_squares": 0.8293469972753399
+        "normalised_shear": 0.47116415336628803,
+        "sum": 1.2504916441286562,
+        "sum_of_squares": 0.82934699727534
       },
       {
         "shear_share": 1.4,
         "normalised_axial": 0.6748972590843748,
-        "normalised_shear": 0.5712391250621869,
-        "sum": 1.2461363841465616,
-        "sum_of_squares": 0.7818004483214145
+        "normalised_shear": 0.571239125062187,
+        "sum": 1.2461363841465618,
+        "sum_of_squares": 0.7818004483214147
       },
       {
         "shear_share": 2.0,
-        "normalised_axial": 0.5534656523532911,
-        "normalised_shear": 0.669226168971045,
-        "sum": 1.2226918213243363,
-        "sum_of_squares": 0.7541878935705159
+        "normalised_axial": 0.5534656523532914,
+        "normalised_shear": 0.6692261689710457,
+        "sum": 1.2226918213243372,
+        "sum_of_squares": 0.7541878935705171
       },
       {
         "shear_share": 4.0,
-        "normalised_axial": 0.33743650496631034,
-        "normalised_shear": 0.8160265719450118,
-        "sum": 1.153463076911322,
-        "sum_of_squares": 0.7797627610042063
+        "normalised_axial": 0.33743650496631045,
+        "normalised_shear": 0.8160265719450124,
+        "sum": 1.1534630769113228,
+        "sum_of_squares": 0.7797627610042074
       }
     ]
   },
