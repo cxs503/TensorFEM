@@ -52,13 +52,11 @@ jobs:
           path: coverage.xml
 
   lint:
-    name: lint (advisory)
+    name: lint
     runs-on: ubuntu-latest
-    # Advisory on purpose: the tree carries a large pre-existing ruff backlog
-    # (unused imports, import ordering, semicolon-packed statements).  Making
-    # it blocking would hide every other signal.  Fix the backlog, then drop
-    # this continue-on-error and promote it to a gate.
-    continue-on-error: true
+    # Blocking gate: the pre-existing ruff backlog (semicolon-packed
+    # statements, unused imports, ambiguous names, star imports) was cleared
+    # in the PR #142 cure, so lint failures must fail the build.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
