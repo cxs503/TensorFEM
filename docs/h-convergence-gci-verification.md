@@ -147,9 +147,12 @@ Run the reproducible evidence with
   rate.  It says nothing about whether the model (material, boundary conditions,
   element suitability) matches reality -- that still needs experimental or
   published benchmark data.
-* **`hex8` only.** `tet4`, TET10, shells, plates and contact are not covered by
-  this evidence set; the evaluator itself is element-agnostic and can be reused
-  once a manufactured/analytic oracle exists for them.
+* **`hex8` here, tetrahedra in a companion note.** `tet4` and TET10 are measured
+  in [tet-h-convergence-gci-validation.md](tet-h-convergence-gci-validation.md)
+  (L2 orders 1.85 / 2.63 at the finest pair, energy GCI 2.37% / 0.032%, analytic
+  energy reference). Shells, plates and contact are still not covered by this
+  evidence set; the evaluator itself is element-agnostic and can be reused once
+  a manufactured/analytic oracle exists for them.
 * **No deal.II / external FE cross-check.** No `deal.II` installation is
   available in this environment, so the independent baseline is analytic rather
   than a second implementation.  A second-code comparison remains an open item.
