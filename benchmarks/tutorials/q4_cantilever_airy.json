@@ -1,0 +1,162 @@
+{
+  "schema": "tensorfem.q4-cantilever-airy/1.0",
+  "title": "Q4 plane-stress cantilever vs exact Timoshenko-Goodier field",
+  "physical_case_id": "rectangular-q4-cantilever-airy",
+  "reference": "Timoshenko & Goodier, Theory of Elasticity, Art. 24",
+  "problem": {
+    "length_m": 1.0,
+    "height_m": 0.1,
+    "thickness_m": 0.012,
+    "young_modulus_pa": 210000000000.0,
+    "poisson": 0.3,
+    "end_shear_n": -100.0,
+    "second_moment_m4": 1.0000000000000004e-06
+  },
+  "cases": [
+    {
+      "mesh": {
+        "nx": 20,
+        "ny": 4,
+        "nodes": 105,
+        "elements": 80
+      },
+      "sigma_x": {
+        "all_elements_max_relative": 0.09343463924246277,
+        "interior_max_relative": 0.08333107293856337,
+        "l2_relative": 0.09241746577195499,
+        "worst_point_m": [
+          0.025,
+          -0.0375
+        ]
+      },
+      "tau_xy": {
+        "all_elements_max_relative": 0.4995389729187964,
+        "interior_max_relative": 0.06145399839010911,
+        "l2_relative": 0.1432624885490338,
+        "worst_point_m": [
+          0.025,
+          0.037500000000000006
+        ]
+      },
+      "displacement": {
+        "max_relative": 0.09594212126430368,
+        "tip_relative": 0.09594137357204624
+      },
+      "strain_energy_relative": 0.09266616103008618,
+      "interior_element_fraction": 0.8,
+      "field": {
+        "height_m": 0.1,
+        "mid_cut_x": 0.5,
+        "mid_cut": [],
+        "bottom_path": []
+      }
+    },
+    {
+      "mesh": {
+        "nx": 40,
+        "ny": 8,
+        "nodes": 369,
+        "elements": 320
+      },
+      "sigma_x": {
+        "all_elements_max_relative": 0.035603142154225186,
+        "interior_max_relative": 0.01602190905059053,
+        "l2_relative": 0.025162454041951863,
+        "worst_point_m": [
+          0.0125,
+          -0.043750000000000004
+        ]
+      },
+      "tau_xy": {
+        "all_elements_max_relative": 0.35691711738056137,
+        "interior_max_relative": 0.014058032282676254,
+        "l2_relative": 0.04954630954866709,
+        "worst_point_m": [
+          0.0125,
+          0.04375
+        ]
+      },
+      "displacement": {
+        "max_relative": 0.02711055128998535,
+        "tip_relative": 0.027110120386145686
+      },
+      "strain_energy_relative": 0.02493679669950124,
+      "interior_element_fraction": 0.6,
+      "field": {
+        "height_m": 0.1,
+        "mid_cut_x": 0.5,
+        "mid_cut": [],
+        "bottom_path": []
+      }
+    },
+    {
+      "mesh": {
+        "nx": 80,
+        "ny": 16,
+        "nodes": 1377,
+        "elements": 1280
+      },
+      "sigma_x": {
+        "all_elements_max_relative": 0.016075801228541253,
+        "interior_max_relative": 0.004192852197959789,
+        "l2_relative": 0.006537597324344044,
+        "worst_point_m": [
+          0.00625,
+          0.046875
+        ]
+      },
+      "tau_xy": {
+        "all_elements_max_relative": 0.18806629646320056,
+        "interior_max_relative": 0.0034638456050618024,
+        "l2_relative": 0.014766765215733535,
+        "worst_point_m": [
+          0.00625,
+          -0.04687500000000001
+        ]
+      },
+      "displacement": {
+        "max_relative": 0.007316912803976996,
+        "tip_relative": 0.007316753492309536
+      },
+      "strain_energy_relative": 0.006361568122435435,
+      "interior_element_fraction": 0.6,
+      "field": {
+        "height_m": 0.1,
+        "mid_cut_x": 0.5,
+        "mid_cut": [],
+        "bottom_path": []
+      }
+    }
+  ],
+  "convergence": {
+    "sigma_x_interior_order": 2.378808497082911,
+    "sigma_x_l2_order": 1.9444402082920926,
+    "tau_xy_interior_order": 2.020948142054663,
+    "displacement_order": 1.8895474791139624
+  },
+  "euler_bernoulli_attribution": {
+    "euler_bernoulli_tip_m": -0.00015873015873015868,
+    "exact_tip_m": -0.0001602777777777777,
+    "tip_model_error": 0.009655855409754777,
+    "timoshenko_shear_tip_m": -1.238095238095238e-06,
+    "shear_share_of_deflection": 0.007724684327803914,
+    "sigma_x_identical_to_exact": true,
+    "sigma_x_at_root_fibre_pa": {
+      "exact": 5000000.074505804,
+      "beam_theory": 4999999.999999998
+    }
+  },
+  "acceptance": {
+    "relative_error_lt": 0.03,
+    "scope": "element centres inside 0.1L<x<0.9L, |y|<0.8c",
+    "corner_band": "excluded: one element width around each corner where the exact traction data is discontinuous"
+  },
+  "verdict": {
+    "sigma_x_interior_pass": true,
+    "tau_xy_interior_pass": true,
+    "displacement_pass": true,
+    "strain_energy_pass": true,
+    "corner_band_tau_xy_pass": false
+  },
+  "qualified": true
+}
