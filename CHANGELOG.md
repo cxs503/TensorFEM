@@ -1,3 +1,43 @@
+## 2026-11-04 Wall-sided large-angle stability: 10-degree cap audited and closed
+
+- `tensorfem.marine_hydrostatics` only covers `|heel| <= 10 deg` with `GZ = GM sin(phi)`. For a
+  rectangular wall-sided barge the intact arm has the exact classical closed form
+  `GZ = sin(phi) * (GM + 0.5 * BM * tan^2(phi))`; the new
+  `tensorfem.marine_large_angle_stability` implements it and cross-checks it against an
+  independent polygon/shoelace oracle that clips the tilted section and solves the
+  constant-displacement waterplane. Agreement over 5 barges and 198 heel angles is
+  `9.1e-15 m` absolute (`1.4e-13` relative), displacement residual `<= 2.8e-13 m^2`.
+- The classical angle-of-loll identity `tan^2(phi) = -2 GM / BM` is recovered from the zero
+  crossing of the oracle arm to `4.1e-13 deg` (GZ at loll `6.2e-15 m`).
+- Audit finding: the merged `GM sin(phi)` model is a lower bound, and its 10-degree cap does
+  **not** bound the arm error at 3%. Error `= [0.5 (BM/GM) tan^2(phi)] / [1 + ...]` is
+  1.87-2.03% at 10 degrees for `BM/GM ~ 1.2-1.3`, but 15.01% (first crossing above 3% at
+  4.5 degrees) for a wide shallow barge with `BM/GM = 11.4`. Exact arms are now available for
+  that regime instead of a model that silently degrades.
+- Two distinct deck limits are recorded: the upright-draft bound that ends the closed form
+  (`deck_immersion_limit_deg`, used by the closed-form guard) and the constant-displacement
+  bound (`equilibrium_deck_immersion_deg`, 36.870 vs 33.690 deg for the shallow barge, because
+  the hull rises by 0.50 m once the keel emerges). Extrapolating the closed form past keel
+  emergence overestimates the arm by 6.2% / 20.0% / 39.6% at 23.4 / 28.4 / 33.4 deg, so
+  `gz_closed_form` fails closed with the binding limit named.
+- Scope: rectangular wall-sided sections only; cross-curves, free surface, downflooding and
+  real hull forms remain out of scope. Evidence:
+  `benchmarks/marine_wall_sided_stability_evidence.json`
+  (generator `benchmarks/marine_large_angle_stability.py`),
+  `docs/assets/marine_large_angle_stability/`,
+  write-up `docs/marine-large-angle-stability-verification.md`; 19 gates in
+  `tests/test_marine_large_angle_stability.py` including an anti-drift assertion against the
+  stored evidence.
+- Merged alongside the independent `BoxBarge` exact-arm oracle (m3275), which keeps the
+  canonical evidence path `benchmarks/marine_large_angle_stability_evidence.json` and its own
+  audit script/figure set. The two implementations compute the same arm by different routes
+  (closed form + shoelace clip vs. centroid solve) and check each other; both test suites live
+  in the same file and both evidence schemas are retained.
+- Merge gate `benchmarks/pr87_merge_cross_check.py` (`artifacts/pr87_merge_cross_check.json`,
+  `docs/assets/pr87_merge_cross_check/cross_check.png`) compares the three routes over 3 cases
+  x 41 heel angles inside the closed-form envelope: max |closed form - centroid| `3.4e-14 m`
+  (relative `2e-15`), i.e. double-precision round-off, verdict PASS at a `1e-9` gate. Two
+  tests pin the merged module (both public surfaces, both evidence schemas).
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
 ## 2026-11-03 Cook 膜应力审计证据收尾
