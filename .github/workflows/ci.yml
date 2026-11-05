@@ -52,13 +52,21 @@ jobs:
           path: coverage.xml
 
   lint:
-    name: lint (advisory)
+    name: lint (debt ratchet)
     runs-on: ubuntu-latest
-    # Advisory on purpose: the tree carries a large pre-existing ruff backlog
-    # (unused imports, import ordering, semicolon-packed statements).  Making
-    # it blocking would hide every other signal.  Fix the backlog, then drop
-    # this continue-on-error and promote it to a gate.
-    continue-on-error: true
+    # Blocking, but against a *frozen debt ledger* rather than against a clean
+    # tree.  The tree carries a large pre-existing ruff backlog (4 271 check
+    # violations in 347 files, 624 files `ruff format` would rewrite), so a
+    # plain `ruff check` could only be made green by a repository-wide rewrite
+    # that would bury every other signal - and leaving the job advisory, as it
+    # was before, let fresh debt in unnoticed.
+    #
+    # `scripts/lint_gate.py --check` compares today's ruff output with
+    # docs/lint-baseline.json and fails on *new* debt only: a grown
+    # file -> rule count, a rule in a file that did not have it, or a file that
+    # needs reformatting and is not in the frozen set.  Debt that is paid down
+    # is reported as progress and re-frozen with `--update-baseline` in a
+    # reviewable commit.  Policy and burn-down plan: docs/lint-debt-baseline.md.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -70,7 +78,21 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      - name: Lint (ruff)
-        run: ruff check src tests scripts examples
-      - name: Format check (ruff format)
-        run: ruff format --check src tests scripts examples
+          # Pinned: the ledger is ruff-version specific, and a new ruff release
+          # with new rules must not turn every open PR red.  Bumping this pin
+          # is a deliberate commit that also re-freezes the baseline.
+          pip install "ruff==0.15.0"
+      - name: Lint debt ratchet (ruff check)
+        run: python scripts/lint_gate.py --check --report artifacts/lint-report.json
+      - name: Raw ruff output (informational, line-level detail for fixing)
+        if: always()
+        continue-on-error: true
+        run: |
+          ruff check src tests scripts examples --statistics || true
+          ruff format --check src tests scripts examples || true
+      - name: Upload lint debt report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: artifacts/lint-report.json

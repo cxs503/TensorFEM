@@ -14,7 +14,12 @@ authors = [{name = "TensorFEM Contributors"}]
 dependencies = ["torch>=2.1"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6", "pytest-timeout>=2.3", "pytest-cov>=5.0", "numpy>=1.26", "matplotlib>=3.8"]
+# ruff is pinned on purpose: docs/lint-baseline.json is ruff-version specific
+# (frozen with ruff 0.15.0, the same pin as the CI lint job) and
+# tests/test_lint_gate.py drives that ledger end-to-end against the installed
+# binary, so the test job and the gate must agree on the build.  Bumping this
+# pin is a deliberate commit that re-freezes the baseline.
+dev = ["pytest>=8", "ruff==0.15.0", "pytest-timeout>=2.3", "pytest-cov>=5.0", "numpy>=1.26", "matplotlib>=3.8"]
 reports = ["numpy>=1.26", "matplotlib>=3.8", "python-docx>=1.1", "reportlab>=4", "markdown>=3.5"]
 # The fluid/rigid feedback fixture couples to the sibling TensorLBM checkout.
 # It stays optional so TensorFEM remains installable on its own.
