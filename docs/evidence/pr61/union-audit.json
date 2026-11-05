@@ -1,0 +1,222 @@
+{
+  "task": "TensorFEM PR #61 reconciliation (agent/m3202 <- main)",
+  "shas": {
+    "merge_base": "e8f6759aab2d203db641b2e94502ee5865848e3f",
+    "main": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+    "branch": "6b4c4fa48efea38e63303f1d5ae921392d468fe6",
+    "merge": "dcc632543167eb3fa8285c9cebb9eff17ccf01aa",
+    "merge_tree": "8b1f27790548d6d75fec39dc1a91bfc7b8eaf55a"
+  },
+  "counts": {
+    "files_main_side": 236,
+    "files_branch_side": 24,
+    "files_both_sides": 17,
+    "files_main_only": 219,
+    "files_branch_only": 7
+  },
+  "hand_resolved": [
+    "CHANGELOG.md",
+    "docs/marine-hydrostatics.md"
+  ],
+  "files_both_sides": [
+    {
+      "path": "CHANGELOG.md",
+      "tier": "2-atom+word",
+      "tier_rule": "prose-atom+word",
+      "atoms_unique_main": 200,
+      "atoms_lost_from_main": 0,
+      "words_lost_from_main": 0,
+      "atoms_unique_branch": 34,
+      "atoms_lost_from_branch": 0,
+      "words_lost_from_branch": 0,
+      "lines_total_merge": 387,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "benchmarks/plate_shear_buckling.py",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 197,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 197,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "benchmarks/plate_shear_buckling_evidence.json",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 314,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 314,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "benchmarks/saint_venant_torsion.json",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 254,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 254,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "docs/assets/plate_shear_buckling.png",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 2522,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 2522,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "docs/assets/saint-venant/annulus-field.png",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 1084,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 1084,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "docs/assets/saint-venant/convergence.png",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 759,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 759,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "docs/assets/saint-venant/rectangle-field.png",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 1190,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 1190,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "docs/benchmark-qualification-status.md",
+      "tier": "2-atom+word",
+      "tier_rule": "prose-atom+word",
+      "atoms_unique_main": 64,
+      "atoms_lost_from_main": 0,
+      "words_lost_from_main": 0,
+      "atoms_unique_branch": 21,
+      "atoms_lost_from_branch": 0,
+      "words_lost_from_branch": 0,
+      "lines_total_merge": 121,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "docs/marine-hydrostatics.md",
+      "tier": "2-atom+word",
+      "tier_rule": "prose-atom+word",
+      "atoms_unique_main": 18,
+      "atoms_lost_from_main": 0,
+      "words_lost_from_main": 0,
+      "atoms_unique_branch": 4,
+      "atoms_lost_from_branch": 0,
+      "words_lost_from_branch": 0,
+      "lines_total_merge": 58,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "docs/marine-plate-shear-buckling-validation.md",
+      "tier": "2-atom+word",
+      "tier_rule": "prose-atom+word",
+      "atoms_unique_main": 265,
+      "atoms_lost_from_main": 0,
+      "words_lost_from_main": 0,
+      "atoms_unique_branch": 265,
+      "atoms_lost_from_branch": 0,
+      "words_lost_from_branch": 0,
+      "lines_total_merge": 145,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "docs/saint-venant-torsion.md",
+      "tier": "2-atom+word",
+      "tier_rule": "prose-atom+word",
+      "atoms_unique_main": 320,
+      "atoms_lost_from_main": 0,
+      "words_lost_from_main": 0,
+      "atoms_unique_branch": 320,
+      "atoms_lost_from_branch": 0,
+      "words_lost_from_branch": 0,
+      "lines_total_merge": 125,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "scripts/audit_saint_venant_torsion.py",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 202,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 202,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "src/tensorfem/plate_shear_buckling.py",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 364,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 364,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "src/tensorfem/saint_venant_torsion.py",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 535,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 535,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "tests/test_plate_shear_buckling.py",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 214,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 214,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    },
+    {
+      "path": "tests/test_saint_venant_torsion.py",
+      "tier": "1-line",
+      "tier_rule": "line-atomic",
+      "lines_unique_main": 164,
+      "lines_lost_from_main": 0,
+      "lines_unique_branch": 164,
+      "lines_lost_from_branch": 0,
+      "verdict": "union-preserved"
+    }
+  ],
+  "deletions": [
+    {
+      "deleted_by": "main",
+      "path": ".scratch/proto_ritz.py",
+      "touched_by_other_side": false,
+      "present_in_merge": false,
+      "verdict": "deletion-propagated"
+    }
+  ],
+  "files_changed_total": 257,
+  "unresolved_conflict_markers": [],
+  "single_side_content_checked": 225,
+  "failures": [],
+  "verdict": "UNION_OK"
+}
