@@ -42,10 +42,17 @@ wall-sided righting arm from immersed-section geometry and measures the
 
 ## Deliberate limitations
 
-This module still is not a large-angle `GZ` curve; the exact wall-sided `GZ`
-oracle lives in `tensorfem.marine_large_angle_stability` and is documented in
-[the audit report](marine-large-angle-stability-audit.md). It is not a
-large-angle `GZ` curve, cross-curves, free-surface, damage
-stability, compartment flooding, trim, arbitrary-hull integration, wave-load,
-seakeeping, mooring, or classification-rule implementation. Passing its tests
-does not constitute design approval or regulatory/classification certification.
+This module itself still provides no large-angle `GZ` curve; two separate
+services cover that question. The exact wall-sided `GZ` oracle lives in
+`tensorfem.marine_large_angle_stability` and is documented in
+[the audit report](marine-large-angle-stability-audit.md). The explicit
+large-angle `GZ` curves and `KN` cross-curves are provided separately by
+`tensorfem.marine_large_angle_gz` (see `docs/marine-large-angle-stability.md`),
+which solves the exact clipped-section geometry for prismatic barges and is
+verified against the wall-sided closed form to machine precision.
+
+Beyond those two services this module offers no large-angle `GZ`, cross-curves,
+free-surface, damage stability, compartment flooding, trim, arbitrary-hull
+integration, wave-load, seakeeping, mooring, or classification-rule
+implementation. Passing its tests does not constitute design approval or
+regulatory/classification certification.
