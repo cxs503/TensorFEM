@@ -54,13 +54,25 @@ jobs:
   lint:
     name: lint (advisory)
     runs-on: ubuntu-latest
-    # Advisory on purpose: the tree carries a large pre-existing ruff backlog
-    # (unused imports, import ordering, semicolon-packed statements).  Making
-    # it blocking would hide every other signal.  Fix the backlog, then drop
-    # this continue-on-error and promote it to a gate.
+    # Advisory, and scoped on purpose.  The tree carries a large pre-existing
+    # ruff backlog (~4.2k findings: E701/E702 semicolon- and colon-packed
+    # statements, unused imports, ~560 files `ruff format` would rewrite), so a
+    # repo-wide `ruff check src tests scripts examples` failed on every run and
+    # its red carried no information about the change under review.
+    #
+    # The job therefore runs the ratchet in scripts/lint_changed.py: the Python
+    # files a pull request touches are linted and format-checked, while the
+    # legacy backlog stays grandfathered (docs/lint-ratchet.md).  New debt is
+    # still caught, so the signal is live without a mass rewrite.  When
+    # `python scripts/lint_changed.py --all` is clean, swap the last step for
+    # `--all` and drop continue-on-error to make lint a blocking gate.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The ratchet diffs against the merge base of the PR target branch or
+          # the previously pushed commit; a depth-1 clone cannot resolve either.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -70,7 +82,33 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      - name: Lint (ruff)
-        run: ruff check src tests scripts examples
-      - name: Format check (ruff format)
-        run: ruff format --check src tests scripts examples
+      - name: Resolve the lint comparison base
+        id: lint_base
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Pull requests compare against the branch they target.
+            git fetch --no-tags --quiet origin \
+              "+refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+            base="origin/${{ github.base_ref }}"
+          elif [ -n "${{ github.event.before }}" ] \
+            && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            # Pushes compare against the previous head of the same ref.
+            base="${{ github.event.before }}"
+          else
+            base="HEAD^"
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "lint comparison base: $base"
+      - name: Lint and format-check the changed files (ruff ratchet)
+        run: >-
+          python scripts/lint_changed.py
+          --base "${{ steps.lint_base.outputs.base }}"
+          --report lint-report.json
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: lint-report.json
