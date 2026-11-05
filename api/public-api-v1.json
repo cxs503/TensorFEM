@@ -757,6 +757,55 @@
       "stability": "experimental"
     },
     {
+      "introduced": "0.45.0",
+      "module": "tensorfem.thick_cylinder_3d",
+      "name": "CylinderQualification",
+      "object": "CylinderQualification",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.thick_cylinder_3d",
+      "name": "LameCylinderReference",
+      "object": "LameCylinderReference",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.thick_cylinder_3d",
+      "name": "field_errors",
+      "object": "field_errors",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.thick_cylinder_3d",
+      "name": "qualify_thick_cylinder",
+      "object": "qualify_thick_cylinder",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.thick_cylinder_3d",
+      "name": "quarter_cylinder_mesh",
+      "object": "quarter_cylinder_mesh",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.thick_cylinder_3d",
+      "name": "solve_thick_cylinder",
+      "object": "solve_thick_cylinder",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.thick_cylinder_3d",
+      "name": "stress_in_cylindrical_frame",
+      "object": "stress_in_cylindrical_frame",
+      "stability": "experimental"
+    },
+    {
       "introduced": "0.8.0",
       "module": "tensorfem.hertz_axisymmetric",
       "name": "AxisymmetricHertzResult",
