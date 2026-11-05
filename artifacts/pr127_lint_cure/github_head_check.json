@@ -1,0 +1,150 @@
+{
+  "source": "GitHub REST API (api.github.com), read-only",
+  "read_at_utc": "2026-11-05T11:12:20Z",
+  "repo": "cxs503/TensorFEM",
+  "note": "Evidence that PR #127's only failing check is inherited from main, and that the six PR-owned files measured locally are byte-identical at the GitHub PR head.",
+  "pr": {
+    "number": 127,
+    "state": "open",
+    "head_ref": "agent/m3890",
+    "head_sha": "ff08d8037d78770db1b5ec12e7baa8aaf3b9bede",
+    "mergeable": true,
+    "mergeable_state": "unstable"
+  },
+  "pr_checks": [
+    {
+      "name": "test (3.11)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "name": "lint (advisory)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "name": "test (3.12)",
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "name": "lint (advisory)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "name": "test (3.12)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "test (3.11)",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "pr_head_parent": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+  "blob_equality": {
+    "src/tensorfem/marine_large_angle_gz.py": {
+      "local_ref": "74d14da3",
+      "local_blob": "50c4e9d69ba66c22152ac5f15565ca4015e2327c",
+      "github_blob": "50c4e9d69ba66c22152ac5f15565ca4015e2327c",
+      "present_on_pr_head": true,
+      "byte_identical": true
+    },
+    "tests/test_marine_large_angle_gz.py": {
+      "local_ref": "74d14da3",
+      "local_blob": "1977d1651baaa647e09067fd6b3f17fe6d915b1f",
+      "github_blob": "1977d1651baaa647e09067fd6b3f17fe6d915b1f",
+      "present_on_pr_head": true,
+      "byte_identical": true
+    },
+    "scripts/plot_large_angle_gz.py": {
+      "local_ref": "74d14da3",
+      "local_blob": "46427676fb4b382cd3e60ec7bc9002caf9c8df08",
+      "github_blob": "46427676fb4b382cd3e60ec7bc9002caf9c8df08",
+      "present_on_pr_head": true,
+      "byte_identical": true
+    },
+    "artifacts/pr61_merge_figure.py": {
+      "local_ref": "74d14da3",
+      "local_blob": "7966f26c2eaf93e1e4badbf3944532535cea2914",
+      "github_blob": null,
+      "present_on_pr_head": false,
+      "byte_identical": false
+    },
+    "artifacts/pr61_merge_union_check.py": {
+      "local_ref": "74d14da3",
+      "local_blob": "5f8ac5dd88a0b96bba568ff0b56ddaf921537e81",
+      "github_blob": null,
+      "present_on_pr_head": false,
+      "byte_identical": false
+    },
+    "artifacts/pr61_resolve_conflicts.py": {
+      "local_ref": "74d14da3",
+      "local_blob": "69c5cce66bbab6c2dc50ed606d50df182b9652a1",
+      "github_blob": null,
+      "present_on_pr_head": false,
+      "byte_identical": false
+    }
+  },
+  "main_runs": [
+    {
+      "head_sha": "c5168e47820aa5f10c4fc4b68bae0dfd5d62da75",
+      "status": "queued",
+      "run_conclusion": null,
+      "jobs": [
+        {
+          "name": "lint (advisory)",
+          "conclusion": null
+        },
+        {
+          "name": "test (3.12)",
+          "conclusion": null
+        },
+        {
+          "name": "test (3.11)",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "head_sha": "b53e180119521cd9e3d19fa62001c668a88215b8",
+      "status": "completed",
+      "run_conclusion": "success",
+      "jobs": [
+        {
+          "name": "test (3.11)",
+          "conclusion": "success"
+        },
+        {
+          "name": "lint (advisory)",
+          "conclusion": "failure"
+        },
+        {
+          "name": "test (3.12)",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "head_sha": "723e12cb594d36c9d366c06ea4237d99429688cd",
+      "status": "completed",
+      "run_conclusion": "success",
+      "jobs": [
+        {
+          "name": "test (3.12)",
+          "conclusion": "success"
+        },
+        {
+          "name": "lint (advisory)",
+          "conclusion": "failure"
+        },
+        {
+          "name": "test (3.11)",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}

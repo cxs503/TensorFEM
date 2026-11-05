@@ -15,6 +15,7 @@ Anchors used here are independent of the implementation under test:
   fine grid) used to confirm the polygon-clipping path in every regime
   (wall-sided, bilge emergence, deck immersion).
 """
+
 import json
 import math
 from pathlib import Path
@@ -104,7 +105,9 @@ def _oracle_section(geom, heel_deg, samples=200001):
 # ----------------------------------------------------------------------
 # Anchor 1: wall-sided closed form, inside its validity band
 # ----------------------------------------------------------------------
-@pytest.mark.parametrize("geom", [BARGE, BARGE_COINCIDENT, BARGE_WIDE], ids=["barge", "coincident", "wide"])
+@pytest.mark.parametrize(
+    "geom", [BARGE, BARGE_COINCIDENT, BARGE_WIDE], ids=["barge", "coincident", "wide"]
+)
 def test_gz_matches_wall_sided_formula_to_machine_precision(geom):
     gm, bm, _ = _gm_bm(geom)
     limit = min(wall_sided_validity_deg(geom["beam"], geom["depth"], geom["draft"]))
@@ -137,11 +140,14 @@ def test_wall_sided_formula_stops_being_valid_exactly_at_the_geometric_limit():
     gm, bm, _ = _gm_bm(geom)
     bilge_limit, deck_limit = wall_sided_validity_deg(geom["beam"], geom["depth"], geom["draft"])
     assert bilge_limit == pytest.approx(math.degrees(math.atan2(2 * geom["draft"], geom["beam"])))
-    assert deck_limit == pytest.approx(math.degrees(math.atan2(2 * (geom["depth"] - geom["draft"]), geom["beam"])))
+    assert deck_limit == pytest.approx(
+        math.degrees(math.atan2(2 * (geom["depth"] - geom["draft"]), geom["beam"]))
+    )
     assert bilge_limit < deck_limit < 90.0
     # still exact at the boundary
     assert _gz(geom, bilge_limit) == pytest.approx(wall_sided_gz(gm, bm, bilge_limit), rel=1e-9)
     assert _section(geom, bilge_limit).bilge_emerged is False
+
     # and demonstrably wrong past it, with the error growing as the heel increases
     def deviation(angle):
         return abs(_gz(geom, angle) / wall_sided_gz(gm, bm, angle) - 1.0)
@@ -155,9 +161,7 @@ def test_wall_sided_formula_stops_being_valid_exactly_at_the_geometric_limit():
     # immersion happens later than the closed-form angle.
     assert _section(geom, deck_limit + 0.5).deck_immersed is False
     true_deck = next(
-        angle / 10.0
-        for angle in range(1, 901)
-        if _section(geom, angle / 10.0).deck_immersed
+        angle / 10.0 for angle in range(1, 901) if _section(geom, angle / 10.0).deck_immersed
     )
     assert deck_limit < true_deck < 90.0
 
@@ -198,7 +202,9 @@ def test_ninety_degree_geometry_and_righting_arm_are_exact(geom):
 def test_initial_slope_reproduces_gm_from_small_angle_hydrostatics():
     geom = BARGE
     gm, _, _ = _gm_bm(geom)
-    upright = analyze_box_barge(json.loads((EXAMPLES / "box_barge_specified_draft.json").read_text()))
+    upright = analyze_box_barge(
+        json.loads((EXAMPLES / "box_barge_specified_draft.json").read_text())
+    )
     assert upright.gm == pytest.approx(gm)
     for step in (1e-2, 1e-3):
         slope = _gz(geom, step) / math.sin(math.radians(step))
@@ -214,7 +220,9 @@ def test_initial_slope_reproduces_gm_from_small_angle_hydrostatics():
 # ----------------------------------------------------------------------
 # Anchor 5: constant displacement is enforced geometrically
 # ----------------------------------------------------------------------
-@pytest.mark.parametrize("geom", [BARGE, BARGE_COINCIDENT, BARGE_WIDE], ids=["barge", "coincident", "wide"])
+@pytest.mark.parametrize(
+    "geom", [BARGE, BARGE_COINCIDENT, BARGE_WIDE], ids=["barge", "coincident", "wide"]
+)
 def test_immersed_area_is_conserved_at_every_heel(geom):
     target = geom["beam"] * geom["draft"]
     for angle in DEFAULT_ANGLES_DEG:
@@ -389,18 +397,29 @@ def test_case_file_with_non_zero_heel_is_rejected():
     with pytest.raises(ValueError, match="requires condition.heel_angle_deg = 0"):
         analyze_large_angle_case(case)
 
+
 # ----------------------------------------------------------------------
 # Stored evidence must not drift away from the code
 # ----------------------------------------------------------------------
 def test_benchmark_evidence_matches_the_current_implementation():
-    evidence = json.loads((Path(__file__).parents[1] / "benchmarks" / "large_angle_gz_reference.json").read_text())
+    evidence = json.loads(
+        (Path(__file__).parents[1] / "benchmarks" / "large_angle_gz_reference.json").read_text()
+    )
     geom = evidence["geometry"]
-    curve = gz_curve(geom["beam"], geom["depth"], geom["draft"], geom["kg"], [row["heel_deg"] for row in evidence["rows"]])
+    curve = gz_curve(
+        geom["beam"],
+        geom["depth"],
+        geom["draft"],
+        geom["kg"],
+        [row["heel_deg"] for row in evidence["rows"]],
+    )
     assert curve.gz == pytest.approx(tuple(row["gz"] for row in evidence["rows"]), rel=0, abs=1e-12)
     assert curve.kn == pytest.approx(tuple(row["kn"] for row in evidence["rows"]), rel=0, abs=1e-12)
     assert curve.max_gz == pytest.approx(evidence["max_gz"], rel=1e-12)
     assert curve.angle_of_max_gz_deg == pytest.approx(evidence["angle_of_max_gz_deg"])
-    assert curve.dynamic_stability_area == pytest.approx(evidence["dynamic_stability_area"], rel=1e-12)
+    assert curve.dynamic_stability_area == pytest.approx(
+        evidence["dynamic_stability_area"], rel=1e-12
+    )
     assert evidence["max_abs_residual_in_band"] < 1e-12
     assert evidence["gz_at_90_deg"] == pytest.approx(evidence["gz_at_90_deg_analytic"], rel=1e-12)
     assert evidence["true_deck_immersion_deg"] > evidence["wall_sided_limits_deg"]["deck_estimate"]

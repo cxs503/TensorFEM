@@ -1,0 +1,235 @@
+{
+  "audit": "PR #127 (TensorFEM, branch agent/m3890) lint cure attribution",
+  "ruff": "ruff 0.15.0",
+  "scope": [
+    "src",
+    "tests",
+    "scripts",
+    "examples"
+  ],
+  "pr_owned": [
+    "src/tensorfem/marine_large_angle_gz.py",
+    "tests/test_marine_large_angle_gz.py",
+    "scripts/plot_large_angle_gz.py",
+    "artifacts/pr61_merge_figure.py",
+    "artifacts/pr61_merge_union_check.py",
+    "artifacts/pr61_resolve_conflicts.py"
+  ],
+  "main_tip": {
+    "label": "main_tip",
+    "ref": "origin/main",
+    "sha": "c5168e47820aa5f10c4fc4b68bae0dfd5d62da75",
+    "scope": {
+      "findings": 4271,
+      "by_rule": {
+        "E702": 2997,
+        "E701": 965,
+        "F401": 84,
+        "E741": 71,
+        "E401": 57,
+        "E731": 33,
+        "F841": 27,
+        "F405": 22,
+        "E402": 5,
+        "E703": 5,
+        "F541": 3,
+        "F403": 2
+      },
+      "unformatted": 624
+    },
+    "pr_owned": {
+      "findings": 0,
+      "by_rule": {},
+      "unformatted": 0,
+      "unformatted_files": []
+    },
+    "guards": {
+      "probe_check_findings": 1026,
+      "probe_unformatted": 225
+    }
+  },
+  "pre_cure": {
+    "label": "pre_cure",
+    "ref": "74d14da3779dc5c3e84184f91ce7293cbaa11131",
+    "sha": "74d14da3779dc5c3e84184f91ce7293cbaa11131",
+    "scope": {
+      "findings": 4268,
+      "by_rule": {
+        "E702": 2997,
+        "E701": 965,
+        "F401": 81,
+        "E741": 71,
+        "E401": 57,
+        "E731": 33,
+        "F841": 27,
+        "F405": 22,
+        "E402": 5,
+        "E703": 5,
+        "F541": 3,
+        "F403": 2
+      },
+      "unformatted": 619
+    },
+    "pr_owned": {
+      "findings": 0,
+      "by_rule": {},
+      "unformatted": 6,
+      "unformatted_files": [
+        "artifacts/pr61_merge_figure.py",
+        "artifacts/pr61_merge_union_check.py",
+        "artifacts/pr61_resolve_conflicts.py",
+        "scripts/plot_large_angle_gz.py",
+        "src/tensorfem/marine_large_angle_gz.py",
+        "tests/test_marine_large_angle_gz.py"
+      ]
+    },
+    "guards": {
+      "probe_check_findings": 1025,
+      "probe_unformatted": 223
+    }
+  },
+  "post_cure": {
+    "label": "post_cure",
+    "ref": "af63d57a9eebb7a0d3bf1fb662a910e3cbfd84d4",
+    "sha": "af63d57a9eebb7a0d3bf1fb662a910e3cbfd84d4",
+    "scope": {
+      "findings": 4268,
+      "by_rule": {
+        "E702": 2997,
+        "E701": 965,
+        "F401": 81,
+        "E741": 71,
+        "E401": 57,
+        "E731": 33,
+        "F841": 27,
+        "F405": 22,
+        "E402": 5,
+        "E703": 5,
+        "F541": 3,
+        "F403": 2
+      },
+      "unformatted": 616
+    },
+    "pr_owned": {
+      "findings": 0,
+      "by_rule": {},
+      "unformatted": 0,
+      "unformatted_files": []
+    },
+    "guards": {
+      "probe_check_findings": 1025,
+      "probe_unformatted": 222
+    }
+  },
+  "cure_diff_files": [
+    "artifacts/pr61_merge_figure.py",
+    "artifacts/pr61_merge_union_check.py",
+    "artifacts/pr61_resolve_conflicts.py",
+    "scripts/plot_large_angle_gz.py",
+    "src/tensorfem/marine_large_angle_gz.py",
+    "tests/test_marine_large_angle_gz.py"
+  ],
+  "ast_identical": {
+    "src/tensorfem/marine_large_angle_gz.py": true,
+    "tests/test_marine_large_angle_gz.py": true,
+    "scripts/plot_large_angle_gz.py": true,
+    "artifacts/pr61_merge_figure.py": true,
+    "artifacts/pr61_merge_union_check.py": true,
+    "artifacts/pr61_resolve_conflicts.py": true
+  },
+  "rollup": {
+    "pr_owned_findings": [
+      0,
+      0
+    ],
+    "pr_owned_unformatted": [
+      6,
+      0
+    ],
+    "scope_findings": [
+      4268,
+      4268
+    ],
+    "scope_unformatted": [
+      619,
+      616
+    ],
+    "main_tip_scope_findings": 4271
+  },
+  "github_drift": {
+    "pr_head_sha": "ff08d8037d78770db1b5ec12e7baa8aaf3b9bede",
+    "pr_head_parent": "7accc4b9cfb45369958c432a8aa2f0ebbb846a5b",
+    "pr_checks": [
+      {
+        "name": "test (3.11)",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "name": "lint (advisory)",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "name": "test (3.12)",
+        "status": "queued",
+        "conclusion": null
+      },
+      {
+        "name": "lint (advisory)",
+        "status": "completed",
+        "conclusion": "failure"
+      },
+      {
+        "name": "test (3.12)",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "name": "test (3.11)",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "main_drift_proven": true,
+    "main_runs": [
+      {
+        "head_sha": "c5168e47",
+        "run_conclusion": null,
+        "lint": [
+          null
+        ]
+      },
+      {
+        "head_sha": "b53e1801",
+        "run_conclusion": "success",
+        "lint": [
+          "failure"
+        ]
+      },
+      {
+        "head_sha": "723e12cb",
+        "run_conclusion": "success",
+        "lint": [
+          "failure"
+        ]
+      }
+    ],
+    "in_scope_files_byte_identical_at_pr_head": [
+      "src/tensorfem/marine_large_angle_gz.py",
+      "tests/test_marine_large_angle_gz.py",
+      "scripts/plot_large_angle_gz.py"
+    ],
+    "files_absent_from_pr_head": [
+      "artifacts/pr61_merge_figure.py",
+      "artifacts/pr61_merge_union_check.py",
+      "artifacts/pr61_resolve_conflicts.py"
+    ]
+  },
+  "final_worktree": {
+    "scope_check_findings": 4268,
+    "scope_unformatted": 616,
+    "pr_check_findings": 0,
+    "pr_unformatted": 0
+  }
+}

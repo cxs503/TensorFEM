@@ -18,6 +18,7 @@ Usage
 Everything is analytic (no mesh, no solver iterations), so the script runs in
 well under a second and the JSON is reproducible bit-for-bit.
 """
+
 from __future__ import annotations
 
 import json
@@ -81,7 +82,11 @@ def build_evidence() -> dict:
             "km": reference.kb + reference.bm,
             "gm": reference.gm,
         },
-        "wall_sided_limits_deg": {"bilge": bilge_limit, "deck_estimate": deck_limit, "band_end": wall_limit},
+        "wall_sided_limits_deg": {
+            "bilge": bilge_limit,
+            "deck_estimate": deck_limit,
+            "band_end": wall_limit,
+        },
         "true_deck_immersion_deg": true_deck,
         "max_gz": reference.max_gz,
         "angle_of_max_gz_deg": reference.angle_of_max_gz_deg,
@@ -150,7 +155,13 @@ def build_figure(evidence: dict) -> None:
     ax.legend(fontsize=7, loc="lower right")
 
     ax = axes[2]
-    ax.plot(reference.angles_deg, reference.kn, color="tab:blue", lw=1.8, label="KN arm (buoyancy lever)")
+    ax.plot(
+        reference.angles_deg,
+        reference.kn,
+        color="tab:blue",
+        lw=1.8,
+        label="KN arm (buoyancy lever)",
+    )
     ax.fill_between(
         reference.angles_deg,
         0.0,
@@ -159,7 +170,9 @@ def build_figure(evidence: dict) -> None:
         alpha=0.15,
         label=f"dynamic stability area = {reference.dynamic_stability_area:.3f} m$\\cdot$rad",
     )
-    ax.plot(reference.angles_deg, reference.gz, color="tab:blue", lw=1.0, ls=":", label="GZ, KG=2.1 m")
+    ax.plot(
+        reference.angles_deg, reference.gz, color="tab:blue", lw=1.0, ls=":", label="GZ, KG=2.1 m"
+    )
     ax.set_xlabel("heel angle [deg]")
     ax.set_ylabel("arm [m]")
     ax.set_title("KN decomposition and dynamic stability")
