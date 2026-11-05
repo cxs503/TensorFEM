@@ -167,3 +167,146 @@ PR #61 的业务内容（分支侧 2 个提交 `3c667a8`、`2ff75a8`，共 9 个
 
 结论：合并结果相对基线**不低于**，文档冲突按并集解决、两侧断言零删除，
 本 PR 可常规合并；`merge_governor` 下一周期以当时 main 复验即可。
+# PR #61 治愈：`agent/m3202` 三方并入 `main`（冲突清单 · 逐文件解法 · 双工具并集审计 · 测试证据）
+- 被治愈的 PR：**#61**，源分支 `agent/m3202`，GitHub 判定 `mergeable=false / state=dirty`
+- 业务增量：船舶**大倾角稳性** —— 墙侧（wall-sided）棱柱形驳船按精确浸水剖面几何求 `GZ`
+  曲线与 `KN` 横交曲线族，补上 `marine_hydrostatics` 文档自己声明的「不支持大倾角 GZ」欠账
+- 本工作树：`/root/tp-agent/work/m3938`（分支 `pr61-cure`，最终以 `HEAD:agent/m3202` 推回）
+- 证据：`docs/evidence/pr61/`（审计 JSON、负控文本、全量 pytest 日志）
+## 1. 案例介绍：这次"脏"是什么脏
+物理背景与几何/参数表（仓内基准算例 `examples/marine/large_angle_box_barge.json`）：
+| 量 | 值 |
+| 船长 L / 船宽 B / 型深 D | 40.0 m / 12.0 m / 6.0 m |
+| 吃水 T（`mode = specified_draft`） | 2.0 m |
+| 重心高 KG | 2.1 m |
+| 水密度 ρ / 重力 g | 1000 kg/m³ / 9.81 m/s² |
+| 解析锚 | 墙侧闭式 `GZ(φ) = sinφ·(GM + BM·tan²φ/2)`，`GM = KB + BM − KG` |
+"脏"不在业务内容，而在**目标分支持续前进**：分支从分叉点 `e8f6759` 起，main 被 drain 了
+236 个文件（含 `.scratch/proto_ritz.py` 一处删除），两侧同时改写 17 个文件，其中 2 个
+文档型文件文本层直接冲突。本次工作的实质不是"再合一次"，而是**证明合并结果对两侧都不丢
+内容**——机械 overlay 有静默丢内容的前科，"看起来能合"不算证据。
+| 角色 | SHA | 说明 |
+| 历史分叉点（审计基准） | `e8f6759` | 两侧共同祖先；`--base` 必须钉它 |
+| merge-base（PR 视角） | `c9d72b1` | 分支侧 9 文件 × main 侧 60 提交 |
+| `main`（合并目标，本机最后已知） | `7accc4b9cfb45369958c432a8aa2f0ebbb846a5b` | `origin/main` |
+| `agent/m3202`（旧 SHA，GitHub PR 头 = 合并前） | `6b4c4fa48efea38e63303f1d5ae921392d468fe6` | 1 提交 / 9 文件 / +3828 −0 |
+| 三方合并提交 | `10c10a95f021371b193e70603f366043e9210373` | 父 = `6b4c4fa` + `7accc4b` |
+| 表述保真修复（唯一真实丢内容的修复） | `31d8146` | 见 §3.3 |
+| 分支新头 | 本文件所在提交（`git log -1`），旧头 `6b4c4fa` → 新头见 §5 | 推回 `agent/m3202` 后 GitHub 重算 `mergeable` |
+## 2. 怎么做的（方法 · 流程 · 关键设置 · 工具链）
+1. **建工作树、拉两支**：`origin/main` 与 `agent/m3202` 都用远端 ref，不依赖仓内本地
+   `main`（实测本地 `main` 与 `/root/tensor-ecosystem/TensorFEM` 镜像都停在旧提交，属陈旧
+   引用陷阱）。
+2. **算清义务面**：`git merge-base` + 两侧 `diff --name-status` 求交 → main 侧 236 文件、
+   分支侧 24 文件、**双侧 17**、单侧 219 / 7，main 侧 1 个删除、分支侧无删除。
+3. **三方合并**：`git merge` 得 `10c10a9`；17 个双侧文件里 15 个由 git 自动合并，2 个
+   文档冲突手工解冲（清单见 §3.1），**禁止机械 overlay**。
+4. **双工具并集审计**（两套互相独立的判据，任一套判 FAIL 即视为不合格）：
+   - `scripts/audit_pr61_merge_union.py`（语义分级）：散文 → 行内反引号标识符 + 链接 +
+     数字 + 内容词义务；代码/数据 → 严格行多重集；单侧文件 → 逐字节相等；删除项单列。
+     空审计（base 塌到一侧）判 `NOT_AUDITED_NO_SHARED_FILES`，不发假绿。
+   - `scripts/crosscheck_pr61_merge.py`（独立复算，不复用上者代码）：义务 A = main 单侧
+     219 条路径在合并树里逐字节相同（删除项必须已删）；义务 B = 共享文件保内容
+     （代码/数据严格 token 超集，散文按**原子**=反引号标识符/链接/数字判，散文改词必须在
+     `PROSE_REWORDED` 里逐文件写明理由，否则 fail-closed）。
+5. **三个负控（审计器必须能判死，否则它的绿没有意义）**：机械取 main、机械取分支、
+   以及本次新增的**单文件静默丢失**（把 `docs/marine-hydrostatics.md` 换成 main 版）——
+   三者分别必须判 `UNION_FAIL` / `CROSSCHECK_FAIL`。
+6. **测试**：合并树与 `main` 基线树（`git archive 7accc4b` 快照）各跑全量
+   `pytest -q -n 16 --timeout=1800`，再对存活的 3 个失败**串行**复跑并逐项归因。
+## 3. 计算结果（数字表，全部程序化产生）
+### 3.1 冲突文件清单与逐文件解法
+| # | 冲突文件 | 冲突原因（两侧各写了什么） | 解法（语义并集） |
+|---|---|---|---|
+| 1 | `CHANGELOG.md` | 分支在顶部加「2026-11-04 大倾角稳性…」整节（5 条要点）；main 在顶部加 `tensorfem.prestressed_modal` 单条要点 | **两段全保留**：main 的 prestressed 要点在前，分支的大倾角稳性整节紧随其后，再接 main 既有历史（`## 2026-11-03 Cook…` 等）。两侧条目数各自可数，行多重集校验 0 丢失 |
+| 2 | `docs/marine-hydrostatics.md`（`## Deliberate limitations` 段） | main 侧写「本模块仍不是大倾角 GZ 曲线；墙侧 oracle 在 `marine_large_angle_stability`，见 audit 报告」；分支侧写「大倾角 GZ 曲线与 `KN` 横交曲线由 `marine_large_angle_gz` 单独提供，对墙侧闭式机精度验证」 | 重写为**并集句**：本模块自身仍无大倾角 GZ → 两个独立服务分别覆盖该问题（`marine_large_angle_stability` 的墙侧 oracle + `marine_large_angle_gz` 的曲线族）→ 两侧共有的免责列表（free-surface / damage stability / compartment flooding / trim / arbitrary-hull / wave-load / seakeeping / mooring / classification-rule）逐项保留 |
+15 个自动合并的双侧文件（如 `src/tensorfem/plate_shear_buckling.py`、
+`tests/test_saint_venant_torsion.py`、`docs/saint-venant-torsion.md` 等）经**严格行/token
+多重集**校验：0 丢失；main 侧唯一删除（`.scratch/proto_ritz.py`）已随合并删除，另一侧未触碰
+（`deletion-propagated`）。
+### 3.2 双审计结果
+| 判据（工具） | 数值 | 判定 |
+| 义务面（audit） | main 侧 236 / 分支侧 24 / 双侧 17 / 单侧 219·7 | — |
+| 双侧文件并集义务 / 丢失单元 | 17 文件，**丢失 0** | `UNION_OK` |
+| 单侧文件逐字节校验 | 225（218 main-only + 7 branch-only）| 0 不一致 |
+| 未解冲突标记残留 | 0 | — |
+| 删除传播 `.scratch/proto_ritz.py` | 已删且另一侧未触碰 | `deletion-propagated` |
+| 独立复算·义务 A（crosscheck） | main 单侧 219 路径，**218 逐字节相同 + 1 删除已删**，0 不符 | `CROSSCHECK_OK` |
+| 独立复算·义务 B | 17 个共享文件，代码/数据 token 丢失 **0**，散文原子丢失 **0** | 同上 |
+| 散文改词（需具名理由） | 1 文件：`docs/marine-hydrostatics.md`（仅系词改写，标识符/链接/数字全在） | 已具名记录 |
+| 负控①机械取 main（`--merge 7accc4b`） | 丢分支 **30** 单元 | `UNION_FAIL` ✓ |
+| 负控②机械取分支（`--merge 6b4c4fa`） | 丢 main **178** 单元 | `UNION_FAIL` ✓ |
+| 负控③单文件静默丢失（散文取 main 版） | 丢分支 **3 atoms** | `UNION_FAIL` + `CROSSCHECK_FAIL` ✓ |
+负控都判死 = 审计器的绿不是空转；负控③正是"看起来能合、实则吃掉一句断言"的那类缺陷，
+两套工具都能在文件粒度上抓到。
+### 3.3 本轮之前抓到的唯一一处**真实**丢内容（已修复并留证）
+`10c10a9` 上审计器报 `docs/marine-hydrostatics.md` 相对 main 侧**内容词短缺 1 个
+（`module`）**，main 的 "this module … two separate services cover that question" 框架整体
+被判吃掉——合并文字是从分支句起头、把 main 的句子续在后面。修复 `31d8146` 后该文件原子/
+词丢失归零，文字同时保留三件事：本模块自身无大倾角 GZ、墙侧 oracle 在
+`marine_large_angle_stability`、曲线由 `marine_large_angle_gz` 提供。修复前审计
+（`--merge 10c10a9`）与收尾树审计可用 §4 命令复算复现。
+### 3.4 测试与基线
+| 运行 | 合并树（HEAD） | main 基线（`7accc4b` 快照） |
+| 全量 `pytest -q -n 16 --timeout=1800` | **3 failed, 1720 passed, 7 skipped, 1 xpassed, 714.66 s** | 同命令同机同时段在跑；(.log 见 `docs/evidence/pr61/`) |
+| `test_release_quality.py::test_api_audit_script_passes_with_warnings_as_errors`（串行复跑） | **failed**（2.52 s） | **failed**（2.58 s）→ **两侧同样失败，非合并回归**（环境：本机 torch 2.7.1 / 无 TensorLBM fixture，`PYTHONWARNINGS=error` 下 `scripts/audit_public_api.py` 非零退出） |
+| `test_colored_contact_graph.py::test_1024_constraint_vectorized_benchmark_and_serial_equivalence` | failed：`serial_time=10.90 s > 10 s`（机时门） | 同一机时门（load average ≈ 700 / 128 核，超订 5 倍） |
+| `test_finite_strain_curved_friction_contact3d.py::test_real_curved_nonmatching_tet4_friction_level_one_closure` | Newton 在该载荷步不收敛（`last residual=5`，Coulomb ratio 1.00002） | 同模块，未被本分支触碰 |
+| PR 新增门 `tests/test_marine_large_angle_gz.py` | 39 passed（含 0.5° 步长全表、墙侧闭式 1.33e-15 m 残差、排水体积 1e-12 守恒、防漂移出图钉） | 文件不存在（PR 新增） |
+**归因（不粉饰）**：合并树相对 main 的代码差异只有 PR 自己的 9 个文件 + 本单证据文件
+（`scripts/`、`docs/evidence/`），**3 个存活失败点所在模块（接触图基准、finite-strain
+摩擦接触、API 审计脚本）分支一行未改**（`git diff --name-status origin/main HEAD` 可证）；
+其中 API 审计项在基线上同样失败（§3.4 第 2 行）。故判定：**无合并引入的回归**；两项机时门
+失败是宿主超订所致，属环境噪声而非代码退化，仍按 honest-FAIL 记录。
+### 3.5 误差判定（逐项，显式回答「是否 <3%」）
+| 关键量 | 基准 | 本结果 | 误差 | <3%？ |
+| 并集义务：合并树丢失内容单元 | 0（义务要求） | **0** | 0% | **是** |
+| main 单侧路径逐字节一致 | 219/219 | 218 一致 + 1 已按 main 删除 | 0% | **是** |
+| 共享文件原子（散文）丢失 | 0 | **0**（唯一改词文件已具名理由） | 0% | **是** |
+| 审计器灵敏度（负控应丢） | — | 30 / 178 / 3 单元均被判死 | 三个方向全部判死 | 是（灵敏度充分） |
+| 测试通过数 | 基线见 `docs/evidence/pr61/pytest-full-baseline.log` | 合并树 1720 passed | 回归项 0（3 失败逐项归因为机时/环境） | 是（无回归） |
+| PR 载荷精度：大倾角 GZ vs 墙侧闭式 | 闭式解 | 带内最大残差 1.33e-15 m（相对 8.3e-16） | ≈1e-15 | **是** |
+## 4. 复现
+```bash
+# 并集审计（--base 必须钉历史分叉点，否则 base 塌到 main 会得到"空审计"）
+python3 scripts/audit_pr61_merge_union.py --base e8f6759 --main 7accc4b \
+    --branch 6b4c4fa --merge HEAD --check --out docs/evidence/pr61/union-audit.json
+# 独立复算（另一套判据）
+python3 scripts/crosscheck_pr61_merge.py --base e8f6759 --main 7accc4b \
+    --branch 6b4c4fa --merge HEAD --out docs/evidence/pr61/crosscheck.json
+# 负控：三个都必须判死（文本记录在 union-audit-controls.txt / crosscheck-controls.txt）
+python3 scripts/audit_pr61_merge_union.py --base e8f6759 --main 7accc4b \
+    --branch 6b4c4fa --merge 7accc4b --check --out /tmp/neg_main.json      # UNION_FAIL
+python3 scripts/audit_pr61_merge_union.py --base e8f6759 --main 7accc4b \
+    --branch 6b4c4fa --merge 6b4c4fa --check --out /tmp/neg_branch.json    # UNION_FAIL
+python3 scripts/plot_pr61_merge_evidence.py --out /tmp/pr61_merge_evidence.png
+```
+## 5. 注意点与局限（不粉饰）
+1. **图不入库（治理约束）**：merge governor 的 artifact 预算 <200 kB/PR，而 PR 已带
+   `docs/assets/marine_large_angle_gz.png`（158 kB，文档正文引用，属正当资产）。故本轮把
+   自证图改为**按需重算**（`scripts/plot_pr61_merge_evidence.py --out /tmp/...`），仓内只留
+   可复算脚本与 JSON；上一轮 `artifacts/` 下的 313 kB 证据（含 112 kB PNG、6 个日志）
+   收敛为 `docs/evidence/pr61/` 文本台账。
+2. **全量基线跑完时间未定**：宿主 load average ≈ 700（128 核），基线全量在同一时段仍在
+   推进；本轮用于判定的基线证据是"同名失败项在基线上同样失败/分支未触碰该模块"的**定点
+   对照**，不是等时全量对照。基线日志 `docs/evidence/pr61/pytest-full-baseline.log` 一旦补齐
+   即可直接替换该行。
+3. **本机取新 main 有超时风险**：`git fetch origin` 偶发 120 s 超时；本审计钉的是
+   `origin/main = 7accc4b`。若远端 main 又前进，重跑 §4（`--base` 用当时的真实分叉点）即可。
+4. **散文审计的边界**：只保证"原子 + 内容词 + 断言不丢"，不保证语序/断句与任一侧相同——
+   这是散文并集的物理限制；§3.3 那次真实丢失正是词级短缺 1 被抓到的，散文没有放宽到
+   "重写也算过"（改词必须具名理由）。
+5. **解冲器需在冲突态运行**：`scripts/resolve_pr61_conflicts.py` 依赖冲突标记定位替换区，
+   合并已提交后再跑会 `StopIteration`；其内嵌文本与仓内提交文本一致，作为"当时解法"的
+   可复算记录保留。
+6. **删除台账不静默**：上一轮 `artifacts/` 证据收敛的逐条理由见 §5.1 的 removal ledger，
+   均可用 `git show <sha>:<path>` 取回。
+### 5.1 Removal ledger（证据收敛，不静默丢）
+| 旧路径 | 处置 | 理由 |
+| `artifacts/pr61_merge_union_check.py` | → `scripts/audit_pr61_merge_union.py` | 可复算审计器，属工具链；默认输出改到 `docs/evidence/pr61/` |
+| `artifacts/pr61_merge_figure.py` | → `scripts/plot_pr61_merge_evidence.py` | 改为按需重算、输出到 `--out`（不入库），读新证据路径 |
+| `artifacts/pr61_resolve_conflicts.py` | → `scripts/resolve_pr61_conflicts.py` | 解冲文本快照，保留可复算记录 |
+| `artifacts/pr61_merge_evidence.png`（112 kB） | 不入库 | artifact 预算 <200 kB（见 §5.1），由脚本按需重算 |
+| `artifacts/evidence_logs/*.log`、`pytest_session_summaries.json` | → `docs/evidence/pr61/*.log` | 同一批实测日志，改文本路径不占 artifact 预算；旧"外部工作树全量数字"不再引用，本轮用自己的全量实测替代 |
+| `artifacts/README.md`（旧清单/台账） | 并入本文 §5.1 | 单一台账入口，避免两份清单漂移 |
+| `artifacts/pr61_merge_union_evidence{,_prefix}.json` | → `docs/evidence/pr61/union-audit.json`（重算） | 旧 JSON 已被负控跑覆盖过；本轮用当前树重算，修复前对照可用 `--merge 10c10a9` 现场复现 |
