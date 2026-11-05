@@ -14,7 +14,9 @@ authors = [{name = "TensorFEM Contributors"}]
 dependencies = ["torch>=2.1"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6", "pytest-timeout>=2.3", "pytest-cov>=5.0", "numpy>=1.26", "matplotlib>=3.8"]
+# pyyaml: tests/test_ci_lint_scope.py parses .github/workflows/ci.yml to pin
+# the two-tier lint gate (importorskip keeps it optional for consumers).
+dev = ["pytest>=8", "ruff>=0.6", "pytest-timeout>=2.3", "pytest-cov>=5.0", "numpy>=1.26", "matplotlib>=3.8", "pyyaml>=6"]
 reports = ["numpy>=1.26", "matplotlib>=3.8", "python-docx>=1.1", "reportlab>=4", "markdown>=3.5"]
 # The fluid/rigid feedback fixture couples to the sibling TensorLBM checkout.
 # It stays optional so TensorFEM remains installable on its own.
