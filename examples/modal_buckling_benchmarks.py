@@ -5,7 +5,9 @@ from tensorfem.modal import cantilever_beam_modes, cantilever_exact_angular_freq
 
 
 def report(name: str, computed: float, exact: float) -> None:
-    print(f"{name}: computed={computed:.8g}, exact={exact:.8g}, error={abs(computed/exact-1):.4%}")
+    print(
+        f"{name}: computed={computed:.8g}, exact={exact:.8g}, error={abs(computed / exact - 1):.4%}"
+    )
 
 
 modal = cantilever_beam_modes(1.0, 8, 210e9 * 8e-8, 7850 * 4e-4, 3)
