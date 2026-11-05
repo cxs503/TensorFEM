@@ -2,6 +2,20 @@
 
 ## 2026-11-03 Cook 膜应力审计证据收尾
 
+## 2026-11-04 — plane-strain B-bar Q4 (near-incompressible locking cure)
+
+- `src/tensorfem/continuum_bbar.py`: mean-dilatation (B-bar) plane-strain Q4, the
+  counterpart of `solid3d_bbar`. Deviatoric part integrated at 2x2 Gauss (no hourglass),
+  volumetric part averaged; plane stress / non-Q4 refused explicitly.
+- Qualification against the exact plane-strain Lame cylinder, `nu = 0.4999`, 306 DOF:
+  displacement 0.1236 %, radial stress 0.5999 %, mean stress 0.0182 %, flat in `nu`,
+  observed order 2.00. The merged fully integrated Q4 stays fail-closed at 61.9 % / 155.2 %
+  and is still 38.5 % at 2450 DOF.
+- `scripts/audit_plane_strain_bbar_locking.py`, `benchmarks/plane_strain_bbar_locking.json`,
+  `docs/plane-strain-bbar-locking.md`, `tests/test_continuum_bbar.py`.
+- `incompressible_locking.plane_strain_sweep` gains `formulations=("standard", "bbar")`
+  and `plane_strain_case` also reports hoop and mean stress; default behaviour unchanged.
+
 - 重新生成 `benchmarks/cook_membrane_stress_reference.json`：旧文件是单元 Jacobian 转置缺陷修复前的产物，
   冒记 `recovery_cross_check = Infinity` 与「加载边型线分歧」；现行代码下交叉校验 2.5e-14 通过，
   加载边型线 Q4/Q8 最大偏差 0.1087（占参考位移 0.454%），两项遗留疑问闭合。

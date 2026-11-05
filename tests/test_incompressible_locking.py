@@ -94,7 +94,12 @@ def test_sweep_records_are_complete_and_reproducible():
 
 @pytest.mark.parametrize("poisson", [0.4999])
 def test_plane_strain_q4_locking_debt_is_quantified(poisson):
-    """The 2-D Q4 path has no B-bar counterpart; record the debt instead of hiding it."""
+    """The merged 2-D Q4 path still locks; the debt stays recorded, not hidden.
+
+    The cure (mean-dilatation Q4, :mod:`tensorfem.continuum_bbar`) is gated in
+    ``tests/test_continuum_bbar.py``; this test keeps the uncured path fail-closed
+    so the two cannot be confused.
+    """
     soft = plane_strain_sweep((0.3,))[0]
     stiff = plane_strain_sweep((poisson,))[0]
     assert stiff["errors"]["displacement_l2"] > soft["errors"]["displacement_l2"]
