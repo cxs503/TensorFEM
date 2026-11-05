@@ -1,4 +1,5 @@
 """End-to-end qualified hemisphere workflow, evidence and deliverables."""
+
 from pathlib import Path
 
 from tensorfem.benchmark_cases import hemisphere_case, run_case, write_archive
@@ -23,9 +24,11 @@ write_hemisphere_vtk(deliverables / "result.vtk", post)
 write_hemisphere_markdown(deliverables / "validation.md", post)
 archive = run_case(hemisphere_case(), tier="quick")
 write_archive(archive, deliverables / "evidence.json")
-print({
-    "job_id": workflow.job_id,
-    "passed": post.validation["passed"],
-    "relative_error": post.validation["relative_error"],
-    "deliverables": str(deliverables),
-})
+print(
+    {
+        "job_id": workflow.job_id,
+        "passed": post.validation["passed"],
+        "relative_error": post.validation["relative_error"],
+        "deliverables": str(deliverables),
+    }
+)

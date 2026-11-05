@@ -1,4 +1,5 @@
 """TensorFEM-only weld hot-spot and fatigue assessment example (SI units)."""
+
 from tensorfem.marine_fatigue_qualification import (
     SNLogLogCurve,
     StressBlock,
