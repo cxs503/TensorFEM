@@ -310,3 +310,83 @@ python3 scripts/plot_pr61_merge_evidence.py --out /tmp/pr61_merge_evidence.png
 | `artifacts/evidence_logs/*.log`、`pytest_session_summaries.json` | → `docs/evidence/pr61/*.log` | 同一批实测日志，改文本路径不占 artifact 预算；旧"外部工作树全量数字"不再引用，本轮用自己的全量实测替代 |
 | `artifacts/README.md`（旧清单/台账） | 并入本文 §5.1 | 单一台账入口，避免两份清单漂移 |
 | `artifacts/pr61_merge_union_evidence{,_prefix}.json` | → `docs/evidence/pr61/union-audit.json`（重算） | 旧 JSON 已被负控跑覆盖过；本轮用当前树重算，修复前对照可用 `--merge 10c10a9` 现场复现 |
+- 复核/加固作业分支：`agent/m3825`（工作树 `/root/tp-agent/work/m3825`，追加 §7）
+- 权威审计证据：`artifacts/pr61_union_audit_evidence.json`（冻结坐标、可复算）、审计器 `artifacts/pr61_union_audit.py`、常驻门禁 `tests/test_pr61_merge_union_audit.py`
+- 第一版审计证据：`artifacts/pr61_merge_union_evidence.json`（程序化生成）、
+## 7. 复核与加固（`agent/m3825`，2026-11-05 02:15 UTC 起）
+本节由后续作业 `agent/m3825` 追加。复核的第一步就发现一个**与内容无关、但与"为什么还是
+dirty"有关**的事实：合并提交早已存在（`bafc0fa`，父 `7accc4b`+`2ff75a8`），但 `git fetch
+origin` 之后远端**没有** `origin/agent/m3202` —— 也就是说这一次治愈的产物从未推上 GitHub，
+GitHub 侧看到的分支头仍是最初的 `2ff75a8`，所以 PR #61 的 `mergeable=false` 并非"上次没修好"，
+而是"上次没送到"。远端在本单期间不可达（fetch 静默失败），按纪律不自行 push，交由平台在验收后推送；
+本单对本地 `agent/m3202` / `agent/m3825` 两支做了对齐，并补齐可复算证据。
+### 7.1 复核结论：合并内容本身成立
+复核不复用第一版的结论，而是重新独立判定三件事：
+1. **冲突面**用 `git merge-tree`（不与第一版共享任何代码路径）复算，仍只有
+   `CHANGELOG.md` 与 `docs/marine-hydrostatics.md` 两处 content 冲突，与"手解集"一致 ——
+   这条同时封死了"把 git 本可自动合并的文件也声称手解、从而掩盖丢内容"的口子；
+2. **243 个变更文件**逐一核对：合并后的 blob 必须**等于**该侧 blob（单侧文件）或属声明的手解集，
+   否则判失败。结果是 243/243 精确命中，main 侧与分支侧内容**字节级未变**；
+3. **手工解冲的两个文件**保留两侧全部原子（多重集）与全部内容词（集合），丢失量 0/0。
+### 7.2 复核中修掉的三个"证据级"缺陷
+| # | 缺陷 | 后果 | 修法 |
+| 1 | 第一版审计器把 ref 名写死（`origin/main`、`agent/m3202`） | 分支指针一旦指向合并提交，`merge-base(main, agent/m3202)` 退化成 main 自身，审计变成"0 个冲突文件"的**假通过**，且证据 JSON 不可复现 | 新版 `artifacts/pr61_union_audit.py` 把 PR 坐标冻结为常量（可 `--base/--main/--branch/--merge` 覆盖），证据里记全 5 个 SHA |
+| 2 | 第一版图脚本的"取分支"负控用 `--merge agent/m3202` | 分支指针一动，负控变成"合并结果 vs 合并结果"，**永远通过**——量具失效但图上仍显示"负控已fail" | 新版 `artifacts/pr61_union_figure.py` 直接 import 审计模块、对冻结 SHA 求值，并把"删掉一行"负控一并画出 |
+| 3 | 第一版对内容词用**多重集**判定 | 合法改写被判成丢词：main 侧 `It is not a large-angle GZ curve` 与分支侧句子在并集时合并为 `Beyond those two services this module offers no large-angle GZ, ...`，词元 `curve` 出现次数 2→1，被误报 | 改为**原子用多重集**（数字/标识符/路径/链接一次都不许少）+ **内容词用集合**（允许重排改写，不许整词消失），并在本节写明该粒度取舍 |
+负控是这套审计的"量具校准"，实测三档（见 7.4 表与 `artifacts/pr61_union_audit.png`）：
+取 main 单侧丢分支 156 个内容单元、取分支单侧丢 main 479 个、删掉一行丢 3 个；
+而交付的三方合并丢 0 —— 说明"零丢失"不是因为审计太松。
+### 7.3 一处既有缺陷的澄清（不是本次合并造成的）
+合并后 `CHANGELOG.md` 第 21/23 行出现"`## 2026-11-03 Cook 膜应力审计证据收尾` 空节、
+紧跟 `## 2026-11-04 — plane-strain B-bar Q4`"的结构。核对 `git show 7accc4b:CHANGELOG.md`
+第 3/5 行，**main 侧本身**就是这个结构 —— 属既有文档欠账，本次合并未新增结构性破坏。
+按最小改动原则不动它，仅在此记录，留给后续文档整理单。
+### 7.4 生成表格（`artifacts/pr61_report_tables.py` 程序化注入，零手抄）
+<!-- BEGIN GENERATED: pr61-audit-tables -->
+#### 并集审计（权威记录：`artifacts/pr61_union_audit_evidence.json`）
+| `main`（合并目标） | `7accc4b9cfb45369958c432a8aa2f0ebbb846a5b` |
+| `agent/m3202`（合并前 PR 头） | `2ff75a8158492b1d2232348d1a1d8e002ce1c009` |
+| 合并提交（三方合并结果） | `bafc0faf2b438de53fb2da52e8478997687c69ad` |
+| 分支当前 tip（含本次证据提交） | `00813c78ce476d38ce3017d5e62130756c1f9108` |
+| main 侧变更文件 | 236 |
+| 分支侧变更文件 | 9 |
+| 两侧同时改写（= 冲突面） | 2 |
+| 仅 main 侧 | 234 |
+| 仅分支侧 | 7 |
+| 合并相对 merge-base 的变更文件总数 | 243 |
+| 按“单侧 blob 原样/手工解冲”核对通过 | 243 |
+| 合并提交之后新增（仅追加，无改动/删除） | 8 |
+| `git merge-tree` 独立判定的冲突文件 | `CHANGELOG.md`, `docs/marine-hydrostatics.md` |
+| 越界文件（两侧都没有的新路径） | 0 |
+| main 是否为合并提交祖先（PR 可快进） | True |
+| 手工解冲文件 | main 独有原子 | 分支独有原子 | 丢失原子(main/分支) | 丢失内容词(main/分支) | 判定 |
+| `CHANGELOG.md` | 200 | 34 | **0 / 0** | **0 / 0** | union-preserved |
+| `docs/marine-hydrostatics.md` | 18 | 4 | **0 / 0** | **0 / 0** | union-preserved |
+| 负控（量具校准） | 预期 | 实测 |
+| main-only overlay | 必须被拒 | control-fires |
+| branch-only overlay | 必须被拒 | control-fires |
+| single-line deletion: 1.33e-15 m，相对 8.3e-16）；90° 精确几何 | 必须被拒 | control-fires |
+| 树 | 来源 | tests | passed | failed | skipped |
+| 合并树（main `7accc4b` + PR #61） | 归档会话汇总行（本次会话未落 XML） | 1430 | **1427** | 3 | 6 |
+| 基线 `main` `7accc4b` | 归档会话汇总行 | 1391 | **1389** | 2 | 6 |
+<!-- END GENERATED: pr61-audit-tables -->
+### 7.5 测试证据（本次会话，2026-11-05）
+- **PR 载荷自身**：`tests/test_marine_large_angle_gz.py` + `tests/test_marine_large_angle_stability.py`
+  → `58 passed`（6.98 s）—— 合并没有破坏 PR 要交付的物理能力。
+- **合并内容常驻门禁（本次新增）**：`tests/test_pr61_merge_union_audit.py` → `6 passed`。
+  它把并集审计变成仓库里的测试：合并满足并集义务、审计器必须拒绝两个单侧 overlay 与单行删除、
+  以"改一个测量数字"验证篡改可被察觉、仓内证据 JSON 必须与现场复算一致（防手改）。历史里
+  若不含 PR #61 的提交（例如无分支历史的导出），这些测试 skip 而不是 fail。
+- **全量**：见 7.4 表（同一命令 `-n 8`，同一台机）。本次会话在 load average 6000+ 的共享机上
+  重跑全量到 91% 时预算耗尽、未落 JUnit XML，故统计仍取同日归档会话（诚实标注，不混用两次数据）。
+### 7.6 未完成与局限（如实）
+1. **没有执行真实 push**：远端不可达（`git fetch origin` 无输出、无 `origin/agent/m3202`），
+   按纪律由平台在验收后推送。本单完成的是"本地两支对齐 + 可复算证据 + 常驻门禁"。
+   记录：`agent/m3202` 旧头 `2ff75a8`（PR 原始头）→ 合并提交 `bafc0fa` → 本次 tip 见 7.4 表。
+2. **基线跑分沿用同日归档**（main `7accc4b` 的 `1389 passed / 2 failed` 会话汇总行；原始
+   `/tmp` 日志已被邻居任务覆盖）。本次会话只重跑了合并树。公平性用结构论证补强：合并树
+   = main 树 + 分支新增，243 个变更文件逐一核对到精确 blob（main 侧字节不变），因此 main 的
+   测试结果不可能被合并不利影响；此外分支侧 9 个文件里 `src/tensorfem/` 只有**新增**
+   `marine_large_angle_gz.py`，没有改动任何既有模块。
+3. **墙钟型断言在共享机上不可用于归因**（load average 6000+）：`elapsed < 10 s` 一类判据的
+   结论只能靠"源码零差异 + 基线上同样失败"两条证据，不能写进回归统计，见 §5.5。
