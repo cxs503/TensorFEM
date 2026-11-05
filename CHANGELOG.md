@@ -1,14 +1,3 @@
-## Unreleased
-
-### Verification
-- **均布压力板的精度复核**（`docs/plate-uniform-load-verification.md`）：已合并的 Q4 Mindlin
-  板路径此前只对一条与第一阶模态同形的正弦载荷复核过，无法发现载荷向量、高阶模态刚度、
-  剪切分解或边界条件错误。新增 `tensorfem.plate_uniform_load`（精确 Navier 双级数 +
-  可分离 Rayleigh-Ritz 固支参考，Ritz 以正弦模态自检到 0.008 %）与
-  `scripts/verify_plate_uniform_load.py`：简支/固支、$t/a=0.01/0.10$、均布压力下
-  中心挠度、中心弯矩全部 < 3 %（最差 0.4886 %）；夹支边峰值弯矩不认证。
-  3 个负控（4×4 粗网格保留失败、固支对简支参考、厚板对 Kirchhoff 参考）按设计失败。
-
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
 ## 2026-11-04 大倾角稳性：盒形驳 GZ 曲线与 KN 横交曲线（精确截面几何）
