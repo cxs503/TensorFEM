@@ -24,6 +24,7 @@ centroid stress and the exact strain-energy identity
 ``u^T K u = V sigma:epsilon`` (equality for a constant-strain field, any
 mapping).
 """
+
 from __future__ import annotations
 
 import math
@@ -55,9 +56,7 @@ def gauss_rule() -> List[Tuple[float, float, float, float]]:
 def warp(points: torch.Tensor, amplitude: float) -> torch.Tensor:
     """Quadratic warp ``x + a*(y z, x z, x y)``; straight edges become parabolic."""
     x, y, z = points[:, 0], points[:, 1], points[:, 2]
-    return torch.stack(
-        (x + amplitude * y * z, y + amplitude * x * z, z + amplitude * x * y), 1
-    )
+    return torch.stack((x + amplitude * y * z, y + amplitude * x * z, z + amplitude * x * y), 1)
 
 
 def graded_shear(points: torch.Tensor, amplitude: float) -> torch.Tensor:
@@ -71,18 +70,20 @@ def cylindrical_bend(points: torch.Tensor, radius: float, axis_x: float = 1.0) -
     x, y, z = points[:, 0], points[:, 1], points[:, 2]
     theta = (x - axis_x) / radius
     rho = radius + z
-    return torch.stack(
-        (rho * torch.sin(theta) + axis_x, y, rho * torch.cos(theta) - radius), 1
-    )
+    return torch.stack((rho * torch.sin(theta) + axis_x, y, rho * torch.cos(theta) - radius), 1)
 
 
-def boundary_nodes(reference: torch.Tensor, length: float, width: float, height: float,
-                   tol: float = 1e-9) -> torch.Tensor:
+def boundary_nodes(
+    reference: torch.Tensor, length: float, width: float, height: float, tol: float = 1e-9
+) -> torch.Tensor:
     """Nodes on the outer box of the *reference* (pre-distortion) configuration."""
     on = (
-        (reference[:, 0] <= tol) | (reference[:, 0] >= length - tol)
-        | (reference[:, 1] <= tol) | (reference[:, 1] >= width - tol)
-        | (reference[:, 2] <= tol) | (reference[:, 2] >= height - tol)
+        (reference[:, 0] <= tol)
+        | (reference[:, 0] >= length - tol)
+        | (reference[:, 1] <= tol)
+        | (reference[:, 1] >= width - tol)
+        | (reference[:, 2] <= tol)
+        | (reference[:, 2] >= height - tol)
     )
     return torch.where(on)[0]
 
@@ -92,7 +93,7 @@ def boundary_nodes(reference: torch.Tensor, length: float, width: float, height:
 # --------------------------------------------------------------------------- #
 def element_stiffness(x: torch.Tensor, d: torch.Tensor, *, center_jacobian: bool = False):
     """Element stiffness; ``center_jacobian=True`` is the deliberate bug control."""
-    from .hex20 import _gradient, hex20_stiffness
+    from .hex20 import hex20_stiffness
 
     if not center_jacobian:
         return hex20_stiffness(x, d)
@@ -150,14 +151,17 @@ def linear_field(nodes: torch.Tensor, gradient: torch.Tensor, offset: torch.Tens
 
 
 def energy_identity_residual(
-    nodes: torch.Tensor, elements: torch.Tensor, gradient: torch.Tensor,
-    young: float = 70e9, poisson: float = 0.27, *, center_jacobian: bool = False,
+    nodes: torch.Tensor,
+    elements: torch.Tensor,
+    gradient: torch.Tensor,
+    young: float = 70e9,
+    poisson: float = 0.27,
+    *,
+    center_jacobian: bool = False,
 ) -> float:
     """Relative error of ``u^T K u = V sigma:epsilon`` for a constant-strain field."""
     x = nodes[elements.long()]
-    d = elasticity_matrix_3d(
-        x.new_full((len(x),), young), x.new_full((len(x),), poisson)
-    )
+    d = elasticity_matrix_3d(x.new_full((len(x),), young), x.new_full((len(x),), poisson))
     ke, b = element_stiffness(x, d, center_jacobian=center_jacobian)
     ue = (x @ gradient.T).reshape(len(x), 60)
     lhs = torch.einsum("ei,eij,ej->e", ue, ke, ue)
@@ -168,9 +172,15 @@ def energy_identity_residual(
 
 
 def patch_residual(
-    nodes: torch.Tensor, elements: torch.Tensor, boundary: torch.Tensor,
-    gradient: torch.Tensor, offset: torch.Tensor | None = None,
-    young: float = 70e9, poisson: float = 0.27, *, center_jacobian: bool = False,
+    nodes: torch.Tensor,
+    elements: torch.Tensor,
+    boundary: torch.Tensor,
+    gradient: torch.Tensor,
+    offset: torch.Tensor | None = None,
+    young: float = 70e9,
+    poisson: float = 0.27,
+    *,
+    center_jacobian: bool = False,
 ) -> Dict[str, float]:
     """Prescribe an exact linear field on the boundary and solve for the interior.
 
@@ -182,9 +192,7 @@ def patch_residual(
     exact = linear_field(nodes, gradient, offset)
     fixed = torch.stack((3 * boundary, 3 * boundary + 1, 3 * boundary + 2), 1).reshape(-1).long()
     x = nodes[elements.long()]
-    d = elasticity_matrix_3d(
-        x.new_full((len(x),), young), x.new_full((len(x),), poisson)
-    )
+    d = elasticity_matrix_3d(x.new_full((len(x),), young), x.new_full((len(x),), poisson))
     ke, b = element_stiffness(x, d, center_jacobian=center_jacobian)
     n = 3 * len(nodes)
     ed = torch.stack(tuple(3 * elements.long() + i for i in range(3)), 2).reshape(len(x), 60)
@@ -206,18 +214,42 @@ def patch_residual(
     dm = d[0]
     ref = torch.stack(
         (
-            dm[0, 0] * ref_strain[0, 0] + dm[0, 1] * ref_strain[1, 1] + dm[0, 2] * ref_strain[2, 2]
-            + 2 * dm[0, 3] * ref_strain[0, 1] + 2 * dm[0, 4] * ref_strain[1, 2] + 2 * dm[0, 5] * ref_strain[0, 2],
-            dm[1, 0] * ref_strain[0, 0] + dm[1, 1] * ref_strain[1, 1] + dm[1, 2] * ref_strain[2, 2]
-            + 2 * dm[1, 3] * ref_strain[0, 1] + 2 * dm[1, 4] * ref_strain[1, 2] + 2 * dm[1, 5] * ref_strain[0, 2],
-            dm[2, 0] * ref_strain[0, 0] + dm[2, 1] * ref_strain[1, 1] + dm[2, 2] * ref_strain[2, 2]
-            + 2 * dm[2, 3] * ref_strain[0, 1] + 2 * dm[2, 4] * ref_strain[1, 2] + 2 * dm[2, 5] * ref_strain[0, 2],
-            dm[3, 0] * ref_strain[0, 0] + dm[3, 1] * ref_strain[1, 1] + dm[3, 2] * ref_strain[2, 2]
-            + 2 * dm[3, 3] * ref_strain[0, 1] + 2 * dm[3, 4] * ref_strain[1, 2] + 2 * dm[3, 5] * ref_strain[0, 2],
-            dm[4, 0] * ref_strain[0, 0] + dm[4, 1] * ref_strain[1, 1] + dm[4, 2] * ref_strain[2, 2]
-            + 2 * dm[4, 3] * ref_strain[0, 1] + 2 * dm[4, 4] * ref_strain[1, 2] + 2 * dm[4, 5] * ref_strain[0, 2],
-            dm[5, 0] * ref_strain[0, 0] + dm[5, 1] * ref_strain[1, 1] + dm[5, 2] * ref_strain[2, 2]
-            + 2 * dm[5, 3] * ref_strain[0, 1] + 2 * dm[5, 4] * ref_strain[1, 2] + 2 * dm[5, 5] * ref_strain[0, 2],
+            dm[0, 0] * ref_strain[0, 0]
+            + dm[0, 1] * ref_strain[1, 1]
+            + dm[0, 2] * ref_strain[2, 2]
+            + 2 * dm[0, 3] * ref_strain[0, 1]
+            + 2 * dm[0, 4] * ref_strain[1, 2]
+            + 2 * dm[0, 5] * ref_strain[0, 2],
+            dm[1, 0] * ref_strain[0, 0]
+            + dm[1, 1] * ref_strain[1, 1]
+            + dm[1, 2] * ref_strain[2, 2]
+            + 2 * dm[1, 3] * ref_strain[0, 1]
+            + 2 * dm[1, 4] * ref_strain[1, 2]
+            + 2 * dm[1, 5] * ref_strain[0, 2],
+            dm[2, 0] * ref_strain[0, 0]
+            + dm[2, 1] * ref_strain[1, 1]
+            + dm[2, 2] * ref_strain[2, 2]
+            + 2 * dm[2, 3] * ref_strain[0, 1]
+            + 2 * dm[2, 4] * ref_strain[1, 2]
+            + 2 * dm[2, 5] * ref_strain[0, 2],
+            dm[3, 0] * ref_strain[0, 0]
+            + dm[3, 1] * ref_strain[1, 1]
+            + dm[3, 2] * ref_strain[2, 2]
+            + 2 * dm[3, 3] * ref_strain[0, 1]
+            + 2 * dm[3, 4] * ref_strain[1, 2]
+            + 2 * dm[3, 5] * ref_strain[0, 2],
+            dm[4, 0] * ref_strain[0, 0]
+            + dm[4, 1] * ref_strain[1, 1]
+            + dm[4, 2] * ref_strain[2, 2]
+            + 2 * dm[4, 3] * ref_strain[0, 1]
+            + 2 * dm[4, 4] * ref_strain[1, 2]
+            + 2 * dm[4, 5] * ref_strain[0, 2],
+            dm[5, 0] * ref_strain[0, 0]
+            + dm[5, 1] * ref_strain[1, 1]
+            + dm[5, 2] * ref_strain[2, 2]
+            + 2 * dm[5, 3] * ref_strain[0, 1]
+            + 2 * dm[5, 4] * ref_strain[1, 2]
+            + 2 * dm[5, 5] * ref_strain[0, 2],
         )
     )
     stress_err = float(torch.max(torch.abs(stress - ref) / torch.abs(ref).clamp(min=1e-300)))
@@ -229,8 +261,13 @@ def patch_residual(
     }
 
 
-def rank_audit(nodes: torch.Tensor, elements: torch.Tensor, young: float = 70e9,
-               poisson: float = 0.27, label: str = "hex20"):
+def rank_audit(
+    nodes: torch.Tensor,
+    elements: torch.Tensor,
+    young: float = 70e9,
+    poisson: float = 0.27,
+    label: str = "hex20",
+):
     """Null-space classification of one distorted brick (6 rigid modes, no hourglass)."""
     from .element_rank_audit import audit_element, rigid_body_basis_solid3d
 
@@ -261,13 +298,15 @@ def qualification_sweep(
             bnd = boundary_nodes(ref, 2.0, 1.0, 1.0)
             good = patch_residual(nodes, cells, bnd, gradient, offset)
             bad = patch_residual(nodes, cells, bnd, gradient, offset, center_jacobian=True)
-            out[kind].append({
-                "amplitude": float(a),
-                "displacement_relative_error": good["displacement_relative_error"],
-                "centroid_stress_relative_error": good["centroid_stress_relative_error"],
-                "energy_identity_relative_error": energy_identity_residual(
-                    nodes, cells, gradient
-                ),
-                "control_displacement_relative_error": bad["displacement_relative_error"],
-            })
+            out[kind].append(
+                {
+                    "amplitude": float(a),
+                    "displacement_relative_error": good["displacement_relative_error"],
+                    "centroid_stress_relative_error": good["centroid_stress_relative_error"],
+                    "energy_identity_relative_error": energy_identity_residual(
+                        nodes, cells, gradient
+                    ),
+                    "control_displacement_relative_error": bad["displacement_relative_error"],
+                }
+            )
     return out
