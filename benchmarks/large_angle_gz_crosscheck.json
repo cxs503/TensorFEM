@@ -1,0 +1,178 @@
+{
+  "abs_tolerance_m": 1e-10,
+  "description": "Independent-implementation agreement between marine_large_angle_gz (polygon clipping) and marine_large_angle_stability.BoxBarge (area-residual bisection)",
+  "geometries": [
+    {
+      "angle_of_max_difference_deg": 18.0,
+      "envelope_difference_deg": 0.0,
+      "envelope_merged_oracle_deg": 18.43494882292201,
+      "envelope_this_module_deg": 18.43494882292201,
+      "geometry": {
+        "beam": 12.0,
+        "depth": 6.0,
+        "draft": 2.0,
+        "kg": 2.1
+      },
+      "gm_difference_m": 0.0,
+      "gm_merged_oracle_m": 4.9,
+      "gm_this_module_m": 4.9,
+      "heel_count": 180,
+      "max_abs_gz_difference_m": 2.1538326677728037e-14,
+      "max_abs_gz_difference_negative_heel_m": 2.19824158875781e-14,
+      "max_gz_m": 2.6753087228605876,
+      "max_rel_gz_difference": 1.3360791889778895e-14,
+      "name": "reference"
+    },
+    {
+      "angle_of_max_difference_deg": 33.0,
+      "envelope_difference_deg": 0.0,
+      "envelope_merged_oracle_deg": 26.56505117707799,
+      "envelope_this_module_deg": 26.56505117707799,
+      "geometry": {
+        "beam": 12.0,
+        "depth": 6.0,
+        "draft": 3.0,
+        "kg": 3.0
+      },
+      "gm_difference_m": 0.0,
+      "gm_merged_oracle_m": 2.5,
+      "gm_this_module_m": 2.5,
+      "heel_count": 180,
+      "max_abs_gz_difference_m": 1.4876988529977098e-14,
+      "max_abs_gz_difference_negative_heel_m": 1.4876988529977098e-14,
+      "max_gz_m": 1.6472958288800972,
+      "max_rel_gz_difference": 9.300932296378841e-15,
+      "name": "deep_draft_deck_first"
+    },
+    {
+      "angle_of_max_difference_deg": 17.5,
+      "envelope_difference_deg": 0.0,
+      "envelope_merged_oracle_deg": 18.43494882292201,
+      "envelope_this_module_deg": 18.43494882292201,
+      "geometry": {
+        "beam": 12.0,
+        "depth": 4.0,
+        "draft": 2.0,
+        "kg": 2.1
+      },
+      "gm_difference_m": 0.0,
+      "gm_merged_oracle_m": 4.9,
+      "gm_this_module_m": 4.9,
+      "heel_count": 180,
+      "max_abs_gz_difference_m": 1.021405182655144e-14,
+      "max_abs_gz_difference_negative_heel_m": 9.769962616701378e-15,
+      "max_gz_m": 2.0669509870286276,
+      "max_rel_gz_difference": 6.5343129136830036e-15,
+      "name": "coincident_limits"
+    },
+    {
+      "angle_of_max_difference_deg": 4.5,
+      "envelope_difference_deg": 0.0,
+      "envelope_merged_oracle_deg": 5.710593137499642,
+      "envelope_this_module_deg": 5.710593137499642,
+      "geometry": {
+        "beam": 20.0,
+        "depth": 3.0,
+        "draft": 1.0,
+        "kg": 1.4
+      },
+      "gm_difference_m": 0.0,
+      "gm_merged_oracle_m": 32.43333333333334,
+      "gm_this_module_m": 32.43333333333334,
+      "heel_count": 180,
+      "max_abs_gz_difference_m": 2.0872192862952943e-14,
+      "max_abs_gz_difference_negative_heel_m": 1.9984014443252818e-14,
+      "max_gz_m": 5.798293507271706,
+      "max_rel_gz_difference": 8.17622937478009e-15,
+      "name": "wide_shallow"
+    },
+    {
+      "angle_of_max_difference_deg": 71.0,
+      "envelope_difference_deg": 0.0,
+      "envelope_merged_oracle_deg": 18.43494882292201,
+      "envelope_this_module_deg": 18.43494882292201,
+      "geometry": {
+        "beam": 6.0,
+        "depth": 6.0,
+        "draft": 1.0,
+        "kg": 1.2
+      },
+      "gm_difference_m": 0.0,
+      "gm_merged_oracle_m": 2.3,
+      "gm_this_module_m": 2.3,
+      "heel_count": 180,
+      "max_abs_gz_difference_m": 1.5987211554602254e-14,
+      "max_abs_gz_difference_negative_heel_m": 1.5987211554602254e-14,
+      "max_gz_m": 1.7955671968701867,
+      "max_rel_gz_difference": 1.0786948056196917e-14,
+      "name": "slender"
+    }
+  ],
+  "max_abs_error_at_90_deg_m": 6.245004513516506e-16,
+  "max_abs_gz_difference_m": 2.1538326677728037e-14,
+  "max_envelope_difference_deg": 0.0,
+  "max_gm_difference_m": 0.0,
+  "merged_oracle_refuses_90_deg": true,
+  "ninety_degree_endpoint": [
+    {
+      "abs_error_m": 2.220446049250313e-16,
+      "gz_at_90_deg_analytic_m": 0.8999999999999999,
+      "gz_at_90_deg_m": 0.9000000000000001,
+      "merged_oracle_refuses_90_deg": true,
+      "name": "reference",
+      "xb_at_90_deg_analytic_m": 4.0,
+      "xb_at_90_deg_m": 4.000000000000001,
+      "zb_at_90_deg_analytic_m": 3.0,
+      "zb_at_90_deg_m": 3.0
+    },
+    {
+      "abs_error_m": 1.8369701987210297e-16,
+      "gz_at_90_deg_analytic_m": 0.0,
+      "gz_at_90_deg_m": 1.8369701987210297e-16,
+      "merged_oracle_refuses_90_deg": true,
+      "name": "deep_draft_deck_first",
+      "xb_at_90_deg_analytic_m": 3.0,
+      "xb_at_90_deg_m": 3.0,
+      "zb_at_90_deg_analytic_m": 3.0,
+      "zb_at_90_deg_m": 3.0
+    },
+    {
+      "abs_error_m": 1.8041124150158794e-16,
+      "gz_at_90_deg_analytic_m": -0.10000000000000009,
+      "gz_at_90_deg_m": -0.09999999999999991,
+      "merged_oracle_refuses_90_deg": true,
+      "name": "coincident_limits",
+      "xb_at_90_deg_analytic_m": 3.0,
+      "xb_at_90_deg_m": 3.0,
+      "zb_at_90_deg_analytic_m": 2.0,
+      "zb_at_90_deg_m": 2.0
+    },
+    {
+      "abs_error_m": 6.245004513516506e-16,
+      "gz_at_90_deg_analytic_m": 0.10000000000000009,
+      "gz_at_90_deg_m": 0.10000000000000071,
+      "merged_oracle_refuses_90_deg": true,
+      "name": "wide_shallow",
+      "xb_at_90_deg_analytic_m": 6.666666666666666,
+      "xb_at_90_deg_m": 6.666666666666668,
+      "zb_at_90_deg_analytic_m": 1.5,
+      "zb_at_90_deg_m": 1.5000000000000002
+    },
+    {
+      "abs_error_m": 2.220446049250313e-16,
+      "gz_at_90_deg_analytic_m": 1.8,
+      "gz_at_90_deg_m": 1.7999999999999998,
+      "merged_oracle_refuses_90_deg": true,
+      "name": "slender",
+      "xb_at_90_deg_analytic_m": 2.5,
+      "xb_at_90_deg_m": 2.5,
+      "zb_at_90_deg_analytic_m": 3.0,
+      "zb_at_90_deg_m": 2.9999999999999996
+    }
+  ],
+  "schema": "tensorfem.marine-large-angle-gz.crosscheck.v1",
+  "sweep": {
+    "max_deg": 89.5,
+    "step_deg": 0.5
+  }
+}
