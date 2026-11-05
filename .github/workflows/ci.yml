@@ -54,13 +54,28 @@ jobs:
   lint:
     name: lint (advisory)
     runs-on: ubuntu-latest
-    # Advisory on purpose: the tree carries a large pre-existing ruff backlog
-    # (unused imports, import ordering, semicolon-packed statements).  Making
-    # it blocking would hide every other signal.  Fix the backlog, then drop
-    # this continue-on-error and promote it to a gate.
+    # Advisory, and scoped on purpose.  The tree still carries a large
+    # pre-existing ruff backlog (thousands of `ruff check` findings, hundreds of
+    # files `ruff format` would rewrite: E701/E702 semicolon- and colon-packed
+    # statements, unused imports, historical formatting).  A repo-wide scan
+    # fails on `main` as well as on every pull request, so its red said nothing
+    # about the change under review.
+    #
+    # The job therefore gates only what a change touches, via
+    # scripts/lint_scope.py: the Python files added or modified between the
+    # merge base and HEAD must pass `ruff check` and `ruff format --check`.
+    # The grandfathered backlog is measured and archived (lint-report.json) but
+    # never gates, so new debt fails immediately while the old debt stays
+    # visible and can only be paid down deliberately.  Once
+    # `python scripts/lint_scope.py --all` is clean, the last step can be
+    # swapped for `--all` and continue-on-error dropped to make lint blocking.
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The gate diffs against the merge base of the target branch or the
+          # previously pushed commit; a depth-1 clone can resolve neither.
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -70,7 +85,40 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-      - name: Lint (ruff)
-        run: ruff check src tests scripts examples
-      - name: Format check (ruff format)
-        run: ruff format --check src tests scripts examples
+      - name: Pin ruff
+        # The diff-scoped gate must give the same verdict on a laptop and on the
+        # runner; `ruff format` output moves between releases, so the lint job
+        # pins the version it gates with.  Bumping this pin is a deliberate
+        # change (re-run scripts/lint_scope.py --all first).
+        run: pip install "ruff==0.15.0"
+      - name: Resolve the lint comparison base
+        id: lint_base
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Pull requests are judged on what they add to their target branch.
+            git fetch --no-tags --quiet origin \
+              "+refs/heads/${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+            base="origin/${{ github.base_ref }}"
+          elif [ -n "${{ github.event.before }}" ] \
+            && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            # Pushes are judged on the commits they add to the same ref.
+            base="${{ github.event.before }}"
+          else
+            base="HEAD^"
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "lint comparison base: $base"
+      - name: Lint the changed Python files (diff-scoped ruff gate)
+        run: >-
+          python scripts/lint_scope.py
+          --base "${{ steps.lint_base.outputs.base }}"
+          --measure-backlog
+          --report lint-report.json
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: lint-report.json

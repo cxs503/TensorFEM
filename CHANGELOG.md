@@ -1,3 +1,18 @@
+## 2026-11-05 PR #97（agent/m3593）lint 红线治理：差异域 ruff 门禁
+
+- 定位 PR #97 `lint (advisory)` 恒红的两个独立成因：本 PR 三个文件自带 1 条 `E702`
+  （`abaqus_io.py` 的 `GENERATE` 分支一行三条语句）与 3 个文件待格式化；以及仓库级存量基线
+  （`ruff check` 4270 条、623 个文件待 `ruff format`），后者在 `main` 上同样失败，任何单个 PR 都无法清除。
+- 修复：拆开 `E702` 三语句行，格式化 PR 自有三个文件（改动全部落在 PR 自己的文件内，无越界 churn）。
+- 新增 `scripts/lint_scope.py`：按 CI 事件解析基准（PR→`origin/<base>`、push→`before`、兜底 `HEAD^`）并取
+  merge base，只闸门改动过的 `*.py`（`--diff-filter=ACMRT`，另可 `--worktree` 涵盖未提交/未跟踪）；
+  存量基线用 `--measure-backlog` 计量入库但永不闸门；缺 ruff / 基准不可解析一律 exit 2（fail-closed）。
+- `lint (advisory)` 改为 `fetch-depth: 0` + 基准解析 + 该门禁 + 固定 `ruff==0.15.0` + 归档 `lint-report.json`；
+  任务名与 `continue-on-error` 保持不变，存量基线不动。`--all` 绿后即可去掉 advisory 升级为硬门。
+- 证据：`artifacts/pr97-lint/before.json`、`after-vs-main.json`、`after-push-base.json`、`gate_scope.png`
+  （由 `scripts/plot_lint_gate_scope.py` 从 JSON 程序化生成）；说明与局限见 `docs/lint-gate-diff-scope.md`；
+  门禁判定回归网 `tests/test_lint_scope.py`（12 项）。
+
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
 ## 2026-11-03 Cook 膜应力审计证据收尾
