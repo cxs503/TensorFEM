@@ -1,0 +1,218 @@
+{
+  "reference": {
+    "inner_radius": 0.5,
+    "outer_radius": 0.8,
+    "young": 200000000000.0,
+    "poisson": 0.3,
+    "inner_pressure": 10000000.0,
+    "outer_pressure": 0.0,
+    "axial_stress": 6410256.410256408,
+    "lame_constant": 4102564.102564102
+  },
+  "meshes": [
+    {
+      "nr": 3,
+      "ntheta": 8,
+      "nz": 3,
+      "elements": 72,
+      "nodes": 144,
+      "errors": {
+        "sigma_r_l2": 0.025451725788857862,
+        "sigma_r_max": 0.00857320771716781,
+        "sigma_theta_l2": 0.00831117507907363,
+        "sigma_theta_max": 0.01147237145837575,
+        "sigma_z_l2": 0.006947078984246508,
+        "sigma_z_max": 0.004575907978437806,
+        "u_r_max": 0.007243379798462783,
+        "u_r_mean": 0.007243379798458524
+      }
+    },
+    {
+      "nr": 4,
+      "ntheta": 12,
+      "nz": 4,
+      "elements": 192,
+      "nodes": 325,
+      "errors": {
+        "sigma_r_l2": 0.01130258266891103,
+        "sigma_r_max": 0.0038634132063771467,
+        "sigma_theta_l2": 0.004231692634982919,
+        "sigma_theta_max": 0.006793414144605626,
+        "sigma_z_l2": 0.00589654162831461,
+        "sigma_z_max": 0.00459988664488175,
+        "u_r_max": 0.004096230146606648,
+        "u_r_mean": 0.004096230146592243
+      }
+    },
+    {
+      "nr": 5,
+      "ntheta": 16,
+      "nz": 5,
+      "elements": 400,
+      "nodes": 612,
+      "errors": {
+        "sigma_r_l2": 0.0064043483963317485,
+        "sigma_r_max": 0.0021729284720286668,
+        "sigma_theta_l2": 0.002426874782829132,
+        "sigma_theta_max": 0.0038744541923021215,
+        "sigma_z_l2": 0.002377232733537747,
+        "sigma_z_max": 0.001916901029680165,
+        "u_r_max": 0.0026284538302015483,
+        "u_r_mean": 0.00262845383015171
+      }
+    }
+  ],
+  "qualification": {
+    "status": "qualified",
+    "tolerance": 0.03,
+    "errors": {
+      "sigma_r_l2": 0.0064043483963317485,
+      "sigma_r_max": 0.0021729284720286668,
+      "sigma_theta_l2": 0.002426874782829132,
+      "sigma_theta_max": 0.0038744541923021215,
+      "sigma_z_l2": 0.002377232733537747,
+      "sigma_z_max": 0.001916901029680165,
+      "u_r_max": 0.0026284538302015483,
+      "u_r_mean": 0.00262845383015171
+    },
+    "convergence": {
+      "sigma_r_l2_order": 2.4176962867508225,
+      "sigma_theta_l2_order": 2.148746704844054,
+      "u_r_max_order": 1.7717983530370183,
+      "sigma_z_l2_order": 1.8011695381257542
+    },
+    "length_sensitivity": 0.006866487069750298,
+    "negative_control": {
+      "sigma_r_l2": 0.0064043483963317485,
+      "sigma_r_max": 0.0021729284720286668,
+      "sigma_theta_l2": 0.002426874782829132,
+      "sigma_theta_max": 0.0038744541923021215,
+      "sigma_z_l2": 0.6653031902061745,
+      "sigma_z_max": 0.11672095122613727,
+      "u_r_max": 0.03373151660056941,
+      "u_r_mean": 0.033731516600521136
+    },
+    "equilibrium": {
+      "axial_cut_reaction": 1960342.8065912116,
+      "axial_expected": 1963495.4084936208,
+      "axial_balance": 0.0016056069643819448,
+      "radial_cut_reaction": -5997588.007838197,
+      "radial_expected": -6000000.0,
+      "radial_balance": 0.00040199869363377605,
+      "free_residual": 4.417719775678953e-14
+    },
+    "missing": []
+  },
+  "variants": {
+    "基准（内压 10 MPa）": {
+      "reference": {
+        "inner_radius": 0.5,
+        "outer_radius": 0.8,
+        "inner_pressure": 10000000.0,
+        "outer_pressure": 0.0,
+        "young": 200000000000.0,
+        "poisson": 0.3
+      },
+      "axial_stress": 6410256.410256408,
+      "errors": {
+        "sigma_r_l2": 0.0064043483963317485,
+        "sigma_r_max": 0.0021729284720286668,
+        "sigma_theta_l2": 0.002426874782829132,
+        "sigma_theta_max": 0.0038744541923021215,
+        "sigma_z_l2": 0.002377232733537747,
+        "sigma_z_max": 0.001916901029680165,
+        "u_r_max": 0.0026284538302015483,
+        "u_r_mean": 0.00262845383015171
+      }
+    },
+    "外压 12 MPa": {
+      "reference": {
+        "inner_radius": 0.5,
+        "outer_radius": 0.8,
+        "inner_pressure": 0.0,
+        "outer_pressure": 12000000.0,
+        "young": 200000000000.0,
+        "poisson": 0.3
+      },
+      "axial_stress": -19692307.692307692,
+      "errors": {
+        "sigma_r_l2": 0.0071537400856445076,
+        "sigma_r_max": 0.0016218633066379942,
+        "sigma_theta_l2": 0.0014692988385341002,
+        "sigma_theta_max": 0.002543566600362277,
+        "sigma_z_l2": 0.0009286065365382919,
+        "sigma_z_max": 0.001320359124104084,
+        "u_r_max": 0.002150675821800764,
+        "u_r_mean": 0.002150675821747012
+      }
+    },
+    "内外压组合": {
+      "reference": {
+        "inner_radius": 0.5,
+        "outer_radius": 0.8,
+        "inner_pressure": 10000000.0,
+        "outer_pressure": 4000000.0,
+        "young": 200000000000.0,
+        "poisson": 0.3
+      },
+      "axial_stress": -153846.15384615498,
+      "errors": {
+        "sigma_r_l2": 0.0029064704063848264,
+        "sigma_r_max": 0.002936179801631914,
+        "sigma_theta_l2": 0.003958583191258021,
+        "sigma_theta_max": 0.0057177964826806505,
+        "sigma_z_l2": 0.059430818338459666,
+        "sigma_z_max": 0.0027431397963460663,
+        "u_r_max": 0.0030469904430407663,
+        "u_r_mean": 0.0030469904429892233
+      }
+    },
+    "薄壁 r_o/r_i = 1.11": {
+      "reference": {
+        "inner_radius": 0.9,
+        "outer_radius": 1.0,
+        "inner_pressure": 10000000.0,
+        "outer_pressure": 0.0,
+        "young": 200000000000.0,
+        "poisson": 0.3
+      },
+      "axial_stress": 42631578.947368436,
+      "errors": {
+        "sigma_r_l2": 0.023178112064598296,
+        "sigma_r_max": 0.0017394991141168918,
+        "sigma_theta_l2": 0.001283607297362184,
+        "sigma_theta_max": 0.0014637493912629286,
+        "sigma_z_l2": 8.308068337095627e-05,
+        "sigma_z_max": 9.60103805813129e-05,
+        "u_r_max": 0.0003242078908515398,
+        "u_r_mean": 0.00032420788071140405
+      }
+    },
+    "E/ν 变化（70 GPa, 0.33）": {
+      "reference": {
+        "inner_radius": 0.5,
+        "outer_radius": 0.8,
+        "inner_pressure": 10000000.0,
+        "outer_pressure": 0.0,
+        "young": 70000000000.0,
+        "poisson": 0.33
+      },
+      "axial_stress": 6410256.410256408,
+      "errors": {
+        "sigma_r_l2": 0.0069352263934328385,
+        "sigma_r_max": 0.0022455398085790054,
+        "sigma_theta_l2": 0.002620030376227848,
+        "sigma_theta_max": 0.004185834388713711,
+        "sigma_z_l2": 0.0030839288902475433,
+        "sigma_z_max": 0.0024855973095686996,
+        "u_r_max": 0.0029411712050612005,
+        "u_r_mean": 0.002941171205057593
+      }
+    }
+  },
+  "half_length_sensitivity": {
+    "long": 1.2,
+    "short": 0.6,
+    "value": 0.006866487069750298
+  }
+}
