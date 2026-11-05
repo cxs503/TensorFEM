@@ -9,6 +9,8 @@ from tensorfem.finite_rotation_layered_shell4 import (
     assemble_finite_rotation_layered_shell4,
     finite_rotation_element_response,
     model_with_imperfection,
+    roundoff_floor,
+    shell_section_area,
     solve_finite_rotation_arc_path,
     solve_finite_rotation_increment,
 )
@@ -89,7 +91,9 @@ def test_imperfection_is_stress_free_reference_and_residual_stress_is_active():
     response = assemble_finite_rotation_layered_shell4(
         imperfect, zero, LayeredShell4State.virgin(imperfect), tangent=False
     )
-    assert float(response.stress.abs().max()) < 1e-10
+    floor = roundoff_floor(imperfect)
+    assert float(response.stress.abs().max()) < floor.stress
+    assert float(response.internal_force.abs().max()) < floor.force
     residual = torch.zeros((1, 4, 3, 3), dtype=D)
     residual[..., 0] = torch.tensor([60., -120., 60.], dtype=D)
     stressed = model(nodes=imperfect.nodes, residual=residual)
@@ -99,13 +103,12 @@ def test_imperfection_is_stress_free_reference_and_residual_stress_is_active():
     assert torch.allclose(response.stress[..., 0], residual[..., 0], atol=2e-7)
 
 
-@pytest.mark.xfail(
-    reason=(
-        "machine-dependent: the stress-free reference lands at 1.5e-10 instead of below 1e-10 on a different CPU/BLAS build.  The assertion is an absolute threshold with no margin for the last-bit difference, while the physical claim is 'zero to within roundoff'.  See issue #8."
-    ),
-    strict=False,
-)
 def test_shallow_warped_reference_is_stress_free_objective_and_deep_warp_rejected():
+    # Issue #8 closed: the thresholds are stiffness-scaled roundoff floors
+    # (``roundoff_floor``) instead of the absolute 1e-10/4e-7 that made this
+    # assertion machine-dependent.  The old ``strict=False`` xfail absorbed a
+    # genuine objectivity regression as an expected failure, so the gate had
+    # no power; it is now a real test with negative controls below.
     nodes = torch.tensor([[0., 0., 0.], [1., 0., .012],
                           [1., 1., -.007], [0., 1., .004]], dtype=D)
     shell = model(nodes=nodes)
@@ -113,8 +116,9 @@ def test_shallow_warped_reference_is_stress_free_objective_and_deep_warp_rejecte
     zero = assemble_finite_rotation_layered_shell4(
         shell, torch.zeros(shell.n_dofs, dtype=D), state, tangent=False
     )
-    assert float(zero.internal_force.abs().max()) < 1e-10
-    assert float(zero.stress.abs().max()) < 1e-10
+    floor = roundoff_floor(shell)
+    assert float(zero.internal_force.abs().max()) < floor.force
+    assert float(zero.stress.abs().max()) < floor.stress
 
     axis = torch.tensor([.2, -.7, .4], dtype=D)
     angle = .83
@@ -125,12 +129,132 @@ def test_shallow_warped_reference_is_stress_free_objective_and_deep_warp_rejecte
         dofs[6*node:6*node+3] = rotation @ X + shift - X
         dofs[6*node+3:6*node+6] = axis / torch.linalg.vector_norm(axis) * angle
     moved = assemble_finite_rotation_layered_shell4(shell, dofs, state, tangent=False)
-    assert float(torch.linalg.vector_norm(moved.internal_force)) < 4e-7
-    assert float(moved.stress.abs().max()) < 4e-7
+    assert float(torch.linalg.vector_norm(moved.internal_force)) < floor.force
+    assert float(moved.stress.abs().max()) < floor.stress
 
     folded = nodes.clone(); folded[:, 2] = torch.tensor([0., 2., -2., 2.], dtype=D)
     with pytest.raises(ValueError, match="warp ratio"):
         layered_shell4_local_frame(folded)
+
+
+def warped_model(young=200000.0):
+    nodes = torch.tensor([[0., 0., 0.], [1., 0., .012],
+                          [1., 1., -.007], [0., 1., .004]], dtype=D)
+    return LayeredShell4Model(nodes, torch.tensor([[0, 1, 2, 3]]), young, .3, .08,
+                              250., 1400., layers=3)
+
+
+def rigid_motion(shell, axis=(.2, -.7, .4), angle=.83, shift=(.6, -1.2, 2.)):
+    direction = torch.tensor(axis, dtype=D)
+    direction = direction / torch.linalg.vector_norm(direction)
+    rotation = axis_angle(torch.tensor(axis, dtype=D), angle)
+    translation = torch.tensor(shift, dtype=D)
+    dofs = torch.zeros(shell.n_dofs, dtype=D)
+    for node, X in enumerate(shell.nodes):
+        dofs[6*node:6*node+3] = rotation @ X + translation - X
+        dofs[6*node+3:6*node+6] = direction * angle
+    return dofs
+
+
+def test_roundoff_floor_is_stiffness_scaled_and_bounds_the_free_reference():
+    """The stress-free residual is roundoff: it follows ``eps*young``, not geometry.
+
+    Every wrong-scale threshold in this family showed up as a machine-dependent
+    xfail (issue #8).  Measuring the same reference at ten times the stiffness
+    separates the two candidate explanations: a residual that tracked the
+    discretisation would not move, a residual that is pure floating point must
+    scale with ``young``.
+    """
+    small, large = warped_model(), warped_model(young=2e6)
+    assert shell_section_area(small) == pytest.approx(1.0, rel=.05)
+    values = []
+    for shell in (small, large):
+        floor = roundoff_floor(shell)
+        response = assemble_finite_rotation_layered_shell4(
+            shell, torch.zeros(shell.n_dofs, dtype=D),
+            LayeredShell4State.virgin(shell), tangent=False,
+        )
+        stress = float(response.stress.abs().max())
+        assert stress < floor.stress
+        assert float(response.internal_force.abs().max()) < floor.force
+        # The floor is a roundoff statement, not a loosened tolerance: 64 eps
+        # of the material modulus, i.e. a strain of 1.4e-14.
+        assert floor.stress / shell.young < 1e-12
+        values.append((stress, floor.force
+                       / (shell.thickness * shell_section_area(shell))))
+    assert values[1][0] / values[0][0] == pytest.approx(10.0, rel=1e-9)
+    assert values[1][1] / values[0][1] == pytest.approx(10.0, rel=1e-9)
+
+
+def test_objectivity_gate_keeps_its_teeth_below_the_old_absolute_threshold():
+    """Negative controls for the gate that issue #8 had made un-failable.
+
+    The old assertions compared a stress to ``1e-10`` and a force to ``4e-7``.
+    On this build both passed, so a regression that inflated the residual by a
+    factor of 10 still passed; on a build with more roundoff the test failed and
+    the ``strict=False`` xfail hid it.  Here a residual is required to be
+    *reachable*: real physics must land far above the floor.
+    """
+    shell = warped_model()
+    floor = roundoff_floor(shell)
+    state = LayeredShell4State.virgin(shell)
+    rigid = rigid_motion(shell)
+    free = assemble_finite_rotation_layered_shell4(shell, rigid, state, tangent=False)
+    assert float(free.stress.abs().max()) < floor.stress
+
+    # (a) a superposed membrane strain of 1e-12 must be resolved, not absorbed.
+    strained = rigid.clone()
+    for node, X in enumerate(shell.nodes):
+        strained[6*node] += 1e-12 * float(X[0])
+    physical = assemble_finite_rotation_layered_shell4(
+        shell, strained, state, tangent=False
+    )
+    stress = float(physical.stress.abs().max())
+    # 54x the floor (3.4e3 x eps*E) measured: the operator resolves 1e-12
+    # strain instead of swallowing it, and the margin is not build-sensitive.
+    assert stress > 20.0 * floor.stress
+    assert stress < 1e-6                        # physics, not roundoff
+
+    # (b) a rotation error of 1e-6 rad reaches the force gate by ~20x even
+    # though it is invisible to the stress gate.
+    mismatch = rigid_motion(shell, angle=1e-6)
+    mismatch[3::6] = 0.0
+    mismatch[4::6] = 0.0
+    mismatch[5::6] = 0.0
+    caught = assemble_finite_rotation_layered_shell4(
+        shell, mismatch, state, tangent=False
+    )
+    assert float(torch.linalg.vector_norm(caught.internal_force)) > 1e6 * floor.force
+
+
+def test_free_reference_gate_fails_on_a_non_objective_operator(monkeypatch):
+    """Implementation-level negative control: a 1e-6 frame error must fail.
+
+    Branch-(a)/(b) above inject physical perturbations; this one damages the
+    operator itself, which is what the old ``strict=False`` xfail would have
+    silently absorbed.
+    """
+    import tensorfem.finite_rotation_layered_shell4 as module
+
+    shell = warped_model()
+    floor = roundoff_floor(shell)
+    state = LayeredShell4State.virgin(shell)
+    zero = torch.zeros(shell.n_dofs, dtype=D)
+    honest = assemble_finite_rotation_layered_shell4(shell, zero, state, tangent=False)
+    assert float(honest.stress.abs().max()) < floor.stress
+
+    intact = module._corotated_deformation
+
+    pattern = torch.linspace(-1.0, 1.0, 24, dtype=D)  # element DOFs
+
+    def damaged(reference, dofs):
+        # The reference case has q == 0, so a multiplicative fault would be a
+        # no-op; add the 1e-9 deformation an objectivity bug would leak through.
+        return intact(reference, dofs) + 1e-9 * pattern
+
+    monkeypatch.setattr(module, "_corotated_deformation", damaged)
+    broken = assemble_finite_rotation_layered_shell4(shell, zero, state, tangent=False)
+    assert float(broken.stress.abs().max()) > 1e3 * floor.stress
 
 
 def test_force_only_material_update_skips_nested_numerical_tangent(monkeypatch):
