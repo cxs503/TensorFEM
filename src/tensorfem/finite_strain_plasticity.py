@@ -43,6 +43,14 @@ def _sym_sqrt(A):
     if bool(torch.any(values<=0)): raise ValueError("elastic metric is not positive definite")
     return (vectors*torch.sqrt(values))@vectors.T
 
+def _sym_log_and_sqrt(A):
+    """Compute both log(A) and sqrt(A) from a single eigenvalue decomposition."""
+    values,vectors=torch.linalg.eigh(.5*(A+A.T))
+    if bool(torch.any(values<=torch.finfo(A.dtype).eps)): raise ValueError("elastic metric is not positive definite")
+    log_A=(vectors*torch.log(values))@vectors.T
+    sqrt_A=(vectors*torch.sqrt(values))@vectors.T
+    return log_A,sqrt_A
+
 def update_multiplicative_j2(F: Tensor, young: float, poisson: float,
                              yield_stress: float, hardening: float,
                              committed: MultiplicativeJ2State):
@@ -68,9 +76,11 @@ def update_multiplicative_j2(F: Tensor, young: float, poisson: float,
         dissipation=dgamma*(yield_stress+hardening*(committed.alpha+.5*dgamma))
     else:
         trial=committed; dgamma=torch.zeros_like(q); dissipation=torch.zeros_like(q)
-    Fe=F@torch.linalg.inv(trial.plastic_gradient); Ce=Fe.T@Fe; Ee=.5*_sym_log(Ce)
+    Fe=F@torch.linalg.inv(trial.plastic_gradient); Ce=Fe.T@Fe
+    log_Ce,Ue=_sym_log_and_sqrt(Ce)
+    Ee=.5*log_Ce
     M=K*torch.trace(Ee)*I+2*G*(Ee-torch.trace(Ee)/3*I)
-    Ue=_sym_sqrt(Ce); Re=Fe@torch.linalg.inv(Ue); tau=Re@M@Re.T
+    Re=Fe@torch.linalg.inv(Ue); tau=Re@M@Re.T
     P=tau@torch.linalg.inv(F).T
     final_q=torch.sqrt(1.5*torch.sum((M-torch.trace(M)/3*I)**2))
     yield_value=final_q-(yield_stress+hardening*trial.alpha)
