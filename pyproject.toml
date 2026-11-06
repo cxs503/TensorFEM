@@ -51,6 +51,18 @@ tensorfem = ["public_api_manifest.json"]
 [tool.pytest.ini_options]
 pythonpath = ["src", "."]
 testpaths = ["tests"]
+# --strict-markers: an unregistered/mistyped marker is an error instead of a
+# silently inert decorator, so the lanes below cannot be broken by a typo.
+addopts = "--strict-markers"
+# Test lanes (see tests/conftest.py and docs/test-lanes.md).  One test body
+# set, two selections: the full lane (plain `pytest`, what CI runs) and the
+# fast lane (`pytest --fast` == `pytest -m "not slow"`).  The `slow` marker
+# only ever changes *which* tests run -- never what they assert -- so the fast
+# lane stays a real gate for the unmarked population.  Marking policy and the
+# registry live in docs/test-lanes.md and tests/slow_lane_manifest.txt.
+markers = [
+    "slow: heavyweight qualification case (mesh-convergence sweep, long nonlinear path, industrial sparse factorisation, contact qualification study); deselected by the fast lane (`pytest --fast`), run by the full lane.",
+]
 
 [tool.ruff]
 line-length = 100
