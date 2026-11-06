@@ -54,8 +54,8 @@ def test_q8_element_has_no_rigid_body_energy_and_the_map_inverts():
     assert np.allclose(reference.map_point(xi, eta), target, atol=1e-12)
 
 
-def test_q8_solution_carries_the_full_traction_and_converges():
-    solution = reference.solve_q8(8)
+def test_q8_solution_carries_the_full_traction_and_converges(cook_q8):
+    solution = cook_q8(8)
     assert abs(solution["load_resultant"] - 1.0) < 1e-14
     assert solution["relative_residual"] < 1e-10
     probe = reference.probe_displacement(solution)
@@ -63,21 +63,20 @@ def test_q8_solution_carries_the_full_traction_and_converges():
     assert probe["relative_error"] < 0.03
 
 
-def test_q8_reference_is_self_converged_at_the_interior_sample_points():
-    coarse = reference.solve_q8(12)
-    fine = reference.solve_q8(24)
+def test_q8_reference_is_self_converged_at_the_interior_sample_points(cook_q8):
+    coarse = cook_q8(12)
+    fine = cook_q8(24)
     for xi, eta in reference.SAMPLE_POINTS:
         a = reference.field_stress(coarse, xi, eta)["von_mises"]
         b = reference.field_stress(fine, xi, eta)["von_mises"]
         assert abs(b - a) / b < 0.02
 
 
-def test_published_deflection_is_confirmed_by_both_discretisations():
-    from tensorfem.additional_benchmark_fields import cook_fields
+def test_published_deflection_is_confirmed_by_both_discretisations(cook_q8, cook_case):
 
-    platform = cook_fields(16)
+    platform = cook_case(16)
     assert platform["verification"]["response_relative_error"] < 0.03
-    independent = reference.probe_displacement(reference.solve_q8(24))
+    independent = reference.probe_displacement(cook_q8(24))
     assert independent["relative_error"] < 0.02
 
 
@@ -124,10 +123,8 @@ def test_interior_sample_points_keep_a_margin_from_every_interface():
         assert margins["min_margin_cells"] >= 0.1
 
 
-def test_two_sided_bracket_reproduces_the_stored_field_at_element_centres():
-    from tensorfem.additional_benchmark_fields import cook_fields
-
-    case = cook_fields(8)
+def test_two_sided_bracket_reproduces_the_stored_field_at_element_centres(cook_case):
+    case = cook_case(8)
     divisions = case["mesh"]
     stored = np.asarray(case["stress"], dtype=np.float64)
     checked = 0
@@ -149,10 +146,8 @@ def test_two_sided_bracket_reproduces_the_stored_field_at_element_centres():
     assert checked == 16
 
 
-def test_interface_point_returns_two_sides_with_a_finite_bracket():
-    from tensorfem.additional_benchmark_fields import cook_fields
-
-    case = cook_fields(8)
+def test_interface_point_returns_two_sides_with_a_finite_bracket(cook_case):
+    case = cook_case(8)
     point = reference.map_point(0.5, 0.5)  # exactly on an interface
     sides = reference.platform_q4_stress_sides(
         case["nodes"], case["elements"], case["displacement"], point
