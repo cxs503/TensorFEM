@@ -1,5 +1,17 @@
 ## Unreleased
 
+### CI / tooling
+- **Lint gate made deterministic**（`docs/lint-gate-determinism.md`）：`main` 自
+  ruff 0.17 发布起持续红。根因不在代码——CI 的 lint 只判定本改动触及的文件，
+  而 `[tool.ruff]` 未写 `select`，规则集继承 ruff 的隐式默认；ruff 0.17 把
+  `I/UP/RUF/C4/PL` 并入默认，0.17.4 于是在同一批文件上报 39 个 finding（全部落在
+  新并入的族，`E4/E7/E9/F` 为 0），而 0.15.0 对同一批文件 `All checks passed`；
+  且 dev 依赖只写 `ruff>=0.6` 下限，CI 不同天解析到 0.15.0 / 0.17.3 / 0.17.4 三种
+  版本，同一类代码得到相反结论。修复=`select = ["E4","E7","E9","F"]` 显式钉规则集 +
+  `ruff>=0.15,<0.16` 钉 minor（0.15.x 同时是 loong64 有轮子的最新版，runner 与
+  702 节点跑同一二进制）+ 3 个守护测试（含负控：对旧 pyproject 断言必失败）。
+  39 个 finding 清单与"新族按需并入"的流程记在文档 §2/§5。
+
 ### Verification
 - **均布压力板的精度复核**（`docs/plate-uniform-load-verification.md`）：已合并的 Q4 Mindlin
   板路径此前只对一条与第一阶模态同形的正弦载荷复核过，无法发现载荷向量、高阶模态刚度、
