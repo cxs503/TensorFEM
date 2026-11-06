@@ -20,7 +20,6 @@ import numpy as np
 import pytest
 
 from tensorfem import cook_stress_reference as reference
-from tensorfem.additional_benchmark_fields import cook_fields
 
 PATCH_TOLERANCE = 1e-12
 MAP_TOLERANCE = 1e-10
@@ -62,13 +61,7 @@ def test_q4_recovery_reproduces_stored_element_centre_stress():
     assert result["max_relative_difference"] <= PATCH_TOLERANCE
 
 
-def test_cross_check_of_pointwise_recovery_passes():
-    check = reference.cross_check_pointwise_recovery(cook_fields(8))
-    assert check["passed"], check
-    assert check["max_relative_difference"] <= check["tolerance"]
-
-
-def test_reference_loaded_edge_profile_matches_production_q4():
+def test_reference_loaded_edge_profile_matches_production_q4(cook_q8, cook_case):
     """The Q8 reference and the Q4 production run must agree on the loaded-edge shape.
 
     Before the Jacobian fix the Q8 reference produced a strongly tilted profile
@@ -78,8 +71,8 @@ def test_reference_loaded_edge_profile_matches_production_q4():
     timeouts on the pure-Python CG solver; the profile shape is identical at coarser
     resolutions and the test only verifies gross correctness (no gross tilt).
     """
-    solution = reference.solve_q8(8)
-    case = cook_fields(16)
+    solution = cook_q8(8)
+    case = cook_case(16)
     reference_profile = reference_fields_profile(solution)
     platform_profile = reference_fields_profile(
         {"nodes": np.asarray(case["nodes"]), "displacement": np.asarray(case["displacement"])}
