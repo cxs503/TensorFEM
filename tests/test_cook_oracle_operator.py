@@ -162,19 +162,17 @@ def test_untransposed_jacobian_is_rejected_on_skew_element():
     assert np.abs(buggy - correct).max() > 0.02 * np.abs(correct).max()
 
 
-def test_q8_reference_reproduces_published_loaded_edge_midpoint():
+def test_q8_reference_reproduces_published_loaded_edge_midpoint(cook_q8):
     """The independent Q8 path must solve the same boundary-value problem as Q4."""
-    solution = reference.solve_q8(12)
+    solution = cook_q8(12)
     probe = reference.probe_displacement(solution)
     assert probe["passed"] is True
     assert probe["relative_error"] < 0.03
 
 
-def test_loaded_edge_profiles_of_the_two_discretisations_agree():
+def test_loaded_edge_profiles_of_the_two_discretisations_agree(cook_q8, cook_case):
     """Q4 and Q8 vertical deflections along the loaded edge must agree to 3 %."""
-    from tensorfem.additional_benchmark_fields import cook_fields
-
-    fields = cook_fields(32)
+    fields = cook_case(32)
     nodes = np.asarray(fields["nodes"])
     displacement = np.asarray(fields["displacement"])
     edge = np.isclose(nodes[:, 0], 48.0)
@@ -182,7 +180,7 @@ def test_loaded_edge_profiles_of_the_two_discretisations_agree():
     y_q4 = nodes[edge, 1][order]
     v_q4 = displacement[edge, 1][order]
 
-    solution = reference.solve_q8(12)
+    solution = cook_q8(12)
     reference_nodes = solution["nodes"]
     reference_edge = np.isclose(reference_nodes[:, 0], 48.0)
     reference_order = np.argsort(reference_nodes[reference_edge, 1])
@@ -197,7 +195,7 @@ def test_loaded_edge_profiles_of_the_two_discretisations_agree():
     assert v_q8[-1] / v_q8[0] < 1.2
 
 
-def test_platform_q4_pointwise_stress_stays_uncertified():
+def test_platform_q4_pointwise_stress_stays_uncertified(cook_case):
     """Honest negative result: the element-centre Q4 stress is not yet a 3 % match.
 
     The audit compares element-centre stress with interior material points, which
@@ -207,9 +205,7 @@ def test_platform_q4_pointwise_stress_stays_uncertified():
     (see docs/cook-membrane-pointwise-protocol.md).  This test fails closed: it must
     not be relaxed into a pass without a new certification decision.
     """
-    from tensorfem.additional_benchmark_fields import cook_fields
-
-    fields = cook_fields(16)
+    fields = cook_case(16)
     assert fields["stress_accuracy_qualified"] is False
     assert fields["verification"]["passed"] is True  # displacement response only
 
@@ -250,22 +246,27 @@ def test_inverse_map_is_globally_convergent_on_the_cook_trapezoid():
     assert failures == []
 
 
-def test_pointwise_recovery_reproduces_the_stored_q4_centre_stress():
-    """The ``inf`` cross-check debt is closed: recovery and stored field now agree."""
-    from tensorfem.additional_benchmark_fields import cook_fields
+def test_pointwise_recovery_reproduces_the_stored_q4_centre_stress(cook_case):
+    """The ``inf`` cross-check debt is closed: recovery and stored field now agree.
 
-    checked = reference.cross_check_pointwise_recovery(cook_fields(8))
-    assert checked["passed"] is True
-    assert checked["max_relative_difference"] < 1e-10
-    assert math.isfinite(checked["max_relative_difference"])
-    assert checked["samples"] == 16
+    Consolidated (m4718): the cross-check on ``cook_fields(8)`` is evaluated exactly
+    once per session and this test now also carries the two assertions of the former
+    ``test_cook_stress_recovery_verification.py`` test
+    ``test_cross_check_of_pointwise_recovery_passes``, which recomputed the very same
+    cross-check to assert a strict subset of what is asserted here (add/remove table:
+    ``artifacts/cook_assertion_consolidation.json``).
+    """
+    check = reference.cross_check_pointwise_recovery(cook_case(8))
+    assert check["passed"] is True
+    assert check["max_relative_difference"] < 1e-10
+    assert math.isfinite(check["max_relative_difference"])
+    assert check["samples"] == 16
+    assert check["max_relative_difference"] <= check["tolerance"]
 
 
-def test_pointwise_recovery_refuses_points_outside_the_material_square():
+def test_pointwise_recovery_refuses_points_outside_the_material_square(cook_case):
     """A physical point outside the parent square must yield ``None``, never a wrong element."""
-    from tensorfem.additional_benchmark_fields import cook_fields
-
-    fields = cook_fields(8)
+    fields = cook_case(8)
     outside = reference.map_point(1.5, 0.4)
     located = reference.inverse_map_checked(outside)
     assert located["converged"] is True  # the inverse itself is well posed ...

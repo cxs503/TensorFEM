@@ -14,14 +14,13 @@ from pathlib import Path
 import numpy as np
 
 from tensorfem import cook_stress_reference as reference
-from tensorfem.additional_benchmark_fields import cook_fields
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE = ROOT / "benchmarks" / "cook_membrane_stress_reference.json"
 
 
-def test_field_stress_at_point_reproduces_the_parent_coordinate_evaluation():
-    solution = reference.solve_q8(12)
+def test_field_stress_at_point_reproduces_the_parent_coordinate_evaluation(cook_q8):
+    solution = cook_q8(12)
     # Parent coordinates on an element boundary are excluded: the Q8 stress field is
     # element-wise discontinuous there, so the containing element (and its value)
     # depends on the last bit of the inverted parent coordinate.
@@ -34,25 +33,25 @@ def test_field_stress_at_point_reproduces_the_parent_coordinate_evaluation():
             assert abs(indirect[key] - direct[key]) <= 1e-6 * max(abs(direct[key]), 1e-3)
 
 
-def test_stored_element_centre_field_converges_under_refinement():
-    fine_reference = reference.solve_q8(24)
-    coarse = reference.element_centre_accuracy(cook_fields(16), fine_reference)
-    fine = reference.element_centre_accuracy(cook_fields(32), fine_reference)
+def test_stored_element_centre_field_converges_under_refinement(cook_q8, cook_case):
+    fine_reference = cook_q8(24)
+    coarse = reference.element_centre_accuracy(cook_case(16), fine_reference)
+    fine = reference.element_centre_accuracy(cook_case(32), fine_reference)
     assert fine["all_elements"]["p95_relative_error"] < 0.5 * coarse["all_elements"]["p95_relative_error"]
     assert fine["all_elements"]["median_relative_error"] < 0.01
     assert set(fine) >= {"all_elements", "excluding_clamped_band", "worst", "passed"}
 
 
-def test_element_centre_gate_fails_on_a_coarse_mesh():
+def test_element_centre_gate_fails_on_a_coarse_mesh(cook_q8, cook_case):
     """Negative control: the scoped gate must not pass at n = 32."""
-    accuracy = reference.element_centre_accuracy(cook_fields(32), reference.solve_q8(24))
+    accuracy = reference.element_centre_accuracy(cook_case(32), cook_q8(24))
     assert accuracy["passed"] is False
     assert accuracy["all_elements"]["max_scale_normalized_error"] > 0.03
 
 
-def test_loaded_edge_profiles_of_both_discretisations_agree():
+def test_loaded_edge_profiles_of_both_discretisations_agree(cook_q8, cook_case):
     """The pre-fix Q8 profile spanned 7.6..52.4; a fixed reference must stay inside 5 %."""
-    agreement = reference.loaded_edge_agreement(reference.solve_q8(12), cook_fields(16))
+    agreement = reference.loaded_edge_agreement(cook_q8(12), cook_case(16))
     assert agreement["reference_spread"] < 4.0
     assert agreement["max_relative_to_probe"] < 0.05
 
@@ -66,13 +65,13 @@ def test_convergence_analysis_recovers_a_known_order():
     assert fit["divisions_for_tolerance"] > levels[-1]
 
 
-def test_committed_evidence_matches_the_current_recovery_code():
+def test_committed_evidence_matches_the_current_recovery_code(cook_case):
     if not EVIDENCE.exists():
         import pytest
 
         pytest.skip("audit evidence has not been generated in this checkout")
     evidence = json.loads(EVIDENCE.read_text())
-    live = reference.cross_check_pointwise_recovery(cook_fields(8))
+    live = reference.cross_check_pointwise_recovery(cook_case(8))
     assert evidence["recovery_cross_check"]["passed"] == live["passed"] is True
     assert evidence["status"] == "measured-not-qualified"
     assert evidence["comparison"]["qualified"] is False
