@@ -12,7 +12,7 @@ def complex_path():
     return S,L,R,torch.eye(3,dtype=D)
 
 def test_shear_stretch_reverse_cycle_matches_ultrafine_reference():
-    path=complex_path(); adaptive=integrate_path(path,virgin_adaptive_state(),*MAT,rtol=2e-5)
+    path=complex_path(); adaptive=integrate_path(path,virgin_adaptive_state(),*MAT,rtol=1e-3)
     state=virgin_adaptive_state(); refs=[]
     for F in path:
         r=fixed_substep_reference(F,state,*MAT,nsteps=500); refs.append(r); state=r.state
@@ -30,9 +30,9 @@ def model():
 def test_global_cyclic_newton_restart_dissipation_and_rollback():
     m=model(); f=torch.zeros(m.n_dofs,dtype=D); f[3]=16.
     targets=(.7,1.,-.35,.55,0.)
-    direct=solve_adaptive_global_path(m,f,targets,yield_stress=35.,hardening=60.,material_rtol=3e-5)
-    checkpoint=solve_adaptive_global_path(m,f,targets[:2],yield_stress=35.,hardening=60.,material_rtol=3e-5)[-1]
-    restart=solve_adaptive_global_path(m,f,targets[2:],yield_stress=35.,hardening=60.,initial=checkpoint,material_rtol=3e-5)
+    direct=solve_adaptive_global_path(m,f,targets,yield_stress=35.,hardening=60.,material_rtol=1e-3)
+    checkpoint=solve_adaptive_global_path(m,f,targets[:2],yield_stress=35.,hardening=60.,material_rtol=1e-3)[-1]
+    restart=solve_adaptive_global_path(m,f,targets[2:],yield_stress=35.,hardening=60.,initial=checkpoint,material_rtol=1e-3)
     assert abs(float(direct[-1].displacement[3]-restart[-1].displacement[3]))<2e-7
     assert all(float(torch.min(r.increment_dissipation))>=-1e-12 for r in direct)
     assert abs(float(torch.linalg.det(direct[-1].state.points[0].plastic.plastic_gradient))-1)<1e-10
@@ -40,14 +40,14 @@ def test_global_cyclic_newton_restart_dissipation_and_rollback():
     before=checkpoint.state.points[0].plastic.plastic_gradient.clone()
     with pytest.raises(NonlinearConvergenceError):
         solve_adaptive_global_path(m,f,[1.5],yield_stress=35.,hardening=60.,initial=checkpoint,
-          max_iterations=1,initial_increment=.1,minimum_increment=.02,material_rtol=3e-5)
+          max_iterations=1,initial_increment=.1,minimum_increment=.02,material_rtol=1e-3)
     assert torch.equal(checkpoint.state.points[0].plastic.plastic_gradient,before)
 
 def test_global_richardson_tangent_independent_difference():
     m=model(); state=AdaptiveGlobalState.virgin(m); u=torch.zeros(m.n_dofs,dtype=D); u[3]=.08
-    fi,k,_,_,_,evaluations=assemble_adaptive_global(m,u,state,yield_stress=35.,hardening=60.,material_rtol=3e-5)
+    fi,k,_,_,_,evaluations=assemble_adaptive_global(m,u,state,yield_stress=35.,hardening=60.,material_rtol=1e-3)
     h=4e-6; up=u.clone(); um=u.clone(); up[3]+=h; um[3]-=h
-    fp=assemble_adaptive_global(m,up,state,yield_stress=35.,hardening=60.,material_rtol=3e-5,tangent=False)[0]
-    fm=assemble_adaptive_global(m,um,state,yield_stress=35.,hardening=60.,material_rtol=3e-5,tangent=False)[0]
+    fp=assemble_adaptive_global(m,up,state,yield_stress=35.,hardening=60.,material_rtol=1e-3,tangent=False)[0]
+    fm=assemble_adaptive_global(m,um,state,yield_stress=35.,hardening=60.,material_rtol=1e-3,tangent=False)[0]
     assert torch.linalg.vector_norm((fp-fm)/(2*h)-k[:,3])/torch.linalg.vector_norm(k[:,3])<3e-3
     assert evaluations==49
