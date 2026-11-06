@@ -10,6 +10,7 @@ throwaway repository, so the result does not depend on the checkout that runs
 the suite.
 """
 
+import os
 import re
 import shutil
 import subprocess
@@ -260,3 +261,80 @@ def test_current_change_is_clean_under_both_gate_commands():
             f"ruff {' '.join(command)} is red on {base[:12]}...HEAD "
             f"(same commands as the CI lint job):\n{result.stdout}{result.stderr}"
         )
+
+
+# --- local reproduction of the whole gate -----------------------------------
+# The tests above pin *which* files are linted and *what counts as clean*.
+# The third failure mode is that the gate only exists inside CI: the incident
+# in docs/lint-gate-determinism.md §6 (main red at f5be5cf1) was a formatting
+# defect, which the ``ruff check`` half cannot see by construction, and nobody
+# ran the ``ruff format --check`` half by hand before pushing.  ``scripts/
+# lint_gate.sh`` runs both halves over the same scope as the job; these tests
+# keep it runnable, keep it hooked to the scope script, and keep the two files
+# of that incident clean under both commands.
+
+GATE_SCRIPT = REPO_ROOT / "scripts" / "lint_gate.sh"
+
+
+def _gate(repo, base=""):
+    args = ["bash", str(GATE_SCRIPT)]
+    if base:
+        args.append(base)
+    return subprocess.run(
+        args,
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        env={"PATH": os.environ.get("PATH", ""), "GITHUB_EVENT_NAME": ""},
+    )
+
+
+def _run_gate_commands(*paths):
+    ruff = _qualified_ruff()
+    check = subprocess.run([ruff, "check", *paths], cwd=REPO_ROOT, capture_output=True, text=True)
+    fmt = subprocess.run(
+        [ruff, "format", "--check", *paths], cwd=REPO_ROOT, capture_output=True, text=True
+    )
+    return check, fmt
+
+
+def test_gate_script_exists_and_is_executable():
+    assert GATE_SCRIPT.is_file()
+    assert GATE_SCRIPT.stat().st_mode & 0o111, "run scripts/lint_gate.sh directly, not via python"
+
+
+def test_gate_script_reuses_the_ci_scope_and_runs_both_commands():
+    text = GATE_SCRIPT.read_text()
+    # A second scope implementation would drift from the one CI uses.
+    assert "lint_scope.sh" in text
+    assert "ruff check" in text
+    assert "ruff format --check" in text
+
+
+@pytest.mark.parametrize("name", ["tests/test_smoke_m4622.py", "smoke_marker_m4622.py"])
+def test_smoke_marker_artifacts_are_gate_clean(name):
+    # Regression lock for f5be5cf1.  The root marker is imported by the smoke
+    # test but sits outside the trees CI lints, so the change-scoped gate can
+    # never see it -- only a file-level assertion can.
+    path = REPO_ROOT / name
+    assert path.is_file(), f"{name} is imported/run by tests/test_smoke_m4622.py"
+    check, fmt = _run_gate_commands(name)
+    assert check.returncode == 0, check.stdout + check.stderr
+    assert fmt.returncode == 0, f"{name} must stay formatted:\n{fmt.stdout}{fmt.stderr}"
+
+
+def test_gate_script_is_green_on_a_clean_change_and_red_on_a_formatting_slip(tmp_path):
+    # End-to-end over the script itself: a clean change returns the job's 0,
+    # the f5be5cf1 defect returns non-zero and names the offending path.
+    repo, base = _seed_repo(tmp_path)
+    (repo / "src" / "c.py").write_text("C = 3\n")
+    _commit(repo, "add a clean file")
+    green = _gate(repo, base)
+    assert green.returncode == 0, green.stdout + green.stderr
+    assert "src/c.py" in green.stdout
+
+    (repo / "src" / "d.py").write_text("D = 4")  # no trailing newline
+    _commit(repo, "add a file without a trailing newline")
+    red = _gate(repo, base)
+    assert red.returncode != 0, red.stdout + red.stderr
+    assert "src/d.py" in red.stdout
