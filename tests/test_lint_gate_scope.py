@@ -10,10 +10,14 @@ throwaway repository, so the result does not depend on the checkout that runs
 the suite.
 """
 
+import os
 import re
+import shutil
 import subprocess
 import tomllib
 from pathlib import Path
+
+import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = REPO_ROOT / "scripts" / "lint_scope.sh"
@@ -157,3 +161,96 @@ def test_ruff_version_is_qualified_within_one_minor_release():
     assert ceiling_ver[0] == floor_ver[0] and ceiling_ver[1] - floor_ver[1] == 1, (
         f"{req!r} spans more than one minor release"
     )
+
+
+# --- gate content: the format check has to actually bite ---------------------
+# The tests above pin *which* files the gate sees and *what counts as clean*.
+# The third failure mode is the gate not being run on the change at all: commit
+# f5be5cf1 added tests/test_smoke_m4622.py without a newline at end of file,
+# ``ruff check`` passed on it, ``ruff format --check`` failed, and nothing in
+# the pytest job noticed -- main carried a red ``lint (advisory)`` job for a
+# one-byte defect (mission m4663).  These tests execute both CI commands the
+# way the workflow does, so the formatting half of the gate is tested instead
+# of assumed, and ``scripts/lint_gate.sh`` gives the same verdict locally.
+
+GATE_SCRIPT = REPO_ROOT / "scripts" / "lint_gate.sh"
+RUFF = shutil.which("ruff")
+requires_ruff = pytest.mark.skipif(RUFF is None, reason="ruff is not installed (dev extra)")
+
+
+def _run_gate(*paths):
+    """Run the two CI gate commands over ``paths``; return (check, format)."""
+    return tuple(
+        subprocess.run(
+            [RUFF, *command, "--config", str(PYPROJECT), *(str(path) for path in paths)],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        for command in (["check"], ["format", "--check"])
+    )
+
+
+def _gate(repo, base):
+    return subprocess.run(
+        ["bash", str(GATE_SCRIPT), base],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        env={"PATH": os.environ.get("PATH", "")},
+    )
+
+
+def test_gate_script_exists_and_is_executable():
+    assert GATE_SCRIPT.is_file()
+    assert GATE_SCRIPT.stat().st_mode & 0o111, "run scripts/lint_gate.sh, not python"
+
+
+@requires_ruff
+def test_format_check_rejects_a_missing_trailing_newline(tmp_path):
+    # The f5be5cf1 defect, reproduced hermetically: a formatting-only slip that
+    # ``ruff check`` accepts and ``ruff format --check`` rejects.
+    broken = tmp_path / "test_missing_newline.py"
+    broken.write_text("def test_smoke() -> None:\n    assert 1 + 1 == 2")  # no final newline
+    check, fmt = _run_gate(broken)
+    assert check.returncode == 0, "the defect is formatting-only; ruff check must accept it"
+    assert fmt.returncode != 0, "ruff format --check must reject a file with no trailing newline"
+    assert broken.name in fmt.stdout
+
+
+@requires_ruff
+def test_format_check_accepts_the_same_file_with_a_trailing_newline(tmp_path):
+    ok = tmp_path / "test_with_newline.py"
+    ok.write_text("def test_smoke() -> None:\n    assert 1 + 1 == 2\n")
+    check, fmt = _run_gate(ok)
+    assert check.returncode == 0, check.stdout + check.stderr
+    assert fmt.returncode == 0, fmt.stdout + fmt.stderr
+
+
+@requires_ruff
+@pytest.mark.parametrize("name", ["tests/test_smoke_m4622.py", "smoke_marker_m4622.py"])
+def test_smoke_marker_artifacts_are_gate_clean(name):
+    # Regression lock for f5be5cf1: the test module and the root marker it
+    # imports must both stay clean under both gate commands.
+    path = REPO_ROOT / name
+    assert path.is_file(), f"{name} is required by tests/test_smoke_m4622.py"
+    check, fmt = _run_gate(path)
+    assert check.returncode == 0, check.stdout + check.stderr
+    assert fmt.returncode == 0, fmt.stdout + fmt.stderr
+
+
+@requires_ruff
+def test_gate_script_is_green_on_a_clean_change_and_red_on_a_formatting_slip(tmp_path):
+    # End-to-end over the script itself: clean change -> 0, the f5be5cf1 defect
+    # -> non-zero with the offending path named.
+    repo, base = _seed_repo(tmp_path)
+    (repo / "src" / "c.py").write_text("C = 3\n")
+    _commit(repo, "add a clean file")
+    green = _gate(repo, base)
+    assert green.returncode == 0, green.stdout + green.stderr
+
+    (repo / "src" / "d.py").write_text("D = 4")  # no trailing newline
+    _commit(repo, "add a file without a trailing newline")
+    red = _gate(repo, base)
+    assert red.returncode != 0, red.stdout + red.stderr
+    assert "src/d.py" in red.stdout

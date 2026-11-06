@@ -142,3 +142,82 @@ pinned one.
   attributed to the same commit that caused it.
 - The full-tree backlog (4177 findings under the pinned set) is untouched and
   still the reason the gate is change-scoped rather than tree-wide.
+## 6 Incident 2026-11-06: main red from a missing newline at EOF (`f5be5cf1`)
+
+Status: closed (m4663). Audience: anyone who pushes to `main` or reviews a
+PR whose "change" is a single new test file.
+
+### Symptom
+
+`main` at `f5be5cf1` (merge of PR #253) carried a red `lint (advisory)` job for
+a change of twenty lines. The change-scoped scope of that push -- base
+`60b2109`, computed by `scripts/lint_scope.sh`, exactly as CI does -- was a
+single file:
+
+```
+$ bash scripts/lint_scope.sh 60b2109
+tests/test_smoke_m4622.py
+```
+
+The two gate commands disagree on it, and only in one direction:
+
+| command | pre-fix `f5be5cf1` | after fix (m4663) |
+|---|---|---|
+| `ruff check tests/test_smoke_m4622.py` | `All checks passed!` (exit 0) | exit 0 |
+| `ruff format --check tests/test_smoke_m4622.py` | `Would reformat: ...` (**exit 1**) | `1 file already formatted` (exit 0) |
+
+### Root cause
+
+`tests/test_smoke_m4622.py` ended with `assert 1 + 1 == 2` and **no newline at
+end of file** (the same defect was present in the root marker module it
+imports, `smoke_marker_m4622.py`). Ruff's formatter normalises the final
+newline, so this is a formatting-only finding: the lint (`E4/E7/E9/F`) half of
+the gate is structurally incapable of seeing it. §1–§5 made the gate
+deterministic; this incident is orthogonal -- the *content* half of the gate
+(the format check) was simply never exercised outside the CI job, so a one-byte
+slip could reach `main` and stay there.
+
+### Fix
+
+1. Restore the trailing newline in `tests/test_smoke_m4622.py` and
+   `smoke_marker_m4622.py` (one byte each; no behavioural change -- the
+   imported constant and both assertions are untouched).
+2. `scripts/lint_gate.sh` -- a local entry point that runs **both** CI commands
+   over the **same** scope (`scripts/lint_scope.sh`, default base = merge base
+   with `origin/main`) and returns the CI exit status, so the gate can be
+   reproduced and fixed before the push:
+
+   ```
+   $ bash scripts/lint_gate.sh            # what my branch adds on top of main
+   $ bash scripts/lint_gate.sh 60b2109    # reproduce a specific CI scope
+   ```
+3. Regression guards in `tests/test_lint_gate_scope.py` (the file that already
+   pinned the scope and the rule set):
+   `test_format_check_rejects_a_missing_trailing_newline` (the defect,
+   hermetically: `ruff check` accepts it, `ruff format --check` must reject it),
+   `test_format_check_accepts_the_same_file_with_a_trailing_newline` (negative
+   control), `test_smoke_marker_artifacts_are_gate_clean` (locks both fixed
+   files under both commands), and
+   `test_gate_script_is_green_on_a_clean_change_and_red_on_a_formatting_slip`
+   (end-to-end over `scripts/lint_gate.sh` in a throwaway repo).
+
+### Verification
+
+| what | how | result |
+|---|---|---|
+| gate on the incident scope | `bash scripts/lint_gate.sh 60b2109` | exit 0, 1 file scoped |
+| negative control (pre-fix blob) | `git show f5be5cf1:tests/test_smoke_m4622.py` → both commands | `check` 0, `format --check` **1** |
+| guard bites | the 3 new file-level tests with the fix stashed | 2 failed / 1 passed |
+| guard green | same tests with the fix restored | 3 passed |
+| suite | `pytest tests/test_lint_gate_scope.py tests/test_smoke_m4622.py -q` | 16 passed |
+
+### Lesson
+
+A change-scoped gate must be reproducible *outside* CI, and the reproduction
+must run every command in the job, not the one that feels like "lint".
+Formatting-only defects are invisible to the lint half by construction, so a
+gate whose format step is unreachable locally will keep reddening `main` one
+byte at a time. The legacy tree still carries 160 files without a final
+newline (whole-tree `ruff format --check` remains red at analyst discretion);
+the change-scoped gate is what keeps that backlog from masking new work, so
+**new files must be clean under both commands**.
