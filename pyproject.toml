@@ -55,6 +55,7 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+exclude = [".scratch"]
 
 [tool.ruff.lint]
 # The gate's rule set is pinned here instead of inherited from ruff's
@@ -63,7 +64,7 @@ target-version = "py311"
 # redefines the gate: ruff 0.17.4 widened the defaults with the I/UP/RUF/C4/PL
 # families and turned the change-scoped CI lint red on main commit 696666b8
 # without a single line of code having changed (CI run 42128721836).  Pinning
-# keeps the blocking gate reproducible across ruff upgrades; new families are
+# keeps the gate reproducible across ruff upgrades; new families are
 # adopted deliberately, in a change that also pays down the findings they
 # raise (see docs/lint-gate-determinism.md).  The selected groups are the
 # pre-0.17 default set, which the tree was qualified against; the repo-wide
