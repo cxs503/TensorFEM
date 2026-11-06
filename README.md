@@ -212,6 +212,15 @@ The default registry is deliberately lightweight. Large sparse throughput,
 mesh convergence, negative/fail-closed cases and experimental formulations are
 covered independently under `tests/` and documented under `docs/`.
 
+## Runnable tutorial
+
+New to the solver? Start with the self-checking walkthrough of the full analysis
+loop — mesh gate, assembly, solve, field verification, refinement study, modal
+cross-check — at
+[the typical static workflow tutorial](docs/tutorials/typical-static-workflow.md).
+Every code block in it is executed by `tests/test_tutorial_static_workflow.py`,
+and the numbers it documents are compared against the solver output.
+
 ## Minimal static example
 
 ```python
