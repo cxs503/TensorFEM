@@ -256,10 +256,28 @@ def solve_finite_strain_friction_path(model: FiniteStrainContactModel,
     committed=initial_finite_strain_friction_state(model) if initial_state is None else initial_state
     fixed=model.solid.fixed_dofs;mask=torch.ones(model.solid.n_dofs,dtype=torch.bool);mask[fixed]=False
     free=torch.nonzero(mask).flatten();steps=[]
+    older_load=None;older_displacement=None
     for load_index,load in enumerate(loads):
         if load.shape!=(model.solid.n_dofs,): raise ValueError("load size mismatch")
         guess=(initial_trial_displacement if load_index==0 and initial_trial_displacement is not None
                else committed.displacement)
+        if load_index>=2 and older_load is not None and older_displacement is not None:
+            # Secant continuation: extrapolate the last two committed states
+            # along the load path.  At a Coulomb limit state the frozen-branch
+            # Newton is not a descent from the committed state, but the
+            # sliding response is locally linear in the load, so the
+            # extrapolated trial lands inside the quadratic convergence basin.
+            past=loads[load_index-1]-older_load;future=load-loads[load_index-1]
+            denominator=float(torch.dot(past,past))
+            if denominator>torch.finfo(past.dtype).eps:
+                factor=float(torch.dot(future,past))/denominator
+                candidate=committed.displacement+factor*(committed.displacement-older_displacement)
+                if bool(torch.isfinite(candidate).all()):
+                    try:
+                        _,_,_,jacobian,_=assemble_finite_tet4(model.solid,candidate,tangent=False)
+                        if bool(torch.min(jacobian)>0): guess=candidate
+                    except ValueError:
+                        pass
         if guess.shape!=(model.solid.n_dofs,): raise ValueError("initial trial displacement size mismatch")
         trial=FiniteStrainFrictionState(guess.detach().clone(),committed.contact)
         converged=False;norm=float("inf")
@@ -300,6 +318,9 @@ def solve_finite_strain_friction_path(model: FiniteStrainContactModel,
         steps.append(FiniteStrainFrictionStep(committed,load.clone(),iteration,
             float(torch.linalg.vector_norm(residual[free])),contact,
             energy.detach().clone(),jacobian.detach().clone()))
+        if load_index>=1:
+            older_load=loads[load_index-1]
+            older_displacement=steps[load_index-1].state.displacement.clone()
     return tuple(steps)
 
 
