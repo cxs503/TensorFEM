@@ -11,9 +11,12 @@ the suite.
 """
 
 import re
+import shutil
 import subprocess
 import tomllib
 from pathlib import Path
+
+import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = REPO_ROOT / "scripts" / "lint_scope.sh"
@@ -157,3 +160,103 @@ def test_ruff_version_is_qualified_within_one_minor_release():
     assert ceiling_ver[0] == floor_ver[0] and ceiling_ver[1] - floor_ver[1] == 1, (
         f"{req!r} spans more than one minor release"
     )
+
+
+# --- the format command is a gate of its own --------------------------------
+# The scope fixes *which* files the gate lints and the pin above fixes *what
+# counts as clean*, yet both were green when main went red at f5be5cf: a new
+# test file had been committed without a final newline.  ``ruff check`` is
+# silent about line endings under the pinned E4/E7/E9/F set, so the job's
+# second command -- ``ruff format --check`` -- was the only thing that failed,
+# and nothing in the suite reproduced it.  Two tests close that gap: a
+# hermetic negative control (the format step must reject such a file) and a
+# live check that replays both job commands over the change in *this* clone.
+
+
+def _ruff_exe():
+    exe = shutil.which("ruff")
+    if exe is None:
+        pytest.skip("ruff is not installed (dev extra); the CI job installs it")
+    return exe
+
+
+def _qualified_ruff():
+    """The ruff binary, or skip when it is outside the pinned minor range."""
+    exe = _ruff_exe()
+    version = re.search(
+        r"(\d+)\.(\d+)\.(\d+)",
+        subprocess.run([exe, "--version"], capture_output=True, text=True, check=True).stdout,
+    )
+    assert version, "ruff --version did not report a version"
+    running = tuple(int(part) for part in version.groups())[:2]
+    req = _ruff_requirement()
+    floor = tuple(int(part) for part in re.search(r">=\s*(\d+)\.(\d+)", req).groups())
+    ceiling = tuple(int(part) for part in re.search(r"<\s*(\d+)\.(\d+)", req).groups())
+    if not floor <= running < ceiling:
+        pytest.skip(f"ruff {running[0]}.{running[1]} is outside the qualified {req}")
+    return exe
+
+
+def test_format_step_rejects_a_file_without_a_final_newline(tmp_path):
+    # Negative control for the f5be5cf failure.  It also pins *why* the job
+    # needs both commands: the linter passes, the formatter does not.
+    repo, base = _seed_repo(tmp_path)
+    (repo / "tests").mkdir()
+    offender = repo / "tests" / "test_no_newline.py"
+    offender.write_bytes(b"def test_ok():\n    assert True")
+    _commit(repo, "add a file with no final newline")
+
+    assert _scope(repo, base=base) == ["tests/test_no_newline.py"]
+    ruff = _ruff_exe()
+    check = subprocess.run(
+        [ruff, "check", "tests/test_no_newline.py"], cwd=repo, capture_output=True, text=True
+    )
+    fmt = subprocess.run(
+        [ruff, "format", "--check", "tests/test_no_newline.py"],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+    )
+    assert check.returncode == 0, "the linter is not expected to flag line endings"
+    assert fmt.returncode != 0, "ruff format --check must reject a missing final newline"
+
+
+def _change_base():
+    """Base revision of the current change, or None (shallow clone)."""
+    for ref in ("HEAD~1", "origin/main"):
+        resolved = subprocess.run(
+            ["git", "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+        )
+        if resolved.returncode == 0 and resolved.stdout.strip():
+            return resolved.stdout.strip()
+    merged = subprocess.run(
+        ["git", "merge-base", "HEAD", "origin/main"], cwd=REPO_ROOT, capture_output=True, text=True
+    )
+    return merged.stdout.strip() or None if merged.returncode == 0 else None
+
+
+def test_current_change_is_clean_under_both_gate_commands():
+    """Replay the lint job (check + format) over this change, locally.
+
+    It mirrors CI for the change in *this* checkout, so a red result means the
+    push being prepared is lint-red.  Skipped on shallow clones, where the base
+    revision is unavailable and the lint job itself owns the check.
+    """
+    ruff = _qualified_ruff()
+    base = _change_base()
+    if base is None:
+        pytest.skip("no base revision in this clone; the lint job owns the check")
+    files = _scope(REPO_ROOT, base=base)
+    if not files:
+        pytest.skip("the change touches no linted Python file")
+    for command in (["check"], ["format", "--check"]):
+        result = subprocess.run(
+            [ruff, *command, *files], cwd=REPO_ROOT, capture_output=True, text=True
+        )
+        assert result.returncode == 0, (
+            f"ruff {' '.join(command)} is red on {base[:12]}...HEAD "
+            f"(same commands as the CI lint job):\n{result.stdout}{result.stderr}"
+        )

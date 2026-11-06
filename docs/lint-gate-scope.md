@@ -85,14 +85,57 @@ throwaway repositories, covering the three behaviours the workflow depends on
 (diff-limited scope, empty scope on an unchanged tree, whole-tree fallback when
 `origin/<base>` cannot be resolved) plus the workflow wiring.
 
+### Line endings: the format command is a gate of its own (`main` red at `f5be5cf`)
+
+The scope diff and the rule-set pin were both correct, and `main` still went red
+at `f5be5cf` (merge of #253). The change added `tests/test_smoke_m4622.py`
+without a final newline. Under the pinned `E4/E7/E9/F` set `ruff check` has
+nothing to say about line endings, so the job's *first* command was green and
+the *second* one was the entire red signal:
+
+```text
+$ GITHUB_EVENT_NAME=push GITHUB_BEFORE=60b2109 bash scripts/lint_scope.sh
+tests/test_smoke_m4622.py
+$ xargs -r -a lint-scope.txt -d '\n' ruff check
+All checks passed!                                     # exit 0
+$ xargs -r -a lint-scope.txt -d '\n' ruff format --check
+Would reformat: tests/test_smoke_m4622.py
+1 file would be reformatted                            # exit 1
+```
+
+Two lessons, both now guarded:
+
+* A "green lint" claim has to cover **both** commands. `ruff check` passing is
+  not evidence that the job passes; the formatter is a separate definition of
+  clean (`ruff format` normalises the final newline, quote style, trailing
+  commas, line breaking), and only the job's second step decides it.
+* The failure mode is invisible to the linter by construction, so the guard has
+  to run the formatter. `tests/test_lint_gate_scope.py` now carries a hermetic
+  negative control (a throwaway repo whose new file has no final newline: the
+  linter passes, `ruff format --check` must fail) and a live replay
+  (`test_current_change_is_clean_under_both_gate_commands`) that runs both CI
+  commands over the change in the current clone, skipping only when the base
+  revision is absent (shallow clone) or the installed ruff is outside the
+  pinned minor.
+
+The fix itself is one byte: the file now ends with a newline
+(`ruff format tests/test_smoke_m4622.py`), and
+`artifacts/lint-gate/evidence-m4636.json` records the before/after verdict from
+`scripts/lint_gate_evidence.py --before f5be5cf`.
+
 ## Limits
 
 * The gate cannot see lint debt in files a change does not touch; that is the
   point, but it means a whole-tree audit is still needed before the job can be
   promoted to blocking (`continue-on-error: false`).
-* `ruff` is unpinned (`ruff>=0.6` in the `dev` extra) — a new ruff release that
-  adds rules or changes formatting can redden a previously green PR. Pinning
-  `ruff` in the `dev` extra is the follow-up if that noise appears.
+* `ruff` is now pinned to `>=0.15,<0.16` and the rule set is pinned in
+  `pyproject.toml`, so the formatter that decides the second command cannot
+  change under a green PR (see `docs/lint-gate-determinism.md`). The live
+  replay guard skips itself when the installed ruff is outside that window
+  rather than reporting a verdict for a binary CI never runs.
+* The live replay guard needs the base commit; on the depth-1 checkout of the
+  `test` job it skips and only the `lint` job (`fetch-depth: 0`) measures the
+  change. It is a presubmit convenience, not a replacement for the job.
 * Files renamed out of the linted trees are dropped from the scope
   (`--diff-filter=ACMR`), which is intended but worth knowing when reading
   scope sizes.
