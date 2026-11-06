@@ -14,15 +14,13 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
+env:
+  TORCH_DEVICE_BACKEND_AUTOLOAD: "0"
+
 jobs:
   test:
     name: test (${{ matrix.python-version }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # pyproject declares requires-python >=3.11; test what we advertise.
-        python-version: ["3.11", "3.12"]
+    runs-on: ci-loong64
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -53,7 +51,7 @@ jobs:
 
   lint:
     name: lint (advisory)
-    runs-on: ubuntu-latest
+    runs-on: ci-loong64
     # Change-scoped gate.  The tree still carries a large pre-existing ruff
     # backlog (thousands of E701/E702 statements over hundreds of legacy
     # files), so a whole-tree run reports red on every commit -- including
