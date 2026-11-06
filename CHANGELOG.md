@@ -1,6 +1,15 @@
 ## Unreleased
 
 ### CI / tooling
+- **main 红修复：lint 门的 format 维度**（`docs/lint-gate-scope.md` §Line endings）：
+  `main` 在 `f5be5cf`（#253 合并）红在 `lint (advisory)`。根因是新增的
+  `tests/test_smoke_m4622.py` 缺文件末尾换行——钉住的 `E4/E7/E9/F` 规则集下
+  `ruff check` 对行尾无话可说（`All checks passed!`, exit 0），唯一的红信号是 job 的
+  第二条命令 `ruff format --check`（`Would reformat`, exit 1）。修复=补末尾换行（1 字节）；
+  并补两个守护测试：封闭负控（临时仓里无末尾换行的新文件：linter 过、formatter 必红）
+  与本地回放（对当前改动跑 CI 的两条命令，浅克隆/ruff 越界时 skip），使该类红在
+  presubmit 即可复现。证据 `artifacts/lint-gate/evidence-m4636.json`
+  （before=`f5be5cf` 格式不洁 → after 全绿）。
 - **Lint gate made deterministic**（`docs/lint-gate-determinism.md`）：`main` 自
   ruff 0.17 发布起持续红。根因不在代码——CI 的 lint 只判定本改动触及的文件，
   而 `[tool.ruff]` 未写 `select`，规则集继承 ruff 的隐式默认；ruff 0.17 把
