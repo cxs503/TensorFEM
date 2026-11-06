@@ -10,7 +10,9 @@ throwaway repository, so the result does not depend on the checkout that runs
 the suite.
 """
 
+import re
 import subprocess
+import tomllib
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -101,3 +103,57 @@ def test_workflow_runs_the_scope_script_and_guards_empty_scope():
     assert "ruff format --check" in text
     # The scope diff needs real history, not a depth-1 clone.
     assert "fetch-depth: 0" in text
+
+
+# --- rule-set determinism ---------------------------------------------------
+# The change-scope gate above answers *which files* to lint.  The second
+# failure mode is the opposite one: the definition of *what counts as clean*
+# floating with the tool.  ruff promotes newly stable rules into its default
+# ``select`` at minor releases, so an unpinned gate changes meaning without a
+# line of code changing -- main went red at 696666b8 exactly that way (see
+# docs/lint-gate-determinism.md).  These tests keep the rule set and the ruff
+# version qualified in the repository.
+
+PYPROJECT = REPO_ROOT / "pyproject.toml"
+
+
+def _pyproject():
+    return tomllib.loads(PYPROJECT.read_text())
+
+
+def _ruff_requirement():
+    dev = _pyproject()["project"]["optional-dependencies"]["dev"]
+    return next(req for req in dev if re.match(r"\s*ruff\b", req))
+
+
+def test_lint_rule_set_is_pinned_in_the_repository():
+    lint = _pyproject()["tool"]["ruff"].get("lint", {})
+    select = lint.get("select")
+    assert select, "tool.ruff.lint.select must pin the gate's rule set explicitly"
+    assert "ALL" not in select
+    # The pyflakes + error groups are the contract the tree is qualified
+    # against; dropping one would silently weaken the gate.
+    assert {"E4", "E7", "E9", "F"} <= set(select)
+
+
+def test_workflow_lints_through_the_pinned_configuration():
+    text = WORKFLOW.read_text()
+    # ``--isolated`` would ignore pyproject.toml entirely (both line-length and
+    # the pinned rule set) and an inline ``--select`` would bypass the pin.
+    assert "--isolated" not in text
+    assert "--select" not in text
+
+
+def test_ruff_version_is_qualified_within_one_minor_release():
+    req = _ruff_requirement()
+    floor = re.search(r">=\s*(\d+)\.(\d+)", req)
+    ceiling = re.search(r"<\s*(\d+)\.(\d+)", req)
+    assert floor and ceiling, f"{req!r} must carry both a floor and a ceiling"
+    floor_ver = tuple(int(part) for part in floor.groups())
+    ceiling_ver = tuple(int(part) for part in ceiling.groups())
+    assert floor_ver < ceiling_ver, f"{req!r} is an empty range"
+    # One minor line: the runner and the development nodes must execute the
+    # same rule implementations and the same formatter.
+    assert ceiling_ver[0] == floor_ver[0] and ceiling_ver[1] - floor_ver[1] == 1, (
+        f"{req!r} spans more than one minor release"
+    )
