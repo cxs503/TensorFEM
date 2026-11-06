@@ -1,0 +1,137 @@
+{
+ "controls": {
+  "kirsch_perturbation": {
+   "1e-01": 0.10096212001138945,
+   "1e-02": 0.010023650985552301,
+   "1e-03": 0.0010002525507383858,
+   "1e-04": 0.00010000527178876931,
+   "1e-05": 1.0003091868542727e-05,
+   "1e-06": 1.006117643790075e-06,
+   "1e-07": 1.3177640143190888e-07,
+   "1e-08": 8.351227897655129e-08,
+   "baseline": 8.258193702233593e-08
+  },
+  "kirsch_stencil": {
+   "observed_orders": [
+    4.0028273338195275,
+    4.000693611392901,
+    4.000186335685798,
+    3.9991208898104142
+   ],
+   "order": 4.0028273338195275,
+   "table": [
+    {
+     "residual": 1.323902981767232e-06,
+     "step": 0.02
+    },
+    {
+     "residual": 8.258193702233593e-08,
+     "step": 0.01
+    },
+    {
+     "residual": 5.158890203266459e-09,
+     "step": 0.005
+    },
+    {
+     "residual": 3.223889958792817e-10,
+     "step": 0.0025
+    },
+    {
+     "residual": 2.0161594022855104e-11,
+     "step": 0.00125
+    }
+   ]
+  }
+ },
+ "detection_floor": 1e-06,
+ "reports": [
+  {
+   "metrics": {
+    "beltrami": 5.119952493061768e-11,
+    "boundary_hole_radial": 0.0,
+    "boundary_hole_shear": 0.0,
+    "compatibility": 3.4891907500843513e-08,
+    "equilibrium": 8.258193702233593e-08,
+    "far_field_40a": 0.0015619140624999472,
+    "far_field_order": 1.9983754448871296
+   },
+   "name": "kirsch_hole",
+   "passed": true,
+   "worst_metric": "equilibrium",
+   "worst_value": 8.258193702233593e-08
+  },
+  {
+   "metrics": {
+    "axial_identity": 8.32667268468867e-16,
+    "beltrami": 4.560938067611242e-12,
+    "boundary_inner_pressure": 0.0,
+    "boundary_outer_pressure": 0.0,
+    "compatibility": 1.7328176639371052e-08,
+    "equilibrium": 6.20172498158272e-11,
+    "polar_equilibrium": 3.285042511799333e-08
+   },
+   "name": "lame_cylinder[strain]",
+   "passed": true,
+   "worst_metric": "polar_equilibrium",
+   "worst_value": 3.285042511799333e-08
+  },
+  {
+   "metrics": {
+    "axial_identity": 0.0,
+    "beltrami": 4.445684242415482e-12,
+    "boundary_inner_pressure": 0.0,
+    "boundary_outer_pressure": 0.0,
+    "compatibility": 1.8043125327995978e-08,
+    "equilibrium": 7.524004130924449e-11,
+    "polar_equilibrium": 3.285042511799333e-08
+   },
+   "name": "lame_cylinder[stress]",
+   "passed": true,
+   "worst_metric": "polar_equilibrium",
+   "worst_value": 3.285042511799333e-08
+  },
+  {
+   "metrics": {
+    "beltrami": 5.8035239057230814e-12,
+    "boundary_free_edge_bottom": 0.0,
+    "boundary_free_edge_top": 0.0,
+    "compatibility": 4.965523161533755e-12,
+    "equilibrium": 1.4875000400494697e-14,
+    "root_rotation": 0.009655360237682598,
+    "statics_end_shear": 2.859451342374086e-14,
+    "statics_root_moment": 2.837623469531536e-14
+   },
+   "name": "airy_cantilever",
+   "passed": true,
+   "worst_metric": "beltrami",
+   "worst_value": 5.8035239057230814e-12
+  }
+ ],
+ "stencil_order": 4.0028273338195275,
+ "verdict": {
+  "passed": true,
+  "references": {
+   "airy_cantilever": {
+    "passed": true,
+    "worst_metric": "beltrami",
+    "worst_value": 5.8035239057230814e-12
+   },
+   "kirsch_hole": {
+    "passed": true,
+    "worst_metric": "equilibrium",
+    "worst_value": 8.258193702233593e-08
+   },
+   "lame_cylinder[strain]": {
+    "passed": true,
+    "worst_metric": "polar_equilibrium",
+    "worst_value": 3.285042511799333e-08
+   },
+   "lame_cylinder[stress]": {
+    "passed": true,
+    "worst_metric": "polar_equilibrium",
+    "worst_value": 3.285042511799333e-08
+   }
+  },
+  "tolerance": 1e-06
+ }
+}
