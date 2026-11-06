@@ -107,7 +107,6 @@ def test_monotone_detects_regression():
     assert bench.monotone() is True
 
 
-@pytest.mark.slow
 def test_beam_path_reproduces_elastica_at_one_load_level():
     """One cheap load-controlled FE case must stay inside the 3% response gate."""
     case = corotational_beam_cantilever(1.0, 4, increment=0.1, max_iterations=20,
