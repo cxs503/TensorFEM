@@ -1,0 +1,101 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_cantilever",
+  "title": "Cantilever bending: Euler--Bernoulli deflection, stress and GCI ladder",
+  "mission": "IN36-N01",
+  "generated_at": "2026-11-07T08:42:23+00:00",
+  "criteria": {
+    "tip_deflection_rel_error_max": 0.01,
+    "gci_fine_max": 0.03,
+    "observed_order_min": 1.8,
+    "midspan_bending_stress_rel_error_max": 0.02,
+    "solid3d_tip_deflection_rel_error_max": 0.02,
+    "refinement_levels_min": 3
+  },
+  "gates": [
+    {
+      "id": "geometry_extent",
+      "quantity": "max relative error of the meshed extents L, h",
+      "reference": "declared L = 10 m, b = 1 m, h = 0.1 m",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "geometry is validated before any field is trusted"
+    },
+    {
+      "id": "tip_deflection",
+      "quantity": "tip deflection of the finest Q8 level",
+      "reference": "w = F L^3/(3 E I)",
+      "value": 9.785634367487361e-05,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "gci_fine",
+      "quantity": "Roache grid-convergence index of the finest triple",
+      "reference": "GCI = 1.25 |(w3-w2)/w3| / (r^p - 1)",
+      "value": 1.1160201114350893e-05,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "observed_order",
+      "quantity": "observed order of accuracy p from the finest triple",
+      "reference": "p = ln((w3-w2)/(w2-w1))/ln r",
+      "value": 3.6844073023156825,
+      "threshold": 1.8,
+      "operator": ">=",
+      "passed": true,
+      "note": "Chebyshev-clustered Q8 ladder; p is the empirical value, not a wish"
+    },
+    {
+      "id": "midspan_bending_stress",
+      "quantity": "sigma_xx at the top-half Gauss point nearest mid-span",
+      "reference": "sigma_xx = F (L - x)(z - h/2)/I",
+      "value": 6.257163025047419e-06,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "reaction_equilibrium",
+      "quantity": "|sum(R_z) - F|/F at the clamped root",
+      "reference": "global equilibrium of the discrete system",
+      "value": 2.417820997302478e-06,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "audit of the linear solve, not of the physics; the 1e-5 band reflects the conditioning of a 100:1 slender system, not a modelling tolerance"
+    },
+    {
+      "id": "solid3d_tip_deflection",
+      "quantity": "tip deflection of the finest HEX20 3-D level",
+      "reference": "w = F L^3/(3 E I)",
+      "value": 0.010609462738271014,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true,
+      "note": "model-form cross-check; locking-limited, see limitations"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "figures": [
+      "cantilever_field.png",
+      "cantilever_convergence.png"
+    ]
+  },
+  "limitations": [
+    "plane stress is a 2-D idealisation; plane strain or the anticlastic 3-D state shifts the deflection by O(nu (h/L)^2), i.e. far below the gate",
+    "the fully clamped root is a boundary layer; Chebyshev clustering is what keeps the ladder inside the asymptotic range",
+    "HEX20 full integration is shear-locking limited at L/h = 100, so the 3-D cross-check is graded at 2 % and its observed order is reported but not gated",
+    "small strain, isotropic, linear elasticity only: no prestress, no contact, no follower load, no geometric nonlinearity"
+  ]
+}

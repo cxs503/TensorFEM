@@ -1,0 +1,189 @@
+{
+  "benchmark": "fem_hertz_contact",
+  "mission": "IN36-N01",
+  "generated_at": "2026-11-07T09:04:41+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64",
+    "dtype": "torch.float64",
+    "linear_solver": "dense LU inside tensorfem.hertz_axisymmetric active-set Newton"
+  },
+  "geometry": {
+    "sphere_radius_1": 0.05,
+    "sphere_radius_2": 0.05,
+    "young_modulus": 210000000000.0,
+    "poisson_ratio": 0.3,
+    "contact_force": 10000.0,
+    "equivalent_radius": 0.025,
+    "equivalent_modulus": 115384615384.61539,
+    "prescribed_approach": 5.528774813678877e-05,
+    "domain_width_over_radius": 1.2,
+    "domain_depth_over_radius": 1.2
+  },
+  "analytic": {
+    "formula_contact_radius": "a = (3 F R / (4 E*))^(1/3), 1/E* = sum (1-nu_i^2)/E_i, 1/R = sum 1/R_i",
+    "formula_peak_pressure": "p_0 = 3 F / (2 pi a^2)",
+    "formula_pressure_field": "p(r) = p_0 sqrt(1 - (r/a)^2)",
+    "formula_approach": "delta = a^2 / R",
+    "effective_modulus": 115384615384.61539,
+    "effective_radius": 0.025,
+    "contact_radius": 0.0011756673438603792,
+    "peak_pressure": 3454398816.1310434,
+    "approach": 5.528774813678877e-05,
+    "per_sphere_approach": 2.7643874068394384e-05,
+    "mean_pressure": 2302932544.0873623,
+    "model_young_modulus": 105000000000.0
+  },
+  "levels": [
+    {
+      "radial_elements": 24,
+      "axial_elements": 24,
+      "grading": 2.6,
+      "penalty_factor": 28.0,
+      "penalty": 2500707377263981.0,
+      "nodes": 25,
+      "dofs": 50,
+      "converged": true,
+      "newton_iterations": 2,
+      "contact_radius": 0.0011886130002568035,
+      "peak_pressure": 3551918391.4299426,
+      "contact_force": 10339.142721199032,
+      "pressure_l2_error": 0.053624512936458486,
+      "force_balance_error": 2.273045621628387e-13,
+      "overlap_fraction": 0.027388652411342966,
+      "nodes_inside_contact_radius": 7,
+      "seconds": 8.769999610260129,
+      "contact_radius_rel_error": 0.011011326004783273,
+      "peak_pressure_rel_error": 0.028230549073694267,
+      "contact_force_rel_error": 0.03391427211990328
+    },
+    {
+      "radial_elements": 36,
+      "axial_elements": 36,
+      "grading": 2.6,
+      "penalty_factor": 28.0,
+      "penalty": 2500707377263981.0,
+      "nodes": 37,
+      "dofs": 74,
+      "converged": true,
+      "newton_iterations": 3,
+      "contact_radius": 0.0011338464726613224,
+      "peak_pressure": 3498758184.6492724,
+      "contact_force": 10247.43849747222,
+      "pressure_l2_error": 0.040792953836931836,
+      "force_balance_error": 1.00983584525294e-12,
+      "overlap_fraction": 0.026404347310455073,
+      "nodes_inside_contact_radius": 11,
+      "seconds": 16.38842768035829,
+      "contact_radius_rel_error": 0.03557202759560818,
+      "peak_pressure_rel_error": 0.012841414926117789,
+      "contact_force_rel_error": 0.02474384974722188
+    },
+    {
+      "radial_elements": 48,
+      "axial_elements": 48,
+      "grading": 2.6,
+      "penalty_factor": 28.0,
+      "penalty": 2500707377263981.0,
+      "nodes": 49,
+      "dofs": 98,
+      "converged": true,
+      "newton_iterations": 3,
+      "contact_radius": 0.0011894765194045995,
+      "peak_pressure": 3455033222.013916,
+      "contact_force": 10217.71012755033,
+      "pressure_l2_error": 0.021496231892914473,
+      "force_balance_error": 6.131118839357652e-13,
+      "overlap_fraction": 0.025878499153430597,
+      "nodes_inside_contact_radius": 14,
+      "seconds": 52.09640774875879,
+      "contact_radius_rel_error": 0.011745818761008442,
+      "peak_pressure_rel_error": 0.00018365160383626566,
+      "contact_force_rel_error": 0.021771012755033015
+    }
+  ],
+  "penalty_study": [
+    {
+      "radial_elements": 36,
+      "axial_elements": 36,
+      "grading": 2.6,
+      "penalty_factor": 100.0,
+      "penalty": 8931097775942790.0,
+      "nodes": 37,
+      "dofs": 74,
+      "converged": true,
+      "newton_iterations": 3,
+      "contact_radius": 0.0011208394234859052,
+      "peak_pressure": 3624125240.8041663,
+      "contact_force": 10398.0688392607,
+      "pressure_l2_error": 0.034888502154183036,
+      "force_balance_error": 1.0884475034565176e-12,
+      "overlap_fraction": 0.007942486331607091,
+      "nodes_inside_contact_radius": 11,
+      "seconds": 28.870080249384046,
+      "contact_radius_rel_error": 0.04663557311581268,
+      "peak_pressure_rel_error": 0.04913341907151825,
+      "contact_force_rel_error": 0.039806883926070125
+    }
+  ],
+  "convergence": {
+    "levels": [
+      24,
+      36,
+      48
+    ],
+    "pressure_l2_two_level_orders": [
+      0.6745264205161324,
+      2.2268739305920606
+    ],
+    "pressure_l2_observed_order_finest_pair": 2.2268739305920606,
+    "contact_radius_two_level_orders": [
+      null,
+      3.851690342494176
+    ],
+    "peak_pressure_two_level_orders": [
+      1.9427792611546861,
+      14.76418125874671
+    ],
+    "contact_radius_monotone": false,
+    "note": "the discrete recovery of (a, p0) from lumped nodal contact pressures is not monotone at these resolutions; the field error is, and it is the quantity whose order is reported"
+  },
+  "audit": {
+    "newton_converged": 1.0,
+    "active_set_iterations": 3.0,
+    "refinement_levels": 3.0
+  },
+  "verification_audit": {
+    "mesh_symmetry": "radial/axial element counts equal",
+    "contact_region_nodes": 7,
+    "pressure_profile_stored_per_level": true,
+    "analytic_inputs_used_by_solver": [
+      "equivalent radius R = 25 mm",
+      "prescribed approach delta = a^2/R",
+      "half-space modulus E*(1-nu^2)"
+    ],
+    "analytic_inputs_not_used_by_solver": [
+      "contact radius a",
+      "peak pressure p_0",
+      "pressure distribution p(r)",
+      "contact force F"
+    ]
+  },
+  "verdict": {
+    "contact_radius_rel_error": 0.011745818761008442,
+    "peak_pressure_rel_error": 0.00018365160383626566,
+    "contact_force_rel_error": 0.021771012755033015,
+    "gate_passed": true,
+    "failed_gates": []
+  },
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "figures": [
+      "hertz_pressure.png",
+      "hertz_convergence.png",
+      "hertz_penalty.png"
+    ]
+  }
+}

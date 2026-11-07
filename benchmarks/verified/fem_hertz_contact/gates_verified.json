@@ -1,0 +1,100 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_hertz_contact",
+  "title": "Hertzian sphere--sphere contact: contact radius, peak pressure and force",
+  "mission": "IN36-N01",
+  "generated_at": "2026-11-07T09:04:41+00:00",
+  "criteria": {
+    "contact_radius_rel_error_max": 0.02,
+    "peak_pressure_rel_error_max": 0.03,
+    "contact_force_rel_error_max": 0.03,
+    "pressure_l2_rel_error_max": 0.05,
+    "force_balance_max": 1e-06,
+    "refinement_levels_min": 3
+  },
+  "gates": [
+    {
+      "id": "contact_radius",
+      "quantity": "recovered contact radius of the finest mesh",
+      "reference": "a = (3 F R /(4 E*))^(1/3)",
+      "value": 0.011745818761008442,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "peak_pressure",
+      "quantity": "recovered maximum contact pressure of the finest mesh",
+      "reference": "p_0 = 3 F /(2 pi a^2)",
+      "value": 0.00018365160383626566,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "contact_force",
+      "quantity": "integrated contact force of the finest mesh",
+      "reference": "prescribed F = 10 kN",
+      "value": 0.021771012755033015,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "displacement-controlled run: F is an output, not an input"
+    },
+    {
+      "id": "pressure_field_l2",
+      "quantity": "L2 error of p(r) over the Hertz patch",
+      "reference": "p(r) = p_0 sqrt(1-(r/a)^2)",
+      "value": 0.021496231892914473,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "force_balance",
+      "quantity": "|support reaction - contact resultant|/F",
+      "reference": "global equilibrium of the discrete system",
+      "value": 6.131118839357652e-13,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "audit of the active-set solve, not of the physics"
+    },
+    {
+      "id": "newton_converged",
+      "quantity": "active-set Newton convergence flag of the finest mesh",
+      "reference": "residual <= 1e-10 of the contact-force scale",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "refinement_levels",
+      "quantity": "number of graded mesh levels reported",
+      "reference": "campaign minimum of 3",
+      "value": 3.0,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "figures": [
+      "hertz_pressure.png",
+      "hertz_convergence.png",
+      "hertz_penalty.png"
+    ]
+  },
+  "limitations": [
+    "the two-deformable-sphere problem is solved in its exact Hertz equivalent form (rigid indenter on a half-space); the reduction is a closed-form theorem, not a numerical approximation, but the run does not exercise a two-body contact algorithm",
+    "the contact is frictionless, adhesion-free, small-strain and small-slope; p_0 = 3.45 GPa is far above the yield strength of ordinary steel, so this is a verification of the elastic operator only",
+    "penalty contact adds a compliance bias of O(overlap/delta) which shows up in the contact force; the penalty study quantifies it instead of hiding it",
+    "the recovered (a, p_0) rest on a least-squares fit of p^2 vs r^2 over the active set, so they inherit the discrete pressure noise (see observed order)"
+  ]
+}
