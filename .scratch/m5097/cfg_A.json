@@ -1,0 +1,1 @@
+{"panel": {"span": 2.4, "spacing": 0.8, "plate_thickness": 0.02, "web_height": 0.2, "web_thickness": 0.01, "flange_width": 0.08, "flange_thickness": 0.012, "young": 206000000000.0, "poisson": 0.3, "yield_stress": 235000000.0}, "steps": 24, "ds": 0.0004, "load_fraction": 0.3, "max_iterations": 10}

@@ -1,0 +1,189 @@
+{
+ "points": [
+  {
+   "step": 1,
+   "average_stress": 19620366.154067315,
+   "stress_over_yield": 0.08349091980454176,
+   "end_shortening": 0.00022913682275749674,
+   "transverse_deflection": 3.233465816673463e-05,
+   "iterations": 4,
+   "residual": 3.040496674739207e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 2,
+   "average_stress": 39240732.30813442,
+   "stress_over_yield": 0.16698183960908264,
+   "end_shortening": 0.00045827364551499295,
+   "transverse_deflection": 6.466931633347524e-05,
+   "iterations": 4,
+   "residual": 2.133565409091199e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 3,
+   "average_stress": 58861098.46220143,
+   "stress_over_yield": 0.2504727594136231,
+   "end_shortening": 0.0006874104682724881,
+   "transverse_deflection": 9.700397450021127e-05,
+   "iterations": 4,
+   "residual": 2.213080625126621e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 4,
+   "average_stress": 78481464.61626874,
+   "stress_over_yield": 0.33396367921816483,
+   "end_shortening": 0.0009165472910299865,
+   "transverse_deflection": 0.00012933863266695626,
+   "iterations": 4,
+   "residual": 3.6570635805615903e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 5,
+   "average_stress": 98101830.77033582,
+   "stress_over_yield": 0.41745459902270565,
+   "end_shortening": 0.0011456841137874828,
+   "transverse_deflection": 0.00016167329083369744,
+   "iterations": 4,
+   "residual": 3.78573751132076e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 6,
+   "average_stress": 117722196.92440271,
+   "stress_over_yield": 0.5009455188272456,
+   "end_shortening": 0.001374820936544977,
+   "transverse_deflection": 0.0001940079490004301,
+   "iterations": 4,
+   "residual": 3.3805624533923584e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 7,
+   "average_stress": 137342563.07847005,
+   "stress_over_yield": 0.5844364386317874,
+   "end_shortening": 0.001603957759302475,
+   "transverse_deflection": 0.00022634260716717386,
+   "iterations": 4,
+   "residual": 6.848788533349485e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 8,
+   "average_stress": 156962929.2325372,
+   "stress_over_yield": 0.6679273584363286,
+   "end_shortening": 0.0018330945820599722,
+   "transverse_deflection": 0.00025867726533390547,
+   "iterations": 4,
+   "residual": 3.419814468961624e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 9,
+   "average_stress": 173889606.90517807,
+   "stress_over_yield": 0.7399557740645876,
+   "end_shortening": 0.002030773112179819,
+   "transverse_deflection": 0.00028657268441761483,
+   "iterations": 5,
+   "residual": 4.246822174925376e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 10,
+   "average_stress": 188354452.4425184,
+   "stress_over_yield": 0.8015083082660358,
+   "end_shortening": 0.0021997010884508977,
+   "transverse_deflection": 0.00031041096715973224,
+   "iterations": 6,
+   "residual": 4.247773533190839e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 11,
+   "average_stress": 206041852.04998496,
+   "stress_over_yield": 0.8767738385105743,
+   "end_shortening": 0.00240626372428922,
+   "transverse_deflection": 0.0003395600674199014,
+   "iterations": 6,
+   "residual": 4.9094735970425025e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 12,
+   "average_stress": 217891929.3109601,
+   "stress_over_yield": 0.927199699195575,
+   "end_shortening": 0.0025446550790523847,
+   "transverse_deflection": 0.0003590891727624907,
+   "iterations": 8,
+   "residual": 3.177711919852256e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 13,
+   "average_stress": 221353114.31553134,
+   "stress_over_yield": 0.9419281460235376,
+   "end_shortening": 0.0025850765945682375,
+   "transverse_deflection": 0.0003647932576453064,
+   "iterations": 9,
+   "residual": 6.216795575025873e-09,
+   "maximum_plastic_strain": 0.0
+  }
+ ],
+ "ultimate_stress": 221353114.31553134,
+ "ultimate_over_yield": 0.9419281460235376,
+ "ultimate_end_shortening": 0.0025850765945682375,
+ "ultimate_transverse_deflection": 0.0003647932576453064,
+ "ultimate_step": 13,
+ "has_peak": false,
+ "post_peak_drop": 0.0,
+ "converged": false,
+ "points_completed": 13,
+ "reference_area": 0.010480000000000001,
+ "pressure_ratio": 0.0,
+ "closed_form_panel_ultimate": 219599784.38873535,
+ "closed_form_over_yield": 0.9344671676116398,
+ "elapsed": 230.95873403549194,
+ "config": {
+  "panel": {
+   "span": 2.4,
+   "spacing": 0.8,
+   "plate_thickness": 0.02,
+   "web_height": 0.2,
+   "web_thickness": 0.01,
+   "flange_width": 0.08,
+   "flange_thickness": 0.012,
+   "young": 206000000000.0,
+   "poisson": 0.3,
+   "yield_stress": 235000000.0
+  },
+  "steps": 24,
+  "ds": 0.0004,
+  "load_fraction": 0.3,
+  "max_iterations": 10
+ },
+ "panel_summary": {
+  "plate_slenderness": 1.3510154397513754,
+  "plate_buckling_stress": 465462112.32243764,
+  "plate_limiting_stress": 219136475.73597914,
+  "column_slenderness": 0.46851225857002576,
+  "column_euler_stress": 1070596809.9751588,
+  "column_limiting_stress": 222104155.4847148,
+  "tripping_stress": 137299059.28456813,
+  "flange_local_buckling_stress": 1780392579.6333237,
+  "governing_stiffener_mode": "column",
+  "stiffener_limiting_stress": 222104155.4847148,
+  "panel_ultimate_stress": 219599784.38873535,
+  "panel_ultimate_over_yield": 0.9344671676116398,
+  "plate_area": 0.016,
+  "stiffener_area": 0.00296,
+  "centroid_offset": -0.020675105485232066
+ },
+ "free_dofs": 95,
+ "elements": [
+  8,
+  4,
+  4
+ ]
+}
