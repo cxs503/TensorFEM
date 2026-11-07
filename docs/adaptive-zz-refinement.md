@@ -161,3 +161,24 @@ Convergence and effectivity (`artifacts/adaptive_zz/study.json`):
 * The two-round adaptive gain (2.8× DOF at equal accuracy) is a *short-horizon* result on one
   singular problem; the asymptotic statement is the extended ladder's rate, which is a
   single-problem measurement and not a general performance claim.
+## 7. Continuation — orders against closed-form theory, and a cost baseline
+
+Two follow-up modules close the accounting gap left by the asymptotic bracket used above
+(`-lambda/2` is a bracket, and the true error in this problem is only available by quadrature):
+
+* `tensorfem.adaptive_1d` — P1 h-adaptive loop on two analytic 1D problems whose **discrete
+  energy error is a closed form** (`u = sin(pi x)` and `u = x^0.6`). Measured uniform orders:
+  `-0.9722` vs theory `-1` (2.8 %), `-0.0977` vs theory `-(alpha-1/2) = -0.1` (2.3 %). The
+  adaptive loop reaches `-0.5027` and, at equal accuracy on the singular problem, needs **>= 39x**
+  fewer unknowns than the uniform ladder; on the smooth problem it is the *control* case and
+  costs 2x more.
+* `tensorfem.adaptive_poisson_2d` — Q4 scalar Poisson with a polynomial bubble manufactured
+  solution and exact quadrature: energy order `-0.4848` and L2 order `-0.9704` against theory
+  `-0.5` / `-1.0` (3.0 % each at the finest rung pair), and a recovered-gradient indicator whose
+  effectivity reaches `theta = 1.0014` at 1521 unknowns. That value is the missing piece for this
+  page: the few-percent effectivity bias measured here is a property of the **singular field**,
+  not of the estimator family, because the same estimator is asymptotically exact on a smooth one.
+
+Details, figures, cost baselines and the error-by-error judgement (including the rows that fail
+the 3 % gate) are in `docs/adaptive-continuation-order-cost.md`; the generated payloads are
+`artifacts/adaptive_continuation/*.json` + `tables.md`.
