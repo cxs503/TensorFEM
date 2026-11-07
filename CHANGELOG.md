@@ -1,5 +1,32 @@
 ## Unreleased
 
+### Marine structures / ultimate strength
+- **Panel moment--curvature collapse surface** (`tensorfem.panel_mchi_qualification`): a
+  Smith-method integration that re-solves the axial equilibrium of a stiffened-panel
+  cross-section at every curvature increment (the neutral axis migrates instead of being
+  frozen at its elastic value), assigns each fibre its own limiting mode and optional
+  softening branch so a fibre past its limit unloads while the curvature grows, and reports
+  a verification ledger: work `int M dchi` against fibre internal energy, increment
+  refinement, monotonicity to the peak and peak uniqueness. A *plateau* fibre law has no
+  limit point by construction and the collapse object says so (`saturating`), so an
+  asymptotic plastic moment cannot be reported as an ultimate point. Cross-verification
+  surface: beam eigenvalue vs Euler, finite-difference plate eigenvalue vs the `k = 4`
+  anchor (24x24 error 0.13 %), and the elasto-plastic Shell4 Riks unit cell
+  (`stiffened_panel_unit_fe`) vs the section chain. Measured: energy residual second-order
+  (1.0e-5 at 200 increments, 7.8e-7 at 800), `M_u` step-size independent to 1e-4, section
+  inertia within 0.97 % of `StiffenedPanel.column_inertia`, Euler eigenvalue to 1e-8 at 64
+  elements. **Honest FAIL**: the executed unit-cell Riks paths rise monotonically to
+  0.97--0.99 sigma_y without reaching a limit point, so their values are lower bounds and
+  the panel `sigma_u` vs FE criterion (15 %) is not met (28.5 % on the tee bay, 7.2 % on the
+  ice-belt panel); the gap is attributed to the symmetry-plane rotational restraint of the
+  unit cell against the simply supported edges assumed by the Faulkner plate limit. An
+  elasto-plastic shell *bending* `M`--`chi` path is not executed and that sub-item is
+  WITHHELD. Evidence `artifacts/panel_mchi_qualification/{evidence,fe_traces}.json`,
+  figures `docs/assets/panel_mchi_qualification/`, note
+  `docs/panel-mchi-ultimate-strength-validation.md`, generator
+  `benchmarks/panel_mchi_qualification.py`, tests
+  `tests/test_panel_mchi_qualification.py`.
+
 ### Adaptivity / verification
 - **1D h-adaptive continuation with closed-form error** (`tensorfem.adaptive_1d`): the P1
   two-point boundary value problem on `(0,1)` with two analytic solutions (`u = sin(pi x)` and
