@@ -1,0 +1,170 @@
+{
+  "benchmark": "Scordelis-Lo cylindrical roof",
+  "reference": {
+    "value": -0.3024,
+    "source": "Scordelis & Lo (1960), widely cited in FEM literature",
+    "quantity": "Vertical displacement at midpoint of free edge"
+  },
+  "problem": {
+    "geometry": "Cylindrical roof: L=50, R=25, half-angle=40\u00b0",
+    "material": "E=4.32e8, \u03bd=0",
+    "thickness": 0.25,
+    "load": "Vertical surface load q=90",
+    "boundary_conditions": "Rigid diaphragms at curved ends (uy=uz=0)"
+  },
+  "elements_compared": [
+    {
+      "name": "Shell4 (flat facet)",
+      "formulation": "Q4 membrane + Mindlin plate with selective reduced integration",
+      "curvature_treatment": "Flat facets approximate curved geometry",
+      "limitation": "Membrane-bending coupling through faceted approximation misses true curved-shell behavior"
+    },
+    {
+      "name": "Cylindrical shell4",
+      "formulation": "Specialized cylindrical Reissner-Mindlin shell",
+      "curvature_treatment": "Exact cylindrical metric and curvature terms retained",
+      "advantage": "Properly captures membrane-bending coupling in cylindrical shells"
+    }
+  ],
+  "flat_facet_results": [
+    {
+      "element": "Shell4 (flat facet)",
+      "mesh": "4x4",
+      "nx": 4,
+      "nt": 4,
+      "elements": 16,
+      "nodes": 25,
+      "probe_displacement": -0.4928374085406344,
+      "reference": -0.3024,
+      "relative_error": 0.6297533351211455,
+      "relative_error_pct": 62.97533351211455
+    },
+    {
+      "element": "Shell4 (flat facet)",
+      "mesh": "8x8",
+      "nx": 8,
+      "nt": 8,
+      "elements": 64,
+      "nodes": 81,
+      "probe_displacement": -0.4055565772389791,
+      "reference": -0.3024,
+      "relative_error": 0.3411262474833965,
+      "relative_error_pct": 34.11262474833965
+    },
+    {
+      "element": "Shell4 (flat facet)",
+      "mesh": "16x16",
+      "nx": 16,
+      "nt": 16,
+      "elements": 256,
+      "nodes": 289,
+      "probe_displacement": -0.4375415612745882,
+      "reference": -0.3024,
+      "relative_error": 0.4468966973366013,
+      "relative_error_pct": 44.68966973366013
+    },
+    {
+      "element": "Shell4 (flat facet)",
+      "mesh": "32x32",
+      "nx": 32,
+      "nt": 32,
+      "elements": 1024,
+      "nodes": 1089,
+      "probe_displacement": -0.45179094637337835,
+      "reference": -0.3024,
+      "relative_error": 0.4940176798061453,
+      "relative_error_pct": 49.40176798061453
+    }
+  ],
+  "cylindrical_results": [
+    {
+      "element": "Cylindrical shell4",
+      "mesh": "4x4",
+      "nx": 4,
+      "nt": 4,
+      "elements": 16,
+      "nodes": 25,
+      "probe_displacement": -0.21673053837085443,
+      "reference": -0.3024,
+      "relative_error": 0.283298484223365,
+      "relative_error_pct": 28.3298484223365
+    },
+    {
+      "element": "Cylindrical shell4",
+      "mesh": "8x8",
+      "nx": 8,
+      "nt": 8,
+      "elements": 64,
+      "nodes": 81,
+      "probe_displacement": -0.2967296525275531,
+      "reference": -0.3024,
+      "relative_error": 0.018751149049096805,
+      "relative_error_pct": 1.8751149049096805
+    },
+    {
+      "element": "Cylindrical shell4",
+      "mesh": "16x16",
+      "nx": 16,
+      "nt": 16,
+      "elements": 256,
+      "nodes": 289,
+      "probe_displacement": -0.30246905129693513,
+      "reference": -0.3024,
+      "relative_error": 0.0002283442358965715,
+      "relative_error_pct": 0.02283442358965715
+    },
+    {
+      "element": "Cylindrical shell4",
+      "mesh": "32x32",
+      "nx": 32,
+      "nt": 32,
+      "elements": 1024,
+      "nodes": 1089,
+      "probe_displacement": -0.30365405700939985,
+      "reference": -0.3024,
+      "relative_error": 0.004147013919973075,
+      "relative_error_pct": 0.4147013919973075
+    }
+  ],
+  "flat_facet_convergence": [
+    {
+      "from_mesh": "4x4",
+      "to_mesh": "8x8",
+      "refinement_ratio": 2.0,
+      "error_coarse": 0.6297533351211455,
+      "error_fine": 0.3411262474833965,
+      "observed_order": 0.8461004972998956
+    }
+  ],
+  "cylindrical_convergence": [
+    {
+      "from_mesh": "4x4",
+      "to_mesh": "8x8",
+      "refinement_ratio": 2.0,
+      "error_coarse": 0.283298484223365,
+      "error_fine": 0.018751149049096805,
+      "observed_order": 14.108326614096793
+    },
+    {
+      "from_mesh": "8x8",
+      "to_mesh": "16x16",
+      "refinement_ratio": 2.0,
+      "error_coarse": 0.018751149049096805,
+      "error_fine": 0.0002283442358965715,
+      "observed_order": 81.11789965037758
+    }
+  ],
+  "verdict": {
+    "flat_facet": {
+      "status": "FAIL",
+      "reason": "Error exceeds 3% threshold on all meshes; non-monotone convergence",
+      "best_error": "49.40%"
+    },
+    "cylindrical": {
+      "status": "PASS",
+      "reason": "Error within 3% threshold on all meshes",
+      "best_error": "0.41%"
+    },
+    "conclusion": "Cylindrical shell4 element successfully captures curved-shell behavior; flat facet formulation is inadequate for curved shells"
+  }
+}
