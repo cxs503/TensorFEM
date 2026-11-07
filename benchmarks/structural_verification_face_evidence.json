@@ -1,0 +1,329 @@
+{
+  "schema": "tensorfem-structural-verification-face/1",
+  "cases": [
+    {
+      "case": "cantilever_plane_stress_q8",
+      "quantity": "tip deflection delta [m] vs F L^3 / (3 E I)",
+      "gate": 0.01,
+      "min_order": 1.5,
+      "levels": [
+        {
+          "label": "10x2",
+          "elements": 20,
+          "dofs": 170,
+          "h": 0.1,
+          "tip_deflection": 0.00015187805439404364,
+          "euler_bernoulli": 0.00015238095238095234,
+          "timoshenko": 0.0001526780952380952,
+          "error_vs_euler_bernoulli": 0.0033002680390883357,
+          "error_vs_timoshenko": 0.0052400499417019734,
+          "bending_stress_error": 0.0013648471292901218,
+          "relative_residual": 4.294269438054283e-10,
+          "load_resultant": 1000.0,
+          "slenderness": 20.0
+        },
+        {
+          "label": "20x4",
+          "elements": 80,
+          "dofs": 578,
+          "h": 0.05,
+          "tip_deflection": 0.00015235408681131313,
+          "euler_bernoulli": 0.00015238095238095234,
+          "timoshenko": 0.0001526780952380952,
+          "error_vs_euler_bernoulli": 0.00017630530075734118,
+          "error_vs_timoshenko": 0.0021221670749611236,
+          "bending_stress_error": 1.9256638252179688e-05,
+          "relative_residual": 7.03017105311413e-10,
+          "load_resultant": 1000.0,
+          "slenderness": 20.0
+        },
+        {
+          "label": "40x8",
+          "elements": 320,
+          "dofs": 2114,
+          "h": 0.025,
+          "tip_deflection": 0.00015248471255216396,
+          "euler_bernoulli": 0.00015238095238095234,
+          "timoshenko": 0.0001526780952380952,
+          "error_vs_euler_bernoulli": 0.0006809261235762423,
+          "error_vs_timoshenko": 0.0012666039986263928,
+          "bending_stress_error": 3.8531655199313294e-08,
+          "relative_residual": 9.885951935338502e-10,
+          "load_resultant": 1000.0,
+          "slenderness": 20.0
+        }
+      ],
+      "metrics": {
+        "observed_order": 1.865620603241652,
+        "richardson_tip_deflection": 0.00015253411253582887,
+        "euler_bernoulli": 0.00015238095238095234,
+        "timoshenko": 0.0001526780952380952,
+        "model_gap_euler_bernoulli_to_timoshenko": 0.0019499999999999563,
+        "discretisation_error_vs_richardson": 0.00032386187485310814,
+        "continuum_limit_error_vs_euler_bernoulli": 0.0010051135163772046,
+        "continuum_limit_error_vs_timoshenko": 0.0009430475409179618,
+        "gate_metric": "error_vs_euler_bernoulli",
+        "gate_value": 0.0006809261235762423,
+        "slenderness_sweep": [
+          {
+            "slenderness": 10.0,
+            "height": 0.1,
+            "elements": 640,
+            "error_vs_euler_bernoulli": 0.00574426139250871,
+            "error_vs_timoshenko": 0.0020398279494853082,
+            "bending_stress_error": 6.614470148107574e-08
+          },
+          {
+            "slenderness": 20.0,
+            "height": 0.05,
+            "elements": 320,
+            "error_vs_euler_bernoulli": 0.0006809261235762423,
+            "error_vs_timoshenko": 0.0012666039986263928,
+            "bending_stress_error": 3.8531655199313294e-08
+          },
+          {
+            "slenderness": 40.0,
+            "height": 0.025,
+            "elements": 160,
+            "error_vs_euler_bernoulli": 0.0005536235795348644,
+            "error_vs_timoshenko": 0.0010406162790988817,
+            "bending_stress_error": 4.6854522374887324e-08
+          }
+        ],
+        "sweep_scaling": {
+          "gaps": [
+            0.00574426139250871,
+            0.0006809261235762423,
+            0.0005536235795348644
+          ],
+          "slenderness": [
+            10.0,
+            20.0,
+            40.0
+          ],
+          "fitted_exponent": 1.6875720524234605,
+          "expected_exponent": 2.0
+        },
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "case": "thick_cylinder_plane_strain_q8",
+      "quantity": "worst-point hoop stress sigma_theta vs Lame",
+      "gate": 0.02,
+      "min_order": 1.5,
+      "levels": [
+        {
+          "label": "12x4",
+          "elements": 48,
+          "dofs": 336,
+          "h": 0.07500000000000001,
+          "hoop_error": 0.00274609279859078,
+          "radial_error": 0.0059279666978335815,
+          "hoop_scale": 228205128.2051282,
+          "bore_displacement": 0.0005872875296334408,
+          "bore_displacement_exact": 0.0005873015873015873,
+          "bore_displacement_error": 2.3936029546777913e-05,
+          "bore_circumferential_spread": 8.823916960462321e-05,
+          "load_resultant_ratio": 4.118403666742569e-17,
+          "load_edge_resultant_error": 7.729604368228961e-05,
+          "load_edge_direction_error": 1.5700924586837752e-16,
+          "load_radial_leak": 3.778447050598857e-16,
+          "wall_ratio": 1.6,
+          "relative_residual": 8.634619985212187e-10
+        },
+        {
+          "label": "24x8",
+          "elements": 192,
+          "dofs": 1248,
+          "h": 0.037500000000000006,
+          "hoop_error": 0.00070524945447349,
+          "radial_error": 0.0015335244026344211,
+          "hoop_scale": 228205128.2051282,
+          "bore_displacement": 0.0005873006539908616,
+          "bore_displacement_exact": 0.0005873015873015873,
+          "bore_displacement_error": 1.589150695089024e-06,
+          "bore_circumferential_spread": 5.907707739970752e-06,
+          "load_resultant_ratio": 4.407033930494787e-17,
+          "load_edge_resultant_error": 4.8773707330673575e-06,
+          "load_edge_direction_error": 1.5700924586837752e-16,
+          "load_radial_leak": 8.237019167356062e-16,
+          "wall_ratio": 1.6,
+          "relative_residual": 6.000456901987476e-10
+        },
+        {
+          "label": "48x16",
+          "elements": 768,
+          "dofs": 4800,
+          "h": 0.018750000000000003,
+          "hoop_error": 0.00018175416060976982,
+          "radial_error": 0.00041112960420075766,
+          "hoop_scale": 228205128.2051282,
+          "bore_displacement": 0.0005873015286600085,
+          "bore_displacement_exact": 0.0005873015873015873,
+          "bore_displacement_error": 9.984917469488001e-08,
+          "bore_circumferential_spread": 3.6923262657877134e-07,
+          "load_resultant_ratio": 5.065725855018766e-17,
+          "load_edge_resultant_error": 3.055816509181422e-07,
+          "load_edge_direction_error": 2.482534153247273e-16,
+          "load_radial_leak": 8.323361560616587e-16,
+          "wall_ratio": 1.6,
+          "relative_residual": 8.954768842862222e-10
+        }
+      ],
+      "metrics": {
+        "observed_order": 1.9561452550012244,
+        "hoop_error_orders": [
+          1.9611748292711417,
+          1.9561452550012244
+        ],
+        "displacement_order_ungated": 3.9073655736987134,
+        "hoop_errors": [
+          0.00274609279859078,
+          0.00070524945447349,
+          0.00018175416060976982
+        ],
+        "gate_metric": "hoop_error",
+        "gate_value": 0.00018175416060976982,
+        "wall_ratio_sweep": [
+          {
+            "wall_ratio": 1.25,
+            "elements": 768,
+            "hoop_error": 2.805929821526494e-05,
+            "radial_error": 6.358526769921183e-05,
+            "bore_displacement_error": 1.0982935656406458e-07
+          },
+          {
+            "wall_ratio": 1.6,
+            "elements": 768,
+            "hoop_error": 0.00018175416060976982,
+            "radial_error": 0.00041112960420075766,
+            "bore_displacement_error": 9.984917469488001e-08
+          },
+          {
+            "wall_ratio": 2.5,
+            "elements": 768,
+            "hoop_error": 0.0012828206736004279,
+            "radial_error": 0.0027623904405088776,
+            "bore_displacement_error": 9.408916804796545e-07
+          }
+        ],
+        "passed": true
+      },
+      "passed": true
+    },
+    {
+      "case": "clamped_plate_uniform_pressure_q4_mindlin",
+      "quantity": "centre deflection w_max vs alpha q a^4 / D",
+      "gate": 0.03,
+      "min_order": 1.5,
+      "levels": [
+        {
+          "label": "8x8",
+          "elements": 64,
+          "dofs": 243,
+          "h": 0.125,
+          "centre_deflection": 6.517165944216106e-05,
+          "ritz_deflection": 6.580650259786227e-05,
+          "error_vs_ritz": 0.00964711891134337,
+          "aspect": 100.0,
+          "alpha_measured": 0.0012533011431184822,
+          "alpha_reference": 0.0012655096653435055
+        },
+        {
+          "label": "16x16",
+          "elements": 256,
+          "dofs": 867,
+          "h": 0.0625,
+          "centre_deflection": 6.573864200343704e-05,
+          "ritz_deflection": 6.580650259786227e-05,
+          "error_vs_ritz": 0.0010312141163301,
+          "aspect": 100.0,
+          "alpha_measured": 0.0012642046539122508,
+          "alpha_reference": 0.0012655096653435055
+        },
+        {
+          "label": "32x32",
+          "elements": 1024,
+          "dofs": 3267,
+          "h": 0.03125,
+          "centre_deflection": 6.588102859818261e-05,
+          "ritz_deflection": 6.580650259786227e-05,
+          "error_vs_ritz": 0.0011325020686141212,
+          "aspect": 100.0,
+          "alpha_measured": 0.001266942857657358,
+          "alpha_reference": 0.0012655096653435055
+        }
+      ],
+      "metrics": {
+        "observed_order": 1.9934910353203448,
+        "ritz_alpha": 0.0012655096653435055,
+        "ritz_mode_spread": 0.0012293190572274743,
+        "timoshenko_table_alpha": 0.00126,
+        "gate_metric": "error_vs_ritz",
+        "gate_value": 0.0011325020686141212,
+        "aspect_sweep": [
+          {
+            "aspect": 10.0,
+            "elements": 256,
+            "error_vs_ritz": 0.18699948320160484,
+            "alpha_measured": 0.001502159318749376,
+            "alpha_reference": 0.0012655096653435046,
+            "ritz_mode_spread": 0.0012293190572285112,
+            "gated": false
+          },
+          {
+            "aspect": 20.0,
+            "elements": 256,
+            "error_vs_ritz": 0.04619549832636689,
+            "alpha_measured": 0.0013239705149708815,
+            "alpha_reference": 0.0012655096653435046,
+            "ritz_mode_spread": 0.0012293190572285112,
+            "gated": false
+          },
+          {
+            "aspect": 50.0,
+            "elements": 256,
+            "error_vs_ritz": 0.004986045726506537,
+            "alpha_measured": 0.0012718195544022442,
+            "alpha_reference": 0.0012655096653435055,
+            "ritz_mode_spread": 0.0012293190572274743,
+            "gated": true
+          },
+          {
+            "aspect": 100.0,
+            "elements": 256,
+            "error_vs_ritz": 0.0010312141163301,
+            "alpha_measured": 0.0012642046539122508,
+            "alpha_reference": 0.0012655096653435055,
+            "ritz_mode_spread": 0.0012293190572274743,
+            "gated": true
+          }
+        ],
+        "passed": true
+      },
+      "passed": true
+    }
+  ],
+  "gates": {
+    "cantilever_error_vs_euler_bernoulli": 0.01,
+    "cylinder_hoop_error": 0.02,
+    "plate_error_vs_ritz": 0.03,
+    "min_observed_order": 1.5
+  },
+  "all_passed": true,
+  "generated_by": "benchmarks/structural_verification_face.py",
+  "generated_at": "2026-11-07T08:39:58+00:00",
+  "quick_mode": false,
+  "runtime_seconds": 126.8,
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "dtype": "torch.float64",
+    "commit": "fc73335a026b054d8c2b401dc4cd1493595ab15d"
+  },
+  "kirchhoff_min_aspect": 50.0
+}
