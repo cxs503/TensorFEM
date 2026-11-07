@@ -27,6 +27,10 @@ from .thermal import (
 )
 from .explicit_dynamics import ExplicitResult, central_difference, critical_time_step
 from .solid_plasticity import Tet4J2Model, PlasticSolidState, solve_load_steps
+from .j2_elastoplasticity import (
+    J2Material, J2Return, radial_return, return_map_residuals,
+    uniaxial_stress_path, pure_shear_yield_point, verify_minimum_surface,
+)
 from .quadratic_solid import Tet10Model, solve_tet10
 from .hex20 import Hex20Model, solve_hex20
 from .finite_sliding_contact import (
@@ -381,4 +385,6 @@ __all__ = [
     "FieldSpec", "ResultFrame", "ResultStep", "HistorySeries", "ResultDBv2",
     "write_result_db_v2", "read_result_db_v2", "query_frame_field",
     "query_history_series", "migrate_v1", "read_result_db_compatible",
+    "J2Material", "J2Return", "radial_return", "return_map_residuals",
+    "uniaxial_stress_path", "pure_shear_yield_point", "verify_minimum_surface",
 ]
