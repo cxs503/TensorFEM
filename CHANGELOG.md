@@ -22,6 +22,14 @@
   39 个 finding 清单与"新族按需并入"的流程记在文档 §2/§5。
 
 ### Verification
+- **J2 弹塑性最小面**（`docs/j2-plasticity-minimal-surface.md`，IN14-D4/m4951，补 m605
+  「无弹塑性」缺口）：新增 `tensorfem.j2_elastoplasticity`（材料点 API），在既有
+  `plasticity.update_j2` / `j2_consistent_tangent` 核上补出可验证面——材料参数封闭拒收
+  （H<0、σy≤0、E≤0、ν∉(-1,0.5)、NaN、非对称/非 3×3 应变）、返回映射六项事后残差
+  （屈服/应力恒等式/一致性参数/流动法则/硬化律/互补条件，实测 ≤3.7e-16）、单轴分段解析锚
+  （弹性斜率 E、塑性斜率 EH/(E+H)，误差 ~1e-16/~6e-15）、纯剪与四个偏量方向屈服点对
+  解析屈服面 q=σy（误差 ~2e-16，门槛 <1%）、一致切线对中心差分（4.2e-10）。
+  16 个 pytest（含 7 个负例），工件 `artifacts/j2_minimal/{verification.json,fig_*.png}`。
 - **均布压力板的精度复核**（`docs/plate-uniform-load-verification.md`）：已合并的 Q4 Mindlin
   板路径此前只对一条与第一阶模态同形的正弦载荷复核过，无法发现载荷向量、高阶模态刚度、
   剪切分解或边界条件错误。新增 `tensorfem.plate_uniform_load`（精确 Navier 双级数 +
