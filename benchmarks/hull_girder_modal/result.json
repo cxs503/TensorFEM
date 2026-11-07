@@ -1,0 +1,742 @@
+{
+  "benchmark": "hull_girder_modal",
+  "mission_id": 5425,
+  "repository": "TensorFEM",
+  "module": "src/tensorfem/hull_girder_modal.py",
+  "physics": "hull girder vertical bending: Timoshenko correction, Lewis section added mass, wet/dry frequency reduction, grid convergence",
+  "conventions": {
+    "beam": "uniform box girder, pinned-pinned (two nodes at the supports)",
+    "added_mass": "2D strip theory, zero speed, infinite depth, free surface as plane of symmetry (rigid lid); immersed section doubled",
+    "wet_mass": "a floating body displaces its own weight, so the vibrating mass per unit length is rho_w * B * T"
+  },
+  "gates": {
+    "gate1_timoshenko_modes": {
+      "criterion": "modes 1..4 relative frequency error <= 2 %",
+      "case": "girder_g",
+      "first_order_max_rel_error_pct": 1.076504842814988,
+      "first_order_per_mode_pct": [
+        0.0354,
+        0.0585,
+        0.1767,
+        1.0765
+      ],
+      "fem_finest_max_rel_error_pct": 0.10300734388129981,
+      "fem_finest_per_mode_pct": [
+        0.0064,
+        0.0258,
+        0.0579,
+        0.103
+      ],
+      "pass": true
+    },
+    "gate2_added_mass_scaling": {
+      "criterion": "finite element added mass vs closed-form kappa scaling <= 5 %",
+      "case": "girder_g",
+      "uniform_ratio_max_rel_error_pct": 0.06638799299607467,
+      "added_mass_matrix_total_rel_error": 1.6727410126006543e-16,
+      "added_mass_total_kg_m": 222705.74287349527,
+      "note": "rigid-translation quadratic form of the added-mass matrix equals m33 * L; the ratio check compares the wet/dry eigen-frequencies with 1/sqrt(1+kappa)",
+      "pass": true
+    },
+    "gate3_wet_dry_ratio": {
+      "criterion": "f_wet/f_dry vs 1/sqrt(1+kappa_33) <= 3 %",
+      "case": "girder_g",
+      "kappa_33": 5.658174361623355,
+      "closed_form_ratio": 0.38754524971463505,
+      "fem_ratio_finest": [
+        0.387566983554267,
+        0.38762677134865653,
+        0.3877107696226774,
+        0.3878022575886282
+      ],
+      "max_rel_error_pct": 0.06638799299607467,
+      "pass": true
+    },
+    "gate4_grid_convergence": {
+      "criterion": "GCI observed order >= 2 on N in {20, 40, 80}",
+      "case": "girder_g",
+      "observed_order_per_mode": [
+        2.0305,
+        2.03,
+        2.0295,
+        2.0296
+      ],
+      "gci_fine_max_pct": 0.1260631812642298,
+      "min_observed_order": 2.0295328160800814,
+      "pass": true
+    },
+    "all_pass": true
+  },
+  "dry_modes": {
+    "girder_g": {
+      "role": "gate case (slender box girder, L/D = 50)",
+      "geometry": {
+        "length_m": 200.0,
+        "breadth_m": 16.0,
+        "depth_m": 4.0,
+        "wall_m": 0.02,
+        "draft_m": 2.4,
+        "slenderness_L_over_D": 50.0,
+        "block_coefficient_area_over_BD": 0.012474999999999903
+      },
+      "section_properties": {
+        "area_m2": 0.7983999999999938,
+        "inertia_m4": 2.7414824533333237,
+        "shear_area_m2": 0.16,
+        "effective_shear_coefficient": 0.20040080160320797,
+        "mass_per_length_kg_m": 6267.439999999951,
+        "bending_stiffness_Nm2": 564745385386.6647,
+        "shear_stiffness_N": 12676923076.923077,
+        "EI_over_kappa_GA_m2": 44.54908986666651,
+        "inertia_over_area_m2": 3.4337205076820454
+      },
+      "geometry_audit": {
+        "area_closed_form": 0.7983999999999938,
+        "area_green": 0.7983999999999938,
+        "area_rel_error": 0.0,
+        "inertia_closed_form": 2.7414824533333237,
+        "inertia_green": 2.741482453333319,
+        "inertia_rel_error": 1.7818758250344153e-15,
+        "area_thin_wall": 0.8,
+        "area_thin_wall_rel_dev": 0.0020040080160399244,
+        "inertia_thin_wall": 2.7733333333333334,
+        "inertia_thin_wall_rel_dev": 0.011618122874097815,
+        "block_coefficient": 0.012474999999999903,
+        "slenderness": 50.0,
+        "draft_over_depth": 0.6
+      },
+      "modes": [
+        {
+          "mode": 1,
+          "f_euler_bernoulli_hz": 0.3727701587641016,
+          "f_timoshenko_first_order_hz": 0.370715743992924,
+          "f_timoshenko_exact_hz": 0.37058458104169467,
+          "f_fem_hz": {
+            "20": 0.37097553749232415,
+            "40": 0.37068063043778315,
+            "80": 0.37060844660780484
+          },
+          "validity_index": 0.01099204733531443,
+          "rel_error_first_order_pct": 0.03539352632012996,
+          "rel_error_euler_bernoulli_pct": 0.5897648834345338,
+          "rel_error_fem_pct": {
+            "20": 0.10549722536499415,
+            "40": 0.0259183465805545,
+            "80": 0.006439978167220459
+          },
+          "shear_reduction_pct": 0.5863070503425161
+        },
+        {
+          "mode": 2,
+          "f_euler_bernoulli_hz": 1.4910806350564063,
+          "f_timoshenko_first_order_hz": 1.4579321113515171,
+          "f_timoshenko_exact_hz": 1.4570794541332015,
+          "f_fem_hz": {
+            "20": 1.4632242036573713,
+            "40": 1.4585895881453204,
+            "80": 1.457454763423586
+          },
+          "validity_index": 0.04396818934125772,
+          "rel_error_first_order_pct": 0.05851823769094716,
+          "rel_error_euler_bernoulli_pct": 2.333515912722254,
+          "rel_error_fem_pct": {
+            "20": 0.42171684644508306,
+            "40": 0.10364115751101699,
+            "80": 0.025757640691440254
+          },
+          "shear_reduction_pct": 2.280304641064468
+        },
+        {
+          "mode": 3,
+          "f_euler_bernoulli_hz": 3.354931428876913,
+          "f_timoshenko_first_order_hz": 3.1846616105503065,
+          "f_timoshenko_exact_hz": 3.1902985671103985,
+          "f_fem_hz": {
+            "20": 3.2205489154403377,
+            "40": 3.1977351538617156,
+            "80": 3.1921472793602166
+          },
+          "validity_index": 0.09892842601782985,
+          "rel_error_first_order_pct": 0.1766905648958634,
+          "rel_error_euler_bernoulli_pct": 5.160421769415467,
+          "rel_error_fem_pct": {
+            "20": 0.9481980351869815,
+            "40": 0.23310002480591488,
+            "80": 0.057947938443032615
+          },
+          "shear_reduction_pct": 4.907190065032918
+        },
+        {
+          "mode": 4,
+          "f_euler_bernoulli_hz": 5.964322540225625,
+          "f_timoshenko_first_order_hz": 5.414498735091066,
+          "f_timoshenko_exact_hz": 5.473420370446545,
+          "f_fem_hz": {
+            "20": 5.56565203031338,
+            "40": 5.496094205122074,
+            "80": 5.4790583953896
+          },
+          "validity_index": 0.17587275736503089,
+          "rel_error_first_order_pct": 1.076504842814988,
+          "rel_error_euler_bernoulli_pct": 8.968837336698659,
+          "rel_error_fem_pct": {
+            "20": 1.6850827019396326,
+            "40": 0.41425348577198773,
+            "80": 0.10300734388129981
+          },
+          "shear_reduction_pct": 8.230644242799611
+        }
+      ],
+      "grid_convergence": [
+        {
+          "mode": 1,
+          "observed_order": 2.0305127359950847,
+          "extrapolated_hz": 0.3705850520771241,
+          "gci_fine_pct": 0.007890581992544577,
+          "rel_error_fine_pct": 0.00631286409141585,
+          "rel_error_vs_exact_pct": 0.006439978167220459,
+          "convergence_ratio": 4.0855002377901135
+        },
+        {
+          "mode": 2,
+          "observed_order": 2.0299801731158245,
+          "extrapolated_hz": 1.4570867908143024,
+          "gci_fine_pct": 0.03155952233632885,
+          "rel_error_fine_pct": 0.025253993900934232,
+          "rel_error_vs_exact_pct": 0.025757640691440254,
+          "convergence_ratio": 4.083992376344707
+        },
+        {
+          "mode": 3,
+          "observed_order": 2.0295328160800814,
+          "extrapolated_hz": 3.190334638809126,
+          "gci_fine_pct": 0.07098045580520648,
+          "rel_error_fine_pct": 0.056816627605157835,
+          "rel_error_vs_exact_pct": 0.057947938443032615,
+          "convergence_ratio": 4.082726190880294
+        },
+        {
+          "mode": 4,
+          "observed_order": 2.0296423036716673,
+          "extrapolated_hz": 5.473532735136358,
+          "gci_fine_pct": 0.1260631812642298,
+          "rel_error_fine_pct": 0.10095235601263089,
+          "rel_error_vs_exact_pct": 0.10300734388129981,
+          "convergence_ratio": 4.083036044873996
+        }
+      ]
+    },
+    "hull_s": {
+      "role": "ship-proportioned girder (L/D = 12.9), applicability study",
+      "geometry": {
+        "length_m": 180.0,
+        "breadth_m": 24.0,
+        "depth_m": 14.0,
+        "wall_m": 0.022,
+        "draft_m": 8.4,
+        "slenderness_L_over_D": 12.857142857142858,
+        "block_coefficient_area_over_BD": 0.0049704285714286455
+      },
+      "section_properties": {
+        "area_m2": 1.6700640000000249,
+        "inertia_m4": 61.54831353299293,
+        "shear_area_m2": 0.616,
+        "effective_shear_coefficient": 0.36884813995151733,
+        "mass_per_length_kg_m": 13110.002400000196,
+        "bending_stiffness_Nm2": 12678952587796.543,
+        "shear_stiffness_N": 48806153846.15384,
+        "EI_over_kappa_GA_m2": 259.7818428340611,
+        "inertia_over_area_m2": 36.85386520096955
+      },
+      "geometry_audit": {
+        "area_closed_form": 1.6700640000000249,
+        "area_green": 1.6700640000000249,
+        "area_rel_error": 0.0,
+        "inertia_closed_form": 61.54831353299293,
+        "inertia_green": 61.548313532993234,
+        "inertia_rel_error": 4.96412263535153e-15,
+        "area_thin_wall": 1.672,
+        "area_thin_wall_rel_dev": 0.001159237011261269,
+        "inertia_thin_wall": 61.80533333333332,
+        "inertia_thin_wall_rel_dev": 0.004175903214677349,
+        "block_coefficient": 0.0049704285714286455,
+        "slenderness": 12.857142857142858,
+        "draft_over_depth": 0.6
+      },
+      "modes": [
+        {
+          "mode": 1,
+          "f_euler_bernoulli_hz": 1.5077008168933295,
+          "f_timoshenko_first_order_hz": 1.4468162292902873,
+          "f_timoshenko_exact_hz": 1.4444169556866215,
+          "f_fem_hz": {
+            "20": 1.4459085842270414,
+            "40": 1.4447886312777911,
+            "80": 1.4445097941596368
+          },
+          "validity_index": 0.07913407467154793,
+          "rel_error_first_order_pct": 0.16610671830041202,
+          "rel_error_euler_bernoulli_pct": 4.381273769846128,
+          "rel_error_fem_pct": {
+            "20": 0.103268556530533,
+            "40": 0.025731876776044414,
+            "80": 0.006427401218859977
+          },
+          "shear_reduction_pct": 4.197375268198533
+        },
+        {
+          "mode": 2,
+          "f_euler_bernoulli_hz": 6.030803267573318,
+          "f_timoshenko_first_order_hz": 4.985777444802158,
+          "f_timoshenko_exact_hz": 5.188721750843324,
+          "f_fem_hz": {
+            "20": 5.2101449369067145,
+            "40": 5.194061649570668,
+            "80": 5.190055704088117
+          },
+          "validity_index": 0.3165362986861917,
+          "rel_error_first_order_pct": 3.9112582209323663,
+          "rel_error_euler_bernoulli_pct": 16.229074465076696,
+          "rel_error_fem_pct": {
+            "20": 0.4128798400089381,
+            "40": 0.10291356877011974,
+            "80": 0.025708706476239962
+          },
+          "shear_reduction_pct": 13.963007569119924
+        },
+        {
+          "mode": 3,
+          "f_euler_bernoulli_hz": 13.569307352039965,
+          "f_timoshenko_first_order_hz": 7.279441164143295,
+          "f_timoshenko_exact_hz": 10.191690934173478,
+          "f_fem_hz": {
+            "20": 10.2864181529544,
+            "40": 10.215293091758042,
+            "80": 10.197586442087083
+          },
+          "validity_index": 0.7122066720439314,
+          "rel_error_first_order_pct": 28.574745730026002,
+          "rel_error_euler_bernoulli_pct": 33.14088348716596,
+          "rel_error_fem_pct": {
+            "20": 0.9294553709757397,
+            "40": 0.23158235210434674,
+            "80": 0.057846219549663666
+          },
+          "shear_reduction_pct": 24.891590486073767
+        },
+        {
+          "mode": 4,
+          "f_euler_bernoulli_hz": 24.12321307029327,
+          "f_timoshenko_first_order_hz": null,
+          "f_timoshenko_exact_hz": 15.739780064118305,
+          "f_fem_hz": {
+            "20": 16.000258833615923,
+            "40": 15.804606665454388,
+            "80": 15.755968106143461
+          },
+          "validity_index": 1.2661451947447668,
+          "rel_error_first_order_pct": null,
+          "rel_error_euler_bernoulli_pct": 53.262707433165026,
+          "rel_error_fem_pct": {
+            "20": 1.6549073013505906,
+            "40": 0.4118647215653746,
+            "80": 0.10284795568433593
+          },
+          "shear_reduction_pct": 34.75255548150348
+        }
+      ],
+      "grid_convergence": [
+        {
+          "mode": 1,
+          "observed_order": 2.0059435966305954,
+          "extrapolated_hz": 1.4444173572614283,
+          "gci_fine_pct": 0.007998985069389824,
+          "rel_error_fine_pct": 0.006399597577790029,
+          "rel_error_vs_exact_pct": 0.006427401218859977,
+          "convergence_ratio": 4.016513140945298
+        },
+        {
+          "mode": 2,
+          "observed_order": 2.0053476230729843,
+          "extrapolated_hz": 5.1887269680629355,
+          "gci_fine_pct": 0.032001969269205545,
+          "rel_error_fine_pct": 0.025608131500457213,
+          "rel_error_vs_exact_pct": 0.025708706476239962,
+          "convergence_ratio": 4.01485427250597
+        },
+        {
+          "mode": 3,
+          "observed_order": 2.0060667275266226,
+          "extrapolated_hz": 10.191717202743996,
+          "gci_fine_pct": 0.07194397635679294,
+          "rel_error_fine_pct": 0.05758832615082904,
+          "rel_error_vs_exact_pct": 0.057846219549663666,
+          "convergence_ratio": 4.0168559562688495
+        },
+        {
+          "mode": 4,
+          "observed_order": 2.008118696405772,
+          "extrapolated_hz": 15.739876334297723,
+          "gci_fine_pct": 0.12766409954415578,
+          "rel_error_fine_pct": 0.10223569425811954,
+          "rel_error_vs_exact_pct": 0.10284795568433593,
+          "convergence_ratio": 4.022573261490111
+        }
+      ]
+    }
+  },
+  "wet_modes": {
+    "section": {
+      "gate_girder": {
+        "added_mass_per_length_kg_m": 222705.74287349527,
+        "half_breadth_m": 8.0,
+        "half_draft_m": 2.4,
+        "lewis_M": 5.500023311999511,
+        "lewis_a1": 0.5090887512951415,
+        "lewis_a3": -0.054549461880451414,
+        "lewis_area_ratio_vs_doubled_box": 0.9056710302823222,
+        "lewis_enclosed_area_m2": 69.55553512568234,
+        "structural_mass_per_length_kg_m": 6267.439999999951,
+        "displaced_mass_per_length_kg_m": 39360.0,
+        "floating_mass_per_length_kg_m": 39360.0,
+        "ballast_mass_per_length_kg_m": 33092.56000000005,
+        "kappa_vs_displaced_mass": 5.658174361623355,
+        "kappa_vs_structural_mass": 35.53376544067386,
+        "kappa_vs_floating_mass": 5.658174361623355,
+        "added_mass_coefficient_c": 3.394904616974013
+      },
+      "exact_limits": [
+        {
+          "name": "circle_b1",
+          "half_breadth_m": 1.0,
+          "half_draft_m": 1.0,
+          "added_mass_per_rho": 3.1415926535897927,
+          "exact_per_rho": 3.141592653589793,
+          "rel_error": 1.4135798584282297e-16
+        },
+        {
+          "name": "circle_b2.5",
+          "half_breadth_m": 2.5,
+          "half_draft_m": 2.5,
+          "added_mass_per_rho": 19.634954084936204,
+          "exact_per_rho": 19.634954084936208,
+          "rel_error": 1.809382218788134e-16
+        },
+        {
+          "name": "ellipse_b2_h1",
+          "half_breadth_m": 2.0,
+          "half_draft_m": 1.0,
+          "added_mass_per_rho": 12.566370614359169,
+          "exact_per_rho": 12.566370614359172,
+          "rel_error": 2.8271597168564594e-16
+        },
+        {
+          "name": "flat_plate_b5",
+          "half_breadth_m": 5.0,
+          "half_draft_m": 0.05,
+          "added_mass_per_rho": 78.53981633974483,
+          "exact_per_rho": 78.53981633974483,
+          "rel_error": 0.0
+        }
+      ],
+      "coefficient_table": [
+        {
+          "half_draft_over_half_breadth": 0.1,
+          "draft_over_breadth": 0.05,
+          "added_mass_coefficient_c": 3.2221201712698893,
+          "kappa_33_vs_displaced_mass": 16.110600856349446,
+          "mission_formula_piB_over_4T": 15.707963267948966,
+          "form_factor_f_equals_c_over_pi": 1.0256327049874145
+        },
+        {
+          "half_draft_over_half_breadth": 0.2,
+          "draft_over_breadth": 0.1,
+          "added_mass_coefficient_c": 3.3065756740938346,
+          "kappa_33_vs_displaced_mass": 8.266439185234585,
+          "mission_formula_piB_over_4T": 7.853981633974483,
+          "form_factor_f_equals_c_over_pi": 1.0525157264788993
+        },
+        {
+          "half_draft_over_half_breadth": 0.3,
+          "draft_over_breadth": 0.15,
+          "added_mass_coefficient_c": 3.394952199807657,
+          "kappa_33_vs_displaced_mass": 5.658253666346095,
+          "mission_formula_piB_over_4T": 5.235987755982989,
+          "form_factor_f_equals_c_over_pi": 1.0806468483201852
+        },
+        {
+          "half_draft_over_half_breadth": 0.5,
+          "draft_over_breadth": 0.25,
+          "added_mass_coefficient_c": 3.583518387621581,
+          "kappa_33_vs_displaced_mass": 3.583518387621581,
+          "mission_formula_piB_over_4T": 3.141592653589793,
+          "form_factor_f_equals_c_over_pi": 1.1406693301013464
+        },
+        {
+          "half_draft_over_half_breadth": 0.75,
+          "draft_over_breadth": 0.375,
+          "added_mass_coefficient_c": 3.8413566595769835,
+          "kappa_33_vs_displaced_mass": 2.560904439717989,
+          "mission_formula_piB_over_4T": 2.0943951023931953,
+          "form_factor_f_equals_c_over_pi": 1.222741801101296
+        },
+        {
+          "half_draft_over_half_breadth": 1.0,
+          "draft_over_breadth": 0.5,
+          "added_mass_coefficient_c": 4.112334636192796,
+          "kappa_33_vs_displaced_mass": 2.056167318096398,
+          "mission_formula_piB_over_4T": 1.5707963267948966,
+          "form_factor_f_equals_c_over_pi": 1.308996769996189
+        },
+        {
+          "half_draft_over_half_breadth": 1.5,
+          "draft_over_breadth": 0.75,
+          "added_mass_coefficient_c": 4.123432405208452,
+          "kappa_33_vs_displaced_mass": 1.3744774684028174,
+          "mission_formula_piB_over_4T": 1.0471975511965976,
+          "form_factor_f_equals_c_over_pi": 1.3125292995884565
+        },
+        {
+          "half_draft_over_half_breadth": 2.0,
+          "draft_over_breadth": 1.0,
+          "added_mass_coefficient_c": 4.123432405203265,
+          "kappa_33_vs_displaced_mass": 1.0308581013008162,
+          "mission_formula_piB_over_4T": 0.7853981633974483,
+          "form_factor_f_equals_c_over_pi": 1.3125292995868054
+        }
+      ]
+    },
+    "uniform": {
+      "kappa": 5.658174361623355,
+      "closed_form_ratio": 0.38754524971463505,
+      "meshes": [
+        {
+          "elements": 20,
+          "dry_hz": [
+            0.1480860332743393,
+            0.5846492701283589,
+            1.2885393511236165,
+            2.2300717470023614
+          ],
+          "wet_hz": [
+            0.05739325757103651,
+            0.22662572724447227,
+            0.49958074259811114,
+            0.8648274727674223
+          ],
+          "ratio": [
+            0.38756698590684546,
+            0.38762680263795923,
+            0.38771089308407447,
+            0.3878025332278722
+          ],
+          "max_rel_error_pct": 0.06638799299607467
+        },
+        {
+          "elements": 40,
+          "dry_hz": [
+            0.14796830730933827,
+            0.5827971830921523,
+            1.2794092615028796,
+            2.2021921024942124
+          ],
+          "wet_hz": [
+            0.057347630547314773,
+            0.22590779180425588,
+            0.49604076148993825,
+            0.8540151155238691
+          ],
+          "ratio": [
+            0.3875669837016211,
+            0.387626773701367,
+            0.38771077904130197,
+            0.38780227871883105
+          ],
+          "max_rel_error_pct": 0.06632232091226954
+        },
+        {
+          "elements": 80,
+          "dry_hz": [
+            0.1479394925101487,
+            0.5823437279257777,
+            1.27717336926624,
+            2.195365406065519
+          ],
+          "wet_hz": [
+            0.05733646286070741,
+            0.22573201907100968,
+            0.49517386993980184,
+            0.8513676607041838
+          ],
+          "ratio": [
+            0.387566983554267,
+            0.38762677134865653,
+            0.3877107696226774,
+            0.3878022575886282
+          ],
+          "max_rel_error_pct": 0.06631686859337754
+        }
+      ],
+      "bare_steel": {
+        "kappa": 35.53376544067386,
+        "closed_form_ratio": 0.1654446705854123,
+        "fem_ratio_finest": [
+          0.16551134968289913,
+          0.1656946800717557,
+          0.16595214736260655,
+          0.16623278440472808
+        ]
+      }
+    },
+    "tapered": {
+      "kappa_mean": 4.18165292054371,
+      "mean_added_mass_kg_m": 164589.85895260042,
+      "scalar_ratio": 0.4393046904311083,
+      "meshes": [
+        {
+          "elements": 20,
+          "dry_hz": [
+            0.1480860332743393,
+            0.5846492701283589,
+            1.2885393511236165,
+            2.2300717470023614
+          ],
+          "wet_hz": [
+            0.0594926117644674,
+            0.24851772019410284,
+            0.5627564776442756,
+            0.9841483148909685
+          ],
+          "ratio": [
+            0.4017435706056988,
+            0.42507146231370674,
+            0.4367398458988059,
+            0.44130791586138435
+          ],
+          "rel_error_vs_scalar_pct": [
+            8.550129475865413,
+            3.2399444912445405,
+            0.5838418273625634,
+            0.4559990990103439
+          ]
+        },
+        {
+          "elements": 40,
+          "dry_hz": [
+            0.14796830730933827,
+            0.5827971830921523,
+            1.2794092615028796,
+            2.2021921024942124
+          ],
+          "wet_hz": [
+            0.05943023348321259,
+            0.2476285182979908,
+            0.5585362838379552,
+            0.9713129284843117
+          ],
+          "ratio": [
+            0.40164163910430806,
+            0.4248965600419444,
+            0.43655794955076466,
+            0.44106639351952925
+          ],
+          "rel_error_vs_scalar_pct": [
+            8.57333239256788,
+            3.27975792269019,
+            0.6252473374796347,
+            0.4010207782421141
+          ]
+        },
+        {
+          "elements": 80,
+          "dry_hz": [
+            0.1479394925101487,
+            0.5823437279257777,
+            1.27717336926624,
+            2.195365406065519
+          ],
+          "wet_hz": [
+            0.059414892944541525,
+            0.24741052051433288,
+            0.5575026650864401,
+            0.9681707092004261
+          ],
+          "ratio": [
+            0.4016161738588203,
+            0.42485306984514554,
+            0.4365129108562104,
+            0.441006634488041
+          ],
+          "rel_error_vs_scalar_pct": [
+            8.579129108615403,
+            3.2896577024435567,
+            0.6354996055603708,
+            0.3874176839000972
+          ]
+        }
+      ],
+      "profile": {
+        "added_mass_at_ends_kg_m": 29253.40737750012,
+        "added_mass_amidships_kg_m": 222708.8643073823,
+        "moment_ratio": 4.18165292054371
+      }
+    }
+  },
+  "applicability_limits": {
+    "first_order_timoshenko": {
+      "validity_index_per_mode_hull_s": [
+        0.0791,
+        0.3165,
+        0.7122,
+        1.2661
+      ],
+      "first_order_error_pct_hull_s": [
+        0.166,
+        3.911,
+        28.575,
+        null
+      ],
+      "statement": "the square-root correction needs (n pi/L)^2 EI/(kappa G A) < 1 and stays within 2 % only while that index is below ~0.1; a ship-proportioned girder exceeds both bounds at higher modes, where the exact Hu-Timoshenko dispersion relation must be used instead"
+    },
+    "scalar_wet_dry_reduction": {
+      "tapered_max_deviation_pct": 8.579129108615403,
+      "tapered_deviation_per_mode_pct": [
+        8.579,
+        3.29,
+        0.635,
+        0.387
+      ],
+      "statement": "1/sqrt(1+kappa) is exact for a uniform added mass and degrades with hull-like taper because the mode shape weights the ends differently from a length average"
+    },
+    "lewis_form": {
+      "area_ratio_vs_doubled_box": 0.9056710302823222,
+      "statement": "the Lewis family has smooth flanks; the boxiest admissible member reaches ~90 % of the sharp box area, so the reported added mass is a lower bound for a sharp-cornered box"
+    }
+  },
+  "figures": [
+    {
+      "file": "figures/fig1_dry_modes.png",
+      "caption": "Dry bending frequencies from four independent paths"
+    },
+    {
+      "file": "figures/fig2_grid_convergence.png",
+      "caption": "Finite element grid convergence and observed order"
+    },
+    {
+      "file": "figures/fig3_lewis_sections.png",
+      "caption": "Fitted Lewis sections and the exact circle limit"
+    },
+    {
+      "file": "figures/fig4_added_mass_table.png",
+      "caption": "Added-mass ratio and the task formula's shape factor"
+    },
+    {
+      "file": "figures/fig5_wet_dry_ratio.png",
+      "caption": "Wet/dry reduction and the unchanged mode shape"
+    }
+  ],
+  "environment": {
+    "torch": "2.7.1",
+    "python": "3.11.6"
+  }
+}
