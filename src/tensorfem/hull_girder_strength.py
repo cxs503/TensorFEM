@@ -1,5 +1,19 @@
 """Hull-girder strength chain: wave loads → equivalent beam → CSR limit-state check.
 
+.. deprecated:: mission IN50-N07
+   This screening module is superseded by
+   :mod:`tensorfem.hull_girder_csr_chain`, which verifies the geometry (Cb,
+   displacement), solves the still-water draft/trim equilibrium, distributes the
+   wave load with a Smith-corrected design wave, uses a real Euler-Bernoulli
+   beam FE with ``EI(x)`` and closes the midship scantlings onto the IACS UR S11
+   minimum.  Two numbers in this module are known to be wrong and must not be
+   quoted: the ``k_w = 11.6`` wave coefficient (over-predicts the DNV/UR S11
+   wave moment by a factor ~7.7) and the ``I_ref = 1.15e7 m4`` midship inertia
+   reference (three orders of magnitude too large; a 320 m tanker has
+   ``I ≈ 1.6e3 m4``, ``W_deck ≈ 96 m3``).  See
+   ``docs/hull-girder-csr-bending-chain.md``.
+
+
 This module implements the full analytical chain for longitudinal hull-girder
 strength qualification:
   1. Wave bending moment (Holtrop/Mariner design wave formula)
