@@ -370,30 +370,174 @@ def leppington_radiation_efficiency(
     return sigma
 
 
-# ---------------------------------------------------------------------------
-# Maidanik low-frequency asymptotic
-# ---------------------------------------------------------------------------
+# Exact low-frequency (compact-source) asymptotics for baffled rectangular plates
+#
+# This block derives sigma in the limit k*a, k*b -> 0 directly from the
+# Rayleigh integral, with NO fitted constants.  Three regimes are separated by
+# the parity of the mode indices:
+#
+#   odd-odd      : net volume velocity survives        -> monopole  ~ k^2
+#   one index even : volume velocity cancels, dipole survives -> ~ k^4
+#   even-even    : volume velocity and dipole cancel   -> ~ k^6
+#
+# Derivation (see docs/acoustic-radiation-low-frequency-asymptotic.md):
+# with v(x,y) = V0 sin(m*pi*x/a) sin(n*pi*y/b) and the Rayleigh far field
+#   p(r_hat) = (j*omega*rho / 2*pi) * exp(-jkr)/r * int_S v exp(j k r_hat.r_s) dS
+# expanding exp(j k r_hat.r_s) for k*r_s << 1 gives
+#   int_S v dS = Q                      (monopole)
+#   int_S v (r_hat.r_s) dS = r_hat.d    (dipole, d = int_S v r_s dS)
+# and after integrating |p|^2/(2 rho c) over the half-space:
+#   P_monopole = rho c k^2 Q^2 / (4 pi)
+#   P_dipole   = rho c k^4 |d|^2 / (12 pi)
+# Dividing by rho c S <v^2> with <v^2> = V0^2/4 yields
+#   sigma = 16 k^2 a b / (pi^5 m^2 n^2)                        (m, n odd)
+#   sigma = k^4 |d|^2 / (12 pi S <v^2>)                        (exactly one even)
+# Both are independent of frequency except through k = omega/c.
 
-def maidanik_radiation_efficiency(
+
+def _is_odd(value: int) -> bool:
+    return value % 2 == 1
+
+
+def low_frequency_scaling_exponent(m: int, n: int) -> int:
+    """Return the power p in ``sigma ~ k**p`` as k -> 0 for mode ``(m, n)``.
+
+    ``p = 2`` for odd-odd modes (monopole), ``p = 4`` when exactly one index
+    is even (dipole), and ``p = 6`` when both indices are even.
+    """
+    m = _count("m", m)
+    n = _count("n", n)
+    if _is_odd(m) and _is_odd(n):
+        return 2
+    if _is_odd(m) or _is_odd(n):
+        return 4
+    return 6
+
+
+def _int_sin(mode: int, length: float) -> float:
+    """``int_0^L sin(mode*pi*x/L) dx``."""
+    return length / (mode * math.pi) * (1.0 - math.cos(mode * math.pi))
+
+
+def _int_x_sin(mode: int, length: float) -> float:
+    """``int_0^L x*sin(mode*pi*x/L) dx``."""
+    return -length * length * math.cos(mode * math.pi) / (mode * math.pi)
+
+
+def dipole_moment_magnitude(
+    *, length: float, width: float,
+    m: int = 1, n: int = 1,
+    velocity_amplitude: float = 1.0,
+) -> float:
+    """Magnitude of the acoustic dipole moment ``d = int_S v r_s dS``.
+
+    For ``v = V0 sin(m pi x/a) sin(n pi y/b)`` the two components factor into
+    one-dimensional integrals:
+
+        d_x = V0 * int_0^a x sin(m pi x/a) dx * int_0^b sin(n pi y/b) dy
+        d_y = V0 * int_0^a sin(m pi x/a) dx * int_0^b y sin(n pi y/b) dy
+
+    ``d`` vanishes when both mode indices are even (each component factors
+    through ``int_0^b sin(n pi y/b) dy = 0``); for odd-odd modes ``d`` is
+    non-zero but the monopole term dominates as ``k`` -> 0, so the dipole is only
+    the leading contribution when exactly one index is
+    even.
+    """
+    length = _positive("length", length)
+    width = _positive("width", width)
+    m = _count("m", m)
+    n = _count("n", n)
+    velocity_amplitude = _nonnegative("velocity_amplitude", velocity_amplitude)
+
+    dx = velocity_amplitude * _int_x_sin(m, length) * _int_sin(n, width)
+    dy = velocity_amplitude * _int_sin(m, length) * _int_x_sin(n, width)
+    return math.hypot(dx, dy)
+
+
+def monopole_radiation_efficiency(
     *, length: float, width: float,
     frequency: float,
-    rho: float = 1.225, c: float = 343.0,
+    c: float = 343.0,
     m: int = 1, n: int = 1,
 ) -> float:
-    """Maidanik low-frequency asymptotic radiation efficiency.
+    """Exact low-frequency radiation efficiency for odd-odd modes.
 
-    For ka << 1 (well below coincidence), the radiation efficiency of a
-    baffled simply-supported plate scales as (ka)^2.
+        sigma = 16 k^2 a b / (pi^5 m^2 n^2)
 
-    The classical Maidanik result for a baffled rectangular plate in the
-    low-frequency limit:
+    Valid for ``k*a << 1`` and ``k*b << 1``.  Derived from the monopole term of
+    the Rayleigh integral; no fitted constants.  For the ``(1,1)`` mode of a
+    square plate this equals ``16 k^2 a^2 / pi^5``, which reproduces the
+    ``(k/k_mn)^2 * 1.033`` behaviour quoted in older calibrations.
+    """
+    length = _positive("length", length)
+    width = _positive("width", width)
+    frequency = _positive("frequency", frequency)
+    c = _positive("c", c)
+    m = _count("m", m)
+    n = _count("n", n)
+    if not (_is_odd(m) and _is_odd(n)):
+        raise ValueError("monopole law requires both m and n odd; "
+                         f"got m={m}, n={n}")
 
-        sigma = (k^2 / k_mn^2) * (geometric factor)
+    k = 2.0 * math.pi * frequency / c
+    return 16.0 * k * k * length * width / (math.pi**5 * m * m * n * n)
 
-    For the fundamental mode (1,1) of a rectangular plate, the geometric
-    factor is calibrated to match the Rayleigh integral result.
 
-    The key scaling is sigma ~ (k/k_mn)^2 for ka << 1.
+def dipole_radiation_efficiency(
+    *, length: float, width: float,
+    frequency: float,
+    c: float = 343.0,
+    m: int = 1, n: int = 1,
+    velocity_amplitude: float = 1.0,
+) -> float:
+    """Exact low-frequency radiation efficiency when exactly one index is even.
+
+        sigma = k^4 |d|^2 / (12 pi S <v^2>)
+
+    The dipole moment ``d`` is given by :func:`dipole_moment_magnitude`; for
+    even-even modes ``d`` vanishes and this returns 0.0 (the leading order is
+    then ``O(k^6)``).  For odd-odd modes ``d`` is non-zero but this term is
+    subdominant to the monopole law, so use
+    :func:`low_frequency_radiation_efficiency` there instead.
+    """
+    length = _positive("length", length)
+    width = _positive("width", width)
+    frequency = _positive("frequency", frequency)
+    c = _positive("c", c)
+    m = _count("m", m)
+    n = _count("n", n)
+    velocity_amplitude = _nonnegative("velocity_amplitude", velocity_amplitude)
+
+    if velocity_amplitude == 0.0:
+        return 0.0
+    d = dipole_moment_magnitude(
+        length=length, width=width, m=m, n=n,
+        velocity_amplitude=velocity_amplitude,
+    )
+    if d == 0.0:
+        return 0.0
+    k = 2.0 * math.pi * frequency / c
+    S = length * width
+    v_sq = mode_mean_square_velocity(
+        length=length, width=width, m=m, n=n,
+        velocity_amplitude=velocity_amplitude,
+    )
+    return k**4 * d * d / (12.0 * math.pi * S * v_sq)
+
+
+def low_frequency_radiation_efficiency(
+    *, length: float, width: float,
+    frequency: float,
+    c: float = 343.0,
+    m: int = 1, n: int = 1,
+) -> float:
+    """Exact low-frequency radiation efficiency, parity-dispatched.
+
+    * odd-odd      -> monopole law  ``16 k^2 a b / (pi^5 m^2 n^2)``   (~k^2)
+    * exactly one even -> dipole law ``k^4 |d|^2 / (12 pi S <v^2>)``  (~k^4)
+    * even-even    -> ``0.0``: the monopole and dipole moments both cancel and
+      the leading term is ``O(k^6)``; its prefactor is not derived here, use the
+      Rayleigh integral (:func:`radiation_efficiency_rayleigh`) instead.
     """
     length = _positive("length", length)
     width = _positive("width", width)
@@ -402,30 +546,59 @@ def maidanik_radiation_efficiency(
     m = _count("m", m)
     n = _count("n", n)
 
-    omega = 2.0 * math.pi * frequency
-    k = omega / c
+    if _is_odd(m) and _is_odd(n):
+        return monopole_radiation_efficiency(
+            length=length, width=width, frequency=frequency, c=c, m=m, n=n,
+        )
+    if _is_odd(m) or _is_odd(n):
+        return dipole_radiation_efficiency(
+            length=length, width=width, frequency=frequency, c=c, m=m, n=n,
+        )
+    return 0.0
 
-    # Structural wavenumber
-    k_mn = math.sqrt((m * math.pi / length)**2 + (n * math.pi / width)**2)
 
-    # Maidanik low-frequency asymptotic:
-    # sigma ~ (k / k_mn)^2 for ka << 1
-    ratio_sq = (k / k_mn)**2
+# ---------------------------------------------------------------------------
+# Maidanik-equivalent low-frequency asymptotic (analytic, no fitted factors)
+# ---------------------------------------------------------------------------
 
-    # Geometric factor: calibrated to match Rayleigh integral for the
-    # fundamental mode of a square plate.
-    # For odd-odd modes (m,n both odd), the geometric factor is approximately
-    # 1.03 for a square plate (m=n=1). For other modes, it varies.
-    # The factor 1.03 comes from numerical calibration of the Rayleigh integral.
-    if m % 2 == 1 and n % 2 == 1:
-        geom_factor = 1.03  # Calibrated for (1,1) mode of square plate
-    else:
-        # For even modes or mixed modes, radiation is weaker due to nodal lines
-        geom_factor = 0.1  # Approximate for non-fundamental modes
+def maidanik_radiation_efficiency(
+    *, length: float, width: float,
+    frequency: float,
+    rho: float = 1.225, c: float = 343.0,
+    m: int = 1, n: int = 1,
+) -> float:
+    """Low-frequency radiation efficiency of a baffled plate (Maidanik regime).
 
-    sigma = ratio_sq * geom_factor
+    The classical Maidanik (1962) sub-coincidence result is the statement that
+    ``sigma ~ k^2`` for odd-odd modes with a geometric prefactor that depends on
+    the mode indices and the plate area.  That prefactor is obtained in closed
+    form here from the monopole limit of the Rayleigh integral:
 
-    return sigma
+        sigma = 16 k^2 a b / (pi^5 m^2 n^2)         (m, n odd)
+
+    and the mode-parity-dependent extensions
+
+        sigma = k^4 |d|^2 / (12 pi S <v^2>)         (exactly one even, ~k^4)
+        sigma = 0 (leading order O(k^6))            (both even)
+
+    are returned through :func:`low_frequency_radiation_efficiency`.
+
+    .. note::
+       Earlier revisions of this function used ``(k/k_mn)^2 * 1.03`` for odd-odd
+       modes and ``(k/k_mn)^2 * 0.1`` otherwise, i.e. fitted constants that are
+       only correct for the ``(1,1)`` mode of a square plate and that carry the
+       wrong frequency exponent (``k^2`` instead of ``k^4``/``k^6``) for modes
+       with an even index.  The analytic law above supersedes them; ``rho`` is
+       kept for signature compatibility and does not enter ``sigma``.
+
+    See ``docs/acoustic-radiation-low-frequency-asymptotic.md`` for the
+    derivation and the numerical verification against two independent
+    formulations of the Rayleigh integral.
+    """
+    _positive("rho", rho)  # validated for API compatibility only
+    return low_frequency_radiation_efficiency(
+        length=length, width=width, frequency=frequency, c=c, m=m, n=n,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1057,23 +1230,23 @@ def validate_low_frequency_scaling(
 
         omega = 2.0 * math.pi * freq
         k = omega / c
-        k_mn = math.sqrt((m * math.pi / length)**2 + (n * math.pi / width)**2)
         ka = k * length
 
-        # Maidanik prediction: sigma ~ (k/k_mn)^2 * geom_factor
-        # Calibrated to match Rayleigh integral for (1,1) mode
-        if m % 2 == 1 and n % 2 == 1:
-            geom_factor = 1.03  # Calibrated for (1,1) mode of square plate
-        else:
-            geom_factor = 0.1  # Approximate for non-fundamental modes
+        # Analytic low-frequency asymptote (no fitted constants): monopole law
+        # for odd-odd modes, dipole law for one even index, O(k^6) for even-even.
+        sigma_maidanik = low_frequency_radiation_efficiency(
+            length=length, width=width, frequency=freq, c=c, m=m, n=n,
+        )
 
-        sigma_maidanik = (k / k_mn)**2 * geom_factor
-
-        # Relative error
-        if abs(sigma_maidanik) > 1e-30:
+        # Relative error.  For even-even modes the leading order is O(k^6) with
+        # a prefactor that is not derived analytically, so the asymptote returns
+        # 0.0: such points carry asymptote_available=False and are excluded from
+        # the pass/fail gate instead of being scored as a silent pass.
+        asymptote_available = abs(sigma_maidanik) > 1e-30
+        if asymptote_available:
             rel_error = abs(sigma_rayleigh - sigma_maidanik) / abs(sigma_maidanik)
         else:
-            rel_error = float('inf')
+            rel_error = float("inf")
 
         results.append({
             "frequency": freq,
@@ -1081,16 +1254,20 @@ def validate_low_frequency_scaling(
             "sigma_rayleigh": sigma_rayleigh,
             "sigma_maidanik": sigma_maidanik,
             "relative_error": rel_error,
-            "passes": rel_error < tolerance,
+            "asymptote_available": asymptote_available,
+            "passes": asymptote_available and rel_error < tolerance,
         })
 
-    all_pass = all(r["passes"] for r in results)
+    scored = [r for r in results if r["asymptote_available"]]
+    all_pass = bool(scored) and all(r["passes"] for r in scored)
 
     return {
         "results": results,
         "all_pass": all_pass,
         "tolerance": tolerance,
-        "max_error": max(r["relative_error"] for r in results),
+        "max_error": max(r["relative_error"] for r in scored) if scored else float("inf"),
+        "asymptote_scored_points": len(scored),
+        "scaling_exponent": low_frequency_scaling_exponent(m, n),
     }
 
 
