@@ -1,0 +1,128 @@
+{
+  "case": "Euler-Bernoulli cantilever, uniform load q",
+  "geometry": {
+    "length_m": 1.0,
+    "width_m": 0.01,
+    "height_m": 0.01,
+    "second_moment_m4": 8.333333333333335e-10,
+    "young_pa": 200000000000.0,
+    "EI_n_m2": 166.66666666666669,
+    "load_n_per_m": 5.0,
+    "slenderness_L_over_h": 100.0
+  },
+  "reference": {
+    "method": "closed form, Euler-Bernoulli",
+    "deflection_field": "w(x)=q x^2 (6L^2-4Lx+x^2)/(24 EI)",
+    "tip_deflection_m": 0.0037499999999999994,
+    "tip_rotation_rad": 0.004999999999999999,
+    "clamped_moment_n": 2.5
+  },
+  "element": "2-node cubic Hermite (4 dof), tensorfem.modal.beam_bending_stiffness",
+  "consistent_load": "q*[L/2, L^2/12, L/2, -L^2/12]",
+  "levels": [
+    {
+      "elements": 2,
+      "dofs": 6,
+      "h": 0.5,
+      "tip_deflection_m": 0.0037499999999999977,
+      "tip_rotation_rad": 0.0049999999999999975,
+      "clamped_shear_recovered_N_per_m": -4.9999999999999964,
+      "tip_relative_error": 4.625929269271486e-16,
+      "rotation_relative_error": 3.4694469519536147e-16,
+      "field_l2_relative_error": 0.0016379450573782085
+    },
+    {
+      "elements": 4,
+      "dofs": 10,
+      "h": 0.25,
+      "tip_deflection_m": 0.0037500000000000584,
+      "tip_rotation_rad": 0.0050000000000001,
+      "clamped_shear_recovered_N_per_m": -5.000000000000014,
+      "tip_relative_error": 1.5728159515523053e-14,
+      "rotation_relative_error": 2.0122792321330965e-14,
+      "field_l2_relative_error": 0.00010237156607746244
+    },
+    {
+      "elements": 8,
+      "dofs": 18,
+      "h": 0.125,
+      "tip_deflection_m": 0.0037500000000007363,
+      "tip_rotation_rad": 0.005000000000000842,
+      "clamped_shear_recovered_N_per_m": -4.999999999999872,
+      "tip_relative_error": 1.9648634571230638e-13,
+      "rotation_relative_error": 1.6861512186494567e-13,
+      "field_l2_relative_error": 6.39822274205381e-06
+    },
+    {
+      "elements": 16,
+      "dofs": 34,
+      "h": 0.0625,
+      "tip_deflection_m": 0.0037500000000053484,
+      "tip_rotation_rad": 0.0050000000000066346,
+      "clamped_shear_recovered_N_per_m": -5.0000000000007105,
+      "tip_relative_error": 1.4264052901798627e-12,
+      "rotation_relative_error": 1.3270634591222576e-12,
+      "field_l2_relative_error": 3.998879305296501e-07
+    },
+    {
+      "elements": 32,
+      "dofs": 66,
+      "h": 0.03125,
+      "tip_deflection_m": 0.003750000000057267,
+      "tip_rotation_rad": 0.005000000000080417,
+      "clamped_shear_recovered_N_per_m": -5.000000000019554,
+      "tip_relative_error": 1.5271349000182493e-11,
+      "rotation_relative_error": 1.608348870751897e-11,
+      "field_l2_relative_error": 2.4983179800112848e-08
+    },
+    {
+      "elements": 64,
+      "dofs": 130,
+      "h": 0.015625,
+      "tip_deflection_m": 0.0037499999999697086,
+      "tip_rotation_rad": 0.004999999999865398,
+      "clamped_shear_recovered_N_per_m": -5.000000000226578,
+      "tip_relative_error": 8.077566393538406e-12,
+      "rotation_relative_error": 2.6920306261946084e-11,
+      "field_l2_relative_error": 1.5607036914155156e-09
+    }
+  ],
+  "observed_order_field_l2": 4.000114426089785,
+  "gates": [
+    {
+      "id": "G1.tip_deflection",
+      "description": "|w_tip(FE) - qL^4/(8EI)| / (qL^4/(8EI)) < 1e-2 at 8 elements",
+      "value": 1.9648634571230638e-13,
+      "limit": 0.01,
+      "relation": "le",
+      "passed": true
+    },
+    {
+      "id": "G1.field_order",
+      "description": "field L2 convergence order >= 1.5 (levels 2..32)",
+      "value": 4.000114426089785,
+      "limit": 1.5,
+      "relation": "ge",
+      "passed": true
+    },
+    {
+      "id": "G1.equilibrium",
+      "description": "recovered clamp shear vs qL, relative error < 1e-8",
+      "value": 2.5579538487363607e-14,
+      "limit": 1e-08,
+      "relation": "le",
+      "passed": true
+    }
+  ],
+  "verdict": "PASS",
+  "generated_by": "benchmarks/structural_ladder.py",
+  "generated_at": "2026-11-07T08:20:51+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "machine": "loongarch64",
+    "dtype": "torch.float64 / numpy.float64"
+  },
+  "module": "tensorfem.structural_verification"
+}

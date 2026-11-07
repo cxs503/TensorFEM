@@ -1,0 +1,63 @@
+{
+  "generated_by": "benchmarks/structural_ladder.py",
+  "generated_at": "2026-11-07T08:20:51+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "machine": "loongarch64",
+    "dtype": "torch.float64 / numpy.float64"
+  },
+  "module": "tensorfem.structural_verification",
+  "rungs": {
+    "fem_beam": "PASS",
+    "fem_plate": "PASS",
+    "fem_modal": "PASS"
+  },
+  "gate_meshes": {
+    "fem_beam": 8,
+    "fem_plate": 16,
+    "fem_modal": 16
+  },
+  "observations": {
+    "beam_field_order": 4.000114426089785,
+    "plate_order": 1.9440160244049582,
+    "modal_orders": {
+      "mode_1": 3.868335920952729,
+      "mode_2": 3.9573267128724976,
+      "mode_3": 3.9090302093197704,
+      "mode_4": 3.696913173228119,
+      "mode_5": 4.056231470279998
+    }
+  },
+  "anchors": [
+    {
+      "rung": "fem_beam",
+      "case": "cantilever UDL",
+      "quantity": "tip deflection w(L) [m]",
+      "fem": 0.0037500000000007363,
+      "reference": 0.0037499999999999994,
+      "relative_error": 1.9648634571230638e-13,
+      "passed": true
+    },
+    {
+      "rung": "fem_plate",
+      "case": "SSSS plate UDL",
+      "quantity": "centre coefficient alpha",
+      "fem": 0.004038418659557961,
+      "reference": 0.00406,
+      "relative_error": 0.005315601094098233,
+      "passed": true
+    },
+    {
+      "rung": "fem_modal",
+      "case": "cantilever modes",
+      "quantity": "frequency f_5 [Hz] (worst of modes 1-5 at this mesh)",
+      "fem": 463.6729674862958,
+      "reference": 463.48377983749594,
+      "relative_error": 0.0004081861265267751,
+      "passed": true
+    }
+  ],
+  "verdict": "PASS"
+}
