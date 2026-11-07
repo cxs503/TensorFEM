@@ -74,6 +74,19 @@
   39 个 finding 清单与"新族按需并入"的流程记在文档 §2/§5。
 
 ### Verification
+- **Armstrong-Frederick 循环塑性最小面**（`docs/cyclic-plasticity-af-anchor.md`，P16-N2/m5197，
+  补 m4951 明确 withhold 的循环加载缺口）：新增 `tensorfem.cyclic_plasticity`——AF 非线性随动
+  强化 `dX=(2/3)C dε^p − γX dp` + 线性/Voce 等向强化，屈服函数按任务书写成
+  `f=‖s−X‖_F−√(2/3)R(p)`；**全隐式**返回映射（`X^{n+1}=a(X^n+√(2/3)CΔp n)`，a=1/(1+γΔp)）
+  收敛为单个单调标量方程（含 `w=s_tr−aX^n` 解析解，非比例步也精确，不做 X 冻结近似），
+  一致切线含 `dX/dε` 耦合项（对中心差分 ≤1.5e-10）。四个闭式锚逐项对齐：稳定滞回环峰/谷
+  `α_a=(C/γ)tanh(γε^p_a)`（≤0.16%，5 应变幅×2 循环数）、每循环耗散
+  `4Rε^p_a+(4C/γ²)(γε^p_a−tanh γε^p_a)`（≤0.26%）、Bauschinger 反向屈服下降量 =α_a（≤0.69%，
+  5 幅值）、棘轮率闭式 `(1/γ)[ln((C−γα_min)/(C−γα_max))−ln((C+γα_max)/(C+γα_min))]`（≤2.6%，
+  20 循环×2 均值×2 幅值；Richardson 极限 0.02%）。`C→0` 逐位退化回 m4951 核（≤2.5e-16），
+  `H_k=0` 负控使 C3 判据 100% FAIL。27 个 pytest + m4951 回归 16 个全绿，工件
+  `artifacts/cyclic_plasticity/{verification.json,*.png}`。
+
 - **J2 弹塑性最小面**（`docs/j2-plasticity-minimal-surface.md`，IN14-D4/m4951，补 m605
   「无弹塑性」缺口）：新增 `tensorfem.j2_elastoplasticity`（材料点 API），在既有
   `plasticity.update_j2` / `j2_consistent_tangent` 核上补出可验证面——材料参数封闭拒收
