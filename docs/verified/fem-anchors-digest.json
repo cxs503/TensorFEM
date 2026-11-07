@@ -1,0 +1,54 @@
+{
+  "mission": "IN36-N01",
+  "anchors": [
+    {
+      "anchor": "fem_cantilever",
+      "finest_tip_deflection_rel_error": 9.785634367487361e-05,
+      "observed_order": 3.6844073023156825,
+      "gci_fine": 1.1160201114350893e-05,
+      "solid3d_rel_error": 0.010609462738271014,
+      "gates_passed": true
+    },
+    {
+      "anchor": "fem_hertz_contact",
+      "contact_radius": 0.0011756673438603792,
+      "peak_pressure": 3454398816.1310434,
+      "contact_radius_rel_error": 0.011745818761008442,
+      "peak_pressure_rel_error": 0.00018365160383626566,
+      "contact_force_rel_error": 0.021771012755033015,
+      "pressure_l2_rel_error": 0.021496231892914473,
+      "pressure_field_order": 2.2268739305920606,
+      "gates_passed": true
+    },
+    {
+      "anchor": "fem_plate_modal",
+      "analytic_hz": [
+        66.58639331770662,
+        128.05075638020506,
+        204.88121020832804,
+        230.49136148436904,
+        266.3455732708265
+      ],
+      "finest_hz": [
+        66.60813678614146,
+        128.11460693836943,
+        205.38691877379202,
+        230.91539545586238,
+        266.69316894785095
+      ],
+      "relative_errors": [
+        0.00032654521969810446,
+        0.0004986347599134078,
+        0.002468301338857559,
+        0.001839695721187029,
+        0.0013050552061213416
+      ],
+      "max_rel_error": 0.002468301338857559,
+      "min_mac": 0.9999999999999972,
+      "min_order": 2.6518751856651654,
+      "library_equivalence": 3.490630007263462e-11,
+      "gates_passed": true
+    }
+  ],
+  "all_gates_passed": true
+}

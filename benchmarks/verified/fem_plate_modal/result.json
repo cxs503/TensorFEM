@@ -1,0 +1,252 @@
+{
+  "benchmark": "fem_plate_modal",
+  "mission": "IN36-N01",
+  "generated_at": "2026-11-07T09:02:58+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64",
+    "dtype": "torch.float64",
+    "eigensolver": "scipy.linalg.eigh(dsyevr) subset on the Cholesky-reduced pencil"
+  },
+  "geometry": {
+    "length_a": 1.2,
+    "width_b": 0.8,
+    "thickness_h": 0.012,
+    "young_modulus": 210000000000.0,
+    "poisson_ratio": 0.3,
+    "density": 7850.0,
+    "aspect_a_over_b": 1.4999999999999998,
+    "slenderness_a_over_h": 100.0,
+    "boundary": "simple (hard: w = 0 on all edges, normal rotation restrained)"
+  },
+  "analytic": {
+    "formula": "f_mn = (pi/2) sqrt(D/(rho h)) [(m/a)^2 + (n/b)^2]",
+    "plate_rigidity": 33230.769230769234,
+    "mode_labels": [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        1
+      ],
+      [
+        2,
+        2
+      ]
+    ],
+    "frequencies_hz": [
+      66.58639331770662,
+      128.05075638020506,
+      204.88121020832804,
+      230.49136148436904,
+      266.3455732708265
+    ],
+    "shear_bias_relative": 0.0001
+  },
+  "levels": [
+    {
+      "elements_x": 12,
+      "elements_y": 8,
+      "nodes": 117,
+      "dofs": 351,
+      "free_dofs": 267,
+      "spurious_modes_filtered": 0,
+      "lambda_max_estimate": 709118655928.8309,
+      "frequencies_hz": [
+        67.53682948882818,
+        131.32434753360508,
+        219.38134636470087,
+        245.13660041926985,
+        282.11767523326057
+      ],
+      "mode_mac": [
+        1.0000000000000002,
+        1.0000000000000004,
+        0.9999999999999998,
+        1.0,
+        1.0
+      ],
+      "mode_labels": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "seconds": 3.474849719554186,
+      "relative_errors": [
+        0.014273729567941817,
+        0.025564793570450828,
+        0.07077338200818284,
+        0.06353920962844417,
+        0.05921668518363776
+      ],
+      "max_relative_error": 0.07077338200818284
+    },
+    {
+      "elements_x": 24,
+      "elements_y": 16,
+      "nodes": 425,
+      "dofs": 1275,
+      "free_dofs": 1111,
+      "spurious_modes_filtered": 0,
+      "lambda_max_estimate": 712114919044.5182,
+      "frequencies_hz": [
+        66.79206702648548,
+        128.7459546871097,
+        208.05950579775768,
+        233.63742650255318,
+        269.6575948114516
+      ],
+      "mode_mac": [
+        0.9999999999999996,
+        1.0,
+        1.0000000000000004,
+        0.9999999999999989,
+        1.0000000000000004
+      ],
+      "mode_labels": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "seconds": 11.060301329940557,
+      "relative_errors": [
+        0.003088824886452679,
+        0.005429083955119207,
+        0.015512870048931537,
+        0.013649383638169477,
+        0.012435053828573794
+      ],
+      "max_relative_error": 0.015512870048931537
+    },
+    {
+      "elements_x": 48,
+      "elements_y": 32,
+      "nodes": 1617,
+      "dofs": 4851,
+      "free_dofs": 4527,
+      "spurious_modes_filtered": 0,
+      "lambda_max_estimate": 714512656283.673,
+      "frequencies_hz": [
+        66.60813678614146,
+        128.11460693836943,
+        205.38691877379202,
+        230.91539545586238,
+        266.69316894785095
+      ],
+      "mode_mac": [
+        1.0000000000000002,
+        0.9999999999999999,
+        1.0000000000000004,
+        1.0000000000000013,
+        0.9999999999999972
+      ],
+      "mode_labels": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "seconds": 48.74061184935272,
+      "relative_errors": [
+        0.00032654521969810446,
+        0.0004986347599134078,
+        0.002468301338857559,
+        0.001839695721187029,
+        0.0013050552061213416
+      ],
+      "max_relative_error": 0.002468301338857559
+    }
+  ],
+  "convergence": {
+    "mode_orders_finest_pair": [
+      3.2417033892619496,
+      3.4446534318505466,
+      2.6518751856651654,
+      2.891296730448768,
+      3.2522300109472044
+    ],
+    "min_order_finest_pair": 2.6518751856651654,
+    "ladder_elements_x": [
+      12,
+      24,
+      48
+    ],
+    "note": "order per mode from the finest two levels of the uniform r = 2 ladder"
+  },
+  "library_equivalence_max_rel": 3.490630007263462e-11,
+  "verdict": {
+    "max_frequency_rel_error": 0.002468301338857559,
+    "min_mode_mac": 0.9999999999999972,
+    "gate_passed": true,
+    "failed_gates": []
+  },
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "figures": [
+      "plate_modes.png",
+      "plate_convergence.png"
+    ]
+  }
+}
