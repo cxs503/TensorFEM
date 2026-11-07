@@ -1,0 +1,23 @@
+[
+  {
+    "id": "G1.beam",
+    "description": "Beam error < 3%",
+    "value": 6.443028509097842e-06,
+    "limit": 3.0,
+    "passed": true
+  },
+  {
+    "id": "G2.plate",
+    "description": "Plate error < 10% (thin plate)",
+    "value": 6.842545540515209,
+    "limit": 10.0,
+    "passed": true
+  },
+  {
+    "id": "G3.shell",
+    "description": "Shell: frequencies positive and in expected range",
+    "value": 60.500108050743094,
+    "limit": null,
+    "passed": true
+  }
+]
