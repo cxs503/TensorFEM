@@ -1,0 +1,344 @@
+{
+  "case": "Euler-Bernoulli beam statics: simply supported uniform load + cantilever tip load",
+  "mission": "5418",
+  "node": "P19-N01",
+  "generated_by": "benchmarks/verified/fem_beam_static/run.py",
+  "generated_at": "2026-11-07T11:50:51+00:00",
+  "model": {
+    "element": "2-node cubic Hermite (w, w,x), no shear deformation",
+    "stiffness": "tensorfem.modal.beam_bending_stiffness",
+    "consistent_load": "q*[le/2, le^2/12, le/2, -le^2/12]",
+    "solver": "numpy dense LU on the free dofs",
+    "boundary_conditions": {
+      "simply_supported": "w=0 at x=0 and x=L (rotations free)",
+      "cantilever": "w=0, w,x=0 at x=0"
+    }
+  },
+  "parameters": {
+    "length_m": 10.0,
+    "EI_N_m2": 1000.0,
+    "uniform_load_N_per_m": 1.0,
+    "tip_load_N": 0.1,
+    "sections_m": [
+      0.9,
+      2.4,
+      3.9,
+      5.4,
+      6.9
+    ],
+    "levels_elements": [
+      10,
+      20,
+      40
+    ],
+    "midspan_exact_m": 0.13020833333333334,
+    "cantilever_tip_exact_m": 0.03333333333333333
+  },
+  "simply_supported_levels": [
+    {
+      "elements": 10,
+      "dof": 22,
+      "h_m": 1.0,
+      "sections": [
+        {
+          "x_m": 0.9,
+          "w_fe_m": 0.036919500000001,
+          "w_exact_m": 0.0369198375,
+          "relative_error": 9.141426990208896e-06
+        },
+        {
+          "x_m": 2.4,
+          "w_fe_m": 0.08986000000000227,
+          "w_exact_m": 0.08986239999999998,
+          "relative_error": 2.670749944036427e-05
+        },
+        {
+          "x_m": 3.9,
+          "w_fe_m": 0.12270650000000319,
+          "w_exact_m": 0.12270683749999999,
+          "relative_error": 2.75045795061744e-06
+        },
+        {
+          "x_m": 5.4,
+          "w_fe_m": 0.12920700000000357,
+          "w_exact_m": 0.12920940000000003,
+          "relative_error": 1.85744999702869e-05
+        },
+        {
+          "x_m": 6.9,
+          "w_fe_m": 0.10818850000000314,
+          "w_exact_m": 0.10818883749999998,
+          "relative_error": 3.119545459933707e-06
+        }
+      ],
+      "max_section_relative_error": 2.670749944036427e-05,
+      "field_l2_relative_error": 1.7831779201402046e-05,
+      "midspan_fe_m": 0.13020833333333687,
+      "midspan_exact_m": 0.13020833333333334
+    },
+    {
+      "elements": 20,
+      "dof": 42,
+      "h_m": 0.5,
+      "sections": [
+        {
+          "x_m": 0.9,
+          "w_fe_m": 0.036919770833365784,
+          "w_exact_m": 0.0369198375,
+          "relative_error": 1.8057130997140485e-06
+        },
+        {
+          "x_m": 2.4,
+          "w_fe_m": 0.08986233333341112,
+          "w_exact_m": 0.08986239999999998,
+          "relative_error": 7.418741193252508e-07
+        },
+        {
+          "x_m": 3.9,
+          "w_fe_m": 0.12270677083343702,
+          "w_exact_m": 0.12270683749999999,
+          "relative_error": 5.432994959592318e-07
+        },
+        {
+          "x_m": 5.4,
+          "w_fe_m": 0.1292093333334377,
+          "w_exact_m": 0.12920940000000003,
+          "relative_error": 5.159575257382443e-07
+        },
+        {
+          "x_m": 6.9,
+          "w_fe_m": 0.10818877083341577,
+          "w_exact_m": 0.10818883749999998,
+          "relative_error": 6.162057542340677e-07
+        }
+      ],
+      "max_section_relative_error": 1.8057130997140485e-06,
+      "field_l2_relative_error": 1.1144855860739755e-06,
+      "midspan_fe_m": 0.13020833333343992,
+      "midspan_exact_m": 0.13020833333333334
+    },
+    {
+      "elements": 40,
+      "dof": 82,
+      "h_m": 0.25,
+      "sections": [
+        {
+          "x_m": 0.9,
+          "w_fe_m": 0.03691982812495824,
+          "w_exact_m": 0.0369198375,
+          "relative_error": 2.539296592732396e-07
+        },
+        {
+          "x_m": 2.4,
+          "w_fe_m": 0.08986239062486907,
+          "w_exact_m": 0.08986239999999998,
+          "relative_error": 1.0432762654577725e-07
+        },
+        {
+          "x_m": 3.9,
+          "w_fe_m": 0.122706828124761,
+          "w_exact_m": 0.12270683749999999,
+          "relative_error": 7.64035580977197e-08
+        },
+        {
+          "x_m": 5.4,
+          "w_fe_m": 0.12920939062469028,
+          "w_exact_m": 0.12920940000000003,
+          "relative_error": 7.255903789320846e-08
+        },
+        {
+          "x_m": 6.9,
+          "w_fe_m": 0.10818882812469419,
+          "w_exact_m": 0.10818883749999998,
+          "relative_error": 8.66568678639255e-08
+        }
+      ],
+      "max_section_relative_error": 2.539296592732396e-07,
+      "field_l2_relative_error": 6.965709013149171e-08,
+      "midspan_fe_m": 0.13020833333303625,
+      "midspan_exact_m": 0.13020833333333334
+    }
+  ],
+  "cantilever_levels": [
+    {
+      "elements": 10,
+      "dof": 22,
+      "h_m": 1.0,
+      "tip_deflection_fe_m": 0.03333333333335006,
+      "tip_deflection_exact_m": 0.03333333333333333,
+      "tip_deflection_relative_error": 5.018901960696098e-13,
+      "tip_rotation_fe_rad": 0.005000000000002402,
+      "tip_rotation_exact_rad": 0.005,
+      "tip_rotation_relative_error": 4.803449304979779e-13
+    },
+    {
+      "elements": 20,
+      "dof": 42,
+      "h_m": 0.5,
+      "tip_deflection_fe_m": 0.03333333333343772,
+      "tip_deflection_exact_m": 0.03333333333333333,
+      "tip_deflection_relative_error": 3.1316615967114103e-12,
+      "tip_rotation_fe_rad": 0.005000000000014335,
+      "tip_rotation_exact_rad": 0.005,
+      "tip_rotation_relative_error": 2.866977488746869e-12
+    },
+    {
+      "elements": 40,
+      "dof": 82,
+      "h_m": 0.25,
+      "tip_deflection_fe_m": 0.03333333333548523,
+      "tip_deflection_exact_m": 0.03333333333333333,
+      "tip_deflection_relative_error": 6.455690149120841e-11,
+      "tip_rotation_fe_rad": 0.005000000000308297,
+      "tip_rotation_exact_rad": 0.005,
+      "tip_rotation_relative_error": 6.165935817481483e-11
+    }
+  ],
+  "convergence": {
+    "h_m": [
+      1.0,
+      0.5,
+      0.25
+    ],
+    "section_error": [
+      2.670749944036427e-05,
+      1.8057130997140485e-06,
+      2.539296592732396e-07
+    ],
+    "field_l2_error": [
+      1.7831779201402046e-05,
+      1.1144855860739755e-06,
+      6.965709013149171e-08
+    ],
+    "section_order": 3.358336091358076,
+    "field_l2_order": 3.9999823679102513
+  },
+  "data_points": [
+    {
+      "id": "L1.section_1",
+      "x_m": 0.9,
+      "fe": 0.03691982812495824,
+      "reference": 0.0369198375,
+      "reference_formula": "q x (L^3-2Lx^2+x^3)/(24EI)",
+      "relative_error": 2.539296592732396e-07,
+      "threshold": 0.005,
+      "passed": true
+    },
+    {
+      "id": "L1.section_2",
+      "x_m": 2.4,
+      "fe": 0.08986239062486907,
+      "reference": 0.08986239999999998,
+      "reference_formula": "q x (L^3-2Lx^2+x^3)/(24EI)",
+      "relative_error": 1.0432762654577725e-07,
+      "threshold": 0.005,
+      "passed": true
+    },
+    {
+      "id": "L1.section_3",
+      "x_m": 3.9,
+      "fe": 0.122706828124761,
+      "reference": 0.12270683749999999,
+      "reference_formula": "q x (L^3-2Lx^2+x^3)/(24EI)",
+      "relative_error": 7.64035580977197e-08,
+      "threshold": 0.005,
+      "passed": true
+    },
+    {
+      "id": "L1.section_4",
+      "x_m": 5.4,
+      "fe": 0.12920939062469028,
+      "reference": 0.12920940000000003,
+      "reference_formula": "q x (L^3-2Lx^2+x^3)/(24EI)",
+      "relative_error": 7.255903789320846e-08,
+      "threshold": 0.005,
+      "passed": true
+    },
+    {
+      "id": "L1.section_5",
+      "x_m": 6.9,
+      "fe": 0.10818882812469419,
+      "reference": 0.10818883749999998,
+      "reference_formula": "q x (L^3-2Lx^2+x^3)/(24EI)",
+      "relative_error": 8.66568678639255e-08,
+      "threshold": 0.005,
+      "passed": true
+    },
+    {
+      "id": "L1.cantilever_tip_deflection",
+      "fe": 0.03333333333548523,
+      "reference": 0.03333333333333333,
+      "reference_formula": "P L^3/(3EI)",
+      "relative_error": 6.455690149120841e-11,
+      "threshold": 0.005,
+      "passed": true
+    },
+    {
+      "id": "L1.cantilever_tip_rotation",
+      "fe": 0.005000000000308297,
+      "reference": 0.005,
+      "reference_formula": "P L^2/(2EI)",
+      "relative_error": 6.165935817481483e-11,
+      "threshold": 0.005,
+      "passed": true
+    }
+  ],
+  "gates": [
+    {
+      "id": "L1.sections",
+      "quantity": "max relative error of the 5 section deflections (N=40)",
+      "reference": "w(x)=q x (L^3-2Lx^2+x^3)/(24EI)",
+      "value": 2.539296592732396e-07,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true,
+      "note": "off-node sections x=0.9,2.4,3.9,5.4,6.9 m"
+    },
+    {
+      "id": "L1.cantilever_tip",
+      "quantity": "cantilever tip deflection relative error (N=40)",
+      "reference": "w_max=P L^3/(3EI)",
+      "value": 6.455690149120841e-11,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L1.cantilever_rotation",
+      "quantity": "cantilever tip rotation relative error (N=40)",
+      "reference": "theta_max=P L^2/(2EI)",
+      "value": 6.165935817481483e-11,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L1.order_l2",
+      "quantity": "observed convergence order of the L2 deflection error",
+      "reference": "log-log slope over N=10,20,40",
+      "value": 3.9999823679102513,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L1.order_sections",
+      "quantity": "observed convergence order of the section errors",
+      "reference": "log-log slope over N=10,20,40",
+      "value": 3.358336091358076,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L1.monotone",
+      "quantity": "L2 error decreases monotonically over N=10,20,40",
+      "reference": "strict decrease of field L2 error",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

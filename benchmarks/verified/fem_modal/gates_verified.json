@@ -1,0 +1,92 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_modal_p19",
+  "title": "Beam and plate modal analysis vs closed-form eigenfrequencies (L3 rung)",
+  "mission": "5418",
+  "generated_at": "2026-11-07T11:53:43+00:00",
+  "criteria": {
+    "frequency_relative_error_max": 0.03,
+    "beam_convergence_order_min": 2.0,
+    "plate_convergence_order_min": 1.5,
+    "levels": [
+      10,
+      20,
+      40
+    ],
+    "modes": 5
+  },
+  "gates": [
+    {
+      "id": "L3.beam_frequencies",
+      "quantity": "worst relative error of beam modes 1-5 (N=40)",
+      "reference": "omega_n = (n pi/L)^2 sqrt(EI/(rho A))",
+      "value": 1.6442502548642484e-05,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L3.plate_frequencies",
+      "quantity": "worst relative error of plate modes (1,1)..(2,2) (N=40)",
+      "reference": "omega_mn = pi^2 sqrt(D/(rho t)) [(m/a)^2+(n/b)^2]",
+      "value": 1.4931413434520423e-06,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L3.beam_order",
+      "quantity": "minimum observed order over the five beam mode errors",
+      "reference": "log-log slope over N=10,20,40",
+      "value": 3.953572568132107,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L3.plate_order",
+      "quantity": "minimum observed order over the plate mode errors",
+      "reference": "log-log slope over N=10,20,40",
+      "value": 3.8047389841187584,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L3.monotone_beam",
+      "quantity": "beam frequency errors decrease monotonically with refinement",
+      "reference": "strict decrease at every mode",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L3.monotone_plate",
+      "quantity": "plate frequency errors decrease monotonically with refinement",
+      "reference": "strict decrease at every mode",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_modal/result_p19.json",
+    "figures": [
+      "beam_modes.png",
+      "plate_modes.png",
+      "modal_convergence.png"
+    ],
+    "legacy_result_untouched": "benchmarks/verified/fem_modal/result.json"
+  },
+  "limitations": [
+    "Euler-Bernoulli beam (no rotary inertia, no shear): the L/h = 80 beam is slender enough for the first five modes, but mode 5 of a stubby beam would need Timoshenko kinematics.",
+    "Kirchhoff plate: a/t = 100 puts the Mindlin shear correction at ~1e-4 relative, below the 3 % gate but not modelled here.",
+    "Simply supported edges only -- clamped and free plate modes are not covered by this rung (the CCCC static case is in benchmarks/verified/fem_plate_static).",
+    "FE consistent-mass models are stiffer in frequency than the exact spectrum only in the limit h -> 0; the observed errors approach zero from above, which the monotonicity gate records."
+  ]
+}
