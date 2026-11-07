@@ -1,0 +1,96 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_beam_static",
+  "title": "Euler-Bernoulli beam statics vs closed form (L1 of the P19 ladder)",
+  "mission": "5418",
+  "generated_at": "2026-11-07T11:50:51+00:00",
+  "criteria": {
+    "section_relative_error_max": 0.005,
+    "cantilever_tip_relative_error_max": 0.005,
+    "convergence_order_min": 2.0,
+    "levels_elements": [
+      10,
+      20,
+      40
+    ],
+    "sections_m": [
+      0.9,
+      2.4,
+      3.9,
+      5.4,
+      6.9
+    ]
+  },
+  "gates": [
+    {
+      "id": "L1.sections",
+      "quantity": "max relative error of the 5 section deflections (N=40)",
+      "reference": "w(x)=q x (L^3-2Lx^2+x^3)/(24EI)",
+      "value": 2.539296592732396e-07,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true,
+      "note": "off-node sections x=0.9,2.4,3.9,5.4,6.9 m"
+    },
+    {
+      "id": "L1.cantilever_tip",
+      "quantity": "cantilever tip deflection relative error (N=40)",
+      "reference": "w_max=P L^3/(3EI)",
+      "value": 6.455690149120841e-11,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L1.cantilever_rotation",
+      "quantity": "cantilever tip rotation relative error (N=40)",
+      "reference": "theta_max=P L^2/(2EI)",
+      "value": 6.165935817481483e-11,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L1.order_l2",
+      "quantity": "observed convergence order of the L2 deflection error",
+      "reference": "log-log slope over N=10,20,40",
+      "value": 3.9999823679102513,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L1.order_sections",
+      "quantity": "observed convergence order of the section errors",
+      "reference": "log-log slope over N=10,20,40",
+      "value": 3.358336091358076,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L1.monotone",
+      "quantity": "L2 error decreases monotonically over N=10,20,40",
+      "reference": "strict decrease of field L2 error",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_beam_static/result.json",
+    "figures": [
+      "deflection_profile.png",
+      "convergence.png"
+    ]
+  },
+  "limitations": [
+    "Nodal displacements of this Hermite element are exact; the graded interior sections measure the interpolation quality, which is why the observed order is 4 rather than 2.",
+    "Euler-Bernoulli kinematics (no transverse shear, no warp) -- the cantilever tip load gives w/L = 3.3e-3, i.e. the geometric linearisation holds but shear deformation would matter for a stubby beam.",
+    "Both cases are 1-D idealisations of the physical beam; they grade the element, not a 3-D solid discretisation."
+  ]
+}

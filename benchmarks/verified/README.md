@@ -42,3 +42,21 @@ Notes that apply to all three:
 * Where a quantity does not converge monotonically, the evidence says so; see
   `fem_hertz_contact/result.json:convergence` and
   `docs/verified/fem-verification-anchors.md` §6.
+## P19-N01 verification ladder (2026-11)
+
+Three new anchors extend the structural verification face beyond the single-rung
+cases above; each is self-contained (`run.py` + `result*.json` +
+`gates_verified.json` + figures) and graded against a closed-form / series
+oracle with a three-level mesh ladder.
+
+| anchor | physics | oracle | data points | worst error |
+|---|---|---|---:|---:|
+| `fem_beam_static/` | Euler–Bernoulli beam: SS uniform load, cantilever tip load | `w(x)=q x(L³-2Lx²+x³)/(24EI)`, `PL³/(3EI)`, `PL²/(2EI)` | 7 | 2.5e-07 |
+| `fem_plate_static/` | Kirchhoff plate: SSSS + CCCC under uniform pressure | Navier series (11 and 301 harmonics), Timoshenko tables 8/35 | 6 | 7.7e-03 |
+| `fem_modal/` | SS beam modes 1–5 and SS plate modes (1,1)…(2,2) | `(nπ/L)²√(EI/ρA)`, Navier plate eigenfrequencies | 10 | 1.6e-05 |
+
+`fem_modal/result.json` remains the legacy cantilever rung produced by
+`benchmarks/structural_ladder.py`; the P19 modal ladder writes
+`result_p19.json` alongside it. Report: `docs/fem-verification-ladder-p19.md`,
+artifact tests: `tests/test_p19_ladder_artifacts.py`, element tests:
+`tests/test_plate_bfs.py`.

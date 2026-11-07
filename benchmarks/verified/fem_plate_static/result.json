@@ -1,0 +1,375 @@
+{
+  "case": "Kirchhoff thin plate statics: SSSS and CCCC square plate under uniform pressure",
+  "mission": "5418",
+  "node": "P19-N01",
+  "generated_by": "benchmarks/verified/fem_plate_static/run.py",
+  "generated_at": "2026-11-07T11:57:03+00:00",
+  "model": {
+    "element": "Bogner-Fox-Schmit C1 bicubic Hermite rectangle (16 dof: w, w,x, w,y, w,xy)",
+    "module": "tensorfem.plate_bfs",
+    "quadrature": "3x3 Gauss (stiffness and consistent load)",
+    "solver": "scipy SuperLU on the constrained sparse system",
+    "boundary_conditions": {
+      "ssss": "w = 0 and tangential slope = 0 on every edge (hard simple support)",
+      "cccc": "w = w,x = w,y = 0 on every edge (corner twist dof free)"
+    },
+    "load": "consistent transverse load of q = 10 kPa (not lumped)"
+  },
+  "parameters": {
+    "side_m": 1.0,
+    "thickness_m": 0.01,
+    "young_pa": 210000000000.0,
+    "poisson": 0.3,
+    "pressure_pa": 10000.0,
+    "rigidity_n_m": 19230.769230769234,
+    "a_over_t": 100.0,
+    "levels": [
+      10,
+      20,
+      40
+    ],
+    "extended_levels": [
+      80
+    ],
+    "navier_terms": 11,
+    "navier_terms_converged": 301
+  },
+  "reference": {
+    "navier_11_centre_deflection_m": 0.0021123987093528266,
+    "navier_301_centre_deflection_m": 0.002112423383553739,
+    "navier_11_centre_moments_N": [
+      478.4034424585964,
+      478.40344245859643
+    ],
+    "navier_301_centre_moments_N": [
+      478.86382678796514,
+      478.86382678796514
+    ],
+    "timoshenko_ssss_alpha": 0.00406,
+    "timoshenko_ssss_moment": 0.0479,
+    "timoshenko_cccc_alpha": 0.00126,
+    "timoshenko_cccc_moment": 0.0231
+  },
+  "ssss_levels": [
+    {
+      "n_x": 10,
+      "n_y": 10,
+      "h_m": 0.1,
+      "n_dof": 484,
+      "n_free_dof": 400,
+      "centre_deflection_m": 0.002112459856611894,
+      "alpha": 0.00406242280117672,
+      "M_x_N": 480.58292713583063,
+      "M_y_N": 480.5829271352063,
+      "M_x_normalised": 0.04805829271358306,
+      "M_y_normalised": 0.048058292713520634,
+      "error_vs_navier_11": 2.8946836028919762e-05,
+      "error_vs_navier_301": 1.726597917766318e-05,
+      "error_vs_timoshenko": 0.0005967490583053465,
+      "M_x_error_vs_navier_301": 0.0035899565841014925,
+      "M_y_error_vs_navier_301": 0.003589956582797758,
+      "M_error_vs_timoshenko": 0.0033046495528823174
+    },
+    {
+      "n_x": 20,
+      "n_y": 20,
+      "h_m": 0.05,
+      "n_dof": 1764,
+      "n_free_dof": 1600,
+      "centre_deflection_m": 0.002112425634253869,
+      "alpha": 0.004062356988949748,
+      "M_x_N": 479.2793556054132,
+      "M_y_N": 479.2793556044108,
+      "M_x_normalised": 0.04792793556054132,
+      "M_y_normalised": 0.04792793556044108,
+      "error_vs_navier_11": 1.2746126440533782e-05,
+      "error_vs_navier_301": 1.0654588219691044e-06,
+      "error_vs_timoshenko": 0.0005805391501843222,
+      "M_x_error_vs_navier_301": 0.0008677389984439682,
+      "M_y_error_vs_navier_301": 0.0008677389963507283,
+      "M_error_vs_timoshenko": 0.0005832058568124691
+    },
+    {
+      "n_x": 40,
+      "n_y": 40,
+      "h_m": 0.025,
+      "n_dof": 6724,
+      "n_free_dof": 6400,
+      "centre_deflection_m": 0.0021124235237256015,
+      "alpha": 0.004062352930241542,
+      "M_x_N": 478.966802994183,
+      "M_y_N": 478.96680302177043,
+      "M_x_normalised": 0.0478966802994183,
+      "M_y_normalised": 0.047896680302177044,
+      "error_vs_navier_11": 1.1747011899326134e-05,
+      "error_vs_navier_301": 6.635595093757612e-08,
+      "error_vs_timoshenko": 0.0005795394683600787,
+      "M_x_error_vs_navier_301": 0.00021504277512168673,
+      "M_y_error_vs_navier_301": 0.00021504283273184025,
+      "M_error_vs_timoshenko": 6.930481381416964e-05
+    }
+  ],
+  "cccc_levels": [
+    {
+      "n_x": 10,
+      "n_y": 10,
+      "h_m": 0.1,
+      "n_dof": 484,
+      "n_free_dof": 364,
+      "centre_deflection_m": 0.0006600107382206368,
+      "alpha": 0.001269251419655071,
+      "M_x_N": 232.15689783681722,
+      "M_y_N": 232.15689783681623,
+      "M_x_normalised": 0.02321568978368172,
+      "M_y_normalised": 0.023215689783681624,
+      "error_vs_timoshenko": 0.007342396551643641,
+      "M_error_vs_timoshenko": 0.0050082157437975
+    },
+    {
+      "n_x": 20,
+      "n_y": 20,
+      "h_m": 0.05,
+      "n_dof": 1764,
+      "n_free_dof": 1524,
+      "centre_deflection_m": 0.0006582231330195768,
+      "alpha": 0.0012658137173453402,
+      "M_x_N": 229.7524971510095,
+      "M_y_N": 229.75249714992,
+      "M_x_normalised": 0.02297524971510095,
+      "M_y_normalised": 0.022975249714992,
+      "error_vs_timoshenko": 0.004614061385190642,
+      "M_error_vs_timoshenko": 0.005400445233725139
+    },
+    {
+      "n_x": 40,
+      "n_y": 40,
+      "h_m": 0.025,
+      "n_dof": 6724,
+      "n_free_dof": 6244,
+      "centre_deflection_m": 0.0006579986347208128,
+      "alpha": 0.0012653819898477171,
+      "M_x_N": 229.21889861893604,
+      "M_y_N": 229.21889862670827,
+      "M_x_normalised": 0.022921889861893602,
+      "M_y_normalised": 0.022921889862670828,
+      "error_vs_timoshenko": 0.004271420514061274,
+      "M_error_vs_timoshenko": 0.007710395589021481
+    }
+  ],
+  "extended_levels": {
+    "ssss": [
+      {
+        "n_x": 80,
+        "n_y": 80,
+        "h_m": 0.0125,
+        "n_dof": 26244,
+        "n_free_dof": 25600,
+        "centre_deflection_m": 0.0021124233916756155,
+        "alpha": 0.004062352676299261,
+        "M_x_N": 478.8894930307575,
+        "M_y_N": 478.8894929141419,
+        "M_x_normalised": 0.047888949303075745,
+        "M_y_normalised": 0.04788894929141419
+      }
+    ],
+    "cccc": [
+      {
+        "n_x": 80,
+        "n_y": 80,
+        "h_m": 0.0125,
+        "n_dof": 26244,
+        "n_free_dof": 25284,
+        "centre_deflection_m": 0.0006579700435057031,
+        "alpha": 0.0012653270067417368,
+        "M_x_N": 229.09206376225146,
+        "M_y_N": 229.0920636639872,
+        "M_x_normalised": 0.022909206376225146,
+        "M_y_normalised": 0.022909206366398722
+      }
+    ]
+  },
+  "convergence": {
+    "h_m": [
+      0.1,
+      0.05,
+      0.025
+    ],
+    "ssss_deflection_error_vs_navier_301": [
+      1.726597917766318e-05,
+      1.0654588219691044e-06,
+      6.635595093757612e-08
+    ],
+    "ssss_moment_error_vs_navier_301": [
+      0.0035899565841014925,
+      0.0008677389984439682,
+      0.00021504277512168673
+    ],
+    "cccc_deflection_error_vs_timoshenko": [
+      0.007342396551643641,
+      0.004614061385190642,
+      0.004271420514061274
+    ],
+    "order_ssss_deflection": 4.01174529158493,
+    "order_ssss_moment": 2.0306354151053294,
+    "order_cccc_self": 2.9932517299359067
+  },
+  "data_points": [
+    {
+      "id": "L2.ssss_centre_deflection_navier_11",
+      "fe": 0.0021124235237256015,
+      "reference": 0.0021123987093528266,
+      "reference_formula": "Navier double sine series, m,n<=11",
+      "relative_error": 1.1747011899326134e-05,
+      "threshold": 0.01,
+      "passed": true
+    },
+    {
+      "id": "L2.ssss_centre_deflection_timoshenko",
+      "fe": 0.0021124235237256015,
+      "reference": 0.0021111999999999997,
+      "reference_formula": "w_c = 0.00406 q a^4 / D",
+      "relative_error": 0.0005795394683600787,
+      "threshold": 0.02,
+      "passed": true
+    },
+    {
+      "id": "L2.ssss_centre_M_x",
+      "fe": 478.966802994183,
+      "reference": 478.86382678796514,
+      "reference_formula": "M_x = 0.047886 q a^2 (Navier, 301 harmonics)",
+      "relative_error": 0.00021504277512168673,
+      "threshold": 0.02,
+      "passed": true
+    },
+    {
+      "id": "L2.ssss_centre_M_y",
+      "fe": 478.96680302177043,
+      "reference": 478.86382678796514,
+      "reference_formula": "M_y = 0.047886 q a^2 (Navier, 301 harmonics)",
+      "relative_error": 0.00021504283273184025,
+      "threshold": 0.02,
+      "passed": true
+    },
+    {
+      "id": "L2.cccc_centre_deflection",
+      "fe": 0.0006579986347208128,
+      "reference": 0.0006551999999999999,
+      "reference_formula": "w_c = 0.00126 q a^4 / D (Timoshenko table 35)",
+      "relative_error": 0.004271420514061274,
+      "threshold": 0.02,
+      "passed": true
+    },
+    {
+      "id": "L2.cccc_centre_M_x",
+      "fe": 229.21889861893604,
+      "reference": 231.0,
+      "reference_formula": "M_x = 0.0231 q a^2 (Timoshenko table 35)",
+      "relative_error": 0.007710395589021481,
+      "threshold": 0.02,
+      "passed": true
+    }
+  ],
+  "gates": [
+    {
+      "id": "L2.ssss_centre_vs_navier_11",
+      "quantity": "SSSS centre deflection vs Navier 11x11 (N=40)",
+      "reference": "w_c = 16q/(pi^6 D) sum_{m,n<=11 odd} ...",
+      "value": 1.1747011899326134e-05,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.ssss_centre_vs_navier_301",
+      "quantity": "SSSS centre deflection vs converged Navier series (N=40)",
+      "reference": "w_c = 16q/(pi^6 D) sum_{m,n<=301 odd} ...",
+      "value": 6.635595093757612e-08,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.ssss_centre_vs_timoshenko",
+      "quantity": "SSSS centre deflection vs Timoshenko table 8 alpha=0.00406 (N=40)",
+      "reference": "w_c = 0.00406 q a^4 / D",
+      "value": 0.0005795394683600787,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.ssss_moments_vs_navier",
+      "quantity": "SSSS centre M_x (worst of M_x, M_y) vs converged Navier (N=40)",
+      "reference": "M_x = M_y = 0.047886 q a^2 (Navier), table 0.0479",
+      "value": 0.00021504283273184025,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.cccc_centre_vs_timoshenko",
+      "quantity": "CCCC centre deflection vs Timoshenko table 35 alpha=0.00126 (N=40)",
+      "reference": "w_c = 0.00126 q a^4 / D",
+      "value": 0.004271420514061274,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true,
+      "note": "table rounding alone is 0.42 %, see extended_levels"
+    },
+    {
+      "id": "L2.cccc_moments_vs_timoshenko",
+      "quantity": "CCCC centre M_x (worst of M_x, M_y) vs Timoshenko 0.0231 q a^2 (N=40)",
+      "reference": "M_x = M_y = 0.0231 q a^2",
+      "value": 0.007710395589021481,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.order_ssss",
+      "quantity": "observed order of the SSSS centre-deflection error",
+      "reference": "log-log slope vs the converged Navier series",
+      "value": 4.01174529158493,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L2.order_ssss_moment",
+      "quantity": "observed order of the SSSS centre-moment error",
+      "reference": "log-log slope vs the converged Navier series",
+      "value": 2.0306354151053294,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L2.order_cccc_self",
+      "quantity": "observed order of the CCCC deflection (successive differences)",
+      "reference": "Richardson self-convergence over N=10,20,40 (table floor excluded)",
+      "value": 2.9932517299359067,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L2.monotone_ssss",
+      "quantity": "SSSS centre-deflection error decreases monotonically",
+      "reference": "strict decrease vs the converged Navier series",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L2.monotone_cccc",
+      "quantity": "CCCC centre-deflection error decreases monotonically",
+      "reference": "strict decrease vs Timoshenko 0.00126",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true
+}
