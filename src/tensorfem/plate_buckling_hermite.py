@@ -68,6 +68,8 @@ __all__ = [
     "hermite_shear_coefficient",
     "hermite_shear_coefficient_ladder",
     "hermite_duality_residual",
+    "hermite_cubic_1d",
+    "bfs_plate_element_matrices",
 ]
 
 YOUNG, POISSON, THICKNESS = 210.0e9, 0.3, 0.012
@@ -328,3 +330,35 @@ def hermite_duality_residual(*, aspect_ratio: float, n_y: int = 12) -> float:
     direct = hermite_shear_coefficient(aspect_ratio=ratio, n_y=n_y)
     inverse = hermite_shear_coefficient(aspect_ratio=1.0 / ratio, n_y=n_y)
     return abs(direct * ratio**2 / inverse - 1.0)
+
+
+# ---------------------------------------------------------------------------
+# Public re-exports
+#
+# The bicubic Hermite (Bogner--Fox--Schmit) element below is not specific to
+# buckling: ``_element_matrices`` returns the *bending* stiffness of the plate
+# together with the unit-shear geometric matrix.  Other verification paths (see
+# ``tensorfem.structural_verification``) need the bending operator for arbitrary
+# material data, so the quadrature-level helpers are exposed here instead of
+# being re-implemented elsewhere.  Their behaviour is unchanged.
+# ---------------------------------------------------------------------------
+
+def hermite_cubic_1d(s: float, length: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Values and first two ``s``-derivatives of the four cubic Hermite functions.
+
+    Dof ordering is ``(w@0, w_,x@0, w@1, w_,x@1)`` with the slope dofs scaled by
+    the element length, i.e. a nodal dof carries the true derivative in ``1/m``.
+    """
+    return _hermite_1d(s, length)
+
+
+def bfs_plate_element_matrices(
+    a: float, b: float, young: float, poisson: float, thickness: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Bending (``16x16``) and unit-shear geometric matrices of one BFS element.
+
+    ``a``/``b`` are the element side lengths, ``young``/``poisson``/``thickness``
+    the plate material data.  Rigidity ``D = E t^3 / (12 (1 - nu^2))`` is applied
+    internally, so the returned bending matrix already carries it.
+    """
+    return _element_matrices(a, b, young, poisson, thickness)

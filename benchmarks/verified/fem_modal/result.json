@@ -1,0 +1,194 @@
+{
+  "case": "Euler-Bernoulli cantilever free vibration, modes 1-5",
+  "geometry": {
+    "length_m": 1.0,
+    "width_m": 0.01,
+    "height_m": 0.01,
+    "young_pa": 200000000000.0,
+    "density_kg_m3": 7850.0,
+    "EI_n_m2": 166.66666666666669,
+    "rho_a_kg_per_m": 0.785,
+    "slenderness_L_over_h": 100.0
+  },
+  "reference": {
+    "method": "cos(beta L) cosh(beta L) = -1 (Blevins 1979 table 8-1)",
+    "beta_l": [
+      1.8751040687119587,
+      4.694091132974178,
+      7.85475743823761,
+      10.995540734875465,
+      14.137168391046469
+    ],
+    "beta_l_table": [
+      1.8751,
+      4.69409,
+      7.85476,
+      10.9955,
+      14.1372
+    ],
+    "angular_frequencies_rad_s": [
+      51.23188068352291,
+      321.0647157526858,
+      898.9905008828455,
+      1761.6625823821498,
+      2912.1544755910127
+    ],
+    "frequencies_hz": [
+      8.15380705467686,
+      51.099036564434265,
+      143.07878200816376,
+      280.37730804615245,
+      463.48377983749594
+    ]
+  },
+  "element": "2-node cubic Hermite beam, consistent mass (tensorfem.modal)",
+  "levels": [
+    {
+      "elements": 4,
+      "dofs": 10,
+      "h": 0.25,
+      "frequencies_hz": [
+        8.154073750005795,
+        51.15857751826556,
+        144.18654032679004,
+        284.448914199348,
+        529.061503314006
+      ],
+      "relative_errors": [
+        3.2708074540550855e-05,
+        0.0011652069752082102,
+        0.00774229625859606,
+        0.01452188189397037,
+        0.1414887129372737
+      ]
+    },
+    {
+      "elements": 8,
+      "dofs": 18,
+      "h": 0.125,
+      "frequencies_hz": [
+        8.153824039105181,
+        51.103122387100434,
+        143.16580839656615,
+        281.00538633593453,
+        466.16548527319503
+      ],
+      "relative_errors": [
+        2.083005914394345e-06,
+        7.995889826657254e-05,
+        0.0006082410486092605,
+        0.0022401181256747732,
+        0.005785974725241392
+      ]
+    },
+    {
+      "elements": 16,
+      "dofs": 34,
+      "h": 0.0625,
+      "frequencies_hz": [
+        8.153808120430877,
+        51.09929757113363,
+        143.08446993025674,
+        280.41969425316165,
+        463.6729674862958
+      ],
+      "relative_errors": [
+        1.307063079963476e-07,
+        5.10785950024333e-06,
+        3.975377769610307e-05,
+        0.00015117559728566865,
+        0.0004081861265267751
+      ]
+    },
+    {
+      "elements": 32,
+      "dofs": 66,
+      "h": 0.03125,
+      "frequencies_hz": [
+        8.15380712065076,
+        51.099052966143674,
+        143.0791414051928,
+        280.38000593429564,
+        463.49593080055257
+      ],
+      "relative_errors": [
+        8.091177234701825e-09,
+        3.209788386823219e-07,
+        2.5118820831858966e-06,
+        9.622348406203998e-06,
+        2.621658747337257e-05
+      ]
+    },
+    {
+      "elements": 64,
+      "dofs": 130,
+      "h": 0.015625,
+      "frequencies_hz": [
+        8.15380704823622,
+        51.09903760349461,
+        143.07880454051562,
+        280.3774774221635,
+        463.4845444120014
+      ],
+      "relative_errors": [
+        7.898936920097518e-10,
+        2.0334245364091895e-08,
+        1.5748213348637607e-07,
+        6.041002826830779e-07,
+        1.649625162099221e-06
+      ]
+    }
+  ],
+  "observed_orders": {
+    "mode_1": 3.868335920952729,
+    "mode_2": 3.9573267128724976,
+    "mode_3": 3.9090302093197704,
+    "mode_4": 3.696913173228119,
+    "mode_5": 4.056231470279998
+  },
+  "gates": [
+    {
+      "id": "G3.frequencies",
+      "description": "max relative frequency error over modes 1-5 < 1e-2 at 16 elements",
+      "value": 0.0004081861265267751,
+      "limit": 0.01,
+      "relation": "le",
+      "passed": true
+    },
+    {
+      "id": "G3.roots_vs_table",
+      "description": "bisection roots reproduce the tabulated beta_n L to < 1e-5 (source precision)",
+      "value": 3.704686050259756e-06,
+      "limit": 1e-05,
+      "relation": "le",
+      "passed": true
+    },
+    {
+      "id": "G3.characteristic_residual",
+      "description": "max |cos(z) cosh(z) + 1| / cosh(z) at the computed roots < 1e-12",
+      "value": 3.0604648975319583e-15,
+      "limit": 1e-12,
+      "relation": "le",
+      "passed": true
+    },
+    {
+      "id": "G3.order",
+      "description": "observed frequency convergence order >= 1.5 for every mode",
+      "value": 3.696913173228119,
+      "limit": 1.5,
+      "relation": "ge",
+      "passed": true
+    }
+  ],
+  "verdict": "PASS",
+  "generated_by": "benchmarks/structural_ladder.py",
+  "generated_at": "2026-11-07T08:20:51+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "machine": "loongarch64",
+    "dtype": "torch.float64 / numpy.float64"
+  },
+  "module": "tensorfem.structural_verification"
+}
