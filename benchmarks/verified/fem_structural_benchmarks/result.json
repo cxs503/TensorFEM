@@ -1,0 +1,1226 @@
+{
+  "anchor": "fem_structural_benchmarks",
+  "schema": "tensorfem.structural-verification-face.v1",
+  "mission": "IN41-N01",
+  "generated_at": "2026-11-07T14:08:07+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "scipy": "1.16.0",
+    "machine": "loongarch64",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "dtype": "torch.float64 / numpy.float64"
+  },
+  "criteria": {
+    "case_a_tip_deflection_rel_max": 0.01,
+    "case_a_root_stress_rel_max": 0.01,
+    "case_b_centre_deflection_rel_max": 0.02,
+    "case_c_stress_rel_max": 0.01,
+    "convergence_order_min": 1.5,
+    "levels_per_case": 3
+  },
+  "cases": {
+    "A_beam_cantilever": {
+      "element": "2-node cubic Hermite Euler-Bernoulli frame element (tensorfem.frame2d, 3 dof per node)",
+      "physics": "Euler-Bernoulli cantilever, tip load P and uniform load q",
+      "parameters": {
+        "length_m": 2.5,
+        "outer_width_m": 0.15,
+        "outer_depth_m": 0.25,
+        "wall_thickness_m": 0.02,
+        "young_modulus_pa": 210000000000.0,
+        "poisson_ratio": 0.3,
+        "tip_load_n": 50000.0,
+        "distributed_load_n_per_m": 20000.0,
+        "levels_elements": [
+          4,
+          8,
+          16
+        ],
+        "section": {
+          "area_m2": 0.014400000000000003,
+          "second_moment_m4": 0.00011042000000000002,
+          "extreme_fibre_m": 0.125,
+          "slenderness_L_over_h": 10.0
+        }
+      },
+      "reference": {
+        "w_tip": "P L^3 / (3 E I) = 1.1230568421e-02 m",
+        "theta_tip": "P L^2 / (2 E I) = 6.7383410528e-03 rad",
+        "sigma_root": "P L c / I = 1.415052e+08 Pa",
+        "w_udl": "q L^4 / (8 E I) = 4.2114631580e-03 m"
+      },
+      "levels_tip_load": [
+        {
+          "elements": 4,
+          "load": "tip",
+          "w_tip_fem_m": 0.011230568421294643,
+          "w_tip_exact_m": 0.011230568421294737,
+          "w_tip_rel_error": 8.341079826834631e-15,
+          "theta_tip_fem_rad": 0.006738341052776777,
+          "theta_tip_exact_rad": 0.006738341052776842,
+          "theta_tip_rel_error": 9.654027577354898e-15,
+          "root_moment_fem_nm": 124999.99999999964,
+          "root_moment_exact_nm": 125000.0,
+          "root_stress_fem_pa": 141505162.1083133,
+          "root_stress_exact_pa": 141505162.10831368,
+          "root_stress_rel_error": 2.737922668457032e-15,
+          "field": [
+            {
+              "x_m": 0.3125,
+              "defl_fem_m": 0.00025224909540017383,
+              "defl_exact_m": 0.00025224909540017476,
+              "defl_rel_error": 3.653419827534654e-15,
+              "bending_stress_fem_pa": 123817016.8447738,
+              "bending_stress_exact_pa": 123817016.84477448,
+              "bending_stress_rel_error": 5.536019461495536e-15
+            },
+            {
+              "x_m": 0.9375,
+              "defl_fem_m": 0.00207282952307099,
+              "defl_exact_m": 0.002072829523071001,
+              "defl_rel_error": 5.2305419255086856e-15,
+              "bending_stress_fem_pa": 88440726.31769507,
+              "bending_stress_exact_pa": 88440726.31769605,
+              "bending_stress_rel_error": 1.1120178222656253e-14
+            },
+            {
+              "x_m": 1.5625,
+              "defl_fem_m": 0.005209492187612269,
+              "defl_exact_m": 0.005209492187612305,
+              "defl_rel_error": 6.826352737813356e-15,
+              "bending_stress_fem_pa": 53064435.79061673,
+              "bending_stress_exact_pa": 53064435.79061764,
+              "bending_stress_rel_error": 1.7129567464192708e-14
+            },
+            {
+              "x_m": 2.1875,
+              "defl_fem_m": 0.009135804194275822,
+              "defl_exact_m": 0.009135804194275895,
+              "defl_rel_error": 7.975038041716771e-15,
+              "bending_stress_fem_pa": 17688145.26353902,
+              "bending_stress_exact_pa": 17688145.26353921,
+              "bending_stress_rel_error": 1.0741081237792972e-14
+            }
+          ],
+          "field_max_defl_rel_error": 7.975038041716771e-15,
+          "field_max_stress_rel_error": 1.7129567464192708e-14
+        },
+        {
+          "elements": 8,
+          "load": "tip",
+          "w_tip_fem_m": 0.011230568421296171,
+          "w_tip_exact_m": 0.011230568421294737,
+          "w_tip_rel_error": 1.2774209290356001e-13,
+          "theta_tip_fem_rad": 0.006738341052777496,
+          "theta_tip_exact_rad": 0.006738341052776842,
+          "theta_tip_rel_error": 9.705515724434123e-14,
+          "root_moment_fem_nm": 125000.00000002375,
+          "root_moment_exact_nm": 125000.0,
+          "root_stress_fem_pa": 141505162.10834056,
+          "root_stress_exact_pa": 141505162.10831368,
+          "root_stress_rel_error": 1.8996971130371097e-13,
+          "field": [
+            {
+              "x_m": 0.15625,
+              "defl_fem_m": 6.443319284679578e-05,
+              "defl_exact_m": 6.443319284678377e-05,
+              "defl_rel_error": 1.863564186370492e-13,
+              "bending_stress_fem_pa": 132661089.47656775,
+              "bending_stress_exact_pa": 132661089.47654408,
+              "bending_stress_rel_error": 1.7837215169270835e-13
+            },
+            {
+              "x_m": 0.46875,
+              "defl_fem_m": 0.0005552221936798316,
+              "defl_exact_m": 0.0005552221936797325,
+              "defl_rel_error": 1.784800386101577e-13,
+              "bending_stress_fem_pa": 114972944.21302232,
+              "bending_stress_exact_pa": 114972944.21300487,
+              "bending_stress_rel_error": 1.5176839975210338e-13
+            },
+            {
+              "x_m": 0.78125,
+              "defl_fem_m": 0.0014737379214958372,
+              "defl_exact_m": 0.0014737379214955861,
+              "defl_rel_error": 1.7038390577126428e-13,
+              "bending_stress_fem_pa": 97284798.94947733,
+              "bending_stress_exact_pa": 97284798.94946566,
+              "bending_stress_rel_error": 1.199325006658381e-13
+            },
+            {
+              "x_m": 1.09375,
+              "defl_fem_m": 0.002754176264451268,
+              "defl_exact_m": 0.002754176264450821,
+              "defl_rel_error": 1.6218689443723655e-13,
+              "bending_stress_fem_pa": 79596653.68593332,
+              "bending_stress_exact_pa": 79596653.68592645,
+              "bending_stress_rel_error": 8.630306667751738e-14
+            },
+            {
+              "x_m": 1.40625,
+              "defl_fem_m": 0.0043307331107025815,
+              "defl_exact_m": 0.004330733110701914,
+              "defl_rel_error": 1.5421604637807487e-13,
+              "bending_stress_fem_pa": 61908508.42239011,
+              "bending_stress_exact_pa": 61908508.42238724,
+              "bending_stress_rel_error": 4.633407592773438e-14
+            },
+            {
+              "x_m": 1.71875,
+              "defl_fem_m": 0.006137604348406238,
+              "defl_exact_m": 0.006137604348405339,
+              "defl_rel_error": 1.4654807824614323e-13,
+              "bending_stress_fem_pa": 44220363.15884565,
+              "bending_stress_exact_pa": 44220363.158848025,
+              "bending_stress_rel_error": 5.3747528076171887e-14
+            },
+            {
+              "x_m": 2.03125,
+              "defl_fem_m": 0.008108985865718697,
+              "defl_exact_m": 0.008108985865717575,
+              "defl_rel_error": 1.384101671334797e-13,
+              "bending_stress_fem_pa": 26532217.89530446,
+              "bending_stress_exact_pa": 26532217.89530882,
+              "bending_stress_rel_error": 1.642753601074219e-13
+            },
+            {
+              "x_m": 2.34375,
+              "defl_fem_m": 0.010179073550796428,
+              "defl_exact_m": 0.010179073550795096,
+              "defl_rel_error": 1.308829946951433e-13,
+              "bending_stress_fem_pa": 8844072.63176875,
+              "bending_stress_exact_pa": 8844072.631769605,
+              "bending_stress_rel_error": 9.666973114013675e-14
+            }
+          ],
+          "field_max_defl_rel_error": 1.863564186370492e-13,
+          "field_max_stress_rel_error": 1.7837215169270835e-13
+        },
+        {
+          "elements": 16,
+          "load": "tip",
+          "w_tip_fem_m": 0.011230568421263864,
+          "w_tip_exact_m": 0.011230568421294737,
+          "w_tip_rel_error": 2.749003660706962e-12,
+          "theta_tip_fem_rad": 0.00673834105275933,
+          "theta_tip_exact_rad": 0.006738341052776842,
+          "theta_tip_rel_error": 2.5988642238239383e-12,
+          "root_moment_fem_nm": 124999.99999962044,
+          "root_moment_exact_nm": 125000.0,
+          "root_stress_fem_pa": 141505162.10788402,
+          "root_stress_exact_pa": 141505162.10831368,
+          "root_stress_rel_error": 3.0363562393188482e-12,
+          "field": [
+            {
+              "x_m": 0.078125,
+              "defl_fem_m": 1.627966308623913e-05,
+              "defl_exact_m": 1.627966308628845e-05,
+              "defl_rel_error": 3.0296102684252755e-12,
+              "bending_stress_fem_pa": 137083125.79201546,
+              "bending_stress_exact_pa": 137083125.79242888,
+              "bending_stress_rel_error": 3.015818422379033e-12
+            },
+            {
+              "x_m": 0.234375,
+              "defl_fem_m": 0.00014343240003349833,
+              "defl_exact_m": 0.0001434324000339309,
+              "defl_rel_error": 3.015842736125686e-12,
+              "bending_stress_fem_pa": 128239053.16027853,
+              "bending_stress_exact_pa": 128239053.16065928,
+              "bending_stress_rel_error": 2.969099205280173e-12
+            },
+            {
+              "x_m": 0.390625,
+              "defl_fem_m": 0.0003898550896967904,
+              "defl_exact_m": 0.0003898550896979603,
+              "defl_rel_error": 3.000880032441973e-12,
+              "bending_stress_fem_pa": 119394980.52854201,
+              "bending_stress_exact_pa": 119394980.52888967,
+              "bending_stress_rel_error": 2.9118392605251744e-12
+            },
+            {
+              "x_m": 0.546875,
+              "defl_fem_m": 0.0007473222180957057,
+              "defl_exact_m": 0.0007473222180979362,
+              "defl_rel_error": 2.984695323432922e-12,
+              "bending_stress_fem_pa": 110550907.89680658,
+              "bending_stress_exact_pa": 110550907.89712007,
+              "bending_stress_rel_error": 2.835712841796875e-12
+            },
+            {
+              "x_m": 0.703125,
+              "defl_fem_m": 0.0012076082712498353,
+              "defl_exact_m": 0.0012076082712534182,
+              "defl_rel_error": 2.966901258035298e-12,
+              "bending_stress_fem_pa": 101706835.26507121,
+              "bending_stress_exact_pa": 101706835.26535046,
+              "bending_stress_rel_error": 2.7456144913383158e-12
+            },
+            {
+              "x_m": 0.859375,
+              "defl_fem_m": 0.0017624877351787708,
+              "defl_exact_m": 0.0017624877351839654,
+              "defl_rel_error": 2.9473279984387194e-12,
+              "bending_stress_fem_pa": 92862762.63333549,
+              "bending_stress_exact_pa": 92862762.63358086,
+              "bending_stress_rel_error": 2.6423661586216522e-12
+            },
+            {
+              "x_m": 1.015625,
+              "defl_fem_m": 0.0024037350959021033,
+              "defl_exact_m": 0.002403735095909138,
+              "defl_rel_error": 2.926585956966392e-12,
+              "bending_stress_fem_pa": 84018690.00159763,
+              "bending_stress_exact_pa": 84018690.00181125,
+              "bending_stress_rel_error": 2.5425657894736846e-12
+            },
+            {
+              "x_m": 1.171875,
+              "defl_fem_m": 0.0031231248394394217,
+              "defl_exact_m": 0.003123124839448495,
+              "defl_rel_error": 2.9052540668527842e-12,
+              "bending_stress_fem_pa": 75174617.36985923,
+              "bending_stress_exact_pa": 75174617.37004165,
+              "bending_stress_rel_error": 2.4266171444163604e-12
+            },
+            {
+              "x_m": 1.328125,
+              "defl_fem_m": 0.003912431451810314,
+              "defl_exact_m": 0.003912431451821596,
+              "defl_rel_error": 2.8835710644240078e-12,
+              "bending_stress_fem_pa": 66330544.73811722,
+              "bending_stress_exact_pa": 66330544.73827204,
+              "bending_stress_rel_error": 2.334114176432292e-12
+            },
+            {
+              "x_m": 1.484375,
+              "defl_fem_m": 0.004763429419034367,
+              "defl_exact_m": 0.004763429419048001,
+              "defl_rel_error": 2.862235998484588e-12,
+              "bending_stress_fem_pa": 57486472.10637275,
+              "bending_stress_exact_pa": 57486472.106502436,
+              "bending_stress_rel_error": 2.255918673001803e-12
+            },
+            {
+              "x_m": 1.640625,
+              "defl_fem_m": 0.0056678932271311605,
+              "defl_exact_m": 0.005667893227147269,
+              "defl_rel_error": 2.842086389483441e-12,
+              "bending_stress_fem_pa": 48642399.47462478,
+              "bending_stress_exact_pa": 48642399.47473283,
+              "bending_stress_rel_error": 2.2212785755504265e-12
+            },
+            {
+              "x_m": 1.796875,
+              "defl_fem_m": 0.0066175973621202784,
+              "defl_exact_m": 0.00661759736213896,
+              "defl_rel_error": 2.82296369671485e-12,
+              "bending_stress_fem_pa": 39798326.8428798,
+              "bending_stress_exact_pa": 39798326.842963226,
+              "bending_stress_rel_error": 2.096172315809462e-12
+            },
+            {
+              "x_m": 1.953125,
+              "defl_fem_m": 0.007604316310021298,
+              "defl_exact_m": 0.007604316310042632,
+              "defl_rel_error": 2.8054631656219427e-12,
+              "bending_stress_fem_pa": 30954254.211135942,
+              "bending_stress_exact_pa": 30954254.21119362,
+              "bending_stress_rel_error": 1.8633519417898997e-12
+            },
+            {
+              "x_m": 2.109375,
+              "defl_fem_m": 0.00861982455685381,
+              "defl_exact_m": 0.008619824556877846,
+              "defl_rel_error": 2.788493933319769e-12,
+              "bending_stress_fem_pa": 22110181.579395734,
+              "bending_stress_exact_pa": 22110181.579424012,
+              "bending_stress_rel_error": 1.2789889831542972e-12
+            },
+            {
+              "x_m": 2.265625,
+              "defl_fem_m": 0.009655896588637393,
+              "defl_exact_m": 0.009655896588664161,
+              "defl_rel_error": 2.7722457165939244e-12,
+              "bending_stress_fem_pa": 13266108.947650602,
+              "bending_stress_exact_pa": 13266108.94765441,
+              "bending_stress_rel_error": 2.8699045817057296e-13
+            },
+            {
+              "x_m": 2.421875,
+              "defl_fem_m": 0.010704306891391633,
+              "defl_exact_m": 0.010704306891421139,
+              "defl_rel_error": 2.756452323553684e-12,
+              "bending_stress_fem_pa": 4422036.3158844495,
+              "bending_stress_exact_pa": 4422036.3158848025,
+              "bending_stress_rel_error": 7.982097625732424e-14
+            }
+          ],
+          "field_max_defl_rel_error": 3.0296102684252755e-12,
+          "field_max_stress_rel_error": 3.015818422379033e-12
+        }
+      ],
+      "levels_uniform_load": [
+        {
+          "elements": 4,
+          "load": "udl",
+          "w_tip_fem_m": 0.004211463157985493,
+          "w_tip_exact_m": 0.004211463157985526,
+          "w_tip_rel_error": 7.826198356042371e-15,
+          "theta_tip_fem_rad": 0.0022461136842589244,
+          "theta_tip_exact_rad": 0.0022461136842589473,
+          "theta_tip_rel_error": 1.0233269231996191e-14,
+          "root_moment_fem_nm": 62499.999999999854,
+          "root_moment_exact_nm": 62500.0,
+          "root_stress_fem_pa": 70752581.05415668,
+          "root_stress_exact_pa": 70752581.05415684,
+          "root_stress_rel_error": 2.3167037963867193e-15,
+          "field": [
+            {
+              "x_m": 0.3125,
+              "defl_fem_m": 0.00012064087171312671,
+              "defl_exact_m": 0.00012098360146231207,
+              "defl_rel_error": 0.0028328611898045092,
+              "bending_stress_fem_pa": 54538447.89591232,
+              "bending_stress_exact_pa": 54169944.86958884,
+              "bending_stress_rel_error": 0.006802721088430737
+            },
+            {
+              "x_m": 0.9375,
+              "defl_fem_m": 0.0009157738898223697,
+              "defl_exact_m": 0.0009161166195715586,
+              "defl_rel_error": 0.0003741114852268137,
+              "bending_stress_fem_pa": 28006230.00060341,
+              "bending_stress_exact_pa": 27637726.97428002,
+              "bending_stress_rel_error": 0.01333333333332101
+            },
+            {
+              "x_m": 1.5625,
+              "defl_fem_m": 0.002133149958927552,
+              "defl_exact_m": 0.0021334926886767496,
+              "defl_rel_error": 0.0001606425702870517,
+              "bending_stress_fem_pa": 10318084.737064216,
+              "bending_stress_exact_pa": 9949581.710740807,
+              "bending_stress_rel_error": 0.03703703703700449
+            },
+            {
+              "x_m": 2.1875,
+              "defl_fem_m": 0.003509552631654579,
+              "defl_exact_m": 0.00350989536140379,
+              "defl_rel_error": 9.764671419550077e-05,
+              "bending_stress_fem_pa": 1474012.1052948858,
+              "bending_stress_exact_pa": 1105509.0789712006,
+              "bending_stress_rel_error": 0.33333333333328957
+            }
+          ],
+          "field_max_defl_rel_error": 0.0028328611898045092,
+          "field_max_stress_rel_error": 0.03703703703700449
+        },
+        {
+          "elements": 8,
+          "load": "udl",
+          "w_tip_fem_m": 0.004211463157986133,
+          "w_tip_exact_m": 0.004211463157985526,
+          "w_tip_rel_error": 1.4416681182183315e-13,
+          "theta_tip_fem_rad": 0.0022461136842592314,
+          "theta_tip_exact_rad": 0.0022461136842589473,
+          "theta_tip_rel_error": 1.2646776126334917e-13,
+          "root_moment_fem_nm": 62500.000000009844,
+          "root_moment_exact_nm": 62500.0,
+          "root_stress_fem_pa": 70752581.05416799,
+          "root_stress_exact_pa": 70752581.05415684,
+          "root_stress_rel_error": 1.575358581542969e-13,
+          "field": [
+            {
+              "x_m": 0.15625,
+              "defl_fem_m": 3.1531136925026825e-05,
+              "defl_exact_m": 3.1552557534345906e-05,
+              "defl_rel_error": 0.0006788866257755414,
+              "bending_stress_fem_pa": 62277011.448720776,
+              "bending_stress_exact_pa": 62184885.69213004,
+              "bending_stress_rel_error": 0.0014814814816391645
+            },
+            {
+              "x_m": 0.46875,
+              "defl_fem_m": 0.0002608173391298413,
+              "defl_exact_m": 0.0002608387597391243,
+              "defl_rel_error": 8.212203318423476e-05,
+              "bending_stress_fem_pa": 46799884.34312144,
+              "bending_stress_exact_pa": 46707758.586533226,
+              "bending_stress_rel_error": 0.001972386587927061
+            },
+            {
+              "x_m": 0.78125,
+              "defl_fem_m": 0.0006645529836698581,
+              "defl_exact_m": 0.0006645744042790779,
+              "defl_rel_error": 3.223207075361956e-05,
+              "bending_stress_fem_pa": 33533775.395464685,
+              "bending_stress_exact_pa": 33441649.638878822,
+              "bending_stress_rel_error": 0.0027548209367865123
+            },
+            {
+              "x_m": 1.09375,
+              "defl_fem_m": 0.0011933849866624258,
+              "defl_exact_m": 0.0011934064072715639,
+              "defl_rel_error": 1.7949132003566183e-05,
+              "bending_stress_fem_pa": 22478684.605750754,
+              "bending_stress_exact_pa": 22386558.849166814,
+              "bending_stress_rel_error": 0.0041152263375828745
+            },
+            {
+              "x_m": 1.40625,
+              "defl_fem_m": 0.001806185778205334,
+              "defl_exact_m": 0.0018062071988143797,
+              "defl_rel_error": 1.185944174051888e-05,
+              "bending_stress_fem_pa": 13634611.973979542,
+              "bending_stress_exact_pa": 13542486.21739721,
+              "bending_stress_rel_error": 0.006802721088538707
+            },
+            {
+              "x_m": 1.71875,
+              "defl_fem_m": 0.002470053302376816,
+              "defl_exact_m": 0.0024700747229857633,
+              "defl_rel_error": 8.672048965914156e-06,
+              "bending_stress_fem_pa": 7001557.500150215,
+              "bending_stress_exact_pa": 6909431.743570005,
+              "bending_stress_rel_error": 0.013333333333228678
+            },
+            {
+              "x_m": 2.03125,
+              "defl_fem_m": 0.003160311017235542,
+              "defl_exact_m": 0.0031603324378443936,
+              "defl_rel_error": 6.777960633280785e-06,
+              "bending_stress_fem_pa": 2579521.184264631,
+              "bending_stress_exact_pa": 2487395.4276852016,
+              "bending_stress_rel_error": 0.03703703703643238
+            },
+            {
+              "x_m": 2.34375,
+              "defl_fem_m": 0.0038605078948206278,
+              "defl_exact_m": 0.0038605293154293898,
+              "defl_rel_error": 5.548619635241685e-06,
+              "bending_stress_fem_pa": 368503.0263234301,
+              "bending_stress_exact_pa": 276377.26974280016,
+              "bending_stress_rel_error": 0.33333333333223547
+            }
+          ],
+          "field_max_defl_rel_error": 0.0006788866257755414,
+          "field_max_stress_rel_error": 0.006802721088538707
+        },
+        {
+          "elements": 16,
+          "load": "udl",
+          "w_tip_fem_m": 0.004211463157973786,
+          "w_tip_exact_m": 0.004211463157985526,
+          "w_tip_rel_error": 2.787568282869302e-12,
+          "theta_tip_fem_rad": 0.0022461136842523034,
+          "theta_tip_exact_rad": 0.0022461136842589473,
+          "theta_tip_rel_error": 2.9579940497015408e-12,
+          "root_moment_fem_nm": 62499.99999985473,
+          "root_moment_exact_nm": 62500.0,
+          "root_stress_fem_pa": 70752581.05399239,
+          "root_stress_exact_pa": 70752581.05415684,
+          "root_stress_rel_error": 2.324285736083985e-12,
+          "field": [
+            {
+              "x_m": 0.078125,
+              "defl_fem_m": 8.054149105829095e-06,
+              "defl_exact_m": 8.055487893930724e-06,
+              "defl_rel_error": 0.00016619578097041445,
+              "bending_stress_fem_pa": 66422670.494694754,
+              "bending_stress_exact_pa": 66399639.055707745,
+              "bending_stress_rel_error": 0.0003468609063926746
+            },
+            {
+              "x_m": 0.234375,
+              "defl_fem_m": 6.950987725642134e-05,
+              "defl_exact_m": 6.951121604466963e-05,
+              "defl_rel_error": 1.9260032041800015e-05,
+              "bending_stress_fem_pa": 58131352.40242336,
+              "bending_stress_exact_pa": 58108320.96342374,
+              "bending_stress_rel_error": 0.0003963535448584066
+            },
+            {
+              "x_m": 0.390625,
+              "defl_fem_m": 0.00018505264395013915,
+              "defl_exact_m": 0.0001850539827386695,
+              "defl_rel_error": 7.234583717431998e-06,
+              "bending_stress_fem_pa": 50392788.84963776,
+              "bending_stress_exact_pa": 50369757.41062533,
+              "bending_stress_rel_error": 0.0004572473681910607
+            },
+            {
+              "x_m": 0.546875,
+              "defl_fem_m": 0.00034748512445410904,
+              "defl_exact_m": 0.00034748646324304493,
+              "defl_rel_error": 3.852780115205349e-06,
+              "bending_stress_fem_pa": 43206979.83633834,
+              "bending_stress_exact_pa": 43183948.39731253,
+              "bending_stress_rel_error": 0.0005333333305679193
+            },
+            {
+              "x_m": 0.703125,
+              "defl_fem_m": 0.0005501240886592356,
+              "defl_exact_m": 0.000550125427448688,
+              "defl_rel_error": 2.4336076568262905e-06,
+              "bending_stress_fem_pa": 36573925.36252452,
+              "bending_stress_exact_pa": 36550893.923485324,
+              "bending_stress_rel_error": 0.0006301197198461547
+            },
+            {
+              "x_m": 0.859375,
+              "defl_fem_m": 0.0007868004010802007,
+              "defl_exact_m": 0.0007868017398702684,
+              "defl_rel_error": 1.701559617750009e-06,
+              "bending_stress_fem_pa": 30493625.42819602,
+              "bending_stress_exact_pa": 30470593.989143718,
+              "bending_stress_rel_error": 0.0007558578956651845
+            },
+            {
+              "x_m": 1.015625,
+              "defl_fem_m": 0.0010518590208554637,
+              "defl_exact_m": 0.0010518603596462333,
+              "defl_rel_error": 1.2727837467907347e-06,
+              "bending_stress_fem_pa": 24966080.033352315,
+              "bending_stress_exact_pa": 24943048.594287716,
+              "bending_stress_rel_error": 0.000923361030931643
+            },
+            {
+              "x_m": 1.171875,
+              "defl_fem_m": 0.0013401590017472612,
+              "defl_exact_m": 0.0013401603405388074,
+              "defl_rel_error": 9.989786338689304e-07,
+              "bending_stress_fem_pa": 19991289.177994106,
+              "bending_stress_exact_pa": 19968257.738917314,
+              "bending_stress_rel_error": 0.0011534025340580976
+            },
+            {
+              "x_m": 1.328125,
+              "defl_fem_m": 0.001647073492141606,
+              "defl_exact_m": 0.0016470748309339927,
+              "defl_rel_error": 8.128303350195236e-07,
+              "bending_stress_fem_pa": 15569252.862119801,
+              "bending_stress_exact_pa": 15546221.42303251,
+              "bending_stress_rel_error": 0.0014814814777544558
+            },
+            {
+              "x_m": 1.484375,
+              "defl_fem_m": 0.001968489735048288,
+              "defl_exact_m": 0.0019684910738415693,
+              "defl_rel_error": 6.801114309776369e-07,
+              "bending_stress_fem_pa": 11699971.085729994,
+              "bending_stress_exact_pa": 11676939.646633307,
+              "bending_stress_rel_error": 0.0019723865836137797
+            },
+            {
+              "x_m": 1.640625,
+              "defl_fem_m": 0.0023008090681008743,
+              "defl_exact_m": 0.0023008104068950944,
+              "defl_rel_error": 5.818794177929927e-07,
+              "bending_stress_fem_pa": 8383443.848824391,
+              "bending_stress_exact_pa": 8360412.409719706,
+              "bending_stress_rel_error": 0.002754820931789144
+            },
+            {
+              "x_m": 1.796875,
+              "defl_fem_m": 0.0026409469235567054,
+              "defl_exact_m": 0.002640948262351903,
+              "defl_rel_error": 5.069373060495277e-07,
+              "bending_stress_fem_pa": 5619671.151405597,
+              "bending_stress_exact_pa": 5596639.712291704,
+              "bending_stress_rel_error": 0.004115226331848807
+            },
+            {
+              "x_m": 1.953125,
+              "defl_fem_m": 0.0029863328282969033,
+              "defl_exact_m": 0.002986334167093107,
+              "defl_rel_error": 4.483075666564312e-07,
+              "bending_stress_fem_pa": 3408652.993472821,
+              "bending_stress_exact_pa": 3385621.5543493023,
+              "bending_stress_rel_error": 0.0068027210820216085
+            },
+            {
+              "x_m": 2.109375,
+              "defl_fem_m": 0.003334910403826366,
+              "defl_exact_m": 0.003334911742623596,
+              "defl_rel_error": 4.0144907377424255e-07,
+              "bending_stress_fem_pa": 1750389.375027209,
+              "bending_stress_exact_pa": 1727357.9358925011,
+              "bending_stress_rel_error": 0.013333333327239957
+            },
+            {
+              "x_m": 2.265625,
+              "defl_fem_m": 0.003685137366273773,
+              "defl_exact_m": 0.0036851387050720386,
+              "defl_rel_error": 3.632965738799326e-07,
+              "bending_stress_fem_pa": 644880.2960651743,
+              "bending_stress_exact_pa": 621848.8569213004,
+              "bending_stress_rel_error": 0.037037037034850846
+            },
+            {
+              "x_m": 2.421875,
+              "defl_fem_m": 0.004035985526391575,
+              "defl_exact_m": 0.004035986865190879,
+              "defl_rel_error": 3.317154759852485e-07,
+              "bending_stress_fem_pa": 92125.75658080528,
+              "bending_stress_exact_pa": 69094.31743570004,
+              "bending_stress_rel_error": 0.3333333333314792
+            }
+          ],
+          "field_max_defl_rel_error": 0.00016619578097041445,
+          "field_max_stress_rel_error": 0.002754820931789144
+        }
+      ],
+      "observations": {
+        "worst_tip_deflection_rel_error": 2.749003660706962e-12,
+        "worst_root_stress_rel_error": 3.0363562393188482e-12,
+        "worst_field_stress_rel_error": 3.015818422379033e-12,
+        "order_tip_load_fem": {
+          "per_level": [
+            -3.9368560170078064,
+            -4.427602930227717
+          ],
+          "finest": -4.427602930227717
+        },
+        "order_udl_interior_field": {
+          "per_level": [
+            2.06101734210171,
+            2.03028690571786
+          ],
+          "finest": 2.03028690571786
+        },
+        "order_note": "the tip-load field is a cubic, which the Hermite element spans exactly: the reported tip-load errors are a round-off floor, not a converged discretisation, so no order is measurable for that load case; the uniform-load interior field supplies the measurable order"
+      }
+    },
+    "B_plate_ssss_uniform": {
+      "element": "4-node Mindlin-Reissner plate element, MITC4 assumed shear strain (tensorfem.plate.q4_mindlin_stiffness)",
+      "physics": "Kirchhoff/Mindlin square plate, soft simple support, uniform pressure",
+      "parameters": {
+        "side_m": 1.0,
+        "thickness_m": 0.01,
+        "young_modulus_pa": 210000000000.0,
+        "poisson_ratio": 0.3,
+        "pressure_pa": 10000.0,
+        "shear_treatment": "mitc",
+        "levels_elements_per_side": [
+          8,
+          16,
+          32
+        ],
+        "timoshenko_alpha": 0.00406,
+        "navier_terms": 401,
+        "navier_terms_field": 101,
+        "bending_stiffness": 19230.769230769234
+      },
+      "reference": {
+        "w_centre_navier": "16 q a^4/(pi^6 D) sum_{m,n odd} sin sin /(m n (m^2+n^2)^2) = 2.1124233836e-03 m (alpha = 0.004062353)",
+        "w_centre_timoshenko": "alpha q a^4 / D, alpha = 0.00406 (Timoshenko table 8) = 2.1112000000e-03 m",
+        "mindlin_model_difference": "O((t/a)^2) = 1.00e-04 relative"
+      },
+      "levels": [
+        {
+          "elements_per_side": 8,
+          "elements": 64,
+          "shear_treatment": "mitc",
+          "w_centre_fem_m": 0.0021042106901806965,
+          "w_centre_navier_m": 0.0021124233835516787,
+          "w_centre_timoshenko_m": 0.0021111999999999997,
+          "w_centre_rel_error_navier": 0.0038878065045720054,
+          "w_centre_rel_error_timoshenko": 0.00331058631077266,
+          "alpha_fem": 0.004046559019578263,
+          "l2_defl_rel_error": 0.04588435907715276
+        },
+        {
+          "elements_per_side": 16,
+          "elements": 256,
+          "shear_treatment": "mitc",
+          "w_centre_fem_m": 0.002113957030448329,
+          "w_centre_navier_m": 0.0021124233835516787,
+          "w_centre_timoshenko_m": 0.0021111999999999997,
+          "w_centre_rel_error_navier": 0.0007260130277821363,
+          "w_centre_rel_error_timoshenko": 0.001305906805764078,
+          "alpha_fem": 0.004065301981631402,
+          "l2_defl_rel_error": 0.009768390948740102
+        },
+        {
+          "elements_per_side": 32,
+          "elements": 1024,
+          "shear_treatment": "mitc",
+          "w_centre_fem_m": 0.002118823408440877,
+          "w_centre_navier_m": 0.0021124233835516787,
+          "w_centre_timoshenko_m": 0.0021111999999999997,
+          "w_centre_rel_error_navier": 0.003029707462543777,
+          "w_centre_rel_error_timoshenko": 0.003610936169419041,
+          "alpha_fem": 0.004074660400847842,
+          "l2_defl_rel_error": 0.0006827979931078379
+        }
+      ],
+      "observations": {
+        "worst_centre_rel_error_navier": 0.0038878065045720054,
+        "worst_centre_rel_error_timoshenko": 0.003610936169419041,
+        "order_l2_field": {
+          "per_level": [
+            2.231809610007378,
+            3.8385902176662197
+          ],
+          "finest": 3.8385902176662197
+        },
+        "order_centre_deflection": {
+          "per_level": [
+            2.420889076366798,
+            -2.0611111573819
+          ],
+          "finest": -2.0611111573819
+        },
+        "order_note": "the centre deflection error is not monotone: at n = 32 it sits at ~0.3 %, above its n = 16 value (7e-4), so its observed order is not a usable rate.  The L2 norm of the deflection field is monotone and second order, which is the rate this case is graded on."
+      }
+    },
+    "C_cylinder_lame": {
+      "element": "4-node axisymmetric (ring) element with hoop strain (tensorfem.hertz_axisymmetric.assemble_axisymmetric_stiffness)",
+      "physics": "thick-walled cylinder under internal pressure, plane strain, Lame solution",
+      "parameters": {
+        "inner_radius_m": 0.1,
+        "outer_radius_m": 0.2,
+        "internal_pressure_pa": 20000000.0,
+        "axial_length_m": 0.05,
+        "young_modulus_pa": 210000000000.0,
+        "poisson_ratio": 0.3,
+        "levels_radial_elements": [
+          8,
+          16,
+          32
+        ],
+        "sample_radii_over_a": [
+          1.1,
+          1.3,
+          1.5,
+          1.7,
+          1.9
+        ],
+        "lame_A_pa": 6666666.666666666,
+        "lame_B_pa_m2": 266666.6666666667
+      },
+      "reference": {
+        "sigma_r": "A - B/r^2",
+        "sigma_theta": "A + B/r^2",
+        "sigma_z": "2 nu A = 4.000000e+06 Pa",
+        "u_r": "(1+nu)/E [(1-2nu) A r + B/r]",
+        "recovery": "Gauss -> nodal bilinear extrapolation (weights (1 +- sqrt3)/2) plus averaging of the sharing elements"
+      },
+      "levels": [
+        {
+          "radial_elements": 8,
+          "axial_elements": 1,
+          "nodes": 18,
+          "samples": [
+            {
+              "r_m": 0.1125,
+              "r_over_a": 1.125,
+              "sigma_r_fem_pa": -14254151.912248831,
+              "sigma_r_lame_pa": -14403292.18106996,
+              "sigma_r_rel_error": 0.010354595806724138,
+              "sigma_r_abs_over_p": 0.007457013441056479,
+              "sigma_theta_fem_pa": 28722069.76145467,
+              "sigma_theta_lame_pa": 27736625.51440329,
+              "sigma_theta_rel_error": 0.03552862789814325,
+              "sigma_z_fem_pa": 4340375.354761753,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.08509383869043843,
+              "u_r_fem_m": 1.6490836218057465e-05,
+              "u_r_lame_m": 1.6530864197530864e-05,
+              "u_r_rel_error": 0.0024214087657545634
+            },
+            {
+              "r_m": 0.125,
+              "r_over_a": 1.25,
+              "sigma_r_fem_pa": -10299792.16517914,
+              "sigma_r_lame_pa": -10400000.000000002,
+              "sigma_r_rel_error": 0.009635368732775094,
+              "sigma_r_abs_over_p": 0.00501039174104305,
+              "sigma_theta_fem_pa": 24367594.39904208,
+              "sigma_theta_lame_pa": 23733333.333333336,
+              "sigma_theta_rel_error": 0.026724483105705556,
+              "sigma_z_fem_pa": 4220340.670158885,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.05508516753972148,
+              "u_r_fem_m": 1.523445936568776e-05,
+              "u_r_lame_m": 1.5269841269841274e-05,
+              "u_r_rel_error": 0.0023171101472675925
+            },
+            {
+              "r_m": 0.15000000000000002,
+              "r_over_a": 1.5000000000000002,
+              "sigma_r_fem_pa": -5135422.178425839,
+              "sigma_r_lame_pa": -5185185.185185183,
+              "sigma_r_rel_error": 0.009597151303587712,
+              "sigma_r_abs_over_p": 0.0024881503379671835,
+              "sigma_theta_fem_pa": 18810253.529297873,
+              "sigma_theta_lame_pa": 18518518.518518515,
+              "sigma_theta_rel_error": 0.01575369058208536,
+              "sigma_z_fem_pa": 4102449.40526161,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.02561235131540266,
+              "u_r_fem_m": 1.3452165998484487e-05,
+              "u_r_lame_m": 1.3481481481481484e-05,
+              "u_r_rel_error": 0.002174500112414587
+            },
+            {
+              "r_m": 0.17500000000000002,
+              "r_over_a": 1.75,
+              "sigma_r_fem_pa": -2014336.881671688,
+              "sigma_r_lame_pa": -2040816.3265306111,
+              "sigma_r_rel_error": 0.01297492798087232,
+              "sigma_r_abs_over_p": 0.0013239722429461544,
+              "sigma_theta_fem_pa": 15521613.702787094,
+              "sigma_theta_lame_pa": 15374149.659863943,
+              "sigma_theta_rel_error": 0.009591687747656256,
+              "sigma_z_fem_pa": 4052183.0463346224,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.013045761583655726,
+              "u_r_fem_m": 1.2296353290927692e-05,
+              "u_r_lame_m": 1.232199546485261e-05,
+              "u_r_rel_error": 0.0020810082261480643
+            },
+            {
+              "r_m": 0.1875,
+              "r_over_a": 1.875,
+              "sigma_r_fem_pa": -899069.0027664569,
+              "sigma_r_lame_pa": -918518.5185185196,
+              "sigma_r_rel_error": 0.02117487602039078,
+              "sigma_r_abs_over_p": 0.0009724757876031333,
+              "sigma_theta_fem_pa": 14359084.081616381,
+              "sigma_theta_lame_pa": 14251851.85185185,
+              "sigma_theta_rel_error": 0.00752409096580645,
+              "sigma_z_fem_pa": 4038004.523654977,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.009501130913744332,
+              "u_r_fem_m": 1.1875136021493008e-05,
+              "u_r_lame_m": 1.18994708994709e-05,
+              "u_r_rel_error": 0.0020450386562123586
+            }
+          ],
+          "max_sigma_r_rel_error": 0.02117487602039078,
+          "max_sigma_r_abs_over_p": 0.007457013441056479,
+          "sigma_r_rel_error_defined_points": 5,
+          "max_sigma_theta_rel_error": 0.03552862789814325,
+          "max_sigma_z_rel_error": 0.08509383869043843,
+          "max_u_r_rel_error": 0.0024214087657545634,
+          "gauss_point_reference": [
+            {
+              "gauss_radius_m": 0.10985843918243517,
+              "sigma_r_rel_error": 0.09523267696825807,
+              "sigma_theta_rel_error": 0.0574300353518717
+            },
+            {
+              "gauss_radius_m": 0.12764156081756484,
+              "sigma_r_rel_error": 0.0945006886091644,
+              "sigma_theta_rel_error": 0.036928193284059004
+            },
+            {
+              "gauss_radius_m": 0.15264156081756483,
+              "sigma_r_rel_error": 0.11261480942895422,
+              "sigma_theta_rel_error": 0.028488492172591594
+            },
+            {
+              "gauss_radius_m": 0.17235843918243518,
+              "sigma_r_rel_error": 0.16307902478857733,
+              "sigma_theta_rel_error": 0.02475683736778828
+            },
+            {
+              "gauss_radius_m": 0.1848584391824352,
+              "sigma_r_rel_error": 0.2689783822976064,
+              "sigma_theta_rel_error": 0.021314099857889332
+            }
+          ],
+          "max_gauss_sigma_theta_rel_error": 0.0574300353518717,
+          "max_gauss_sigma_r_rel_error": 0.2689783822976064
+        },
+        {
+          "radial_elements": 16,
+          "axial_elements": 1,
+          "nodes": 34,
+          "samples": [
+            {
+              "r_m": 0.1125,
+              "r_over_a": 1.125,
+              "sigma_r_fem_pa": -14366631.96267914,
+              "sigma_r_lame_pa": -14403292.18106996,
+              "sigma_r_rel_error": 0.002545266591134112,
+              "sigma_r_abs_over_p": 0.0018330109195410275,
+              "sigma_theta_fem_pa": 27980178.823947437,
+              "sigma_theta_lame_pa": 27736625.51440329,
+              "sigma_theta_rel_error": 0.008780927925701409,
+              "sigma_z_fem_pa": 4084064.0583804883,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.021016014595122194,
+              "u_r_fem_m": 1.652078312953094e-05,
+              "u_r_lame_m": 1.6530864197530864e-05,
+              "u_r_rel_error": 0.000609833090361311
+            },
+            {
+              "r_m": 0.13125,
+              "r_over_a": 1.3125,
+              "sigma_r_fem_pa": -8792710.335132392,
+              "sigma_r_lame_pa": -8813303.099017385,
+              "sigma_r_rel_error": 0.002336554598614588,
+              "sigma_r_abs_over_p": 0.0010296381942496635,
+              "sigma_theta_fem_pa": 22274625.85909371,
+              "sigma_theta_lame_pa": 22146636.432350717,
+              "sigma_theta_rel_error": 0.005779181282627308,
+              "sigma_z_fem_pa": 4044574.6571883936,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.011143664297098527,
+              "u_r_fem_m": 1.4735695738589985e-05,
+              "u_r_lame_m": 1.4744142101284959e-05,
+              "u_r_rel_error": 0.0005728622687540108
+            },
+            {
+              "r_m": 0.15000000000000002,
+              "r_over_a": 1.5000000000000002,
+              "sigma_r_fem_pa": -5172837.125379432,
+              "sigma_r_lame_pa": -5185185.185185183,
+              "sigma_r_rel_error": 0.0023814115339662358,
+              "sigma_r_abs_over_p": 0.0006174029902875424,
+              "sigma_theta_fem_pa": 18590959.502495628,
+              "sigma_theta_lame_pa": 18518518.518518515,
+              "sigma_theta_rel_error": 0.003911813134764098,
+              "sigma_z_fem_pa": 4025436.7131348574,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.006359178283714457,
+              "u_r_fem_m": 1.3474098554242192e-05,
+              "u_r_lame_m": 1.3481481481481484e-05,
+              "u_r_rel_error": 0.000547634712804597
+            },
+            {
+              "r_m": 0.16875,
+              "r_over_a": 1.6875,
+              "sigma_r_fem_pa": -2690075.3067682823,
+              "sigma_r_lame_pa": -2697759.4878829457,
+              "sigma_r_rel_error": 0.002848356626740472,
+              "sigma_r_abs_over_p": 0.0003842090557331685,
+              "sigma_theta_fem_pa": 16074280.34737599,
+              "sigma_theta_lame_pa": 16031092.821216278,
+              "sigma_theta_rel_error": 0.0026939851600482722,
+              "sigma_z_fem_pa": 4015261.5121823126,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.0038153780455782546,
+              "u_r_fem_m": 1.2561543591422615e-05,
+              "u_r_lame_m": 1.2568195179306291e-05,
+              "u_r_rel_error": 0.0005292397029788722
+            },
+            {
+              "r_m": 0.1875,
+              "r_over_a": 1.875,
+              "sigma_r_fem_pa": -913678.5331892166,
+              "sigma_r_lame_pa": -918518.5185185196,
+              "sigma_r_rel_error": 0.005269338866579828,
+              "sigma_r_abs_over_p": 0.00024199926646514795,
+              "sigma_theta_fem_pa": 14278514.739586525,
+              "sigma_theta_lame_pa": 14251851.85185185,
+              "sigma_theta_rel_error": 0.0018708367173497812,
+              "sigma_z_fem_pa": 4009450.861919193,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.0023627154797983825,
+              "u_r_fem_m": 1.18933413203727e-05,
+              "u_r_lame_m": 1.18994708994709e-05,
+              "u_r_rel_error": 0.0005151135836193325
+            }
+          ],
+          "max_sigma_r_rel_error": 0.005269338866579828,
+          "max_sigma_r_abs_over_p": 0.0018330109195410275,
+          "sigma_r_rel_error_defined_points": 5,
+          "max_sigma_theta_rel_error": 0.008780927925701409,
+          "max_sigma_z_rel_error": 0.021016014595122194,
+          "max_u_r_rel_error": 0.000609833090361311,
+          "gauss_point_reference": [
+            {
+              "gauss_radius_m": 0.11117921959121758,
+              "sigma_r_rel_error": 0.0472584793808095,
+              "sigma_theta_rel_error": 0.026364396761798515
+            },
+            {
+              "gauss_radius_m": 0.12992921959121756,
+              "sigma_r_rel_error": 0.04820183396098161,
+              "sigma_theta_rel_error": 0.020424809286979102
+            },
+            {
+              "gauss_radius_m": 0.1486792195912176,
+              "sigma_r_rel_error": 0.054335452005500745,
+              "sigma_theta_rel_error": 0.01611343932212461
+            },
+            {
+              "gauss_radius_m": 0.1674292195912176,
+              "sigma_r_rel_error": 0.0721308694487803,
+              "sigma_theta_rel_error": 0.01288851331674315
+            },
+            {
+              "gauss_radius_m": 0.18617921959121758,
+              "sigma_r_rel_error": 0.14560256543119493,
+              "sigma_theta_rel_error": 0.010423893900522656
+            }
+          ],
+          "max_gauss_sigma_theta_rel_error": 0.026364396761798515,
+          "max_gauss_sigma_r_rel_error": 0.14560256543119493
+        },
+        {
+          "radial_elements": 32,
+          "axial_elements": 1,
+          "nodes": 66,
+          "samples": [
+            {
+              "r_m": 0.109375,
+              "r_over_a": 1.09375,
+              "sigma_r_fem_pa": -15614357.041176882,
+              "sigma_r_lame_pa": -15624489.79591837,
+              "sigma_r_rel_error": 0.0006485174795361979,
+              "sigma_r_abs_over_p": 0.0005066377370744012,
+              "sigma_theta_fem_pa": 29026029.100664444,
+              "sigma_theta_lame_pa": 28957823.129251704,
+              "sigma_theta_rel_error": 0.0023553556186978186,
+              "sigma_z_fem_pa": 4023501.6178462664,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.005875404461566708,
+              "u_r_fem_m": 1.689591150624251e-05,
+              "u_r_lame_m": 1.6898526077097507e-05,
+              "u_r_rel_error": 0.00015472182858239432
+            },
+            {
+              "r_m": 0.13125,
+              "r_over_a": 1.3125,
+              "sigma_r_fem_pa": -8808168.945412632,
+              "sigma_r_lame_pa": -8813303.099017385,
+              "sigma_r_rel_error": 0.000582545902151684,
+              "sigma_r_abs_over_p": 0.0002567076802376658,
+              "sigma_theta_fem_pa": 22178565.951001335,
+              "sigma_theta_lame_pa": 22146636.432350717,
+              "sigma_theta_rel_error": 0.0014417321902650815,
+              "sigma_z_fem_pa": 4011119.101676611,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.002779775419152924,
+              "u_r_fem_m": 1.474202660733873e-05,
+              "u_r_lame_m": 1.4744142101284959e-05,
+              "u_r_rel_error": 0.0001434803009694489
+            },
+            {
+              "r_m": 0.15000000000000002,
+              "r_over_a": 1.5000000000000002,
+              "sigma_r_fem_pa": -5182103.895800957,
+              "sigma_r_lame_pa": -5185185.185185183,
+              "sigma_r_rel_error": 0.0005942486669577528,
+              "sigma_r_abs_over_p": 0.00015406446921126916,
+              "sigma_theta_fem_pa": 18536598.134243045,
+              "sigma_theta_lame_pa": 18518518.518518515,
+              "sigma_theta_rel_error": 0.0009762992491246241,
+              "sigma_z_fem_pa": 4006348.271532626,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.0015870678831565895,
+              "u_r_fem_m": 1.3479632318629573e-05,
+              "u_r_lame_m": 1.3481481481481484e-05,
+              "u_r_rel_error": 0.00013716317857581352
+            },
+            {
+              "r_m": 0.16875,
+              "r_over_a": 1.6875,
+              "sigma_r_fem_pa": -2695841.054799009,
+              "sigma_r_lame_pa": -2697759.4878829457,
+              "sigma_r_rel_error": 0.0007111208736558104,
+              "sigma_r_abs_over_p": 9.59216541968286e-05,
+              "sigma_theta_fem_pa": 16041874.000441715,
+              "sigma_theta_lame_pa": 16031092.821216278,
+              "sigma_theta_rel_error": 0.0006725167988029513,
+              "sigma_z_fem_pa": 4003809.883692812,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.0009524709232031602,
+              "u_r_fem_m": 1.2566529158891209e-05,
+              "u_r_lame_m": 1.2568195179306291e-05,
+              "u_r_rel_error": 0.0001325584454500807
+            },
+            {
+              "r_m": 0.19062500000000002,
+              "r_over_a": 1.90625,
+              "sigma_r_fem_pa": -670744.171439612,
+              "sigma_r_lame_pa": -671862.4025799511,
+              "sigma_r_rel_error": 0.0016643752292806412,
+              "sigma_r_abs_over_p": 5.591155701695243e-05,
+              "sigma_theta_fem_pa": 14011352.726911258,
+              "sigma_theta_lame_pa": 14005195.735913284,
+              "sigma_theta_rel_error": 0.0004396219170422276,
+              "sigma_z_fem_pa": 4002182.566641494,
+              "sigma_z_lame_pa": 3999999.9999999995,
+              "sigma_z_rel_error": 0.000545641660373658,
+              "u_r_fem_m": 1.180520923470314e-05,
+              "u_r_lame_m": 1.1806726515742911e-05,
+              "u_r_rel_error": 0.00012850988271378102
+            }
+          ],
+          "max_sigma_r_rel_error": 0.0016643752292806412,
+          "max_sigma_r_abs_over_p": 0.0005066377370744012,
+          "sigma_r_rel_error_defined_points": 5,
+          "max_sigma_theta_rel_error": 0.0023553556186978186,
+          "max_sigma_z_rel_error": 0.005875404461566708,
+          "max_u_r_rel_error": 0.00015472182858239432,
+          "gauss_point_reference": [
+            {
+              "gauss_radius_m": 0.10871460979560879,
+              "sigma_r_rel_error": 0.02363607818105861,
+              "sigma_theta_rel_error": 0.013219952309744981
+            },
+            {
+              "gauss_radius_m": 0.1305896097956088,
+              "sigma_r_rel_error": 0.024122628222459145,
+              "sigma_theta_rel_error": 0.00989903462002692
+            },
+            {
+              "gauss_radius_m": 0.15066039020439123,
+              "sigma_r_rel_error": 0.027657402226730313,
+              "sigma_theta_rel_error": 0.007538085562125228
+            },
+            {
+              "gauss_radius_m": 0.1680896097956088,
+              "sigma_r_rel_error": 0.03658131887920557,
+              "sigma_theta_rel_error": 0.006340476028050174
+            },
+            {
+              "gauss_radius_m": 0.1899646097956088,
+              "sigma_r_rel_error": 0.09722302926199891,
+              "sigma_theta_rel_error": 0.004994776792464926
+            }
+          ],
+          "max_gauss_sigma_theta_rel_error": 0.013219952309744981,
+          "max_gauss_sigma_r_rel_error": 0.09722302926199891
+        }
+      ],
+      "observations": {
+        "worst_sigma_theta_rel_error": 0.03552862789814325,
+        "worst_sigma_r_rel_error": 0.02117487602039078,
+        "worst_u_r_rel_error": 0.0024214087657545634,
+        "order_sigma_theta": {
+          "per_level": [
+            2.016536663505437,
+            1.8984285060692851
+          ],
+          "finest": 1.8984285060692851
+        },
+        "order_u_r": {
+          "per_level": [
+            1.9893603057060374,
+            1.9787376844968112
+          ],
+          "finest": 1.9787376844968112
+        },
+        "gauss_vs_recovered": {
+          "finest_gauss_sigma_theta_rel_error": 0.013219952309744981,
+          "finest_gauss_sigma_r_rel_error": 0.09722302926199891
+        },
+        "order_note": "the recovered pointwise stress is second order; the raw Gauss values are first order and are reported for transparency."
+      }
+    }
+  },
+  "timings_s": {
+    "beam": 0.03553199768066406,
+    "plate": 40.26272654533386,
+    "cylinder": 0.4718332290649414
+  }
+}
