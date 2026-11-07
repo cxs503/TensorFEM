@@ -1,0 +1,118 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_plate_modal",
+  "title": "Simply supported rectangular plate: first five natural frequencies vs Navier",
+  "mission": "IN36-N01",
+  "generated_at": "2026-11-07T09:02:58+00:00",
+  "criteria": {
+    "frequency_rel_error_max": 0.01,
+    "observed_order_min": 1.8,
+    "mac_min": 0.99,
+    "library_equivalence_max": 1e-09,
+    "refinement_levels_min": 3
+  },
+  "gates": [
+    {
+      "id": "frequency_mode_1_11",
+      "quantity": "natural frequency of mode 1 (1,1)",
+      "reference": "f_mn = (pi/2) sqrt(D/(rho h)) [(m/a)^2 + (n/b)^2]",
+      "value": 0.00032654521969810446,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "frequency_mode_2_21",
+      "quantity": "natural frequency of mode 2 (2,1)",
+      "reference": "f_mn = (pi/2) sqrt(D/(rho h)) [(m/a)^2 + (n/b)^2]",
+      "value": 0.0004986347599134078,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "frequency_mode_3_12",
+      "quantity": "natural frequency of mode 3 (1,2)",
+      "reference": "f_mn = (pi/2) sqrt(D/(rho h)) [(m/a)^2 + (n/b)^2]",
+      "value": 0.002468301338857559,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "frequency_mode_4_31",
+      "quantity": "natural frequency of mode 4 (3,1)",
+      "reference": "f_mn = (pi/2) sqrt(D/(rho h)) [(m/a)^2 + (n/b)^2]",
+      "value": 0.001839695721187029,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "frequency_mode_5_22",
+      "quantity": "natural frequency of mode 5 (2,2)",
+      "reference": "f_mn = (pi/2) sqrt(D/(rho h)) [(m/a)^2 + (n/b)^2]",
+      "value": 0.0013050552061213416,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "mode_shape_mac",
+      "quantity": "minimum modal assurance criterion over the five modes",
+      "reference": "MAC = (phi_FE . phi_exact)^2 / (|phi_FE|^2 |phi_exact|^2)",
+      "value": 0.9999999999999972,
+      "threshold": 0.99,
+      "operator": ">=",
+      "passed": true,
+      "note": "identifies each FE mode with the analytic (m,n) sine product"
+    },
+    {
+      "id": "observed_order",
+      "quantity": "minimum observed order over the five modes (finest pair)",
+      "reference": "p = ln(e_coarse/e_fine)/ln(h_coarse/h_fine)",
+      "value": 2.6518751856651654,
+      "threshold": 1.8,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "library_equivalence",
+      "quantity": "max relative frequency difference against solve_plate_vibration",
+      "reference": "TensorFEM library entry point on the coarsest level",
+      "value": 3.490630007263462e-11,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true,
+      "note": "proves the subset LAPACK eigensolve solves the same discrete problem"
+    },
+    {
+      "id": "spurious_mode_filter",
+      "quantity": "near-zero eigenvalues filtered out at the finest mesh",
+      "reference": "supported boundary must carry no mechanism",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "non-zero means the SRI shear rule still leaves a mechanism in the supported spectrum; reported, and the retained set is verified positive"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "figures": [
+      "plate_modes.png",
+      "plate_convergence.png"
+    ]
+  },
+  "limitations": [
+    "Kirchhoff is the yardstick; at a/h = 100 the Mindlin shear correction is O((h/a)^2) ~ 2e-4 relative, far below the 1 % gate but non-zero",
+    "hard simple support (w = 0 and the normal rotation restrained) is the library's declared convention; the difference to the soft (SS1) convention is O((h/a)^2) as well",
+    "isotropic, uniform thickness, no prestress, no added mass, no damping, no fluid coupling",
+    "the selective-reduced-integration shear rule leaves zero-energy mechanisms in the element; the count at each level is reported and the retained spectrum is asserted positive",
+    "the reported order is a two-level estimate per mode; it is not a p-refinement study and does not extrapolate the frequencies"
+  ]
+}
