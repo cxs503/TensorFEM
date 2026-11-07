@@ -1,0 +1,377 @@
+{
+ "points": [
+  {
+   "step": 1,
+   "average_stress": 11749999.999149488,
+   "stress_over_yield": 0.0499999999963808,
+   "end_shortening": 0.00012839704746548075,
+   "transverse_deflection": 2.295698334193983e-05,
+   "iterations": 2,
+   "residual": 1.1135943911394843e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 2,
+   "average_stress": 23499999.998298977,
+   "stress_over_yield": 0.0999999999927616,
+   "end_shortening": 0.0002567940949309604,
+   "transverse_deflection": 4.5913966683876446e-05,
+   "iterations": 2,
+   "residual": 1.5682220898792076e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 3,
+   "average_stress": 35249999.99744846,
+   "stress_over_yield": 0.14999999998914237,
+   "end_shortening": 0.00038519114239643997,
+   "transverse_deflection": 6.887095002581272e-05,
+   "iterations": 2,
+   "residual": 1.8031126531056184e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 4,
+   "average_stress": 46999999.996597946,
+   "stress_over_yield": 0.19999999998552317,
+   "end_shortening": 0.0005135881898619195,
+   "transverse_deflection": 9.182793336775094e-05,
+   "iterations": 2,
+   "residual": 1.7238237653093234e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 5,
+   "average_stress": 58749999.99574743,
+   "stress_over_yield": 0.24999999998190398,
+   "end_shortening": 0.0006419852373273992,
+   "transverse_deflection": 0.00011478491670968748,
+   "iterations": 2,
+   "residual": 1.7958829463866138e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 6,
+   "average_stress": 70499999.99489692,
+   "stress_over_yield": 0.29999999997828475,
+   "end_shortening": 0.0007703822847928787,
+   "transverse_deflection": 0.000137741900051625,
+   "iterations": 2,
+   "residual": 1.6381007571171997e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 7,
+   "average_stress": 82249999.9940464,
+   "stress_over_yield": 0.3499999999746656,
+   "end_shortening": 0.0008987793322583586,
+   "transverse_deflection": 0.00016069888339356048,
+   "iterations": 2,
+   "residual": 1.8783394057098398e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 8,
+   "average_stress": 93999999.99319589,
+   "stress_over_yield": 0.39999999997104635,
+   "end_shortening": 0.001027176379723838,
+   "transverse_deflection": 0.00018365586673549792,
+   "iterations": 2,
+   "residual": 3.5025442091082424e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 9,
+   "average_stress": 105749999.99234538,
+   "stress_over_yield": 0.4499999999674271,
+   "end_shortening": 0.0011555734271893178,
+   "transverse_deflection": 0.00020661285007743667,
+   "iterations": 2,
+   "residual": 4.1054658533406944e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 10,
+   "average_stress": 117499999.99149486,
+   "stress_over_yield": 0.49999999996380795,
+   "end_shortening": 0.001283970474654797,
+   "transverse_deflection": 0.00022956983341937783,
+   "iterations": 2,
+   "residual": 2.23315644343328e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 11,
+   "average_stress": 129249999.99064435,
+   "stress_over_yield": 0.5499999999601888,
+   "end_shortening": 0.001412367522120277,
+   "transverse_deflection": 0.00025252681676130994,
+   "iterations": 2,
+   "residual": 3.4127954266373803e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 12,
+   "average_stress": 140999999.98979384,
+   "stress_over_yield": 0.5999999999565695,
+   "end_shortening": 0.0015407645695857566,
+   "transverse_deflection": 0.0002754838001032537,
+   "iterations": 2,
+   "residual": 8.00514977428027e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 13,
+   "average_stress": 152749999.98894334,
+   "stress_over_yield": 0.6499999999529503,
+   "end_shortening": 0.0016691616170512364,
+   "transverse_deflection": 0.0002984407834451844,
+   "iterations": 2,
+   "residual": 5.0173846274681946e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 14,
+   "average_stress": 164499999.98809284,
+   "stress_over_yield": 0.6999999999493313,
+   "end_shortening": 0.0017975586645167154,
+   "transverse_deflection": 0.00032139776678712534,
+   "iterations": 2,
+   "residual": 2.7472088102739287e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 15,
+   "average_stress": 176249999.98724234,
+   "stress_over_yield": 0.7499999999457121,
+   "end_shortening": 0.0019259557119821955,
+   "transverse_deflection": 0.0003443547501290568,
+   "iterations": 2,
+   "residual": 2.666320607843409e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 16,
+   "average_stress": 187999999.9863918,
+   "stress_over_yield": 0.7999999999420928,
+   "end_shortening": 0.0020543527594476755,
+   "transverse_deflection": 0.00036731173347099726,
+   "iterations": 2,
+   "residual": 4.297623474933399e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 17,
+   "average_stress": 199749999.9855413,
+   "stress_over_yield": 0.8499999999384736,
+   "end_shortening": 0.002182749806913155,
+   "transverse_deflection": 0.00039026871681293413,
+   "iterations": 2,
+   "residual": 9.565504150428954e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 18,
+   "average_stress": 211499999.9846908,
+   "stress_over_yield": 0.8999999999348544,
+   "end_shortening": 0.0023111468543786347,
+   "transverse_deflection": 0.00041322570015486657,
+   "iterations": 2,
+   "residual": 5.765944393562282e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 19,
+   "average_stress": 223249999.98384026,
+   "stress_over_yield": 0.9499999999312352,
+   "end_shortening": 0.0024395439018441148,
+   "transverse_deflection": 0.00043618268349680036,
+   "iterations": 2,
+   "residual": 6.545357855955181e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 20,
+   "average_stress": 230046840.01701316,
+   "stress_over_yield": 0.9789227234766518,
+   "end_shortening": 0.0025138157480073245,
+   "transverse_deflection": 0.00044946225315047083,
+   "iterations": 4,
+   "residual": 3.796239868094401e-09,
+   "maximum_plastic_strain": 0.0
+  },
+  {
+   "step": 21,
+   "average_stress": 232658907.59013203,
+   "stress_over_yield": 0.9900379046388597,
+   "end_shortening": 0.0025426230455121044,
+   "transverse_deflection": 0.00045581053914408416,
+   "iterations": 10,
+   "residual": 0.0003979586193611229,
+   "maximum_plastic_strain": 1.0117503952557688e-05
+  },
+  {
+   "step": 22,
+   "average_stress": 236382656.8829213,
+   "stress_over_yield": 1.0058836463103034,
+   "end_shortening": 0.002586559697077341,
+   "transverse_deflection": 0.0004769946114855574,
+   "iterations": 7,
+   "residual": 1.5596657026218593e-07,
+   "maximum_plastic_strain": 4.3730151872758615e-05
+  },
+  {
+   "step": 23,
+   "average_stress": 239194840.7808466,
+   "stress_over_yield": 1.017850386301475,
+   "end_shortening": 0.00262163180749077,
+   "transverse_deflection": 0.0005003369087093199,
+   "iterations": 7,
+   "residual": 0.00011342864732933404,
+   "maximum_plastic_strain": 7.707748950738604e-05
+  },
+  {
+   "step": 24,
+   "average_stress": 241795064.67090258,
+   "stress_over_yield": 1.0289151688123515,
+   "end_shortening": 0.002655433532557237,
+   "transverse_deflection": 0.0005243104237192034,
+   "iterations": 8,
+   "residual": 7.620244311500155e-08,
+   "maximum_plastic_strain": 0.00010904666332506026
+  },
+  {
+   "step": 25,
+   "average_stress": 243932792.5206989,
+   "stress_over_yield": 1.038011883066804,
+   "end_shortening": 0.002685371173166598,
+   "transverse_deflection": 0.0005487113092494884,
+   "iterations": 8,
+   "residual": 6.857210794822934e-08,
+   "maximum_plastic_strain": 0.00013841479090805742
+  },
+  {
+   "step": 26,
+   "average_stress": 245764607.5724889,
+   "stress_over_yield": 1.0458068407339953,
+   "end_shortening": 0.00271314237833949,
+   "transverse_deflection": 0.0005743566461729567,
+   "iterations": 8,
+   "residual": 6.859426474405967e-07,
+   "maximum_plastic_strain": 0.00016573983493932567
+  },
+  {
+   "step": 27,
+   "average_stress": 247383200.51825926,
+   "stress_over_yield": 1.052694470290465,
+   "end_shortening": 0.0027393532418296955,
+   "transverse_deflection": 0.0006001176770842985,
+   "iterations": 8,
+   "residual": 0.000982453878277801,
+   "maximum_plastic_strain": 0.0001905111468163964
+  },
+  {
+   "step": 28,
+   "average_stress": 248892385.36120334,
+   "stress_over_yield": 1.059116533451929,
+   "end_shortening": 0.0027648269403098085,
+   "transverse_deflection": 0.0006254824104718543,
+   "iterations": 11,
+   "residual": 3.206775601547585e-05,
+   "maximum_plastic_strain": 0.0002140337000876835
+  },
+  {
+   "step": 29,
+   "average_stress": 250386348.43176284,
+   "stress_over_yield": 1.0654738231138845,
+   "end_shortening": 0.0027903534061651204,
+   "transverse_deflection": 0.0006510612785532226,
+   "iterations": 12,
+   "residual": 1.447225444452592e-06,
+   "maximum_plastic_strain": 0.00023719651070503426
+  },
+  {
+   "step": 30,
+   "average_stress": 240024325.92734128,
+   "stress_over_yield": 1.0213801103291118,
+   "end_shortening": 0.0026771233554917406,
+   "transverse_deflection": 0.0006308161059620049,
+   "iterations": 12,
+   "residual": 5.951539602451889e-09,
+   "maximum_plastic_strain": 0.00023719651070503426
+  },
+  {
+   "step": 31,
+   "average_stress": 247096044.13492277,
+   "stress_over_yield": 1.0514725282337138,
+   "end_shortening": 0.0027543989076982975,
+   "transverse_deflection": 0.000644632728694101,
+   "iterations": 4,
+   "residual": 6.378102520355959e-09,
+   "maximum_plastic_strain": 0.00023719651070503426
+  },
+  {
+   "step": 32,
+   "average_stress": 251104371.2214018,
+   "stress_over_yield": 1.0685292392400076,
+   "end_shortening": 0.002802751923123439,
+   "transverse_deflection": 0.0006635899853817934,
+   "iterations": 9,
+   "residual": 4.386247300392293e-07,
+   "maximum_plastic_strain": 0.00024826988294023565
+  }
+ ],
+ "ultimate_stress": 251104371.2214018,
+ "ultimate_over_yield": 1.0685292392400076,
+ "ultimate_end_shortening": 0.002802751923123439,
+ "ultimate_transverse_deflection": 0.0006635899853817934,
+ "ultimate_step": 32,
+ "has_peak": false,
+ "post_peak_drop": 0.0,
+ "converged": false,
+ "points_completed": 32,
+ "reference_area": 0.010480000000000001,
+ "pressure_ratio": 0.0,
+ "closed_form_panel_ultimate": 219599784.38873535,
+ "closed_form_over_yield": 0.9344671676116398,
+ "elapsed": 325.7464883327484,
+ "config": {
+  "panel": {
+   "span": 2.4,
+   "spacing": 0.8,
+   "plate_thickness": 0.02,
+   "web_height": 0.2,
+   "web_thickness": 0.01,
+   "flange_width": 0.08,
+   "flange_thickness": 0.012,
+   "young": 206000000000.0,
+   "poisson": 0.3,
+   "yield_stress": 235000000.0
+  },
+  "steps": 72,
+  "ds": 0.0002
+ },
+ "panel_summary": {
+  "plate_slenderness": 1.3510154397513754,
+  "plate_buckling_stress": 465462112.32243764,
+  "plate_limiting_stress": 219136475.73597914,
+  "column_slenderness": 0.46851225857002576,
+  "column_euler_stress": 1070596809.9751588,
+  "column_limiting_stress": 222104155.4847148,
+  "tripping_stress": 137299059.28456813,
+  "flange_local_buckling_stress": 1780392579.6333237,
+  "governing_stiffener_mode": "column",
+  "stiffener_limiting_stress": 222104155.4847148,
+  "panel_ultimate_stress": 219599784.38873535,
+  "panel_ultimate_over_yield": 0.9344671676116398,
+  "plate_area": 0.016,
+  "stiffener_area": 0.00296,
+  "centroid_offset": -0.020675105485232066
+ },
+ "free_dofs": 90,
+ "elements": [
+  8,
+  4,
+  4
+ ]
+}
