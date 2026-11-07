@@ -1,0 +1,140 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_plate_static",
+  "title": "Kirchhoff plate statics vs Navier series and Timoshenko tables (L2 rung)",
+  "mission": "5418",
+  "generated_at": "2026-11-07T11:57:03+00:00",
+  "criteria": {
+    "ssss_centre_vs_navier_11_max": 0.01,
+    "all_data_points_max": 0.02,
+    "convergence_order_min": 1.5,
+    "levels": [
+      10,
+      20,
+      40
+    ],
+    "extended_levels": [
+      80
+    ]
+  },
+  "gates": [
+    {
+      "id": "L2.ssss_centre_vs_navier_11",
+      "quantity": "SSSS centre deflection vs Navier 11x11 (N=40)",
+      "reference": "w_c = 16q/(pi^6 D) sum_{m,n<=11 odd} ...",
+      "value": 1.1747011899326134e-05,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.ssss_centre_vs_navier_301",
+      "quantity": "SSSS centre deflection vs converged Navier series (N=40)",
+      "reference": "w_c = 16q/(pi^6 D) sum_{m,n<=301 odd} ...",
+      "value": 6.635595093757612e-08,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.ssss_centre_vs_timoshenko",
+      "quantity": "SSSS centre deflection vs Timoshenko table 8 alpha=0.00406 (N=40)",
+      "reference": "w_c = 0.00406 q a^4 / D",
+      "value": 0.0005795394683600787,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.ssss_moments_vs_navier",
+      "quantity": "SSSS centre M_x (worst of M_x, M_y) vs converged Navier (N=40)",
+      "reference": "M_x = M_y = 0.047886 q a^2 (Navier), table 0.0479",
+      "value": 0.00021504283273184025,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.cccc_centre_vs_timoshenko",
+      "quantity": "CCCC centre deflection vs Timoshenko table 35 alpha=0.00126 (N=40)",
+      "reference": "w_c = 0.00126 q a^4 / D",
+      "value": 0.004271420514061274,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true,
+      "note": "table rounding alone is 0.42 %, see extended_levels"
+    },
+    {
+      "id": "L2.cccc_moments_vs_timoshenko",
+      "quantity": "CCCC centre M_x (worst of M_x, M_y) vs Timoshenko 0.0231 q a^2 (N=40)",
+      "reference": "M_x = M_y = 0.0231 q a^2",
+      "value": 0.007710395589021481,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L2.order_ssss",
+      "quantity": "observed order of the SSSS centre-deflection error",
+      "reference": "log-log slope vs the converged Navier series",
+      "value": 4.01174529158493,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L2.order_ssss_moment",
+      "quantity": "observed order of the SSSS centre-moment error",
+      "reference": "log-log slope vs the converged Navier series",
+      "value": 2.0306354151053294,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L2.order_cccc_self",
+      "quantity": "observed order of the CCCC deflection (successive differences)",
+      "reference": "Richardson self-convergence over N=10,20,40 (table floor excluded)",
+      "value": 2.9932517299359067,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L2.monotone_ssss",
+      "quantity": "SSSS centre-deflection error decreases monotonically",
+      "reference": "strict decrease vs the converged Navier series",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L2.monotone_cccc",
+      "quantity": "CCCC centre-deflection error decreases monotonically",
+      "reference": "strict decrease vs Timoshenko 0.00126",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_plate_static/result.json",
+    "figures": [
+      "fields_ssss.png",
+      "fields_cccc.png",
+      "convergence.png"
+    ]
+  },
+  "limitations": [
+    "Kirchhoff (thin-plate) theory: a/t = 100 keeps the Mindlin shear correction ~1e-4 relative, but the model carries no transverse shear deformation at all.",
+    "Timoshenko table 35 (CCCC) is quoted to three significant digits, so 0.42 % of the reported CCCC error is reference rounding, not discretisation; the extended N=80 level (alpha = 0.001265) sits on that floor and the CCCC order is therefore graded by self-convergence rather than against the table.",
+    "The CCCC centre moment converges from above to 0.02291 q a^2 (0.02322, 0.02298, 0.02292, 0.02291 at N=10,20,40,80), i.e. 0.8 % below the three-significant-digit table value 0.0231; the error against the table is therefore non-monotone (it crosses the table value near N=10) even though the moment itself converges at order 2.",
+    "The 11x11 Navier truncation mandated by the campaign is accurate for deflections (~5e-8) but only ~1e-3 for the moments; the moment gates use the 301-harmonic evaluation of the same series.",
+    "Hard simple support excludes the corner uplift dof; this is the exact Kirchhoff condition and the same convention as benchmarks/verified/fem_plate, so results are comparable but not identical (that anchor used lumped nodal loads)."
+  ]
+}
