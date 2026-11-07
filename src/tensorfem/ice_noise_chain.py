@@ -307,18 +307,24 @@ def girder_modal_superposition(
 
     eig = solve_modes(Kf, Mwf, (), modes=modes)
     omega = eig.angular_frequencies
-    phi = eig.modes  # (ndof, n_modes), M_wet-orthonormal on free DOFs
-    phi_f = phi[free, :]
+    # ``solve_modes`` was handed the *free-reduced* matrices, so its modes are
+    # indexed on the reduced DOF set (0 .. nfree-1) and not on global DOFs; the
+    # global basis is rebuilt by scattering them back onto ``free``.
+    phi_f = eig.modes  # (nfree, n_modes), M_wet-orthonormal
+    n_modes = phi_f.shape[1]
+    phi = torch.zeros((ndof, n_modes), dtype=phi_f.dtype)
+    phi[free, :] = phi_f
 
     n_steps = int(round(t_end / dt))
     if n_steps < 1:
         raise ValueError("t_end/dt must be >= 1")
     times = torch.linspace(0.0, t_end, n_steps + 1)
 
-    q = torch.zeros(modes)
-    qd = torch.zeros(modes)
-    u_hist = torch.zeros((n_steps + 1, ndof))
-    a_hist = torch.zeros((n_steps + 1, ndof))
+    dtype = omega.dtype
+    q = torch.zeros(n_modes, dtype=dtype)
+    qd = torch.zeros(n_modes, dtype=dtype)
+    u_hist = torch.zeros((n_steps + 1, ndof), dtype=dtype)
+    a_hist = torch.zeros((n_steps + 1, ndof), dtype=dtype)
 
     def accel(qv: torch.Tensor, qdv: torch.Tensor, tnow: float) -> torch.Tensor:
         Ff = force(tnow)[free]
@@ -334,8 +340,8 @@ def girder_modal_superposition(
             break
 
         def deriv(state: torch.Tensor, t0: float, t1: float) -> torch.Tensor:
-            qv = state[:modes]
-            qdv = state[modes:]
+            qv = state[:n_modes]
+            qdv = state[n_modes:]
             return torch.cat([qdv, accel(qv, qdv, 0.5 * (t0 + t1))])
 
         s0 = torch.cat([q, qd])
@@ -344,7 +350,7 @@ def girder_modal_superposition(
         k3 = deriv(s0 + 0.5 * dt * k2, tnow, tnow + dt)
         k4 = deriv(s0 + dt * k3, tnow, tnow + dt)
         s_new = s0 + (dt / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4)
-        q, qd = s_new[:modes], s_new[modes:]
+        q, qd = s_new[:n_modes], s_new[n_modes:]
 
     return {
         "time": times,
@@ -386,8 +392,11 @@ def girder_newmark_reference(
 
     eig = solve_modes(Kf, Mwf, (), modes=modes)
     omega = eig.angular_frequencies
-    phi_f = eig.modes[free, :]
+    # Reduced-system modes (see girder_modal_superposition for the indexing).
+    phi_f = eig.modes
     C = _modal_damping_matrix(phi_f, omega, zeta)
+    phi = torch.zeros((ndof, phi_f.shape[1]), dtype=phi_f.dtype)
+    phi[free, :] = phi_f
 
     n_steps = int(round(t_end / dt))
     if n_steps < 1:
@@ -398,12 +407,13 @@ def girder_newmark_reference(
     K_eff = Kf + (gamma / (beta * dt)) * C + (1.0 / (beta * dt ** 2)) * Mwf
     K_eff_inv = torch.linalg.inv(K_eff)
 
-    uf = torch.zeros(free.numel())
-    uf_d = torch.zeros(free.numel())
-    uf_dd = torch.zeros(free.numel())
+    uf = torch.zeros(free.numel(), dtype=Kf.dtype)
+    uf_d = torch.zeros(free.numel(), dtype=Kf.dtype)
+    uf_dd = torch.zeros(free.numel(), dtype=Kf.dtype)
 
-    u_hist = torch.zeros((n_steps + 1, ndof))
-    a_hist = torch.zeros((n_steps + 1, ndof))
+    dtype = Kf.dtype
+    u_hist = torch.zeros((n_steps + 1, ndof), dtype=dtype)
+    a_hist = torch.zeros((n_steps + 1, ndof), dtype=dtype)
 
     for step in range(n_steps + 1):
         tnow = float(times[step])
@@ -417,7 +427,12 @@ def girder_newmark_reference(
             - Kf @ (uf + dt * uf_d + dt ** 2 * (0.5 - beta) * uf_dd)
             - C @ (uf_d + dt * (1.0 - gamma) * uf_dd)
         )
-        uf_dd_new = K_eff_inv @ rhs
+        # ``K_eff = M/(beta*dt**2) + gamma/(beta*dt) C + K`` is the Newmark
+        # operator scaled by ``1/(beta*dt**2)`` relative to the acceleration
+        # form ``M + gamma*dt C + beta*dt**2 K``; the inverse must therefore be
+        # rescaled or the acceleration (and the whole response) comes out too
+        # small by ``beta*dt**2``.
+        uf_dd_new = (K_eff_inv @ rhs) / (beta * dt * dt)
         uf = uf + dt * uf_d + dt ** 2 * ((0.5 - beta) * uf_dd + beta * uf_dd_new)
         uf_d = uf_d + dt * ((1.0 - gamma) * uf_dd + gamma * uf_dd_new)
         uf_dd = uf_dd_new
@@ -427,7 +442,7 @@ def girder_newmark_reference(
         "u": u_hist,
         "a": a_hist,
         "omega": omega,
-        "modes": eig.modes,
+        "modes": phi,
         "free": free,
         "n_steps": n_steps,
     }
@@ -646,7 +661,7 @@ def baffled_monopole_pressure(
         raise ValueError("frequency, r, rho, c must be positive")
     omega = 2.0 * math.pi * frequency
     k = omega / c
-    return 1j * rho * omega * q_volume * math.exp(-1j * k * r) / (2.0 * math.pi * r)
+    return 1j * rho * omega * q_volume * cmath.exp(-1j * k * r) / (2.0 * math.pi * r)
 
 
 def noise_level_db(
@@ -732,7 +747,7 @@ def run_ice_noise_chain(cfg: IceNoiseChainConfig) -> dict:
 
     def force_fn(tnow: float) -> torch.Tensor:
         # Map the scalar ice force onto the girder mid-span DOF.
-        f = torch.zeros(2 * (cfg.girder_elements + 1))
+        f = torch.zeros(2 * (cfg.girder_elements + 1), dtype=torch.float64)
         f[2 * cfg.girder_elements // 2] = float(ice_force[int(round(tnow / cfg.dt))])
         return f
 
