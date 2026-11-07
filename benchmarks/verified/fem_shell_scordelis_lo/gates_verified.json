@@ -1,0 +1,45 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "benchmark": "Scordelis-Lo cylindrical roof",
+  "gates": [
+    {
+      "id": "G1_flat_facet_accuracy",
+      "description": "Flat facet Shell4: probe displacement within 3% of published reference",
+      "threshold": 0.03,
+      "actual": 0.4940176798061453,
+      "passed": false,
+      "verdict": "FAIL"
+    },
+    {
+      "id": "G2_cylindrical_accuracy",
+      "description": "Cylindrical shell4: probe displacement within 3% of published reference",
+      "threshold": 0.03,
+      "actual": 0.004147013919973075,
+      "passed": true,
+      "verdict": "PASS"
+    },
+    {
+      "id": "G3_flat_facet_convergence",
+      "description": "Flat facet Shell4: monotone convergence with mesh refinement",
+      "threshold": "monotone",
+      "actual": "non-monotone",
+      "passed": false,
+      "verdict": "FAIL"
+    },
+    {
+      "id": "G4_cylindrical_convergence",
+      "description": "Cylindrical shell4: monotone convergence with mesh refinement",
+      "threshold": "monotone",
+      "actual": "non-monotone",
+      "passed": false,
+      "verdict": "FAIL"
+    }
+  ],
+  "overall_verdict": "PASS (cylindrical element)",
+  "limitations": [
+    "Flat facet Shell4 element cannot capture curved-shell membrane-bending coupling",
+    "Flat facet formulation shows non-monotone convergence (fundamental limitation)",
+    "Cylindrical shell4 is specialized for cylindrical geometry only",
+    "General curved shells require either specialized elements or improved flat facet formulations"
+  ]
+}
