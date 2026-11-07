@@ -11,6 +11,13 @@ from .timoshenko_beam_modal import (
     simply_supported_timoshenko_modes as simply_supported_timoshenko_modes,
 )
 from .buckling import BucklingResult, pinned_pinned_column_buckling, solve_linear_buckling
+from .structural_verification import (
+    solve_cantilever_udl as solve_cantilever_udl,
+    kirchhoff_ss_plate_uniform_load as kirchhoff_ss_plate_uniform_load,
+    cantilever_modal_ladder as cantilever_modal_ladder,
+    euler_bernoulli_cantilever_tip as euler_bernoulli_cantilever_tip,
+    PLATE_ALPHA_TIMOSHENKO as PLATE_ALPHA_TIMOSHENKO,
+)
 from .benchmark_registry import BenchmarkEvidence, run_registered_benchmarks, verification_report
 from .sparse_core import (
     DofManager, MPC, IterativeResult, SparseStaticResult, assemble_coo,
@@ -248,6 +255,8 @@ __all__ = [
     "ContinuumModel", "ContinuumResult", "solve_continuum",
     "ModalResult", "cantilever_beam_modes", "solve_modes",
     "BucklingResult", "pinned_pinned_column_buckling", "solve_linear_buckling",
+    "solve_cantilever_udl", "kirchhoff_ss_plate_uniform_load", "cantilever_modal_ladder",
+    "euler_bernoulli_cantilever_tip", "PLATE_ALPHA_TIMOSHENKO",
     "BenchmarkEvidence", "run_registered_benchmarks", "verification_report",
     "DofManager", "MPC", "IterativeResult", "SparseStaticResult",
     "assemble_coo", "conjugate_gradient", "solve_sparse_static",
