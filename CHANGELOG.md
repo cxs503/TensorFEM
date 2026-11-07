@@ -1,5 +1,35 @@
 ## Unreleased
 
+### Adaptivity / verification
+- **1D h-adaptive continuation with closed-form error** (`tensorfem.adaptive_1d`): the P1
+  two-point boundary value problem on `(0,1)` with two analytic solutions (`u = sin(pi x)` and
+  `u = x^0.6`, singular flux at `x = 0`), an analytic load vector (no quadrature on the singular
+  element), a **closed-form discrete energy-norm error** per element, an L2-projection flux
+  recovery with a closed-form element indicator, Doerfler marking and bisection refinement.
+  Measured uniform orders `-0.9722` vs theory `-1` (2.8 %) and `-0.0977` vs theory
+  `-(alpha-1/2) = -0.1` (2.3 %); the adaptive loop reaches `-0.5027` and needs **>= 39x** fewer
+  unknowns than the uniform ladder at equal accuracy on the singular problem, while on the smooth
+  problem it is a negative control (2x more unknowns than uniform). Rejection gates: non-monotone
+  meshes, empty markings, out-of-range marking fractions, `alpha` outside `(0.5, 1)`, non-finite
+  flux, and a zero exact error whose effectivity is undefined. No closed-form rate is claimed for
+  the adaptive ladder: the textbook optimal grading (`gamma = 2/(2 alpha - 1)`) exhausts double
+  precision at `N >= 64` and that limit is recorded in the grading scan.
+- **2D Q4 analytic-order audit** (`tensorfem.adaptive_poisson_2d`): scalar Poisson on `(0,1)^2`
+  with the polynomial bubble `u = 256 x^2(1-x)^2 y^2(1-y)^2` (zero boundary trace, exact
+  quadrature for stiffness, load, errors and indicators), a vectorised gradient/recovery path
+  guarded by a per-element `J^-1 dN/dxi` cross-check, and a recovered-gradient ZZ indicator.
+  Energy order `-0.4848` and L2 order `-0.9704` against theory `-0.5` / `-1.0` (3.0 % at the
+  finest rung pair); effectivity `theta = 1.0014` at 1521 unknowns, i.e. the estimator is
+  asymptotically exact on a smooth field, which localises the bias measured on the singular
+  Williams field to the *field*, not the estimator. The averaged recovery is only mildly
+  superconvergent (`-0.72`, reported; SPR lives in `adaptive_zz`).
+  Evidence `artifacts/adaptive_continuation/{study_1d,study_2d,grading_scan}.json` + `tables.md`,
+  figures `docs/assets/adaptive_continuation/`, generator
+  `scripts/adaptive_continuation_study.py`, note `docs/adaptive-continuation-order-cost.md`,
+  tests `tests/test_adaptive_1d.py` + `tests/test_adaptive_poisson_2d.py`.
+  Uniform meshes only in 2D; the local-refinement loop with hanging nodes remains
+  `tensorfem.adaptive_zz`.
+
 ### Contact
 - **Two-block frictionless mortar segment integration**
   (`tensorfem.mortar_segment_contact3d`, `tensorfem.mortar_two_block`,
