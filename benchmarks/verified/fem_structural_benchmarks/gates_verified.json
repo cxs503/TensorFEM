@@ -1,0 +1,151 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_structural_benchmarks",
+  "title": "Beam / plate / axisymmetric elements vs Euler-Bernoulli, Navier and Lame oracles",
+  "mission": "IN41-N01",
+  "generated_at": "2026-11-07T14:08:07+00:00",
+  "criteria": {
+    "case_a_tip_deflection_rel_max": 0.01,
+    "case_a_root_stress_rel_max": 0.01,
+    "case_b_centre_deflection_rel_max": 0.02,
+    "case_c_stress_rel_max": 0.01,
+    "convergence_order_min": 1.5,
+    "levels_per_case": 3
+  },
+  "gates": [
+    {
+      "id": "A1.tip_deflection",
+      "quantity": "cantilever tip deflection vs P L^3/(3 E I), worst level",
+      "reference": "w(L) = P L^3 / (3 E I)",
+      "value": 2.749003660706962e-12,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "cubic Hermite element spans the exact cubic field: round-off floor"
+    },
+    {
+      "id": "A2.root_bending_stress",
+      "quantity": "fixed-end bending stress vs sigma = M c / I, worst level",
+      "reference": "sigma(L=0) = P L c / I = 141.505 MPa",
+      "value": 3.0363562393188482e-12,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A3.beam_order",
+      "quantity": "observed order, uniform-load interior deflection field",
+      "reference": "h-refinement order, levels (4, 8, 16)",
+      "value": 2.03028690571786,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true,
+      "note": "the tip-load case is exactly represented (order not measurable); the quartic uniform-load field provides the rate"
+    },
+    {
+      "id": "B1.centre_vs_timoshenko",
+      "quantity": "SSSS centre deflection vs Timoshenko table 8 alpha = 0.00406, finest level",
+      "reference": "w_c = 0.00406 q a^4 / D",
+      "value": 0.003610936169419041,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true,
+      "note": "table is quoted to three significant figures: 0.06 %% rounding floor"
+    },
+    {
+      "id": "B2.centre_vs_navier",
+      "quantity": "SSSS centre deflection vs converged Navier series, finest level",
+      "reference": "w_c = 16 q a^4/(pi^6 D) sum_{m,n odd} sin sin /(m n (m^2+n^2)^2), 401 terms",
+      "value": 0.003029707462543777,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "B3.plate_order",
+      "quantity": "observed order, L2 deflection field error",
+      "reference": "h-refinement order, levels (8, 16, 32)",
+      "value": 3.8385902176662197,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "C1.hoop_stress",
+      "quantity": "sigma_theta vs Lame at 5 radii, worst of the finest level",
+      "reference": "sigma_theta = A + B/r^2",
+      "value": 0.0023553556186978186,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "C2.radial_stress",
+      "quantity": "sigma_r vs Lame at 5 radii, worst of the finest level",
+      "reference": "sigma_r = A - B/r^2",
+      "value": 0.0016643752292806412,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "sigma_r vanishes at the free outer surface, where a relative error is undefined; the four inner sample radii carry the relative gate and C2b grades the load-normalised error at all five"
+    },
+    {
+      "id": "C2b.radial_stress_absolute",
+      "quantity": "|sigma_r - Lame| / p at the 5 radii, worst of the finest level",
+      "reference": "load-normalised radial stress error",
+      "value": 0.0005066377370744012,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "companion of C2: defined even where sigma_r vanishes (free surface)"
+    },
+    {
+      "id": "C3.radial_displacement",
+      "quantity": "u_r vs Lame at 5 radii, worst of the finest level",
+      "reference": "u_r = (1+nu)/E [(1-2 nu) A r + B/r]",
+      "value": 0.00015472182858239432,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "C3b.axial_stress",
+      "quantity": "sigma_z vs 2 nu A at 5 radii, worst of the finest level",
+      "reference": "sigma_z = 2 nu A (plane strain)",
+      "value": 0.005875404461566708,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "confirms the plane-strain constraint is actually enforced"
+    },
+    {
+      "id": "C4.cylinder_order",
+      "quantity": "observed order, recovered sigma_theta error",
+      "reference": "h-refinement order, levels (8, 16, 32)",
+      "value": 1.8984285060692851,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_structural_benchmarks/result.json",
+    "gates": "benchmarks/verified/fem_structural_benchmarks/gates_verified.json",
+    "figures": [
+      "benchmarks/verified/fem_structural_benchmarks/case_a_beam.png",
+      "benchmarks/verified/fem_structural_benchmarks/case_b_plate.png",
+      "benchmarks/verified/fem_structural_benchmarks/case_c_cylinder.png"
+    ],
+    "driver": "benchmarks/verified/fem_structural_benchmarks/run.py",
+    "tests": "tests/test_fem_structural_benchmarks.py"
+  },
+  "limitations": [
+    "Case A is exactly represented by the cubic Hermite element, so its tip-load errors are a round-off floor (~1e-13) rather than a converged discretisation; the measured order comes from the uniform-load interior field.  Euler-Bernoulli theory itself ignores transverse shear, which at L/h = 10 is a ~2 % model-level difference that the 1 % comparison to the same theory does not measure.",
+    "Case B uses soft simple support (w = 0, rotations free) and a/t = 100, so the Mindlin transverse-shear compliance is a ~1e-4 relative model difference against the Kirchhoff oracle.  The plate centre-deflection error is not monotone in the mesh, so the plate rate is graded on the L2 deflection-field norm.",
+    "Case C enforces plane strain (u_z = 0) rather than modelling the closed or open ends; the Lame sigma_r/sigma_theta fields are independent of the end condition, but sigma_z = 2 nu A corresponds to plane strain only.  Stresses are reported after standard nodal recovery: the raw Gauss-point values are first order, and both sets are in result.json.",
+    "All three cases are linear-elastic, small-displacement, single-physics checks.  They certify element kernels and load/boundary handling, not mesh quality on curved geometry, plasticity, contact or dynamics."
+  ]
+}

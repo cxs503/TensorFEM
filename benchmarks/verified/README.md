@@ -60,3 +60,21 @@ oracle with a three-level mesh ladder.
 `result_p19.json` alongside it. Report: `docs/fem-verification-ladder-p19.md`,
 artifact tests: `tests/test_p19_ladder_artifacts.py`, element tests:
 `tests/test_plate_bfs.py`.
+
+## IN41-N01 structural face: beam / plate / axisymmetric (2026-11)
+
+`fem_structural_benchmarks/` adds the shell-of-revolution (4-node axisymmetric
+ring) family, which the anchors above do not touch, and re-uses no reference
+value from them. It is one directory with three graded ladders, one per element
+family, each with its own figure.
+
+| case | element | oracle | levels | worst error (finest) |
+|---|---|---|---|---:|
+| A cantilever tip load | cubic Hermite frame (`frame2d`) | `w=PL³/(3EI)`, `σ=Mc/I` | 4, 8, 16 | 2.7e-12 (round-off) |
+| B SSSS plate, uniform pressure | Q4 Mindlin/MITC4 (`plate`) | Navier series α=0.00406235; Timoshenko α=0.00406 | 8, 16, 32 | 3.0e-03 |
+| C thick cylinder, internal pressure | axisymmetric Q4 ring (`hertz_axisymmetric`) | Lamé `σ_r`, `σ_θ`, `u_r` at 5 radii | 8, 16, 32 | 2.4e-03 |
+
+Twelve gates (`gates_verified.json`) pass, including the h-refinement orders
+2.03 / 3.84 / 1.90 ≥ 1.5. Report: `docs/fem-structural-benchmarks-in41.md`,
+tests: `tests/test_fem_structural_benchmarks.py`, doc renderer:
+`benchmarks/verified/fem_structural_benchmarks/render_doc.py`.
