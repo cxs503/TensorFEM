@@ -1,5 +1,27 @@
 ## Unreleased
 
+### Contact
+- **Two-block frictionless mortar segment integration**
+  (`tensorfem.mortar_segment_contact3d`, `tensorfem.mortar_two_block`,
+  `tensorfem.mortar_segment_transfer`): the existing facet-quadrature kernel
+  integrated every slave facet at its own quadrature points regardless of the
+  overlap with a master facet. The new kernel clips each slave facet against its
+  master facets in the master plane, fan-triangulates the clipped convex polygon
+  and integrates the penalty potential with a three-point rule per segment
+  triangle, distributing the traction to both surfaces with their own shape
+  functions (non-matching interfaces, no node pairing). Gates:
+  identical-block patch test reproduces the analytic uniform traction `p` to
+  ~1e-10 at four refinement levels (area exact, equilibrium 1e-11, penetration
+  `p/eps_n`); a prescribed smooth gap field converges at second order
+  (L2 6.4e-2 -> 4.7e-3, fitted rate 1.97) against the analytic integral; the
+  mismatched-punch interface distribution is declared withheld (penalty and mesh
+  dependent, classical elastic edge singularity) while its integral is exact.
+  Rejection gates: `eps_n <= 0`, initial interpenetration, invalid connectivity,
+  too small a search radius. Evidence `artifacts/mortar-two-block/evidence.json`,
+  tests `tests/test_mortar_segment_contact3d.py`, note
+  `docs/mortar-two-block-segment-validation.md`. Frictional mortar with finite
+  sliding remains roadmap.
+
 ### CI / tooling
 - **main 红修复：lint 门的 format 维度**（`docs/lint-gate-scope.md` §Line endings）：
   `main` 在 `f5be5cf`（#253 合并）红在 `lint (advisory)`。根因是新增的
