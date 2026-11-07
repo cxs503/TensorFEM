@@ -1,5 +1,28 @@
 ## Unreleased
 
+### Vibration / acoustics
+- **Plate structure-acoustic radiation chain** (`tensorfem.plate_acoustics`,
+  `tensorfem.plate_radiation_chain`): the Q4 Mindlin eigenpairs of a simply-supported or
+  clamped plate are turned into a sampled surface-velocity field (bilinear interpolation on
+  a Gauss grid, unit-RMS normalisation) and fed to three *numerically independent*
+  evaluations of the baffled half-space radiated power -- the 4-D Rayleigh surface integral,
+  a far-field boundary-integral extrapolation of the directivity, and the closed-form
+  angular spectrum of a sine mode -- plus the radiation efficiency
+  `sigma = P/(rho c S <v^2>)` in the harmonic (rms) convention, the coincidence frequency
+  `c^2/(1.8 c_L h)`, the equal-modal-energy band average and its asymptotics. Evidence
+  (`artifacts/plate_radiation_chain/`, 4 figures, `scripts/plate_radiation_chain_benchmark.py`):
+  simply-supported eigenfrequencies within 1.71 % of Kirchhoff (5 modes, 24x24), clamped
+  within 2.68 % of Leissa's CCCC table, FEM-driven sigma within 0.14 % of the analytical
+  Rayleigh value, the three acoustic routes agreeing to 7e-16 at `ka` from 0.4 to 55,
+  fixed-mode low-frequency exponent 1.9446 against the classical 2, `sigma(10 f_c) =
+  1.00003`, piston limit 1.00085. **Honest FAIL**: the narrow-band radiation-efficiency peak
+  sits at 1.0607 `f_c`, i.e. 6.07 % from `c^2/(1.8 c_L h)` (criterion was 5 %); a discrete
+  finite panel can only sample the coincidence singularity from a distance, and the 1/3-octave
+  average is worse (1.2 `f_c`). Audit note: the existing `acoustic_radiation` module mixes
+  the peak-squared and rms velocity conventions, so its Leppington branch is a factor two
+  above the exact Rayleigh result far above coincidence (left unchanged, documented in
+  `docs/plate_radiation_chain.md`). 25 tests in `tests/test_plate_radiation_chain.py`.
+
 ### Marine structures / ultimate strength
 - **Panel moment--curvature collapse surface** (`tensorfem.panel_mchi_qualification`): a
   Smith-method integration that re-solves the axial equilibrium of a stiffened-panel
