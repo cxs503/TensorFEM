@@ -1,0 +1,453 @@
+{
+  "case": "Free vibration: simply supported beam modes 1-5 and rectangular SS plate modes (1,1)..(2,2)",
+  "mission": "5418",
+  "node": "P19-N01",
+  "generated_by": "benchmarks/verified/fem_modal/run.py",
+  "generated_at": "2026-11-07T11:53:43+00:00",
+  "model": {
+    "beam": "2-node cubic Hermite, consistent mass (tensorfem.modal), no rotary inertia, pinned ends",
+    "plate": "BFS C1 bicubic, consistent mass rho t N_i N_j (4x4 Gauss), hard simple support",
+    "solver": {
+      "beam": "symmetric reduction with the Cholesky factor of M (tensorfem.modal.solve_modes)",
+      "plate": "scipy shift-invert Lanczos (sigma=0) on the sparse generalised problem"
+    }
+  },
+  "parameters": {
+    "beam": {
+      "length_m": 4.0,
+      "width_m": 0.05,
+      "height_m": 0.05,
+      "young_pa": 200000000000.0,
+      "density_kg_m3": 7850.0,
+      "EI_N_m2": 104166.66666666669,
+      "rho_A_kg_per_m": 19.625,
+      "slenderness_L_over_h": 80.0
+    },
+    "plate": {
+      "a_m": 1.0,
+      "b_m": 0.75,
+      "thickness_m": 0.01,
+      "young_pa": 210000000000.0,
+      "poisson": 0.3,
+      "density_kg_m3": 7850.0,
+      "rigidity_n_m": 19230.769230769234,
+      "aspect_ratio": 1.3333333333333333,
+      "a_over_t": 100.0
+    },
+    "modes": 5,
+    "levels": [
+      10,
+      20,
+      40
+    ]
+  },
+  "beam_levels": [
+    {
+      "elements": 10,
+      "h_m": 0.4,
+      "frequencies_hz": [
+        7.152574246894836,
+        28.613166001376747,
+        64.40713199656878,
+        114.63001303555745,
+        179.51890705844997
+      ],
+      "exact_hz": [
+        7.152525999517441,
+        28.610103998069764,
+        64.37273399565697,
+        114.44041599227906,
+        178.81314998793604
+      ],
+      "relative_errors": [
+        6.745501854571647e-06,
+        0.0001070252421029163,
+        0.0005343566876331169,
+        0.0016567315107556793,
+        0.003946896917601086
+      ],
+      "max_relative_error": 0.003946896917601086
+    },
+    {
+      "elements": 20,
+      "h_m": 0.2,
+      "frequencies_hz": [
+        7.152529021501171,
+        28.610296988089868,
+        64.3749245676358,
+        114.45266400544553,
+        178.8595810123701
+      ],
+      "exact_hz": [
+        7.152525999517441,
+        28.610103998069764,
+        64.37273399565697,
+        114.44041599227906,
+        178.81314998793604
+      ],
+      "relative_errors": [
+        4.225058014646404e-07,
+        6.745519698790447e-06,
+        3.4029500424467234e-05,
+        0.00010702524156585125,
+        0.00025966224764343914
+      ],
+      "max_relative_error": 0.00025966224764343914
+    },
+    {
+      "elements": 40,
+      "h_m": 0.1,
+      "frequencies_hz": [
+        7.152526194113239,
+        28.610116088307333,
+        64.37287155586995,
+        114.44118795098461,
+        178.81609012361045
+      ],
+      "exact_hz": [
+        7.152525999517441,
+        28.610103998069764,
+        64.37273399565697,
+        114.44041599227906,
+        178.81314998793604
+      ],
+      "relative_errors": [
+        2.720658382158832e-08,
+        4.225862852244515e-07,
+        2.13693289749401e-06,
+        6.745507685049068e-06,
+        1.6442502548642484e-05
+      ],
+      "max_relative_error": 1.6442502548642484e-05
+    }
+  ],
+  "plate_levels": [
+    {
+      "n_x": 10,
+      "n_y": 8,
+      "h_m": 0.1,
+      "n_dof": 396,
+      "frequencies_hz": [
+        68.29425846672706,
+        142.05853758389108,
+        199.45768566010693,
+        265.0793003765172,
+        273.2082956596709
+      ],
+      "exact_hz": [
+        68.29373673610935,
+        142.05097241110747,
+        199.41771126943934,
+        264.9796985361043,
+        273.1749469444374
+      ],
+      "mode_indices": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "relative_errors": [
+        7.639509018473809e-06,
+        5.3256747597086545e-05,
+        0.00020045556843035497,
+        0.0003758847978284465,
+        0.00012207823450312855
+      ],
+      "max_relative_error": 0.0003758847978284465
+    },
+    {
+      "n_x": 20,
+      "n_y": 15,
+      "h_m": 0.05,
+      "n_dof": 1344,
+      "frequencies_hz": [
+        68.29377785214821,
+        142.05145056042528,
+        199.4209768576353,
+        264.9860084562689,
+        273.17757754171566
+      ],
+      "exact_hz": [
+        68.29373673610935,
+        142.05097241110747,
+        199.41771126943934,
+        264.9796985361043,
+        273.1749469444374
+      ],
+      "mode_indices": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "relative_errors": [
+        6.020469932257079e-07,
+        3.3660404408497686e-06,
+        1.6375617668005998e-05,
+        2.3812843774126905e-05,
+        9.629716442268025e-06
+      ],
+      "max_relative_error": 2.3812843774126905e-05
+    },
+    {
+      "n_x": 40,
+      "n_y": 30,
+      "h_m": 0.025,
+      "n_dof": 5084,
+      "frequencies_hz": [
+        68.29373930643924,
+        142.05100231318082,
+        199.4179159613749,
+        264.9800941882474,
+        273.1751114085895
+      ],
+      "exact_hz": [
+        68.29373673610935,
+        142.05097241110747,
+        199.41771126943934,
+        264.9796985361043,
+        273.1749469444374
+      ],
+      "mode_indices": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "relative_errors": [
+        3.763639248346818e-08,
+        2.105024191625115e-07,
+        1.0264481237013107e-06,
+        1.4931413434520423e-06,
+        6.020469809059437e-07
+      ],
+      "max_relative_error": 1.4931413434520423e-06
+    }
+  ],
+  "convergence": {
+    "beam_h_m": [
+      0.4,
+      0.2,
+      0.1
+    ],
+    "plate_h_m": [
+      0.1,
+      0.05,
+      0.025
+    ],
+    "beam_orders_per_mode": [
+      3.976913077164553,
+      3.992244718737713,
+      3.9830588291312563,
+      3.970098537608064,
+      3.953572568132107
+    ],
+    "plate_orders_per_mode": [
+      3.832603880542462,
+      3.991491850978368,
+      3.8047389841187584,
+      3.9878980091804874,
+      3.8318571076665244
+    ],
+    "beam_order_min": 3.953572568132107,
+    "plate_order_min": 3.8047389841187584
+  },
+  "data_points": [
+    {
+      "id": "L3.beam_mode_1",
+      "fe_hz": 7.152526194113239,
+      "reference": 7.152525999517441,
+      "reference_formula": "f_n = (n pi/L)^2 sqrt(EI/(rho A)) / (2 pi)",
+      "relative_error": 2.720658382158832e-08,
+      "threshold": 0.03,
+      "passed": true
+    },
+    {
+      "id": "L3.beam_mode_2",
+      "fe_hz": 28.610116088307333,
+      "reference": 28.610103998069764,
+      "reference_formula": "f_n = (n pi/L)^2 sqrt(EI/(rho A)) / (2 pi)",
+      "relative_error": 4.225862852244515e-07,
+      "threshold": 0.03,
+      "passed": true
+    },
+    {
+      "id": "L3.beam_mode_3",
+      "fe_hz": 64.37287155586995,
+      "reference": 64.37273399565697,
+      "reference_formula": "f_n = (n pi/L)^2 sqrt(EI/(rho A)) / (2 pi)",
+      "relative_error": 2.13693289749401e-06,
+      "threshold": 0.03,
+      "passed": true
+    },
+    {
+      "id": "L3.beam_mode_4",
+      "fe_hz": 114.44118795098461,
+      "reference": 114.44041599227906,
+      "reference_formula": "f_n = (n pi/L)^2 sqrt(EI/(rho A)) / (2 pi)",
+      "relative_error": 6.745507685049068e-06,
+      "threshold": 0.03,
+      "passed": true
+    },
+    {
+      "id": "L3.beam_mode_5",
+      "fe_hz": 178.81609012361045,
+      "reference": 178.81314998793604,
+      "reference_formula": "f_n = (n pi/L)^2 sqrt(EI/(rho A)) / (2 pi)",
+      "relative_error": 1.6442502548642484e-05,
+      "threshold": 0.03,
+      "passed": true
+    },
+    {
+      "id": "L3.plate_mode_11",
+      "fe_hz": 68.29373930643924,
+      "reference": 68.29373673610935,
+      "reference_formula": "f_mn = pi^2 sqrt(D/(rho t))[(m/a)^2+(n/b)^2]/(2 pi)",
+      "relative_error": 3.763639248346818e-08,
+      "threshold": 0.03,
+      "passed": true
+    },
+    {
+      "id": "L3.plate_mode_21",
+      "fe_hz": 142.05100231318082,
+      "reference": 142.05097241110747,
+      "reference_formula": "f_mn = pi^2 sqrt(D/(rho t))[(m/a)^2+(n/b)^2]/(2 pi)",
+      "relative_error": 2.105024191625115e-07,
+      "threshold": 0.03,
+      "passed": true
+    },
+    {
+      "id": "L3.plate_mode_12",
+      "fe_hz": 199.4179159613749,
+      "reference": 199.41771126943934,
+      "reference_formula": "f_mn = pi^2 sqrt(D/(rho t))[(m/a)^2+(n/b)^2]/(2 pi)",
+      "relative_error": 1.0264481237013107e-06,
+      "threshold": 0.03,
+      "passed": true
+    },
+    {
+      "id": "L3.plate_mode_31",
+      "fe_hz": 264.9800941882474,
+      "reference": 264.9796985361043,
+      "reference_formula": "f_mn = pi^2 sqrt(D/(rho t))[(m/a)^2+(n/b)^2]/(2 pi)",
+      "relative_error": 1.4931413434520423e-06,
+      "threshold": 0.03,
+      "passed": true
+    },
+    {
+      "id": "L3.plate_mode_22",
+      "fe_hz": 273.1751114085895,
+      "reference": 273.1749469444374,
+      "reference_formula": "f_mn = pi^2 sqrt(D/(rho t))[(m/a)^2+(n/b)^2]/(2 pi)",
+      "relative_error": 6.020469809059437e-07,
+      "threshold": 0.03,
+      "passed": true
+    }
+  ],
+  "gates": [
+    {
+      "id": "L3.beam_frequencies",
+      "quantity": "worst relative error of beam modes 1-5 (N=40)",
+      "reference": "omega_n = (n pi/L)^2 sqrt(EI/(rho A))",
+      "value": 1.6442502548642484e-05,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L3.plate_frequencies",
+      "quantity": "worst relative error of plate modes (1,1)..(2,2) (N=40)",
+      "reference": "omega_mn = pi^2 sqrt(D/(rho t)) [(m/a)^2+(n/b)^2]",
+      "value": 1.4931413434520423e-06,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "L3.beam_order",
+      "quantity": "minimum observed order over the five beam mode errors",
+      "reference": "log-log slope over N=10,20,40",
+      "value": 3.953572568132107,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L3.plate_order",
+      "quantity": "minimum observed order over the plate mode errors",
+      "reference": "log-log slope over N=10,20,40",
+      "value": 3.8047389841187584,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L3.monotone_beam",
+      "quantity": "beam frequency errors decrease monotonically with refinement",
+      "reference": "strict decrease at every mode",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "L3.monotone_plate",
+      "quantity": "plate frequency errors decrease monotonically with refinement",
+      "reference": "strict decrease at every mode",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true
+}
