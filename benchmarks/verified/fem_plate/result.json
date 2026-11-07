@@ -1,0 +1,159 @@
+{
+  "case": "Kirchhoff thin plate, SSSS square, uniform pressure",
+  "geometry": {
+    "side_m": 1.0,
+    "thickness_m": 0.01,
+    "young_pa": 210000000000.0,
+    "poisson": 0.3,
+    "pressure_pa": 10000.0,
+    "bending_stiffness_n_m": 19230.769230769234,
+    "a_over_h": 100.0
+  },
+  "reference": {
+    "method": "Timoshenko & Woinowsky-Krieger table 8 (0.00406) and Navier double-sine series",
+    "alpha_timoshenko": 0.00406,
+    "alpha_navier_series": 0.004062352660676306,
+    "centre_deflection_series_m": 0.0021124233835516787
+  },
+  "element": "Bogner-Fox-Schmit C1 bicubic Hermite rectangle (16 dof; w, w,x, w,y, w,xy)",
+  "boundary_condition": "hard simple support (w = 0 and tangential slope = 0 on edges)",
+  "levels": [
+    {
+      "n_x": 2,
+      "n_y": 2,
+      "n_dof": 36,
+      "n_free_dof": 16,
+      "h": 0.5,
+      "centre_deflection_m": 0.0014408444255984913,
+      "alpha": 0.0027708546646124836,
+      "error_vs_timoshenko_00406": 0.317523481622541,
+      "error_vs_navier_series": 0.31791872935246646
+    },
+    {
+      "n_x": 4,
+      "n_y": 4,
+      "n_dof": 100,
+      "n_free_dof": 64,
+      "h": 0.25,
+      "centre_deflection_m": 0.001919507071945359,
+      "alpha": 0.003691359753741076,
+      "error_vs_timoshenko_00406": 0.09079809021155769,
+      "error_vs_navier_series": 0.09132464311295581
+    },
+    {
+      "n_x": 6,
+      "n_y": 6,
+      "n_dof": 196,
+      "n_free_dof": 144,
+      "h": 0.16666666666666666,
+      "centre_deflection_m": 0.0020250164339453945,
+      "alpha": 0.0038942623729719132,
+      "error_vs_timoshenko_00406": 0.040822075622681524,
+      "error_vs_navier_series": 0.04137757150714951
+    },
+    {
+      "n_x": 8,
+      "n_y": 8,
+      "n_dof": 324,
+      "n_free_dof": 256,
+      "h": 0.125,
+      "centre_deflection_m": 0.00206294066042637,
+      "alpha": 0.00396719357774302,
+      "error_vs_timoshenko_00406": 0.02285872469383749,
+      "error_vs_navier_series": 0.023424623828066156
+    },
+    {
+      "n_x": 10,
+      "n_y": 10,
+      "n_dof": 484,
+      "n_free_dof": 400,
+      "h": 0.1,
+      "centre_deflection_m": 0.0020806618944541055,
+      "alpha": 0.004001272873950204,
+      "error_vs_timoshenko_00406": 0.014464809371870986,
+      "error_vs_navier_series": 0.015035569737053181
+    },
+    {
+      "n_x": 12,
+      "n_y": 12,
+      "n_dof": 676,
+      "n_free_dof": 576,
+      "h": 0.08333333333333333,
+      "centre_deflection_m": 0.0020903320905197396,
+      "alpha": 0.004019869404845654,
+      "error_vs_timoshenko_00406": 0.0098843830429424,
+      "error_vs_navier_series": 0.010457796104678762
+    },
+    {
+      "n_x": 16,
+      "n_y": 16,
+      "n_dof": 1156,
+      "n_free_dof": 1024,
+      "h": 0.0625,
+      "centre_deflection_m": 0.0020999777029701394,
+      "alpha": 0.004038418659557961,
+      "error_vs_timoshenko_00406": 0.005315601094098233,
+      "error_vs_navier_series": 0.005891660108691842
+    },
+    {
+      "n_x": 20,
+      "n_y": 20,
+      "n_dof": 1764,
+      "n_free_dof": 1600,
+      "h": 0.05,
+      "centre_deflection_m": 0.002104452440041997,
+      "alpha": 0.004047023923157687,
+      "error_vs_timoshenko_00406": 0.0031960780399786634,
+      "error_vs_navier_series": 0.0037733645498092623
+    },
+    {
+      "n_x": 24,
+      "n_y": 24,
+      "n_dof": 2500,
+      "n_free_dof": 2304,
+      "h": 0.041666666666666664,
+      "centre_deflection_m": 0.0021068858561768835,
+      "alpha": 0.004051703569570931,
+      "error_vs_timoshenko_00406": 0.0020434557707068083,
+      "error_vs_navier_series": 0.0026214098072919892
+    }
+  ],
+  "observed_order": 1.9440160244049582,
+  "gates": [
+    {
+      "id": "G2.centre_deflection",
+      "description": "|alpha_FE - 0.00406| / 0.00406 < 2e-2 at 16x16 elements",
+      "value": 0.005315601094098233,
+      "limit": 0.02,
+      "relation": "le",
+      "passed": true
+    },
+    {
+      "id": "G2.centre_deflection_vs_series",
+      "description": "|alpha_FE - alpha_Navier| / alpha_Navier < 2e-2 at 16x16 elements",
+      "value": 0.005891660108691842,
+      "limit": 0.02,
+      "relation": "le",
+      "passed": true
+    },
+    {
+      "id": "G2.order",
+      "description": "observed convergence order >= 1.5 (levels 2..24)",
+      "value": 1.9440160244049582,
+      "limit": 1.5,
+      "relation": "ge",
+      "passed": true
+    }
+  ],
+  "verdict": "PASS",
+  "generated_by": "benchmarks/structural_ladder.py",
+  "generated_at": "2026-11-07T08:20:51+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "machine": "loongarch64",
+    "dtype": "torch.float64 / numpy.float64"
+  },
+  "module": "tensorfem.structural_verification"
+}
