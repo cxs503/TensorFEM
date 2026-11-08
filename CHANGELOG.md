@@ -1,5 +1,25 @@
 ## Unreleased
 
+### Solids / inertia
+- **HEX20 consistent & lumped mass** (`tensorfem.hex20_mass`, `hex20_lumped_mass`,
+  `hex20_mass_totals`, `assemble_hex20_mass`, `hex_gauss_rule`,
+  `tensorfem.hex20_mass_audit`, `scripts/audit_hex20_mass.py`,
+  `docs/hex20-consistent-mass.md`): HEX20 shipped stiffness only
+  (`grep -n mass src/tensorfem/hex20.py` was empty), so every vibration/transient
+  claim on the workhorse quadratic brick was unsupported. Default 3x3x3 Gauss is
+  exact for affine/straight geometry: mass matrix vs an independent NumPy
+  serendipity oracle (own node table, own central-difference Jacobian) 1.07e-10
+  Frobenius, total mass 8.4e-11, rigid translation *and* three-axis rotation
+  kinetic energy 8.4e-11 vs the analytic cuboid inertia, six free-free rigid
+  modes 6.45e-10 relative. Eigenfrequency evidence: 1-D constrained rod
+  6.45e-6 error at 16 elements with observed order 4.00, full 3-D rod axial mode
+  0.44 % at 8 elements (sqrt(E/rho), lateral contraction resolved). Documented
+  boundaries: the *total mass is exact for every Gauss order* while the order-2
+  matrix is 13.17 % wrong; affine shear stays exact but non-planar faces give
+  7.3e-4 and curved mid-edge 0.182 % (order 4 recovers 1.2e-10); row-sum lumping
+  is structurally indefinite (corner mass = -rho*V/8, 24 negative components) so
+  HRZ is the default. 13 new tests including three negative controls.
+
 ### Solids / integration accuracy
 - **TET10 integration-accuracy audit** (`tensorfem.tet10_integration_audit`,
   `scripts/audit_tet10_integration.py`, `docs/tet10-integration-accuracy.md`): the

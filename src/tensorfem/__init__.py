@@ -39,7 +39,10 @@ from .j2_elastoplasticity import (
     uniaxial_stress_path, pure_shear_yield_point, verify_minimum_surface,
 )
 from .quadratic_solid import Tet10Model, solve_tet10
-from .hex20 import Hex20Model, solve_hex20
+from .hex20 import (
+    Hex20Model, solve_hex20, hex20_mass, hex20_lumped_mass,
+    hex20_mass_totals, assemble_hex20_mass, hex_gauss_rule,
+)
 from .finite_sliding_contact import (
     PolylineProjection, FrictionState, ContactUpdate,
     project_point_to_polyline, update_node_polyline_contact,
@@ -269,6 +272,7 @@ __all__ = [
     "Tet4J2Model", "PlasticSolidState", "solve_load_steps",
     "Tet10Model", "solve_tet10",
     "Hex20Model", "solve_hex20",
+    "hex20_mass", "hex20_lumped_mass", "hex20_mass_totals", "assemble_hex20_mass", "hex_gauss_rule",
     "PolylineProjection", "FrictionState", "ContactUpdate",
     "project_point_to_polyline", "update_node_polyline_contact",
     "gmres", "jacobi_inverse", "solve_multiple_rhs",
