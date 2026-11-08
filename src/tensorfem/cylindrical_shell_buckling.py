@@ -136,10 +136,25 @@ def classical_axial_buckling_resultant(
     return E * t**2 / (R * math.sqrt(3.0 * (1.0 - nu**2)))
 
 
-def _assemble(nodes, elements, young, poisson, thickness, drilling_factor):
-    """Sparse global elastic and initial-stress matrices (scipy CSC/CSR)."""
+def _assemble(nodes, elements, young, poisson, thickness, drilling_factor, formulation="shell4"):
+    """Sparse global elastic and initial-stress matrices (scipy CSC/CSR).
+
+    ``formulation`` selects the element elastic operator: ``"shell4"`` (the
+    historical full-integration operator, the default) or ``"mitc"`` (the
+    locking-controlled assumed-shear operator of :mod:`tensorfem.shell4_mitc`).
+    The initial-stress operator is the same in both cases: it is the planar
+    facet operator of :mod:`tensorfem.shell4_buckling` and does not depend on
+    the bending formulation.
+    """
     import numpy as np
     from scipy.sparse import coo_matrix
+
+    if formulation not in ("shell4", "mitc"):
+        raise ValueError("formulation must be 'shell4' or 'mitc'")
+    if formulation == "mitc":
+        from .shell4_mitc import shell4_mitc_stiffness as _elastic
+    else:
+        _elastic = shell4_stiffness
 
     ndof = 6 * len(nodes)
     unit = nodes.new_tensor([1.0, 0.0, 0.0])
@@ -147,7 +162,7 @@ def _assemble(nodes, elements, young, poisson, thickness, drilling_factor):
     for el in elements:
         ids = (6 * el[:, None] + torch.arange(6, dtype=torch.long)[None, :]).reshape(-1)
         xyz = nodes[el]
-        ke = shell4_stiffness(xyz, young, poisson, thickness, drilling_factor=drilling_factor)
+        ke = _elastic(xyz, young, poisson, thickness, drilling_factor=drilling_factor)
         ge = shell4_geometric_stiffness(xyz, unit)
         block = len(ids)
         r = ids.repeat_interleave(block).numpy()
@@ -165,6 +180,44 @@ def _assemble(nodes, elements, young, poisson, thickness, drilling_factor):
     return K, G
 
 
+def _axisymmetric_constraint(nz: int, ntheta: int, *, dtype=torch.float64) -> torch.Tensor:
+    """Constraint matrix of the axisymmetric subspace of the faceted cylinder.
+
+    The reduced field has three DOFs per axial ring, ``(u, w, phi)``, where
+    ``u`` is the axial translation, ``w`` the radial translation and ``phi``
+    the rotation of the cross-section about the local tangent.  Node ``(i, j)``
+    at angle ``theta_j`` therefore carries the global Cartesian displacement
+
+    * translation ``(u_i, w_i*cos(theta_j), w_i*sin(theta_j))``,
+    * rotation vector ``phi_i * (0, -sin(theta_j), cos(theta_j))``,
+
+    i.e. rotation about the tangent.  The returned matrix ``C`` of shape
+    ``(6*(nz+1)*ntheta, 3*(nz+1))`` maps the reduced vector to the full
+    6-DOF-per-node field, so the reduced pencil is ``C^T K C w = lambda *
+    C^T G C w``.  Two consequences make this subspace the clean one to
+    certify: (a) the chord strain of the axisymmetric field is exactly
+    ``w/R`` (the chord/arc factors cancel in the edge strain), so the hoop
+    membrane term carries no faceting error; (b) the field is independent of
+    theta, so the circumferential mesh only fixes the local frames.
+    """
+    nz = _count("nz", nz)
+    nt = _count("ntheta", ntheta)
+    nrings = nz + 1
+    C = torch.zeros((6 * nrings * nt, 3 * nrings), dtype=dtype)
+    th = torch.arange(nt, dtype=dtype) * (2.0 * math.pi / nt)
+    cos, sin = torch.cos(th), torch.sin(th)
+    for i in range(nrings):
+        u_d, w_d, p_d = 3 * i, 3 * i + 1, 3 * i + 2
+        for j in range(nt):
+            base = 6 * (i * nt + j)
+            C[base + 0, u_d] = 1.0
+            C[base + 1, w_d] = cos[j]
+            C[base + 2, w_d] = sin[j]
+            C[base + 4, p_d] = -sin[j]
+            C[base + 5, p_d] = cos[j]
+    return C
+
+
 def cylindrical_shell_axial_buckling(
     radius: float,
     length: float,
@@ -176,6 +229,8 @@ def cylindrical_shell_axial_buckling(
     thickness: float,
     modes: int = 1,
     drilling_factor: float = 1e-6,
+    formulation: str = "shell4",
+    axisymmetric: bool = False,
     dtype=torch.float64,
 ) -> CylinderBucklingResult:
     """Lowest axial-compression buckling resultant of a diaphragm-SS cylinder.
@@ -189,6 +244,13 @@ def cylindrical_shell_axial_buckling(
     solved through its inverse: ``lambda = 1/mu`` with ``mu`` the largest
     generalised eigenvalue of ``(Kg, K)``.  Only ``mu > 0`` is admissible, which
     discards the singular directions instead of inverting them.
+
+    ``formulation`` selects the element elastic operator (``"shell4"`` default,
+    bit-for-bit the historical path; ``"mitc"`` the locking-controlled
+    assumed-shear operator).  ``axisymmetric=True`` condenses the pencil onto
+    the three-DOF-per-ring axisymmetric subspace of
+    :func:`_axisymmetric_constraint` before solving, which isolates the
+    Donnell-type mode family from the non-axisymmetric facet modes.
     """
     R = _positive("radius", radius)
     L = _positive("length", length)
@@ -206,27 +268,63 @@ def cylindrical_shell_axial_buckling(
         raise RuntimeError("cylindrical shell buckling assembly requires scipy") from exc
 
     nodes, elements = cylindrical_shell_mesh(R, L, nz_i, nt_i, dtype=dtype)
-    K, G = _assemble(nodes, elements, E, nu, t, drilling_factor)
+    K, G = _assemble(nodes, elements, E, nu, t, drilling_factor, formulation=formulation)
     ndof = 6 * len(nodes)
-    ring = torch.arange(nt_i, dtype=torch.long)
-    end = torch.cat((ring, nz_i * nt_i + ring))
-    fixed = (6 * end[:, None] + torch.arange(3, dtype=torch.long)[None, :]).reshape(-1)
-    mask = np.ones(ndof, dtype=bool)
-    mask[fixed.numpy()] = False
-    free = np.nonzero(mask)[0]
-    Kf = K[free][:, free].tocsc()
-    Gf = G[free][:, free].tocsc()
-    k = min(int(modes) + 2, Kf.shape[0] - 2)
-    # Shift-invert about sigma=0 keeps the factorised operator positive definite
-    # (K is SPD on the free DOFs) while ``Kg`` may stay singular.
-    values, vec = eigsh(Kf, k=k, M=Gf, sigma=0.0, which="LM", tol=1e-9)
-    order = np.argsort(values)
-    values = values[order][: int(modes)]
-    vec = vec[:, order][:, : int(modes)]
+    if axisymmetric:
+        C = _axisymmetric_constraint(nz_i, nt_i, dtype=dtype)
+        Cn = C.numpy()
+        # Condense the pencil onto the axisymmetric subspace.  The condensed
+        # ``G`` stays singular (it acts on the radial DOFs only), so the solve
+        # uses the same shift-invert-about-zero strategy as the full path:
+        # the factorised operator is ``K_red^{-1} G_red`` with ``K_red`` SPD.
+        K_red = Cn.T @ K.toarray() @ Cn
+        G_red = Cn.T @ G.toarray() @ Cn
+        # Donnell ends: u and w of the two end rings are restrained, phi free.
+        fixed_red = [0, 1, 3 * nz_i, 3 * nz_i + 1]
+        mask = np.ones(3 * (nz_i + 1), dtype=bool)
+        mask[np.asarray(fixed_red)] = False
+        free = np.nonzero(mask)[0]
+        Kf = K_red[free][:, free]
+        Gf = G_red[free][:, free]
+        # Dense symmetric solve: K_red is SPD on the free reduced DOFs, so
+        # with K_red = L L^T and w = L^{-T} y the pencil becomes the standard
+        # symmetric problem ``A y = mu y`` with ``A = L^{-1} G L^{-T}`` and
+        # ``mu = 1/lambda``; the singular directions of G give mu = 0 and are
+        # discarded by the positivity filter below.
+        Lc = np.linalg.cholesky((Kf + Kf.T) / 2.0)
+        LinvT = np.linalg.solve(Lc.T, np.eye(Kf.shape[0]))
+        A = np.linalg.solve(Lc, Gf @ LinvT)
+        A = (A + A.T) / 2.0
+        evals, evecs = np.linalg.eigh(A)
+        if not bool((evals > 1e-14).any()):
+            raise RuntimeError("no positive buckling load factor found")
+        order = np.argsort(evals)[::-1][: int(modes)]
+        mus = evals[order]
+        values = 1.0 / mus
+        y = evecs[:, order]
+        red = np.zeros((3 * (nz_i + 1), int(modes)))
+        red[free, :] = np.linalg.solve(Lc.T, y)
+        full = Cn @ red
+    else:
+        ring = torch.arange(nt_i, dtype=torch.long)
+        end = torch.cat((ring, nz_i * nt_i + ring))
+        fixed = (6 * end[:, None] + torch.arange(3, dtype=torch.long)[None, :]).reshape(-1)
+        mask = np.ones(ndof, dtype=bool)
+        mask[fixed.numpy()] = False
+        free = np.nonzero(mask)[0]
+        Kf = K[free][:, free].tocsc()
+        Gf = G[free][:, free].tocsc()
+        k = min(int(modes) + 2, Kf.shape[0] - 2)
+        # Shift-invert about sigma=0 keeps the factorised operator positive
+        # definite (K is SPD on the free DOFs) while ``Kg`` may stay singular.
+        values, vec = eigsh(Kf, k=k, M=Gf, sigma=0.0, which="LM", tol=1e-9)
+        order = np.argsort(values)
+        values = values[order][: int(modes)]
+        vec = vec[:, order][:, : int(modes)]
+        full = np.zeros((ndof, int(modes)))
+        full[free, :] = vec
     if not np.all(values > 0):
         raise RuntimeError("no positive buckling load factor found")
-    full = np.zeros((ndof, int(modes)))
-    full[free, :] = vec
     return CylinderBucklingResult(
         torch.from_numpy(values).to(dtype), torch.from_numpy(full).to(dtype), nodes, elements
     )
