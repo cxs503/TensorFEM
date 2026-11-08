@@ -106,6 +106,41 @@
       "stability": "stable"
     },
     {
+      "introduced": "0.45.0",
+      "module": "tensorfem.structural_verification",
+      "name": "solve_cantilever_udl",
+      "object": "solve_cantilever_udl",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.structural_verification",
+      "name": "kirchhoff_ss_plate_uniform_load",
+      "object": "kirchhoff_ss_plate_uniform_load",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.structural_verification",
+      "name": "cantilever_modal_ladder",
+      "object": "cantilever_modal_ladder",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.structural_verification",
+      "name": "euler_bernoulli_cantilever_tip",
+      "object": "euler_bernoulli_cantilever_tip",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem",
+      "name": "PLATE_ALPHA_TIMOSHENKO",
+      "object": "float",
+      "stability": "experimental"
+    },
+    {
       "introduced": "0.3.0",
       "module": "tensorfem.benchmark_registry",
       "name": "BenchmarkEvidence",
@@ -2470,6 +2505,55 @@
       "name": "read_result_db_compatible",
       "object": "read_result_db_compatible",
       "stability": "beta"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.j2_elastoplasticity",
+      "name": "J2Material",
+      "object": "J2Material",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.j2_elastoplasticity",
+      "name": "J2Return",
+      "object": "J2Return",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.j2_elastoplasticity",
+      "name": "radial_return",
+      "object": "radial_return",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.j2_elastoplasticity",
+      "name": "return_map_residuals",
+      "object": "return_map_residuals",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.j2_elastoplasticity",
+      "name": "uniaxial_stress_path",
+      "object": "uniaxial_stress_path",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.j2_elastoplasticity",
+      "name": "pure_shear_yield_point",
+      "object": "pure_shear_yield_point",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.j2_elastoplasticity",
+      "name": "verify_minimum_surface",
+      "object": "verify_minimum_surface",
+      "stability": "experimental"
     }
   ],
   "package_version": "0.45.0",
