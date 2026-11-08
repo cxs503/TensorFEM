@@ -1,0 +1,487 @@
+{
+  "schema": "mindlin-contact-verification/1",
+  "campaign_node": "P22-N02",
+  "generated_utc": "2026-11-08T09:37:46.159217+00:00",
+  "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+  "parameters": {
+    "young_modulus_Pa": 210000000000.0,
+    "poisson": 0.3,
+    "indenter_radius_m": 0.05,
+    "plane_strain_modulus_Pa": 230769230769.23077,
+    "cylinder_load_N_per_m": 3625000.0,
+    "sphere_loads_N": [
+      100000.0,
+      160000.0,
+      256000.00000000006,
+      409600.0000000001,
+      655360.0000000001,
+      1048576.0000000002
+    ],
+    "friction": 0.3,
+    "tangential_fractions": [
+      0.15,
+      0.35,
+      0.6,
+      0.85
+    ],
+    "mesh_3d_rings": [
+      60,
+      150,
+      300
+    ],
+    "mesh_2d_segments": [
+      400,
+      800,
+      1600
+    ]
+  },
+  "module": {
+    "file": "src/tensorfem/hertz_mindlin.py",
+    "operator": "Flamant (2-D plane strain) / Love (axisymmetric) half-space compliance + exact active-set complementarity"
+  },
+  "hertz_3d": {
+    "mesh_ladder": [
+      {
+        "contact_radius_raw_m": 0.0043311955267045146,
+        "contact_radius_raw_rel_error": 0.0,
+        "peak_pressure_raw_Pa": 12720234264.361553,
+        "peak_pressure_raw_rel_error": 0.0004620250226683442,
+        "rings": 60,
+        "load_N": 499999.9999999999,
+        "contact_radius_m": 0.004320367537887754,
+        "contact_radius_reference_m": 0.0043311955267045146,
+        "contact_radius_rel_error": 0.0024999999999999467,
+        "peak_pressure_Pa": 12735831815.942125,
+        "peak_pressure_reference_Pa": 12726114047.492826,
+        "peak_pressure_rel_error": 0.0007636084678348531,
+        "complementarity_residual": 1.3263856428919198e-09,
+        "iterations": 11,
+        "converged": true
+      },
+      {
+        "contact_radius_raw_m": 0.004331195526704515,
+        "contact_radius_raw_rel_error": 0.0,
+        "peak_pressure_raw_Pa": 12725169226.17112,
+        "peak_pressure_raw_rel_error": 7.42427199835749e-05,
+        "rings": 150,
+        "load_N": 500000.0,
+        "contact_radius_m": 0.004331195526704515,
+        "contact_radius_reference_m": 0.004331195526704515,
+        "contact_radius_rel_error": 0.0,
+        "peak_pressure_Pa": 12725076151.248486,
+        "peak_pressure_reference_Pa": 12726114047.492826,
+        "peak_pressure_rel_error": 8.155641545148917e-05,
+        "complementarity_residual": 1.5727395749588845e-09,
+        "iterations": 12,
+        "converged": true
+      },
+      {
+        "contact_radius_raw_m": 0.004331195526704515,
+        "contact_radius_raw_rel_error": 0.0,
+        "peak_pressure_raw_Pa": 12725877381.05645,
+        "peak_pressure_raw_rel_error": 1.8596913048063435e-05,
+        "rings": 300,
+        "load_N": 500000.0000000001,
+        "contact_radius_m": 0.004331195526704515,
+        "contact_radius_reference_m": 0.004331195526704515,
+        "contact_radius_rel_error": 0.0,
+        "peak_pressure_Pa": 12725851037.829283,
+        "peak_pressure_reference_Pa": 12726114047.49283,
+        "peak_pressure_rel_error": 2.066692649194124e-05,
+        "complementarity_residual": 3.4483239453006086e-09,
+        "iterations": 14,
+        "converged": true
+      }
+    ],
+    "load_approach": [
+      {
+        "load_N": 100000.0,
+        "approach_m": 0.00012831028699069368,
+        "load_reference_N": 99998.58523966713,
+        "rel_error": 1.4147803486297406e-05,
+        "contact_radius_m": 0.002532898509550444
+      },
+      {
+        "load_N": 160000.00000000003,
+        "approach_m": 0.0001755260035722161,
+        "load_reference_N": 159997.7363834675,
+        "rel_error": 1.4147803485853316e-05,
+        "contact_radius_m": 0.002962496068407371
+      },
+      {
+        "load_N": 256000.00000000017,
+        "approach_m": 0.00024011619529982212,
+        "load_reference_N": 255996.37821354807,
+        "rel_error": 1.4147803486075361e-05,
+        "contact_radius_m": 0.0034649564213636123
+      },
+      {
+        "load_N": 409600.0000000002,
+        "approach_m": 0.0003284743346961759,
+        "load_reference_N": 409594.2051416769,
+        "rel_error": 1.4147803485853316e-05,
+        "contact_radius_m": 0.004052637615280711
+      },
+      {
+        "load_N": 655360.0000000002,
+        "approach_m": 0.00044934656914487326,
+        "load_reference_N": 655350.7282266828,
+        "rel_error": 1.4147803486075361e-05,
+        "contact_radius_m": 0.004739993709451795
+      },
+      {
+        "load_N": 1048576.0,
+        "approach_m": 0.0006146974599675443,
+        "load_reference_N": 1048561.1651626918,
+        "rel_error": 1.4147803486297406e-05,
+        "contact_radius_m": 0.005543930274181779
+      }
+    ],
+    "load_approach_r2": 0.9999999994424974,
+    "power_law_exponent": 1.5000000000000009,
+    "power_law_exponent_reference": 1.5
+  },
+  "hertz_2d_cylinder": {
+    "mesh_ladder": [
+      {
+        "segments": 400,
+        "load_N_per_m": 3625000.0,
+        "half_width_m": 0.000999041657441618,
+        "half_width_reference_m": 0.0010000117794776598,
+        "half_width_rel_error": 0.0009701106086454914,
+        "peak_pressure_Pa": 2307650768.8584833,
+        "peak_pressure_reference_Pa": 2307719491.102292,
+        "peak_pressure_rel_error": 2.977928819936082e-05,
+        "complementarity_residual": 1.4543412193746437e-10,
+        "converged": true
+      },
+      {
+        "segments": 800,
+        "load_N_per_m": 3625000.0,
+        "half_width_m": 0.0010001405323761293,
+        "half_width_reference_m": 0.0010000117794776598,
+        "half_width_rel_error": 0.0001287513818455377,
+        "peak_pressure_Pa": 2307716309.6359262,
+        "peak_pressure_reference_Pa": 2307719491.102292,
+        "peak_pressure_rel_error": 1.3786191858100594e-06,
+        "complementarity_residual": 1.8234173099484812e-10,
+        "converged": true
+      },
+      {
+        "segments": 1600,
+        "load_N_per_m": 3624999.9999999995,
+        "half_width_m": 0.000999817790220184,
+        "half_width_reference_m": 0.0010000117794776598,
+        "half_width_rel_error": 0.00019398697241057583,
+        "peak_pressure_Pa": 2307715175.4499135,
+        "peak_pressure_reference_Pa": 2307719491.102292,
+        "peak_pressure_rel_error": 1.8700940019877876e-06,
+        "complementarity_residual": 2.4946300282620045e-10,
+        "converged": true
+      }
+    ],
+    "reference": {
+      "half_width_m": 0.0010000117794776598,
+      "peak_pressure_Pa": 2307719491.102292
+    }
+  },
+  "finite_element_cross_check": {
+    "note": "plane-strain Q4 node-to-node contact, exact Lagrange multipliers; independent check of the half-space operator on a volumetric mesh",
+    "rows": [
+      {
+        "mesh": "60x40",
+        "load_N_per_m": 3625000.010302565,
+        "contact_extent_m": 0.0008333431495647173,
+        "contact_extent_rel_error": 0.16666666666666585,
+        "peak_nodal_pressure_Pa": 2310481094.8289304,
+        "peak_pressure_rel_error": 0.001196680851934584,
+        "complementarity_residual": 2.8834537598013314e-15,
+        "sawtooth_fraction": 0.0,
+        "converged": true
+      },
+      {
+        "mesh": "100x60",
+        "load_N_per_m": 3624999.995858564,
+        "contact_extent_m": 0.0009720114496522846,
+        "contact_extent_rel_error": 0.02800000000000069,
+        "peak_nodal_pressure_Pa": 2306442601.0761456,
+        "peak_pressure_rel_error": 0.0005533124935979128,
+        "complementarity_residual": 2.8147140403773303e-15,
+        "sawtooth_fraction": 0.0,
+        "converged": true
+      }
+    ]
+  },
+  "cattaneo_mindlin": {
+    "law": "c = b sqrt(1 - Q/(mu P))  (two-dimensional Flamant correspondence)",
+    "rows": [
+      {
+        "segments": 400,
+        "tangential_fraction": 0.15,
+        "normal_load_N_per_m": 3625000.0,
+        "tangential_load_N_per_m": 163125.00000000006,
+        "contact_half_width_m": 0.000999041657441618,
+        "stick_half_width_m": 0.000937511043260306,
+        "stick_half_width_reference_m": 0.0009210708975470569,
+        "stick_boundary_rel_error": 0.017848947086517963,
+        "stick_segments": 124,
+        "contact_segments": 134,
+        "tangential_translation_m": 3.4381989304617415e-06,
+        "complementarity_residual": 1.4543412193746437e-10,
+        "stick_residual": 2.541098841762901e-21,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 400,
+        "tangential_fraction": 0.35,
+        "normal_load_N_per_m": 3625000.0,
+        "tangential_load_N_per_m": 380624.99999999994,
+        "contact_half_width_m": 0.000999041657441618,
+        "stick_half_width_m": 0.0008175096297229868,
+        "stick_half_width_reference_m": 0.0008054531343581711,
+        "stick_boundary_rel_error": 0.014968587060528282,
+        "stick_segments": 108,
+        "contact_segments": 134,
+        "tangential_translation_m": 8.086125282039227e-06,
+        "complementarity_residual": 1.4543412193746437e-10,
+        "stick_residual": 5.082197683525802e-21,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 400,
+        "tangential_fraction": 0.6,
+        "normal_load_N_per_m": 3625000.0,
+        "tangential_load_N_per_m": 652499.9999999998,
+        "contact_half_width_m": 0.000999041657441618,
+        "stick_half_width_m": 0.000637507509417008,
+        "stick_half_width_reference_m": 0.0006318494229810442,
+        "stick_boundary_rel_error": 0.008954801935671997,
+        "stick_segments": 84,
+        "contact_segments": 134,
+        "tangential_translation_m": 1.4032098798589036e-05,
+        "complementarity_residual": 1.4543412193746437e-10,
+        "stick_residual": 6.776263578034403e-21,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 400,
+        "tangential_fraction": 0.85,
+        "normal_load_N_per_m": 3625000.0,
+        "tangential_load_N_per_m": 924375.0000000005,
+        "contact_half_width_m": 0.000999041657441618,
+        "stick_half_width_m": 0.0003975046823423698,
+        "stick_half_width_reference_m": 0.00038692717014388365,
+        "stick_boundary_rel_error": 0.027337217478299092,
+        "stick_segments": 52,
+        "contact_segments": 134,
+        "tangential_translation_m": 2.023091230892942e-05,
+        "complementarity_residual": 1.4543412193746437e-10,
+        "stick_residual": 1.0164395367051604e-20,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 800,
+        "tangential_fraction": 0.15,
+        "normal_load_N_per_m": 3625000.0,
+        "tangential_load_N_per_m": 163125.00000000006,
+        "contact_half_width_m": 0.0010001405323761293,
+        "stick_half_width_m": 0.0009262609107411823,
+        "stick_half_width_reference_m": 0.0009220840101782301,
+        "stick_boundary_rel_error": 0.004529848166594741,
+        "stick_segments": 246,
+        "contact_segments": 268,
+        "tangential_translation_m": 3.4383092312573764e-06,
+        "complementarity_residual": 1.8234173099484812e-10,
+        "stick_residual": 2.964615315390051e-21,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 800,
+        "tangential_fraction": 0.35,
+        "normal_load_N_per_m": 3625000.0,
+        "tangential_load_N_per_m": 380625.0,
+        "contact_half_width_m": 0.0010001405323761293,
+        "stick_half_width_m": 0.0008137595855499456,
+        "stick_half_width_reference_m": 0.0008063390756536886,
+        "stick_boundary_rel_error": 0.009202716475375183,
+        "stick_segments": 216,
+        "contact_segments": 268,
+        "tangential_translation_m": 8.086134959229796e-06,
+        "complementarity_residual": 1.8234173099484812e-10,
+        "stick_residual": 6.776263578034403e-21,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 800,
+        "tangential_fraction": 0.6,
+        "normal_load_N_per_m": 3625000.0,
+        "tangential_load_N_per_m": 652500.0,
+        "contact_half_width_m": 0.0010001405323761293,
+        "stick_half_width_m": 0.0006412575535900491,
+        "stick_half_width_reference_m": 0.0006325444125123887,
+        "stick_boundary_rel_error": 0.013774749891557692,
+        "stick_segments": 170,
+        "contact_segments": 268,
+        "tangential_translation_m": 1.4032158368388826e-05,
+        "complementarity_residual": 1.8234173099484812e-10,
+        "stick_residual": 1.0164395367051604e-20,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 800,
+        "tangential_fraction": 0.85,
+        "normal_load_N_per_m": 3625000.0,
+        "tangential_load_N_per_m": 924375.0000000002,
+        "contact_half_width_m": 0.0010001405323761293,
+        "stick_half_width_m": 0.00039375463816932843,
+        "stick_half_width_reference_m": 0.00038735276257597664,
+        "stick_boundary_rel_error": 0.016527249091443208,
+        "stick_segments": 104,
+        "contact_segments": 268,
+        "tangential_translation_m": 2.0230930772858193e-05,
+        "complementarity_residual": 1.8234173099484812e-10,
+        "stick_residual": 1.6940658945086007e-20,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 1600,
+        "tangential_fraction": 0.15,
+        "normal_load_N_per_m": 3624999.9999999995,
+        "tangential_load_N_per_m": 163125.00000000006,
+        "contact_half_width_m": 0.000999817790220184,
+        "stick_half_width_m": 0.0009243858886546618,
+        "stick_half_width_reference_m": 0.000921786456612732,
+        "stick_boundary_rel_error": 0.0028199937450610335,
+        "stick_segments": 492,
+        "contact_segments": 534,
+        "tangential_translation_m": 3.438271197799068e-06,
+        "complementarity_residual": 2.4946300282620045e-10,
+        "stick_residual": 4.235164736271502e-21,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 1600,
+        "tangential_fraction": 0.35,
+        "normal_load_N_per_m": 3624999.9999999995,
+        "tangential_load_N_per_m": 380625.0,
+        "contact_half_width_m": 0.000999817790220184,
+        "stick_half_width_m": 0.0008081345192903838,
+        "stick_half_width_reference_m": 0.0008060788726089413,
+        "stick_boundary_rel_error": 0.0025501805732597305,
+        "stick_segments": 430,
+        "contact_segments": 534,
+        "tangential_translation_m": 8.08611223585458e-06,
+        "complementarity_residual": 2.4946300282620045e-10,
+        "stick_residual": 8.470329472543003e-21,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 1600,
+        "tangential_fraction": 0.6,
+        "normal_load_N_per_m": 3624999.9999999995,
+        "tangential_load_N_per_m": 652500.0,
+        "contact_half_width_m": 0.000999817790220184,
+        "stick_half_width_m": 0.0006356324873304875,
+        "stick_half_width_reference_m": 0.0006323402924504405,
+        "stick_boundary_rel_error": 0.005206365811814884,
+        "stick_segments": 338,
+        "contact_segments": 534,
+        "tangential_translation_m": 1.403215919366345e-05,
+        "complementarity_residual": 2.4946300282620045e-10,
+        "stick_residual": 2.0328790734103208e-20,
+        "cone_residual": 0.0,
+        "converged": true
+      },
+      {
+        "segments": 1600,
+        "tangential_fraction": 0.85,
+        "normal_load_N_per_m": 3624999.9999999995,
+        "tangential_load_N_per_m": 924374.9999999999,
+        "contact_half_width_m": 0.000999817790220184,
+        "stick_half_width_m": 0.0003881295719097666,
+        "stick_half_width_reference_m": 0.00038722776507646727,
+        "stick_boundary_rel_error": 0.0023288795758775738,
+        "stick_segments": 206,
+        "contact_segments": 534,
+        "tangential_translation_m": 2.0230888188068907e-05,
+        "complementarity_residual": 2.4946300282620045e-10,
+        "stick_residual": 2.371692252312041e-20,
+        "cone_residual": 0.0,
+        "converged": true
+      }
+    ],
+    "stick_boundary_rel_error_max_finest": 0.005206365811814884
+  },
+  "unilateral": {
+    "contact_complementarity_residual_2d": 2.4946300282620045e-10,
+    "contact_complementarity_residual_3d": 3.4483239453006086e-09,
+    "contact_min_gap_2d": -9.486769009248164e-20,
+    "contact_min_pressure_2d": 0.0,
+    "open_gap_min_2d": 1.0000351570782494e-06,
+    "open_contact_force_2d": 0.0,
+    "open_contact_force_3d": 0.0,
+    "open_contact_force_exact_zero": true
+  },
+  "gates": [
+    {
+      "gate": "E1_hertz_contact_radius_rel_error",
+      "value": 0.0,
+      "limit": 0.02,
+      "mode": "max",
+      "passed": true,
+      "note": "3-D Hertz, 300 rings (mesh ladder [60, 150, 300])"
+    },
+    {
+      "gate": "E2_hertz_peak_pressure_rel_error",
+      "value": 2.066692649194124e-05,
+      "limit": 0.05,
+      "mode": "max",
+      "passed": true,
+      "note": "peak of the recovered p(r) against p0 = 3F/(2 pi a^2)"
+    },
+    {
+      "gate": "E3_load_approach_r2",
+      "value": 0.9999999994424974,
+      "limit": 0.99,
+      "mode": "min",
+      "passed": true,
+      "note": "P(delta) over 6 loads; power-law exponent 1.500000"
+    },
+    {
+      "gate": "E4_stick_slip_boundary_rel_error",
+      "value": 0.005206365811814884,
+      "limit": 0.05,
+      "mode": "max",
+      "passed": true,
+      "note": "Cattaneo c vs c=b sqrt(1-Q/(mu P)), 1600 segments, Q/(mu P) in [0.15, 0.35, 0.6, 0.85]"
+    },
+    {
+      "gate": "E5_complementarity_residual",
+      "value": 3.4483239453006086e-09,
+      "limit": 1e-08,
+      "mode": "max",
+      "passed": true,
+      "note": "max |gap * contact_force|, 2-D and 3-D"
+    },
+    {
+      "gate": "E6_no_contact_force_zero",
+      "value": 0.0,
+      "limit": 0.0,
+      "mode": "max",
+      "passed": true,
+      "note": "retracted indenter (gap > 0 everywhere): total contact force must be exactly 0.0 in floating point"
+    }
+  ],
+  "all_gates_passed": true,
+  "runtime_seconds": 115.30335715040565
+}
