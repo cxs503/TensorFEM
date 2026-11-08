@@ -178,3 +178,129 @@ def cantilever_tet4_benchmark(nx: int = 10):
     computed=-result.displacement.reshape(-1,3)[tip_nodes,1].mean()
     reference=10.**3/(3*E*(1/12))+10./((5/6)*(E/(2*(1+nu))))
     return computed,computed.new_tensor(reference)
+
+
+# ---------------------------------------------------------------------------
+# Consistent / lumped mass.
+#
+# ``N_i N_j`` is quartic, so the shipped degree-three Keast rule used by the
+# stiffness is *not* able to integrate the mass matrix: it loses 19.7 % in the
+# Frobenius norm and up to 70.8 % of the corner diagonal (measured in
+# ``docs/tet10-consistent-mass.md`` and pinned by ``tests/test_tet10_mass.py``).
+# The mass path below therefore uses a collapsed (Duffy) Gauss rule, which is
+# exact at ``order=4`` for straight-sided TET10 and converges rapidly for
+# curved edges.
+# ---------------------------------------------------------------------------
+
+
+def gauss_legendre_01(order: int, *, dtype=torch.float64, device=None):
+    """``order``-point Gauss-Legendre nodes/weights on ``[0, 1]``.
+
+    Computed from the Jacobi matrix with ``torch.linalg.eigh`` so the module stays
+    numpy-free; exact to rounding for the orders used here.
+    """
+    if order < 1:
+        raise ValueError("order must be >= 1")
+    k = torch.arange(1, order, dtype=dtype, device=device)
+    b = k / torch.sqrt(4.0 * k * k - 1.0)
+    jacobi = torch.diag(b, 1) + torch.diag(b, -1)
+    values, vectors = torch.linalg.eigh(jacobi)
+    nodes = 0.5 * (values + 1.0)
+    weights = 0.5 * 2.0 * vectors[0, :] ** 2
+    return nodes, weights
+
+
+def tet10_mass_quadrature(order: int = 4, *, dtype=torch.float64, device=None):
+    """Collapsed (Duffy) Gauss rule on the reference tetrahedron.
+
+    ``order`` points per collapsed direction, ``order**3`` points in total.  The
+    weights already carry the collapse Jacobian ``u**2 v`` and the reference volume,
+    so ``weights.sum() == 1/6``; the element Jacobian is applied by the caller.
+    ``order=4`` is exact for every polynomial that the straight-sided TET10 mass
+    integrand produces (at most degree two per collapsed variable); the monomial
+    self-verification lives in ``tests/test_tet10_mass.py``.
+    """
+    u, w = gauss_legendre_01(order, dtype=dtype, device=device)
+    uu, vv, ww = torch.meshgrid(u, u, u, indexing="ij")
+    wu, wv, ww_e = torch.meshgrid(w, w, w, indexing="ij")
+    r = uu * (1.0 - vv)
+    s = uu * vv * (1.0 - ww)
+    t = uu * vv * ww
+    points = torch.stack((r.reshape(-1), s.reshape(-1), t.reshape(-1)), -1)
+    weights = (wu * wv * ww_e * uu**2 * vv).reshape(-1)
+    return points, weights
+
+
+def _mass_rule(x: torch.Tensor, rule):
+    if rule is None:
+        return tet10_mass_quadrature(dtype=x.dtype, device=x.device)
+    raw_points, raw_weights = rule
+    points = raw_points if isinstance(raw_points, torch.Tensor) else torch.as_tensor(
+        raw_points, dtype=x.dtype)
+    weights = raw_weights if isinstance(raw_weights, torch.Tensor) else torch.as_tensor(
+        raw_weights, dtype=x.dtype)
+    points = points.to(dtype=x.dtype, device=x.device)
+    weights = weights.to(dtype=x.dtype, device=x.device)
+    if points.ndim != 2 or points.shape[1] != 3:
+        raise ValueError("rule points must have shape [q,3]")
+    if weights.shape != (points.shape[0],):
+        raise ValueError("rule weights must have shape [q]")
+    return points, weights
+
+
+def _tet10_det_weights(x: torch.Tensor, rule=None):
+    """Shape values and ``w * det J`` at every quadrature point of every element."""
+    points, weights = _mass_rule(x, rule)
+    shape, d_nat = tet10_shape(points)
+    jacobian = torch.einsum("eia,qib->eqab", x, d_nat)
+    det = torch.linalg.det(jacobian)
+    if bool((det <= 100 * torch.finfo(x.dtype).eps).any()):
+        raise ValueError("TET10 has non-positive or degenerate Jacobian at a quadrature point")
+    return shape, weights * det
+
+
+def tet10_volume(x: torch.Tensor, *, rule=None) -> torch.Tensor:
+    """Element volume ``int det J dV`` (includes curved-edge contributions)."""
+    if x.ndim != 3 or x.shape[1:] != (10, 3):
+        raise ValueError("x must have shape (n_elements, 10, 3)")
+    _, scaled = _tet10_det_weights(x, rule)
+    return scaled.sum(-1)
+
+
+def tet10_consistent_mass(x: torch.Tensor, density, *, rule=None) -> torch.Tensor:
+    """Return the 30x30 consistent mass matrix of TET10 elements.
+
+    ``rho * int N_i N_j detJ dV`` evaluated with the collapsed Gauss rule of
+    :func:`tet10_mass_quadrature` (``rule=`` overrides it, same convention as
+    ``tet10_stiffness``).  For a straight-sided element the result is exact and
+    every row sum equals the analytic shape-function integral
+    ``-rho V / 20`` at a vertex and ``+rho V / 5`` at a mid-edge node.
+    """
+    if x.ndim != 3 or x.shape[1:] != (10, 3):
+        raise ValueError("x must have shape (n_elements, 10, 3)")
+    from .solid_mass import _expand_scalar, _gauss_to_full
+
+    rho = _expand_scalar(density, len(x), dtype=x.dtype, device=x.device)
+    shape, scaled = _tet10_det_weights(x, rule)
+    block = torch.einsum("eq,qi,qj->eij", scaled, shape, shape) * rho[:, None, None]
+    return _gauss_to_full(block)
+
+
+def tet10_lumped_mass(x: torch.Tensor, density, *, rule=None) -> torch.Tensor:
+    """HRZ-diagonal lumped TET10 mass (positive and exactly mass conserving).
+
+    Row-sum lumping is **not** available for quadratic tetrahedra: the vertex row
+    sums are ``-rho V / 20``, i.e. negative masses.  The HRZ diagonal scaling
+    ``m_ii -> m_ii * rho V / sum_j m_jj`` keeps every entry positive and makes the
+    total mass equal ``rho V``; the rotational inertia is *not* preserved, which is
+    measured rather than hidden by ``tests/test_tet10_mass.py``.
+    """
+    from .solid_mass import _expand_scalar, _gauss_to_full
+
+    element = tet10_consistent_mass(x, density, rule=rule)
+    volume = tet10_volume(x, rule=rule)
+    rho = _expand_scalar(density, len(x), dtype=x.dtype, device=x.device)
+    scalar = element[:, 0::3, 0::3]
+    diagonal = torch.diagonal(scalar, dim1=-2, dim2=-1)
+    scale = (rho * volume) / diagonal.sum(-1)
+    return _gauss_to_full(torch.diag_embed(diagonal * scale[:, None]))
