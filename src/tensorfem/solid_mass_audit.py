@@ -93,11 +93,15 @@ def _solid_stiffness(
     e = torch.full((ne,), float(young), dtype=nodes.dtype, device=nodes.device)
     nu = torch.full((ne,), float(poisson), dtype=nodes.dtype, device=nodes.device)
     d = elasticity_matrix_3d(e, nu)
-    element = (
-        tet4_stiffness(x, d)[0]
-        if element_type.lower() == "tet4"
-        else hex8_stiffness(x, d)[0]
-    )
+    kind = element_type.lower()
+    if kind == "tet4":
+        element = tet4_stiffness(x, d)[0]
+    elif kind == "tet10":
+        from .quadratic_solid import tet10_stiffness
+
+        element = tet10_stiffness(x, d)[0]
+    else:
+        element = hex8_stiffness(x, d)[0]
     dofs = _dof_map(elements)
     rows = dofs[:, :, None].expand(-1, -1, dofs.shape[1]).reshape(-1)
     cols = dofs[:, None, :].expand(-1, dofs.shape[1], -1).reshape(-1)
@@ -136,8 +140,12 @@ def axial_rod_case(
         connectivity = hexes
     elif kind == "tet4":
         connectivity = hex_to_tet_mesh(nodes, hexes)[1]
+    elif kind == "tet10":
+        from .quadratic_solid import tet4_to_tet10
+
+        nodes, connectivity = tet4_to_tet10(nodes, hex_to_tet_mesh(nodes, hexes)[1])
     else:
-        raise ValueError("element_type must be 'hex8' or 'tet4'")
+        raise ValueError("element_type must be 'hex8', 'tet4' or 'tet10'")
     stiffness = _solid_stiffness(nodes, connectivity, young, poisson, kind)
     mass = assemble_solid_mass(
         nodes, connectivity, density, element_type=kind, lumped=mass_form == "lumped"
