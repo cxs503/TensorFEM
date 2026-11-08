@@ -1,0 +1,41 @@
+{
+  "dataset": "Paik & Thayamballi (2003) stiffened-panel collapse tests",
+  "criterion": "P70-N01 (c): |sigma_u_model / sigma_u_test - 1| <= 0.15 for three specimens",
+  "status": "WITHHELD",
+  "reason": "The primary experimental table is not available in this environment. Repository policy (see docs/stiffened-panel-ultimate-strength.md, 'Scope and honesty statement') is that no literature value is quoted from memory, so this file ships the schema and the loader contract with an EMPTY specimen list rather than an unverified transcription.",
+  "reference": {
+    "authors": "Paik, J.K.; Thayamballi, A.K.",
+    "title": "Ultimate Limit State Design of Steel-Plated Structures",
+    "year": 2003,
+    "series_note": "stiffened-panel uniaxial compression collapse tests reported in the book"
+  },
+  "loader": "tensorfem.smith_progressive_collapse.compare_experimental_panels",
+  "schema": {
+    "specimen": "str",
+    "span_m": "float",
+    "spacing_m": "float",
+    "plate_thickness_m": "float",
+    "web_height_m": "float",
+    "web_thickness_m": "float",
+    "flange_width_m": "float",
+    "flange_thickness_m": "float",
+    "young_pa": "float",
+    "poisson": "float",
+    "yield_stress_pa": "float",
+    "measured_ultimate_stress_pa": "float",
+    "provenance": "str",
+    "primary_source_verified": "bool"
+  },
+  "acceptance": {
+    "threshold_relative_error": 0.15,
+    "specimen_count": 3,
+    "evidence_grade_requires": "primary_source_verified == true for every specimen"
+  },
+  "specimens": [],
+  "how_to_use": [
+    "Fill 'specimens' with the three test entries, each with provenance text naming the page/table and primary_source_verified = true only after the primary table has been consulted.",
+    "Run: from tensorfem.smith_progressive_collapse import compare_experimental_panels; compare_experimental_panels(json.load(open(path))['specimens']).",
+    "The output carries evidence_grade = WITHHELD while any specimen is unverified, so an unverified transcription can never be promoted to REAL by accident."
+  ],
+  "synthetic_fixture_note": "tests/test_smith_progressive_collapse.py exercises the harness with SYNTHETIC fixtures (measured value = model value, then scaled by 0.9/1.1) to prove the loader, the deviation arithmetic and the grade propagation. Synthetic fixtures are labelled as such and are never reported as experimental evidence."
+}
