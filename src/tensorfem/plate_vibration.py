@@ -47,6 +47,13 @@ Independent references (all closed form, none of them produced by this code)
   A uniform foundation therefore *cannot* be used to hide discretisation
   error in the bending term: it is an additive exactness check.
 
+* Free plate on a uniform Winkler foundation: the vertical translation mode is
+  still exact, ``omega^2 = k_w / (rho h)``, with no boundary condition involved
+  (``winkler_translation_angular_frequency``).  The remaining family is the
+  free-plate spectrum shifted by ``k_w/(rho h)`` in ``omega^2``; that shift is
+  exact in the Kirchhoff model and is supplied as an independent reference by
+  ``tensorfem.plate_ritz_reference`` with ``winkler_parameter``.
+
 * Clamped square plate, Leissa (NASA SP-160, 1969) tabulated frequency
   coefficient ``lambda_1 = 35.9853``::
 
@@ -264,6 +271,37 @@ def winkler_angular_frequency(
     rigidity = plate_rigidity(young, poisson, thickness)
     wave_numbers = (half_waves_x * math.pi / length) ** 2 + (half_waves_y * math.pi / width) ** 2
     return math.sqrt((rigidity * wave_numbers**2 + winkler_k) / (density * thickness))
+
+
+def winkler_translation_angular_frequency(
+    *, density: float, thickness: float, winkler_k: float,
+) -> float:
+    """Exact angular frequency of the vertical translation mode on a Winkler bed.
+
+    A plate that is held *only* by a uniform Winkler foundation has one exact
+    eigenpair that does not depend on its boundary conditions, its bending
+    stiffness or its planform: the vertical translation ``w = const``,
+    ``theta_x = theta_y = 0`` gives ``U = k_w/2 int w^2`` and
+    ``T = rho h/2 int w^2``, hence
+
+        omega_translation^2 = k_w / (rho h),
+
+    *exactly*, for a free edge as well.  Discretely the same is true of any
+    consistent Q4 element set (the consistent foundation matrix and the
+    translatory consistent mass share the same shape-function products), which
+    is what makes this an anchor on the *assembly* rather than on the mesh:
+    measured drift is at machine precision.  It is the reference used for the
+    free-edge foundation verification in
+    ``docs/free-plate-winkler-foundation-validation.md``.
+    """
+    if isinstance(winkler_k, bool) or not isinstance(winkler_k, (int, float)):
+        raise TypeError("winkler_k must be a real number")
+    winkler_k = float(winkler_k)
+    if not math.isfinite(winkler_k) or winkler_k < 0.0:
+        raise ValueError("winkler_k must be finite and non-negative")
+    density = _positive("density", density)
+    thickness = _positive("thickness", thickness)
+    return math.sqrt(winkler_k / (density * thickness))
 
 
 def clamped_square_angular_frequency(
