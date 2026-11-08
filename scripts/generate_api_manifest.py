@@ -6,6 +6,7 @@ from pathlib import Path
 import tensorfem
 
 ROOT=Path(__file__).resolve().parents[1]
+MANIFEST=ROOT/"api/public-api-v1.json"
 INTERNAL_MARKERS=("benchmark","_demo","postprocess","qualification","benchmark_cases","shell_benchmark_suite")
 BETA_MODULES=("industrial_workflow","project_workflow","result_db","result_db_v2","mesh_project","step_executor")
 STABLE_PREFIXES=("model","solvers","frame2d","continuum","modal","buckling","sparse_core","modeldb",
@@ -29,12 +30,34 @@ def stability(module):
     return "experimental"
 
 
-def build():
+def curated(path):
+    """Load reviewed metadata from an existing manifest, if any.
+
+    The git history of this repository is periodically squashed, so
+    ``introduced()`` can no longer recover the release in which a symbol
+    first appeared.  Regeneration must therefore preserve the reviewed
+    ``introduced``/``stability`` values of names that are already in the
+    manifest instead of re-deriving them from the (rewritten) history.
+    """
+    try:
+        payload=json.loads(Path(path).read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return {entry["name"]:entry for entry in payload.get("entries",[])}
+
+
+def build(manifest=MANIFEST):
+    previous=curated(manifest)
     entries=[]
     for name in tensorfem.__all__:
         obj=getattr(tensorfem,name);module=getattr(obj,"__module__","tensorfem")
-        entries.append({"name":name,"module":module,"object":getattr(obj,"__name__",type(obj).__name__),
-                        "stability":stability(module),"introduced":introduced(module)})
+        entry={"name":name,"module":module,"object":getattr(obj,"__name__",type(obj).__name__),
+               "stability":stability(module),"introduced":introduced(module)}
+        reviewed=previous.get(name)
+        if reviewed:
+            entry["introduced"]=reviewed.get("introduced",entry["introduced"])
+            entry["stability"]=reviewed.get("stability",entry["stability"])
+        entries.append(entry)
     return {"schema":"tensorfem.public-api-manifest/1.0","package_version":tensorfem.__version__,
             "policy":{"stable":"semver compatibility","beta":"deprecate before removal",
                       "experimental":"may change with release notes","internal_candidate":"kept for compatibility; move to submodules after deprecation"},
