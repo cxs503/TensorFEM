@@ -1,0 +1,53 @@
+{
+  "gates": [
+    {
+      "gate": "E1_hertz_contact_radius_rel_error",
+      "value": 0.0,
+      "limit": 0.02,
+      "mode": "max",
+      "passed": true,
+      "note": "3-D Hertz, 300 rings (mesh ladder [60, 150, 300])"
+    },
+    {
+      "gate": "E2_hertz_peak_pressure_rel_error",
+      "value": 2.066692649194124e-05,
+      "limit": 0.05,
+      "mode": "max",
+      "passed": true,
+      "note": "peak of the recovered p(r) against p0 = 3F/(2 pi a^2)"
+    },
+    {
+      "gate": "E3_load_approach_r2",
+      "value": 0.9999999994424974,
+      "limit": 0.99,
+      "mode": "min",
+      "passed": true,
+      "note": "P(delta) over 6 loads; power-law exponent 1.500000"
+    },
+    {
+      "gate": "E4_stick_slip_boundary_rel_error",
+      "value": 0.005206365811814884,
+      "limit": 0.05,
+      "mode": "max",
+      "passed": true,
+      "note": "Cattaneo c vs c=b sqrt(1-Q/(mu P)), 1600 segments, Q/(mu P) in [0.15, 0.35, 0.6, 0.85]"
+    },
+    {
+      "gate": "E5_complementarity_residual",
+      "value": 3.4483239453006086e-09,
+      "limit": 1e-08,
+      "mode": "max",
+      "passed": true,
+      "note": "max |gap * contact_force|, 2-D and 3-D"
+    },
+    {
+      "gate": "E6_no_contact_force_zero",
+      "value": 0.0,
+      "limit": 0.0,
+      "mode": "max",
+      "passed": true,
+      "note": "retracted indenter (gap > 0 everywhere): total contact force must be exactly 0.0 in floating point"
+    }
+  ],
+  "all_passed": true
+}
