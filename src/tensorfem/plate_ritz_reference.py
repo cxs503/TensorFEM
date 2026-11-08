@@ -43,6 +43,26 @@ Two numerical traps that this module handles explicitly
 The reference is an *upper bound* sequence: the Rayleigh quotient of a Rayleigh--Ritz
 solution is never below the true eigenvalue, so increasing ``order`` decreases the
 first frequency monotonically towards the exact Kirchhoff value.
+
+Winkler foundation on a free edge: why the reference is still exact
+-------------------------------------------------------------------
+A plate resting on a uniform Winkler bed of modulus ``k`` adds the potential
+``k/2 int w^2 dA`` and nothing else, so in the dimensionless Kirchhoff model
+(``D = rho h = 1``) the stiffness becomes ``K + kappa W`` with
+``kappa = k a^4 / D`` and ``W[pq, rs] = int P_p P_q P_r P_s dA``.  When the plate
+is *free* there is no characteristic function to normalise against, but none is
+needed: ``W`` is exactly the mass operator of this model, hence **every**
+Kirchhoff eigenpair satisfies
+
+    lambda_k^2 = lambda_k^2(kappa = 0) + kappa          (exact, any boundary)
+
+and the mode shapes are unchanged.  The free-edge Winkler case therefore has a
+closed-form reference after all -- not a tabulated frequency but an exact shift
+of the already-verified free-plate spectrum.  ``foundation_energy_matrix``
+assembles ``W`` by direct 2-D Gauss--Legendre quadrature (``2 (order+1)`` points
+per direction, pointwise products), i.e. along a code path that is independent of
+the Kronecker mass operator; ``RitzFreePlateResult.foundation_check`` reports the
+measured relative disagreement between the two, so a shortcut cannot hide there.
 """
 from __future__ import annotations
 
@@ -54,6 +74,7 @@ import numpy as np
 __all__ = [
     "RitzFreePlateResult",
     "legendre_operator_matrices",
+    "foundation_energy_matrix",
     "ritz_free_plate_eigenvalues",
     "ritz_free_plate_convergence",
     "energy_quadrature_check",
@@ -66,6 +87,15 @@ def _positive(name: str, value: float) -> float:
     value = float(value)
     if not math.isfinite(value) or value <= 0.0:
         raise ValueError(f"{name} must be positive and finite")
+    return value
+
+
+def _non_negative(name: str, value: float) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise TypeError(f"{name} must be a real number")
+    value = float(value)
+    if not math.isfinite(value) or value < 0.0:
+        raise ValueError(f"{name} must be finite and non-negative")
     return value
 
 
@@ -120,6 +150,40 @@ def legendre_operator_matrices(
     return mass, first_energy, second_energy, coupling
 
 
+def foundation_energy_matrix(
+    *, order: int, length: float = 1.0, width: float | None = None
+) -> np.ndarray:
+    """Return the dimensionless Winkler operator ``W[pq, rs] = int P_p P_q P_r P_s dA``.
+
+    ``W`` is assembled with ``2 (order + 1)`` Gauss--Legendre points per direction,
+    i.e. a **different quadrature rule** than the ``order + 2`` points used by
+    ``legendre_operator_matrices``; the two must agree to machine precision, which
+    is the point of ``foundation_check`` (a missing Jacobian, a transposed factor
+    or an off-by-one quadrature order cannot hide in a shared rule).  Independent
+    anchors for ``W`` itself are the analytic moments ``int 1 = a b``,
+    ``int x^2 = a^3 b / 3`` and ``int x y = a^2 b^2 / 4`` of the polynomial
+    trial functions.
+
+    For the dimensionless Kirchhoff model (``D = rho h = 1``) the physical
+    foundation modulus enters as ``kappa = k * length^4 / D``.
+    """
+    order = _order(order)
+    length = _positive("length", length)
+    width = length if width is None else _positive("width", width)
+    count = order + 1
+    points, weights = np.polynomial.legendre.leggauss(2 * count)
+    scale_x, scale_y = 0.5 * length, 0.5 * width
+    values = np.zeros((count, points.size))
+    for degree in range(count):
+        polynomial = np.zeros(degree + 1)
+        polynomial[degree] = 1.0
+        values[degree] = np.polynomial.legendre.legval(points, polynomial)
+    one_x = (values * (weights * scale_x)) @ values.T
+    one_y = (values * (weights * scale_y)) @ values.T
+    # flat index p * count + q, matching the kron(...) ordering of ``mass``
+    return np.kron(one_x, one_y)
+
+
 @dataclass(frozen=True)
 class RitzFreePlateResult:
     """Elastic eigenpairs of a completely free Kirchhoff plate.
@@ -129,6 +193,13 @@ class RitzFreePlateResult:
     quantity in physical units.  ``rigid_body_defect`` is the largest measured
     elastic-to-rigid ratio ``omega_rb^2 / omega_1^2`` of the three rigid-body
     modes, i.e. a direct measure of the constraint's numerical quality.
+    ``winkler_parameter`` is the dimensionless foundation modulus
+    ``kappa = k a^4 / D`` that was applied, and ``foundation_check`` is the
+    measured relative disagreement between the quadrature-assembled Winkler
+    operator and the Kronecker mass operator (0.0 when no foundation is present).
+    With ``kappa > 0`` no rigid mode is removed, because the three rigid modes are
+    then exact eigenmodes of eigenvalue ``kappa`` and removing them would delete
+    the analytic anchor.
     """
 
     dimensionless: np.ndarray
@@ -138,6 +209,8 @@ class RitzFreePlateResult:
     aspect_ratio: float
     rigid_body_defect: float
     energy_check: float
+    winkler_parameter: float = 0.0
+    foundation_check: float = 0.0
 
 
 def _rigid_body_coefficients(count: int, length: float, width: float) -> np.ndarray:
@@ -158,13 +231,20 @@ def _rigid_body_coefficients(count: int, length: float, width: float) -> np.ndar
 
 def ritz_free_plate_eigenvalues(
     *, length: float = 1.0, width: float | None = None, poisson: float = 0.3,
-    order: int = 14, count: int = 4,
+    order: int = 14, count: int = 4, winkler_parameter: float = 0.0,
 ) -> RitzFreePlateResult:
-    """Return the first ``count`` elastic modes of a completely free plate.
+    """Return the first ``count`` modes of a completely free plate.
 
     The result is dimensionless in the Kirchhoff sense (``D = rho h = 1``), so it
     is independent of the material: ``omega = lambda * sqrt(D / (rho h)) / a^2``.
+
+    ``winkler_parameter`` is the dimensionless foundation modulus
+    ``kappa = k a^4 / D``.  For ``kappa = 0`` the three rigid-body modes are
+    projected out and the returned sequence is the elastic spectrum; for
+    ``kappa > 0`` nothing is removed and the first three entries are the lifted
+    rigid modes, each equal to ``kappa`` exactly (see the module docstring).
     """
+    winkler_parameter = _non_negative("winkler_parameter", winkler_parameter)
     length = _positive("length", length)
     width = length if width is None else _positive("width", width)
     if isinstance(poisson, bool) or not isinstance(poisson, (int, float)):
@@ -190,13 +270,27 @@ def ritz_free_plate_eigenvalues(
     )
     stiffness = 0.5 * (stiffness + stiffness.T)
     mass = np.kron(mx, my)
+    plate_stiffness = stiffness
+    foundation_check = 0.0
+    if winkler_parameter > 0.0:
+        foundation = foundation_energy_matrix(order=order, length=length, width=width)
+        foundation_check = float(
+            np.linalg.norm(foundation - mass) / np.linalg.norm(mass)
+        )
+        stiffness = plate_stiffness + winkler_parameter * foundation
 
     rigid = _rigid_body_coefficients(count, length, width)
-    projected = rigid.T @ mass
-    _, _, right = np.linalg.svd(projected)
-    null = right[3:].T
-    reduced_stiffness = null.T @ stiffness @ null
-    reduced_mass = null.T @ mass @ null
+    if winkler_parameter > 0.0:
+        # The three rigid modes are exact eigenmodes of eigenvalue ``kappa``;
+        # projecting them out would delete the analytic anchor of this reference.
+        reduced_stiffness = stiffness
+        reduced_mass = mass
+    else:
+        projected = rigid.T @ mass
+        _, _, right = np.linalg.svd(projected)
+        null = right[3:].T
+        reduced_stiffness = null.T @ stiffness @ null
+        reduced_mass = null.T @ mass @ null
     reduction = np.linalg.cholesky(0.5 * (reduced_mass + reduced_mass.T))
     inverse = np.linalg.inv(reduction)
     standard = inverse @ reduced_stiffness @ inverse.T
@@ -208,12 +302,18 @@ def ritz_free_plate_eigenvalues(
         raise ValueError("count exceeds the number of elastic modes in the basis")
     eigenvalues = eigenvalues[:count_modes]
 
-    # Rigid-body defect: Rayleigh quotient of the exact rigid-body vectors.
+    # Rigid-body defect: Rayleigh quotient of the exact rigid-body vectors against
+    # the *plate* energy (the foundation energy of a rigid mode is not a defect).
+    elastic_scale_index = 3 if winkler_parameter > 0.0 else 0
+    if eigenvalues.size > elastic_scale_index:
+        scale = float(eigenvalues[elastic_scale_index])
+    else:
+        scale = float(eigenvalues[-1])
     defect = 0.0
     for column in range(rigid.shape[1]):
         vector = rigid[:, column]
-        numerator = abs(float(vector @ stiffness @ vector))
-        denominator = float(vector @ mass @ vector) * float(eigenvalues[0])
+        numerator = abs(float(vector @ plate_stiffness @ vector))
+        denominator = float(vector @ mass @ vector) * scale
         defect = max(defect, numerator / denominator)
     return RitzFreePlateResult(
         dimensionless=np.sqrt(eigenvalues) * length**2,
@@ -223,18 +323,22 @@ def ritz_free_plate_eigenvalues(
         aspect_ratio=width / length,
         rigid_body_defect=defect,
         energy_check=0.0,
+        winkler_parameter=winkler_parameter,
+        foundation_check=foundation_check,
     )
 
 
 def ritz_free_plate_convergence(
     *, orders: tuple[int, ...] = (8, 10, 12, 14, 16), count: int = 1,
     poisson: float = 0.3, length: float = 1.0, width: float | None = None,
+    winkler_parameter: float = 0.0,
 ) -> tuple[tuple[int, float], ...]:
     """Return ``(order, lambda_1)`` pairs; a Rayleigh--Ritz sequence decreases."""
     rows = []
     for order in orders:
         result = ritz_free_plate_eigenvalues(
-            length=length, width=width, poisson=poisson, order=order, count=count
+            length=length, width=width, poisson=poisson, order=order, count=count,
+            winkler_parameter=winkler_parameter,
         )
         rows.append((order, float(result.dimensionless[count - 1])))
     return tuple(rows)

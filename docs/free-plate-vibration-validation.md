@@ -162,3 +162,12 @@ OMP_NUM_THREADS=8 PYTHONPATH=src python -m pytest -q tests/test_free_plate_vibra
 测试断言全部对文献值、独立离散参考或精确矩阵恒等式；无一条对存储快照。
 `tests/test_plate_vibration.py` 中"自由边界应当报错"的旧断言已随契约更新（改为非法
 `boundary` 名报错），并使 28 项相关测试全绿。
+
+## 7. 后续（清偿记录，不改写上文结论）
+
+上文 §4 第 5 条把「自由边 + 弹性地基组合（Winkler 项对自由边非精确特征函数）」列为未验证项。
+该项已由 [自由边界板 + Winkler 地基验证](free-plate-winkler-foundation-validation.md) 清偿：
+平移模态 `ω² = k_w/(ρh)` 是**任意边界**下的闭式特征对（实测相对偏差 2.2×10⁻¹⁶），Kirchhoff
+模型还有精确位移恒等式 `ω²(k_w) = ω²(0) + k_w/(ρh)`，因此自由边地基工况的参考解不需要特征
+函数。证据：`benchmarks/free_plate_winkler_foundation_evidence.json`、
+`tests/test_free_plate_winkler_foundation.py`。上文原有记录保留不动。
