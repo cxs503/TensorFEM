@@ -60,9 +60,31 @@ def tet10_quadrature(*, dtype=torch.float64, device=None):
     return points,weights
 
 
-def tet10_stiffness(x: torch.Tensor, d: torch.Tensor):
-    """Element stiffness and centroid strain matrix for batched coordinates."""
-    ne=len(x); ke=x.new_zeros((ne,30,30)); points,weights=tet10_quadrature(dtype=x.dtype,device=x.device)
+def tet10_stiffness(x: torch.Tensor, d: torch.Tensor, *, rule=None):
+    """Element stiffness and centroid strain matrix for batched coordinates.
+
+    ``rule=`` optionally replaces the shipped five-point Keast rule with any
+    ``(points, weights)`` pair expressed on the reference tetrahedron with the same
+    convention (weights already carrying the reference volume, so the Jacobian is
+    applied here).  The default path is bit-for-bit unchanged.  The Keast rule is
+    degree-three exact, which is enough for straight-edged geometry but under-integrates
+    curved (quadratic) edges: ``docs/tet10-integration-accuracy.md`` measures the loss
+    and shows how to obtain a high-order rule, e.g.::
+
+        from tensorfem.tet10_integration_audit import duffy_rule
+        p, w = duffy_rule(6)
+        k, _ = tet10_stiffness(x, d, rule=(torch.as_tensor(p), torch.as_tensor(w)))
+    """
+    ne=len(x); ke=x.new_zeros((ne,30,30))
+    if rule is None:
+        points,weights=tet10_quadrature(dtype=x.dtype,device=x.device)
+    else:
+        raw_points,raw_weights=rule
+        points=raw_points if isinstance(raw_points,torch.Tensor) else torch.as_tensor(raw_points,dtype=x.dtype)
+        weights=raw_weights if isinstance(raw_weights,torch.Tensor) else torch.as_tensor(raw_weights,dtype=x.dtype)
+        points=points.to(dtype=x.dtype,device=x.device); weights=weights.to(dtype=x.dtype,device=x.device)
+        if points.ndim!=2 or points.shape[1]!=3: raise ValueError("rule points must have shape [q,3]")
+        if weights.shape!=(points.shape[0],): raise ValueError("rule weights must have shape [q]")
     bc=None
     for p,w in zip(points,weights):
         _,dn=tet10_shape(p)
