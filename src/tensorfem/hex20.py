@@ -83,6 +83,198 @@ def hex20_stiffness(x, d):
     _,dn=hex20_shape_gradients(0.,0.,0.,like=x)
     return ke,_b(_gradient(x,dn)[0])
 
+# --------------------------------------------------------------------------
+# Inertia operator (consistent / lumped mass).  Until this block existed HEX20
+# had stiffness only: ``grep -n mass src/tensorfem/hex20.py`` was empty, so the
+# workhorse quadratic brick could not be used for vibration, transient or
+# explicit-dynamics work.  The four public entry points below mirror the TET10
+# mass API (:mod:`tensorfem.quadratic_solid`) so the two quadratic solids share
+# one calling convention.
+# --------------------------------------------------------------------------
+
+# One-dimensional Gauss-Legendre nodes/weights (weights carry the [-1, 1]
+# measure of one direction; the tensor product below therefore integrates over
+# the reference volume 8).  Closed-form values keep the library core torch-only.
+_GAUSS_1D = {
+    1: ((0.0,), (2.0,)),
+    2: ((-math.sqrt(1.0 / 3.0), math.sqrt(1.0 / 3.0)), (1.0, 1.0)),
+    3: (
+        (-math.sqrt(3.0 / 5.0), 0.0, math.sqrt(3.0 / 5.0)),
+        (5.0 / 9.0, 8.0 / 9.0, 5.0 / 9.0),
+    ),
+    4: (
+        (
+            -math.sqrt((3.0 + 2.0 * math.sqrt(6.0 / 5.0)) / 7.0),
+            -math.sqrt((3.0 - 2.0 * math.sqrt(6.0 / 5.0)) / 7.0),
+            math.sqrt((3.0 - 2.0 * math.sqrt(6.0 / 5.0)) / 7.0),
+            math.sqrt((3.0 + 2.0 * math.sqrt(6.0 / 5.0)) / 7.0),
+        ),
+        (
+            (18.0 - math.sqrt(30.0)) / 36.0,
+            (18.0 + math.sqrt(30.0)) / 36.0,
+            (18.0 + math.sqrt(30.0)) / 36.0,
+            (18.0 - math.sqrt(30.0)) / 36.0,
+        ),
+    ),
+    5: (
+        (
+            -math.sqrt(5.0 + 2.0 * math.sqrt(10.0 / 7.0)) / 3.0,
+            -math.sqrt(5.0 - 2.0 * math.sqrt(10.0 / 7.0)) / 3.0,
+            0.0,
+            math.sqrt(5.0 - 2.0 * math.sqrt(10.0 / 7.0)) / 3.0,
+            math.sqrt(5.0 + 2.0 * math.sqrt(10.0 / 7.0)) / 3.0,
+        ),
+        (
+            (322.0 - 13.0 * math.sqrt(70.0)) / 900.0,
+            (322.0 + 13.0 * math.sqrt(70.0)) / 900.0,
+            128.0 / 225.0,
+            (322.0 + 13.0 * math.sqrt(70.0)) / 900.0,
+            (322.0 - 13.0 * math.sqrt(70.0)) / 900.0,
+        ),
+    ),
+}
+
+
+def hex_gauss_rule(order: int = 3, *, dtype=torch.float64, device=None):
+    """Tensor-product Gauss-Legendre rule on the reference cube ``[-1,1]^3``.
+
+    Returns ``(points[q,3], weights[q])``.  Order ``n`` integrates exactly any
+    polynomial of degree ``2n-1`` *per natural coordinate*; the weights carry the
+    reference volume only (their sum is 8), which is the convention
+    :func:`hex20_mass` expects from a user-supplied ``rule=``.
+    """
+    try:
+        nodes, weights = _GAUSS_1D[int(order)]
+    except KeyError:
+        raise ValueError("quadrature order must be one of 1, 2, 3, 4, 5") from None
+    points, wts = [], []
+    for r, wr in zip(nodes, weights):
+        for s, ws in zip(nodes, weights):
+            for t, wt in zip(nodes, weights):
+                points.append((r, s, t))
+                wts.append(wr * ws * wt)
+    return (
+        torch.tensor(points, dtype=dtype, device=device),
+        torch.tensor(wts, dtype=dtype, device=device),
+    )
+
+
+def _hex20_rule(rule, x: torch.Tensor):
+    """Normalise a ``rule`` argument into ``(points, weights)`` on ``x``'s dtype."""
+    if rule is None:
+        return hex_gauss_rule(3, dtype=x.dtype, device=x.device)
+    points, weights = rule
+    points = torch.as_tensor(points).to(dtype=x.dtype, device=x.device)
+    weights = torch.as_tensor(weights).to(dtype=x.dtype, device=x.device)
+    if points.ndim != 2 or points.shape[1] != 3:
+        raise ValueError("rule points must have shape [q,3]")
+    if weights.shape != (points.shape[0],):
+        raise ValueError("rule weights must have shape [q]")
+    return points, weights
+
+
+def _hex20_density(density, x: torch.Tensor):
+    ne = len(x)
+    if isinstance(density, torch.Tensor):
+        return density.expand(ne).to(x)
+    return x.new_full((ne,), float(density))
+
+
+def _hex20_scalar_mass(x: torch.Tensor, density, *, rule=None):
+    """Nodal scalar mass ``rho * int N_i N_j detJ`` of shape ``[e,20,20]``."""
+    rho = _hex20_density(density, x)
+    points, weights = _hex20_rule(rule, x)
+    values, dets = [], []
+    for r, s, t in points.tolist():
+        n, dn = hex20_shape_gradients(r, s, t, like=x)
+        values.append(n)
+        dets.append(_gradient(x, dn)[1])
+    n = torch.stack(values)
+    det = torch.stack(dets, 1)
+    return torch.einsum("qi,eq,q,qj->eij", n, det * rho[:, None], weights, n)
+
+
+def hex20_mass(x: torch.Tensor, density, *, rule=None):
+    """Consistent mass matrix of batched HEX20 elements, layout ``[e,60,60]``.
+
+    ``x`` is ``[e,20,3]`` and ``density`` a scalar or one value per element.  The
+    DOF ordering equals :func:`solve_hex20` (``3*node + component``), so the
+    assembly pattern carries over verbatim.
+
+    The default rule (order-3 Gauss, 27 points) is **exact** whenever
+    ``N_i N_j detJ`` is at most degree 5 per natural coordinate, which covers the
+    affine (parallelepiped) and straight-planar-face HEX20 shapes; the residual
+    for curved geometry is quantified in
+    ``docs/hex20-consistent-mass.md``.  ``rule=`` accepts any
+    ``(points, weights)`` pair on ``[-1,1]^3`` with weights carrying the
+    reference volume, so a deliberately under-integrated rule (order 2, degree 3)
+    can be measured instead of assumed.
+    """
+    m = _hex20_scalar_mass(x, density, rule=rule)
+    eye = torch.eye(3, dtype=x.dtype, device=x.device)
+    return torch.einsum("eij,ab->eiajb", m, eye).reshape(len(x), 60, 60)
+
+
+def hex20_lumped_mass(x: torch.Tensor, density, *, scheme: str = "hrz", rule=None):
+    """Diagonal (lumped) mass per DOF, shape ``[e,60]``, for explicit dynamics.
+
+    ``scheme="hrz"`` (default) scales the consistent diagonal so the element
+    total mass is preserved (Hinton-Rock-Zienkiewicz); every entry stays positive.
+
+    ``scheme="row"`` is the naive row sum ``sum_j M_ij``.  It preserves the total
+    mass but is **unusable** for the serendipity brick: the vertex shape
+    functions have ``int N_vertex dV = -rho V / 8`` (while ``int N_edge dV =
+    +rho V / 6``), so the eight corner DOFs receive *negative* masses and the
+    lumped operator is indefinite.  The scheme is kept so the trap stays
+    measurable; explicit time integration must use ``"hrz"``.
+    """
+    m = _hex20_scalar_mass(x, density, rule=rule)
+    if scheme == "row":
+        nodal = m.sum(-1)
+    elif scheme == "hrz":
+        diag = torch.diagonal(m, dim1=-2, dim2=-1)
+        if torch.any(diag <= 0):
+            raise ValueError("HRZ lumping requires a positive consistent diagonal")
+        nodal = diag * (m.sum((-2, -1)) / diag.sum(-1))[:, None]
+    else:
+        raise ValueError("scheme must be 'hrz' or 'row'")
+    return nodal.repeat_interleave(3, dim=-1)
+
+
+def hex20_mass_totals(x: torch.Tensor, density, *, rule=None):
+    """Element mass ``rho * int detJ`` per element (the isoparametric volume)."""
+    rho = _hex20_density(density, x)
+    points, weights = _hex20_rule(rule, x)
+    dets = []
+    for r, s, t in points.tolist():
+        _, dn = hex20_shape_gradients(r, s, t, like=x)
+        dets.append(_gradient(x, dn)[1])
+    return rho * (torch.stack(dets, 1) * weights).sum(-1)
+
+
+def assemble_hex20_mass(nodes: torch.Tensor, elements: torch.Tensor, density,
+                        *, rule=None, lumping: str | None = None):
+    """Assemble the global HEX20 mass matrix ``[n_dofs, n_dofs]``.
+
+    ``lumping=None`` assembles the consistent matrix; ``lumping="hrz"``/``"row"``
+    assembles the diagonal matrix built from :func:`hex20_lumped_mass`.
+    """
+    elements = elements.long()
+    x = nodes[elements]
+    ne = len(elements)
+    ed = torch.stack(tuple(3 * elements + i for i in range(3)), 2).reshape(ne, 60).long()
+    n_dofs = 3 * len(nodes)
+    if lumping is None:
+        me = hex20_mass(x, density, rule=rule)
+        rows = ed[:, :, None].expand(-1, -1, 60).reshape(-1)
+        cols = ed[:, None, :].expand(-1, 60, -1).reshape(-1)
+        m = nodes.new_zeros((n_dofs, n_dofs))
+        return m.index_put((rows, cols), me.reshape(-1), accumulate=True)
+    values = hex20_lumped_mass(x, density, scheme=lumping, rule=rule).reshape(-1)
+    flat = nodes.new_zeros(n_dofs * n_dofs)
+    return flat.index_add(0, ed.reshape(-1) * (n_dofs + 1), values).reshape(n_dofs, n_dofs)
+
+
 def solve_hex20(m: Hex20Model):
     ne=len(m.elements)
     expand=lambda a:a.to(m.nodes).reshape(-1).expand(ne)
