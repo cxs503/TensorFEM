@@ -1,0 +1,374 @@
+{
+  "schema": "tensorfem.cylindrical-shell-buckling-mitc-audit/1.0",
+  "case": {
+    "radius": 1.0,
+    "length": 1.2,
+    "young": 200000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.01
+  },
+  "references": {
+    "donnell_finite_length": 12106132.931829931,
+    "classical_asymptotic": 12104550.653376048,
+    "donnell_over_classical": 1.000130717653153
+  },
+  "hoop_energy": [
+    {
+      "formulation": "shell4",
+      "ntheta": 8,
+      "nz": 4,
+      "energy_fem": 8074199891.65904,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0708740202246518,
+      "facet_area_factor": 0.9744953584044327,
+      "ratio_over_facet_area": 1.0989010989010994
+    },
+    {
+      "formulation": "shell4",
+      "ntheta": 16,
+      "nz": 4,
+      "energy_fem": 8232382819.14211,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0918536825760496,
+      "facet_area_factor": 0.9935868511442058,
+      "ratio_over_facet_area": 1.0989010989010983
+    },
+    {
+      "formulation": "shell4",
+      "ntheta": 32,
+      "nz": 4,
+      "energy_fem": 8272215799.242038,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0971366956435367,
+      "facet_area_factor": 0.9983943930356184,
+      "ratio_over_facet_area": 1.0989010989010988
+    },
+    {
+      "formulation": "shell4",
+      "ntheta": 64,
+      "nz": 4,
+      "energy_fem": 8282192062.298251,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0984598386260214,
+      "facet_area_factor": 0.9995984531496791,
+      "ratio_over_facet_area": 1.0989010989010992
+    },
+    {
+      "formulation": "mitc",
+      "ntheta": 8,
+      "nz": 4,
+      "energy_fem": 8074199891.659039,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0708740202246516,
+      "facet_area_factor": 0.9744953584044327,
+      "ratio_over_facet_area": 1.0989010989010992
+    },
+    {
+      "formulation": "mitc",
+      "ntheta": 16,
+      "nz": 4,
+      "energy_fem": 8232382819.142109,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0918536825760494,
+      "facet_area_factor": 0.9935868511442058,
+      "ratio_over_facet_area": 1.098901098901098
+    },
+    {
+      "formulation": "mitc",
+      "ntheta": 32,
+      "nz": 4,
+      "energy_fem": 8272215799.242031,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.0971366956435358,
+      "facet_area_factor": 0.9983943930356184,
+      "ratio_over_facet_area": 1.0989010989010979
+    },
+    {
+      "formulation": "mitc",
+      "ntheta": 64,
+      "nz": 4,
+      "energy_fem": 8282192062.298264,
+      "energy_continuum": 7539822368.615503,
+      "ratio": 1.098459838626023,
+      "facet_area_factor": 0.9995984531496791,
+      "ratio_over_facet_area": 1.0989010989011008
+    }
+  ],
+  "prescribed_energy": [
+    {
+      "formulation": "shell4",
+      "nz": 20,
+      "ntheta": 16,
+      "m": 5,
+      "energy_fem": 7706508540.656277,
+      "energy_donnell": 4783502787.9677925,
+      "ratio": 1.6110596945905167
+    },
+    {
+      "formulation": "shell4",
+      "nz": 20,
+      "ntheta": 16,
+      "m": 6,
+      "energy_fem": 9898380902.218077,
+      "energy_donnell": 5871694733.657212,
+      "ratio": 1.6857792087656478
+    },
+    {
+      "formulation": "shell4",
+      "nz": 20,
+      "ntheta": 16,
+      "m": 7,
+      "energy_fem": 13038605783.948242,
+      "energy_donnell": 7663724688.9281645,
+      "ratio": 1.7013405769632102
+    },
+    {
+      "formulation": "shell4",
+      "nz": 20,
+      "ntheta": 16,
+      "m": 8,
+      "energy_fem": 17491527398.45243,
+      "energy_donnell": 10412585118.054195,
+      "ratio": 1.67984484161615
+    },
+    {
+      "formulation": "mitc",
+      "nz": 20,
+      "ntheta": 16,
+      "m": 5,
+      "energy_fem": 4732442455.8976,
+      "energy_donnell": 4783502787.9677925,
+      "ratio": 0.9893257442645111
+    },
+    {
+      "formulation": "mitc",
+      "nz": 20,
+      "ntheta": 16,
+      "m": 6,
+      "energy_fem": 5712712467.281929,
+      "energy_donnell": 5871694733.657212,
+      "ratio": 0.9729239557594881
+    },
+    {
+      "formulation": "mitc",
+      "nz": 20,
+      "ntheta": 16,
+      "m": 7,
+      "energy_fem": 7494372485.344917,
+      "energy_donnell": 7663724688.9281645,
+      "ratio": 0.9779021023774626
+    },
+    {
+      "formulation": "mitc",
+      "nz": 20,
+      "ntheta": 16,
+      "m": 8,
+      "energy_fem": 10475219098.453972,
+      "energy_donnell": 10412585118.054195,
+      "ratio": 1.0060152190536409
+    }
+  ],
+  "eigen": [
+    {
+      "tag": "mitc-axsym",
+      "nz": 6,
+      "ntheta": 32,
+      "elements": 192,
+      "N_cr": 19576754.73476938,
+      "error_vs_donnell": 0.6170939840993643,
+      "error_vs_classical": 0.6173053668298939,
+      "circumferential_spread": 4.341524258990775e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "mitc-axsym",
+      "nz": 10,
+      "ntheta": 32,
+      "elements": 320,
+      "N_cr": 15006592.742392082,
+      "error_vs_donnell": 0.23958598727560187,
+      "error_vs_classical": 0.23974802304674006,
+      "circumferential_spread": 4.527177470065381e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "mitc-axsym",
+      "nz": 15,
+      "ntheta": 32,
+      "elements": 480,
+      "N_cr": 13290636.882007832,
+      "error_vs_donnell": 0.09784329619110287,
+      "error_vs_classical": 0.09798680369031089,
+      "circumferential_spread": 3.6847318459016006e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "mitc-axsym",
+      "nz": 20,
+      "ntheta": 32,
+      "elements": 640,
+      "N_cr": 12906429.200848896,
+      "error_vs_donnell": 0.0661066810950666,
+      "error_vs_classical": 0.06624604005843024,
+      "circumferential_spread": 4.395937815640265e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "mitc-axsym",
+      "nz": 30,
+      "ntheta": 32,
+      "elements": 960,
+      "N_cr": 12462852.30839418,
+      "error_vs_donnell": 0.029466005253118318,
+      "error_vs_classical": 0.029600574633325955,
+      "circumferential_spread": 4.3051137895675607e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "mitc-axsym-nt",
+      "nz": 30,
+      "ntheta": 16,
+      "elements": 480,
+      "N_cr": 12634307.384560456,
+      "error_vs_donnell": 0.04362866785824132,
+      "error_vs_classical": 0.0437650885484671,
+      "circumferential_spread": 4.2619417645550834e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "mitc-axsym-nt",
+      "nz": 30,
+      "ntheta": 32,
+      "elements": 960,
+      "N_cr": 12462852.30839418,
+      "error_vs_donnell": 0.029466005253118318,
+      "error_vs_classical": 0.029600574633325955,
+      "circumferential_spread": 4.3051137895675607e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "mitc-axsym-nt",
+      "nz": 30,
+      "ntheta": 64,
+      "elements": 1920,
+      "N_cr": 12421017.717088543,
+      "error_vs_donnell": 0.026010352523942962,
+      "error_vs_classical": 0.02614447018933573,
+      "circumferential_spread": 4.315994743701012e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "mitc-full",
+      "nz": 10,
+      "ntheta": 32,
+      "elements": 320,
+      "N_cr": 15006592.742391951,
+      "error_vs_donnell": 0.23958598727559108,
+      "error_vs_classical": 0.2397480230467293,
+      "circumferential_spread": 1.5609918933291385e-09,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "mitc-full",
+      "nz": 20,
+      "ntheta": 32,
+      "elements": 640,
+      "N_cr": 12906429.200848304,
+      "error_vs_donnell": 0.06610668109501766,
+      "error_vs_classical": 0.0662460400583813,
+      "circumferential_spread": 0.9979201972998912,
+      "axial_zero_crossings": 2,
+      "axisymmetric": false
+    },
+    {
+      "tag": "mitc-full",
+      "nz": 30,
+      "ntheta": 32,
+      "elements": 960,
+      "N_cr": 12462852.30839373,
+      "error_vs_donnell": 0.029466005253081084,
+      "error_vs_classical": 0.029600574633288718,
+      "circumferential_spread": 3.8897327542618063e-10,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "shell4-axsym",
+      "nz": 10,
+      "ntheta": 32,
+      "elements": 320,
+      "N_cr": 17493914.93092123,
+      "error_vs_donnell": 0.44504566647583443,
+      "error_vs_classical": 0.44523455945405527,
+      "circumferential_spread": 3.8270089461266873e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "shell4-axsym",
+      "nz": 20,
+      "ntheta": 32,
+      "elements": 640,
+      "N_cr": 15393751.38937816,
+      "error_vs_donnell": 0.27156636029530873,
+      "error_vs_classical": 0.271732576465755,
+      "circumferential_spread": 4.083871249945935e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    },
+    {
+      "tag": "shell4-axsym",
+      "nz": 30,
+      "ntheta": 32,
+      "elements": 960,
+      "N_cr": 14950174.496924013,
+      "error_vs_donnell": 0.23492568445340736,
+      "error_vs_classical": 0.23508711104069765,
+      "circumferential_spread": 4.485427362339559e-16,
+      "axial_zero_crossings": 2,
+      "axisymmetric": true
+    }
+  ],
+  "boundary": "linear initial-stress eigenbuckling, prescribed unit membrane resultant, flat-facet cylinder, diaphragm SS ends; no postbuckling/imperfection/plasticity claim",
+  "audit": {
+    "mitc_axsym": {
+      "monotone": true,
+      "min_error": 0.029466005253118318,
+      "max_error": 0.6170939840993643,
+      "finest_error": 0.029466005253118318,
+      "within_3pct_any": true
+    },
+    "mitc_axsym_nt_sensitivity": {
+      "monotone": true,
+      "min_error": 0.026010352523942962,
+      "max_error": 0.04362866785824132,
+      "finest_error": 0.026010352523942962,
+      "within_3pct_any": true
+    },
+    "mitc_full_axial": {
+      "monotone": true,
+      "min_error": 0.029466005253081084,
+      "max_error": 0.23958598727559108,
+      "finest_error": 0.029466005253081084,
+      "within_3pct_any": true
+    },
+    "shell4_axsym": {
+      "monotone": true,
+      "min_error": 0.23492568445340736,
+      "max_error": 0.44504566647583443,
+      "finest_error": 0.23492568445340736,
+      "within_3pct_any": false
+    },
+    "certified": true,
+    "reason": "MITC4 axisymmetric family is monotone and its finest affordable mesh (nz=30, nt=32) sits within 3% of the Donnell finite-length reference; the shell4 family is still >20% over-stiff at the same mesh, so the v1 over-stiffness is attributed to the full-integration bending-shear coupling, not to the geometric stiffness operator"
+  }
+}
