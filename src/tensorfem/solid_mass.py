@@ -157,8 +157,12 @@ def _element_mass(x: torch.Tensor, density, element_type: str, lumped: bool) -> 
         element = hex8_consistent_mass(x, density)
     elif kind == "tet4":
         element = tet4_consistent_mass(x, density)
+    elif kind == "tet10":
+        from .quadratic_solid import tet10_consistent_mass, tet10_lumped_mass
+
+        return (tet10_lumped_mass if lumped else tet10_consistent_mass)(x, density)
     else:
-        raise ValueError("element_type must be 'tet4' or 'hex8'")
+        raise ValueError("element_type must be 'tet4', 'tet10' or 'hex8'")
     return _row_sum_lumped(element) if lumped else element
 
 
@@ -176,9 +180,9 @@ def assemble_solid_mass(
     if elements.ndim != 2 or elements.dtype not in (torch.int32, torch.int64):
         raise ValueError("elements must be an integer connectivity array")
     kind = element_type.lower()
-    expected = {"hex8": 8, "tet4": 4}.get(kind)
+    expected = {"hex8": 8, "tet4": 4, "tet10": 10}.get(kind)
     if expected is None:
-        raise ValueError("element_type must be 'tet4' or 'hex8'")
+        raise ValueError("element_type must be 'tet4', 'tet10' or 'hex8'")
     if elements.shape[1] != expected:
         raise ValueError(f"{kind} connectivity must have {expected} nodes per element")
     if int(elements.min()) < 0 or int(elements.max()) >= len(nodes):
@@ -244,8 +248,15 @@ def _exact_integrals(nodes: torch.Tensor, elements: torch.Tensor, density, eleme
         dets = torch.stack(dets, 1)
         pts = torch.einsum("eji,eia->eja", shapes, x)
         weights = dets
+    elif kind == "tet10":
+        # Independent higher-order rule, distinct from the mass integrator default.
+        from .quadratic_solid import _tet10_det_weights, tet10_mass_quadrature
+
+        shape, scaled = _tet10_det_weights(x, tet10_mass_quadrature(6, dtype=x.dtype))
+        pts = torch.einsum("qi,eia->eqa", shape, x)
+        weights = scaled
     else:
-        raise ValueError("element_type must be 'tet4' or 'hex8'")
+        raise ValueError("element_type must be 'tet4', 'tet10' or 'hex8'")
     mass = float((rho[:, None] * weights).sum())
     radius = pts[..., 0] ** 2 + pts[..., 1] ** 2
     polar = float((rho[:, None] * weights * radius).sum())
