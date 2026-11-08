@@ -148,3 +148,14 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python scripts/vali
 故 `cook_fields['stress_accuracy_qualified']` **保持 `False`**，两个口径并存互不覆盖。证据
 `docs/cook-recovery-evidence.json`（含 Torch vs NumPy 两条实现的应变矩阵 2.8e-17、恢复场 4.7e-14 交叉校验）。
 Cook 膜已有独立 Q8 应力参考（m2430），其点式 5.02% 残差的归因由 [cook-probe-protocol-audit.md](cook-probe-protocol-audit.md) 定谳：全部 5 个规范采样点落在 Q4 单元边界上，取值不唯一且该协议逐点不收敛；同一位移解经 Gauss 点+节点恢复后 n=64 为 0.120%、二阶收敛，但恢复场尚未进入生产 `cook_fields`，故 `stress_accuracy_qualified` 保持 False。开孔半球壳的独立应力参照**已补并给出否定结论**：[三维 HEX20 实体 oracle](hemisphere-hex20-stress-oracle.md) 逐站位复算后，内部区域表面 von Mises 相对误差平均 5.09%、最大 9.00%（孔边 6.87%、点载附近 7.56%），不满足 3% 门限，`stress_accuracy_qualified` 维持 `False`；oracle 自身先在 Lamé 圆环（最大 8.6e-7）与薄板弯曲（0.26%）上过标；局部板屈曲的**单轴压缩**已闭环，面内**剪切与压-剪组合**亦已按文献锚点（k_s=9.34@a/b=1、5.34 长板渐近，误差 0.17%/2.6%）闭环，见 [marine-plate-shear-buckling-validation.md](marine-plate-shear-buckling-validation.md)；仍缺：壳单元几何刚度、Hertz 接触及其他经典壳体案例的完整场验证与相同质量的报告，不能列为完整报告通过。
+
+## 新增：TET10 一致质量阵（Keast 欠账已清偿）
+
+[tet10 一致质量阵报告](tet10-consistent-mass.md) 清偿「五点 Keast 规则不能用于一致质量阵」这条欠账：
+新增 `tet10_consistent_mass / tet10_lumped_mass / tet10_mass_quadrature / tet10_volume`（坍缩 Gauss，
+order=4 对直边 TET10 精确），并把 `element_type="tet10"` 接入 `solid_mass.assemble_solid_mass /
+mass_properties` 与 `solid_mass_audit.axial_rod_case`。独立验证：直边/畸变/曲边三几何的质量阵与
+24³ Duffy 参考 Frobenius 2.2e−15，行和命中闭式 −ρV/20、+ρV/5，总质量误差 8.3e−17；物理锚
+固定–自由杆 ω₁ 在 4 单元 0.0016 %、16 单元 5.0e−6 %（同网格 TET4 为 0.64 %）。出厂 Keast 规则
+的 19.677 % Frobenius / −70.83 % 顶点对角误差以 fail-closed 测试锁死，子午面上不得回退。
+范围仅限质量阵与轴向动力学：不含弯曲精度认证，也不改变 `tet10_stiffness` 默认路径（逐位不变）。
