@@ -1,5 +1,15 @@
 # Exact low-frequency radiation efficiency of a baffled plate (verification debt closed)
 
+> **Convention revision 2026-11-08 (read first).** All absolute ``sigma`` values
+> in this document and in ``acoustic-low-frequency-asymptotic-evidence.json``
+> were produced *before* the harmonic time-average factor was restored in
+> ``acoustic_radiation.mode_mean_square_velocity``; they are in the old
+> half convention, i.e. **multiply every ``sigma`` by 2** to obtain the standard
+> ``<v^2> = V0^2/8`` value. Relative errors, exponents and gates are unaffected.
+> Authority and derivation: [acoustic-radiation-convention-audit.md](acoustic-radiation-convention-audit.md).
+> Regenerate with ``python3 docs/gen_acoustic_low_frequency_evidence.py``.
+
+
 **Scope:** `src/tensorfem/acoustic_radiation.py` (merged with the `m6164` acoustic-radiation drop),
 TensorFEM. **Status:** verification debt closed; superseded calibrated low-frequency model replaced
 by an analytic law derived from the Rayleigh integral. No fitted constants remain on the
