@@ -1,0 +1,353 @@
+{
+  "case": "TET10 (10-node quadratic tetrahedron) integration accuracy",
+  "acceptance_gate": 0.03,
+  "material": {
+    "young_pa": 200000000000.0,
+    "poisson": 0.3
+  },
+  "reference_rule": {
+    "name": "Duffy collapsed-cube tensor-product Gauss-Legendre",
+    "order": 24,
+    "points": 13824,
+    "self_verification": [
+      {
+        "order": 2,
+        "points": 8,
+        "volume_relative_error": 1.6653345369377348e-16,
+        "exact_through_total_degree": 1,
+        "worst_monomial_relative_error": 0.002777777777777782
+      },
+      {
+        "order": 3,
+        "points": 27,
+        "volume_relative_error": 0.0,
+        "exact_through_total_degree": 3,
+        "worst_monomial_relative_error": 7.142857142857992e-05
+      },
+      {
+        "order": 4,
+        "points": 64,
+        "volume_relative_error": 1.6653345369377348e-16,
+        "exact_through_total_degree": 5,
+        "worst_monomial_relative_error": 2.429543245910902e-06
+      },
+      {
+        "order": 6,
+        "points": 216,
+        "volume_relative_error": 4.996003610813204e-16,
+        "exact_through_total_degree": 6,
+        "worst_monomial_relative_error": 4.996003610813204e-16
+      },
+      {
+        "order": 8,
+        "points": 512,
+        "volume_relative_error": 1.6653345369377348e-16,
+        "exact_through_total_degree": 6,
+        "worst_monomial_relative_error": 1.6653345369377348e-16
+      },
+      {
+        "order": 12,
+        "points": 1728,
+        "volume_relative_error": 4.996003610813204e-16,
+        "exact_through_total_degree": 6,
+        "worst_monomial_relative_error": 4.996003610813204e-16
+      },
+      {
+        "order": 16,
+        "points": 4096,
+        "volume_relative_error": 1.6653345369377348e-16,
+        "exact_through_total_degree": 6,
+        "worst_monomial_relative_error": 1.6653345369377348e-16
+      }
+    ]
+  },
+  "oracle_self_verification": {
+    "closed_forms": [
+      {
+        "order": 2,
+        "points": 8,
+        "volume_relative_error": 1.6653345369377348e-16,
+        "exact_through_total_degree": 1,
+        "worst_monomial_relative_error": 0.002777777777777782
+      },
+      {
+        "order": 3,
+        "points": 27,
+        "volume_relative_error": 0.0,
+        "exact_through_total_degree": 3,
+        "worst_monomial_relative_error": 7.142857142857992e-05
+      },
+      {
+        "order": 4,
+        "points": 64,
+        "volume_relative_error": 1.6653345369377348e-16,
+        "exact_through_total_degree": 5,
+        "worst_monomial_relative_error": 2.429543245910902e-06
+      },
+      {
+        "order": 6,
+        "points": 216,
+        "volume_relative_error": 4.996003610813204e-16,
+        "exact_through_total_degree": 6,
+        "worst_monomial_relative_error": 4.996003610813204e-16
+      },
+      {
+        "order": 8,
+        "points": 512,
+        "volume_relative_error": 1.6653345369377348e-16,
+        "exact_through_total_degree": 6,
+        "worst_monomial_relative_error": 1.6653345369377348e-16
+      },
+      {
+        "order": 12,
+        "points": 1728,
+        "volume_relative_error": 4.996003610813204e-16,
+        "exact_through_total_degree": 6,
+        "worst_monomial_relative_error": 4.996003610813204e-16
+      },
+      {
+        "order": 16,
+        "points": 4096,
+        "volume_relative_error": 1.6653345369377348e-16,
+        "exact_through_total_degree": 6,
+        "worst_monomial_relative_error": 1.6653345369377348e-16
+      }
+    ],
+    "keast_convention": {
+      "keast_points_max_abs_diff": 0.0,
+      "keast_weights_max_abs_diff": 0.0,
+      "keast_weight_sum": 0.16666666666666666,
+      "reference_volume": 0.16666666666666666
+    },
+    "production_vs_oracle": [
+      {
+        "geometry": "regular curvature=0.0",
+        "production_vs_oracle_relative_frobenius": 0.0
+      },
+      {
+        "geometry": "distorted curvature=0.0",
+        "production_vs_oracle_relative_frobenius": 3.4117040834338717e-16
+      },
+      {
+        "geometry": "curved curvature=0.05",
+        "production_vs_oracle_relative_frobenius": 1.74225901469513e-16
+      },
+      {
+        "geometry": "curved curvature=0.11",
+        "production_vs_oracle_relative_frobenius": 2.4977948893650425e-16
+      },
+      {
+        "geometry": "warped curvature=0.02",
+        "production_vs_oracle_relative_frobenius": 2.683817504174445e-16
+      }
+    ]
+  },
+  "curved_sweep": [
+    {
+      "kind": "curved",
+      "curvature": 0.0,
+      "stiffness_keast_vs_reference": 3.636665495232754e-15,
+      "mass_keast_vs_reference": 0.19676988058411396,
+      "reference_half_vs_full": 3.3878074884325012e-15,
+      "affine_patch_energy_error": 1.148553505655358e-15,
+      "det_jacobian_min": 1.515999999999998,
+      "volume_ratio_to_straight": 1.0
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.02,
+      "stiffness_keast_vs_reference": 0.0006899845121844649,
+      "mass_keast_vs_reference": 0.1970902512049413,
+      "reference_half_vs_full": 3.3332875700680497e-15,
+      "affine_patch_energy_error": 1.567733622555953e-15,
+      "det_jacobian_min": 1.317166402651283,
+      "volume_ratio_to_straight": 1.0073529377403863
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.05,
+      "stiffness_keast_vs_reference": 0.004284827095347692,
+      "mass_keast_vs_reference": 0.19871605863319827,
+      "reference_half_vs_full": 3.103354812690117e-15,
+      "affine_patch_energy_error": 1.973687629254676e-15,
+      "det_jacobian_min": 1.0189160066282088,
+      "volume_ratio_to_straight": 1.0183823443509656
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.08,
+      "stiffness_keast_vs_reference": 0.011600620913057573,
+      "mass_keast_vs_reference": 0.20158875152947334,
+      "reference_half_vs_full": 3.5526488611692923e-15,
+      "affine_patch_energy_error": 1.2552049193681162e-15,
+      "det_jacobian_min": 0.7206656106051327,
+      "volume_ratio_to_straight": 1.0294117509615452
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.11,
+      "stiffness_keast_vs_reference": 0.02550913013104133,
+      "mass_keast_vs_reference": 0.2055442952732479,
+      "reference_half_vs_full": 2.47122392365658e-11,
+      "affine_patch_energy_error": 1.2418988661285305e-15,
+      "det_jacobian_min": 0.42241521458205816,
+      "volume_ratio_to_straight": 1.0404411575721249
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.12,
+      "stiffness_keast_vs_reference": 0.03292323527908043,
+      "mass_keast_vs_reference": 0.20707345692243792,
+      "reference_half_vs_full": 4.923485685189198e-10,
+      "affine_patch_energy_error": 9.625202103644002e-16,
+      "det_jacobian_min": 0.3229984159076999,
+      "volume_ratio_to_straight": 1.044117626442318
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.15,
+      "stiffness_keast_vs_reference": 0.07969605659317015,
+      "mass_keast_vs_reference": 0.2122026401516285,
+      "reference_half_vs_full": 8.386836245176781e-05,
+      "affine_patch_energy_error": 5.442623016870946e-16,
+      "det_jacobian_min": 0.02474801988462483,
+      "volume_ratio_to_straight": 1.0551470330528978
+    }
+  ],
+  "warped_sweep": [
+    {
+      "kind": "warped",
+      "curvature": 0.0,
+      "stiffness_keast_vs_reference": 3.636665495232754e-15,
+      "mass_keast_vs_reference": 0.19676988058411396,
+      "reference_half_vs_full": 3.3878074884325012e-15,
+      "affine_patch_energy_error": 1.148553505655358e-15,
+      "det_jacobian_min": 1.515999999999998,
+      "volume_ratio_to_straight": 1.0
+    },
+    {
+      "kind": "warped",
+      "curvature": 0.02,
+      "stiffness_keast_vs_reference": 0.0015408139681110389,
+      "mass_keast_vs_reference": 0.1973215966061942,
+      "reference_half_vs_full": 3.766794583195946e-15,
+      "affine_patch_energy_error": 1.0128558763361361e-15,
+      "det_jacobian_min": 1.277814197743273,
+      "volume_ratio_to_straight": 0.9922283524521057
+    },
+    {
+      "kind": "warped",
+      "curvature": 0.05,
+      "stiffness_keast_vs_reference": 0.010662254105847103,
+      "mass_keast_vs_reference": 0.200295257074568,
+      "reference_half_vs_full": 3.1370588052423128e-15,
+      "affine_patch_energy_error": 1.1748594303185072e-15,
+      "det_jacobian_min": 0.9907053210922941,
+      "volume_ratio_to_straight": 0.9776093003262376
+    }
+  ],
+  "strain_energy": [
+    {
+      "kind": "curved",
+      "curvature": 0.0,
+      "affine_energy_keast": 167440.2564102565,
+      "affine_energy_reference": 167440.25641025606,
+      "affine_energy_relative_error": 2.607243121877264e-15,
+      "bending_energy_keast": 15507.416666666668,
+      "bending_energy_reference": 15507.416666666588,
+      "bending_energy_relative_error": 5.161113258022866e-15
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.05,
+      "affine_energy_keast": 170518.2008618039,
+      "affine_energy_reference": 170518.20086180337,
+      "affine_energy_relative_error": 3.072217191910069e-15,
+      "bending_energy_keast": 15552.590059072845,
+      "bending_energy_reference": 15632.615171268684,
+      "bending_energy_relative_error": 0.005119112273864315
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.08,
+      "affine_energy_keast": 172364.9675327323,
+      "affine_energy_reference": 172364.96753273244,
+      "affine_energy_relative_error": 8.442501650228557e-16,
+      "bending_energy_keast": 15702.365390443152,
+      "bending_energy_reference": 15916.936487171512,
+      "bending_energy_relative_error": 0.013480678075287675
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.11,
+      "affine_energy_keast": 174211.73420366066,
+      "affine_energy_reference": 174211.7342036604,
+      "affine_energy_relative_error": 1.5035409371701197e-15,
+      "bending_energy_keast": 15994.11680497667,
+      "bending_energy_reference": 16432.55160840465,
+      "bending_energy_relative_error": 0.026680871837562806
+    },
+    {
+      "kind": "curved",
+      "curvature": 0.15,
+      "affine_energy_keast": 176674.08976489858,
+      "affine_energy_reference": 176674.08976489826,
+      "affine_energy_relative_error": 1.8120491547463845e-15,
+      "bending_energy_keast": 16703.343473775138,
+      "bending_energy_reference": 17780.74182664824,
+      "bending_energy_relative_error": 0.06059355472213139
+    }
+  ],
+  "consistent_mass": [
+    {
+      "curvature": 0.0,
+      "relative_frobenius_error": 0.19676988058411396,
+      "diagonal_relative_error_max": 0.7083333333333331,
+      "total_mass_relative_error": 1.490273321057099e-15
+    },
+    {
+      "curvature": 0.05,
+      "relative_frobenius_error": 0.19871605863319827,
+      "diagonal_relative_error_max": 0.7644392693935755,
+      "total_mass_relative_error": 2.026208897928803e-15
+    },
+    {
+      "curvature": 0.11,
+      "relative_frobenius_error": 0.2055442952732479,
+      "diagonal_relative_error_max": 0.8186591793532837,
+      "total_mass_relative_error": 1.542528108090465e-15
+    }
+  ],
+  "opt_in_rule": [
+    {
+      "curvature": 0.05,
+      "default_vs_reference": 0.004284827095347689,
+      "opt_in_6th_order_vs_reference": 2.3134176935874232e-10
+    },
+    {
+      "curvature": 0.11,
+      "default_vs_reference": 0.025509130131041297,
+      "opt_in_6th_order_vs_reference": 3.1448858167055424e-06
+    }
+  ],
+  "benchmark_mesh": [
+    {
+      "benchmark_elements_checked": 8,
+      "worst_stiffness_relative_error": 1.941710282862513e-15,
+      "cantilever_tip_deflection_computed": 0.0003932990379491355,
+      "cantilever_tip_deflection_reference": 0.00040312000000000003,
+      "cantilever_relative_error": 0.02436237857428197
+    }
+  ],
+  "verdict": {
+    "straight_edges_exact": true,
+    "curvature_0.11_stiffness_error": 0.02550913013104133,
+    "curvature_0.12_stiffness_error": 0.03292323527908043,
+    "curvature_0.15_stiffness_error": 0.07969605659317015,
+    "curvature_0.12_jacobian_min": 0.3229984159076999,
+    "reference_tail_at_0.11": 2.47122392365658e-11,
+    "reference_tail_at_0.15": 8.386836245176781e-05,
+    "first_failing_curvature": 0.12,
+    "mass_matrix_error_straight": 0.19676988058411396
+  }
+}
