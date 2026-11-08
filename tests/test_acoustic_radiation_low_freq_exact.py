@@ -18,7 +18,7 @@ independent numerical formulations:
 
 Closed forms (see docs/acoustic-radiation-low-frequency-asymptotic.md):
 
-  odd-odd        sigma = 16 k^2 a b / (pi^5 m^2 n^2)                 (~k^2)
+  odd-odd        sigma = 32 k^2 a b / (pi^5 m^2 n^2)                 (~k^2)
   exactly one even   sigma = k^4 |d|^2 / (12 pi S <v^2>)             (~k^4)
   even-even      sigma = O(k^6) (prefactor not derived; slope test only)
 """
@@ -106,7 +106,7 @@ def _freq(k: float) -> float:
 
 
 # ---------------------------------------------------------------------------
-# Odd-odd modes: monopole law  sigma = 16 k^2 a b / (pi^5 m^2 n^2)
+# Odd-odd modes: monopole law  sigma = 32 k^2 a b / (pi^5 m^2 n^2)
 # ---------------------------------------------------------------------------
 
 MONOPOLE_CASES = [
@@ -321,17 +321,28 @@ def _legacy_calibrated_sigma(length, width, frequency, c, m, n):
     return (k / k_mn) ** 2 * geom
 
 
-def test_legacy_calibration_factor_is_the_analytic_prefactor():
-    """The old 1.03 factor is the analytic (1,1)-square prefactor in disguise."""
+def test_legacy_calibration_factor_is_half_the_analytic_prefactor():
+    """The old 1.03 factor was the analytic (1,1)-square prefactor *halved*.
+
+    ``monopole_radiation_efficiency`` returns ``32 k^2 a b/(pi^5 m^2 n^2)``
+    after the 2026-11-08 convention audit (``<v^2> = V0^2/8``), i.e.
+    ``2.0641 (k/k_mn)^2`` for the (1,1) square mode.  The superseded m6164 fit
+    used 1.03, which reproduced the old half-convention law, so it is exactly
+    half of the correct prefactor: same defect, one factor of two apart.
+    """
     k = 0.1
     k_mn = math.sqrt(2.0) * PI
     ratio = monopole_radiation_efficiency(
         length=1.0, width=1.0, frequency=_freq(k), c=AIR_C, m=1, n=1) / (k / k_mn) ** 2
-    assert abs(ratio - 1.03) / 1.03 < 0.01, f"analytic prefactor ratio={ratio:.6f}"
+    assert abs(ratio - 2.0641) / 2.0641 < 0.01, f"analytic prefactor ratio={ratio:.6f}"
+    assert abs(1.03 - 0.5 * ratio) / (0.5 * ratio) < 0.01, (
+        f"legacy 1.03 vs half of analytic {0.5 * ratio:.6f}")
 
 
 @pytest.mark.parametrize("length,width,m,n,min_err", [
-    (1.0, 1.0, 1, 3, 0.15),     # same area, higher mode
+    # (1,3) residual is 10.2% after the convention audit (was 48% against the
+    # half-convention law): same-area higher mode is the weakest discriminator.
+    (1.0, 1.0, 1, 3, 0.08),     # same area, higher mode
     (2.0, 1.0, 1, 1, 0.15),     # aspect ratio 2
     (2.0, 1.0, 3, 1, 0.15),
     (1.0, 1.0, 2, 1, 0.50),     # even mode: wrong exponent
@@ -395,12 +406,15 @@ def test_validate_low_frequency_scaling_marks_even_even_as_ungated():
     assert all(r["asymptote_available"] is False for r in result["results"])
 
 
-def test_low_frequency_anchor_consistent_with_leppington_below_coincidence():
-    """Below coincidence both models agree to the ~3% monopole prefactor.
+def test_subsonic_leppington_is_half_the_exact_monopole_law():
+    """Below coincidence the published Leppington form carries unit prefactor.
 
-    The subsonic Leppington branch is the bare ``(k/k_mn)^2`` scaling with unit
-    prefactor; the exact monopole law carries ``1.0332`` for the (1,1) square
-    mode.  The residual is independent of ``k`` and must stay below 5%.
+    The subsonic branch of :func:`leppington_radiation_efficiency` is the
+    published *band-average* ``(k/k_c)^2`` law with unit prefactor, adapted here
+    to the modal wavenumber ``k_mn``.  The exact per-mode monopole law carries
+    ``2.0641`` for the (1,1) square mode, so the ratio is a fixed constant
+    independent of ``k`` (2.0641, not 1.0); the per-mode law is the authority
+    (see ``docs/acoustic-radiation-low-frequency-asymptotic.md``).
     """
     for ka in (0.1, 0.2, 0.3):
         f = _freq(_k_from_ka(ka, 1.0, 1.0))
@@ -409,4 +423,5 @@ def test_low_frequency_anchor_consistent_with_leppington_below_coincidence():
         lep = leppington_radiation_efficiency(
             length=1.0, width=1.0, frequency=f, c=AIR_C, m=1, n=1)
         assert 0.0 < ana < 1.0 and 0.0 < lep <= 1.0
-        assert abs(ana - lep) / lep < 0.05, f"ka={ka}: ana={ana:.4e} lep={lep:.4e}"
+        assert abs(ana / lep - 2.0641) / 2.0641 < 0.01, (
+            f"ka={ka}: ana={ana:.4e} lep={lep:.4e} ratio={ana / lep:.5f}")

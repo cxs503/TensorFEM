@@ -125,17 +125,33 @@ def mode_mean_square_velocity(
     m: int = 1, n: int = 1,
     velocity_amplitude: float = 1.0,
 ) -> float:
-    """Analytical spatial mean-square velocity for a single mode.
+    """Time- and space-averaged mean-square normal velocity of a single mode.
 
-    For ``v(x,y) = V0 * sin(m*pi*x/a)*sin(n*pi*y/b)``:
-        <v^2> = V0^2 / 4
+    For the harmonic motion ``v(x,y,t) = V0 * sin(omega t) *
+    sin(m*pi*x/a) * sin(n*pi*y/b)`` with ``V0`` the **peak** amplitude:
+
+        <v^2> = V0^2/2 (harmonic time average) * 1/4 (spatial average of
+                sin^2 over the panel) = V0^2 / 8
+
+    This is the ``<v^2>`` that belongs in the efficiency definition
+    ``sigma = P_rad / (rho c S <v^2>)``: both ``P_rad`` and ``<v^2>`` must be
+    time averages, otherwise ``sigma`` is not the tabulated quantity.  The
+    factor ``1/2`` was missing before the 2026-11-08 convention audit, which
+    made every efficiency computed here (and in :func:`monopole...`,
+    :func:`dipole...`, ``ice_noise_chain.monopole_sigma_lowfreq``) half of the
+    literature value; see ``docs/acoustic-radiation-convention-audit.md``.
+
+    Anchors for the peak-amplitude convention: a baffled piston of peak
+    velocity ``V0`` and a smooth panel mode both give ``sigma -> 1`` far above
+    coincidence, which the Rayleigh route now reproduces (it used to give
+    0.5).
     """
     length = _positive("length", length)
     width = _positive("width", width)
     m = _count("m", m)
     n = _count("n", n)
     velocity_amplitude = _nonnegative("velocity_amplitude", velocity_amplitude)
-    return velocity_amplitude ** 2 / 4.0
+    return velocity_amplitude ** 2 / 8.0
 
 
 # ---------------------------------------------------------------------------
@@ -462,12 +478,14 @@ def monopole_radiation_efficiency(
 ) -> float:
     """Exact low-frequency radiation efficiency for odd-odd modes.
 
-        sigma = 16 k^2 a b / (pi^5 m^2 n^2)
+        sigma = 32 k^2 a b / (pi^5 m^2 n^2)
 
     Valid for ``k*a << 1`` and ``k*b << 1``.  Derived from the monopole term of
-    the Rayleigh integral; no fitted constants.  For the ``(1,1)`` mode of a
-    square plate this equals ``16 k^2 a^2 / pi^5``, which reproduces the
-    ``(k/k_mn)^2 * 1.033`` behaviour quoted in older calibrations.
+    the Rayleigh integral; no fitted constants.  With ``Q = 4 V0 a b/(pi^2 m n)``
+    (volume velocity), ``P = rho c k^2 Q^2/(4 pi)`` and ``<v^2> = V0^2/8``
+    (harmonic time average x spatial average) this is ``2 k^2 Q^2/(pi a b V0^2)``.
+    For the ``(1,1)`` mode of a square plate it equals ``32 k^2 a^2 / pi^5``, i.e.
+    ``(k/k_mn)^2 * 2.066``.
     """
     length = _positive("length", length)
     width = _positive("width", width)
@@ -480,7 +498,7 @@ def monopole_radiation_efficiency(
                          f"got m={m}, n={n}")
 
     k = 2.0 * math.pi * frequency / c
-    return 16.0 * k * k * length * width / (math.pi**5 * m * m * n * n)
+    return 32.0 * k * k * length * width / (math.pi**5 * m * m * n * n)
 
 
 def dipole_radiation_efficiency(
@@ -574,7 +592,7 @@ def maidanik_radiation_efficiency(
     the mode indices and the plate area.  That prefactor is obtained in closed
     form here from the monopole limit of the Rayleigh integral:
 
-        sigma = 16 k^2 a b / (pi^5 m^2 n^2)         (m, n odd)
+        sigma = 32 k^2 a b / (pi^5 m^2 n^2)         (m, n odd)
 
     and the mode-parity-dependent extensions
 
@@ -1282,8 +1300,20 @@ def validate_high_frequency_limit(
     m: int = 1, n: int = 1,
     n_points: int = 40,
     tolerance: float = 0.02,
+    n_points_refine: int = 0,
+    quadrature_tolerance: float = 0.02,
 ) -> dict:
     """Validate that baffled plate sigma -> 1 at high frequency.
+
+    The Rayleigh double integral is a ``sin(kR)/R`` kernel on an ``n x n``
+    Gauss grid; once ``k`` grows the integrand oscillates faster than the grid
+    can resolve and the raw value is meaningless (``sigma = 9.7`` instead of
+    1.0 at ``f = 10 kHz`` for a 1 m panel).  Every point is therefore evaluated
+    at ``n_points`` and at ``n_points_refine`` (default ``n_points + 16``) and
+    only scored when the two agree to ``quadrature_tolerance``; unconverged
+    points are reported as such instead of being counted as failures or, worse,
+    as passes.  Raise ``n_points_refine`` for high ``ka`` or use the closed-form
+    routes there.
 
     Parameters
     ----------
@@ -1296,14 +1326,19 @@ def validate_high_frequency_limit(
     m, n : int
         Mode indices.
     n_points : int
-        Quadrature points.
+        Quadrature points (coarse level).
     tolerance : float
-        Maximum allowed error from 1.0 (default 2%).
+        Maximum allowed error from 1.0 (default 2%), scored on converged points.
+    n_points_refine : int
+        Fine quadrature level; ``0`` means ``n_points + 16``.
+    quadrature_tolerance : float
+        Max accepted relative drift between the two levels (default 2%).
 
     Returns
     -------
     dict
-        Validation results.
+        Validation results plus ``scored_points`` / ``converged_points`` /
+        ``all_rows_rayleigh_converged``.
     """
     length = _positive("length", length)
     width = _positive("width", width)
@@ -1313,38 +1348,57 @@ def validate_high_frequency_limit(
     n = _count("n", n)
     n_points = _count("n_points", n_points)
     tolerance = _nonnegative("tolerance", tolerance)
+    n_points_refine = _count(
+        "n_points_refine", n_points + 16 if n_points_refine == 0 else n_points_refine)
+    quadrature_tolerance = _nonnegative("quadrature_tolerance", quadrature_tolerance)
 
     frequencies = [freq_min * (2.0 ** i) for i in range(4)]  # 4 points
 
     results = []
     for freq in frequencies:
-        sigma_rayleigh = radiation_efficiency_rayleigh(
+        sigma_coarse = radiation_efficiency_rayleigh(
             length=length, width=width, frequency=freq,
             rho=1.225, c=c, m=m, n=n, n_points=n_points,
+        )
+        sigma_rayleigh = radiation_efficiency_rayleigh(
+            length=length, width=width, frequency=freq,
+            rho=1.225, c=c, m=m, n=n, n_points=n_points_refine,
         )
         sigma_leppington = leppington_radiation_efficiency(
             length=length, width=width, frequency=freq,
             c=c, m=m, n=n,
         )
 
+        drift = (abs(sigma_rayleigh - sigma_coarse) / abs(sigma_rayleigh)
+                 if sigma_rayleigh != 0.0 else float("inf"))
+        converged = drift < quadrature_tolerance
         error_rayleigh = abs(sigma_rayleigh - 1.0)
         error_leppington = abs(sigma_leppington - 1.0)
 
         results.append({
             "frequency": freq,
             "sigma_rayleigh": sigma_rayleigh,
+            "sigma_rayleigh_coarse": sigma_coarse,
+            "quadrature_rel_drift": drift,
+            "quadrature_converged": converged,
             "sigma_leppington": sigma_leppington,
             "error_rayleigh": error_rayleigh,
             "error_leppington": error_leppington,
-            "passes_rayleigh": error_rayleigh < tolerance,
+            "passes_rayleigh": converged and error_rayleigh < tolerance,
             "passes_leppington": error_leppington < tolerance,
         })
 
+    converged_points = sum(1 for r in results if r["quadrature_converged"])
     return {
         "results": results,
-        "all_pass_rayleigh": all(r["passes_rayleigh"] for r in results),
+        "all_pass_rayleigh": converged_points > 0 and all(
+            r["passes_rayleigh"] for r in results if r["quadrature_converged"]),
         "all_pass_leppington": all(r["passes_leppington"] for r in results),
+        "converged_points": converged_points,
+        "scored_points": len(results),
+        "all_rows_rayleigh_converged": converged_points == len(results),
         "tolerance": tolerance,
+        "quadrature_tolerance": quadrature_tolerance,
     }
 
 
@@ -1489,13 +1543,15 @@ def energy_conservation_check(
         n_points=n_points,
     )
 
-    # Input power (for V0 = velocity_amplitude, assuming no damping)
-    # P_in = (1/2) * rho * c * S * <v^2> * sigma
-    # But we check P_rad <= P_in where P_in is the mechanical power
-    # For a simply-supported plate, the input power equals the radiated
-    # power at steady state (no damping).
+    # Passivity of the fluid half-space only requires the radiated real power
+    # to be positive, i.e. sigma > 0.  ``sigma <= 1`` is NOT a passivity
+    # theorem: an individual baffled plate mode reaches sigma = 1.28 .. 1.60
+    # in the coincidence region (Rayleigh route, quadrature converged; see
+    # docs/acoustic-radiation-convention-audit.md), and only the
 
-    # Check: sigma <= 1 (passive system)
+    # far-above-coincidence asymptote brings sigma back to 1.  The unit cap
+    # below is therefore kept as a *screen* with a documented coincidence-peak
+    # allowance (measured peak + margin), not as an energy statement.
     sigma = radiation_efficiency_rayleigh(
         length=length, width=width, frequency=frequency,
         rho=rho, c=c, m=m, n=n,
@@ -1511,13 +1567,17 @@ def energy_conservation_check(
     )
     P_ref = rho * c * S * v_sq
 
-    # Energy conservation: P_rad <= P_ref (sigma <= 1)
-    conserved = sigma <= 1.05  # Allow small numerical overshoot
+    # Positivity is the hard statement; the cap is the coincidence-peak screen.
+    coincidence_peak_cap = 2.0
+    conserved = sigma > 0.0
+    within_coincidence_cap = sigma <= coincidence_peak_cap
 
     return {
         "P_rad": P_rad,
         "P_ref": P_ref,
         "sigma": sigma,
         "conserved": conserved,
-        "sigma_exceeds_unity": sigma > 1.05,
+        "within_coincidence_cap": within_coincidence_cap,
+        "coincidence_peak_cap": coincidence_peak_cap,
+        "sigma_exceeds_unity": sigma > 1.0,
     }

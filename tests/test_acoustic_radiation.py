@@ -81,16 +81,21 @@ def test_mode_shape_higher_modes():
 # ---------------------------------------------------------------------------
 
 def test_mean_square_velocity_analytical():
-    """<v^2> = V0^2 / 4 for a single sine mode."""
+    """<v^2> = V0^2 / 8 for a single sine mode (V0 = peak amplitude).
+
+    Harmonic time average (1/2) times the spatial average of sin^2 (1/4).
+    The 1/2 was missing before the 2026-11-08 convention audit, which made
+    every efficiency in this module half of the literature value.
+    """
     v_sq = mode_mean_square_velocity(
         length=1.0, width=1.0, m=1, n=1, velocity_amplitude=2.0
     )
-    assert v_sq == pytest.approx(1.0, rel=1e-12)
+    assert v_sq == pytest.approx(0.5, rel=1e-12)
 
     v_sq = mode_mean_square_velocity(
         length=2.0, width=1.5, m=3, n=2, velocity_amplitude=1.0
     )
-    assert v_sq == pytest.approx(0.25, rel=1e-12)
+    assert v_sq == pytest.approx(0.125, rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -242,13 +247,20 @@ def test_radiation_efficiency_rayleigh_positive():
 
 
 def test_radiation_efficiency_bounded():
-    """sigma from Rayleigh must be <= 1 (for passive system)."""
+    """sigma from Rayleigh must stay below the coincidence-peak cap.
+
+    sigma > 1 is physical for an individual baffled mode in the coincidence
+    region (Rayleigh route gives 1.15 here, quadrature converged against
+    n_points 40/56/72; measured peak over the sweep 1.28-1.60), so the cap is
+    2.0 rather than 1.  The asymptote sigma -> 1 far above coincidence is a
+    separate, genuine statement (test_rayleigh_matches_leppington_far_above_...).
+    """
     sigma = radiation_efficiency_rayleigh(
         length=1.0, width=1.0, frequency=500.0,
         rho=AIR_RHO, c=AIR_C, m=1, n=1,
         velocity_amplitude=1.0, n_points=30,
     )
-    assert sigma <= 1.05, f"sigma={sigma} should be <= 1.05"
+    assert sigma <= 2.0, f"sigma={sigma} should be <= 2.0"
 
 
 # ---------------------------------------------------------------------------
@@ -387,9 +399,10 @@ def test_higher_mode_radiation_efficiency():
         rho=AIR_RHO, c=AIR_C, m=2, n=2,
         velocity_amplitude=1.0, n_points=30,
     )
-    # Both should be positive and bounded
-    assert 0 < sigma_11 <= 1.05
-    assert 0 < sigma_22 <= 1.05
+    # Both should be positive and below the coincidence-peak cap (see
+    # test_radiation_efficiency_bounded for why the cap is 2.0, not 1).
+    assert 0 < sigma_11 <= 2.0
+    assert 0 < sigma_22 <= 2.0
 
 
 # ---------------------------------------------------------------------------
@@ -431,7 +444,7 @@ def test_rectangular_plate_radiation():
         velocity_amplitude=1.0, n_points=30,
     )
     assert sigma > 0
-    assert sigma <= 1.05
+    assert sigma <= 2.0  # coincidence-peak cap, see test_radiation_efficiency_bounded
 
     # Maidanik should also work for rectangular plates
     sigma_m = maidanik_radiation_efficiency(
@@ -492,13 +505,13 @@ def test_unbaffled_rayleigh_positive():
 
 
 def test_unbaffled_rayleigh_bounded():
-    """Unbaffled sigma from Rayleigh must be <= 2 (two-sided radiation)."""
+    """Unbaffled sigma from Rayleigh must be <= 4 (two-sided x peak cap)."""
     sigma = unbaffled_radiation_efficiency_rayleigh(
         length=1.0, width=1.0, frequency=500.0,
         rho=AIR_RHO, c=AIR_C, m=1, n=1,
         velocity_amplitude=1.0, n_points=30,
     )
-    assert sigma <= 2.1, f"Unbaffled sigma={sigma} should be <= 2.1"
+    assert sigma <= 4.0, f"Unbaffled sigma={sigma} should be <= 4.0"
 
 
 # ---------------------------------------------------------------------------
@@ -620,7 +633,7 @@ def test_dipole_correction_validation():
 # ---------------------------------------------------------------------------
 
 def test_energy_conservation_baffled():
-    """Energy conservation: P_rad <= P_ref (sigma <= 1) for baffled plate."""
+    """Passivity screen: sigma > 0 and below the coincidence-peak cap."""
     for freq in [100.0, 500.0, 1000.0]:
         result = energy_conservation_check(
             length=1.0, width=1.0,
@@ -631,7 +644,9 @@ def test_energy_conservation_baffled():
             n_points=30,
         )
         assert result["conserved"], \
-            f"Energy not conserved at f={freq}: sigma={result['sigma']}"
+            f"sigma not positive at f={freq}: sigma={result['sigma']}"
+        assert result["within_coincidence_cap"], \
+            f"sigma above coincidence-peak cap at f={freq}: {result['sigma']}"
 
 
 def test_energy_conservation_unbaffled():
@@ -720,3 +735,72 @@ def test_higher_mode_unbaffled():
     # Both should be positive
     assert sigma_u_11 > 0
     assert sigma_u_22 > 0
+
+
+# ---------------------------------------------------------------------------
+# Convention audit (2026-11-08): the invariants that caught the factor of two
+# ---------------------------------------------------------------------------
+
+def test_rayleigh_matches_leppington_far_above_coincidence():
+    """Two independent routes must agree on sigma -> 1 far above coincidence.
+
+    This is the invariant the convention defect violated: before the audit the
+    Rayleigh route returned 0.504 while Leppington returned 1.0 at f = 2 kHz
+    (1 m square panel, mode (1,1), k/k_mn = 8.2) -- a 49.7% disagreement that no
+    test covered.
+    """
+    for freq in (2000.0, 5000.0):
+        sigma_ray = radiation_efficiency_rayleigh(
+            length=1.0, width=1.0, frequency=freq,
+            rho=AIR_RHO, c=AIR_C, m=1, n=1, n_points=40,
+        )
+        sigma_lep = leppington_radiation_efficiency(
+            length=1.0, width=1.0, frequency=freq, c=AIR_C, m=1, n=1,
+        )
+        assert abs(sigma_ray - sigma_lep) / sigma_lep < 0.02, (
+            f"f={freq}: Rayleigh {sigma_ray:.5f} vs Leppington {sigma_leppington_str(sigma_lep)}")
+        assert abs(sigma_ray - 1.0) < 0.02, f"f={freq}: sigma={sigma_ray:.5f} should be ~1"
+
+
+def sigma_leppington_str(value: float) -> str:
+    return f"{value:.5f}"
+
+
+def test_rayleigh_low_frequency_matches_literature_monopole_value():
+    """Absolute check against the closed-form low-ka law (no fitted constant).
+
+    For the (1,1) mode of a 1 m square panel at ka = 0.1 the exact monopole law
+    gives sigma = 32 k^2 a b/(pi^5) = 1.04568e-3.  The half-convention module
+    returned 5.23e-4 here, i.e. 50% low against literature.
+    """
+    ka = 0.1
+    freq = ka * AIR_C / (2.0 * math.pi)
+    sigma_ray = radiation_efficiency_rayleigh(
+        length=1.0, width=1.0, frequency=freq,
+        rho=AIR_RHO, c=AIR_C, m=1, n=1, n_points=48,
+    )
+    analytic = 32.0 * (2.0 * math.pi * freq / AIR_C) ** 2 / math.pi**5
+    assert abs(sigma_ray - analytic) / analytic < 0.005, (
+        f"Rayleigh {sigma_ray:.6e} vs literature monopole {analytic:.6e}")
+
+
+def test_high_frequency_validation_flags_quadrature_starvation():
+    """Unresolved sin(kR)/R quadrature must be flagged, not scored.
+
+    At f = 10 kHz (1 m panel, ka = 183) a 40-point Gauss grid returns
+    sigma = 9.75 while a 56-point grid returns 1.0003, so the raw Rayleigh
+    value is meaningless there.  The validation must mark the row unconverged
+    and score only converged rows.
+    """
+    result = validate_high_frequency_limit(
+        length=1.0, width=1.0, freq_min=5000.0, c=AIR_C,
+        m=1, n=1, n_points=40, tolerance=0.03,
+    )
+    rows = {round(r["frequency"]): r for r in result["results"]}
+    assert rows[5000]["quadrature_converged"] is True
+    assert rows[10000]["quadrature_converged"] is False
+    assert rows[10000]["quadrature_rel_drift"] > 0.5
+    assert result["converged_points"] < result["scored_points"]
+    assert result["all_rows_rayleigh_converged"] is False
+    # the converged row does satisfy sigma -> 1
+    assert result["all_pass_rayleigh"] is True

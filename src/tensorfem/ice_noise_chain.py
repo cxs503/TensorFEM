@@ -521,11 +521,14 @@ def monopole_sigma_lowfreq(
     has the uniform limit ``sin(kR)/R -> k`` as ``k -> 0``, giving
 
         P = rho w^2 Q^2 / (4 pi c),
-        sigma = P / (rho c S <v^2>) = k^2 Q^2 / (pi a b V0^2),
+        sigma = P / (rho c S <v^2>) = 2 k^2 Q^2 / (pi a b V0^2),
 
-    with ``<v^2> = V0^2 / 4`` for a single sine mode.  For mode (1,1) this
-    reduces to ``sigma = 16 k^2 a b / pi^5``.  This is an *exact* analytic
-    result (the low-frequency end of the Leppington 1982 panel family).
+    with ``<v^2> = V0^2 / 8`` for a single sine mode (harmonic time average
+    1/2 x spatial average 1/4 of the peak amplitude).  For mode (1,1) this
+    reduces to ``sigma = 32 k^2 a b / pi^5``.  This is an *exact* analytic
+    result (the low-frequency end of the Leppington 1982 panel family) in the
+    standard ``<v^2>`` convention; multiplies to the same value as
+    :func:`tensorfem.acoustic_radiation.monopole_radiation_efficiency`.
     """
     length = float(length)
     width = float(width)
@@ -535,8 +538,8 @@ def monopole_sigma_lowfreq(
         raise ValueError("geometry, frequency and c must be positive")
     k = 2.0 * math.pi * frequency / c
     q = mode_volume_velocity(length, width, m, n, 1.0)
-    # sigma = k^2 Q^2 / (pi a b V0^2) with V0 = 1 (see docstring derivation).
-    return (k ** 2) * q ** 2 / (math.pi * length * width)
+    # sigma = 2 k^2 Q^2 / (pi a b V0^2) with V0 = 1 (see docstring derivation).
+    return 2.0 * (k ** 2) * q ** 2 / (math.pi * length * width)
 
 
 def underwater_sigma_rayleigh(
