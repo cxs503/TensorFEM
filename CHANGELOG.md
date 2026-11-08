@@ -1,5 +1,28 @@
 ## Unreleased
 
+### Solids / integration accuracy
+- **TET10 integration-accuracy audit** (`tensorfem.tet10_integration_audit`,
+  `scripts/audit_tet10_integration.py`, `docs/tet10-integration-accuracy.md`): the
+  outstanding "Keast is only degree-three exact, accuracy loss unquantified" debt is
+  closed with an independent high-order reference (Duffy collapsed-cube tensor-product
+  Gauss, `24**3` points/element) that first verifies itself against closed-form
+  monomial integrals (<=1e-16) and against the production torch implementation
+  (<=2.7e-16, five geometries) before judging the shipped rule. Straight-edged
+  distortion: 3.64e-15 (the rule is exact on affine geometry, so the existing TET10
+  cantilever benchmark is unaffected -- its 2.44 % Timoshenko residual is
+  discretisation, its element-level quadrature error is 1.94e-15). Curved isoparametric
+  edges: 0.428 % / 2.551 % / 3.292 % / 7.970 % for mid-edge offsets of
+  0.05 / 0.11 / 0.12 / 0.15 edge lengths -- the 3 % gate is first crossed at 0.12 (still
+  a well-shaped element, min detJ 0.32), and a random-warp control reproduces the same
+  magnitude, so the deficiency is not a hand-picked pattern. Affine-field strain energy
+  is exact to <=3.1e-15 at every curvature, isolating the `B`-matrix sampling (not detJ)
+  as the error source. The consistent mass matrix cannot be integrated by the shipped
+  rule at all (Frobenius 19.7 %, diagonal 70.8 %-81.9 %) -- a forward constraint for a
+  future `tet10_mass`. `tet10_stiffness(x, d, rule=(points, weights))` adds an opt-in
+  high-order hook whose default path is bit-for-bit unchanged; `duffy_rule(6)` (216
+  points) reduces the curved error to 3.1e-06. 21 gates in
+  `tests/test_tet10_integration_audit.py`.
+
 ### Vibration / acoustics
 - **Plate structure-acoustic radiation chain** (`tensorfem.plate_acoustics`,
   `tensorfem.plate_radiation_chain`): the Q4 Mindlin eigenpairs of a simply-supported or
