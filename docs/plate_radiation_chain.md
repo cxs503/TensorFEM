@@ -203,6 +203,13 @@ python scripts/plate_radiation_chain_benchmark.py --stage acceptance
   and for a piston). This is an audit finding for the existing module, left
   untouched here (`acoustic_radiation` is not part of this node) — the new chain
   uses the rms convention and states it explicitly.
+  **Resolved 2026-11-08** — `docs/acoustic-radiation-convention-audit.md`: the
+  root cause was not Leppington but the missing harmonic time average `1/2` in
+  `acoustic_radiation.mode_mean_square_velocity` (`<v^2> = V0^2/4` instead of
+  `V0^2/8`). With the denominator corrected the module's Rayleigh route
+  reproduces the Leppington asymptote (1.0074 vs 1.0000 at 2 kHz, 5 kHz
+  1.0012 vs 1.0000), so the chain's rms convention was the correct one and the
+  published Leppington values never needed halving.
 * **Thin-plate assumption.** `h/a = 0.004`; the analytical mode shapes and the
   `1/1.8` coincidence formula both assume Kirchhoff kinematics. Mindlin shear
   correction and rotary inertia are included in the FEM but not in the reference
