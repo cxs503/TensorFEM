@@ -36,6 +36,20 @@ from .beam_interface import (
     verify_beam_detail_chain,
 )
 
+from .detail_maturity import (
+    IIW_STRUCTURAL_SCF_BAND,
+    JOINT_FAMILY,
+    beam_to_detail_validation,
+    extrapolation_linearity,
+    family_geometry,
+    gci_hotspot,
+    power_law_response,
+    radius_negative_controls,
+    run_maturity_assessment,
+    scf_vs_iiw,
+    toe_mesh_resolution,
+)
+
 from .extended_verification import (
     ALTERNATIVE_LINEAR_STATIONS,
     BracketDetail,
@@ -73,6 +87,18 @@ __all__ = [
     "beam_nominal_stress",
     "global_to_detail_fatigue",
     "verify_beam_detail_chain",
+    # Detail maturity ledger
+    "IIW_STRUCTURAL_SCF_BAND",
+    "JOINT_FAMILY",
+    "beam_to_detail_validation",
+    "extrapolation_linearity",
+    "family_geometry",
+    "gci_hotspot",
+    "power_law_response",
+    "radius_negative_controls",
+    "run_maturity_assessment",
+    "scf_vs_iiw",
+    "toe_mesh_resolution",
     # Extended verification
     "ALTERNATIVE_LINEAR_STATIONS",
     "BracketDetail",
