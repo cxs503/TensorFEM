@@ -1,5 +1,24 @@
 ## Unreleased
 
+### Solids / verification
+- **TET10 mass cross-check without quadrature** (`tensorfem.tet10_mass_crosscheck`,
+  `tests/test_tet10_mass_crosscheck.py`): the shipped `tet10_consistent_mass` was
+  verified against a 24^3 Duffy reference in `test_tet10_mass.py`; this adds a
+  method-independent closed-form reference (barycentric monomial integrals, no
+  quadrature at all) and reproduces the operator to 1.10e-15 Frobenius with the
+  analytic row sums `-rho V/20` (vertex) / `+rho V/5` (mid-edge). New measurements:
+  rigid-rotation energy vs the closed-form tetrahedron inertia tensor (<=1.2e-15,
+  three axes), single-element free-free rigid eigenvalues 4.67e-17 relative to the
+  first elastic mode, `order=4` collapsed rule as the first exact order
+  (2->2.92e-1, 3->3.89e-2, 4->1.1e-15), the row-sum lumping trap (negative vertex
+  masses, 12 negative components) and HRZ positivity. Two residual debts are
+  quantified instead of hidden: the rod eigenfrequency anchor used with the
+  constrained modulus is a 1-D model substitution, not a 3-D verification (with
+  `nu = 0` the same mesh converges at high order, 1.4e-5 at 4 elements; with
+  `nu = 0.3` it plateaus near 0.5 % at ~O(h) because lateral contraction at the
+  fully clamped end dominates), and HRZ lumping is ~50x less accurate than the
+  consistent matrix on the same mesh. 10 new gates.
+
 ### Solids / inertia
 - **HEX20 consistent & lumped mass** (`tensorfem.hex20_mass`, `hex20_lumped_mass`,
   `hex20_mass_totals`, `assemble_hex20_mass`, `hex_gauss_rule`,
