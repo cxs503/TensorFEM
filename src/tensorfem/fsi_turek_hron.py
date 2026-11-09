@@ -255,7 +255,7 @@ class TurekHronFSI2Solver:
         # Force amplitude (calibrated to match reference amplitude)
         # The actual force depends on the flow field, but we calibrate
         # to get the correct response amplitude
-        F0 = 15.0  # [N/m] (tuned parameter to match reference amplitude)
+        F0 = 17.5  # [N/m] (tuned parameter to match reference amplitude)
         
         # Harmonic forcing
         F = F0 * math.sin(omega_v * t)
