@@ -1,0 +1,6191 @@
+{
+  "meta": {
+    "version": "0.45.0",
+    "timestamp": "2026-11-09T00:15:03.378930+00:00",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "torch_threads": 8,
+    "levels": [
+      24,
+      32,
+      48,
+      64
+    ],
+    "rays_degrees": [
+      90.0,
+      0.0
+    ],
+    "radial_scales": [
+      1.02,
+      1.05,
+      1.1,
+      1.25,
+      1.5,
+      2.0
+    ],
+    "tolerance": 0.03,
+    "withhold_fraction": 0.01,
+    "ill_conditioned_fraction": 0.05,
+    "grading": 5.0,
+    "outer_radius": 10.0,
+    "far_field": 1.0,
+    "measured_absolute_floor_of_scale": 0.01663195993301436
+  },
+  "levels": {
+    "24": {
+      "elements": 576,
+      "dofs": 1250
+    },
+    "32": {
+      "elements": 1024,
+      "dofs": 2178
+    },
+    "48": {
+      "elements": 2304,
+      "dofs": 4802
+    },
+    "64": {
+      "elements": 4096,
+      "dofs": 8450
+    }
+  },
+  "probes": [
+    {
+      "level": 24,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.02,
+      "exact": {
+        "radial": 0.05598503281720685,
+        "hoop": 2.866352529658764,
+        "shear": -9.233915512169772e-18
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.06593350870001113,
+          "hoop": 2.8620719563075045,
+          "shear": -0.004930193262761654
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.05892442334517623,
+          "hoop": 2.860092490720222,
+          "shear": -0.004847488147715989
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.05598503281720685,
+          "conditioning_index": 17.86191683168314,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.866352529658764,
+          "conditioning_index": 0.3488754400070423,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 9.233915512169772e-18,
+          "conditioning_index": 1.0829642080675931e+17,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.06593350870001113,
+            "absolute_error": 0.009948475882804286,
+            "relative_error": 0.17769884882065567,
+            "scale_normalized_error": 0.009948475882804286,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.05892442334517623,
+            "absolute_error": 0.0029393905279693835,
+            "relative_error": 0.05250314914642633,
+            "scale_normalized_error": 0.0029393905279693835,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.8620719563075045,
+            "absolute_error": 0.00428057335125942,
+            "relative_error": 0.0014933869114030498,
+            "scale_normalized_error": 0.00428057335125942,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.860092490720222,
+            "absolute_error": 0.006260038938541879,
+            "relative_error": 0.0021839738391450157,
+            "scale_normalized_error": 0.006260038938541879,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.004930193262761654,
+            "absolute_error": 0.004930193262761644,
+            "relative_error": 533922284242684.7,
+            "scale_normalized_error": 0.004930193262761644,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.004847488147715989,
+            "absolute_error": 0.00484748814771598,
+            "relative_error": 524965616300827.94,
+            "scale_normalized_error": 0.00484748814771598,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.05,
+      "exact": {
+        "radial": 0.12649050549925195,
+        "hoop": 2.6875684514168476,
+        "shear": -2.118342184928941e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.08973976694183494,
+          "hoop": 2.6701957473002103,
+          "shear": -0.008930847200077186
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.13050516947905674,
+          "hoop": 2.682225071874182,
+          "shear": -0.0094013099415555
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.12649050549925195,
+          "conditioning_index": 7.905731707317067,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.6875684514168476,
+          "conditioning_index": 0.3720835461782617,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 2.118342184928941e-17,
+          "conditioning_index": 4.7206726425718824e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.08973976694183494,
+            "absolute_error": 0.036750738557417006,
+            "relative_error": 0.2905414790806915,
+            "scale_normalized_error": 0.036750738557417006,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.13050516947905674,
+            "absolute_error": 0.0040146639798047945,
+            "relative_error": 0.03173885631936649,
+            "scale_normalized_error": 0.0040146639798047945,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.6701957473002103,
+            "absolute_error": 0.017372704116637383,
+            "relative_error": 0.006464097354424123,
+            "scale_normalized_error": 0.017372704116637383,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.682225071874182,
+            "absolute_error": 0.005343379542665616,
+            "relative_error": 0.0019881836088114007,
+            "scale_normalized_error": 0.005343379542665616,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.008930847200077186,
+            "absolute_error": 0.008930847200077165,
+            "relative_error": 421596060523939.7,
+            "scale_normalized_error": 0.008930847200077165,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.0094013099415555,
+            "absolute_error": 0.00940130994155548,
+            "relative_error": 443805066454400.1,
+            "scale_normalized_error": 0.00940130994155548,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.1,
+      "exact": {
+        "radial": 0.21514923843999734,
+        "hoop": 2.4377433235434736,
+        "shear": -3.697528294263286e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.19813083348945937,
+          "hoop": 2.4289854181480894,
+          "shear": -0.014797294874158507
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.21832069028652298,
+          "hoop": 2.435309773126224,
+          "shear": -0.015023871827097388
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.21514923843999734,
+          "conditioning_index": 4.647936507936507,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.4377433235434736,
+          "conditioning_index": 0.41021546048023316,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 3.697528294263286e-17,
+          "conditioning_index": 2.7045093922648264e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.19813083348945937,
+            "absolute_error": 0.01701840495053797,
+            "relative_error": 0.0791004656764528,
+            "scale_normalized_error": 0.01701840495053797,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.21832069028652298,
+            "absolute_error": 0.003171451846525647,
+            "relative_error": 0.014740706820629201,
+            "scale_normalized_error": 0.003171451846525647,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.4289854181480894,
+            "absolute_error": 0.008757905395384125,
+            "relative_error": 0.003592628194609817,
+            "scale_normalized_error": 0.008757905395384125,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.435309773126224,
+            "absolute_error": 0.0024335504172494637,
+            "relative_error": 0.0009982800050138522,
+            "scale_normalized_error": 0.0024335504172494637,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.014797294874158507,
+            "absolute_error": 0.01479729487415847,
+            "relative_error": 400194229672737.56,
+            "scale_normalized_error": 0.01479729487415847,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.015023871827097388,
+            "absolute_error": 0.015023871827097352,
+            "relative_error": 406322024645677.06,
+            "scale_normalized_error": 0.015023871827097352,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.25,
+      "exact": {
+        "radial": 0.3455999999999999,
+        "hoop": 1.9344000000000003,
+        "shear": -6.436743576318487e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.3175658754319087,
+          "hoop": 1.925642029410907,
+          "shear": -0.022930209852323125
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.34555147789088125,
+          "hoop": 1.9339060671819854,
+          "shear": -0.02324984454526368
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.3455999999999999,
+          "conditioning_index": 2.8935185185185195,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.9344000000000003,
+          "conditioning_index": 0.5169561621174523,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 6.436743576318487e-17,
+          "conditioning_index": 1.5535806081806862e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.3175658754319087,
+            "absolute_error": 0.028034124568091234,
+            "relative_error": 0.08111725858822698,
+            "scale_normalized_error": 0.028034124568091234,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.34555147789088125,
+            "absolute_error": 4.8522109118653844e-05,
+            "relative_error": 0.00014039962129240122,
+            "scale_normalized_error": 4.8522109118653844e-05,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.925642029410907,
+            "absolute_error": 0.008757970589093445,
+            "relative_error": 0.00452748686367527,
+            "scale_normalized_error": 0.008757970589093445,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.9339060671819854,
+            "absolute_error": 0.0004939328180149083,
+            "relative_error": 0.000255341613944845,
+            "scale_normalized_error": 0.0004939328180149083,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.022930209852323125,
+            "absolute_error": 0.02293020985232306,
+            "relative_error": 356239293680828.25,
+            "scale_normalized_error": 0.02293020985232306,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.02324984454526368,
+            "absolute_error": 0.023249844545263614,
+            "relative_error": 361205076287370.56,
+            "scale_normalized_error": 0.023249844545263614,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.5,
+      "exact": {
+        "radial": 0.37037037037037035,
+        "hoop": 1.5185185185185186,
+        "shear": -7.937525550029141e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.3645539440042388,
+          "hoop": 1.5200936625112909,
+          "shear": -0.024518031227156983
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.3655267109767853,
+          "hoop": 1.5210442586952617,
+          "shear": -0.024529422059314427
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.37037037037037035,
+          "conditioning_index": 2.7,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.5185185185185186,
+          "conditioning_index": 0.6585365853658536,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 7.937525550029141e-17,
+          "conditioning_index": 1.2598384643893572e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.3645539440042388,
+            "absolute_error": 0.005816426366131555,
+            "relative_error": 0.0157043511885552,
+            "scale_normalized_error": 0.005816426366131555,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.3655267109767853,
+            "absolute_error": 0.004843659393585054,
+            "relative_error": 0.013077880362679645,
+            "scale_normalized_error": 0.004843659393585054,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.5200936625112909,
+            "absolute_error": 0.0015751439927722544,
+            "relative_error": 0.0010372899464597771,
+            "scale_normalized_error": 0.0015751439927722544,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.5210442586952617,
+            "absolute_error": 0.0025257401767431187,
+            "relative_error": 0.001663292311513761,
+            "scale_normalized_error": 0.0025257401767431187,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.024518031227156983,
+            "absolute_error": 0.024518031227156904,
+            "relative_error": 308887588110716.56,
+            "scale_normalized_error": 0.024518031227156904,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.024529422059314427,
+            "absolute_error": 0.024529422059314347,
+            "relative_error": 309031094195650.1,
+            "scale_normalized_error": 0.024529422059314347,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 90.0,
+      "r_over_a": 2.0,
+      "exact": {
+        "radial": 0.28125,
+        "hoop": 1.21875,
+        "shear": -8.036744619404505e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.2841306162034257,
+          "hoop": 1.2228825237524155,
+          "shear": -0.01861420402551683
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.27616266344721146,
+          "hoop": 1.2208491164251831,
+          "shear": -0.01853180771107015
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.28125,
+          "conditioning_index": 3.5555555555555554,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.21875,
+          "conditioning_index": 0.8205128205128205,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 8.036744619404505e-17,
+          "conditioning_index": 1.2442849031005996e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.2841306162034257,
+            "absolute_error": 0.0028806162034257232,
+            "relative_error": 0.010242190945513683,
+            "scale_normalized_error": 0.0028806162034257232,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.27616266344721146,
+            "absolute_error": 0.005087336552788535,
+            "relative_error": 0.018088307743248124,
+            "scale_normalized_error": 0.005087336552788535,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.2228825237524155,
+            "absolute_error": 0.004132523752415462,
+            "relative_error": 0.0033907887199306356,
+            "scale_normalized_error": 0.004132523752415462,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.2208491164251831,
+            "absolute_error": 0.002099116425183123,
+            "relative_error": 0.0017223519386117931,
+            "scale_normalized_error": 0.002099116425183123,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.01861420402551683,
+            "absolute_error": 0.01861420402551675,
+            "relative_error": 231613730521849.0,
+            "scale_normalized_error": 0.01861420402551675,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.01853180771107015,
+            "absolute_error": 0.01853180771107007,
+            "relative_error": 230588485620477.7,
+            "scale_normalized_error": 0.01853180771107007,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.02,
+      "exact": {
+        "radial": -0.017153814055192174,
+        "hoop": -0.9051837484207785,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.019175291229579006,
+          "hoop": -0.9009290483249063,
+          "shear": -0.03626542615970815
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.015417240262321405,
+          "hoop": -0.8998827021075732,
+          "shear": -0.036220661385116065
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.017153814055192174,
+          "conditioning_index": 58.29607321045413,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.9051837484207785,
+          "conditioning_index": 1.1047480710349051,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.019175291229579006,
+            "absolute_error": 0.002021477174386832,
+            "relative_error": 0.11784418135131672,
+            "scale_normalized_error": 0.002021477174386832,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.015417240262321405,
+            "absolute_error": 0.001736573792870769,
+            "relative_error": 0.10123543296455036,
+            "scale_normalized_error": 0.001736573792870769,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.9009290483249063,
+            "absolute_error": 0.004254700095872255,
+            "relative_error": 0.004700371723746899,
+            "scale_normalized_error": 0.004254700095872255,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.8998827021075732,
+            "absolute_error": 0.005301046313205382,
+            "relative_error": 0.0058563206889803415,
+            "scale_normalized_error": 0.005301046313205382,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.03626542615970815,
+            "absolute_error": 0.03626542615970815,
+            "relative_error": null,
+            "scale_normalized_error": 0.03626542615970815,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.036220661385116065,
+            "absolute_error": 0.036220661385116065,
+            "relative_error": null,
+            "scale_normalized_error": 0.036220661385116065,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.05,
+      "exact": {
+        "radial": -0.03351998395730177,
+        "hoop": -0.7805389729587979,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.01579591677859457,
+          "hoop": -0.7711979339117517,
+          "shear": -0.038803887488475686
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.03178517388813558,
+          "hoop": -0.7758708959312214,
+          "shear": -0.0389892179072527
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.03351998395730177,
+          "conditioning_index": 29.832949838932326,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.7805389729587979,
+          "conditioning_index": 1.2811660079051386,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.01579591677859457,
+            "absolute_error": 0.017724067178707198,
+            "relative_error": 0.5287612070842387,
+            "scale_normalized_error": 0.017724067178707198,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.03178517388813558,
+            "absolute_error": 0.00173481006916619,
+            "relative_error": 0.05175450177350967,
+            "scale_normalized_error": 0.00173481006916619,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.7711979339117517,
+            "absolute_error": 0.009341039047046196,
+            "relative_error": 0.011967421705590195,
+            "scale_normalized_error": 0.009341039047046196,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.7758708959312214,
+            "absolute_error": 0.004668077027576545,
+            "relative_error": 0.005980581610013927,
+            "scale_normalized_error": 0.004668077027576545,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.038803887488475686,
+            "absolute_error": 0.038803887488475686,
+            "relative_error": null,
+            "scale_normalized_error": 0.038803887488475686,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.0389892179072527,
+            "absolute_error": 0.0389892179072527,
+            "relative_error": null,
+            "scale_normalized_error": 0.0389892179072527,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.1,
+      "exact": {
+        "radial": -0.041595519431732786,
+        "hoop": -0.6112970425517381,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.03374289479115053,
+          "hoop": -0.6072994961934681,
+          "shear": -0.041924454082188506
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.0381678237382837,
+          "hoop": -0.6087960008939058,
+          "shear": -0.04197200961135626
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.041595519431732786,
+          "conditioning_index": 24.04105090311988,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.6112970425517381,
+          "conditioning_index": 1.6358659217877098,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.03374289479115053,
+            "absolute_error": 0.007852624640582256,
+            "relative_error": 0.18878534870733146,
+            "scale_normalized_error": 0.007852624640582256,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.0381678237382837,
+            "absolute_error": 0.0034276956934490843,
+            "relative_error": 0.08240540664661423,
+            "scale_normalized_error": 0.0034276956934490843,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.6072994961934681,
+            "absolute_error": 0.003997546358269988,
+            "relative_error": 0.006539449858260436,
+            "scale_normalized_error": 0.003997546358269988,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.6087960008939058,
+            "absolute_error": 0.0025010416578322703,
+            "relative_error": 0.004091368817019249,
+            "scale_normalized_error": 0.0025010416578322703,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.041924454082188506,
+            "absolute_error": 0.041924454082188506,
+            "relative_error": null,
+            "scale_normalized_error": 0.041924454082188506,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.04197200961135626,
+            "absolute_error": 0.04197200961135626,
+            "relative_error": null,
+            "scale_normalized_error": 0.04197200961135626,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.25,
+      "exact": {
+        "radial": 0.014399999999999968,
+        "hoop": -0.2944000000000002,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.015073759189064076,
+          "hoop": -0.29538151572624405,
+          "shear": -0.044170064443141546
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.02233991614455307,
+          "hoop": -0.29317029201183403,
+          "shear": -0.0440841498560369
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.014399999999999968,
+          "conditioning_index": 69.4444444444446,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.2944000000000002,
+          "conditioning_index": 3.39673913043478,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.015073759189064076,
+            "absolute_error": 0.0006737591890641076,
+            "relative_error": 0.04678883257389646,
+            "scale_normalized_error": 0.0006737591890641076,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.02233991614455307,
+            "absolute_error": 0.0079399161445531,
+            "relative_error": 0.5513830655939665,
+            "scale_normalized_error": 0.0079399161445531,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.29538151572624405,
+            "absolute_error": 0.0009815157262438312,
+            "relative_error": 0.003333952874469533,
+            "scale_normalized_error": 0.0009815157262438312,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.29317029201183403,
+            "absolute_error": 0.0012297079881661843,
+            "relative_error": 0.004176997242412308,
+            "scale_normalized_error": 0.0012297079881661843,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.044170064443141546,
+            "absolute_error": 0.044170064443141546,
+            "relative_error": null,
+            "scale_normalized_error": 0.044170064443141546,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.0440841498560369,
+            "absolute_error": 0.0440841498560369,
+            "relative_error": null,
+            "scale_normalized_error": 0.0440841498560369,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.5,
+      "exact": {
+        "radial": 0.18518518518518523,
+        "hoop": -0.07407407407407407,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.17875967111950222,
+          "hoop": -0.0799387075147112,
+          "shear": -0.039197803999991496
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.19649081587624062,
+          "hoop": -0.07485127358582352,
+          "shear": -0.0390018758161402
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.18518518518518523,
+          "conditioning_index": 5.399999999999999,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.07407407407407407,
+          "conditioning_index": 13.5,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.17875967111950222,
+            "absolute_error": 0.006425514065683008,
+            "relative_error": 0.03469777595468823,
+            "scale_normalized_error": 0.006425514065683008,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.19649081587624062,
+            "absolute_error": 0.01130563069105539,
+            "relative_error": 0.06105040573169909,
+            "scale_normalized_error": 0.01130563069105539,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.0799387075147112,
+            "absolute_error": 0.005864633440637132,
+            "relative_error": 0.07917255144860129,
+            "scale_normalized_error": 0.005864633440637132,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.07485127358582352,
+            "absolute_error": 0.0007771995117494546,
+            "relative_error": 0.010492193408617637,
+            "scale_normalized_error": 0.0007771995117494546,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.039197803999991496,
+            "absolute_error": 0.039197803999991496,
+            "relative_error": null,
+            "scale_normalized_error": 0.039197803999991496,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.0390018758161402,
+            "absolute_error": 0.0390018758161402,
+            "relative_error": null,
+            "scale_normalized_error": 0.0390018758161402,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 24,
+      "ray_degrees": 0.0,
+      "r_over_a": 2.0,
+      "exact": {
+        "radial": 0.46875,
+        "hoop": 0.03125,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.4512306188420757,
+          "hoop": 0.022680232709357442,
+          "shear": -0.02696533824487322
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.4779330938537389,
+          "hoop": 0.030700506140439343,
+          "shear": -0.026674284403869875
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.46875,
+          "conditioning_index": 2.1333333333333333,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.03125,
+          "conditioning_index": 32.0,
+          "ill_conditioned": true
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.4512306188420757,
+            "absolute_error": 0.017519381157924285,
+            "relative_error": 0.03737467980357181,
+            "scale_normalized_error": 0.017519381157924285,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.4779330938537389,
+            "absolute_error": 0.009183093853738888,
+            "relative_error": 0.01959060022130963,
+            "scale_normalized_error": 0.009183093853738888,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 0.022680232709357442,
+            "absolute_error": 0.008569767290642558,
+            "relative_error": 0.27423255330056184,
+            "scale_normalized_error": 0.008569767290642558,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.030700506140439343,
+            "absolute_error": 0.0005494938595606569,
+            "relative_error": 0.01758380350594102,
+            "scale_normalized_error": 0.0005494938595606569,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.02696533824487322,
+            "absolute_error": 0.02696533824487322,
+            "relative_error": null,
+            "scale_normalized_error": 0.02696533824487322,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.026674284403869875,
+            "absolute_error": 0.026674284403869875,
+            "relative_error": null,
+            "scale_normalized_error": 0.026674284403869875,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.02,
+      "exact": {
+        "radial": 0.05598503281720685,
+        "hoop": 2.866352529658764,
+        "shear": -9.233915512169772e-18
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.035387602109361205,
+          "hoop": 2.8559305479784935,
+          "shear": -0.0034578307944251535
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.05778281674362529,
+          "hoop": 2.862623687270959,
+          "shear": -0.0036505864764598693
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.05598503281720685,
+          "conditioning_index": 17.86191683168314,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.866352529658764,
+          "conditioning_index": 0.3488754400070423,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 9.233915512169772e-18,
+          "conditioning_index": 1.0829642080675931e+17,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.035387602109361205,
+            "absolute_error": 0.020597430707845643,
+            "relative_error": 0.3679095942498953,
+            "scale_normalized_error": 0.020597430707845643,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.05778281674362529,
+            "absolute_error": 0.0017977839264184392,
+            "relative_error": 0.032111866975022926,
+            "scale_normalized_error": 0.0017977839264184392,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.8559305479784935,
+            "absolute_error": 0.01042198168027042,
+            "relative_error": 0.0036359734444496765,
+            "scale_normalized_error": 0.01042198168027042,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.862623687270959,
+            "absolute_error": 0.0037288423878050203,
+            "relative_error": 0.0013009015287623867,
+            "scale_normalized_error": 0.0037288423878050203,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.0034578307944251535,
+            "absolute_error": 0.0034578307944251444,
+            "relative_error": 374470698791636.25,
+            "scale_normalized_error": 0.0034578307944251444,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.0036505864764598693,
+            "absolute_error": 0.00365058647645986,
+            "relative_error": 395345449246161.75,
+            "scale_normalized_error": 0.00365058647645986,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.05,
+      "exact": {
+        "radial": 0.12649050549925195,
+        "hoop": 2.6875684514168476,
+        "shear": -2.118342184928941e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.10216567211845451,
+          "hoop": 2.676774940780444,
+          "shear": -0.006825272781034879
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.12869116549908283,
+          "hoop": 2.684677592504111,
+          "shear": -0.007053852493691525
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.12649050549925195,
+          "conditioning_index": 7.905731707317067,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.6875684514168476,
+          "conditioning_index": 0.3720835461782617,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 2.118342184928941e-17,
+          "conditioning_index": 4.7206726425718824e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.10216567211845451,
+            "absolute_error": 0.02432483338079744,
+            "relative_error": 0.19230560653377493,
+            "scale_normalized_error": 0.02432483338079744,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.12869116549908283,
+            "absolute_error": 0.0022006599998308785,
+            "relative_error": 0.017397827537687347,
+            "scale_normalized_error": 0.0022006599998308785,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.676774940780444,
+            "absolute_error": 0.010793510636403436,
+            "relative_error": 0.004016087713305777,
+            "scale_normalized_error": 0.010793510636403436,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.684677592504111,
+            "absolute_error": 0.002890858912736771,
+            "relative_error": 0.001075641035752132,
+            "scale_normalized_error": 0.002890858912736771,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.006825272781034879,
+            "absolute_error": 0.006825272781034859,
+            "relative_error": 322198784955217.7,
+            "scale_normalized_error": 0.006825272781034859,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.007053852493691525,
+            "absolute_error": 0.0070538524936915046,
+            "relative_error": 332989284917069.4,
+            "scale_normalized_error": 0.0070538524936915046,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.1,
+      "exact": {
+        "radial": 0.21514923843999734,
+        "hoop": 2.4377433235434736,
+        "shear": -3.697528294263286e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.2372963198000797,
+          "hoop": 2.4421063472768947,
+          "shear": -0.011482402534417594
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.21715569547439814,
+          "hoop": 2.436058569939521,
+          "shear": -0.011309481776567574
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.21514923843999734,
+          "conditioning_index": 4.647936507936507,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.4377433235434736,
+          "conditioning_index": 0.41021546048023316,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 3.697528294263286e-17,
+          "conditioning_index": 2.7045093922648264e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.2372963198000797,
+            "absolute_error": 0.022147081360082366,
+            "relative_error": 0.10293822799776692,
+            "scale_normalized_error": 0.022147081360082366,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.21715569547439814,
+            "absolute_error": 0.002006457034400805,
+            "relative_error": 0.009325884901797515,
+            "scale_normalized_error": 0.002006457034400805,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.4421063472768947,
+            "absolute_error": 0.004363023733421123,
+            "relative_error": 0.001789779789891532,
+            "scale_normalized_error": 0.004363023733421123,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.436058569939521,
+            "absolute_error": 0.0016847536039525934,
+            "relative_error": 0.0006911119754411455,
+            "scale_normalized_error": 0.0016847536039525934,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.011482402534417594,
+            "absolute_error": 0.011482402534417558,
+            "relative_error": 310542655000977.3,
+            "scale_normalized_error": 0.011482402534417558,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.011309481776567574,
+            "absolute_error": 0.011309481776567537,
+            "relative_error": 305865996863748.0,
+            "scale_normalized_error": 0.011309481776567537,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.25,
+      "exact": {
+        "radial": 0.3455999999999999,
+        "hoop": 1.9344000000000003,
+        "shear": -6.436743576318487e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.3501091318521911,
+          "hoop": 1.9362519833910639,
+          "shear": -0.01751851952638778
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.34514739132395517,
+          "hoop": 1.9351360906906503,
+          "shear": -0.017473528520444273
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.3455999999999999,
+          "conditioning_index": 2.8935185185185195,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.9344000000000003,
+          "conditioning_index": 0.5169561621174523,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 6.436743576318487e-17,
+          "conditioning_index": 1.5535806081806862e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.3501091318521911,
+            "absolute_error": 0.004509131852191206,
+            "relative_error": 0.013047256516756965,
+            "scale_normalized_error": 0.004509131852191206,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.34514739132395517,
+            "absolute_error": 0.0004526086760447412,
+            "relative_error": 0.001309631585777608,
+            "scale_normalized_error": 0.0004526086760447412,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.9362519833910639,
+            "absolute_error": 0.0018519833910635164,
+            "relative_error": 0.0009573942261494604,
+            "scale_normalized_error": 0.0018519833910635164,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.9351360906906503,
+            "absolute_error": 0.0007360906906499487,
+            "relative_error": 0.00038052661840878236,
+            "scale_normalized_error": 0.0007360906906499487,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.01751851952638778,
+            "absolute_error": 0.017518519526387714,
+            "relative_error": 272164322202306.53,
+            "scale_normalized_error": 0.017518519526387714,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.017473528520444273,
+            "absolute_error": 0.017473528520444207,
+            "relative_error": 271465350658542.78,
+            "scale_normalized_error": 0.017473528520444207,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.5,
+      "exact": {
+        "radial": 0.37037037037037035,
+        "hoop": 1.5185185185185186,
+        "shear": -7.937525550029141e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.3754758293279833,
+          "hoop": 1.5213324292687753,
+          "shear": -0.018564797964737544
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.3679208094181891,
+          "hoop": 1.5189842592714684,
+          "shear": -0.018500264851944895
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.37037037037037035,
+          "conditioning_index": 2.7,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.5185185185185186,
+          "conditioning_index": 0.6585365853658536,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 7.937525550029141e-17,
+          "conditioning_index": 1.2598384643893572e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.3754758293279833,
+            "absolute_error": 0.0051054589576129406,
+            "relative_error": 0.01378473918555494,
+            "scale_normalized_error": 0.0051054589576129406,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.3679208094181891,
+            "absolute_error": 0.00244956095218124,
+            "relative_error": 0.006613814570889349,
+            "scale_normalized_error": 0.00244956095218124,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.5213324292687753,
+            "absolute_error": 0.0028139107502567207,
+            "relative_error": 0.0018530631769983282,
+            "scale_normalized_error": 0.0028139107502567207,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.5189842592714684,
+            "absolute_error": 0.0004657407529498059,
+            "relative_error": 0.0003067073251132868,
+            "scale_normalized_error": 0.0004657407529498059,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.018564797964737544,
+            "absolute_error": 0.018564797964737464,
+            "relative_error": 233886465595935.1,
+            "scale_normalized_error": 0.018564797964737464,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.018500264851944895,
+            "absolute_error": 0.018500264851944816,
+            "relative_error": 233073452618705.53,
+            "scale_normalized_error": 0.018500264851944816,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 90.0,
+      "r_over_a": 2.0,
+      "exact": {
+        "radial": 0.28125,
+        "hoop": 1.21875,
+        "shear": -8.036744619404505e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.27636632279023854,
+          "hoop": 1.2190218817925627,
+          "shear": -0.013942380277619192
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.27840708828740685,
+          "hoop": 1.2197114871875343,
+          "shear": -0.013963548124413435
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.28125,
+          "conditioning_index": 3.5555555555555554,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.21875,
+          "conditioning_index": 0.8205128205128205,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 8.036744619404505e-17,
+          "conditioning_index": 1.2442849031005996e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.27636632279023854,
+            "absolute_error": 0.004883677209761461,
+            "relative_error": 0.017364185634707416,
+            "scale_normalized_error": 0.004883677209761461,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.27840708828740685,
+            "absolute_error": 0.0028429117125931547,
+            "relative_error": 0.01010813053366455,
+            "scale_normalized_error": 0.0028429117125931547,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.2190218817925627,
+            "absolute_error": 0.000271881792562656,
+            "relative_error": 0.00022308249646166644,
+            "scale_normalized_error": 0.000271881792562656,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.2197114871875343,
+            "absolute_error": 0.0009614871875343045,
+            "relative_error": 0.0007889125641307113,
+            "scale_normalized_error": 0.0009614871875343045,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.013942380277619192,
+            "absolute_error": 0.013942380277619112,
+            "relative_error": 173482932927290.1,
+            "scale_normalized_error": 0.013942380277619112,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.013963548124413435,
+            "absolute_error": 0.013963548124413356,
+            "relative_error": 173746321249262.3,
+            "scale_normalized_error": 0.013963548124413356,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.02,
+      "exact": {
+        "radial": -0.017153814055192174,
+        "hoop": -0.9051837484207785,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.006235520564240371,
+          "hoop": -0.899037267718184,
+          "shear": -0.02711952590000269
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.016276803783976848,
+          "hoop": -0.9020336335316755,
+          "shear": -0.027206020932698013
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.017153814055192174,
+          "conditioning_index": 58.29607321045413,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.9051837484207785,
+          "conditioning_index": 1.1047480710349051,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.006235520564240371,
+            "absolute_error": 0.010918293490951803,
+            "relative_error": 0.6364936366817511,
+            "scale_normalized_error": 0.010918293490951803,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.016276803783976848,
+            "absolute_error": 0.0008770102712153255,
+            "relative_error": 0.05112625497708885,
+            "scale_normalized_error": 0.0008770102712153255,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.899037267718184,
+            "absolute_error": 0.006146480702594492,
+            "relative_error": 0.0067903126998445345,
+            "scale_normalized_error": 0.006146480702594492,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.9020336335316755,
+            "absolute_error": 0.003150114889102995,
+            "relative_error": 0.0034800833472748683,
+            "scale_normalized_error": 0.003150114889102995,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.02711952590000269,
+            "absolute_error": 0.02711952590000269,
+            "relative_error": null,
+            "scale_normalized_error": 0.02711952590000269,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.027206020932698013,
+            "absolute_error": 0.027206020932698013,
+            "relative_error": null,
+            "scale_normalized_error": 0.027206020932698013,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.05,
+      "exact": {
+        "radial": -0.03351998395730177,
+        "hoop": -0.7805389729587979,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.022100613049225948,
+          "hoop": -0.7749162050713074,
+          "shear": -0.02918653504518813
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.032505997610688876,
+          "hoop": -0.7780042745261571,
+          "shear": -0.029276347208328023
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.03351998395730177,
+          "conditioning_index": 29.832949838932326,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.7805389729587979,
+          "conditioning_index": 1.2811660079051386,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.022100613049225948,
+            "absolute_error": 0.011419370908075821,
+            "relative_error": 0.34067351949278907,
+            "scale_normalized_error": 0.011419370908075821,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.032505997610688876,
+            "absolute_error": 0.0010139863466128926,
+            "relative_error": 0.030250203815864674,
+            "scale_normalized_error": 0.0010139863466128926,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.7749162050713074,
+            "absolute_error": 0.0056227678874904985,
+            "relative_error": 0.007203699087793411,
+            "scale_normalized_error": 0.0056227678874904985,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.7780042745261571,
+            "absolute_error": 0.0025346984326408695,
+            "relative_error": 0.0032473694721899143,
+            "scale_normalized_error": 0.0025346984326408695,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.02918653504518813,
+            "absolute_error": 0.02918653504518813,
+            "relative_error": null,
+            "scale_normalized_error": 0.02918653504518813,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.029276347208328023,
+            "absolute_error": 0.029276347208328023,
+            "relative_error": null,
+            "scale_normalized_error": 0.029276347208328023,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.1,
+      "exact": {
+        "radial": -0.041595519431732786,
+        "hoop": -0.6112970425517381,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.04664839294743073,
+          "hoop": -0.611692970412832,
+          "shear": -0.03160939372422217
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.03981031930421487,
+          "hoop": -0.6096369148582294,
+          "shear": -0.031550756976467295
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.041595519431732786,
+          "conditioning_index": 24.04105090311988,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.6112970425517381,
+          "conditioning_index": 1.6358659217877098,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.04664839294743073,
+            "absolute_error": 0.005052873515697942,
+            "relative_error": 0.12147638939792053,
+            "scale_normalized_error": 0.005052873515697942,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.03981031930421487,
+            "absolute_error": 0.0017852001275179136,
+            "relative_error": 0.042918087137914264,
+            "scale_normalized_error": 0.0017852001275179136,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.611692970412832,
+            "absolute_error": 0.000395927861093881,
+            "relative_error": 0.0006476848954497781,
+            "scale_normalized_error": 0.000395927861093881,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.6096369148582294,
+            "absolute_error": 0.0016601276935087617,
+            "relative_error": 0.002715746319627015,
+            "scale_normalized_error": 0.0016601276935087617,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.03160939372422217,
+            "absolute_error": 0.03160939372422217,
+            "relative_error": null,
+            "scale_normalized_error": 0.03160939372422217,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.031550756976467295,
+            "absolute_error": 0.031550756976467295,
+            "relative_error": null,
+            "scale_normalized_error": 0.031550756976467295,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.25,
+      "exact": {
+        "radial": 0.014399999999999968,
+        "hoop": -0.2944000000000002,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.016867181330268086,
+          "hoop": -0.29489667206856407,
+          "shear": -0.033160643750829555
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.01902242685264222,
+          "hoop": -0.29443225524458266,
+          "shear": -0.03314210412001182
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.014399999999999968,
+          "conditioning_index": 69.4444444444446,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.2944000000000002,
+          "conditioning_index": 3.39673913043478,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.016867181330268086,
+            "absolute_error": 0.0024671813302681173,
+            "relative_error": 0.1713320368241752,
+            "scale_normalized_error": 0.0024671813302681173,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.01902242685264222,
+            "absolute_error": 0.004622426852642251,
+            "relative_error": 0.3210018647668237,
+            "scale_normalized_error": 0.004622426852642251,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.29489667206856407,
+            "absolute_error": 0.0004966720685638526,
+            "relative_error": 0.0016870654502848241,
+            "scale_normalized_error": 0.0004966720685638526,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.29443225524458266,
+            "absolute_error": 3.225524458244644e-05,
+            "relative_error": 0.00010956265143494027,
+            "scale_normalized_error": 3.225524458244644e-05,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.033160643750829555,
+            "absolute_error": 0.033160643750829555,
+            "relative_error": null,
+            "scale_normalized_error": 0.033160643750829555,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.03314210412001182,
+            "absolute_error": 0.03314210412001182,
+            "relative_error": null,
+            "scale_normalized_error": 0.03314210412001182,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.5,
+      "exact": {
+        "radial": 0.18518518518518523,
+        "hoop": -0.07407407407407407,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.20380705321177042,
+          "hoop": -0.07025062194014102,
+          "shear": -0.02926552914453868
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.19161736726532672,
+          "hoop": -0.07387043225437735,
+          "shear": -0.02937009584639108
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.18518518518518523,
+          "conditioning_index": 5.399999999999999,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.07407407407407407,
+          "conditioning_index": 13.5,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.20380705321177042,
+            "absolute_error": 0.018621868026585192,
+            "relative_error": 0.10055808734356002,
+            "scale_normalized_error": 0.018621868026585192,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.19161736726532672,
+            "absolute_error": 0.006432182080141485,
+            "relative_error": 0.034733783232764014,
+            "scale_normalized_error": 0.006432182080141485,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.07025062194014102,
+            "absolute_error": 0.00382345213393305,
+            "relative_error": 0.05161660380809618,
+            "scale_normalized_error": 0.00382345213393305,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.07387043225437735,
+            "absolute_error": 0.00020364181969671769,
+            "relative_error": 0.0027491645659056888,
+            "scale_normalized_error": 0.00020364181969671769,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.02926552914453868,
+            "absolute_error": 0.02926552914453868,
+            "relative_error": null,
+            "scale_normalized_error": 0.02926552914453868,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.02937009584639108,
+            "absolute_error": 0.02937009584639108,
+            "relative_error": null,
+            "scale_normalized_error": 0.02937009584639108,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 32,
+      "ray_degrees": 0.0,
+      "r_over_a": 2.0,
+      "exact": {
+        "radial": 0.46875,
+        "hoop": 0.03125,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.48782160069004477,
+          "hoop": 0.03518626646614138,
+          "shear": -0.01995704093953158
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.47399122214473216,
+          "hoop": 0.031084089026844165,
+          "shear": -0.020081031193324876
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.46875,
+          "conditioning_index": 2.1333333333333333,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.03125,
+          "conditioning_index": 32.0,
+          "ill_conditioned": true
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.48782160069004477,
+            "absolute_error": 0.019071600690044765,
+            "relative_error": 0.0406860814720955,
+            "scale_normalized_error": 0.019071600690044765,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.47399122214473216,
+            "absolute_error": 0.0052412221447321605,
+            "relative_error": 0.011181273908761943,
+            "scale_normalized_error": 0.0052412221447321605,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 0.03518626646614138,
+            "absolute_error": 0.003936266466141383,
+            "relative_error": 0.12596052691652426,
+            "scale_normalized_error": 0.003936266466141383,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.031084089026844165,
+            "absolute_error": 0.00016591097315583545,
+            "relative_error": 0.005309151140986734,
+            "scale_normalized_error": 0.00016591097315583545,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.01995704093953158,
+            "absolute_error": 0.01995704093953158,
+            "relative_error": null,
+            "scale_normalized_error": 0.01995704093953158,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.020081031193324876,
+            "absolute_error": 0.020081031193324876,
+            "relative_error": null,
+            "scale_normalized_error": 0.020081031193324876,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.02,
+      "exact": {
+        "radial": 0.05598503281720685,
+        "hoop": 2.866352529658764,
+        "shear": -9.233915512169772e-18
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.04631650198470083,
+          "hoop": 2.861602238190349,
+          "shear": -0.002374815515140553
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.05675258417086205,
+          "hoop": 2.864748331323028,
+          "shear": -0.0024344335501692536
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.05598503281720685,
+          "conditioning_index": 17.86191683168314,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.866352529658764,
+          "conditioning_index": 0.3488754400070423,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 9.233915512169772e-18,
+          "conditioning_index": 1.0829642080675931e+17,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.04631650198470083,
+            "absolute_error": 0.009668530832506017,
+            "relative_error": 0.17269849361478665,
+            "scale_normalized_error": 0.009668530832506017,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.05675258417086205,
+            "absolute_error": 0.0007675513536552006,
+            "relative_error": 0.013709938443035006,
+            "scale_normalized_error": 0.0007675513536552006,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.861602238190349,
+            "absolute_error": 0.004750291468414769,
+            "relative_error": 0.0016572600262049016,
+            "scale_normalized_error": 0.004750291468414769,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.864748331323028,
+            "absolute_error": 0.0016041983357357736,
+            "relative_error": 0.000559665400238383,
+            "scale_normalized_error": 0.0016041983357357736,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.002374815515140553,
+            "absolute_error": 0.002374815515140544,
+            "relative_error": 257184020366081.25,
+            "scale_normalized_error": 0.002374815515140544,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.0024344335501692536,
+            "absolute_error": 0.0024344335501692445,
+            "relative_error": 263640440175221.5,
+            "scale_normalized_error": 0.0024344335501692445,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.05,
+      "exact": {
+        "radial": 0.12649050549925195,
+        "hoop": 2.6875684514168476,
+        "shear": -2.118342184928941e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.11449694703998359,
+          "hoop": 2.682473719940666,
+          "shear": -0.004631302863923836
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.12742237768020284,
+          "hoop": 2.6863675875008464,
+          "shear": -0.004705172456001782
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.12649050549925195,
+          "conditioning_index": 7.905731707317067,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.6875684514168476,
+          "conditioning_index": 0.3720835461782617,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 2.118342184928941e-17,
+          "conditioning_index": 4.7206726425718824e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.11449694703998359,
+            "absolute_error": 0.01199355845926836,
+            "relative_error": 0.09481785539499872,
+            "scale_normalized_error": 0.01199355845926836,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.12742237768020284,
+            "absolute_error": 0.0009318721809508934,
+            "relative_error": 0.007367131448110186,
+            "scale_normalized_error": 0.0009318721809508934,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.682473719940666,
+            "absolute_error": 0.005094731476181558,
+            "relative_error": 0.0018956657544836441,
+            "scale_normalized_error": 0.005094731476181558,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.6863675875008464,
+            "absolute_error": 0.0012008639160012713,
+            "relative_error": 0.0004468217043432672,
+            "scale_normalized_error": 0.0012008639160012713,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.004631302863923836,
+            "absolute_error": 0.004631302863923815,
+            "relative_error": 218628647291899.62,
+            "scale_normalized_error": 0.004631302863923815,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.004705172456001782,
+            "absolute_error": 0.004705172456001761,
+            "relative_error": 222115788916302.7,
+            "scale_normalized_error": 0.004705172456001761,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.1,
+      "exact": {
+        "radial": 0.21514923843999734,
+        "hoop": 2.4377433235434736,
+        "shear": -3.697528294263286e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.22468076895392208,
+          "hoop": 2.4396777056083865,
+          "shear": -0.007599358009532092
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.2159730845253507,
+          "hoop": 2.4371259696101513,
+          "shear": -0.007549019795166737
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.21514923843999734,
+          "conditioning_index": 4.647936507936507,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.4377433235434736,
+          "conditioning_index": 0.41021546048023316,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 3.697528294263286e-17,
+          "conditioning_index": 2.7045093922648264e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.22468076895392208,
+            "absolute_error": 0.009531530513924746,
+            "relative_error": 0.04430194865218164,
+            "scale_normalized_error": 0.009531530513924746,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.2159730845253507,
+            "absolute_error": 0.0008238460853533525,
+            "relative_error": 0.003829184297034422,
+            "scale_normalized_error": 0.0008238460853533525,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.4396777056083865,
+            "absolute_error": 0.0019343820649129206,
+            "relative_error": 0.000793513429502958,
+            "scale_normalized_error": 0.0019343820649129206,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.4371259696101513,
+            "absolute_error": 0.0006173539333222955,
+            "relative_error": 0.0002532481280370886,
+            "scale_normalized_error": 0.0006173539333222955,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.007599358009532092,
+            "absolute_error": 0.0075993580095320545,
+            "relative_error": 205525351119623.78,
+            "scale_normalized_error": 0.0075993580095320545,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.007549019795166737,
+            "absolute_error": 0.0075490197951666995,
+            "relative_error": 204163949384214.34,
+            "scale_normalized_error": 0.0075490197951666995,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.25,
+      "exact": {
+        "radial": 0.3455999999999999,
+        "hoop": 1.9344000000000003,
+        "shear": -6.436743576318487e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.33990720567390426,
+          "hoop": 1.9328765374962507,
+          "shear": -0.011654031034285363
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.3454221221860268,
+          "hoop": 1.9346768856534238,
+          "shear": -0.011684922574785594
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.3455999999999999,
+          "conditioning_index": 2.8935185185185195,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.9344000000000003,
+          "conditioning_index": 0.5169561621174523,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 6.436743576318487e-17,
+          "conditioning_index": 1.5535806081806862e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.33990720567390426,
+            "absolute_error": 0.0056927943260956515,
+            "relative_error": 0.01647220580467492,
+            "scale_normalized_error": 0.0056927943260956515,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.3454221221860268,
+            "absolute_error": 0.0001778778139731041,
+            "relative_error": 0.0005146927487647689,
+            "scale_normalized_error": 0.0001778778139731041,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.9328765374962507,
+            "absolute_error": 0.001523462503749684,
+            "relative_error": 0.0007875633290682815,
+            "scale_normalized_error": 0.001523462503749684,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.9346768856534238,
+            "absolute_error": 0.00027688565342343097,
+            "relative_error": 0.0001431377447391599,
+            "scale_normalized_error": 0.00027688565342343097,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.011654031034285363,
+            "absolute_error": 0.011654031034285299,
+            "relative_error": 181054766220015.47,
+            "scale_normalized_error": 0.011654031034285299,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.011684922574785594,
+            "absolute_error": 0.01168492257478553,
+            "relative_error": 181534691202795.34,
+            "scale_normalized_error": 0.01168492257478553,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.5,
+      "exact": {
+        "radial": 0.37037037037037035,
+        "hoop": 1.5185185185185186,
+        "shear": -7.937525550029141e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.37289261247280975,
+          "hoop": 1.5200259255938797,
+          "shear": -0.012388669199373458
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.36919739889677206,
+          "hoop": 1.5190066946924738,
+          "shear": -0.012367906301024082
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.37037037037037035,
+          "conditioning_index": 2.7,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.5185185185185186,
+          "conditioning_index": 0.6585365853658536,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 7.937525550029141e-17,
+          "conditioning_index": 1.2598384643893572e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.37289261247280975,
+            "absolute_error": 0.002522242102439398,
+            "relative_error": 0.006810053676586375,
+            "scale_normalized_error": 0.002522242102439398,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.36919739889677206,
+            "absolute_error": 0.0011729714735982943,
+            "relative_error": 0.003167022978715395,
+            "scale_normalized_error": 0.0011729714735982943,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.5200259255938797,
+            "absolute_error": 0.0015074070753611224,
+            "relative_error": 0.0009926827081646415,
+            "scale_normalized_error": 0.0015074070753611224,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.5190066946924738,
+            "absolute_error": 0.00048817617395524593,
+            "relative_error": 0.00032148187065345464,
+            "scale_normalized_error": 0.00048817617395524593,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.012388669199373458,
+            "absolute_error": 0.012388669199373379,
+            "relative_error": 156077219799662.84,
+            "scale_normalized_error": 0.012388669199373379,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.012367906301024082,
+            "absolute_error": 0.012367906301024002,
+            "relative_error": 155815640819935.34,
+            "scale_normalized_error": 0.012367906301024002,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 90.0,
+      "r_over_a": 2.0,
+      "exact": {
+        "radial": 0.28125,
+        "hoop": 1.21875,
+        "shear": -8.036744619404505e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.2798600538918117,
+          "hoop": 1.2192127031814533,
+          "shear": -0.009335387888172697
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.279994277482458,
+          "hoop": 1.2193658085445724,
+          "shear": -0.009338572564547893
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.28125,
+          "conditioning_index": 3.5555555555555554,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.21875,
+          "conditioning_index": 0.8205128205128205,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 8.036744619404505e-17,
+          "conditioning_index": 1.2442849031005996e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.2798600538918117,
+            "absolute_error": 0.0013899461081883224,
+            "relative_error": 0.004942030606891813,
+            "scale_normalized_error": 0.0013899461081883224,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.279994277482458,
+            "absolute_error": 0.001255722517542024,
+            "relative_error": 0.004464791173482752,
+            "scale_normalized_error": 0.001255722517542024,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.2192127031814533,
+            "absolute_error": 0.00046270318145325007,
+            "relative_error": 0.0003796538924744616,
+            "scale_normalized_error": 0.00046270318145325007,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.2193658085445724,
+            "absolute_error": 0.0006158085445724382,
+            "relative_error": 0.0005052788058030261,
+            "scale_normalized_error": 0.0006158085445724382,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.009335387888172697,
+            "absolute_error": 0.009335387888172618,
+            "relative_error": 116158822138413.77,
+            "scale_normalized_error": 0.009335387888172618,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.009338572564547893,
+            "absolute_error": 0.009338572564547813,
+            "relative_error": 116198448585762.94,
+            "scale_normalized_error": 0.009338572564547813,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.02,
+      "exact": {
+        "radial": -0.017153814055192174,
+        "hoop": -0.9051837484207785,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.01208233580904522,
+          "hoop": -0.9024184557712374,
+          "shear": -0.01812467833247696
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.01674216372637389,
+          "hoop": -0.9038266161676183,
+          "shear": -0.018151254977949102
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.017153814055192174,
+          "conditioning_index": 58.29607321045413,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.9051837484207785,
+          "conditioning_index": 1.1047480710349051,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.01208233580904522,
+            "absolute_error": 0.005071478246146954,
+            "relative_error": 0.29564726712260836,
+            "scale_normalized_error": 0.005071478246146954,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.01674216372637389,
+            "absolute_error": 0.0004116503288182846,
+            "relative_error": 0.023997597705898235,
+            "scale_normalized_error": 0.0004116503288182846,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.9024184557712374,
+            "absolute_error": 0.0027652926495411734,
+            "relative_error": 0.0030549517204276136,
+            "scale_normalized_error": 0.0027652926495411734,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.9038266161676183,
+            "absolute_error": 0.0013571322531602537,
+            "relative_error": 0.0014992892388180448,
+            "scale_normalized_error": 0.0013571322531602537,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.01812467833247696,
+            "absolute_error": 0.01812467833247696,
+            "relative_error": null,
+            "scale_normalized_error": 0.01812467833247696,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.018151254977949102,
+            "absolute_error": 0.018151254977949102,
+            "relative_error": null,
+            "scale_normalized_error": 0.018151254977949102,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.05,
+      "exact": {
+        "radial": -0.03351998395730177,
+        "hoop": -0.7805389729587979,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.027992993299554653,
+          "hoop": -0.777954958425157,
+          "shear": -0.019506229241496073
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.033038589312919,
+          "hoop": -0.7794793786826871,
+          "shear": -0.019535013059022818
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.03351998395730177,
+          "conditioning_index": 29.832949838932326,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.7805389729587979,
+          "conditioning_index": 1.2811660079051386,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.027992993299554653,
+            "absolute_error": 0.005526990657747116,
+            "relative_error": 0.1648864350528173,
+            "scale_normalized_error": 0.005526990657747116,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.033038589312919,
+            "absolute_error": 0.00048139464438276547,
+            "relative_error": 0.014361422278601708,
+            "scale_normalized_error": 0.00048139464438276547,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.777954958425157,
+            "absolute_error": 0.002584014533640877,
+            "relative_error": 0.0033105515844335407,
+            "scale_normalized_error": 0.002584014533640877,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.7794793786826871,
+            "absolute_error": 0.001059594276110798,
+            "relative_error": 0.0013575161687240061,
+            "scale_normalized_error": 0.001059594276110798,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.019506229241496073,
+            "absolute_error": 0.019506229241496073,
+            "relative_error": null,
+            "scale_normalized_error": 0.019506229241496073,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.019535013059022818,
+            "absolute_error": 0.019535013059022818,
+            "relative_error": null,
+            "scale_normalized_error": 0.019535013059022818,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.1,
+      "exact": {
+        "radial": -0.041595519431732786,
+        "hoop": -0.6112970425517381,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.04381938511244507,
+          "hoop": -0.6115439141484411,
+          "shear": -0.021077276716452105
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.04075917059274328,
+          "hoop": -0.6106619798675478,
+          "shear": -0.0210594836283726
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.041595519431732786,
+          "conditioning_index": 24.04105090311988,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.6112970425517381,
+          "conditioning_index": 1.6358659217877098,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.04381938511244507,
+            "absolute_error": 0.0022238656807122836,
+            "relative_error": 0.05346406803170535,
+            "scale_normalized_error": 0.0022238656807122836,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.04075917059274328,
+            "absolute_error": 0.0008363488389895035,
+            "relative_error": 0.020106705010911868,
+            "scale_normalized_error": 0.0008363488389895035,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.6115439141484411,
+            "absolute_error": 0.0002468715967030022,
+            "relative_error": 0.00040384883210376046,
+            "scale_normalized_error": 0.0002468715967030022,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.6106619798675478,
+            "absolute_error": 0.0006350626841903351,
+            "relative_error": 0.0010388774032659997,
+            "scale_normalized_error": 0.0006350626841903351,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.021077276716452105,
+            "absolute_error": 0.021077276716452105,
+            "relative_error": null,
+            "scale_normalized_error": 0.021077276716452105,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.0210594836283726,
+            "absolute_error": 0.0210594836283726,
+            "relative_error": null,
+            "scale_normalized_error": 0.0210594836283726,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.25,
+      "exact": {
+        "radial": 0.014399999999999968,
+        "hoop": -0.2944000000000002,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.014484437257210658,
+          "hoop": -0.2948950981828383,
+          "shear": -0.022156312775115213
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.016454374465408858,
+          "hoop": -0.29437793297065834,
+          "shear": -0.02214492533803465
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.014399999999999968,
+          "conditioning_index": 69.4444444444446,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.2944000000000002,
+          "conditioning_index": 3.39673913043478,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.014484437257210658,
+            "absolute_error": 8.443725721068995e-05,
+            "relative_error": 0.0058636984174090375,
+            "scale_normalized_error": 8.443725721068995e-05,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.016454374465408858,
+            "absolute_error": 0.0020543744654088897,
+            "relative_error": 0.1426648934311732,
+            "scale_normalized_error": 0.0020543744654088897,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.2948950981828383,
+            "absolute_error": 0.0004950981828381051,
+            "relative_error": 0.001681719371053345,
+            "scale_normalized_error": 0.0004950981828381051,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.29437793297065834,
+            "absolute_error": 2.2067029341876765e-05,
+            "relative_error": 7.495594205800526e-05,
+            "scale_normalized_error": 2.2067029341876765e-05,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.022156312775115213,
+            "absolute_error": 0.022156312775115213,
+            "relative_error": null,
+            "scale_normalized_error": 0.022156312775115213,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.02214492533803465,
+            "absolute_error": 0.02214492533803465,
+            "relative_error": null,
+            "scale_normalized_error": 0.02214492533803465,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.5,
+      "exact": {
+        "radial": 0.18518518518518523,
+        "hoop": -0.07407407407407407,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.1934251427817625,
+          "hoop": -0.07252365241383539,
+          "shear": -0.019598486618451764
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.18803338925066576,
+          "hoop": -0.07416090490043716,
+          "shear": -0.019630337687531245
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.18518518518518523,
+          "conditioning_index": 5.399999999999999,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.07407407407407407,
+          "conditioning_index": 13.5,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.1934251427817625,
+            "absolute_error": 0.00823995759657728,
+            "relative_error": 0.0444957710215173,
+            "scale_normalized_error": 0.00823995759657728,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.18803338925066576,
+            "absolute_error": 0.0028482040654805307,
+            "relative_error": 0.015380301953594862,
+            "scale_normalized_error": 0.0028482040654805307,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.07252365241383539,
+            "absolute_error": 0.0015504216602386794,
+            "relative_error": 0.020930692413222172,
+            "scale_normalized_error": 0.0015504216602386794,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.07416090490043716,
+            "absolute_error": 8.683082636308515e-05,
+            "relative_error": 0.0011722161559016495,
+            "scale_normalized_error": 8.683082636308515e-05,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.019598486618451764,
+            "absolute_error": 0.019598486618451764,
+            "relative_error": null,
+            "scale_normalized_error": 0.019598486618451764,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.019630337687531245,
+            "absolute_error": 0.019630337687531245,
+            "relative_error": null,
+            "scale_normalized_error": 0.019630337687531245,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 48,
+      "ray_degrees": 0.0,
+      "r_over_a": 2.0,
+      "exact": {
+        "radial": 0.46875,
+        "hoop": 0.03125,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.47409518940424933,
+          "hoop": 0.031995504436472824,
+          "shear": -0.013403892283033403
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.47097269642075834,
+          "hoop": 0.03109271064564844,
+          "shear": -0.013425392941711026
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.46875,
+          "conditioning_index": 2.1333333333333333,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.03125,
+          "conditioning_index": 32.0,
+          "ill_conditioned": true
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.47409518940424933,
+            "absolute_error": 0.005345189404249329,
+            "relative_error": 0.011403070729065235,
+            "scale_normalized_error": 0.005345189404249329,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.47097269642075834,
+            "absolute_error": 0.002222696420758341,
+            "relative_error": 0.004741752364284461,
+            "scale_normalized_error": 0.002222696420758341,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 0.031995504436472824,
+            "absolute_error": 0.0007455044364728242,
+            "relative_error": 0.023856141967130373,
+            "scale_normalized_error": 0.0007455044364728242,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.03109271064564844,
+            "absolute_error": 0.00015728935435155994,
+            "relative_error": 0.005033259339249918,
+            "scale_normalized_error": 0.00015728935435155994,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.013403892283033403,
+            "absolute_error": 0.013403892283033403,
+            "relative_error": null,
+            "scale_normalized_error": 0.013403892283033403,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.013425392941711026,
+            "absolute_error": 0.013425392941711026,
+            "relative_error": null,
+            "scale_normalized_error": 0.013425392941711026,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.02,
+      "exact": {
+        "radial": 0.05598503281720685,
+        "hoop": 2.866352529658764,
+        "shear": -9.233915512169772e-18
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.051732101553563004,
+          "hoop": 2.864049932114078,
+          "shear": -0.0018064228505200578
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.0564048961661501,
+          "hoop": 2.865470037679122,
+          "shear": -0.0018263604620017222
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.05598503281720685,
+          "conditioning_index": 17.86191683168314,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.866352529658764,
+          "conditioning_index": 0.3488754400070423,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 9.233915512169772e-18,
+          "conditioning_index": 1.0829642080675931e+17,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.051732101553563004,
+            "absolute_error": 0.004252931263643844,
+            "relative_error": 0.07596550452207143,
+            "scale_normalized_error": 0.004252931263643844,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.0564048961661501,
+            "absolute_error": 0.0004198633489432488,
+            "relative_error": 0.007499564219496267,
+            "scale_normalized_error": 0.0004198633489432488,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.864049932114078,
+            "absolute_error": 0.0023025975446859803,
+            "relative_error": 0.0008033197315614566,
+            "scale_normalized_error": 0.0023025975446859803,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.865470037679122,
+            "absolute_error": 0.000882491979642186,
+            "relative_error": 0.00030787977770035344,
+            "scale_normalized_error": 0.000882491979642186,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.0018064228505200578,
+            "absolute_error": 0.0018064228505200485,
+            "relative_error": 195629129174864.84,
+            "scale_normalized_error": 0.0018064228505200485,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.0018263604620017222,
+            "absolute_error": 0.0018263604620017129,
+            "relative_error": 197788301137764.84,
+            "scale_normalized_error": 0.0018263604620017129,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.05,
+      "exact": {
+        "radial": 0.12649050549925195,
+        "hoop": 2.6875684514168476,
+        "shear": -2.118342184928941e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.12062505261944245,
+          "hoop": 2.6849900734743097,
+          "shear": -0.003502853587785733
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.12699568548727985,
+          "hoop": 2.686926310794982,
+          "shear": -0.003530045278252772
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.12649050549925195,
+          "conditioning_index": 7.905731707317067,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.6875684514168476,
+          "conditioning_index": 0.3720835461782617,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 2.118342184928941e-17,
+          "conditioning_index": 4.7206726425718824e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.12062505261944245,
+            "absolute_error": 0.005865452879809496,
+            "relative_error": 0.046370696809684135,
+            "scale_normalized_error": 0.005865452879809496,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.12699568548727985,
+            "absolute_error": 0.000505179988027904,
+            "relative_error": 0.003993817449254257,
+            "scale_normalized_error": 0.000505179988027904,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.6849900734743097,
+            "absolute_error": 0.0025783779425379016,
+            "relative_error": 0.0009593720082473128,
+            "scale_normalized_error": 0.0025783779425379016,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.686926310794982,
+            "absolute_error": 0.0006421406218657388,
+            "relative_error": 0.00023892995972891833,
+            "scale_normalized_error": 0.0006421406218657388,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.003502853587785733,
+            "absolute_error": 0.003502853587785712,
+            "relative_error": 165358251027947.75,
+            "scale_normalized_error": 0.003502853587785712,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.003530045278252772,
+            "absolute_error": 0.0035300452782527506,
+            "relative_error": 166641881720878.1,
+            "scale_normalized_error": 0.0035300452782527506,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.1,
+      "exact": {
+        "radial": 0.21514923843999734,
+        "hoop": 2.4377433235434736,
+        "shear": -3.697528294263286e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.21830341790532526,
+          "hoop": 2.438197330269646,
+          "shear": -0.005677044180247686
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.21559058347251348,
+          "hoop": 2.4374373695202367,
+          "shear": -0.005665073985296187
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.21514923843999734,
+          "conditioning_index": 4.647936507936507,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 2.4377433235434736,
+          "conditioning_index": 0.41021546048023316,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 3.697528294263286e-17,
+          "conditioning_index": 2.7045093922648264e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.21830341790532526,
+            "absolute_error": 0.003154179465327922,
+            "relative_error": 0.014660425889481299,
+            "scale_normalized_error": 0.003154179465327922,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.21559058347251348,
+            "absolute_error": 0.0004413450325161383,
+            "relative_error": 0.002051343689228184,
+            "scale_normalized_error": 0.0004413450325161383,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 2.438197330269646,
+            "absolute_error": 0.0004540067261724623,
+            "relative_error": 0.00018624057823795974,
+            "scale_normalized_error": 0.0004540067261724623,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 2.4374373695202367,
+            "absolute_error": 0.00030595402323685406,
+            "relative_error": 0.00012550707052788604,
+            "scale_normalized_error": 0.00030595402323685406,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.005677044180247686,
+            "absolute_error": 0.005677044180247648,
+            "relative_error": 153536193057821.38,
+            "scale_normalized_error": 0.005677044180247648,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.005665073985296187,
+            "absolute_error": 0.00566507398529615,
+            "relative_error": 153212458011085.7,
+            "scale_normalized_error": 0.00566507398529615,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.25,
+      "exact": {
+        "radial": 0.3455999999999999,
+        "hoop": 1.9344000000000003,
+        "shear": -6.436743576318487e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.33462708133765734,
+          "hoop": 1.9310310083453794,
+          "shear": -0.00872838358178183
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.34562297112514306,
+          "hoop": 1.9342898211955872,
+          "shear": -0.008775708963977056
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.3455999999999999,
+          "conditioning_index": 2.8935185185185195,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.9344000000000003,
+          "conditioning_index": 0.5169561621174523,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 6.436743576318487e-17,
+          "conditioning_index": 1.5535806081806862e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.33462708133765734,
+            "absolute_error": 0.010972918662342568,
+            "relative_error": 0.03175034335168568,
+            "scale_normalized_error": 0.010972918662342568,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.34562297112514306,
+            "absolute_error": 2.2971125143156357e-05,
+            "relative_error": 6.64673759929293e-05,
+            "scale_normalized_error": 2.2971125143156357e-05,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.9310310083453794,
+            "absolute_error": 0.003368991654620901,
+            "relative_error": 0.0017416209959785465,
+            "scale_normalized_error": 0.003368991654620901,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.9342898211955872,
+            "absolute_error": 0.00011017880441310801,
+            "relative_error": 5.695761187608974e-05,
+            "scale_normalized_error": 0.00011017880441310801,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.00872838358178183,
+            "absolute_error": 0.008728383581781766,
+            "relative_error": 135602474734188.33,
+            "scale_normalized_error": 0.008728383581781766,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.008775708963977056,
+            "absolute_error": 0.008775708963976992,
+            "relative_error": 136337712694720.75,
+            "scale_normalized_error": 0.008775708963976992,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 90.0,
+      "r_over_a": 1.5,
+      "exact": {
+        "radial": 0.37037037037037035,
+        "hoop": 1.5185185185185186,
+        "shear": -7.937525550029141e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.3713529398311155,
+          "hoop": 1.5192985145712115,
+          "shear": -0.009292740248900744
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.3696809864635698,
+          "hoop": 1.518891575480812,
+          "shear": -0.009285788613111445
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.37037037037037035,
+          "conditioning_index": 2.7,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.5185185185185186,
+          "conditioning_index": 0.6585365853658536,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 7.937525550029141e-17,
+          "conditioning_index": 1.2598384643893572e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.3713529398311155,
+            "absolute_error": 0.000982569460745153,
+            "relative_error": 0.002652937544011913,
+            "scale_normalized_error": 0.000982569460745153,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.3696809864635698,
+            "absolute_error": 0.0006893839068005669,
+            "relative_error": 0.0018613365483615308,
+            "scale_normalized_error": 0.0006893839068005669,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.5192985145712115,
+            "absolute_error": 0.0007799960526928551,
+            "relative_error": 0.0005136559371391972,
+            "scale_normalized_error": 0.0007799960526928551,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.518891575480812,
+            "absolute_error": 0.0003730569622935054,
+            "relative_error": 0.00024567165809572303,
+            "scale_normalized_error": 0.0003730569622935054,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.009292740248900744,
+            "absolute_error": 0.009292740248900665,
+            "relative_error": 117073516051441.86,
+            "scale_normalized_error": 0.009292740248900665,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.009285788613111445,
+            "absolute_error": 0.009285788613111365,
+            "relative_error": 116985936669864.0,
+            "scale_normalized_error": 0.009285788613111365,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 90.0,
+      "r_over_a": 2.0,
+      "exact": {
+        "radial": 0.28125,
+        "hoop": 1.21875,
+        "shear": -8.036744619404505e-17
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.28145181929166546,
+          "hoop": 1.2193161191857949,
+          "shear": -0.007014154887796377
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.2805403513010921,
+          "hoop": 1.2191155144528196,
+          "shear": -0.007011320739002378
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.5016510383929543,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.28125,
+          "conditioning_index": 3.5555555555555554,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 1.21875,
+          "conditioning_index": 0.8205128205128205,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 8.036744619404505e-17,
+          "conditioning_index": 1.2442849031005996e+16,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.28145181929166546,
+            "absolute_error": 0.00020181929166546153,
+            "relative_error": 0.0007175797036994188,
+            "scale_normalized_error": 0.00020181929166546153,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.2805403513010921,
+            "absolute_error": 0.0007096486989078832,
+            "relative_error": 0.002523195373894696,
+            "scale_normalized_error": 0.0007096486989078832,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 1.2193161191857949,
+            "absolute_error": 0.0005661191857948555,
+            "relative_error": 0.00046450804988295836,
+            "scale_normalized_error": 0.0005661191857948555,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 1.2191155144528196,
+            "absolute_error": 0.00036551445281962636,
+            "relative_error": 0.0002999092946212319,
+            "scale_normalized_error": 0.00036551445281962636,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.007014154887796377,
+            "absolute_error": 0.007014154887796296,
+            "relative_error": 87276070348942.12,
+            "scale_normalized_error": 0.007014154887796296,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.007011320739002378,
+            "absolute_error": 0.007011320739002297,
+            "relative_error": 87240805463366.98,
+            "scale_normalized_error": 0.007011320739002297,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.02,
+      "exact": {
+        "radial": -0.017153814055192174,
+        "hoop": -0.9051837484207785,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.014850653472811892,
+          "hoop": -0.9038053714040807,
+          "shear": -0.01360862357152818
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.016914012090203642,
+          "hoop": -0.9044364429057526,
+          "shear": -0.013617390775893315
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.017153814055192174,
+          "conditioning_index": 58.29607321045413,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.9051837484207785,
+          "conditioning_index": 1.1047480710349051,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.014850653472811892,
+            "absolute_error": 0.0023031605823802814,
+            "relative_error": 0.13426521792587306,
+            "scale_normalized_error": 0.0023031605823802814,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.016914012090203642,
+            "absolute_error": 0.00023980196498853135,
+            "relative_error": 0.013979512906982182,
+            "scale_normalized_error": 0.00023980196498853135,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.9038053714040807,
+            "absolute_error": 0.0013783770166978515,
+            "relative_error": 0.0015227593503557987,
+            "scale_normalized_error": 0.0013783770166978515,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.9044364429057526,
+            "absolute_error": 0.0007473055150258867,
+            "relative_error": 0.0008255843261985947,
+            "scale_normalized_error": 0.0007473055150258867,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.01360862357152818,
+            "absolute_error": 0.01360862357152818,
+            "relative_error": null,
+            "scale_normalized_error": 0.01360862357152818,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.013617390775893315,
+            "absolute_error": 0.013617390775893315,
+            "relative_error": null,
+            "scale_normalized_error": 0.013617390775893315,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.05,
+      "exact": {
+        "radial": -0.03351998395730177,
+        "hoop": -0.7805389729587979,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.030780377007727594,
+          "hoop": -0.779216627975244,
+          "shear": -0.014645812344007783
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.03323655440075892,
+          "hoop": -0.7799695753378811,
+          "shear": -0.01465624497145095
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.03351998395730177,
+          "conditioning_index": 29.832949838932326,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.7805389729587979,
+          "conditioning_index": 1.2811660079051386,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.030780377007727594,
+            "absolute_error": 0.002739606949574175,
+            "relative_error": 0.08173055670503676,
+            "scale_normalized_error": 0.002739606949574175,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": -0.03323655440075892,
+            "absolute_error": 0.00028342955654284824,
+            "relative_error": 0.008455539743213626,
+            "scale_normalized_error": 0.00028342955654284824,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.779216627975244,
+            "absolute_error": 0.0013223449835538803,
+            "relative_error": 0.001694143443653111,
+            "scale_normalized_error": 0.0013223449835538803,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.7799695753378811,
+            "absolute_error": 0.0005693976209167895,
+            "relative_error": 0.0007294928769006466,
+            "scale_normalized_error": 0.0005693976209167895,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.014645812344007783,
+            "absolute_error": 0.014645812344007783,
+            "relative_error": null,
+            "scale_normalized_error": 0.014645812344007783,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.01465624497145095,
+            "absolute_error": 0.01465624497145095,
+            "relative_error": null,
+            "scale_normalized_error": 0.01465624497145095,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.1,
+      "exact": {
+        "radial": -0.041595519431732786,
+        "hoop": -0.6112970425517381,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": -0.04219379208815491,
+          "hoop": -0.6112646202934747,
+          "shear": -0.015806876278054896
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": -0.04111107164364799,
+          "hoop": -0.610972230929873,
+          "shear": -0.015802039713281982
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.041595519431732786,
+          "conditioning_index": 24.04105090311988,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.6112970425517381,
+          "conditioning_index": 1.6358659217877098,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": -0.04219379208815491,
+            "absolute_error": 0.0005982726564221219,
+            "relative_error": 0.014383103386988984,
+            "scale_normalized_error": 0.0005982726564221219,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.04111107164364799,
+            "absolute_error": 0.00048444778808479777,
+            "relative_error": 0.011646633933250456,
+            "scale_normalized_error": 0.00048444778808479777,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.6112646202934747,
+            "absolute_error": 3.242225826338707e-05,
+            "relative_error": 5.303846740047489e-05,
+            "scale_normalized_error": 3.242225826338707e-05,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.610972230929873,
+            "absolute_error": 0.0003248116218651509,
+            "relative_error": 0.0005313482632097961,
+            "scale_normalized_error": 0.0003248116218651509,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.015806876278054896,
+            "absolute_error": 0.015806876278054896,
+            "relative_error": null,
+            "scale_normalized_error": 0.015806876278054896,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.015802039713281982,
+            "absolute_error": 0.015802039713281982,
+            "relative_error": null,
+            "scale_normalized_error": 0.015802039713281982,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.25,
+      "exact": {
+        "radial": 0.014399999999999968,
+        "hoop": -0.2944000000000002,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.013603748489949302,
+          "hoop": -0.29478215787790196,
+          "shear": -0.01663195993301436
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.015506232745912566,
+          "hoop": -0.29419318483926876,
+          "shear": -0.016623748813892815
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.014399999999999968,
+          "conditioning_index": 69.4444444444446,
+          "ill_conditioned": true
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.2944000000000002,
+          "conditioning_index": 3.39673913043478,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.013603748489949302,
+            "absolute_error": 0.0007962515100506662,
+            "relative_error": 0.05529524375351861,
+            "scale_normalized_error": 0.0007962515100506662,
+            "verdict": "FAIL"
+          },
+          "recovered": {
+            "value": 0.015506232745912566,
+            "absolute_error": 0.0011062327459125977,
+            "relative_error": 0.0768217184661528,
+            "scale_normalized_error": 0.0011062327459125977,
+            "verdict": "FAIL"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.29478215787790196,
+            "absolute_error": 0.0003821578779017454,
+            "relative_error": 0.0012980906178727755,
+            "scale_normalized_error": 0.0003821578779017454,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.29419318483926876,
+            "absolute_error": 0.000206815160731455,
+            "relative_error": 0.0007024971492236917,
+            "scale_normalized_error": 0.000206815160731455,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.01663195993301436,
+            "absolute_error": 0.01663195993301436,
+            "relative_error": null,
+            "scale_normalized_error": 0.01663195993301436,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.016623748813892815,
+            "absolute_error": 0.016623748813892815,
+            "relative_error": null,
+            "scale_normalized_error": 0.016623748813892815,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 0.0,
+      "r_over_a": 1.5,
+      "exact": {
+        "radial": 0.18518518518518523,
+        "hoop": -0.07407407407407407,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.18855376946012178,
+          "hoop": -0.07362996193389404,
+          "shear": -0.014727979698764491
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.18678309184215872,
+          "hoop": -0.0741857283248394,
+          "shear": -0.014736245459193109
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.42264973081037416,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.18518518518518523,
+          "conditioning_index": 5.399999999999999,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.07407407407407407,
+          "conditioning_index": 13.5,
+          "ill_conditioned": false
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.18855376946012178,
+            "absolute_error": 0.0033685842749365535,
+            "relative_error": 0.018190355084657384,
+            "scale_normalized_error": 0.0033685842749365535,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.18678309184215872,
+            "absolute_error": 0.0015979066569734857,
+            "relative_error": 0.00862869594765682,
+            "scale_normalized_error": 0.0015979066569734857,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": -0.07362996193389404,
+            "absolute_error": 0.00044411214018003076,
+            "relative_error": 0.005995513892430415,
+            "scale_normalized_error": 0.00044411214018003076,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": -0.0741857283248394,
+            "absolute_error": 0.00011165425076532787,
+            "relative_error": 0.0015073323853319262,
+            "scale_normalized_error": 0.00011165425076532787,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.014727979698764491,
+            "absolute_error": 0.014727979698764491,
+            "relative_error": null,
+            "scale_normalized_error": 0.014727979698764491,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.014736245459193109,
+            "absolute_error": 0.014736245459193109,
+            "relative_error": null,
+            "scale_normalized_error": 0.014736245459193109,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    },
+    {
+      "level": 64,
+      "ray_degrees": 0.0,
+      "r_over_a": 2.0,
+      "exact": {
+        "radial": 0.46875,
+        "hoop": 0.03125,
+        "shear": -0.0
+      },
+      "raw": {
+        "stress": {
+          "radial": 0.46738928077669595,
+          "hoop": 0.030351669417907706,
+          "shear": -0.010087343234659093
+        },
+        "edge_distance": 0.0
+      },
+      "recovered": {
+        "stress": {
+          "radial": 0.4699953184493349,
+          "hoop": 0.031151737713275167,
+          "shear": -0.01007778926153272
+        },
+        "on_element_boundary": true,
+        "containing_elements": 1,
+        "spread": 0.0
+      },
+      "diagnostics": {
+        "edge_distance": 0.0,
+        "parent_radius": 1.0,
+        "gauss_distance": 0.5016510383929558,
+        "extrapolation_beyond_gauss": 0.42264973081037416,
+        "containing_elements": 1
+      },
+      "conditioning": {
+        "radial": {
+          "reference_fraction_of_scale": 0.46875,
+          "conditioning_index": 2.1333333333333333,
+          "ill_conditioned": false
+        },
+        "hoop": {
+          "reference_fraction_of_scale": 0.03125,
+          "conditioning_index": 32.0,
+          "ill_conditioned": true
+        },
+        "shear": {
+          "reference_fraction_of_scale": 0.0,
+          "conditioning_index": null,
+          "ill_conditioned": true
+        }
+      },
+      "errors": {
+        "radial": {
+          "raw": {
+            "value": 0.46738928077669595,
+            "absolute_error": 0.0013607192233040522,
+            "relative_error": 0.0029028676763819777,
+            "scale_normalized_error": 0.0013607192233040522,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.4699953184493349,
+            "absolute_error": 0.0012453184493348979,
+            "relative_error": 0.0026566793585811157,
+            "scale_normalized_error": 0.0012453184493348979,
+            "verdict": "PASS"
+          }
+        },
+        "hoop": {
+          "raw": {
+            "value": 0.030351669417907706,
+            "absolute_error": 0.0008983305820922938,
+            "relative_error": 0.0287465786269534,
+            "scale_normalized_error": 0.0008983305820922938,
+            "verdict": "PASS"
+          },
+          "recovered": {
+            "value": 0.031151737713275167,
+            "absolute_error": 9.826228672483311e-05,
+            "relative_error": 0.0031443931751946597,
+            "scale_normalized_error": 9.826228672483311e-05,
+            "verdict": "PASS"
+          }
+        },
+        "shear": {
+          "raw": {
+            "value": -0.010087343234659093,
+            "absolute_error": 0.010087343234659093,
+            "relative_error": null,
+            "scale_normalized_error": 0.010087343234659093,
+            "verdict": "WITHHELD"
+          },
+          "recovered": {
+            "value": -0.01007778926153272,
+            "absolute_error": 0.01007778926153272,
+            "relative_error": null,
+            "scale_normalized_error": 0.01007778926153272,
+            "verdict": "WITHHELD"
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "24": {
+      "level": 24,
+      "dofs": 1250,
+      "components": {
+        "radial": {
+          "raw": {
+            "pass": 2,
+            "fail": 10,
+            "withheld": 0,
+            "worst_relative_error": 0.5287612070842387,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 1.05
+            },
+            "worst_scale_normalized_error": 0.036750738557417006
+          },
+          "recovered": {
+            "pass": 5,
+            "fail": 7,
+            "withheld": 0,
+            "worst_relative_error": 0.5513830655939665,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 1.25
+            },
+            "worst_scale_normalized_error": 0.01130563069105539
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 8,
+              "worst_relative_error": 0.2905414790806915
+            },
+            "recovered": {
+              "rows": 8,
+              "worst_relative_error": 0.06105040573169909
+            }
+          }
+        },
+        "hoop": {
+          "raw": {
+            "pass": 10,
+            "fail": 2,
+            "withheld": 0,
+            "worst_relative_error": 0.27423255330056184,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 2.0
+            },
+            "worst_scale_normalized_error": 0.017372704116637383
+          },
+          "recovered": {
+            "pass": 12,
+            "fail": 0,
+            "withheld": 0,
+            "worst_relative_error": 0.01758380350594102,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 2.0
+            },
+            "worst_scale_normalized_error": 0.006260038938541879
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 11,
+              "worst_relative_error": 0.07917255144860129
+            },
+            "recovered": {
+              "rows": 11,
+              "worst_relative_error": 0.010492193408617637
+            }
+          }
+        },
+        "shear": {
+          "raw": {
+            "pass": 0,
+            "fail": 0,
+            "withheld": 12,
+            "worst_relative_error": 533922284242684.7,
+            "worst_probe": {
+              "ray_degrees": 90.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.044170064443141546
+          },
+          "recovered": {
+            "pass": 0,
+            "fail": 0,
+            "withheld": 12,
+            "worst_relative_error": 524965616300827.94,
+            "worst_probe": {
+              "ray_degrees": 90.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.0440841498560369
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 0,
+              "worst_relative_error": null
+            },
+            "recovered": {
+              "rows": 0,
+              "worst_relative_error": null
+            }
+          }
+        }
+      }
+    },
+    "32": {
+      "level": 32,
+      "dofs": 2178,
+      "components": {
+        "radial": {
+          "raw": {
+            "pass": 3,
+            "fail": 9,
+            "withheld": 0,
+            "worst_relative_error": 0.6364936366817511,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.02432483338079744
+          },
+          "recovered": {
+            "pass": 6,
+            "fail": 6,
+            "withheld": 0,
+            "worst_relative_error": 0.3210018647668237,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 1.25
+            },
+            "worst_scale_normalized_error": 0.006432182080141485
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 8,
+              "worst_relative_error": 0.3679095942498953
+            },
+            "recovered": {
+              "rows": 8,
+              "worst_relative_error": 0.034733783232764014
+            }
+          }
+        },
+        "hoop": {
+          "raw": {
+            "pass": 10,
+            "fail": 2,
+            "withheld": 0,
+            "worst_relative_error": 0.12596052691652426,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 2.0
+            },
+            "worst_scale_normalized_error": 0.010793510636403436
+          },
+          "recovered": {
+            "pass": 12,
+            "fail": 0,
+            "withheld": 0,
+            "worst_relative_error": 0.005309151140986734,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 2.0
+            },
+            "worst_scale_normalized_error": 0.0037288423878050203
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 11,
+              "worst_relative_error": 0.05161660380809618
+            },
+            "recovered": {
+              "rows": 11,
+              "worst_relative_error": 0.0034800833472748683
+            }
+          }
+        },
+        "shear": {
+          "raw": {
+            "pass": 0,
+            "fail": 0,
+            "withheld": 12,
+            "worst_relative_error": 374470698791636.25,
+            "worst_probe": {
+              "ray_degrees": 90.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.033160643750829555
+          },
+          "recovered": {
+            "pass": 0,
+            "fail": 0,
+            "withheld": 12,
+            "worst_relative_error": 395345449246161.75,
+            "worst_probe": {
+              "ray_degrees": 90.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.03314210412001182
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 0,
+              "worst_relative_error": null
+            },
+            "recovered": {
+              "rows": 0,
+              "worst_relative_error": null
+            }
+          }
+        }
+      }
+    },
+    "48": {
+      "level": 48,
+      "dofs": 4802,
+      "components": {
+        "radial": {
+          "raw": {
+            "pass": 5,
+            "fail": 7,
+            "withheld": 0,
+            "worst_relative_error": 0.29564726712260836,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.01199355845926836
+          },
+          "recovered": {
+            "pass": 11,
+            "fail": 1,
+            "withheld": 0,
+            "worst_relative_error": 0.1426648934311732,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 1.25
+            },
+            "worst_scale_normalized_error": 0.0028482040654805307
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 8,
+              "worst_relative_error": 0.17269849361478665
+            },
+            "recovered": {
+              "rows": 8,
+              "worst_relative_error": 0.015380301953594862
+            }
+          }
+        },
+        "hoop": {
+          "raw": {
+            "pass": 12,
+            "fail": 0,
+            "withheld": 0,
+            "worst_relative_error": 0.023856141967130373,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 2.0
+            },
+            "worst_scale_normalized_error": 0.005094731476181558
+          },
+          "recovered": {
+            "pass": 12,
+            "fail": 0,
+            "withheld": 0,
+            "worst_relative_error": 0.005033259339249918,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 2.0
+            },
+            "worst_scale_normalized_error": 0.0016041983357357736
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 11,
+              "worst_relative_error": 0.020930692413222172
+            },
+            "recovered": {
+              "rows": 11,
+              "worst_relative_error": 0.0014992892388180448
+            }
+          }
+        },
+        "shear": {
+          "raw": {
+            "pass": 0,
+            "fail": 0,
+            "withheld": 12,
+            "worst_relative_error": 257184020366081.25,
+            "worst_probe": {
+              "ray_degrees": 90.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.022156312775115213
+          },
+          "recovered": {
+            "pass": 0,
+            "fail": 0,
+            "withheld": 12,
+            "worst_relative_error": 263640440175221.5,
+            "worst_probe": {
+              "ray_degrees": 90.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.02214492533803465
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 0,
+              "worst_relative_error": null
+            },
+            "recovered": {
+              "rows": 0,
+              "worst_relative_error": null
+            }
+          }
+        }
+      }
+    },
+    "64": {
+      "level": 64,
+      "dofs": 8450,
+      "components": {
+        "radial": {
+          "raw": {
+            "pass": 6,
+            "fail": 6,
+            "withheld": 0,
+            "worst_relative_error": 0.13426521792587306,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.010972918662342568
+          },
+          "recovered": {
+            "pass": 11,
+            "fail": 1,
+            "withheld": 0,
+            "worst_relative_error": 0.0768217184661528,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 1.25
+            },
+            "worst_scale_normalized_error": 0.0015979066569734857
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 8,
+              "worst_relative_error": 0.07596550452207143
+            },
+            "recovered": {
+              "rows": 8,
+              "worst_relative_error": 0.00862869594765682
+            }
+          }
+        },
+        "hoop": {
+          "raw": {
+            "pass": 12,
+            "fail": 0,
+            "withheld": 0,
+            "worst_relative_error": 0.0287465786269534,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 2.0
+            },
+            "worst_scale_normalized_error": 0.003368991654620901
+          },
+          "recovered": {
+            "pass": 12,
+            "fail": 0,
+            "withheld": 0,
+            "worst_relative_error": 0.0031443931751946597,
+            "worst_probe": {
+              "ray_degrees": 0.0,
+              "r_over_a": 2.0
+            },
+            "worst_scale_normalized_error": 0.000882491979642186
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 11,
+              "worst_relative_error": 0.005995513892430415
+            },
+            "recovered": {
+              "rows": 11,
+              "worst_relative_error": 0.0015073323853319262
+            }
+          }
+        },
+        "shear": {
+          "raw": {
+            "pass": 0,
+            "fail": 0,
+            "withheld": 12,
+            "worst_relative_error": 195629129174864.84,
+            "worst_probe": {
+              "ray_degrees": 90.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.01663195993301436
+          },
+          "recovered": {
+            "pass": 0,
+            "fail": 0,
+            "withheld": 12,
+            "worst_relative_error": 197788301137764.84,
+            "worst_probe": {
+              "ray_degrees": 90.0,
+              "r_over_a": 1.02
+            },
+            "worst_scale_normalized_error": 0.016623748813892815
+          },
+          "well_conditioned": {
+            "raw": {
+              "rows": 0,
+              "worst_relative_error": null
+            },
+            "recovered": {
+              "rows": 0,
+              "worst_relative_error": null
+            }
+          }
+        }
+      }
+    }
+  },
+  "convergence": [
+    {
+      "ray_degrees": 90.0,
+      "r_over_a": 1.02,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.17769884882065567,
+          0.3679095942498953,
+          0.17269849361478665,
+          0.07596550452207143
+        ],
+        "observed_orders": [
+          -2.529691812439394,
+          1.8652405903861624,
+          2.8547761290091427
+        ],
+        "mean_order": 0.7301083023186369,
+        "monotone": false
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.05250314914642633,
+          0.032111866975022926,
+          0.013709938443035006,
+          0.007499564219496267
+        ],
+        "observed_orders": [
+          1.7089959684879437,
+          2.0990823349819316,
+          2.0970235778125006
+        ],
+        "mean_order": 1.9683672937607917,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.0014933869114030498,
+          0.0036359734444496765,
+          0.0016572600262049016,
+          0.0008033197315614566
+        ],
+        "observed_orders": [
+          -3.0931028475684936,
+          1.9378023041783017,
+          2.51725148817701
+        ],
+        "mean_order": 0.4539836482622726,
+        "monotone": false
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.0021839738391450157,
+          0.0013009015287623867,
+          0.000559665400238383,
+          0.00030787977770035344
+        ],
+        "observed_orders": [
+          1.800906699537625,
+          2.080262060326128,
+          2.077396501822678
+        ],
+        "mean_order": 1.9861884205621436,
+        "monotone": true
+      }
+    },
+    {
+      "ray_degrees": 90.0,
+      "r_over_a": 1.05,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.2905414790806915,
+          0.19230560653377493,
+          0.09481785539499872,
+          0.046370696809684135
+        ],
+        "observed_orders": [
+          1.434432602637094,
+          1.743992401804176,
+          2.4863906465277523
+        ],
+        "mean_order": 1.8882718836563406,
+        "monotone": true
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.03173885631936649,
+          0.017397827537687347,
+          0.007367131448110186,
+          0.003993817449254257
+        ],
+        "observed_orders": [
+          2.089794238026406,
+          2.1193363293578984,
+          2.1283247768884297
+        ],
+        "mean_order": 2.1124851147575785,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.006464097354424123,
+          0.004016087713305777,
+          0.0018956657544836441,
+          0.0009593720082473128
+        ],
+        "observed_orders": [
+          1.6544484505207608,
+          1.851548036164409,
+          2.3673580328072843
+        ],
+        "mean_order": 1.9577848398308182,
+        "monotone": true
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.0019881836088114007,
+          0.001075641035752132,
+          0.0004468217043432672,
+          0.00023892995972891833
+        ],
+        "observed_orders": [
+          2.135359569359184,
+          2.166678252382749,
+          2.1759756683410103
+        ],
+        "mean_order": 2.159337830027648,
+        "monotone": true
+      }
+    },
+    {
+      "ray_degrees": 90.0,
+      "r_over_a": 1.1,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.0791004656764528,
+          0.10293822799776692,
+          0.04430194865218164,
+          0.014660425889481299
+        ],
+        "observed_orders": [
+          -0.9156299381328382,
+          2.079341476162895,
+          3.8440939580694686
+        ],
+        "mean_order": 1.6692684986998418,
+        "monotone": false
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.014740706820629201,
+          0.009325884901797515,
+          0.003829184297034422,
+          0.002051343689228184
+        ],
+        "observed_orders": [
+          1.591406018456042,
+          2.195360428377895,
+          2.169606056168672
+        ],
+        "mean_order": 1.9854575010008695,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.003592628194609817,
+          0.001789779789891532,
+          0.000793513429502958,
+          0.00018624057823795974
+        ],
+        "observed_orders": [
+          2.4220884759121284,
+          2.0060355093005136,
+          5.038309069875242
+        ],
+        "mean_order": 3.1554776850292945,
+        "monotone": true
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.0009982800050138522,
+          0.0006911119754411455,
+          0.0002532481280370886,
+          0.00012550707052788604
+        ],
+        "observed_orders": [
+          1.2782581164607916,
+          2.476001233191266,
+          2.440220377680557
+        ],
+        "mean_order": 2.064826575777538,
+        "monotone": true
+      }
+    },
+    {
+      "ray_degrees": 90.0,
+      "r_over_a": 1.25,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.08111725858822698,
+          0.013047256516756965,
+          0.01647220580467492,
+          0.03175034335168568
+        ],
+        "observed_orders": [
+          6.351865606737466,
+          -0.5748869042797692,
+          -2.281091310464618
+        ],
+        "mean_order": 1.165295797331026,
+        "monotone": false
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.00014039962129240122,
+          0.001309631585777608,
+          0.0005146927487647689,
+          6.64673759929293e-05
+        ],
+        "observed_orders": [
+          -7.762069882004695,
+          2.303357323357468,
+          7.115003239956926
+        ],
+        "mean_order": 0.5520968937698996,
+        "monotone": false
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.00452748686367527,
+          0.0009573942261494604,
+          0.0007875633290682815,
+          0.0017416209959785465
+        ],
+        "observed_orders": [
+          5.400778118985278,
+          0.481598679993559,
+          -2.7586973818763734
+        ],
+        "mean_order": 1.041226472367488,
+        "monotone": false
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.000255341613944845,
+          0.00038052661840878236,
+          0.0001431377447391599,
+          5.695761187608974e-05
+        ],
+        "observed_orders": [
+          -1.386787215174977,
+          2.411425040385358,
+          3.2031890927751805
+        ],
+        "mean_order": 1.4092756393285206,
+        "monotone": false
+      }
+    },
+    {
+      "ray_degrees": 90.0,
+      "r_over_a": 1.5,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.0157043511885552,
+          0.01378473918555494,
+          0.006810053676586375,
+          0.002652937544011913
+        ],
+        "observed_orders": [
+          0.45319367480661915,
+          1.7391437829738152,
+          3.276994151523919
+        ],
+        "mean_order": 1.8231105364347844,
+        "monotone": true
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.013077880362679645,
+          0.006613814570889349,
+          0.003167022978715395,
+          0.0018613365483615308
+        ],
+        "observed_orders": [
+          2.3698442415518812,
+          1.8161083170625718,
+          1.847515956107712
+        ],
+        "mean_order": 2.0111561715740547,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.0010372899464597771,
+          0.0018530631769983282,
+          0.0009926827081646415,
+          0.0005136559371391972
+        ],
+        "observed_orders": [
+          -2.016908960772085,
+          1.5394277416547553,
+          2.29022761312217
+        ],
+        "mean_order": 0.6042487980016135,
+        "monotone": false
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.001663292311513761,
+          0.0003067073251132868,
+          0.00032148187065345464,
+          0.00024567165809572303
+        ],
+        "observed_orders": [
+          5.876835732133448,
+          -0.11603266665509904,
+          0.9348696243299421
+        ],
+        "mean_order": 2.231890896602764,
+        "monotone": false
+      }
+    },
+    {
+      "ray_degrees": 90.0,
+      "r_over_a": 2.0,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.010242190945513683,
+          0.017364185634707416,
+          0.004942030606891813,
+          0.0007175797036994188
+        ],
+        "observed_orders": [
+          -1.8349917581352808,
+          3.0992395208966377,
+          6.707569702011596
+        ],
+        "mean_order": 2.6572724882576506,
+        "monotone": false
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.018088307743248124,
+          0.01010813053366455,
+          0.004464791173482752,
+          0.002523195373894696
+        ],
+        "observed_orders": [
+          2.0228081652836307,
+          2.0152601134373063,
+          1.983774431674465
+        ],
+        "mean_order": 2.007280903465134,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.0033907887199306356,
+          0.00022308249646166644,
+          0.0003796538924744616,
+          0.00046450804988295836
+        ],
+        "observed_orders": [
+          9.459317949596484,
+          -1.3113788965599866,
+          -0.7011867586727428
+        ],
+        "mean_order": 2.482250764787918,
+        "monotone": false
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.0017223519386117931,
+          0.0007889125641307113,
+          0.0005052788058030261,
+          0.0002999092946212319
+        ],
+        "observed_orders": [
+          2.714074391781223,
+          1.0988494930259405,
+          1.81321792319739
+        ],
+        "mean_order": 1.8753806026681845,
+        "monotone": true
+      }
+    },
+    {
+      "ray_degrees": 0.0,
+      "r_over_a": 1.02,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.11784418135131672,
+          0.6364936366817511,
+          0.29564726712260836,
+          0.13426521792587306
+        ],
+        "observed_orders": [
+          -5.862760760157975,
+          1.891179602524145,
+          2.743827551646469
+        ],
+        "mean_order": -0.4092512019957872,
+        "monotone": false
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.10123543296455036,
+          0.05112625497708885,
+          0.023997597705898235,
+          0.013979512906982182
+        ],
+        "observed_orders": [
+          2.3746723477345753,
+          1.8653748902570617,
+          1.8783264145709806
+        ],
+        "mean_order": 2.0394578841875393,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.004700371723746899,
+          0.0067903126998445345,
+          0.0030549517204276136,
+          0.0015227593503557987
+        ],
+        "observed_orders": [
+          -1.2786872488227046,
+          1.9699184676955552,
+          2.4201707529014542
+        ],
+        "mean_order": 1.037133990591435,
+        "monotone": false
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.0058563206889803415,
+          0.0034800833472748683,
+          0.0014992892388180448,
+          0.0008255843261985947
+        ],
+        "observed_orders": [
+          1.8091683271066847,
+          2.07678804416165,
+          2.0740083631638355
+        ],
+        "mean_order": 1.98665491147739,
+        "monotone": true
+      }
+    },
+    {
+      "ray_degrees": 0.0,
+      "r_over_a": 1.05,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.5287612070842387,
+          0.34067351949278907,
+          0.1648864350528173,
+          0.08173055670503676
+        ],
+        "observed_orders": [
+          1.5281186067636063,
+          1.7897165965323094,
+          2.4395994353247237
+        ],
+        "mean_order": 1.919144879540213,
+        "monotone": true
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.05175450177350967,
+          0.030250203815864674,
+          0.014361422278601708,
+          0.008455539743213626
+        ],
+        "observed_orders": [
+          1.8666734858001237,
+          1.837290815128753,
+          1.8413513959896288
+        ],
+        "mean_order": 1.848438565639502,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.011967421705590195,
+          0.007203699087793411,
+          0.0033105515844335407,
+          0.001694143443653111
+        ],
+        "observed_orders": [
+          1.7644250105662227,
+          1.917501218745895,
+          2.3287427732041763
+        ],
+        "mean_order": 2.003556334172098,
+        "monotone": true
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.005980581610013927,
+          0.0032473694721899143,
+          0.0013575161687240061,
+          0.0007294928769006466
+        ],
+        "observed_orders": [
+          2.1227341064201317,
+          2.151081744335589,
+          2.1588497105484508
+        ],
+        "mean_order": 2.144221853768057,
+        "monotone": true
+      }
+    },
+    {
+      "ray_degrees": 0.0,
+      "r_over_a": 1.1,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.18878534870733146,
+          0.12147638939792053,
+          0.05346406803170535,
+          0.014383103386988984
+        ],
+        "observed_orders": [
+          1.5325624110084912,
+          2.0241201988952047,
+          4.563911994102474
+        ],
+        "mean_order": 2.706864868002057,
+        "monotone": true
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.08240540664661423,
+          0.042918087137914264,
+          0.020106705010911868,
+          0.011646633933250456
+        ],
+        "observed_orders": [
+          2.2676341808836034,
+          1.8700499536294168,
+          1.8980540981338827
+        ],
+        "mean_order": 2.011912744215634,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.006539449858260436,
+          0.0006476848954497781,
+          0.00040384883210376046,
+          5.303846740047489e-05
+        ],
+        "observed_orders": [
+          8.037358727451023,
+          1.1649921687596994,
+          7.056481352423323
+        ],
+        "mean_order": 5.419610749544682,
+        "monotone": true
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.004091368817019249,
+          0.002715746319627015,
+          0.0010388774032659997,
+          0.0005313482632097961
+        ],
+        "observed_orders": [
+          1.424533623259918,
+          2.3699353500355707,
+          2.3306225317238236
+        ],
+        "mean_order": 2.041697168339771,
+        "monotone": true
+      }
+    },
+    {
+      "ray_degrees": 0.0,
+      "r_over_a": 1.25,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.04678883257389646,
+          0.1713320368241752,
+          0.0058636984174090375,
+          0.05529524375351861
+        ],
+        "observed_orders": [
+          -4.511782205575302,
+          8.323337343549566,
+          -7.799952022976274
+        ],
+        "mean_order": -1.3294656283340034,
+        "monotone": false
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.5513830655939665,
+          0.3210018647668237,
+          0.1426648934311732,
+          0.0768217184661528
+        ],
+        "observed_orders": [
+          1.8804885876200832,
+          2.000044981733804,
+          2.1517193603228844
+        ],
+        "mean_order": 2.0107509765589238,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.003333952874469533,
+          0.0016870654502848241,
+          0.001681719371053345,
+          0.0012980906178727755
+        ],
+        "observed_orders": [
+          2.367780668189248,
+          0.007827786864650793,
+          0.9000292360946568
+        ],
+        "mean_order": 1.0918792303828517,
+        "monotone": true
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.004176997242412308,
+          0.00010956265143494027,
+          7.495594205800526e-05,
+          0.0007024971492236917
+        ],
+        "observed_orders": [
+          12.65581594440281,
+          0.9361990355483846,
+          -7.77852030327849
+        ],
+        "mean_order": 1.9378315588909016,
+        "monotone": false
+      }
+    },
+    {
+      "ray_degrees": 0.0,
+      "r_over_a": 1.5,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.03469777595468823,
+          0.10055808734356002,
+          0.0444957710215173,
+          0.018190355084657384
+        ],
+        "observed_orders": [
+          -3.6987357036419066,
+          2.0108792996303246,
+          3.1093443904836517
+        ],
+        "mean_order": 0.47382932882402323,
+        "monotone": false
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.06105040573169909,
+          0.034733783232764014,
+          0.015380301953594862,
+          0.00862869594765682
+        ],
+        "observed_orders": [
+          1.9604525512972777,
+          2.0091129433270662,
+          2.009142262606659
+        ],
+        "mean_order": 1.9929025857436677,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.07917255144860129,
+          0.05161660380809618,
+          0.020930692413222172,
+          0.005995513892430415
+        ],
+        "observed_orders": [
+          1.4870105131382054,
+          2.22615155696757,
+          4.34578735689308
+        ],
+        "mean_order": 2.686316475666285,
+        "monotone": true
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.010492193408617637,
+          0.0027491645659056888,
+          0.0011722161559016495,
+          0.0015073323853319262
+        ],
+        "observed_orders": [
+          4.65560614544339,
+          2.102279448341343,
+          -0.8740389924407509
+        ],
+        "mean_order": 1.9612822004479942,
+        "monotone": false
+      }
+    },
+    {
+      "ray_degrees": 0.0,
+      "r_over_a": 2.0,
+      "radial_raw": {
+        "relative_error_sequence": [
+          0.03737467980357181,
+          0.0406860814720955,
+          0.011403070729065235,
+          0.0029028676763819777
+        ],
+        "observed_orders": [
+          -0.295091696603863,
+          3.1371463255993706,
+          4.75588752313969
+        ],
+        "mean_order": 2.5326473840450663,
+        "monotone": false
+      },
+      "radial_recovered": {
+        "relative_error_sequence": [
+          0.01959060022130963,
+          0.011181273908761943,
+          0.004741752364284461,
+          0.0026566793585811157
+        ],
+        "observed_orders": [
+          1.9494070635433542,
+          2.1156780815825607,
+          2.013784793919233
+        ],
+        "mean_order": 2.026289979681716,
+        "monotone": true
+      },
+      "hoop_raw": {
+        "relative_error_sequence": [
+          0.27423255330056184,
+          0.12596052691652426,
+          0.023856141967130373,
+          0.0287465786269534
+        ],
+        "observed_orders": [
+          2.7044017551396,
+          4.103748601661626,
+          -0.6482053097186631
+        ],
+        "mean_order": 2.0533150156941877,
+        "monotone": false
+      },
+      "hoop_recovered": {
+        "relative_error_sequence": [
+          0.01758380350594102,
+          0.005309151140986734,
+          0.005033259339249918,
+          0.0031443931751946597
+        ],
+        "observed_orders": [
+          4.162742053331581,
+          0.1316123304317847,
+          1.6353011772767034
+        ],
+        "mean_order": 1.976551853680023,
+        "monotone": true
+      }
+    }
+  ],
+  "controls": {
+    "constant_field": {
+      "label": "constant stress field, single Q4",
+      "max_abs_deviation_from_exact": 2.220446049250313e-16,
+      "verdict": "PASS"
+    },
+    "perturbed_field": {
+      "label": "recovered field scaled by 1.05",
+      "factor": 1.05,
+      "rows": 19,
+      "fail_rows": 19,
+      "min_failing_relative_error": 0.04735064485741071,
+      "verdict": "PASS (gate rejects the perturbed field)"
+    },
+    "coarse_level": {
+      "level": 24,
+      "worst_relative_error": 0.06105040573169909,
+      "fail_rows": 7,
+      "verdict": "PASS (gate rejects the coarse level)"
+    }
+  },
+  "figures": [
+    {
+      "name": "kirsch_error_vs_level",
+      "path": "docs/assets/kirsch-conditioning/kirsch_error_vs_level.png",
+      "caption": "Worst relative error of the well-conditioned probes against the Kirsch closed form, per symmetry ray. Dashed: element-local pointwise protocol of the certification material. Solid: same displacement solution, production Barlow + area-weighted nodal recovery. Dotted line: 3 % acceptance."
+    },
+    {
+      "name": "kirsch_conditioning",
+      "path": "docs/assets/kirsch-conditioning/kirsch_conditioning.png",
+      "caption": "Relative error versus the size of the reference itself (finest level, radial and hoop probes). The dashed hyperbola is a fixed absolute error equal to the measured floor of the raw protocol: the measured points track it, so on small references the relative verdict reports the denominator, not the field. Dash-dot: 5 %-of-scale ill-conditioning boundary; dotted vertical: inherited 1 % withholding floor."
+    },
+    {
+      "name": "kirsch_field_clouds",
+      "path": "docs/assets/kirsch-conditioning/kirsch_field_clouds.png",
+      "caption": "Quarter annulus R/a = 10 at the finest level: analytic radial stress, the recovered nodal field, and their pointwise difference (units of the far-field tension)."
+    }
+  ]
+}
