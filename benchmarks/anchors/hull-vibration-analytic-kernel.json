@@ -1,0 +1,779 @@
+{
+  "benchmark": "anchors/hull-vibration-analytic-kernel",
+  "task_key": "paper-exp-hull-vibration-analytic-kernel-1",
+  "mission_id": 7501,
+  "topic": "hull-vibration-analytic-kernel",
+  "repository": "TensorFEM",
+  "generated_by": "benchmarks/anchors/hull_vibration_anchor.py",
+  "script_sha256": "f3d5ce21c58382bd0a7211e8637051622f10c5a1755c713283df46eac997de40",
+  "external_anchor": {
+    "standard": "ISO 6954:2000",
+    "title": "Mechanical vibration - Guidelines for the measurement, reporting and evaluation of vibration with regard to habitability on passenger and merchant ships",
+    "quantity_in_scope_per_mission_brief": "frequency-weighted r.m.s. velocity, mm/s, over the 1-80 Hz band",
+    "quantity_corroboration": "the mission brief states the quantity is a frequency-weighted r.m.s. velocity; this is a platform-provided claim, NOT yet corroborated by the licensed text",
+    "verification_status": "WITHHELD",
+    "n_verified_records": 0,
+    "candidate_registrations": [
+      {
+        "key": "tensorfem_accel_ladder",
+        "provenance": "TensorFEM:src/tensorfem/hull_girder_vibration_chain.py:484",
+        "claimed_quantity": "acceleration",
+        "unit": "m/s^2 (frequency-weighted r.m.s.)",
+        "ladder": {
+          "A": 0.2,
+          "B": 0.4,
+          "C": 0.8
+        },
+        "citation_quote": null,
+        "table_or_clause": null,
+        "page": null,
+        "printed_values": null,
+        "missing_citation_pillars": [
+          "citation_quote",
+          "table_or_clause",
+          "page",
+          "printed_values"
+        ],
+        "status": "UNCITED_CANDIDATE",
+        "usable_for_compliance_claim": false,
+        "note": "iso6954_grade() attributes this acceleration ladder to ISO 6954:2000; the module header quotes the 1984-edition title and carries no table number, no page and no printed value string."
+      },
+      {
+        "key": "tensorfem_weighting",
+        "provenance": "TensorFEM:src/tensorfem/hull_girder_vibration_chain.py:429",
+        "claimed_quantity": "acceleration",
+        "unit": "dimensionless weighting ordinate",
+        "ladder": {
+          "plateau_value": 0.5
+        },
+        "citation_quote": null,
+        "table_or_clause": null,
+        "page": null,
+        "printed_values": null,
+        "missing_citation_pillars": [
+          "citation_quote",
+          "table_or_clause",
+          "page",
+          "printed_values"
+        ],
+        "status": "UNCITED_CANDIDATE",
+        "usable_for_compliance_claim": false,
+        "note": "iso6954_weighted_rms(weighting='Wk') uses a piecewise band approximation with a 0.5 plateau over 4-8 Hz; the ordinates are not traceable to a cited table."
+      },
+      {
+        "key": "ship_platform_velocity_ladder",
+        "provenance": "ship-performance-platform:backend/modules/ice_operability/iso2631.py:67",
+        "claimed_quantity": "velocity",
+        "unit": "mm/s (frequency-weighted r.m.s.)",
+        "ladder": {
+          "A": 4.0,
+          "B": 6.0,
+          "C": 8.0
+        },
+        "citation_quote": null,
+        "table_or_clause": null,
+        "page": null,
+        "printed_values": null,
+        "missing_citation_pillars": [
+          "citation_quote",
+          "table_or_clause",
+          "page",
+          "printed_values"
+        ],
+        "status": "UNCITED_CANDIDATE",
+        "usable_for_compliance_claim": false,
+        "note": "ISO6954_ZONES attributes 4/6/8 mm/s to zones A/B/C of the same standard; no quote, no table number, no page."
+      },
+      {
+        "key": "kb_chapter_quantity_claim",
+        "provenance": "ship-performance-platform:knowledge-center/books/chapters/\u8239\u8236\u603b\u4f53\u6027\u80fd\u4e0eAI\u8d4b\u80fd\u6846\u67b6_\u7b2c\u4e5d\u7ae0_\u632f\u52a8\u566a\u58f0\u4e0e\u667a\u80fd\u63a7\u5236.md:47",
+        "claimed_quantity": "acceleration",
+        "unit": "unspecified r.m.s.",
+        "ladder": {},
+        "citation_quote": null,
+        "table_or_clause": null,
+        "page": null,
+        "printed_values": null,
+        "missing_citation_pillars": [
+          "citation_quote",
+          "table_or_clause",
+          "page",
+          "printed_values"
+        ],
+        "status": "UNCITED_CANDIDATE",
+        "usable_for_compliance_claim": false,
+        "note": "Internal knowledge-base chapter states the standard limits the r.m.s. of the vibration acceleration -- a third, mutually inconsistent statement of the quantity in scope; no citation."
+      }
+    ],
+    "acquisition_attempts": [
+      {
+        "target": "licensed standard text inside the working environment",
+        "method": "filesystem scan of the worktree, benchmarks/, docs/ and the ship-performance-platform knowledge-center",
+        "outcome": "NOT_FOUND",
+        "evidence": "no ISO 6954:2000 document exists here; the only hits are the uncited code constants and prose in candidate_registry()"
+      },
+      {
+        "target": "iso.org catalogue page",
+        "method": "HTTPS GET https://www.iso.org/standard/23714.html",
+        "outcome": "HTTP 403 (automated access refused)",
+        "evidence": "no text retrieved; the catalogue page would only expose the scope abstract, never the limit table"
+      },
+      {
+        "target": "ISO Online Browsing Platform preview",
+        "method": "review decision",
+        "outcome": "NOT_ATTEMPTED",
+        "evidence": "client-side rendered and, by design, withholds the tables; a licensed copy is required"
+      }
+    ],
+    "candidate_values_used_as_reference": [],
+    "candidate_values_role": "cross-check only; per the task rule no uncited candidate value is cited as a benchmark or used in any pass/fail decision",
+    "conclusion": "the external anchor is NOT yet closed: no licensed copy of the standard exists in this environment, so no verbatim quote / table number / page can be recorded, and the four candidate registrations in the ecosystem stay uncited and mutually inconsistent (acceleration vs velocity; 0.2 m/s^2 vs 4 mm/s)."
+  },
+  "case_conventions": {
+    "source": "src/tensorfem/hull_girder_vibration_chain.py::run_hull_girder_vibration_chain (defaults, n_elements=20)",
+    "ship": {
+      "L_m": 200.0,
+      "B_m": 32.0,
+      "D_m": 16.0,
+      "Cb": 0.65,
+      "T_m": 8.0
+    },
+    "propeller": {
+      "n_blades": 5,
+      "rpm": 90.0,
+      "f_blade_hz": 7.5
+    },
+    "natural_frequencies_hz": [
+      2.819559688396687,
+      7.7723344534061996,
+      15.2375791975297,
+      25.191152185779238,
+      37.6388353200917
+    ],
+    "case_quantity": {
+      "a_w_m_s2": 0.03128089689319412,
+      "unit": "m/s^2 (frequency-weighted r.m.s. acceleration, case kernel output)",
+      "kernel_grade_under_candidate_accel_ladder": "A"
+    },
+    "propeller_bandwidth_hz": 0.5,
+    "relative_half_width": 0.06666666666666667
+  },
+  "case_value_in_standard_kou_jing": {
+    "a_w_m_s2": 0.03128089689319412,
+    "f_blade_hz": 7.5,
+    "v_w_mm_s_single_frequency_conversion": 0.6638012486533008,
+    "conversion": "v_w[mm/s] = a_w/(2*pi*f_b)*1000 (valid for a narrowband component; error = table bandwidth_validity_rows)",
+    "applicability_error_at_case_bandwidth": 0.002654245491299223,
+    "margin_to_candidate_A_accel": 6.393678566279045,
+    "margin_to_candidate_A_velocity": 6.02590008397103,
+    "note": "the value is derived from the case kernel output; it is NOT compared against a verified limit because none exists yet"
+  },
+  "conversion_chain": {
+    "steps": [
+      {
+        "step": 1,
+        "from": "weighted r.m.s. velocity limit [mm/s]",
+        "to": "r.m.s. velocity [m/s]",
+        "operation": "divide by 1000 (dimensionless scale)",
+        "dimension_in": "L^1 T^-1",
+        "dimension_out": "L^1 T^-1"
+      },
+      {
+        "step": 2,
+        "from": "r.m.s. velocity at f",
+        "to": "r.m.s. acceleration at f",
+        "operation": "multiply by 2*pi*f",
+        "dimension_in": "L^1 T^-2",
+        "dimension_out": "L^1 T^-2"
+      },
+      {
+        "step": 3,
+        "from": "case weighted r.m.s. acceleration",
+        "to": "velocity \u53e3\u5f84",
+        "operation": "divide by 2*pi*f_blade",
+        "dimension_in": "L^1 T^-2",
+        "dimension_out": "L^1 T^-1"
+      }
+    ],
+    "dimensional_check": {
+      "chains": {
+        "velocity_to_acceleration": {
+          "derived_dimension": "L^1 T^-2",
+          "required_dimension": "L^1 T^-2",
+          "closed": true
+        },
+        "acceleration_to_velocity": {
+          "derived_dimension": "L^1 T^-1",
+          "required_dimension": "L^1 T^-1",
+          "closed": true
+        },
+        "velocity_integrand (W/(2 pi f))^2 S_aa": {
+          "derived_dimension": "L^2 T^-2",
+          "required_dimension": "L^2 T^-2",
+          "closed": true
+        },
+        "acceleration_integrand W^2 S_aa": {
+          "derived_dimension": "L^2 T^-4",
+          "required_dimension": "L^2 T^-4",
+          "closed": true
+        },
+        "mm_to_m_scale": {
+          "derived_dimension": "L^0 T^0",
+          "required_dimension": "L^0 T^0",
+          "closed": true
+        },
+        "sqrt_velocity_integrand": {
+          "derived_dimension": "L^1 T^-1",
+          "required_dimension": "L^1 T^-1",
+          "closed": true
+        }
+      },
+      "violations": [],
+      "n_violations": 0,
+      "status": "PASS"
+    },
+    "recompute_residual": 0.0
+  },
+  "machine_checks": {
+    "dimensional_homogeneity": {
+      "chains": {
+        "velocity_to_acceleration": {
+          "derived_dimension": "L^1 T^-2",
+          "required_dimension": "L^1 T^-2",
+          "closed": true
+        },
+        "acceleration_to_velocity": {
+          "derived_dimension": "L^1 T^-1",
+          "required_dimension": "L^1 T^-1",
+          "closed": true
+        },
+        "velocity_integrand (W/(2 pi f))^2 S_aa": {
+          "derived_dimension": "L^2 T^-2",
+          "required_dimension": "L^2 T^-2",
+          "closed": true
+        },
+        "acceleration_integrand W^2 S_aa": {
+          "derived_dimension": "L^2 T^-4",
+          "required_dimension": "L^2 T^-4",
+          "closed": true
+        },
+        "mm_to_m_scale": {
+          "derived_dimension": "L^0 T^0",
+          "required_dimension": "L^0 T^0",
+          "closed": true
+        },
+        "sqrt_velocity_integrand": {
+          "derived_dimension": "L^1 T^-1",
+          "required_dimension": "L^1 T^-1",
+          "closed": true
+        }
+      },
+      "violations": [],
+      "n_violations": 0,
+      "status": "PASS"
+    },
+    "weighting_continuity": {
+      "breakpoints": [
+        {
+          "breakpoint_hz": 4.0,
+          "left": 0.499999999875,
+          "right": 0.5,
+          "abs_jump": 1.2500001034254637e-10
+        },
+        {
+          "breakpoint_hz": 8.0,
+          "left": 0.5,
+          "right": 0.4999999999375,
+          "abs_jump": 6.250000517127319e-11
+        },
+        {
+          "breakpoint_hz": 16.0,
+          "left": 0.250000000015625,
+          "right": 0.249999999984375,
+          "abs_jump": 3.1250002585636594e-11
+        }
+      ],
+      "max_abs_jump": 1.2500001034254637e-10,
+      "threshold": 1e-06,
+      "status": "PASS",
+      "observation": "segments join continuously, but the ordinates (0.5 plateau, 12 dB/oct skirts) are not traceable to a cited table"
+    },
+    "weighting_replication": {
+      "a_w_repository_m_s2": 0.395706559246758,
+      "a_w_local_operator_m_s2": 0.395706559246758,
+      "relative_residual": 0.0,
+      "threshold": 1e-09,
+      "status": "PASS"
+    },
+    "integration_independence": {
+      "value_repository_integrator": 0.395706559246758,
+      "value_independent_trapezoid": 0.395706559246758,
+      "relative_residual": 0.0,
+      "threshold": 1e-09,
+      "status": "PASS"
+    },
+    "conversion_bandwidth_validity": [
+      {
+        "relative_half_width": 0.01,
+        "ratio_R": 1.0000500037505624,
+        "relative_error": 5.000375056241069e-05
+      },
+      {
+        "relative_half_width": 0.02,
+        "ratio_R": 1.0002000600210084,
+        "relative_error": 0.00020006002100836362
+      },
+      {
+        "relative_half_width": 0.05,
+        "ratio_R": 1.0012523486498122,
+        "relative_error": 0.0012523486498121628
+      },
+      {
+        "relative_half_width": 0.1,
+        "ratio_R": 1.0054580391742733,
+        "relative_error": 0.005458039174273344
+      },
+      {
+        "relative_half_width": 0.2,
+        "ratio_R": 1.026058275321012,
+        "relative_error": 0.026058275321011903
+      },
+      {
+        "relative_half_width": 0.3,
+        "ratio_R": 1.0632423073834498,
+        "relative_error": 0.06324230738344983
+      }
+    ],
+    "cross_registration_deviation_max": 9.053096491487338
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "claim": "verbatim transcription of the frequency-weighted r.m.s. velocity limit curve with quote + table/page + printed value",
+      "threshold": ">= 1 verified record",
+      "measured": 0,
+      "unit": "verified records",
+      "status": "WITHHELD",
+      "verdict": "FAIL",
+      "evidence": {
+        "verified_records": [],
+        "candidate_records": [
+          {
+            "key": "tensorfem_accel_ladder",
+            "provenance": "TensorFEM:src/tensorfem/hull_girder_vibration_chain.py:484",
+            "claimed_quantity": "acceleration",
+            "unit": "m/s^2 (frequency-weighted r.m.s.)",
+            "ladder": {
+              "A": 0.2,
+              "B": 0.4,
+              "C": 0.8
+            },
+            "citation_quote": null,
+            "table_or_clause": null,
+            "page": null,
+            "printed_values": null,
+            "missing_citation_pillars": [
+              "citation_quote",
+              "table_or_clause",
+              "page",
+              "printed_values"
+            ],
+            "status": "UNCITED_CANDIDATE",
+            "usable_for_compliance_claim": false,
+            "note": "iso6954_grade() attributes this acceleration ladder to ISO 6954:2000; the module header quotes the 1984-edition title and carries no table number, no page and no printed value string."
+          },
+          {
+            "key": "tensorfem_weighting",
+            "provenance": "TensorFEM:src/tensorfem/hull_girder_vibration_chain.py:429",
+            "claimed_quantity": "acceleration",
+            "unit": "dimensionless weighting ordinate",
+            "ladder": {
+              "plateau_value": 0.5
+            },
+            "citation_quote": null,
+            "table_or_clause": null,
+            "page": null,
+            "printed_values": null,
+            "missing_citation_pillars": [
+              "citation_quote",
+              "table_or_clause",
+              "page",
+              "printed_values"
+            ],
+            "status": "UNCITED_CANDIDATE",
+            "usable_for_compliance_claim": false,
+            "note": "iso6954_weighted_rms(weighting='Wk') uses a piecewise band approximation with a 0.5 plateau over 4-8 Hz; the ordinates are not traceable to a cited table."
+          },
+          {
+            "key": "ship_platform_velocity_ladder",
+            "provenance": "ship-performance-platform:backend/modules/ice_operability/iso2631.py:67",
+            "claimed_quantity": "velocity",
+            "unit": "mm/s (frequency-weighted r.m.s.)",
+            "ladder": {
+              "A": 4.0,
+              "B": 6.0,
+              "C": 8.0
+            },
+            "citation_quote": null,
+            "table_or_clause": null,
+            "page": null,
+            "printed_values": null,
+            "missing_citation_pillars": [
+              "citation_quote",
+              "table_or_clause",
+              "page",
+              "printed_values"
+            ],
+            "status": "UNCITED_CANDIDATE",
+            "usable_for_compliance_claim": false,
+            "note": "ISO6954_ZONES attributes 4/6/8 mm/s to zones A/B/C of the same standard; no quote, no table number, no page."
+          },
+          {
+            "key": "kb_chapter_quantity_claim",
+            "provenance": "ship-performance-platform:knowledge-center/books/chapters/\u8239\u8236\u603b\u4f53\u6027\u80fd\u4e0eAI\u8d4b\u80fd\u6846\u67b6_\u7b2c\u4e5d\u7ae0_\u632f\u52a8\u566a\u58f0\u4e0e\u667a\u80fd\u63a7\u5236.md:47",
+            "claimed_quantity": "acceleration",
+            "unit": "unspecified r.m.s.",
+            "ladder": {},
+            "citation_quote": null,
+            "table_or_clause": null,
+            "page": null,
+            "printed_values": null,
+            "missing_citation_pillars": [
+              "citation_quote",
+              "table_or_clause",
+              "page",
+              "printed_values"
+            ],
+            "status": "UNCITED_CANDIDATE",
+            "usable_for_compliance_claim": false,
+            "note": "Internal knowledge-base chapter states the standard limits the r.m.s. of the vibration acceleration -- a third, mutually inconsistent statement of the quantity in scope; no citation."
+          }
+        ],
+        "acquisition_attempts": [
+          {
+            "target": "licensed standard text inside the working environment",
+            "method": "filesystem scan of the worktree, benchmarks/, docs/ and the ship-performance-platform knowledge-center",
+            "outcome": "NOT_FOUND",
+            "evidence": "no ISO 6954:2000 document exists here; the only hits are the uncited code constants and prose in candidate_registry()"
+          },
+          {
+            "target": "iso.org catalogue page",
+            "method": "HTTPS GET https://www.iso.org/standard/23714.html",
+            "outcome": "HTTP 403 (automated access refused)",
+            "evidence": "no text retrieved; the catalogue page would only expose the scope abstract, never the limit table"
+          },
+          {
+            "target": "ISO Online Browsing Platform preview",
+            "method": "review decision",
+            "outcome": "NOT_ATTEMPTED",
+            "evidence": "client-side rendered and, by design, withholds the tables; a licensed copy is required"
+          }
+        ]
+      }
+    },
+    {
+      "id": "C2",
+      "claim": "same-\u53e3\u5f84 conversion chain is recomputable: tonal round trip a -> v -> a closes below the residual gate",
+      "threshold": "<= 1e-09",
+      "measured": 0.0,
+      "unit": "relative residual",
+      "status": "PASS",
+      "evidence": {
+        "frequency_sweep_hz": [
+          1.0,
+          2.819559688396687,
+          7.5,
+          7.7723344534061996,
+          80.0
+        ],
+        "rows": [
+          {
+            "f_hz": 1.0,
+            "a_rms_m_s2": 0.01,
+            "v_rms_mm_s": 1.5915494309189535,
+            "a_back_m_s2": 0.01,
+            "residual": 0.0
+          },
+          {
+            "f_hz": 2.819559688396687,
+            "a_rms_m_s2": 0.01,
+            "v_rms_mm_s": 0.5644673661170022,
+            "a_back_m_s2": 0.01,
+            "residual": 0.0
+          },
+          {
+            "f_hz": 7.5,
+            "a_rms_m_s2": 0.01,
+            "v_rms_mm_s": 0.21220659078919382,
+            "a_back_m_s2": 0.01,
+            "residual": 0.0
+          },
+          {
+            "f_hz": 7.7723344534061996,
+            "a_rms_m_s2": 0.01,
+            "v_rms_mm_s": 0.20477109425231466,
+            "a_back_m_s2": 0.01,
+            "residual": 0.0
+          },
+          {
+            "f_hz": 80.0,
+            "a_rms_m_s2": 0.01,
+            "v_rms_mm_s": 0.019894367886486918,
+            "a_back_m_s2": 0.01,
+            "residual": 0.0
+          }
+        ],
+        "formula": "v[mm/s] = a/(2*pi*f)*1000 ; a = 2*pi*f*v",
+        "residual_note": "the round trip is evaluated with the same multiplicative pair, so the residual is exactly zero in IEEE-754 arithmetic; the gate is still meaningful because it also fixes the operator and the unit scale"
+      }
+    },
+    {
+      "id": "C3",
+      "claim": "dimensional homogeneity of every link in the conversion chain",
+      "threshold": "n_violations <= 0",
+      "measured": 0,
+      "unit": "violations",
+      "status": "PASS",
+      "evidence": {
+        "chains": {
+          "velocity_to_acceleration": {
+            "derived_dimension": "L^1 T^-2",
+            "required_dimension": "L^1 T^-2",
+            "closed": true
+          },
+          "acceleration_to_velocity": {
+            "derived_dimension": "L^1 T^-1",
+            "required_dimension": "L^1 T^-1",
+            "closed": true
+          },
+          "velocity_integrand (W/(2 pi f))^2 S_aa": {
+            "derived_dimension": "L^2 T^-2",
+            "required_dimension": "L^2 T^-2",
+            "closed": true
+          },
+          "acceleration_integrand W^2 S_aa": {
+            "derived_dimension": "L^2 T^-4",
+            "required_dimension": "L^2 T^-4",
+            "closed": true
+          },
+          "mm_to_m_scale": {
+            "derived_dimension": "L^0 T^0",
+            "required_dimension": "L^0 T^0",
+            "closed": true
+          },
+          "sqrt_velocity_integrand": {
+            "derived_dimension": "L^1 T^-1",
+            "required_dimension": "L^1 T^-1",
+            "closed": true
+          }
+        },
+        "violations": [],
+        "n_violations": 0,
+        "status": "PASS"
+      }
+    },
+    {
+      "id": "C4",
+      "claim": "cross-registration consistency: both candidate ladders agree to 1 % once converted into one \u53e3\u5f84 over 1-80 Hz",
+      "threshold": "<= 0.01 relative",
+      "measured": 9.053096491487338,
+      "unit": "relative deviation",
+      "status": "FAIL",
+      "evidence": {
+        "rows": [
+          {
+            "grade": "A",
+            "acceleration_ladder_limit_m_s2": 0.2,
+            "velocity_ladder_limit_mm_s": 4.0,
+            "acceleration_equivalent_by_frequency": {
+              "1.000": 0.025132741228718346,
+              "2.820": 0.07086326402739966,
+              "7.500": 0.18849555921538758,
+              "7.772": 0.19534007056051006,
+              "80.000": 2.0106192982974678
+            },
+            "deviation_at_each_frequency": {
+              "1.000": 0.8743362938564083,
+              "2.820": 0.6456836798630017,
+              "7.500": 0.057522203923062176,
+              "7.772": 0.023299647197449758,
+              "80.000": 9.053096491487338
+            },
+            "max_relative_deviation": 9.053096491487338
+          },
+          {
+            "grade": "B",
+            "acceleration_ladder_limit_m_s2": 0.4,
+            "velocity_ladder_limit_mm_s": 6.0,
+            "acceleration_equivalent_by_frequency": {
+              "1.000": 0.03769911184307752,
+              "2.820": 0.1062948960410995,
+              "7.500": 0.2827433388230814,
+              "7.772": 0.2930101058407651,
+              "80.000": 3.0159289474462017
+            },
+            "deviation_at_each_frequency": {
+              "1.000": 0.9057522203923063,
+              "2.820": 0.7342627598972513,
+              "7.500": 0.29314165294229655,
+              "7.772": 0.2674747353980873,
+              "80.000": 6.539822368615504
+            },
+            "max_relative_deviation": 6.539822368615504
+          },
+          {
+            "grade": "C",
+            "acceleration_ladder_limit_m_s2": 0.8,
+            "velocity_ladder_limit_mm_s": 8.0,
+            "acceleration_equivalent_by_frequency": {
+              "1.000": 0.05026548245743669,
+              "2.820": 0.14172652805479932,
+              "7.500": 0.37699111843077515,
+              "7.772": 0.3906801411210201,
+              "80.000": 4.0212385965949355
+            },
+            "deviation_at_each_frequency": {
+              "1.000": 0.9371681469282042,
+              "2.820": 0.8228418399315008,
+              "7.500": 0.528761101961531,
+              "7.772": 0.5116498235987249,
+              "80.000": 4.026548245743669
+            },
+            "max_relative_deviation": 4.026548245743669
+          }
+        ],
+        "interpretation": "the two registrations describe different quantities; at least one is wrong, and without the licensed text neither can be used for a compliance claim"
+      }
+    },
+    {
+      "id": "C5",
+      "claim": "uncited candidate values can never be promoted to a benchmark reference (promotion gate refuses)",
+      "threshold": "all uncited records refused",
+      "measured": 4,
+      "unit": "refused records",
+      "status": "PASS",
+      "evidence": {
+        "tensorfem_accel_ladder": "REFUSED: tensorfem_accel_ladder cannot be promoted: missing ['citation_quote', 'table_or_clause', 'page', 'printed_values']",
+        "tensorfem_weighting": "REFUSED: tensorfem_weighting cannot be promoted: missing ['citation_quote', 'table_or_clause', 'page', 'printed_values']",
+        "ship_platform_velocity_ladder": "REFUSED: ship_platform_velocity_ladder cannot be promoted: missing ['citation_quote', 'table_or_clause', 'page', 'printed_values']",
+        "kb_chapter_quantity_claim": "REFUSED: kb_chapter_quantity_claim cannot be promoted: missing ['citation_quote', 'table_or_clause', 'page', 'printed_values']"
+      }
+    },
+    {
+      "id": "C6",
+      "claim": "numeric operators are implementation-independent (repository integrator vs independent trapezoid, local vs repository weighting)",
+      "threshold": "<= 1e-09",
+      "measured": 0.0,
+      "unit": "relative residual",
+      "status": "PASS",
+      "evidence": {
+        "weighting_replication": {
+          "a_w_repository_m_s2": 0.395706559246758,
+          "a_w_local_operator_m_s2": 0.395706559246758,
+          "relative_residual": 0.0,
+          "threshold": 1e-09,
+          "status": "PASS"
+        },
+        "integration_independence": {
+          "value_repository_integrator": 0.395706559246758,
+          "value_independent_trapezoid": 0.395706559246758,
+          "relative_residual": 0.0,
+          "threshold": 1e-09,
+          "status": "PASS"
+        },
+        "spectrum": "synthetic Gaussian band centred on the blade frequency, sigma = 0.25 Hz (operator validation, not a case result)",
+        "residual_note": "the repository integrator and the independent trapezoid reduce to the same floating-point sequence on a uniform grid, hence exact zeros; the check still catches grid/weighting mismatches"
+      }
+    },
+    {
+      "id": "C7",
+      "claim": "case quantity expressed in the standard's \u53e3\u5f84 with an explicit applicability bound",
+      "threshold": "validity error <= 1 % at the case bandwidth",
+      "measured": 0.002654245491299223,
+      "unit": "relative error",
+      "status": "PASS",
+      "evidence": {
+        "case_a_w_m_s2": 0.03128089689319412,
+        "case_v_w_mm_s": 0.6638012486533008,
+        "case_blade_freq_hz": 7.5,
+        "relative_half_width": 0.06666666666666667,
+        "bandwidth_validity_rows": [
+          {
+            "relative_half_width": 0.01,
+            "ratio_R": 1.0000500037505624,
+            "relative_error": 5.000375056241069e-05
+          },
+          {
+            "relative_half_width": 0.02,
+            "ratio_R": 1.0002000600210084,
+            "relative_error": 0.00020006002100836362
+          },
+          {
+            "relative_half_width": 0.05,
+            "ratio_R": 1.0012523486498122,
+            "relative_error": 0.0012523486498121628
+          },
+          {
+            "relative_half_width": 0.1,
+            "ratio_R": 1.0054580391742733,
+            "relative_error": 0.005458039174273344
+          },
+          {
+            "relative_half_width": 0.2,
+            "ratio_R": 1.026058275321012,
+            "relative_error": 0.026058275321011903
+          },
+          {
+            "relative_half_width": 0.3,
+            "ratio_R": 1.0632423073834498,
+            "relative_error": 0.06324230738344983
+          }
+        ],
+        "margin_under_accel_ladder_A": 6.393678566279045,
+        "margin_under_velocity_ladder_A": 6.02590008397103
+      }
+    },
+    {
+      "id": "C8",
+      "claim": "printed value strings survive the transcription pipeline without re-rounding",
+      "threshold": "round trip exact",
+      "measured": 0,
+      "unit": "strings checked",
+      "status": "PASS",
+      "evidence": {
+        "rows": [],
+        "status": "PASS",
+        "n_strings_checked": 0,
+        "note": "applies to values transcribed from a licensed source; the current registry holds no printed string, so the check is vacuous and is reported as such"
+      }
+    }
+  ],
+  "overall_status": "FAIL",
+  "gap_statement": "Achieved: a recomputable same-\u53e3\u5f84 conversion chain (residual 0.00e+00 <= 1e-9), dimensional homogeneity on all links, an implementation-independence check of the numerics, a promotion gate that refuses uncited values, and the case value expressed in the standard's \u53e3\u5f84 (v_w = 0.6638 mm/s at f = 7.5 Hz, conversion error <= 0.27 % at the case bandwidth). Not achieved: the verbatim transcription of the limit curve. No licensed copy of ISO 6954:2000 is reachable from this environment, so the anchor stays WITHHELD and no error-vs-benchmark number can be claimed for the topic yet. The four candidate registrations already in the ecosystem are uncited and contradict each other (e.g. max relative deviation 905.3 % after \u53e3\u5f84 conversion), which is the quantified size of the risk the anchor would have removed.",
+  "stance": {
+    "mission_brief_basis": "mission 7501 research_plan item 1",
+    "independent_anchor": null,
+    "anchor_unverified_reason": "licensed standard text not available in the environment; only memory-derived internal constants exist",
+    "comparison_basis": "internal cross-registration only (declared, not an external benchmark)"
+  },
+  "figures": [
+    {
+      "name": "fig1_candidate_ladders_one_kou_jing.png",
+      "caption": "Both uncited candidate ladders expressed as acceleration. They coincide near 8 Hz and diverge by an order of magnitude at the band edges, so the anchor is unusable until verbatim transcription."
+    },
+    {
+      "name": "fig2_conversion_validity_domain.png",
+      "caption": "Conversion error grows as the square of the relative bandwidth; at the case bandwidth (r=0.067) the single-frequency conversion is good to well below 1 %."
+    },
+    {
+      "name": "fig3_cross_registration_deviation.png",
+      "caption": "Deviation between the two registrations after the \u53e3\u5f84 conversion. The 1 % gate holds only in a narrow window around the blade frequency, so the registrations are not interchangeable."
+    }
+  ],
+  "environment": {
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "command": "python benchmarks/anchors/hull_vibration_anchor.py"
+  }
+}
