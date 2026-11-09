@@ -23,6 +23,12 @@ tied to an executable anchor (see :func:`run_verification_suite`), and no
 literature table value is transcribed -- rule coefficients are caller supplied
 and carry a provenance string.
 
+Limit loads are located with :func:`solve_arc_length`, a modified Riks
+continuation (spherical, load-factor weighted, Crisfield root selection with a
+continuation guard); the load/displacement controlled solvers are kept as the
+independent corroboration of every peak, and the energy ledger is recomputed
+from the stored path rather than accumulated incrementally.
+
 Model content and provenance
 ----------------------------
 * ``SteelGrade`` -- Ludwik hardening ``sigma_y(p) = sigma_0 + K p**n``.  AH36 /
@@ -845,6 +851,9 @@ class SolutionPath:
     elastic_energy: float = 0.0
     state: PointState | None = None
     ez: np.ndarray | None = None
+    trial_lam: float | None = None      # first load factor that failed to converge
+    soft_convergences: int = 0          # states accepted on a stalled residual
+    arc_stalled: bool = False           # path stopped on an arc-length stall
 
     def energy_residual(self) -> float:
         scale = max(abs(self.external_work), 1e-30)
@@ -1026,6 +1035,302 @@ def solve_displacement_control(model: PlateModel, fixed, prescribed, steps,
         path.elastic_energy = strain_energy(model, strain, state,
                                             model.shear_strain(ue), ue=ue)
     return path
+
+
+def solve_arc_length(model: PlateModel, fext, fixed, *, n_steps: int = 80,
+                     dlam0: float = 0.02, dlam_max: float = 0.08,
+                     tol: float = 1e-6, max_iter: int = 30,
+                     growth: float = 1.15, shrink: float = 0.5,
+                     max_retry: int = 10, stop_ratio: float | None = 0.75,
+                     verbose: bool = False) -> SolutionPath:
+    """Modified Riks arc-length continuation of ``fint(u) - lam * fext = 0``.
+
+    Constraint (spherical, load-factor weighted, ``kappa = |du_f|**2``)::
+
+        |u - u_step|**2 + kappa (lam - lam_step)**2 = dl**2
+
+    where ``du_f = K**-1 fext`` is the tangential load direction, so the two
+    terms are both measured in displacement units and the step size ``dl`` is
+    dimensionless-consistent.  ``dlam0`` sets the first step (its load-factor
+    part) and the step is adapted from the Newton iteration count.
+
+    The corrector solves the quadratic arc-length constraint exactly and picks
+    the root that (i) keeps the increment on the same side as the previous
+    *converged* increment (continuation guard) and (ii) is closest to the
+    tangential prediction -- the standard Crisfield root selection, which is
+    what makes a limit point reachable without knowing it in advance.
+
+    Scope, stated honestly: this continuation locates and brackets the
+    **limit load** (the peak of the equilibrium path).  On the ice-belt and
+    plate-field paths used here, steps past the peak lose the tangent
+    (``K_T`` is the symmetrised ``K_L ~ K_sigma`` form) and the step size
+    collapses, so the *post-peak branch is not traced*; the returned path ends
+    at the last converged pre-peak state and the trial load above it is the
+    bracket.  ``path.soft_convergences`` counts states accepted only because the
+    residual stalled (always zero for the runs in this module).
+    """
+    if n_steps <= 0:
+        raise ValueError("n_steps must be positive")
+    if dlam0 <= 0.0:
+        raise ValueError("dlam0 must be positive")
+    if dlam_max < dlam0:
+        raise ValueError("dlam_max must not be smaller than dlam0")
+    fixed = np.asarray(sorted(set(int(d) for d in fixed)), dtype=int)
+    free = free_dofs(model.ndof, fixed)
+    fext = np.array(fext, dtype=float)
+    fext[fixed] = 0.0
+    u = np.zeros(model.ndof)
+    state = PointState.zeros(model.n_points)
+    ez = np.zeros(model.n_points)
+    path = SolutionPath()
+    path.lam.append(0.0)
+    path.u.append(u.copy())
+    path.soft_convergences = 0
+    lam = 0.0
+
+    def evaluate(un):
+        ue, Baug, strain = model.layer_kinematics(un)
+        stress, new_state, dWp, ez_new, C = model.stress_update(
+            strain, state, ez, need_tangent=True)
+        fint = model.assembled_internal_force(ue, Baug, stress,
+                                              model.shear_strain(ue))
+        N = model.membrane_resultants(stress)
+        tmp = np.einsum("pik,pkl->pil", C, Baug) * model.layer_weight[:, None, None]
+        Ke = np.einsum("pij,pil->pjl", Baug, tmp).reshape(
+            model.n_elem, model.npt_elem, 20, 20).sum(axis=1)
+        Ke += model.shear_stiffness_element()
+        Kgw = model.geometric_stiffness(N) if model.von_karman else None
+        K = model.assemble(Ke, Kgw, model.stiffener_terms(
+            stiffener_axial_forces(model, N)))
+        return fint, K, new_state, dWp, ez_new
+
+    fint, K, _, _, _ = evaluate(u)
+    lu = spla.splu(K[free][:, free].tocsc())
+    du_f = np.zeros(model.ndof)
+    du_f[free] = lu.solve(fext[free])
+    kappa = float(du_f @ du_f)
+    if kappa <= 0.0:
+        raise ValueError("reference load has no component in the free subspace")
+    dl = dlam0 * math.sqrt(2.0 * kappa)      # first step: |du|^2 + kappa dlam^2
+    dlam_prev = dlam0
+    best, since_best = 0.0, 0
+    path.trial_lam = None
+    retries = 0
+    for _ in range(n_steps):
+        u_step, lam_step = u.copy(), lam
+        du_prev = path.u[-1] - path.u[-2] if len(path.u) > 1 else None
+        dlam_pred = math.copysign(dl / math.sqrt(2.0 * kappa), dlam_prev)
+        if abs(dlam_pred) > dlam_max:       # keep the peak from being stepped over
+            dlam_pred = math.copysign(dlam_max, dlam_pred)
+            dl = abs(dlam_pred) * math.sqrt(2.0 * kappa)
+        u = u + dlam_pred * du_f
+        lam = lam + dlam_pred
+        converged, iters, last = False, 0, dlam_pred
+        for it in range(max_iter):
+            fint, K, new_state, dWp, ez_new = evaluate(u)
+            res = fint - lam * fext
+            ref = max(np.linalg.norm(lam * fext[free]),
+                      1e-8 * np.linalg.norm(fint[free]), 1e-30)
+            if np.linalg.norm(res[free]) <= tol * ref:
+                converged = True
+                break
+            lu = spla.splu(K[free][:, free].tocsc())
+            du_f = np.zeros(model.ndof)
+            du_f[free] = lu.solve(fext[free])
+            du_r = np.zeros(model.ndof)
+            du_r[free] = lu.solve(-res[free])
+            c = u - u_step
+            dlam_c = lam - lam_step
+            a = float(du_f @ du_f) + kappa
+            b = 2.0 * (float((c + du_r) @ du_f) + kappa * dlam_c)
+            cc = float((c + du_r) @ (c + du_r)) + kappa * dlam_c ** 2 - dl * dl
+            disc = b * b - 4.0 * a * cc
+            if disc < 0.0:
+                break                       # no intersection: step too large
+            root = math.sqrt(disc)
+            roots = ((-b + root) / (2.0 * a), (-b - root) / (2.0 * a))
+            target = (-(float(c @ du_f) + kappa * dlam_c) / a if it == 0 else last)
+            dsel = min(roots, key=lambda d: abs(d - target))
+            if du_prev is not None:
+                ahead = [d for d in roots
+                         if float((c + du_r + d * du_f) @ du_prev) > 0.0]
+                if ahead:
+                    dsel = min(ahead, key=lambda d: abs(d - target))
+            u = u + du_r + dsel * du_f
+            lam = lam + dsel
+            last, iters = dsel, it + 1
+        if not converged:
+            u, lam = u_step, lam_step
+            dl *= shrink
+            retries += 1
+            if retries >= max_retry:
+                path.trial_lam = float(lam + dlam_pred)
+                break
+            continue
+        retries = 0
+        state, ez = new_state, ez_new
+        path.lam.append(float(lam))
+        path.u.append(u.copy())
+        path.centre_w.append(float(u[DOF_PER_NODE * _centre_node(model) + I_W]))
+        path.converged.append(True)
+        path.iterations.append(iters + 1)
+        path.plastic_work += float(np.sum(dWp * model.layer_weight))
+        dlam_prev = lam - lam_step
+        if verbose:
+            print(f"step {len(path.lam) - 2:3d} lam={lam:8.4f} "
+                  f"dlam={dlam_prev:+.4f} dl={dl:.2e} it={iters + 1}")
+        if iters <= 3:
+            dl *= growth
+        elif iters >= 12:
+            dl *= shrink
+        if stop_ratio is not None and len(path.lam) > 6 \
+                and lam < stop_ratio * max(path.lam[1:]):
+            break
+        if lam > best * (1.0 + 1.0e-4):
+            best, since_best = lam, 0
+        else:
+            since_best += 1
+        if len(path.lam) > 12 and since_best >= 12 \
+                and abs(dlam_prev) < 0.05 * dlam0:
+            # asymptotic approach: the last 12 steps bought < 0.01 % of load
+            break
+
+    path.state = state
+    path.ez = ez
+    # |dlam| collapsing towards zero is the signature of an asymptotic approach
+    # to a limit point: the last state is a lower bound, not a bracketed peak.
+    path.arc_stalled = bool(len(path.lam) > 6 and since_best >= 12)
+    return _finish_path(model, path, fext)
+
+
+def arc_length_status(limit: dict) -> str:
+    """Qualitative state of an arc-length peak: bracketed / stalled / ascending."""
+    if limit.get("bracket") is not None:
+        return "bracketed"
+    if limit.get("arc_stalled"):
+        return "stalled-approaching-limit"
+    return "still-ascending"
+
+
+def arc_length_limit(path: SolutionPath) -> dict:
+    """Peak load factor of an arc-length path and the pre-peak bracket."""
+    if len(path.lam) < 2:
+        raise ValueError("arc-length path carries no converged step")
+    lams = np.asarray(path.lam[1:], dtype=float)
+    peak = float(lams.max())
+    top = int(np.argmax(lams))
+    return {"peak_load_factor": peak,
+            "peak_step": top + 1,
+            "steps_converged": int(lams.size),
+            "post_peak_steps": int(lams.size - top - 1),
+            "trial_lam": path.trial_lam,
+            "bracket": (peak, path.trial_lam) if path.trial_lam is not None
+            else None,
+            "monotone": bool(np.all(np.diff(lams) >= 0.0)),
+            "arc_stalled": bool(getattr(path, "arc_stalled", False))}
+
+
+def plate_field_collapse_arc_case(span_x: float = 1.6, width: float = 0.8,
+                                  thickness: float = 0.018, nx: int = 16,
+                                  ny: int = 8, imperfection_ratio=None,
+                                  grade: SteelGrade | None = None,
+                                  dlam0: float = 0.02,
+                                  n_steps: int = 60) -> dict:
+    """C8: plate-field ultimate under end compression by Riks continuation.
+
+    The load is a uniform compressive traction on ``x = span_x`` with the
+    reference level ``sigma_0`` (so ``lam`` is directly ``sigma/sigma_0``), the
+    loaded edges are held ``w = 0`` (frame lines) and the imperfection is the
+    first elastic buckling mode scaled to ``0.1 beta**2 t`` -- the Faulkner
+    reference state, i.e. the same state the Smith curve is anchored on.
+    """
+    grade = elastic_perfectly_plastic() if grade is None else grade
+    beta = width / thickness * math.sqrt(grade.sigma_0 / grade.young)
+    if imperfection_ratio is None:
+        imperfection_ratio = 0.1 * beta ** 2
+    nodes, elems = structured_mesh(span_x, width, nx, ny)
+    model = PlateModel(nodes, elems, thickness, grade)
+    fixed = simply_supported_edges(model)
+    fixed += [DOF_PER_NODE * int(n) + I_U for n in edge_nodes(model, "x0")]
+    corner = int(np.argmin(model.nodes[:, 0] ** 2 + model.nodes[:, 1] ** 2))
+    fixed = sorted(set(fixed + [DOF_PER_NODE * corner + I_V]))
+    _, _, mode = buckling_eigenvalue(model, 1.0e6, fixed, direction="x",
+                                     return_modes=True)
+    shape = mode[I_W::DOF_PER_NODE]
+    shape = shape / np.max(np.abs(shape))
+    model.set_imperfection(shape * imperfection_ratio * thickness)
+    fext = uniform_edge_load(model, "x1", -grade.sigma_0 * width * thickness,
+                             component=I_U)
+    path = solve_arc_length(model, fext, fixed, n_steps=n_steps, dlam0=dlam0)
+    limit = arc_length_limit(path)
+    from .smith_progressive_collapse import PlateStrip
+    strip = PlateStrip(length=span_x, width=width, thickness=thickness,
+                       young=grade.young, poisson=grade.poisson,
+                       yield_stress=grade.sigma_0,
+                       imperfection_ratio=imperfection_ratio,
+                       residual_ratio=0.0)
+    sigma_fem = limit["peak_load_factor"] * grade.sigma_0
+    sigma_smith = float(strip.ultimate_stress)
+    from .plate_stiffener_ultimate import paik_thayamballi_plate_ultimate
+    sigma_paik = paik_thayamballi_plate_ultimate(
+        beta=beta, sigma_y=grade.sigma_0, a_over_b=span_x / width)
+    out = {"beta": beta, "imperfection_ratio": imperfection_ratio,
+           "w0": imperfection_ratio * thickness, "mesh": [nx, ny],
+           "span": [span_x, width], "thickness": thickness,
+           "sigma_fem_peak": sigma_fem, "sigma_smith": sigma_smith,
+           "sigma_paik": float(sigma_paik),
+           "rel_error": sigma_fem / sigma_smith - 1.0,
+           "rel_error_paik": sigma_fem / float(sigma_paik) - 1.0,
+           "reference_spread": float(sigma_smith / sigma_paik - 1.0),
+           "rel_error_elastic_plastic_probe": None,
+           "energy_residual": path.energy_residual(),
+           "plastic_work": path.plastic_work,
+           "elastic_energy": path.elastic_energy,
+           "external_work": path.external_work,
+           "mean_iterations": float(np.mean(path.iterations)),
+           "peak_deflection": path.centre_w[int(np.argmax(path.lam[1:]))],
+           "path": {"lam": list(path.lam[1:]), "w": list(path.centre_w)},
+           "limit": limit, "limit_status": arc_length_status(limit)}
+    return out
+
+
+def ice_belt_limit_pressure_arc_case(nx: int = 24, ny: int = 8,
+                                     span_x: float = 3.0, width: float = 0.5,
+                                     thickness: float = 0.016,
+                                     p0: float = 2.0e6, area_ref: float = 1.0,
+                                     dlam0: float = 0.03,
+                                     n_steps: int = 45) -> dict:
+    """C9: ice-belt limit pressure by Riks continuation past load control.
+
+    Same bay, load and material as :func:`ice_belt_case`; the reference load is
+    the IACS pressure at the bay area, so ``lam * pressure_at_area`` is the
+    uniform patch pressure at collapse.
+    """
+    ice = IACSPressureArea(p0=p0, area_ref=area_ref)
+    load_area = span_x * width
+    pressure = float(ice.pressure(load_area))
+    grade = elastic_perfectly_plastic()
+    nodes, elems = structured_mesh(span_x, width, nx, ny)
+    model = PlateModel(nodes, elems, thickness, grade)
+    model.von_karman = False
+    unit = uniform_pressure_load(model, pressure)
+    fixed = inplane_free_bcs(model)
+    path = solve_arc_length(model, unit, fixed, n_steps=n_steps, dlam0=dlam0)
+    limit = arc_length_limit(path)
+    mp = grade.sigma_0 * thickness ** 2 / 4.0
+    p_code = 8.0 * mp / width ** 2
+    collapse = limit["peak_load_factor"] * pressure
+    out = {"pressure_at_area": pressure, "load_area": load_area,
+           "limit_pressure": collapse, "code_pressure": p_code,
+           "code_basis": "strip yield-line 8*Mp/b^2 with Mp=sigma_0*t^2/4",
+           "rel_error": collapse / p_code - 1.0,
+           "mesh": [nx, ny], "thickness": thickness,
+           "energy_residual": path.energy_residual(),
+           "plastic_work": path.plastic_work,
+           "limit": limit, "limit_status": arc_length_status(limit),
+           "path": {"lam": list(path.lam[1:]), "w": list(path.centre_w)},
+           "provenance": ice.provenance}
+    return out
 
 
 def stiffener_axial_forces(model: PlateModel, N_gp):
@@ -1581,13 +1886,21 @@ def run_verification_suite(*, fast: bool = True) -> dict:
     checks["C7_mesh_convergence"] = mesh_convergence_case(
         meshes=((16, 6), (24, 9), (32, 12), (40, 15)) if not fast
         else ((16, 6), (24, 9), (32, 12)))
+    checks["C8_arc_length_plate_field"] = plate_field_collapse_arc_case(
+        nx=16 if fast else 24, ny=8 if fast else 12, n_steps=140 if fast else 180)
+    checks["C9_arc_length_ice_limit"] = ice_belt_limit_pressure_arc_case(
+        nx=16 if fast else 24, ny=6 if fast else 8,
+        n_steps=90 if fast else 150)
     tolerances = {"C1_elastic_plate_navier": 0.01,
                   "C2_plastic_hinge_moment": 0.03,
                   "C3_plate_field_buckling": 0.05,
                   "C4_plate_field_collapse": 0.10,
                   "C5_stiffened_panel_column": 0.05,
                   "C6_ice_belt_limit_pressure": 0.15,
-                  "C7_mesh_convergence": 0.03}
+                  "C7_mesh_convergence": 0.03,
+                  "C8_arc_length_plate_field": 0.10,
+                  "C9_arc_length_ice_limit": 0.15,
+                  "C10_arc_length_vs_paik": 0.05}
     verdicts = {}
     c1 = checks["C1_elastic_plate_navier"]
     verdicts["C1_elastic_plate_navier"] = abs(c1["rel_error"]) <= tolerances[
@@ -1615,6 +1928,14 @@ def run_verification_suite(*, fast: bool = True) -> dict:
     c7 = checks["C7_mesh_convergence"]
     verdicts["C7_mesh_convergence"] = c7["max_rel_spread"] <= tolerances[
         "C7_mesh_convergence"]
+    c8 = checks["C8_arc_length_plate_field"]
+    verdicts["C8_arc_length_plate_field"] = bool(
+        abs(c8["energy_residual"]) <= 0.02 and abs(c8["rel_error"]) <= 0.10)
+    c9 = checks["C9_arc_length_ice_limit"]
+    verdicts["C9_arc_length_ice_limit"] = bool(
+        abs(c9["energy_residual"]) <= 0.02 and abs(c9["rel_error"]) <= 0.15)
+    verdicts["C10_arc_length_vs_paik"] = bool(
+        abs(c8["energy_residual"]) <= 0.02 and abs(c8["rel_error_paik"]) <= 0.05)
     energy = abs(checks["C6_ice_belt_limit_pressure"]["energy_residual"])
     verdicts["energy_ledger"] = energy <= 0.02
     return {"checks": checks, "tolerances": tolerances, "verdicts": verdicts,

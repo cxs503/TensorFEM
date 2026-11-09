@@ -1,5 +1,21 @@
 ## Unreleased
 
+### Ice-belt structures / arc-length continuation
+- **Riks arc-length limit-load continuation on the layered elastoplastic plate**
+  (`tensorfem.ice_belt_collapse.solve_arc_length`, `arc_length_limit`,
+  `arc_length_status`, `plate_field_collapse_arc_case`,
+  `ice_belt_limit_pressure_arc_case`): spherical load-factor-weighted constraint
+  with Crisfield root selection and a continuation guard, `K_T` from the
+  finite-difference consistent tangent plus the von Kármán geometric stiffness.
+  Verified anchors: linear-elastic exactness 8.9e-17, peak vs load control
+  +0.3 %, energy ledger 3e-4, h-refinement -1.6 %/-0.5 %.
+  Plate-field peak 256.4 MPa at 32x16 (-15.3 % vs Faulkner-Smith -> criterion
+  FAIL, -0.4 % vs Paik-Thayamballi); ice-belt plastic limit 897.5 kPa at 48x16
+  (+23.5 % vs the strip yield line, twice-elastic-slope design limit 826 kPa
+  stays inside the 15 % gate). Docs `docs/ice-belt-arc-length.md`, benchmark
+  `benchmarks/ice_belt_arc_length.py`, artefact
+  `artifacts/ice_belt_collapse/arc_length.json`.
+
 ### Solids / verification
 - **TET10 mass cross-check without quadrature** (`tensorfem.tet10_mass_crosscheck`,
   `tests/test_tet10_mass_crosscheck.py`): the shipped `tet10_consistent_mass` was
