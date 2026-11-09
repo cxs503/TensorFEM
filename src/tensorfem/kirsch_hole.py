@@ -390,6 +390,26 @@ def _q4_b(xi: float, eta: float, coordinates: np.ndarray) -> tuple[np.ndarray, f
     return b, determinant
 
 
+def polar_from_cartesian(
+    sxx: float, syy: float, sxy: float, theta: float
+) -> tuple[float, float, float]:
+    """Rotate a Cartesian plane-stress tensor into polar components at ``theta``.
+
+    Returns ``(sigma_rr, sigma_tt, tau_rt)``.  The shear component follows from the
+    definition ``tau_rt = e_r . sigma . e_t`` with ``e_r = (cos, sin)`` and
+    ``e_t = (-sin, cos)``, i.e. ``tau_rt = (syy - sxx) cos sin + sxy cos 2theta``
+    (Mohr's circle).  Writing it as ``(srr - stt) cos sin + sxy cos 2theta`` is a
+    common slip: it coincides with the correct value *only* on the axes, where
+    ``sin 2theta = 0``, and is wrong in between (at ``theta = 45 deg`` it returns
+    0 instead of the extremum).  Do not "simplify" it back.
+    """
+    c, s = math.cos(theta), math.sin(theta)
+    stt = sxx * s * s + syy * c * c - 2.0 * sxy * c * s
+    srr = sxx * c * c + syy * s * s + 2.0 * sxy * c * s
+    srt = (syy - sxx) * c * s + sxy * (c * c - s * s)
+    return srr, stt, srt
+
+
 def _locate(meta: dict, point) -> tuple[int, float, float]:
     """Element index and parent coordinates of a physical point in the polar grid."""
     radii, thetas = meta["radii"], meta["thetas"]
@@ -573,11 +593,7 @@ def solve_case(
     for scale, theta in sample_points:
         point = (scale * hole.radius * math.cos(theta), scale * hole.radius * math.sin(theta))
         sampled = q4_stress_at_point(meta, displacement, point)
-        sxx, syy, sxy = sampled["stress"]
-        c, s = math.cos(theta), math.sin(theta)
-        stt = sxx * s * s + syy * c * c - 2.0 * sxy * c * s
-        srr = sxx * c * c + syy * s * s + 2.0 * sxy * c * s
-        srt = (srr - stt) * c * s + sxy * (c * c - s * s)
+        srr, stt, srt = polar_from_cartesian(*sampled["stress"], theta)
         exact = hole.stress_polar(scale * hole.radius, theta)
         rows.append(
             {
