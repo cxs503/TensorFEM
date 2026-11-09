@@ -266,7 +266,8 @@ def _elastic_shear_drilling(xy: torch.Tensor, local: torch.Tensor,
 
 
 def element_response(model: LayeredShell4Model, element: int, local_global: torch.Tensor,
-                     committed: tuple[tuple[J2State, ...], ...], *, compute_tangent: bool = True):
+                     committed: tuple[tuple[J2State, ...], ...], *, compute_tangent: bool = True,
+                     geometric: bool = False):
     conn = model.elements[element].long(); xyz = model.nodes[conn]
     xy, basis = layered_shell4_local_frame(xyz); transform = _transform(basis, dtype=xyz.dtype, device=xyz.device)
     local = transform @ local_global
@@ -291,6 +292,13 @@ def element_response(model: LayeredShell4Model, element: int, local_global: torc
                 tangent += bz.T @ material @ bz * det*dz
             qstresses.append(stress); qtrials.append(trial)
         stresses.append(torch.stack(qstresses)); trial_points.append(tuple(qtrials))
+    if geometric and compute_tangent:
+        # Updated geometric stiffness: in-plane resultants from the
+        # current trial stress, positive in compression, subtracted
+        # from the tangent (K_E + K_M - K_G).
+        nq = -torch.stack([s.sum(dim=0) for s in stresses]) * dz
+        nodal = torch.stack([_q4_shape_values(k) for k in range(4)]).to(dtype=xyz.dtype) @ nq
+        tangent -= layered_shell4_geometric_stiffness(model, element, nodal)
     return transform.T@force, transform.T@tangent@transform, torch.stack(stresses), tuple(trial_points)
 
 
@@ -299,7 +307,7 @@ def _element_dofs(conn: torch.Tensor) -> torch.Tensor:
 
 
 def assemble_layered_shell4(model: LayeredShell4Model, displacement: torch.Tensor,
-                            committed: LayeredShell4State):
+                            committed: LayeredShell4State, *, geometric: bool = False):
     model.validate()
     if displacement.shape != (model.n_dofs,):
         raise ValueError("wrong displacement vector length")
@@ -308,7 +316,8 @@ def assemble_layered_shell4(model: LayeredShell4Model, displacement: torch.Tenso
     stresses, trial = [], []
     for e, conn in enumerate(model.elements):
         ids = _element_dofs(conn)
-        force, stiffness, stress, points = element_response(model, e, displacement[ids], committed.points[e])
+        force, stiffness, stress, points = element_response(model, e, displacement[ids],
+                committed.points[e], geometric=geometric)
         internal.index_add_(0, ids, force)
         tangent.index_put_((ids[:, None], ids[None, :]), stiffness, accumulate=True)
         stresses.append(stress); trial.append(points)
@@ -356,3 +365,128 @@ def solve_layered_shell4_path(model: LayeredShell4Model, external_force: torch.T
                                                 max_iterations=max_iterations)
         results.append(result); state = result.state; u = result.displacement
     return tuple(results)
+
+
+# ---------------------------------------------------------------------------
+# Geometric (initial-stress) stiffness
+# ---------------------------------------------------------------------------
+
+def _q4_shape_values(gi: int) -> torch.Tensor:
+    """Bilinear Q4 shape values at the 2x2 Gauss point ``gi``."""
+    gp = 1.0 / math.sqrt(3.0)
+    xi, eta = ((-gp, -gp), (gp, -gp), (gp, gp), (-gp, gp))[gi]
+    return torch.tensor([(1 - xi) * (1 - eta), (1 + xi) * (1 - eta),
+                         (1 + xi) * (1 + eta), (1 - xi) * (1 + eta)],
+                        dtype=torch.float64) / 4.0
+
+
+def _q4_natural_gradients(xi: float, eta: float, dtype, device) -> torch.Tensor:
+    """4x2 matrix of dN/d(xi), dN/d(eta) for the bilinear Q4."""
+    return torch.tensor([[-(1 - eta), -(1 - xi)], [(1 - eta), -(1 + xi)],
+                         [(1 + eta), (1 + xi)], [-(1 + eta), (1 - xi)]],
+                        dtype=dtype, device=device) / 4.0
+
+
+def layered_shell4_geometric_stiffness(model: LayeredShell4Model, element: int,
+                                       nodal_resultants: torch.Tensor) -> torch.Tensor:
+    """24x24 initial-stress matrix for one element.
+
+    ``nodal_resultants`` is a finite ``(4, 3)`` tensor of in-plane force
+    resultants per unit length at the element nodes, ``[Nx, Ny, Nxy]``,
+    **positive in compression**.  The returned matrix is positive
+    semidefinite for compression; it is subtracted from the material tangent
+    in the nonlinear path and used as ``K - lambda*Kg`` in the linearised
+    eigenvalue problem (same construction as
+    :func:`tensorfem.shell4_buckling.shell4_geometric_stiffness`, but in the
+    layered element's local frame).
+    """
+    conn = model.elements[element].long()
+    xyz = model.nodes[conn]
+    xy, basis = layered_shell4_local_frame(xyz)
+    n = torch.as_tensor(nodal_resultants, dtype=xyz.dtype, device=xyz.device)
+    if n.shape != (4, 3) or not bool(torch.all(torch.isfinite(n))):
+        raise ValueError("nodal_resultants must be a finite (4, 3) tensor")
+    gp = 1.0 / math.sqrt(3.0)
+    points = ((-gp, -gp), (gp, -gp), (gp, gp), (-gp, gp))
+    kg4 = xyz.new_zeros((4, 4))
+    for k in range(4):
+        dnat = _q4_natural_gradients(*points[k], xyz.dtype, xyz.device)
+        j = xy.T @ dnat
+        detj = torch.linalg.det(j)
+        if bool(detj <= torch.finfo(xyz.dtype).eps):
+            raise ValueError("inverted or degenerate shell element")
+        grad = dnat @ torch.linalg.inv(j)
+        nloc = _q4_shape_values(k).to(dtype=xyz.dtype, device=xyz.device) @ n
+        smat = torch.stack((torch.stack((nloc[0], nloc[2])),
+                           torch.stack((nloc[2], nloc[1]))))
+        kg4 += grad @ smat @ grad.T * detj
+    local = xyz.new_zeros((24, 24))
+    w = 6 * torch.arange(4, device=xyz.device) + 2
+    local[w[:, None], w] = kg4
+    transform = _transform(basis, dtype=xyz.dtype, device=xyz.device)
+    return transform.T @ local @ transform
+
+
+def layered_shell4_buckling_eigenvalue(model: LayeredShell4Model, fixed_dofs: torch.Tensor,
+                                       unit_resultant: torch.Tensor, modes: int = 3):
+    """Lowest buckling loads of ``(K_E - lambda*K_G) v = 0``.
+
+    ``unit_resultant`` is the in-plane resultant per unit length (3,) for a
+    stress of one pascal, e.g. ``[t, 0, 0]`` for uniaxial compression; the
+    eigenvalue ``lambda`` is therefore the critical stress in pascals.  The
+    pencil is reduced to the bending space ``(w, rx, ry)`` and solved with the
+    Cholesky mapping of :func:`tensorfem.stiffened_panel_buckling._solve_pencil`.
+    Returns ``(loads, w_fields, residuals)`` where ``w_fields`` is
+    ``(modes, n_nodes)`` of the transverse displacement mode shapes.
+    """
+    from .stiffened_panel_buckling import _solve_pencil
+
+    model.validate()
+    fixed = fixed_dofs.to(device=model.nodes.device, dtype=torch.long)
+    mask = torch.ones(model.n_dofs, dtype=torch.bool, device=model.nodes.device)
+    mask[fixed] = False
+    free = torch.arange(model.n_dofs, device=model.nodes.device)[mask]
+
+    internal, tangent, _stress, _trial = assemble_layered_shell4(
+        model, torch.zeros(model.n_dofs, dtype=model.nodes.dtype, device=model.nodes.device),
+        LayeredShell4State.virgin(model))
+    stiffness = 0.5 * (tangent + tangent.T)
+
+    n_nodes = len(model.nodes)
+    geometric = torch.zeros_like(stiffness)
+    unit = torch.as_tensor(unit_resultant, dtype=model.nodes.dtype, device=model.nodes.device)
+    if unit.shape != (3,):
+        raise ValueError("unit_resultant must have shape (3,)")
+    nodal = unit.reshape(1, 3).expand(4, 3).clone()
+    for e in range(len(model.elements)):
+        kg = layered_shell4_geometric_stiffness(model, e, nodal)
+        ids = _element_dofs(model.elements[e].long())
+        geometric.index_put_((ids[:, None], ids[None, :]), kg, accumulate=True)
+
+    # restrict to the bending space (w, rx, ry) on free dofs
+    index = torch.cat([6 * torch.arange(n_nodes) + k for k in (2, 3, 4)])
+    is_bending = torch.zeros(stiffness.shape[0], dtype=torch.bool)
+    is_bending[index] = True
+    keep = free[is_bending[free]]
+    k_bend = stiffness[keep[:, None], keep[None, :]].double()
+    g_bend = torch.zeros_like(k_bend)
+    # g_bend must be the w-w block of the full-space geometric matrix, mapped
+    # into the keep space (same construction as
+    # tensorfem.stiffened_panel_buckling._bending_pencil).
+    w_full = 6 * torch.arange(n_nodes) + 2
+    lookup = {int(dof): i for i, dof in enumerate(keep.tolist())}
+    w_pairs = [(int(d), lookup[int(d)]) for d in w_full.tolist() if int(d) in lookup]
+    rows = torch.tensor([p[1] for p in w_pairs], dtype=torch.long)
+    cols = torch.tensor([p[0] for p in w_pairs], dtype=torch.long)
+    g_bend[rows[:, None], rows[None, :]] = geometric[cols, :][:, cols].double()
+    loads, vectors, residuals = _solve_pencil(k_bend, g_bend, modes)
+    w_rows = [i for i, dof in enumerate(keep.tolist()) if int(dof) % 6 == 2]
+    nodes = (keep[w_rows] // 6).numpy()
+    fields = torch.zeros((len(loads), n_nodes), dtype=torch.float64)
+    for column in range(vectors.shape[1]):
+        amplitude = torch.as_tensor(vectors[w_rows, column], dtype=torch.float64)
+        peak = float(amplitude.abs().max())
+        if peak > 0:
+            amplitude = amplitude / peak
+        fields[column, nodes] = amplitude
+    return torch.as_tensor(loads, dtype=torch.float64), fields, torch.as_tensor(residuals, dtype=torch.float64)
