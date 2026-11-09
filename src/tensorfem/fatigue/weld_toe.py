@@ -45,6 +45,7 @@ from ..quadratic_plane import (
     GAUSS_WEIGHTS_3X3,
     elasticity_matrix,
     q8_element_dofs,
+    q8_strain_matrix,
 )
 from ..sparse_core import assemble_coo
 from ..sparse_direct import factorize_sparse
@@ -69,6 +70,11 @@ __all__ = [
     "LINEAR_STATIONS",
     "QUADRATIC_STATIONS",
 ]
+
+#: Supported load cases of a :class:`WeldDetail` (see the class docstring).
+ALLOWED_LOAD_CASES: frozenset[str] = frozenset(
+    {"carried", "plate_axial", "attachment_supported"}
+)
 
 #: Structural steel elastic constants of the joint models.
 YOUNG_STEEL_PA = 210.0e9
@@ -110,6 +116,15 @@ class WeldDetail:
         ``True`` for the symmetric half model, ``False`` for the full L section.
     patch_length_m:
         Half length of the modelled plate; defaults to ``8 t``.
+    load_case:
+        Loading of the joint family.  ``"carried"`` (default, backward compatible)
+        applies the plate axial traction *and* the attachment traction to opposite
+        far edges; ``"plate_axial"`` keeps only the plate axial traction, i.e. the
+        non-load-carrying transverse attachment case; ``"attachment_supported"``
+        pulls the attachment axially while the far plate edge is supported
+        vertically, i.e. the load-carrying joint whose base plate carries the
+        attachment load in bending, as in the joint embedded in a stiffened panel.  The nominal stress normaliser is the same plate membrane stress
+        in every case, so the three cases are directly comparable.
     """
 
     joint_type: str
@@ -124,6 +139,7 @@ class WeldDetail:
     symmetry: bool = True
     patch_length_m: float = 0.0
     bonded_root: bool = True
+    load_case: str = "carried"
 
     def __post_init__(self) -> None:
         allowed = {"t_fillet", "butt", "corner"}
@@ -135,6 +151,8 @@ class WeldDetail:
                 raise TypeError(f"{name} must be a real scalar")
             if not (math.isfinite(value) and value > 0.0):
                 raise ValueError(f"{name} must be positive and finite")
+        if self.load_case not in ALLOWED_LOAD_CASES:
+            raise ValueError(f"load_case must be one of {sorted(ALLOWED_LOAD_CASES)}")
         if not 0.0 < self.flank_angle_deg < 90.0:
             raise ValueError("flank_angle_deg must lie in (0, 90)")
         if self.joint_type in {"t_fillet", "corner"}:
@@ -147,6 +165,8 @@ class WeldDetail:
         else:
             if self.reinforcement_m <= self.toe_radius_m:
                 raise ValueError("reinforcement must exceed the toe radius")
+        if self.joint_type == "butt" and self.load_case == "attachment_supported":
+            raise ValueError("butt welds have no attachment load path")
         if self.joint_type == "corner" and self.symmetry:
             raise ValueError("corner joints use the full L section (symmetry=False)")
 
@@ -187,10 +207,18 @@ class WeldDetail:
 
     @property
     def surface_band_m(self) -> float:
-        """Depth of the surface-following mesh band below the weld profile."""
+        """Depth of the surface-following mesh band below the weld profile.
+
+        The band must stay well inside the modelled depth, otherwise the graded
+        tail rows below it collapse onto the far row and the Q8 elements lose
+        their area (this happened for ``band >= plate_depth_m``: butt welds with
+        a thick reinforcement and T-joints with a weld leg above the plate depth).
+        """
         if self.joint_type == "butt":
-            return max(2.5 * self.reinforcement_m, 4.0 * self.toe_radius_m)
-        return float(self.weld_leg_m)
+            band = max(2.5 * self.reinforcement_m, 4.0 * self.toe_radius_m)
+        else:
+            band = float(self.weld_leg_m)
+        return min(band, 0.85 * self.plate_depth_m)
 
 
 def nii_stress_concentration(
@@ -306,7 +334,12 @@ def _weld_columns(profile: _JointProfile, detail: WeldDetail, level: int) -> np.
     key_points = np.array(
         [
             p
-            for p in (profile.arc_start, profile.corner, profile.toe)
+            for p in (
+                profile.flank_origin,
+                profile.arc_start,
+                profile.corner,
+                profile.toe,
+            )
             if profile.surface_start < p < detail.patch_m
         ]
     )
@@ -341,9 +374,16 @@ def _column_rows(detail: WeldDetail, profile: _JointProfile, x: float, depths: n
     below = top - depths                      # descending
     lower = float(below[-1])                  # = top - band
     anchor = -detail.plate_depth_m
-    u = np.linspace(0.0, 1.0, 11)[1:]
-    tail = lower + (anchor - lower) * u**1.6
-    return np.concatenate((below, tail))[::-1]
+    span = anchor - lower
+    tail = np.empty(0)
+    if span < -1.0e-12:                       # tail rows (graded towards the anchor)
+        u = np.linspace(0.0, 1.0, 11)[1:]
+        tail = lower + span * u**1.6
+    rows = np.concatenate((below, tail))[::-1]
+    # a repeated abscissa collapses a Q8 element; keep the first occurrence
+    keep = np.ones(rows.shape[0], dtype=bool)
+    keep[1:] = np.abs(np.diff(rows)) > 1.0e-15
+    return rows[keep]
 
 
 class _NodeRegistry:
@@ -707,6 +747,7 @@ def _build_mesh(detail: WeldDetail, level: int) -> dict[str, object]:
     blocks: list[np.ndarray] = []
     loaded: list[tuple[tuple[int, int, int], float, tuple[float, float]]] = []
     symmetry: list[int] = []
+    clamped: list[int] = []
 
     if detail.joint_type == "butt":
         cols = np.concatenate(([0.0], columns[columns > 0.0]))
@@ -763,14 +804,20 @@ def _build_mesh(detail: WeldDetail, level: int) -> dict[str, object]:
             symmetry = [registry.add(0.0, y) for y in np.concatenate((plate_rows, att_rows))]
         att_top = [registry.add(x, detail.attachment_height_m) for x in xa]
         traction_att = detail.plate_thickness_m / seam
-        for k in range(len(att_top) - 1):
-            mid = registry.add(0.5 * (xa[k] + xa[k + 1]), detail.attachment_height_m)
-            loaded.append(((att_top[k], mid, att_top[k + 1]), traction_att, (0.0, 1.0)))
+        if detail.load_case != "plate_axial":
+            for k in range(len(att_top) - 1):
+                mid = registry.add(0.5 * (xa[k] + xa[k + 1]), detail.attachment_height_m)
+                loaded.append(((att_top[k], mid, att_top[k + 1]), traction_att, (0.0, 1.0)))
         last = _column_rows(detail, profile, cols[-1], depths)
         far = [registry.add(cols[-1], y) for y in last]
-        for k in range(len(far) - 1):
-            mid = registry.add(cols[-1], 0.5 * (last[k] + last[k + 1]))
-            loaded.append(((far[k], mid, far[k + 1]), 1.0, (1.0, 0.0)))
+        if detail.load_case == "attachment_supported":
+            # the surrounding structure supports the base plate vertically: the
+            # attachment pull is carried by the plate in bending, not by the pin
+            clamped.extend(far)
+        else:
+            for k in range(len(far) - 1):
+                mid = registry.add(cols[-1], 0.5 * (last[k] + last[k + 1]))
+                loaded.append(((far[k], mid, far[k + 1]), 1.0, (1.0, 0.0)))
         anchor_node = registry.add(0.0, -detail.plate_depth_m)
 
     elements = np.concatenate(blocks, axis=0)
@@ -785,7 +832,12 @@ def _build_mesh(detail: WeldDetail, level: int) -> dict[str, object]:
         dirichlet[2 * node] = 0.0
     if detail.joint_type == "corner":
         dirichlet[2 * anchor_node] = 0.0
-    dirichlet[2 * anchor_node + 1] = 0.0
+    for node in clamped:
+        # vertical support of the far plate edge only: the plate stays free to
+        # slide axially so the case carries no spurious axial restraint
+        dirichlet[2 * node + 1] = 0.0
+    if not clamped:
+        dirichlet[2 * anchor_node + 1] = 0.0
     return {
         "coords": coords,
         "elements": elements,
@@ -805,7 +857,11 @@ def _jacobian_report(coords: np.ndarray, elements: np.ndarray, samples=3) -> lis
         xy = torch.as_tensor(coords[conn], dtype=torch.float64).unsqueeze(0)
         for xi in xs:
             for eta in xs:
-                _, det = q8_strain_matrix(float(xi), float(eta), xy)
+                try:
+                    _, det = q8_strain_matrix(float(xi), float(eta), xy)
+                except ValueError:
+                    bad.append(int(e))
+                    break
                 if float(det.min()) <= 0.0:
                     bad.append(int(e))
                     break
