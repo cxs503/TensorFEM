@@ -19,13 +19,15 @@ import numpy as np
 import pytest
 
 from tensorfem.ice_belt_collapse import (
-    AH36, DH36, DOF_PER_NODE, E_STEEL, IACSPressureArea, I_RX, NU_STEEL, PlateModel,
+    AH36, DH36, DOF_PER_NODE, E_STEEL, IACSPressureArea, I_RX, I_U, I_V, I_W, NU_STEEL,
+    PlateModel, buckling_eigenvalue,
     Stiffener, analytic_moment_curvature, calibrate_user_K, csr_plate_buckling_stress,
     edge_nodes, elastic_perfectly_plastic, elastic_plate_case, euler_column_stress,
     ice_belt_case, inplane_free_bcs, line_nodes, navier_ssss_centre,
-    plate_buckling_case, plastic_hinge_case, section_moment,
+    plate_buckling_case, plate_field_collapse_arc_case, plastic_hinge_case,
+    section_moment, simply_supported_edges, solve_arc_length,
     solve_displacement_control, solve_load_control, structured_mesh,
-    tee_section, uniform_pressure_load, _mitc4_shear_operators,
+    tee_section, uniform_edge_load, uniform_pressure_load, _mitc4_shear_operators,
 )
 
 
@@ -286,3 +288,66 @@ def test_stiffener_axial_rigidity_and_geometric_term():
     ramp = np.zeros(model.ndof)
     ramp[2::DOF_PER_NODE] = np.linspace(0.0, 1.0e-3, model.n_nodes)
     assert float(ramp @ geo @ ramp) < 0.0
+
+# --------------------------------------------------------------------------- #
+# arc-length (Riks) continuation
+# --------------------------------------------------------------------------- #
+def test_arc_length_limit_reads_peak_and_bracket():
+    from tensorfem.ice_belt_collapse import SolutionPath, arc_length_limit
+    path = SolutionPath()
+    path.lam = [0.0, 0.2, 0.5, 0.8, 0.82, 0.81, 0.79]
+    path.trial_lam = 0.83
+    out = arc_length_limit(path)
+    assert out["peak_load_factor"] == pytest.approx(0.82)
+    assert out["post_peak_steps"] == 2
+    lo, hi = out["bracket"]
+    assert lo == pytest.approx(0.82) and hi == pytest.approx(0.83)
+    assert out["monotone"] is False
+
+
+def test_arc_length_is_exact_on_a_linear_elastic_path():
+    """The continuation must reduce to the linear solve on a linear problem."""
+    a, b, t = 1.2, 0.8, 0.012
+    nodes, elems = structured_mesh(a, b, 10, 6)
+    model = PlateModel(nodes, elems, t, AH36)
+    model.von_karman = False
+    fixed = inplane_free_bcs(model)
+    fext = uniform_pressure_load(model, 1.0e5)
+    reference = solve_load_control(model, fext, fixed, [1.0], tol=1e-10, max_iter=12)
+    path = solve_arc_length(model, fext, fixed, n_steps=4, dlam0=0.3, dlam_max=0.5,
+                            tol=1e-10, max_iter=12, growth=1.0, stop_ratio=None)
+    assert path.lam[-1] > 0.0
+    u_riks = path.u[-1] / path.lam[-1]
+    scale = np.max(np.abs(reference.u[-1]))
+    assert np.max(np.abs(u_riks - reference.u[-1])) <= 1.0e-8 * scale
+
+
+@pytest.mark.slow
+def test_arc_length_peak_corroborates_load_control_and_conserves_energy():
+    """C8: the Riks peak is an equilibrium state the load path cannot pass."""
+    out = plate_field_collapse_arc_case(nx=16, ny=8, n_steps=140)
+    assert abs(out["energy_residual"]) <= 0.02          # C7 ledger
+    assert out["mean_iterations"] <= 12.0
+    # independent load control agrees to within one 0.5 % load step
+    lam = np.round(np.arange(0.60, 0.80, 0.005), 4)
+    nodes, elems = structured_mesh(out["span"][0], out["span"][1], 16, 8)
+    model = PlateModel(nodes, elems, out["thickness"], elastic_perfectly_plastic())
+    fixed = simply_supported_edges(model)
+    fixed += [DOF_PER_NODE * int(n) + I_U for n in edge_nodes(model, "x0")]
+    corner = int(np.argmin(model.nodes[:, 0] ** 2 + model.nodes[:, 1] ** 2))
+    fixed = sorted(set(fixed + [DOF_PER_NODE * corner + I_V]))
+    _, _, mode = buckling_eigenvalue(model, 1.0e6, fixed, direction="x",
+                                     return_modes=True)
+    shape = mode[I_W::DOF_PER_NODE]
+    model.set_imperfection(shape / np.max(np.abs(shape))
+                           * out["imperfection_ratio"] * out["thickness"])
+    fext = uniform_edge_load(model, "x1",
+                             -elastic_perfectly_plastic().sigma_0
+                             * out["span"][1] * out["thickness"], component=I_U)
+    control = solve_load_control(model, fext, fixed, lam, tol=1e-7, max_iter=30)
+    lam_control = control.lam[-1]
+    lam_riks = out["limit"]["peak_load_factor"]
+    assert lam_riks >= lam_control - 1.0e-9            # both are equilibrium states
+    assert lam_riks / lam_control - 1.0 <= 0.02        # within 2 %
+    # and the Smith comparison stays inside the documented (FAIL) band
+    assert -0.25 < out["rel_error"] < 0.0
