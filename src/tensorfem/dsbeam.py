@@ -121,6 +121,8 @@ __all__ = [
     "natural_frequencies",
     "natural_frequencies_hz",
     "mode_shape",
+    "BeamModeShape",
+    "mode_shape_full",
     "euler_bernoulli_free_free_angular_frequencies",
     "simply_supported_timoshenko_angular_frequencies",
 ]
@@ -564,9 +566,15 @@ def signature_count(matrix: np.ndarray) -> int:
         return 0
     sym = 0.5 * (array + array.T)
     eigenvalues = np.linalg.eigvalsh(sym)
-    # A tolerance scaled to the matrix norm keeps round-off null modes from
-    # being counted as negative; DSM matrices are indefinite by construction.
-    tol = 1e-12 * max(np.abs(eigenvalues).max(), 1.0)
+    # Tolerance = backward-error bound of ``eigvalsh`` (``n * eps * ||A||``, with
+    # a safety factor), *not* a loose 1e-12*||A||: the free--free dynamic
+    # stiffness carries two eigenvalues of size ``omega^2 * M`` that are the only
+    # evidence of the rigid-body pair, and at low frequency they sit many decades
+    # below ``||K||``.  Any tolerance wider than the backward error silently
+    # reports them as zero and the Wittrick--Williams count loses its two
+    # rigid-body eigenvalues.
+    scale = np.abs(eigenvalues).max() if eigenvalues.size else 0.0
+    tol = 64.0 * np.finfo(float).eps * max(scale, np.finfo(float).tiny)
     return int(np.sum(eigenvalues < -tol))
 
 
@@ -635,6 +643,70 @@ def _bisect_det(det, lo: float, hi: float, iterations: int = 200) -> float:
     return 0.5 * (lo + hi)
 
 
+def _brent_solve(det, lo: float, hi: float, *, xtol: float, max_iterations: int) -> float:
+    """Brent's root finder on a bracketed sign change, in pure Python.
+
+    Deliberately dependency free: :mod:`tensorfem.dsbeam` is specified to need
+    ``math`` and ``numpy.linalg`` only, so the polishing step cannot borrow
+    ``scipy.optimize.brentq`` (it used to).  This is the classical
+    Brent--Dekker algorithm -- inverse quadratic interpolation with the
+    bisection safeguard and the ``m = 2 eps |b|`` termination test of Dekker's
+    original proof -- so it converges superlinearly but never leaves the
+    bracket, which is what makes it safe *after* the Wittrick--Williams count
+    has isolated a single root.
+
+    The bracket ``[lo, hi]`` must satisfy ``det(lo) * det(hi) < 0``; a
+    ``ValueError`` is raised otherwise so the caller can fall back to the
+    bisection midpoint.
+    """
+    eps = np.finfo(float).eps
+    a, b = float(lo), float(hi)
+    fa, fb = float(det(a)), float(det(b))
+    if fa == 0.0:
+        return a
+    if fb == 0.0:
+        return b
+    if fa * fb > 0.0:
+        raise ValueError("_brent_solve requires a sign-changing bracket")
+    c, fc = a, fa
+    d = e = b - a
+    for _ in range(int(max_iterations)):
+        if (fb > 0.0) == (fc > 0.0):
+            c, fc = a, fa
+            d = e = b - a
+        if abs(fc) < abs(fb):
+            a, b, c = b, c, b
+            fa, fb, fc = fb, fc, fb
+        tol = 2.0 * eps * abs(b) + 0.5 * xtol
+        mid = 0.5 * (c - b)
+        if abs(mid) <= tol or fb == 0.0:
+            return b
+        if abs(e) >= tol and abs(fa) > abs(fb):
+            s = fb / fa
+            if a == c:  # secant step
+                p = 2.0 * mid * s
+                q = 1.0 - s
+            else:  # inverse quadratic interpolation
+                q = fa / fc
+                r = fb / fc
+                p = s * (2.0 * mid * q * (q - r) - (b - a) * (r - 1.0))
+                q = (q - 1.0) * (r - 1.0) * (s - 1.0)
+            if p > 0.0:
+                q = -q
+            else:
+                p = -p
+            if 2.0 * p < min(3.0 * mid * q - abs(tol * q), abs(e * q)):
+                e, d = d, p / q
+            else:
+                d = e = mid
+        else:
+            d = e = mid
+        a, fa = b, fb
+        b += d if abs(d) > tol else (tol if mid > 0.0 else -tol)
+        fb = float(det(b))
+    return b
+
+
 def _elastic_count(
     section: DSMBeamSection,
     omega: float,
@@ -649,7 +721,15 @@ def _elastic_count(
     # of a free-free beam (J counts eigenvalues, so they must be removed to get
     # elastic frequencies), and the single numerical zero that the basis
     # degeneracy creates at the second-spectrum threshold.
-    return count - rigid_body_mode_count(bc) - (1 if omega > shear_cutoff_angular_frequency(section) else 0)
+    count -= rigid_body_mode_count(bc) + (
+        1 if omega > shear_cutoff_angular_frequency(section) else 0
+    )
+    # ``J`` is a count and therefore non-negative; below the first natural
+    # frequency the exact value is zero.  A negative raw value can only mean
+    # that ``omega^2 * M`` of the rigid-body pair fell under the inertia
+    # tolerance (``omega`` many orders of magnitude below ``omega_1``), so
+    # clamping at zero returns the exact value instead of a numerical artefact.
+    return max(count, 0)
 
 
 def wittrick_williams_count(
@@ -678,8 +758,51 @@ def wittrick_williams_count(
     ceiling = float(omega) if omega_ceiling is None else float(omega_ceiling)
     if ceiling < omega:
         raise ValueError(f"omega_ceiling ({ceiling}) must be >= omega ({omega})")
-    cc = clamped_clamped_angular_frequencies(section, ceiling, n_elements=n)
+    if omega <= _count_floor(section, n):
+        # Below this floor the four dispersion roots coalesce in double precision
+        # and *no* natural frequency of the beam can lie below it (the floor is
+        # ~1e-4 of the Euler--Bernoulli first-mode estimate of the element, and
+        # shear/rotary inertia lower the true first frequency by O(1) at most),
+        # so the exact count is zero and the clamped--clamped scan -- whose
+        # determinant is then round-off noise -- must not run at all.
+        return 0
+    # The scan is stretched by 0.1 % so that a pole just above ``omega`` is
+    # still in ``cc`` and the proximity guard below can see it; ``J_0`` only
+    # counts poles <= omega, so the extra entries do not change the count.
+    cc = clamped_clamped_angular_frequencies(
+        section, ceiling * 1.001, n_elements=n
+    )
+    if _free_dofs(bc, 2 * (n + 1)) and cc.size:
+        # At an element clamped--clamped frequency the amplitude map ``H`` is
+        # singular, so ``K(omega) = H^{-T} Q H^{-1}`` has a pole and the inertia
+        # of the constrained matrix -- hence ``J`` -- is meaningless there.  The
+        # natural-frequency driver always brackets *inside* two scan points and
+        # never lands on a pole; a direct caller can, and used to get a silently
+        # wrong count, so it is refused explicitly.
+        nearest = float(np.min(np.abs(cc - omega)))
+        if nearest <= 1e-5 * omega:
+            raise ValueError(
+                f"omega={omega:.12g} coincides with the clamped-clamped pole "
+                f"{float(cc[int(np.argmin(np.abs(cc - omega)))]):.12g} of the element; "
+                "evaluate the count away from the pole"
+            )
     return _elastic_count(section, omega, n, bc, cc)
+
+
+def _count_floor(section: DSMBeamSection, n_elements: int) -> float:
+    """Frequency below which ``J`` is exactly zero in double precision.
+
+    ``1e-4`` times the Euler--Bernoulli estimate ``2 (pi)^2 sqrt(EI/(rho A L^4))``
+    of the element.  The estimate is an upper bound of the first Timoshenko
+    frequency, so the floor is at least three decades below any physical first
+    mode of any boundary condition -- while still far above the regime where the
+    exact basis loses all relative accuracy.
+    """
+    element_length = section.length / _check_elements(n_elements)
+    base = math.sqrt(
+        section.flexural_rigidity / (section.mass_per_length * element_length**4)
+    )
+    return 1e-4 * 2.0 * math.pi**2 * base
 
 
 def _scaled_det(section: DSMBeamSection, n: int, bc: str, log_scale: float):
@@ -775,8 +898,6 @@ def _frequencies_below(
     def j(omega: float) -> int:
         return _elastic_count(section, omega, n, bc, cc)
 
-    from scipy.optimize import brentq  # local: scipy stays an optional dependency
-
     points = 256
     while True:
         grid = np.linspace(floor, ceiling, points)
@@ -784,7 +905,7 @@ def _frequencies_below(
         try:
             return _roots_from_counts(
                 section, n, bc, grid, counts, count, j, sign_log,
-                rel_tol, max_iterations, brentq,
+                rel_tol, max_iterations,
             )
         except _ScanTooCoarse:
             if points >= 4096:
@@ -809,7 +930,6 @@ def _roots_from_counts(
     sign_log,
     rel_tol: float,
     max_iterations: int,
-    brentq,
 ) -> list[float]:
     frequencies: list[float] = []
     for position in range(1, grid.size):
@@ -823,7 +943,7 @@ def _roots_from_counts(
         frequencies.append(
             _bisect_and_polish(
                 section, n, bc, float(grid[position - 1]), float(grid[position]),
-                counts[position], j, sign_log, rel_tol, max_iterations, brentq,
+                counts[position], j, sign_log, rel_tol, max_iterations,
             )
         )
         if len(frequencies) >= count:
@@ -842,7 +962,6 @@ def _bisect_and_polish(
     sign_log,
     rel_tol: float,
     max_iterations: int,
-    brentq,
 ) -> float:
     """Bisect ``[lo, hi]`` on ``J`` down to a single root, then polish with Brent.
 
@@ -871,9 +990,8 @@ def _bisect_and_polish(
             return float(sign) * math.exp(exponent)
 
         try:
-            root = float(
-                brentq(det, lo, hi, xtol=rel_tol * max(hi, 1.0), rtol=1e-15,
-                       maxiter=max_iterations)
+            root = _brent_solve(
+                det, lo, hi, xtol=rel_tol * max(hi, 1.0), max_iterations=max_iterations
             )
         except (ValueError, RuntimeError):
             root = 0.5 * (lo + hi)  # safeguard: keep the bisection result
@@ -983,6 +1101,125 @@ def mode_shape(
     x = np.array(xs)
     w = np.array(ws)
     return x, w / np.abs(w).max()
+
+
+@dataclass(frozen=True)
+class BeamModeShape:
+    """Exact continuum mode of a Timoshenko beam: both fields and both slopes.
+
+    ``w`` is the deflection [m], ``psi`` the section rotation [rad], ``dw_dx``
+    the slope and ``dpsi_dx`` the curvature (bending strain, i.e. what a
+    whipping/springing stress recovery needs).  The shape is normalised so that
+    ``max |w| = 1``.
+
+    The fields come from the *exact* solution basis of the loaded element, not
+    from an interpolation of the nodal degrees of freedom, so the modal
+    identities below (mass orthogonality, Rayleigh quotient) hold to sampling
+    error only -- which is what makes them a usable verification surface.
+    """
+
+    omega: float
+    x: np.ndarray
+    w: np.ndarray
+    psi: np.ndarray
+    dw_dx: np.ndarray
+    dpsi_dx: np.ndarray
+
+    def mass_inner(self, other: "BeamModeShape", section: DSMBeamSection) -> float:
+        """Mass-weighted inner product ``int (rho A w_i w_j + rho I psi_i psi_j) dx``."""
+        rho_a = section.mass_per_length
+        rho_i = section.rotary_inertia_per_length
+        left = rho_a * self.w * other.w + rho_i * self.psi * other.psi
+        return float(np.trapezoid(left, self.x))
+
+    def strain_energy(self, section: DSMBeamSection) -> float:
+        """``int (EI psi_x^2 + kappa G A (w_x - psi)^2) dx`` for the shape."""
+        ei = section.flexural_rigidity
+        kga = section.shear_rigidity
+        shear = self.dw_dx - self.psi
+        integrand = ei * self.dpsi_dx**2 + kga * shear**2
+        return float(np.trapezoid(integrand, self.x))
+
+    def rayleigh_quotient(self, section: DSMBeamSection) -> float:
+        """``strain energy / mass integral`` -- must reproduce ``omega^2``."""
+        mass = self.mass_inner(self, section)
+        if mass <= 0.0:  # pragma: no cover - defensive
+            raise RuntimeError("mode shape has non-positive generalized mass")
+        return self.strain_energy(section) / mass
+
+
+def mode_shape_full(
+    section: DSMBeamSection,
+    mode: int,
+    *,
+    n_elements: int = 1,
+    bc: str = "free-free",
+    points_per_element: int = 40,
+    rel_tol: float = 1e-12,
+) -> BeamModeShape:
+    """Exact two-field mode shape ``(w, psi)`` and their slopes.
+
+    Companion of :func:`mode_shape` (which returns the deflection only) for the
+    callers that need the rotation/curvature field: modal stress recovery for
+    whipping and springing, and the mass-orthogonality audit of the eigenpairs.
+    """
+    if not isinstance(mode, (int, np.integer)) or mode < 1:
+        raise ValueError(f"mode must be a positive integer (1-based), got {mode!r}")
+    if points_per_element < 2:
+        raise ValueError("points_per_element must be >= 2")
+    n = _check_elements(n_elements)
+    omegas = natural_frequencies(
+        section, count=int(mode), n_elements=n, bc=bc, rel_tol=rel_tol
+    )
+    omega = float(omegas[int(mode) - 1])
+    ndof = 2 * (n + 1)
+    free = _free_dofs(bc, ndof)
+    k_red = assembled_dynamic_stiffness(section, omega, n, bc)
+    _, _, vt = np.linalg.svd(k_red)
+    dofs = np.zeros(ndof)
+    dofs[free] = vt[-1]
+    if np.abs(dofs).max() == 0.0:  # pragma: no cover - defensive
+        raise RuntimeError("null vector of the dynamic stiffness vanished")
+
+    le = section.length / n
+    lam, rotation, scale, h = _element_basis(section, omega, le)
+    xs: list[float] = []
+    ws: list[float] = []
+    psis: list[float] = []
+    dws: list[float] = []
+    dpsis: list[float] = []
+    for e in range(n):
+        d = dofs[2 * e : 2 * e + 4]
+        amplitudes = np.linalg.solve(h, d.astype(complex))
+        xi = np.linspace(0.0, 1.0, points_per_element, endpoint=(e == n - 1))
+        eta = xi - 0.5
+        base = np.array(
+            [scale[k] * np.exp(lam[k] * eta) for k in range(4)], dtype=complex
+        )  # 4 x npts
+        w = np.real(amplitudes @ base) * le
+        # dW/dxi = sum a_k scale_k lambda_k exp(...);  w = le * W  =>  dw/dx = dW/dxi
+        d_w = np.real((amplitudes * lam) @ base)
+        psi = np.real((amplitudes * rotation) @ base)
+        d_psi = np.real((amplitudes * rotation * lam) @ base) / le
+        xs.extend((e + xi) * le)
+        ws.extend(w)
+        psis.extend(psi)
+        dws.extend(d_w)
+        dpsis.extend(d_psi)
+    x = np.array(xs)
+    w = np.array(ws)
+    psi = np.array(psis)
+    scale_factor = np.abs(w).max()
+    if scale_factor == 0.0:  # pragma: no cover - defensive
+        raise RuntimeError("mode shape vanished")
+    return BeamModeShape(
+        omega=omega,
+        x=x,
+        w=w / scale_factor,
+        psi=psi / scale_factor,
+        dw_dx=np.array(dws) / scale_factor,
+        dpsi_dx=np.array(dpsis) / scale_factor,
+    )
 
 
 # ---------------------------------------------------------------- references
