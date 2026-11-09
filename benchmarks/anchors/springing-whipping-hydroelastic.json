@@ -1,0 +1,427 @@
+{
+  "schema_version": "1.0.0",
+  "task_key": "paper-exp-springing-whipping-hydroelastic-1",
+  "topic": "springing-whipping-hydroelastic",
+  "experiment": "research_plan item 1 — external anchor reconciliation (verbatim transcription + same-caliber transfer + consistency machine check)",
+  "repository": "TensorFEM",
+  "branch": "agent/m7516",
+  "git_head": "91187e720ccfe07eeb02f43183db6be80e1d9842",
+  "generated_at_utc": "2026-11-08T15:57:37Z",
+  "generated_by": {
+    "script": "benchmarks/anchors/springing_whipping_hydroelastic_anchor.py",
+    "script_sha256": "eb915c08f4a39bd2a4635658c6a354d96bf72d1170589843fb9f8ceb9cda4e3a",
+    "command": "python benchmarks/anchors/springing_whipping_hydroelastic_anchor.py",
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "tensorfem": "0.45.0"
+  },
+  "case_caliber": {
+    "case_id": "kvlcc2_hull_girder_caliber",
+    "description": "Hull-girder vertical bending caliber of a KVLCC2-class ship: the scale at which a springing excitation spectrum has to be expressed in order to be usable by the TensorFEM hull-girder modal / hydroelastic models.",
+    "quantities": {
+      "L": {
+        "value": 320.0,
+        "unit": "m",
+        "grade": "REPO_DOCUMENTED",
+        "source": "docs/hull-girder-csr-bending-chain.md (length between perpendiculars, KVLCC2)"
+      },
+      "B": {
+        "value": 58.0,
+        "unit": "m",
+        "grade": "REPO_DOCUMENTED",
+        "source": "docs/hull-girder-csr-bending-chain.md (moulded breadth, KVLCC2)"
+      },
+      "T": {
+        "value": 20.8,
+        "unit": "m",
+        "grade": "REPO_DOCUMENTED",
+        "source": "docs/hull-girder-csr-bending-chain.md (design draft, KVLCC2)"
+      },
+      "rho": {
+        "value": 1025.0,
+        "unit": "kg/m^3",
+        "grade": "REPO_DOCUMENTED",
+        "source": "docs/hull-girder-csr-bending-chain.md (sea water density)"
+      },
+      "V": {
+        "value": 7.9732,
+        "unit": "m/s",
+        "grade": "CASE_INPUT",
+        "source": "declared service speed 15.5 kn (0.514444 m/s per kn); an assumption of this case, not an external anchor"
+      },
+      "delta_star": {
+        "value": 1.0,
+        "unit": "m",
+        "grade": "CASE_INPUT",
+        "source": "nominal hull boundary-layer displacement thickness at the springing band; declared assumption, swept below"
+      }
+    }
+  },
+  "source_registry": {
+    "path": "benchmarks/anchors/sources/sname_tr_bulletin_3-37_4-7.transcription.json",
+    "sha256": "83b3b467507b4cfdad570c9c27ecbf2306d2b2991a6f1cc90f92d8e39615a1b7",
+    "sources_sought": [
+      {
+        "id": "SNAME-TR-3-37",
+        "citation_as_assigned": "SNAME Technical and Research Bulletin No. 3-37 (1997)",
+        "expected_contribution": "nondimensional turbulent fluctuating-pressure spectrum reference for hull / boundary-layer excitation (springing excitation anchor)",
+        "acquisition_status": "NOT_OBTAINED",
+        "acquisition_attempts": [
+          {
+            "channel": "local filesystem corpus",
+            "action": "find /root /data /srv /media /opt -iname '*sname*' -o -iname '*bulletin*3-37*'",
+            "result": "no matching document; single false positive was a ruff parser snapshot"
+          },
+          {
+            "channel": "local PDF corpus",
+            "action": "find /root -maxdepth 4 -iname '*.pdf'",
+            "result": "4 PDFs found, none related (agent tooling specs / unrelated paper)"
+          },
+          {
+            "channel": "repository corpus",
+            "action": "grep -rIl 'SNAME|T&R Bulletin|3-37|4-7' over the TensorFEM worktree",
+            "result": "no verbatim text, no table extract, no page locator for this bulletin"
+          },
+          {
+            "channel": "network",
+            "action": "curl https://www.sname.org (HTTP 301), https://ntrs.nasa.gov (HTTP 403), https://apps.dtic.mil (connection failed)",
+            "result": "no retrievable full text from this sandbox; the bulletin series is also a commercial SNAME publication (member/purchase access), so an unauthenticated fetch would not be an authorised copy in any case"
+          }
+        ]
+      },
+      {
+        "id": "SNAME-TR-4-7",
+        "citation_as_assigned": "SNAME Technical and Research Bulletin No. 4-7",
+        "expected_contribution": "companion vibration/hydroelastic guidance bulletin; candidate second anchor or convention (nondimensionalisation) reference",
+        "acquisition_status": "NOT_OBTAINED",
+        "acquisition_attempts": [
+          {
+            "channel": "same four channels as SNAME-TR-3-37",
+            "action": "shared search",
+            "result": "no copy, no verbatim extract, no page locator available"
+          }
+        ]
+      }
+    ],
+    "entry_classification": [],
+    "claim_eligible_entries": 0
+  },
+  "conversion_chain": {
+    "convention_status": "UNVERIFIED — assumed for the dry run, must be resolved verbatim from the source",
+    "assumed_convention": {
+      "pressure_scale": "q = 0.5 * rho * V^2",
+      "frequency_scale": "omega* = omega * l_ref / V",
+      "spectrum_normalisation": "INT_0^inf S* domega* = Cp_rms^2",
+      "reference_length_l_ref": "L (ship length) OR delta* (boundary-layer scale) — the source must state which; CHK7 quantifies the difference"
+    },
+    "steps": [
+      {
+        "id": "S1",
+        "formula": "q = 0.5 * rho * V^2",
+        "unit": "kg^1*m^-1*s^-2",
+        "note": "dynamic pressure; kg/m^3 * (m/s)^2 = kg m^-1 s^-2 = Pa"
+      },
+      {
+        "id": "S2",
+        "formula": "omega = 2*pi*f",
+        "unit": "s^-1",
+        "note": "Hz = 1/s"
+      },
+      {
+        "id": "S3",
+        "formula": "S_p(omega) = q^2 * (l_ref/V) * S*(omega*l_ref/V)",
+        "unit": "kg^2*m^-2*s^-3",
+        "note": "Pa^2 * (m / (m/s)) = Pa^2 s; the bracket (l_ref/V) carries s"
+      },
+      {
+        "id": "S4",
+        "formula": "S_p(f) = 2*pi*S_p(omega)",
+        "unit": "kg^2*m^-2*s^-3",
+        "note": "2*pi is dimensionless; spectral density per Hz equals per rad/s up to 2*pi"
+      },
+      {
+        "id": "S5",
+        "formula": "p_rms = sqrt(INT_0^inf S_p(omega) domega)",
+        "unit": "kg^1*m^-1*s^-2",
+        "note": "rhs: sqrt(Pa^2 s * 1/s) = Pa"
+      },
+      {
+        "id": "S6",
+        "formula": "omega* = omega * l_ref / V",
+        "unit": "1",
+        "note": "reduced frequency; 1/s * s = 1"
+      }
+    ],
+    "closure_identity": "INT S_p domega = q^2 * Cp_rms^2 = p_rms^2"
+  },
+  "machine_checks": [
+    {
+      "id": "CHK1_dimensional_homogeneity",
+      "method": "exponent algebra over (kg, m, s) for both sides of every conversion step",
+      "steps": [
+        {
+          "step": "S1",
+          "formula": "q = 0.5 * rho * V^2",
+          "lhs": "kg^1*m^-1*s^-2",
+          "rhs": "kg^1*m^-1*s^-2",
+          "homogeneous": true,
+          "note": "dynamic pressure; kg/m^3 * (m/s)^2 = kg m^-1 s^-2 = Pa"
+        },
+        {
+          "step": "S2",
+          "formula": "omega = 2*pi*f",
+          "lhs": "s^-1",
+          "rhs": "s^-1",
+          "homogeneous": true,
+          "note": "Hz = 1/s"
+        },
+        {
+          "step": "S3",
+          "formula": "S_p(omega) = q^2 * (l_ref/V) * S*(omega*l_ref/V)",
+          "lhs": "kg^2*m^-2*s^-3",
+          "rhs": "kg^2*m^-2*s^-3",
+          "homogeneous": true,
+          "note": "Pa^2 * (m / (m/s)) = Pa^2 s; the bracket (l_ref/V) carries s"
+        },
+        {
+          "step": "S4",
+          "formula": "S_p(f) = 2*pi*S_p(omega)",
+          "lhs": "kg^2*m^-2*s^-3",
+          "rhs": "kg^2*m^-2*s^-3",
+          "homogeneous": true,
+          "note": "2*pi is dimensionless; spectral density per Hz equals per rad/s up to 2*pi"
+        },
+        {
+          "step": "S5",
+          "formula": "p_rms = sqrt(INT_0^inf S_p(omega) domega)",
+          "lhs": "kg^1*m^-1*s^-2",
+          "rhs": "kg^1*m^-1*s^-2",
+          "homogeneous": true,
+          "note": "rhs: sqrt(Pa^2 s * 1/s) = Pa"
+        },
+        {
+          "step": "S6",
+          "formula": "omega* = omega * l_ref / V",
+          "lhs": "1",
+          "rhs": "1",
+          "homogeneous": true,
+          "note": "reduced frequency; 1/s * s = 1"
+        }
+      ],
+      "n_steps": 6,
+      "n_homogeneous": 6,
+      "tolerance": "exact",
+      "passed": true
+    },
+    {
+      "id": "CHK2_round_trip_residual",
+      "method": "apply S1..S3 forward on a reduced-frequency band (0.2..9, 4001 points), then invert both the ordinate and the abscissa and compare",
+      "band_omega_star": [
+        0.2,
+        9.0
+      ],
+      "band_hz": [
+        0.0007931088701626875,
+        0.03568989915732094
+      ],
+      "max_relative_residual": 4.222322173177061e-14,
+      "ordinate_residual": 4.222322173177061e-14,
+      "abscissa_residual": 0.0,
+      "tolerance": 1e-09,
+      "passed": true,
+      "claim_eligible": false,
+      "fixture_note": "evaluated on the synthetic dry-run fixture, not on a source anchor"
+    },
+    {
+      "id": "CHK3_spectral_moment_closure",
+      "method": "trapezoidal quadrature of the nondimensional spectrum vs its closed-form moment; then quadrature of the dimensionalised spectrum vs (q*Cp_rms)^2",
+      "m0_star_numeric": 0.00010000000000000002,
+      "m0_star_closed_form": 0.0001,
+      "m0_relative_residual": 1.3552527156068805e-16,
+      "variance_pa2_numeric": 106149.60240354635,
+      "variance_pa2_closed_form": 106149.6024035463,
+      "variance_relative_residual": 4.112662195298254e-16,
+      "tolerance": 1e-09,
+      "passed": true,
+      "claim_eligible": false
+    },
+    {
+      "id": "CHK4_unit_system_invariance",
+      "method": "evaluate S_p(f) in (kg, m, s) and in (kg, cm, s); map the cm result back with 1 kg/(cm s^2) = 100 Pa and compare",
+      "evaluated_at_hz": 0.007931088701626876,
+      "s_p_si": 4425707.210192779,
+      "s_p_cm_mapped_to_si": 4425707.21019278,
+      "relative_residual": 2.1043474644471817e-16,
+      "reduced_frequency_residual": 0.0,
+      "tolerance": 1e-12,
+      "passed": true,
+      "claim_eligible": false
+    },
+    {
+      "id": "CHK5_spectral_scale_exponents",
+      "method": "S_p(rho, V, L, f) rescaled by lambda at fixed reduced frequency (L/V is invariant under a common scaling of L and V, so f is held); compares against the analytic exponents rho^2 V^3 L^1",
+      "lambda": 2.0,
+      "measured_ratio": 64.0,
+      "analytic_ratio": 64.0,
+      "relative_residual": 0.0,
+      "tolerance": 1e-12,
+      "passed": true,
+      "claim_eligible": false
+    },
+    {
+      "id": "CHK6_time_domain_closure",
+      "method": "(a) multi-sine synthesis on orthogonal bins -> record variance vs spectral variance; (b) 16 random-phase realisations, record variance averaged over seeds (declared tolerance 3%, expected standard error ~1.1%)",
+      "m0_from_quadrature_pa2": 8314.181719362909,
+      "variance_orthogonal_pa2": 8314.181719362912,
+      "relative_residual_orthogonal": 4.3756306151202103e-16,
+      "variance_random_phase_mean_pa2": 8314.18171936291,
+      "relative_residual_random_phase_mean": 2.1878153075601052e-16,
+      "tolerance_orthogonal": 1e-09,
+      "tolerance_random_phase": 0.03,
+      "passed": true,
+      "claim_eligible": false,
+      "seeding": "numpy default_rng(20261108), 16 seeds, 512 bins, 32768 samples"
+    },
+    {
+      "id": "CHK7_convention_sensitivity",
+      "method": "map an identical reduced-frequency band onto the case frequency axis under the two candidate reference lengths",
+      "nominal_delta_star_m": 1.0,
+      "nominal_L_over_delta_star": 320.0,
+      "rows": [
+        {
+          "delta_star_m": 0.1,
+          "L_over_delta_star": 3200.0,
+          "f_at_omega_star_min_if_l_ref_is_L_hz": 0.003965544350813438,
+          "f_at_omega_star_min_if_l_ref_is_delta_star_hz": 12.689741922603,
+          "frequency_shift_factor": 3199.9999999999995
+        },
+        {
+          "delta_star_m": 0.3,
+          "L_over_delta_star": 1066.6666666666667,
+          "f_at_omega_star_min_if_l_ref_is_L_hz": 0.003965544350813438,
+          "f_at_omega_star_min_if_l_ref_is_delta_star_hz": 4.229913974201,
+          "frequency_shift_factor": 1066.6666666666665
+        },
+        {
+          "delta_star_m": 1.0,
+          "L_over_delta_star": 320.0,
+          "f_at_omega_star_min_if_l_ref_is_L_hz": 0.003965544350813438,
+          "f_at_omega_star_min_if_l_ref_is_delta_star_hz": 1.2689741922603,
+          "frequency_shift_factor": 319.99999999999994
+        },
+        {
+          "delta_star_m": 3.0,
+          "L_over_delta_star": 106.66666666666667,
+          "f_at_omega_star_min_if_l_ref_is_L_hz": 0.003965544350813438,
+          "f_at_omega_star_min_if_l_ref_is_delta_star_hz": 0.4229913974201,
+          "frequency_shift_factor": 106.66666666666666
+        }
+      ],
+      "quantifies": "the frequency-axis ambiguity produced by an unresolved nondimensionalisation convention",
+      "passed": true,
+      "decision_use": "supports WITHHELD on the anchor transfer: the convention must be resolved verbatim first"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "C1",
+      "requirement": "引句 + 表号/页码 + 数值逐字录入工件（值=来源原值，禁改写/禁四舍五入到失真）",
+      "status": "WITHHELD",
+      "measured": {
+        "verbatim_entries_in_registry": 0,
+        "total_entries_in_registry": 0,
+        "sources_sought": [
+          "SNAME-TR-3-37",
+          "SNAME-TR-4-7"
+        ],
+        "sources_obtained": []
+      },
+      "verdict": "FAIL (honest)",
+      "evidence": "benchmarks/anchors/sources/sname_tr_bulletin_3-37_4-7.transcription.json (acquisition_status = NOT_OBTAINED for both sources; entries = [])",
+      "gap": "No authorised copy of SNAME T&R Bulletin 3-37 (1997) or 4-7 is present in the sandbox (filesystem, repository, platform corpus) and the series is a paid SNAME publication, so no character-exact quote, table number or page can be copied. Writing one from memory would violate the transcription discipline, therefore no value was entered."
+    },
+    {
+      "id": "C2",
+      "requirement": "同口径换算脚本落盘且可复算（复算残差 <1e-9）",
+      "status": "PASS_PIPELINE_DRY_RUN_ONLY",
+      "measured": {
+        "script": "benchmarks/anchors/springing_whipping_hydroelastic_anchor.py",
+        "round_trip_max_relative_residual": 4.222322173177061e-14,
+        "moment_closure_relative_residual": 1.3552527156068805e-16,
+        "unit_system_invariance_residual": 2.1043474644471817e-16,
+        "tolerance": 1e-09
+      },
+      "verdict": "PARTIAL — machinery reproducible to <1e-9 on the synthetic fixture; the anchor-specific conversion cannot be executed (blocked by C1)",
+      "evidence": "machine check CHK2/CHK3/CHK4 in this artifact",
+      "gap": "the chain is parameterised on l_ref and on the spectrum normalisation, both of which the source text must supply; only the fixture path is exercised"
+    },
+    {
+      "id": "C3",
+      "requirement": "量纲齐次与内部一致性机检通过",
+      "status": "PASS_PIPELINE_DRY_RUN_ONLY",
+      "measured": {
+        "dimensional_homogeneity_steps": "6/6",
+        "time_domain_closure_relative_residual": 4.3756306151202103e-16,
+        "random_phase_mean_residual": 2.1878153075601052e-16,
+        "scale_exponent_residual": 0.0,
+        "all_checks_pass": true
+      },
+      "verdict": "PASS on the chain itself (dims + closure + invariance), no anchor number is validated by it",
+      "evidence": "machine checks CHK1, CHK3, CHK4, CHK5, CHK6",
+      "gap": "internal consistency constrains the transfer, it does not verify agreement with the external anchor"
+    },
+    {
+      "id": "C4",
+      "requirement": "未核候选登记值不得直接引用（只能作为核对对照）",
+      "status": "PASS",
+      "measured": {
+        "claim_eligible_entries": 0,
+        "claim_ineligible_entries": 0,
+        "candidate_values_recorded_from_memory": 0
+      },
+      "verdict": "PASS — structurally enforced by classify_entries(); registry holds zero numeric candidates, so nothing could be cited even accidentally",
+      "evidence": "promotion_rule in the transcription registry + CHK guard test in tests/test_springing_whipping_anchor.py",
+      "gap": null
+    }
+  ],
+  "dry_run_fixture": {
+    "label": "SYNTHETIC — not a source value, not an anchor, comparison-only",
+    "spectrum_shape": "S*(x) = A x^2 exp(-x^2)",
+    "closed_form_moment": "A*sqrt(pi)/4",
+    "cp_rms_star": 0.01,
+    "amplitude_A": 0.00022567583341910255,
+    "l_ref_used_m": 320.0,
+    "derived_case_caliber_values": {
+      "q_pa": 32580.608098,
+      "p_rms_pa": 325.80608098,
+      "s_p_at_1hz_pa2_per_hz": 0.0
+    },
+    "claim_eligible": false
+  },
+  "domain_comparison": {
+    "status": "NOT_PERFORMED",
+    "reason": "the research question's second half (本课题领域实验结果 vs 锚) presupposes a verified anchor; with C1 WITHHELD any 'difference to the anchor' number would be a difference to an unverified candidate. Left explicitly uncomputed."
+  },
+  "verdict": {
+    "overall": "FAIL",
+    "kind": "honest FAIL — external anchor not reconciled",
+    "why": "C1 WITHHELD: neither SNAME T&R Bulletin 3-37 (1997) nor 4-7 could be obtained in this sandbox, so no verbatim quote / table / page could be transcribed. Criteria C2 and C3 pass only as pipeline self-consistency on a labelled synthetic fixture; C4 passes. The research question (how far the domain result sits from the anchor) is therefore unanswered and explicitly not computed.",
+    "what_would_close_it": [
+      "operator supplies an authorised copy (or licensed access) of SNAME T&R Bulletin 3-37 (1997) and 4-7",
+      "two independent transcribers fill entries[] with quote + table/page + printed values as strings",
+      "resolve the nondimensionalisation block (pressure scale, frequency scale, reference length) verbatim",
+      "re-run this script: C1 flips to PASS, the transfer executes on the real anchor, and only then may the anchor be compared with the domain result"
+    ]
+  },
+  "limitations": [
+    "The dry-run fixture coefficients are arbitrary; the numbers under dry_run_fixture carry no physical meaning and must not be quoted.",
+    "The convention block (pressure scale / frequency scale / reference length) is assumed, not sourced; CHK7 shows the frequency axis moves by L/delta* ~ 320 when the reference length changes between the hull length and the boundary-layer scale, so an assumed convention is not good enough for a transfer.",
+    "Dimensional homogeneity and moment closure validate the arithmetic of the chain only; they say nothing about agreement with the external anchor.",
+    "delta* = 1.0 m and V = 7.9732 m/s are declared case inputs, not measured values of a specific ship."
+  ],
+  "reproduce": {
+    "generate": "python benchmarks/anchors/springing_whipping_hydroelastic_anchor.py",
+    "gate": "python benchmarks/anchors/springing_whipping_hydroelastic_anchor.py --check",
+    "tests": "pytest tests/test_springing_whipping_anchor.py -q"
+  }
+}
