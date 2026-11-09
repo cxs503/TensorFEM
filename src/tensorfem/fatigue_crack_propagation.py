@@ -32,7 +32,7 @@ All quantities use SI units: stress in Pa, length in m, cycles dimensionless.
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Literal
 
@@ -127,14 +127,29 @@ def k_edge_crack_finite_width(sigma_pa: float, crack_length_m: float,
 
 def k_semi_elliptical_surface_crack(
     sigma_pa: float, crack_depth_m: float, crack_half_length_m: float,
-    thickness_m: float, *, front_location: Literal["deepest", "surface"] = "deepest"
+    thickness_m: float, *, front_location: Literal["deepest", "surface"] = "deepest",
+    plate_half_width_m: float | None = None,
 ) -> SIFResult:
-    """Newman-Raju approximation for semi-elliptical surface crack.
+    """Newman-Raju approximation for a semi-elliptical surface crack.
 
-    K_I = sigma * sqrt(pi * a / Q) * F(a/t, a/c, c/W, phi)
+    ``K_I = sigma * sqrt(pi * a / Q) * F(a/c, a/t, c/b, phi)`` with the shape
+    factor ``Q = 1 + 1.464 (a/c)^1.65`` and
 
-    Simplified version using the standard Newman-Raju formulation.
-    ``front_location`` selects the deepest point (phi=pi/2) or surface point (phi=0).
+    ``F = [M1 + M2 (a/t)^2 + M3 (a/t)^4] * g(phi) * f_phi(phi) * f_w``,
+
+    ``M1 = 1.13 - 0.09 (a/c)``,
+    ``M2 = -0.54 + 0.89 / (0.2 + a/c)``,
+    ``M3 = 0.5 - 1/(0.65 + a/c) + 14 (1 - a/c)^24``,
+    ``g = 1 + [0.1 + 0.35 (a/t)^2] (1 - sin phi)^2``,
+    ``f_phi = [(a/c)^2 cos^2 phi + sin^2 phi]^(1/4)``,
+    ``f_w = [sec(pi c / (2 b) * sqrt(a/t))]^(1/2)`` for plate half width ``b``.
+
+    ``front_location = "deepest"`` is ``phi = pi/2`` (``g = 1``, ``f_phi = 1``);
+    ``"surface"`` is ``phi = 0``.  The finite-width factor ``f_w`` is unity when
+    ``plate_half_width_m`` is not supplied (wide-plate limit) and is the only
+    difference between the two branches apart from the angular functions --
+    the surface branch used to drop ``M1..M3`` and ``g`` entirely, which
+    under-predicted ``K_I`` at the surface point of a shallow flaw.
     """
     sigma = _positive(sigma_pa, "sigma_pa")
     a = _positive(crack_depth_m, "crack_depth_m")
@@ -150,26 +165,28 @@ def k_semi_elliptical_surface_crack(
     # Elliptic integral approximation (Raju-Newman)
     Q = 1.0 + 1.464 * a_c**1.65  # shape parameter
 
-    # Geometry correction factor F
-    if front_location == "deepest":
-        M1 = 1.13 - 0.09 * a_c
-        M2 = -0.54 + 0.89 / (0.2 + a_c)
-        M3 = 0.5 - 1.0 / (0.65 + a_c) + 14.0 * (1.0 - a_c)**24
-        g1 = 1.0 + (0.1 + 0.35 * a_t**2) * (1.0 - math.sin(math.pi / 2.0))**2
-        g2 = 1.0
-        f_phi = 1.0
-        f_w = 1.0
-        F = (M1 + M2 * a_t**2 + M3 * a_t**4) * g1 * g2 * f_phi * f_w
-    else:
-        M1 = 1.0
-        M2 = 0.0
-        M3 = 0.0
-        g1 = 1.0
-        g2 = 1.0
-        f_phi = math.sqrt(a_c)
-        f_w = 1.0
-        F = (M1 + M2 * a_t**2 + M3 * a_t**4) * g1 * g2 * f_phi * f_w
+    M1 = 1.13 - 0.09 * a_c
+    M2 = -0.54 + 0.89 / (0.2 + a_c)
+    M3 = 0.5 - 1.0 / (0.65 + a_c) + 14.0 * (1.0 - a_c) ** 24
 
+    if front_location == "deepest":
+        phi = math.pi / 2.0
+    elif front_location == "surface":
+        phi = 0.0
+    else:  # pragma: no cover - guarded by the Literal type
+        raise ValueError("front_location must be 'deepest' or 'surface'")
+
+    g = 1.0 + (0.1 + 0.35 * a_t**2) * (1.0 - math.sin(phi)) ** 2
+    f_phi = (a_c**2 * math.cos(phi) ** 2 + math.sin(phi) ** 2) ** 0.25
+    f_w = 1.0
+    if plate_half_width_m is not None:
+        b = _positive(plate_half_width_m, "plate_half_width_m")
+        argument = math.pi * c / (2.0 * b) * math.sqrt(a_t)
+        if argument >= math.pi / 2.0:
+            raise ValueError("c/b too large for the finite-width surface correction")
+        f_w = math.sqrt(1.0 / math.cos(argument))
+
+    F = (M1 + M2 * a_t**2 + M3 * a_t**4) * g * f_phi * f_w
     Y = F / math.sqrt(Q)
     k = sigma * math.sqrt(math.pi * a / Q) * F
     return SIFResult(k, Y, f"semi_elliptical_surface_{front_location}")
@@ -177,16 +194,27 @@ def k_semi_elliptical_surface_crack(
 
 def k_hole_edge_crack(sigma_pa: float, crack_length_m: float,
                        hole_radius_m: float) -> SIFResult:
-    """Edge crack emanating from a circular hole (Lukas approximation)."""
+    """Crack growing from a circular hole, ``K_I = F(a/R) * sigma sqrt(pi a)``.
+
+    ``F`` is the Tada correlation for two opposite radial cracks at a circular
+    hole under uniaxial tension, written with ``lam = a/(a+R)``::
+
+        F = 0.5 * (3 - lam) * (1 + 1.243 * (1 - lam)^3)
+
+    It tends to the exact small-crack limit ``1.12 * K_t = 3.36`` (Kirsch
+    ``K_t = 3``) as ``a/R -> 0`` and decays towards the edge-crack value for
+    ``a >> R``.  The previous implementation used another correlation together
+    with a hard switch to ``F = 3.0`` for ``a/R < 1e-3``; that switch was
+    discontinuous (the branched correlation tends to 4.5, not 3.0) and
+    over-predicted the small-crack amplification by 34% relative to the exact
+    Kirsch limit of ``1.12 K_t``.  Accuracy of the present fit is about 5-10%
+    over ``0 < a/R < 2``.
+    """
     sigma = _positive(sigma_pa, "sigma_pa")
     a = _positive(crack_length_m, "crack_length_m")
     R = _positive(hole_radius_m, "hole_radius_m")
-    a_R = a / R
-
-    if a_R < 0.001:
-        F = 3.0
-    else:
-        F = (1.0 + 0.5 / (1.0 + a_R)) * (1.12 + (3.0 - 1.12) * math.exp(-2.0 * a_R))
+    lam = a / (a + R)
+    F = 0.5 * (3.0 - lam) * (1.0 + 1.243 * (1.0 - lam) ** 3)
 
     k = sigma * math.sqrt(math.pi * a) * F
     return SIFResult(k, F, "hole_edge_crack")
@@ -471,10 +499,42 @@ class WeldToeDetail:
         )
 
     def compute_residual_life(self) -> ResidualLifeResult:
+        """Residual life with the semi-elliptical geometry factor retained.
+
+        The growth integral uses the same Newman-Raju ``Delta K(a)`` that
+        ``compute_sif_deepest`` reports (aspect ratio ``a/c`` held constant) and
+        the critical depth is the root of ``K_I(a_c) = K_IC``.  The previous
+        implementation integrated with ``Y = 1``, which ignores the surface
+        crack shape factor entirely; :meth:`compute_residual_life_uniform_y`
+        keeps that legacy value for audit purposes.
+        """
+        from .fatigue.crack_growth_geometry import weld_toe_surface_crack_life
+
+        law = ParisLaw(self.paris_c, self.paris_m)
+        life = weld_toe_surface_crack_life(
+            thickness_m=self.thickness_m,
+            crack_depth_m=self.crack_depth_m,
+            crack_half_length_m=self.crack_half_length_m,
+            sigma_range_pa=self.sigma_range_pa,
+            law=law,
+            fracture_toughness_pa_sqrt_m=self.fracture_toughness_pa_sqrt_m,
+        )
+        return ResidualLifeResult(
+            n_residual=life.n_f,
+            a_0_m=self.crack_depth_m,
+            a_c_m=life.critical_crack_m,
+            k_ic_pa_sqrt_m=self.fracture_toughness_pa_sqrt_m,
+            description=(
+                f"geometry_aware_surface_crack_a0={self.crack_depth_m:.2e}"
+                f"_ac={life.critical_crack_m:.2e}"
+            ),
+        )
+
+    def compute_residual_life_uniform_y(self) -> ResidualLifeResult:
+        """Legacy baseline: Paris integration with a unit geometry factor."""
         law = ParisLaw(self.paris_c, self.paris_m)
         K_IC = self.fracture_toughness_pa_sqrt_m
         sigma_max = self.sigma_range_pa
-        ac = compute_critical_crack(sigma_max, K_IC)
         return residual_life_constant_amplitude(
             self.crack_depth_m, sigma_max, 0.0, K_IC, law,
         )
@@ -497,10 +557,40 @@ class HoleEdgeDetail:
         )
 
     def compute_residual_life(self) -> ResidualLifeResult:
+        """Residual life with the hole stress-concentration factor retained.
+
+        Integrating with ``Y = 1`` discarded the amplification ``F ~ 3.4`` of a
+        crack at a hole, which over-predicted the life by ``F**m`` (about 40x
+        for ``m = 3``); that non-conservative legacy value is available from
+        :meth:`compute_residual_life_uniform_y`.
+        """
+        from .fatigue.crack_growth_geometry import hole_edge_crack_life
+
+        law = ParisLaw(self.paris_c, self.paris_m)
+        life = hole_edge_crack_life(
+            hole_radius_m=self.hole_radius_m,
+            crack_length_m=self.crack_length_m,
+            plate_width_m=self.plate_width_m,
+            sigma_range_pa=self.sigma_range_pa,
+            law=law,
+            fracture_toughness_pa_sqrt_m=self.fracture_toughness_pa_sqrt_m,
+        )
+        return ResidualLifeResult(
+            n_residual=life.n_f,
+            a_0_m=self.crack_length_m,
+            a_c_m=life.critical_crack_m,
+            k_ic_pa_sqrt_m=self.fracture_toughness_pa_sqrt_m,
+            description=(
+                f"geometry_aware_hole_edge_a0={self.crack_length_m:.2e}"
+                f"_ac={life.critical_crack_m:.2e}"
+            ),
+        )
+
+    def compute_residual_life_uniform_y(self) -> ResidualLifeResult:
+        """Legacy baseline: Paris integration with a unit geometry factor."""
         law = ParisLaw(self.paris_c, self.paris_m)
         K_IC = self.fracture_toughness_pa_sqrt_m
         sigma_max = self.sigma_range_pa
-        ac = compute_critical_crack(sigma_max, K_IC)
         return residual_life_constant_amplitude(
             self.crack_length_m, sigma_max, 0.0, K_IC, law,
         )
@@ -524,10 +614,34 @@ class FilletWeldDetail:
         )
 
     def compute_residual_life(self) -> ResidualLifeResult:
+        """Residual life with the finite-width edge-crack factor retained."""
+        from .fatigue.crack_growth_geometry import fillet_weld_toe_life
+
+        law = ParisLaw(self.paris_c, self.paris_m)
+        life = fillet_weld_toe_life(
+            plate_thickness_m=self.plate_thickness_m,
+            weld_leg_m=self.weld_leg_m,
+            crack_length_m=self.crack_length_m,
+            sigma_range_pa=self.sigma_range_pa,
+            law=law,
+            fracture_toughness_pa_sqrt_m=self.fracture_toughness_pa_sqrt_m,
+        )
+        return ResidualLifeResult(
+            n_residual=life.n_f,
+            a_0_m=self.crack_length_m,
+            a_c_m=life.critical_crack_m,
+            k_ic_pa_sqrt_m=self.fracture_toughness_pa_sqrt_m,
+            description=(
+                f"geometry_aware_fillet_weld_a0={self.crack_length_m:.2e}"
+                f"_ac={life.critical_crack_m:.2e}"
+            ),
+        )
+
+    def compute_residual_life_uniform_y(self) -> ResidualLifeResult:
+        """Legacy baseline: Paris integration with a unit geometry factor."""
         law = ParisLaw(self.paris_c, self.paris_m)
         K_IC = self.fracture_toughness_pa_sqrt_m
         sigma_max = self.sigma_range_pa
-        ac = compute_critical_crack(sigma_max, K_IC)
         return residual_life_constant_amplitude(
             self.crack_length_m, sigma_max, 0.0, K_IC, law,
         )
