@@ -1,0 +1,129 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_panel_buckling",
+  "title": "Linearised buckling of a longitudinally stiffened panel unit cell",
+  "mission": "p127w2-n08-fem-structural-ultimate",
+  "generated_at": "2026-11-09T01:45:32+00:00",
+  "criteria": {
+    "a_plate_buckling_vs_classical_relative_error": 0.05,
+    "b_ultimate_vs_experiment_relative_error": 0.1,
+    "c_postbuckling_energy_absorption_relative_error": 0.15,
+    "d_smith_vs_fem_full_model_relative_error": 0.08,
+    "e_csr_section_modulus_ratio": 1.0,
+    "f_mesh_convergence_gci": 0.03
+  },
+  "gates": [
+    {
+      "id": "plate_finest_vs_classical",
+      "quantity": "|sigma_cr(FE) / sigma_cr(classical) - 1| on the finest simply supported plate mesh",
+      "reference": "k pi^2 D/(b^2 t), k = min_m (m b/a + a/(m b))^2",
+      "value": 0.0009291948851047893,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh 40x20: FE 167.411 MPa vs classical 167.566 MPa; pencil residual 1.1e-10"
+    },
+    {
+      "id": "plate_medium_vs_classical",
+      "quantity": "|sigma_cr(FE) / sigma_cr(classical) - 1| on the middle plate mesh",
+      "reference": "same closed form",
+      "value": 0.011003275656313871,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh 20x10"
+    },
+    {
+      "id": "plate_gci_fine",
+      "quantity": "GCI_fine of the simply supported plate buckling ladder",
+      "reference": "Richardson, Fs = 1.25, r = 2",
+      "value": 0.005458599444846808,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "three meshes 10x5 / 20x10 / 40x20"
+    },
+    {
+      "id": "panel_gci_fine",
+      "quantity": "GCI_fine of the stiffened-cell buckling ladder",
+      "reference": "Richardson, Fs = 1.25, r = 2",
+      "value": 0.012017990282263994,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "three meshes 8x2 / 16x4 / 32x8"
+    },
+    {
+      "id": "panel_at_least_simply_supported",
+      "quantity": "k_eff of the stiffened cell vs the idealised simply supported coefficient",
+      "reference": "k_SS = 4 (closed form): a stiffener restrains, so the cell cannot buckle below it",
+      "value": 3.0136807245957664,
+      "threshold": 0.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "k_eff 7.014 at 32x8; clamped-edge FE companion 6.991"
+    },
+    {
+      "id": "panel_at_most_clamped",
+      "quantity": "k_eff of the stiffened cell vs the clamped-edge finite-element companion",
+      "reference": "clamped-edge plate, same mesher and element (the strongest restitution)",
+      "value": 0.02709286224146723,
+      "threshold": 0.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "cell 7.014 <= clamped 6.991 + 5 %% tolerance"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_panel_buckling/result.json",
+    "driver": "benchmarks/verified/fem_panel_buckling/run.py",
+    "figures": [
+      "benchmarks/verified/fem_panel_buckling/figures/buckling_convergence.png",
+      "benchmarks/verified/fem_panel_buckling/figures/buckling_modes.png",
+      "benchmarks/verified/fem_panel_buckling/figures/linear_path_evidence.png"
+    ],
+    "module": "src/tensorfem/stiffened_panel_buckling.py",
+    "test": "tests/test_stiffened_panel_buckling.py"
+  },
+  "limitations": [
+    "Linearised (eigenvalue) buckling: prebuckling resultants are not updated, so the anchor carries no post-buckling reserve and no ultimate strength.",
+    "Rotational geometric stiffness terms are omitted; the simply supported plate agreement with the closed form quantifies that omission.",
+    "The repository's panel path (stiffened_panel_unit_fe) is geometrically linear and cannot supply a limit point, so campaign criteria (b), (c) and (d) are WITHHELD.",
+    "The buckling operator uses the MITC4 flat shell rather than the layered Shell4 of the nonlinear path, because the layered element's one-point shear field carries hourglass modes that make the pure bending operator singular.",
+    "No experimental value is quoted anywhere in this anchor."
+  ],
+  "campaign_criteria": {
+    "note": "the campaign's six acceptance criteria, graded on this anchor's evidence only; a criterion the repository cannot support is recorded as FAIL or WITHHELD instead of being inferred",
+    "(a)_buckling_vs_classical": {
+      "status": "PASS",
+      "value_percent": 0.0929,
+      "threshold_percent": 5.0,
+      "evidence": "simply supported plate 40x20"
+    },
+    "(b)_ultimate_vs_Paik2007_experiment": {
+      "status": "WITHHELD",
+      "reason": "primary experimental table unavailable; repository policy forbids quoting it from memory (see benchmarks/paik_thayamballi_2003_specimens.json)"
+    },
+    "(c)_postbuckling_path_vs_experiment": {
+      "status": "FAIL",
+      "reason": "the panel path in the repository is geometrically linear: no limit point, no descending branch, no energy absorption to compare (measured: applied stress 0.325 sigma_y with maximum plastic strain 0.0e+00 and a deflection-versus-load proportionality residual of 1.8e-14)"
+    },
+    "(d)_smith_Mkappa_vs_fem_full_model": {
+      "status": "WITHHELD",
+      "reason": "no geometrically nonlinear full-section FE exists in the repository, so there is no full-model M-kappa to compare the Smith curve against"
+    },
+    "(e)_csr_section_modulus": {
+      "status": "WITHHELD",
+      "reason": "the rule design bending moment of the applicable CSR edition is not available; only the actual section moduli are reported"
+    },
+    "(f)_mesh_convergence_gci": {
+      "status": "PASS",
+      "value_percent": 0.5459,
+      "threshold_percent": 3.0,
+      "evidence": "simply supported plate ladder 10x5 / 20x10 / 40x20, r = 2"
+    }
+  }
+}
