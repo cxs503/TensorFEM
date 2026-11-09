@@ -525,9 +525,9 @@ def strong_coupling_fsi(
         residuals = []
         
         # Aitken acceleration
+        disp_prev = disp.clone()  # Always initialize for safety
         if use_aitken and step > 0:
             disp_prev_prev = disp_history[step - 1].clone()
-            disp_prev = disp.clone()
         
         while sub_iter < max_sub_iterations:
             # Solve fluid
