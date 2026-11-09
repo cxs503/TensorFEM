@@ -1,0 +1,250 @@
+{
+  "repo": "TensorFEM",
+  "module": "tensorfem.open_section_torsion",
+  "closed_form_anchors": {
+    "i_section": {
+      "cw": 7.775999999999998e-08,
+      "cw_closed_form": 7.775999999999999e-08,
+      "cw_rel_error": 2.220446049250313e-16,
+      "i_xx": 8.28e-05,
+      "i_xx_closed_form": 8.279999999999998e-05,
+      "shear_centre": [
+        -5.812424154962021e-22,
+        0.15
+      ],
+      "centroid": [
+        -1.6042290667695083e-19,
+        0.14999999999999997
+      ]
+    },
+    "channel": {
+      "shear_centre": [
+        -0.042352941176470586,
+        0.15
+      ],
+      "shear_centre_closed_form": [
+        -0.04235294117647059,
+        0.15
+      ],
+      "shear_centre_rel_error": 1.1102230246251565e-16,
+      "cw": 1.2197647058823528e-07,
+      "cw_closed_form": 1.2197647058823526e-07,
+      "cw_rel_error": 2.220446049250313e-16
+    },
+    "tee": {
+      "shear_centre": [
+        -9.082767510386183e-20,
+        0.3
+      ],
+      "cw": 3.6489246359868047e-42,
+      "cw_expected": 0.0
+    },
+    "angle": {
+      "shear_centre": [
+        3.469446951953614e-18,
+        -6.938893903907228e-18
+      ],
+      "cw": 1.5010405332569166e-40,
+      "cw_expected": 0.0
+    },
+    "z_section": {
+      "shear_centre": [
+        -2.2312856212892386e-17,
+        0.14999999999999997
+      ],
+      "centroid": [
+        -6.416916267078033e-19,
+        0.14999999999999997
+      ],
+      "cw": 1.837963636363636e-07
+    }
+  },
+  "flat_bar_thin_wall_limit": [
+    {
+      "t_over_b": 0.02,
+      "j_thin": 2.6666666666666673e-10,
+      "j_rect": 2.6330533932837377e-10,
+      "j_exact": 2.6330533932837377e-10,
+      "thin_rel_error": 0.012765891291330655,
+      "rect_rel_error": 0.0
+    },
+    {
+      "t_over_b": 0.05,
+      "j_thin": 4.166666666666669e-09,
+      "j_rect": 4.0353648175146006e-09,
+      "j_exact": 4.0353648175146006e-09,
+      "thin_rel_error": 0.032537789045040455,
+      "rect_rel_error": 0.0
+    },
+    {
+      "t_over_b": 0.1,
+      "j_thin": 3.3333333333333354e-08,
+      "j_rect": 3.123250374690035e-08,
+      "j_exact": 3.123250374690035e-08,
+      "thin_rel_error": 0.06726420665655097,
+      "rect_rel_error": 0.0
+    },
+    {
+      "t_over_b": 0.2,
+      "j_thin": 2.6666666666666683e-07,
+      "j_rect": 2.3305340336926785e-07,
+      "j_exact": 2.3305340336926785e-07,
+      "thin_rel_error": 0.1442298752622786,
+      "rect_rel_error": 0.0
+    },
+    {
+      "t_over_b": 0.4,
+      "j_thin": 2.1333333333333346e-06,
+      "j_rect": 1.5959364784344193e-06,
+      "j_exact": 1.5959364784344193e-06,
+      "thin_rel_error": 0.33672822331004704,
+      "rect_rel_error": 0.0
+    }
+  ],
+  "hex8_flat_bar": [
+    {
+      "through_thickness": 1,
+      "j_fem": 3.21311080815537e-08,
+      "torque": 3.21311080815537e-08,
+      "dofs": 486,
+      "elements": 64,
+      "warping_max": 0.0007319666169571483,
+      "j_exact": 3.1232503746900335e-08,
+      "rel_error": 0.028771447269658967
+    },
+    {
+      "through_thickness": 2,
+      "j_fem": 3.2131107730516646e-08,
+      "torque": 3.2131107730516646e-08,
+      "dofs": 729,
+      "elements": 128,
+      "warping_max": 0.0007319666232582831,
+      "j_exact": 3.1232503746900335e-08,
+      "rel_error": 0.028771436030180286
+    }
+  ],
+  "hex8_i_section": [
+    {
+      "mesh": "coarse",
+      "j_fem": 1.9522725294675156e-07,
+      "torque": 1.9522725294675156e-07,
+      "dofs": 756,
+      "elements": 104,
+      "warping_max": 0.008959475588576654,
+      "j_thin": 1.8943999999999998e-07,
+      "j_rect": 1.711543845080254e-07,
+      "rel_error_vs_j_rect": 0.14065002487620992
+    }
+  ],
+  "closed_box_control": [
+    {
+      "outer_half_dim": 0.11,
+      "wall": 0.01,
+      "j_bredt": 9.260999999999998e-05,
+      "j_fd_energy": 9.628790924913033e-05,
+      "j_fd_torque": 9.546691469869683e-05,
+      "bredt_vs_fd_energy": 0.03819699978752589,
+      "bredt_vs_fd_torque": 0.029925704708417156
+    },
+    {
+      "outer_half_dim": 0.11,
+      "wall": 0.02,
+      "j_bredt": 0.00016000000000000007,
+      "j_fd_energy": 0.00017359144568015883,
+      "j_fd_torque": 0.00017076585076214126,
+      "bredt_vs_fd_energy": 0.0782955958855307,
+      "bredt_vs_fd_torque": 0.06304451805845468
+    },
+    {
+      "outer_half_dim": 0.11,
+      "wall": 0.04,
+      "j_bredt": 0.00023327999999999996,
+      "j_fd_energy": 0.0002783937752582362,
+      "j_fd_torque": 0.00027086207954769376,
+      "bredt_vs_fd_energy": 0.16205022980987627,
+      "bredt_vs_fd_torque": 0.138749874513447
+    }
+  ],
+  "stiffener_ltb": {
+    "scantlings": {
+      "web_depth": 0.25,
+      "web_t": 0.01,
+      "flange_width": 0.09,
+      "flange_t": 0.012
+    },
+    "j": 1.2436007596466234e-07,
+    "j_thin": 1.3517333333333333e-07,
+    "cw": 8.960457446954842e-41,
+    "i_yy": 7.289999999999997e-07,
+    "shear_centre": [
+      -1.4103246360917115e-19,
+      0.25
+    ],
+    "span_sweep": [
+      {
+        "span": 1.5,
+        "mcr_computed": 82135.3660380545,
+        "mcr_placeholder": 155264.37483006963,
+        "ratio": 0.5290032960101004
+      },
+      {
+        "span": 2.0,
+        "mcr_computed": 61601.52452854087,
+        "mcr_placeholder": 96879.47816400637,
+        "ratio": 0.6358573115377048
+      },
+      {
+        "span": 2.5,
+        "mcr_computed": 49281.2196228327,
+        "mcr_placeholder": 69066.48049108464,
+        "ratio": 0.7135330955396533
+      },
+      {
+        "span": 3.0,
+        "mcr_computed": 41067.68301902725,
+        "mcr_placeholder": 53349.157527438634,
+        "ratio": 0.7697906569172203
+      },
+      {
+        "span": 3.5,
+        "mcr_computed": 35200.871159166214,
+        "mcr_placeholder": 43409.46618032726,
+        "ratio": 0.8109031106933745
+      },
+      {
+        "span": 4.0,
+        "mcr_computed": 30800.762264270434,
+        "mcr_placeholder": 36606.54363713576,
+        "ratio": 0.8414004493181484
+      },
+      {
+        "span": 4.5,
+        "mcr_computed": 27378.455346018167,
+        "mcr_placeholder": 31672.82873643633,
+        "ratio": 0.8644145925154475
+      },
+      {
+        "span": 5.0,
+        "mcr_computed": 24640.60981141635,
+        "mcr_placeholder": 27934.49162966268,
+        "ratio": 0.8820854926621013
+      },
+      {
+        "span": 5.5,
+        "mcr_computed": 22400.55437401486,
+        "mcr_placeholder": 25003.95058203062,
+        "ratio": 0.8958806049678119
+      },
+      {
+        "span": 6.0,
+        "mcr_computed": 20533.841509513626,
+        "mcr_placeholder": 22643.854742504394,
+        "ratio": 0.9068174011454817
+      }
+    ],
+    "placeholder_constants": {
+      "torsion_constant": 1.2e-07,
+      "warping_constant": 2.5e-08
+    }
+  }
+}
