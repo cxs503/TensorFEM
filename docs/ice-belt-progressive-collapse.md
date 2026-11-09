@@ -151,6 +151,18 @@ material on both sides), and the Faulkner-anchored peak is an empirically calibr
 upper estimate; a converged side-by-side comparison needs arc-length control on the
 softening branch, which this node does not deliver.
 
+## 4b. Arc-length follow-up (limit loads)
+
+The two open items above -- the incomplete plate-field path and the load-step
+bracketing of the ice-belt limit -- are addressed by the Riks continuation
+documented in [`ice-belt-arc-length.md`](ice-belt-arc-length.md).  Headline:
+the plate-field peak converges to `256.4 MPa` (`-15.3 %` vs Faulkner, `-0.4 %`
+vs Paik-Thayamballi, h-refinement `-1.6 %` then `-0.5 %`), so criterion (d) is
+a confirmed FAIL of the *reference formula*, not of the FE path; and the
+ice-belt load-controlled `826 kPa` was a solver limit -- the equilibrium path
+continues to `934.6 kPa` at the same mesh, i.e. the code comparison is only
+inside 15 % under the twice-elastic-slope design convention.
+
 ## 5. Pitfalls found while building this surface
 
 1. **Geometric stiffness needs `N` per unit length, not per area.** Multiplying the
