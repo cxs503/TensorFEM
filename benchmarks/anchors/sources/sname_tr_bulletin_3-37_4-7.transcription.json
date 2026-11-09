@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Verbatim transcription registry for the external quantitative anchors of the springing-whipping-hydroelastic topic. An entry may only be created by copying characters from an authorised copy of the source document held by the operator: quote (verbatim, character exact), table/figure/page locator, and the numeric values exactly as printed (as strings, no re-rounding). The anchor reconciliation script refuses to promote any anchor whose entry is not VERBATIM.",
+  "sources_sought": [
+    {
+      "id": "SNAME-TR-3-37",
+      "citation_as_assigned": "SNAME Technical and Research Bulletin No. 3-37 (1997)",
+      "expected_contribution": "nondimensional turbulent fluctuating-pressure spectrum reference for hull / boundary-layer excitation (springing excitation anchor)",
+      "acquisition_status": "NOT_OBTAINED",
+      "acquisition_attempts": [
+        {
+          "channel": "local filesystem corpus",
+          "action": "find /root /data /srv /media /opt -iname '*sname*' -o -iname '*bulletin*3-37*'",
+          "result": "no matching document; single false positive was a ruff parser snapshot"
+        },
+        {
+          "channel": "local PDF corpus",
+          "action": "find /root -maxdepth 4 -iname '*.pdf'",
+          "result": "4 PDFs found, none related (agent tooling specs / unrelated paper)"
+        },
+        {
+          "channel": "repository corpus",
+          "action": "grep -rIl 'SNAME|T&R Bulletin|3-37|4-7' over the TensorFEM worktree",
+          "result": "no verbatim text, no table extract, no page locator for this bulletin"
+        },
+        {
+          "channel": "network",
+          "action": "curl https://www.sname.org (HTTP 301), https://ntrs.nasa.gov (HTTP 403), https://apps.dtic.mil (connection failed)",
+          "result": "no retrievable full text from this sandbox; the bulletin series is also a commercial SNAME publication (member/purchase access), so an unauthenticated fetch would not be an authorised copy in any case"
+        }
+      ]
+    },
+    {
+      "id": "SNAME-TR-4-7",
+      "citation_as_assigned": "SNAME Technical and Research Bulletin No. 4-7",
+      "expected_contribution": "companion vibration/hydroelastic guidance bulletin; candidate second anchor or convention (nondimensionalisation) reference",
+      "acquisition_status": "NOT_OBTAINED",
+      "acquisition_attempts": [
+        {
+          "channel": "same four channels as SNAME-TR-3-37",
+          "action": "shared search",
+          "result": "no copy, no verbatim extract, no page locator available"
+        }
+      ]
+    }
+  ],
+  "entries": [],
+  "entry_schema": {
+    "anchor_id": "string, stable key used by the reconciliation script",
+    "source_id": "one of sources_sought[].id",
+    "locator": {
+      "document_part": "e.g. 'Table 3-2', 'Fig. 4-7.3', 'p. 27'",
+      "page": "integer or range, as printed",
+      "section": "section heading as printed (optional)"
+    },
+    "quote": "character-exact sentence(s) from the document containing the anchor value and its nondimensionalisation",
+    "verbatim_status": "VERBATIM | TRANSCRIBED_OCR_REVIEWED | WITHHELD",
+    "values": [
+      {
+        "symbol": "as printed",
+        "printed_value": "string, exactly as printed (no re-rounding, no unit conversion)",
+        "unit_as_printed": "string",
+        "definition_in_quote": true
+      }
+    ],
+    "nondimensionalisation": {
+      "pressure_scale": "as printed, e.g. 'q = 1/2 rho V^2' with the quote fragment that states it",
+      "frequency_scale": "as printed, e.g. 'omega* = omega L / V' or 'omega delta*/U' - MUST be resolved verbatim before any transfer",
+      "spectrum_normalisation": "as printed, e.g. 'integral S domega* = Cp_rms^2'"
+    },
+    "operator": "who transcribed, from which copy (edition, ISBN/accession), and the date",
+    "verification": "second-person re-read result; two independent readings required before verbatim_status=VERBATIM"
+  },
+  "promotion_rule": "An entry with verbatim_status != VERBATIM, or with an empty quote, or without a page/table locator, is claim_ineligible: its numbers may only be used as a cross-check against computed values, never as a basis for a pass/compliance statement. The generator script enforces this (see benchmarks/anchors/springing_whipping_hydroelastic_anchor.py, function classify_entries)."
+}
