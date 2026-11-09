@@ -28,7 +28,27 @@ from .weld_toe import (
     solve_weld_detail,
 )
 
+from .beam_interface import (
+    BeamSection,
+    GlobalDetailResult,
+    beam_nominal_stress,
+    global_to_detail_fatigue,
+    verify_beam_detail_chain,
+)
+
+from .extended_verification import (
+    ALTERNATIVE_LINEAR_STATIONS,
+    BracketDetail,
+    compute_gci,
+    hot_spot_stress_alternative,
+    negative_control_large_radius,
+    negative_control_small_radius,
+    run_full_verification,
+    verify_fatigue_power_law,
+)
+
 __all__ = [
+    # Core weld_toe
     "ENVIRONMENTS",
     "LINEAR_STATIONS",
     "POISSON_STEEL",
@@ -47,4 +67,19 @@ __all__ = [
     "mesh_convergence",
     "nii_stress_concentration",
     "solve_weld_detail",
+    # Beam interface
+    "BeamSection",
+    "GlobalDetailResult",
+    "beam_nominal_stress",
+    "global_to_detail_fatigue",
+    "verify_beam_detail_chain",
+    # Extended verification
+    "ALTERNATIVE_LINEAR_STATIONS",
+    "BracketDetail",
+    "compute_gci",
+    "hot_spot_stress_alternative",
+    "negative_control_large_radius",
+    "negative_control_small_radius",
+    "run_full_verification",
+    "verify_fatigue_power_law",
 ]
