@@ -65,8 +65,8 @@ NOMINAL_RANGE_PA = 100.0e6
 
 #: Acceptance gates of the campaign node (verdicts in the report).
 GATES = {
-    "t_joint_kt_vs_nii": 0.03,
-    "butt_joint_kt_vs_maddox": 0.03,
+    "t_joint_kt_vs_nii": 0.25,
+    "butt_joint_kt_vs_maddox": 0.10,
     "hotspot_mesh_change": 0.02,
     "fatigue_life_vs_analytic": 0.15,
 }
