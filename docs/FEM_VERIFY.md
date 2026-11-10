@@ -262,7 +262,7 @@ OMP_NUM_THREADS=8 PYTHONPATH=src python benchmarks/euler_bernoulli/run.py --skip
 * No thick-plate (`a/t = 10`) case here — covered by
   `benchmarks/plate_uniform_load_evidence.json` (Mindlin vs 3-D reference).
 * Cantilever with an end *moment* and cantilever free vibration are covered
-  elsewhere (`benchmarks/beam_dynamics_validation.md`,
+  elsewhere (`docs/beam_dynamics_validation.md`,
   `benchmarks/timoshenko_beam_modal_reference.json`); this page only grades the
   static tip-deflection criterion requested for the benchmark contract.
 * Half-space with a *free* bottom face and an absorbing far field (a truncation
