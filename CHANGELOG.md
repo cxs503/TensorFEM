@@ -1,5 +1,29 @@
 ## Unreleased
 
+### Plasticity: three-case qualification of the J2 surface (p337w1-n07)
+- **New verification surface** (`tensorfem.j2_elastoplastic_three_case`): one material
+  card (E = 210 GPa, nu = 0.3, sigma_y = 250 MPa, H = 1000 MPa) driven through
+  (A) a displacement-controlled TET4 tensile bar (1/8 model, 48 tets), (B) a
+  material-point pure-shear path plus a TET4 homogeneous-shear patch test, and
+  (C) a plane-strain axisymmetric thick-walled cylinder, against oracles the code
+  under test never sees (bilinear card + independent scalar bisection for A, closed
+  form tau(gamma) with tau_y = sigma_y/sqrt(3) for B, Hill 1950 + quadrature u_r(r)
+  for C).
+- **Numbers** (`artifacts/j2_elastoplastic_three_case/report.json`): sigma(eps)
+  3.8e-15, sigma_y read back from the FE curve 250.0000 MPa (3.6e-14), tau_y
+  144.337567 MPa vs 250/sqrt(3) (2.1e-16), pi-plane 6-direction deviation 1.2e-16;
+  r_p(p) worst 1.37% (band 5%) over five contained-plastic levels p/k = 1.00..1.35,
+  u_r(r) worst 2.08% (band 10%); Roache GCI on u_r(a) over n_r = 16/32/64 <= 8.6e-4.
+  The residual ~2% offset against Hill is traced to the classical plane-strain
+  sigma_z inconsistency for nu != 1/2, not to the mesh (GCI 0.1%).
+- **Honest gaps**: no ASTM E8 dataset exists in the repository, so the experimental
+  chord is *withheld* (scored against the analytic card instead); the campaign's
+  literal p = 0..100 MPa band is elastic for this card (p_y = 108.25 MPa) and is
+  reported as an elastic check; the H = 1000 MPa cylinder has no closed form and is
+  verified by mesh refinement only.
+- 11 pytest cases (`tests/test_j2_elastoplastic_three_case.py`, end-to-end case in the
+  slow lane); report `docs/j2-elastoplastic-three-case.md`.
+
 ### FSI: partitioned vortex-lattice/FE flutter verification (P88W1-N07)
 - **New time-domain fluid solver** (`tensorfem.unsteady_vlm`): 2-D unsteady vortex
   lattice for a flat plate -- cosine panels, quarter-chord bound vortices, wake shed as
