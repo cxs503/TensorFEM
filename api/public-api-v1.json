@@ -386,6 +386,41 @@
       "stability": "stable"
     },
     {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hex20",
+      "name": "hex20_mass",
+      "object": "hex20_mass",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hex20",
+      "name": "hex20_lumped_mass",
+      "object": "hex20_lumped_mass",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hex20",
+      "name": "hex20_mass_totals",
+      "object": "hex20_mass_totals",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hex20",
+      "name": "assemble_hex20_mass",
+      "object": "assemble_hex20_mass",
+      "stability": "stable"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hex20",
+      "name": "hex_gauss_rule",
+      "object": "hex_gauss_rule",
+      "stability": "stable"
+    },
+    {
       "introduced": "0.4.0",
       "module": "tensorfem.finite_sliding_contact",
       "name": "PolylineProjection",
