@@ -1,0 +1,63 @@
+{
+  "benchmark": "MacNeal\u2013Harder pinched cylinder",
+  "reference": {
+    "value": -1.8248e-05,
+    "source": "MacNeal & Harder (1985), FEAD 1(1), 3\u201320",
+    "quantity": "Radial displacement at load point (in)"
+  },
+  "problem": {
+    "geometry": "Circular cylinder, R=300 in, L=600 in, t=3 in",
+    "material": "E=3e6 psi, nu=0.3",
+    "load": "Two diametrically opposed unit forces at midspan",
+    "boundary_conditions": "Rigid diaphragms at ends, symmetry octant"
+  },
+  "element": {
+    "name": "Cylindrical Shell4",
+    "formulation": "Reissner\u2013Mindlin with exact cylindrical metric",
+    "integration": "2x2 membrane+bending, 1-point selective shear"
+  },
+  "levels": [
+    {
+      "mesh": "4x4",
+      "n_elements": 16,
+      "displacement": -1.772659884661117e-05,
+      "reference": -1.8248e-05,
+      "relative_error": 0.02857305750705985,
+      "relative_error_pct": 2.857305750705985
+    },
+    {
+      "mesh": "8x8",
+      "n_elements": 64,
+      "displacement": -1.7636652834588284e-05,
+      "reference": -1.8248e-05,
+      "relative_error": 0.033502146285166345,
+      "relative_error_pct": 3.3502146285166345
+    },
+    {
+      "mesh": "16x16",
+      "n_elements": 256,
+      "displacement": -1.827849365234856e-05,
+      "reference": -1.8248e-05,
+      "relative_error": 0.001671068190955749,
+      "relative_error_pct": 0.1671068190955749
+    },
+    {
+      "mesh": "32x32",
+      "n_elements": 1024,
+      "displacement": -1.8579423846604277e-05,
+      "reference": -1.8248e-05,
+      "relative_error": 0.01816220115104561,
+      "relative_error_pct": 1.816220115104561
+    }
+  ],
+  "convergence": [
+    {
+      "mesh_range": "4x \u2192 16x",
+      "observed_order": -0.22959810101145503
+    },
+    {
+      "mesh_range": "8x \u2192 32x",
+      "observed_order": 4.325411012014273
+    }
+  ]
+}
