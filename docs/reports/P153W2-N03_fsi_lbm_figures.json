@@ -1,0 +1,67 @@
+{
+  "figures": {
+    "cylinder": "artifacts/fsi_strong_coupling/fig_cylinder_validation.png",
+    "fsi2": "artifacts/fsi_strong_coupling/fig_fsi2_history.png",
+    "energy": "artifacts/fsi_strong_coupling/fig_energy_ledger.png",
+    "summary": "artifacts/fsi_strong_coupling/fig_summary.png"
+  },
+  "cylinder": {
+    "CD_mean": 2.8691023237611657,
+    "CL_amp": 0.808368672710622,
+    "St": 0.2660783777863098,
+    "error_CD": 0.1117330266993295,
+    "error_CL": 0.19163132728937804,
+    "error_St": 0.11307207404563388
+  },
+  "structure": {
+    "case": "structure",
+    "analytic_f1_Hz": 1.9736411041705342,
+    "numerical_f1_Hz": 1.9800930919692201,
+    "frequency_error": 0.003269078549819488,
+    "energy_initial_J_per_m": 0.007688936914301677,
+    "energy_final_J_per_m": 0.007688918439353386,
+    "energy_drift": 2.402796185950698e-06,
+    "static_tip_modal_error": {
+      "3": 0.00013313713104069882,
+      "5": 5.977540381241142e-06,
+      "8": 4.866090956276828e-06,
+      "12": 1.6264415328878956e-06
+    }
+  },
+  "interface": {
+    "case": "interface",
+    "loaded_columns": 70,
+    "loaded_cells": 5740,
+    "resultant_columns": -22.904901849571406,
+    "resultant_nodes_full": -22.957672458140063,
+    "resultant_nodes_free": -19.126330130290988,
+    "force_conservation_error": 0.002303900226913432,
+    "clamp_reaction_share": 0.16496781973117786,
+    "n_links": 5740.0
+  },
+  "fsi2": {
+    "frequency_Hz": 3.0780664123011743,
+    "amplitude_m": 0.015588967778231221,
+    "mean_CD": 56.28568448114494,
+    "amp_CL": 0.987280847455634,
+    "mean_sub_iterations": 2.135,
+    "converged_fraction": 1.0,
+    "ledger": {
+      "delta_E_J_per_m": 11.492828463847331,
+      "work_in_J_per_m": 5.238753410117666,
+      "viscous_J_per_m": 28.811824586390923,
+      "interface_work_J_per_m": 0.9030835959217539,
+      "residual_relative": 6.693557969802016,
+      "window_s": [
+        0.16525000000000012,
+        0.2997499999999947
+      ]
+    },
+    "error_frequency": 0.5390332061505871,
+    "error_amplitude": 0.5415009476990817,
+    "window": [
+      0.16525000000000012,
+      0.2997499999999947
+    ]
+  }
+}
