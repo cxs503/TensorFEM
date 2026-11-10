@@ -1,0 +1,615 @@
+{
+  "generated_utc": "2026-11-10T01:08:57+00:00",
+  "host": {
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "machine": "loongarch64",
+    "python": "3.11.6",
+    "torch_threads": 4,
+    "eigen_residual_tolerance": 1e-08
+  },
+  "tensorfem_version": "0.45.0",
+  "command": "PYTHONPATH=src python scripts/audit_structural_canonical_face.py",
+  "gates": {
+    "C1_beam_tip_deflection": {
+      "gate": "relative error < 1 %",
+      "value": 2.6489227478165844e-13,
+      "pass": true
+    },
+    "C2_plate_centre_deflection": {
+      "gate": "relative error < 2 % (every aspect ratio)",
+      "worst": 0.0058916601178590974,
+      "pass": true
+    },
+    "C3_beam_first_frequency": {
+      "gate": "relative error < 3 %",
+      "value": 2.083004327961598e-06,
+      "pass": true
+    },
+    "C4_plate_first_frequency": {
+      "gate": "relative error < 3 %",
+      "value": 0.0036714976730212756,
+      "pass": true
+    },
+    "C5_stress_concentration": {
+      "gate": "|K_t - 3| < 0.1",
+      "value": 3.027300684157547,
+      "pass": true
+    },
+    "C6_linear_element_order": {
+      "gate": "observed L2 order >= 1.9",
+      "value": 2.0278604514524377,
+      "pass": true
+    }
+  },
+  "all_pass": true,
+  "arms": {
+    "C1": {
+      "case": "Euler-Bernoulli cantilever, concentrated tip load P",
+      "elements": 8,
+      "length_m": 1.0,
+      "bending_stiffness_nm2": 2000.0,
+      "load_n": 10.0,
+      "tip_deflection_m": 0.0016666666666671083,
+      "exact_tip_deflection_m": 0.0016666666666666668,
+      "relative_error": 2.6489227478165844e-13,
+      "tip_rotation_rad": 0.0025000000000005964,
+      "exact_tip_rotation_rad": 0.0025,
+      "tip_rotation_relative_error": 2.38524477946811e-13,
+      "base_reaction_n": 10.000000000004661,
+      "base_moment_nm": 10.00000000000323,
+      "strain_energy_j": 0.008333333333339701,
+      "exact_strain_energy_j": 0.008333333333333333,
+      "energy_relative_error": 7.641803856373031e-13,
+      "nodal_field_l2_relative_error": 2.726845135551589e-13,
+      "nodes": [
+        0.0,
+        0.125,
+        0.25,
+        0.375,
+        0.5,
+        0.625,
+        0.75,
+        0.875,
+        1.0
+      ],
+      "fe_deflection": [
+        -0.0,
+        3.743489583334519e-05,
+        0.00014322916666671104,
+        0.00030761718750009297,
+        0.0005208333333334867,
+        0.000773111979166888,
+        0.0010546875000002935,
+        0.0013557942708337007,
+        0.0016666666666671083
+      ],
+      "exact_deflection": [
+        0.0,
+        3.743489583333333e-05,
+        0.00014322916666666667,
+        0.0003076171875,
+        0.0005208333333333333,
+        0.0007731119791666666,
+        0.0010546875,
+        0.0013557942708333334,
+        0.0016666666666666668
+      ],
+      "gate": 0.01,
+      "pass": true
+    },
+    "C2": {
+      "case": "SSSS rectangular Kirchhoff plate, uniform pressure, alpha(a/b)",
+      "rows": [
+        {
+          "aspect_ratio": 1.0,
+          "elements": [
+            16,
+            16
+          ],
+          "centre_deflection_m": 2.0999777029702175e-07,
+          "alpha_fe": 0.0040384186595581115,
+          "alpha_navier": 0.0040623526607139184,
+          "relative_error": 0.0058916601178590974,
+          "alpha_timoshenko": 0.00406,
+          "timoshenko_relative_error": 0.0005791374876608453,
+          "n_dof": 1156,
+          "n_free": 1024,
+          "pass": true
+        },
+        {
+          "aspect_ratio": 1.5,
+          "elements": [
+            24,
+            16
+          ],
+          "centre_deflection_m": 3.9994533640292415e-07,
+          "alpha_fe": 0.007691256469287004,
+          "alpha_navier": 0.007724021623450538,
+          "relative_error": 0.004241981154487881,
+          "alpha_timoshenko": 0.00772,
+          "timoshenko_relative_error": 0.0005206644474334131,
+          "n_dof": 1700,
+          "n_free": 1536,
+          "pass": true
+        },
+        {
+          "aspect_ratio": 2.0,
+          "elements": [
+            32,
+            16
+          ],
+          "centre_deflection_m": 5.247642376947992e-07,
+          "alpha_fe": 0.010091619955669217,
+          "alpha_navier": 0.0101286630555361,
+          "relative_error": 0.003657254631116956,
+          "alpha_timoshenko": 0.01013,
+          "timoshenko_relative_error": 0.00013199614367365018,
+          "n_dof": 2244,
+          "n_free": 2048,
+          "pass": true
+        },
+        {
+          "aspect_ratio": 3.0,
+          "elements": [
+            48,
+            16
+          ],
+          "centre_deflection_m": 6.340299489807936e-07,
+          "alpha_fe": 0.012192883634246034,
+          "alpha_navier": 0.012232810845997907,
+          "relative_error": 0.0032639441788586106,
+          "alpha_timoshenko": 0.01223,
+          "timoshenko_relative_error": 0.00022977924152464127,
+          "n_dof": 3332,
+          "n_free": 3072,
+          "pass": true
+        }
+      ],
+      "strip_alpha_series": 0.013021075825118857,
+      "strip_alpha_exact": 0.013020833333333334,
+      "strip_relative_error": 1.8623369128167866e-05,
+      "gate": 0.02,
+      "pass": true
+    },
+    "C3": {
+      "case": "Euler-Bernoulli cantilever, first bending mode",
+      "elements": 8,
+      "computed_hz": 8.84793234079092,
+      "exact_hz": 8.84791391054795,
+      "relative_error": 2.083004327961598e-06,
+      "gate": 0.03,
+      "pass": true
+    },
+    "C4": {
+      "case": "SSSS rectangular plate (a/b = 2), first mode",
+      "length": 2.0,
+      "width": 1.0,
+      "elements_x": 16,
+      "elements_y": 8,
+      "computed_hz": 30.457533360820314,
+      "exact_hz": 29.991538198213668,
+      "relative_error": 0.015537554610466799,
+      "gate": 0.03,
+      "pass": true
+    },
+    "C5": {
+      "case": "Kirsch circular hole in an infinite plate, uniaxial tension",
+      "n_theta": 24,
+      "n_radial": 8,
+      "n_node": 624,
+      "inner_radius": 1.0,
+      "outer_radius": 4.0,
+      "computed_factor": 3.027300684157547,
+      "exact_factor": 3.0,
+      "absolute_error": 0.02730068415754694,
+      "displacement_relative_l2": 0.000377336044901383,
+      "cg_relative_residual": 4.5243921335476544e-13,
+      "gate": 0.1,
+      "pass": true
+    },
+    "C6": {
+      "case": "SSSS rectangular plate (a/b = 2), bilinear Q4 deflection L2 error",
+      "rows": [
+        {
+          "level": 4,
+          "elements": [
+            8,
+            4
+          ],
+          "n_dof": 135,
+          "element_size": 0.25,
+          "relative_l2_error": 0.12230445113607756
+        },
+        {
+          "level": 8,
+          "elements": [
+            16,
+            8
+          ],
+          "n_dof": 459,
+          "element_size": 0.125,
+          "relative_l2_error": 0.03081801076408952
+        },
+        {
+          "level": 12,
+          "elements": [
+            24,
+            12
+          ],
+          "n_dof": 975,
+          "element_size": 0.08333333333333333,
+          "relative_l2_error": 0.013540179384799239
+        },
+        {
+          "level": 16,
+          "elements": [
+            32,
+            16
+          ],
+          "n_dof": 1683,
+          "element_size": 0.0625,
+          "relative_l2_error": 0.007468840647594464
+        },
+        {
+          "level": 20,
+          "elements": [
+            40,
+            20
+          ],
+          "n_dof": 2583,
+          "element_size": 0.05,
+          "relative_l2_error": 0.004654478490175202
+        }
+      ],
+      "pairwise_orders": [
+        {
+          "from_level": 4,
+          "to_level": 8,
+          "observed_order": 1.9886312629936698
+        },
+        {
+          "from_level": 8,
+          "to_level": 12,
+          "observed_order": 2.0283811153858093
+        },
+        {
+          "from_level": 12,
+          "to_level": 16,
+          "observed_order": 2.0679833291648944
+        },
+        {
+          "from_level": 16,
+          "to_level": 20,
+          "observed_order": 2.1193080011595797
+        }
+      ],
+      "observed_order": 2.0278604514524377,
+      "gate": 1.9,
+      "pass": true
+    }
+  },
+  "plate_aspect_mesh_ladder": {
+    "1.0": [
+      {
+        "elements": [
+          16,
+          16
+        ],
+        "n_dof": 1156,
+        "alpha_fe": 0.0040384186595581115,
+        "relative_error": 0.00589166011785887
+      },
+      {
+        "elements": [
+          24,
+          24
+        ],
+        "n_dof": 2500,
+        "alpha_fe": 0.004051703569574289,
+        "relative_error": 0.002621409815699491
+      },
+      {
+        "elements": [
+          32,
+          32
+        ],
+        "n_dof": 4356,
+        "alpha_fe": 0.004056360236936202,
+        "relative_error": 0.0014751116602128443
+      }
+    ],
+    "2.0": [
+      {
+        "elements": [
+          32,
+          16
+        ],
+        "n_dof": 2244,
+        "alpha_fe": 0.010091619955669217,
+        "relative_error": 0.0036572546311167986
+      },
+      {
+        "elements": [
+          48,
+          24
+        ],
+        "n_dof": 4900,
+        "alpha_fe": 0.010112193391287473,
+        "relative_error": 0.001626045230088274
+      },
+      {
+        "elements": [
+          64,
+          32
+        ],
+        "n_dof": 8580,
+        "alpha_fe": 0.010119397676113076,
+        "relative_error": 0.0009147682544300996
+      }
+    ],
+    "3.0": [
+      {
+        "elements": [
+          48,
+          16
+        ],
+        "n_dof": 3332,
+        "alpha_fe": 0.012192883634246034,
+        "relative_error": 0.0032639441788585265
+      },
+      {
+        "elements": [
+          72,
+          24
+        ],
+        "n_dof": 7300,
+        "alpha_fe": 0.012215063328099303,
+        "relative_error": 0.001450812746312428
+      },
+      {
+        "elements": [
+          96,
+          32
+        ],
+        "n_dof": 12804,
+        "alpha_fe": 0.012222827455608862,
+        "relative_error": 0.0008161158146502621
+      }
+    ]
+  },
+  "kirsch_ladder": [
+    {
+      "n_theta": 12,
+      "n_radial": 2,
+      "n_node": 96,
+      "factor": 2.6926911126119775,
+      "absolute_error": 0.30730888738802253,
+      "displacement_relative_l2": 0.016778905438728047
+    },
+    {
+      "n_theta": 16,
+      "n_radial": 2,
+      "n_node": 128,
+      "factor": 2.7272363232928223,
+      "absolute_error": 0.2727636767071777,
+      "displacement_relative_l2": 0.015361790598294288
+    },
+    {
+      "n_theta": 16,
+      "n_radial": 4,
+      "n_node": 224,
+      "factor": 2.9642036816013673,
+      "absolute_error": 0.03579631839863273,
+      "displacement_relative_l2": 0.003313787339548441
+    },
+    {
+      "n_theta": 24,
+      "n_radial": 4,
+      "n_node": 336,
+      "factor": 2.9763880708276886,
+      "absolute_error": 0.023611929172311363,
+      "displacement_relative_l2": 0.002897408085883543
+    },
+    {
+      "n_theta": 24,
+      "n_radial": 8,
+      "n_node": 624,
+      "factor": 3.027300684157547,
+      "absolute_error": 0.02730068415754694,
+      "displacement_relative_l2": 0.000377336044901383
+    }
+  ],
+  "kirsch_edge_hoop_stress": {
+    "theta_deg": [
+      -172.5,
+      -165.00000000000003,
+      -157.50000000000003,
+      -150.00000000000003,
+      -142.50000000000003,
+      -135.00000000000003,
+      -127.50000000000003,
+      -120.00000000000004,
+      -112.49999999999999,
+      -105.0,
+      -97.5,
+      -90.00000000000001,
+      -82.50000000000001,
+      -75.00000000000003,
+      -67.50000000000004,
+      -59.99999999999999,
+      -52.50000000000006,
+      -45.000000000000014,
+      -37.50000000000002,
+      -30.00000000000003,
+      -22.499999999999986,
+      -15.00000000000005,
+      -7.500000000000006,
+      0.0,
+      7.499999999999999,
+      14.999999999999998,
+      22.500000000000004,
+      29.999999999999996,
+      37.5,
+      45.0,
+      52.50000000000001,
+      59.99999999999999,
+      67.5,
+      75.0,
+      82.5,
+      90.0,
+      97.5,
+      105.0,
+      112.49999999999999,
+      119.99999999999999,
+      127.50000000000001,
+      135.0,
+      142.5,
+      150.0,
+      157.5,
+      165.0,
+      172.49999999999997,
+      180.0
+    ],
+    "computed": [
+      -0.9375753539998845,
+      -0.7399140744719683,
+      -0.41711658522840206,
+      -0.0009657727104242092,
+      0.48434444552797695,
+      1.0084563795808474,
+      1.525261983070445,
+      2.0178785318698034,
+      2.4267230138273543,
+      2.756826833629733,
+      2.947181782598225,
+      3.0273006841576477,
+      2.9471817825981326,
+      2.756826833629831,
+      2.426723013827255,
+      2.0178785318699344,
+      1.5252619830714775,
+      1.0084563795803514,
+      0.4843444455293796,
+      -0.0009657727085554818,
+      -0.41711658522785167,
+      -0.7399140744700723,
+      -0.9375753539993417,
+      -1.0103879249997405,
+      -0.9375753539996092,
+      -0.7399140744722899,
+      -0.41711658522895306,
+      -0.0009657727101132774,
+      0.48434444552771794,
+      1.0084563795801194,
+      1.52526198307106,
+      2.0178785318696417,
+      2.4267230138276923,
+      2.756826833630492,
+      2.9471817825979505,
+      3.027300684157547,
+      2.9471817825976117,
+      2.7568268336295034,
+      2.4267230138267797,
+      2.017878531868878,
+      1.5252619830710041,
+      1.0084563795796924,
+      0.48434444552900663,
+      -0.0009657727085555234,
+      -0.41711658522788464,
+      -0.7399140744699705,
+      -0.937575353999685,
+      -1.0103879249991299
+    ],
+    "exact": [
+      -0.9318516525781366,
+      -0.7320508075688776,
+      -0.41421356237309603,
+      -1.7763568394002505e-15,
+      0.48236190979495774,
+      0.9999999999999986,
+      1.5176380902050397,
+      1.9999999999999978,
+      2.414213562373096,
+      2.7320508075688776,
+      2.9318516525781364,
+      3.0,
+      2.931851652578137,
+      2.7320508075688785,
+      2.4142135623730967,
+      1.9999999999999996,
+      1.517638090205045,
+      1.0000000000000007,
+      0.48236190979495985,
+      1.7763568394002505e-15,
+      -0.4142135623730958,
+      -0.7320508075688756,
+      -0.9318516525781364,
+      -1.0,
+      -0.9318516525781366,
+      -0.7320508075688774,
+      -0.4142135623730949,
+      -2.220446049250313e-16,
+      0.4823619097949585,
+      0.9999999999999999,
+      1.5176380902050417,
+      1.9999999999999996,
+      2.414213562373095,
+      2.7320508075688776,
+      2.9318516525781364,
+      3.0,
+      2.9318516525781364,
+      2.7320508075688776,
+      2.414213562373096,
+      2.000000000000001,
+      1.5176380902050413,
+      1.0000000000000004,
+      0.4823619097949594,
+      -2.220446049250313e-16,
+      -0.4142135623730947,
+      -0.7320508075688767,
+      -0.9318516525781362,
+      -1.0
+    ]
+  },
+  "kirsch_edge_max_abs_deviation": 0.027300684157647748,
+  "plate_first_frequency_fine_mesh": {
+    "length": 2.0,
+    "width": 1.0,
+    "elements_x": 32,
+    "elements_y": 16,
+    "computed_hz": 30.101652060918738,
+    "exact_hz": 29.991538198213668,
+    "relative_error": 0.0036714976730212756
+  },
+  "pairwise_orders": [
+    {
+      "from_level": 4,
+      "to_level": 8,
+      "observed_order": 1.9886312629936698
+    },
+    {
+      "from_level": 8,
+      "to_level": 12,
+      "observed_order": 2.0283811153858093
+    },
+    {
+      "from_level": 12,
+      "to_level": 16,
+      "observed_order": 2.0679833291648944
+    },
+    {
+      "from_level": 16,
+      "to_level": 20,
+      "observed_order": 2.1193080011595797
+    }
+  ],
+  "gate_linear_order": 1.9,
+  "figures": [
+    "docs/assets/structural_canonical/beam_static.png",
+    "docs/assets/structural_canonical/plate_aspect.png",
+    "docs/assets/structural_canonical/plate_field.png",
+    "docs/assets/structural_canonical/modal.png",
+    "docs/assets/structural_canonical/kirsch_edge.png",
+    "docs/assets/structural_canonical/convergence.png"
+  ]
+}
