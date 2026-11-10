@@ -1,0 +1,217 @@
+{
+  "node": "P153W2-N03",
+  "mission_id": 8136,
+  "repo": "TensorFEM",
+  "branch": "agent/m8136",
+  "title": "LBM x FE partitioned strong coupling: Turek-Hron 2D-2 anchor, FSI-2 attempt, energy ledger",
+  "modules": {
+    "fluid": "src/tensorfem/lbm_channel2d.py",
+    "coupling": "src/tensorfem/fsi_lbm_strong_coupling.py",
+    "driver": "benchmarks/fsi_strong_coupling/run_validation.py",
+    "tests": "tests/test_fsi_lbm_strong_coupling.py"
+  },
+  "capability_findings": {
+    "fsi_turek_hron": "MOCK: vortex forcing frequency f_vortex=3.0 and force amplitude F0=17.5 are calibrated to the reference answer; Re is reported as 100 while the configured U_mean=0.2 m/s with nu=1e-3 gives Re=30",
+    "fsi_flutter / theodorsen": "MOCK: find_critical_flutter returns the closed form 2 sqrt(mu); fsi_time_march synthesises the time history from that same formula",
+    "new_fluid_solver": "REAL: D2Q9 BGK + half-way bounce-back + momentum exchange",
+    "new_coupling": "REAL: partitioned Dirichlet-Neumann with Aitken relaxation, bounce-back moving body, conservative load projection"
+  },
+  "results": {
+    "cylinder_2d2_D20": {
+      "CD_mean": 2.8691023237611657,
+      "CL_amp": 0.808368672710622,
+      "St": 0.2660783777863098,
+      "error_CD": 0.1117330266993295,
+      "error_CL": 0.19163132728937804,
+      "error_St": 0.11307207404563388
+    },
+    "cylinder_2d2_D12": {
+      "CD_mean": 2.9220132127579506,
+      "CL_amp": 0.8001660654336651,
+      "St": 0.26514571959605804,
+      "error_CD": 0.09535194651456638,
+      "error_CL": 0.19983393456633491,
+      "error_St": 0.1161809346798065
+    },
+    "grid_convergence": {
+      "CD_D12": 2.9220132127579506,
+      "CD_D20": 2.8691023237611657,
+      "St_D12": 0.26514571959605804,
+      "St_D20": 0.2660783777863098,
+      "CD_change": 0.01810768300628072,
+      "St_change": 0.003517530630600666
+    },
+    "time_step_convergence": {
+      "CD_change": 0.0029459622334283364,
+      "St_change": 0.013329719722991887,
+      "CL_change": 0.02633157880836767,
+      "max_change": 0.02633157880836767
+    },
+    "structure": {
+      "case": "structure",
+      "analytic_f1_Hz": 1.9736411041705342,
+      "numerical_f1_Hz": 1.9800930919692201,
+      "frequency_error": 0.003269078549819488,
+      "energy_initial_J_per_m": 0.007688936914301677,
+      "energy_final_J_per_m": 0.007688918439353386,
+      "energy_drift": 2.402796185950698e-06,
+      "static_tip_modal_error": {
+        "3": 0.00013313713104069882,
+        "5": 5.977540381241142e-06,
+        "8": 4.866090956276828e-06,
+        "12": 1.6264415328878956e-06
+      }
+    },
+    "interface": {
+      "case": "interface",
+      "loaded_columns": 70,
+      "loaded_cells": 5740,
+      "resultant_columns": -22.904901849571406,
+      "resultant_nodes_full": -22.957672458140063,
+      "resultant_nodes_free": -19.126330130290988,
+      "force_conservation_error": 0.002303900226913432,
+      "clamp_reaction_share": 0.16496781973117786,
+      "n_links": 5740.0
+    },
+    "fsi2": {
+      "cells_per_D": 20,
+      "u_lat": 0.05,
+      "dt": 0.00025,
+      "n_steps": 1200,
+      "frequency_Hz": 3.0780664123011743,
+      "amplitude_m": 0.015588967778231221,
+      "mean_CD": 56.28568448114494,
+      "amp_CL": 0.987280847455634,
+      "mean_sub_iterations": 2.135,
+      "converged_fraction": 1.0,
+      "force_residual_median": 0.0,
+      "ledger": {
+        "delta_E_J_per_m": 11.492828463847331,
+        "work_in_J_per_m": 5.238753410117666,
+        "viscous_J_per_m": 28.811824586390923,
+        "interface_work_J_per_m": 0.9030835959217539,
+        "residual_relative": 6.693557969802016,
+        "window_s": [
+          0.16525000000000012,
+          0.2997499999999947
+        ]
+      },
+      "window": [
+        0.16525000000000012,
+        0.2997499999999947
+      ]
+    }
+  },
+  "criteria": [
+    {
+      "id": "C1",
+      "name": "FSI-2 oscillation frequency vs reference (<= 5%)",
+      "reference": 2.0,
+      "computed": 3.0780664123011743,
+      "error": 0.5390332061505871,
+      "verdict": "FAIL",
+      "reason": "the coupled run only reaches t=0.30 s at the affordable resolution (0.3 s of physical time, < 1 shedding period); the start-up transient dominates and the FFT peak is not a converged limit-cycle frequency"
+    },
+    {
+      "id": "C2",
+      "name": "FSI-2 tip amplitude vs reference (<= 10%)",
+      "reference": 0.034,
+      "computed": 0.015588967778231221,
+      "error": 0.5415009476990817,
+      "verdict": "FAIL",
+      "reason": "same truncated window; the beam is still in its transient"
+    },
+    {
+      "id": "C3",
+      "name": "mean CD / CL amplitude of the coupled case (<= 10%)",
+      "reference": "Turek-Hron FSI-2 force tables (not verifiable offline)",
+      "computed": {
+        "mean_CD": 56.28568448114494,
+        "amp_CL": 0.987280847455634
+      },
+      "verdict": "WITHHELD",
+      "reason": "no network access to the benchmark tables; the transient window gives mean CD=56.3 which is dominated by the impulsive start. The bare-cylinder anchor (CD=2.869, -11.2% vs 2D-2) is the only adjudicable force number"
+    },
+    {
+      "id": "C4",
+      "name": "flutter critical speed vs Theodorsen (<= 8%)",
+      "reference": "U_cr/(b omega_alpha) = 2 sqrt(mu)",
+      "computed": null,
+      "verdict": "WITHHELD",
+      "reason": "the pre-existing flutter 'verification' is a tautology: find_critical_flutter returns the closed form 2 sqrt(mu) and the time history is generated from the same formula, so its 2.04% 'error' is not evidence. No independent flutter solver was qualified in this work."
+    },
+    {
+      "id": "C5",
+      "name": "energy ledger residual (<= 5%)",
+      "reference": 0.05,
+      "computed": 6.693557969802016,
+      "verdict": "FAIL",
+      "reason": "coupled window: the finite-difference viscous dissipation is larger than the net inflow work while the flow is still transient (residual 6.7). The structure-only ledger is clean: Newmark energy drift 2.40e-06 over two periods"
+    },
+    {
+      "id": "C6",
+      "name": "time-step halving changes the answer by <= 3%",
+      "reference": 0.03,
+      "computed": {
+        "CD_change": 0.0029459622334283364,
+        "St_change": 0.013329719722991887,
+        "CL_change": 0.02633157880836767,
+        "max_change": 0.02633157880836767
+      },
+      "verdict": "PASS",
+      "reason": "u_lat 0.1 -> 0.05 at D=12: max change 2.63%"
+    },
+    {
+      "id": "C7",
+      "name": "interface force conservation error <= 1%",
+      "reference": 0.01,
+      "computed": 0.002303900226913432,
+      "verdict": "PASS",
+      "reason": "FE-consistent projection; resultant conserved to 2.30e-03"
+    },
+    {
+      "id": "C8",
+      "name": "honest-FAIL root-cause analysis",
+      "verdict": "PASS",
+      "reason": "six sources listed in section 5 of the report"
+    }
+  ],
+  "criteria_summary": {
+    "PASS": [
+      "C6",
+      "C7",
+      "C8"
+    ],
+    "FAIL": [
+      "C1",
+      "C2",
+      "C5"
+    ],
+    "WITHHELD": [
+      "C3",
+      "C4"
+    ]
+  },
+  "artifacts": {
+    "figures": {
+      "cylinder": "artifacts/fsi_strong_coupling/fig_cylinder_validation.png",
+      "fsi2": "artifacts/fsi_strong_coupling/fig_fsi2_history.png",
+      "energy": "artifacts/fsi_strong_coupling/fig_energy_ledger.png",
+      "summary": "artifacts/fsi_strong_coupling/fig_summary.png"
+    },
+    "json": [
+      "artifacts/fsi_strong_coupling/cylinder_D12.json",
+      "artifacts/fsi_strong_coupling/cylinder_D12_ulat005.json",
+      "artifacts/fsi_strong_coupling/cylinder_D20.json",
+      "artifacts/fsi_strong_coupling/fsi2_D20_u0.05_local.json",
+      "artifacts/fsi_strong_coupling/interface.json",
+      "artifacts/fsi_strong_coupling/structure.json"
+    ]
+  },
+  "limitations": [
+    "outlet is a zero-gradient copy: acoustic reflections bias the force coefficients",
+    "linear (modal) beam: no geometric nonlinearity, so no amplitude saturation mechanism",
+    "moving body uses a half-way bounce-back mask with the wall velocity neglected (O(Ma) force error)",
+    "affordable resolution (D/dx <= 20) is far below the D/dx ~ 100 used for converged FSI-2 references"
+  ]
+}
