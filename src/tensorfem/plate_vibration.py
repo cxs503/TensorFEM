@@ -364,6 +364,45 @@ def _fixed_dofs(nodes: torch.Tensor, length: float, width: float, boundary: str,
     return torch.cat((transverse, rotations)).unique()
 
 
+EIGEN_RESIDUAL_TOLERANCE = 1e-8
+"""Largest admissible ``max_j ||S v_j - lambda_j v_j|| / lambda_max``.
+
+A healthy symmetric eigen-solve lands seven to eight orders of magnitude below
+this bound (the reduced matrices here are ill-conditioned, so the residual is
+not at machine epsilon).  The bound exists because the BLAS/LAPACK stack can
+return a *consistent-looking but wrong* spectrum: flexiblas 3.3.0 on
+loongarch64 does exactly that for the reduced plate matrices when the thread
+count is pinned to one or two, producing large spurious negative eigenvalues.
+Returning those silently would corrupt every downstream frequency.
+"""
+
+
+def _check_eigenpair_residual(
+    standard: torch.Tensor,
+    selected: torch.Tensor,
+    vectors: torch.Tensor,
+    scale: float,
+) -> None:
+    """Raise if the retained eigenpairs violate ``S v = lambda v``.
+
+    ``standard`` is the Cholesky-reduced stiffness, ``selected`` the retained
+    eigenvalues and ``vectors`` the matching columns.  The residual is scaled
+    by the largest projected eigenvalue so the test is mesh-size independent.
+    """
+    if selected.numel() == 0:
+        return
+    residual = standard @ vectors - vectors * selected.unsqueeze(0)
+    ratio = float(residual.norm(dim=0).max()) / scale
+    if not math.isfinite(ratio) or ratio > EIGEN_RESIDUAL_TOLERANCE:
+        raise ValueError(
+            "inconsistent eigenpairs: max ||S v - lambda v|| / lambda_max = "
+            f"{ratio:.3e} exceeds {EIGEN_RESIDUAL_TOLERANCE:.0e}; the eigensolver "
+            "returned a spectrum that violates its own eigen-identity (observed with "
+            "flexiblas 3.3.0 on loongarch64 when OMP_NUM_THREADS is pinned to 1 or 2). "
+            "Re-run with the default thread count; do not pin it to one."
+        )
+
+
 def solve_plate_vibration(
     elements_x: int = 8, elements_y: int = 8, *, length: float = 1.0,
     width: float | None = None, young: float = 200.0e9, poisson: float = 0.3,
@@ -453,6 +492,7 @@ def solve_plate_vibration(
     threshold = rigid_body_relative_tolerance * scale
     rigid = int(torch.sum(eigenvalues <= threshold).item())
     selected = eigenvalues[rigid : rigid + modes]
+    _check_eigenpair_residual(standard, selected, eigenvectors[:, rigid : rigid + modes], scale)
     if selected.numel() < modes:
         raise ValueError(
             "requested modes exceed the elastic spectrum"

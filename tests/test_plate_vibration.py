@@ -24,6 +24,7 @@ from tensorfem.plate_vibration import (
     structured_rectangular_mesh,
     winkler_angular_frequency,
 )
+import tensorfem.plate_vibration as plate_vibration_module
 from tensorfem.plate import structured_square_mesh
 
 STEEL = dict(young=200.0e9, poisson=0.3, density=7850.0, thickness=0.01)
@@ -203,3 +204,49 @@ def test_input_validation_and_result_metadata():
     with pytest.raises(ValueError):
         shear_deformation_bias(length=1.0, width=1.0, young=200.0e9, poisson=0.5,
                               thickness=0.01)
+
+# --------------------------------------------------------------------------- #
+# eigen-solver integrity: a wrong spectrum must never pass silently
+# --------------------------------------------------------------------------- #
+
+
+def test_eigenpair_residual_helper_accepts_exact_pairs_and_rejects_mismatches():
+    standard = torch.diag(torch.tensor([1.0, 2.0, 4.0], dtype=torch.float64))
+    value = torch.tensor([1.0], dtype=torch.float64)
+    exact = torch.tensor([[1.0], [0.0], [0.0]], dtype=torch.float64)
+    plate_vibration_module._check_eigenpair_residual(standard, value, exact, 4.0)
+    wrong = torch.tensor([[0.0], [1.0], [0.0]], dtype=torch.float64)
+    with pytest.raises(ValueError, match="inconsistent eigenpairs"):
+        plate_vibration_module._check_eigenpair_residual(standard, value, wrong, 4.0)
+    # a NaN/inf spectrum is rejected as well
+    with pytest.raises(ValueError, match="inconsistent eigenpairs"):
+        plate_vibration_module._check_eigenpair_residual(
+            standard, torch.tensor([float("nan")], dtype=torch.float64), exact, 4.0
+        )
+
+
+def test_inconsistent_eigensolver_output_is_rejected(monkeypatch):
+    """A solver that returns orthonormal-but-wrong vectors must be caught.
+
+    Reproduces the flexiblas/loongarch64 failure mode (wrong spectrum with a
+    self-consistent-looking set of values) without depending on the host BLAS.
+    """
+    real_eigh = torch.linalg.eigh
+
+    def scrambled(matrix):
+        values, vectors = real_eigh(matrix)
+        generator = torch.Generator().manual_seed(11)
+        noise = torch.randn(vectors.shape, dtype=vectors.dtype, generator=generator)
+        rotation, _ = torch.linalg.qr(noise)
+        return values, rotation
+
+    monkeypatch.setattr(torch.linalg, "eigh", scrambled)
+    with pytest.raises(ValueError, match="inconsistent eigenpairs"):
+        solve_plate_vibration(6, 4, modes=2, **STEEL)
+
+
+def test_healthy_eigenpairs_stay_far_below_the_residual_bound():
+    """The guard must not fire on the production path; the actual margin is huge."""
+    result = solve_plate_vibration(8, 4, modes=2, **STEEL)
+    assert float(result.frequencies_hz[0]) > 0.0
+    assert plate_vibration_module.EIGEN_RESIDUAL_TOLERANCE == pytest.approx(1e-8)

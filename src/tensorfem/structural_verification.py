@@ -282,9 +282,15 @@ class KirchhoffPlateSolution:
     n_free: int
 
     def grid(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """Return ``(X, Y, W)`` nodal coordinates and deflection for plotting."""
+        """Return ``(X, Y, W)`` nodal coordinates and deflection for plotting.
+
+        ``n_y`` only refines the mesh; the plate stays ``side`` by ``side`` (the
+        element size is ``side/n_x`` by ``side/n_y``), so both axes span
+        ``[0, side]``.  The previous ``side*n_y/n_x`` y-extent described a domain
+        the assembled stiffness never used.
+        """
         xs = np.linspace(0.0, self.side, self.n_x + 1)
-        ys = np.linspace(0.0, self.side * self.n_y / self.n_x, self.n_y + 1)
+        ys = np.linspace(0.0, self.side, self.n_y + 1)
         X, Y = np.meshgrid(xs, ys)
         return X, Y, self.deflection
 
