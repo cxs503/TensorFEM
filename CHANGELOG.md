@@ -1,5 +1,30 @@
 ## Unreleased
 
+### FSI: partitioned vortex-lattice/FE flutter verification (P88W1-N07)
+- **New time-domain fluid solver** (`tensorfem.unsteady_vlm`): 2-D unsteady vortex
+  lattice for a flat plate -- cosine panels, quarter-chord bound vortices, wake shed as
+  finite vortex-**sheet** segments (implicit Kelvin closure) and unsteady Bernoulli
+  loads. Verified against Theodorsen (1935): steady lift exact, harmonic lift/moment
+  amplitude within 4.29% and phase within 2.11 deg for
+  `k = 0.05..0.5`, pitch and plunge.
+- **New frequency-domain reference** (`tensorfem.theodorsen_pk`): real Hankel-function
+  `C(k)`, Theodorsen lift/moment matrices and a p-k continuation (complex `k = -i p b/U`
+  with mode tracking) giving the honest flutter boundary. The legacy
+  `tensorfem.theodorsen` flutter routines are documented as MOCK (its
+  `theodorsen_critical_velocity(20)` returns 8.9443 against the p-k 2.2096).
+- **New partitioned FSI driver** (`tensorfem.fsi_flutter_vlm`): explicit staggered
+  coupling of the vortex lattice with a 2-DOF modal structure whose frequencies come
+  from the TensorFEM FE modal solve (cantilever plate 1.0x0.2x0.01 m aluminium in air:
+  `mu = 140.3`, `sigma = 0.106`,
+  `b*omega_alpha = 48.75 m/s`).
+- **Evidence** (`docs/fsi-flutter-vlm-N07.md`, `artifacts/fsi_flutter_vlm_n07/`):
+  time-domain `U_cr` within 1.89% of the p-k reference for mu = 5, 10, 20, 50; flutter
+  frequency within 1.66% at 1.05 U_cr; supercritical growth rates within
+  7.7%; mass-ratio exponent
+  0.4973 (0.54% from 1/2 for mu >= 200);
+  negative control rho_f -> 0 within 0.80% of the sqrt(mu) law.
+  13 pytest cases (`tests/test_fsi_flutter_vlm.py`).
+
 ### Plasticity / verification: non-linear (Voce) hardening and the Hill elastic-plastic cylinder
 - **Implicit J2 return mapping with non-linear isotropic hardening**
   (`tensorfem.j2_saturation_hardening`): yield law
