@@ -278,3 +278,61 @@ def test_plate_level_is_free_of_mechanisms(coarse_plate_record):
     assert all(f > 0.0 for f in coarse_plate_record["frequencies_hz"])
     assert coarse_plate_record["spurious_modes_filtered"] >= 0
     assert min(coarse_plate_record["mode_mac"]) > 0.99
+
+
+# ---------------------------------------------------------------------------
+# Pinched cylinder anchor
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def pinched():
+    return _load("verified_fem_pinched", VERIFIED / "fem_pinched_cylinder" / "run_verification.py")
+
+
+def test_pinched_cylinder_oracle_is_published_reference():
+    """The reference value must match the MacNeal–Harder paper."""
+    from tensorfem.pinched_cylinder import REFERENCE_DISPLACEMENT
+    assert REFERENCE_DISPLACEMENT == pytest.approx(-1.8248e-5, rel=1e-4)
+
+
+def test_pinched_cylinder_evidence_self_consistent():
+    """gates_verified.json values must match result.json."""
+    result = json.loads((VERIFIED / "fem_pinched_cylinder" / "result.json").read_text())
+    gates = json.loads((VERIFIED / "fem_pinched_cylinder" / "gates_verified.json").read_text())
+    # Finest mesh error must match
+    finest_result = result["levels"][-1]["relative_error"]
+    g1 = next(g for g in gates["gates"] if g["id"] == "G1_finest_accuracy")
+    assert g1["actual"] == pytest.approx(finest_result, rel=1e-10)
+    # Schema check
+    assert gates["schema"] == "tensorfem.verified-gates.v1"
+    assert gates["anchor"] == "fem_pinched_cylinder"
+
+
+def test_pinched_cylinder_finest_mesh_within_three_percent():
+    """The key engineering gate: finest mesh error <= 3%."""
+    result = json.loads((VERIFIED / "fem_pinched_cylinder" / "result.json").read_text())
+    finest_error = result["levels"][-1]["relative_error"]
+    assert finest_error <= 0.03, f"Finest mesh error {finest_error*100:.2f}% exceeds 3%"
+
+
+def test_pinched_cylinder_records_non_monotone_convergence():
+    """The evidence must honestly record the non-monotone convergence."""
+    gates = json.loads((VERIFIED / "fem_pinched_cylinder" / "gates_verified.json").read_text())
+    g2 = next(g for g in gates["gates"] if g["id"] == "G2_monotone_convergence")
+    assert g2["passed"] is False
+    assert g2["actual"] == "non-monotone"
+    # Limitations must mention this
+    assert any("non-monotone" in lim.lower() or "monotone" in lim.lower()
+               for lim in gates.get("limitations", []))
+
+
+def test_pinched_cylinder_convergence_order_exceeds_minimum():
+    """Observed order must be >= 1.0 for a bending-dominated thin shell."""
+    result = json.loads((VERIFIED / "fem_pinched_cylinder" / "result.json").read_text())
+    orders = result["convergence"]
+    assert len(orders) >= 1
+    order_val = orders[-1]["observed_order"]
+    if isinstance(order_val, str):
+        assert "inf" in order_val.lower() or "near-exact" in order_val.lower()
+    else:
+        assert float(order_val) >= 1.0
