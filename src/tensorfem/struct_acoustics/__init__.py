@@ -14,7 +14,16 @@ efficiency).  Neither of them contains
   (:mod:`tensorfem.struct_acoustics.free_surface`), or
 * an acoustic-analogy (FW-H / Kirchhoff data surface) route to the radiated
   power that can be cross-checked against the Rayleigh route
-  (:mod:`tensorfem.struct_acoustics.fwh_analogy`).
+  (:mod:`tensorfem.struct_acoustics.fwh_analogy`),
+* an exterior monopole (pulsating sphere) solved with a radial Helmholtz finite
+  element model and an *exact* spherical radiation condition
+  (:mod:`tensorfem.struct_acoustics.pulsating_sphere`),
+* the far field of a baffled circular piston / plate from direct numerical
+  Rayleigh quadrature, anchored by the exact on-axis integral and the Airy
+  directivity (:mod:`tensorfem.struct_acoustics.plate_far_field`), and
+* the sound-power / vibration-velocity level law ``Lw = Lv + C`` with a derived
+  ``C`` plus the energy balance of a fluid-loaded breathing shell
+  (:mod:`tensorfem.struct_acoustics.radiation_scale_law`).
 
 The modules are deliberately independent code paths: each one is verified
 against the others and against closed forms rather than against a stored
@@ -50,6 +59,50 @@ from .free_surface import (
     free_surface_power_ratio_analytic,
     lloyd_null_cosines,
 )
+from .plate_far_field import (
+    PistonPowerCheck,
+    angle_sweep_error,
+    baffled_piston_far_field,
+    bessel_j1,
+    far_field_power_from_directivity,
+    node_cos_theta_far_field,
+    on_axis_exact,
+    piston_directivity,
+    piston_power_check,
+    piston_radiation_efficiency,
+    rayleigh_far_field,
+)
+from .pulsating_sphere import (
+    PulsatingSphereSolution,
+    RadialMesh,
+    assemble_radial_helmholtz,
+    convergence_study,
+    plane_wave_form_relative_error,
+    plane_wave_power,
+    plane_wave_power_relative_error,
+    plane_wave_pressure,
+    pressure as monopole_pressure,
+    radiated_power as monopole_radiated_power,
+    radiation_efficiency as monopole_radiation_efficiency,
+    solve_pulsating_sphere,
+    surface_impedance as monopole_surface_impedance,
+)
+from .radiation_scale_law import (
+    BreathingShell,
+    CoupledBreathingSphere,
+    SurfaceSourceLaw,
+    coupled_breathing_sphere,
+    energy_balance_sweep,
+    impedance_convergence,
+    monopole_surface_source,
+    piston_surface_source,
+    scale_law_offset_db,
+    scale_law_residual_db,
+    scaling_slope_db,
+    sound_power_level,
+    spherical_shell_breathing_parameters,
+    velocity_level,
+)
 from .fwh_analogy import (
     KirchhoffSurfaceResult,
     fwh_far_field_power,
@@ -83,4 +136,42 @@ __all__ = [
     "KirchhoffSurfaceResult",
     "fwh_far_field_power",
     "kirchhoff_data_surface_power",
+    "PistonPowerCheck",
+    "angle_sweep_error",
+    "baffled_piston_far_field",
+    "bessel_j1",
+    "far_field_power_from_directivity",
+    "node_cos_theta_far_field",
+    "on_axis_exact",
+    "piston_directivity",
+    "piston_power_check",
+    "piston_radiation_efficiency",
+    "rayleigh_far_field",
+    "PulsatingSphereSolution",
+    "RadialMesh",
+    "assemble_radial_helmholtz",
+    "convergence_study",
+    "plane_wave_form_relative_error",
+    "plane_wave_power",
+    "plane_wave_power_relative_error",
+    "plane_wave_pressure",
+    "monopole_pressure",
+    "monopole_radiated_power",
+    "monopole_radiation_efficiency",
+    "solve_pulsating_sphere",
+    "monopole_surface_impedance",
+    "BreathingShell",
+    "CoupledBreathingSphere",
+    "SurfaceSourceLaw",
+    "coupled_breathing_sphere",
+    "energy_balance_sweep",
+    "impedance_convergence",
+    "monopole_surface_source",
+    "piston_surface_source",
+    "scale_law_offset_db",
+    "scale_law_residual_db",
+    "scaling_slope_db",
+    "sound_power_level",
+    "spherical_shell_breathing_parameters",
+    "velocity_level",
 ]
