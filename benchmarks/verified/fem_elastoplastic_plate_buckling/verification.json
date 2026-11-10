@@ -1,0 +1,48 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_elastoplastic_plate_buckling",
+  "title": "Elastoplastic plate buckling and ultimate strength verification",
+  "mission": "IN36-N01",
+  "generated_at": "2026-11-10T07:36:55+00:00",
+  "criteria": {
+    "elastic_buckling_error_pct": 2.0,
+    "csr_ultimate_strength_ratio": 1.0
+  },
+  "gates": [
+    {
+      "id": "elastic_buckling_error",
+      "quantity": "relative error vs Timoshenko closed form",
+      "reference": "sigma_cr = k*pi^2*E/(12*(1-nu^2))*(t/b)^2 = 297.9 MPa",
+      "value": 0.6996890700650642,
+      "threshold": 2.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh 10x5, FE=300.0 MPa"
+    },
+    {
+      "id": "csr_ultimate_strength_reasonable",
+      "quantity": "CSR ultimate strength ratio",
+      "reference": "sigma_u/sigma_y should be in (0, 1] for slender plates",
+      "value": 0.9929519723186382,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "sigma_u/sigma_y = 0.993"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "figures": [
+      "/root/tp-agent/work/m9084/benchmarks/verified/fem_elastoplastic_plate_buckling/figures/elastic_buckling_comparison.png"
+    ],
+    "module": "src/tensorfem/elastoplastic_plate_buckling.py"
+  },
+  "limitations": [
+    "Flat-facet small-strain Mindlin shell: large rotations not captured",
+    "CSR formula is engineering approximation; provides reference values",
+    "Arc-length post-buckling analysis available but computationally expensive",
+    "Mesh convergence shows sensitivity to boundary condition representation"
+  ]
+}
