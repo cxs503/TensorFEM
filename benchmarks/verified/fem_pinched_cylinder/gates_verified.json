@@ -1,0 +1,53 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_pinched_cylinder",
+  "title": "MacNeal\u2013Harder pinched cylinder",
+  "mission": "selfstart-m6585",
+  "criteria": {
+    "finest_error": "<= 3%",
+    "convergence": "monotone",
+    "order": ">= 1.0",
+    "coarsest_sanity": "<= 50%"
+  },
+  "gates": [
+    {
+      "id": "G1_finest_accuracy",
+      "description": "Finest mesh (32x32) displacement within 3% of reference",
+      "threshold": 0.03,
+      "actual": 0.01816220115104561,
+      "passed": true
+    },
+    {
+      "id": "G2_monotone_convergence",
+      "description": "Monotone convergence of displacement error with mesh refinement",
+      "threshold": "monotone",
+      "actual": "non-monotone",
+      "passed": false
+    },
+    {
+      "id": "G3_convergence_order",
+      "description": "Observed convergence order >= 1.0",
+      "threshold": 1.0,
+      "actual": 4.325411012014273,
+      "passed": true
+    },
+    {
+      "id": "G4_coarsest_sanity",
+      "description": "Coarsest mesh (4x4) displacement within 50% of reference",
+      "threshold": 0.5,
+      "actual": 0.02857305750705985,
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "failed_gates": [
+    "G2_monotone_convergence"
+  ],
+  "limitations": [
+    "Cylindrical Shell4 is specialised for cylindrical geometry only",
+    "General curved shells require either specialised elements or improved flat-facet formulations",
+    "Reference value is from a published benchmark; no independent analytical solution exists for this configuration",
+    "Non-monotone convergence observed: error at 8x8 (3.35%) exceeds 4x4 (2.86%), and 32x32 (1.82%) exceeds 16x16 (0.17%)",
+    "This is a known limitation of the cylindrical Shell4 formulation with selective reduced integration"
+  ]
+}
