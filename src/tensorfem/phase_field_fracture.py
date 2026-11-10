@@ -140,7 +140,14 @@ class PhaseFieldProblem:
         det = jac[:, :, 0, 0] * jac[:, :, 1, 1] - jac[:, :, 0, 1] * jac[:, :, 1, 0]
         if bool((det <= 0.0).any()):
             raise ValueError("inverted or degenerate element in mesh")
-        inv = torch.linalg.inv(jac)                                  # [m, g, 2, 2]
+        # closed-form 2x2 inverse: torch.linalg.inv on a batched [m, g, 2, 2] tensor
+        # costs ~30 s for a few thousand elements on many-core hosts, the explicit
+        # expression is exact and instant
+        inv = torch.empty_like(jac)
+        inv[:, :, 0, 0] = jac[:, :, 1, 1] / det
+        inv[:, :, 1, 1] = jac[:, :, 0, 0] / det
+        inv[:, :, 0, 1] = -jac[:, :, 0, 1] / det
+        inv[:, :, 1, 0] = -jac[:, :, 1, 0] / det
         # dN/dX[m, g, k, b] = sum_a dN_k/dxi_a * invJ[a, b]
         dndx = torch.einsum("kag,mgab->mgkb", _DN_T, inv)            # [m, 4, 4, 2]
         b = torch.zeros((self.n_elem, 4, 3, 8), dtype=torch.float64)
@@ -216,6 +223,14 @@ def _tocoo(rows, cols, data, n):
     cols = np.asarray(cols).ravel()
     data = np.asarray(data).ravel()
     return sp.coo_matrix((data, (rows, cols)), shape=(n, n)).tocsr()
+
+
+def _masked_solve(K, rhs: np.ndarray, fixed: np.ndarray) -> np.ndarray:
+    """Solve ``K dx = rhs`` with the ``fixed`` dof rows/columns replaced by identity."""
+    mask = np.asarray(fixed, dtype=bool).astype(np.float64)
+    free = sp.diags(1.0 - mask)
+    Kd = (free @ K @ free + sp.diags(mask)).tocsc()
+    return spla.splu(Kd).solve(np.where(mask > 0.0, 0.0, rhs))
 
 
 def assemble(problem: PhaseFieldProblem, u: np.ndarray, d: np.ndarray, history: np.ndarray,
@@ -479,6 +494,49 @@ class PhaseFieldSolver:
                 return it + 1
         return max_iter
 
+    def alternating_step(self, tol: float = 1e-6, max_iter: int = 200):
+        """True alternate-minimisation (staggered) step: the displacement block and
+        the phase-field block are solved separately, back to back.
+
+        Unlike :meth:`staggered_step` -- which takes full coupled Newton steps and
+        only interleaves the history update -- this driver really alternates the two
+        fields, i.e. the ``u`` sub-problem is solved with ``d`` frozen and the ``d``
+        sub-problem with ``u`` frozen (and ``H`` at its running maximum).  The
+        returned residual history is the *coupled* residual measured in the
+        free-dof 2-norm divided by its value at the start of the step.
+
+        Returns ``(iterations, residual_history, converged)``.
+        """
+        n2 = 2 * self.problem.n_nodes
+        u_fixed = self.fixed[:n2]
+        d_fixed = self.fixed[n2:]
+        R, K, _ = assemble(self.problem, self.u, self.d, self.history, self.load)
+        R = np.where(self.fixed, 0.0, R)
+        ref = max(float(np.linalg.norm(R)), 1e-30)
+        history = [1.0]
+        converged = False
+        it = 0
+        for it in range(max_iter):
+            # --- displacement block: d and H frozen ------------------------------
+            du = _masked_solve(K[:n2, :n2], -R[:n2], u_fixed)
+            self.u = self.u + du
+            self._apply_fixed()
+            # --- history floor from the new strain (monotone, no healing) --------
+            self.update_history()
+            # --- phase-field block: u and H frozen ------------------------------
+            R, K, _ = assemble(self.problem, self.u, self.d, self.history, self.load)
+            dd = _masked_solve(K[n2:, n2:], -R[n2:], d_fixed)
+            self.d = np.clip(self.d + dd, 0.0, 1.0)
+            self._apply_fixed()
+            R, K, _ = assemble(self.problem, self.u, self.d, self.history, self.load)
+            R = np.where(self.fixed, 0.0, R)
+            rel = float(np.linalg.norm(R)) / ref
+            history.append(rel)
+            if rel <= tol:
+                converged = True
+                break
+        return it + 1, history, converged
+
     def update_history(self):
         e = self.problem.strain(self.u)
         psi_p = self.problem.split(e)[0].numpy()
@@ -514,6 +572,9 @@ def run_load_path(problem: PhaseFieldProblem, solver: PhaseFieldSolver,
         if scheme == "staggered":
             iters = solver.staggered_step(max_iter=max_iter, tol=1e-8)
             rec = NewtonRecord([0.0], iters, True)
+        elif scheme == "alternating":
+            iters, hist, conv = solver.alternating_step(tol=1e-6, max_iter=max_iter)
+            rec = NewtonRecord(hist, iters, conv)
         else:
             rec = solver.newton_step(max_iter=max_iter, tol=tol)
         solver.update_history()
