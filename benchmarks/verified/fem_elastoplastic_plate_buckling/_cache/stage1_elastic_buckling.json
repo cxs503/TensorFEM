@@ -1,0 +1,24 @@
+{
+  "analytical_sigma_cr_MPa": 297.89575188636013,
+  "mesh_results": [
+    {
+      "mesh": "8x4",
+      "nx": 8,
+      "ny": 4,
+      "fe_sigma_cr_MPa": 294.9915976122233,
+      "analytical_sigma_cr_MPa": 297.89575188636013,
+      "relative_error_pct": 0.9748894557061843,
+      "passed": true
+    },
+    {
+      "mesh": "10x5",
+      "nx": 10,
+      "ny": 5,
+      "fe_sigma_cr_MPa": 299.9800959024971,
+      "analytical_sigma_cr_MPa": 297.89575188636013,
+      "relative_error_pct": 0.6996890700650642,
+      "passed": true
+    }
+  ],
+  "figure": "/root/tp-agent/work/m9084/benchmarks/verified/fem_elastoplastic_plate_buckling/figures/elastic_buckling_comparison.png"
+}
