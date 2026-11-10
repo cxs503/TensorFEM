@@ -1,0 +1,810 @@
+{
+  "schema": "tensorfem.fem-plate-postbuckling.v1",
+  "anchor": "fem_plate_postbuckling",
+  "case": {
+    "a_m": 0.4,
+    "b_m": 0.4,
+    "thickness_m": 0.006,
+    "young_pa": 206000000000.0,
+    "poisson": 0.3,
+    "yield_pa": 355000000.0
+  },
+  "A1_linear_buckling": {
+    "cases": [
+      {
+        "aspect_ratio": 1.0,
+        "half_waves": 1,
+        "buckling_coefficient": 4.0,
+        "sigma_cr_reference_pa": 167566360.43607754,
+        "ladder": [
+          {
+            "mesh": [
+              4,
+              4
+            ],
+            "n_dofs": 150,
+            "sigma_cr_pa": 167610060.66247374,
+            "relative_error": 0.00026079355237218493,
+            "pencil_residual": 4.870855841493558e-15,
+            "mac_vs_closed_form_mode": 1.0
+          },
+          {
+            "mesh": [
+              6,
+              6
+            ],
+            "n_dofs": 294,
+            "sigma_cr_pa": 167575055.40631303,
+            "relative_error": 5.1889712307851e-05,
+            "pencil_residual": 1.6054982251620787e-14,
+            "mac_vs_closed_form_mode": 1.0000000000000004
+          },
+          {
+            "mesh": [
+              8,
+              8
+            ],
+            "n_dofs": 486,
+            "sigma_cr_pa": 167569089.84686318,
+            "relative_error": 1.6288536544895038e-05,
+            "pencil_residual": 4.3906839153232615e-14,
+            "mac_vs_closed_form_mode": 1.0
+          }
+        ],
+        "max_abs_relative_error": 0.00026079355237218493
+      },
+      {
+        "aspect_ratio": 2.0,
+        "half_waves": 2,
+        "buckling_coefficient": 4.0,
+        "sigma_cr_reference_pa": 167566360.43607754,
+        "ladder": [
+          {
+            "mesh": [
+              8,
+              4
+            ],
+            "n_dofs": 270,
+            "sigma_cr_pa": 167610060.61534366,
+            "relative_error": 0.00026079327111006023,
+            "pencil_residual": 5.511122415847377e-15,
+            "mac_vs_closed_form_mode": 0.9999999999999996
+          },
+          {
+            "mesh": [
+              12,
+              6
+            ],
+            "n_dofs": 546,
+            "sigma_cr_pa": 167575055.28647533,
+            "relative_error": 5.1888997142146565e-05,
+            "pencil_residual": 2.37665738121261e-14,
+            "mac_vs_closed_form_mode": 1.0000000000000002
+          },
+          {
+            "mesh": [
+              16,
+              8
+            ],
+            "n_dofs": 918,
+            "sigma_cr_pa": 167569089.07300258,
+            "relative_error": 1.6283918311099654e-05,
+            "pencil_residual": 5.217439513642474e-14,
+            "mac_vs_closed_form_mode": 0.9999999999999992
+          }
+        ],
+        "max_abs_relative_error": 0.00026079327111006023
+      },
+      {
+        "aspect_ratio": 3.0,
+        "half_waves": 3,
+        "buckling_coefficient": 4.0,
+        "sigma_cr_reference_pa": 167566360.43607754,
+        "ladder": [
+          {
+            "mesh": [
+              12,
+              4
+            ],
+            "n_dofs": 390,
+            "sigma_cr_pa": 167610060.72961426,
+            "relative_error": 0.00026079395305234065,
+            "pencil_residual": 6.193014797787217e-15,
+            "mac_vs_closed_form_mode": 1.0
+          },
+          {
+            "mesh": [
+              18,
+              6
+            ],
+            "n_dofs": 798,
+            "sigma_cr_pa": 167575054.7984626,
+            "relative_error": 5.1886084787122755e-05,
+            "pencil_residual": 2.3916986167055342e-14,
+            "mac_vs_closed_form_mode": 0.9999999999999997
+          },
+          {
+            "mesh": [
+              24,
+              8
+            ],
+            "n_dofs": 1350,
+            "sigma_cr_pa": 167569090.30605394,
+            "relative_error": 1.6291276896396312e-05,
+            "pencil_residual": 5.924666450451171e-14,
+            "mac_vs_closed_form_mode": 0.9999999999999912
+          }
+        ],
+        "max_abs_relative_error": 0.00026079395305234065
+      }
+    ],
+    "max_abs_relative_error": 0.00026079395305234065
+  },
+  "A2_postbuckling_path": {
+    "koiter_coefficient": 0.34125,
+    "imperfection_over_t": 0.001,
+    "stations_over_t": [
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55
+    ],
+    "cases": [
+      {
+        "mesh": [
+          8,
+          8
+        ],
+        "converged": true,
+        "points": 16,
+        "reached_total_amplitude_over_t": 1.3142632737021618,
+        "stations": [
+          {
+            "total_amplitude_over_t": 0.1,
+            "load_factor_fe": 0.9920925806007442,
+            "load_factor_koiter": 0.9934125,
+            "relative_error": -0.00132867202622855
+          },
+          {
+            "total_amplitude_over_t": 0.15,
+            "load_factor_fe": 0.9987171074049066,
+            "load_factor_koiter": 1.0010114583333334,
+            "relative_error": -0.0022920326329199936
+          },
+          {
+            "total_amplitude_over_t": 0.2,
+            "load_factor_fe": 1.004596099940001,
+            "load_factor_koiter": 1.00865,
+            "relative_error": -0.004019134546174641
+          },
+          {
+            "total_amplitude_over_t": 0.25,
+            "load_factor_fe": 1.0112009495914565,
+            "load_factor_koiter": 1.017328125,
+            "relative_error": -0.006022811380097748
+          },
+          {
+            "total_amplitude_over_t": 0.3,
+            "load_factor_fe": 1.0180881677780689,
+            "load_factor_koiter": 1.0273791666666667,
+            "relative_error": -0.00904339818252542
+          },
+          {
+            "total_amplitude_over_t": 0.35,
+            "load_factor_fe": 1.0268281960976304,
+            "load_factor_koiter": 1.038945982142857,
+            "relative_error": -0.011663538098711679
+          },
+          {
+            "total_amplitude_over_t": 0.4,
+            "load_factor_fe": 1.0356130265842671,
+            "load_factor_koiter": 1.0521,
+            "relative_error": -0.01567053836682153
+          },
+          {
+            "total_amplitude_over_t": 0.45,
+            "load_factor_fe": 1.0465421668469064,
+            "load_factor_koiter": 1.0668809027777777,
+            "relative_error": -0.0190637360533088
+          },
+          {
+            "total_amplitude_over_t": 0.5,
+            "load_factor_fe": 1.057860732746542,
+            "load_factor_koiter": 1.0833125,
+            "relative_error": -0.02349439081839999
+          },
+          {
+            "total_amplitude_over_t": 0.55,
+            "load_factor_fe": 1.0699692764635802,
+            "load_factor_koiter": 1.1014099431818183,
+            "relative_error": -0.028545835193216407
+          }
+        ],
+        "beyond_gate_range": [
+          {
+            "total_amplitude_over_t": 0.6,
+            "load_factor_fe": 1.0841135669593556,
+            "load_factor_koiter": 1.1211833333333332,
+            "relative_error": -0.033063072980015984
+          },
+          {
+            "total_amplitude_over_t": 0.8,
+            "load_factor_fe": 1.148846513336795,
+            "load_factor_koiter": 1.2171500000000002,
+            "relative_error": -0.05611755877517566
+          },
+          {
+            "total_amplitude_over_t": 1.0,
+            "load_factor_fe": 1.2314645656675274,
+            "load_factor_koiter": 1.34025,
+            "relative_error": -0.08116801666291551
+          }
+        ],
+        "path": [
+          {
+            "total_amplitude_over_t": 0.012485028043058658,
+            "load_factor": 0.9199515047308929
+          },
+          {
+            "total_amplitude_over_t": 0.018074821192486712,
+            "load_factor": 0.9447644826916703
+          },
+          {
+            "total_amplitude_over_t": 0.038061096621358106,
+            "load_factor": 0.974086442743041
+          },
+          {
+            "total_amplitude_over_t": 0.08740507652061448,
+            "load_factor": 0.9903957921695141
+          },
+          {
+            "total_amplitude_over_t": 0.14349630108914668,
+            "load_factor": 0.9979524034579584
+          },
+          {
+            "total_amplitude_over_t": 0.21400324097744228,
+            "load_factor": 1.0062425989234711
+          },
+          {
+            "total_amplitude_over_t": 0.3011804878971975,
+            "load_factor": 1.018250773332362
+          },
+          {
+            "total_amplitude_over_t": 0.4076848126090548,
+            "load_factor": 1.0369632221061094
+          },
+          {
+            "total_amplitude_over_t": 0.5360216770862625,
+            "load_factor": 1.066015007264867
+          },
+          {
+            "total_amplitude_over_t": 0.6643309017036345,
+            "load_factor": 1.102311866190383
+          },
+          {
+            "total_amplitude_over_t": 0.7862277359405263,
+            "load_factor": 1.143484392568074
+          },
+          {
+            "total_amplitude_over_t": 0.9020479249209503,
+            "load_factor": 1.1885780560417945
+          },
+          {
+            "total_amplitude_over_t": 1.012267140508576,
+            "load_factor": 1.2368355069066659
+          },
+          {
+            "total_amplitude_over_t": 1.1173923214068893,
+            "load_factor": 1.287671965047858
+          },
+          {
+            "total_amplitude_over_t": 1.2179096275734165,
+            "load_factor": 1.340638574067572
+          },
+          {
+            "total_amplitude_over_t": 1.3142632737021618,
+            "load_factor": 1.3953892112032553
+          }
+        ]
+      },
+      {
+        "mesh": [
+          12,
+          12
+        ],
+        "converged": true,
+        "points": 16,
+        "reached_total_amplitude_over_t": 1.0356985257382596,
+        "stations": [
+          {
+            "total_amplitude_over_t": 0.1,
+            "load_factor_fe": 0.9918930356490806,
+            "load_factor_koiter": 0.9934125,
+            "relative_error": -0.0015295401969669387
+          },
+          {
+            "total_amplitude_over_t": 0.15,
+            "load_factor_fe": 0.9982313811479042,
+            "load_factor_koiter": 1.0010114583333334,
+            "relative_error": -0.002777268094471097
+          },
+          {
+            "total_amplitude_over_t": 0.2,
+            "load_factor_fe": 1.0038744775449686,
+            "load_factor_koiter": 1.00865,
+            "relative_error": -0.004734568438042319
+          },
+          {
+            "total_amplitude_over_t": 0.25,
+            "load_factor_fe": 1.0099589904901207,
+            "load_factor_koiter": 1.017328125,
+            "relative_error": -0.00724361622252323
+          },
+          {
+            "total_amplitude_over_t": 0.3,
+            "load_factor_fe": 1.0164587888661805,
+            "load_factor_koiter": 1.0273791666666667,
+            "relative_error": -0.010629354920557166
+          },
+          {
+            "total_amplitude_over_t": 0.35,
+            "load_factor_fe": 1.024429352990541,
+            "load_factor_koiter": 1.038945982142857,
+            "relative_error": -0.013972458050586
+          },
+          {
+            "total_amplitude_over_t": 0.4,
+            "load_factor_fe": 1.032646277486258,
+            "load_factor_koiter": 1.0521,
+            "relative_error": -0.01849037402693865
+          },
+          {
+            "total_amplitude_over_t": 0.45,
+            "load_factor_fe": 1.042491658393645,
+            "load_factor_koiter": 1.0668809027777777,
+            "relative_error": -0.02286032519715353
+          },
+          {
+            "total_amplitude_over_t": 0.5,
+            "load_factor_fe": 1.052668809606905,
+            "load_factor_koiter": 1.0833125,
+            "relative_error": -0.02828702742107647
+          },
+          {
+            "total_amplitude_over_t": 0.55,
+            "load_factor_fe": 1.064442208982921,
+            "load_factor_koiter": 1.1014099431818183,
+            "relative_error": -0.03356400986548447
+          }
+        ],
+        "beyond_gate_range": [
+          {
+            "total_amplitude_over_t": 0.6,
+            "load_factor_fe": 1.0766866376217847,
+            "load_factor_koiter": 1.1211833333333332,
+            "relative_error": -0.03968726111835574
+          },
+          {
+            "total_amplitude_over_t": 0.8,
+            "load_factor_fe": 1.1365198216945909,
+            "load_factor_koiter": 1.2171500000000002,
+            "relative_error": -0.06624506289726761
+          },
+          {
+            "total_amplitude_over_t": 1.0,
+            "load_factor_fe": 1.2114385742122291,
+            "load_factor_koiter": 1.34025,
+            "relative_error": -0.0961099987224554
+          }
+        ],
+        "path": [
+          {
+            "total_amplitude_over_t": 0.012478632613380513,
+            "load_factor": 0.9198994090284704
+          },
+          {
+            "total_amplitude_over_t": 0.01799965621270814,
+            "load_factor": 0.9445173387393577
+          },
+          {
+            "total_amplitude_over_t": 0.035927504633971666,
+            "load_factor": 0.9724539977993015
+          },
+          {
+            "total_amplitude_over_t": 0.07130630277536847,
+            "load_factor": 0.9871007055058092
+          },
+          {
+            "total_amplitude_over_t": 0.11045632344781794,
+            "load_factor": 0.9936394175689315
+          },
+          {
+            "total_amplitude_over_t": 0.1599179759820465,
+            "load_factor": 0.9993830946064792
+          },
+          {
+            "total_amplitude_over_t": 0.22170212767389239,
+            "load_factor": 1.0063063049876093
+          },
+          {
+            "total_amplitude_over_t": 0.2984898434205209,
+            "load_factor": 1.0162180528690892
+          },
+          {
+            "total_amplitude_over_t": 0.3934297480802687,
+            "load_factor": 1.031352544830113
+          },
+          {
+            "total_amplitude_over_t": 0.491396080710029,
+            "load_factor": 1.0506428620469084
+          },
+          {
+            "total_amplitude_over_t": 0.5874740695899857,
+            "load_factor": 1.0732661527334715
+          },
+          {
+            "total_amplitude_over_t": 0.6814874465088624,
+            "load_factor": 1.098938603762996
+          },
+          {
+            "total_amplitude_over_t": 0.7733358681194046,
+            "load_factor": 1.1273472160964448
+          },
+          {
+            "total_amplitude_over_t": 0.8629787871845386,
+            "load_factor": 1.1581848651499804
+          },
+          {
+            "total_amplitude_over_t": 0.9504207031696754,
+            "load_factor": 1.191166337718565
+          },
+          {
+            "total_amplitude_over_t": 1.0356985257382596,
+            "load_factor": 1.2260351700195038
+          }
+        ]
+      }
+    ],
+    "max_abs_relative_error": 0.03356400986548447,
+    "all_stations_resolved": true
+  },
+  "A3_imperfection_sensitivity": {
+    "station_total_amplitude_over_t": 0.25,
+    "koiter_coefficient": 0.34125,
+    "cases": [
+      {
+        "imperfection_over_t": 0.002,
+        "imperfection_mm": 0.012,
+        "converged": true,
+        "load_factor_fe": 1.0069774678765508,
+        "load_factor_koiter": 1.013328125,
+        "relative_error": -0.006267128057310223,
+        "curve": [
+          {
+            "total_amplitude_over_t": 0.05,
+            "load_factor_fe": 0.9567489576905122
+          },
+          {
+            "total_amplitude_over_t": 0.1,
+            "load_factor_fe": 0.9810808105440343
+          },
+          {
+            "total_amplitude_over_t": 0.15,
+            "load_factor_fe": 0.9917320870065305
+          },
+          {
+            "total_amplitude_over_t": 0.2,
+            "load_factor_fe": 0.9995340810017583
+          },
+          {
+            "total_amplitude_over_t": 0.25,
+            "load_factor_fe": 1.0069774678765508
+          },
+          {
+            "total_amplitude_over_t": 0.3,
+            "load_factor_fe": 1.0149823104431153
+          },
+          {
+            "total_amplitude_over_t": 0.35,
+            "load_factor_fe": 1.0237472387612065
+          },
+          {
+            "total_amplitude_over_t": 0.4,
+            "load_factor_fe": 1.033425149793635
+          },
+          {
+            "total_amplitude_over_t": 0.45,
+            "load_factor_fe": 1.0439313935348389
+          },
+          {
+            "total_amplitude_over_t": 0.5,
+            "load_factor_fe": 1.0559891379566104
+          },
+          {
+            "total_amplitude_over_t": 0.55,
+            "load_factor_fe": 1.0680468823783817
+          },
+          {
+            "total_amplitude_over_t": 0.6,
+            "load_factor_fe": 1.082307134560087
+          }
+        ]
+      },
+      {
+        "imperfection_over_t": 0.005,
+        "imperfection_mm": 0.030000000000000002,
+        "converged": true,
+        "load_factor_fe": 0.9948805626049028,
+        "load_factor_koiter": 1.001328125,
+        "relative_error": -0.0064390105841650724,
+        "curve": [
+          {
+            "total_amplitude_over_t": 0.05,
+            "load_factor_fe": null
+          },
+          {
+            "total_amplitude_over_t": 0.1,
+            "load_factor_fe": 0.9504912264400005
+          },
+          {
+            "total_amplitude_over_t": 0.15,
+            "load_factor_fe": 0.971214781055006
+          },
+          {
+            "total_amplitude_over_t": 0.2,
+            "load_factor_fe": 0.9841630026904944
+          },
+          {
+            "total_amplitude_over_t": 0.25,
+            "load_factor_fe": 0.9948805626049028
+          },
+          {
+            "total_amplitude_over_t": 0.3,
+            "load_factor_fe": 1.0047859487144795
+          },
+          {
+            "total_amplitude_over_t": 0.35,
+            "load_factor_fe": 1.0150862601593311
+          },
+          {
+            "total_amplitude_over_t": 0.4,
+            "load_factor_fe": 1.0257899365373018
+          },
+          {
+            "total_amplitude_over_t": 0.45,
+            "load_factor_fe": 1.0372830758339153
+          },
+          {
+            "total_amplitude_over_t": 0.5,
+            "load_factor_fe": 1.04989414363143
+          },
+          {
+            "total_amplitude_over_t": 0.55,
+            "load_factor_fe": 1.0625052114289446
+          },
+          {
+            "total_amplitude_over_t": 0.6,
+            "load_factor_fe": 1.0773239926792748
+          }
+        ]
+      },
+      {
+        "imperfection_over_t": 0.01,
+        "imperfection_mm": 0.060000000000000005,
+        "converged": true,
+        "load_factor_fe": 0.9747909446313608,
+        "load_factor_koiter": 0.981328125,
+        "relative_error": -0.006661564263878761,
+        "curve": [
+          {
+            "total_amplitude_over_t": 0.05,
+            "load_factor_fe": null
+          },
+          {
+            "total_amplitude_over_t": 0.1,
+            "load_factor_fe": null
+          },
+          {
+            "total_amplitude_over_t": 0.15,
+            "load_factor_fe": 0.9383439724196307
+          },
+          {
+            "total_amplitude_over_t": 0.2,
+            "load_factor_fe": 0.9591498129799448
+          },
+          {
+            "total_amplitude_over_t": 0.25,
+            "load_factor_fe": 0.9747909446313608
+          },
+          {
+            "total_amplitude_over_t": 0.3,
+            "load_factor_fe": 0.9878406776098919
+          },
+          {
+            "total_amplitude_over_t": 0.35,
+            "load_factor_fe": 1.0006100875862054
+          },
+          {
+            "total_amplitude_over_t": 0.4,
+            "load_factor_fe": 1.0131410184175562
+          },
+          {
+            "total_amplitude_over_t": 0.45,
+            "load_factor_fe": 1.0260167738554984
+          },
+          {
+            "total_amplitude_over_t": 0.5,
+            "load_factor_fe": 1.0397592654186565
+          },
+          {
+            "total_amplitude_over_t": 0.55,
+            "load_factor_fe": 1.0535017569818146
+          },
+          {
+            "total_amplitude_over_t": 0.6,
+            "load_factor_fe": 1.0689126666930466
+          }
+        ]
+      }
+    ],
+    "max_abs_relative_error": 0.006661564263878761,
+    "all_cases_resolved": true
+  },
+  "A4_stiffened_panel_mode": {
+    "panel": {
+      "span_m": 0.8,
+      "spacing_m": 0.4,
+      "plate_thickness_m": 0.006,
+      "web_mm": [
+        150.0,
+        10.0
+      ],
+      "flange_mm": [
+        50.0,
+        10.0
+      ]
+    },
+    "fe_critical_stress_pa": 319858217.58557546,
+    "fe_load_factors_pa": [
+      319858217.58557546,
+      375550158.3636126,
+      425590753.32084167
+    ],
+    "fe_mac_plate_family": {
+      "1": 3.1580570271190236e-08,
+      "2": 5.0079694314346434e-26,
+      "3": 0.980292819222623,
+      "4": 6.869396259238473e-28,
+      "5": 2.4304972419627415e-09,
+      "6": 2.186833936663977e-30
+    },
+    "fe_best_half_waves": 3,
+    "dnv_plate_buckling_stress_pa": 167566360.43607754,
+    "dnv_column_euler_stress_pa": 4813301388.788841,
+    "dnv_column_buckling_stress_pa": 355000000.0,
+    "dnv_column_capped_by_yield": true,
+    "dnv_governing_mode": "plate",
+    "mac_plate_mode": 0.980292819222623,
+    "mac_column_mode": 2.0643182851175888e-08,
+    "fe_dominant_mode": "plate",
+    "mode_agrees_with_dnv": true,
+    "mac_of_dominant_reference": 0.980292819222623
+  },
+  "A5_negative_controls": {
+    "zero_load_tangent": {
+      "min_eigenvalue": 0.8184484148695187,
+      "max_eigenvalue": 5175509359.609592,
+      "positive_definite": true,
+      "n_free": 408,
+      "mesh": [
+        8,
+        8
+      ]
+    },
+    "tensile_load_buckling": {
+      "buckling": false,
+      "max_mapped_eigenvalue": 7.42507190142559e-23,
+      "rationale": "no positive buckling factor"
+    },
+    "no_zero_energy_mode": true,
+    "tensile_has_no_buckling_factor": true
+  },
+  "single_mode_content_study": {
+    "cases": [
+      {
+        "total_amplitude_over_t": 0.21400324097744228,
+        "load_factor": 1.0062425989234711,
+        "mac_whole_field": 0.9999982148600554,
+        "mac_centre_line": 0.9999984610867342
+      },
+      {
+        "total_amplitude_over_t": 0.4076848126090548,
+        "load_factor": 1.0369632221061094,
+        "mac_whole_field": 0.9999773440928336,
+        "mac_centre_line": 0.9999805392721932
+      },
+      {
+        "total_amplitude_over_t": 0.5360216770862625,
+        "load_factor": 1.066015007264867,
+        "mac_whole_field": 0.9999348221054409,
+        "mac_centre_line": 0.9999442555524525
+      },
+      {
+        "total_amplitude_over_t": 0.7862277359405263,
+        "load_factor": 1.143484392568074,
+        "mac_whole_field": 0.9997274230683432,
+        "mac_centre_line": 0.9997697316036467
+      },
+      {
+        "total_amplitude_over_t": 1.012267140508576,
+        "load_factor": 1.2368355069066659,
+        "mac_whole_field": 0.9993350395304539,
+        "mac_centre_line": 0.9994468834954252
+      }
+    ]
+  },
+  "gates": [
+    {
+      "id": "A1",
+      "quantity": "max |sigma_cr_FE / sigma_cr_Timoshenko - 1| over a/b = 1,2,3",
+      "reference": "Timoshenko k pi^2 D/(b^2 t)",
+      "value": 0.00026079395305234065,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A2",
+      "quantity": "max |N_FE / N_koiter - 1| at 10 path stations (A/t = 0.10..0.55)",
+      "reference": "one-mode von Karman-Koiter, w0 = t/1000",
+      "value": 0.03356400986548447,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A3",
+      "quantity": "max |N_FE / N_koiter - 1| over w0 = t/500, t/200, t/100",
+      "reference": "one-mode von Karman-Koiter",
+      "value": 0.006661564263878761,
+      "threshold": 0.1,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A4",
+      "quantity": "MAC of the panel eigenmode against its DNV-RP-C201 mode family",
+      "reference": "DNV-RP-C201 plate/column mode shapes",
+      "value": 0.980292819222623,
+      "threshold": 0.9,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "A5a",
+      "quantity": "min eigenvalue of the zero-load tangent",
+      "reference": "positive definiteness",
+      "value": 0.8184484148695187,
+      "threshold": 0.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "A5b",
+      "quantity": "count of positive buckling factors under tension",
+      "reference": "no bifurcation under tension",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": []
+}
