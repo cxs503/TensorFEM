@@ -315,9 +315,17 @@ def sine_mode_field(
 # ---------------------------------------------------------------------------
 
 def _tile_axis(axis: torch.Tensor, repeat: int, *, vary_first: bool) -> torch.Tensor:
-    """Tile a 1-D axis over a ``repeat`` x ``n`` grid, C-order flattened."""
+    """Tile a 1-D axis over a ``n`` x ``repeat`` grid, C-order flattened.
+
+    ``vary_first`` says whether the axis is the *fast* (last) index of the field,
+    i.e. whether its values have to be repeated along the slow index.  Both
+    branches used to expand to ``(repeat, axis.numel())``, which only produced a
+    conforming shape when ``repeat == axis.numel()``: ``rayleigh_power`` and
+    ``far_field_power`` therefore raised on any grid with ``nx != ny`` (see the
+    non-square-grid regression in ``tests/test_struct_acoustic_coupling.py``).
+    """
     if vary_first:
-        tiled = axis[:, None].expand(repeat, axis.numel())
+        tiled = axis[:, None].expand(axis.numel(), repeat)
     else:
         tiled = axis[None, :].expand(repeat, axis.numel())
     return tiled.reshape(-1)
