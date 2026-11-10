@@ -1,0 +1,646 @@
+{
+  "node": "P218-N04",
+  "fd_roundoff_floor": {
+    "per_filter": {
+      "linear": [
+        1.20586430041314e-10,
+        8.772680184065962e-11,
+        9.740376749434176e-11
+      ],
+      "helmholtz": [
+        1.0195404245294526e-10,
+        1.1715530776612581e-10,
+        1.0884964485846637e-10
+      ],
+      "sensitivity": [
+        0.0005428237656908912,
+        5.4282434001372126e-05,
+        5.428242475094819e-06
+      ]
+    },
+    "eps_C_median": 1.0540184365570582e-10,
+    "delta_at_which_1e-4_is_reached": 1.0540184365570582e-06
+  },
+  "repository": "TensorFEM",
+  "module": "src/tensorfem/simp_topology.py",
+  "tests": "tests/test_simp_filter_consistency.py",
+  "study": "benchmarks/simp_filter_consistency/run.py",
+  "verdict": {
+    "C1_checkerboard_index_unfiltered_gt_0.3": true,
+    "C1_checkerboard_index_filtered_lt_0.05": true,
+    "C1_suppression_ratio_ge_5": true,
+    "C1_compliance_ratio_ge_5": false,
+    "C2_rel_error_lt_1pct_all_deltas": true,
+    "C2_abs_error_le_1e-4_at_1e-4_and_1e-5": true,
+    "C2_abs_error_le_1e-4_at_1e-6_cone": true,
+    "C2_abs_error_le_1e-4_at_1e-6_pde": false,
+    "C2_abs_error_le_1e-4_all_deltas_scaled_load": true,
+    "C2_roundoff_scale_law": true,
+    "C2_sensitivity_filter_heuristic_rejected": true,
+    "C3_volume_deviation_lt_2pct": true,
+    "C3_compliance_deviation_lt_3pct": true,
+    "C4_perimeter_strictly_monotone_cone": true,
+    "C4_perimeter_non_increasing_both": true,
+    "C4_ci_monotone": true,
+    "kernel_adjoint_exact": true,
+    "kernel_pde_matches_cone_lt_5pct": true
+  },
+  "criteria": {
+    "C1": {
+      "ci_none": 0.3502588971731616,
+      "ci_cone": 0.033278672804965284,
+      "ci_pde": 0.03717425508591537,
+      "hfreac_none": 0.5575009853283915,
+      "hfreac_cone": 0.05028774994033573,
+      "hfreac_pde": 0.05582841001150157,
+      "suppression_ratio_cone": 10.525026019694568,
+      "suppression_ratio_pde": 9.422082469807664,
+      "compliance_none": 67.32353715117632,
+      "compliance_cone": 116.80277152431242,
+      "compliance_pde": 121.71436369652228,
+      "compliance_ratio_cone": 1.7349470403200815,
+      "compliance_ratio_pde": 1.8079020925951987,
+      "perimeter_none": 198.0,
+      "perimeter_cone": 82.0,
+      "perimeter_pde": 94.0
+    },
+    "C2": {
+      "linear": {
+        "0.0001": {
+          "n": 100,
+          "max_abs_error": 1.2058643004131397e-06,
+          "median_abs_error": 2.6202389147300664e-07,
+          "max_rel_error": 2.5712454199182648e-06,
+          "median_rel_error": 5.7337461791001265e-08,
+          "clamped": 0,
+          "max_abs_gradient": 48.164749036637616,
+          "roundoff_product": 1.20586430041314e-10
+        },
+        "1e-05": {
+          "n": 100,
+          "max_abs_error": 8.772680184065962e-06,
+          "median_abs_error": 2.529776088638913e-06,
+          "max_rel_error": 2.969672995703188e-05,
+          "median_rel_error": 4.1132711709461823e-07,
+          "clamped": 0,
+          "max_abs_gradient": 48.164749036637616,
+          "roundoff_product": 8.772680184065962e-11
+        },
+        "1e-06": {
+          "n": 100,
+          "max_abs_error": 9.740376749434176e-05,
+          "median_abs_error": 2.304501260896874e-05,
+          "max_rel_error": 0.00029515810168152535,
+          "median_rel_error": 2.4882294488326497e-06,
+          "clamped": 0,
+          "max_abs_gradient": 48.164749036637616,
+          "roundoff_product": 9.740376749434176e-11
+        }
+      },
+      "helmholtz": {
+        "0.0001": {
+          "n": 100,
+          "max_abs_error": 1.0195404245294526e-06,
+          "median_abs_error": 3.384460836031167e-07,
+          "max_rel_error": 1.4156080603362768e-06,
+          "median_rel_error": 5.062229673739036e-08,
+          "clamped": 0,
+          "max_abs_gradient": 50.018065353344255,
+          "roundoff_product": 1.0195404245294526e-10
+        },
+        "1e-05": {
+          "n": 100,
+          "max_abs_error": 1.1715530776612582e-05,
+          "median_abs_error": 2.9384233688478645e-06,
+          "max_rel_error": 1.9801329876332924e-05,
+          "median_rel_error": 4.827364372088976e-07,
+          "clamped": 0,
+          "max_abs_gradient": 50.018065353344255,
+          "roundoff_product": 1.1715530776612581e-10
+        },
+        "1e-06": {
+          "n": 100,
+          "max_abs_error": 0.00010884964485846638,
+          "median_abs_error": 3.022407826708262e-05,
+          "max_rel_error": 7.235477282544695e-05,
+          "median_rel_error": 4.508648901163402e-06,
+          "clamped": 0,
+          "max_abs_gradient": 50.018065353344255,
+          "roundoff_product": 1.0884964485846637e-10
+        }
+      },
+      "sensitivity": {
+        "0.0001": {
+          "n": 100,
+          "max_abs_error": 5.428237656908912,
+          "median_abs_error": 0.4676154388525413,
+          "max_rel_error": 0.33500883137032683,
+          "median_rel_error": 0.13537707493911783,
+          "clamped": 0,
+          "max_abs_gradient": 53.59298711702762,
+          "roundoff_product": 0.0005428237656908912
+        },
+        "1e-05": {
+          "n": 100,
+          "max_abs_error": 5.428243400137212,
+          "median_abs_error": 0.467615111462236,
+          "max_rel_error": 0.33500011050323125,
+          "median_rel_error": 0.13537714295580408,
+          "clamped": 0,
+          "max_abs_gradient": 53.59298711702762,
+          "roundoff_product": 5.4282434001372126e-05
+        },
+        "1e-06": {
+          "n": 100,
+          "max_abs_error": 5.4282424750948195,
+          "median_abs_error": 0.4676236315960387,
+          "max_rel_error": 0.33506713815387995,
+          "median_rel_error": 0.13538079294740102,
+          "clamped": 0,
+          "max_abs_gradient": 53.59298711702762,
+          "roundoff_product": 5.428242475094819e-06
+        }
+      }
+    },
+    "C3": {
+      "compliances": [
+        105.49857379332632,
+        104.56978657823421,
+        104.82761578328366,
+        104.88702548840328
+      ],
+      "volume_fractions": [
+        0.5000000000247976,
+        0.49999999998418154,
+        0.5000000000036999,
+        0.5000000000122939
+      ],
+      "max_volume_deviation": 2.479760841112011e-11,
+      "max_compliance_deviation_vs_finest": 0.005830542930122931,
+      "max_compliance_step_change": 0.0088037892996697,
+      "unfiltered_compliances": [
+        67.32353715117632,
+        67.56678239178835,
+        65.75919351855262
+      ],
+      "unfiltered_max_step_change": 0.02675262620549788
+    },
+    "C4": {
+      "linear": {
+        "perimeter_monotone_decreasing": true,
+        "perimeter_non_increasing": true,
+        "perimeter_relative_drop": 0.3411764705882353,
+        "ci_monotone_decreasing": true,
+        "compliance_monotone_increasing": true
+      },
+      "helmholtz": {
+        "perimeter_monotone_decreasing": false,
+        "perimeter_non_increasing": true,
+        "perimeter_relative_drop": 0.0375,
+        "ci_monotone_decreasing": true,
+        "compliance_monotone_increasing": true
+      }
+    }
+  },
+  "c4_rows": {
+    "linear": [
+      {
+        "radius": 0.1,
+        "compliance": 77.96571965437842,
+        "perimeter": 170.0,
+        "perimeter_design": 182.0,
+        "ci": 0.05366136369536922,
+        "gray_fraction": 0.046296296296296294,
+        "n_components": 1,
+        "hf": 0.021447920671162416
+      },
+      {
+        "radius": 0.15,
+        "compliance": 90.4513649147139,
+        "perimeter": 154.0,
+        "perimeter_design": 180.0,
+        "ci": 0.03320821111834959,
+        "gray_fraction": 0.10802469135802469,
+        "n_components": 1,
+        "hf": 0.01689301134386348
+      },
+      {
+        "radius": 0.2,
+        "compliance": 104.57896334049164,
+        "perimeter": 148.0,
+        "perimeter_design": 178.0,
+        "ci": 0.02157931453140699,
+        "gray_fraction": 0.17901234567901234,
+        "n_components": 1,
+        "hf": 0.024893913974335286
+      },
+      {
+        "radius": 0.3,
+        "compliance": 131.78942803617278,
+        "perimeter": 112.0,
+        "perimeter_design": 174.0,
+        "ci": 0.009629383647269174,
+        "gray_fraction": 0.3333333333333333,
+        "n_components": 1,
+        "hf": 0.03517984561211108
+      }
+    ],
+    "helmholtz": [
+      {
+        "radius": 0.1,
+        "compliance": 87.6374540447907,
+        "perimeter": 160.0,
+        "perimeter_design": 184.0,
+        "ci": 0.039939625684945544,
+        "gray_fraction": 0.09567901234567901,
+        "n_components": 1,
+        "hf": 0.017669882760696646
+      },
+      {
+        "radius": 0.15,
+        "compliance": 96.01007893240761,
+        "perimeter": 158.0,
+        "perimeter_design": 182.0,
+        "ci": 0.032810769628830484,
+        "gray_fraction": 0.13271604938271606,
+        "n_components": 1,
+        "hf": 0.017900005012167437
+      },
+      {
+        "radius": 0.2,
+        "compliance": 105.70463067779174,
+        "perimeter": 158.0,
+        "perimeter_design": 180.0,
+        "ci": 0.026539467310746103,
+        "gray_fraction": 0.15432098765432098,
+        "n_components": 1,
+        "hf": 0.022676315274674255
+      },
+      {
+        "radius": 0.3,
+        "compliance": 124.6556787694671,
+        "perimeter": 154.0,
+        "perimeter_design": 178.0,
+        "ci": 0.018010577443328575,
+        "gray_fraction": 0.2345679012345679,
+        "n_components": 3,
+        "hf": 0.02645538246468805
+      }
+    ]
+  },
+  "mesh_sweep": [
+    {
+      "nx": 20,
+      "ny": 10,
+      "h": 0.1,
+      "radius": 0.4,
+      "none": {
+        "compliance": 67.87375113640849,
+        "ci_physical": 0.3466666666275405,
+        "hf_physical": 0.48111828899243986,
+        "perimeter_physical": 132.0,
+        "volume_fraction": 0.4999999999614825,
+        "iters": 60
+      },
+      "linear": {
+        "compliance": 149.96488750685458,
+        "ci_physical": 0.018725057706985373,
+        "hf_physical": 0.07440588519866755,
+        "perimeter_physical": 58.0,
+        "volume_fraction": 0.4999999999932676,
+        "iters": 150
+      },
+      "helmholtz": {
+        "compliance": 147.3163475510558,
+        "ci_physical": 0.030689668839483337,
+        "hf_physical": 0.060332737447421715,
+        "perimeter_physical": 72.0,
+        "volume_fraction": 0.49999999996737865,
+        "iters": 150
+      },
+      "regularisation_penalty": 3.1622572065237504,
+      "reinterpreted_compliance": 214.63425866490732
+    },
+    {
+      "nx": 40,
+      "ny": 20,
+      "h": 0.05,
+      "radius": 0.2,
+      "none": {
+        "compliance": 68.49305048241916,
+        "ci_physical": 0.2287499999873158,
+        "hf_physical": 0.3155673017608879,
+        "perimeter_physical": 362.0,
+        "volume_fraction": 0.49999999999704964,
+        "iters": 28
+      },
+      "linear": {
+        "compliance": 104.00784160405296,
+        "ci_physical": 0.017219324388019108,
+        "hf_physical": 0.019925181983912996,
+        "perimeter_physical": 154.0,
+        "volume_fraction": 0.5000000000150522,
+        "iters": 150
+      },
+      "helmholtz": {
+        "compliance": 104.7985939217975,
+        "ci_physical": 0.0229330669394061,
+        "hf_physical": 0.020665889702184866,
+        "perimeter_physical": 176.0,
+        "volume_fraction": 0.49999999999643757,
+        "iters": 150
+      },
+      "regularisation_penalty": 2.384260105397733,
+      "reinterpreted_compliance": 163.30524776222495
+    },
+    {
+      "nx": 60,
+      "ny": 30,
+      "h": 0.03333333333333333,
+      "radius": 0.13333333333333333,
+      "none": {
+        "compliance": 66.38975878168159,
+        "ci_physical": 0.2463668911243306,
+        "hf_physical": 0.28817783605989167,
+        "perimeter_physical": 902.0,
+        "volume_fraction": 0.4999999999830561,
+        "iters": 150
+      },
+      "linear": {
+        "compliance": 86.17725984151932,
+        "ci_physical": 0.014242260515946159,
+        "hf_physical": 0.009118435858329756,
+        "perimeter_physical": 270.0,
+        "volume_fraction": 0.5000000000032648,
+        "iters": 150
+      },
+      "helmholtz": {
+        "compliance": 88.32382878473999,
+        "ci_physical": 0.01695669629758174,
+        "hf_physical": 0.00984261700565876,
+        "perimeter_physical": 282.0,
+        "volume_fraction": 0.5000000000192898,
+        "iters": 150
+      },
+      "regularisation_penalty": 1.6715960496796713,
+      "reinterpreted_compliance": 110.97685851864522
+    }
+  ],
+  "kernels": {
+    "radius": 0.2,
+    "cases": {
+      "0.1": {
+        "smooth_relL2": 0.047024013810726406,
+        "smooth_max_abs": 0.04601577177056859,
+        "smooth_corr": 0.9938761272296606,
+        "impulse_peak_pde": 0.22068965190658255,
+        "impulse_peak_cone": 0.9999999999999977,
+        "impulse_relL2": 0.8224797019086328,
+        "volume_error_pde": 1.4159490834888356e-16,
+        "volume_error_cone": 0.0,
+        "uniform_error_pde": 2.220446049250313e-16,
+        "pde_length_scale": 0.02886751345948129
+      },
+      "0.2": {
+        "smooth_relL2": 0.028454085897845996,
+        "smooth_max_abs": 0.0338847112506411,
+        "smooth_corr": 0.9990290397703151,
+        "impulse_peak_pde": 0.168584014662374,
+        "impulse_peak_cone": 0.2397177347499069,
+        "impulse_relL2": 0.27096978901865765,
+        "volume_error_pde": 2.831898166977671e-16,
+        "volume_error_cone": 0.000386149884846471,
+        "uniform_error_pde": 2.7755575615628914e-16,
+        "pde_length_scale": 0.05773502691896258
+      },
+      "0.3": {
+        "smooth_relL2": 0.019142802343377435,
+        "smooth_max_abs": 0.022424806889530635,
+        "smooth_corr": 0.9988206898712098,
+        "impulse_peak_pde": 0.12608372189170114,
+        "impulse_peak_cone": 0.10660642339945328,
+        "impulse_relL2": 0.24688728494552029,
+        "volume_error_pde": 0.0,
+        "volume_error_cone": 0.0011635094482975868,
+        "uniform_error_pde": 3.3306690738754696e-16,
+        "pde_length_scale": 0.08660254037844387
+      }
+    },
+    "adjoint_worst_rel": {
+      "linear": 2.965986478225073e-08,
+      "helmholtz": 9.04674032635293e-07
+    }
+  },
+  "mesh_family": [
+    {
+      "nx": 24,
+      "ny": 12,
+      "h": 0.08333333333333333,
+      "filter_type": "linear",
+      "radius": 0.2,
+      "iters": 250,
+      "converged": false,
+      "compliance": 105.49857379332632,
+      "volume_fraction": 0.5000000000247976,
+      "design_metrics": {
+        "perimeter": 116.0,
+        "perimeter_per_area": 0.4027777777777778,
+        "n_components": 1,
+        "gray_fraction": 0.041666666666666664,
+        "checkerboard_index": 0.17692411254448853
+      },
+      "physical_metrics": {
+        "perimeter": 96.0,
+        "perimeter_per_area": 0.3333333333333333,
+        "n_components": 1,
+        "gray_fraction": 0.1527777777777778,
+        "checkerboard_index": 0.046605001506828454
+      },
+      "hf_design": 0.2628327386017486,
+      "hf_physical": 0.046703149406377105,
+      "wall_time_s": 4.07
+    },
+    {
+      "nx": 36,
+      "ny": 18,
+      "h": 0.05555555555555555,
+      "filter_type": "linear",
+      "radius": 0.2,
+      "iters": 250,
+      "converged": false,
+      "compliance": 104.56978657823421,
+      "volume_fraction": 0.49999999998418154,
+      "design_metrics": {
+        "perimeter": 178.0,
+        "perimeter_per_area": 0.27469135802469136,
+        "n_components": 1,
+        "gray_fraction": 0.006172839506172839,
+        "checkerboard_index": 0.12709400573154833
+      },
+      "physical_metrics": {
+        "perimeter": 148.0,
+        "perimeter_per_area": 0.22839506172839505,
+        "n_components": 1,
+        "gray_fraction": 0.17901234567901234,
+        "checkerboard_index": 0.021576709284973416
+      },
+      "hf_design": 0.11696685130759289,
+      "hf_physical": 0.024873033208525405,
+      "wall_time_s": 7.01
+    },
+    {
+      "nx": 48,
+      "ny": 24,
+      "h": 0.041666666666666664,
+      "filter_type": "linear",
+      "radius": 0.2,
+      "iters": 250,
+      "converged": false,
+      "compliance": 104.82761578328366,
+      "volume_fraction": 0.5000000000036999,
+      "design_metrics": {
+        "perimeter": 240.0,
+        "perimeter_per_area": 0.20833333333333334,
+        "n_components": 1,
+        "gray_fraction": 0.008680555555555556,
+        "checkerboard_index": 0.09544558835070409
+      },
+      "physical_metrics": {
+        "perimeter": 194.0,
+        "perimeter_per_area": 0.1684027777777778,
+        "n_components": 1,
+        "gray_fraction": 0.17708333333333334,
+        "checkerboard_index": 0.01197609755337398
+      },
+      "hf_design": 0.12123045530508174,
+      "hf_physical": 0.017598195356661336,
+      "wall_time_s": 14.83
+    },
+    {
+      "nx": 60,
+      "ny": 30,
+      "h": 0.03333333333333333,
+      "filter_type": "linear",
+      "radius": 0.2,
+      "iters": 250,
+      "converged": false,
+      "compliance": 104.88702548840328,
+      "volume_fraction": 0.5000000000122939,
+      "design_metrics": {
+        "perimeter": 314.0,
+        "perimeter_per_area": 0.17444444444444446,
+        "n_components": 1,
+        "gray_fraction": 0.013333333333333334,
+        "checkerboard_index": 0.0742878893820993
+      },
+      "physical_metrics": {
+        "perimeter": 242.0,
+        "perimeter_per_area": 0.13444444444444445,
+        "n_components": 1,
+        "gray_fraction": 0.18,
+        "checkerboard_index": 0.007693228723153174
+      },
+      "hf_design": 0.07383835705016394,
+      "hf_physical": 0.013288543766627234,
+      "wall_time_s": 22.33
+    }
+  ],
+  "_c2_scale_ratio": {
+    "linear": {
+      "0.0001": 122.17948952430619,
+      "1e-05": 77.0235368353878,
+      "1e-06": 91.38802736651013
+    },
+    "helmholtz": {
+      "0.0001": 104.59062029907703,
+      "1e-05": 133.86010362503694,
+      "1e-06": 100.89985213250397
+    }
+  },
+  "mesh_family_unfiltered": [
+    {
+      "nx": 24,
+      "ny": 12,
+      "h": 0.08333333333333333,
+      "filter_type": "none",
+      "radius": 0.0,
+      "iters": 81,
+      "converged": true,
+      "compliance": 67.32353715117632,
+      "volume_fraction": 0.500000000073506,
+      "design_metrics": {
+        "perimeter": 198.0,
+        "perimeter_per_area": 0.6875,
+        "n_components": 8,
+        "gray_fraction": 0.0,
+        "checkerboard_index": 0.3502588971731616
+      },
+      "physical_metrics": {
+        "perimeter": 198.0,
+        "perimeter_per_area": 0.6875,
+        "n_components": 8,
+        "gray_fraction": 0.0,
+        "checkerboard_index": 0.3502588971731616
+      },
+      "hf_design": 0.5575009853283915,
+      "hf_physical": 0.5575009853283915,
+      "wall_time_s": 1.36
+    },
+    {
+      "nx": 36,
+      "ny": 18,
+      "h": 0.05555555555555555,
+      "filter_type": "none",
+      "radius": 0.0,
+      "iters": 29,
+      "converged": true,
+      "compliance": 67.56678239178835,
+      "volume_fraction": 0.500000000000019,
+      "design_metrics": {
+        "perimeter": 302.0,
+        "perimeter_per_area": 0.4660493827160494,
+        "n_components": 17,
+        "gray_fraction": 0.0,
+        "checkerboard_index": 0.2331594446645745
+      },
+      "physical_metrics": {
+        "perimeter": 302.0,
+        "perimeter_per_area": 0.4660493827160494,
+        "n_components": 17,
+        "gray_fraction": 0.0,
+        "checkerboard_index": 0.2331594446645745
+      },
+      "hf_design": 0.282083641905592,
+      "hf_physical": 0.282083641905592,
+      "wall_time_s": 0.82
+    },
+    {
+      "nx": 48,
+      "ny": 24,
+      "h": 0.041666666666666664,
+      "filter_type": "none",
+      "radius": 0.0,
+      "iters": 47,
+      "converged": true,
+      "compliance": 65.75919351855262,
+      "volume_fraction": 0.49999999999610867,
+      "design_metrics": {
+        "perimeter": 626.0,
+        "perimeter_per_area": 0.5434027777777778,
+        "n_components": 55,
+        "gray_fraction": 0.0,
+        "checkerboard_index": 0.27359352544245724
+      },
+      "physical_metrics": {
+        "perimeter": 626.0,
+        "perimeter_per_area": 0.5434027777777778,
+        "n_components": 55,
+        "gray_fraction": 0.0,
+        "checkerboard_index": 0.27359352544245724
+      },
+      "hf_design": 0.3277203363071479,
+      "hf_physical": 0.3277203363071479,
+      "wall_time_s": 2.14
+    }
+  ]
+}
