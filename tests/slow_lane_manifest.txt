@@ -28,7 +28,6 @@
 # entries appended at the end were measured at 27 s / 13 s / 10 s, plus one
 # 8x8 plate eigen-solve case (3.6 s on the x86 reference, slower on loong64)
 # registered by policy.
-
 tests/test_ad_plastic_tangent.py::test_ad_matches_oracle_and_preserves_gates
 tests/test_ad_plastic_tangent.py::test_ad_newton_not_slower_and_checkpoint_immutable
 tests/test_ad_plastic_tangent.py::test_measured_reduction
@@ -140,6 +139,8 @@ tests/test_simp_filter_consistency.py::test_topology_complexity_decays_with_filt
 tests/test_slow_lane.py::test_registry_matches_a_fresh_collection
 tests/test_solid3d_bbar.py::test_bbar_cures_near_incompressible_locking_under_three_percent
 tests/test_sparse_shell_arc.py::test_sparse_frozen_shell_path_converges_without_tangent_actions
+tests/test_structural_mindlin_face.py::test_c4_cc_plate_six_frequencies_within_three_percent
+tests/test_structural_mindlin_face.py::test_c4_ss_plate_six_frequencies_within_three_percent
 tests/test_suboff_appendages.py::test_exact_precontact_vehicle_translation_includes_all_appendages
 tests/test_suboff_appendages.py::test_five_appendages_are_welded_to_the_hull_and_have_positive_stiffness
 tests/test_suboff_appendages.py::test_open_water_under_roof_has_no_hidden_ice_contact
