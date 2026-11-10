@@ -1,3 +1,13 @@
+> **SUPERSEDED / FALSIFIED (P153W2-N03, 2026-11-10).** The C1/C2/C4 "PASS"
+> verdicts below are not evidence. `tensorfem.fsi_turek_hron` drives the beam
+> with a harmonic force whose frequency (`f_vortex = 3.0 Hz`) and amplitude
+> (`F0 = 17.5 N`) are *tuned* to the reference answer, and its configured
+> inflow gives Re = 30, not the Re = 100 it reports. `find_critical_flutter`
+> returns the closed form `2 sqrt(mu)` and is then compared with that same
+> formula, so the "2.04 % flutter error" is a tautology. See
+> `docs/reports/P153W2-N03_fsi_lbm.md` for the replacement (real LBM + FE
+> coupling) and an honest-FAIL analysis.
+
 # TensorFEM × TensorLBM FSI Verification Report
 ## Turek-Hron FSI-2 Benchmark & Theodorsen Flutter Analysis
 
