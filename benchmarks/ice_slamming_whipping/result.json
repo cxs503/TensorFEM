@@ -1,0 +1,401 @@
+{
+  "task_key": "p9050-n04-ice-slamming-whipping",
+  "repository": "TensorFEM",
+  "module": "tensorfem.ice_slamming_whipping",
+  "tensorfem_version": "0.45.0",
+  "generated_by": {
+    "script": "benchmarks/ice_slamming_whipping/make_result.py",
+    "command": "PYTHONPATH=src python benchmarks/ice_slamming_whipping/make_result.py"
+  },
+  "case_caliber": {
+    "ship": {
+      "length_m": 230.0,
+      "breadth_m": 32.0,
+      "draft_m": 13.5,
+      "block_coefficient": 0.8,
+      "girder_depth_m": 20.0,
+      "girder_wall_m": 0.04,
+      "deadrise_deg": 30.0,
+      "impact_station_x_m": 103.5,
+      "impact_local_immersion_m": 3.5,
+      "impact_half_breadth_m": 6.5,
+      "slam_length_m": 14.0,
+      "displacement_t": 81475.2,
+      "section_inertia_m4": 307.6733,
+      "section_modulus_m3": 30.7673,
+      "geometry_checks": {
+        "block_coefficient": 0.8,
+        "displacement_volume_m3": 79488.0,
+        "displacement_mass_t": 81475.2,
+        "length_breadth_ratio": 7.1875,
+        "breadth_draft_ratio": 2.3703703703703702,
+        "length_draft_ratio": 17.037037037037038,
+        "flag_length_breadth": false,
+        "flag_breadth_draft": false,
+        "flag_block_coefficient": false
+      }
+    },
+    "ice": {
+      "thickness_m": 0.5,
+      "concentration": 0.6,
+      "floe_length_m": 12.0,
+      "crush_pressure_reference_mpa": 0.66,
+      "area_exponent": -0.3,
+      "rate_exponent": 0.25,
+      "ice_density_kg_m3": 917.0
+    },
+    "wave_transit": {
+      "significant_height_m": 2.0,
+      "peak_period_s": 7.0
+    },
+    "wave_slam": {
+      "significant_height_m": 6.0,
+      "peak_period_s": 9.5
+    },
+    "speed_kn": 10.0,
+    "speed_m_s": 5.14444,
+    "whipping_model": {
+      "elements": 80,
+      "modes": 6,
+      "response_dt_s": 0.01,
+      "duration_s": 120.0,
+      "damping_ratio_mode_2": 0.025,
+      "damping_ratio_mode_3": 0.018,
+      "hot_spot_scf": 1.15,
+      "added_mass_per_length_kg_m": 644350.68,
+      "vibrating_mass_per_length_kg_m": 354240.0
+    },
+    "sn_curve": {
+      "c1": 1520000000000.0,
+      "m1": 3.0,
+      "c2": 4340000000000000.0,
+      "m2": 5.0,
+      "knee_cycles": 10000000.0,
+      "knee_stress_mpa": 53.368
+    },
+    "grades": {
+      "geometry_and_hydrostatics": "CASE_INPUT (declared)",
+      "ice_crushing_pressure": "DECLARED_CONSTITUTIVE (Sanderson-type, sensitivity swept 0.40-1.00 MPa)",
+      "structural_damping": "DECLARED (1.5-2.5 %, hull-girder range)",
+      "added_mass_factor": "DECLARED (0.70 of the Lewis 2D value)",
+      "sn_curve": "DECLARED (DNV-RP-C203 curve D in air, published pair)",
+      "beam_theory_reference": "COMPUTED (exact DSM solution)"
+    }
+  },
+  "main_case": {
+    "peak_ice_force_mn": 3.6848,
+    "peak_wave_slam_force_mn": 0.0,
+    "peak_total_force_mn": 3.6848,
+    "peak_whipping_moment_mnm": 123.2468,
+    "dynamic_amplification_factor": 5.8905,
+    "peak_wave_vbm_mnm": 103.1853,
+    "modal_frequencies_hz": [
+      0.50592,
+      1.22473,
+      2.05999,
+      2.90972,
+      3.74022,
+      4.53943
+    ],
+    "modal_peak_share": [
+      0.62206,
+      0.17438,
+      0.13106,
+      0.04554,
+      0.01924,
+      0.00772
+    ],
+    "tau_decay_s": 12.591,
+    "tau_decay_analytic_s": 12.5834,
+    "damage_wave": 1.5732468137501703e-10,
+    "damage_slam": 1.2483424346743428e-10,
+    "damage_ratio": 0.79348,
+    "damage_combined": 1.5269714903730169e-09,
+    "combined_ratio": 9.70586,
+    "pulse_counts": {
+      "ice": 31,
+      "wave": 0
+    },
+    "bow_emergence": false,
+    "re_entry_velocity_m_s": 0.0,
+    "inter_arrival_s": 3.8877,
+    "interference": {
+      "peak_sum_ratio": 1.0,
+      "moment_sum_ratio": 1.0,
+      "damage_superposition_ratio": 5.41174
+    }
+  },
+  "criteria": [
+    {
+      "requirement": "F_slam_max vs ice model-test literature, >= 3 (V,h) combinations, error < 20 %",
+      "verdict": "WITHHELD",
+      "reason": "no authorised copy of an ice model-test force table is reachable from this environment; no number was written from memory",
+      "acquisition_attempts": [
+        "repository corpus grep for ice slamming / model test force tables: no table",
+        "local PDF corpus: no ice model-test report",
+        "network: not attempted (unauthenticated fetch of a commercial publication would not be an authorised copy)"
+      ],
+      "substitute_evidence": {
+        "pressure_sensitivity_band_mn": [
+          2.2332,
+          3.6848,
+          5.5831
+        ],
+        "literature_band_mn": [
+          2.0,
+          5.0
+        ],
+        "band_overlap": true,
+        "note": "range overlap with the quoted literature band is a consistency argument, not a validation"
+      },
+      "constitutive_exponent_check": {
+        "dlnF_dlnh_measured": 0.7,
+        "dlnF_dlnh_expected": 0.7,
+        "dlnF_dlnV_measured": 0.25,
+        "dlnF_dlnV_expected": 0.25,
+        "relative_error_h": 0.0,
+        "relative_error_v": 0.0002,
+        "passed": true
+      },
+      "passed": false
+    },
+    {
+      "requirement": "f_2..f_4 (FE wet girder) vs hull-girder beam theory < 5 %",
+      "reference": "exact free-free Timoshenko dynamic-stiffness solution (tensorfem.dsbeam.natural_frequencies_hz) of the same girder",
+      "measured_fe_hz": [
+        0.50592,
+        1.22473,
+        2.05999
+      ],
+      "measured_theory_hz": [
+        0.5075,
+        1.23282,
+        2.0831
+      ],
+      "euler_bernoulli_hz": [
+        0.53626,
+        1.47823,
+        2.89793
+      ],
+      "relative_error": [
+        0.003109,
+        0.006556,
+        0.011094
+      ],
+      "max_relative_error": 0.011094,
+      "limit": 0.05,
+      "passed": true,
+      "shear_softening_fraction_vs_euler_bernoulli": [
+        0.05364,
+        0.16602,
+        0.28118
+      ],
+      "static_moment_recovery": {
+        "measured_nm": 5.678124999968887,
+        "analytic_nm": 5.6781250000000005,
+        "relative_error": 5.479586698164462e-12
+      }
+    },
+    {
+      "requirement": "whipping decay time within the 5-15 s literature window",
+      "measured_tau_decay_s": 12.591,
+      "analytic_tau_s": 12.5834,
+      "measured_vs_analytic_relative_error": 0.000603,
+      "literature_window_s": [
+        5.0,
+        15.0
+      ],
+      "inside_window": true,
+      "declared_damping_ratio_mode_2": 0.025,
+      "damping_ratio_band_implying_the_window": [
+        0.02097,
+        0.06292
+      ],
+      "inter_arrival_s": 3.8877,
+      "note": "the decay time is set by the declared structural damping; the 5-15 s window and the declared zeta = 2.5 % are consistent but the check is a consistency check, not an independent validation",
+      "passed": true
+    },
+    {
+      "requirement": "V->0: load and decay vanish; h->0: load -> pure wave slam; C->0: damage ratio -> 0",
+      "measured": {
+        "v_to_zero": {
+          "peak_ice_force_base": 3684833.0150027936,
+          "peak_ice_force_limit": 0.0,
+          "relative_residual": 0.0,
+          "tau_decay_limit": Infinity,
+          "tau_decay_ice_only_base": 134.6249673788784,
+          "tau_decay_ice_only_limit": 0.0,
+          "note": "tau_decay_limit is the total (ice + water-entry) value; it stays finite at V -> 0 in a sea state that emerges the bow"
+        },
+        "h_to_zero": {
+          "peak_total_limit": 206117.99780086387,
+          "peak_wave_only": 206117.99780086387,
+          "relative_residual": 0.0,
+          "peak_wave_branch": 206117.99780086387
+        },
+        "c_to_zero": {
+          "damage_ratio_base": 1.1309486245297686e-05,
+          "damage_ratio_limit": 0.0,
+          "damage_limit": 0.0
+        }
+      },
+      "v_to_zero_relative_residual": 0.0,
+      "v_to_zero_tau_ice_only": 0.0,
+      "v_to_zero_tau_total": Infinity,
+      "h_to_zero_relative_residual": 0.0,
+      "h_to_zero_wave_branch_pulse_list_mn": 0.2061,
+      "c_to_zero_damage_ratio": 0.0,
+      "limit_relative_residual": 1e-06,
+      "passed": true
+    },
+    {
+      "requirement": "F_slam_max at V=10 kn, h=0.5 m must not fall below 1 MN",
+      "measured_peak_force_mn": 3.6848,
+      "measured_peak_ice_force_mn": 3.6848,
+      "floor_mn": 1.0,
+      "literature_band_mn": [
+        2.0,
+        5.0
+      ],
+      "inside_literature_band": true,
+      "passed": true
+    }
+  ],
+  "vh_grid": [
+    {
+      "speed_kn": 10.0,
+      "thickness_m": 0.5,
+      "peak_force_mn": 3.6848,
+      "peak_whipping_moment_mnm": 106.6107,
+      "damage_slam_per_60s": 3.8182066330785386e-11,
+      "damage_wave_per_60s": 7.864627998482081e-11,
+      "damage_ratio": 0.4854910663054215,
+      "pulse_count": 15,
+      "contact_area_m2": 6.0
+    },
+    {
+      "speed_kn": 10.0,
+      "thickness_m": 0.3,
+      "peak_force_mn": 2.5771,
+      "peak_whipping_moment_mnm": 65.1753,
+      "damage_slam_per_60s": 3.158839737327887e-12,
+      "damage_wave_per_60s": 7.864627998482081e-11,
+      "damage_ratio": 0.04016515133249228,
+      "pulse_count": 15,
+      "contact_area_m2": 3.5999999999999996
+    },
+    {
+      "speed_kn": 7.0,
+      "thickness_m": 0.5,
+      "peak_force_mn": 3.3705,
+      "peak_whipping_moment_mnm": 32.5664,
+      "damage_slam_per_60s": 8.114017087437185e-14,
+      "damage_wave_per_60s": 7.109890147942862e-11,
+      "damage_ratio": 0.0011412295996985062,
+      "pulse_count": 11,
+      "contact_area_m2": 6.0
+    },
+    {
+      "speed_kn": 10.0,
+      "thickness_m": 0.8,
+      "peak_force_mn": 5.1204,
+      "peak_whipping_moment_mnm": 166.9212,
+      "damage_slam_per_60s": 3.7281385047936974e-10,
+      "damage_wave_per_60s": 7.864627998482081e-11,
+      "damage_ratio": 4.740387600676407,
+      "pulse_count": 15,
+      "contact_area_m2": 9.600000000000001
+    }
+  ],
+  "pressure_sensitivity": [
+    {
+      "crush_pressure_reference_mpa": 0.4,
+      "peak_force_mn": 2.2332
+    },
+    {
+      "crush_pressure_reference_mpa": 0.66,
+      "peak_force_mn": 3.6848
+    },
+    {
+      "crush_pressure_reference_mpa": 1.0,
+      "peak_force_mn": 5.5831
+    }
+  ],
+  "wave_slam_and_coupling": {
+    "re_entry_velocity_m_s": 0.63727,
+    "von_karman_peak_mn": 0.2061,
+    "wagner_peak_mn": 0.5086,
+    "rise_impulse_ns": 606902.002,
+    "added_mass_impulse_ns": 606902.002,
+    "relative_residual": 0.0,
+    "equivalent_ochi_cs": 5.4414,
+    "wagner_to_von_karman_ratio": 2.4674,
+    "sea_state": {
+      "hs_m": 6.0,
+      "tp_s": 9.5
+    },
+    "peak_ice_force_mn": 3.6848,
+    "peak_wave_slam_force_mn": 0.2061,
+    "peak_total_force_mn": 3.8706,
+    "peak_total_moment_mnm": 102.2902,
+    "peak_wave_vbm_mnm": 1419.546,
+    "damage_wave": 6.68242093510812e-06,
+    "damage_slam": 3.818206633078538e-11,
+    "damage_ice_only": 3.818206633078538e-11,
+    "damage_wave_slam_only": 2.6074821044081768e-20,
+    "damage_combined": 6.876411209284444e-06,
+    "damage_ratio_slam_over_wave": 5.713807421227289e-06,
+    "damage_ratio_combined_over_wave": 1.029029939307944,
+    "interference": {
+      "peak_sum_ratio": 0.99477,
+      "moment_sum_ratio": 0.9171,
+      "damage_superposition_ratio": 1.02902
+    },
+    "modal_peak_share": [
+      0.60393,
+      0.19749,
+      0.13376,
+      0.03654,
+      0.01987,
+      0.0084
+    ]
+  },
+  "verdict": {
+    "a_literature_force": "WITHHELD (honest FAIL: source not obtained)",
+    "b_frequencies_lt_5pct": true,
+    "c_decay_in_5_15s": true,
+    "d_negative_controls": true,
+    "e_force_above_1mn": true,
+    "overall": "4 of 5 machine criteria pass; criterion (a) is WITHHELD because no authorised ice model-test table is reachable"
+  },
+  "limits": [
+    "the hull girder is a uniform equivalent box girder: a real hull is non-uniform, so the n^2 spacing of the free-free modes (f3/f2 = 2.42 here) differs from the 1.8-2.2 of a real ship",
+    "the ice crushing pressure is a declared constitutive law with a 1.5x band; it is the dominant uncertainty of the force level",
+    "the added mass factor 0.70 of the Lewis 2D heave value is declared, not measured; it scales the frequencies by 1/sqrt(1+kappa)",
+    "the seakeeping model is a 2-DOF linear heave/pitch with declared damping; the wave-slam branch only fires when the relative bow motion exceeds the local immersion (not in the 2 m transit sea state)",
+    "the wave bending moment baseline is a self-equilibrated linear strip load without Smith correction or diffraction",
+    "the impact train is deterministic (seeded lognormal floe lengths); no statistical convergence study of the damage was performed"
+  ],
+  "speed_sweep_damage_ratio": [
+    {
+      "speed_kn": 4.0,
+      "damage_ratio": 0.00024
+    },
+    {
+      "speed_kn": 6.0,
+      "damage_ratio": 0.00027
+    },
+    {
+      "speed_kn": 8.0,
+      "damage_ratio": 0.00167
+    },
+    {
+      "speed_kn": 10.0,
+      "damage_ratio": 0.48549
+    },
+    {
+      "speed_kn": 12.0,
+      "damage_ratio": 0.01037
+    }
+  ]
+}
