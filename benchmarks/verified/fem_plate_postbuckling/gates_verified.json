@@ -1,0 +1,84 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_plate_postbuckling",
+  "title": "Von Karman plate postbuckling path and imperfection sensitivity (p250-N06)",
+  "mission": "p250-n06-structural-buckling",
+  "generated_at": "2026-11-10T10:47:50+00:00",
+  "criteria": {
+    "A1": "< 3 %",
+    "A2": "< 5 % (10 stations)",
+    "A3": "< 10 %",
+    "A4": "MAC > 0.9",
+    "A5": "no zero-energy mode, no tensile buckling"
+  },
+  "gates": [
+    {
+      "id": "A1",
+      "quantity": "max |sigma_cr_FE / sigma_cr_Timoshenko - 1| over a/b = 1,2,3",
+      "reference": "Timoshenko k pi^2 D/(b^2 t)",
+      "value": 0.00026079395305234065,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A2",
+      "quantity": "max |N_FE / N_koiter - 1| at 10 path stations (A/t = 0.10..0.55)",
+      "reference": "one-mode von Karman-Koiter, w0 = t/1000",
+      "value": 0.03356400986548447,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A3",
+      "quantity": "max |N_FE / N_koiter - 1| over w0 = t/500, t/200, t/100",
+      "reference": "one-mode von Karman-Koiter",
+      "value": 0.006661564263878761,
+      "threshold": 0.1,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A4",
+      "quantity": "MAC of the panel eigenmode against its DNV-RP-C201 mode family",
+      "reference": "DNV-RP-C201 plate/column mode shapes",
+      "value": 0.980292819222623,
+      "threshold": 0.9,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "A5a",
+      "quantity": "min eigenvalue of the zero-load tangent",
+      "reference": "positive definiteness",
+      "value": 0.8184484148695187,
+      "threshold": 0.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "A5b",
+      "quantity": "count of positive buckling factors under tension",
+      "reference": "no bifurcation under tension",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "buckling_mode.png": "benchmarks/verified/fem_plate_postbuckling/buckling_mode.png",
+    "postbuckling_path.png": "benchmarks/verified/fem_plate_postbuckling/postbuckling_path.png",
+    "imperfection_sensitivity.png": "benchmarks/verified/fem_plate_postbuckling/imperfection_sensitivity.png"
+  },
+  "limitations": [
+    "Small-rotation von Karman plate element (BFS bending + Q4 membrane); finite rotations, yielding and stiffener web local buckling are outside the model.",
+    "Dead-load (uniform traction) in-plane loading with stress-free unloaded edges; a rigid end platen would raise the postbuckling load.",
+    "The one-mode Koiter reference is an asymptotic in the amplitude, so the A2 gate is graded inside A/t <= 0.55; the deviation beyond that range is reported as a measurement, not hidden.",
+    "The panel MAC comparison (A4) uses the transverse nodal field only, which is free of any rotation sign convention."
+  ]
+}
