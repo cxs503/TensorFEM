@@ -1,5 +1,44 @@
 ## Unreleased
 
+### Plasticity / verification: non-linear (Voce) hardening and the Hill elastic-plastic cylinder
+- **Implicit J2 return mapping with non-linear isotropic hardening**
+  (`tensorfem.j2_saturation_hardening`): yield law
+  `sigma_y(alpha) = sigma_y0 + H alpha + Q (1 - exp(-b alpha))` (Voce/linear/perfect
+  as special cases), so the incremental multiplier has no closed form; it is solved by
+  Newton inside the analytic bracket `[0, q_tr/(3G)]` (`f' = -(3G+H) < 0`). The
+  consistent tangent generalises the linear-hardening operator to
+  `C = K 1x1 + 2G beta I_dev - (9G^2/q_tr^2)[1/A - dg/q_tr] s_tr x s_tr` with
+  `A = 3G + H(alpha_{n+1})`, verified against central finite differences of the
+  implemented return map (3.1e-10 relative). Audited numbers: uniaxial
+  stress-strain vs the closed-form 1-D solution 1.4e-13 over `0 <= eps <= 2%` for four
+  hardening laws, post-mapping identities (yield, flow rule, hardening law,
+  incompressibility, scalar consistency) `<= 1.2e-15`, isochoric plastic flow
+  `|tr(eps_p)|/dg = 1e-16`, local Newton <= 4 iterations.
+  The existing `tensorfem.plasticity` / `j2_elastoplasticity` surface covers *linear*
+  hardening only, so the Voce branch (and the implicit solve it forces) is new.
+- **Hill 1950 elastic-plastic thick-walled cylinder** (`tensorfem.thick_cylinder_plasticity`):
+  plane-strain closed form (plastic radius `p(c) = 2k[ln(c/a) + (b^2-c^2)/(2b^2)]`,
+  stresses in both zones, `p_y = k(1-a^2/b^2)`, `p_p = 2k ln(b/a)`, `u_r` by
+  compatibility quadrature) plus a plane-strain axisymmetric Q4 model with `u_z = 0`
+  at every node (exact `eps_z = 0`, exact cylindrical geometry) and consistent bore
+  pressure loads. Campaign gate: plastic radius within 3% of the closed form for
+  `n_r = 8..32` at `p/k = 1.0, 1.15` -> measured worst **0.34%** (Lamé-fit estimator;
+  model-free bracket 1.8% worst); radial displacement at the bore 0.30%; hoop/radial
+  stress <= 2.8% of `p`; yield residual at every yielded Gauss point 0.0; global Newton
+  <= 7 iterations with a quadratic residual history. The element itself is qualified
+  separately against the elastic Lamé field at `0.5 p_y` (sigma_theta 0.90%,
+  `u_r(a)` 0.021% at `n_r = 32`). `sigma_z` differs from the classical formula by up to
+  13.8% of `p` at the interface, where Hill's incompressible-plastic-zone assumption
+  makes `sigma_z` jump while the FE field stays continuous — reported as an
+  approximation in the closed form, not an FE defect.
+- Tests `tests/test_j2_saturation_hardening.py`, `tests/test_thick_cylinder_plasticity.py`
+  (42 cases, ~22 s); report generator
+  `scripts/plasticity_hill_thick_cylinder_report.py`; documentation
+  `docs/thick-cylinder-von-mises-hill.md`; artefact
+  `artifacts/plasticity_hill/plasticity_hill_report.json` + six figures; platform
+  progress report delivered as report id 10562
+  (`scripts/plasticity_hill_platform_report.py`, payload rebuilt from the artefact).
+
 ### Ice-belt structures / arc-length continuation
 - **Riks arc-length limit-load continuation on the layered elastoplastic plate**
   (`tensorfem.ice_belt_collapse.solve_arc_length`, `arc_length_limit`,
