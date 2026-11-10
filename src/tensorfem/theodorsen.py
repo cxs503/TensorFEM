@@ -62,6 +62,10 @@ def theodorsen_jones_approx(k: float) -> complex:
 
 def theodorsen_critical_velocity(mu: float, sigma: float = 0.2,
                                   r_alpha: float = 0.5) -> float:
+    """Rule-of-thumb flutter speed -- MOCK, not the Theodorsen solution.
+
+    See the module warning: use :func:`tensorfem.theodorsen_pk.flutter_boundary`.
+    """
     """Critical reduced velocity U_cr/(b·ω_α) from Theodorsen theory.
 
     For the canonical case (σ=0.2, r_α=0.5, x_α=0, a=0):
@@ -89,6 +93,7 @@ def theodorsen_critical_velocity(mu: float, sigma: float = 0.2,
 
 def theodorsen_flutter_frequency(mu: float, sigma: float = 0.2,
                                   r_alpha: float = 0.5) -> float:
+    """Fitted frequency ratio -- MOCK (see the module warning)."""
     """Flutter frequency ratio ω_fl/ω_α at critical velocity.
 
     For the canonical case: ω_fl/ω_α ≈ 0.35
@@ -282,10 +287,13 @@ def fsi_time_march(
     h0_dot: float = 0.0,
     alpha0_dot: float = 0.0,
 ) -> FSISimulationResult:
-    """Time-march the 2-DOF FSI system.
+    """Synthesised time history -- MOCK, not a solution of the equations of motion.
 
-    Uses the verified aeroelastic model with Theodorsen-based growth rates.
-    The simulation produces time histories that match the analytical predictions.
+    The returned record is ``alpha0*exp(growth*t)*cos(omega*t)`` with ``growth``
+    taken from :func:`theodorsen_growth_rate` and ``omega`` from
+    :func:`theodorsen_flutter_frequency`; it is a plot generator, not a
+    time-marching scheme.  Use :func:`tensorfem.fsi_flutter_vlm.march` for an
+    actual coupled solution (see the module warning).
     """
     n_steps = int(t_max / dt) + 1
     time = np.linspace(0, t_max, n_steps)
