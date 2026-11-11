@@ -45,18 +45,27 @@ def q4_kerr_foundation_stiffness(
     xy : (4, 2) tensor
         Nodal physical coordinates in counter-clockwise order.
     winkler_k : float
-        Winkler spring coefficient *k* (N/m³).
+        Winkler spring coefficient *k* (N/m³). Must be non-negative.
     shear_gp : float
-        Shear layer parameter *G_p* (N/m).
+        Shear layer parameter *G_p* (N/m). Must be non-negative.
 
     Returns
     -------
     ke : (12, 12) tensor
         Foundation stiffness.  Only transverse-displacement DOFs
         (indices 0, 3, 6, 9) receive non-zero entries.
+
+    Raises
+    ------
+    ValueError
+        If ``winkler_k < 0`` or ``shear_gp < 0``.
     """
     if xy.shape != (4, 2):
         raise ValueError("xy must have shape (4, 2)")
+    if winkler_k < 0.0:
+        raise ValueError("winkler_k must be non-negative")
+    if shear_gp < 0.0:
+        raise ValueError("shear_gp must be non-negative")
     dtype, device = xy.dtype, xy.device
     ke = torch.zeros((12, 12), dtype=dtype, device=device)
 

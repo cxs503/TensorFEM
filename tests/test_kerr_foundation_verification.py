@@ -62,7 +62,13 @@ class TestKerrToWinklerReduction:
 # ---------------------------------------------------------------------------
 
 class TestKerrReductionAlgebra:
-    """Kerr → Pasternak equivalence algebra."""
+    """Kerr → Pasternak equivalence algebra.
+
+    Limits (from docstring of kerr_equivalent_pasternak):
+    - G_p = 0 → Winkler k_eq
+    - k_u → ∞ (plate tied to shear layer) → Pasternak (k_l, G_p)
+    - k_l → ∞ (rigid base pins shear layer) → Winkler k_u with G_eq → 0
+    """
 
     def test_equivalent_parameters(self):
         """k_eq = k_u*k_l/(k_u+k_l), G_eq = k_u*G_p/(k_u+k_l)."""
@@ -70,11 +76,26 @@ class TestKerrReductionAlgebra:
         assert k_eq == pytest.approx(K_UPPER * K_LOWER / (K_UPPER + K_LOWER), rel=1e-14)
         assert g_eq == pytest.approx(K_UPPER * G_SHEAR / (K_UPPER + K_LOWER), rel=1e-14)
 
-    def test_k_l_large_gives_pasternak(self):
-        """k_l >> k_u: k_eq→k_u, G_eq→G_p."""
+    def test_k_u_large_gives_pasternak(self):
+        """k_u >> k_l: plate tied to shear layer → Pasternak (k_l, G_p)."""
+        k_eq, g_eq = kerr_equivalent_pasternak(1000 * K_LOWER, K_LOWER, G_SHEAR)
+        assert k_eq == pytest.approx(K_LOWER, rel=1e-3)
+        assert g_eq == pytest.approx(G_SHEAR, rel=1e-3)
+
+    def test_k_l_large_gives_winkler(self):
+        """k_l >> k_u: rigid base pins shear layer → Winkler k_u, G_eq → 0.
+
+        With k_l = 1000 * k_u:
+            G_eq = k_u * G_p / (k_u + 1000*k_u) = G_p / 1001 ≈ 0.001 * G_p
+        This is much smaller than G_p but not exactly zero.
+        """
         k_eq, g_eq = kerr_equivalent_pasternak(K_UPPER, 1000 * K_UPPER, G_SHEAR)
         assert k_eq == pytest.approx(K_UPPER, rel=1e-3)
-        assert g_eq == pytest.approx(G_SHEAR, rel=1e-3)
+        # G_eq = G_SHEAR / 1001 ≈ 29970, which is ~0.1% of G_SHEAR
+        expected_g_eq = G_SHEAR / 1001.0
+        assert g_eq == pytest.approx(expected_g_eq, rel=1e-10)
+        # Verify it's much smaller than G_SHEAR
+        assert g_eq < 0.01 * G_SHEAR, f"G_eq={g_eq} should be < 1% of G_SHEAR={G_SHEAR}"
 
     def test_g_p_zero_gives_winkler(self):
         """G_p=0: G_eq=0, k_eq = series spring."""
@@ -174,6 +195,13 @@ class TestKerrNegativeControls:
         )
         with pytest.raises(ValueError):
             q4_kerr_foundation_stiffness(xy, -1.0, G_EQ)
+
+    def test_negative_shear_gp_raises(self):
+        xy = torch.tensor(
+            [[0.0, 0.0], [0.4, 0.0], [0.4, 0.4], [0.0, 0.4]], dtype=DTYPE
+        )
+        with pytest.raises(ValueError):
+            q4_kerr_foundation_stiffness(xy, K_EQ, -1.0)
 
 
 # ---------------------------------------------------------------------------
