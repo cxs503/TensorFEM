@@ -1,0 +1,113 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_curved_ring_solid",
+  "title": "Quarter-ring curved cantilever: plane-stress continuum oracle for the curved-beam closed form",
+  "mission": "m14873",
+  "generated_at": "2026-11-11T12:17:56+00:00",
+  "criteria": {
+    "thin_limit_tangential_rel_error": 0.005,
+    "thin_limit_radial_rel_error": 0.005,
+    "min_observed_order": 1.8,
+    "equilibrium_rel_residual": 1e-08,
+    "reciprocity_rel_error": 1e-06,
+    "fibre_stress_vs_winkler_bach": 0.01,
+    "closed_form_drift_at_0p30": 0.03,
+    "flat_beam_inner_fibre_gap_at_0p30": 0.09
+  },
+  "gates": [
+    {
+      "id": "G1_thin_limit_tangential",
+      "quantity": "continuum limit / closed form - 1, t/R=0.05 delta_tangent",
+      "reference": "(3 pi/4 - 2) P R^3/(E I) + pi P R/(4 E A) + pi P R/(4 k G A)",
+      "value": 0.0010778288312286444,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true,
+      "note": "Richardson limit 8.555616e-04 m"
+    },
+    {
+      "id": "G2_thin_limit_radial",
+      "quantity": "continuum limit / closed form - 1, t/R=0.05 delta_radial",
+      "reference": "P R^3/(2 E I) (Maxwell-Betti reciprocity with the radial load case)",
+      "value": 0.0005435675237762672,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true,
+      "note": "Richardson limit 1.199348e-03 m"
+    },
+    {
+      "id": "G3_observed_order",
+      "quantity": "minimum observed convergence order over the t/R ladder",
+      "reference": "2 (Q8 displacement convergence, Richardson from three nested meshes)",
+      "value": 2.056755517399754,
+      "threshold": 1.8,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "G4_equilibrium",
+      "quantity": "max relative reaction residual over the ladder",
+      "reference": "sum(reactions) = -applied load; reaction moment = P R",
+      "value": 3.3572039247737222e-09,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G5_reciprocity",
+      "quantity": "|cross/direct - 1| for the Maxwell-Betti pair",
+      "reference": "symmetric stiffness -> exactly 1",
+      "value": 9.903642868014373e-07,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G6_fibre_stress_vs_winkler_bach",
+      "quantity": "max inner/outer fibre |FE/Winkler-Bach - 1| over the t/R ladder",
+      "reference": "curved-beam hoop stress N/A + M (r - r_n)/(A e r)",
+      "value": 0.00845609223615984,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G7_closed_form_drift_envelope",
+      "quantity": "|continuum limit / closed form - 1| at t/R=0.3",
+      "reference": "declared 3 % usability envelope of the curved-beam closed form",
+      "value": 0.007157321873322298,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G8_flat_beam_stress_gap",
+      "quantity": "inner surface fibre |flat-beam/FE - 1| at t/R=0.3",
+      "reference": "declared 9 % penalty that a flat-beam check under-reports",
+      "value": 0.10472124864779908,
+      "threshold": 0.09,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "driver": "benchmarks/verified/fem_curved_ring_solid/run_verification.py",
+    "module": "src/tensorfem/curved_ring_continuum.py",
+    "result": "benchmarks/verified/fem_curved_ring_solid/result.json",
+    "figures": [
+      "docs/assets/curved_ring_continuum/fig1_convergence.png",
+      "docs/assets/curved_ring_continuum/fig2_validity_envelope.png",
+      "docs/assets/curved_ring_continuum/fig3_hoop_stress_t10.png",
+      "docs/assets/curved_ring_continuum/fig3_hoop_stress_t30.png"
+    ]
+  },
+  "limitations": [
+    "Plane-stress idealisation: no out-of-plane (width-direction) stress; valid for b >> t, which the declared b/t >= 4 respects.",
+    "Flat-beam/Winkler-Bach profiles use statics-derived section resultants (N, M), so the comparison grades the stress *distribution* of the continuum solution, not an independently solved stress boundary-value problem.",
+    "The 2 % section gate excludes points within one sample of the neutral surface, where the hoop stress passes through zero and a relative deviation is meaningless; the fibre (inner/outer) gate is the graded one.",
+    "Continuum drift for t/R < 0.10 is below the extrapolation resolution, so the drift exponent is fitted on t/R >= 0.10 only."
+  ]
+}
