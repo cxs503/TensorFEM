@@ -12,6 +12,7 @@ contact / modal verification surface).
 | `fem_plate_modal/` | SS rectangular plate `1.2 x 0.8 x 0.012 m` | `f_mn = (pi/2) sqrt(D/(rho h))[(m/a)^2+(n/b)^2]` |
 | `fem_structural_acoustics/` | baffled SS plate `1.0 x 0.5 x 0.01 m` modes + radiation efficiency, capped cylinder `R = 0.5 m, L = 2 m / 8 m` radiation | Kirchhoff `f_mn`, exact angular-spectrum `sigma`, Maidanik monopole law, Junger & Feit infinite-cylinder modal resistance, exact pulsating-sphere power (ESM anchor) |
 | `fem_kirsch_plate/` | circular hole in a tension plate, `d/W = 0.02 … 0.5`, Q4 plate + Q8 annulus | `K_t = 3` at `σ_θθ(a, π/2)/T` from Kirsch (1898) / Timoshenko & Goodier 3rd ed. Art. 39; finite width vs Howland/Heywood |
+| `fem_sphere_pressure_membrane/` | closed sphere under uniform internal pressure, `R = 10 m`, `t = 40 mm` (`R/t = 250`), `E = 68.25 MPa`, `ν = 0.3` — case-pool anchor CASE-SPHERE-PRESSURE (mission 15405) | `σ = pR/(2t)`, `w = pR²(1-ν)/(2Et)`; machine-derived by sympy equilibrium (residual 0) and cross-checked against the exact Lamé thick-sphere limit; chord-meridian and flat-facet Shell4 controls fail closed |
 | `fem_panel_buckling/` | longitudinally stiffened panel cell `800 x 400 x 6 mm` + tee `150x10`/`50x10` (MITC4 shell, linearised bifurcation) | `sigma_cr = k pi^2 D/(b^2 t)`, `k = min_m (m b/a + a/(m b))^2` |
 
 Height of evidence per anchor:
