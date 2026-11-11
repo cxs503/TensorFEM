@@ -1,0 +1,47 @@
+{
+  "s0_plate_velocity_extrapolated": {
+    "value": 0.9996882454343158,
+    "threshold": 0.002,
+    "verdict": "FAIL"
+  },
+  "a0_flexural_limit": {
+    "value": 0.0017679325410421276,
+    "threshold": 0.01,
+    "verdict": "PASS"
+  },
+  "a0_rayleigh_limit": {
+    "value": 1.8399101542332374e-07,
+    "threshold": 0.01,
+    "verdict": "PASS"
+  },
+  "s0_longitudinal_limit": {
+    "value": 0.4958161867219243,
+    "threshold": 0.05,
+    "verdict": "FAIL"
+  },
+  "root_residual": {
+    "value": 4.860013849625548e-15,
+    "threshold": 1e-09,
+    "verdict": "PASS"
+  },
+  "fem_phase_error_fine": {
+    "value": 5.568130032780239,
+    "threshold": 0.03,
+    "verdict": "FAIL"
+  },
+  "fem_convergence_order": {
+    "value": 0.0,
+    "threshold": 0.0,
+    "verdict": "PASS"
+  },
+  "mass_conservation": {
+    "value": 1.1102230246251565e-16,
+    "threshold": 1e-12,
+    "verdict": "PASS"
+  },
+  "rigid_mode_count": {
+    "value": 0.7548558610603089,
+    "threshold": 1e-06,
+    "verdict": "FAIL"
+  }
+}
