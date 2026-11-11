@@ -32,6 +32,7 @@ from tensorfem.cohesive3d import (
     BKCohesive3DLaw,
     assemble_cohesive_interface,
     cohesive_hex8_response,
+    cohesive_separations,
     cohesive_shape_functions,
     interface_area,
     mid_surface_frame,
@@ -490,3 +491,238 @@ def test_warped_interface_keeps_uniform_normal_opening_exact():
     # traction only to O(warp slope^2); 1e-3 covers that geometric residual and
     # the softening slope at this opening.
     assert float(force[4:, 2].sum()) == pytest.approx(expected * area, rel=1e-3)
+
+# --------------------------------------------------------------------------- #
+# Corotational kinematics: objectivity at finite rigid rotation
+# --------------------------------------------------------------------------- #
+
+def _rotation(axis, angle: float) -> torch.Tensor:
+    """Rodrigues rotation matrix from a (not necessarily unit) axis and an angle."""
+    k = torch.as_tensor(axis, dtype=D)
+    k = k / torch.linalg.vector_norm(k)
+    skew = torch.tensor([[0.0, -k[2], k[1]], [k[2], 0.0, -k[0]], [-k[1], k[0], 0.0]], dtype=D)
+    return (
+        torch.eye(3, dtype=D)
+        + math.sin(angle) * skew
+        + (1.0 - math.cos(angle)) * (skew @ skew)
+    )
+
+
+COROTATIONAL_ANGLES = (0.01, 0.1, 0.3, 0.7, 1.4, 3.0)
+
+
+def rigid_rotation_displacements(coords: torch.Tensor, angle: float) -> torch.Tensor:
+    """Displacements of a rigid rotation by ``angle`` about the x axis, in a fixed frame."""
+    r = _rotation((1.0, 0.0, 0.0), angle)
+    return coords @ (r.T - torch.eye(3, dtype=D))
+
+
+def test_small_strain_kinematics_is_not_objective_at_finite_rotation():
+    """Documented limitation of ``kinematics="small_strain"`` (measured, not asserted away).
+
+    Rotating the body rigidly in a fixed frame is *not* a change of frame: the
+    reference-frame separation then sees the rotation-induced shear
+    ``k_s * g * theta`` and reports a large spurious traction.  This test pins
+    that the limitation is real, so the ``corotational`` test below cannot pass
+    by accident.
+    """
+    law_obj = law()
+    coords = flat_element(1.0)
+    scale = float(law_obj.tn0 * interface_area(coords))
+    errors = []
+    for angle in COROTATIONAL_ANGLES:
+        u = rigid_rotation_displacements(coords, angle)
+        force, _, _, diag = cohesive_hex8_response(coords, u, law_obj)
+        errors.append(float(force.abs().max()) / scale)
+        assert diag["kinematics"] == "small_strain"
+    # Monotone growth with the rotation angle, and already large at 0.3 rad.
+    assert all(b > a for a, b in zip(errors[:-1], errors[1:]))
+    assert errors[COROTATIONAL_ANGLES.index(0.3)] > 100.0
+
+
+def test_corotational_rigid_rotation_gives_zero_traction():
+    """``kinematics="corotational"`` is objective under rigid rotation of any angle."""
+    law_obj = law()
+    coords = flat_element(1.0)
+    scale = float(law_obj.tn0 * interface_area(coords))
+    for angle in COROTATIONAL_ANGLES:
+        u = rigid_rotation_displacements(coords, angle)
+        force, tangent, history, diag = cohesive_hex8_response(
+            coords, u, law_obj, kinematics="corotational"
+        )
+        assert float(force.abs().max()) / scale < 1e-10, angle
+        # cancellation floor of the frame-projected gaps: ~1e-5 Pa on tractions
+        # of order t_n0 = 5e6 Pa (see docs/cohesive3d-interface-element.md, pitfall 4)
+        assert float(diag["traction"].abs().max()) < 1e-10 * law_obj.tn0
+        assert float(history.abs().max()) < 1e-12  # no spurious damage (a ~ 1e-12 m floor)
+        assert float(tangent.abs().max()) > 0.0  # the operator is still defined
+        assert diag["kinematics"] == "corotational"
+    # Rigid translation is objective in both formulations.
+    shifted = flat_element(1.0) + torch.tensor([3.0, -2.0, 5.0], dtype=D)
+    u = torch.full((8, 3), 0.25, dtype=D)
+    force, _, _, _ = cohesive_hex8_response(shifted, u, law_obj, kinematics="corotational")
+    assert float(force.abs().max()) / scale < 1e-10
+
+
+def test_corotational_patch_uniform_opening_is_exact():
+    law_obj = law()
+    coords = flat_element(1.0)
+    area = float(interface_area(coords))
+    u = torch.zeros(8, 3, dtype=D)
+    u[4:, 2] = 2e-5
+    force, _, _, diag = cohesive_hex8_response(coords, u, law_obj, kinematics="corotational")
+    expected = float(law_obj.envelope_traction(torch.tensor([[2e-5, 0.0, 0.0]], dtype=D))[0, 0]) * area
+    assert float(force[4:, 2].sum()) == pytest.approx(expected, rel=1e-12)
+    for gp in range(4):
+        assert float(diag["separation"][gp][0]) == pytest.approx(2e-5, rel=1e-12)
+        assert abs(float(diag["separation"][gp][1])) < 1e-18
+
+
+def test_corotational_rotation_objectivity_of_the_reaction():
+    """A rotated element geometry returns the rotated reaction: f(RX, Ru) = R f(X, u)."""
+    law_obj = law()
+    coords = flat_element(1.0)
+    u = torch.zeros(8, 3, dtype=D)
+    u[4:, 2] = 3e-6
+    u[4:, 0] = 1e-6
+    force0 = cohesive_hex8_response(coords, u, law_obj, kinematics="corotational")[0]
+    for axis_angle in ((0.5, -0.2, 0.9), (2.4, 0.0, 0.0), (0.0, 3.0, 0.0)):
+        r = _rotation(axis_angle, 1.0)
+        force_rot = cohesive_hex8_response(coords @ r.T, u @ r.T, law_obj, kinematics="corotational")[0]
+        assert float((force_rot - force0 @ r.T).norm()) / float(force0.norm()) < 1e-10
+
+
+def test_corotational_elastic_tangent_is_symmetric():
+    law_obj = law()
+    coords = flat_element(1.0)
+    u = rigid_rotation_displacements(coords, 0.4)
+    u[4:, 2] += 2e-6  # elastic: below the onset separation t_n0 / k_n = 5e-6 m
+    _, tangent, _, diag = cohesive_hex8_response(coords, u, law_obj, kinematics="corotational")
+    assert float(diag["damage"].max()) == 0.0
+    assert float((tangent - tangent.T).abs().max()) / float(tangent.abs().max()) < 1e-12
+
+
+def test_corotational_tangent_matches_finite_differences_in_softening():
+    """The tangent carries every geometric term: it matches central differences."""
+    law_obj = law()
+    coords = flat_element(1.0)
+    u = rigid_rotation_displacements(coords, 0.3)
+    u[4:, 2] += 2e-5  # softening branch
+    _, tangent, _, diag = cohesive_hex8_response(coords, u, law_obj, kinematics="corotational")
+    assert 0.0 < float(diag["damage"].max()) < 1.0
+    eps = 1e-9
+    numeric = torch.zeros(24, 24, dtype=D)
+    flat = u.reshape(-1)
+    for j in range(24):
+        delta = torch.zeros(24, dtype=D)
+        delta[j] = eps
+        plus = cohesive_hex8_response(
+            coords, (flat + delta).reshape(8, 3), law_obj, kinematics="corotational"
+        )[0].reshape(-1)
+        minus = cohesive_hex8_response(
+            coords, (flat - delta).reshape(8, 3), law_obj, kinematics="corotational"
+        )[0].reshape(-1)
+        numeric[:, j] = (plus - minus) / (2.0 * eps)
+    assert float((tangent - numeric).norm()) / float(numeric.norm()) < 1e-6
+
+
+def test_corotational_dissipation_is_rotation_invariant():
+    """Monotonic opening of a rigidly rotated interface dissipates the same energy."""
+    law_obj = law()
+    coords = flat_element(1.0)
+    area = float(interface_area(coords))
+    stroke, steps = 2.2e-4, 40
+
+    def dissipated(angle: float) -> float:
+        r = _rotation((1.0, 0.0, 0.0), angle) if angle else torch.eye(3, dtype=D)
+        base = coords @ (r.T - torch.eye(3, dtype=D))
+        normal = r @ torch.tensor([0.0, 0.0, 1.0], dtype=D)
+        work, history, previous = 0.0, None, 0.0
+        for i in range(1, steps + 1):
+            u = base.clone()
+            u[4:8] += stroke * i / steps * normal
+            force, _, history, _ = cohesive_hex8_response(
+                coords, u, law_obj, history, kinematics="corotational"
+            )
+            current = float((force[4:8] @ normal).sum())
+            work += 0.5 * (current + previous) * (stroke / steps)
+            previous = current
+        return work
+
+    reference = dissipated(0.0)
+    for angle in (0.4, 1.2):
+        assert dissipated(angle) == pytest.approx(reference, rel=1e-12)
+    # Trapezoid quadrature error of a 40-step sweep is below 0.5 % of G_Ic * A.
+    assert reference == pytest.approx(law_obj.gic * area, rel=5e-3)
+
+
+def test_corotational_assembly_and_mesh_objectivity():
+    law_obj = law()
+    opening = 2e-6
+    expected = float(
+        law_obj.envelope_traction(torch.tensor([[opening, 0.0, 0.0]], dtype=D))[0, 0]
+    ) * 1.0
+    for n in (1, 2):
+        coords, conn, _ = patch_mesh(n)
+        nn = (n + 1) ** 2
+        top = torch.zeros(coords.shape[0], dtype=torch.bool)
+        top[nn:] = True
+        u = torch.zeros(coords.shape[0], 3, dtype=D)
+        u[top, 2] = opening
+        force, tangent, histories = assemble_cohesive_interface(
+            coords.to(D), conn, u, law_obj, kinematics="corotational"
+        )
+        assert float(force.reshape(-1, 3)[top, 2].sum()) == pytest.approx(expected, rel=1e-11)
+        # Assembly equals the sum of the element contributions, force and tangent.
+        manual_force = torch.zeros_like(force)
+        manual_tangent = torch.zeros_like(tangent)
+        for e, conn_e in enumerate(conn):
+            dofs = (3 * conn_e[:, None] + torch.arange(3)[None, :]).reshape(-1)
+            f_e, k_e, _, _ = cohesive_hex8_response(
+                coords.to(D)[conn_e], u[conn_e], law_obj, histories[e], kinematics="corotational"
+            )
+            manual_force.index_add_(0, dofs, f_e.reshape(-1))
+            rows = dofs[:, None].expand(-1, dofs.numel())
+            cols = dofs[None, :].expand(dofs.numel(), -1)
+            manual_tangent.index_put_((rows, cols), k_e, accumulate=True)
+        assert torch.allclose(force, manual_force, atol=1e-9 * float(manual_force.abs().max()) + 1e-9)
+        assert float((tangent - manual_tangent).abs().max()) < 1e-9 * float(
+            manual_tangent.abs().max()
+        )
+
+
+def test_corotational_compression_is_undamaged():
+    law_obj = law()
+    coords = flat_element(1.0)
+    area = float(interface_area(coords))
+    u = torch.zeros(8, 3, dtype=D)
+    u[4:, 2] = -1e-8
+    force, _, history, diag = cohesive_hex8_response(coords, u, law_obj, kinematics="corotational")
+    assert float(force[4:, 2].sum()) == pytest.approx(-law_obj.kn * 1e-8 * area, rel=1e-8)
+    assert float(diag["damage"].max()) == 0.0
+    assert float(history.abs().max()) < 1e-12  # only the ~1e-19 cancellation floor
+
+
+def test_cohesive_separations_helper_matches_the_element_diagnostics():
+    """The public separation helper is pinned to both element formulations."""
+    coords = flat_element(1.0)
+    u = torch.zeros(8, 3, dtype=D)
+    u[4:, 2] = 2e-5
+    u[4:, 0] = 5e-6
+    law_obj = law()
+    for kinematics in ("small_strain", "corotational"):
+        helper = cohesive_separations(coords, u, kinematics=kinematics)
+        diag = cohesive_hex8_response(coords, u, law_obj, kinematics=kinematics)[3]
+        assert torch.allclose(helper, diag["separation"], atol=1e-18, rtol=1e-13)
+
+
+def test_invalid_kinematics_is_rejected():
+    law_obj = law()
+    coords = flat_element(1.0)
+    u = torch.zeros(8, 3, dtype=D)
+    with pytest.raises(ValueError):
+        cohesive_hex8_response(coords, u, law_obj, kinematics="total_lagrangian")
+    with pytest.raises(ValueError):
+        cohesive_separations(coords, u, kinematics="updated_lagrangian")
+    with pytest.raises(ValueError):
+        assemble_cohesive_interface(coords, torch.arange(8).reshape(1, 8), u, law_obj, kinematics="x")
