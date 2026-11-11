@@ -1,0 +1,107 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_curved_beam",
+  "title": "Quarter-ring curved cantilever vs Castigliano closed form",
+  "mission": "GAP-FEM-CURVED-BEAM-VERIFY",
+  "generated_at": "2026-11-11T12:21:25+00:00",
+  "criteria": {
+    "tangent_error": "< 1%",
+    "radial_error": "< 1%",
+    "monotone": "strict decrease",
+    "equilibrium_residual": "< 1%"
+  },
+  "gates": [
+    {
+      "id": "C1_tangent_flat",
+      "quantity": "Tangent tip-displacement relative error",
+      "reference": "delta_t=(3pi/4-2)PR^3/(EI)+piPR/(4EA)+piPR/(4kGA)",
+      "value": 0.19411992877444995,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "n_arc=64, flat element"
+    },
+    {
+      "id": "C2_radial_flat",
+      "quantity": "Radial tip-displacement relative error",
+      "reference": "delta_r=PR^3/(2EI) (Maxwell-Betti reciprocity)",
+      "value": 0.1403317240828872,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "n_arc=64, flat element"
+    },
+    {
+      "id": "C1_tangent_cylindrical",
+      "quantity": "Tangent tip-displacement relative error",
+      "reference": "delta_t=(3pi/4-2)PR^3/(EI)+piPR/(4EA)+piPR/(4kGA)",
+      "value": 0.16320255681862017,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "n_arc=64, cylindrical element"
+    },
+    {
+      "id": "C2_radial_cylindrical",
+      "quantity": "Radial tip-displacement relative error",
+      "reference": "delta_r=PR^3/(2EI) (Maxwell-Betti reciprocity)",
+      "value": 0.1592064772723112,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "n_arc=64, cylindrical element"
+    },
+    {
+      "id": "C3_monotone_flat",
+      "quantity": "Tangent-error monotone decrease over refinement ladder",
+      "reference": "error(n=4) > error(n=8) > ... > error(n=64)",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "errors=[3.868, 1.642, 0.747, 0.363, 0.194]"
+    },
+    {
+      "id": "C3_monotone_cylindrical",
+      "quantity": "Tangent-error monotone decrease over refinement ladder",
+      "reference": "error(n=4) > error(n=8) > ... > error(n=64)",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "errors=[7.767, 2.774, 1.078, 0.464, 0.163]"
+    },
+    {
+      "id": "C4_equilibrium_flat",
+      "quantity": "Root reaction vs applied load residual",
+      "reference": "Sigma F_reaction = Sigma F_applied",
+      "value": 3.1383606824419985e-08,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "n_arc=64, flat element"
+    },
+    {
+      "id": "C4_equilibrium_cylindrical",
+      "quantity": "Root reaction vs applied load residual",
+      "reference": "Sigma F_reaction = Sigma F_applied",
+      "value": 1.0349092471884092e-06,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "n_arc=64, cylindrical element"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result_json": "result.json",
+    "gates_verified_json": "gates_verified.json",
+    "convergence_figure": "curved_beam_convergence.png"
+  },
+  "limitations": [
+    "Closed form is the thin, inextensible-section curved-bar idealisation; axial and transverse-shear terms are retained but small.",
+    "Both elements are verified on the same physical configuration; the cylindrical element measures theta with the opposite sense to the flat mesh, so reported components are magnitudes along declared axes."
+  ]
+}
