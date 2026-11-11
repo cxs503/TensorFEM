@@ -110,6 +110,15 @@ def run_registered_benchmarks():
     out.append(_evidence("plasticity.tet4_j2","TET4 J2 plasticity","uniaxial strain","strain","Linear-hardening uniaxial stress-strain solution",pr.displacement[3],exact))
     from .marine_benchmark_suite import run_marine_benchmarks
     out.extend(run_marine_benchmarks())
+    # CASE-NAFEMS-LE11 (case pool): spheroidal shell under internal pressure.
+    # Reference = closed-form thin-shell statics, recomputed in-process (no transcription).
+    from .ellipsoid_shell import ellipsoid_pressure
+    r = ellipsoid_pressure(a=1., b=.5, thickness=.01, young=1., poisson=.3, pressure=1., facets=256)
+    out.append(_evidence("shell.spheroid.meridional_pole","axisym shell","meridional membrane force at pole","p*a","cap axial statics N=p*r/(2 sin phi)",r["N_pole_fe"],r["N_pole_ref"]))
+    out.append(_evidence("shell.spheroid.meridional_equator","axisym shell","meridional membrane force at equator","p*a","cap axial statics N=p*r/(2 sin phi)",r["N_phi_equator_fe"],r["N_phi_equator_ref"]))
+    out.append(_evidence("shell.spheroid.hoop_pole","axisym shell","hoop membrane force at pole","p*a","normal equilibrium N_theta=p*R2*(1-R2/(2*R1))",r["N_theta_pole_fe"],r["N_theta_pole_ref"]))
+    out.append(_evidence("shell.spheroid.displacement_equator","axisym shell","equatorial normal displacement","p*a^2/(E*t)","Rayleigh-Ritz membrane potential minimisation",r["w_equator_fe"],r["w_equator_ref"]))
+
     return tuple(out)
 
 def verification_report():

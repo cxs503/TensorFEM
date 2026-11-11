@@ -1,0 +1,215 @@
+{
+ "case": "CASE-NAFEMS-LE11",
+ "repo": "TensorFEM",
+ "level_claim": "L4",
+ "impl_files": [
+  "src/tensorfem/ellipsoid_shell.py",
+  "src/tensorfem/integration_callers.py",
+  "benchmarks/nafems_le11/run.py",
+  "benchmarks/nafems_le11_ellipsoid.py"
+ ],
+ "impl_detail": [
+  {
+   "file": "src/tensorfem/ellipsoid_shell.py",
+   "exists": true,
+   "lines": 380,
+   "placeholder_markers": [],
+   "status": "OK"
+  },
+  {
+   "file": "src/tensorfem/integration_callers.py",
+   "exists": true,
+   "lines": 90,
+   "placeholder_markers": [],
+   "status": "OK"
+  },
+  {
+   "file": "benchmarks/nafems_le11/run.py",
+   "exists": true,
+   "lines": 279,
+   "placeholder_markers": [],
+   "status": "OK"
+  },
+  {
+   "file": "benchmarks/nafems_le11_ellipsoid.py",
+   "exists": true,
+   "lines": 204,
+   "placeholder_markers": [],
+   "status": "OK"
+  }
+ ],
+ "entry": "PYTHONPATH=src python3 benchmarks/nafems_le11/run.py",
+ "run_artifacts": [
+  "benchmarks/nafems_le11/results.json",
+  "benchmarks/nafems_le11/report.md"
+ ],
+ "run_artifact_detail": [
+  {
+   "file": "benchmarks/nafems_le11/results.json",
+   "exists": true,
+   "bytes": 17370
+  },
+  {
+   "file": "benchmarks/nafems_le11/report.md",
+   "exists": true,
+   "bytes": 3251
+  }
+ ],
+ "tests": [
+  "tests/test_ellipsoid_shell.py",
+  "tests/test_nafems_le11_case_pool.py"
+ ],
+ "integration_callers": {
+  "callers": [
+   {
+    "surface": "tensorfem.benchmark_registry.run_registered_benchmarks",
+    "repo": "TensorFEM",
+    "registry_ids": [
+     "shell.spheroid.meridional_pole",
+     "shell.spheroid.meridional_equator",
+     "shell.spheroid.hoop_pole",
+     "shell.spheroid.displacement_equator"
+    ],
+    "consumers": [
+     "tensorfem.cli verify",
+     "marine_structural_qualification"
+    ]
+   },
+   {
+    "surface": "tensorfem.integration_callers.run_nafems_le11_case",
+    "repo": "TensorFEM",
+    "consumers": [
+     "platform case-pool settlement",
+     "ship-performance-platform verification pipeline"
+    ]
+   }
+  ],
+  "cli_verify_command": "PYTHONPATH=src python3 -m tensorfem.cli verify",
+  "cli_verify_reachable": true,
+  "registry_wired": true,
+  "cli_verify_artifact": "benchmarks/nafems_le11/cli_verify_report.json"
+ },
+ "benchmark": {
+  "case": "CASE-NAFEMS-LE11",
+  "report_mesh": {
+   "facets": 256,
+   "dof": 771
+  },
+  "tolerance": 0.05,
+  "rows": [
+   {
+    "quantity": "N_phi_pole",
+    "ref": 0.9999912181834618,
+    "got": 0.9999449827920514,
+    "rel_error": 4.623579744475583e-05,
+    "tolerance": 0.05,
+    "passed": true
+   },
+   {
+    "quantity": "N_theta_pole",
+    "ref": 0.9999736544732645,
+    "got": 0.9999435725908286,
+    "rel_error": 3.008267497983521e-05,
+    "tolerance": 0.05,
+    "passed": true
+   },
+   {
+    "quantity": "N_phi_equator",
+    "ref": 0.5000012610963988,
+    "got": 0.49961380309140946,
+    "rel_error": 0.0007749140554959384,
+    "tolerance": 0.05,
+    "passed": true
+   },
+   {
+    "quantity": "N_theta_equator",
+    "ref": -0.9999924334343305,
+    "got": -0.9735296721521517,
+    "rel_error": 0.026462961515914957,
+    "tolerance": 0.05,
+    "passed": true
+   },
+   {
+    "quantity": "w_equator",
+    "ref": -114.99999999694278,
+    "got": -112.34655702874348,
+    "rel_error": 0.023073417115389922,
+    "tolerance": 0.05,
+    "passed": true
+   }
+  ],
+  "worst_quantity": "N_theta_equator",
+  "worst_rel_error": 0.026462961515914957,
+  "all_passed": true,
+  "reference_provenance": "The NAFEMS LE11 manual text/table was NOT retrievable from this sandbox (no egress to nafems.org documents; search-engine caches returned no table). The ref column is therefore the closed-form thin-shell membrane solution (exact statics, recomputed in-process) plus an independent Rayleigh-Ritz displacement solve -- NOT transcribed manual values. See docs \u00a76 item 4."
+ },
+ "live_recompute": {
+  "case": "CASE-NAFEMS-LE11",
+  "verdict": "PASS",
+  "rows": [
+   {
+    "quantity": "N_phi_pole",
+    "got": 0.9999449827920514,
+    "ref": 0.9999912181834618,
+    "rel_error": 4.623579744475583e-05,
+    "tolerance": 0.05,
+    "passed": true
+   },
+   {
+    "quantity": "N_theta_pole",
+    "got": 0.9999435725908286,
+    "ref": 0.9999736544732645,
+    "rel_error": 3.008267497983521e-05,
+    "tolerance": 0.05,
+    "passed": true
+   },
+   {
+    "quantity": "N_phi_equator",
+    "got": 0.49961380309140946,
+    "ref": 0.5000012610963988,
+    "rel_error": 0.0007749140554959384,
+    "tolerance": 0.05,
+    "passed": true
+   },
+   {
+    "quantity": "N_theta_equator",
+    "got": -0.9735296721521517,
+    "ref": -0.9999924334343305,
+    "rel_error": 0.026462961515914957,
+    "tolerance": 0.05,
+    "passed": true
+   },
+   {
+    "quantity": "w_equator",
+    "got": -112.34655702874348,
+    "ref": -114.99999999694278,
+    "rel_error": 0.023073417115389922,
+    "tolerance": 0.05,
+    "passed": true
+   }
+  ],
+  "max_rel_error": 0.026462961515914957,
+  "tolerance": 0.05,
+  "facets": 256,
+  "dof": 771,
+  "parameters": {
+   "a": 1.0,
+   "b": 0.5,
+   "thickness": 0.01,
+   "young": 1.0,
+   "poisson": 0.3,
+   "pressure": 1.0
+  },
+  "axial_residual_max": 0.03741065437973861,
+  "artifact": null,
+  "wall_seconds": 1.49
+ },
+ "repro_cmd": "PYTHONPATH=src python3 benchmarks/nafems_le11/run.py && PYTHONPATH=src python3 benchmarks/nafems_le11/maturity_evidence.py && PYTHONPATH=src python3 -m pytest tests/test_ellipsoid_shell.py tests/test_nafems_le11_case_pool.py -q",
+ "external_anchor": "The NAFEMS LE11 manual text/table was NOT retrievable from this sandbox (no egress to nafems.org documents; search-engine caches returned no table). The ref column is therefore the closed-form thin-shell membrane solution (exact statics, recomputed in-process) plus an independent Rayleigh-Ritz displacement solve -- NOT transcribed manual values. See docs \u00a76 item 4. The anchor is thin-shell membrane equilibrium (exact statics), which NAFEMS LE11 measures; the manual table itself was not obtained, so the ref column is not a transcription.",
+ "findings": {
+  "F1_ref_not_transcribed": "NAFEMS LE11 manual table not retrievable in this sandbox -> ref is closed-form statics + independent Rayleigh-Ritz, not the manual numbers.",
+  "F2_first_order_geometry": "2-node ring element on a varying-curvature meridian is first order: field error 7.9 % at 64 facets; only n>=128 facets meets the 5 % field gate.",
+  "F3_equator_stagnation": "Equatorial hoop error stagnates near 2.6 % (discrete boundary layer at the symmetry line), mesh independent.",
+  "F4_thick_wall": "a/t=50 gives 7.1 % equatorial hoop error -> case is valid for thin walls a/t >= 100 only."
+ }
+}
