@@ -1,0 +1,506 @@
+{
+  "case": "CASE-LAME-CYLINDER",
+  "generator": "benchmarks/lame_cylinder_anchor.py",
+  "repro_cmd": "OMP_NUM_THREADS=4 PYTHONPATH=src python benchmarks/lame_cylinder_anchor.py",
+  "reference": {
+    "kind": "closed-form (Lam\u00e9 1852)",
+    "citations": [
+      "Lam\u00e9, G. (1852) Le\u00e7ons sur la th\u00e9orie de l'\u00e9lasticit\u00e9, Paris: Bachelier.",
+      "Timoshenko & Goodier, Theory of Elasticity, 3rd ed., Art. 27 'The thick cylinder'.",
+      "Roark's Formulas for Stress and Strain, Table 13.5, case 1 (cylinder, internal pressure)."
+    ],
+    "equations": [
+      "A=(p_i a^2 - p_o b^2)/(b^2-a^2)",
+      "B=a^2 b^2 (p_i-p_o)/(b^2-a^2)",
+      "sigma_r=A-B/r^2",
+      "sigma_theta=A+B/r^2",
+      "sigma_z=2 nu A (plane strain)",
+      "u_r=(1+nu)/E[(1-2nu)A r + B/r] (plane strain)"
+    ],
+    "implementation": "tensorfem.lame_reference.lame_state",
+    "independent_oracle": "tensorfem.thick_cylinder_1d_oracle.solve_thick_cylinder_1d (Chebyshev collocation of the axisymmetric displacement problem)",
+    "note": "Zero hand transcription: every number below is computed at run time from the closed form or from the FE solve; no reference value is typed into this file."
+  },
+  "parameters": {
+    "case": {
+      "inner_radius": 0.5,
+      "outer_radius": 0.8,
+      "inner_pressure": 100000000.0,
+      "outer_pressure": 0.0,
+      "young_modulus": 210000000000.0,
+      "poisson_ratio": 0.3,
+      "plane": "strain",
+      "thickness": 1.0
+    },
+    "wall_ratio": 1.6,
+    "dimensionless": {
+      "wall_ratio_b_over_a": 1.6,
+      "normalized_pressure_p_over_E": 0.0004761904761904762,
+      "poisson_ratio": 0.3,
+      "plane_state": "strain",
+      "bore_hoop_over_p": 2.282051282051282,
+      "exterior_over_p": 0.0
+    },
+    "element": "4-node bilinear isoparametric (Q4), 2x2 Gauss, centre stress recovery",
+    "mesh_family": "structured polar quarter annulus (theta in [0, pi/2]) with symmetry cuts"
+  },
+  "oracle_validation": {
+    "strain": {
+      "sigma_r_max_scaled": 5.511343479156494e-12,
+      "sigma_theta_max": 5.848019310597624e-12,
+      "u_r_max": 5.13799307154282e-12,
+      "sigma_z_max": 3.6047399044036864e-12,
+      "equilibrium_residual": 1.6431888937971798e-09,
+      "bore_traction_rel": 1.3293325901031493e-12,
+      "outer_traction_rel": 1.3308227062225341e-12
+    },
+    "stress": {
+      "sigma_r_max_scaled": 1.484006643295288e-12,
+      "sigma_theta_max": 1.8249013958251924e-12,
+      "u_r_max": 1.4845419628685423e-12,
+      "sigma_z_max": 0.0,
+      "equilibrium_residual": 9.448879957188912e-10,
+      "bore_traction_rel": 1.0673701763153077e-12,
+      "outer_traction_rel": 1.2445449829101562e-12
+    }
+  },
+  "ladder": [
+    {
+      "n_theta": 12,
+      "n_radial": 4,
+      "n_element": 48,
+      "n_dof": 130,
+      "metrics": {
+        "u_r_max": 0.005112976748362935,
+        "u_r_l2": 0.004696452448750874,
+        "sigma_r_max": 0.06498131668063394,
+        "sigma_r_max_scaled": 0.009432709528842122,
+        "sigma_r_l2": 0.014758558276927528,
+        "sigma_theta_max": 0.004394595746715768,
+        "sigma_theta_l2": 0.0038368859250730945,
+        "sigma_z_max": 0.002132006226363481,
+        "max_tau_over_sigma": 1.4407929016788843e-14,
+        "max_u_hoop_over_u_radial": 2.2247784387175414e-14,
+        "reaction_norm": 70710678.11865489,
+        "reaction_rel_error": 1.896608182990231e-15
+      },
+      "geometry": {
+        "bore_node_offset_max_m": 5.551115123125783e-17,
+        "outer_node_offset_max_m": 0.0,
+        "mesh_area_m2": 0.30543128979492085,
+        "analytic_quarter_area_m2": 0.30630528372500493,
+        "area_rel_error": 0.002853342650362956
+      }
+    },
+    {
+      "n_theta": 24,
+      "n_radial": 8,
+      "n_element": 192,
+      "n_dof": 450,
+      "metrics": {
+        "u_r_max": 0.0012909898717144346,
+        "u_r_l2": 0.0011803331971864967,
+        "sigma_r_max": 0.032481537240362755,
+        "sigma_r_max_scaled": 0.002539789686212987,
+        "sigma_r_l2": 0.003685475238704198,
+        "sigma_theta_max": 0.0011114464152326886,
+        "sigma_theta_l2": 0.0009624057263067247,
+        "sigma_z_max": 0.000706758226473287,
+        "max_tau_over_sigma": 4.18700195410045e-14,
+        "max_u_hoop_over_u_radial": 7.621968843957741e-14,
+        "reaction_norm": 70710678.11865456,
+        "reaction_rel_error": 2.7395451532081117e-15
+      },
+      "geometry": {
+        "bore_node_offset_max_m": 5.551115123125783e-17,
+        "outer_node_offset_max_m": 0.0,
+        "mesh_area_m2": 0.3060866447970694,
+        "analytic_quarter_area_m2": 0.30630528372500493,
+        "area_rel_error": 0.0007137941770924358
+      }
+    },
+    {
+      "n_theta": 48,
+      "n_radial": 16,
+      "n_element": 768,
+      "n_dof": 1666,
+      "metrics": {
+        "u_r_max": 0.00032357188798323386,
+        "u_r_l2": 0.0002951571192931683,
+        "sigma_r_max": 0.012550022655953886,
+        "sigma_r_max_scaled": 0.0006583294050559401,
+        "sigma_r_l2": 0.0009211257659783983,
+        "sigma_theta_max": 0.0002787668382282687,
+        "sigma_theta_l2": 0.00024080614059589724,
+        "sigma_z_max": 0.00020150959954671568,
+        "max_tau_over_sigma": 4.81557077803147e-14,
+        "max_u_hoop_over_u_radial": 7.352254757856144e-14,
+        "reaction_norm": 70710678.1186536,
+        "reaction_rel_error": 1.6437270919248673e-14
+      },
+      "geometry": {
+        "bore_node_offset_max_m": 5.551115123125783e-17,
+        "outer_node_offset_max_m": 1.1102230246251565e-16,
+        "mesh_area_m2": 0.306250615211826,
+        "analytic_quarter_area_m2": 0.30630528372500493,
+        "area_rel_error": 0.0001784772123879002
+      }
+    },
+    {
+      "n_theta": 96,
+      "n_radial": 32,
+      "n_element": 3072,
+      "n_dof": 6402,
+      "metrics": {
+        "u_r_max": 8.095429629852311e-05,
+        "u_r_l2": 7.376428899447458e-05,
+        "sigma_r_max": 0.003090302750161849,
+        "sigma_r_max_scaled": 0.00016753100444749,
+        "sigma_r_l2": 0.00023026653659518386,
+        "sigma_theta_max": 6.976018418792223e-05,
+        "sigma_theta_l2": 6.021442956771054e-05,
+        "sigma_z_max": 5.3683602787941714e-05,
+        "max_tau_over_sigma": 1.0681027389158374e-13,
+        "max_u_hoop_over_u_radial": 1.163596766378166e-13,
+        "reaction_norm": 70710678.11865696,
+        "reaction_rel_error": 3.118866789806158e-14
+      },
+      "geometry": {
+        "bore_node_offset_max_m": 5.551115123125783e-17,
+        "outer_node_offset_max_m": 1.1102230246251565e-16,
+        "mesh_area_m2": 0.30629161604783295,
+        "analytic_quarter_area_m2": 0.30630528372500493,
+        "area_rel_error": 4.462109502574145e-05
+      }
+    }
+  ],
+  "observed_order": {
+    "u_r_max": 1.9989067190002194,
+    "sigma_r_l2": 2.000093381039555,
+    "sigma_theta_l2": 1.999691025785812
+  },
+  "finest_mesh": {
+    "n_theta": 96,
+    "n_radial": 32,
+    "n_element": 3072,
+    "n_dof": 6402
+  },
+  "pointwise": [
+    {
+      "radius_m": 0.5046706100864383,
+      "sigma_r_ref_MPa": -96.97659275252526,
+      "sigma_r_got_MPa": -96.95983965208839,
+      "sigma_r_error": 0.0001727540632370272,
+      "sigma_theta_ref_MPa": 225.18172095765345,
+      "sigma_theta_got_MPa": 225.17185037033593,
+      "sigma_theta_error": 4.3833874594921284e-05,
+      "sigma_z_ref_MPa": 38.461538461538446,
+      "sigma_z_got_MPa": 38.463603215474265,
+      "sigma_z_error": 5.368360233116152e-05,
+      "u_r_ref_mm": 0.5873015873015873,
+      "u_r_got_mm": 0.5872540427148722,
+      "u_r_error": 8.095429629852311e-05
+    },
+    {
+      "radius_m": 0.6546655901740486,
+      "sigma_r_ref_MPa": -31.620445879918435,
+      "sigma_r_got_MPa": -31.610604162419836,
+      "sigma_r_error": 0.000311245373830957,
+      "sigma_theta_ref_MPa": 159.8255740850466,
+      "sigma_theta_got_MPa": 159.8151271597312,
+      "sigma_theta_error": 6.536454115835472e-05,
+      "sigma_z_ref_MPa": 38.461538461538446,
+      "sigma_z_got_MPa": 38.4613568991934,
+      "sigma_z_error": 4.72062097130716e-06,
+      "u_r_ref_mm": 0.4938949938949939,
+      "u_r_got_mm": 0.49385921220415413,
+      "u_r_error": 7.244797230600488e-05
+    },
+    {
+      "radius_m": 0.7577871389842805,
+      "sigma_r_ref_MPa": -7.3406385992516805,
+      "sigma_r_got_MPa": -7.3336561106688345,
+      "sigma_r_error": 0.0009512099646967481,
+      "sigma_theta_ref_MPa": 135.54576680437984,
+      "sigma_theta_got_MPa": 135.53636822226179,
+      "sigma_theta_error": 6.933880961128232e-05,
+      "sigma_z_ref_MPa": 38.461538461538446,
+      "sigma_z_got_MPa": 38.46081363347788,
+      "sigma_z_error": 1.884552957475186e-05,
+      "u_r_ref_mm": 0.4444444444444445,
+      "u_r_got_mm": 0.4444147240431261,
+      "u_r_error": 6.687090296634331e-05
+    }
+  ],
+  "sensitivity": {
+    "thickness": [
+      {
+        "ratio": 1.6,
+        "outer_radius": 0.8,
+        "n_theta": 48,
+        "n_radial": 16,
+        "sigma_theta_bore_MPa": 228.2051282051282,
+        "metrics": {
+          "u_r_max": 0.00032357188798323386,
+          "u_r_l2": 0.0002951571192931683,
+          "sigma_r_max": 0.012550022655953886,
+          "sigma_r_max_scaled": 0.0006583294050559401,
+          "sigma_r_l2": 0.0009211257659783983,
+          "sigma_theta_max": 0.0002787668382282687,
+          "sigma_theta_l2": 0.00024080614059589724,
+          "sigma_z_max": 0.00020150959954671568,
+          "max_tau_over_sigma": 4.81557077803147e-14,
+          "max_u_hoop_over_u_radial": 7.352254757856144e-14,
+          "reaction_norm": 70710678.1186536,
+          "reaction_rel_error": 1.6437270919248673e-14
+        }
+      },
+      {
+        "ratio": 2.0,
+        "outer_radius": 1.0,
+        "n_theta": 48,
+        "n_radial": 16,
+        "sigma_theta_bore_MPa": 166.66666666666666,
+        "metrics": {
+          "u_r_max": 0.0007267425302792629,
+          "u_r_l2": 0.0006455817541118771,
+          "sigma_r_max": 0.007019847471032291,
+          "sigma_r_max_scaled": 0.0006591217868363857,
+          "sigma_r_l2": 0.0008852440628513371,
+          "sigma_theta_max": 0.0004999767458510184,
+          "sigma_theta_l2": 0.0003087758330059788,
+          "sigma_z_max": 0.001029947210262157,
+          "max_tau_over_sigma": 3.3797523213272884e-14,
+          "max_u_hoop_over_u_radial": 5.628344782816466e-14,
+          "reaction_norm": 70710678.11865374,
+          "reaction_rel_error": 1.432992849370397e-14
+        }
+      },
+      {
+        "ratio": 3.0,
+        "outer_radius": 1.5,
+        "n_theta": 48,
+        "n_radial": 16,
+        "sigma_theta_bore_MPa": 125.0,
+        "metrics": {
+          "u_r_max": 0.0024860385714263653,
+          "u_r_l2": 0.002146441833252351,
+          "sigma_r_max": 0.004328326359418104,
+          "sigma_r_max_scaled": 0.0010609375025992095,
+          "sigma_r_l2": 0.0014978161121512578,
+          "sigma_theta_max": 0.0016348294713344886,
+          "sigma_theta_l2": 0.0009844673642991435,
+          "sigma_z_max": 0.009783577901362752,
+          "max_tau_over_sigma": 2.327382044816849e-14,
+          "max_u_hoop_over_u_radial": 4.346152300049943e-15,
+          "reaction_norm": 70710678.11865433,
+          "reaction_rel_error": 6.111293034079634e-15
+        }
+      }
+    ],
+    "poisson": [
+      {
+        "poisson": 0.3,
+        "n_theta": 48,
+        "n_radial": 16,
+        "metrics": {
+          "u_r_max": 0.00032357188798323386,
+          "u_r_l2": 0.0002951571192931683,
+          "sigma_r_max": 0.012550022655953886,
+          "sigma_r_max_scaled": 0.0006583294050559401,
+          "sigma_r_l2": 0.0009211257659783983,
+          "sigma_theta_max": 0.0002787668382282687,
+          "sigma_theta_l2": 0.00024080614059589724,
+          "sigma_z_max": 0.00020150959954671568,
+          "max_tau_over_sigma": 4.81557077803147e-14,
+          "max_u_hoop_over_u_radial": 7.352254757856144e-14,
+          "reaction_norm": 70710678.1186536,
+          "reaction_rel_error": 1.6437270919248673e-14
+        }
+      },
+      {
+        "poisson": 0.45,
+        "n_theta": 48,
+        "n_radial": 16,
+        "metrics": {
+          "u_r_max": 0.0009469955411873596,
+          "u_r_l2": 0.00092155534216989,
+          "sigma_r_max": 0.024270480719226762,
+          "sigma_r_max_scaled": 0.0020101227145035566,
+          "sigma_r_l2": 0.0024405843445721655,
+          "sigma_theta_max": 0.0007151792987903564,
+          "sigma_theta_l2": 0.0005986496349675095,
+          "sigma_z_max": 0.0008055464049383602,
+          "max_tau_over_sigma": 2.8415081773852404e-13,
+          "max_u_hoop_over_u_radial": 5.56031485010764e-13,
+          "reaction_norm": 70710678.11865062,
+          "reaction_rel_error": 5.85841194301427e-14
+        }
+      },
+      {
+        "poisson": 0.49,
+        "n_theta": 48,
+        "n_radial": 16,
+        "metrics": {
+          "u_r_max": 0.0041913027331874925,
+          "u_r_l2": 0.004167221288891068,
+          "sigma_r_max": 0.08653894440517737,
+          "sigma_r_max_scaled": 0.009191931833186298,
+          "sigma_r_l2": 0.0105654274007248,
+          "sigma_theta_max": 0.0030337519426710934,
+          "sigma_theta_l2": 0.0025000420035602156,
+          "sigma_z_max": 0.0040146738696891955,
+          "max_tau_over_sigma": 1.0458038286182898e-12,
+          "max_u_hoop_over_u_radial": 2.0668718291711143e-12,
+          "reaction_norm": 70710678.11864813,
+          "reaction_rel_error": 9.377673793673921e-14
+        }
+      }
+    ]
+  },
+  "plane_discrimination": {
+    "stress_metrics": {
+      "u_r_max": 0.000265891506990414,
+      "u_r_l2": 0.00023677065341076888,
+      "sigma_r_max": 0.011544745592867955,
+      "sigma_r_max_scaled": 0.0005423845503081382,
+      "sigma_r_l2": 0.000792731736113046,
+      "sigma_theta_max": 0.0002413352437102953,
+      "sigma_theta_l2": 0.00021012145831466916,
+      "sigma_z_max": null,
+      "max_tau_over_sigma": 1.4544004051776766e-13,
+      "max_u_hoop_over_u_radial": 3.5084072796041813e-13,
+      "reaction_norm": 70710678.11865427,
+      "reaction_rel_error": 6.954230004297515e-15
+    },
+    "strain_metrics": {
+      "u_r_max": 0.00032357188798323386,
+      "u_r_l2": 0.0002951571192931683,
+      "sigma_r_max": 0.012550022655953886,
+      "sigma_r_max_scaled": 0.0006583294050559401,
+      "sigma_r_l2": 0.0009211257659783983,
+      "sigma_theta_max": 0.0002787668382282687,
+      "sigma_theta_l2": 0.00024080614059589724,
+      "sigma_z_max": 0.00020150959954671568,
+      "max_tau_over_sigma": 4.81557077803147e-14,
+      "max_u_hoop_over_u_radial": 7.352254757856144e-14,
+      "reaction_norm": 70710678.1186536,
+      "reaction_rel_error": 1.6437270919248673e-14
+    },
+    "cross_relative_difference": 0.09896491645353282,
+    "analytic_cross_difference": 0.09890109890109884,
+    "cross_difference_gap": 6.381755243398124e-05
+  },
+  "anchors": [
+    {
+      "id": "u_r_max",
+      "unit": "mm",
+      "metric_fmt": "%.4f%%",
+      "ref": 0.5873015873015873,
+      "got": 0.5872540427148722,
+      "metric": 0.00809542962985231,
+      "description": "radial displacement u_r on the theta=0 ray vs Lame (plane strain)",
+      "criterion": "max relative error < 2 %",
+      "passed": true
+    },
+    {
+      "id": "sigma_r_max",
+      "unit": "MPa",
+      "metric_fmt": "%.4f%%",
+      "ref": -96.97659275252526,
+      "got": -96.95983965208839,
+      "metric": 0.3090302750161849,
+      "description": "radial stress at element centres vs Lame",
+      "criterion": "max relative error < 2 % (denominator floored at 2 % p_i)",
+      "passed": true
+    },
+    {
+      "id": "sigma_theta_max",
+      "unit": "MPa",
+      "metric_fmt": "%.4f%%",
+      "ref": 225.18172095765345,
+      "got": 225.17185037033593,
+      "metric": 0.006976018418792224,
+      "description": "hoop stress at element centres vs Lame",
+      "criterion": "max relative error < 2 %",
+      "passed": true
+    },
+    {
+      "id": "sigma_z_max",
+      "unit": "MPa",
+      "metric_fmt": "%.4f%%",
+      "ref": 38.461538461538446,
+      "got": 38.463603215474265,
+      "metric": 0.005368360278794172,
+      "description": "plane-strain axial stress nu(sigma_r+sigma_theta) vs 2 nu A",
+      "criterion": "max relative error < 2 %",
+      "passed": true
+    },
+    {
+      "id": "sigma_r_scaled",
+      "unit": "MPa",
+      "metric_fmt": "%.3e",
+      "ref": 100.0,
+      "got": 0.016753100444748998,
+      "metric": 0.00016753100444749,
+      "description": "worst |Delta sigma_r| normalised by p_i (no zero-crossing floor)",
+      "criterion": "max |Delta sigma_r| / p_i < 2 %",
+      "passed": true
+    },
+    {
+      "id": "force_balance",
+      "unit": "MN",
+      "metric_fmt": "%.2e",
+      "ref": 70.71067811865476,
+      "got": 70.71067811865696,
+      "metric": 3.118866789806158e-14,
+      "description": "support reaction resultant vs analytic 2 p_i a sin(pi/4)",
+      "criterion": "relative error < 1e-6 (equilibrium identity, not a 2 % anchor)",
+      "passed": true
+    },
+    {
+      "id": "axisymmetry",
+      "unit": "-",
+      "metric_fmt": "%.2e",
+      "ref": 0.0,
+      "got": 1.163596766378166e-13,
+      "metric": 1.163596766378166e-13,
+      "description": "max(|tau_rtheta|/max|sigma_r|, |u_theta|/max|u_r|)",
+      "criterion": "< 1e-9 (symmetry identity)",
+      "passed": true
+    }
+  ],
+  "wall_limitation": {
+    "radius_centre_m": 0.5046706100864383,
+    "sigma_r_centre_MPa": -96.95983965208839,
+    "wall_value_MPa": -100.0,
+    "relative_gap": 0.03040160347911609,
+    "note": "Q4 centre stress is not the boundary value; the gap is a stress-recovery location effect, so the <2 % acceptance is evaluated at element centres."
+  },
+  "bore_wall_values": {
+    "radius_m": 0.5,
+    "sigma_r_lame_MPa": -100.0,
+    "sigma_theta_lame_MPa": 228.2051282051282,
+    "u_r_lame_mm": 0.5873015873015873,
+    "u_r_fem_mm": 0.5872540427148722,
+    "u_r_error": 8.095429629852311e-05
+  },
+  "m48": {
+    "u_r_max": 0.00032357188798323386,
+    "sigma_r_max": 0.012550022655953886
+  },
+  "gate": 0.02,
+  "all_passed": true,
+  "environment": {
+    "timestamp_utc": "2026-11-11T22:32:15Z",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "machine": "loongarch64",
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "dtype": "torch.float64 / numpy float64",
+    "threads": "4",
+    "solver": "dense direct (torch.linalg.solve) for the FE system; dense LU (numpy.linalg.solve) for the 33-mode Chebyshev system",
+    "git_rev": "085e3045"
+  }
+}
