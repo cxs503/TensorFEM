@@ -1,5 +1,34 @@
 ## Unreleased
 
+### Fracture: level-set crack propagation and floating ice-sheet bending fracture (p360w1-n02)
+- **New package** `tensorfem.levelset` (5 modules): Sussman signed-distance
+  re-initialisation with a Godunov upwind Hamiltonian and a first-order band-edge
+  fallback (max `||grad phi|-1|` = 2.6e-4, gate < 1 %), semi-Lagrangian /
+  upwind level-set advection, Adalsteinsson-Sethian velocity extension,
+  marching-squares zero contour with edge-key topology, Erdogan-Sih maximum
+  hoop-stress and maximum energy-release-rate kink criteria, the
+  Kirchhoff/plane-stress-analogy bending-Griffith relation
+  `G = pi c^2 M^2 a/(D h)`, a Mindlin plate + Winkler foundation finite element
+  with an explicit (node-duplicated) through crack and virtual-crack-extension
+  energy release rate, and a level-set driven growth loop for a floating ice
+  sheet.
+- **Numbers** (`artifacts/levelset_ice_plate_benchmark.json`,
+  `artifacts/levelset_vce_convergence.json`): G vs analytic bending Griffith
+  -2.6 % at `h_e = a/8` (gate < 10 %); incidence fracture load 11.73 kN vs the
+  analytic small-crack 10.60 kN (+10.7 %, gate < 20 %); uncracked patch-load
+  centre moment vs the exact Kelvin solution +1.07 % (and the Westergaard
+  constant 0.6159 = ln 2 - gamma + 1/2 confirmed, the 4 pi prefactor refuted);
+  mixed-mode level-set path deviation 7.0 % / RMS 2.1 % (experimental arm
+  WITHHELD: no digitised dataset available); unstable crack growth with G/G_c
+  rising 1.04 -> 1.43.
+- **Tests** `tests/test_levelset_fracture.py`: 21 passed.
+- **Report** `docs/levelset-ice-plate-fracture.md`,
+  figures `docs/assets/levelset-ice-fracture/`.
+- **Performance note**: `torch.linalg.inv` costs ~17 ms per call on this host, so
+  the rectangular Mindlin element is re-implemented in numpy
+  (`tensorfem.levelset.plate_crack.rect_mindlin_stiffness`) and asserted equal to
+  `tensorfem.plate.q4_mindlin_stiffness` to 1e-16 relative.
+
 ### Plasticity: three-case qualification of the J2 surface (p337w1-n07)
 - **New verification surface** (`tensorfem.j2_elastoplastic_three_case`): one material
   card (E = 210 GPa, nu = 0.3, sigma_y = 250 MPa, H = 1000 MPa) driven through
