@@ -1,5 +1,38 @@
 ## Unreleased
 
+### 3-D cohesive interface: closed-form dissipated energy + imported-checkout guard
+- **New capability** `BKCohesive3DLaw.dissipated_energy(separation, history)` and
+  `Cohesive3DResponse.dissipated_energy`: the energy dissipated per unit reference
+  interface area is now a closed-form state function of the history variable,
+  `W_d(h) = int_0^h t_eff(s) ds - t_eff(h) h / 2` (the second term is what the secant
+  unloading branch stores).  `cohesive_hex8_response` aggregates it into
+  `diagnostics["dissipated_energy"]` [J] (per Gauss point:
+  `dissipated_per_area` [J/m^2]), so an interface patch reports its own damage energy
+  and a nonlinear solve can check `W_ext = W_strain + W_d` without integrating the
+  traction history; delamination R-curves get `W_d / A` directly.
+- **Verification (closed form vs two independent oracles)**: numerical
+  `int t . d(delta)` along a monotonic ray for 7 mode mixes → max deviation `5.0e-6`;
+  `W_d(a_f) == G_c(direction)` for mode I / II / III / 45° / 3-D → `5.7e-16`;
+  element `dissipated_energy == G_c * A` for **both** kinematics → `1.1e-16`;
+  rigid-rotation invariance (corotational) → `2.3e-16`; elastic branch exactly 0.
+  The verification table grows from 18 PASS to **24 PASS / 0 FAIL / 2 KNOWN_LIMIT**.
+- **Measured non-proportional path** (previously an unquantified scope limit):
+  open to `1.5 a_0(I)` then shear to failure gives `W_path = 1200.249 J/m^2` vs the
+  closed form `1199.754 J/m^2` (residual `4.1e-4`) and stays below `G_IIc = 1200`.
+  The limitation is now a measured row instead of a sentence.
+- **Defect fix · verification provenance**: `benchmarks/cohesive3d_verification_tables.py`
+  imported `tensorfem` from whatever the shared `site-packages` resolved to.  In a
+  multi-worktree host that was *another* checkout, where the run died inside a bug
+  already fixed on main (`RuntimeError: size of tensor a (3) must match tensor b (16)`);
+  a table generated that way would describe the wrong code.  The script now puts its own
+  `../src` first on `sys.path` and writes a `provenance` block
+  (`tensorfem_module_file`, `imported_from_this_checkout`, `git_commit`, `git_dirty`)
+  into the JSON, warning loudly if the module still comes from elsewhere.
+- **Tests** `tests/test_cohesive3d.py`: 11 new tests (path-integral oracle, `G_c` at
+  failure for 5 directions, elasticity/monotonicity/saturation, unloading independence,
+  compression, element-level `G_c A`, rotation invariance, bounded non-proportional
+  path).
+
 ### Foundation: Winkler `k` sweep (3 decades) vs Hetényi — GAP-FEM-WINKLER hardening
 - **New benchmark** `benchmarks/fem_winkler_plate_k_sweep.py`: the existing
   `fem_winkler_plate` anchor pins one foundation modulus (ρ_w g) and sweeps the mesh;

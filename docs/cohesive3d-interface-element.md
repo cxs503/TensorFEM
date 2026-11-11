@@ -101,30 +101,71 @@ Consequences pinned by tests:
 
 | check | oracle (closed form) | measured | tolerance | status |
 |---|---|---|---|---|
-| `law_reduces_to_2d_bk` | 3-D law == merged 2-D BK law on `delta_s2 = 0` | 2.1e-16 | 1e-12 | PASS |
-| `law_energy_mode_I` | `int t . d(delta) == G_Ic` | 500.000000 vs 500.000000 J/m² (3.4e-16) | 1e-5 | PASS |
-| `law_energy_mode_II` | `int t . d(delta) == G_IIc` | 1199.999919 vs 1200.000000 (6.7e-08) | 1e-5 | PASS |
-| `law_energy_mode_III` | mode III behaves as mode II | 1199.999919 vs 1200.000000 (6.7e-08) | 1e-5 | PASS |
-| `law_energy_mixed_45` | `int t . d(delta) == G_c(BK)` | 594.316809 vs 594.316824 (2.6e-08) | 1e-5 | PASS |
-| `law_initiation_quadratic` | `(t_n/t_n0)^2 + (t_s/t_s0)^2 == 1` at onset | 4.4e-16 | 1e-12 | PASS |
-| `law_tangent_vs_ad` | analytic `dt/d(delta)` == autograd Jacobian of the traction | 5.5e-16 | 1e-10 | PASS |
+| `law_reduces_to_2d_bk` | 3-D law == merged 2-D BK law on delta_s2 = 0 | max scaled traction difference over 5 mode-mix ratios x 5 amplitudes | 1e-12 | PASS |
+| `law_energy_mode_I` | int t . d(delta) along the envelope == G_c(direction) | mode_I: measure 500.000000 vs 500.000000 J/m^2 | 1e-05 | PASS |
+| `law_energy_mode_II` | int t . d(delta) along the envelope == G_c(direction) | mode_II: measure 1199.999919 vs 1200.000000 J/m^2 | 1e-05 | PASS |
+| `law_energy_mode_III` | int t . d(delta) along the envelope == G_c(direction) | mode_III: measure 1199.999919 vs 1200.000000 J/m^2 | 1e-05 | PASS |
+| `law_energy_mixed_45` | int t . d(delta) along the envelope == G_c(direction) | mixed_45: measure 594.316809 vs 594.316824 J/m^2 | 1e-05 | PASS |
+| `law_initiation_quadratic` | (t_n/t_n0)^2 + (t_s/t_s0)^2 == 1 at damage onset | max |quadratic criterion - 1| over 11 mode-mix angles | 1e-12 | PASS |
+| `law_tangent_vs_ad` | analytic dt/d(delta) == autograd Jacobian of the traction | max relative tangent difference over 35 (angle, amplitude) points | 1e-10 | PASS |
 | `law_batch_matches_pointwise` | batched update (16 softening points) == 16 independent point calls | max relative difference 0.0e+00 at damage 0.991 | 1e-12 | PASS |
-| `element_patch_small_strain` | uniform opening: reaction == `t * A` | 4615384.615385 N vs 4615384.615385 N (0.0) | 1e-12 | PASS |
-| `element_rigid_rotation_small_strain` | rigid rotation in a fixed frame ⇒ zero traction | `max |f|/(t_n0 A) = 9.9e3` | — | **KNOWN_LIMIT** |
-| `element_rigid_rotation_corotational` | rigid rotation in a fixed frame ⇒ zero traction | 2.9e-12 over `theta = 0.01 … 3.0 rad` | 1e-10 | PASS |
-| `element_rotation_objectivity_corotational` | `f(RX, Ru) == R f(X, u)` | 1.1e-11 | 1e-9 | PASS |
-| `corotational_elastic_tangent_symmetry` | Hessian of a potential ⇒ symmetric | 1.4e-16 | 1e-12 | PASS |
-| `corotational_tangent_vs_finite_difference` | `df/du` == central differences | 3.0e-08 at damage 0.762 | 1e-6 | PASS |
-| `corotational_dissipation_rotation_invariance` | dissipated work independent of rigid rotation | 7.9e-14 over `theta = 0, 0.4, 1.2 rad` | 1e-12 | PASS |
-| `corotational_dissipation_vs_fracture_energy` | dissipated work == `G_Ic * A` | 498.8077 J vs 500 J (2.4e-03, 40-step trapezoid) | 5e-3 | PASS |
-| `small_strain_dissipation_at_rotation` | same opening at `theta = 0.4 rad`, reference frame | −1559043 J vs 500 J (3.1e+03) | — | **KNOWN_LIMIT** |
-| `corotational_mesh_objectivity` | 1×1, 2×2, 4×4 patches ⇒ same reaction | 1.0e-12 | 1e-11 | PASS |
-| `corotational_assembly_consistency` | assembly == sum of element contributions | 0.0 (force and tangent) | 1e-12 | PASS |
-| `corotational_compression_undamaged` | closing uses `k_n`, never damages | −9999.999995 N vs −10000 N (5.3e-10) | 1e-8 | PASS |
+| `element_patch_small_strain` | uniform opening: reaction on the top face == t * A (unit area) | measure 4615384.615385 N vs 4615384.615385 N | 1e-12 | PASS |
+| `element_rigid_rotation_small_strain` | rigid rotation of the body in a fixed frame must give zero traction | max |f| / (t_n0 A) over theta = [0.01, 0.1, 0.3, 0.7, 1.4, 3.0] (reference-frame separation) | n/a | **KNOWN_LIMIT** |
+| `element_rigid_rotation_corotational` | rigid rotation of the body in a fixed frame must give zero traction | max |f| / (t_n0 A) over theta = [0.01, 0.1, 0.3, 0.7, 1.4, 3.0] (current-frame separation) | 1e-10 | PASS |
+| `element_rotation_objectivity_corotational` | f(R X, R u) == R f(X, u) for a rotated element geometry | relative Frobenius difference of the reaction under R (0.5, -0.2, 0.9) | 1e-09 | PASS |
+| `corotational_elastic_tangent_symmetry` | tangent is the Hessian of a potential in the elastic regime => symmetric | max |K - K^T| / max |K| | 1e-12 | PASS |
+| `corotational_tangent_vs_finite_difference` | d f / d u == central differences of the internal force | relative Frobenius difference at damage 0.762 (central differences, eps = 1e-9 m) | 1e-06 | PASS |
+| `corotational_dissipation_rotation_invariance` | dissipated work under monotonic opening is independent of rigid rotation | max |W(theta) - W(0)| / W(0) for theta = 0.0, 0.4, 1.2 rad | 1e-12 | PASS |
+| `corotational_dissipation_vs_fracture_energy` | dissipated work == G_Ic * A (trapezoid integration, 40 steps) | measure 498.8077 J vs 500.0 J | 5e-03 | PASS |
+| `small_strain_dissipation_at_rotation` | same opening at theta = 0.4 rad, reference-frame separation (known limit) | measure -1559043.3 J vs 500.0 J | n/a | **KNOWN_LIMIT** |
+| `law_dissipation_vs_path_integral` | closed-form W_d(a_f) == int t . d(delta) along a monotonic ray (7 mixities) | max relative difference, 0deg 500.0000; 15deg 502.2829; 30deg 522.8049 ... | 1e-05 | PASS |
+| `law_dissipation_equals_fracture_energy` | W_d(a_f) == G_c(direction), BK mixed mode, modes I / II / III / 45deg / 3-D | max relative difference from G_c, 5 directions, worst 5.74e-16 | 1e-12 | PASS |
+| `law_dissipation_monotone_bounded` | W_d == 0 on the elastic branch, non-decreasing, saturating at G_c | elastic max 0.0e+00 J/m^2, worst decrease 1.1e-13, overshoot 2.2e-16 | 1e-12 | PASS |
+| `element_dissipation_equals_gc_times_area` | element diagnostics ``dissipated_energy`` == G_Ic * A at complete opening | small_strain 500.000000 J, corotational 500.000000 J vs 500.0 J | 1e-12 | PASS |
+| `element_dissipation_rotation_invariance` | element ``dissipated_energy`` independent of a rigid rotation (corotational) | max relative spread over theta = 0.0, 0.3, 1.2 rad | 1e-14 | PASS |
+| `nonproportional_path_dissipation` | open to 1.5 a_0(I) then shear to failure: 0 <= W - G_IIc and W_d ~= W_path | W_path 1200.249 J/m^2 vs G_IIc 1200.0, closed form 1199.754 (residual 4.1e-04) | 1e-03 | PASS |
+| `corotational_mesh_objectivity` | n x n patches (n = 1, 2, 4) of the same unit interface give the same reaction | max relative reaction difference from t * A | 1e-11 | PASS |
+| `corotational_assembly_consistency` | dense patch assembly == sum of element contributions (force and tangent) | max relative difference, 2 x 2 patch | 1e-12 | PASS |
+| `corotational_compression_undamaged` | closing uses the penalty stiffness k_n and never damages the interface | reaction -9999.999995 N vs -10000.000000 N, damage 0.0e+00 | 1e-08 | PASS |
 
-18 PASS, 0 FAIL, 2 KNOWN_LIMIT.  Regenerate with
-`PYTHONPATH=src python benchmarks/cohesive3d_verification_tables.py`; the JSON
-carries the raw values, the Markdown table is the one pasted above.
+24 PASS, 0 FAIL, 2 KNOWN_LIMIT.  Regenerate with
+`python benchmarks/cohesive3d_verification_tables.py` (the script puts this
+checkout's `src/` first on `sys.path`, so it can never report numbers from a
+foreign editable install); the JSON carries the raw values *and* a
+`provenance` block (`tensorfem_module_file`, `git_commit`, `git_dirty`), the
+Markdown table is the one pasted above.
+
+### 3.1 Dissipated energy in closed form (`dissipated_energy`)
+
+Every response carries the energy dissipated per unit **reference** area,
+
+```
+W_d(h) = int_0^h t_eff(s) ds  -  t_eff(h) h / 2 ,      h = max(history, a)
+```
+
+with `t_eff` the bilinear envelope of the work-conjugate direction and the
+second term the energy stored by the secant unloading branch.  It vanishes on
+the elastic branch, is monotone in `h`, and saturates at `G_c(direction)`; the
+element aggregates it as `sum_gp A_gp W_d` into
+`diagnostics["dissipated_energy"]` [J] (per-Gauss-point values in
+`diagnostics["dissipated_per_area"]`).
+
+Why it matters: an interface patch now exposes its own damage energy, so a
+nonlinear solution can check the energy balance `W_ext = W_strain + W_d` per
+Newton increment without integrating the traction history numerically, and a
+delamination test can report the R-curve input `W_d / A` directly.
+
+The identity is verified against two independent oracles (rows
+`law_dissipation_vs_path_integral`, `law_dissipation_equals_fracture_energy`,
+`element_dissipation_equals_gc_times_area`): a numerical integral of
+`t . d(delta)` along a ray (max deviation `5.0e-6` over 7 mode mixes) and the
+BK closed form `G_c` (`5.7e-16`).  Because the law is a
+history-of-maximum-separation model, the state function uses the **current**
+mode mix; a path that rotates the mix is therefore not integrated exactly.  The
+row `nonproportional_path_dissipation` measures that residual instead of
+assuming it away: open to `1.5 a_0(I)` then shear to failure gives
+`W_path = 1200.249 J/m^2` against `W_d = 1199.754 J/m^2` (residual `4.1e-4`,
+0.04%) and does not exceed `G_IIc`.
 
 ## 4. Pitfalls (measured while building this)
 
@@ -177,14 +218,31 @@ carries the raw values, the Markdown table is the one pasted above.
    (`tests/test_cohesive3d_dcb.py`), which is also what
    `corotational_assembly_consistency` does for the explicit assembly path.
 
+9. **The verification script must import *this* checkout.**  In a shared
+   `site-packages` (several worktrees, editable installs) `import tensorfem`
+   resolved to another worktree's copy and the table run crashed inside *that*
+   code (`RuntimeError: The size of tensor a (3) must match the size of tensor b
+   (16)`) although the fix was already merged here.  A table produced that way
+   would be a statement about somebody else's checkout.  The script now puts
+   `../src` first on `sys.path` and records the imported module file plus the
+   git commit in the JSON `provenance` block.
+10. **Dissipation is a state function of (history, direction), not of the path.**
+   Re-evaluating `W_d` after the mode mix has rotated re-uses the current
+   direction's `a_0`, `a_f`, `G_c`; the residual against the path integral is
+   `4.1e-4` for the measured I -> II path.  Do not use `W_d` as an incremental
+   energy for mixed-mode path reversals without accounting for that.
+
 ## 5. Scope limits (not claimed)
 
 * Small-strain adherends: no geometric (initial-stress) stiffness of the *host
   solid*; only the interface rotation is treated exactly (corotational).
 * No friction, no contact damage, no cyclic degradation.
-* No mixed-mode **non-proportional** path validation: the law is a total
-  (history-of-maximum-separation) formulation, so a load path that reverses the
-  mode mix is outside the verified envelope.
+* No mixed-mode **non-proportional** path *exactness*: the law is a total
+  (history-of-maximum-separation) formulation.  One class of non-proportional
+  path (mode I pre-damage, then shear to failure) is now measured in the
+  verification table (`nonproportional_path_dissipation`: work bounded by
+  `G_IIc`, closed-form dissipation within `4.1e-4`); arbitrary mode-mix
+  reversals remain outside the verified envelope.
 * Prescribed crack path (pre-meshed interface); no crack-path search, no
   remeshing, no adaptive insertion.
 * Rate and temperature dependence are not modelled.
