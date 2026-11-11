@@ -1,0 +1,859 @@
+{
+  "schema": "tensorfem.w22-ice-6dof-ensemble.v1",
+  "node": "w22-ice-6dof-2",
+  "provenance": {
+    "generated_utc": "2026-11-11T08:06:17Z",
+    "git": {
+      "commit": "5fb5781f02f1959deb04cb1190a71da1e550977a",
+      "branch": "agent/m14517",
+      "dirty": true
+    },
+    "driver": {
+      "path": "benchmarks/w22_ice_6dof_ensemble.py",
+      "sha256": "5653cfd8b296d9a6812497731582b7c054abc243d528df000f081014e5535a8c"
+    },
+    "model": {
+      "path": "src/tensorfem/iso19906_ice_6dof.py",
+      "sha256": "d2a97fbcd3d86b04d0f4098e8e9656e920ef519f55babedcce45e0d052dd7794"
+    },
+    "anchor": {
+      "anchor_id": "AN-ISO19906",
+      "status": "pending_transcription",
+      "C_R_MPa": 1.0,
+      "A_0_m2": 1.0,
+      "exponent": -0.28,
+      "source": "not available in this work tree",
+      "note": "declared reference normalisation, not a normative transcription; loads scale exactly linearly in C_R"
+    },
+    "settings": {
+      "duration_s": 60.0,
+      "transient_s": 10.0,
+      "dt_master_s": 0.005,
+      "statistics_window_s": [
+        10.0,
+        60.0
+      ],
+      "thicknesses_m": [
+        0.6,
+        1.0,
+        1.5
+      ],
+      "speeds_mps": [
+        0.8,
+        1.6
+      ],
+      "threshold_factor": 1.25
+    },
+    "vessel": {
+      "mass_kg": 8610000.0,
+      "displacement_m3": 8400.0,
+      "waterplane_area_m2": 1700.0,
+      "natural_periods_s": {
+        "heave": 6.14768367953841,
+        "roll": 14.044865048123283,
+        "pitch": 7.09372808312707
+      },
+      "stiffness": {
+        "surge": 0.0,
+        "sway": 0.0,
+        "heave": 17088087.625,
+        "roll": 101322307.8,
+        "pitch": 8443525650.0,
+        "yaw": 0.0
+      },
+      "provenance": "generic 100 m / 20 m / 6 m / Cb 0.70 single-screw hull with textbook added-mass ratios and metacentric heights; a representative numerical test bed, not a particular ship"
+    },
+    "contact": {
+      "half_angle_deg": 40.0,
+      "spall_depth_m": 0.3,
+      "residual_ratio": 0.2,
+      "residual_penetration_m": 0.06,
+      "friction": 0.15,
+      "normal_obliquity_deg": 20.0,
+      "provenance": "wedge waterline half-angle / spall increment / residual ratio / friction / oblique contact normal are engineering assumptions of this model, not ISO 19906 values; residual_ratio fixes the saw-tooth peak-to-mean load ratio"
+    },
+    "law": {
+      "reference_pressure_MPa": 1.0,
+      "reference_area_m2": 1.0,
+      "exponent": -0.28,
+      "force_area_exponent": 0.72,
+      "provenance": "AN-ISO19906 [pending_transcription]: not available in this work tree"
+    }
+  },
+  "model_statement": "ISO 19906 global pressure--area law p_G = C_R (A/A_0)^ex used as the contact pressure source of a linear 6-DOF (surge/sway/heave/roll/pitch/yaw) rigid-body time integration with velocity-Verlet; contact force N = p_G A applied at the bow/ice-line point, crushing/spalling saw-tooth kinematics, thrust governor holding the commanded speed.",
+  "ensemble": [
+    {
+      "case": "h0.60_U0.80",
+      "thickness_m": 0.6,
+      "commanded_speed_mps": 0.8,
+      "peak_load_MN": 0.42233397764766645,
+      "mean_load_MN": 0.2867751681103027,
+      "rms_load_MN": 0.29870153852475406,
+      "min_load_MN": 0.13256385932038664,
+      "peak_to_mean": 1.4727006540720555,
+      "threshold_MN": 0.3584689601378784,
+      "threshold_factor": 1.25,
+      "exceedance_count": 139,
+      "cycle_count": 139,
+      "spall_events": 169,
+      "mean_speed_mps": 0.675504080945384,
+      "speed_loss_fraction": 0.1556198988182701,
+      "max_abs_heave_m": 0.003794225152727993,
+      "max_abs_pitch_deg": 0.012297970506097688,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 2.19421466101705,
+      "mean_contact_area_m2": 0.18057323407896242,
+      "series_file": "docs/w22_ice_6dof/timeseries/h0.60_U0.80_dt0.0050.csv"
+    },
+    {
+      "case": "h0.60_U1.60",
+      "thickness_m": 0.6,
+      "commanded_speed_mps": 1.6,
+      "peak_load_MN": 0.41901373591405616,
+      "mean_load_MN": 0.28486497711095154,
+      "rms_load_MN": 0.29698992220403225,
+      "min_load_MN": 0.13256385932038664,
+      "peak_to_mean": 1.470920504737426,
+      "threshold_MN": 0.3560812213886895,
+      "threshold_factor": 1.25,
+      "exceedance_count": 313,
+      "cycle_count": 312,
+      "spall_events": 375,
+      "mean_speed_mps": 1.518595710584656,
+      "speed_loss_fraction": 0.050877680884590104,
+      "max_abs_heave_m": 0.0037678267835280256,
+      "max_abs_pitch_deg": 0.012227153054907626,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 2.19421466101705,
+      "mean_contact_area_m2": 0.179007336323666,
+      "series_file": "docs/w22_ice_6dof/timeseries/h0.60_U1.60_dt0.0050.csv"
+    },
+    {
+      "case": "h1.00_U0.80",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 0.8,
+      "peak_load_MN": 0.6100027369472658,
+      "mean_load_MN": 0.414294954898741,
+      "rms_load_MN": 0.43144604104491807,
+      "min_load_MN": 0.1914944708903724,
+      "peak_to_mean": 1.4723875580294195,
+      "threshold_MN": 0.5178686936234264,
+      "threshold_factor": 1.25,
+      "exceedance_count": 127,
+      "cycle_count": 127,
+      "spall_events": 155,
+      "mean_speed_mps": 0.6140140108872923,
+      "speed_loss_fraction": 0.23248248639088465,
+      "max_abs_heave_m": 0.005472509768813119,
+      "max_abs_pitch_deg": 0.017746083935133026,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 1.9017851970461128,
+      "mean_contact_area_m2": 0.3009601480621767,
+      "series_file": "docs/w22_ice_6dof/timeseries/h1.00_U0.80_dt0.0050.csv"
+    },
+    {
+      "case": "h1.00_U1.60",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 1.6,
+      "peak_load_MN": 0.6036390644948534,
+      "mean_load_MN": 0.4096560174721883,
+      "rms_load_MN": 0.4269728820409187,
+      "min_load_MN": 0.1914944708903724,
+      "peak_to_mean": 1.4735266632226014,
+      "threshold_MN": 0.5120700218402354,
+      "threshold_factor": 1.25,
+      "exceedance_count": 303,
+      "cycle_count": 303,
+      "spall_events": 365,
+      "mean_speed_mps": 1.4582050734291698,
+      "speed_loss_fraction": 0.08862182910676886,
+      "max_abs_heave_m": 0.005453483545646344,
+      "max_abs_pitch_deg": 0.017671279271491987,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 1.9017851970461128,
+      "mean_contact_area_m2": 0.29643882737221056,
+      "series_file": "docs/w22_ice_6dof/timeseries/h1.00_U1.60_dt0.0050.csv"
+    },
+    {
+      "case": "h1.50_U0.80",
+      "thickness_m": 1.5,
+      "commanded_speed_mps": 0.8,
+      "peak_load_MN": 0.8168779534987932,
+      "mean_load_MN": 0.5550641893579986,
+      "rms_load_MN": 0.5780025865159744,
+      "min_load_MN": 0.25641412504459155,
+      "peak_to_mean": 1.4716819588804944,
+      "threshold_MN": 0.6938302366974983,
+      "threshold_factor": 1.25,
+      "exceedance_count": 114,
+      "cycle_count": 113,
+      "spall_events": 139,
+      "mean_speed_mps": 0.5460803219008403,
+      "speed_loss_fraction": 0.31739959762394965,
+      "max_abs_heave_m": 0.007332121207364107,
+      "max_abs_pitch_deg": 0.02376830345751973,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 1.6976803039655524,
+      "mean_contact_area_m2": 0.45177950164767866,
+      "series_file": "docs/w22_ice_6dof/timeseries/h1.50_U0.80_dt0.0050.csv"
+    },
+    {
+      "case": "h1.50_U1.60",
+      "thickness_m": 1.5,
+      "commanded_speed_mps": 1.6,
+      "peak_load_MN": 0.8167861477385288,
+      "mean_load_MN": 0.5517582804490573,
+      "rms_load_MN": 0.575215903524266,
+      "min_load_MN": 0.25641412504459155,
+      "peak_to_mean": 1.4803332848467166,
+      "threshold_MN": 0.6896978505613215,
+      "threshold_factor": 1.25,
+      "exceedance_count": 286,
+      "cycle_count": 286,
+      "spall_events": 346,
+      "mean_speed_mps": 1.389730064732911,
+      "speed_loss_fraction": 0.1314187095419307,
+      "max_abs_heave_m": 0.00725255277047667,
+      "max_abs_pitch_deg": 0.023528490265093183,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 1.6976803039655524,
+      "mean_contact_area_m2": 0.4483532253521253,
+      "series_file": "docs/w22_ice_6dof/timeseries/h1.50_U1.60_dt0.0050.csv"
+    }
+  ],
+  "cases_detail": [
+    {
+      "case": "h0.60_U0.80",
+      "thickness_m": 0.6,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.005,
+      "peak_load_MN": 0.42233397764766645,
+      "mean_load_MN": 0.2867751681103027,
+      "rms_load_MN": 0.29870153852475406,
+      "min_load_MN": 0.13256385932038664,
+      "std_load_MN": 0.08356202530074748,
+      "peak_to_mean": 1.4727006540720555,
+      "threshold_MN": 0.3584689601378784,
+      "threshold_factor": 1.25,
+      "exceedance_count": 139,
+      "exceedance_samples": 2509,
+      "exceedance_definition": "number of contiguous excursions above the threshold (one count per load spike, not per sample)",
+      "cycle_count": 139,
+      "cycle_detection": {
+        "method": "turning-point peaks",
+        "prominence_fraction": 0.1,
+        "min_separation_samples": 2
+      },
+      "mean_speed_mps": 0.675504080945384,
+      "min_speed_mps": 0.6731427691365847,
+      "max_speed_mps": 0.6891427514817202,
+      "speed_loss_fraction": 0.1556198988182701,
+      "max_abs_heave_m": 0.003794225152727993,
+      "max_abs_pitch_deg": 0.012297970506097688,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 2.19421466101705,
+      "min_pressure_MPa": 1.3982287038138985,
+      "mean_contact_area_m2": 0.18057323407896242,
+      "spall_events": 169,
+      "statistics_window_s": [
+        10.0,
+        60.0
+      ],
+      "samples": 10001,
+      "wall_time_s": 4.047616481781006,
+      "series_file": "docs/w22_ice_6dof/timeseries/h0.60_U0.80_dt0.0050.csv",
+      "provenance": {
+        "model_sha256": "d2a97fbcd3d86b04d0f4098e8e9656e920ef519f55babedcce45e0d052dd7794",
+        "driver_sha256": "5653cfd8b296d9a6812497731582b7c054abc243d528df000f081014e5535a8c",
+        "git_commit": "5fb5781f02f1959deb04cb1190a71da1e550977a",
+        "law_provenance": "AN-ISO19906 [pending_transcription]: not available in this work tree",
+        "anchor_status": "pending_transcription",
+        "config": {
+          "thickness_m": 0.6,
+          "commanded_speed_mps": 0.8,
+          "dt_s": 0.005,
+          "duration_s": 60.0,
+          "transient_s": 10.0
+        }
+      }
+    },
+    {
+      "case": "h0.60_U1.60",
+      "thickness_m": 0.6,
+      "commanded_speed_mps": 1.6,
+      "dt_s": 0.005,
+      "peak_load_MN": 0.41901373591405616,
+      "mean_load_MN": 0.28486497711095154,
+      "rms_load_MN": 0.29698992220403225,
+      "min_load_MN": 0.13256385932038664,
+      "std_load_MN": 0.08399380159472593,
+      "peak_to_mean": 1.470920504737426,
+      "threshold_MN": 0.3560812213886895,
+      "threshold_factor": 1.25,
+      "exceedance_count": 313,
+      "exceedance_samples": 2503,
+      "exceedance_definition": "number of contiguous excursions above the threshold (one count per load spike, not per sample)",
+      "cycle_count": 312,
+      "cycle_detection": {
+        "method": "turning-point peaks",
+        "prominence_fraction": 0.1,
+        "min_separation_samples": 2
+      },
+      "mean_speed_mps": 1.518595710584656,
+      "min_speed_mps": 1.5173994380969331,
+      "max_speed_mps": 1.5271998598063787,
+      "speed_loss_fraction": 0.050877680884590104,
+      "max_abs_heave_m": 0.0037678267835280256,
+      "max_abs_pitch_deg": 0.012227153054907626,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 2.19421466101705,
+      "min_pressure_MPa": 1.4025270051979233,
+      "mean_contact_area_m2": 0.179007336323666,
+      "spall_events": 375,
+      "statistics_window_s": [
+        10.0,
+        60.0
+      ],
+      "samples": 10001,
+      "wall_time_s": 4.78362512588501,
+      "series_file": "docs/w22_ice_6dof/timeseries/h0.60_U1.60_dt0.0050.csv",
+      "provenance": {
+        "model_sha256": "d2a97fbcd3d86b04d0f4098e8e9656e920ef519f55babedcce45e0d052dd7794",
+        "driver_sha256": "5653cfd8b296d9a6812497731582b7c054abc243d528df000f081014e5535a8c",
+        "git_commit": "5fb5781f02f1959deb04cb1190a71da1e550977a",
+        "law_provenance": "AN-ISO19906 [pending_transcription]: not available in this work tree",
+        "anchor_status": "pending_transcription",
+        "config": {
+          "thickness_m": 0.6,
+          "commanded_speed_mps": 1.6,
+          "dt_s": 0.005,
+          "duration_s": 60.0,
+          "transient_s": 10.0
+        }
+      }
+    },
+    {
+      "case": "h1.00_U0.80",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.005,
+      "peak_load_MN": 0.6100027369472658,
+      "mean_load_MN": 0.414294954898741,
+      "rms_load_MN": 0.43144604104491807,
+      "min_load_MN": 0.1914944708903724,
+      "std_load_MN": 0.12043826916218638,
+      "peak_to_mean": 1.4723875580294195,
+      "threshold_MN": 0.5178686936234264,
+      "threshold_factor": 1.25,
+      "exceedance_count": 127,
+      "exceedance_samples": 2530,
+      "exceedance_definition": "number of contiguous excursions above the threshold (one count per load spike, not per sample)",
+      "cycle_count": 127,
+      "cycle_detection": {
+        "method": "turning-point peaks",
+        "prominence_fraction": 0.1,
+        "min_separation_samples": 2
+      },
+      "mean_speed_mps": 0.6140140108872923,
+      "min_speed_mps": 0.6105536967233356,
+      "max_speed_mps": 0.6348383803720503,
+      "speed_loss_fraction": 0.23248248639088465,
+      "max_abs_heave_m": 0.005472509768813119,
+      "max_abs_pitch_deg": 0.017746083935133026,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 1.9017851970461128,
+      "min_pressure_MPa": 1.2119426917688896,
+      "mean_contact_area_m2": 0.3009601480621767,
+      "spall_events": 155,
+      "statistics_window_s": [
+        10.0,
+        60.0
+      ],
+      "samples": 10001,
+      "wall_time_s": 4.192225217819214,
+      "series_file": "docs/w22_ice_6dof/timeseries/h1.00_U0.80_dt0.0050.csv",
+      "provenance": {
+        "model_sha256": "d2a97fbcd3d86b04d0f4098e8e9656e920ef519f55babedcce45e0d052dd7794",
+        "driver_sha256": "5653cfd8b296d9a6812497731582b7c054abc243d528df000f081014e5535a8c",
+        "git_commit": "5fb5781f02f1959deb04cb1190a71da1e550977a",
+        "law_provenance": "AN-ISO19906 [pending_transcription]: not available in this work tree",
+        "anchor_status": "pending_transcription",
+        "config": {
+          "thickness_m": 1.0,
+          "commanded_speed_mps": 0.8,
+          "dt_s": 0.005,
+          "duration_s": 60.0,
+          "transient_s": 10.0
+        }
+      }
+    },
+    {
+      "case": "h1.00_U1.60",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 1.6,
+      "dt_s": 0.005,
+      "peak_load_MN": 0.6036390644948534,
+      "mean_load_MN": 0.4096560174721883,
+      "rms_load_MN": 0.4269728820409187,
+      "min_load_MN": 0.1914944708903724,
+      "std_load_MN": 0.12036523313297073,
+      "peak_to_mean": 1.4735266632226014,
+      "threshold_MN": 0.5120700218402354,
+      "threshold_factor": 1.25,
+      "exceedance_count": 303,
+      "exceedance_samples": 2468,
+      "exceedance_definition": "number of contiguous excursions above the threshold (one count per load spike, not per sample)",
+      "cycle_count": 303,
+      "cycle_detection": {
+        "method": "turning-point peaks",
+        "prominence_fraction": 0.1,
+        "min_separation_samples": 2
+      },
+      "mean_speed_mps": 1.4582050734291698,
+      "min_speed_mps": 1.4562877424872978,
+      "max_speed_mps": 1.4725490037693914,
+      "speed_loss_fraction": 0.08862182910676886,
+      "max_abs_heave_m": 0.005453483545646344,
+      "max_abs_pitch_deg": 0.017671279271491987,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 1.9017851970461128,
+      "min_pressure_MPa": 1.216895423149869,
+      "mean_contact_area_m2": 0.29643882737221056,
+      "spall_events": 365,
+      "statistics_window_s": [
+        10.0,
+        60.0
+      ],
+      "samples": 10001,
+      "wall_time_s": 3.95731258392334,
+      "series_file": "docs/w22_ice_6dof/timeseries/h1.00_U1.60_dt0.0050.csv",
+      "provenance": {
+        "model_sha256": "d2a97fbcd3d86b04d0f4098e8e9656e920ef519f55babedcce45e0d052dd7794",
+        "driver_sha256": "5653cfd8b296d9a6812497731582b7c054abc243d528df000f081014e5535a8c",
+        "git_commit": "5fb5781f02f1959deb04cb1190a71da1e550977a",
+        "law_provenance": "AN-ISO19906 [pending_transcription]: not available in this work tree",
+        "anchor_status": "pending_transcription",
+        "config": {
+          "thickness_m": 1.0,
+          "commanded_speed_mps": 1.6,
+          "dt_s": 0.005,
+          "duration_s": 60.0,
+          "transient_s": 10.0
+        }
+      }
+    },
+    {
+      "case": "h1.50_U0.80",
+      "thickness_m": 1.5,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.005,
+      "peak_load_MN": 0.8168779534987932,
+      "mean_load_MN": 0.5550641893579986,
+      "rms_load_MN": 0.5780025865159744,
+      "min_load_MN": 0.25641412504459155,
+      "std_load_MN": 0.16121642506737405,
+      "peak_to_mean": 1.4716819588804944,
+      "threshold_MN": 0.6938302366974983,
+      "threshold_factor": 1.25,
+      "exceedance_count": 114,
+      "exceedance_samples": 2568,
+      "exceedance_definition": "number of contiguous excursions above the threshold (one count per load spike, not per sample)",
+      "cycle_count": 113,
+      "cycle_detection": {
+        "method": "turning-point peaks",
+        "prominence_fraction": 0.1,
+        "min_separation_samples": 2
+      },
+      "mean_speed_mps": 0.5460803219008403,
+      "min_speed_mps": 0.5410780793597598,
+      "max_speed_mps": 0.5730779202567774,
+      "speed_loss_fraction": 0.31739959762394965,
+      "max_abs_heave_m": 0.007332121207364107,
+      "max_abs_pitch_deg": 0.02376830345751973,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 1.6976803039655524,
+      "min_pressure_MPa": 1.081835176190195,
+      "mean_contact_area_m2": 0.45177950164767866,
+      "spall_events": 139,
+      "statistics_window_s": [
+        10.0,
+        60.0
+      ],
+      "samples": 10001,
+      "wall_time_s": 4.265282869338989,
+      "series_file": "docs/w22_ice_6dof/timeseries/h1.50_U0.80_dt0.0050.csv",
+      "provenance": {
+        "model_sha256": "d2a97fbcd3d86b04d0f4098e8e9656e920ef519f55babedcce45e0d052dd7794",
+        "driver_sha256": "5653cfd8b296d9a6812497731582b7c054abc243d528df000f081014e5535a8c",
+        "git_commit": "5fb5781f02f1959deb04cb1190a71da1e550977a",
+        "law_provenance": "AN-ISO19906 [pending_transcription]: not available in this work tree",
+        "anchor_status": "pending_transcription",
+        "config": {
+          "thickness_m": 1.5,
+          "commanded_speed_mps": 0.8,
+          "dt_s": 0.005,
+          "duration_s": 60.0,
+          "transient_s": 10.0
+        }
+      }
+    },
+    {
+      "case": "h1.50_U1.60",
+      "thickness_m": 1.5,
+      "commanded_speed_mps": 1.6,
+      "dt_s": 0.005,
+      "peak_load_MN": 0.8167861477385288,
+      "mean_load_MN": 0.5517582804490573,
+      "rms_load_MN": 0.575215903524266,
+      "min_load_MN": 0.25641412504459155,
+      "std_load_MN": 0.16259192976017312,
+      "peak_to_mean": 1.4803332848467166,
+      "threshold_MN": 0.6896978505613215,
+      "threshold_factor": 1.25,
+      "exceedance_count": 286,
+      "exceedance_samples": 2572,
+      "exceedance_definition": "number of contiguous excursions above the threshold (one count per load spike, not per sample)",
+      "cycle_count": 286,
+      "cycle_detection": {
+        "method": "turning-point peaks",
+        "prominence_fraction": 0.1,
+        "min_separation_samples": 2
+      },
+      "mean_speed_mps": 1.389730064732911,
+      "min_speed_mps": 1.3867735738609435,
+      "max_speed_mps": 1.4129731133037482,
+      "speed_loss_fraction": 0.1314187095419307,
+      "max_abs_heave_m": 0.00725255277047667,
+      "max_abs_pitch_deg": 0.023528490265093183,
+      "max_abs_roll_deg": 0.0,
+      "max_pressure_MPa": 1.6976803039655524,
+      "min_pressure_MPa": 1.081882462267335,
+      "mean_contact_area_m2": 0.4483532253521253,
+      "spall_events": 346,
+      "statistics_window_s": [
+        10.0,
+        60.0
+      ],
+      "samples": 10001,
+      "wall_time_s": 4.236378908157349,
+      "series_file": "docs/w22_ice_6dof/timeseries/h1.50_U1.60_dt0.0050.csv",
+      "provenance": {
+        "model_sha256": "d2a97fbcd3d86b04d0f4098e8e9656e920ef519f55babedcce45e0d052dd7794",
+        "driver_sha256": "5653cfd8b296d9a6812497731582b7c054abc243d528df000f081014e5535a8c",
+        "git_commit": "5fb5781f02f1959deb04cb1190a71da1e550977a",
+        "law_provenance": "AN-ISO19906 [pending_transcription]: not available in this work tree",
+        "anchor_status": "pending_transcription",
+        "config": {
+          "thickness_m": 1.5,
+          "commanded_speed_mps": 1.6,
+          "dt_s": 0.005,
+          "duration_s": 60.0,
+          "transient_s": 10.0
+        }
+      }
+    }
+  ],
+  "thickness_trend": [
+    {
+      "scope": "fixed commanded speed 0.8 m/s",
+      "thickness_m": [
+        0.6,
+        1.0,
+        1.5
+      ],
+      "mean_load_MN": [
+        0.2867751681103027,
+        0.414294954898741,
+        0.5550641893579986
+      ],
+      "spearman_rho": 1.0,
+      "p_value": 0.3333333333333333,
+      "p_value_method": "exact permutation over all 6 relabellings",
+      "peak_load_spearman_rho": 1.0,
+      "peak_load_p_value": 0.3333333333333333,
+      "monotone_increasing": true
+    },
+    {
+      "scope": "fixed commanded speed 1.6 m/s",
+      "thickness_m": [
+        0.6,
+        1.0,
+        1.5
+      ],
+      "mean_load_MN": [
+        0.28486497711095154,
+        0.4096560174721883,
+        0.5517582804490573
+      ],
+      "spearman_rho": 1.0,
+      "p_value": 0.3333333333333333,
+      "p_value_method": "exact permutation over all 6 relabellings",
+      "peak_load_spearman_rho": 1.0,
+      "peak_load_p_value": 0.3333333333333333,
+      "monotone_increasing": true
+    }
+  ],
+  "pooled_thickness_trend": {
+    "n": 6,
+    "rho": 0.9561828874675149,
+    "p_value": 0.022222222222222223,
+    "method": "exact permutation over all 720 relabellings",
+    "x": [
+      0.6,
+      0.6,
+      1.0,
+      1.0,
+      1.5,
+      1.5
+    ],
+    "y": [
+      0.2867751681103027,
+      0.28486497711095154,
+      0.414294954898741,
+      0.4096560174721883,
+      0.5550641893579986,
+      0.5517582804490573
+    ]
+  },
+  "pooled_thickness_trend_peak": {
+    "n": 6,
+    "rho": 0.9561828874675149,
+    "p_value": 0.022222222222222223,
+    "method": "exact permutation over all 720 relabellings",
+    "x": [
+      0.6,
+      0.6,
+      1.0,
+      1.0,
+      1.5,
+      1.5
+    ],
+    "y": [
+      0.42233397764766645,
+      0.41901373591405616,
+      0.6100027369472658,
+      0.6036390644948534,
+      0.8168779534987932,
+      0.8167861477385288
+    ]
+  },
+  "time_step_convergence": [
+    {
+      "case": "h0.60_U0.80",
+      "mean_load_MN_dt": 0.2867751681103027,
+      "mean_load_MN_dt_half": 0.2871392470184432,
+      "mean_load_relative_change": 0.0012695621818987516,
+      "peak_load_relative_change": 4.7879384737926603e-05,
+      "dt_s": 0.005,
+      "dt_half_s": 0.0025,
+      "energy_residual_fraction_dt": 3.8200278878902014e-10,
+      "energy_residual_fraction_dt_half": 1.7762166634127225e-11,
+      "cycle_count_dt": 139,
+      "cycle_count_dt_half": 140
+    },
+    {
+      "case": "h0.60_U1.60",
+      "mean_load_MN_dt": 0.28486497711095154,
+      "mean_load_MN_dt_half": 0.2868952500225042,
+      "mean_load_relative_change": 0.007127141188584579,
+      "peak_load_relative_change": 0.007929950868863053,
+      "dt_s": 0.005,
+      "dt_half_s": 0.0025,
+      "energy_residual_fraction_dt": -2.0874546289456094e-10,
+      "energy_residual_fraction_dt_half": -2.5144395207579957e-12,
+      "cycle_count_dt": 312,
+      "cycle_count_dt_half": 312
+    },
+    {
+      "case": "h1.00_U0.80",
+      "mean_load_MN_dt": 0.414294954898741,
+      "mean_load_MN_dt_half": 0.414538392453648,
+      "mean_load_relative_change": 0.0005875947848953796,
+      "peak_load_relative_change": 0.00010977039497300955,
+      "dt_s": 0.005,
+      "dt_half_s": 0.0025,
+      "energy_residual_fraction_dt": 1.1013214046760902e-10,
+      "energy_residual_fraction_dt_half": 3.9017605396711626e-11,
+      "cycle_count_dt": 127,
+      "cycle_count_dt_half": 128
+    },
+    {
+      "case": "h1.00_U1.60",
+      "mean_load_MN_dt": 0.4096560174721883,
+      "mean_load_MN_dt_half": 0.41270312384494423,
+      "mean_load_relative_change": 0.007438207283169647,
+      "peak_load_relative_change": 0.008818033092603919,
+      "dt_s": 0.005,
+      "dt_half_s": 0.0025,
+      "energy_residual_fraction_dt": -3.39030248658975e-11,
+      "energy_residual_fraction_dt_half": 8.975782860586323e-12,
+      "cycle_count_dt": 303,
+      "cycle_count_dt_half": 303
+    },
+    {
+      "case": "h1.50_U0.80",
+      "mean_load_MN_dt": 0.5550641893579986,
+      "mean_load_MN_dt_half": 0.5548851079237368,
+      "mean_load_relative_change": 0.0003226319364413487,
+      "peak_load_relative_change": 6.018914597666079e-05,
+      "dt_s": 0.005,
+      "dt_half_s": 0.0025,
+      "energy_residual_fraction_dt": 5.022747497588798e-10,
+      "energy_residual_fraction_dt_half": 4.910294387772984e-10,
+      "cycle_count_dt": 113,
+      "cycle_count_dt_half": 113
+    },
+    {
+      "case": "h1.50_U1.60",
+      "mean_load_MN_dt": 0.5517582804490573,
+      "mean_load_MN_dt_half": 0.5547683769879359,
+      "mean_load_relative_change": 0.005455462374626822,
+      "peak_load_relative_change": 0.00020072323345609878,
+      "dt_s": 0.005,
+      "dt_half_s": 0.0025,
+      "energy_residual_fraction_dt": 1.0927234189041336e-10,
+      "energy_residual_fraction_dt_half": 1.2724678809438511e-10,
+      "cycle_count_dt": 286,
+      "cycle_count_dt_half": 286
+    }
+  ],
+  "sensitivity": [
+    {
+      "variant": "baseline",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.01,
+      "mean_load_MN": 0.41388365617635253,
+      "peak_load_MN": 0.6101160500484293,
+      "cycle_count": 126,
+      "mean_load_delta_vs_baseline": 0.0,
+      "max_abs_pitch_deg": 0.017694706267677926,
+      "max_abs_heave_m": 0.0054648774681785115,
+      "energy_residual_fraction": -3.3906871773184573e-09,
+      "mean_speed_mps": 0.6143605380159942
+    },
+    {
+      "variant": "exponent_minus_0.20",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.01,
+      "mean_load_MN": 0.37381021652747476,
+      "peak_load_MN": 0.5773216898014847,
+      "cycle_count": 132,
+      "mean_load_delta_vs_baseline": -0.09682295749267955,
+      "max_abs_pitch_deg": 0.016109411109780942,
+      "max_abs_heave_m": 0.004973624638584291,
+      "energy_residual_fraction": 2.708998704086206e-09,
+      "mean_speed_mps": 0.6333947260464634
+    },
+    {
+      "variant": "exponent_minus_0.35",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.01,
+      "mean_load_MN": 0.44839759034009086,
+      "peak_load_MN": 0.6399940958836023,
+      "cycle_count": 122,
+      "mean_load_delta_vs_baseline": 0.08339042542195041,
+      "max_abs_pitch_deg": 0.019216446294636397,
+      "max_abs_heave_m": 0.005925530563144175,
+      "energy_residual_fraction": 4.849894562726974e-09,
+      "mean_speed_mps": 0.5974124090254734
+    },
+    {
+      "variant": "obliquity_0deg",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.01,
+      "mean_load_MN": 0.41367644642167234,
+      "peak_load_MN": 0.6100422757687965,
+      "cycle_count": 125,
+      "mean_load_delta_vs_baseline": -0.0005006473476012463,
+      "max_abs_pitch_deg": 0.007064372483131039,
+      "max_abs_heave_m": 0.0021450707243516266,
+      "energy_residual_fraction": -4.2534209687701735e-09,
+      "mean_speed_mps": 0.6126353927120066
+    },
+    {
+      "variant": "obliquity_35deg",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.01,
+      "mean_load_MN": 0.4134212869211585,
+      "peak_load_MN": 0.6101122386931107,
+      "cycle_count": 130,
+      "mean_load_delta_vs_baseline": -0.001117147894810877,
+      "max_abs_pitch_deg": 0.06232718690088008,
+      "max_abs_heave_m": 0.01220699193235849,
+      "energy_residual_fraction": 6.336645502668302e-10,
+      "mean_speed_mps": 0.6317740662971302
+    },
+    {
+      "variant": "no_friction",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.01,
+      "mean_load_MN": 0.4129309117395608,
+      "peak_load_MN": 0.6100887203916909,
+      "cycle_count": 129,
+      "mean_load_delta_vs_baseline": -0.002301961970650468,
+      "max_abs_pitch_deg": 0.04290444131995503,
+      "max_abs_heave_m": 0.009237132612240262,
+      "energy_residual_fraction": -2.2142776367328444e-09,
+      "mean_speed_mps": 0.6250749617748852
+    },
+    {
+      "variant": "surge_only_contact_at_cg",
+      "thickness_m": 1.0,
+      "commanded_speed_mps": 0.8,
+      "dt_s": 0.01,
+      "mean_load_MN": 0.41367765783335864,
+      "peak_load_MN": 0.6100426737765938,
+      "cycle_count": 125,
+      "mean_load_delta_vs_baseline": -0.0004977204098779442,
+      "max_abs_pitch_deg": 3.781733734047696e-05,
+      "max_abs_heave_m": 5.119046360167744e-06,
+      "energy_residual_fraction": -3.3895561870647134e-09,
+      "mean_speed_mps": 0.6126346220826363
+    }
+  ],
+  "criteria": {
+    "C1_timeseries_cases": {
+      "requirement": ">=6 cases, each integrated for >=60 s of physical time, with full series on disk and peak/mean/exceedances tabulated",
+      "cases": 6,
+      "physical_duration_s": 60.0,
+      "statistics_window_s": [
+        10.0,
+        60.0
+      ],
+      "min_statistics_window_s": 50.0,
+      "series_written": true,
+      "PASS": true
+    },
+    "C2_energy_balance": {
+      "requirement": "energy-budget residual < 5% of non-conservative work",
+      "metric": "residual of the non-conservative work, normalised by the input (thrust) work; primary quadrature = power (F.v), with the displacement and left-endpoint quadratures reported alongside",
+      "worst_residual_fraction": 5.022747497588798e-10,
+      "PASS": true
+    },
+    "C3_time_step_convergence": {
+      "requirement": "mean load changes < 3% when dt is halved",
+      "worst_relative_change": 0.007438207283169647,
+      "PASS": true
+    },
+    "C4_thickness_monotonicity": {
+      "requirement": "load increases monotonically with ice thickness (Spearman rho + significance)",
+      "pooled_rho": 0.9561828874675149,
+      "pooled_p_value": 0.022222222222222223,
+      "pooled_p_value_method": "exact permutation over all 720 relabellings",
+      "per_speed_monotone_increasing": true,
+      "per_speed_p_values": [
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "pooled_rho_requirement": ">= 0.95: tied thickness values give average ranks, so the pooled rho is 0.9562 for a perfectly monotone ensemble and cannot be 1.0",
+      "PASS": true
+    }
+  },
+  "null_result_statement": "None of the four criteria is reinterpreted: the numbers above are the measured quantities and the PASS/FAIL flags are computed from them."
+}
