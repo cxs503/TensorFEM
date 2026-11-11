@@ -1,0 +1,89 @@
+{
+ "all_gating_pass": true,
+ "all_pass_including_prediction": false,
+ "falsified_predictions": [
+  "G8b_reference_band_reaches_t_over_R_0.05"
+ ],
+ "gates": {
+  "G10_flat_facet_shell4_control": {
+   "criterion": "> 3% (recorded 13317% at 24 facets)",
+   "note": "merged flat-facet Shell4 element on the same case: element control",
+   "pass": true,
+   "value": 133.16588851674985
+  },
+  "G1_sigma_theta_vs_pr_2t": {
+   "criterion": "rel err < 3% at facets=8",
+   "note": "max over Gauss points of sigma_theta; reference pR/(2t)",
+   "pass": true,
+   "value": 7.309107154185312e-07
+  },
+  "G2_sigma_phi_vs_pr_2t": {
+   "criterion": "rel err < 3% at facets=8",
+   "note": "meridional stress, independent Gauss-point set",
+   "pass": true,
+   "value": 1.203855199882753e-06
+  },
+  "G3_isotropy": {
+   "criterion": "< 3% at facets=8",
+   "note": "|N_phi - N_theta| / (pR/2); the membrane state is equi-biaxial",
+   "pass": true,
+   "value": 1.5248483988372641e-06
+  },
+  "G4_radial_displacement": {
+   "criterion": "< 3% at facets=8",
+   "note": "w vs pR^2(1-nu)/(2Et) at the pole",
+   "pass": true,
+   "value": 6.261665223315587e-06
+  },
+  "G5_monotone_refinement": {
+   "criterion": "e(4) > e(8) > e(32)",
+   "note": "error must fall monotonically under refinement",
+   "pass": true,
+   "value": [
+    1.1279845849188063e-05,
+    7.309107154185312e-07,
+    2.8281590402912116e-09
+   ]
+  },
+  "G6_observed_order": {
+   "criterion": "min observed order >= 1.5",
+   "note": "log-log slope between consecutive ladders",
+   "pass": true,
+   "value": [
+    3.456,
+    3.948,
+    3.989,
+    4.025,
+    3.48
+   ]
+  },
+  "G7_poisson_invariance": {
+   "criterion": "< 3% for every nu in 0..0.49",
+   "note": "membrane stress of a closed sphere is nu-independent; w is not",
+   "pass": true,
+   "value": 8.572343833890272e-07
+  },
+  "G8a_reference_valid_at_case_point": {
+   "criterion": "|sigma_thin - sigma_Lame|/sigma_Lame < 3% at t/R of the case",
+   "note": "validity of the reference itself at t/R = 0.004 (thin-shell vs exact Lame)",
+   "pass": true,
+   "value": 0.004013376122981727
+  },
+  "G8b_reference_band_reaches_t_over_R_0.05": {
+   "criterion": "predicted: band reaches t/R = 0.05",
+   "note": "PREDECLARED PREDICTION FALSIFIED: measured band ends near t/R = 0.03; deviation scales like t/R (see thin_vs_lame_loglog_slope)",
+   "pass": false,
+   "value": [
+    0.001,
+    0.02
+   ]
+  },
+  "G9_chord_control_fails": {
+   "criterion": "> 3% (control must fail: geometry representation matters)",
+   "note": "same element and mesh, curved meridian switched off",
+   "pass": true,
+   "value": 2.078740587504627
+  }
+ },
+ "tolerance": 0.03
+}
