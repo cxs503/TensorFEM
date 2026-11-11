@@ -30,6 +30,22 @@ against the others and against closed forms rather than against a stored
 snapshot of this repository's output.
 """
 
+from .cylinder_radiation import (
+    CylinderRadiationResult,
+    EquivalentSourceResult,
+    axial_spectrum,
+    compact_body_power,
+    cylinder_mode_field,
+    cylinder_surface_grid,
+    donnell_frequencies,
+    equivalent_source_power,
+    finite_cylinder_mode_power,
+    fourier_cylinder_mode,
+    infinite_cylinder_conductance,
+    infinite_cylinder_efficiency,
+    monopole_power_matrix,
+    shell_radial_amplitudes,
+)
 from .levy_modes import (
     PlateModalConfig,
     leissa_cccc_square_lambdas,

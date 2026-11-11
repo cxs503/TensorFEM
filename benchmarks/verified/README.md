@@ -10,6 +10,7 @@ contact / modal verification surface).
 | `fem_cantilever/` | slender cantilever, `L/b/h = 10/1/0.1 m`, tip load | `w = F L^3/(3 E I)`, `sigma_xx = F(L-x)(z-h/2)/I` |
 | `fem_hertz_contact/` | two steel spheres `R = 50 mm` under `F = 10 kN` | `a = (3FR/4E*)^(1/3)`, `p_0 = 3F/(2 pi a^2)` |
 | `fem_plate_modal/` | SS rectangular plate `1.2 x 0.8 x 0.012 m` | `f_mn = (pi/2) sqrt(D/(rho h))[(m/a)^2+(n/b)^2]` |
+| `fem_structural_acoustics/` | baffled SS plate `1.0 x 0.5 x 0.01 m` modes + radiation efficiency, capped cylinder `R = 0.5 m, L = 2 m / 8 m` radiation | Kirchhoff `f_mn`, exact angular-spectrum `sigma`, Maidanik monopole law, Junger & Feit infinite-cylinder modal resistance, exact pulsating-sphere power (ESM anchor) |
 | `fem_panel_buckling/` | longitudinally stiffened panel cell `800 x 400 x 6 mm` + tee `150x10`/`50x10` (MITC4 shell, linearised bifurcation) | `sigma_cr = k pi^2 D/(b^2 t)`, `k = min_m (m b/a + a/(m b))^2` |
 
 Height of evidence per anchor:

@@ -1,0 +1,160 @@
+{
+ "schema": "tensorfem.verified-gates-partial.v1",
+ "anchor": "fem_structural_acoustics",
+ "title": "FEM structure-acoustic face: baffled plate modes, Rayleigh-integral radiated power, cylinder radiation vs Junger & Feit",
+ "mission": "p472w2-N09",
+ "generated_at": "2026-11-11T07:39:20",
+ "environment": {
+  "python": "3.11.6",
+  "machine": "loongarch64",
+  "torch": "2.7.1",
+  "numpy": "2.4.6",
+  "commit": "85876af",
+  "threads": 8
+ },
+ "gates": [
+  {
+   "id": "F1_pytest",
+   "quantity": "pytest tests/test_cylinder_radiation.py tests/test_fem_structural_acoustics.py: 24 passed, 0 failed",
+   "value": 24.0,
+   "threshold": 12,
+   "passed": true
+  },
+  {
+   "id": "A1_plate_modal_first6",
+   "quantity": "max |f_fem - f_kirchhoff|/f over the first six modes, 24x24 Q4",
+   "value": 0.0234305728030315,
+   "threshold": 0.03,
+   "passed": true
+  },
+  {
+   "id": "A2_plate_mesh_convergence",
+   "quantity": "A2_plate_mesh_convergence",
+   "value": 0.059338089289970926,
+   "threshold": null,
+   "passed": true
+  },
+  {
+   "id": "B1_plate_sigma_low_ka",
+   "quantity": "ka < 1, FEM mode velocity + Rayleigh vs analytic sine + spectrum",
+   "value": 0.0035156404965401844,
+   "threshold": 0.1,
+   "passed": true
+  },
+  {
+   "id": "B2_plate_sigma_high_ka",
+   "quantity": "B2_plate_sigma_high_ka",
+   "value": 0.004023510404220887,
+   "threshold": 0.05,
+   "passed": true
+  },
+  {
+   "id": "B3_plate_low_ka_exponent",
+   "quantity": "fitted sigma ~ (ka)^p for sine(1,1), ka in [0.2, 0.7]",
+   "value": 1.9931930837729965,
+   "threshold": null,
+   "passed": true
+  },
+  {
+   "id": "B4_plate_high_ka_plateau",
+   "quantity": "sigma -> 1.0 with the modal-RMS normalisation (i.e. 0.5 with the space-averaged <v^2>), mean over ka in {20, 30, 50}",
+   "value": 1.0339867863895016,
+   "threshold": 0.05,
+   "passed": true
+  },
+  {
+   "id": "B5_plate_monopole_law",
+   "quantity": "Maidanik monopole law vs 2 x the exact angular-spectrum sigma, ka in {0.3, 0.5, 1.0} (the factor 2 is the normalisation difference between the two conventions)",
+   "value": 0.019878214397076377,
+   "threshold": 0.03,
+   "passed": true
+  },
+  {
+   "id": "C1_esm_sphere",
+   "quantity": "C1_esm_sphere",
+   "value": 1.672835284582952e-05,
+   "threshold": 0.02,
+   "passed": true
+  },
+  {
+   "id": "C2_esm_resolution_convergence",
+   "quantity": "matching grid 21x40 -> 29x56 with a fixed source surface: 2.09 % worst case; the coarse pair 13x24 -> 21x40 moves by 7.82 %, i.e. the coarse grid is not adequate and is not used for any reported number",
+   "value": 0.020909342942096343,
+   "threshold": 0.05,
+   "passed": true
+  },
+  {
+   "id": "C3_cylinder_sigma_vs_jf_L2",
+   "quantity": "R = 0.5 m, L = 2 m, ka in [0.5, 3], four modes",
+   "value": 0.41045906291645917,
+   "threshold": 0.15,
+   "passed": false
+  },
+  {
+   "id": "C4_cylinder_sigma_vs_jf_L8",
+   "quantity": "length-converged configuration L = 8 m, ka in [0.5, 3]",
+   "value": 0.3031401810717105,
+   "threshold": 0.15,
+   "passed": false
+  },
+  {
+   "id": "C5_cylinder_gap_trend",
+   "quantity": "establishes that the L = 2 discrepancy is a low-frequency finite-length effect, not a numerical artefact",
+   "value": NaN,
+   "threshold": null,
+   "passed": true
+  },
+  {
+   "id": "D1_plate_three_way",
+   "quantity": "D1_plate_three_way",
+   "value": 0.004023510404220887,
+   "threshold": 0.1,
+   "passed": true
+  },
+  {
+   "id": "D2_physical_bound",
+   "quantity": "D2_physical_bound",
+   "value": 0.622099254652718,
+   "threshold": 1.02,
+   "passed": true
+  },
+  {
+   "id": "E1_negative_control",
+   "quantity": "E1_negative_control",
+   "value": 0.0,
+   "threshold": 1e-30,
+   "passed": true
+  },
+  {
+   "id": "E2_esm_regularization_sensitivity",
+   "quantity": "E2_esm_regularization_sensitivity",
+   "value": 0.006989606003553028,
+   "threshold": 0.05,
+   "passed": true
+  }
+ ],
+ "passed": false,
+ "failed_gates": [
+  "C3_cylinder_sigma_vs_jf_L2",
+  "C4_cylinder_sigma_vs_jf_L8"
+ ],
+ "honest_fail_notes": {
+  "C3_cylinder_sigma_vs_jf_L2": "Junger & Feit infinite-cylinder closure vs the finite capped cylinder exterior solve at R=0.5 m, L=2 m: max |gap| 41.1 % over ka in [0.5, 3]; the gap decays monotonically with ka (<= 6.1 % for ka >= 2.5) and is dominated by the axially antisymmetric m=2 modes in the compact regime, where an infinite-cylinder closure cannot be a valid reference.",
+  "C4_cylinder_sigma_vs_jf_L8": "same comparison at the length-converged L = 8 m: 30.3 % worst case, driven by the m=2 modes at ka <= 1; the low orders (1,0) and (1,1) are within 10.6 % over the whole band."
+ },
+ "artifacts": {
+  "result": "result.json",
+  "figures": [
+   "fig_cylinder.png",
+   "fig_esm_validation.png",
+   "fig_plate_modes.png",
+   "fig_plate_sigma.png"
+  ],
+  "report": "docs/reports/fem-structural-acoustics.md"
+ },
+ "limitations": [
+  "air, not water: fluid loading on the structure is neglected (added-mass frequency shift ~0.8 % here)",
+  "the cylinder radiation operator is verified on prescribed modal velocity fields; the shell eigenvalue problem of the repository's cylindrical Shell4 element is NOT verified (mesh sequence and Donnell low-n branch both unresolved)",
+  "the exterior solve is discretisation-limited to ~2 % (measured)"
+ ]
+}
