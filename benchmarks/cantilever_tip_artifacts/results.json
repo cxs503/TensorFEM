@@ -1,0 +1,121 @@
+{
+  "benchmark": "cantilever_tip_deflection",
+  "case_key": "CASE-CANTILEVER-TIP",
+  "generated_at": "2026-11-11T22:30:47+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64",
+    "dtype": "torch.float64"
+  },
+  "geometry": {
+    "length_m": 1.0,
+    "width_m": 0.01,
+    "height_m": 0.01,
+    "slenderness_L_over_h": 100.0,
+    "area_m2": 0.0001,
+    "inertia_m4": 8.333333333333335e-10
+  },
+  "material": {
+    "young_modulus_Pa": 200000000000.0,
+    "poisson_ratio": 0.3,
+    "shear_modulus_Pa": 76923076923.07692
+  },
+  "load": {
+    "tip_force_N": 5.0,
+    "type": "concentrated_transverse"
+  },
+  "analytic_references": {
+    "euler_bernoulli": {
+      "formula": "delta = P*L^3 / (3*E*I)",
+      "tip_deflection_m": 0.009999999999999998
+    },
+    "timoshenko": {
+      "formula": "delta = P*L^3/(3*E*I) + P*L/(kappa*A*G)",
+      "shear_correction_kappa": 0.8333333333333334,
+      "shear_contribution_m": 7.799999999999999e-07,
+      "shear_fraction_pct": 0.007800000000000001,
+      "tip_deflection_m": 0.010000779999999999
+    }
+  },
+  "tolerance": 0.03,
+  "frame_results": [
+    {
+      "n_elements": 4,
+      "dofs": 15,
+      "tip_deflection_m": 0.010000000000000177,
+      "relative_error_vs_eb": 1.7867651802561116e-14,
+      "seconds": 0.0037041902542114258
+    },
+    {
+      "n_elements": 8,
+      "dofs": 27,
+      "tip_deflection_m": 0.010000000000001865,
+      "relative_error_vs_eb": 1.8665624601510447e-13,
+      "seconds": 0.002854200080037117
+    },
+    {
+      "n_elements": 16,
+      "dofs": 51,
+      "tip_deflection_m": 0.010000000000012998,
+      "relative_error_vs_eb": 1.3000017728970194e-12,
+      "seconds": 0.0027610696852207184
+    },
+    {
+      "n_elements": 32,
+      "dofs": 99,
+      "tip_deflection_m": 0.01000000000015078,
+      "relative_error_vs_eb": 1.507821645319041e-11,
+      "seconds": 0.01883736066520214
+    }
+  ],
+  "hex20_results": [
+    {
+      "axial_elements": 8,
+      "cross_elements": 1,
+      "nodes": 104,
+      "dofs": 312,
+      "tip_deflection_m": 0.009748606755302255,
+      "relative_error_vs_eb": -0.02513932446977438,
+      "seconds": 2.7546617705374956
+    },
+    {
+      "axial_elements": 16,
+      "cross_elements": 1,
+      "nodes": 200,
+      "dofs": 600,
+      "tip_deflection_m": 0.009883910739521252,
+      "relative_error_vs_eb": -0.0116089260478746,
+      "seconds": 6.9139723200351
+    },
+    {
+      "axial_elements": 16,
+      "cross_elements": 2,
+      "nodes": 501,
+      "dofs": 1503,
+      "tip_deflection_m": 0.009913672415396,
+      "relative_error_vs_eb": -0.00863275846039978,
+      "seconds": 25.47523207962513
+    },
+    {
+      "axial_elements": 32,
+      "cross_elements": 2,
+      "nodes": 981,
+      "dofs": 2943,
+      "tip_deflection_m": 0.00995984584188315,
+      "relative_error_vs_eb": -0.004015415811684833,
+      "seconds": 53.834629939869046
+    }
+  ],
+  "verdict": {
+    "frame_passed": true,
+    "hex20_passed": true,
+    "finest_frame_error_pct": 1.5078216453190411e-09,
+    "finest_hex20_error_pct": 0.40154158116848326,
+    "all_passed": true
+  },
+  "artifacts": {
+    "convergence_png": "benchmarks/cantilever_tip_artifacts/convergence.png",
+    "comparison_png": "benchmarks/cantilever_tip_artifacts/comparison.png"
+  }
+}
