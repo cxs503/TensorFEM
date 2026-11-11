@@ -1,0 +1,96 @@
+{
+  "spec": {
+    "corners": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        48.0,
+        44.0
+      ],
+      [
+        48.0,
+        60.0
+      ],
+      [
+        0.0,
+        44.0
+      ]
+    ],
+    "young": 1.0,
+    "poisson": 0.3333333333333333,
+    "thickness": 1.0,
+    "resultant": 1.0,
+    "traction_y": 0.0625,
+    "published_reference_uy_mid": 23.96,
+    "midpoint": [
+      48.0,
+      52.0
+    ],
+    "canonical_points": [
+      [
+        0.5,
+        0.5
+      ],
+      [
+        0.3,
+        0.5
+      ],
+      [
+        0.7,
+        0.5
+      ],
+      [
+        0.5,
+        0.25
+      ],
+      [
+        0.5,
+        0.75
+      ]
+    ],
+    "probe_offset": [
+      0.0026041666666666665,
+      0.0015625
+    ]
+  },
+  "levels": [
+    8,
+    16
+  ],
+  "parties": [
+    "tensorfem_q4"
+  ],
+  "results": {
+    "tensorfem_q4": {
+      "8": {
+        "party": "tensorfem_q4",
+        "family": "Q4 bilinear, 2x2 Gauss, full integration (production path)",
+        "third_party": false,
+        "ndof": 162,
+        "nelem": 64,
+        "uy_mid": 22.079183389482466,
+        "uy_max": 22.6726190140809,
+        "reaction_y": -1.0,
+        "energy": 11.035060853091176,
+        "vm_max_nodal": 0.21341172293256871,
+        "wall_s": 4.795817613601685
+      },
+      "16": {
+        "party": "tensorfem_q4",
+        "family": "Q4 bilinear, 2x2 Gauss, full integration (production path)",
+        "third_party": false,
+        "ndof": 578,
+        "nelem": 256,
+        "uy_mid": 23.430411260069476,
+        "uy_max": 24.271986401978836,
+        "reaction_y": -1.0,
+        "energy": 11.727674572217282,
+        "vm_max_nodal": 0.27506419844438135,
+        "wall_s": 17.100241899490356
+      }
+    }
+  },
+  "wall_time_s": 21.896950483322144
+}
