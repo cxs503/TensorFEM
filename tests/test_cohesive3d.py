@@ -816,3 +816,192 @@ def test_batched_softening_tangent_is_the_derivative_of_the_traction(n):
     scale = max(float(jacobian.abs().max()), 1.0)
     error = float((response.tangent - jacobian).abs().max()) / scale
     assert error < 1e-6, f"batched consistent tangent deviates from finite differences: {error:.3e}"
+
+
+# --------------------------------------------------------------------------- #
+# Dissipated-energy accounting (closed form vs path integral)
+# --------------------------------------------------------------------------- #
+
+
+def _unit(angle_deg: float) -> torch.Tensor:
+    theta = math.radians(angle_deg)
+    return torch.tensor([math.cos(theta), math.sin(theta), 0.0], dtype=D)
+
+
+def _dissipated_by_path_integral(law_obj, direction: torch.Tensor, steps: int = 2001) -> float:
+    """Work spent loading monotonically from 0 to failure along ``direction``."""
+    failure = float(law_obj.failure_amplitude(direction))
+    amplitudes = torch.linspace(0.0, failure, steps, dtype=D)
+    separation = amplitudes[:, None] * direction[None, :]
+    traction = law_obj.update(separation).traction
+    work = torch.trapezoid((traction * direction).sum(-1), amplitudes)
+    return float(work)
+
+
+@pytest.mark.parametrize("angle", [0.0, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0])
+def test_dissipated_energy_matches_the_path_integral(angle):
+    """The closed-form dissipation must equal int t . d(delta) along a ray.
+
+    This is the independent oracle for the new state function: the traction
+    law (already verified against autograd and finite differences) is
+    integrated numerically, so the energy is derived from a different code
+    path than the closed form.
+    """
+    law_obj = law()
+    direction = _unit(angle)
+    integrated = _dissipated_by_path_integral(law_obj, direction)
+    closed = float(law_obj.dissipated_energy(direction * float(law_obj.failure_amplitude(direction))))
+    assert closed == pytest.approx(integrated, rel=1e-5)
+
+
+@pytest.mark.parametrize(
+    "direction",
+    [
+        torch.tensor([1.0, 0.0, 0.0], dtype=D),
+        torch.tensor([0.0, 1.0, 0.0], dtype=D),
+        torch.tensor([0.0, 0.0, 1.0], dtype=D),
+        torch.tensor([1.0, 1.0, 0.0], dtype=D),
+        torch.tensor([1.0, 1.0, 1.0], dtype=D),
+    ],
+)
+def test_dissipated_energy_equals_gc_at_failure(direction):
+    """Complete separation consumes exactly the BK fracture energy."""
+    law_obj = law()
+    unit = direction / torch.linalg.vector_norm(direction)
+    failure = law_obj.failure_amplitude(unit)
+    dissipated = law_obj.dissipated_energy(unit * failure)
+    critical = law_obj.critical_energy(unit)
+    assert float(dissipated) == pytest.approx(float(critical), rel=1e-12)
+    # Past failure the interface is traction free and cannot dissipate more.
+    beyond = law_obj.dissipated_energy(unit * (3.0 * failure))
+    assert float(beyond) == pytest.approx(float(critical), rel=1e-12)
+
+
+def test_dissipated_energy_is_zero_while_elastic_and_monotone_saturating():
+    """No dissipation before onset; monotone and bounded by G_c on the envelope."""
+    law_obj = law()
+    direction = _unit(30.0)
+    onset = float(law_obj.onset_amplitude(direction))
+    failure = float(law_obj.failure_amplitude(direction))
+    critical = float(law_obj.critical_energy(direction))
+
+    elastic = direction[None, :] * torch.linspace(0.0, onset, 33, dtype=D)[:, None]
+    assert float(law_obj.dissipated_energy(elastic).abs().max()) == 0.0
+
+    amplitudes = torch.linspace(onset, failure, 200, dtype=D)
+    values = law_obj.dissipated_energy(amplitudes[:, None] * direction[None, :])
+    assert bool(torch.all(torch.diff(values) >= -1e-12)), "dissipation must not decrease on loading"
+    assert float(values.max()) <= critical * (1.0 + 1e-12)
+    assert float(values[-1]) == pytest.approx(critical, rel=1e-12)
+
+
+def test_dissipated_energy_is_independent_of_the_unloading_path():
+    """Secant unloading stores energy reversibly: W_d depends on history only."""
+    law_obj = law()
+    direction = _unit(20.0)
+    peak = 2.0 * float(law_obj.onset_amplitude(direction))
+    loaded = law_obj.update(direction * peak)
+    assert float(loaded.dissipated_energy) > 0.0
+    # Unload to 20% of the peak reopening: the dissipated energy is unchanged.
+    partial = law_obj.update(direction * (0.2 * peak), loaded.history)
+    assert float(partial.dissipated_energy) == pytest.approx(float(loaded.dissipated_energy), rel=1e-12)
+    # ... and so is the stored energy accounting: W_d + 1/2 t.delta is monotone.
+    reopened = law_obj.update(direction * peak, loaded.history)
+    assert float(reopened.dissipated_energy) == pytest.approx(float(loaded.dissipated_energy), rel=1e-12)
+
+
+def test_compression_dissipates_nothing():
+    """Closing the interface is elastic (penalty k_n) and never dissipates."""
+    law_obj = law()
+    closure = torch.tensor([[-1e-7, 2e-7, 0.0], [-1e-6, 0.0, 0.0]], dtype=D)
+    assert float(law_obj.dissipated_energy(closure).abs().max()) == 0.0
+    response = law_obj.update(closure)
+    assert float(response.dissipated_energy.abs().max()) == 0.0
+
+
+def test_response_dissipated_energy_matches_the_law_method():
+    """``update`` and the standalone accessor must report the same state function."""
+    law_obj = law()
+    separation = _mixed_mode_samples(7)
+    history = torch.linspace(0.0, 1.2e-4, separation.shape[0], dtype=D)
+    response = law_obj.update(separation, history)
+    direct = law_obj.dissipated_energy(separation, history)
+    assert torch.allclose(response.dissipated_energy, direct, rtol=1e-13, atol=1e-13)
+    # The state function must not depend on how the state was reached.
+    again = law_obj.update(separation, response.history)
+    assert torch.allclose(again.dissipated_energy, response.dissipated_energy, rtol=1e-13, atol=1e-13)
+
+
+def test_element_dissipated_energy_equals_fracture_energy_times_area():
+    """Element-level closure: the reported Joules are exactly G_c * A."""
+    law_obj = law()
+    coords = flat_element(1.0)
+    area = float(interface_area(coords))
+    failure = float(law_obj.failure_amplitude(torch.tensor([1.0, 0.0, 0.0], dtype=D)))
+    for kinematics in ("small_strain", "corotational"):
+        u = torch.zeros(8, 3, dtype=D)
+        u[4:, 2] = failure
+        _, _, _, diagnostics = cohesive_hex8_response(
+            coords, u, law_obj, kinematics=kinematics
+        )
+        assert float(diagnostics["dissipated_energy"]) == pytest.approx(500.0 * area, rel=1e-12)
+        assert torch.allclose(
+            diagnostics["dissipated_per_area"],
+            torch.full((4,), 500.0, dtype=D),
+            rtol=1e-12,
+        )
+        # Partially damaged interface: 0 < W_d < G_c A.
+        u[4:, 2] = 1.2 * float(law_obj.onset_amplitude(torch.tensor([1.0, 0.0, 0.0], dtype=D)))
+        _, _, _, partial = cohesive_hex8_response(coords, u, law_obj, kinematics=kinematics)
+        assert 0.0 < float(partial["dissipated_energy"]) < 500.0 * area
+
+
+def test_corotational_element_dissipation_is_rotation_invariant():
+    """Rigid rotation of the body must not change the dissipated energy."""
+    law_obj = law()
+    coords = flat_element(1.0)
+    values = []
+    for angle in (0.0, 0.3, 1.2):
+        c, s = math.cos(angle), math.sin(angle)
+        rotation = torch.tensor([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]], dtype=D)
+        u = torch.zeros(8, 3, dtype=D)
+        u[4:, 2] = 1e-4
+        _, _, _, diagnostics = cohesive_hex8_response(
+            coords @ rotation.T, u @ rotation.T, law_obj, kinematics="corotational"
+        )
+        values.append(float(diagnostics["dissipated_energy"]))
+    assert max(values) - min(values) < 1e-10 * max(values)
+
+
+def test_non_proportional_path_dissipation_stays_bounded():
+    """Mode-mix rotation at constant gap: the state function stays within G_c.
+
+    The law is a history-of-maximum-separation model, so a path that rotates
+    the mixity is outside the *exact* (fixed-direction) envelope.  This test
+    pins the measured behaviour instead of assuming it: the reported energy
+    must remain bounded by the larger of the two pure-mode energies and stay
+    within 0.1% of the numerically integrated work for the path used in
+    ``benchmarks/cohesive3d_verification_tables.py``.
+    """
+    law_obj = law()
+    onset = float(law_obj.onset_amplitude(_unit(0.0)))
+    peak = 1.5 * onset
+    normal = _unit(0.0)
+    failure_shear = float(law_obj.failure_amplitude(_unit(90.0)))
+
+    path = [normal * peak * (k / 200.0) for k in range(201)]
+    path += [torch.tensor([peak, failure_shear * k / 400.0, 0.0], dtype=D) for k in range(1, 401)]
+    work = 0.0
+    history = None
+    previous = None
+    for separation in path:
+        response = law_obj.update(separation, history)
+        history = response.history
+        if previous is not None:
+            work += 0.5 * float(((previous[1] + response.traction) * (separation - previous[0])).sum())
+        previous = (separation, response.traction)
+    # Bounded by the shear fracture energy (the path ends in mode II) ...
+    assert work <= 1200.0 * (1.0 + 1e-3)
+    # ... and the closed-form state function agrees with the integrated work.
+    closed = float(response.dissipated_energy)
+    assert closed == pytest.approx(work, rel=1e-3)

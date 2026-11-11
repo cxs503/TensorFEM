@@ -37,18 +37,32 @@ from __future__ import annotations
 import json
 import math
 import pathlib
+import subprocess
+import sys
 
-import torch
+HERE = pathlib.Path(__file__).resolve().parent
+REPO = HERE.parent
 
-from tensorfem.cohesive3d import (
+# Import ``tensorfem`` from *this* checkout.  A shared site-packages tree can
+# hold an editable install that points at another worktree (measured: without
+# this the script imported a foreign checkout and crashed on a bug that is
+# already fixed here), which would make the table a statement about somebody
+# else's code.  ``provenance`` below records what was actually imported.
+_SRC = REPO / "src"
+if _SRC.is_dir():
+    sys.path.insert(0, str(_SRC))
+
+import torch  # noqa: E402
+
+from tensorfem.cohesive3d import (  # noqa: E402
     BKCohesive3DLaw,
     assemble_cohesive_interface,
     cohesive_hex8_response,
     interface_area,
 )
-from tensorfem.mixed_mode_cohesive import BenzeggaghKenaneLaw
+from tensorfem.mixed_mode_cohesive import BenzeggaghKenaneLaw  # noqa: E402
+import tensorfem  # noqa: E402
 
-HERE = pathlib.Path(__file__).resolve().parent
 JSON_PATH = HERE / "cohesive3d_verification_tables.json"
 MD_PATH = HERE / "cohesive3d_verification_tables.md"
 
@@ -142,6 +156,35 @@ def record(check, oracle, measure, value, tolerance, status="PASS"):
 
 def ok(value: float, tolerance: float) -> str:
     return "PASS" if value <= tolerance else "FAIL"
+
+
+def provenance() -> dict:
+    """What code produced these numbers (checkout, commit, cleanliness)."""
+    module_file = pathlib.Path(tensorfem.__file__).resolve()
+    try:
+        inside = REPO.resolve() in module_file.parents
+    except OSError:  # pragma: no cover - defensive
+        inside = False
+    info = {
+        "tensorfem_module_file": str(module_file),
+        "imported_from_this_checkout": bool(inside),
+        "repo": str(REPO),
+    }
+    try:
+        info["git_commit"] = subprocess.run(
+            ["git", "-C", str(REPO), "rev-parse", "HEAD"],
+            capture_output=True, text=True, timeout=10, check=True,
+        ).stdout.strip()
+        info["git_dirty"] = bool(
+            subprocess.run(
+                ["git", "-C", str(REPO), "status", "--porcelain"],
+                capture_output=True, text=True, timeout=10, check=True,
+            ).stdout.strip()
+        )
+    except Exception:  # pragma: no cover - git missing / not a checkout
+        info["git_commit"] = None
+        info["git_dirty"] = None
+    return info
 
 
 # --------------------------------------------------------------------------- #
@@ -490,6 +533,184 @@ def check_dissipation():
     ]
 
 
+# --------------------------------------------------------------------------- #
+# Dissipated-energy accounting of the closed-form state function
+# --------------------------------------------------------------------------- #
+
+
+def ray(angle_deg: float) -> torch.Tensor:
+    theta = math.radians(angle_deg)
+    return torch.tensor([math.cos(theta), math.sin(theta), 0.0], dtype=D)
+
+
+def path_work(law, separations) -> float:
+    """Trapezoidal ``int t . d(delta)`` along an explicit separation path."""
+    work, history, previous = 0.0, None, None
+    for separation in separations:
+        response = law.update(separation, history)
+        history = response.history
+        if previous is not None:
+            work += 0.5 * float(((previous[1] + response.traction) * (separation - previous[0])).sum())
+        previous = (separation, response.traction)
+    return work
+
+
+def check_dissipation_closed_form():
+    """Closed-form dissipated energy vs the numerical work of the traction law."""
+    law = new_law()
+    worst = 0.0
+    lines = []
+    for angle in (0.0, 15.0, 30.0, 45.0, 60.0, 75.0, 90.0):
+        direction = ray(angle)
+        failure = float(law.failure_amplitude(direction))
+        amplitudes = torch.linspace(0.0, failure, 2001, dtype=D)
+        separation = amplitudes[:, None] * direction[None, :]
+        traction = law.update(separation).traction
+        integrated = float(torch.trapezoid((traction * direction).sum(-1), amplitudes))
+        closed = float(law.dissipated_energy(direction * failure))
+        worst = max(worst, abs(closed - integrated) / integrated)
+        lines.append(f"{angle:.0f}deg {closed:.4f}")
+    return record(
+        "law_dissipation_vs_path_integral",
+        "closed-form W_d(a_f) == int t . d(delta) along a monotonic ray (7 mixities)",
+        "max relative difference, " + "; ".join(lines[:3]) + " ...",
+        worst,
+        1e-5,
+        ok(worst, 1e-5),
+    )
+
+
+def check_dissipation_equals_fracture_energy():
+    law = new_law()
+    worst = 0.0
+    for direction in (
+        torch.tensor([1.0, 0.0, 0.0], dtype=D),
+        torch.tensor([0.0, 1.0, 0.0], dtype=D),
+        torch.tensor([0.0, 0.0, 1.0], dtype=D),
+        torch.tensor([1.0, 1.0, 0.0], dtype=D),
+        torch.tensor([1.0, 1.0, 1.0], dtype=D),
+    ):
+        unit = direction / torch.linalg.vector_norm(direction)
+        failure = float(law.failure_amplitude(unit))
+        closed = float(law.dissipated_energy(unit * failure))
+        critical = float(law.critical_energy(unit))
+        worst = max(worst, abs(closed - critical) / critical)
+    return record(
+        "law_dissipation_equals_fracture_energy",
+        "W_d(a_f) == G_c(direction), BK mixed mode, modes I / II / III / 45deg / 3-D",
+        f"max relative difference from G_c, 5 directions, worst {worst:.2e}",
+        worst,
+        1e-12,
+        ok(worst, 1e-12),
+    )
+
+
+def check_dissipation_monotone():
+    law = new_law()
+    direction = ray(30.0)
+    onset = float(law.onset_amplitude(direction))
+    failure = float(law.failure_amplitude(direction))
+    critical = float(law.critical_energy(direction))
+    elastic = float(law.dissipated_energy(direction[None, :] * torch.linspace(0.0, onset, 33, dtype=D)[:, None]).abs().max())
+    amplitudes = torch.linspace(onset, failure * 1.5, 400, dtype=D)
+    values = law.dissipated_energy(amplitudes[:, None] * direction[None, :])
+    drops = float(torch.clamp(-torch.diff(values), min=0.0).max())
+    bound = max(float(values.max()) - critical, 0.0) / critical
+    value = max(drops / critical, bound, elastic / critical)
+    return record(
+        "law_dissipation_monotone_bounded",
+        "W_d == 0 on the elastic branch, non-decreasing, saturating at G_c",
+        f"elastic max {elastic:.1e} J/m^2, worst decrease {drops:.1e}, overshoot {bound:.1e}",
+        value,
+        1e-12,
+        ok(value, 1e-12),
+    )
+
+
+def check_element_dissipation():
+    law = new_law()
+    coords = flat_element()
+    area = float(interface_area(coords))
+    failure = float(law.failure_amplitude(torch.tensor([1.0, 0.0, 0.0], dtype=D)))
+    worst = 0.0
+    measures = []
+    for kinematics in ("small_strain", "corotational"):
+        u = torch.zeros(8, 3, dtype=D)
+        u[4:, 2] = failure
+        _, _, _, diagnostics = cohesive_hex8_response(
+            coords, u, law, kinematics=kinematics
+        )
+        energy = float(diagnostics["dissipated_energy"])
+        worst = max(worst, abs(energy - G_IC * area) / (G_IC * area))
+        measures.append(f"{kinematics} {energy:.6f} J")
+    return record(
+        "element_dissipation_equals_gc_times_area",
+        "element diagnostics ``dissipated_energy`` == G_Ic * A at complete opening",
+        ", ".join(measures) + f" vs {G_IC:.1f} J",
+        worst,
+        1e-12,
+        ok(worst, 1e-12),
+    )
+
+
+def check_element_dissipation_rotation():
+    law = new_law()
+    coords = flat_element()
+    values = []
+    for angle in (0.0, 0.3, 1.2):
+        rot = rotation([0.0, 0.0, angle])
+        u = torch.zeros(8, 3, dtype=D)
+        u[4:, 2] = 1e-4
+        _, _, _, diagnostics = cohesive_hex8_response(
+            coords @ rot.T, u @ rot.T, law, kinematics="corotational"
+        )
+        values.append(float(diagnostics["dissipated_energy"]))
+    spread = (max(values) - min(values)) / max(values)
+    return record(
+        "element_dissipation_rotation_invariance",
+        "element ``dissipated_energy`` independent of a rigid rotation (corotational)",
+        "max relative spread over theta = 0.0, 0.3, 1.2 rad",
+        spread,
+        1e-14,
+        ok(spread, 1e-14),
+    )
+
+
+def check_nonproportional_dissipation():
+    """Mode-mix rotation at constant gap: measured, not assumed.
+
+    The law is a history-of-maximum-separation model, so a path that rotates
+    the mode mix is not integrated exactly by the state function.  The row
+    quantifies the residual against the numerically integrated work and the
+    bound ``G_c`` of the direction the path ends in.
+    """
+    law = new_law()
+    peak = 1.5 * float(law.onset_amplitude(ray(0.0)))
+    shear = float(law.failure_amplitude(ray(90.0)))
+    path = [ray(0.0) * peak * (k / 200.0) for k in range(201)]
+    path += [torch.tensor([peak, shear * k / 400.0, 0.0], dtype=D) for k in range(1, 401)]
+    work = path_work(law, path)
+    # The closed form is evaluated on the *current* state, so the history of
+    # the last path point is recovered by replaying the path.
+    history = None
+    for separation in path:
+        response = law.update(separation, history)
+        history = response.history
+    closed = float(response.dissipated_energy)
+    residual = abs(closed - work) / work
+    overshoot = max(work - G_IIC, 0.0) / G_IIC
+    value = max(residual, overshoot)
+    return record(
+        "nonproportional_path_dissipation",
+        "open to 1.5 a_0(I) then shear to failure: 0 <= W - G_IIc and W_d ~= W_path",
+        f"W_path {work:.3f} J/m^2 vs G_IIc {G_IIC:.1f}, closed form {closed:.3f} "
+        f"(residual {residual:.1e})",
+        value,
+        1e-3,
+        ok(value, 1e-3),
+    )
+
+
 def check_mesh_objectivity():
     law = new_law()
     expected = float(law.envelope_traction(torch.tensor([[2e-6, 0.0, 0.0]], dtype=D))[0, 0]) * 1.0
@@ -575,6 +796,12 @@ def build_tables():
     rows.append(check_tangent_symmetry())
     rows.append(check_tangent_finite_difference())
     rows.extend(check_dissipation())
+    rows.append(check_dissipation_closed_form())
+    rows.append(check_dissipation_equals_fracture_energy())
+    rows.append(check_dissipation_monotone())
+    rows.append(check_element_dissipation())
+    rows.append(check_element_dissipation_rotation())
+    rows.append(check_nonproportional_dissipation())
     rows.append(check_mesh_objectivity())
     rows.append(check_assembly_consistency())
     rows.append(check_compression())
@@ -612,6 +839,7 @@ def main() -> int:
             "mode_ii_energy_J_per_m2": G_IIC,
             "bk_eta": ETA,
         },
+        "provenance": provenance(),
         "checks": rows,
         "passed": sum(1 for row in rows if row["status"] == "PASS"),
         "failed": sum(1 for row in rows if row["status"] == "FAIL"),
@@ -619,6 +847,12 @@ def main() -> int:
     }
     JSON_PATH.write_text(json.dumps(payload, indent=2) + "\n")
     MD_PATH.write_text(render_markdown(rows) + "\n")
+    prov = payload["provenance"]
+    if not prov["imported_from_this_checkout"]:
+        print(
+            f"WARNING: tensorfem imported from {prov['tensorfem_module_file']}, "
+            f"which is outside {prov['repo']}; the table describes that checkout."
+        )
     print(render_markdown(rows))
     print(
         f"\n{payload['passed']} PASS, {payload['failed']} FAIL, "
