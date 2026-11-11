@@ -1,0 +1,223 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "benchmarks/undex_shock/cole_anchor",
+  "topic": "w23_undex_shock_chain",
+  "mission_id": 15095,
+  "repository": "TensorFEM",
+  "generated_by": "scripts/w23_cole_anchor_record.py",
+  "script_sha256": "1430fe3106bfb6c91099edfd9a6499a20f3011b584e9096bc99eb9e93bf16713",
+  "git_commit_at_record": "fe26e5fe67162caaab36f7a46cd535a771e65ab7",
+  "document": {
+    "citation_as_assigned": "Cole, R.H., Underwater Explosions, Princeton University Press, 1948 (anchor AN-COLE)",
+    "subject_quantity": "peak shock overpressure p_m = K (W^(1/3)/R)^A and the bubble-pulsation period T (K, A charge-dependent implementation parameters)",
+    "why_it_matters": "without a transcribed copy of Cole's tables the coefficient values cannot be validated; the chain therefore reports transcription fidelity of the recorded parameters, the coefficient-free scaling structure, and the FSI/solver verification separately"
+  },
+  "acquisition_status": "NOT_OBTAINED",
+  "acquisition_attempts": [
+    {
+      "channel": "local filesystem corpus",
+      "action": "grep -rIl -i 'cole|undex|underwater explosion|bubble period|Cole (1948)' /root /opt /srv /data --include=*.py --include=*.json --include=*.md --include=*.csv --include=*.txt --include=*.tex --include=*.bib (excluding this worktree)",
+      "result": "only this repository's own UNDEX code (src/tensorfem/undex_shock.py, present in this repository's history at commit a706ec07) and unrelated wall-law scripts (compare_wall_law_coles.py in /tmp/stage). No Cole (1948) text, table or page image."
+    },
+    {
+      "channel": "local PDF corpus",
+      "action": "find / -maxdepth 5 -iname '*.pdf' -not -path '/proc/*' -not -path '/sys/*'  (bounded depth-5 sweep; the full sweep exceeded the tool timeout at 120 s after listing 35 files)",
+      "result": "35 PDFs, all tooling/platform manuals (SDAA programming guide, hermes-kanban spec, one unrelated paper under /root/.worktrees). No Cole monograph or UNDEX report."
+    },
+    {
+      "channel": "network",
+      "action": "timeout 12 curl -sS -o /dev/null -w '%{http_code}' https://en.wikipedia.org/wiki/Underwater_explosion ; timeout 10 curl -sS -o /dev/null -w '%{http_code}' https://www.google.com",
+      "result": "both rejected by the execution sandbox: 'REJECTED: \u547d\u4ee4\u88ab\u5b89\u5168\u7b56\u7565\u62e6\u622a' (security policy). No outbound HTTP, so no full text and no authorised copy either way."
+    },
+    {
+      "channel": "operator-supplied deposition",
+      "action": "ls benchmarks/anchors/sources/",
+      "result": "only sname_tr_bulletin_3-37_4-7.transcription.json (different topic, SNAME Transactions); no Cole deposition."
+    },
+    {
+      "channel": "repository history",
+      "action": "git log --all --oneline -- '*undex*'",
+      "result": "a706ec07 'undex shock chain: Cole(1948) environment -> Taylor air-backed plate FSI ...' whose src/tensorfem/undex_shock.py declares K, A, K_theta, -0.24 as implementation parameters. Self-declared, therefore not an anchor."
+    }
+  ],
+  "usable_for_physics_validation": false,
+  "usable_for_transcription_fidelity_check": true,
+  "parameters": {
+    "K": {
+      "symbol": "K",
+      "value": 52400000.0,
+      "unit": "Pa",
+      "role": "Cole peak-pressure coefficient, metric TNT fit",
+      "provenance": {
+        "kind": "repo_history_implementation_parameter",
+        "file": "src/tensorfem/undex_shock.py",
+        "commit": "a706ec07315bf1c4c810f569171b19370dcad3d9",
+        "quote": "The Cole coefficients are implementation parameters for a TNT charge (metric fit widely quoted for UNDEX work): K = 52.4 MPa, A = 1.13, K_theta = 0.084 ms, decay exponent -0.24, W in kg, R in m.",
+        "usable_for_validation_claim": false
+      }
+    },
+    "A": {
+      "symbol": "A",
+      "value": 1.13,
+      "unit": "-",
+      "role": "Cole peak-pressure exponent, metric TNT fit",
+      "provenance": {
+        "kind": "repo_history_implementation_parameter",
+        "file": "src/tensorfem/undex_shock.py",
+        "commit": "a706ec07315bf1c4c810f569171b19370dcad3d9",
+        "quote": "same declared implementation-parameter block (K = 52.4 MPa, A = 1.13)",
+        "usable_for_validation_claim": false
+      }
+    },
+    "K_theta": {
+      "symbol": "K_theta",
+      "value": 8.4e-05,
+      "unit": "s",
+      "role": "Cole shock-decay time coefficient, theta = K_theta W^(1/3) (W^(1/3)/R)^n",
+      "provenance": {
+        "kind": "repo_history_implementation_parameter",
+        "file": "src/tensorfem/undex_shock.py",
+        "commit": "a706ec07315bf1c4c810f569171b19370dcad3d9",
+        "quote": "K_theta = 0.084 ms, decay exponent -0.24",
+        "usable_for_validation_claim": false
+      }
+    },
+    "decay_exponent": {
+      "symbol": "n",
+      "value": -0.24,
+      "unit": "-",
+      "role": "exponent of the reduced range in the Cole decay time",
+      "provenance": {
+        "kind": "repo_history_implementation_parameter",
+        "file": "src/tensorfem/undex_shock.py",
+        "commit": "a706ec07315bf1c4c810f569171b19370dcad3d9",
+        "quote": "K_theta = 0.084 ms, decay exponent -0.24",
+        "usable_for_validation_claim": false
+      }
+    },
+    "T_b": {
+      "symbol": "K_b",
+      "value": 2.11,
+      "unit": "s * m^(5/6) / kg^(1/3)",
+      "role": "prefactor of the bubble-pulsation period T = K_b W^(1/3)/(H + 10.33)^(5/6)",
+      "provenance": {
+        "kind": "uncited_candidate",
+        "file": "src/tensorfem/undex_chain.py",
+        "quote": "UNCITED CANDIDATE: carried as a declared implementation parameter, NOT transcribed from Cole (1948).",
+        "usable_for_validation_claim": false
+      }
+    },
+    "depth_offset": {
+      "symbol": "H_0",
+      "value": 10.33,
+      "unit": "m",
+      "role": "atmospheric head expressed as metres of water (p_atm / (rho g))",
+      "provenance": {
+        "kind": "physical_constant",
+        "quote": "p_atm = 101325 Pa, rho = 1025 kg/m^3, g = 9.80665 m/s^2 -> 10.08 m; the 10.33 m figure is the fresh-water/standard value used in the law's own convention",
+        "usable_for_validation_claim": false
+      }
+    },
+    "bubble_exponent": {
+      "symbol": "m",
+      "value": 0.8333333333333334,
+      "unit": "-",
+      "role": "exponent of the hydrostatic head in the bubble-period law",
+      "provenance": {
+        "kind": "derived_coefficient_free",
+        "derivation": "Rayleigh collapse of a gas bubble: R0 ~ (E/p_h)^(1/3) and t_c ~ R0 sqrt(rho/p_h) => t_c ~ W^(1/3) p_h^(-1/3-1/2) = W^(1/3) p_h^(-5/6); machine-checked in src/tensorfem/undex_chain.py::bubble_scaling_exponents",
+        "usable_for_validation_claim": true
+      }
+    }
+  },
+  "cases": [
+    {
+      "case_id": "C1",
+      "weight_kg": 5.0,
+      "range_m": 12.0,
+      "depth_m": 40.0
+    },
+    {
+      "case_id": "C2",
+      "weight_kg": 10.0,
+      "range_m": 18.0,
+      "depth_m": 40.0
+    },
+    {
+      "case_id": "C3",
+      "weight_kg": 25.0,
+      "range_m": 25.0,
+      "depth_m": 40.0
+    },
+    {
+      "case_id": "C4",
+      "weight_kg": 50.0,
+      "range_m": 30.0,
+      "depth_m": 40.0
+    }
+  ],
+  "recorded_values": [
+    {
+      "case_id": "C1",
+      "weight_kg": 5.0,
+      "range_m": 12.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.1424979955563914,
+      "peak_pressure_pa": 5796090.802537563,
+      "decay_time_s": 0.00022927419971641258,
+      "bubble_period_s": 0.1377473802850657,
+      "specific_impulse_pa_s": 1328.8940802354593,
+      "energy_flux_j_m2": 2504.842522276215,
+      "shock_energy_j": 4532656.243036196,
+      "form_cross_check_max_rel": 1.710999234814448e-15
+    },
+    {
+      "case_id": "C2",
+      "weight_kg": 10.0,
+      "range_m": 18.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.11969081611288243,
+      "peak_pressure_pa": 4759266.485094873,
+      "decay_time_s": 0.0003012159886337374,
+      "bubble_period_s": 0.17355082398902835,
+      "specific_impulse_pa_s": 1433.5671594792648,
+      "energy_flux_j_m2": 2218.773377639779,
+      "shock_energy_j": 9033744.85755317,
+      "form_cross_check_max_rel": 3.1721384511322686e-16
+    },
+    {
+      "case_id": "C3",
+      "weight_kg": 25.0,
+      "range_m": 25.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.11696070952851464,
+      "peak_pressure_pa": 4636779.892322652,
+      "decay_time_s": 0.00041108316382968703,
+      "bubble_period_s": 0.23554470700519023,
+      "specific_impulse_pa_s": 1906.1021481178714,
+      "energy_flux_j_m2": 2874.203614018198,
+      "shock_energy_j": 22573942.396802012,
+      "form_cross_check_max_rel": 1.908595932638729e-15
+    },
+    {
+      "case_id": "C4",
+      "weight_kg": 50.0,
+      "range_m": 30.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.12280104995467954,
+      "peak_pressure_pa": 4899250.40786096,
+      "decay_time_s": 0.000511910599009715,
+      "bubble_period_s": 0.29676773454715955,
+      "specific_impulse_pa_s": 2507.978210986694,
+      "energy_flux_j_m2": 3995.8417148237277,
+      "shock_energy_j": 45191905.114312306,
+      "form_cross_check_max_rel": 4.235904373079521e-16
+    }
+  ],
+  "scaling_structure": {
+    "peak_pressure": "p_m = K (W^(1/3)/R)^A (Hopkinson scaling, exponent A)",
+    "decay_time": "theta = K_theta W^(1/3) (W^(1/3)/R)^n (linear in Hopkinson scale)",
+    "bubble_period": "T = K_b W^(1/3) (H + 10.33)^(-5/6); the 1/3 and -5/6 exponents are derived from the Rayleigh collapse integral, only K_b is empirical"
+  },
+  "evidence_note": "every value in recorded_values is produced by this script from the parameters block above; the chain recomputes them through tensorfem.undex_chain.cole_recompute_vs_anchor and must agree within 1 %"
+}
