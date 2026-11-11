@@ -1,0 +1,273 @@
+{
+  "schema": "tensorfem-maneuvering-anchor/1.0",
+  "mission": "m14511 / W22 maneuvering-podded-ice (mission-brief anchors AN-MSC137, AN-SIMMAN2008)",
+  "created_utc": "2026-11-11T00:00:00Z",
+  "policy": {
+    "anchor_value_rule": "Values are transcribed, never recalled. Every field carries a locator + verbatim quote + file sha256 inside this environment. Fields with no available source are recorded as MISSING with status WITHHELD; they are NOT filled from memory.",
+    "provenance_grades": {
+      "A": "digit-exact value quoted from the primary document (resolution / workshop proceedings) present in the environment",
+      "B": "secondary transcription: an in-ecosystem file that states the primary document as its source; primary document NOT accessible offline",
+      "C": "order-of-magnitude / bracket statement only, explicitly flagged by its own source as non-digit-exact",
+      "MISSING": "no transcription available in this environment"
+    },
+    "scale_basis_rule": "Each field states its scale caliber (full scale / model scale / dimensionless-by-L). Mixing calibers without conversion is forbidden; comparisons must be same-caliber."
+  },
+  "case_data": {
+    "note": "KVLCC2 as used by the W22 runs; transcribed (grade B) from the in-ecosystem verification report; used only after the Cb/L/B geometry gate passes.",
+    "L_pp_m": {"value": 320.0, "source": "AN-CASE-01"},
+    "B_m": {"value": 58.0, "source": "AN-CASE-01"},
+    "T_m": {"value": 20.8, "source": "AN-CASE-01"},
+    "Cb": {"value": 0.8098, "source": "AN-CASE-01"},
+    "displacement_t": {"value": 320000.0, "source": "AN-CASE-01"},
+    "V_design_m_s": {"value": 7.97, "source": "AN-CASE-01"},
+    "wetted_surface_m2": {"value": 27000.0, "source": "AN-CASE-02", "provenance_grade": "B"},
+    "rho_kg_m3": {"value": 1025.0, "source": "AN-CASE-01"}
+  },
+  "anchors": [
+    {
+      "id": "AN-MSC137-01",
+      "document": "AN-MSC137  IMO Resolution MSC.137(76) (2002), Standards for Ship Manoeuvrability",
+      "quantity": "turning_circle.advance_over_L",
+      "value": 4.5,
+      "unit": "L (ship lengths)",
+      "comparator": "<=",
+      "condition": "turning circle manoeuvre, full-scale ship",
+      "applicability": "ships of L >= 100 m",
+      "scale_basis": "full scale (dimensionless by L, hence caliber-free)",
+      "provenance_grade": "B",
+      "source": {
+        "kind": "mission_brief_anchor_statement + in_ecosystem_transcription",
+        "mission_quote": "AN-MSC137 IMO MSC.137(76) 操纵性判据 ...：进距 ≤ 4.5L；战术直径 ≤ 5L",
+        "locator": "backend/methods/manoeuvring/manoeuvres.py :: IMO_LIMITS",
+        "file": "/root/ship-performance-platform-incoming/ship-performance-platform/backend/methods/manoeuvring/manoeuvres.py",
+        "sha256": "bf9859b6b24b25052d0eea906e3686d5ce3f7924e9eed8ed4bba69b65c8b5e91",
+        "quote": "# IMO Res. MSC.137(76) limits (ships of L >= 100 m)\nIMO_LIMITS: Dict[str, float] = {\n    \"advance_over_L\": 4.5,\n    \"tactical_diameter_over_L\": 5.0,"
+      }
+    },
+    {
+      "id": "AN-MSC137-02",
+      "document": "AN-MSC137  IMO Resolution MSC.137(76) (2002)",
+      "quantity": "turning_circle.tactical_diameter_over_L",
+      "value": 5.0,
+      "unit": "L (ship lengths)",
+      "comparator": "<=",
+      "condition": "turning circle manoeuvre, full-scale ship",
+      "scale_basis": "full scale (dimensionless by L)",
+      "provenance_grade": "B",
+      "source": {
+        "locator": "backend/methods/manoeuvring/manoeuvres.py :: IMO_LIMITS",
+        "file": "/root/ship-performance-platform-incoming/ship-performance-platform/backend/methods/manoeuvring/manoeuvres.py",
+        "sha256": "bf9859b6b24b25052d0eea906e3686d5ce3f7924e9eed8ed4bba69b65c8b5e91",
+        "quote": "    \"tactical_diameter_over_L\": 5.0,"
+      }
+    },
+    {
+      "id": "AN-MSC137-03",
+      "document": "AN-MSC137  IMO Resolution MSC.137(76) (2002), annex 2.3 (zig-zag overshoot angles)",
+      "quantity": "zigzag.10_10.first_overshoot_deg",
+      "value": 10.0,
+      "unit": "deg",
+      "comparator": "<=",
+      "condition": "10 deg / 10 deg zig-zag, L/V < 10 s",
+      "scale_basis": "full scale; the L/V condition makes the limit speed-dependent",
+      "provenance_grade": "B",
+      "source": {
+        "locator": "src/tensorlbm/maneuvering.py :: IMO_MSC137_ZIGZAG_LIMITS",
+        "file": "/root/tensor-ecosystem/TensorLBM/src/tensorlbm/maneuvering.py",
+        "sha256": "d627e56f14887bc843d9e25a7a30cde48bd4bb2c88028b47f8e2b20d7e9a37a3",
+        "quote": "#: IMO Resolution MSC.137(76) annex 2.3 zig-zag overshoot-angle limits [deg].\n#: ``L/V`` is the ship-length / approach-speed ratio in seconds.\nIMO_MSC137_ZIGZAG_LIMITS = {\n    \"10/10\": {\"first_lt10s\": 10.0, \"first_ge10s\": 20.0},"
+      }
+    },
+    {
+      "id": "AN-MSC137-04",
+      "document": "AN-MSC137  IMO Resolution MSC.137(76) (2002), annex 2.3",
+      "quantity": "zigzag.10_10.first_overshoot_deg",
+      "value": 20.0,
+      "unit": "deg",
+      "comparator": "<=",
+      "condition": "10 deg / 10 deg zig-zag, L/V >= 10 s",
+      "scale_basis": "full scale; L/V branch",
+      "provenance_grade": "B",
+      "source": {
+        "locator": "src/tensorlbm/maneuvering.py :: IMO_MSC137_ZIGZAG_LIMITS[\"10/10\"][\"first_ge10s\"]",
+        "file": "/root/tensor-ecosystem/TensorLBM/src/tensorlbm/maneuvering.py",
+        "sha256": "d627e56f14887bc843d9e25a7a30cde48bd4bb2c88028b47f8e2b20d7e9a37a3",
+        "quote": "\"10/10\": {\"first_lt10s\": 10.0, \"first_ge10s\": 20.0},"
+      }
+    },
+    {
+      "id": "AN-MSC137-05",
+      "document": "AN-MSC137  IMO Resolution MSC.137(76) (2002), annex 2.3",
+      "quantity": "zigzag.20_20.first_overshoot_deg",
+      "value": 25.0,
+      "unit": "deg",
+      "comparator": "<=",
+      "condition": "20 deg / 20 deg zig-zag",
+      "scale_basis": "full scale",
+      "provenance_grade": "B",
+      "source": {
+        "locator": "src/tensorlbm/maneuvering.py :: IMO_MSC137_ZIGZAG_LIMITS[\"20/20\"]",
+        "file": "/root/tensor-ecosystem/TensorLBM/src/tensorlbm/maneuvering.py",
+        "sha256": "d627e56f14887bc843d9e25a7a30cde48bd4bb2c88028b47f8e2b20d7e9a37a3",
+        "quote": "    \"20/20\": {\"first\": 25.0, \"second\": 40.0},"
+      }
+    },
+    {
+      "id": "AN-MSC137-06",
+      "document": "AN-MSC137  IMO Resolution MSC.137(76) (2002), annex 2.3",
+      "quantity": "zigzag.20_20.second_overshoot_deg",
+      "value": 40.0,
+      "unit": "deg",
+      "comparator": "<=",
+      "condition": "20 deg / 20 deg zig-zag",
+      "scale_basis": "full scale",
+      "provenance_grade": "B",
+      "source": {
+        "locator": "src/tensorlbm/maneuvering.py :: IMO_MSC137_ZIGZAG_LIMITS[\"20/20\"]",
+        "file": "/root/tensor-ecosystem/TensorLBM/src/tensorlbm/maneuvering.py",
+        "sha256": "d627e56f14887bc843d9e25a7a30cde48bd4bb2c88028b47f8e2b20d7e9a37a3",
+        "quote": "    \"20/20\": {\"first\": 25.0, \"second\": 40.0},"
+      }
+    },
+    {
+      "id": "AN-MSC137-07",
+      "document": "AN-MSC137  IMO Resolution MSC.137(76) (2002)",
+      "quantity": "applicability.min_length_m",
+      "value": 100.0,
+      "unit": "m",
+      "comparator": ">=",
+      "condition": "resolution applies to ships of this length and above",
+      "scale_basis": "full scale",
+      "provenance_grade": "B",
+      "source": {
+        "locator": "backend/methods/manoeuvring/manoeuvres.py :: IMO_MIN_LENGTH",
+        "file": "/root/ship-performance-platform-incoming/ship-performance-platform/backend/methods/manoeuvring/manoeuvres.py",
+        "sha256": "bf9859b6b24b25052d0eea906e3686d5ce3f7924e9eed8ed4bba69b65c8b5e91",
+        "quote": "IMO_MIN_LENGTH = 100.0"
+      }
+    },
+    {
+      "id": "AN-SIMMAN-01",
+      "document": "AN-SIMMAN2008  SIMMAN 2008 Workshop on Verification and Validation of Ship Manoeuvring Simulation Methods",
+      "quantity": "KCS.Froude_number",
+      "value": 0.26,
+      "unit": "-",
+      "comparator": "=",
+      "condition": "KCS benchmark condition, model scale",
+      "scale_basis": "model scale (Froude-scaled)",
+      "provenance_grade": "B",
+      "source": {
+        "kind": "mission_brief_anchor_statement",
+        "mission_quote": "KCS(Fr=0.26)/KVLCC2(Fr=0.142) 阻力与 PMM/操纵试验基准值（由仓内转录件承载）"
+      }
+    },
+    {
+      "id": "AN-SIMMAN-02",
+      "document": "AN-SIMMAN2008",
+      "quantity": "KVLCC2.Froude_number",
+      "value": 0.142,
+      "unit": "-",
+      "comparator": "=",
+      "condition": "KVLCC2 benchmark condition",
+      "scale_basis": "Froude-similar condition; Froude number is caliber-free",
+      "provenance_grade": "B",
+      "source": {
+        "kind": "mission_brief_anchor_statement",
+        "mission_quote": "KCS(Fr=0.26)/KVLCC2(Fr=0.142) 阻力与 PMM/操纵试验基准值（由仓内转录件承载）"
+      },
+      "cross_check": {
+        "computed_from_case_data": "V/sqrt(g*L) with V=7.97 m/s, L=320 m, g=9.81 m/s^2",
+        "expected": 0.1422,
+        "verdict": "consistent with the anchor to 0.15% (see turning_zigzag.json :: anchor_cross_checks)"
+      }
+    },
+    {
+      "id": "AN-SIMMAN-03",
+      "document": "AN-SIMMAN2008",
+      "quantity": "KVLCC2.turning_circle.advance_over_L",
+      "value": null,
+      "unit": "L",
+      "status": "MISSING",
+      "provenance_grade": "MISSING",
+      "reason": "No digit-exact transcription of the SIMMAN 2008 KVLCC2 turning-circle table exists anywhere in this environment (grep over TensorLBM / TensorFEM / ship-performance-platform / ship-data-official returns no KVLCC2 advance value, only the bracket AN-SIMMAN-06). The workshop proceedings are not accessible offline. Per the no-memory rule the field is left empty -> criterion 1 (anchor completeness) cannot reach 100%."
+    },
+    {
+      "id": "AN-SIMMAN-04",
+      "document": "AN-SIMMAN2008",
+      "quantity": "KVLCC2.turning_circle.tactical_diameter_over_L",
+      "value": null,
+      "unit": "L",
+      "status": "MISSING",
+      "provenance_grade": "MISSING",
+      "reason": "Same as AN-SIMMAN-03 (no digit-exact KVLCC2 tactical-diameter transcription offline)."
+    },
+    {
+      "id": "AN-SIMMAN-05",
+      "document": "AN-SIMMAN2008",
+      "quantity": "KVLCC2.zigzag.10_10.first_overshoot_deg / PMM derivative table",
+      "value": null,
+      "unit": "deg / -",
+      "status": "MISSING",
+      "provenance_grade": "MISSING",
+      "reason": "No digit-exact KVLCC2 Z-test overshoot or PMM derivative table is present offline (TensorLBM benchmarks/verified/maneuvering_steady_turn/result.json explicitly labels its derivative set as 'representative ... NOT a digit-exact reprint')."
+    },
+    {
+      "id": "AN-SIMMAN-06",
+      "document": "AN-SIMMAN2008 (corroboration only)",
+      "quantity": "KVLCC2.turning_circle.tactical_diameter_over_L (bracket)",
+      "value": [2.5, 4.5],
+      "unit": "L",
+      "comparator": "in-range",
+      "condition": "large tanker, 20-35 deg rudder; 'KVLCC2 SIMMAN sim D_T/L ~3'",
+      "scale_basis": "full scale",
+      "provenance_grade": "C",
+      "source": {
+        "locator": "benchmarks/verified/maneuvering_steady_turn/result.json :: published_ranges",
+        "file": "/root/tensor-ecosystem/TensorLBM/benchmarks/verified/maneuvering_steady_turn/result.json",
+        "sha256": "79bf2e1d00786f0710aa8e9e68841503bc61ad482a99e14744d6b1e8e7371ecb",
+        "quote": "\"tactical_diameter_over_L\": \"~2.5-4.5 (large tanker, 20-35 deg rudder; KVLCC2 SIMMAN sim D_T/L ~3)\""
+      },
+      "usage_limit": "Order-of-magnitude plausibility band ONLY. It is NOT a validation target and cannot be used to claim the <15% criterion."
+    }
+  ],
+  "source_registry": [
+    {
+      "id": "AN-CASE-01",
+      "file": "/root/ship-performance-platform-incoming/ship-performance-platform/docs/reports/m6475_manoeuvring_kernel_verification.md",
+      "sha256": "75a6d58d9d185aa4a069de0696f670b7a14017e430b9fb2d6ba10f1ce2ff558a",
+      "locator": "§1.2 table row 'KVLCC2 级油船'",
+      "quote": "| KVLCC2 级油船 | 320 | 58 | 20.8 | 0.8098 | 320000 | 7.97 | 0.12% |"
+    },
+    {
+      "id": "AN-CASE-02",
+      "file": "/root/ship-performance-platform-incoming/ship-performance-platform/tests/test_w17_resistance_repair.py",
+      "sha256": "04d118a8c67c66ceb29a24909f6b6325c68e9aff102c6654d62a14fe6ef4165d",
+      "locator": "module constant KVLCC2_S_AUTHORITY_M2",
+      "quote": "KVLCC2_S_AUTHORITY_M2 = 27000.0"
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "CONFLICT-ZZ-01",
+      "topic": "10/10 second-overshoot limit label",
+      "detail": "ship-performance-platform charger lists \"zigzag_10_second_overshoot_deg\": 25.0 while TensorLBM's transcription puts 25 deg as the 20/20 FIRST-overshoot limit and 40 deg as the 20/20 SECOND. The two are incompatible as labels.",
+      "resolution_for_w22": "Use the TensorLBM set (10/10 first: 10 deg for L/V<10 s, 20 deg for L/V>=10 s; 20/20 first 25, second 40) because it is the only transcription that states the L/V branch required by the mission brief ('Z 形首向超调判据按 L/V 条件另列'). The ship-performance-platform value is recorded, not used.",
+      "status": "UNRESOLVED at source level (primary resolution PDF not offline) -> flagged, both kept in provenance"
+    }
+  ],
+  "completeness": {
+    "required_fields": 12,
+    "filled_fields": 9,
+    "missing_fields": ["AN-SIMMAN-03", "AN-SIMMAN-04", "AN-SIMMAN-05"],
+    "ratio": 0.75,
+    "criterion_1_verdict": "FAIL",
+    "honest_statement": "The MSC.137(76) side of the anchor set is complete (direction + unit + scale caliber + L/V condition recorded, grade B). The SIMMAN 2008 KVLCC2 numerical baseline side is missing 3 of 3 required numeric fields; therefore anchor completeness is 75%, not 100%, and criterion 1 of the mission is honestly FAIL."
+  },
+  "blocked": {
+    "blocked_fields": ["AN-SIMMAN-03", "AN-SIMMAN-04", "AN-SIMMAN-05"],
+    "what_is_missing": "Digit-exact SIMMAN 2008 KVLCC2 advance / tactical-diameter / 10-10 overshoot (and PMM derivative) table values, i.e. the 'SIMMAN 2008 proceedings' numeric pages, model scale or full scale.",
+    "why_blocked": "Offline environment: no network egress (external HTTPS is blocked by policy) and no in-repo/on-disk transcription of those tables exists.",
+    "unblocks_next": "Any of: (i) SIMMAN 2008 proceedings PDF/table scan ingested as a source transcription (benchmarks/anchors/sources/*.transcription.json style); (ii) an authoritative digitised KVLCC2 PMM/zigzag dataset (e.g. ITTC 7.5-02-06-03 sample or Yasukawa & Yoshimura 2015 table) supplied as an anchor document; (iii) a KVLCC2 EFD-to-full-scale zigzag table from the towing tank report.",
+    "consequence": "Criterion 3 (<15% same-caliber comparison against SIMMAN KVLCC2 single-screw baseline) is WITHHELD, not PASS; only the same-model podded-vs-single-screw delta is reported."
+  }
+}
