@@ -22,6 +22,28 @@ The hoop stress on the hole edge is ``sigma_tt(a, pi/2) = 3 T`` (the classical
 stress-concentration factor ``K_t = 3``) and ``sigma_tt(a, 0) = -T``; both are
 reproduced here as hard identities so the reference cannot drift silently.
 
+General biaxial far field
+------------------------
+``lateral_ratio = l`` adds a second principal far-field stress ``l*T`` along
+``y`` (``sigma_xx = T``, ``sigma_yy = l*T``, ``sigma_xy = 0``)::
+
+    sigma_rr = T/2 (1+l) (1 - a^2/r^2)
+             + T/2 (1-l) (1 - 4 a^2/r^2 + 3 a^4/r^4) cos 2 theta
+    sigma_tt = T/2 (1+l) (1 + a^2/r^2)
+             - T/2 (1-l) (1 + 3 a^4/r^4) cos 2 theta
+    sigma_rt = -T/2 (1-l) (1 + 2 a^2/r^2 - 3 a^4/r^4) sin 2 theta
+
+i.e. the isotropic part of the far field plus the uniaxial field with the
+deviatoric amplitude ``T(1-l)/2``.  On the hole edge this gives
+``sigma_tt(a, theta) = T[(1+l) - 2(1-l) cos 2 theta]``, so ``K_t`` depends on
+the biaxiality: ``3`` uniaxial (``l=0``), ``2`` equibiaxial (``l=1``, uniform
+``2T`` on the whole edge) and ``4`` for the pure-shear state ``l=-1`` -- the
+classical shear concentration ``4*tau``.  The displacement field is the
+superposition of the uniaxial field and its 90-degree rotation, which is the
+same gauge (it satisfies ``u_y = 0`` on ``theta = 0`` and ``u_x = 0`` on
+``theta = pi/2``), so the quarter-annulus symmetry model stays valid for every
+``l`` because an aligned biaxial far field is mirror-symmetric about both axes.
+
 Both the traction-free hole and the far field are exact for every ``r >= a``,
 so the *annulus* ``a <= r <= b`` loaded on ``r = b`` by the Kirsch tractions has
 the Kirsch field as its exact, unique solution.  That makes the quarter model
@@ -105,6 +127,7 @@ class KirschHole:
     poisson: float = 0.3
     plane: str = "stress"
     thickness: float = 1.0
+    lateral_ratio: float = 0.0
 
     def __post_init__(self) -> None:
         if self.radius <= 0.0:
@@ -115,6 +138,8 @@ class KirschHole:
             raise ValueError("poisson ratio out of range for a stable solid")
         if self.young <= 0.0 or self.thickness <= 0.0:
             raise ValueError("young modulus and thickness must be positive")
+        if not math.isfinite(self.lateral_ratio):
+            raise ValueError("lateral_ratio must be finite")
 
     # -- material -----------------------------------------------------------
     @property
@@ -126,9 +151,43 @@ class KirschHole:
         return self.young / (1.0 - nu * nu), nu / (1.0 - nu)
 
     @property
+    def far_field_y(self) -> float:
+        """Second principal far-field stress ``sigma_yy`` (zero for uniaxial)."""
+        return self.lateral_ratio * self.far_field
+
+    def edge_hoop(self, theta):
+        """Exact ``sigma_tt(a, theta) / far_field`` on the hole edge."""
+        lam = self.lateral_ratio
+        theta = np.asarray(theta, dtype=np.float64)
+        return (1.0 + lam) - 2.0 * (1.0 - lam) * np.cos(2.0 * theta)
+
+    @property
     def stress_concentration(self) -> float:
-        """Exact ``sigma_tt(a, pi/2) / T`` = 3."""
-        return 3.0
+        """Exact ``sigma_tt(a, pi/2) / T`` = ``3 - lateral_ratio`` (3 uniaxial)."""
+        return float(self.edge_hoop(math.pi / 2.0))
+
+    @property
+    def peak_edge_stress(self) -> dict:
+        """Worst hole-edge hoop ``sigma_tt`` and where it sits.
+
+        The two stationary points of ``T[(1+l) - 2(1-l) cos 2 theta]`` are
+        ``theta = 0`` (value ``T(3l-1)``) and ``theta = pi/2`` (value
+        ``T(3-l)``); the larger of the two is the design-relevant peak.  For
+        ``l = 1`` the edge field is uniform ``2T`` and ``theta`` is arbitrary --
+        reported as ``0`` with ``uniform=True``.
+        """
+        t = self.far_field
+        lam = self.lateral_ratio
+        at_zero = t * (3.0 * lam - 1.0)
+        at_ninety = t * (3.0 - lam)
+        if abs(lam - 1.0) <= 1e-14:
+            return {"value": 2.0 * t, "theta_degrees": 0.0, "uniform": True,
+                    "stress_concentration": 2.0}
+        if at_ninety >= at_zero:
+            return {"value": at_ninety, "theta_degrees": 90.0, "uniform": False,
+                    "stress_concentration": at_ninety / t}
+        return {"value": at_zero, "theta_degrees": 0.0, "uniform": False,
+                "stress_concentration": at_zero / t}
 
     # -- stress -------------------------------------------------------------
     def stress_polar(self, r, theta):
@@ -139,12 +198,15 @@ class KirschHole:
             raise ValueError("r must be positive")
         a = self.radius
         t = self.far_field
+        lam = self.lateral_ratio
         c2, s2 = np.cos(2.0 * theta), np.sin(2.0 * theta)
         a2r2 = (a / r) ** 2
         a4r4 = a2r2 * a2r2
-        srr = t / 2.0 * (1.0 - a2r2) + t / 2.0 * (1.0 - 4.0 * a2r2 + 3.0 * a4r4) * c2
-        stt = t / 2.0 * (1.0 + a2r2) - t / 2.0 * (1.0 + 3.0 * a4r4) * c2
-        srt = -t / 2.0 * (1.0 + 2.0 * a2r2 - 3.0 * a4r4) * s2
+        iso = t / 2.0 * (1.0 + lam)    # isotropic part of the far field
+        dev = t / 2.0 * (1.0 - lam)    # deviatoric (uniaxial) amplitude
+        srr = iso * (1.0 - a2r2) + dev * (1.0 - 4.0 * a2r2 + 3.0 * a4r4) * c2
+        stt = iso * (1.0 + a2r2) - dev * (1.0 + 3.0 * a4r4) * c2
+        srt = -dev * (1.0 + 2.0 * a2r2 - 3.0 * a4r4) * s2
         return srr, stt, srt
 
     def stress_cartesian(self, x, y):
@@ -165,6 +227,50 @@ class KirschHole:
         return np.sqrt(srr * srr - srr * stt + stt * stt + 3.0 * srt * srt)
 
     # -- displacement -------------------------------------------------------
+    def _uniaxial_cartesian(self, x, y):
+        """Cartesian displacement of the ``lateral_ratio = 0`` field.
+
+        Same gauge as :meth:`displacement_polar` (``u_y = 0`` on ``y = 0``,
+        ``u_x = 0`` on ``x = 0``), used to build the 90-degree rotated field
+        that superposes onto the uniaxial one.
+        """
+        x = np.asarray(x, dtype=np.float64)
+        y = np.asarray(y, dtype=np.float64)
+        r = np.hypot(x, y)
+        if np.any(r <= 0.0):
+            raise ValueError("r must be positive")
+        theta = np.arctan2(y, x)
+        e, nu = self.effective_constants
+        a = self.radius
+        t = self.far_field
+        f = t / (2.0 * e)
+        c2, s2 = np.cos(2.0 * theta), np.sin(2.0 * theta)
+        c, s = np.cos(theta), np.sin(theta)
+        a2 = a * a
+        a4 = a2 * a2
+        ur = f * ((1.0 - nu) * r + (1.0 + nu) * a2 / r) + f * (
+            (1.0 + nu) * r + 4.0 * a2 / r - (1.0 + nu) * a4 / r**3
+        ) * c2
+        ut = f * (-(1.0 + nu) * r + 2.0 * (nu - 1.0) * a2 / r - (1.0 + nu) * a4 / r**3) * s2
+        return ur * c - ut * s, ur * s + ut * c
+
+    def _lateral_cartesian(self, x, y):
+        """Displacement of the ``sigma_yy = lateral_ratio * far_field`` field.
+
+        Obtained by rotating the uniaxial field by 90 degrees,
+        ``u_lat(x, y) = l * R90 u0(R-90 (x, y))`` with
+        ``R-90 (x, y) = (y, -x)``.  This is the same solution branch as the
+        uniaxial field (a rotation of a valid solution is valid) and it keeps
+        the symmetry gauge, so the two fields can simply be added.
+        """
+        x = np.asarray(x, dtype=np.float64)
+        y = np.asarray(y, dtype=np.float64)
+        lam = self.lateral_ratio
+        if lam == 0.0:
+            return np.zeros_like(x), np.zeros_like(x)
+        ux, uy = self._uniaxial_cartesian(y, -x)
+        return -lam * uy, lam * ux
+
     def displacement_polar(self, r, theta):
         """Exact ``(u_r, u_t)`` of the equivalent plane problem."""
         r = np.asarray(r, dtype=np.float64)
@@ -180,6 +286,11 @@ class KirschHole:
             (1.0 + nu) * r + 4.0 * a2 / r - (1.0 + nu) * a4 / r**3
         ) * c2
         ut = f * (-(1.0 + nu) * r + 2.0 * (nu - 1.0) * a2 / r - (1.0 + nu) * a4 / r**3) * s2
+        if self.lateral_ratio != 0.0:
+            c, s = np.cos(theta), np.sin(theta)
+            lx, ly = self._lateral_cartesian(r * c, r * s)
+            ur = ur + lx * c + ly * s
+            ut = ut - lx * s + ly * c
         return ur, ut
 
     def displacement_cartesian(self, x, y):
@@ -529,7 +640,7 @@ def arc_resultant(hole: KirschHole, outer_radius: float, samples: int = 200) -> 
 
 
 def _hole_edge_peak(hole: KirschHole, meta: dict, displacement) -> dict:
-    """Peak hoop stress on the hole edge by nodal averaging, vs ``3 T``."""
+    """Peak hoop stress on the hole edge by nodal averaging, vs the exact edge field."""
     nodes = np.asarray(meta["nodes"], dtype=np.float64)
     elements = np.asarray(meta["elements"])
     u = np.asarray(displacement, dtype=np.float64).reshape(-1, 2)
@@ -566,8 +677,8 @@ def _hole_edge_peak(hole: KirschHole, meta: dict, displacement) -> dict:
         "peak_theta_degrees": math.degrees(peak_theta),
         "hole_edge_at_90_degrees": hoop[round(math.pi / 2.0, 12)],
         "hole_edge_at_0_degrees": hoop[round(0.0, 12)],
-        "exact_at_90_degrees": hole.stress_concentration * hole.far_field,
-        "exact_at_0_degrees": -hole.far_field,
+        "exact_at_90_degrees": float(hole.edge_hoop(math.pi / 2.0) * hole.far_field),
+        "exact_at_0_degrees": float(hole.edge_hoop(0.0) * hole.far_field),
         "profile": [[math.degrees(theta), value] for theta, value in sorted(hoop.items())],
     }
 
@@ -686,6 +797,8 @@ def convergence_study(
         "hole": {
             "radius": hole.radius,
             "far_field": hole.far_field,
+            "far_field_y": hole.far_field_y,
+            "lateral_ratio": hole.lateral_ratio,
             "young": hole.young,
             "poisson": hole.poisson,
             "plane": hole.plane,
