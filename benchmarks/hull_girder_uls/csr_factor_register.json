@@ -1,0 +1,87 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "benchmarks/hull_girder_uls/csr_factor_register",
+  "topic": "w23_ship_hull_girder_structure",
+  "mission_id": 15094,
+  "repository": "TensorFEM",
+  "status": "BLOCKED",
+  "document": {
+    "citation_as_assigned": "IACS Common Structural Rules for Bulk Carriers and Oil Tankers (2019) Pt.1 Ch.5; IACS UR S7 (2010) Minimum longitudinal strength standard",
+    "subject_quantity": "hull-girder ULS gamma_s M_sw + gamma_w M_wv <= M_u and the yield criterion sigma = M/Z <= sigma_y/gamma_R",
+    "prior_record": "benchmarks/anchors/iacs-csr-w22.json (mission 14512) reached the same conclusion; this file refreshes the acquisition attempt for W23 and is the register the W23 criteria read"
+  },
+  "why_it_is_blocking": "without the printed gamma table the utilisation is a unit-factor reference value and the admissible factor M_u/(M_sw+M_wv); no CSR compliance claim may be made from it",
+  "acquisition_attempts": [
+    {
+      "channel": "network (direct)",
+      "date": "2026-11-11",
+      "action": "python urllib.request.urlopen on https://iacs.org.uk/ and https://www.iacs.org.uk/resolutions/unified-requirements/ (timeout 6 s; curl to external hosts is blocked by the sandbox policy)",
+      "result": "HTTP 403 Forbidden from the sandbox proxy for both URLs; no retrievable full text"
+    },
+    {
+      "channel": "platform corpus text search",
+      "date": "2026-11-11",
+      "action": "grep -rIl -i \"common structural rules\" /root/tp-agent --include=*.json --include=*.md (excluding this worktree)",
+      "result": "hits are the repository's own W22 anchor/report and TensorPapers manuscripts that cite the document; none contains a rule table, page locator or factor value"
+    },
+    {
+      "channel": "platform corpus factor search",
+      "date": "2026-11-11",
+      "action": "grep -rIl \"gamma_w\" /root/tp-agent --include=*.json (excluding this worktree)",
+      "result": "no match: no transcription of gamma_w anywhere in the corpus"
+    },
+    {
+      "channel": "local document corpus",
+      "date": "2026-11-11",
+      "action": "find / -maxdepth 6 -iname '*iacs*' -not -path '*/proc/*' ; find / -maxdepth 5 -iname '*.pdf'",
+      "result": "no IACS publication in the environment; only software manuals and unrelated papers, plus repository code/tests that mention IACS for other quantities (ice torque)"
+    }
+  ],
+  "factors": [
+    {
+      "id": "gamma_s",
+      "symbol": "gamma_s",
+      "role": "partial safety factor on the still-water bending moment M_sw",
+      "clause_as_assigned": "IACS CSR BC&OT (2019) Pt.1 Ch.5 hull-girder ULS load combination",
+      "citation_quote": null,
+      "table_or_clause": null,
+      "page": null,
+      "printed_values": null,
+      "status": "BLOCKED",
+      "usable_for_compliance_claim": false
+    },
+    {
+      "id": "gamma_w",
+      "symbol": "gamma_w",
+      "role": "partial safety factor on the vertical wave bending moment M_wv",
+      "clause_as_assigned": "IACS CSR BC&OT (2019) Pt.1 Ch.5 hull-girder ULS load combination",
+      "citation_quote": null,
+      "table_or_clause": null,
+      "page": null,
+      "printed_values": null,
+      "status": "BLOCKED",
+      "usable_for_compliance_claim": false
+    },
+    {
+      "id": "gamma_R",
+      "symbol": "gamma_R",
+      "role": "partial safety factor on the yield strength of the elastic (yield) check",
+      "clause_as_assigned": "IACS CSR BC&OT (2019) Pt.1 Ch.5 yield criterion sigma = M/Z <= sigma_y/gamma_R",
+      "citation_quote": null,
+      "table_or_clause": null,
+      "page": null,
+      "printed_values": null,
+      "status": "BLOCKED",
+      "usable_for_compliance_claim": false
+    }
+  ],
+  "substitutes_reported_instead": [
+    "unit-factor utilisation gamma_s = gamma_w = 1, explicitly labelled a reference value",
+    "admissible factor gamma* = M_u/(M_sw + M_wv) per case",
+    "exact factor sensitivity: gamma_w_max = (M_u - M_sw)/M_wv at gamma_s = 1 (utilisation is linear in the factors)"
+  ],
+  "what_would_unblock": [
+    "an operator-deposited transcription of the CSR Pt.1 Ch.5 ULS factor table with clause number and page",
+    "or an authorised copy of UR S7 (2010) with the printed factor values"
+  ]
+}
