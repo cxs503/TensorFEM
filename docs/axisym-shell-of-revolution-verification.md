@@ -129,3 +129,23 @@ Shell4 平面映射面元在**闭合球壳内压**（薄壳、曲面、压力、
 PYTHONPATH=src python3 scripts/verify_axisym_shell.py      # 写 JSON + 两张图
 PYTHONPATH=src python3 -m pytest tests/test_axisym_shell.py -q   # 8 passed
 ```
+
+## 6) 追加（CASE-NAFEMS-LE11，mission 15261）：变曲率子午线的可测边界
+
+C5 记录的是「一般曲面子午线未合格」。椭球壳算例给出了该边界的一个**正面**数据点，
+它与 C5 不矛盾，但把可用面扩大了：
+
+- 算例：闭合旋转椭球 $a=1,b=0.5,t=0.01,E=1,\nu=0.3,p=1$（扁椭球，赤道环向膜力**为压**），
+  极→赤道半子午线，逐单元给中点密切圆半径 $R_1=W^3/(ab)$；
+- 参考解：闭式膜力（截盖轴向静力平衡 + 法向平衡）与独立的 Rayleigh–Ritz 膜位移
+  （自检复现闭式膜力 1e-10 量级）；
+- 实测：场误差**一阶收敛**（n=32/64/128 的 max$|\Delta N_\varphi|/N_{scale}$
+  = 15.20% / 7.94% / 4.06%），n=128 时极部 $N_\varphi$ 0.02%、赤道 $N_\varphi$ 0.31%、
+  赤道 $N_\theta$ 2.86%、赤道 $w$ 2.51%，全部 <5%；
+- 限制：赤道 $N_\theta$ 相对误差在 n≥128 后**停滞在 ~2.6%**（离散边界层，网格无关），
+  且 $a/t=50$ 时赤道 $N_\theta$ 误差 7.11% 已超 5%（弯/膜耦合）。
+  故椭球子午线只在**薄壳 + n≥128** 的使用面上合格，粗网格/厚壁不得引用。
+
+门与工件：`tests/test_ellipsoid_shell.py`（12 条，含 fail-closed 断言语义）、
+`benchmarks/nafems_le11_ellipsoid.py`、`docs/nafems_le11_ellipsoid.md`、
+`runs/nafems_le11/nafems_le11_results.json`。
