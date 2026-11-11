@@ -1,0 +1,29 @@
+/root/tp-agent/work/m15256/benchmarks/cohesive3d_dcb_3d.py:210: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  ax.legend(fontsize=8)
+{
+  "compliance_bracket": {
+    "rel_error": -1.0,
+    "passed": false
+  },
+  "peak_load_vs_lefm": {
+    "rel_error": -0.9980058662236955,
+    "passed": false
+  },
+  "energy_balance": {
+    "rel_error": 0.935845053073108,
+    "passed": false
+  },
+  "interface_work_vs_GIc": {
+    "rel_error": NaN,
+    "passed": false
+  },
+  "peak_ratio_two_cracks": {
+    "rel_error": 6.144329651437908,
+    "passed": false
+  },
+  "width_objectivity": {
+    "rel_error": -0.9760887702679802,
+    "passed": false
+  }
+}
+all_passed=False runtime=135.7s

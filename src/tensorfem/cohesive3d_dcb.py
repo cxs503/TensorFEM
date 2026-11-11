@@ -365,6 +365,11 @@ def build_dcb_model(
     if g.width_configuration == "roller":  # plane-strain-like: no lateral motion
         lat = np.concatenate([3 * loaded + 1, 3 * loaded])
         fixed = np.unique(np.concatenate((fixed, lat)))
+    # The opening is imposed by *displacement control*, so the loaded dofs are
+    # constrained, not free.  Leaving them in the free set makes Newton relax
+    # them (residual -> 0), which silently reports a zero reaction load and a
+    # specimen that never opens: pinned by tests/test_cohesive3d_dcb.py.
+    fixed = np.unique(np.concatenate((fixed, lower_load, upper_load)))
 
     return DCBModel(
         geometry=g,
@@ -550,8 +555,15 @@ def solve_dcb(
     iterations_total = 0
     steps_taken = 0
 
-    while delta < delta_max * (1.0 + 1e-12):
+    max_steps_total = 100 * max(n_steps, 1)
+    # Termination is on *reaching* delta_max.  The old test (``delta <
+    # delta_max * (1 + 1e-12)``) could never become false once ``delta ==
+    # delta_max``, so the follower spun forever on zero-length steps after the
+    # final accepted step (the historical "DCB never finishes" stall).
+    while delta < delta_max * (1.0 - 1e-9):
         target = min(delta + step, delta_max)
+        if target <= delta:  # no representable forward progress left
+            break
         trial = u + (target - delta) * prescription
         ok, its, history_new, diag, fint = _newton(
             model, K_solid, trial, history, free, max_iter, tol, scale
@@ -565,6 +577,9 @@ def solve_dcb(
             continue
         # accept
         prev_delta = delta
+        if steps_taken >= max_steps_total:  # run-away cutback guard
+            converged_all = False
+            break
         delta = target
         u = trial
         history = history_new
