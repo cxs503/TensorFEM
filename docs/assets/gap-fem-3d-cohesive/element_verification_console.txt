@@ -1,0 +1,12 @@
+law_reduces_to_2d_bk         PASS
+law_energy                   PASS
+law_initiation               PASS
+law_tangent_vs_ad            PASS
+element_patch                PASS
+element_rigid_rotation       PASS
+element_mesh_objectivity     PASS
+coupled_block_mode_i         PASS
+coupled_block_mode_ii        PASS
+coupled_block_mesh           PASS
+coupled_block_energy         PASS
+all_passed: True -> /root/tp-agent/work/m15256/benchmarks/cohesive3d_verification.json

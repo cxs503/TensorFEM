@@ -1,6 +1,6 @@
 {
   "schema": "tensorfem.cohesive3d-verification/1.0",
-  "generated_utc": "2026-11-11T19:27:33.177741+00:00",
+  "generated_utc": "2026-11-11T21:16:10.751149+00:00",
   "generator": "benchmarks/cohesive3d_verification.py",
   "host": {
     "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",

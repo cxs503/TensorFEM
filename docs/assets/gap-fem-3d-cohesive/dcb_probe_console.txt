@@ -1,0 +1,28 @@
+{
+ "termination": {
+  "delta_max_m": 2e-05,
+  "reach_delta_m": 2e-05,
+  "converged_all": true,
+  "committed_steps": 8,
+  "newton_iterations": 16,
+  "terminated_at_target": true
+ },
+ "reaction": {
+  "peak_load_N": 0.1513517430099044,
+  "max_committed_damage": 0.0,
+  "load_is_nonzero": true
+ }
+}
+{
+ "fem_m_per_N": 0.00013214251519185483,
+ "beam_plain_m_per_N": 1.9196190476190475e-05,
+ "beam_williams_root_rotation_m_per_N": 2.3567419619544515e-05,
+ "ratio_fem_over_beam_plain": 6.88378849729349,
+ "ratio_fem_over_beam_root_rotation": 5.606999719318815,
+ "ref": 2.3567419619544515e-05,
+ "got": 0.00013214251519185483,
+ "rel_error": 4.606999719318815,
+ "tolerance": "|rel_error| <= 0.10 vs root-rotation beam theory",
+ "passed": false
+}
+runtime=0.3s -> /root/tp-agent/work/m15256/benchmarks/cohesive3d_dcb_displacement_control_probe.json
