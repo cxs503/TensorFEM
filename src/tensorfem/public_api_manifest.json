@@ -2589,6 +2589,146 @@
       "name": "verify_minimum_surface",
       "object": "verify_minimum_surface",
       "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cohesive3d",
+      "name": "BKCohesive3DLaw",
+      "object": "BKCohesive3DLaw",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cohesive3d",
+      "name": "Cohesive3DResponse",
+      "object": "Cohesive3DResponse",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cohesive3d",
+      "name": "cohesive_hex8_quadrature",
+      "object": "cohesive_hex8_quadrature",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cohesive3d",
+      "name": "cohesive_shape_functions",
+      "object": "cohesive_shape_functions",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cohesive3d",
+      "name": "mid_surface_frame",
+      "object": "mid_surface_frame",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cohesive3d",
+      "name": "interface_area",
+      "object": "interface_area",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cohesive3d",
+      "name": "cohesive_separations",
+      "object": "cohesive_separations",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cohesive3d",
+      "name": "cohesive_hex8_response",
+      "object": "cohesive_hex8_response",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cohesive3d",
+      "name": "assemble_cohesive_interface",
+      "object": "assemble_cohesive_interface",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "IcePlateSolution",
+      "object": "IcePlateSolution",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "q4_shape_kinematics",
+      "object": "q4_shape_kinematics",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "quarter_disc_loads",
+      "object": "quarter_disc_loads",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "principal_moments",
+      "object": "principal_moments",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "surface_tensile_stress",
+      "object": "surface_tensile_stress",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "foundation_reaction",
+      "object": "foundation_reaction",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "characteristic_moment_per_load",
+      "object": "characteristic_moment_per_load",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "solve_circular_patch",
+      "object": "solve_circular_patch",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "first_crack_load",
+      "object": "first_crack_load",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "failure_mode",
+      "object": "failure_mode",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.ice_plate_flexural_limit",
+      "name": "nevel_moment_applicability",
+      "object": "nevel_moment_applicability",
+      "stability": "experimental"
     }
   ],
   "package_version": "0.45.0",

@@ -256,6 +256,12 @@ from .cohesive3d import (
     cohesive_shape_functions, mid_surface_frame, interface_area,
     cohesive_separations, cohesive_hex8_response, assemble_cohesive_interface,
 )
+from .ice_plate_flexural_limit import (
+    IcePlateSolution, q4_shape_kinematics, quarter_disc_loads,
+    principal_moments, surface_tensile_stress, foundation_reaction,
+    characteristic_moment_per_load, solve_circular_patch,
+    first_crack_load, failure_mode, nevel_moment_applicability,
+)
 __version__ = "0.45.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
@@ -408,4 +414,8 @@ __all__ = [
     "BKCohesive3DLaw", "Cohesive3DResponse", "cohesive_hex8_quadrature",
     "cohesive_shape_functions", "mid_surface_frame", "interface_area",
     "cohesive_separations", "cohesive_hex8_response", "assemble_cohesive_interface",
+    "IcePlateSolution", "q4_shape_kinematics", "quarter_disc_loads",
+    "principal_moments", "surface_tensile_stress", "foundation_reaction",
+    "characteristic_moment_per_load", "solve_circular_patch",
+    "first_crack_load", "failure_mode", "nevel_moment_applicability",
 ]
