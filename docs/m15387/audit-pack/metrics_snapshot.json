@@ -1,0 +1,472 @@
+{
+  "spec": {
+    "corners": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        48.0,
+        44.0
+      ],
+      [
+        48.0,
+        60.0
+      ],
+      [
+        0.0,
+        44.0
+      ]
+    ],
+    "young": 1.0,
+    "poisson": 0.3333333333333333,
+    "thickness": 1.0,
+    "resultant": 1.0,
+    "traction_y": 0.0625,
+    "published_reference_uy_mid": 23.96,
+    "midpoint": [
+      48.0,
+      52.0
+    ],
+    "canonical_points": [
+      [
+        0.5,
+        0.5
+      ],
+      [
+        0.3,
+        0.5
+      ],
+      [
+        0.7,
+        0.5
+      ],
+      [
+        0.5,
+        0.25
+      ],
+      [
+        0.5,
+        0.75
+      ]
+    ],
+    "probe_offset": [
+      0.0026041666666666665,
+      0.0015625
+    ]
+  },
+  "levels": [
+    8,
+    16
+  ],
+  "parties": [
+    "tensorfem_q4",
+    "skfem_quad2",
+    "skfem_tri2"
+  ],
+  "results": {
+    "tensorfem_q4": {
+      "8": {
+        "party": "tensorfem_q4",
+        "family": "Q4 bilinear, 2x2 Gauss, full integration (production path)",
+        "third_party": false,
+        "ndof": 162,
+        "nelem": 64,
+        "uy_mid": 22.079183389482466,
+        "uy_max": 22.6726190140809,
+        "reaction_y": -1.0000000000000313,
+        "energy": 11.035060853090611,
+        "vm_max_nodal": 0.3525181495392168,
+        "vm_max_quad": 0.21341172293256883,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.06788505529086049
+          },
+          "p2": {
+            "von_mises": 0.07039388311594774
+          },
+          "p3": {
+            "von_mises": 0.08391457056475475
+          },
+          "p4": {
+            "von_mises": 0.14504670524261087
+          },
+          "p5": {
+            "von_mises": 0.07718822333705988
+          }
+        },
+        "recovery": "2x2 Gauss (Barlow) extrapolation + area-weighted nodal averaging",
+        "wall_s": 17.20049476623535
+      },
+      "8": {
+        "party": "tensorfem_q4",
+        "family": "Q4 bilinear, 2x2 Gauss, full integration (production path)",
+        "third_party": false,
+        "ndof": 162,
+        "nelem": 64,
+        "uy_mid": 22.079183389482466,
+        "uy_max": 22.6726190140809,
+        "reaction_y": -1.0000000000000313,
+        "energy": 11.035060853090611,
+        "vm_max_nodal": 0.3525181495392168,
+        "vm_max_quad": 0.21341172293256883,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.06788505529086049
+          },
+          "p2": {
+            "von_mises": 0.07039388311594774
+          },
+          "p3": {
+            "von_mises": 0.08391457056475475
+          },
+          "p4": {
+            "von_mises": 0.14504670524261087
+          },
+          "p5": {
+            "von_mises": 0.07718822333705988
+          }
+        },
+        "recovery": "2x2 Gauss (Barlow) extrapolation + area-weighted nodal averaging",
+        "wall_s": 12.05752182006836
+      },
+      "16": {
+        "party": "tensorfem_q4",
+        "family": "Q4 bilinear, 2x2 Gauss, full integration (production path)",
+        "third_party": false,
+        "ndof": 578,
+        "nelem": 256,
+        "uy_mid": 23.430411260069476,
+        "uy_max": 24.271986401978836,
+        "reaction_y": -1.0000000000001428,
+        "energy": 11.72767457221703,
+        "vm_max_nodal": 0.4209588386036763,
+        "vm_max_quad": 0.2750641984443814,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.06825570313667893
+          },
+          "p2": {
+            "von_mises": 0.0722328527683579
+          },
+          "p3": {
+            "von_mises": 0.08638297854397324
+          },
+          "p4": {
+            "von_mises": 0.1531989953741469
+          },
+          "p5": {
+            "von_mises": 0.08239083101549886
+          }
+        },
+        "recovery": "2x2 Gauss (Barlow) extrapolation + area-weighted nodal averaging",
+        "wall_s": 47.293171644210815
+      },
+      "16": {
+        "party": "tensorfem_q4",
+        "family": "Q4 bilinear, 2x2 Gauss, full integration (production path)",
+        "third_party": false,
+        "ndof": 578,
+        "nelem": 256,
+        "uy_mid": 23.430411260069476,
+        "uy_max": 24.271986401978836,
+        "reaction_y": -1.0000000000001428,
+        "energy": 11.72767457221703,
+        "vm_max_nodal": 0.4209588386036763,
+        "vm_max_quad": 0.2750641984443814,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.06825570313667893
+          },
+          "p2": {
+            "von_mises": 0.0722328527683579
+          },
+          "p3": {
+            "von_mises": 0.08638297854397324
+          },
+          "p4": {
+            "von_mises": 0.1531989953741469
+          },
+          "p5": {
+            "von_mises": 0.08239083101549886
+          }
+        },
+        "recovery": "2x2 Gauss (Barlow) extrapolation + area-weighted nodal averaging",
+        "wall_s": 57.97187042236328
+      }
+    },
+    "skfem_quad2": {
+      "8": {
+        "party": "skfem_quad2",
+        "family": "scikit-fem ElementQuad2 (biquadratic, full integration)",
+        "third_party": true,
+        "tool": "scikit-fem 12.0.2",
+        "ndof": 578,
+        "nelem": 64,
+        "uy_mid": 23.92540471767333,
+        "uy_max": 24.94684644077656,
+        "reaction_y": -0.4231091563785633,
+        "energy": 11.989479935761874,
+        "vm_max_nodal": 0.21443207084188096,
+        "vm_max_quad": 0.42104375164683333,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.03521382163849799
+          },
+          "p2": {
+            "von_mises": 0.03270624489034207
+          },
+          "p3": {
+            "von_mises": 0.055321038799071375
+          },
+          "p4": {
+            "von_mises": 0.08801837575694714
+          },
+          "p5": {
+            "von_mises": 0.0825628433864009
+          }
+        },
+        "recovery": "area-weighted averaging of native element stress to nodes",
+        "wall_s": 0.6070675849914551
+      },
+      "8": {
+        "party": "skfem_quad2",
+        "family": "scikit-fem ElementQuad2 (biquadratic, full integration)",
+        "third_party": true,
+        "tool": "scikit-fem 12.0.2",
+        "ndof": 578,
+        "nelem": 64,
+        "uy_mid": 23.92540471767333,
+        "uy_max": 24.94684644077656,
+        "reaction_y": -0.4231091563785633,
+        "energy": 11.989479935761874,
+        "vm_max_nodal": 0.21443207084188096,
+        "vm_max_quad": 0.42104375164683333,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.03521382163849799
+          },
+          "p2": {
+            "von_mises": 0.03270624489034207
+          },
+          "p3": {
+            "von_mises": 0.055321038799071375
+          },
+          "p4": {
+            "von_mises": 0.08801837575694714
+          },
+          "p5": {
+            "von_mises": 0.0825628433864009
+          }
+        },
+        "recovery": "area-weighted averaging of native element stress to nodes",
+        "wall_s": 0.40944790840148926
+      },
+      "16": {
+        "party": "skfem_quad2",
+        "family": "scikit-fem ElementQuad2 (biquadratic, full integration)",
+        "third_party": true,
+        "tool": "scikit-fem 12.0.2",
+        "ndof": 2178,
+        "nelem": 256,
+        "uy_mid": 23.94940922134584,
+        "uy_max": 25.078738061417596,
+        "reaction_y": -0.39004988110369415,
+        "energy": 12.010129661815462,
+        "vm_max_nodal": 0.27902309453371155,
+        "vm_max_quad": 0.5156165860437626,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.03557199956637364
+          },
+          "p2": {
+            "von_mises": 0.03314602951952865
+          },
+          "p3": {
+            "von_mises": 0.05507662554303967
+          },
+          "p4": {
+            "von_mises": 0.08897635972456287
+          },
+          "p5": {
+            "von_mises": 0.08225279842860213
+          }
+        },
+        "recovery": "area-weighted averaging of native element stress to nodes",
+        "wall_s": 0.25670528411865234
+      },
+      "16": {
+        "party": "skfem_quad2",
+        "family": "scikit-fem ElementQuad2 (biquadratic, full integration)",
+        "third_party": true,
+        "tool": "scikit-fem 12.0.2",
+        "ndof": 2178,
+        "nelem": 256,
+        "uy_mid": 23.94940922134584,
+        "uy_max": 25.078738061417596,
+        "reaction_y": -0.39004988110369415,
+        "energy": 12.010129661815462,
+        "vm_max_nodal": 0.27902309453371155,
+        "vm_max_quad": 0.5156165860437626,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.03557199956637364
+          },
+          "p2": {
+            "von_mises": 0.03314602951952865
+          },
+          "p3": {
+            "von_mises": 0.05507662554303967
+          },
+          "p4": {
+            "von_mises": 0.08897635972456287
+          },
+          "p5": {
+            "von_mises": 0.08225279842860213
+          }
+        },
+        "recovery": "area-weighted averaging of native element stress to nodes",
+        "wall_s": 0.2546861171722412
+      }
+    },
+    "skfem_tri2": {
+      "8": {
+        "party": "skfem_tri2",
+        "family": "scikit-fem ElementTriP2 (quadratic triangles)",
+        "third_party": true,
+        "tool": "scikit-fem 12.0.2",
+        "ndof": 578,
+        "nelem": 128,
+        "uy_mid": 23.86070584692031,
+        "uy_max": 24.782794329589624,
+        "reaction_y": -0.5696707491314545,
+        "energy": 11.944656767004439,
+        "vm_max_nodal": 0.23679859810393525,
+        "vm_max_quad": 0.35227923891319113,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.035088321463183324
+          },
+          "p2": {
+            "von_mises": 0.03344707008992362
+          },
+          "p3": {
+            "von_mises": 0.05480694622083535
+          },
+          "p4": {
+            "von_mises": 0.08805867935174168
+          },
+          "p5": {
+            "von_mises": 0.08070786227772804
+          }
+        },
+        "recovery": "area-weighted averaging of native element stress to nodes",
+        "wall_s": 0.0559999942779541
+      },
+      "8": {
+        "party": "skfem_tri2",
+        "family": "scikit-fem ElementTriP2 (quadratic triangles)",
+        "third_party": true,
+        "tool": "scikit-fem 12.0.2",
+        "ndof": 578,
+        "nelem": 128,
+        "uy_mid": 23.86070584692031,
+        "uy_max": 24.782794329589624,
+        "reaction_y": -0.5696707491314545,
+        "energy": 11.944656767004439,
+        "vm_max_nodal": 0.23679859810393525,
+        "vm_max_quad": 0.35227923891319113,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.035088321463183324
+          },
+          "p2": {
+            "von_mises": 0.03344707008992362
+          },
+          "p3": {
+            "von_mises": 0.05480694622083535
+          },
+          "p4": {
+            "von_mises": 0.08805867935174168
+          },
+          "p5": {
+            "von_mises": 0.08070786227772804
+          }
+        },
+        "recovery": "area-weighted averaging of native element stress to nodes",
+        "wall_s": 0.05737042427062988
+      },
+      "16": {
+        "party": "skfem_tri2",
+        "family": "scikit-fem ElementTriP2 (quadratic triangles)",
+        "third_party": true,
+        "tool": "scikit-fem 12.0.2",
+        "ndof": 2178,
+        "nelem": 512,
+        "uy_mid": 23.927124906252942,
+        "uy_max": 25.01581252281935,
+        "reaction_y": -0.4677223950513336,
+        "energy": 11.996673869234032,
+        "vm_max_nodal": 0.301621126876066,
+        "vm_max_quad": 0.4314184008059622,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.03554549578753531
+          },
+          "p2": {
+            "von_mises": 0.03339667739634901
+          },
+          "p3": {
+            "von_mises": 0.05504143252997302
+          },
+          "p4": {
+            "von_mises": 0.08899110980417159
+          },
+          "p5": {
+            "von_mises": 0.08178760367548432
+          }
+        },
+        "recovery": "area-weighted averaging of native element stress to nodes",
+        "wall_s": 0.11369729042053223
+      },
+      "16": {
+        "party": "skfem_tri2",
+        "family": "scikit-fem ElementTriP2 (quadratic triangles)",
+        "third_party": true,
+        "tool": "scikit-fem 12.0.2",
+        "ndof": 2178,
+        "nelem": 512,
+        "uy_mid": 23.927124906252942,
+        "uy_max": 25.01581252281935,
+        "reaction_y": -0.4677223950513336,
+        "energy": 11.996673869234032,
+        "vm_max_nodal": 0.301621126876066,
+        "vm_max_quad": 0.4314184008059622,
+        "vm_probe": {
+          "p1": {
+            "von_mises": 0.03554549578753531
+          },
+          "p2": {
+            "von_mises": 0.03339667739634901
+          },
+          "p3": {
+            "von_mises": 0.05504143252997302
+          },
+          "p4": {
+            "von_mises": 0.08899110980417159
+          },
+          "p5": {
+            "von_mises": 0.08178760367548432
+          }
+        },
+        "recovery": "area-weighted averaging of native element stress to nodes",
+        "wall_s": 0.11389422416687012
+      }
+    }
+  },
+  "environment": {
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38"
+  }
+}
