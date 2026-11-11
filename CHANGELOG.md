@@ -1,5 +1,25 @@
 ## Unreleased
 
+### Torsion: multi-cell closed sections (double-hull box girder) and the shared-wall flow
+- **New module** `tensorfem.multicell_torsion`: finite-difference Prandtl oracle with one
+  unknown constant per compartment (circulation conditions `contour_i(dphi/dn) ds = 2 G theta A_i`
+  eliminating them in one `n_cell` linear system), the classical multi-cell Bredt solution
+  (shared-wall flow `q_i - q_j`), and the merged HEX8 path on a conforming block mesh of the
+  same section.  This is the gap written down in `docs/box-girder-torsion-validation.md` §5
+  ("未覆盖的仍是缺口：多闭室箱梁").
+- **Numbers** (`benchmarks/multicell_box_torsion_evidence.json`): single-cell degeneracy
+  bit-identical to `box_torsion` (`J_T` rel diff 0.0); circulation residual <= 3.1e-15;
+  energy vs torque identities within 1.19 % at `h = 0.0125`; HEX8 vs FD
+  -0.55 % (single) / -0.92 % (symmetric 2-cell, 12555 dof) / -0.81 % (asymmetric 2-cell) /
+  -0.70 % (3-cell), all inside the 3 % gate; shared-web shear flow 0.204 vs Bredt 0.205
+  (0.5 %).  Symmetric double hull: the web carries 6.9 % of the outer-wall flow
+  (Bredt: exactly zero) and adds only +0.84 % to `J`.  Bredt truncation 10.83 % -> 4.99 % ->
+  2.40 % -> 0.94 % for `t = 0.2/0.1/0.05/0.02` (first order); "independent cells" naive sum
+  is -20 % to -37 % (design-office trap quantified).
+- **Tests** `tests/test_multicell_torsion.py`: 17 passed.
+- **Report** `docs/multicell-box-torsion-validation.md` (rendered from the evidence JSON by
+  `scripts/render_multicell_box_torsion.py`), figures `docs/assets/multicell-box-torsion/`.
+
 ### Fracture: level-set crack propagation and floating ice-sheet bending fracture (p360w1-n02)
 - **New package** `tensorfem.levelset` (5 modules): Sussman signed-distance
   re-initialisation with a Godunov upwind Hamiltonian and a first-order band-edge
