@@ -225,3 +225,29 @@ assumed ice pressure of §3.3).
    interaction equation.
 7. The through-thickness layer count is 3–5; a plasticity localisation study
    would need more.
+## 8. Erratum from the independent review (2026-11-11)
+
+An independent re-verification of this module (finite-difference plate field,
+numerically integrated yield-line virtual work, re-implemented component
+limits) is recorded in `docs/stiffened-panel-ultimate-independent-review.md`
+with evidence in `artifacts/stiffened_panel_ultimate_review/verification.json`.
+It found and fixed two defects that the tests of this module could not catch
+because they restate the module's own formulas:
+
+1. `simply_supported_plate_series` returned the centre deflection a factor `E`
+   too large in SI units (it carried `D/E` into the sum without multiplying
+   back). The bending moments were unaffected, which is why every number in
+   sections 3.3-3.5 above is unchanged; the series now takes `young` and
+   returns `plate_rigidity = D`.
+2. `flange_local_buckling_stress` used the total flange width instead of the
+   outstand `(flange_width - web_thickness)/2`, under-predicting `sigma_cr` by
+   about four. For the panels documented here the screen is column governed
+   and the acceptance numbers of sections 3.1-3.5 are unchanged
+   (ice-belt panel ultimate 0.9345 sigma_y); the defect only affected fabricated
+   flanges with `b_f/t_f` between about 18 and 37, where it cost up to 20 % of
+   the panel ultimate.
+
+The yield-line selector's 53.8 % step at `a/b = 1.5` is quantified in the same
+review and is left as a reported limitation (the strip mechanism is not
+kinematically admissible there, so the step is conservative, but closing it
+needs a combined mechanism family).
