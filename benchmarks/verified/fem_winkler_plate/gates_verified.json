@@ -1,0 +1,58 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_winkler_plate",
+  "title": "Winkler plate on elastic foundation vs Het\u00e9nyi analytical solution",
+  "mission": "GAP-FEM-WINKLER",
+  "generated_at": "2026-11-11T05:15:32+00:00",
+  "criteria": {
+    "centre_error": "< 5%",
+    "equilibrium_residual": "< 1%",
+    "profile_R2": "> 0.99"
+  },
+  "gates": [
+    {
+      "id": "C1_centre_error",
+      "quantity": "Centre deflection relative error",
+      "reference": "Het\u00e9nyi w(0)=P/(8\u221a(Dk))",
+      "value": 0.4309713118562031,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "n=60"
+    },
+    {
+      "id": "C2_equilibrium",
+      "quantity": "Foundation reaction residual",
+      "reference": "\u03a3F_reaction=\u03a3F_applied",
+      "value": 8.579081622883677e-10,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "Global force equilibrium"
+    },
+    {
+      "id": "C3_profile_R2",
+      "quantity": "Deflection profile R\u00b2 vs kei",
+      "reference": "Het\u00e9nyi kei(r/l)",
+      "value": 0.9999978673156532,
+      "threshold": 0.99,
+      "operator": ">=",
+      "passed": true,
+      "note": "Along x-axis, excludes r=0"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result_json": "result.json",
+    "deflection_profile_png": "winkler_deflection_profile.png",
+    "convergence_png": "winkler_convergence.png"
+  },
+  "limitations": [
+    "Quarter-symmetry model; asymmetric loads not covered",
+    "Domain truncation at 20 characteristic lengths",
+    "Mindlin Q4 has shear locking in thin-plate limit (h/l < 0.01)",
+    "Winkler model neglects shear-layer coupling"
+  ]
+}
