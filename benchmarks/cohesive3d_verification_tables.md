@@ -17,6 +17,12 @@
 | `corotational_dissipation_rotation_invariance` | dissipated work under monotonic opening is independent of rigid rotation | max |W(theta) - W(0)| / W(0) for theta = 0.0, 0.4, 1.2 rad | 1e-12 | PASS |
 | `corotational_dissipation_vs_fracture_energy` | dissipated work == G_Ic * A (trapezoid integration, 40 steps) | measure 498.8077 J vs 500.0 J | 5e-03 | PASS |
 | `small_strain_dissipation_at_rotation` | same opening at theta = 0.4 rad, reference-frame separation (known limit) | measure -1559043.3 J vs 500.0 J | n/a | **KNOWN_LIMIT** |
+| `law_dissipation_vs_path_integral` | closed-form W_d(a_f) == int t . d(delta) along a monotonic ray (7 mixities) | max relative difference, 0deg 500.0000; 15deg 502.2829; 30deg 522.8049 ... | 1e-05 | PASS |
+| `law_dissipation_equals_fracture_energy` | W_d(a_f) == G_c(direction), BK mixed mode, modes I / II / III / 45deg / 3-D | max relative difference from G_c, 5 directions, worst 5.74e-16 | 1e-12 | PASS |
+| `law_dissipation_monotone_bounded` | W_d == 0 on the elastic branch, non-decreasing, saturating at G_c | elastic max 0.0e+00 J/m^2, worst decrease 1.1e-13, overshoot 2.2e-16 | 1e-12 | PASS |
+| `element_dissipation_equals_gc_times_area` | element diagnostics ``dissipated_energy`` == G_Ic * A at complete opening | small_strain 500.000000 J, corotational 500.000000 J vs 500.0 J | 1e-12 | PASS |
+| `element_dissipation_rotation_invariance` | element ``dissipated_energy`` independent of a rigid rotation (corotational) | max relative spread over theta = 0.0, 0.3, 1.2 rad | 1e-14 | PASS |
+| `nonproportional_path_dissipation` | open to 1.5 a_0(I) then shear to failure: 0 <= W - G_IIc and W_d ~= W_path | W_path 1200.249 J/m^2 vs G_IIc 1200.0, closed form 1199.754 (residual 4.1e-04) | 1e-03 | PASS |
 | `corotational_mesh_objectivity` | n x n patches (n = 1, 2, 4) of the same unit interface give the same reaction | max relative reaction difference from t * A | 1e-11 | PASS |
 | `corotational_assembly_consistency` | dense patch assembly == sum of element contributions (force and tangent) | max relative difference, 2 x 2 patch | 1e-12 | PASS |
 | `corotational_compression_undamaged` | closing uses the penalty stiffness k_n and never damages the interface | reaction -9999.999995 N vs -10000.000000 N, damage 0.0e+00 | 1e-08 | PASS |
