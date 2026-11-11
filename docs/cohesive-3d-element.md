@@ -1,6 +1,6 @@
 # 3-D zero-thickness cohesive interface element (COH3D8 topology)
 
-Status: **verified** -- all eleven checks in `benchmarks/cohesive3d_verification.json` pass (2026-11-11T05:22:08.683837+00:00).
+Status: **verified** -- all eleven checks in `benchmarks/cohesive3d_verification.json` pass (2026-11-11T19:27:33.177741+00:00).
 
 ## 1. What was missing
 
