@@ -217,9 +217,30 @@ class StiffenedPanel:
         return (shear * torsion + math.pi**2 * self.young * warping / self.span**2) / polar
 
     @property
+    def flange_outstand(self) -> float:
+        """Width of the flange protruding beyond the web face.
+
+        ``flange_width`` is the **total** flange plate width (that is the
+        convention of :meth:`_section_geometry`, where the flange area is
+        ``flange_width * flange_thickness`` and the section is symmetric about
+        the web plane).  The flange therefore overhangs the web by
+        ``(flange_width - web_thickness)/2`` on each side, and *that* is the
+        one-edge-free width a local-buckling check must use.
+        """
+        return max(0.5 * (self.flange_width - self.web_thickness), 1.0e-9)
+
+    @property
     def flange_local_buckling_stress(self) -> float:
-        """Outstand (one edge free) elastic plate buckling, ``k = 0.425``."""
-        ratio = self.flange_width / self.flange_thickness
+        """Outstand (one edge free) elastic plate buckling, ``k = 0.425``.
+
+        ``sigma_cr = k pi^2 E / (12 (1 - nu^2)) (t_f / c)^2`` with ``c`` the
+        outstand width :attr:`flange_outstand`, not the total flange width.
+        Using the total width over-predicts the slenderness of the outstand by
+        a factor of two in ``b/t`` and therefore *under*-predicts ``sigma_cr``
+        by a factor of about four (see
+        ``docs/stiffened-panel-ultimate-independent-review.md``).
+        """
+        ratio = self.flange_outstand / self.flange_thickness
         return 0.425 * math.pi**2 * self.young / (12.0 * (1.0 - self.poisson**2)) / ratio**2
 
     # -- component limiting stresses --------------------------------------
@@ -478,22 +499,31 @@ def hull_girder_progressive_collapse(
 # --------------------------------------------------------------------------
 def simply_supported_plate_series(
     span: float, width: float, thickness: float, pressure: float, *,
-    poisson: float = 0.3, terms: int = 51,
+    young: float = 2.06e11, poisson: float = 0.3, terms: int = 51,
 ) -> dict[str, float]:
     """Navier double-series deflection and bending moment of a uniform-load plate.
 
     Simply supported on all four edges, isotropic, small deflection.  Returns
-    the centre deflection and the maximum bending moment ``M_x = M_y``, both
-    exact in the limit ``terms -> inf``.  Term counts are odd; convergence is
-    monitored by :func:`series_convergence`.
+    the centre deflection [m] and the maximum bending moment [N m/m], both
+    exact in the limit ``terms -> inf``.  Term counts are odd.
+
+    The bending moments are independent of the plate rigidity ``D`` (it cancels
+    between the series coefficient and the moment definition), but the
+    deflection is not: it needs the physical ``D = E t^3 / (12 (1 - nu^2))``.
+    An earlier revision carried ``D/E`` (a unit-Young-modulus rigidity) into
+    the deflection sum without multiplying by ``E`` back, which returned
+    deflections a factor ``E = 2.06e11`` too large in SI units; the ``young``
+    argument restores the physical value and ``plate_rigidity`` is now the
+    physical rigidity.
     """
     a = _positive("span", span)
     b = _positive("width", width)
     t = _positive("thickness", thickness)
     p = _positive("pressure", pressure)
+    e = _positive("young", young)
     if terms < 1 or terms % 2 == 0:
         raise ValueError("terms must be a positive odd integer")
-    rigidity = t**3 / (12.0 * (1.0 - poisson**2))  # D/E for unit Young modulus
+    rigidity = e * t**3 / (12.0 * (1.0 - poisson**2))
     deflection = 0.0
     moment_x = 0.0
     moment_y = 0.0
@@ -528,7 +558,7 @@ def plate_pressure_bending_stress(
 ) -> dict[str, float]:
     """Elastic bending stress at the centre of a simply supported plate."""
     series = simply_supported_plate_series(span, width, thickness, pressure,
-                                           poisson=poisson, terms=terms)
+                                           young=young, poisson=poisson, terms=terms)
     stress = 6.0 * abs(series["centre_moment"]) / _positive("thickness", thickness) ** 2
     return {"maximum_bending_stress": stress,
             "centre_moment": series["centre_moment"],
