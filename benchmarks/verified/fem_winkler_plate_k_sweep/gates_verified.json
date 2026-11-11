@@ -1,0 +1,300 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_winkler_plate_k_sweep",
+  "title": "Winkler foundation k-sweep (plate + beam) vs Hetényi analytical solutions",
+  "mission": "GAP-FEM-WINKLER",
+  "generated_at": "2026-11-11T10:13:36+00:00",
+  "criteria": {
+    "error": "<= 5 %",
+    "equilibrium": "<= 1 %",
+    "sweep": ">= 2 decades, >= 3 values"
+  },
+  "gates": [
+    {
+      "id": "A_centre_k=1000",
+      "quantity": "Plate centre deflection error vs Hetényi",
+      "reference": "w(0)=P/(8√(Dk))",
+      "value": 0.09180653546878484,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1000"
+    },
+    {
+      "id": "A_profile_k=1000",
+      "quantity": "Plate profile max error vs kei(r/l)",
+      "reference": "kei solution, r/l=0.5,1,2,3",
+      "value": 0.07850945525583078,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1000"
+    },
+    {
+      "id": "A_equilibrium_k=1000",
+      "quantity": "Foundation reaction residual",
+      "reference": "ΣR=ΣP",
+      "value": 7.865892257541418e-09,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1000"
+    },
+    {
+      "id": "A_centre_k=1e+04",
+      "quantity": "Plate centre deflection error vs Hetényi",
+      "reference": "w(0)=P/(8√(Dk))",
+      "value": 0.070149874218433,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+04"
+    },
+    {
+      "id": "A_profile_k=1e+04",
+      "quantity": "Plate profile max error vs kei(r/l)",
+      "reference": "kei solution, r/l=0.5,1,2,3",
+      "value": 0.07599158026757073,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+04"
+    },
+    {
+      "id": "A_equilibrium_k=1e+04",
+      "quantity": "Foundation reaction residual",
+      "reference": "ΣR=ΣP",
+      "value": 6.543181370943785e-09,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+04"
+    },
+    {
+      "id": "A_centre_k=1.006e+04",
+      "quantity": "Plate centre deflection error vs Hetényi",
+      "reference": "w(0)=P/(8√(Dk))",
+      "value": 0.07006274525252663,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1.006e+04"
+    },
+    {
+      "id": "A_profile_k=1.006e+04",
+      "quantity": "Plate profile max error vs kei(r/l)",
+      "reference": "kei solution, r/l=0.5,1,2,3",
+      "value": 0.07598666315518243,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1.006e+04"
+    },
+    {
+      "id": "A_equilibrium_k=1.006e+04",
+      "quantity": "Foundation reaction residual",
+      "reference": "ΣR=ΣP",
+      "value": 1.367837830912322e-08,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1.006e+04"
+    },
+    {
+      "id": "A_centre_k=1e+05",
+      "quantity": "Plate centre deflection error vs Hetényi",
+      "reference": "w(0)=P/(8√(Dk))",
+      "value": 0.002070895014136509,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+05"
+    },
+    {
+      "id": "A_profile_k=1e+05",
+      "quantity": "Plate profile max error vs kei(r/l)",
+      "reference": "kei solution, r/l=0.5,1,2,3",
+      "value": 0.06802584213160213,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+05"
+    },
+    {
+      "id": "A_equilibrium_k=1e+05",
+      "quantity": "Foundation reaction residual",
+      "reference": "ΣR=ΣP",
+      "value": 4.886387614533305e-09,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+05"
+    },
+    {
+      "id": "A_centre_k=1e+06",
+      "quantity": "Plate centre deflection error vs Hetényi",
+      "reference": "w(0)=P/(8√(Dk))",
+      "value": 0.21238016389827674,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+06"
+    },
+    {
+      "id": "A_profile_k=1e+06",
+      "quantity": "Plate profile max error vs kei(r/l)",
+      "reference": "kei solution, r/l=0.5,1,2,3",
+      "value": 0.05293709415989501,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+06"
+    },
+    {
+      "id": "A_equilibrium_k=1e+06",
+      "quantity": "Foundation reaction residual",
+      "reference": "ΣR=ΣP",
+      "value": 1.382039044983685e-09,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+06"
+    },
+    {
+      "id": "B_sup_point_k=1e+04",
+      "quantity": "Beam sup-norm deflection error vs Fourier series",
+      "reference": "simply supported series solution",
+      "value": 5.8923705039455335e-06,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "point_k=1e+04"
+    },
+    {
+      "id": "B_sup_point_k=1e+05",
+      "quantity": "Beam sup-norm deflection error vs Fourier series",
+      "reference": "simply supported series solution",
+      "value": 3.394942147002496e-05,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "point_k=1e+05"
+    },
+    {
+      "id": "B_sup_point_k=1e+06",
+      "quantity": "Beam sup-norm deflection error vs Fourier series",
+      "reference": "simply supported series solution",
+      "value": 0.00019431595264014176,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "point_k=1e+06"
+    },
+    {
+      "id": "B_sup_uniform_k=1e+04",
+      "quantity": "Beam sup-norm deflection error vs Fourier series",
+      "reference": "simply supported series solution",
+      "value": 4.6910096217859864e-08,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "uniform_k=1e+04"
+    },
+    {
+      "id": "B_sup_uniform_k=1e+05",
+      "quantity": "Beam sup-norm deflection error vs Fourier series",
+      "reference": "simply supported series solution",
+      "value": 2.159700486176451e-08,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "uniform_k=1e+05"
+    },
+    {
+      "id": "B_sup_uniform_k=1e+06",
+      "quantity": "Beam sup-norm deflection error vs Fourier series",
+      "reference": "simply supported series solution",
+      "value": 2.0624092967689384e-07,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "uniform_k=1e+06"
+    },
+    {
+      "id": "C_centre_k=1e+04",
+      "quantity": "Finite plate centre deflection error vs Navier",
+      "reference": "Navier series",
+      "value": 0.006290562917851348,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+04"
+    },
+    {
+      "id": "C_centre_k=1e+05",
+      "quantity": "Finite plate centre deflection error vs Navier",
+      "reference": "Navier series",
+      "value": 0.0707906437765683,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+05"
+    },
+    {
+      "id": "C_centre_k=1e+06",
+      "quantity": "Finite plate centre deflection error vs Navier",
+      "reference": "Navier series",
+      "value": 0.15333803782020788,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "k=1e+06"
+    },
+    {
+      "id": "D_sweep_span_plate",
+      "quantity": "Plate k sweep span",
+      "reference": ">= 2 decades",
+      "value": 3.0,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "5 values"
+    },
+    {
+      "id": "D_sweep_span_beam",
+      "quantity": "Beam k sweep span",
+      "reference": ">= 2 decades",
+      "value": 2.0,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "3 values"
+    },
+    {
+      "id": "D_sweep_span_finite_plate",
+      "quantity": "Finite plate k sweep span",
+      "reference": ">= 2 decades",
+      "value": 2.0,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "3 values"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "artifacts": {
+    "result_json": "result.json",
+    "profile_png": "winkler_k_sweep_profile.png",
+    "error_png": "winkler_k_sweep_error.png",
+    "beam_png": "winkler_k_sweep_beam.png"
+  },
+  "limitations": [
+    "Quarter-symmetry plate model: central point load only (no eccentric load).",
+    "Domain truncated at 10 characteristic lengths (free edge).",
+    "Winkler (one-parameter) foundation only; shear-layer coupling not in this sweep.",
+    "Beam family is Euler-Bernoulli (no shear deformation) — thin beam regime.",
+    "Plate sweep uses a 50 mm steel plate (t/l <= 0.04); the thick-plate regime (t/l > 0.1) is documented in regime_diagnostic, where the Mindlin-vs-Kirchhoff model gap alone reaches ~5 %."
+  ],
+  "external_anchor": "Hetényi, M. (1946) Beams on Elastic Foundation, Univ. of Michigan Press — infinite plate: w(r) = -P/(2πkl²)·kei(r/l); w(0)=P/(8√(Dk)); finite simply supported beam: Fourier-sine (Hetényi's method of end conditioning for SS ends)."
+}
