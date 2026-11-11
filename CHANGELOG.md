@@ -397,6 +397,25 @@
 
 - Added `tensorfem.prestressed_modal`: stress-stiffened (prestressed) free vibration for Euler--Bernoulli beams and Q4 Mindlin plates, `(K + N*Kg) phi = omega^2 M phi`, with the linear buckling load of the same discretisation reported and enforced fail-closed. Verified against the exact pinned-beam law `omega_n^2 = (n pi/L)^2 (EI (n pi/L)^2 + N)/rho A`, the exact Navier prestressed-plate law and the Navier buckling resultant (plate 2.13%/1.34% at 8x8/10x10, beam 3.5e-5 at 24 elements), plus an exact discrete identity that puts the fundamental at zero to 4e-10 at the reported critical load; the 4x4 plate mesh fails the 3% gate at 9.13% and is recorded as a coarse-mesh failure. Evidence `benchmarks/prestressed_modal_evidence.json`, generator `benchmarks/prestressed_modal_verification.py`, write-up `docs/prestressed-modal-verification.md`, gate `tests/test_prestressed_modal.py` (16 tests).
 
+## 2026-11-11 -- independent review of `stiffened_panel_ultimate`
+
+* **fix:** `simply_supported_plate_series` returned the centre deflection a
+  factor `E` too large in SI units (`D/E` used as `D`); the series now takes
+  `young` (default 2.06e11) and `plate_rigidity` is the physical rigidity `D`.
+  Bending moments unchanged.
+* **fix:** `flange_local_buckling_stress` now uses the outstand
+  `(flange_width - web_thickness)/2` (new `flange_outstand` property) instead of
+  the total flange width; `sigma_cr` was under-predicted by about four, costing
+  up to 20 % of the panel ultimate for flanges with `b_f/t_f` in 18...37.
+* **new:** `scripts/verify_stiffened_panel_ultimate_independent.py`
+  (FD plate solver + numerically integrated yield-line virtual work +
+  re-implemented component limits) with evidence in
+  `artifacts/stiffened_panel_ultimate_review/`, `docs/stiffened-panel-ultimate-independent-review.md`
+  and `tests/test_stiffened_panel_ultimate_independent_review.py`.
+* **reported:** yield-line selector step of 53.8 % at `a/b = 1.5` (conservative,
+  left as a quantified gap).
+
+
 ## 2026-11-04 大倾角稳性：盒形驳 GZ 曲线与 KN 横交曲线（精确截面几何）
 
 - 新增 `tensorfem.marine_large_angle_gz`：补齐 `marine_hydrostatics` 文档里声明的
