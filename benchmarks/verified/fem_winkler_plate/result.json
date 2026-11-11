@@ -1,0 +1,88 @@
+{
+  "benchmark": "fem_winkler_plate",
+  "mission": "GAP-FEM-WINKLER / H3-ICE-PLATE-FEM",
+  "generated_at": "2026-11-11T05:15:32+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64",
+    "dtype": "torch.float64"
+  },
+  "physics": {
+    "young_modulus_Pa": 3000000000.0,
+    "poisson_ratio": 0.3,
+    "thickness_m": 0.15,
+    "winkler_coefficient_N_m3": 10055.25,
+    "point_load_N": 10000.0,
+    "flexural_rigidity_Nm": 927197.802197802,
+    "characteristic_length_m": 3.0988095105322975,
+    "hetenyi_center_deflection_mm": 12.945754886125231
+  },
+  "reference": {
+    "source": "Het\u00e9nyi (1946), Beams on Elastic Foundation",
+    "formula": "w(r) = -P/(2\u03c0 k l\u00b2) \u00b7 kei(r/l),  l = (D/k)^(1/4)",
+    "center_deflection": "w(0) = P / (8 \u221a(D k))"
+  },
+  "levels": [
+    {
+      "n": 20,
+      "beta": 3.0,
+      "ndof": 1323,
+      "n_elements": 400,
+      "w0_fem_mm": 12.864999,
+      "w0_hetenyi_mm": 12.945755,
+      "centre_error_pct": 0.6238,
+      "equilibrium_error_pct": 0.0,
+      "r_squared_profile": 0.999979,
+      "elapsed_s": 0.75
+    },
+    {
+      "n": 30,
+      "beta": 3.5,
+      "ndof": 2883,
+      "n_elements": 900,
+      "w0_fem_mm": 12.951449,
+      "w0_hetenyi_mm": 12.945755,
+      "centre_error_pct": 0.044,
+      "equilibrium_error_pct": 0.0,
+      "r_squared_profile": 0.999997,
+      "elapsed_s": 1.63
+    },
+    {
+      "n": 40,
+      "beta": 4.0,
+      "ndof": 5043,
+      "n_elements": 1600,
+      "w0_fem_mm": 12.97901,
+      "w0_hetenyi_mm": 12.945755,
+      "centre_error_pct": 0.2569,
+      "equilibrium_error_pct": 0.0,
+      "r_squared_profile": 0.999999,
+      "elapsed_s": 3.7
+    },
+    {
+      "n": 50,
+      "beta": 4.5,
+      "ndof": 7803,
+      "n_elements": 2500,
+      "w0_fem_mm": 12.992446,
+      "w0_hetenyi_mm": 12.945755,
+      "centre_error_pct": 0.3607,
+      "equilibrium_error_pct": 0.0,
+      "r_squared_profile": 0.999999,
+      "elapsed_s": 8.59
+    },
+    {
+      "n": 60,
+      "beta": 5.0,
+      "ndof": 11163,
+      "n_elements": 3600,
+      "w0_fem_mm": 13.001547,
+      "w0_hetenyi_mm": 12.945755,
+      "centre_error_pct": 0.431,
+      "equilibrium_error_pct": 0.0,
+      "r_squared_profile": 0.999998,
+      "elapsed_s": 2.24
+    }
+  ]
+}
