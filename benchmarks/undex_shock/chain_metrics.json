@@ -1,0 +1,1445 @@
+{
+  "schema_version": "1.0.0",
+  "mission_id": 15095,
+  "git_commit_at_run": "fe26e5fe67162caaab36f7a46cd535a771e65ab7",
+  "anchor_sha256": "cf8159f22306a6b9b5d6cceb4d50a3b52c6c5102c9ce513c068cccaf6e3b34ce",
+  "anchor_acquisition_status": "NOT_OBTAINED",
+  "script_sha256": "4f2133984ff9106868f5fa6ca482d3917538a29e3d90417c5e698f6b2f4e0dae",
+  "package_file_sha256": "14375eaa2cb70ac5caa25128c0def232533b4ba8a28acd008ec256e40a21fd73",
+  "base_module_sha256": "b1a5e4796ae4a01757005bea7ca8143b410bbf754a7a02b00c90be16281a8ec6",
+  "test_file_sha256": "c68838d98e3ec28c5fe2256154e871eb7107bfcaca4d1a6b1ad1ddce728c44c3",
+  "parameters_used": {
+    "K": 52400000.0,
+    "A": 1.13,
+    "K_theta": 8.4e-05,
+    "decay_exponent": -0.24,
+    "K_b": 2.11,
+    "depth_offset_m": 10.33,
+    "bubble_exponent": 0.8333333333333334
+  },
+  "criterion1_recompute": {
+    "tolerance": 0.01,
+    "max_relative_deviation": 0.0,
+    "pass": true,
+    "rows": [
+      {
+        "case_id": "C1",
+        "weight_kg": 5.0,
+        "range_m": 12.0,
+        "depth_m": 40.0,
+        "recomputed": {
+          "peak_pressure_pa": 5796090.802537563,
+          "decay_time_s": 0.00022927419971641258,
+          "bubble_period_s": 0.1377473802850657,
+          "specific_impulse_pa_s": 1328.8940802354593
+        },
+        "relative_deviation": {
+          "peak_pressure": 0.0,
+          "decay_time": 0.0,
+          "bubble_period": 0.0,
+          "specific_impulse": 0.0
+        }
+      },
+      {
+        "case_id": "C2",
+        "weight_kg": 10.0,
+        "range_m": 18.0,
+        "depth_m": 40.0,
+        "recomputed": {
+          "peak_pressure_pa": 4759266.485094873,
+          "decay_time_s": 0.0003012159886337374,
+          "bubble_period_s": 0.17355082398902835,
+          "specific_impulse_pa_s": 1433.5671594792648
+        },
+        "relative_deviation": {
+          "peak_pressure": 0.0,
+          "decay_time": 0.0,
+          "bubble_period": 0.0,
+          "specific_impulse": 0.0
+        }
+      },
+      {
+        "case_id": "C3",
+        "weight_kg": 25.0,
+        "range_m": 25.0,
+        "depth_m": 40.0,
+        "recomputed": {
+          "peak_pressure_pa": 4636779.892322652,
+          "decay_time_s": 0.00041108316382968703,
+          "bubble_period_s": 0.23554470700519023,
+          "specific_impulse_pa_s": 1906.1021481178714
+        },
+        "relative_deviation": {
+          "peak_pressure": 0.0,
+          "decay_time": 0.0,
+          "bubble_period": 0.0,
+          "specific_impulse": 0.0
+        }
+      },
+      {
+        "case_id": "C4",
+        "weight_kg": 50.0,
+        "range_m": 30.0,
+        "depth_m": 40.0,
+        "recomputed": {
+          "peak_pressure_pa": 4899250.40786096,
+          "decay_time_s": 0.000511910599009715,
+          "bubble_period_s": 0.29676773454715955,
+          "specific_impulse_pa_s": 2507.978210986694
+        },
+        "relative_deviation": {
+          "peak_pressure": 0.0,
+          "decay_time": 0.0,
+          "bubble_period": 0.0,
+          "specific_impulse": 0.0
+        }
+      }
+    ],
+    "parameters_used": {
+      "K": 52400000.0,
+      "A": 1.13,
+      "K_theta": 8.4e-05,
+      "decay_exponent": -0.24,
+      "K_b": 2.11,
+      "depth_offset_m": 10.33,
+      "bubble_exponent": 0.8333333333333334
+    }
+  },
+  "bubble_scaling": {
+    "pass": true,
+    "tolerance": 1e-09,
+    "hydrostatic_pa": 505907.9118625,
+    "weight_scaling": [
+      {
+        "scale": 0.5,
+        "ratio": 0.5,
+        "expected": 0.5,
+        "rel_error": 0.0
+      },
+      {
+        "scale": 2.0,
+        "ratio": 2.0,
+        "expected": 2.0,
+        "rel_error": 0.0
+      },
+      {
+        "scale": 3.0,
+        "ratio": 3.0,
+        "expected": 3.0,
+        "rel_error": 0.0
+      }
+    ],
+    "head_scaling": [
+      {
+        "scale": 0.5,
+        "ratio": 1.7817974362806785,
+        "expected": 1.7817974362806785,
+        "rel_error": 0.0
+      },
+      {
+        "scale": 2.0,
+        "ratio": 0.5612310241546865,
+        "expected": 0.5612310241546865,
+        "rel_error": 0.0
+      },
+      {
+        "scale": 3.0,
+        "ratio": 0.400312318392001,
+        "expected": 0.4003123183920009,
+        "rel_error": 2.773392108153875e-16
+      }
+    ],
+    "log_slope_weight_exponent": 0.33333333333333337,
+    "log_slope_head_exponent": -0.8333333333333331,
+    "expected_weight_exponent": 0.3333333333333333,
+    "expected_head_exponent": -0.8333333333333334,
+    "beta_prefactor_derived": 0.914681356501962,
+    "note": "only the prefactor of the bubble law is empirical; the W^(1/3) and (H + p_atm/rho g)^(-5/6) structure is derived here"
+  },
+  "bubble_prefactor_used": 2.11,
+  "levels": [
+    [
+      12,
+      8,
+      40
+    ],
+    [
+      18,
+      12,
+      60
+    ],
+    [
+      27,
+      18,
+      90
+    ]
+  ],
+  "rows": [
+    {
+      "case_id": "C1",
+      "weight_kg": 5.0,
+      "range_m": 12.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.1424979955563914,
+      "cole_peak_pressure_mpa": 5.796090802537563,
+      "cole_decay_time_us": 229.2741997164126,
+      "cole_bubble_period_s": 0.1377473802850657,
+      "cole_impulse_pa_s": 1328.8940802354593,
+      "recompute_peak_pressure_mpa": 5.796090802537563,
+      "recompute_rel_dev_peak_pressure": 0.0,
+      "recompute_rel_dev_decay_time": 0.0,
+      "recompute_rel_dev_bubble_period": 0.0,
+      "recompute_rel_dev_impulse": 0.0,
+      "criterion1_pass": true,
+      "wall_peak_pressure_mpa": 11.592181605075126,
+      "wall_peak_over_cole": 2.0,
+      "wall_peak_rel_dev_vs_cole": 1.0,
+      "wall_impulse_precav_pa_s": 389.9556833917219,
+      "wall_impulse_precav_over_cole": 0.293443765903922,
+      "wall_impulse_precav_rel_dev_vs_cole": 0.706556234096078,
+      "cavitation_onset_us": 99.35215321044546,
+      "min_wall_pressure_mpa": -1.1242086060878187,
+      "center_deflection_mm": 1.707773554487575,
+      "center_acceleration_g": 15058.476647488376,
+      "deflection_ratio_vs_rigid": 0.9879275779810499,
+      "taylor_velocity_rel_err": 0.04435610530552621,
+      "taylor_pressure_rel_err": 0.02884489102319746,
+      "energy_residual_max": 0.0005247227251220928,
+      "energy_residual_worst_level": 0.0024769163299451775,
+      "gci_deflection": 0.0,
+      "gci_acceleration": 0.0041169977139499615,
+      "gci_impulse_precav": 0.09898941100579425,
+      "gci_wall_pressure": 0.0,
+      "fe_fluid_pressure_rel_err": 0.5060091298472655,
+      "fe_fluid_velocity_rel_err": 0.03965158730054843,
+      "fe_fluid_impulse_precav_pa_s": 397.8839198471523,
+      "fe_fluid_impulse_rel_dev_vs_cole": 0.700590193180292,
+      "srs_bands": 6,
+      "srs_band_max_deviation": 0.02942024636746636,
+      "gci_pass": true
+    },
+    {
+      "case_id": "C2",
+      "weight_kg": 10.0,
+      "range_m": 18.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.11969081611288243,
+      "cole_peak_pressure_mpa": 4.759266485094873,
+      "cole_decay_time_us": 301.2159886337374,
+      "cole_bubble_period_s": 0.17355082398902835,
+      "cole_impulse_pa_s": 1433.5671594792648,
+      "recompute_peak_pressure_mpa": 4.759266485094873,
+      "recompute_rel_dev_peak_pressure": 0.0,
+      "recompute_rel_dev_decay_time": 0.0,
+      "recompute_rel_dev_bubble_period": 0.0,
+      "recompute_rel_dev_impulse": 0.0,
+      "criterion1_pass": true,
+      "wall_peak_pressure_mpa": 9.518532970189746,
+      "wall_peak_over_cole": 2.0,
+      "wall_peak_rel_dev_vs_cole": 1.0,
+      "wall_impulse_precav_pa_s": 341.88092262685393,
+      "wall_impulse_precav_over_cole": 0.2384826691698492,
+      "wall_impulse_precav_rel_dev_vs_cole": 0.7615173308301507,
+      "cavitation_onset_us": 107.09901818088441,
+      "min_wall_pressure_mpa": -0.7605248886645614,
+      "center_deflection_mm": 1.8589039460225472,
+      "center_acceleration_g": 12364.765437007796,
+      "deflection_ratio_vs_rigid": 0.9968368713626438,
+      "taylor_velocity_rel_err": 0.04176192487668022,
+      "taylor_pressure_rel_err": 0.029069155628618473,
+      "energy_residual_max": 0.0006893663841106491,
+      "energy_residual_worst_level": 0.0032541065037968425,
+      "gci_deflection": 0.009779199576900193,
+      "gci_acceleration": 0.004116997713954329,
+      "gci_impulse_precav": 0.0,
+      "gci_wall_pressure": 0.0,
+      "fe_fluid_pressure_rel_err": 0.5045827226640369,
+      "fe_fluid_velocity_rel_err": 0.03877317457673542,
+      "fe_fluid_impulse_precav_pa_s": 350.7315234650797,
+      "fe_fluid_impulse_rel_dev_vs_cole": 0.7553435002009388,
+      "srs_bands": 6,
+      "srs_band_max_deviation": 0.03168718961796519,
+      "gci_pass": true
+    },
+    {
+      "case_id": "C3",
+      "weight_kg": 25.0,
+      "range_m": 25.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.11696070952851464,
+      "cole_peak_pressure_mpa": 4.636779892322652,
+      "cole_decay_time_us": 411.083163829687,
+      "cole_bubble_period_s": 0.23554470700519023,
+      "cole_impulse_pa_s": 1906.1021481178714,
+      "recompute_peak_pressure_mpa": 4.636779892322652,
+      "recompute_rel_dev_peak_pressure": 0.0,
+      "recompute_rel_dev_decay_time": 0.0,
+      "recompute_rel_dev_bubble_period": 0.0,
+      "recompute_rel_dev_impulse": 0.0,
+      "criterion1_pass": true,
+      "wall_peak_pressure_mpa": 9.273559784645304,
+      "wall_peak_over_cole": 2.0,
+      "wall_peak_rel_dev_vs_cole": 1.0,
+      "wall_impulse_precav_pa_s": 354.26943566773247,
+      "wall_impulse_precav_over_cole": 0.18586067699338474,
+      "wall_impulse_precav_rel_dev_vs_cole": 0.8141393230066153,
+      "cavitation_onset_us": 114.18976773046862,
+      "min_wall_pressure_mpa": -0.6699170529087944,
+      "center_deflection_mm": 2.530778061050124,
+      "center_acceleration_g": 12046.540350526511,
+      "deflection_ratio_vs_rigid": 1.020688154799883,
+      "taylor_velocity_rel_err": 0.03964513523017526,
+      "taylor_pressure_rel_err": 0.029491262133328852,
+      "energy_residual_max": 0.000940788840818232,
+      "energy_residual_worst_level": 0.004440978294268369,
+      "gci_deflection": 0.012800847202985874,
+      "gci_acceleration": 0.004116997713954939,
+      "gci_impulse_precav": 0.0,
+      "gci_wall_pressure": 0.0,
+      "fe_fluid_pressure_rel_err": 0.503363439349574,
+      "fe_fluid_velocity_rel_err": 0.041017333101102296,
+      "fe_fluid_impulse_precav_pa_s": 365.98906711258405,
+      "fe_fluid_impulse_rel_dev_vs_cole": 0.8079908427394775,
+      "srs_bands": 6,
+      "srs_band_max_deviation": 0.03418642172417078,
+      "gci_pass": true
+    },
+    {
+      "case_id": "C4",
+      "weight_kg": 50.0,
+      "range_m": 30.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.12280104995467954,
+      "cole_peak_pressure_mpa": 4.8992504078609596,
+      "cole_decay_time_us": 511.91059900971493,
+      "cole_bubble_period_s": 0.29676773454715955,
+      "cole_impulse_pa_s": 2507.978210986694,
+      "recompute_peak_pressure_mpa": 4.8992504078609596,
+      "recompute_rel_dev_peak_pressure": 0.0,
+      "recompute_rel_dev_decay_time": 0.0,
+      "recompute_rel_dev_bubble_period": 0.0,
+      "recompute_rel_dev_impulse": 0.0,
+      "criterion1_pass": true,
+      "wall_peak_pressure_mpa": 9.798500815721919,
+      "wall_peak_over_cole": 2.0,
+      "wall_peak_rel_dev_vs_cole": 1.0,
+      "wall_impulse_precav_pa_s": 388.11262486759813,
+      "wall_impulse_precav_over_cole": 0.15475119487378083,
+      "wall_impulse_precav_rel_dev_vs_cole": 0.8452488051262191,
+      "cavitation_onset_us": 119.44580643560016,
+      "min_wall_pressure_mpa": -0.6811085749329887,
+      "center_deflection_mm": 3.4027209727903096,
+      "center_acceleration_g": 12728.449289419852,
+      "deflection_ratio_vs_rigid": 1.0430082938362946,
+      "taylor_velocity_rel_err": 0.03768890710827489,
+      "taylor_pressure_rel_err": 0.029194399855295993,
+      "energy_residual_max": 0.001171512533856416,
+      "energy_residual_worst_level": 0.005530173024674976,
+      "gci_deflection": 0.018169347533292145,
+      "gci_acceleration": 0.004116997713953343,
+      "gci_impulse_precav": 0.0,
+      "gci_wall_pressure": 0.0,
+      "fe_fluid_pressure_rel_err": 0.502703359037432,
+      "fe_fluid_velocity_rel_err": 0.04205864383614327,
+      "fe_fluid_impulse_precav_pa_s": 403.0503268767351,
+      "fe_fluid_impulse_rel_dev_vs_cole": 0.8392927318462762,
+      "srs_bands": 6,
+      "srs_band_max_deviation": 0.03375059083205118,
+      "gci_pass": true
+    }
+  ],
+  "cases": {
+    "C1": {
+      "env": {
+        "weight_kg": 5.0,
+        "range_m": 12.0,
+        "depth_m": 40.0,
+        "reduced_range": 0.1424979955563914,
+        "peak_pressure_pa": 5796090.802537563,
+        "peak_pressure_mpa": 5.796090802537563,
+        "decay_time_s": 0.00022927419971641258,
+        "specific_impulse_pa_s": 1328.8940802354593,
+        "energy_flux_j_m2": 2504.842522276215,
+        "shock_energy_j": 4532656.243036196,
+        "shock_energy_ratio": 0.20056001075381397,
+        "bubble_period_s": 0.1377473802850657
+      },
+      "closure": {
+        "fem_wall_peak_pa": 11592181.605075127,
+        "fem_wall_impulse_pa_s": -7.683354996633205,
+        "fem_wall_impulse_total_pa_s": 49.25530104320608,
+        "impulse_window_s": [
+          0.0,
+          0.0009170967988656503
+        ],
+        "cavitation_onset_s": 9.935215321044546e-05,
+        "min_wall_pressure_pa": -1124208.6060878187,
+        "cole_free_field_peak_pa": 5796090.802537563,
+        "cole_free_field_impulse_pa_s": 1328.8940802354593,
+        "rigid_wall_peak_pa": 11592181.605075127,
+        "rigid_wall_impulse_pa_s": 2657.7881604709187,
+        "peak_rel_dev_vs_cole_free_field": 1.0,
+        "impulse_rel_dev_vs_cole_free_field": 1.0057817662904118,
+        "peak_rel_dev_vs_rigid_wall": 0.0,
+        "impulse_rel_dev_vs_rigid_wall": 1.002890883145206,
+        "reflection_factor_peak": 2.0,
+        "reflection_factor_impulse": -0.005781766290411825,
+        "rigid_wall_factor": 2.0,
+        "cavitation": true
+      },
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": false,
+          "values": [
+            0.0017006568228867896,
+            0.0016975602335215715,
+            0.0017077735544875749
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences"
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            146040.54256196372,
+            147563.89945533074,
+            147673.21001509187
+          ],
+          "ratio": 1.5,
+          "observed_order": -6.497423835915119,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.0041169977139499615,
+          "gci_fine_p2": 0.0007402192973929198,
+          "extrapolated_fine": 148159.5862295269,
+          "monotone": true
+        },
+        "wall_impulse_precav_pa_s": {
+          "available": true,
+          "values": [
+            352.746402237793,
+            383.01529505080384,
+            389.9556833917219
+          ],
+          "ratio": 1.5,
+          "observed_order": -3.6322800310461494,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.09898941100579425,
+          "gci_fine_p2": 0.017797889956501094,
+          "extrapolated_fine": 420.83687012556874,
+          "monotone": true
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            11592181.605075127,
+            11592181.605075127,
+            11592181.605075127
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences"
+        }
+      },
+      "taylor": {
+        "areal_mass_kg_m2": 78.5,
+        "beta_theta": 4.490561554955215,
+        "reference_cavitation_time_s": 9.935215321044546e-05,
+        "window_s": [
+          0.0,
+          0.003668387195462602
+        ],
+        "center_velocity": {
+          "peak_reference": 4.903041265996334,
+          "peak_fem": 5.031101138341574,
+          "max_abs_error": 0.21747981471187394,
+          "relative_max_error": 0.04435610530552621,
+          "peak_ratio_fem_over_reference": 1.026118456973504
+        },
+        "center_acceleration": {
+          "peak_reference": 147671.10324936468,
+          "peak_fem": 147673.21001509187,
+          "max_abs_error": 11972.791864623869,
+          "relative_max_error": 0.08107741867686885,
+          "peak_ratio_fem_over_reference": 1.000014266607893
+        },
+        "center_wall_pressure": {
+          "peak_reference": 11592181.605075127,
+          "peak_fem": 11592181.605075127,
+          "max_abs_error": 334375.21511950623,
+          "relative_max_error": 0.02884489102319746,
+          "peak_ratio_fem_over_reference": 1.0
+        },
+        "peak_deflection_reference_m": 0.0017286424557330586,
+        "peak_deflection_fem_m": 0.0017077735544875749,
+        "deflection_ratio": 0.9879275779810499
+      },
+      "levels": [
+        {
+          "nx": 12,
+          "ny": 8,
+          "ndof": 351,
+          "free_dofs": 311,
+          "dt_s": 5.731854992910314e-06,
+          "steps": 641,
+          "duration_s": 0.0036683871954626013,
+          "steps_per_decay": 40,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 5796090.802537563,
+          "decay_time_s": 0.00022927419971641258,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 4.490561554955215,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -1811538.4610998426,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 11592181.605075127,
+          "peak_center_acceleration_ms2": 146040.54256196372,
+          "peak_center_deflection_m": 0.0017006568228867896,
+          "energy_residual_max": 0.0024769163299451775,
+          "energy_residual_final": 0.0024769163299451775,
+          "wall_impulse_loading_pa_s": 187.77779013082758,
+          "wall_impulse_total_pa_s": 43.16642119701775,
+          "cavitation_onset_s": 8.02459699007444e-05,
+          "wall_impulse_precav_pa_s": 352.746402237793,
+          "velocity_at_cavitation_ms": 5.44710219200112,
+          "cavitation_impulse_fraction_of_loading": 1.8785310125975458
+        },
+        {
+          "nx": 18,
+          "ny": 12,
+          "ndof": 741,
+          "free_dofs": 681,
+          "dt_s": 3.82123666194021e-06,
+          "steps": 961,
+          "duration_s": 0.0036683871954626013,
+          "steps_per_decay": 60,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 5796090.802537563,
+          "decay_time_s": 0.00022927419971641258,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 4.490561554955215,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -1697062.2206440833,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 11592181.605075127,
+          "peak_center_acceleration_ms2": 147563.89945533074,
+          "peak_center_deflection_m": 0.0016975602335215715,
+          "energy_residual_max": 0.0011484066554551145,
+          "energy_residual_final": 0.0011484066554551145,
+          "wall_impulse_loading_pa_s": 34.336786665320155,
+          "wall_impulse_total_pa_s": 47.850524919182824,
+          "cavitation_onset_s": 0.0001261008098440269,
+          "wall_impulse_precav_pa_s": 383.01529505080384,
+          "velocity_at_cavitation_ms": 4.38198775886601,
+          "cavitation_impulse_fraction_of_loading": 11.1546633289843
+        },
+        {
+          "nx": 27,
+          "ny": 18,
+          "ndof": 1596,
+          "free_dofs": 1506,
+          "dt_s": 2.54749110796014e-06,
+          "steps": 1441,
+          "duration_s": 0.003668387195462602,
+          "steps_per_decay": 90,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 5796090.802537563,
+          "decay_time_s": 0.00022927419971641258,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 4.490561554955215,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -1124208.6060878187,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 11592181.605075127,
+          "peak_center_acceleration_ms2": 147673.21001509187,
+          "peak_center_deflection_m": 0.0017077735544875749,
+          "energy_residual_max": 0.0005247227251220928,
+          "energy_residual_final": 0.0005247227251220928,
+          "wall_impulse_loading_pa_s": -7.683354996633205,
+          "wall_impulse_total_pa_s": 49.25530104320608,
+          "cavitation_onset_s": 9.935215321044546e-05,
+          "wall_impulse_precav_pa_s": 389.9556833917219,
+          "velocity_at_cavitation_ms": 4.929371502483759,
+          "cavitation_impulse_fraction_of_loading": -50.75330810077081
+        }
+      ],
+      "fe_fluid": {
+        "comparison": {
+          "window_s": [
+            0.0,
+            9.935215321044545e-05
+          ],
+          "samples": 27,
+          "displacement": {
+            "peak_reference": 0.00035755285051582055,
+            "max_abs_error": 9.001421877689755e-06,
+            "relative_max_error": 0.025175080731992296,
+            "relative_l2_error": 0.034565430082362604
+          },
+          "velocity": {
+            "peak_reference": 4.903041265996334,
+            "max_abs_error": 0.19441336879684512,
+            "relative_max_error": 0.03965158730054843,
+            "relative_l2_error": 0.026106555795898663
+          },
+          "acceleration": {
+            "peak_reference": 147671.10324936468,
+            "max_abs_error": 76584.89098392236,
+            "relative_max_error": 0.5186179915958057,
+            "relative_l2_error": 0.22983277172101418
+          },
+          "interface_pressure": {
+            "peak_reference": 11592181.605075127,
+            "max_abs_error": 5865749.727015543,
+            "relative_max_error": 0.5060091298472655,
+            "relative_l2_error": 0.23654028322877557
+          },
+          "impedance_residual_relative": 1.012018259694531
+        },
+        "impulse_precav_pa_s": 397.8839198471523,
+        "cavitation_time_s": 0.00010317338987238566,
+        "elements": 120,
+        "dt_s": 3.82123666194021e-06
+      }
+    },
+    "C2": {
+      "env": {
+        "weight_kg": 10.0,
+        "range_m": 18.0,
+        "depth_m": 40.0,
+        "reduced_range": 0.11969081611288243,
+        "peak_pressure_pa": 4759266.485094873,
+        "peak_pressure_mpa": 4.759266485094873,
+        "decay_time_s": 0.0003012159886337374,
+        "specific_impulse_pa_s": 1433.5671594792648,
+        "energy_flux_j_m2": 2218.773377639779,
+        "shock_energy_j": 9033744.85755317,
+        "shock_energy_ratio": 0.19986161189276924,
+        "bubble_period_s": 0.17355082398902835
+      },
+      "closure": {
+        "fem_wall_peak_pa": 9518532.970189746,
+        "fem_wall_impulse_pa_s": 25.269495955860158,
+        "fem_wall_impulse_total_pa_s": 9.098676498044393,
+        "impulse_window_s": [
+          0.0,
+          0.0012048639545349496
+        ],
+        "cavitation_onset_s": 0.00010709901818088441,
+        "min_wall_pressure_pa": -760524.8886645613,
+        "cole_free_field_peak_pa": 4759266.485094873,
+        "cole_free_field_impulse_pa_s": 1433.5671594792648,
+        "rigid_wall_peak_pa": 9518532.970189746,
+        "rigid_wall_impulse_pa_s": 2867.1343189585295,
+        "peak_rel_dev_vs_cole_free_field": 1.0,
+        "impulse_rel_dev_vs_cole_free_field": 0.982372994673623,
+        "peak_rel_dev_vs_rigid_wall": 0.0,
+        "impulse_rel_dev_vs_rigid_wall": 0.9911864973368114,
+        "reflection_factor_peak": 2.0,
+        "reflection_factor_impulse": 0.01762700532637701,
+        "rigid_wall_factor": 2.0,
+        "cavitation": true
+      },
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": true,
+          "values": [
+            0.0018656336162855413,
+            0.0018621723824021434,
+            0.001858903946022547
+          ],
+          "ratio": 1.5,
+          "observed_order": -0.14135233557526844,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.009779199576900193,
+          "gci_fine_p2": 0.0017582599609784917,
+          "extrapolated_fine": 0.0018443610718765935,
+          "monotone": true
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            119916.31659323389,
+            121167.17025554455,
+            121256.9269728325
+          ],
+          "ratio": 1.5,
+          "observed_order": -6.497423835912288,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.004116997713954329,
+          "gci_fine_p2": 0.000740219297393705,
+          "extrapolated_fine": 121656.29856575113,
+          "monotone": true
+        },
+        "wall_impulse_precav_pa_s": {
+          "available": false,
+          "values": [
+            305.53105280309205,
+            343.68474751093595,
+            341.88092262685393
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences"
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            9518532.970189746,
+            9518532.970189746,
+            9518532.970189746
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences"
+        }
+      },
+      "taylor": {
+        "areal_mass_kg_m2": 78.5,
+        "beta_theta": 5.899612516234028,
+        "reference_cavitation_time_s": 0.00011044586249903705,
+        "window_s": [
+          0.0,
+          0.004819455818139798
+        ],
+        "center_velocity": {
+          "peak_reference": 4.309300733578293,
+          "peak_fem": 4.4605295293027,
+          "max_abs_error": 0.17996469350671962,
+          "relative_max_error": 0.04176192487668022,
+          "peak_ratio_fem_over_reference": 1.0350935813195918
+        },
+        "center_acceleration": {
+          "peak_reference": 121255.19707248085,
+          "peak_fem": 121256.9269728325,
+          "max_abs_error": 10426.237340123313,
+          "relative_max_error": 0.08598590074362736,
+          "peak_ratio_fem_over_reference": 1.0000142666078933
+        },
+        "center_wall_pressure": {
+          "peak_reference": 9518532.970189746,
+          "peak_fem": 9518532.970189746,
+          "max_abs_error": 276695.7162665818,
+          "relative_max_error": 0.029069155628618473,
+          "peak_ratio_fem_over_reference": 1.0
+        },
+        "peak_deflection_reference_m": 0.0018648025563916847,
+        "peak_deflection_fem_m": 0.001858903946022547,
+        "deflection_ratio": 0.9968368713626438
+      },
+      "levels": [
+        {
+          "nx": 12,
+          "ny": 8,
+          "ndof": 351,
+          "free_dofs": 311,
+          "dt_s": 7.530399715843435e-06,
+          "steps": 641,
+          "duration_s": 0.004819455818139798,
+          "steps_per_decay": 40,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 4759266.485094873,
+          "decay_time_s": 0.0003012159886337374,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 5.899612516234028,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -1342721.2750137541,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 9518532.970189746,
+          "peak_center_acceleration_ms2": 119916.31659323389,
+          "peak_center_deflection_m": 0.0018656336162855413,
+          "energy_residual_max": 0.0032541065037968425,
+          "energy_residual_final": 0.0032541065037968425,
+          "wall_impulse_loading_pa_s": 202.66681454043018,
+          "wall_impulse_total_pa_s": -1.1283603938074265,
+          "cavitation_onset_s": 8.283439687427779e-05,
+          "wall_impulse_precav_pa_s": 305.53105280309205,
+          "velocity_at_cavitation_ms": 4.740364172829403,
+          "cavitation_impulse_fraction_of_loading": 1.5075534368856496
+        },
+        {
+          "nx": 18,
+          "ny": 12,
+          "ndof": 741,
+          "free_dofs": 681,
+          "dt_s": 5.020266477228957e-06,
+          "steps": 961,
+          "duration_s": 0.004819455818139798,
+          "steps_per_decay": 60,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 4759266.485094873,
+          "decay_time_s": 0.0003012159886337374,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 5.899612516234028,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -1355018.0743307313,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 9518532.970189746,
+          "peak_center_acceleration_ms2": 121167.17025554455,
+          "peak_center_deflection_m": 0.0018621723824021434,
+          "energy_residual_max": 0.0015087405089846903,
+          "energy_residual_final": 0.0015087405089846903,
+          "wall_impulse_loading_pa_s": 83.68335018045839,
+          "wall_impulse_total_pa_s": 4.110326897018382,
+          "cavitation_onset_s": 0.0001506079943168687,
+          "wall_impulse_precav_pa_s": 343.68474751093595,
+          "velocity_at_cavitation_ms": 3.7785183266720965,
+          "cavitation_impulse_fraction_of_loading": 4.1069668789526155
+        },
+        {
+          "nx": 27,
+          "ny": 18,
+          "ndof": 1596,
+          "free_dofs": 1506,
+          "dt_s": 3.346844318152638e-06,
+          "steps": 1441,
+          "duration_s": 0.004819455818139798,
+          "steps_per_decay": 90,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 4759266.485094873,
+          "decay_time_s": 0.0003012159886337374,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 5.899612516234028,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -760524.8886645613,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 9518532.970189746,
+          "peak_center_acceleration_ms2": 121256.9269728325,
+          "peak_center_deflection_m": 0.001858903946022547,
+          "energy_residual_max": 0.0006893663841106491,
+          "energy_residual_final": 0.0006893663841106491,
+          "wall_impulse_loading_pa_s": 25.269495955860158,
+          "wall_impulse_total_pa_s": 9.098676498044393,
+          "cavitation_onset_s": 0.00010709901818088441,
+          "wall_impulse_precav_pa_s": 341.88092262685393,
+          "velocity_at_cavitation_ms": 4.39298312666503,
+          "cavitation_impulse_fraction_of_loading": 13.529392245260418
+        }
+      ],
+      "fe_fluid": {
+        "comparison": {
+          "window_s": [
+            0.0,
+            0.00011044586249903705
+          ],
+          "samples": 23,
+          "displacement": {
+            "peak_reference": 0.0003523991317661769,
+            "max_abs_error": 7.661391859205952e-06,
+            "relative_max_error": 0.021740666104391602,
+            "relative_l2_error": 0.03030115945815864
+          },
+          "velocity": {
+            "peak_reference": 4.309300733578293,
+            "max_abs_error": 0.16708526964668513,
+            "relative_max_error": 0.03877317457673542,
+            "relative_l2_error": 0.023099355350034777
+          },
+          "acceleration": {
+            "peak_reference": 121255.19707248085,
+            "max_abs_error": 62786.93523391582,
+            "relative_max_error": 0.5178081991519476,
+            "relative_l2_error": 0.2481792057788557
+          },
+          "interface_pressure": {
+            "peak_reference": 9518532.970189746,
+            "max_abs_error": 4802887.281865745,
+            "relative_max_error": 0.5045827226640369,
+            "relative_l2_error": 0.251647278550449
+          },
+          "impedance_residual_relative": 1.0091654453280738
+        },
+        "impulse_precav_pa_s": 350.7315234650797,
+        "cavitation_time_s": 0.00011044586249903705,
+        "elements": 120,
+        "dt_s": 5.020266477228957e-06
+      }
+    },
+    "C3": {
+      "env": {
+        "weight_kg": 25.0,
+        "range_m": 25.0,
+        "depth_m": 40.0,
+        "reduced_range": 0.11696070952851464,
+        "peak_pressure_pa": 4636779.892322652,
+        "peak_pressure_mpa": 4.636779892322652,
+        "decay_time_s": 0.00041108316382968703,
+        "specific_impulse_pa_s": 1906.1021481178714,
+        "energy_flux_j_m2": 2874.203614018198,
+        "shock_energy_j": 22573942.396802012,
+        "shock_energy_ratio": 0.19976940174161073,
+        "bubble_period_s": 0.23554470700519023
+      },
+      "closure": {
+        "fem_wall_peak_pa": 9273559.784645304,
+        "fem_wall_impulse_pa_s": 83.25210837998063,
+        "fem_wall_impulse_total_pa_s": -78.82818151220354,
+        "impulse_window_s": [
+          0.0,
+          0.0016443326553187481
+        ],
+        "cavitation_onset_s": 0.00011418976773046862,
+        "min_wall_pressure_pa": -669917.0529087945,
+        "cole_free_field_peak_pa": 4636779.892322652,
+        "cole_free_field_impulse_pa_s": 1906.1021481178714,
+        "rigid_wall_peak_pa": 9273559.784645304,
+        "rigid_wall_impulse_pa_s": 3812.2042962357427,
+        "peak_rel_dev_vs_cole_free_field": 1.0,
+        "impulse_rel_dev_vs_cole_free_field": 0.9563233751862744,
+        "peak_rel_dev_vs_rigid_wall": 0.0,
+        "impulse_rel_dev_vs_rigid_wall": 0.9781616875931373,
+        "reflection_factor_peak": 2.0,
+        "reflection_factor_impulse": 0.04367662481372557,
+        "rigid_wall_factor": 2.0,
+        "cavitation": true
+      },
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": true,
+          "values": [
+            0.0025522434503657274,
+            0.0025366027474994796,
+            0.0025307780610501237
+          ],
+          "ratio": 1.5,
+          "observed_order": -2.436144282419596,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.012800847202985874,
+          "gci_fine_p2": 0.0023015398066707528,
+          "extrapolated_fine": 0.0025048611784387865,
+          "monotone": true
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            116830.0970921194,
+            118048.75822988186,
+            118136.2049284908
+          ],
+          "ratio": 1.5,
+          "observed_order": -6.49742383591203,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.004116997713954939,
+          "gci_fine_p2": 0.0007402192973938148,
+          "extrapolated_fine": 118525.29811699153,
+          "monotone": true
+        },
+        "wall_impulse_precav_pa_s": {
+          "available": false,
+          "values": [
+            311.88575936299776,
+            367.3007742995236,
+            354.26943566773247
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences"
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            9273559.784645304,
+            9273559.784645304,
+            9273559.784645304
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences"
+        }
+      },
+      "taylor": {
+        "areal_mass_kg_m2": 78.5,
+        "beta_theta": 8.051469610040048,
+        "reference_cavitation_time_s": 0.0001233249491489061,
+        "window_s": [
+          0.0,
+          0.0065773306212749925
+        ],
+        "center_velocity": {
+          "peak_reference": 4.486780332243487,
+          "peak_fem": 4.660930499485442,
+          "max_abs_error": 0.17787901301988374,
+          "relative_max_error": 0.03964513523017526,
+          "peak_ratio_fem_over_reference": 1.038814061386169
+        },
+        "center_acceleration": {
+          "peak_reference": 118134.5195496217,
+          "peak_fem": 118136.2049284908,
+          "max_abs_error": 10018.900229391445,
+          "relative_max_error": 0.0848092519238889,
+          "peak_ratio_fem_over_reference": 1.0000142666078935
+        },
+        "center_wall_pressure": {
+          "peak_reference": 9273559.784645304,
+          "peak_fem": 9273559.784645304,
+          "max_abs_error": 273488.9825180713,
+          "relative_max_error": 0.029491262133328852,
+          "peak_ratio_fem_over_reference": 1.0
+        },
+        "peak_deflection_reference_m": 0.0024794821504970934,
+        "peak_deflection_fem_m": 0.0025307780610501237,
+        "deflection_ratio": 1.020688154799883
+      },
+      "levels": [
+        {
+          "nx": 12,
+          "ny": 8,
+          "ndof": 351,
+          "free_dofs": 311,
+          "dt_s": 1.0277079095742177e-05,
+          "steps": 641,
+          "duration_s": 0.0065773306212749925,
+          "steps_per_decay": 40,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 4636779.892322652,
+          "decay_time_s": 0.00041108316382968703,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 8.05146961004005,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -1161463.4471197044,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 9273559.784645304,
+          "peak_center_acceleration_ms2": 116830.0970921194,
+          "peak_center_deflection_m": 0.0025522434503657274,
+          "energy_residual_max": 0.004440978294268369,
+          "energy_residual_final": 0.004440978294268369,
+          "wall_impulse_loading_pa_s": 238.24010390437763,
+          "wall_impulse_total_pa_s": -111.67188749211036,
+          "cavitation_onset_s": 9.249371186167959e-05,
+          "wall_impulse_precav_pa_s": 311.88575936299776,
+          "velocity_at_cavitation_ms": 4.995781473211365,
+          "cavitation_impulse_fraction_of_loading": 1.3091236708332668
+        },
+        {
+          "nx": 18,
+          "ny": 12,
+          "ndof": 741,
+          "free_dofs": 681,
+          "dt_s": 6.851386063828117e-06,
+          "steps": 961,
+          "duration_s": 0.0065773306212749925,
+          "steps_per_decay": 60,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 4636779.892322652,
+          "decay_time_s": 0.00041108316382968703,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 8.05146961004005,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -1250305.2780393437,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 9273559.784645304,
+          "peak_center_acceleration_ms2": 118048.75822988186,
+          "peak_center_deflection_m": 0.0025366027474994796,
+          "energy_residual_max": 0.0020590124511327924,
+          "energy_residual_final": 0.0020590124511327924,
+          "wall_impulse_loading_pa_s": 150.07762442017088,
+          "wall_impulse_total_pa_s": -87.73461200043559,
+          "cavitation_onset_s": 0.00017128465159570294,
+          "wall_impulse_precav_pa_s": 367.3007742995236,
+          "velocity_at_cavitation_ms": 3.9815662835314773,
+          "cavitation_impulse_fraction_of_loading": 2.447405305878211
+        },
+        {
+          "nx": 27,
+          "ny": 18,
+          "ndof": 1596,
+          "free_dofs": 1506,
+          "dt_s": 4.567590709218745e-06,
+          "steps": 1441,
+          "duration_s": 0.0065773306212749925,
+          "steps_per_decay": 90,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 4636779.892322652,
+          "decay_time_s": 0.00041108316382968703,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 8.05146961004005,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -669917.0529087945,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 9273559.784645304,
+          "peak_center_acceleration_ms2": 118136.2049284908,
+          "peak_center_deflection_m": 0.0025307780610501237,
+          "energy_residual_max": 0.000940788840818232,
+          "energy_residual_final": 0.000940788840818232,
+          "wall_impulse_loading_pa_s": 83.25210837998063,
+          "wall_impulse_total_pa_s": -78.82818151220354,
+          "cavitation_onset_s": 0.00011418976773046862,
+          "wall_impulse_precav_pa_s": 354.26943566773247,
+          "velocity_at_cavitation_ms": 4.61000200304199,
+          "cavitation_impulse_fraction_of_loading": 4.255380945438285
+        }
+      ],
+      "fe_fluid": {
+        "comparison": {
+          "window_s": [
+            0.0,
+            0.0001233249491489061
+          ],
+          "samples": 19,
+          "displacement": {
+            "peak_reference": 0.00041355553596231914,
+            "max_abs_error": 7.724747423458597e-06,
+            "relative_max_error": 0.018678863542434677,
+            "relative_l2_error": 0.026478348245892923
+          },
+          "velocity": {
+            "peak_reference": 4.486780332243487,
+            "max_abs_error": 0.18403576343910555,
+            "relative_max_error": 0.041017333101102296,
+            "relative_l2_error": 0.020464812698982957
+          },
+          "acceleration": {
+            "peak_reference": 118134.5195496217,
+            "max_abs_error": 61089.53656972002,
+            "relative_max_error": 0.517118424001883,
+            "relative_l2_error": 0.27775190062776867
+          },
+          "interface_pressure": {
+            "peak_reference": 9273559.784645304,
+            "max_abs_error": 4667970.948212954,
+            "relative_max_error": 0.503363439349574,
+            "relative_l2_error": 0.2767693673334128
+          },
+          "impedance_residual_relative": 1.006726878699148
+        },
+        "impulse_precav_pa_s": 365.98906711258405,
+        "cavitation_time_s": 0.0001233249491489061,
+        "elements": 120,
+        "dt_s": 6.851386063828117e-06
+      }
+    },
+    "C4": {
+      "env": {
+        "weight_kg": 50.0,
+        "range_m": 30.0,
+        "depth_m": 40.0,
+        "reduced_range": 0.12280104995467954,
+        "peak_pressure_pa": 4899250.40786096,
+        "peak_pressure_mpa": 4.8992504078609596,
+        "decay_time_s": 0.000511910599009715,
+        "specific_impulse_pa_s": 2507.978210986694,
+        "energy_flux_j_m2": 3995.8417148237277,
+        "shock_energy_j": 45191905.114312306,
+        "shock_energy_ratio": 0.19996418192173587,
+        "bubble_period_s": 0.29676773454715955
+      },
+      "closure": {
+        "fem_wall_peak_pa": 9798500.81572192,
+        "fem_wall_impulse_pa_s": 138.1430395446816,
+        "fem_wall_impulse_total_pa_s": -215.67603378529566,
+        "impulse_window_s": [
+          0.0,
+          0.00204764239603886
+        ],
+        "cavitation_onset_s": 0.00011944580643560016,
+        "min_wall_pressure_pa": -681108.5749329887,
+        "cole_free_field_peak_pa": 4899250.40786096,
+        "cole_free_field_impulse_pa_s": 2507.978210986694,
+        "rigid_wall_peak_pa": 9798500.81572192,
+        "rigid_wall_impulse_pa_s": 5015.956421973388,
+        "peak_rel_dev_vs_cole_free_field": 1.0,
+        "impulse_rel_dev_vs_cole_free_field": 0.9449185647070144,
+        "peak_rel_dev_vs_rigid_wall": 0.0,
+        "impulse_rel_dev_vs_rigid_wall": 0.9724592823535072,
+        "reflection_factor_peak": 2.0,
+        "reflection_factor_impulse": 0.05508143529298569,
+        "rigid_wall_factor": 2.0,
+        "cavitation": true
+      },
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": true,
+          "values": [
+            0.003454204774302073,
+            0.0034138368936688737,
+            0.00340272097279031
+          ],
+          "ratio": 1.5,
+          "observed_order": -3.1806831588745856,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.018169347533292145,
+          "gci_fine_p2": 0.0032667741397110614,
+          "extrapolated_fine": 0.0033532607968595504,
+          "monotone": true
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            123443.40557910014,
+            124731.05049968672,
+            124823.44722408918
+          ],
+          "ratio": 1.5,
+          "observed_order": -6.4974238359130645,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.004116997713953343,
+          "gci_fine_p2": 0.0007402192973935278,
+          "extrapolated_fine": 125234.56550158466,
+          "monotone": true
+        },
+        "wall_impulse_precav_pa_s": {
+          "available": false,
+          "values": [
+            340.14863066097365,
+            410.1431702807988,
+            388.11262486759813
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences"
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            9798500.81572192,
+            9798500.81572192,
+            9798500.81572192
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences"
+        }
+      },
+      "taylor": {
+        "areal_mass_kg_m2": 78.5,
+        "beta_theta": 10.026274471050149,
+        "reference_cavitation_time_s": 0.00013082159752470494,
+        "window_s": [
+          0.0,
+          0.00819056958415544
+        ],
+        "center_velocity": {
+          "peak_reference": 4.936629300107996,
+          "peak_fem": 5.1226854632277545,
+          "max_abs_error": 0.18605616311975837,
+          "relative_max_error": 0.03768890710827489,
+          "peak_ratio_fem_over_reference": 1.0376889071082749
+        },
+        "center_acceleration": {
+          "peak_reference": 124821.66644231745,
+          "peak_fem": 124823.44722408918,
+          "max_abs_error": 10470.181076726574,
+          "relative_max_error": 0.08388111916103164,
+          "peak_ratio_fem_over_reference": 1.0000142666078933
+        },
+        "center_wall_pressure": {
+          "peak_reference": 9798500.81572192,
+          "peak_fem": 9798500.81572192,
+          "max_abs_error": 286061.3507966297,
+          "relative_max_error": 0.029194399855295993,
+          "peak_ratio_fem_over_reference": 1.0
+        },
+        "peak_deflection_reference_m": 0.0032624102731482058,
+        "peak_deflection_fem_m": 0.00340272097279031,
+        "deflection_ratio": 1.0430082938362946
+      },
+      "levels": [
+        {
+          "nx": 12,
+          "ny": 8,
+          "ndof": 351,
+          "free_dofs": 311,
+          "dt_s": 1.2797764975242874e-05,
+          "steps": 641,
+          "duration_s": 0.00819056958415544,
+          "steps_per_decay": 40,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 4899250.40786096,
+          "decay_time_s": 0.000511910599009715,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 10.02627447105015,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -1135623.2665929878,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 9798500.81572192,
+          "peak_center_acceleration_ms2": 123443.40557910014,
+          "peak_center_deflection_m": 0.003454204774302073,
+          "energy_residual_max": 0.005530173024674976,
+          "energy_residual_final": 0.005530173024674976,
+          "wall_impulse_loading_pa_s": 268.74226309634867,
+          "wall_impulse_total_pa_s": -294.62273800795964,
+          "cavitation_onset_s": 8.958435482670011e-05,
+          "wall_impulse_precav_pa_s": 340.14863066097365,
+          "velocity_at_cavitation_ms": 5.363908586630126,
+          "cavitation_impulse_fraction_of_loading": 1.2657057611330176
+        },
+        {
+          "nx": 18,
+          "ny": 12,
+          "ndof": 741,
+          "free_dofs": 681,
+          "dt_s": 8.531843316828582e-06,
+          "steps": 961,
+          "duration_s": 0.00819056958415544,
+          "steps_per_decay": 60,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 4899250.40786096,
+          "decay_time_s": 0.000511910599009715,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 10.02627447105015,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -1252554.3368425202,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 9798500.81572192,
+          "peak_center_acceleration_ms2": 124731.05049968672,
+          "peak_center_deflection_m": 0.0034138368936688737,
+          "energy_residual_max": 0.002563995463844784,
+          "energy_residual_final": 0.002563995463844784,
+          "wall_impulse_loading_pa_s": 204.23156808300848,
+          "wall_impulse_total_pa_s": -232.7022569622859,
+          "cavitation_onset_s": 0.0001877005529702288,
+          "wall_impulse_precav_pa_s": 410.1431702807988,
+          "velocity_at_cavitation_ms": 4.4899743761799495,
+          "cavitation_impulse_fraction_of_loading": 2.0082261235643015
+        },
+        {
+          "nx": 27,
+          "ny": 18,
+          "ndof": 1596,
+          "free_dofs": 1506,
+          "dt_s": 5.6878955445523884e-06,
+          "steps": 1441,
+          "duration_s": 0.00819056958415544,
+          "steps_per_decay": 90,
+          "duration_theta": 16.0,
+          "peak_pressure_pa": 4899250.40786096,
+          "decay_time_s": 0.000511910599009715,
+          "areal_mass_kg_m2": 78.5,
+          "rc_pa_s_m": 1537500.0,
+          "beta_1_s": 19585.987261146496,
+          "beta_theta": 10.02627447105015,
+          "panel_area_m2": 1.5,
+          "shear_treatment": "mitc",
+          "bc": "ss",
+          "stiffness_scale": 1.0,
+          "first_frequency_hz": 35.172900422861275,
+          "min_wall_pressure_pa": -681108.5749329887,
+          "cavitation": true,
+          "peak_wall_pressure_pa": 9798500.81572192,
+          "peak_center_acceleration_ms2": 124823.44722408918,
+          "peak_center_deflection_m": 0.00340272097279031,
+          "energy_residual_max": 0.001171512533856416,
+          "energy_residual_final": 0.001171512533856416,
+          "wall_impulse_loading_pa_s": 138.1430395446816,
+          "wall_impulse_total_pa_s": -215.67603378529566,
+          "cavitation_onset_s": 0.00011944580643560016,
+          "wall_impulse_precav_pa_s": 388.11262486759813,
+          "velocity_at_cavitation_ms": 5.089450903339127,
+          "cavitation_impulse_fraction_of_loading": 2.8094982284074126
+        }
+      ],
+      "fe_fluid": {
+        "comparison": {
+          "window_s": [
+            0.0,
+            0.00013650949306925732
+          ],
+          "samples": 17,
+          "displacement": {
+            "peak_reference": 0.0005117430503784522,
+            "max_abs_error": 8.378189036925836e-06,
+            "relative_max_error": 0.016371866761512182,
+            "relative_l2_error": 0.023600767774102933
+          },
+          "velocity": {
+            "peak_reference": 4.935896906233456,
+            "max_abs_error": 0.2075971299911944,
+            "relative_max_error": 0.04205864383614327,
+            "relative_l2_error": 0.01862017562136131
+          },
+          "acceleration": {
+            "peak_reference": 124821.66644231745,
+            "max_abs_error": 64501.08868754288,
+            "relative_max_error": 0.5167459346278644,
+            "relative_l2_error": 0.3051747466846738
+          },
+          "interface_pressure": {
+            "peak_reference": 9798500.81572192,
+            "max_abs_error": 4925739.273594427,
+            "relative_max_error": 0.502703359037432,
+            "relative_l2_error": 0.300506656263882
+          },
+          "impedance_residual_relative": 1.005406718074864
+        },
+        "impulse_precav_pa_s": 403.0503268767351,
+        "cavitation_time_s": 0.00013650949306925732,
+        "elements": 120,
+        "dt_s": 8.531843316828582e-06
+      }
+    }
+  },
+  "figures": [
+    "fig1_cole_environment.png",
+    "fig2_wall_pressure.png",
+    "fig3_panel_response.png",
+    "fig4_srs.png",
+    "fig5_energy_ledger.png",
+    "fig6_grid_convergence.png"
+  ]
+}
