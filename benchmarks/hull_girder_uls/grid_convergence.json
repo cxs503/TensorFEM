@@ -1,0 +1,630 @@
+{
+  "study": "W23 multi-station IACS CSR hull-girder ULS scan",
+  "mission_id": 15094,
+  "repository": "TensorFEM",
+  "criterion": "Roache GCI of M_u < 5% on three grids; observed order reported",
+  "safety_factor": 1.25,
+  "reference": {
+    "strips": 16,
+    "curvature_steps": 640
+  },
+  "axes": {
+    "fibres_per_deep_member": [
+      4,
+      8,
+      16
+    ],
+    "curvature_steps": [
+      160,
+      320,
+      640
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "kvlcc2_x0.20_sagging",
+      "station_x_fraction": 0.2,
+      "condition": "sagging",
+      "compressed_fibre": "deck",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 12794045819.288994,
+          "8": 12743196371.536554,
+          "16": 12729605057.040668
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0010676933365162476,
+        "order_observed": 1.9035471114919977,
+        "order_used": 1.9035471114919977,
+        "gci_fine": 0.00048685195195606975,
+        "gci_fine_percent": 0.048685195195606976,
+        "behaviour": "monotone",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 12726852640.090584,
+          "320": 12727740191.427599,
+          "640": 12729605057.040668
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.00014649830884093992,
+        "order_observed": -1.071169195762636,
+        "order_used": null,
+        "gci_fine": 0.0001831228860511749,
+        "gci_fine_percent": 0.01831228860511749,
+        "behaviour": "non-asymptotic (fine-pair change at noise level)",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 12729605057.040668
+    },
+    {
+      "case_id": "kvlcc2_x0.20_hogging",
+      "station_x_fraction": 0.2,
+      "condition": "hogging",
+      "compressed_fibre": "bottom",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 17365786079.36485,
+          "8": 17542432183.9536,
+          "16": 17579126520.372807
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0020873810980698558,
+        "order_observed": 2.267232622320281,
+        "order_used": 2.267232622320281,
+        "gci_fine": 0.000684120190561573,
+        "gci_fine_percent": 0.0684120190561573,
+        "behaviour": "monotone",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 17573721729.426292,
+          "320": 17573721729.426292,
+          "640": 17579126520.372807
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0003074550342561337,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0003843187928201672,
+        "gci_fine_percent": 0.03843187928201672,
+        "behaviour": "exact/zero difference",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 17579126520.372807
+    },
+    {
+      "case_id": "kvlcc2_x0.30_sagging",
+      "station_x_fraction": 0.3,
+      "condition": "sagging",
+      "compressed_fibre": "deck",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 14858860087.03705,
+          "8": 14739021781.81595,
+          "16": 14751109193.433535
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0008194239130820717,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0010242798913525895,
+        "gci_fine_percent": 0.10242798913525895,
+        "behaviour": "oscillatory",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 14747631684.360956,
+          "320": 14748836915.555174,
+          "640": 14751109193.433535
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.00015404115368980212,
+        "order_observed": -0.9148293548907814,
+        "order_used": null,
+        "gci_fine": 0.00019255144211225266,
+        "gci_fine_percent": 0.019255144211225265,
+        "behaviour": "non-asymptotic (fine-pair change at noise level)",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 14751109193.433535
+    },
+    {
+      "case_id": "kvlcc2_x0.30_hogging",
+      "station_x_fraction": 0.3,
+      "condition": "hogging",
+      "compressed_fibre": "bottom",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 20561736093.217216,
+          "8": 20739999589.865086,
+          "16": 20771067764.21458
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0014957427659554757,
+        "order_observed": 2.5205019374488833,
+        "order_used": 2.5205019374488833,
+        "gci_fine": 0.0003946286837541524,
+        "gci_fine_percent": 0.03946286837541524,
+        "behaviour": "monotone",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 20755631184.529953,
+          "320": 20755631184.529953,
+          "640": 20771067764.21458
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0007431769931068461,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0009289712413835577,
+        "gci_fine_percent": 0.09289712413835577,
+        "behaviour": "exact/zero difference",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 20771067764.21458
+    },
+    {
+      "case_id": "kvlcc2_x0.40_sagging",
+      "station_x_fraction": 0.4,
+      "condition": "sagging",
+      "compressed_fibre": "deck",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 15704806453.258875,
+          "8": 15572696124.542803,
+          "16": 15598270014.032726
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0016395337089892886,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.002049417136236611,
+        "gci_fine_percent": 0.2049417136236611,
+        "behaviour": "oscillatory",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 15596901710.79545,
+          "320": 15597811649.424698,
+          "640": 15598270014.032726
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 2.9385605430349115e-05,
+        "order_observed": 0.9892735933695999,
+        "order_used": 0.9892735933695999,
+        "gci_fine": 3.728436779421086e-05,
+        "gci_fine_percent": 0.003728436779421086,
+        "behaviour": "monotone",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 15598270014.032726
+    },
+    {
+      "case_id": "kvlcc2_x0.40_hogging",
+      "station_x_fraction": 0.4,
+      "condition": "hogging",
+      "compressed_fibre": "bottom",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 21961130029.394684,
+          "8": 22135818196.166386,
+          "16": 22172689740.616604
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0016629260987978283,
+        "order_observed": 2.244202131185364,
+        "order_used": 2.244202131185364,
+        "gci_fine": 0.0005561253473676049,
+        "gci_fine_percent": 0.05561253473676049,
+        "behaviour": "monotone",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 22172689740.616604,
+          "320": 22172689740.616604,
+          "640": 22172689740.616604
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0,
+        "gci_fine_percent": 0.0,
+        "behaviour": "exact/zero difference",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 22172689740.616604
+    },
+    {
+      "case_id": "kvlcc2_x0.50_sagging",
+      "station_x_fraction": 0.5,
+      "condition": "sagging",
+      "compressed_fibre": "deck",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 15794889110.971323,
+          "8": 15670305579.382605,
+          "16": 15692563195.65774
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0014183544139745063,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0017729430174681328,
+        "gci_fine_percent": 0.17729430174681327,
+        "behaviour": "oscillatory",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 15692563195.65774,
+          "320": 15692563195.65774,
+          "640": 15692563195.65774
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0,
+        "gci_fine_percent": 0.0,
+        "behaviour": "exact/zero difference",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 15692563195.65774
+    },
+    {
+      "case_id": "kvlcc2_x0.50_hogging",
+      "station_x_fraction": 0.5,
+      "condition": "hogging",
+      "compressed_fibre": "bottom",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 22205693775.365364,
+          "8": 22379530544.652622,
+          "16": 22416012502.346146
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0016274954205037612,
+        "order_observed": 2.252478213212793,
+        "order_used": 2.252478213212793,
+        "gci_fine": 0.0005403361774179884,
+        "gci_fine_percent": 0.05403361774179884,
+        "behaviour": "monotone",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 22416012502.346146,
+          "320": 22416012502.346146,
+          "640": 22416012502.346146
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0,
+        "gci_fine_percent": 0.0,
+        "behaviour": "exact/zero difference",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 22416012502.346146
+    },
+    {
+      "case_id": "kvlcc2_x0.60_sagging",
+      "station_x_fraction": 0.6,
+      "condition": "sagging",
+      "compressed_fibre": "deck",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 15704806453.258875,
+          "8": 15572696124.542803,
+          "16": 15598270014.032726
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0016395337089892886,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.002049417136236611,
+        "gci_fine_percent": 0.2049417136236611,
+        "behaviour": "oscillatory",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 15596901710.79545,
+          "320": 15597811649.424698,
+          "640": 15598270014.032726
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 2.9385605430349115e-05,
+        "order_observed": 0.9892735933695999,
+        "order_used": 0.9892735933695999,
+        "gci_fine": 3.728436779421086e-05,
+        "gci_fine_percent": 0.003728436779421086,
+        "behaviour": "monotone",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 15598270014.032726
+    },
+    {
+      "case_id": "kvlcc2_x0.60_hogging",
+      "station_x_fraction": 0.6,
+      "condition": "hogging",
+      "compressed_fibre": "bottom",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 21961130029.394684,
+          "8": 22135818196.166386,
+          "16": 22172689740.616604
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0016629260987978283,
+        "order_observed": 2.244202131185364,
+        "order_used": 2.244202131185364,
+        "gci_fine": 0.0005561253473676049,
+        "gci_fine_percent": 0.05561253473676049,
+        "behaviour": "monotone",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 22172689740.616604,
+          "320": 22172689740.616604,
+          "640": 22172689740.616604
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0,
+        "gci_fine_percent": 0.0,
+        "behaviour": "exact/zero difference",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 22172689740.616604
+    },
+    {
+      "case_id": "kvlcc2_x0.70_sagging",
+      "station_x_fraction": 0.7,
+      "condition": "sagging",
+      "compressed_fibre": "deck",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 14858860087.037062,
+          "8": 14739021781.81595,
+          "16": 14751109193.433535
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0008194239130820717,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0010242798913525895,
+        "gci_fine_percent": 0.10242798913525895,
+        "behaviour": "oscillatory",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 14747631684.360956,
+          "320": 14748836915.555172,
+          "640": 14751109193.433535
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.00015404115368993144,
+        "order_observed": -0.9148293548942755,
+        "order_used": null,
+        "gci_fine": 0.00019255144211241429,
+        "gci_fine_percent": 0.01925514421124143,
+        "behaviour": "non-asymptotic (fine-pair change at noise level)",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 14751109193.433535
+    },
+    {
+      "case_id": "kvlcc2_x0.70_hogging",
+      "station_x_fraction": 0.7,
+      "condition": "hogging",
+      "compressed_fibre": "bottom",
+      "fibres": 51,
+      "fibre_levels": [
+        4,
+        8,
+        16
+      ],
+      "fibre_family": {
+        "values": {
+          "4": 20561736093.21723,
+          "8": 20739999589.86508,
+          "16": 20771067764.214592
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.0014957427659562095,
+        "order_observed": 2.5205019374480204,
+        "order_used": 2.5205019374480204,
+        "gci_fine": 0.00039462868375463186,
+        "gci_fine_percent": 0.039462868375463186,
+        "behaviour": "monotone",
+        "verdict": "PASS"
+      },
+      "step_levels": [
+        160,
+        320,
+        640
+      ],
+      "step_family": {
+        "values": {
+          "160": 20755631184.52997,
+          "320": 20755631184.52997,
+          "640": 20771067764.214592
+        },
+        "refinement_ratio": 2.0,
+        "safety_factor": 1.25,
+        "relative_change_medium_to_fine": 0.000743176993106662,
+        "order_observed": null,
+        "order_used": null,
+        "gci_fine": 0.0009289712413833275,
+        "gci_fine_percent": 0.09289712413833275,
+        "behaviour": "exact/zero difference",
+        "verdict": "PASS"
+      },
+      "M_u_reference_Nm": 20771067764.214592
+    }
+  ],
+  "max_gci_percent_fibres": 0.2049417136236611,
+  "max_gci_percent_curvature_steps": 0.09289712413835577,
+  "max_order_fibres": 2.5205019374488833,
+  "min_order_fibres": 1.9035471114919977,
+  "verdict": "PASS"
+}
