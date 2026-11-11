@@ -1,0 +1,618 @@
+{
+  "schema": "tensorfem.cohesive3d-verification/1.0",
+  "generated_utc": "2026-11-11T05:22:08.683837+00:00",
+  "generator": "benchmarks/cohesive3d_verification.py",
+  "host": {
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "machine": "loongarch64",
+    "python": "3.11.6",
+    "torch": "2.7.1"
+  },
+  "model": {
+    "normal_stiffness_Pa_per_m": 1000000000000.0,
+    "shear_stiffness_Pa_per_m": 400000000000.0,
+    "normal_strength_Pa": 5000000.0,
+    "shear_strength_Pa": 3000000.0,
+    "mode_i_energy_J_per_m2": 500.0,
+    "mode_ii_energy_J_per_m2": 1200.0,
+    "bk_eta": 1.6
+  },
+  "criteria": {
+    "law_reduces_to_2d_bk": {
+      "criterion": "max relative deviation from the 2-D BK law < 1e-12",
+      "max_rel_error": 2.4587397943786342e-15,
+      "passed": true
+    },
+    "law_energy": {
+      "criterion": "int t d(delta) == G_c (BK) for pure and mixed modes, rel < 1e-6",
+      "pure_modes": [
+        {
+          "mode": "mode_I",
+          "analytic_Gc": 500.0,
+          "integrated_work": 500.0000000000001,
+          "rel_error": 2.2737367544323206e-16,
+          "passed": true
+        },
+        {
+          "mode": "mode_II",
+          "analytic_Gc": 1200.0,
+          "integrated_work": 1199.9999910269894,
+          "rel_error": 7.477508840262695e-09,
+          "passed": true
+        },
+        {
+          "mode": "mode_III",
+          "analytic_Gc": 1200.0,
+          "integrated_work": 1199.9999910269894,
+          "rel_error": 7.477508840262695e-09,
+          "passed": true
+        }
+      ],
+      "mixed_modes": [
+        {
+          "direction": [
+            1.0,
+            1.0,
+            0.0
+          ],
+          "bk_Gc": 594.3168242256564,
+          "integrated_work": 594.3168225505176,
+          "rel_error": 2.818595679437461e-09,
+          "passed": true
+        },
+        {
+          "direction": [
+            3.0,
+            4.0,
+            0.0
+          ],
+          "bk_Gc": 671.7721869737832,
+          "integrated_work": 671.7721213629958,
+          "rel_error": 9.766821051245989e-08,
+          "passed": true
+        },
+        {
+          "direction": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "bk_Gc": 691.2520112702842,
+          "integrated_work": 691.2520093463756,
+          "rel_error": 2.7832231476911863e-09,
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    "law_initiation": {
+      "criterion": "(t_n/t_n0)^2 + (t_s/t_s0)^2 == 1 at onset, abs < 1e-12",
+      "rows": [
+        {
+          "direction": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "onset": 5e-06,
+          "quadratic_criterion": 1.0,
+          "abs_error": 0.0,
+          "passed": true
+        },
+        {
+          "direction": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "onset": 7.499999999999999e-06,
+          "quadratic_criterion": 0.9999999999999998,
+          "abs_error": 2.220446049250313e-16,
+          "passed": true
+        },
+        {
+          "direction": [
+            1.0,
+            1.0,
+            0.0
+          ],
+          "onset": 5.883484054145522e-06,
+          "quadratic_criterion": 1.0,
+          "abs_error": 0.0,
+          "passed": true
+        },
+        {
+          "direction": [
+            3.0,
+            4.0,
+            0.0
+          ],
+          "onset": 6.228410989030499e-06,
+          "quadratic_criterion": 1.0000000000000004,
+          "abs_error": 4.440892098500626e-16,
+          "passed": true
+        },
+        {
+          "direction": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "onset": 6.301260378126044e-06,
+          "quadratic_criterion": 0.9999999999999999,
+          "abs_error": 1.1102230246251565e-16,
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    "law_tangent_vs_ad": {
+      "criterion": "analytic tangent == autograd Jacobian, max rel < 1e-10",
+      "samples": 48,
+      "max_rel_error": 9.903048147049793e-16,
+      "passed": true
+    },
+    "element_patch": {
+      "criterion": "uniform opening: resultant == t(separation) * area, rel < 1e-12",
+      "area": 1.0,
+      "rows": [
+        {
+          "opening": 1e-06,
+          "analytic_traction": 1000000.0,
+          "fem_resultant": 999999.9999999998,
+          "rel_error": 2.328306436538696e-16,
+          "gauss_spread": 1.7289987634156778e-22
+        },
+        {
+          "opening": 2.5e-06,
+          "analytic_traction": 2500000.0,
+          "fem_resultant": 2499999.9999999995,
+          "rel_error": 1.862645149230957e-16,
+          "gauss_spread": 3.4579975268313557e-22
+        },
+        {
+          "opening": 5e-06,
+          "analytic_traction": 5000000.0,
+          "fem_resultant": 4999999.999999999,
+          "rel_error": 1.862645149230957e-16,
+          "gauss_spread": 6.915995053662711e-22
+        },
+        {
+          "opening": 2e-05,
+          "analytic_traction": 4615384.615384616,
+          "fem_resultant": 4615384.615384616,
+          "rel_error": 0.0,
+          "gauss_spread": 2.7663980214650845e-21
+        },
+        {
+          "opening": 0.00015,
+          "analytic_traction": 1282051.2820512827,
+          "fem_resultant": 1282051.2820512832,
+          "rel_error": 3.6321580410003645e-16,
+          "gauss_spread": 2.2131184171720676e-20
+        },
+        {
+          "opening": 0.00021,
+          "analytic_traction": 0.0,
+          "fem_resultant": 0.0,
+          "rel_error": 0.0,
+          "gauss_spread": 1.5649110403512075e-20
+        }
+      ],
+      "max_rel_error": 3.6321580410003645e-16,
+      "passed": true
+    },
+    "element_rigid_rotation": {
+      "criterion": "rigid rotation: force vector rotates with R, rel < 1e-12",
+      "rows": [
+        {
+          "rotation_rad": 0.3,
+          "max_rel_error": 8.774054565976598e-16,
+          "history_rel_error": 2.142842693223084e-16,
+          "passed": true
+        },
+        {
+          "rotation_rad": 0.7,
+          "max_rel_error": 2.1935136414941495e-16,
+          "history_rel_error": 2.142842693223084e-16,
+          "passed": true
+        },
+        {
+          "rotation_rad": 1.4,
+          "max_rel_error": 2.1935136414941495e-16,
+          "history_rel_error": 2.142842693223084e-16,
+          "passed": true
+        }
+      ],
+      "passed": true
+    },
+    "element_mesh_objectivity": {
+      "criterion": "1x1..8x8 patches of one interface give the same resultant, rel < 1e-11",
+      "analytic_resultant": 4615384.615384616,
+      "rows": [
+        {
+          "elements": 1,
+          "resultant": 4615384.615384616,
+          "rel_error": 0.0
+        },
+        {
+          "elements": 4,
+          "resultant": 4615384.615384616,
+          "rel_error": 0.0
+        },
+        {
+          "elements": 16,
+          "resultant": 4615384.615384615,
+          "rel_error": 2.0178655783335366e-16
+        },
+        {
+          "elements": 64,
+          "resultant": 4615384.615384616,
+          "rel_error": 0.0
+        }
+      ],
+      "max_rel_error": 2.0178655783335366e-16,
+      "passed": true
+    },
+    "coupled_block_mode_i": {
+      "criterion": "coupled FEM == closed-form series spring and peak load == t_0 * A (both rel < 1e-06)",
+      "driver": "normal",
+      "specimen": {
+        "area_m2": 1.0,
+        "adherend_thickness_m": 0.05,
+        "young_Pa": 210000000000.0,
+        "poisson": 0.3,
+        "mesh": "1 HEX8 through each adherend + 1 cohesive element"
+      },
+      "peak_fem": 4970295.722584429,
+      "peak_analytic": 4970295.722584053,
+      "peak_vs_nominal_strength": 0.9940591445168858,
+      "max_load_rel_error": 9.415984964695103e-12,
+      "newton_iterations_max": 3,
+      "rows": [
+        {
+          "stroke": 7.916666666666667e-06,
+          "fem_reaction": 4970295.722584429,
+          "analytic_reaction": 4970295.722584053,
+          "rel_error": 7.570059029587057e-14
+        },
+        {
+          "stroke": 1.5833333333333333e-05,
+          "fem_reaction": 4765446.224276276,
+          "analytic_reaction": 4765446.224256294,
+          "rel_error": 4.193197493078041e-12
+        },
+        {
+          "stroke": 2.3749999999999998e-05,
+          "fem_reaction": 4560596.725948502,
+          "analytic_reaction": 4560596.725928535,
+          "rel_error": 4.3782770544550786e-12
+        },
+        {
+          "stroke": 3.1666666666666666e-05,
+          "fem_reaction": 4355747.227620723,
+          "analytic_reaction": 4355747.227600777,
+          "rel_error": 4.579268386867893e-12
+        },
+        {
+          "stroke": 3.958333333333334e-05,
+          "fem_reaction": 4150897.7292929376,
+          "analytic_reaction": 4150897.729273016,
+          "rel_error": 4.799312541916425e-12
+        },
+        {
+          "stroke": 4.7499999999999996e-05,
+          "fem_reaction": 3946048.2309651845,
+          "analytic_reaction": 3946048.230945257,
+          "rel_error": 5.049991272983973e-12
+        },
+        {
+          "stroke": 5.541666666666667e-05,
+          "fem_reaction": 3741198.7326374087,
+          "analytic_reaction": 3741198.732617498,
+          "rel_error": 5.3220228984665384e-12
+        },
+        {
+          "stroke": 6.333333333333333e-05,
+          "fem_reaction": 3536349.234309599,
+          "analytic_reaction": 3536349.234289739,
+          "rel_error": 5.61595784992558e-12
+        },
+        {
+          "stroke": 7.125000000000001e-05,
+          "fem_reaction": 3331499.7359818537,
+          "analytic_reaction": 3331499.7359619793,
+          "rel_error": 5.96560868000655e-12
+        },
+        {
+          "stroke": 7.916666666666668e-05,
+          "fem_reaction": 3126650.2376540396,
+          "analytic_reaction": 3126650.23763422,
+          "rel_error": 6.338884814116082e-12
+        },
+        {
+          "stroke": 8.708333333333334e-05,
+          "fem_reaction": 2921800.739326311,
+          "analytic_reaction": 2921800.73930646,
+          "rel_error": 6.793986581492041e-12
+        },
+        {
+          "stroke": 9.499999999999999e-05,
+          "fem_reaction": 2716951.240998482,
+          "analytic_reaction": 2716951.240978702,
+          "rel_error": 7.280180152900246e-12
+        },
+        {
+          "stroke": 0.00010291666666666667,
+          "fem_reaction": 2512101.7426707214,
+          "analytic_reaction": 2512101.7426509424,
+          "rel_error": 7.87347217773278e-12
+        },
+        {
+          "stroke": 0.00011083333333333333,
+          "fem_reaction": 2307252.2443429446,
+          "analytic_reaction": 2307252.244323183,
+          "rel_error": 8.565051246298739e-12
+        },
+        {
+          "stroke": 0.00011875,
+          "fem_reaction": 2102402.7460152204,
+          "analytic_reaction": 2102402.745995424,
+          "rel_error": 9.415984964695103e-12
+        },
+        {
+          "stroke": 0.00012666666666666666,
+          "fem_reaction": 1897553.2476673943,
+          "analytic_reaction": 1897553.2476676651,
+          "rel_error": 1.427006271904496e-13
+        },
+        {
+          "stroke": 0.00013458333333333334,
+          "fem_reaction": 1692703.7493396413,
+          "analytic_reaction": 1692703.7493399053,
+          "rel_error": 1.5598119281442514e-13
+        },
+        {
+          "stroke": 0.00014250000000000002,
+          "fem_reaction": 1487854.251011866,
+          "analytic_reaction": 1487854.2510121458,
+          "rel_error": 1.8809801664482167e-13
+        },
+        {
+          "stroke": 0.00015041666666666667,
+          "fem_reaction": 1283004.7526839692,
+          "analytic_reaction": 1283004.7526843874,
+          "rel_error": 3.259253990505022e-13
+        },
+        {
+          "stroke": 0.00015833333333333335,
+          "fem_reaction": 1078155.2543563133,
+          "analytic_reaction": 1078155.2543566278,
+          "rel_error": 2.917522298438207e-13
+        },
+        {
+          "stroke": 0.00016625000000000003,
+          "fem_reaction": 873305.7560284706,
+          "analytic_reaction": 873305.7560288681,
+          "rel_error": 4.552338299552449e-13
+        },
+        {
+          "stroke": 0.00017416666666666668,
+          "fem_reaction": 668456.2577007974,
+          "analytic_reaction": 668456.2577011099,
+          "rel_error": 4.674333139734093e-13
+        },
+        {
+          "stroke": 0.00018208333333333336,
+          "fem_reaction": 463606.75937298464,
+          "analytic_reaction": 463606.7593733503,
+          "rel_error": 7.887299278221475e-13
+        },
+        {
+          "stroke": 0.00018999999999999998,
+          "fem_reaction": 258757.26104521248,
+          "analytic_reaction": 258757.261045592,
+          "rel_error": 1.4666794184721976e-12
+        }
+      ],
+      "passed": true
+    },
+    "coupled_block_mode_ii": {
+      "criterion": "coupled FEM == closed-form series spring and peak load == t_0 * A (both rel < 0.03)",
+      "driver": "tangential",
+      "specimen": {
+        "area_m2": 1.0,
+        "adherend_thickness_m": 0.05,
+        "young_Pa": 210000000000.0,
+        "poisson": 0.3,
+        "mesh": "1 HEX8 through each adherend + 1 cohesive element"
+      },
+      "peak_fem": 2974723.809026002,
+      "peak_analytic": 2982432.310060672,
+      "peak_vs_nominal_strength": 0.9915746030086673,
+      "max_load_rel_error": 0.011439254586445013,
+      "newton_iterations_max": 5,
+      "rows": [
+        {
+          "stroke": 7.916666666666667e-06,
+          "fem_reaction": 2093607.9480892166,
+          "analytic_reaction": 2117834.3949044584,
+          "rel_error": 0.011439254586445013
+        },
+        {
+          "stroke": 1.5833333333333333e-05,
+          "fem_reaction": 2974723.809026002,
+          "analytic_reaction": 2982432.310060672,
+          "rel_error": 0.0025846357044439438
+        },
+        {
+          "stroke": 2.3749999999999998e-05,
+          "fem_reaction": 2944601.867559733,
+          "analytic_reaction": 2952322.7383863074,
+          "rel_error": 0.0026151852323552586
+        },
+        {
+          "stroke": 3.1666666666666666e-05,
+          "fem_reaction": 2914479.8566471785,
+          "analytic_reaction": 2922213.166711944,
+          "rel_error": 0.002646388070815209
+        },
+        {
+          "stroke": 3.958333333333334e-05,
+          "fem_reaction": 2884357.7740564635,
+          "analytic_reaction": 2892103.59503758,
+          "rel_error": 0.002678265396304329
+        },
+        {
+          "stroke": 4.7499999999999996e-05,
+          "fem_reaction": 2854235.617435116,
+          "analytic_reaction": 2861994.023363216,
+          "rel_error": 0.002710839318589092
+        },
+        {
+          "stroke": 5.541666666666667e-05,
+          "fem_reaction": 2824113.3843280575,
+          "analytic_reaction": 2831884.451688853,
+          "rel_error": 0.0027441329239832266
+        },
+        {
+          "stroke": 6.333333333333333e-05,
+          "fem_reaction": 2793991.0721708373,
+          "analytic_reaction": 2801774.880014489,
+          "rel_error": 0.0027781703302341585
+        },
+        {
+          "stroke": 7.125000000000001e-05,
+          "fem_reaction": 2763868.6782831457,
+          "analytic_reaction": 2771665.308340125,
+          "rel_error": 0.0028129767448899974
+        },
+        {
+          "stroke": 7.916666666666668e-05,
+          "fem_reaction": 2733746.1998621337,
+          "analytic_reaction": 2741555.7366657606,
+          "rel_error": 0.00284857852757893
+        },
+        {
+          "stroke": 8.708333333333334e-05,
+          "fem_reaction": 2703623.6339753554,
+          "analytic_reaction": 2711446.1649913974,
+          "rel_error": 0.0028850032565801687
+        },
+        {
+          "stroke": 9.499999999999999e-05,
+          "fem_reaction": 2673500.977553014,
+          "analytic_reaction": 2681336.593317033,
+          "rel_error": 0.0029222798001370337
+        },
+        {
+          "stroke": 0.00010291666666666667,
+          "fem_reaction": 2643378.227379991,
+          "analytic_reaction": 2651227.02164267,
+          "rel_error": 0.002960438392716669
+        },
+        {
+          "stroke": 0.00011083333333333333,
+          "fem_reaction": 2613255.3800869985,
+          "analytic_reaction": 2621117.449968306,
+          "rel_error": 0.0029995107168518885
+        },
+        {
+          "stroke": 0.00011875,
+          "fem_reaction": 2583132.4321413273,
+          "analytic_reaction": 2591007.8782939413,
+          "rel_error": 0.0030395299908542077
+        },
+        {
+          "stroke": 0.00012666666666666666,
+          "fem_reaction": 2553009.3798366967,
+          "analytic_reaction": 2560898.3066195776,
+          "rel_error": 0.0030805310630606045
+        },
+        {
+          "stroke": 0.00013458333333333334,
+          "fem_reaction": 2522886.219282618,
+          "analytic_reaction": 2530788.734945214,
+          "rel_error": 0.003122550512999327
+        },
+        {
+          "stroke": 0.00014250000000000002,
+          "fem_reaction": 2492762.946392645,
+          "analytic_reaction": 2500679.1632708507,
+          "rel_error": 0.003165626760312285
+        },
+        {
+          "stroke": 0.00015041666666666667,
+          "fem_reaction": 2462639.556871937,
+          "analytic_reaction": 2470569.5915964865,
+          "rel_error": 0.0032098001819187726
+        },
+        {
+          "stroke": 0.00015833333333333335,
+          "fem_reaction": 2432516.0462037874,
+          "analytic_reaction": 2440460.019922123,
+          "rel_error": 0.003255113238277464
+        },
+        {
+          "stroke": 0.00016625000000000003,
+          "fem_reaction": 2402392.409635162,
+          "analytic_reaction": 2410350.4482477587,
+          "rel_error": 0.00330161060952025
+        },
+        {
+          "stroke": 0.00017416666666666668,
+          "fem_reaction": 2372268.6421608715,
+          "analytic_reaction": 2380240.8765733945,
+          "rel_error": 0.003349339342495391
+        },
+        {
+          "stroke": 0.00018208333333333336,
+          "fem_reaction": 2342144.738506903,
+          "analytic_reaction": 2350131.304899031,
+          "rel_error": 0.0033983490094699276
+        },
+        {
+          "stroke": 0.00018999999999999998,
+          "fem_reaction": 2312020.6931117265,
+          "analytic_reaction": 2320021.733224667,
+          "rel_error": 0.0034486918800625678
+        }
+      ],
+      "passed": true
+    },
+    "coupled_block_mesh": {
+      "criterion": "coupled reaction independent of the in-plane mesh, rel < 1e-6",
+      "stroke": 0.00013,
+      "analytic_reaction": 1811300.8273191343,
+      "rows": [
+        {
+          "mesh": "1x1",
+          "elements": 3,
+          "reaction": 1811300.8273188774,
+          "rel_error": 1.4178329523004756e-13
+        },
+        {
+          "mesh": "2x2",
+          "elements": 12,
+          "reaction": 1811300.8273193138,
+          "rel_error": 9.910690899579934e-14
+        }
+      ],
+      "max_rel_error": 1.4178329523004756e-13,
+      "passed": true
+    },
+    "coupled_block_energy": {
+      "criterion": "global energy balance W_ext - U_adherends == cohesive dissipation, rel < 1%",
+      "stroke": 0.00019,
+      "external_work": 498.5151510065539,
+      "adherend_strain_energy": 0.01184243753885765,
+      "cohesive_dissipation_from_history": 498.6943698743464,
+      "max_effective_opening": 0.00018990846681922203,
+      "failure_opening": 0.0002,
+      "fraction_of_G_Ic_reached": 0.9495423340961101,
+      "relative_balance_error": 0.0003831230446406345,
+      "passed": true
+    }
+  },
+  "all_passed": true
+}
