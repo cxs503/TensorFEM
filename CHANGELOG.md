@@ -1,5 +1,32 @@
 ## Unreleased
 
+### Foundation: Winkler `k` sweep (3 decades) vs Hetényi — GAP-FEM-WINKLER hardening
+- **New benchmark** `benchmarks/fem_winkler_plate_k_sweep.py`: the existing
+  `fem_winkler_plate` anchor pins one foundation modulus (ρ_w g) and sweeps the mesh;
+  a wrong units/quadrature/factor-of-`l` in `K_w = k ∫ Nᵀ N dA` survives no test at a
+  single `k`, because `k l⁴ = D` binds every length scale together. This benchmark
+  moves `k` instead. Family A: infinite plate (quarter-symmetry Q4 Mindlin, MITC) under a
+  central point load vs Hetényi's kei solution, `k` = 1e3 / 1e4 / 10055.25 / 1e5 / 1e6 N/m³
+  (3 decades); family B: finite simply supported EB beam (L = 20 m) under a central point
+  and a uniform load vs the exact Fourier-sine solution, `k_b` = 1e4 / 1e5 / 1e6 N/m²;
+  family C: finite simply supported plate under uniform pressure vs the Navier series,
+  `k` = 1e4 / 1e5 / 1e6 N/m³.
+- **Numbers** (`benchmarks/verified/fem_winkler_plate_k_sweep/result.json`, 27/27 gates
+  pass): plate centre deflection error 0.0918 / 0.0701 / 0.0701 / 0.0021 / 0.2124 % against
+  `w(0)=P/(8√(Dk))`; profile error at r/l = 0.5/1/2/3 ≤ 0.0785 % (normalised by `w(0)`,
+  since kei crosses zero); foundation equilibrium residual ≤ 1.4e-08 %; beam sup-norm error
+  ≤ 1.94e-04 %; finite-plate centre error ≤ 0.1533 %. All three chains are inside the
+  stricter 3 % reading, not just the 5 % gate.
+- **Documented model boundary**: thick-plate regime `t/l > 0.1` diverges from the Kirchhoff
+  oracle by O((t/l)²) — 150 mm ice plate at `k = 1e6` gives 3.54 → 4.43 → 4.84 % for
+  n = 20/40/60 (error *growing* towards the converged Mindlin value, i.e. model difference,
+  not implementation error). Family A therefore uses a 50 mm steel plate (`t/l ≤ 0.04`).
+- **Tests** `tests/test_fem_winkler_plate_k_sweep.py`: 18 passed (fast lane) + 1 slow
+  full-sweep gate; one of them is a mutation probe (element `k` x1.25 -> 10.9 % error ->
+  gate breached), so the acceptance chain is not inert.
+- **Report** `docs/foundation-plate-winkler-k-sweep.md` (rendered from the result JSON by
+  `scripts/winkler_k_sweep_doc.py`, zero hand-copied numbers).
+
 ### Torsion: multi-cell closed sections (double-hull box girder) and the shared-wall flow
 - **New module** `tensorfem.multicell_torsion`: finite-difference Prandtl oracle with one
   unknown constant per compartment (circulation conditions `contour_i(dphi/dn) ds = 2 G theta A_i`
