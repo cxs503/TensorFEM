@@ -295,8 +295,8 @@ class BKCohesive3DLaw:
         # *not* the derivative of the discrete law -- these terms are).
         tension = (delta_n > 0).to(dtype)
         jac_clamp = torch.stack((tension, torch.ones_like(tension), torch.ones_like(tension)), dim=-1)
-        tangent = torch.diag_embed(k * h * jac_clamp)
-        coef = (k * delta_eff) * hp
+        tangent = torch.diag_embed(k * h[..., None] * jac_clamp)
+        coef = (k * delta_eff) * hp[..., None]
         tangent = tangent + coef[..., :, None] * c[..., None, :]
 
         # -- envelope sensitivity to the mode mix (softening branch only) ----
