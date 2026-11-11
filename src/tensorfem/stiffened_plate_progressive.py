@@ -156,13 +156,9 @@ class WeldedPlateCase:
         return torch.arange(self.n_dofs, device=self.nodes.device)[mask]
 
     def virgin_state(self) -> LayeredShell4State:
-        from .plasticity import J2State
-        zero = self.nodes.new_zeros((3, 3))
+        """Virgin per-model histories packed as one state (``points[i]`` = model ``i``)."""
         return LayeredShell4State(tuple(
-            tuple(tuple(tuple(J2State(zero.clone(), self.nodes.new_zeros(()))
-                        for _ in range(self.layers))
-                    for _ in range(4)) for _ in model.elements)
-            for model in self.models))
+            LayeredShell4State.virgin(model).points for model in self.models))
 
 
 def build_welded_plate(spec: WeldedPlateSpec, *, dtype: torch.dtype = torch.float64,
@@ -282,7 +278,7 @@ def build_welded_plate(spec: WeldedPlateSpec, *, dtype: torch.dtype = torch.floa
 # ---------------------------------------------------------------------------
 
 def welded_plate_buckling(spec: WeldedPlateSpec, *, nx: int | None = None,
-                          ny: int | None = None,
+                          ny: int | None = None, modes: int = 1,
                           dtype: torch.dtype = torch.float64):
     """Elastic buckling of the plate bay (Paik2007 Eq.2.1 verification).
 
@@ -307,7 +303,7 @@ def welded_plate_buckling(spec: WeldedPlateSpec, *, nx: int | None = None,
     navier = classical_plate_buckling_stress(
         a=spec.length, b=spec.spacing, t=spec.plate_t,
         E=spec.young, nu=spec.poisson)
-    sigma_cr_fem = float(result.load_factors[0]) / (spec.spacing * spec.plate_t)
+    sigma_cr_fem = float(result.load_factors[0]) / spec.plate_t
     sigma_cr_navier = float(navier["sigma_cr"])
     return {
         "sigma_cr_fem": sigma_cr_fem,
@@ -318,6 +314,47 @@ def welded_plate_buckling(spec: WeldedPlateSpec, *, nx: int | None = None,
         "loads": [float(x) for x in result.load_factors],
         "modes": result.modes.numpy(),
     }
+
+
+def bay_imperfection_mode(spec: WeldedPlateSpec, *, nx: int = 18,
+                          ny: int = 6) -> torch.Tensor:
+    """First bay buckling mode interpolated onto the plate nodes.
+
+    ``welded_plate_buckling`` returns the mode on its own bay mesh ``(nx, ny)``
+    as ``(3 * n_nodes, modes)``; :func:`build_welded_plate` needs one value per
+    plate node of the ``(spec.nx, spec.ny)`` grid.  The mode is bilinearly
+    interpolated inside every bay and its sign alternates between adjacent bays
+    (the classical antisymmetric bay pattern), so the field is continuous at the
+    stiffener lines.  The result is peak-normalised to ``+-1``.
+    """
+    spec.validate()
+    nx, ny = int(nx), int(ny)
+    buckling = welded_plate_buckling(spec, nx=nx, ny=ny, modes=1)
+    bay_mode = buckling["modes"][2::3, 0].reshape(ny + 1, nx + 1)
+    bays = spec.n_stiffeners + 1
+    values: list[list[float]] = []
+    for j in range(spec.ny + 1):
+        y = j * spec.width / spec.ny
+        bay = min(int(y / spec.spacing), bays - 1)
+        eta = (y - bay * spec.spacing) / spec.spacing * ny
+        j0 = min(int(eta), ny - 1)
+        fy = eta - j0
+        row: list[float] = []
+        for i in range(spec.nx + 1):
+            xi = i / spec.nx * nx
+            i0 = min(int(xi), nx - 1)
+            fx = xi - i0
+            value = ((1 - fx) * (1 - fy) * bay_mode[j0, i0]
+                     + fx * (1 - fy) * bay_mode[j0, i0 + 1]
+                     + (1 - fx) * fy * bay_mode[j0 + 1, i0]
+                     + fx * fy * bay_mode[j0 + 1, i0 + 1])
+            row.append(float(value) * (-1.0) ** bay)
+        values.append(row)
+    mode = torch.tensor(values, dtype=torch.float64)
+    peak = float(mode.abs().max())
+    if not math.isfinite(peak) or peak <= 0.0:
+        raise RuntimeError("first buckling mode is identically zero")
+    return mode.reshape(-1) / peak
 
 
 # ---------------------------------------------------------------------------
@@ -356,10 +393,11 @@ class ArcTrace:
 def _maximum_plastic_strain(state: LayeredShell4State) -> float:
     from .plasticity import J2State
     best = 0.0
-    for element in state.points:
-        for q in element:
-            for point in q:
-                best = max(best, float(torch.linalg.vector_norm(point.plastic_strain)))
+    for model_points in state.points:
+        for element in model_points:
+            for q in element:
+                for layer in q:
+                    best = max(best, float(torch.linalg.vector_norm(layer.plastic_strain)))
     return best
 
 
@@ -377,10 +415,10 @@ def trace_welded_plate_path(case: WeldedPlateCase, *, steps: int = 60,
     """
     if steps < 1:
         raise ValueError("steps must be >= 1")
-    ds = 0.02 * case.spec.yield_stress if step_size is None else float(step_size)
+    ds = 0.02 * case.spec.sigma_y if step_size is None else float(step_size)
     if ds <= 0:
         raise ValueError("step_size must be positive")
-    weight = ds / (0.02 * case.spec.yield_stress) if load_scale is None else float(load_scale)
+    weight = ds / (0.02 * case.spec.sigma_y) if load_scale is None else float(load_scale)
     if weight <= 0:
         raise ValueError("load_scale must be positive")
 
@@ -397,13 +435,14 @@ def trace_welded_plate_path(case: WeldedPlateCase, *, steps: int = 60,
     step = 0
     def assemble_all(u: torch.Tensor, st: LayeredShell4State):
         internal = torch.zeros(case.n_dofs, dtype=dtype)
-        stiffness = torch.zeros((case.n_dofs, case.n_dofs), dtype=dtype, device=dtype.device)
+        stiffness = torch.zeros((case.n_dofs, case.n_dofs), dtype=dtype, device=case.nodes.device)
         trial_states = []
-        for model in case.models:
-            f, k, _s, t = assemble_layered_shell4(model, u, st, geometric=True)
+        for index, model in enumerate(case.models):
+            f, k, _s, t = assemble_layered_shell4(
+                model, u, LayeredShell4State(st.points[index]), geometric=True)
             internal += f
             stiffness += k
-            trial_states.append(t)
+            trial_states.append(t.points)
         return internal, 0.5 * (stiffness + stiffness.T), LayeredShell4State(tuple(trial_states))
 
     while step < steps:
@@ -483,7 +522,7 @@ def trace_welded_plate_path(case: WeldedPlateCase, *, steps: int = 60,
             transverse_deflection=float(displacement[case.probe_dof]),
             maximum_plastic_strain=_maximum_plastic_strain(state)))
     return ArcTrace(tuple(points), converged and len(points) == steps, ds,
-                    case.spec.yield_stress)
+                    case.spec.sigma_y)
 
 
 def path_summary(case: WeldedPlateCase, trace: ArcTrace) -> dict[str, object]:
