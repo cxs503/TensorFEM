@@ -23,6 +23,8 @@ and nothing more:
   24-component internal force vector and the consistent 24x24 tangent.
 * :func:`interface_area` / :func:`assemble_cohesive_interface` -- interface
   area and dense global assembly over a pre-meshed interface patch.
+* :meth:`BKCohesive3DLaw.dissipated_energy` -- closed-form dissipated energy
+  per unit area (energy balance, R-curve and damage post-processing).
 
 Conventions and limits (read before use)
 ----------------------------------------
@@ -61,6 +63,14 @@ Conventions and limits (read before use)
   ``G_c`` per unit interface area, where ``G_c`` follows BK.  The tests verify
   the dissipated work against ``G_c * A`` analytically integrated through the
   element quadrature.
+* **Energy accounting is available per integration point.**  Every response
+  carries ``dissipated_energy`` [J/m^2] in closed form
+  (:meth:`BKCohesive3DLaw.dissipated_energy`), and the element aggregates it
+  into ``diagnostics["dissipated_energy"]`` [J], so an energy balance of a
+  nonlinear solution can be checked without integrating the traction history.
+  The state function is exact for a fixed mode mix (verified against a
+  numerical path integral to ``5e-6``) and uses the *current* direction when
+  the mix rotates, which is measured rather than assumed.
 * **Unloading is secant to the origin** from the historical maximum opening
   (standard irreversible cohesive practice); the tangent returned during
   unloading is the secant stiffness, so a Newton solver sees a positive
@@ -101,13 +111,18 @@ class Cohesive3DResponse:
     the element normal/tangential frame; ``tangent`` has shape ``(..., 3, 3)``
     and is the derivative ``dt/d(delta)`` (unsymmetric for ``k_n != k_s`` in the
     softening branch, which is the exact consistent tangent);
-    ``history`` is the updated maximum effective separation.
+    ``history`` is the updated maximum effective separation;
+    ``dissipated_energy`` is the energy dissipated per unit *reference*
+    interface area [J/m^2] at the updated state, obtained in closed form from
+    the history variable (see :meth:`BKCohesive3DLaw.dissipated_energy`).
+    ``damage`` is the secant degradation ``1 - g(a)/a`` in ``[0, 1]``.
     """
 
     traction: torch.Tensor
     tangent: torch.Tensor
     damage: torch.Tensor
     history: torch.Tensor
+    dissipated_energy: torch.Tensor | None = None
 
 
 class BKCohesive3DLaw:
@@ -365,7 +380,98 @@ class BKCohesive3DLaw:
         )
         tangent = tangent + compression
         damage = torch.clamp(1.0 - h, min=0.0, max=1.0)
-        return Cohesive3DResponse(traction, tangent, damage, hist_new)
+        dissipated = self._dissipated_work(hist_new, work_stiffness, onset, failure)
+        return Cohesive3DResponse(traction, tangent, damage, hist_new, dissipated)
+
+    # -- energy accounting ---------------------------------------------------
+
+    def _dissipated_work(
+        self,
+        history: torch.Tensor,
+        work_stiffness: torch.Tensor,
+        onset: torch.Tensor,
+        failure: torch.Tensor,
+    ) -> torch.Tensor:
+        """Closed-form dissipated work per unit area at effective opening ``history``.
+
+        With the bilinear envelope in the work-conjugate direction,
+
+        ``W_tot(x) = int_0^x t_eff(s) ds``  and  ``W_el(x) = t_eff(x) x / 2``
+
+        (the secant unloading branch stores exactly ``W_el``), the dissipated
+        work is ``W_tot(x) - W_el(x)``.  It vanishes on the elastic branch,
+        equals ``G_c`` at ``x = a_f`` and is constant beyond failure.  The
+        algebra is done on the *clamped* history so it stays finite and
+        monotone for any input.
+        """
+        tiny = torch.finfo(history.dtype).tiny
+        span = torch.clamp(failure - onset, min=tiny)
+        x = torch.clamp(history, min=0.0)
+        x_c = torch.minimum(x, failure)  # past failure the envelope is exhausted
+        elastic_part = 0.5 * work_stiffness * torch.clamp(x_c, max=onset) ** 2
+        softened = torch.clamp(x_c - onset, min=0.0)
+        softening_part = (
+            work_stiffness
+            * onset
+            / span
+            * (failure * softened - 0.5 * torch.clamp(x_c**2 - onset**2, min=0.0))
+        )
+        total_work = elastic_part + softening_part
+        envelope_traction = torch.where(
+            x_c <= onset,
+            work_stiffness * x_c,
+            work_stiffness * onset * torch.clamp(failure - x_c, min=0.0) / span,
+        )
+        stored = torch.where(
+            x_c <= onset, 0.5 * work_stiffness * x_c**2, 0.5 * envelope_traction * x_c
+        )
+        return torch.clamp(total_work - stored, min=0.0)
+
+    def dissipated_energy(
+        self, separation: torch.Tensor, history: torch.Tensor | None = None
+    ) -> torch.Tensor:
+        """Dissipated energy per unit reference area [J/m^2] at ``separation``.
+
+        This is the state function ``W_d(h)`` where ``h = max(history, a)`` is
+        the maximum effective opening, evaluated with the BK parameters of the
+        *current* work-conjugate direction -- exactly the envelope that the
+        traction :meth:`update` returns.  Consequences:
+
+        * elastic loading/unloading (``h <= onset``) dissipates nothing;
+        * a monotonic (fixed-direction) path up to failure dissipates
+          ``G_c(direction)`` -- the closed form matches a path integral of
+          ``t . d(delta)`` to the quadrature error of the integral;
+        * because the state function uses the current direction, a path that
+          *rotates* the mode mix does not integrate exactly; the residual is
+          measured in ``benchmarks/cohesive3d_verification_tables.py``.
+
+        Useful for energy balances of a nonlinear solution (the dissipated
+        energy of an interface patch is ``sum_gp A_gp W_d``), for R-curve /
+        damage post-processing, and as an independent oracle for the traction
+        law (its derivative along a proportional path is the traction).
+        """
+        sep = torch.as_tensor(separation)
+        if sep.shape[-1] != 3:
+            raise ValueError("separation must have trailing dimension 3 (n, s1, s2)")
+        dtype = sep.dtype
+        if history is None:
+            hist_old = self.initial_history(sep.shape[:-1], dtype=dtype, device=sep.device)
+        else:
+            hist_old = torch.as_tensor(history, dtype=dtype, device=sep.device).expand(sep.shape[:-1])
+        a = self.effective_separation(sep)
+        tiny = torch.finfo(dtype).tiny
+        a_safe = torch.clamp(a, min=tiny)
+        null_sep = a <= 0
+        cx = torch.where(null_sep, torch.ones_like(a), torch.clamp(sep[..., 0], min=0.0) / a_safe)
+        cy = torch.where(null_sep, torch.zeros_like(a), sep[..., 1] / a_safe)
+        cz = torch.where(null_sep, torch.zeros_like(a), sep[..., 2] / a_safe)
+        cs2 = cy**2 + cz**2
+        c = torch.stack((cx, cy, cz), dim=-1)
+        work_stiffness = self.kn * cx**2 + self.ks * cs2
+        onset = self.onset_amplitude(c)
+        failure = 2.0 * self.critical_energy(c) / torch.clamp(work_stiffness * onset, min=tiny)
+        hist_new = torch.maximum(hist_old, a)
+        return self._dissipated_work(hist_new, work_stiffness, onset, failure)
 
     def envelope_traction(self, separation: torch.Tensor) -> torch.Tensor:
         """Monotonic (virgin loading) traction for curve oracles -- no history."""
@@ -605,6 +711,10 @@ def _corotational_response(
         "damage": torch.stack([r.damage.reshape(()) for r in responses]),
         "normal": torch.stack([frames_cur[gp][0] for gp in range(n_gp)]),
         "normal_reference": torch.stack([frames_ref[gp][0] for gp in range(n_gp)]),
+        "dissipated_per_area": torch.stack([r.dissipated_energy.reshape(()) for r in responses]),
+        "dissipated_energy": torch.stack(
+            [areas[gp] * r.dissipated_energy.reshape(()) for gp, r in enumerate(responses)]
+        ).sum(),
         "kinematics": "corotational",
     }
     histories = torch.stack([r.history.reshape(()) for r in responses])
@@ -638,7 +748,10 @@ def cohesive_hex8_response(
     tangent : ``(24, 24)`` consistent tangent (ordering ``node*3 + comp``).
     history : ``(4,)`` updated history.
     diagnostics : dict with per-Gauss-point ``separation`` (3,), ``traction``
-        (3,), ``area`` (scalar), ``damage`` (scalar), ``normal`` (3,).
+        (3,), ``area`` (scalar), ``damage`` (scalar), ``normal`` (3,), plus the
+        energy accounting ``dissipated_per_area`` (4,) in J/m^2 and the element
+        total ``dissipated_energy`` (scalar) in J, summed over the Gauss points
+        with their reference areas.
     """
     if _check_kinematics(kinematics) == "corotational":
         return _corotational_response(coordinates, displacements, law, history)
@@ -659,6 +772,8 @@ def cohesive_hex8_response(
     damages = []
     new_history = []
     normals = []
+    dissipated = []
+    dissipated_areas = []
 
     for gp, ((normal, e1, e2, jac, n), w) in enumerate(zip(frames, weights)):
         # Rows of the rotation are the local (n, s1, s2) axes; (n, e1, e2) is a
@@ -684,6 +799,8 @@ def cohesive_hex8_response(
         damages.append(response.damage)
         normals.append(normal)
         new_history.append(response.history)
+        dissipated.append(area * response.dissipated_energy.reshape(()))
+        dissipated_areas.append(response.dissipated_energy)
 
     diagnostics = {
         "separation": torch.stack(separations),
@@ -691,6 +808,8 @@ def cohesive_hex8_response(
         "area": torch.stack(areas),
         "damage": torch.stack([d.reshape(()) for d in damages]),
         "normal": torch.stack(normals),
+        "dissipated_per_area": torch.stack([d.reshape(()) for d in dissipated_areas]),
+        "dissipated_energy": torch.stack([d.reshape(()) for d in dissipated]).sum(),
         "kinematics": "small_strain",
     }
     return force, tangent, torch.stack([h.reshape(()) for h in new_history]), diagnostics
