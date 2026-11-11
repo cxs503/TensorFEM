@@ -251,6 +251,11 @@ from .result_db_v2 import (
     query_history_series, migrate_v1, read_result_db_compatible,
 )
 
+from .cohesive3d import (
+    BKCohesive3DLaw, Cohesive3DResponse, cohesive_hex8_quadrature,
+    cohesive_shape_functions, mid_surface_frame, interface_area,
+    cohesive_separations, cohesive_hex8_response, assemble_cohesive_interface,
+)
 __version__ = "0.45.0"
 __all__ = [
     "TrussModel", "StaticResult", "solve_linear_static",
@@ -400,4 +405,7 @@ __all__ = [
     "query_history_series", "migrate_v1", "read_result_db_compatible",
     "J2Material", "J2Return", "radial_return", "return_map_residuals",
     "uniaxial_stress_path", "pure_shear_yield_point", "verify_minimum_surface",
+    "BKCohesive3DLaw", "Cohesive3DResponse", "cohesive_hex8_quadrature",
+    "cohesive_shape_functions", "mid_surface_frame", "interface_area",
+    "cohesive_separations", "cohesive_hex8_response", "assemble_cohesive_interface",
 ]
