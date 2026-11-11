@@ -1,5 +1,11 @@
-"""Build the mission report payload from the committed study artifacts (no hand copying)."""
+"""Build the mission report payload from the committed study artifacts (no hand copying).
 
+Usage::
+
+    PYTHONPATH=src python scripts/adaptive_zz_report.py [--mission-id 14683]
+"""
+
+import argparse
 import base64
 import io
 import json
@@ -7,7 +13,7 @@ from pathlib import Path
 
 from PIL import Image
 
-ROOT = Path("/root/tp-agent/work/m4971")
+ROOT = Path(__file__).resolve().parents[1]
 STUDY = json.loads((ROOT / "artifacts/adaptive_zz/study.json").read_text())
 CRIT = STUDY["criteria"]
 UNIFORM = STUDY["uniform"]["levels"]
@@ -16,6 +22,12 @@ MATCH = [row for row in STUDY["matched_dof_table"] if "uniform_error" in row]
 EQUAL = STUDY["equal_error_table"]
 EXT = STUDY["extended_adaptive"]
 QUAD = STUDY["true_error_quadrature_sensitivity"]
+EVIDENCE = json.loads((ROOT / "artifacts/adaptive_zz/evidence.json").read_text())
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--mission-id", type=int, default=14683)
+parser.add_argument("--out", default="/tmp/report.json")
+args = parser.parse_args()
 
 
 def figure(name, caption, width=520, colors=64):
@@ -187,10 +199,15 @@ Gauss 积分）。
 * **同精度口径**（在均匀阶梯上 log-log 插值）：达到 {CRIT["final_adaptive_error"]:.5f} 需
   **{CRIT["uniform_dofs_for_same_error"]:.0f} DOF**，即自适应省
   **{CRIT["dof_saving_at_equal_error"]:.2f} 倍**自由度。
-* **扩展阶梯（7 轮，12×12 起点，附于 `artifacts/adaptive_zz/study.json`）**：DOF 170→1248、
-  误差 {EXT["levels"][0]["true_energy_norm"]:.4f}→{EXT["levels"][-1]["true_energy_norm"]:.4f}，
-  实测率 **{EXT["rate"]:.3f}**（均匀 -{abs(CRIT["uniform_rate"]):.3f}、理论最优 -0.5）。
-  两轮结果受「只看两轮」限制，长期收益以扩展阶梯为准。
+* **扩展阶梯（{len(EXT["levels"]) - 1} 轮，12×12 起点，附于 `artifacts/adaptive_zz/study.json`）**：DOF
+  {EXT["levels"][0]["dofs"]}→{EXT["levels"][-1]["dofs"]}、误差
+  {EXT["levels"][0]["true_energy_norm"]:.4f}→{EXT["levels"][-1]["true_energy_norm"]:.4f}。
+  全阶梯最小二乘斜率 {EXT["rate"]:.3f} **不是率**：前两轮在边界层塌缩区（局部率 -3.9、-1.6）的
+  预渐近段污染了全局拟合，且 |斜率| 超过最优网格界 N^-1/2，物理上不可能。
+  与理论可比的是尾段拟合：**{EXT["asymptotics"]["tail_rate"]:.4f}**（末
+  {EXT["asymptotics"]["tail_window"]} 段）vs 理论界 -0.5，偏差
+  **{100 * EXT["asymptotics"]["tail_relative_deviation"]:.1f}%**；逐段率为
+  {", ".join(f"{r:.3f}" for r in EXT["asymptotics"]["local_rates"])}。
 
 ## 4 结果图
 
@@ -226,8 +243,9 @@ Gauss 积分）。
   模型误差。
 * 加密为各向同性四叉树 + 悬挂节点消除；无各向异性加密、无 p 加密、无粗化、无网格光顺。
 * 标记分数固定为 0.5，未声明 Dörfler 集最优性；效应指数是测量值而非假设值。
-* 两轮自适应 2.80 倍 DOF 收益是**单问题、短视界**结论；长期结论以 7 轮扩展阶梯的率
-  （-0.691）为准，且仍限于该算例。
+* 两轮自适应 {CRIT["dof_saving_at_equal_error"]:.2f} 倍 DOF 收益是**单问题、短视界**结论；长期结论
+  取扩展阶梯的**尾段率** {EXT["asymptotics"]["tail_rate"]:.4f}（= 最优网格界 -1/2 的
+  {100 * (1 - EXT["asymptotics"]["tail_relative_deviation"]):.1f}%），仍限于该算例的单一奇异性强度。
 
 ## 6 误差判定（逐项 vs 基准，显式回答是否 <3%）
 
@@ -247,6 +265,51 @@ Gauss 积分）。
 不掩盖。除该行外，无其他超限项；无基准缺失项。
 """
 
+ALL_THETA = (
+    EXT["asymptotics"]["effectivities"]
+    + [level["effectivity"] for level in ADAPT]
+    + [level["effectivity"] for level in UNIFORM]
+)
+EVIDENCE_TABLE = "\n".join(
+    f"| {item['quantity']} | {item['reference']:.6g} | {item['measured']:.6g} | "
+    f"{100 * item['rel_error']:.2f}% | {100 * item['tolerance']:.0f}% | {item['verdict']} |"
+    for item in EVIDENCE["rows"]
+)
+EVIDENCE_FAILS = [item for item in EVIDENCE["rows"] if item["verdict"] == "FAIL"]
+markdown += f"""
+## 7 收敛阶渐近核算与判据复核（本轮 GAP-FEM-ADAPTIVE 第 1 轮新增）
+
+`tensorfem.adaptive_zz` 新增 `local_rates` / `tail_rate` / `asymptotic_summary` 与常量
+`BEST_APPROXIMATION_RATE = -0.5`（最优网格界，Binev–Dahmen–DeVore 2004；Stevenson 2007），
+并把扩展阶梯从 7 轮延长到 {len(EXT["levels"]) - 1} 轮。逐段率为
+{", ".join(f"{r:.3f}" for r in EXT["asymptotics"]["local_rates"])}：前段是边界层塌缩（-3.9、-1.6），
+渐近段围绕 -0.5 振荡，尾段拟合 **{EXT["asymptotics"]["tail_rate"]:.4f}**（末
+{EXT["asymptotics"]["tail_window"]} 段）对理论界 -0.5 偏差 **{100 * EXT["asymptotics"]["tail_relative_deviation"]:.1f}%**。
+
+**自我更正**：旧版本把全阶梯斜率 {EXT["rate"]:.3f} 当作"优于 N^-1/2 理想"的率来引用——这是**错类型**
+的陈述：自适应法不可能超过最优网格界，斜率更陡只能说明阶梯尚未进入渐近段。现已由
+`criteria.global_rate_overstates_theory = {str(CRIT["global_rate_overstates_theory"]).lower()}` 自动检出，
+并由 `test_adaptive_rate_reaches_the_best_approximation_bound` 断死。
+
+### 7.1 判据表（机器生成，`artifacts/adaptive_zz/benchmark_table.md`，零手抄）
+
+| 量 | 基准 | 实测 | 相对偏差 | 容差 | 判定 |
+|---|---|---|---|---|---|
+{EVIDENCE_TABLE}
+
+胜负判定：`all_rows_pass = {str(EVIDENCE["criteria"]["all_rows_pass"]).lower()}`，
+未通过项：{", ".join(item["quantity"] for item in EVIDENCE_FAILS) or "无"}。
+该失败项是 1D P1 奇异算例的指示子低估（θ = {EVIDENCE["rows"][-1]["measured"]:.4f}），已在
+`docs/adaptive-continuation-order-cost.md` 作为方法局限记录，不参与"二维 ZZ 指示子 θ∈[0.8,1.2]"
+这一判据的判定（二维全部通过：L 形 21 级 θ∈[{min(ALL_THETA):.4f}, {max(ALL_THETA):.4f}]，
+Poisson 1.00142）。
+
+### 7.2 本轮未建立的内容
+
+* 尾段率 -1/2 是**单一奇异性强度**（λ=0.544）的单算例测量，不外推到其它 λ 或三维。
+* 自适应未做目标导向（无对偶加权残量）、未做各向异性或 p 加密、未涉及非线性/接触路径。
+"""
+
 payload = {
     "title": "TensorFEM：ZZ 误差指示子 + 指示子驱动 h 加密闭环（270° 凹角奇异性，两轮自适应 vs 均匀加密）",
     "summary": (
@@ -255,11 +318,14 @@ payload = {
         f"{UNIFORM[0]['effectivity']:.3f}→{eff_uniform:.3f}（渐近精确），均匀率 "
         f"{CRIT['uniform_rate']:.3f} vs 理论 {CRIT['theory_uniform_rate']:.3f}；两轮自适应 354 DOF "
         f"误差 {CRIT['final_adaptive_error']:.4f}，同精度均匀网格需 {CRIT['uniform_dofs_for_same_error']:.0f} DOF"
-        f"（省 {CRIT['dof_saving_at_equal_error']:.2f}x）；7 轮扩展阶梯率 {EXT['rate']:.3f}。"
-        f"pytest 13 项（含负例：指示子负值/非有限/非正定柔度矩阵 fail-closed）。"
+        f"（省 {CRIT['dof_saving_at_equal_error']:.2f}x）；扩展阶梯尾段率 "
+        f"{EXT['asymptotics']['tail_rate']:.4f} vs 理论界 -0.5（偏差 "
+        f"{100 * EXT['asymptotics']['tail_relative_deviation']:.1f}%），并更正旧版把全阶梯斜率当成率的"
+        f"越界陈述；二维 ZZ effectivity 全部落在 [0.8, 1.2]。"
+        f"pytest 15 项（含判据测试与负例：指示子负值/非有限/非正定柔度矩阵 fail-closed）。"
     ),
     "scenario_key": "tensorfem-adaptive-zz-refinement",
-    "mission_id": 4971,
+    "mission_id": args.mission_id,
     "tags": [
         "TensorFEM",
         "ZZ-estimator",
@@ -274,7 +340,7 @@ payload = {
     "figures": [
         figure(
             "adaptive_zz_convergence.png",
-            "左：真实能量范数误差 vs 自由度（均匀阶梯、两轮自适应、7 轮扩展阶梯，"
+            f"左：真实能量范数误差 vs 自由度（均匀阶梯、两轮自适应、{len(EXT['levels']) - 1} 轮扩展阶梯，"
             "含理论斜率 N^{-λ/2} 与最优 N^{-1/2}）；右：同精度所需工作量对比。",
         ),
         figure(
@@ -301,7 +367,7 @@ payload = {
 }
 
 text = json.dumps(payload)
-Path("/tmp/report.json").write_text(text)
+Path(args.out).write_text(text)
 print(
     "payload bytes:",
     len(text),

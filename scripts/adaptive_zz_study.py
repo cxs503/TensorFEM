@@ -81,7 +81,7 @@ def figure_convergence(main: dict, extended: dict, path: Path) -> None:
     ax = axes[0]
     ax.loglog(uniform_dofs, uniform_error, "o-", color="#1f4e79", label="uniform h-refinement")
     ax.loglog(adaptive_dofs, adaptive_error, "s-", color="#c00000", label="ZZ-adaptive (2 rounds)")
-    ax.loglog(ext_dofs, ext_error, "^--", color="#e07941", ms=4, label="ZZ-adaptive (7 rounds)")
+    ax.loglog(ext_dofs, ext_error, "^--", color="#e07941", ms=4, label=f"ZZ-adaptive ({len(extended['levels']) - 1} rounds)")
     ref = np.array([uniform_dofs[0], uniform_dofs[-1]], dtype=float)
     ax.loglog(
         ref,
@@ -335,6 +335,14 @@ def figure_profile(main: dict, path: Path) -> None:
     plt.close(fig)
 
 
+def criteria_effectivity_ranges(asymptotics: dict, main_study: dict) -> list[float]:
+    """Every effectivity measured in the study, so the [0.8, 1.2] gate sees all of them."""
+    values = list(asymptotics["effectivities"])
+    values.extend(level["effectivity"] for level in main_study["adaptive"]["levels"])
+    values.extend(level["effectivity"] for level in main_study["uniform"]["levels"])
+    return [float(v) for v in values]
+
+
 # ---------------------------------------------------------------------------
 def main() -> dict:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -357,10 +365,24 @@ def main() -> dict:
         uniform_divisions=(8, 16, 24, 32, 48, 64),
         max_subcells=8,
     )
-    extended = zz.adaptive_study(divisions=12, rounds=7, fraction=args.fraction, max_subcells=6)
+    extended_rounds = 11
+    extended = zz.adaptive_study(
+        divisions=12, rounds=extended_rounds, fraction=args.fraction, max_subcells=6
+    )
     extended_rate = zz.convergence_rate(
         [level["dofs"] for level in extended["levels"]],
         [level["true_energy_norm"] for level in extended["levels"]],
+    )
+    # Order accounting: the global slope of a pre-asymptotic ladder is *not* a rate claim
+    # (it mixes the initial boundary-layer collapse with the singular regime), so the
+    # asymptotic order is taken from the tail fit and the deviation is reported as measured.
+    asymptotics = zz.asymptotic_summary(extended["levels"], window=6)
+    # the uniform ladder is limited by the singularity, so its reference order is the
+    # classical estimate -(lambda)/2 rather than the optimal-mesh bound
+    uniform_asymptotics = zz.asymptotic_summary(
+        main_study["uniform"]["levels"],
+        window=3,
+        theory=main_study["criteria"]["theory_uniform_rate"],
     )
 
     # quadrature sensitivity of the independently measured true error
@@ -382,6 +404,22 @@ def main() -> dict:
         {
             "extended_adaptive_rate": extended_rate,
             "extended_adaptive_levels": len(extended["levels"]),
+            "extended_tail_rate": asymptotics["tail_rate"],
+            "extended_tail_window": asymptotics["tail_window"],
+            "extended_local_rates": asymptotics["local_rates"],
+            "theory_optimal_rate": asymptotics["theory_rate"],
+            "tail_relative_deviation": asymptotics["tail_relative_deviation"],
+            "global_rate_overstates_theory": asymptotics["global_rate_overstates_theory"],
+            "effectivity_adaptive_range": [
+                min(asymptotics["effectivities"]),
+                max(asymptotics["effectivities"]),
+            ],
+            "uniform_tail_rate": uniform_asymptotics["tail_rate"],
+            "uniform_tail_relative_deviation": uniform_asymptotics["tail_relative_deviation"],
+            "effectivity_criterion": (
+                min(criteria_effectivity_ranges(asymptotics, main_study)) >= 0.8
+                and max(criteria_effectivity_ranges(asymptotics, main_study)) <= 1.2
+            ),
             "true_error_quadrature_spread": (max(sensitivity.values()) - min(sensitivity.values()))
             / min(sensitivity.values()),
             "artifacts": {
@@ -411,12 +449,14 @@ def main() -> dict:
         "matched_dof_table": main_study["matched_dof_table"],
         "equal_error_table": main_study["equal_error_table"],
         "extended_adaptive": {
-            "rounds": 7,
+            "rounds": extended_rounds,
             "divisions": 12,
             "rate": extended_rate,
+            "asymptotics": asymptotics,
             "levels": extended["levels"],
             "markings": extended["markings"],
         },
+        "uniform_asymptotics": uniform_asymptotics,
         "true_error_quadrature_sensitivity": sensitivity,
         "criteria": criteria,
         "limitations": [
@@ -453,7 +493,14 @@ def summary_markdown(payload: dict) -> str:
         f"| adaptive rate (2 rounds) | {criteria['adaptive_rate']:.3f} |",
         f"| uniform rate (measured) | {criteria['uniform_rate']:.3f} |",
         f"| uniform rate (theory -lambda/2) | {criteria['theory_uniform_rate']:.3f} |",
-        f"| extended adaptive rate (7 rounds) | {criteria['extended_adaptive_rate']:.3f} |",
+        f"| extended adaptive global slope ({criteria['extended_adaptive_levels'] - 1} rounds) | {criteria['extended_adaptive_rate']:.3f} |",
+        f"| extended adaptive tail rate (last {criteria['extended_tail_window']} intervals) | {criteria['extended_tail_rate']:.4f} |",
+        f"| theory: best-approximation bound N^-1/2 | {criteria['theory_optimal_rate']:.3f} |",
+        f"| tail deviation from the bound | {100.0 * criteria['tail_relative_deviation']:.1f} % |",
+        f"| global slope overstates the bound (not a rate claim) | {criteria['global_rate_overstates_theory']} |",
+        f"| uniform ladder tail rate (last 3 intervals) | {criteria['uniform_tail_rate']:.4f} |",
+        f"| effectivity, adaptive ladder | {criteria['effectivity_adaptive_range'][0]:.4f} - {criteria['effectivity_adaptive_range'][1]:.4f} |",
+        f"| effectivity inside [0.8, 1.2] (criterion) | {criteria['effectivity_criterion']} |",
         f"| effectivity range | {criteria['effectivity_range'][0]:.4f} - {criteria['effectivity_range'][1]:.4f} |",
         f"| true-error quadrature spread | {criteria['true_error_quadrature_spread']:.2e} |",
     ]
