@@ -418,4 +418,13 @@ __all__ = [
     "principal_moments", "surface_tensile_stress", "foundation_reaction",
     "characteristic_moment_per_load", "solve_circular_patch",
     "first_crack_load", "failure_mode", "nevel_moment_applicability",
+    "CookXvalResult", "run_cook_xval", "load_cook_xval_results",
+    "generate_convergence_plot", "generate_error_plot",
 ]
+from .cook_xval import (
+    CookXvalResult,
+    run_cook_xval,
+    load_cook_xval_results,
+    generate_convergence_plot,
+    generate_error_plot,
+)
