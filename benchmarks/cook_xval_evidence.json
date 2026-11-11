@@ -1,0 +1,81 @@
+{
+    "capability": "XVAL-FEM-COOK",
+    "description": "Cook membrane horizontal cross-validation benchmark",
+    "version": "1.0.0",
+    "evidence": {
+        "spec": {
+            "corners": [[0.0, 0.0], [48.0, 44.0], [48.0, 60.0], [0.0, 44.0]],
+            "young": 1.0,
+            "poisson": 0.3333333333333333,
+            "thickness": 1.0,
+            "resultant": 1.0,
+            "published_reference_uy_mid": 23.96
+        },
+        "results": {
+            "tensorfem_q4": {
+                "8": {
+                    "uy_mid": 22.079183,
+                    "error_pct": 7.85,
+                    "pass_3pct": false
+                },
+                "16": {
+                    "uy_mid": 23.430411,
+                    "error_pct": 2.21,
+                    "pass_3pct": true
+                }
+            },
+            "skfem_quad2": {
+                "8": {
+                    "uy_mid": 23.925405,
+                    "error_pct": 0.14,
+                    "pass_3pct": true
+                },
+                "16": {
+                    "uy_mid": 23.949409,
+                    "error_pct": 0.04,
+                    "pass_3pct": true
+                }
+            },
+            "skfem_tri2": {
+                "8": {
+                    "uy_mid": 23.860706,
+                    "error_pct": 0.41,
+                    "pass_3pct": true
+                },
+                "16": {
+                    "uy_mid": 23.927125,
+                    "error_pct": 0.14,
+                    "pass_3pct": true
+                }
+            }
+        },
+        "verdict": {
+            "displacement_accuracy_n16": "PASS (2.21% < 3%)",
+            "third_party_agreement": "PASS (skfem_quad2: 0.04%, skfem_tri2: 0.14%)",
+            "convergence_trend": "PASS (all parties converge toward reference)"
+        }
+    },
+    "artifacts": {
+        "metrics": "artifacts/cook_xval/metrics.json",
+        "convergence_plot": "artifacts/cook_xval/convergence.png",
+        "error_plot": "artifacts/cook_xval/error.png",
+        "benchmark_script": "benchmarks/cook_membrane_xval.py",
+        "entry_point": "src/tensorfem/cook_xval.py",
+        "documentation": "docs/cook-xval-report.md"
+    },
+    "repro_cmd": "PYTHONPATH=src python benchmarks/cook_membrane_xval.py --levels 8,16 --parties tensorfem_q4,skfem_quad2,skfem_tri2 --out artifacts/cook_xval",
+    "maturity": {
+        "L2": {
+            "impl_files": "src/tensorfem/cook_xval.py (non-placeholder)",
+            "entry": "tensorfem.cook_xval.run_cook_xval",
+            "run_artifacts": "artifacts/cook_xval/metrics.json, convergence.png, error.png"
+        },
+        "L3": {
+            "integration_callers": "src/tensorfem/__init__.py exports run_cook_xval, load_cook_xval_results"
+        },
+        "L4": {
+            "benchmark": "ref vs got numerical对照 in metrics.json",
+            "repro_cmd": "PYTHONPATH=src python benchmarks/cook_membrane_xval.py --levels 8,16 --parties tensorfem_q4,skfem_quad2,skfem_tri2 --out artifacts/cook_xval"
+        }
+    }
+}
