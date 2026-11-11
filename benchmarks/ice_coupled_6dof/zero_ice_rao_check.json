@@ -1,0 +1,454 @@
+{
+  "case": "zero_ice_limit_time_vs_frequency_domain",
+  "git_commit": "fe26e5fe67162caaab36f7a46cd535a771e65ab7",
+  "model": {
+    "length_m": 100.0,
+    "breadth_m": 20.0,
+    "draught_m": 6.0,
+    "mass_kg": 8610000.0,
+    "natural_frequency_rad_s": {
+      "heave": 0.9961624281879604,
+      "roll": 0.4473653029524242,
+      "pitch": 0.8857381102786535
+    },
+    "added_mass_inf": 8610000.0,
+    "kernel_terms_heave": [
+      [
+        2054570.1401504423,
+        0.85,
+        0.3
+      ],
+      [
+        1027285.0700752211,
+        1.8,
+        0.7
+      ],
+      [
+        342428.35669174045,
+        0.22,
+        0.1
+      ]
+    ],
+    "kernel_terms_pitch": [
+      [
+        1100662575.080594,
+        0.85,
+        0.3
+      ],
+      [
+        550331287.540297,
+        1.8,
+        0.7
+      ],
+      [
+        183443762.51343238,
+        0.22,
+        0.1
+      ]
+    ],
+    "provenance": "hull/main particulars and damping ratios are declared engineering inputs of this study; the radiation kernel is a synthetic passive model (see module docstring); MMG derivatives are declared estimates, not captive-model data"
+  },
+  "excitation": "Froude-Krylov + Smith correction, no diffraction, identical in time and frequency domain, unit wave amplitude",
+  "dt_s": 0.02,
+  "frequencies": [
+    {
+      "omega_rad_s": 0.15,
+      "period_s": 41.88790204786391,
+      "periods_simulated": 18,
+      "damping_ratio_used": 0.16928586273936386,
+      "rao_heave_frequency_domain_m_per_m": 1.000434414242288,
+      "rao_heave_time_domain_m_per_m": 1.0004342512024256,
+      "rao_pitch_frequency_domain_rad_per_m": 0.0038921929820515525,
+      "rao_pitch_time_domain_rad_per_m": 0.003892192278918812,
+      "rel_deviation_heave": -1.6296906646395826e-07,
+      "rel_deviation_pitch": -1.8065207552098173e-07,
+      "rel_deviation_max": 1.8065207552098173e-07,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 0.184927,
+      "period_s": 33.97657079377044,
+      "periods_simulated": 19,
+      "damping_ratio_used": 0.1628220542269572,
+      "rao_heave_frequency_domain_m_per_m": 1.0013229648758446,
+      "rao_heave_time_domain_m_per_m": 1.0013227057380683,
+      "rao_pitch_frequency_domain_rad_per_m": 0.005938508922520018,
+      "rao_pitch_time_domain_rad_per_m": 0.0059385072006260965,
+      "rel_deviation_heave": -2.587953991106673e-07,
+      "rel_deviation_pitch": -2.899539167655618e-07,
+      "rel_deviation_max": 2.899539167655618e-07,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 0.227987,
+      "period_s": 27.559401664040433,
+      "periods_simulated": 20,
+      "damping_ratio_used": 0.15405915131258038,
+      "rao_heave_frequency_domain_m_per_m": 1.0035985625937927,
+      "rao_heave_time_domain_m_per_m": 1.003598139795776,
+      "rao_pitch_frequency_domain_rad_per_m": 0.009088823317434868,
+      "rao_pitch_time_domain_rad_per_m": 0.009088818961709188,
+      "rel_deviation_heave": -4.2128200694602214e-07,
+      "rel_deviation_pitch": -4.792397791941738e-07,
+      "rel_deviation_max": 4.792397791941738e-07,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 0.281073,
+      "period_s": 22.354282720786365,
+      "periods_simulated": 21,
+      "damping_ratio_used": 0.14372955254884218,
+      "rao_heave_frequency_domain_m_per_m": 1.0087926029683438,
+      "rao_heave_time_domain_m_per_m": 1.0087918849810582,
+      "rao_pitch_frequency_domain_rad_per_m": 0.013990388104152493,
+      "rao_pitch_time_domain_rad_per_m": 0.013990376535306697,
+      "rel_deviation_heave": -7.117293321368123e-07,
+      "rel_deviation_pitch": -8.269138576100232e-07,
+      "rel_deviation_max": 8.269138576100232e-07,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 0.346519,
+      "period_s": 18.13229666246176,
+      "periods_simulated": 23,
+      "damping_ratio_used": 0.13296227009511394,
+      "rao_heave_frequency_domain_m_per_m": 1.0196621124436358,
+      "rao_heave_time_domain_m_per_m": 1.0196608211343285,
+      "rao_pitch_frequency_domain_rad_per_m": 0.021761397310274964,
+      "rao_pitch_time_domain_rad_per_m": 0.021761364382344283,
+      "rel_deviation_heave": -1.2664090305314346e-06,
+      "rel_deviation_pitch": -1.5131349431207752e-06,
+      "rel_deviation_max": 1.5131349431207752e-06,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 0.427205,
+      "period_s": 14.707658635033734,
+      "periods_simulated": 25,
+      "damping_ratio_used": 0.12249876535571998,
+      "rao_heave_frequency_domain_m_per_m": 1.0415777911530022,
+      "rao_heave_time_domain_m_per_m": 1.041575278311182,
+      "rao_pitch_frequency_domain_rad_per_m": 0.034514540388642725,
+      "rao_pitch_time_domain_rad_per_m": 0.03451443691087705,
+      "rel_deviation_heave": -2.4125339859182304e-06,
+      "rel_deviation_pitch": -2.998091949368842e-06,
+      "rel_deviation_max": 2.998091949368842e-06,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 0.526679,
+      "period_s": 11.929819315331704,
+      "periods_simulated": 27,
+      "damping_ratio_used": 0.11235767527882905,
+      "rao_heave_frequency_domain_m_per_m": 1.0868991340859604,
+      "rao_heave_time_domain_m_per_m": 1.0868936763736494,
+      "rao_pitch_frequency_domain_rad_per_m": 0.05694341156926786,
+      "rao_pitch_time_domain_rad_per_m": 0.05694303643435651,
+      "rel_deviation_heave": -5.021360437007516e-06,
+      "rel_deviation_pitch": -6.587854521011849e-06,
+      "rel_deviation_max": 6.587854521011849e-06,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 0.649314,
+      "period_s": 9.676651523268538,
+      "periods_simulated": 30,
+      "damping_ratio_used": 0.10213952854018123,
+      "rao_heave_frequency_domain_m_per_m": 1.1905433357737782,
+      "rao_heave_time_domain_m_per_m": 1.1905292814194464,
+      "rao_pitch_frequency_domain_rad_per_m": 0.10309719405551217,
+      "rao_pitch_time_domain_rad_per_m": 0.10309544520094217,
+      "rel_deviation_heave": -1.1804991813080257e-05,
+      "rel_deviation_pitch": -1.696316360511041e-05,
+      "rel_deviation_max": 1.696316360511041e-05,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 0.800505,
+      "period_s": 7.849026935721309,
+      "periods_simulated": 33,
+      "damping_ratio_used": 0.09156362052002615,
+      "rao_heave_frequency_domain_m_per_m": 1.488234891913038,
+      "rao_heave_time_domain_m_per_m": 1.4881844588900743,
+      "rao_pitch_frequency_domain_rad_per_m": 0.24865436061951657,
+      "rao_pitch_time_domain_rad_per_m": 0.24863970395191534,
+      "rel_deviation_heave": -3.388781114976869e-05,
+      "rel_deviation_pitch": -5.894393955008237e-05,
+      "rel_deviation_max": 5.894393955008237e-05,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 0.9869,
+      "period_s": 6.366587604802499,
+      "periods_simulated": 38,
+      "damping_ratio_used": 0.08082320260432202,
+      "rao_heave_frequency_domain_m_per_m": 2.8923165431146605,
+      "rao_heave_time_domain_m_per_m": 2.8920066238777395,
+      "rao_pitch_frequency_domain_rad_per_m": 0.46249718077409324,
+      "rao_pitch_time_domain_rad_per_m": 0.4625698187644216,
+      "rel_deviation_heave": -0.0001071525997591305,
+      "rel_deviation_pitch": 0.0001570560715782321,
+      "rel_deviation_max": 0.0001570560715782321,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 1.216696,
+      "period_s": 5.164137391081738,
+      "periods_simulated": 43,
+      "damping_ratio_used": 0.07051497738365735,
+      "rao_heave_frequency_domain_m_per_m": 0.9815540270475938,
+      "rao_heave_time_domain_m_per_m": 0.9817250328920899,
+      "rao_pitch_frequency_domain_rad_per_m": 0.1322484637844785,
+      "rao_pitch_time_domain_rad_per_m": 0.1322649356495015,
+      "rel_deviation_heave": 0.00017421949254337044,
+      "rel_deviation_pitch": 0.00012455241105757686,
+      "rel_deviation_max": 0.00017421949254337044,
+      "pass_5pct": true
+    },
+    {
+      "omega_rad_s": 1.5,
+      "period_s": 4.1887902047863905,
+      "periods_simulated": 49,
+      "damping_ratio_used": 0.061254661188338014,
+      "rao_heave_frequency_domain_m_per_m": 0.21967212048608578,
+      "rao_heave_time_domain_m_per_m": 0.21970526989531783,
+      "rao_pitch_frequency_domain_rad_per_m": 0.05638538471797249,
+      "rao_pitch_time_domain_rad_per_m": 0.05639252687871632,
+      "rel_deviation_heave": 0.00015090403442497013,
+      "rel_deviation_pitch": 0.00012666687971640833,
+      "rel_deviation_max": 0.00015090403442497013,
+      "pass_5pct": true
+    }
+  ],
+  "worst_point": {
+    "omega_rad_s": 1.216696,
+    "period_s": 5.164137391081738,
+    "periods_simulated": 43,
+    "damping_ratio_used": 0.07051497738365735,
+    "rao_heave_frequency_domain_m_per_m": 0.9815540270475938,
+    "rao_heave_time_domain_m_per_m": 0.9817250328920899,
+    "rao_pitch_frequency_domain_rad_per_m": 0.1322484637844785,
+    "rao_pitch_time_domain_rad_per_m": 0.1322649356495015,
+    "rel_deviation_heave": 0.00017421949254337044,
+    "rel_deviation_pitch": 0.00012455241105757686,
+    "rel_deviation_max": 0.00017421949254337044,
+    "pass_5pct": true
+  },
+  "criterion": {
+    "metric": "max over heave/pitch of |RAO_td/RAO_fd - 1|",
+    "threshold": 0.05,
+    "pass": true
+  },
+  "kernel_kramers_kronig": [
+    {
+      "dof": "heave",
+      "omega_rad_s": 0.2,
+      "added_mass_closed_form": 3146087.861879138,
+      "added_mass_kernel_integral": 3146087.933211254,
+      "damping_closed_form": 3500303.211679451,
+      "damping_kernel_integral": 3500303.288151573,
+      "rel_error_added_mass": 2.2673275257290015e-08,
+      "rel_error_damping": 2.1847284870091244e-08
+    },
+    {
+      "dof": "heave",
+      "omega_rad_s": 0.5,
+      "added_mass_closed_form": 5503646.128861748,
+      "added_mass_kernel_integral": 5503646.200197089,
+      "damping_closed_form": 2538452.4360676566,
+      "damping_kernel_integral": 2538452.512543378,
+      "rel_error_added_mass": 1.2961469453287577e-08,
+      "rel_error_damping": 3.012690741321933e-08
+    },
+    {
+      "dof": "heave",
+      "omega_rad_s": 0.7,
+      "added_mass_closed_form": 6251693.183397565,
+      "added_mass_kernel_integral": 6251693.254735817,
+      "damping_closed_form": 2106490.326819623,
+      "damping_kernel_integral": 2106490.403296517,
+      "rel_error_added_mass": 1.1411029010588436e-08,
+      "rel_error_damping": 3.630536227205994e-08
+    },
+    {
+      "dof": "heave",
+      "omega_rad_s": 1.0,
+      "added_mass_closed_form": 6945471.091010659,
+      "added_mass_kernel_integral": 6945471.162350786,
+      "damping_closed_form": 1584386.2689518176,
+      "damping_kernel_integral": 1584386.3454279222,
+      "rel_error_added_mass": 1.0271459682797968e-08,
+      "rel_error_damping": 4.826859845152853e-08
+    },
+    {
+      "dof": "pitch",
+      "omega_rad_s": 0.2,
+      "added_mass_closed_form": 2454154211.7209663,
+      "added_mass_kernel_integral": 2454154249.9346004,
+      "damping_closed_form": 1875162434.8282773,
+      "damping_kernel_integral": 1875162475.7954857,
+      "rel_error_added_mass": 1.557099960081132e-08,
+      "rel_error_damping": 2.184728509213585e-08
+    },
+    {
+      "dof": "pitch",
+      "omega_rad_s": 0.5,
+      "added_mass_closed_form": 3717131854.747364,
+      "added_mass_kernel_integral": 3717131892.9627266,
+      "damping_closed_form": 1359885233.607673,
+      "damping_kernel_integral": 1359885274.57681,
+      "rel_error_added_mass": 1.028087348586837e-08,
+      "rel_error_damping": 3.012690763526393e-08
+    },
+    {
+      "dof": "pitch",
+      "omega_rad_s": 0.7,
+      "added_mass_closed_form": 4117871348.2486963,
+      "added_mass_kernel_integral": 4117871386.465616,
+      "damping_closed_form": 1128476960.7962265,
+      "damping_kernel_integral": 1128477001.7659917,
+      "rel_error_added_mass": 9.280746393613981e-09,
+      "rel_error_damping": 3.630536249410454e-08
+    },
+    {
+      "dof": "pitch",
+      "omega_rad_s": 1.0,
+      "added_mass_closed_form": 4489538084.4699955,
+      "added_mass_kernel_integral": 4489538122.687921,
+      "damping_closed_form": 848778358.367045,
+      "damping_kernel_integral": 848778399.3363873,
+      "rel_error_added_mass": 8.512663018933608e-09,
+      "rel_error_damping": 4.826859911766235e-08
+    }
+  ],
+  "added_mass_damping_table": [
+    {
+      "omega_rad_s": 0.1,
+      "added_mass_heave_kg": 2571658.781163867,
+      "added_mass_heave_over_mass": 0.2986827852687418,
+      "damping_heave_Ns_m": 3834077.224656127,
+      "added_mass_pitch_kgm2": 2146424347.0520713,
+      "added_mass_pitch_over_inertia": 0.39887095880177864,
+      "damping_pitch_Nms_rad": 2053969941.780068,
+      "damping_ratio_heave": 0.17591477192132426,
+      "damping_ratio_pitch": 0.15273079656027247
+    },
+    {
+      "omega_rad_s": 0.3,
+      "added_mass_heave_kg": 4123006.9596162736,
+      "added_mass_heave_over_mass": 0.478862596935688,
+      "damping_heave_Ns_m": 3112041.9986730153,
+      "added_mass_pitch_kgm2": 2977503728.36586,
+      "added_mass_pitch_over_inertia": 0.5533107973734467,
+      "damping_pitch_Nms_rad": 1667165356.4319723,
+      "damping_ratio_heave": 0.1403757428027113,
+      "damping_ratio_pitch": 0.12191808259589684
+    },
+    {
+      "omega_rad_s": 0.5,
+      "added_mass_heave_kg": 5503646.128861748,
+      "added_mass_heave_over_mass": 0.6392155782650113,
+      "damping_heave_Ns_m": 2538452.4360676566,
+      "added_mass_pitch_kgm2": 3717131854.747364,
+      "added_mass_pitch_over_inertia": 0.6907562099414382,
+      "damping_pitch_Nms_rad": 1359885233.607673,
+      "damping_ratio_heave": 0.11486572619228343,
+      "damping_ratio_pitch": 0.09932842392143326
+    },
+    {
+      "omega_rad_s": 0.7,
+      "added_mass_heave_kg": 6251693.183397565,
+      "added_mass_heave_over_mass": 0.7260967692680099,
+      "damping_heave_Ns_m": 2106490.326819623,
+      "added_mass_pitch_kgm2": 4117871348.2486963,
+      "added_mass_pitch_over_inertia": 0.7652258022297229,
+      "damping_pitch_Nms_rad": 1128476960.7962265,
+      "damping_ratio_heave": 0.09838460452171888,
+      "damping_ratio_pitch": 0.08429117678491015
+    },
+    {
+      "omega_rad_s": 1.0,
+      "added_mass_heave_kg": 6945471.091010659,
+      "added_mass_heave_over_mass": 0.8066749234623297,
+      "damping_heave_Ns_m": 1584386.2689518176,
+      "added_mass_pitch_kgm2": 4489538084.4699955,
+      "added_mass_pitch_over_inertia": 0.8342927915391397,
+      "damping_pitch_Nms_rad": 848778358.367045,
+      "damping_ratio_heave": 0.08015384275431951,
+      "damping_ratio_pitch": 0.06737031463607772
+    },
+    {
+      "omega_rad_s": 1.5,
+      "added_mass_heave_kg": 7605441.289050569,
+      "added_mass_heave_over_mass": 0.8833265144077316,
+      "damping_heave_Ns_m": 1010060.920725148,
+      "added_mass_pitch_kgm2": 4843093547.705662,
+      "added_mass_pitch_over_inertia": 0.8999941552066271,
+      "damping_pitch_Nms_rad": 541104064.6741865,
+      "damping_ratio_heave": 0.061254661188338014,
+      "damping_ratio_pitch": 0.04963824417053619
+    },
+    {
+      "omega_rad_s": 2.0,
+      "added_mass_heave_kg": 7953442.658060019,
+      "added_mass_heave_over_mass": 0.9237447918768895,
+      "damping_heave_Ns_m": 681027.2321936153,
+      "added_mass_pitch_kgm2": 5029522852.532153,
+      "added_mass_pitch_over_inertia": 0.9346383930373339,
+      "damping_pitch_Nms_rad": 364836017.24657965,
+      "damping_ratio_heave": 0.0508288962925915,
+      "damping_ratio_pitch": 0.03979152464402168
+    }
+  ],
+  "time_step_refinement": [
+    {
+      "omega_rad_s": 0.15,
+      "dt_s": 0.02,
+      "rel_deviation_heave": -1.6296906646395826e-07,
+      "rel_deviation_pitch": -1.8065207552098173e-07
+    },
+    {
+      "omega_rad_s": 0.15,
+      "dt_s": 0.01,
+      "rel_deviation_heave": -4.073864978693109e-08,
+      "rel_deviation_pitch": -4.516038587532023e-08
+    },
+    {
+      "omega_rad_s": 0.526679,
+      "dt_s": 0.02,
+      "rel_deviation_heave": -5.021360437007516e-06,
+      "rel_deviation_pitch": -6.587854521011849e-06
+    },
+    {
+      "omega_rad_s": 0.526679,
+      "dt_s": 0.01,
+      "rel_deviation_heave": -1.2550909352926354e-06,
+      "rel_deviation_pitch": -1.6444305788176905e-06
+    },
+    {
+      "omega_rad_s": 1.5,
+      "dt_s": 0.02,
+      "rel_deviation_heave": 0.00015090403442497013,
+      "rel_deviation_pitch": 0.00012666687971640833
+    },
+    {
+      "omega_rad_s": 1.5,
+      "dt_s": 0.01,
+      "rel_deviation_heave": 3.774418474922214e-05,
+      "rel_deviation_pitch": 3.137140215536682e-05
+    }
+  ],
+  "negative_control_kernel_mismatch": [
+    {
+      "omega_rad_s": 0.281073,
+      "rel_deviation_heave": 0.011429164867500008,
+      "note": "time-domain kernel has one exponential term removed; a real mismatch must show up as a large deviation"
+    },
+    {
+      "omega_rad_s": 1.5,
+      "rel_deviation_heave": -0.06740661055644193,
+      "note": "time-domain kernel has one exponential term removed; a real mismatch must show up as a large deviation"
+    }
+  ],
+  "runtime_s": 72.16845083236694
+}
