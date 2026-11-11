@@ -108,6 +108,7 @@ Consequences pinned by tests:
 | `law_energy_mixed_45` | `int t . d(delta) == G_c(BK)` | 594.316809 vs 594.316824 (2.6e-08) | 1e-5 | PASS |
 | `law_initiation_quadratic` | `(t_n/t_n0)^2 + (t_s/t_s0)^2 == 1` at onset | 4.4e-16 | 1e-12 | PASS |
 | `law_tangent_vs_ad` | analytic `dt/d(delta)` == autograd Jacobian of the traction | 5.5e-16 | 1e-10 | PASS |
+| `law_batch_matches_pointwise` | batched update (16 softening points) == 16 independent point calls | max relative difference 0.0e+00 at damage 0.991 | 1e-12 | PASS |
 | `element_patch_small_strain` | uniform opening: reaction == `t * A` | 4615384.615385 N vs 4615384.615385 N (0.0) | 1e-12 | PASS |
 | `element_rigid_rotation_small_strain` | rigid rotation in a fixed frame ⇒ zero traction | `max |f|/(t_n0 A) = 9.9e3` | — | **KNOWN_LIMIT** |
 | `element_rigid_rotation_corotational` | rigid rotation in a fixed frame ⇒ zero traction | 2.9e-12 over `theta = 0.01 … 3.0 rad` | 1e-10 | PASS |
@@ -121,7 +122,7 @@ Consequences pinned by tests:
 | `corotational_assembly_consistency` | assembly == sum of element contributions | 0.0 (force and tangent) | 1e-12 | PASS |
 | `corotational_compression_undamaged` | closing uses `k_n`, never damages | −9999.999995 N vs −10000 N (5.3e-10) | 1e-8 | PASS |
 
-17 PASS, 0 FAIL, 2 KNOWN_LIMIT.  Regenerate with
+18 PASS, 0 FAIL, 2 KNOWN_LIMIT.  Regenerate with
 `PYTHONPATH=src python benchmarks/cohesive3d_verification_tables.py`; the JSON
 carries the raw values, the Markdown table is the one pasted above.
 
@@ -154,6 +155,27 @@ carries the raw values, the Markdown table is the one pasted above.
 6. **Compression never damages.**  Closing openings use the penalty stiffness
    `k_n` and leave the history variable untouched; friction and contact
    degradation are out of scope.
+
+7. **The solver never calls the law point by point.**  `cohesive_hex8_response`
+   evaluates all `4 * n_elements` Gauss points of the patch in one batched call,
+   so a bug in *batch* broadcasting is a bug in the only path the solver uses.
+   One was present in the BK mixing weight (`frac ** (eta-1)` and both `dF`
+   denominators must be broadcast with `[..., None]`): with exactly three points
+   in the batch the trailing axis aliased the *component* axis and each point
+   picked up its neighbour's weight, with any other batch size the update raised
+   `RuntimeError: The size of tensor a (16) must match the size of tensor b (3)`.
+   Every single-point check passed throughout.  `law_batch_matches_pointwise`
+   (verification table) and `test_batched_update_matches_pointwise_in_softening`
+   / `test_vectorised_assembly_with_damage_matches_production_element` now pin the
+   batch path itself, with finite differences -- not the pointwise path -- as the
+   oracle for the tangent.
+8. **The interface patch is conforming.**  Adjacent `COH3D8` elements share the
+   four nodes of their common in-plane edge, so a *global* force or tangent entry
+   is the sum over every incident element.  Comparing one element against the
+   global vector therefore disagrees at the shared nodes even when the assembly is
+   exact; the reference must be assembled over the whole patch
+   (`tests/test_cohesive3d_dcb.py`), which is also what
+   `corotational_assembly_consistency` does for the explicit assembly path.
 
 ## 5. Scope limits (not claimed)
 

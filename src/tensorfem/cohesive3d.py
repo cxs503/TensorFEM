@@ -325,12 +325,21 @@ class BKCohesive3DLaw:
                 ),
                 dim=-1,
             )
-            dgc = (self.giic - self.gic) * self.eta * torch.clamp(frac, min=tiny) ** (self.eta - 1.0) * dfrac
+            # ``frac`` has the history shape ``(...)``, ``dfrac`` the component
+            # shape ``(..., 3)``: the mixing weight and the BK denominator must
+            # be broadcast along the component axis explicitly (``[..., None]``).
+            # Without it the trailing axis silently aligns with the *component*
+            # axis whenever three integration points happen to be in the batch
+            # (each point's weight then multiplies its neighbour's derivative)
+            # and raises a shape error for every other batch size, which is why
+            # the batched softening path is pinned by tests/test_cohesive3d.py.
+            mixing = torch.clamp(frac, min=tiny) ** (self.eta - 1.0)
+            dgc = (self.giic - self.gic) * self.eta * mixing[..., None] * dfrac
             dkw = torch.stack(
                 (2.0 * self.kn * cx, 2.0 * self.ks * cy, 2.0 * self.ks * cz), dim=-1
             )
             dF = (
-                2.0 * dgc / torch.clamp(work_stiffness * onset, min=tiny)
+                2.0 * dgc / torch.clamp(work_stiffness * onset, min=tiny)[..., None]
                 - failure[..., None] * dkw / torch.clamp(work_stiffness, min=tiny)[..., None]
                 - (failure / onset)[..., None] * dO
             )
