@@ -1,0 +1,1057 @@
+{
+  "schema": "tensorfem.w22-ice-6dof-energy.v1",
+  "node": "w22-ice-6dof-2",
+  "provenance": {
+    "generated_utc": "2026-11-11T08:06:17Z",
+    "git": {
+      "commit": "5fb5781f02f1959deb04cb1190a71da1e550977a",
+      "branch": "agent/m14517",
+      "dirty": true
+    },
+    "driver": {
+      "path": "benchmarks/w22_ice_6dof_ensemble.py",
+      "sha256": "5653cfd8b296d9a6812497731582b7c054abc243d528df000f081014e5535a8c"
+    },
+    "model": {
+      "path": "src/tensorfem/iso19906_ice_6dof.py",
+      "sha256": "d2a97fbcd3d86b04d0f4098e8e9656e920ef519f55babedcce45e0d052dd7794"
+    },
+    "anchor": {
+      "anchor_id": "AN-ISO19906",
+      "status": "pending_transcription",
+      "C_R_MPa": 1.0,
+      "A_0_m2": 1.0,
+      "exponent": -0.28,
+      "source": "not available in this work tree",
+      "note": "declared reference normalisation, not a normative transcription; loads scale exactly linearly in C_R"
+    },
+    "settings": {
+      "duration_s": 60.0,
+      "transient_s": 10.0,
+      "dt_master_s": 0.005,
+      "statistics_window_s": [
+        10.0,
+        60.0
+      ],
+      "thicknesses_m": [
+        0.6,
+        1.0,
+        1.5
+      ],
+      "speeds_mps": [
+        0.8,
+        1.6
+      ],
+      "threshold_factor": 1.25
+    },
+    "vessel": {
+      "mass_kg": 8610000.0,
+      "displacement_m3": 8400.0,
+      "waterplane_area_m2": 1700.0,
+      "natural_periods_s": {
+        "heave": 6.14768367953841,
+        "roll": 14.044865048123283,
+        "pitch": 7.09372808312707
+      },
+      "stiffness": {
+        "surge": 0.0,
+        "sway": 0.0,
+        "heave": 17088087.625,
+        "roll": 101322307.8,
+        "pitch": 8443525650.0,
+        "yaw": 0.0
+      },
+      "provenance": "generic 100 m / 20 m / 6 m / Cb 0.70 single-screw hull with textbook added-mass ratios and metacentric heights; a representative numerical test bed, not a particular ship"
+    },
+    "contact": {
+      "half_angle_deg": 40.0,
+      "spall_depth_m": 0.3,
+      "residual_ratio": 0.2,
+      "residual_penetration_m": 0.06,
+      "friction": 0.15,
+      "normal_obliquity_deg": 20.0,
+      "provenance": "wedge waterline half-angle / spall increment / residual ratio / friction / oblique contact normal are engineering assumptions of this model, not ISO 19906 values; residual_ratio fixes the saw-tooth peak-to-mean load ratio"
+    },
+    "law": {
+      "reference_pressure_MPa": 1.0,
+      "reference_area_m2": 1.0,
+      "exponent": -0.28,
+      "force_area_exponent": 0.72,
+      "provenance": "AN-ISO19906 [pending_transcription]: not available in this work tree"
+    }
+  },
+  "quadratures": {
+    "displacement_trapezoid": "0.5*(F_n + F_n+1).dq -- algebraically identical to the kinetic-energy change of velocity-Verlet, so it can only detect missing/mis-signed force terms, not integration error",
+    "power_trapezoid": "0.5*dt*(F_n.v_n + F_n+1.v_n+1) -- independent quadrature (velocity, not displacement); this is the primary residual of criterion C2",
+    "left_endpoint": "F_n.dq -- deliberately lower-order quadrature, reported as a bound on the quadrature sensitivity of the budget"
+  },
+  "cases": [
+    {
+      "case": "h0.60_U0.80",
+      "dt_s": 0.005,
+      "whole_run": {
+        "window_s": [
+          0.0,
+          60.0
+        ],
+        "work_thrust_J": 11625300.945603801,
+        "work_ice_normal_J": -11054338.54370158,
+        "work_ice_friction_J": -604069.8678558593,
+        "work_damping_J": -843286.4890566485,
+        "kinetic_energy_change_J": -876618.5764398822,
+        "potential_energy_change_J": 224.6177801044028,
+        "residual_J": 0.003649491111389125,
+        "residual_fraction_of_nonconservative_work": 1.5674010092926067e-10,
+        "residual_fraction_of_thrust_work": 3.1392656538862705e-10,
+        "residual_fraction_of_ice_work": 3.13035079019548e-10,
+        "power_quadrature_residual_J": -0.0037893466651439667,
+        "power_quadrature_residual_fraction": -1.6274668457119417e-10,
+        "displacement_quadrature_residual_J": 0.003649491111389125,
+        "left_endpoint_residual_J": -78.98339451581705,
+        "left_endpoint_residual_fraction": -3.39221684620916e-06,
+        "damping_to_thrust_work_ratio": 0.07253888914047035
+      },
+      "statistics_window": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "work_thrust_J": 10192157.4515763,
+        "work_ice_normal_J": -9102026.309361113,
+        "work_ice_friction_J": -496840.68926011503,
+        "work_damping_J": -684482.7732476478,
+        "kinetic_energy_change_J": -91117.61898616329,
+        "potential_energy_change_J": -74.70519984576367,
+        "residual_J": 0.003893432952281728,
+        "residual_fraction_of_nonconservative_work": 1.9672719648000194e-10,
+        "residual_fraction_of_thrust_work": 3.8200278878902014e-10,
+        "residual_fraction_of_ice_work": 4.0561376121027774e-10,
+        "power_quadrature_residual_J": -0.002196852001361549,
+        "power_quadrature_residual_fraction": -1.1100243425434142e-10,
+        "displacement_quadrature_residual_J": 0.003893432952281728,
+        "left_endpoint_residual_J": 244.69852099649142,
+        "left_endpoint_residual_fraction": 1.2364115321475126e-05,
+        "damping_to_thrust_work_ratio": 0.06715778375107453
+      },
+      "initial_kinetic_energy_J": 3030720.0,
+      "peak_kinetic_energy_J": 3030720.0,
+      "peak_potential_energy_J": 547.5746963638491,
+      "spall_events": 169,
+      "windowed_residuals": [
+        {
+          "window_s": [
+            10.0,
+            15.0
+          ],
+          "residual_J": 0.002093552318200409,
+          "residual_fraction": 1.076953855522614e-09,
+          "thrust_work_J": 977206.6552385124,
+          "ice_work_J": -966749.653112893,
+          "damping_work_J": -70061.87279159707
+        },
+        {
+          "window_s": [
+            15.0,
+            20.0
+          ],
+          "residual_J": 0.0009070228985024187,
+          "residual_fraction": 4.610648308563898e-10,
+          "thrust_work_J": 1008763.1693646647,
+          "ice_work_J": -958470.8869672152,
+          "damping_work_J": -68854.09009877106
+        },
+        {
+          "window_s": [
+            20.0,
+            25.0
+          ],
+          "residual_J": -0.0014475247538996427,
+          "residual_fraction": -7.302476936690995e-10,
+          "thrust_work_J": 1019817.2985994113,
+          "ice_work_J": -962419.7371369483,
+          "damping_work_J": -68426.60740541108
+        },
+        {
+          "window_s": [
+            25.0,
+            30.0
+          ],
+          "residual_J": -0.0028087901578146557,
+          "residual_fraction": -1.4132358751536504e-09,
+          "thrust_work_J": 1024831.0999050112,
+          "ice_work_J": -962656.476628101,
+          "damping_work_J": -68232.39114798396
+        },
+        {
+          "window_s": [
+            30.0,
+            35.0
+          ],
+          "residual_J": -0.0004659420478390075,
+          "residual_fraction": -2.343800549517084e-10,
+          "thrust_work_J": 1026370.2776810676,
+          "ice_work_J": -961605.2501638897,
+          "damping_work_J": -68172.71917064663
+        },
+        {
+          "window_s": [
+            35.0,
+            40.0
+          ],
+          "residual_J": 0.0021250889468262812,
+          "residual_fraction": 1.0717806427461411e-09,
+          "thrust_work_J": 1026857.2541842274,
+          "ice_work_J": -955906.5598744864,
+          "damping_work_J": -68153.88242814282
+        },
+        {
+          "window_s": [
+            40.0,
+            45.0
+          ],
+          "residual_J": 0.0016770589039651895,
+          "residual_fraction": 8.454543853033158e-10,
+          "thrust_work_J": 1027022.0085847061,
+          "ice_work_J": -956595.4256180176,
+          "damping_work_J": -68147.48598565138
+        },
+        {
+          "window_s": [
+            45.0,
+            50.0
+          ],
+          "residual_J": 0.0011881545942742378,
+          "residual_fraction": 5.987387679413296e-10,
+          "thrust_work_J": 1027080.1027201712,
+          "ice_work_J": -957347.9302611459,
+          "damping_work_J": -68145.2237154335
+        }
+      ],
+      "damping_crosscheck": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "power_law_integral_J": 684482.0474259398,
+        "accumulated_force_displacement_J": 684482.7732476478,
+        "relative_difference": 1.0603955366094668e-06
+      },
+      "analytic_crushing_work": {
+        "events_detected": 169,
+        "spall_events_reported": 169,
+        "width_fraction_capped_by_breadth": false,
+        "law_force_coefficient_N_per_m": 1004977.2691985188,
+        "analytic_crushing_work_J": 11584554.635583486,
+        "path_integral_of_simulated_force_J": 11605117.247215241,
+        "analytic_to_simulated_ratio": 0.9982281427069003
+      }
+    },
+    {
+      "case": "h0.60_U1.60",
+      "dt_s": 0.005,
+      "whole_run": {
+        "window_s": [
+          0.0,
+          60.0
+        ],
+        "work_thrust_J": 28780470.32800778,
+        "work_ice_normal_J": -24479893.392517112,
+        "work_ice_friction_J": -1337037.6056384295,
+        "work_damping_J": -4181739.926083047,
+        "kinetic_energy_change_J": -1218421.2382536475,
+        "potential_energy_change_J": 220.6469295357756,
+        "residual_J": -0.004906696959551482,
+        "residual_fraction_of_nonconservative_work": -8.987052040020173e-11,
+        "residual_fraction_of_thrust_work": -1.7048702585966752e-10,
+        "residual_fraction_of_ice_work": -1.9005732206685267e-10,
+        "power_quadrature_residual_J": 0.005987280048429966,
+        "power_quadrature_residual_fraction": 1.0966236108930835e-10,
+        "displacement_quadrature_residual_J": -0.004906696959551482,
+        "left_endpoint_residual_J": 535.9827035625931,
+        "left_endpoint_residual_fraction": 9.817000090235937e-06,
+        "damping_to_thrust_work_ratio": 0.14529782637762353
+      },
+      "statistics_window": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "work_thrust_J": 24753421.99053949,
+        "work_ice_normal_J": -20325058.928269602,
+        "work_ice_friction_J": -1109564.9609034064,
+        "work_damping_J": -3459213.3805091055,
+        "kinetic_energy_change_J": -140338.17631859332,
+        "potential_energy_change_J": -77.09765686477232,
+        "residual_J": -0.005167164740385033,
+        "residual_fraction_of_nonconservative_work": -1.1187233688061927e-10,
+        "residual_fraction_of_thrust_work": -2.0874546289456094e-10,
+        "residual_fraction_of_ice_work": -2.4106625458115926e-10,
+        "power_quadrature_residual_J": 0.006796326255425811,
+        "power_quadrature_residual_fraction": 1.471446989981083e-10,
+        "displacement_quadrature_residual_J": -0.005167164740385033,
+        "left_endpoint_residual_J": 520.6478611403145,
+        "left_endpoint_residual_fraction": 1.1272350668913049e-05,
+        "damping_to_thrust_work_ratio": 0.13974686983013146
+      },
+      "initial_kinetic_energy_J": 12122880.0,
+      "peak_kinetic_energy_J": 12122880.0,
+      "peak_potential_energy_J": 544.5705618854979,
+      "spall_events": 375,
+      "windowed_residuals": [
+        {
+          "window_s": [
+            10.0,
+            15.0
+          ],
+          "residual_J": -0.0014651500358695557,
+          "residual_fraction": -3.2094102061387294e-10,
+          "thrust_work_J": 2410925.2529505524,
+          "ice_work_J": -2154242.864624764,
+          "damping_work_J": -348087.09398318816
+        },
+        {
+          "window_s": [
+            15.0,
+            20.0
+          ],
+          "residual_J": -0.003896244731834031,
+          "residual_fraction": -8.447445851032825e-10,
+          "thrust_work_J": 2461933.663570448,
+          "ice_work_J": -2150400.00011687,
+          "damping_work_J": -346373.34610282397
+        },
+        {
+          "window_s": [
+            20.0,
+            25.0
+          ],
+          "residual_J": 0.0029906747031702707,
+          "residual_fraction": 6.478438104187188e-10,
+          "thrust_work_J": 2478542.368418934,
+          "ice_work_J": -2137808.065481959,
+          "damping_work_J": -345813.93528526113
+        },
+        {
+          "window_s": [
+            25.0,
+            30.0
+          ],
+          "residual_J": 0.00244364665988428,
+          "residual_fraction": 5.286341873605248e-10,
+          "thrust_work_J": 2483922.8578443136,
+          "ice_work_J": -2138642.5941769406,
+          "damping_work_J": -345632.7621056703
+        },
+        {
+          "window_s": [
+            30.0,
+            35.0
+          ],
+          "residual_J": -0.0012471107606302212,
+          "residual_fraction": -2.694450294595175e-10,
+          "thrust_work_J": 2485686.8021884393,
+          "ice_work_J": -2142754.4560777945,
+          "damping_work_J": -345573.35262397677
+        },
+        {
+          "window_s": [
+            35.0,
+            40.0
+          ],
+          "residual_J": -0.003993197901593248,
+          "residual_fraction": -8.619098741666903e-10,
+          "thrust_work_J": 2486289.657643307,
+          "ice_work_J": -2146673.9031281336,
+          "damping_work_J": -345553.01334624784
+        },
+        {
+          "window_s": [
+            40.0,
+            45.0
+          ],
+          "residual_J": 0.0027715944207216126,
+          "residual_fraction": 5.995096427667541e-10,
+          "thrust_work_J": 2486497.216589056,
+          "ice_work_J": -2136604.104051902,
+          "damping_work_J": -345546.1207935512
+        },
+        {
+          "window_s": [
+            45.0,
+            50.0
+          ],
+          "residual_J": 0.00246757134004838,
+          "residual_fraction": 5.335562676211945e-10,
+          "thrust_work_J": 2486521.5706990995,
+          "ice_work_J": -2138240.5326372967,
+          "damping_work_J": -345545.2941944385
+        }
+      ],
+      "damping_crosscheck": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "power_law_integral_J": 3459212.2632013555,
+        "accumulated_force_displacement_J": 3459213.3805091055,
+        "relative_difference": 3.229948511481358e-07
+      },
+      "analytic_crushing_work": {
+        "events_detected": 375,
+        "spall_events_reported": 375,
+        "width_fraction_capped_by_breadth": false,
+        "law_force_coefficient_N_per_m": 1004977.2691985188,
+        "analytic_crushing_work_J": 25202957.56631587,
+        "path_integral_of_simulated_force_J": 25265827.637329802,
+        "analytic_to_simulated_ratio": 0.9975116559838696
+      }
+    },
+    {
+      "case": "h1.00_U0.80",
+      "dt_s": 0.005,
+      "whole_run": {
+        "window_s": [
+          0.0,
+          60.0
+        ],
+        "work_thrust_J": 14878646.357757784,
+        "work_ice_normal_J": -14622765.441072833,
+        "work_ice_friction_J": -799489.8719896451,
+        "work_damping_J": -709456.9112312658,
+        "kinetic_energy_change_J": -1253532.8641727997,
+        "potential_energy_change_J": 466.9888109084181,
+        "residual_J": 0.00882593202783255,
+        "residual_fraction_of_nonconservative_work": 2.9127620796366287e-10,
+        "residual_fraction_of_thrust_work": 5.931945166527974e-10,
+        "residual_fraction_of_ice_work": 5.722853938276907e-10,
+        "power_quadrature_residual_J": -0.008449327200651169,
+        "power_quadrature_residual_fraction": -2.7884737601523213e-10,
+        "displacement_quadrature_residual_J": 0.00882593202783255,
+        "left_endpoint_residual_J": 46.98897630884312,
+        "left_endpoint_residual_fraction": 1.550745098894148e-06,
+        "damping_to_thrust_work_ratio": 0.04768289039805437
+      },
+      "statistics_window": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "work_thrust_J": 13038826.316856023,
+        "work_ice_normal_J": -11952368.554219007,
+        "work_ice_friction_J": -652363.2417806124,
+        "work_damping_J": -565571.6307183583,
+        "kinetic_energy_change_J": -131320.9906245761,
+        "potential_energy_change_J": -156.12067337313255,
+        "residual_J": 0.0014359939615928852,
+        "residual_fraction_of_nonconservative_work": 5.59982315743758e-11,
+        "residual_fraction_of_thrust_work": 1.1013214046760902e-10,
+        "residual_fraction_of_ice_work": 1.1392498237238543e-10,
+        "power_quadrature_residual_J": -0.0004724394530057907,
+        "power_quadrature_residual_fraction": -1.8423318343862304e-11,
+        "displacement_quadrature_residual_J": 0.0014359939615928852,
+        "left_endpoint_residual_J": 128.95502909040079,
+        "left_endpoint_residual_fraction": 5.028749266935922e-06,
+        "damping_to_thrust_work_ratio": 0.04337595835686942
+      },
+      "initial_kinetic_energy_J": 3030720.0,
+      "peak_kinetic_energy_J": 3030720.0,
+      "peak_potential_energy_J": 1145.9110695151571,
+      "spall_events": 155,
+      "windowed_residuals": [
+        {
+          "window_s": [
+            10.0,
+            15.0
+          ],
+          "residual_J": 0.001551160675887786,
+          "residual_fraction": 6.107942584053277e-10,
+          "thrust_work_J": 1255828.7677789975,
+          "ice_work_J": -1283749.8935255853,
+          "damping_work_J": -58731.01827886165
+        },
+        {
+          "window_s": [
+            15.0,
+            20.0
+          ],
+          "residual_J": -0.0019055147619724266,
+          "residual_fraction": -7.445362674014786e-10,
+          "thrust_work_J": 1293002.3685245602,
+          "ice_work_J": -1266327.6478447337,
+          "damping_work_J": -57061.58220695902
+        },
+        {
+          "window_s": [
+            20.0,
+            25.0
+          ],
+          "residual_J": -0.00839199675317559,
+          "residual_fraction": -3.2590820267427584e-09,
+          "thrust_work_J": 1305960.54205879,
+          "ice_work_J": -1268995.6650056937,
+          "damping_work_J": -56466.40672368824
+        },
+        {
+          "window_s": [
+            25.0,
+            30.0
+          ],
+          "residual_J": 0.009634255383502932,
+          "residual_fraction": 3.7649932537518245e-09,
+          "thrust_work_J": 1310543.040175981,
+          "ice_work_J": -1248359.7171952636,
+          "damping_work_J": -56255.252879842476
+        },
+        {
+          "window_s": [
+            30.0,
+            35.0
+          ],
+          "residual_J": -0.002292677623927375,
+          "residual_fraction": -8.919727922182447e-10,
+          "thrust_work_J": 1311909.0552272368,
+          "ice_work_J": -1258434.7399606535,
+          "damping_work_J": -56191.92607184197
+        },
+        {
+          "window_s": [
+            35.0,
+            40.0
+          ],
+          "residual_J": -0.006128568447138605,
+          "residual_fraction": -2.3801891158225245e-09,
+          "thrust_work_J": 1312148.642327616,
+          "ice_work_J": -1262674.5203401262,
+          "damping_work_J": -56180.73892098252
+        },
+        {
+          "window_s": [
+            40.0,
+            45.0
+          ],
+          "residual_J": 0.008737446476175137,
+          "residual_fraction": 3.4129104383272467e-09,
+          "thrust_work_J": 1312336.09226913,
+          "ice_work_J": -1247778.8656689809,
+          "damping_work_J": -56172.31600765325
+        },
+        {
+          "window_s": [
+            45.0,
+            50.0
+          ],
+          "residual_J": -0.003443712187049641,
+          "residual_fraction": -1.3392660044602131e-09,
+          "thrust_work_J": 1312418.1252996605,
+          "ice_work_J": -1258923.8159688432,
+          "damping_work_J": -56168.33901839366
+        }
+      ],
+      "damping_crosscheck": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "power_law_integral_J": 565570.5856475211,
+        "accumulated_force_displacement_J": 565571.6307183583,
+        "relative_difference": 1.8478168132724613e-06
+      },
+      "analytic_crushing_work": {
+        "events_detected": 155,
+        "spall_events_reported": 155,
+        "width_fraction_capped_by_breadth": false,
+        "law_force_coefficient_N_per_m": 1451734.9706672707,
+        "analytic_crushing_work_J": 15327273.045279654,
+        "path_integral_of_simulated_force_J": 15369695.554377187,
+        "analytic_to_simulated_ratio": 0.9972398601554959
+      }
+    },
+    {
+      "case": "h1.00_U1.60",
+      "dt_s": 0.005,
+      "whole_run": {
+        "window_s": [
+          0.0,
+          60.0
+        ],
+        "work_thrust_J": 37590629.786259286,
+        "work_ice_normal_J": -33931801.50928873,
+        "work_ice_friction_J": -1853657.868690847,
+        "work_damping_J": -3879171.5784305623,
+        "kinetic_energy_change_J": -2074457.9371951036,
+        "potential_energy_change_J": 456.77283179803885,
+        "residual_J": -0.005787545788507487,
+        "residual_fraction_of_nonconservative_work": -7.887509099426163e-11,
+        "residual_fraction_of_thrust_work": -1.5396245467163166e-10,
+        "residual_fraction_of_ice_work": -1.6172897392899904e-10,
+        "power_quadrature_residual_J": 0.003840603632852435,
+        "power_quadrature_residual_fraction": 5.234135021716135e-11,
+        "displacement_quadrature_residual_J": -0.005787545788507487,
+        "left_endpoint_residual_J": -568.838037264999,
+        "left_endpoint_residual_fraction": -7.75236232936042e-06,
+        "damping_to_thrust_work_ratio": 0.10319517117144354
+      },
+      "statistics_window": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "work_thrust_J": 32574636.720722053,
+        "work_ice_normal_J": -28068303.402603183,
+        "work_ice_friction_J": -1532205.7615533345,
+        "work_damping_J": -3189576.553597795,
+        "kinetic_energy_change_J": -215283.9175688699,
+        "potential_energy_change_J": -165.07835901048384,
+        "residual_J": -0.0011043787526432425,
+        "residual_fraction_of_nonconservative_work": -1.7762382687861975e-11,
+        "residual_fraction_of_thrust_work": -3.39030248658975e-11,
+        "residual_fraction_of_ice_work": -3.730944995605322e-11,
+        "power_quadrature_residual_J": 0.00266346731223166,
+        "power_quadrature_residual_fraction": 4.2838134619339896e-11,
+        "displacement_quadrature_residual_J": -0.0011043787526432425,
+        "left_endpoint_residual_J": 140.83788859006017,
+        "left_endpoint_residual_fraction": 2.2651798290212473e-06,
+        "damping_to_thrust_work_ratio": 0.09791594862676785
+      },
+      "initial_kinetic_energy_J": 12122880.0,
+      "peak_kinetic_energy_J": 12122880.0,
+      "peak_potential_energy_J": 1134.6688845842048,
+      "spall_events": 365,
+      "windowed_residuals": [
+        {
+          "window_s": [
+            10.0,
+            15.0
+          ],
+          "residual_J": 0.006936768255059178,
+          "residual_fraction": 1.130595641377025e-09,
+          "thrust_work_J": 3158680.6811262285,
+          "ice_work_J": -2976817.166729264,
+          "damping_work_J": -322455.57470200874
+        },
+        {
+          "window_s": [
+            15.0,
+            20.0
+          ],
+          "residual_J": -0.0028876375577056024,
+          "residual_fraction": -4.6538515573928286e-10,
+          "thrust_work_J": 3237641.4883950194,
+          "ice_work_J": -2967191.3403042974,
+          "damping_work_J": -319663.3450662495
+        },
+        {
+          "window_s": [
+            20.0,
+            25.0
+          ],
+          "residual_J": -0.013181444267274856,
+          "residual_fraction": -2.1155644318385605e-09,
+          "thrust_work_J": 3262730.476093201,
+          "ice_work_J": -2967967.0877975435,
+          "damping_work_J": -318771.69716236275
+        },
+        {
+          "window_s": [
+            25.0,
+            30.0
+          ],
+          "residual_J": 0.014577435637875169,
+          "residual_fraction": 2.3445831486940944e-09,
+          "thrust_work_J": 3270712.114012547,
+          "ice_work_J": -2946782.582821507,
+          "damping_work_J": -318488.33306961274
+        },
+        {
+          "window_s": [
+            30.0,
+            35.0
+          ],
+          "residual_J": 0.0005636956655621361,
+          "residual_fraction": 9.049323782176388e-11,
+          "thrust_work_J": 3273210.149604898,
+          "ice_work_J": -2955935.6809283965,
+          "damping_work_J": -318399.5119772004
+        },
+        {
+          "window_s": [
+            35.0,
+            40.0
+          ],
+          "residual_J": -0.008528295899225213,
+          "residual_fraction": -1.3670695102552797e-09,
+          "thrust_work_J": 3274053.292527102,
+          "ice_work_J": -2964323.372433535,
+          "damping_work_J": -318369.4523330522
+        },
+        {
+          "window_s": [
+            40.0,
+            45.0
+          ],
+          "residual_J": 0.005396227187134173,
+          "residual_fraction": 8.669041293650638e-10,
+          "thrust_work_J": 3274354.2227466665,
+          "ice_work_J": -2950355.2202483006,
+          "damping_work_J": -318358.9092992991
+        },
+        {
+          "window_s": [
+            45.0,
+            50.0
+          ],
+          "residual_J": 0.0040661892970774716,
+          "residual_fraction": 6.529663859108068e-10,
+          "thrust_work_J": 3274372.0523665734,
+          "ice_work_J": -2952883.640802469,
+          "damping_work_J": -318358.26071662595
+        }
+      ],
+      "damping_crosscheck": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "power_law_integral_J": 3189574.843387835,
+        "accumulated_force_displacement_J": 3189576.553597795,
+        "relative_difference": 5.36187436766889e-07
+      },
+      "analytic_crushing_work": {
+        "events_detected": 365,
+        "spall_events_reported": 365,
+        "width_fraction_capped_by_breadth": false,
+        "law_force_coefficient_N_per_m": 1451734.9706672707,
+        "analytic_crushing_work_J": 35045660.79264928,
+        "path_integral_of_simulated_force_J": 35050821.92310064,
+        "analytic_to_simulated_ratio": 0.9998527529407816
+      }
+    },
+    {
+      "case": "h1.50_U0.80",
+      "dt_s": 0.005,
+      "whole_run": {
+        "window_s": [
+          0.0,
+          60.0
+        ],
+        "work_thrust_J": 17519053.501594122,
+        "work_ice_normal_J": -17617006.095315415,
+        "work_ice_friction_J": -963876.5970642007,
+        "work_damping_J": -576040.6107940231,
+        "kinetic_energy_change_J": -1638707.1922672768,
+        "potential_energy_change_J": 837.3878251025699,
+        "residual_J": 0.0028626573957808432,
+        "residual_fraction_of_nonconservative_work": 7.929812676401871e-11,
+        "residual_fraction_of_thrust_work": 1.6340250528476635e-10,
+        "residual_fraction_of_ice_work": 1.5406465285366782e-10,
+        "power_quadrature_residual_J": 0.0006751639302819967,
+        "power_quadrature_residual_fraction": 1.87026344853227e-11,
+        "displacement_quadrature_residual_J": 0.0028626573957808432,
+        "left_endpoint_residual_J": 419.3239847912919,
+        "left_endpoint_residual_fraction": 1.1615643056057473e-05,
+        "damping_to_thrust_work_ratio": 0.03288080476840843
+      },
+      "statistics_window": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "work_thrust_J": 15304021.743503235,
+        "work_ice_normal_J": -14241115.2343199,
+        "work_ice_friction_J": -777170.8265779425,
+        "work_damping_J": -447403.35443512833,
+        "kinetic_energy_change_J": -161387.63492070092,
+        "potential_energy_change_J": -280.0445958580292,
+        "residual_J": 0.0076868241937972925,
+        "residual_fraction_of_nonconservative_work": 2.535039215972104e-10,
+        "residual_fraction_of_thrust_work": 5.022747497588798e-10,
+        "residual_fraction_of_ice_work": 5.118309539981419e-10,
+        "power_quadrature_residual_J": -0.00627917586825788,
+        "power_quadrature_residual_fraction": -2.0708106063963376e-10,
+        "displacement_quadrature_residual_J": 0.0076868241937972925,
+        "left_endpoint_residual_J": 263.83654465782456,
+        "left_endpoint_residual_fraction": 8.701070434964058e-06,
+        "damping_to_thrust_work_ratio": 0.02923436288181531
+      },
+      "initial_kinetic_energy_J": 3030720.0,
+      "peak_kinetic_energy_J": 3030720.0,
+      "peak_potential_energy_J": 2056.179102042141,
+      "spall_events": 139,
+      "windowed_residuals": [
+        {
+          "window_s": [
+            10.0,
+            15.0
+          ],
+          "residual_J": 0.02187520491952455,
+          "residual_fraction": 7.242519776025967e-09,
+          "thrust_work_J": 1485765.3733853372,
+          "ice_work_J": -1534619.5690784142,
+          "damping_work_J": -47396.813852250314
+        },
+        {
+          "window_s": [
+            15.0,
+            20.0
+          ],
+          "residual_J": -0.01653027472661961,
+          "residual_fraction": -5.431828923428025e-09,
+          "thrust_work_J": 1520804.991660792,
+          "ice_work_J": -1522418.483860311,
+          "damping_work_J": -45344.419373938435
+        },
+        {
+          "window_s": [
+            20.0,
+            25.0
+          ],
+          "residual_J": 0.01086043752934529,
+          "residual_fraction": 3.593083937723039e-09,
+          "thrust_work_J": 1531723.3184463065,
+          "ice_work_J": -1490870.6772686064,
+          "damping_work_J": -44673.630011571164
+        },
+        {
+          "window_s": [
+            25.0,
+            30.0
+          ],
+          "residual_J": 0.006371928869953081,
+          "residual_fraction": 2.1030762699474325e-09,
+          "thrust_work_J": 1536163.0678821737,
+          "ice_work_J": -1493649.4300906556,
+          "damping_work_J": -44396.75897507003
+        },
+        {
+          "window_s": [
+            30.0,
+            35.0
+          ],
+          "residual_J": -0.005163976752669441,
+          "residual_fraction": -1.70075229001017e-09,
+          "thrust_work_J": 1537774.2187268836,
+          "ice_work_J": -1498514.535519787,
+          "damping_work_J": -44295.82588421018
+        },
+        {
+          "window_s": [
+            35.0,
+            40.0
+          ],
+          "residual_J": -0.013627071301698379,
+          "residual_fraction": -4.478419870788967e-09,
+          "thrust_work_J": 1538267.2873978466,
+          "ice_work_J": -1504561.9283625362,
+          "damping_work_J": -44264.665259616915
+        },
+        {
+          "window_s": [
+            40.0,
+            45.0
+          ],
+          "residual_J": 0.008268102020792867,
+          "residual_fraction": 2.7332095060672624e-09,
+          "thrust_work_J": 1538427.7472552229,
+          "ice_work_J": -1486623.669121597,
+          "damping_work_J": -44255.044797260896
+        },
+        {
+          "window_s": [
+            45.0,
+            50.0
+          ],
+          "residual_J": 0.010168652561105773,
+          "residual_fraction": 3.3596649438183543e-09,
+          "thrust_work_J": 1538358.1690716874,
+          "ice_work_J": -1488327.340193374,
+          "damping_work_J": -44259.360486131685
+        }
+      ],
+      "damping_crosscheck": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "power_law_integral_J": 447402.06574258476,
+        "accumulated_force_displacement_J": 447403.35443512833,
+        "relative_difference": 2.8803902401192747e-06
+      },
+      "analytic_crushing_work": {
+        "events_detected": 139,
+        "spall_events_reported": 139,
+        "width_fraction_capped_by_breadth": false,
+        "law_force_coefficient_N_per_m": 1943896.0851950059,
+        "analytic_crushing_work_J": 18428899.692652103,
+        "path_integral_of_simulated_force_J": 18542253.97564484,
+        "analytic_to_simulated_ratio": 0.9938867042193668
+      }
+    },
+    {
+      "case": "h1.50_U1.60",
+      "dt_s": 0.005,
+      "whole_run": {
+        "window_s": [
+          0.0,
+          60.0
+        ],
+        "work_thrust_J": 46593590.93440906,
+        "work_ice_normal_J": -43656220.42151211,
+        "work_ice_friction_J": -2385466.671803393,
+        "work_damping_J": -3551568.673343702,
+        "kinetic_energy_change_J": -3000492.876406461,
+        "potential_energy_change_J": 828.0377842393088,
+        "residual_J": 0.006372074099317615,
+        "residual_fraction_of_nonconservative_work": 6.878668868056772e-11,
+        "residual_fraction_of_thrust_work": 1.3675859350547044e-10,
+        "residual_fraction_of_ice_work": 1.3839792508048234e-10,
+        "power_quadrature_residual_J": -0.00728106452152133,
+        "power_quadrature_residual_fraction": -7.859926151182854e-11,
+        "displacement_quadrature_residual_J": 0.006372074099317615,
+        "left_endpoint_residual_J": -196.9862240832299,
+        "left_endpoint_residual_fraction": -2.1264708883132355e-06,
+        "damping_to_thrust_work_ratio": 0.07622440180923017
+      },
+      "statistics_window": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "work_thrust_J": 40559696.920189165,
+        "work_ice_normal_J": -36028244.811591834,
+        "work_ice_friction_J": -1966652.5249520903,
+        "work_damping_J": -2897090.5847925954,
+        "kinetic_energy_change_J": -332019.54808229394,
+        "potential_energy_change_J": -271.4574971141885,
+        "residual_J": 0.0044320531781067984,
+        "residual_fraction_of_nonconservative_work": 5.64200370916801e-11,
+        "residual_fraction_of_thrust_work": 1.0927234189041336e-10,
+        "residual_fraction_of_ice_work": 1.1664863895277223e-10,
+        "power_quadrature_residual_J": -0.005166186951100826,
+        "power_quadrature_residual_fraction": -6.576556004415312e-11,
+        "displacement_quadrature_residual_J": 0.0044320531781067984,
+        "left_endpoint_residual_J": -277.6612909869291,
+        "left_endpoint_residual_fraction": -3.5346282426823415e-06,
+        "damping_to_thrust_work_ratio": 0.0714278146374095
+      },
+      "initial_kinetic_energy_J": 12122880.0,
+      "peak_kinetic_energy_J": 12122880.0,
+      "peak_potential_energy_J": 2033.973831315166,
+      "spall_events": 346,
+      "windowed_residuals": [
+        {
+          "window_s": [
+            10.0,
+            15.0
+          ],
+          "residual_J": 0.00023267811911864555,
+          "residual_fraction": 2.996518471425148e-11,
+          "thrust_work_J": 3914049.0627724184,
+          "ice_work_J": -3850898.5379943764,
+          "damping_work_J": -295078.0422379816
+        },
+        {
+          "window_s": [
+            15.0,
+            20.0
+          ],
+          "residual_J": -0.005732326435236246,
+          "residual_fraction": -7.309978242895853e-10,
+          "thrust_work_J": 4028898.0953085423,
+          "ice_work_J": -3812884.073891945,
+          "damping_work_J": -290744.00480123016
+        },
+        {
+          "window_s": [
+            20.0,
+            25.0
+          ],
+          "residual_J": 0.009974175367688076,
+          "residual_fraction": 1.2698369513630943e-09,
+          "thrust_work_J": 4064215.839329593,
+          "ice_work_J": -3790472.9749661665,
+          "damping_work_J": -289399.48784214933
+        },
+        {
+          "window_s": [
+            25.0,
+            30.0
+          ],
+          "residual_J": -0.01910451842331895,
+          "residual_fraction": -2.4239399199981916e-09,
+          "thrust_work_J": 4075022.4896682724,
+          "ice_work_J": -3806573.849317425,
+          "damping_work_J": -288987.3436364806
+        },
+        {
+          "window_s": [
+            30.0,
+            35.0
+          ],
+          "residual_J": 0.019825761545121168,
+          "residual_fraction": 2.523633698265002e-09,
+          "thrust_work_J": 4078441.074966572,
+          "ice_work_J": -3777595.652993463,
+          "damping_work_J": -288857.3940040907
+        },
+        {
+          "window_s": [
+            35.0,
+            40.0
+          ],
+          "residual_J": -0.018440989984014777,
+          "residual_fraction": -2.3399125370707286e-09,
+          "thrust_work_J": 4079501.190301895,
+          "ice_work_J": -3801557.333017099,
+          "damping_work_J": -288816.64884694805
+        },
+        {
+          "window_s": [
+            40.0,
+            45.0
+          ],
+          "residual_J": 0.01516289830419737,
+          "residual_fraction": 1.9284104499731506e-09,
+          "thrust_work_J": 4079752.8799974583,
+          "ice_work_J": -3783146.004416922,
+          "damping_work_J": -288807.3067508931
+        },
+        {
+          "window_s": [
+            45.0,
+            50.0
+          ],
+          "residual_J": -0.0031698238406079327,
+          "residual_fraction": -4.026314139746899e-10,
+          "thrust_work_J": 4079956.1049331576,
+          "ice_work_J": -3792811.2151443046,
+          "damping_work_J": -288799.4254022138
+        }
+      ],
+      "damping_crosscheck": {
+        "window_s": [
+          10.0,
+          60.0
+        ],
+        "power_law_integral_J": 2897087.950605538,
+        "accumulated_force_displacement_J": 2897090.5847925954,
+        "relative_difference": 9.092533958446368e-07
+      },
+      "analytic_crushing_work": {
+        "events_detected": 346,
+        "spall_events_reported": 346,
+        "width_fraction_capped_by_breadth": false,
+        "law_force_coefficient_N_per_m": 1943896.0851950059,
+        "analytic_crushing_work_J": 45135397.3721343,
+        "path_integral_of_simulated_force_J": 45168217.02347925,
+        "analytic_to_simulated_ratio": 0.9992733905939237
+      }
+    }
+  ],
+  "worst_residual_fraction_of_thrust_work": 5.022747497588798e-10,
+  "criteria": {
+    "requirement": "energy-budget residual < 5% of non-conservative work",
+    "metric": "residual of the non-conservative work, normalised by the input (thrust) work; primary quadrature = power (F.v), with the displacement and left-endpoint quadratures reported alongside",
+    "worst_residual_fraction": 5.022747497588798e-10,
+    "PASS": true
+  }
+}
