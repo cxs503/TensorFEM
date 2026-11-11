@@ -1241,6 +1241,89 @@ def convergence_rate(dofs, errors) -> float:
     return float(slope)
 
 
+#: Asymptotic best-approximation rate of the energy norm on optimally graded 2D meshes
+#: with piecewise polynomials, ``||u - u_h||_E <= C N^(-1/2)``: an adaptive method cannot
+#: beat it (Binev-Dahmen-DeVore 2004, SIAM J. Numer. Anal. 42, 1163; Stevenson 2007,
+#: Math. Comp. 76, 27).  It is a *bound*, so a short ladder whose error is still collapsing
+#: in a boundary layer can show a steeper slope before the asymptotic regime is reached.
+BEST_APPROXIMATION_RATE = -0.5
+
+
+def _log_log(dofs, errors):
+    """Validate and log-transform a refinement ladder (``dofs`` strictly increasing)."""
+    x = np.asarray(dofs, dtype=np.float64)
+    y = np.asarray(errors, dtype=np.float64)
+    if x.size < 2 or x.size != y.size:
+        raise ValueError("a rate needs at least two (dofs, error) pairs of equal length")
+    if not np.all(np.isfinite(x)) or not np.all(np.isfinite(y)):
+        raise ValueError("ladder entries must be finite")
+    if np.any(x <= 0.0):
+        raise ValueError("dofs must be positive")
+    if np.any(y <= 0.0):
+        raise ValueError("errors must be positive (a zero error has no rate)")
+    if np.any(np.diff(x) <= 0.0):
+        raise ValueError("dofs must be strictly increasing along the ladder")
+    return np.log(x), np.log(y)
+
+
+def local_rates(dofs, errors) -> list[float]:
+    """Slope of ``log(error)`` against ``log(dofs)`` on every consecutive level pair.
+
+    This is the honest resolution of a refinement sequence: a single least-squares slope
+    over a pre-asymptotic ladder mixes the initial collapse of a boundary-layer error with
+    the asymptotic regime, so the per-interval rates are what shows whether a ladder has
+    reached its asymptotic order at all.
+    """
+    x, y = _log_log(dofs, errors)
+    return [float((y[i + 1] - y[i]) / (x[i + 1] - x[i])) for i in range(x.size - 1)]
+
+
+def tail_rate(dofs, errors, window: int = 3) -> float:
+    """Least-squares slope over the last ``window`` intervals (``window + 1`` levels).
+
+    The tail fit is the quantity comparable with theory: it discards the pre-asymptotic
+    part of the ladder instead of averaging it into the answer.
+    """
+    x, y = _log_log(dofs, errors)
+    if window < 1:
+        raise ValueError("window must be at least one interval")
+    if x.size < window + 1:
+        raise ValueError(
+            f"a window of {window} intervals needs {window + 1} levels, got {x.size}"
+        )
+    slope, _ = np.polyfit(x[-(window + 1):], y[-(window + 1):], 1)
+    return float(slope)
+
+
+def asymptotic_summary(levels, window: int = 6, theory: float = BEST_APPROXIMATION_RATE) -> dict:
+    """Convergence-order accounting for a ladder of :func:`solve_level` records.
+
+    Reports, without clipping or selection, the global slope, the per-interval slopes and
+    the tail slope, together with the relative deviation of the tail from ``theory`` and a
+    flag stating whether the global slope *overstates* the theory bound (which happens
+    whenever the ladder is not yet asymptotic and makes the global number unusable as a
+    rate claim).
+    """
+    dofs = [level["dofs"] for level in levels]
+    errors = [level["true_energy_norm"] for level in levels]
+    global_rate = convergence_rate(dofs, errors)
+    rates = local_rates(dofs, errors)
+    tail = tail_rate(dofs, errors, window=min(window, len(rates)))
+    return {
+        "levels": len(dofs),
+        "dofs": [int(d) for d in dofs],
+        "errors": [float(e) for e in errors],
+        "effectivities": [float(level["effectivity"]) for level in levels],
+        "global_rate": global_rate,
+        "local_rates": rates,
+        "tail_window": min(window, len(rates)),
+        "tail_rate": tail,
+        "theory_rate": float(theory),
+        "tail_relative_deviation": abs(tail - theory) / abs(theory),
+        "global_rate_overstates_theory": bool(abs(global_rate) > abs(theory) * 1.05),
+    }
+
+
 def matched_dof_table(adaptive: dict, uniform: dict) -> list[dict]:
     """Pair every adaptive level with the cheapest uniform level of at least the same DOFs.
 

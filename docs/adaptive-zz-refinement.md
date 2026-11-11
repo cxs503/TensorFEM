@@ -108,10 +108,17 @@ Convergence and effectivity (`artifacts/adaptive_zz/study.json`):
   as many unknowns (770 DOF = 2.18×) gives `0.7378`, i.e. **9% lower error at 2.2× less work**.
   Interpolating the uniform ladder in log–log, `0.6767` costs **992 uniform DOF**: adaptivity
   saves **2.80×** DOF at equal accuracy.
-* **Extended ladder** (7 rounds from a 12×12 mesh, `artifacts/adaptive_zz/study.json` →
-  `extended_adaptive`): 170 → 1248 DOF with error 1.069 → 0.2455, measured rate **-0.691**,
-  i.e. 2.8× the uniform rate and better than the `N^-1/2` ideal because the graded mesh
-  resolves the singularity instead of fighting it.
+* **Extended ladder** (11 rounds from a 12×12 mesh, `artifacts/adaptive_zz/study.json` →
+  `extended_adaptive`): 170 → 7690 DOF with error 1.069 → 0.0978.  A single least-squares
+  slope over the whole ladder gives **-0.577**, which is *steeper than the optimal-mesh bound*
+  `N^-1/2` and is therefore **not** a rate: the first two rounds collapse a boundary-layer
+  error at local rates of `-3.9` and `-1.6` and that pre-asymptotic part contaminates a global
+  fit.  The quantity comparable with theory is the tail fit: **-0.4933** over the last six
+  intervals against the bound `-0.5` (**1.3 %**), with per-interval rates
+  `-0.523, -0.501, -0.441, -0.561, -0.500, -0.439, -0.531` oscillating about it.  The
+  overstatement is now detected automatically (`criteria.global_rate_overstates_theory =
+  true`, `adaptive_zz.asymptotic_summary`) and asserted in
+  `test_adaptive_rate_reaches_the_best_approximation_bound`.
 * **Localisation**: the Dörfler set is tiny and sits at the corner — round 1 marks 3 elements
   (1.6% of the mesh) carrying 54% of the estimated error energy at a maximum distance of
   0.088 from the corner; round 2 marks 5 elements (2.5%) carrying 51%.
@@ -166,6 +173,13 @@ Convergence and effectivity (`artifacts/adaptive_zz/study.json`):
 Two follow-up modules close the accounting gap left by the asymptotic bracket used above
 (`-lambda/2` is a bracket, and the true error in this problem is only available by quadrature):
 
+**Correction (2026-11-11 audit).** An earlier revision of this page quoted the global slope
+`-0.691` as "2.8× the uniform rate and better than the `N^-1/2` ideal".  That statement was
+wrong in kind, not in arithmetic: an adaptive method cannot beat the best-approximation bound
+`N^-1/2` (Binev–Dahmen–DeVore 2004; Stevenson 2007), so a steeper measured slope can only be
+pre-asymptotic.  The corrected accounting lives in
+`artifacts/adaptive_zz/benchmark_table.md` (row 3) and is enforced by a test.
+
 * `tensorfem.adaptive_1d` — P1 h-adaptive loop on two analytic 1D problems whose **discrete
   energy error is a closed form** (`u = sin(pi x)` and `u = x^0.6`). Measured uniform orders:
   `-0.9722` vs theory `-1` (2.8 %), `-0.0977` vs theory `-(alpha-1/2) = -0.1` (2.3 %). The
@@ -182,3 +196,58 @@ Two follow-up modules close the accounting gap left by the asymptotic bracket us
 Details, figures, cost baselines and the error-by-error judgement (including the rows that fail
 the 3 % gate) are in `docs/adaptive-continuation-order-cost.md`; the generated payloads are
 `artifacts/adaptive_continuation/*.json` + `tables.md`.
+
+## 8. Asymptotic order accounting and the acceptance criteria (first round of the GAP sweep)
+
+The mission criterion is two-part: (i) the refinement sequence must reproduce the theoretical
+convergence order, and (ii) the ZZ efficiency index must lie in `theta in [0.8, 1.2]`.  Both
+are now machine-checked rather than asserted, by `adaptive_zz.local_rates`,
+`adaptive_zz.tail_rate` and `adaptive_zz.asymptotic_summary`, and emitted by
+`scripts/adaptive_evidence_pack.py` into `artifacts/adaptive_zz/benchmark_table.md` /
+`evidence.json` (every number read from the study JSON, never retyped; the manifest carries
+the sha256 of each payload plus the commit).
+
+### 8.1 L-shape order table (adaptive ladder, 11 rounds)
+
+| round | DOF | `||u-u_h||_E` | local rate | effectivity |
+|---|---|---|---|---|
+| start 12×12 | 170 | 1.0688 | — | 0.991 |
+| 1 | 180 | 0.8530 | -3.946 | 1.023 |
+| 2 | 202 | 0.7851 | -0.720 | 1.033 |
+| 3 | 248 | 0.5679 | -1.578 | 1.047 |
+| 4 | 332 | 0.4670 | -0.671 | 1.029 |
+| 5 | 486 | 0.3826 | -0.523 | 1.019 |
+| 6 | 772 | 0.3035 | -0.501 | 1.013 |
+| 7 | 1248 | 0.2455 | -0.441 | 0.999 |
+| 8 | 1940 | 0.1917 | -0.561 | 1.005 |
+| 9 | 3100 | 0.1516 | -0.500 | 1.004 |
+| 10 | 4992 | 0.1230 | -0.439 | 0.999 |
+| 11 | 7690 | 0.0978 | -0.531 | 0.996 |
+
+### 8.2 Criterion verdicts
+
+| criterion | reference | measured | rel. error | verdict |
+|---|---|---|---|---|
+| Williams `lambda` | 0.5444837367825 (Williams 1952) | 0.5444837367825 | 0.00 % | PASS |
+| uniform order, L-shape (tail, 3 intervals) | `-lambda/2 = -0.2722` | -0.2599 | 4.5 % | PASS (< 15 %) |
+| adaptive order, L-shape (tail, 6 intervals) | `-1/2` (optimal-mesh bound) | -0.4933 | 1.3 % | PASS (< 15 %) |
+| ZZ effectivity, 21 L-shape levels | `theta in [0.8, 1.2]` | 0.986 – 1.047 | worst 4.7 % of 1 | PASS |
+| 2D Poisson order, energy / L2 | -0.5 / -1.0 | -0.4848 / -0.9704 | 3.0 % / 3.0 % | PASS |
+| 2D Poisson effectivity (1521 unknowns) | 1 | 1.00142 | 0.14 % | PASS |
+| 1D P1 order, smooth / singular | -1 / -0.1 | -0.9722 / -0.0977 | 2.8 % / 2.3 % | PASS |
+| 1D P1 singular effectivity | 1 | 0.2329 | 77 % | **FAIL — documented** |
+
+The last row is kept as an honest FAIL: the 1D gradient-recovery estimator is a stable
+*underestimate* on the `x^0.6` field, so the `theta in [0.8, 1.2]` interval is asserted only
+for the 2D indicators, which meet it.  Claiming otherwise would mean rescaling the estimator
+after seeing the answer, which is exactly what §6 forbids.
+
+### 8.3 What is *not* established
+
+* The `-1/2` tail is a single-problem measurement on one singularity strength (`lambda =
+  0.544`); no claim is made about other exponents or about 3D.
+* The equal-accuracy saving (2.80× DOF) is a two-round, short-horizon number.
+* Capability statement: this closes *linear-elastic Q4 ZZ estimation + isotropic h-adaptivity
+  with hanging-node elimination*, verified on an L-shape and on a smooth manufactured field.
+  It does not close goal-oriented adaptation, anisotropic refinement, `p`-adaptation or
+  nonlinear/contact paths.

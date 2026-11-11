@@ -27,8 +27,11 @@ import pytest
 
 from tensorfem.adaptive_zz import (
     CORNER_ANGLE,
+    BEST_APPROXIMATION_RATE,
     WILLIAMS_LAMBDA,
     QuadMesh,
+    adaptive_study,
+    asymptotic_summary,
     boundary_nodes,
     constraint_pairs,
     dorfler_mark,
@@ -36,6 +39,7 @@ from tensorfem.adaptive_zz import (
     effectivity_index,
     element_indicators,
     exact_dirichlet,
+    local_rates,
     exact_energy_norm_sq,
     gauss_point_stresses,
     hanging_nodes,
@@ -45,6 +49,7 @@ from tensorfem.adaptive_zz import (
     solve_level,
     spr_recover,
     study,
+    tail_rate,
     true_element_error_sq,
     validate_indicators,
     williams_displacement,
@@ -283,3 +288,44 @@ def test_mesh_helpers_reject_malformed_input():
         refine_mesh(mesh, np.ones(mesh.n_elements + 1, dtype=bool))
     with pytest.raises(ValueError):
         QuadMesh(mesh.nodes, mesh.elements[:, :3])
+
+
+# ---------------------------------------------------------------------------
+# 8. convergence order of the refinement sequence against closed-form theory
+# ---------------------------------------------------------------------------
+def test_local_and_tail_rates_on_a_synthetic_ladder():
+    dofs = [100, 200, 400, 800]
+    errors = [1.0, 0.5, 0.25, 0.125]
+    assert local_rates(dofs, errors) == pytest.approx([-1.0, -1.0, -1.0])
+    assert tail_rate(dofs, errors, window=2) == pytest.approx(-1.0)
+    # a pre-asymptotic first rung must not contaminate the tail fit
+    ladder_errors = [1.0, 0.1, 0.05, 0.025, 0.0125]
+    ladder_dofs = [100, 200, 400, 800, 1600]
+    assert local_rates(ladder_dofs, ladder_errors)[0] < -3.0
+    assert tail_rate(ladder_dofs, ladder_errors, window=3) == pytest.approx(-1.0)
+    with pytest.raises(ValueError):
+        tail_rate(dofs, errors, window=4)
+    with pytest.raises(ValueError):
+        local_rates([100, 100], [1.0, 0.5])
+    with pytest.raises(ValueError):
+        local_rates([100, 50], [1.0, 0.5])
+    with pytest.raises(ValueError):
+        local_rates([100, 200], [1.0, 0.0])
+
+
+def test_adaptive_rate_reaches_the_best_approximation_bound():
+    """The graded sequence must converge at the optimal rate N^-1/2, not faster or slower.
+
+    The global slope of the *same* ladder is steeper than the bound because the ladder
+    starts with a boundary-layer collapse; the test therefore fixes both facts, so a future
+    change that quietly quotes the global number as a rate fails here.
+    """
+    study = adaptive_study(divisions=12, rounds=7, fraction=0.5, max_subcells=6)
+    summary = asymptotic_summary(study["levels"], window=4)
+    assert summary["tail_rate"] == pytest.approx(BEST_APPROXIMATION_RATE, rel=0.12), summary
+    assert summary["global_rate_overstates_theory"] is True, summary
+    assert abs(summary["global_rate"]) > abs(summary["tail_rate"])
+    for eta in summary["effectivities"]:
+        assert 0.8 <= eta <= 1.2, eta
+    # the ZZ estimator becomes asymptotically exact on the graded mesh
+    assert abs(summary["effectivities"][-1] - 1.0) < 0.01, summary["effectivities"]
