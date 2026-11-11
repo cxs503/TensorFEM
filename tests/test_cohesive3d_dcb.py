@@ -1,0 +1,126 @@
+"""Fast checks for the width-resolved 3-D DCB driver (cohesive3d_dcb)."""
+from __future__ import annotations
+
+import numpy as np
+import pytest
+import torch
+
+from tensorfem.cohesive3d import BKCohesive3DLaw, cohesive_hex8_response
+from tensorfem.cohesive3d_dcb import (
+    DCBGeometry,
+    beam_compliance,
+    beam_peak_load,
+    build_dcb_model,
+    solve_dcb,
+    williams_root_rotation,
+)
+
+torch.set_num_threads(1)
+
+
+def _law() -> BKCohesive3DLaw:
+    return BKCohesive3DLaw(2.4e14, 1.0e14, 120.0e6, 80.0e6, 300.0, 800.0, 2.2)
+
+
+def _geometry(**kw) -> DCBGeometry:
+    base = dict(
+        length=60e-3, width=3e-3, arm_thickness=3e-3, initial_crack=30e-3,
+        nx=60, ny=1, nz=2,
+    )
+    base.update(kw)
+    return DCBGeometry(**base)
+
+
+def test_mesh_topology_and_boundary_conditions():
+    g = _geometry()
+    m = build_dcb_model(g, _law())
+    assert m.iface.shape == (g.n_bonded * g.ny, 8)
+    # interface nodes are duplicated: lower and upper layers are disjoint
+    lower, upper = m.iface.numpy()[:, :4], m.iface.numpy()[:, 4:]
+    assert np.intersect1d(lower, upper).size == 0
+    # the clamp sits on x = 0, the load on x = L, and they are disjoint
+    assert np.intersect1d(m.fixed_dofs, m.upper_load_dofs).size == 0
+    assert np.intersect1d(m.fixed_dofs, m.lower_load_dofs).size == 0
+    assert m.upper_load_dofs.size == m.lower_load_dofs.size == 2 * (g.nz + 1)
+
+
+def test_vectorised_assembly_matches_production_element():
+    """The batched ligament assembly must reproduce cohesive_hex8_response."""
+    g = _geometry(nx=8, nz=2)
+    m = build_dcb_model(g, _law())
+    rng = np.random.default_rng(0)
+    u = rng.normal(scale=2.0e-7, size=m.n_dofs)
+    f, K, hist, diag = m.interface_response(u, None)
+    uu = torch.as_tensor(u, dtype=torch.float64).reshape(m.n_nodes, 3)
+    for e in range(m.n_iface):
+        conn = m.iface[e]
+        fe, ke, _, _ = cohesive_hex8_response(m.nodes[conn], uu[conn], m.law)
+        dofs = (3 * conn.numpy()[:, None] + np.arange(3)).reshape(-1)
+        assert np.allclose(f[dofs], fe.numpy().reshape(-1), rtol=1e-12, atol=1e-12)
+        assert np.allclose(K[dofs][:, dofs].toarray(), ke.numpy(), rtol=1e-12, atol=1e-10)
+
+
+def test_batched_law_tangent_matches_per_point_calls():
+    """BKCohesive3DLaw.update must accept a batch (regression: h[..., None])."""
+    law = _law()
+    sep = torch.tensor(
+        [[0.6e-6, 0.0, 0.0], [2.5e-6, 0.3e-6, 0.0], [1.0e-5, 0.0, 0.5e-6]],
+        dtype=torch.float64,
+    )
+    batch = law.update(sep, torch.zeros(3, dtype=torch.float64))
+    for i in range(3):
+        one = law.update(sep[i], torch.zeros((), dtype=torch.float64))
+        assert torch.allclose(batch.traction[i], one.traction, rtol=1e-13, atol=1e-13)
+        assert torch.allclose(batch.tangent[i], one.tangent, rtol=1e-13, atol=1e-13)
+        assert torch.allclose(
+            batch.history[i].reshape(()), one.history.reshape(()), rtol=1e-13
+        )
+
+
+def test_root_rotation_matches_williams_formula():
+    g = _geometry()
+    delta = williams_root_rotation(g.arm_thickness, g.young_modulus, g.shear_modulus)
+    ratio = np.sqrt(g.young_modulus / g.shear_modulus)
+    gamma = 1.18 * ratio
+    expected = g.arm_thickness * np.sqrt(
+        g.young_modulus / (11.0 * g.shear_modulus)
+        * (3.0 - 2.0 * (gamma / (1.0 + gamma)) ** 2)
+    )
+    assert delta == pytest.approx(expected, rel=1e-14)
+    # the correction grows the compliance and lowers the LEFM peak load
+    assert beam_compliance(g.initial_crack, g, root_rotation=True) > beam_compliance(
+        g.initial_crack, g, root_rotation=False
+    )
+    assert beam_peak_load(g.initial_crack, 300.0, g, root_rotation=True) < beam_peak_load(
+        g.initial_crack, 300.0, g, root_rotation=False
+    )
+
+
+def test_linear_compliance_is_bracketed_by_beam_theory():
+    g = _geometry()
+    m = build_dcb_model(g, _law())
+    import scipy.sparse.linalg as spla
+
+    k_solid = m.solid_stiffness()
+    u = np.zeros(m.n_dofs)
+    _, k_coh, _, _ = m.interface_response(u, None)
+    free = m.free_dofs
+    unit = np.zeros(m.n_dofs)
+    unit[m.upper_load_dofs] = 0.5 / m.upper_load_dofs.size
+    unit[m.lower_load_dofs] = -0.5 / m.lower_load_dofs.size
+    u[free] = spla.spsolve((k_solid + k_coh)[free][:, free].tocsc(), unit[free])
+    c_fem = u[m.upper_load_dofs].mean() - u[m.lower_load_dofs].mean()
+    c_plain = beam_compliance(g.initial_crack, g, root_rotation=False, shear=True)
+    c_root = beam_compliance(g.initial_crack, g, root_rotation=True, shear=True)
+    assert c_plain < c_fem < c_root * 1.10  # coarse mesh: within the bracket +10%
+
+
+def test_damage_history_is_committed_and_monotone():
+    g = _geometry(nx=40, nz=2)
+    m = build_dcb_model(g, _law())
+    r = solve_dcb(m, delta_max=6e-6, n_steps=6, tol=1e-8)
+    assert r.stats["converged_all"]
+    assert r.curve and r.curve[-1]["disp"] == pytest.approx(6e-6, rel=1e-6)
+    assert np.all(np.diff([c["disp"] for c in r.curve]) > 0.0)
+    assert r.damage.max() > 0.0  # damage has initiated at the initial front
+    assert np.all(r.damage >= 0.0) and np.all(r.damage <= 1.0)
