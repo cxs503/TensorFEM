@@ -121,10 +121,6 @@ def propagate(g: DCBGeometry, *, n_steps: int, delta_max: float) -> dict:
                 "rel_error": (c["load"] - p_lefm) / p_lefm,
             }
         )
-    front = []
-    half = g.ny // 2
-    for e, x in enumerate(result.iface_x):
-        pass
     dmg = result.damage.reshape(-1)
     width_front = []
     ncol = g.n_bonded
