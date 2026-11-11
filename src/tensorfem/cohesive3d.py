@@ -26,13 +26,28 @@ and nothing more:
 
 Conventions and limits (read before use)
 ----------------------------------------
-* **Small-strain kinematics.**  The internal force is ``f = int B^T t dA`` and
-  the tangent is ``K = int B^T D B dA``.  No geometric (initial-stress)
-  stiffness term is added, so the element is *not* validated for
-  geometrically non-linear host solids.  Rigid-body motion *is* reproduced
-  exactly: the local frame is recomputed from the current mid-surface, hence
-  rigid translation gives zero traction and rigid rotation rotates the traction
-  vector exactly (both pinned to ~1e-14 in the tests).
+* **Two kinematics, chosen by the ``kinematics`` keyword.**
+  ``kinematics="small_strain"`` (default, unchanged since the first release) is
+  the original formulation: the mid-surface frame is taken from the *reference*
+  coordinates, so ``delta = R_ref (u_top - u_bottom)`` and the internal force is
+  ``f = int B^T t dA`` with the analytic tangent ``K = int B^T D B dA``.  It is
+  valid only for *infinitesimal* interface rotation (it is exactly objective
+  under a rotation that rotates coordinates and displacements together, which is
+  a change of frame, but **not** under a finite rigid rotation of the body in a
+  fixed frame: a rigid rotation by ``theta`` produces a spurious traction of
+  order ``k_s g theta``, see ``docs/cohesive3d-interface-element.md``).
+  ``kinematics="corotational"`` removes that restriction: the frame and the
+  mid-surface Jacobian are rebuilt from the **current** configuration,
+  ``delta = sum_a N_a [ R_cur (x_a^top - x_a^bot) - R_ref (X_a^top - X_a^bot) ]``,
+  the traction is integrated over the *reference* area, and both the internal
+  force and its exact consistent tangent (including every geometric term, i.e.
+  the sensitivity of the local frame to the nodal displacements) are obtained by
+  differentiating that discrete force.  Rigid translation and rigid rotation of
+  any magnitude then give zero traction (~1e-12 relative), the tangent stays
+  symmetric in the elastic regime and matches finite differences in the
+  softening regime.  Area change of the interface itself is neglected
+  (reference-area quadrature), so the host solids are still assumed
+  small-strain.
 * **Damage drives on tensile/separation quantities only.**  The effective
   separation is ``a = sqrt(<delta_n>^2 + delta_s1^2 + delta_s2^2)`` with
   ``<.>`` the Macaulay bracket; compression uses the undamaged penalty
@@ -67,6 +82,7 @@ __all__ = [
     "cohesive_shape_functions",
     "mid_surface_frame",
     "interface_area",
+    "cohesive_separations",
     "cohesive_hex8_response",
     "assemble_cohesive_interface",
 ]
@@ -452,20 +468,160 @@ def interface_area(coordinates: torch.Tensor, *, dtype=None, device=None) -> tor
     return area
 
 
+
+# --------------------------------------------------------------------------- #
+# Kinematics: separation measures for the two formulations
+# --------------------------------------------------------------------------- #
+
+
+def _check_kinematics(kinematics: str) -> str:
+    if kinematics not in ("small_strain", "corotational"):
+        raise ValueError("kinematics must be 'small_strain' or 'corotational'")
+    return kinematics
+
+
+def _small_strain_separations(coordinates: torch.Tensor, displacements: torch.Tensor) -> torch.Tensor:
+    """``delta = R_ref (u_top - u_bottom)`` at each Gauss point, shape ``(4, 3)``.
+
+    This is the separation measure of the original (``small_strain``)
+    formulation: the local frame is the *reference* frame, so only the relative
+    displacement vector enters.
+    """
+    frames, _, _ = mid_surface_frame(coordinates, dtype=coordinates.dtype, device=coordinates.device)
+    jump = displacements[4:8] - displacements[0:4]
+    out = []
+    for normal, e1, e2, _, n in frames:
+        rotation = torch.stack((normal, e1, e2))
+        out.append(torch.einsum("a,ab->b", n, jump @ rotation.T))
+    return torch.stack(out)
+
+
+def _corotational_separations(coordinates: torch.Tensor, displacements: torch.Tensor) -> torch.Tensor:
+    """Corotational separation, shape ``(4, 3)``, differentiable in ``displacements``.
+
+    ``delta = sum_a N_a [ R_cur (x_a^top - x_a^bot) - R_ref (X_a^top - X_a^bot) ]``
+
+    with ``R_cur`` the local frame of the **current** mid-surface and ``R_ref``
+    the local frame of the reference mid-surface (rows ``(n, s1, s2)``).  For a
+    rigid rotation ``x_top - x_bot = R (X_top - X_bot)`` and ``R_cur = R_ref R^T``,
+    so both terms coincide and the separation vanishes identically -- at any
+    rotation angle.  A pure rigid translation changes neither term.
+    """
+    dtype = coordinates.dtype
+    device = coordinates.device
+    current = coordinates + displacements
+    frames_cur, _, _ = mid_surface_frame(current, dtype=dtype, device=device)
+    frames_ref, _, _ = mid_surface_frame(coordinates, dtype=dtype, device=device)
+    gap_cur = current[4:8] - current[0:4]
+    gap_ref = coordinates[4:8] - coordinates[0:4]
+    out = []
+    for (n_cur, e1_cur, e2_cur, _, n), (n_ref, e1_ref, e2_ref, _, _) in zip(frames_cur, frames_ref):
+        r_cur = torch.stack((n_cur, e1_cur, e2_cur))
+        r_ref = torch.stack((n_ref, e1_ref, e2_ref))
+        local = torch.stack([r_cur @ gap_cur[a] - r_ref @ gap_ref[a] for a in range(4)])
+        out.append(torch.einsum("a,ab->b", n, local))
+    return torch.stack(out)
+
+
+def cohesive_separations(
+    coordinates: torch.Tensor,
+    displacements: torch.Tensor,
+    *,
+    kinematics: str = "small_strain",
+) -> torch.Tensor:
+    """Per-Gauss-point local separation ``(4, 3)`` for either kinematics."""
+    if _check_kinematics(kinematics) == "corotational":
+        return _corotational_separations(coordinates, displacements)
+    return _small_strain_separations(coordinates, displacements)
+
+
+def _corotational_response(
+    coordinates: torch.Tensor,
+    displacements: torch.Tensor,
+    law: BKCohesive3DLaw,
+    history: torch.Tensor | None,
+):
+    """Corotational internal force and its exact consistent tangent.
+
+    The tangent splits into a material part and a geometric part that are both
+    *exact* for this discrete force, without nested differentiation:
+
+    ``f = sum_gp A_gp B_gp^T t_gp`` with ``B = d(delta)/du``, so
+
+    ``K = sum_gp A_gp B^T D B  +  d/du ( sum_gp A_gp B^T t ) |_{t const}``
+    ``  = sum_gp A_gp B^T D B  +  Hess_u ( sum_gp A_gp delta_gp . t_gp )``
+
+    because ``sum_gp A_gp B^T t`` is the gradient of the scalar
+    ``sum_gp A_gp delta_gp . t_gp`` for frozen ``t``.  The Hessian carries every
+    geometric term, i.e. the sensitivity of the local frame to the nodal
+    displacements, which is exactly what a frame-frozen tangent misses.
+    """
+    dtype = coordinates.dtype
+    device = coordinates.device
+    frames_ref, weights, _ = mid_surface_frame(coordinates, dtype=dtype, device=device)
+    n_gp = len(frames_ref)
+    if history is None:
+        history = law.initial_history((n_gp,), dtype=dtype, device=device)
+    history = torch.as_tensor(history, dtype=dtype, device=device)
+    if history.shape != (n_gp,):
+        raise ValueError("history must have one entry per Gauss point")
+    # Reference-area quadrature: the interface neither gains nor loses area, so
+    # the formulation stays conservative in the reference configuration.
+    areas = torch.stack([w * frames_ref[gp][3] for gp, w in enumerate(weights)])
+
+    def separations(flat: torch.Tensor) -> torch.Tensor:
+        return _corotational_separations(coordinates, flat.reshape(8, 3))
+
+    flat_u = displacements.reshape(8 * 3)
+    delta = separations(flat_u)
+    responses = [law.update(delta[gp], history[gp]) for gp in range(n_gp)]
+    traction = torch.stack([r.traction for r in responses]).detach()
+    material = torch.stack([r.tangent for r in responses]).detach()
+
+    weighted_traction = (areas.unsqueeze(-1) * traction).detach()
+
+    def potential(flat: torch.Tensor) -> torch.Tensor:
+        return (separations(flat) * weighted_traction).sum()
+
+    force = torch.autograd.functional.jacobian(potential, flat_u, vectorize=True).reshape(-1)
+    geometric = torch.autograd.functional.hessian(potential, flat_u, vectorize=True)
+    b_matrix = torch.autograd.functional.jacobian(separations, flat_u, vectorize=True)  # (n_gp,3,24)
+    tangent = geometric + torch.einsum("g,gim,gij,gjn->mn", areas, b_matrix, material, b_matrix)
+
+    frames_cur, _, _ = mid_surface_frame(coordinates + displacements, dtype=dtype, device=device)
+    diagnostics = {
+        "separation": separations(flat_u),
+        "traction": traction,
+        "area": areas,
+        "damage": torch.stack([r.damage.reshape(()) for r in responses]),
+        "normal": torch.stack([frames_cur[gp][0] for gp in range(n_gp)]),
+        "normal_reference": torch.stack([frames_ref[gp][0] for gp in range(n_gp)]),
+        "kinematics": "corotational",
+    }
+    histories = torch.stack([r.history.reshape(()) for r in responses])
+    return force.reshape(8, 3), tangent, histories, diagnostics
+
+
 def cohesive_hex8_response(
     coordinates: torch.Tensor,
     displacements: torch.Tensor,
     law: BKCohesive3DLaw,
     history: torch.Tensor | None = None,
+    *,
+    kinematics: str = "small_strain",
 ):
     """Internal force and consistent tangent of one 8-node cohesive element.
 
     Parameters
     ----------
-    coordinates : ``(8, 3)`` reference/current node coordinates.
-    displacements : ``(8, 3)`` nodal displacements (small strain).
+    coordinates : ``(8, 3)`` reference node coordinates.
+    displacements : ``(8, 3)`` nodal displacements.
     law : :class:`BKCohesive3DLaw`.
     history : optional ``(4,)`` per-Gauss-point maximum effective separation.
+    kinematics : ``"small_strain"`` (default, reference-frame separation,
+        infinitesimal interface rotation only) or ``"corotational"`` (current
+        mid-surface frame, objective under arbitrary rigid rotation; see the
+        module docstring).
 
     Returns
     -------
@@ -475,6 +631,8 @@ def cohesive_hex8_response(
     diagnostics : dict with per-Gauss-point ``separation`` (3,), ``traction``
         (3,), ``area`` (scalar), ``damage`` (scalar), ``normal`` (3,).
     """
+    if _check_kinematics(kinematics) == "corotational":
+        return _corotational_response(coordinates, displacements, law, history)
     dtype = coordinates.dtype
     device = coordinates.device
     frames, weights, _ = mid_surface_frame(coordinates, dtype=dtype, device=device)
@@ -524,6 +682,7 @@ def cohesive_hex8_response(
         "area": torch.stack(areas),
         "damage": torch.stack([d.reshape(()) for d in damages]),
         "normal": torch.stack(normals),
+        "kinematics": "small_strain",
     }
     return force, tangent, torch.stack([h.reshape(()) for h in new_history]), diagnostics
 
@@ -536,6 +695,7 @@ def assemble_cohesive_interface(
     histories: torch.Tensor | None = None,
     *,
     n_dofs: int | None = None,
+    kinematics: str = "small_strain",
 ):
     """Dense assembly of a pre-meshed interface patch.
 
@@ -564,7 +724,9 @@ def assemble_cohesive_interface(
         coords = coordinates[conn]
         elem_u = u[conn]
         hist = None if histories is None else histories[e]
-        f, k, hist_new, _ = cohesive_hex8_response(coords, elem_u, law, hist)
+        f, k, hist_new, _ = cohesive_hex8_response(
+            coords, elem_u, law, hist, kinematics=kinematics
+        )
         dofs = (3 * conn[:, None] + torch.arange(3, device=device)[None, :]).reshape(-1)
         force = force.index_add(0, dofs, f.reshape(-1))
         tangent = tangent.index_put(
