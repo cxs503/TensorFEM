@@ -1,0 +1,169 @@
+{
+  "module": "tensorfem.cohesive3d",
+  "parameters": {
+    "normal_stiffness_Pa_per_m": 1000000000000.0,
+    "shear_stiffness_Pa_per_m": 400000000000.0,
+    "normal_strength_Pa": 5000000.0,
+    "shear_strength_Pa": 3000000.0,
+    "mode_i_energy_J_per_m2": 500.0,
+    "mode_ii_energy_J_per_m2": 1200.0,
+    "bk_eta": 1.6
+  },
+  "checks": [
+    {
+      "check": "law_reduces_to_2d_bk",
+      "oracle": "3-D law == merged 2-D BK law on delta_s2 = 0",
+      "measure": "max scaled traction difference over 5 mode-mix ratios x 5 amplitudes",
+      "value": 2.129065664098578e-16,
+      "tolerance": 1e-12,
+      "status": "PASS"
+    },
+    {
+      "check": "law_energy_mode_I",
+      "oracle": "int t . d(delta) along the envelope == G_c(direction)",
+      "measure": "mode_I: measure 500.000000 vs 500.000000 J/m^2",
+      "value": 3.410605131648481e-16,
+      "tolerance": 1e-05,
+      "status": "PASS"
+    },
+    {
+      "check": "law_energy_mode_II",
+      "oracle": "int t . d(delta) along the envelope == G_c(direction)",
+      "measure": "mode_II: measure 1199.999919 vs 1200.000000 J/m^2",
+      "value": 6.729758126766683e-08,
+      "tolerance": 1e-05,
+      "status": "PASS"
+    },
+    {
+      "check": "law_energy_mode_III",
+      "oracle": "int t . d(delta) along the envelope == G_c(direction)",
+      "measure": "mode_III: measure 1199.999919 vs 1200.000000 J/m^2",
+      "value": 6.729758126766683e-08,
+      "tolerance": 1e-05,
+      "status": "PASS"
+    },
+    {
+      "check": "law_energy_mixed_45",
+      "oracle": "int t . d(delta) along the envelope == G_c(direction)",
+      "measure": "mixed_45: measure 594.316809 vs 594.316824 J/m^2",
+      "value": 2.588379463681183e-08,
+      "tolerance": 1e-05,
+      "status": "PASS"
+    },
+    {
+      "check": "law_initiation_quadratic",
+      "oracle": "(t_n/t_n0)^2 + (t_s/t_s0)^2 == 1 at damage onset",
+      "measure": "max |quadratic criterion - 1| over 11 mode-mix angles",
+      "value": 4.440892098500626e-16,
+      "tolerance": 1e-12,
+      "status": "PASS"
+    },
+    {
+      "check": "law_tangent_vs_ad",
+      "oracle": "analytic dt/d(delta) == autograd Jacobian of the traction",
+      "measure": "max relative tangent difference over 35 (angle, amplitude) points",
+      "value": 5.459585012977956e-16,
+      "tolerance": 1e-10,
+      "status": "PASS"
+    },
+    {
+      "check": "element_patch_small_strain",
+      "oracle": "uniform opening: reaction on the top face == t * A (unit area)",
+      "measure": "measure 4615384.615385 N vs 4615384.615385 N",
+      "value": 0.0,
+      "tolerance": 1e-12,
+      "status": "PASS"
+    },
+    {
+      "check": "element_rigid_rotation_small_strain",
+      "oracle": "rigid rotation of the body in a fixed frame must give zero traction",
+      "measure": "max |f| / (t_n0 A) over theta = [0.01, 0.1, 0.3, 0.7, 1.4, 3.0] (reference-frame separation)",
+      "value": 9949.962483002226,
+      "tolerance": 0.0,
+      "status": "KNOWN_LIMIT"
+    },
+    {
+      "check": "element_rigid_rotation_corotational",
+      "oracle": "rigid rotation of the body in a fixed frame must give zero traction",
+      "measure": "max |f| / (t_n0 A) over theta = [0.01, 0.1, 0.3, 0.7, 1.4, 3.0] (current-frame separation)",
+      "value": 2.9485774052527007e-12,
+      "tolerance": 1e-10,
+      "status": "PASS"
+    },
+    {
+      "check": "element_rotation_objectivity_corotational",
+      "oracle": "f(R X, R u) == R f(X, u) for a rotated element geometry",
+      "measure": "relative Frobenius difference of the reaction under R (0.5, -0.2, 0.9)",
+      "value": 1.13271615440093e-11,
+      "tolerance": 1e-09,
+      "status": "PASS"
+    },
+    {
+      "check": "corotational_elastic_tangent_symmetry",
+      "oracle": "tangent is the Hessian of a potential in the elastic regime => symmetric",
+      "measure": "max |K - K^T| / max |K|",
+      "value": 1.417604879241811e-16,
+      "tolerance": 1e-12,
+      "status": "PASS"
+    },
+    {
+      "check": "corotational_tangent_vs_finite_difference",
+      "oracle": "d f / d u == central differences of the internal force",
+      "measure": "relative Frobenius difference at damage 0.762 (central differences, eps = 1e-9 m)",
+      "value": 3.0098591514364287e-08,
+      "tolerance": 1e-06,
+      "status": "PASS"
+    },
+    {
+      "check": "corotational_dissipation_rotation_invariance",
+      "oracle": "dissipated work under monotonic opening is independent of rigid rotation",
+      "measure": "max |W(theta) - W(0)| / W(0) for theta = 0.0, 0.4, 1.2 rad",
+      "value": 7.920121665624186e-14,
+      "tolerance": 1e-12,
+      "status": "PASS"
+    },
+    {
+      "check": "corotational_dissipation_vs_fracture_energy",
+      "oracle": "dissipated work == G_Ic * A (trapezoid integration, 40 steps)",
+      "measure": "measure 498.8077 J vs 500.0 J",
+      "value": 0.0023846153846153583,
+      "tolerance": 0.005,
+      "status": "PASS"
+    },
+    {
+      "check": "small_strain_dissipation_at_rotation",
+      "oracle": "same opening at theta = 0.4 rad, reference-frame separation (known limit)",
+      "measure": "measure -1559043.3 J vs 500.0 J",
+      "value": 3119.086626491991,
+      "tolerance": 0.0,
+      "status": "KNOWN_LIMIT"
+    },
+    {
+      "check": "corotational_mesh_objectivity",
+      "oracle": "n x n patches (n = 1, 2, 4) of the same unit interface give the same reaction",
+      "measure": "max relative reaction difference from t * A",
+      "value": 1.000124029815197e-12,
+      "tolerance": 1e-11,
+      "status": "PASS"
+    },
+    {
+      "check": "corotational_assembly_consistency",
+      "oracle": "dense patch assembly == sum of element contributions (force and tangent)",
+      "measure": "max relative difference, 2 x 2 patch",
+      "value": 0.0,
+      "tolerance": 1e-12,
+      "status": "PASS"
+    },
+    {
+      "check": "corotational_compression_undamaged",
+      "oracle": "closing uses the penalty stiffness k_n and never damages the interface",
+      "measure": "reaction -9999.999995 N vs -10000.000000 N, damage 0.0e+00",
+      "value": 5.263560524326749e-10,
+      "tolerance": 1e-08,
+      "status": "PASS"
+    }
+  ],
+  "passed": 17,
+  "failed": 0,
+  "known_limits": 2
+}
