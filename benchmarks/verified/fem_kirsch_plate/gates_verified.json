@@ -1,0 +1,170 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_kirsch_plate",
+  "title": "KIRSCH-PLATE: circular hole in a tension plate, K_t = 3 (Kirsch 1898)",
+  "mission": "CASE-KIRSCH-PLATE",
+  "generated_at": "2026-11-11T21:56:22+00:00",
+  "criteria": {
+    "kirsch_limit_rel_error_max": 0.05,
+    "kirsch_extrapolated_rel_error_max": 0.01,
+    "q8_crosscheck_rel_error_max": 0.05,
+    "observed_order_min": 1.0,
+    "q8_observed_order_min": 1.5,
+    "load_balance_rel_max": 1e-10,
+    "nu_E_invariance_rel_max": 0.01,
+    "saint_venant_band_rel_max": 0.01,
+    "finite_width_trend_rel_max": 0.03,
+    "hoop_profile_rms_over_kt_max": 0.05,
+    "refinement_levels_min": 3
+  },
+  "gates": [
+    {
+      "id": "oracle_selfcheck",
+      "quantity": "hole-edge traction |sigma_rr|,|sigma_rt| / T of the analytic oracle",
+      "reference": "Kirsch (1898) closed form; Timoshenko & Goodier 3rd ed. Art. 39 eqs. (a)-(c)",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "oracle_kt_value",
+      "quantity": "analytic K_t from the cited closed form",
+      "reference": "sigma_tt(a,pi/2)/T = 3",
+      "value": 3.0,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "self-consistency: the oracle evaluates to 3 before any FE is run"
+    },
+    {
+      "id": "kirsch_limit",
+      "quantity": "|K_t(d/W=0.02, n=48) - 3|/3",
+      "reference": "Kirsch limit 3 (pool tolerance)",
+      "value": 0.0004691998997712332,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "kirsch_extrapolated",
+      "quantity": "|Richardson limit of the d/W=0.02 ladder - 3|/3",
+      "reference": "Kirsch limit 3",
+      "value": 0.003065277225289561,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "mesh_convergence_order",
+      "quantity": "observed order p of the K_t ladder (min over d/W)",
+      "reference": "p >= 1 for Q4 recovered stress",
+      "value": 1.7632539971669776,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "mesh_error_monotone",
+      "quantity": "coarse/fine error ratio at d/W = 0.02",
+      "reference": "error must fall with refinement",
+      "value": 0.011722712433684706,
+      "threshold": 0.5,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "q8_crosscheck",
+      "quantity": "|K_t(Q8 annulus, finest) - 3|/3",
+      "reference": "Kirsch limit 3, independent element family",
+      "value": 0.0004920885410074997,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "q8_convergence_order",
+      "quantity": "observed order p of the Q8 annulus ladder",
+      "reference": "p >= 1.5 for quadratic elements",
+      "value": 1.7199880884043544,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "nu_E_invariance",
+      "quantity": "max relative spread of K_t over nu in {0, .3, .45} and E in {2, 200} GPa",
+      "reference": "Kirsch K_t is independent of nu and E",
+      "value": 0.007056124109152218,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "saint_venant_length",
+      "quantity": "K_t band over resolution-matched L/W in {1.0, 1.5, 2.5}, relative to L/W = 2.5",
+      "reference": "load introduction must not move K_t",
+      "value": 0.002199730876347238,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "resolution-matched arms (n ~ L); the fixed-n variant drifts several percent purely from mesh coarsening and is reported separately as a confounder"
+    },
+    {
+      "id": "finite_width_trend",
+      "quantity": "max |K_tg - Howland/Heywood gross| / value over d/W 0.1..0.5",
+      "reference": "Heywood (1952) fit K_tn = 2 + (1-d/W)^3",
+      "value": 0.009847808136257186,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "finite_width_monotone",
+      "quantity": "gross K_t strictly increasing over d/W 0.1..0.5",
+      "reference": "Howland trend",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "hoop_profile_shape",
+      "quantity": "RMS of (sigma_tt(a,theta) - exact) / 3 at d/W = 0.02",
+      "reference": "Kirsch edge law 1 - 2 cos 2 theta",
+      "value": 0.003176406633680044,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "load_balance",
+      "quantity": "max |applied - reacted| / applied",
+      "reference": "statics on the symmetry plane",
+      "value": 1.010994310490787e-12,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result.json": "every number of the ladder, cross-checks and sensitivity studies",
+    "figures": [
+      "benchmarks/verified/fem_kirsch_plate/kirsch_field.png",
+      "benchmarks/verified/fem_kirsch_plate/kirsch_convergence.png",
+      "benchmarks/verified/fem_kirsch_plate/kirsch_hoop_profile.png",
+      "benchmarks/verified/fem_kirsch_plate/kirsch_width_trend.png"
+    ],
+    "run.py": "this driver"
+  },
+  "limitations": [
+    "K_t = 3 is the infinite-plate limit; the finite-width plate is pushed to d/W = 0.02 and Richardson-extrapolated in h, and the d/W trend is graded against the Howland/Heywood fit rather than claimed to be 3.",
+    "The Q8 annulus check prescribes the exact Kirsch displacement on r = 2a, so it certifies the discretisation only and cannot see the far-field/finite-width model error.",
+    "Plane stress, linear elasticity, isotropic homogeneous material, single hole, no plasticity and no contact: this anchor says nothing about those regimes.",
+    "The plate-length study must be resolution-matched (n ~ L): with the ray count held fixed the starburst mesh coarsens near the apex and K_t drifts by percent-level in a way that mimics a load-introduction effect. Both tables are in result.json.",
+    "The hole edge is a stress-raiser: the Q4 recovered nodal stress converges at an observed order near 2 on this mesh family, which is a property of the starburst mesh plus apex node, not a general O(h^2) claim."
+  ]
+}
