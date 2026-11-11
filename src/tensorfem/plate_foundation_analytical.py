@@ -151,6 +151,56 @@ def kirchhoff_ss_center(
     return navier_ss_plate_uniform(q, a, b, D, k_foundation=0.0, M=M, N=N)
 
 
+def fsdt_ss_center_deflection(
+    q: float,
+    a: float,
+    b: float,
+    D: float,
+    h: float,
+    G: float,
+    k_normal: float = 0.0,
+    g_shear: float = 0.0,
+    kappa: float = 5.0 / 6.0,
+    M: int = 150,
+    N: int = 150,
+) -> float:
+    """Exact first-order-shear-deformation (Mindlin-Timoshenko) centre deflection.
+
+    Double-sine solution of the simply supported plate on a two-parameter
+    foundation, ``w(x,y) = sum W_mn sin(m pi x/a) sin(n pi y/b)`` with
+    ``lam = (m pi/a)^2 + (n pi/b)^2`` and shear rigidity ``S = kappa G h``:
+
+        W_mn = q_mn / ( k_normal + g_shear lam + D lam^2 / (1 + D lam / S) )
+
+    For uniform load ``q_mn = 16 q / (pi^2 m n)`` (odd ``m, n``).  Dropping the
+    ``1 / (1 + D lam / S)`` factor returns the Kirchhoff Navier series, so the
+    difference is exactly the transverse-shear deflection
+    ``sum q_mn / (S lam)``.  This replaces the earlier hard-coded
+    ``nu = 0.3``/``C_s = 0.384`` estimate, which was only valid for square
+    plates with ``nu = 0.3`` (see the P9263-N01 verification note).
+
+    Pure python (no torch) so it stays an independent oracle.
+    """
+    if a <= 0.0 or b <= 0.0 or h <= 0.0:
+        raise ValueError("plate geometry must be positive")
+    S = kappa * G * h
+    if S <= 0.0:
+        raise ValueError("shear rigidity must be positive")
+    w = 0.0
+    for m in range(1, 2 * M + 1, 2):
+        am = m * math.pi / a
+        sm = 1.0 if (m % 4 == 1) else -1.0
+        for n in range(1, 2 * N + 1, 2):
+            bn = n * math.pi / b
+            lam = am ** 2 + bn ** 2
+            qmn = 16.0 * q / (math.pi ** 2 * m * n)
+            sn = 1.0 if (n % 4 == 1) else -1.0
+            denom = (k_normal + g_shear * lam
+                     + D * lam ** 2 / (1.0 + D * lam / S))
+            w += qmn / denom * sm * sn
+    return w
+
+
 def mindlin_ss_center_correction(
     q: float,
     a: float,
@@ -162,25 +212,21 @@ def mindlin_ss_center_correction(
     M: int = 150,
     N: int = 150,
 ) -> float:
-    """Mindlin thick-plate correction to Kirchhoff center deflection.
+    """Exact Mindlin (FSDT) centre deflection of a simply supported plate.
 
-    The additional transverse-shear deflection for a simply-supported
-    rectangular plate under uniform load is:
+    The transverse shear part is *not* an estimate any more: the returned value
+    is the exact double-sine (Navier) solution of the first-order shear
+    deformation plate, which for uniform load on a square plate is about
+    ``q a^4 / (D) * 0.00406 * (1 + K)`` with
+    ``K = sum q_mn / (S lam) / w_K``.
 
-    w_s = q / (κ·G·h) · [1 - Σ correction terms]
-
-    For thin plates (h/a < 0.1) the correction is O((h/a)²).
-
-    Returns the total Mindlin center deflection = Kirchhoff + shear correction.
+    Signature is kept for compatibility with ``test_plate_foundation_ladder``;
+    ``D``, ``G`` and ``h`` over-determine the isotropic pair ``(E, nu)`` and are
+    consistent only if ``nu = 1 - G h^3 / (6 D)``, which is what the previous
+    implementation ignored (it hard-coded ``nu = 0.3`` and the coefficient
+    ``0.384``).
     """
-    w_k = kirchhoff_ss_center(q, a, b, D, M, N)
-    # First-order shear correction for uniform load on SS square plate
-    # w_s ≈ q·a² / (κ·G·h) · C_s  where C_s depends on aspect ratio and Poisson
-    # For square plate: C_s ≈ 0.384 (from Timoshenko & Woinowsky-Krieger)
-    nu = 0.3  # typical
-    S = kappa * G * h  # shear rigidity per unit width
-    w_shear = q * a ** 2 / (S) * 0.384 * (1 - nu) / 2
-    return w_k + w_shear
+    return fsdt_ss_center_deflection(q, a, b, D, h, G, kappa=kappa, M=M, N=N)
 
 
 def gci_order_of_convergence(f1, f2, f3, r12, r23):
