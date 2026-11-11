@@ -1,0 +1,341 @@
+{
+ "auditor_mission": 15313,
+ "anchor": "CASE-NAFEMS-LE1",
+ "scope_binding": {
+  "named_mission_in_task": 15261,
+  "named_mission_task_key": "case-nafems-le11",
+  "named_mission_goal_anchor": "CASE-NAFEMS-LE11（3D 椭球壳体应力）",
+  "named_mission_tree_evidence": "/root/tp-agent/work/m15261/runs/nafems_le11/nafems_le11_results.json exists=True",
+  "anchor_true_carrier_mission": 15238,
+  "anchor_true_carrier_task_key": "case-nafems-le1",
+  "anchor_true_carrier_head": "4c900e23",
+  "note": "任务单把 mission_id=15261 与锚点 CASE-NAFEMS-LE1 绑在一起；实测 15261=LE11（另有 m15318 专项审计）。本单按锚点（CASE-NAFEMS-LE1=唯一裁判对象）核验其真实载体 m15238，并保留模板 scope 串以便机器对账。",
+  "merge_commit": [
+   "8b7bf3e3 Merge #686 (m15238) via merge-master"
+  ]
+ },
+ "B1_run_artifacts": {
+  "json": {
+   "path": "artifacts/nafems_le1/nafems_le1_report.json",
+   "sha256": "82753725413f62982dbe6fa7577c8eb4666d46186d434a9395768fd163e04a69",
+   "bytes": 5812
+  },
+  "md": {
+   "path": "artifacts/nafems_le1/nafems_le1_summary.md",
+   "sha256": "c6448513d68c694fa54efbd13de439312240c68307158999624050074b51f513"
+  },
+  "figures": [
+   {
+    "path": "docs/assets/nafems_le1/convergence.png",
+    "sha256": "3b8a2e75063709d8a63654832a1163105e0e623731e4233308c698ed358ce0ea",
+    "bytes": 61451
+   },
+   {
+    "path": "docs/assets/nafems_le1/stress_profile.png",
+    "sha256": "6f5bd27944e547a4af275b0e569c0d7ee9ee8120cc8f19d6bcbd6903abbf8873",
+    "bytes": 66730
+   },
+   {
+    "path": "docs/assets/nafems_le1/von_mises_field.png",
+    "sha256": "d1ffed3d4557a046d3fdcb87aded6a40c718a7e2b18e079ffbf2ec926b663408",
+    "bytes": 66120
+   }
+  ],
+  "in_main": {
+   "benchmarks/nafems_le1.py": true,
+   "docs/nafems_le1_report.md": true,
+   "artifacts/nafems_le1/nafems_le1_report.json": false
+  },
+  "on_disk_vs_main_note": "bench/docs 已随 PR #686 合入 main；artifacts/*.json 只在工作树（门禁滤除），复现须重跑"
+ },
+ "B2_benchmark": {
+  "registered_judge_sql": "SELECT anchor_slug FROM tensor_benchmark_cases WHERE anchor_slug='CASE-NAFEMS-LE1'",
+  "registered_rows": "0",
+  "registered_total_rows": "14",
+  "ref_declared_in_report": "NAFEMS A Finite Element Benchmark Set (1990), Test LE1",
+  "tolerance_pct_declared": 5.0,
+  "rows_ref_vs_got": [
+   {
+    "n": 16,
+    "dofs": 578,
+    "fe": 1.8942762678170182,
+    "exact": 2.0,
+    "err_pct": 5.2862
+   },
+   {
+    "n": 20,
+    "dofs": 882,
+    "fe": 1.9157576146305957,
+    "exact": 2.0,
+    "err_pct": 4.2121
+   },
+   {
+    "n": 24,
+    "dofs": 1250,
+    "fe": 1.929868389140499,
+    "exact": 2.0,
+    "err_pct": 3.5066
+   },
+   {
+    "n": 32,
+    "dofs": 2178,
+    "fe": 1.9473415053395773,
+    "exact": 2.0,
+    "err_pct": 2.6329
+   },
+   {
+    "n": 40,
+    "dofs": 3362,
+    "fe": 1.9577761410786874,
+    "exact": 2.0,
+    "err_pct": 2.1112
+   },
+   {
+    "n": 48,
+    "dofs": 4802,
+    "fe": 1.964729165506285,
+    "exact": 2.0,
+    "err_pct": 1.7635
+   }
+  ],
+  "finest_error_pct": 1.7635,
+  "within_tolerance": true,
+  "honest_coarse_fail": [
+   16
+  ],
+  "independent_analytic_check": {
+   "formula": "K_t = 1 + 2b/a（Inglis 1913，横向尖点 x 向正应力）",
+   "kt_independent": 2.0,
+   "module_exact": 2.0,
+   "agrees": true,
+   "load_axis_tip_independent": {
+    "formula": "K_t' = -1（沿载方向尖点，σ_xx=-T）",
+    "json_value": -1.0
+   }
+  },
+  "doc_table_vs_json": {
+   "parsed_rows": 6,
+   "mismatches": [],
+   "consistent": true,
+   "tolerance": "四舍五入容差 fe<=5e-6 / err_pct<=5e-3（doc 显示 6 位与 2 位小数）"
+  },
+  "report_claim_probes": {
+   "doc_claims_observed_order": [
+    "0.95"
+   ],
+   "recomputed_orders": [
+    {
+     "pair": "n16->n20",
+     "p": 1.0179
+    },
+    {
+     "pair": "n20->n24",
+     "p": 1.0054
+    },
+    {
+     "pair": "n24->n32",
+     "p": 0.9961
+    },
+    {
+     "pair": "n32->n40",
+     "p": 0.9896
+    },
+    {
+     "pair": "n40->n48",
+     "p": 0.987
+    }
+   ],
+   "doc_claims_richardson": [
+    "2.000000"
+   ],
+   "richardson_p1_from_n40_n48": 1.999494,
+   "richardson_rel_err_vs_exact": 0.02529,
+   "doc_claims_grading_penalty": [
+    "50"
+   ],
+   "reference_evidence_json_observed_rates_mild": [
+    0.9958095347353018,
+    0.9895487313069472,
+    0.986776402510983
+   ],
+   "reference_evidence_json_sharp_observed_order": 0.9530662616499395
+  }
+ },
+ "B3_repro": {
+  "cmd": "cd /root/tp-agent/work/m15238 && PYTHONPATH=src python3 benchmarks/nafems_le1.py",
+  "repro_md": {
+   "path": "runs/nafems_le1/repro.md",
+   "sha256": "e1a61cacc1b8f5043fdc32c1bbff1dce947986f66ff9c433c4c04da0e75c8621"
+  },
+  "rerun_log_bytes": 0,
+  "rerun_rows": [
+   {
+    "n": 16,
+    "fe": 1.8942762678170182,
+    "err_pct": 5.2862
+   },
+   {
+    "n": 20,
+    "fe": 1.9157576146305957,
+    "err_pct": 4.2121
+   },
+   {
+    "n": 24,
+    "fe": 1.929868389140499,
+    "err_pct": 3.5066
+   },
+   {
+    "n": 32,
+    "fe": 1.9473415053395773,
+    "err_pct": 2.6329
+   },
+   {
+    "n": 40,
+    "fe": 1.9577761410786874,
+    "err_pct": 2.1112
+   },
+   {
+    "n": 48,
+    "fe": 1.964729165506285,
+    "err_pct": 1.7635
+   }
+  ],
+  "max_abs_fe_diff": 0.0,
+  "max_abs_err_pct_diff": 0.0,
+  "rows": [
+   {
+    "n": 16,
+    "fe_committed": 1.8942762678170182,
+    "fe_repro": 1.8942762678170182,
+    "d_fe": 0.0,
+    "err_pct_committed": 5.2862,
+    "err_pct_repro": 5.2862
+   },
+   {
+    "n": 20,
+    "fe_committed": 1.9157576146305957,
+    "fe_repro": 1.9157576146305957,
+    "d_fe": 0.0,
+    "err_pct_committed": 4.2121,
+    "err_pct_repro": 4.2121
+   },
+   {
+    "n": 24,
+    "fe_committed": 1.929868389140499,
+    "fe_repro": 1.929868389140499,
+    "d_fe": 0.0,
+    "err_pct_committed": 3.5066,
+    "err_pct_repro": 3.5066
+   },
+   {
+    "n": 32,
+    "fe_committed": 1.9473415053395773,
+    "fe_repro": 1.9473415053395773,
+    "d_fe": 0.0,
+    "err_pct_committed": 2.6329,
+    "err_pct_repro": 2.6329
+   },
+   {
+    "n": 40,
+    "fe_committed": 1.9577761410786874,
+    "fe_repro": 1.9577761410786874,
+    "d_fe": 0.0,
+    "err_pct_committed": 2.1112,
+    "err_pct_repro": 2.1112
+   },
+   {
+    "n": 48,
+    "fe_committed": 1.964729165506285,
+    "fe_repro": 1.964729165506285,
+    "d_fe": 0.0,
+    "err_pct_committed": 1.7635,
+    "err_pct_repro": 1.7635
+   }
+  ],
+  "reproduced": false,
+  "rerun_artifact_mtime": 1794430978.084,
+  "repro_note": "重跑进程 22:05:20 启动，审计窗口（~12 min）内未写出工件：stdout 缓冲 0B、artifacts json mtime 仍为 21:02:58（提交版）→ 上栏 max diff 是『提交版 vs 提交版』的自比对，不构成复现证据；复现性判定=NOT_COMPLETED（未证实亦未否证）。"
+ },
+ "D_level_gates": {
+  "impl_files": [
+   {
+    "path": "benchmarks/nafems_le1.py",
+    "lines": 349,
+    "sha256": "d57ba20b920ef31329bd26204055d11e385e8a65df1726abedd9a1f76458a7ff",
+    "in_main": true
+   },
+   {
+    "path": "src/tensorfem/elliptic_hole.py",
+    "lines": 847,
+    "sha256": "76b863aaebd4296b3c869d7f1fb116578cb12bcd2e1f3e2978bc4c1900941b00",
+    "preexisting": false,
+    "note": "Q4 求解面（ContinuumModel+solve_continuum）+ Kolosov-Muskhelishvili 解析面，本单未改"
+   }
+  ],
+  "entry": "benchmarks/nafems_le1.py::main（PYTHONPATH=src python3 benchmarks/nafems_le1.py）",
+  "tests": {
+   "dedicated_le1_test": false,
+   "module_tests": [
+    "tests/test_elliptic_hole_reference.py",
+    "tests/test_elliptic_hole_sharp_tip.py"
+   ],
+   "module_tests_in_main": [
+    true,
+    true
+   ],
+   "note": "底层模块有门（Kirsch 极限/牵引自由/本构/强式平衡/Q4 尖点 3% 门），但 LE1 这个算例本身没有专门回归测试（改 benchmarks 不会被测试挡住）"
+  },
+  "integration_callers": [
+   "benchmarks/nafems_le1.py:41 from tensorfem.elliptic_hole import solve_case",
+   "src/tensorfem/elliptic_hole.py:457 ContinuumModel(...) / :718 solve_continuum(model)",
+   "scripts/audit_elliptic_hole.py:22（同模块既有审计入口）"
+  ],
+  "platform_report": {
+   "tensor_reports_rows_for_mission_15238": "0",
+   "road_docs_only": "docs/nafems_le1_report.md（六段齐全，见 E）"
+  },
+  "report_owed_flag": "f",
+  "report_sections": {
+   "count": 6,
+   "found": [
+    "## ①",
+    "## ②",
+    "## ③",
+    "## ④",
+    "## ⑤",
+    "## ⑥"
+   ]
+  }
+ },
+ "E_probes": {
+  "P1_grading_sensitivity": {
+   "exact": 2.0,
+   "levels": {
+    "grading=3.0": {
+     "n": 24,
+     "dofs": 1250,
+     "hoop_fe": 1.929868389140499,
+     "error_pct": 3.5065805429750463,
+     "elapsed_s": 30.1
+    },
+    "grading=1.0": {
+     "n": 24,
+     "dofs": 1250,
+     "hoop_fe": 1.7590692007658348,
+     "error_pct": 12.046539961708259,
+     "elapsed_s": 32.5
+    }
+   }
+  },
+  "P2_bc_carries_answer": {
+   "statement": "外边界 ρ₀=5.0 施加的是**精确 Inglis 面力**（elliptic_hole.py:406 consistent_arc_loads），故域截断误差被消除、模型退化为 patch test：所测 1.76% 是纯插值/恢复误差，不是对 NAFEMS 有限板原算例的复现。合法但减弱『与手册目标值对比』的说服力。",
+   "file": "src/tensorfem/elliptic_hole.py:397-431, benchmarks/nafems_le1.py:96-99"
+  },
+  "P3_ref_source": {
+   "declared": "NAFEMS A Finite Element Benchmark Set (1990), Test LE1",
+   "cited_page_or_table": false,
+   "actual_value_source": "Inglis 1913 闭式 K_t=1+2b/a（自推/自算，非手册查得）",
+   "knowledge_base_hit": "4"
+  }
+ }
+}
