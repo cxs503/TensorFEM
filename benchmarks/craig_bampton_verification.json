@@ -1,0 +1,345 @@
+{
+  "module": "tensorfem.craig_bampton",
+  "module_sha256": "ee602fd63045497977e8cfa2c1032891991560e82b549d5d858e4e92182b3d93",
+  "generated_by": "benchmarks/craig_bampton_verification.py",
+  "model": {
+    "type": "plane-stress Q4 strip, in-plane vibration",
+    "length_m": 1.0,
+    "height_m": 0.05,
+    "thickness_m": 1.0,
+    "young_pa": 210000000000.0,
+    "poisson": 0.3,
+    "density_kg_m3": 7850.0,
+    "mesh": "80x8",
+    "nodes": 729,
+    "elements": 640,
+    "components": 2,
+    "split_x_m": 0.5,
+    "interface_dofs": 18,
+    "internal_dofs": [
+      702,
+      720
+    ],
+    "monolithic_unknown_dofs": 1440
+  },
+  "analytic_anchor": {
+    "formula": "f_n = (beta_n L)^2/(2 pi) sqrt(EI/(rho A L^4))",
+    "roots_source": "Blevins, Formulas for Natural Frequency and Mode Shape, 1979, Table 8-1",
+    "frequencies_hz": [
+      41.77582972211664,
+      261.8046559313976,
+      733.0606174460062
+    ],
+    "monolithic_fe_frequencies_hz": [
+      42.261795536966105,
+      261.9087139893776,
+      720.8760415017518
+    ],
+    "rel_error": [
+      0.01163270288303067,
+      0.00039746450501353624,
+      0.016621512129113652
+    ]
+  },
+  "monolithic": {
+    "frequencies_hz": [
+      42.261795536966105,
+      261.9087139893776,
+      720.8760415017518,
+      1294.0131305207356,
+      1379.6133696649676,
+      2216.4585182599685,
+      3205.8133962946395,
+      3881.8857033601034
+    ],
+    "wall_time_s": 2.165417030453682
+  },
+  "sweep": [
+    {
+      "n_modes_per_component": 0,
+      "reduced_dofs": 18,
+      "frequencies_hz": [
+        43.37536903100176,
+        350.8568769171679,
+        1426.4392490933596,
+        17403.829174407656,
+        44449.80087166901,
+        61248.41399552458
+      ],
+      "rel_error": [
+        0.026349412747066567,
+        0.3396151337347173,
+        0.9787580207572943,
+        12.449499671926839,
+        31.219027336958487,
+        26.633458280828854
+      ],
+      "max_rel_error_1_6": 31.219027336958487,
+      "upper_bound_violation": -0.026349412747066567,
+      "wall_time_s": 0.6926390007138252
+    },
+    {
+      "n_modes_per_component": 1,
+      "reduced_dofs": 20,
+      "frequencies_hz": [
+        42.26502522220529,
+        263.7753639404253,
+        802.3529846068874,
+        1426.4392490928715,
+        2147.9199635354175,
+        44449.80087166931
+      ],
+      "rel_error": [
+        7.642091866065611e-05,
+        0.007127101357625688,
+        0.11302490083510085,
+        0.10233753850615497,
+        0.5568999335350232,
+        19.05442488793548
+      ],
+      "max_rel_error_1_6": 19.05442488793548,
+      "upper_bound_violation": -7.642091866065611e-05,
+      "wall_time_s": 0.7253125496208668
+    },
+    {
+      "n_modes_per_component": 2,
+      "reduced_dofs": 22,
+      "frequencies_hz": [
+        42.26195576698083,
+        262.0294589378826,
+        721.323784010409,
+        1403.9931149173997,
+        1426.4392490934829,
+        2494.6630469496263
+      ],
+      "rel_error": [
+        3.7913678936845218e-06,
+        0.0004610192103418592,
+        0.0006211088770884819,
+        0.0849913975389153,
+        0.033941305918111446,
+        0.1255175887108694
+      ],
+      "max_rel_error_1_6": 0.1255175887108694,
+      "upper_bound_violation": -3.7913678936845218e-06,
+      "wall_time_s": 0.616519259288907
+    },
+    {
+      "n_modes_per_component": 3,
+      "reduced_dofs": 24,
+      "frequencies_hz": [
+        42.261945485260625,
+        262.01420019017274,
+        721.2892496956139,
+        1299.7369142371185,
+        1401.2426799637306,
+        2494.662461744018
+      ],
+      "rel_error": [
+        3.54808149098829e-06,
+        0.0004027594163951103,
+        0.0005732028394246876,
+        0.00442328101731055,
+        0.015677805662332393,
+        0.12551732468354676
+      ],
+      "max_rel_error_1_6": 0.12551732468354676,
+      "upper_bound_violation": -3.54808149098829e-06,
+      "wall_time_s": 0.6800828091800213
+    },
+    {
+      "n_modes_per_component": 5,
+      "reduced_dofs": 28,
+      "frequencies_hz": [
+        42.261804332780315,
+        261.9170450029959,
+        720.881840893431,
+        1295.3399806514929,
+        1380.8311873208793,
+        2217.0699327008856
+      ],
+      "rel_error": [
+        2.0812684597422102e-07,
+        3.1808844736090435e-05,
+        8.044922213070045e-06,
+        0.00102537609508131,
+        0.0008827238722739923,
+        0.0002758519664952172
+      ],
+      "max_rel_error_1_6": 0.00102537609508131,
+      "upper_bound_violation": -2.0812684597422102e-07,
+      "wall_time_s": 0.5318456701934338
+    },
+    {
+      "n_modes_per_component": 8,
+      "reduced_dofs": 34,
+      "frequencies_hz": [
+        42.26179718308192,
+        261.9104396197045,
+        720.8764216680273,
+        1294.247711061485,
+        1379.859178371147,
+        2216.4989223232606
+      ],
+      "rel_error": [
+        3.895044665360198e-08,
+        6.588670917556427e-06,
+        5.273670556241448e-07,
+        0.00018128142227973255,
+        0.00017817216880047023,
+        1.8229108715178384e-05
+      ],
+      "max_rel_error_1_6": 0.00018128142227973255,
+      "upper_bound_violation": -3.895044665360198e-08,
+      "wall_time_s": 0.5935085900127888
+    },
+    {
+      "n_modes_per_component": 12,
+      "reduced_dofs": 42,
+      "frequencies_hz": [
+        42.261796002073964,
+        261.90926142641325,
+        720.8761030271077,
+        1294.0484938584714,
+        1379.6908230257668,
+        2216.4648937894544
+      ],
+      "rel_error": [
+        1.1005397519726386e-08,
+        2.0901825957800568e-06,
+        8.534803804809054e-08,
+        2.732842264250099e-05,
+        5.614135271678579e-05,
+        2.876448818418279e-06
+      ],
+      "max_rel_error_1_6": 5.614135271678579e-05,
+      "upper_bound_violation": -1.1005397519726386e-08,
+      "wall_time_s": 0.6062235292047262
+    }
+  ],
+  "static_load_study": [
+    {
+      "n_modes": 0,
+      "rel_error": 8.776487736854928e-12
+    },
+    {
+      "n_modes": 2,
+      "rel_error": 8.202628341206353e-12
+    },
+    {
+      "n_modes": 5,
+      "rel_error": 8.776487736854928e-12
+    },
+    {
+      "n_modes": 12,
+      "rel_error": 8.776487736854928e-12
+    }
+  ],
+  "full_retention": {
+    "n_modes": [
+      702,
+      720
+    ],
+    "reduced_dofs": 1440,
+    "max_rel_error": 6.313519505191064e-09
+  },
+  "checks": [
+    {
+      "name": "consistent_mass_total",
+      "value": 0.0,
+      "limit": 1e-12,
+      "comparison": "<=",
+      "note": "sum of all consistent-mass entries == 2*rho*t*A per element (both directions)",
+      "status": "PASS"
+    },
+    {
+      "name": "fixed_interface_M_orthonormal",
+      "value": 8.881784197001252e-16,
+      "limit": 1e-10,
+      "comparison": "<=",
+      "note": "Phi^T M_ss Phi == I (M-normalised fixed-interface modes)",
+      "status": "PASS"
+    },
+    {
+      "name": "constraint_modes_static_definition",
+      "value": 2.8852982954545603e-15,
+      "limit": 1e-12,
+      "comparison": "<=",
+      "note": "K_ss Psi_c + K_si == 0 -- the constraint modes are the exact static response",
+      "status": "PASS"
+    },
+    {
+      "name": "guyan_matches_static_condensation",
+      "value": 3.569295071830117e-15,
+      "limit": 1e-12,
+      "comparison": "<=",
+      "note": "T^T K T of the Guyan basis == K_cc - K_ic K_ii^-1 K_ci",
+      "status": "PASS"
+    },
+    {
+      "name": "zero_modes_equals_guyan",
+      "value": 2.7007338284554787e-15,
+      "limit": 1e-14,
+      "comparison": "<=",
+      "note": "n_modes=0 superelement stiffness == Guyan stiffness",
+      "status": "PASS"
+    },
+    {
+      "name": "full_retention_invariance",
+      "value": 6.313519505191064e-09,
+      "limit": 1e-06,
+      "comparison": "<=",
+      "note": "retaining every internal mode reproduces the monolithic eigenvalues",
+      "status": "PASS"
+    },
+    {
+      "name": "truncation_upper_bound",
+      "value": 0.0,
+      "limit": 1e-09,
+      "comparison": "<=",
+      "note": "omega_reduced >= omega_exact for every retained mode (Rayleigh-Ritz)",
+      "status": "PASS"
+    },
+    {
+      "name": "truncation_convergence",
+      "value": 1.1005397519726386e-08,
+      "limit": 1e-05,
+      "comparison": "<=",
+      "note": "f1 error with 12 modes/component below 1e-5 and decreasing in n",
+      "status": "PASS"
+    },
+    {
+      "name": "truncation_monotone",
+      "value": 0.0,
+      "limit": 0.0,
+      "comparison": "==",
+      "note": "f1 error is non-increasing in n",
+      "status": "PASS"
+    },
+    {
+      "name": "guyan_static_load_exact",
+      "value": 8.776487736854928e-12,
+      "limit": 1e-09,
+      "comparison": "<=",
+      "note": "with no retained modes an interface load is transmitted exactly (static basis)",
+      "status": "PASS"
+    },
+    {
+      "name": "analytic_cantilever_f1",
+      "value": 0.01163270288303067,
+      "limit": 0.03,
+      "comparison": "<=",
+      "note": "monolithic FE f1 vs Euler-Bernoulli (Blevins beta_1 L = 1.875104)",
+      "status": "PASS"
+    },
+    {
+      "name": "analytic_cantilever_f2",
+      "value": 0.00039746450501353624,
+      "limit": 0.03,
+      "comparison": "<=",
+      "note": "monolithic FE f2 vs Euler-Bernoulli (Blevins beta_2 L = 4.694091)",
+      "status": "PASS"
+    }
+  ],
+  "all_pass": true
+}
