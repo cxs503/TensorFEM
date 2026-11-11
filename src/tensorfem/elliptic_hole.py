@@ -101,6 +101,7 @@ __all__ = [
     "element_centre_cross_check",
     "tip_nodal_stress",
     "boundary_hoop_profile",
+    "tip_resolution",
 ]
 
 # 4-point Gauss-Legendre on [-1, 1] for the consistent boundary loads.
@@ -476,6 +477,7 @@ def annulus_model(
         "grading": grading,
         "rho_outer": rho_outer,
     }
+    meta["tip_resolution"] = tip_resolution(hole, n_theta, n_radial, grading, rho_outer)
     return model, meta
 
 
@@ -649,6 +651,46 @@ def _nodal_displacement_error(hole: InglisHole, nodes: torch.Tensor, displacemen
     }
 
 
+def tip_resolution(
+    hole: InglisHole | None = None,
+    n_theta: int = 24,
+    n_radial: int | None = None,
+    grading: float = 3.0,
+    rho_outer: float = 5.0,
+) -> dict:
+    """Physical size of the first element at the transverse tip, in units of ``rho_t``.
+
+    The transverse tip ``(0, semi_y)`` is the peak-stress point and it sits on the
+    corner ``(theta = pi/2, rho = 1)`` of the parametric grid.  There the two mesh
+    directions have the *same* metric factor ``|dz/dtheta| = |dz/drho| =
+    R (1 + m)``, so a mesh can be resolved along the hole boundary and still be
+    too coarse through the boundary layer: this helper reports both spacings
+    normalised by the tip curvature radius ``rho_t = semi_x^2 / semi_y``, which is
+    the length scale the exact field decays over (see
+    ``docs/elliptic-hole-sharp-tip-certification.md``).
+
+    ``radial_over_curvature`` is the quantity that decides whether the *peak* is
+    resolved; ``aspect`` (``angular / radial``) below ``~0.1`` means flat elements
+    whose Gauss-to-node extrapolation is anisotropic.
+    """
+    hole = hole or InglisHole()
+    n_radial = n_theta if n_radial is None else int(n_radial)
+    rhos = _graded_rho(n_radial, rho_outer, grading)
+    thetas = _chebyshev_theta(n_theta)
+    metric = hole.mapping_radius * (1.0 + hole.mapping_m)  # |dz/dzeta| at the tip
+    radial = float(rhos[1] - rhos[0]) * metric
+    angular = float(thetas[1] - thetas[0]) * metric
+    curvature = hole.tip_curvature_radius
+    return {
+        "radial_layer": radial,
+        "angular_layer": angular,
+        "curvature_radius": curvature,
+        "radial_over_curvature": radial / curvature,
+        "angular_over_curvature": angular / curvature,
+        "aspect": angular / radial if radial > 0.0 else float("inf"),
+    }
+
+
 def _symmetry_edge_traction(hole: InglisHole, meta: dict) -> dict:
     """Exact x-resultant of the traction on the ``theta = pi/2`` edge (reaction check)."""
     rhos = meta["rhos"]
@@ -731,6 +773,7 @@ def solve_case(
         "n_radial": meta["n_radial"],
         "grading": grading,
         "rho_outer": rho_outer,
+        "tip_resolution": tip_resolution(hole, meta["n_theta"], meta["n_radial"], grading, rho_outer),
         "elements": int(meta["elements"].shape[0]),
         "dofs": int(2 * meta["nodes"].shape[0]),
         "semi_x": hole.semi_x,
