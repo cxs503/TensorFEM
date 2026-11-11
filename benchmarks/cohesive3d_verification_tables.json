@@ -67,6 +67,14 @@
       "status": "PASS"
     },
     {
+      "check": "law_batch_matches_pointwise",
+      "oracle": "batched update (16 softening points) == 16 independent point calls",
+      "measure": "max relative difference 0.0e+00 at damage 0.991",
+      "value": 0.0,
+      "tolerance": 1e-12,
+      "status": "PASS"
+    },
+    {
       "check": "element_patch_small_strain",
       "oracle": "uniform opening: reaction on the top face == t * A (unit area)",
       "measure": "measure 4615384.615385 N vs 4615384.615385 N",
@@ -163,7 +171,7 @@
       "status": "PASS"
     }
   ],
-  "passed": 17,
+  "passed": 18,
   "failed": 0,
   "known_limits": 2
 }

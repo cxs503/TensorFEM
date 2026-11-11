@@ -262,6 +262,47 @@ def check_law_tangent():
 # --------------------------------------------------------------------------- #
 
 
+def check_law_batch_consistency():
+    """The batched (vectorised assembly) update must equal independent point calls.
+
+    The element assembly evaluates the law on all Gauss points of the patch at
+    once (``4 * n_elements`` points), so the batch path -- not the single-point
+    path -- is what the solver actually uses.  A regression in the batch
+    broadcasting of the BK mixing weight was invisible to every single-point
+    check (and silently order dependent when the batch happened to have three
+    points), so it is pinned here by an explicit pointwise oracle.
+    """
+    law = new_law()
+    directions = torch.tensor(
+        [[1.0, 0.3, 0.0], [0.2, 1.0, 0.0], [0.8, 0.5, 0.3], [0.0, 1.0, 1.0]], dtype=D
+    )
+    directions = directions / torch.linalg.vector_norm(directions, dim=-1, keepdim=True)
+    onset = law.onset_amplitude(directions)
+    failure = law.failure_amplitude(directions)
+    separation = (0.5 * (onset + failure))[:, None] * directions
+    separation = separation.repeat(4, 1)  # 16 points == a 4-element patch
+    history = torch.zeros(separation.shape[0], dtype=D)
+    batch = law.update(separation, history)
+    worst = 0.0
+    for i in range(separation.shape[0]):
+        one = law.update(separation[i], history[i].reshape(()))
+        worst = max(
+            worst,
+            float((batch.traction[i] - one.traction).abs().max() / one.traction.abs().max()),
+            float((batch.tangent[i] - one.tangent).abs().max() / one.tangent.abs().max()),
+        )
+    damaged = float(batch.damage.max())
+    value = worst if damaged > 0.0 else 1.0  # a batch that never softens proves nothing
+    return record(
+        "law_batch_matches_pointwise",
+        "batched update (16 softening points) == 16 independent point calls",
+        f"max relative difference {worst:.1e} at damage {damaged:.3f}",
+        value,
+        1e-12,
+        ok(value, 1e-12),
+    )
+
+
 def check_element_patch():
     law = new_law()
     coords = flat_element()
@@ -527,6 +568,7 @@ def build_tables():
     rows.extend(check_law_energy())
     rows.append(check_law_initiation())
     rows.append(check_law_tangent())
+    rows.append(check_law_batch_consistency())
     rows.append(check_element_patch())
     rows.extend(check_rigid_rotation())
     rows.append(check_rotation_objectivity())

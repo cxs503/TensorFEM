@@ -45,19 +45,57 @@ def test_mesh_topology_and_boundary_conditions():
 
 
 def test_vectorised_assembly_matches_production_element():
-    """The batched ligament assembly must reproduce cohesive_hex8_response."""
+    """The batched ligament assembly must reproduce the per-element COH3D8 loop.
+
+    The interface patch is *conforming*: neighbouring COH3D8 elements share the
+    four nodes of their common in-plane edge, so a global internal-force entry is
+    the sum over every incident element.  Comparing one element against the
+    global vector (as an earlier version of this test did) therefore sees the
+    neighbour's contribution and fails at the shared nodes, not because the
+    vectorised path is wrong but because the reference was not assembled.  The
+    comparison below accumulates :func:`cohesive_hex8_response` over the *whole*
+    patch, which pins the equivalence the docstring of
+    ``DCBModel.reference_frames`` claims and additionally covers the full
+    tangent and the committed history.
+    """
     g = _geometry(nx=8, nz=2)
     m = build_dcb_model(g, _law())
     rng = np.random.default_rng(0)
     u = rng.normal(scale=2.0e-7, size=m.n_dofs)
-    f, K, hist, diag = m.interface_response(u, None)
+    f, K, hist, _ = m.interface_response(u, None)
     uu = torch.as_tensor(u, dtype=torch.float64).reshape(m.n_nodes, 3)
+
+    f_ref = np.zeros(m.n_dofs)
+    K_ref = np.zeros((m.n_dofs, m.n_dofs))
+    hist_ref = np.zeros((m.n_iface, 4))
     for e in range(m.n_iface):
         conn = m.iface[e]
-        fe, ke, _, _ = cohesive_hex8_response(m.nodes[conn], uu[conn], m.law)
+        fe, ke, he, _ = cohesive_hex8_response(m.nodes[conn], uu[conn], m.law)
         dofs = (3 * conn.numpy()[:, None] + np.arange(3)).reshape(-1)
-        assert np.allclose(f[dofs], fe.numpy().reshape(-1), rtol=1e-12, atol=1e-12)
-        assert np.allclose(K[dofs][:, dofs].toarray(), ke.numpy(), rtol=1e-12, atol=1e-10)
+        f_ref[dofs] += fe.numpy().reshape(-1)
+        K_ref[np.ix_(dofs, dofs)] += ke.numpy()
+        hist_ref[e] = he.numpy().reshape(4)
+
+    assert np.allclose(f, f_ref, rtol=1e-12, atol=1e-12)
+    assert np.allclose(K.toarray(), K_ref, rtol=1e-12, atol=1e-6)
+    assert np.allclose(hist.numpy(), hist_ref, rtol=1e-12, atol=1e-15)
+
+    # The patch is genuinely conforming: this is what makes the accumulation
+    # above necessary, and it guards against the mesh silently becoming
+    # node-duplicated per element (which would hide a shared-node assembly bug).
+    shared = np.intersect1d(m.iface[0].numpy(), m.iface[1].numpy())
+    assert shared.size == 4
+
+    # Negative control with teeth: at the shared nodes the neighbour contributes
+    # a non-zero force, so an *unassembled* single-element reference -- the
+    # previous formulation of this test -- must disagree with the global vector.
+    # Without this line a regression that dropped the neighbour accumulation
+    # could still pass on the interior nodes alone.
+    dofs0 = (3 * m.iface[0].numpy()[:, None] + np.arange(3)).reshape(-1)
+    fe0, _, _, _ = cohesive_hex8_response(
+        m.nodes[m.iface[0]], uu[m.iface[0]], m.law
+    )
+    assert not np.allclose(f[dofs0], fe0.numpy().reshape(-1), rtol=1e-12, atol=1e-12)
 
 
 def test_batched_law_tangent_matches_per_point_calls():
@@ -124,3 +162,40 @@ def test_damage_history_is_committed_and_monotone():
     assert np.all(np.diff([c["disp"] for c in r.curve]) > 0.0)
     assert r.damage.max() > 0.0  # damage has initiated at the initial front
     assert np.all(r.damage >= 0.0) and np.all(r.damage <= 1.0)
+
+
+def test_vectorised_assembly_with_damage_matches_production_element():
+    """The batched assembly must integrate *damage*, not only the elastic branch.
+
+    The elastic comparison above is blind to the softening block of
+    :meth:`BKCohesive3DLaw.update`: with no Gauss point past initiation that
+    branch is skipped entirely.  Regression pinned here: the batch-of-one
+    cohesive update broadcast the BK mixing weight against the component axis,
+    so a batch whose size was not exactly 3 (the ligament patch always has
+    ``4 * n_iface`` Gauss points) raised a shape error the moment one point
+    entered softening -- the vectorised assembly could not dissipate energy at
+    all, although every elastic test passed.
+    """
+    g = _geometry(nx=8, nz=2)
+    m = build_dcb_model(g, _law())
+    rng = np.random.default_rng(1)
+    u = rng.normal(scale=1.0e-5, size=m.n_dofs)  # well past the onset opening
+    f, K, hist, diag = m.interface_response(u, None)
+    assert diag["damage"].max() > 0.5, "test data must drive Gauss points into softening"
+    assert np.any((diag["damage"] > 0.0) & (diag["damage"] < 1.0))
+
+    uu = torch.as_tensor(u, dtype=torch.float64).reshape(m.n_nodes, 3)
+    f_ref = np.zeros(m.n_dofs)
+    K_ref = np.zeros((m.n_dofs, m.n_dofs))
+    hist_ref = np.zeros((m.n_iface, 4))
+    for e in range(m.n_iface):
+        conn = m.iface[e]
+        fe, ke, he, _ = cohesive_hex8_response(m.nodes[conn], uu[conn], m.law)
+        dofs = (3 * conn.numpy()[:, None] + np.arange(3)).reshape(-1)
+        f_ref[dofs] += fe.numpy().reshape(-1)
+        K_ref[np.ix_(dofs, dofs)] += ke.numpy()
+        hist_ref[e] = he.numpy().reshape(4)
+
+    assert np.allclose(f, f_ref, rtol=1e-11, atol=1e-8)
+    assert np.allclose(K.toarray(), K_ref, rtol=1e-11, atol=1e-3)
+    assert np.allclose(hist.numpy(), hist_ref, rtol=1e-12, atol=1e-18)

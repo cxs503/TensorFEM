@@ -726,3 +726,93 @@ def test_invalid_kinematics_is_rejected():
         cohesive_separations(coords, u, kinematics="updated_lagrangian")
     with pytest.raises(ValueError):
         assemble_cohesive_interface(coords, torch.arange(8).reshape(1, 8), u, law_obj, kinematics="x")
+
+
+# --------------------------------------------------------------------------- #
+# Batched material-point path (regression: element assembly is batched)
+# --------------------------------------------------------------------------- #
+
+
+_SAMPLE_DIRECTIONS = (
+    # (unit direction before normalisation, target branch)
+    ((1.0, 0.3, 0.0), "softening"),      # mode I dominated
+    ((0.2, 1.0, 0.0), "softening"),      # shear dominated
+    ((0.8, 0.5, 0.3), "softening"),      # all three components non-zero
+    ((1.0, 0.0, 0.0), "elastic"),        # pure mode I below onset
+    ((-0.6, 0.8, 0.2), "softening"),     # compressive normal part, shear driven
+    ((0.0, 1.0, 1.0), "elastic"),        # equal shear modes, below onset
+    ((1.0, 1.0, 1.0), "failed"),         # mixed, driven past failure
+)
+
+
+def _mixed_mode_samples(n: int) -> torch.Tensor:
+    """``n`` separations spanning elastic, softening and fully failed states.
+
+    Amplitudes are built from the law's own closed-form onset and failure
+    openings along each direction (never from a hard-coded number), so the
+    samples provably reach every branch for any parameter set.
+    """
+    law_obj = law()
+    samples = []
+    for (dx, dy, dz), branch in _SAMPLE_DIRECTIONS[:n]:
+        c = torch.tensor([dx, dy, dz], dtype=D)
+        c = c / torch.linalg.vector_norm(c)
+        onset = float(law_obj.onset_amplitude(c))
+        failure = float(law_obj.failure_amplitude(c))
+        amplitude = {
+            "elastic": 0.45 * onset,
+            "softening": 0.5 * (onset + failure),
+            "failed": 1.5 * failure,
+        }[branch]
+        samples.append(amplitude * c)
+    return torch.stack(samples)
+
+
+@pytest.mark.parametrize("n", [1, 2, 3, 4, 5, 7])
+def test_batched_update_matches_pointwise_in_softening(n):
+    """``update`` on a batch must equal ``n`` independent point calls.
+
+    Regression: the BK mixing weight of ``dgc`` and the ``dF`` denominators were
+    broadcast without ``[..., None]``.  Three integration points in the batch
+    then silently reused the *neighbouring* point's weight (the trailing axis
+    aliased the component axis) and every other batch size raised a shape error,
+    so the vectorised element assembly could not integrate damage at all.
+    """
+    law_obj = law()
+    sep = _mixed_mode_samples(n)
+    hist = torch.zeros(n, dtype=D)
+    batch = law_obj.update(sep, hist)
+    assert torch.any(batch.damage > 0.0), "test data must exercise the softening branch"
+    for i in range(n):
+        one = law_obj.update(sep[i], hist[i].reshape(()))
+        assert torch.allclose(batch.traction[i], one.traction, rtol=1e-13, atol=1e-13)
+        assert torch.allclose(batch.tangent[i], one.tangent, rtol=1e-13, atol=1e-13)
+        assert torch.allclose(batch.damage[i], one.damage, rtol=1e-13, atol=1e-13)
+        assert torch.allclose(batch.history[i], one.history, rtol=1e-13, atol=1e-13)
+
+
+@pytest.mark.parametrize("n", [2, 3, 4])
+def test_batched_softening_tangent_is_the_derivative_of_the_traction(n):
+    """The batched tangent must still be the exact derivative (central differences).
+
+    Pointwise agreement alone cannot certify this: a broadcast that mixed the
+    points' mixing weights consistently in both the traction and the tangent
+    would pass a self-comparison.  Central differences of the traction are an
+    independent oracle.
+    """
+    law_obj = law()
+    sep = _mixed_mode_samples(n)[:n]
+    hist = torch.zeros(n, dtype=D)
+    response = law_obj.update(sep, hist)
+    assert torch.any(response.damage > 0.0)
+    step = 1e-13
+    jacobian = torch.zeros(n, 3, 3, dtype=D)
+    for m in range(3):
+        perturb = torch.zeros(3, dtype=D)
+        perturb[m] = step
+        plus = law_obj.update(sep + perturb, hist).traction
+        minus = law_obj.update(sep - perturb, hist).traction
+        jacobian[:, :, m] = (plus - minus) / (2.0 * step)
+    scale = max(float(jacobian.abs().max()), 1.0)
+    error = float((response.tangent - jacobian).abs().max()) / scale
+    assert error < 1e-6, f"batched consistent tangent deviates from finite differences: {error:.3e}"
