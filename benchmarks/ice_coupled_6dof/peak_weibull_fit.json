@@ -1,0 +1,98 @@
+{
+  "concentration_0.3": {
+    "heave": {
+      "n": 8921,
+      "shape_k": 1.3967700273578285,
+      "scale_lambda": 0.001610274942136846,
+      "mean": 0.0014681767144402015,
+      "weibull_plot_slope": 1.3470951292575455,
+      "weibull_plot_r2": 0.9953962679003567,
+      "max": 0.005730311457551866,
+      "p95": 0.003444315066489915
+    },
+    "pitch": {
+      "n": 8921,
+      "shape_k": 1.4028521302545451,
+      "scale_lambda": 0.0001282916417988712,
+      "mean": 0.00011689077325453392,
+      "weibull_plot_slope": 1.332164445363407,
+      "weibull_plot_r2": 0.9974115993076638,
+      "max": 0.00048447711331788635,
+      "p95": 0.00027363838756154437
+    }
+  },
+  "concentration_0.5": {
+    "heave": {
+      "n": 9064,
+      "shape_k": 1.4784520380961768,
+      "scale_lambda": 0.0025060159680471315,
+      "mean": 0.002266379975250223,
+      "weibull_plot_slope": 1.3362190964864955,
+      "weibull_plot_r2": 0.9922870057509663,
+      "max": 0.007980680434959923,
+      "p95": 0.00509499508479443
+    },
+    "pitch": {
+      "n": 9064,
+      "shape_k": 1.4946467373846448,
+      "scale_lambda": 0.00020159364554408218,
+      "mean": 0.00018206713850310225,
+      "weibull_plot_slope": 1.3411794911081223,
+      "weibull_plot_r2": 0.9908347801820696,
+      "max": 0.0006282833415382506,
+      "p95": 0.0003989339750609655
+    }
+  },
+  "concentration_0.7": {
+    "heave": {
+      "n": 9047,
+      "shape_k": 1.632055429776457,
+      "scale_lambda": 0.0033564505334413033,
+      "mean": 0.0030040620153659755,
+      "weibull_plot_slope": 1.454417243701703,
+      "weibull_plot_r2": 0.9895651949615422,
+      "max": 0.01108301604555399,
+      "p95": 0.006436993091012727
+    },
+    "pitch": {
+      "n": 9047,
+      "shape_k": 1.5324860661098043,
+      "scale_lambda": 0.00027022283762717056,
+      "mean": 0.0002433364219940836,
+      "weibull_plot_slope": 1.3438362394497871,
+      "weibull_plot_r2": 0.9873800333152675,
+      "max": 0.000823924648116258,
+      "p95": 0.0005213630751712755
+    }
+  },
+  "pooled": {
+    "heave": {
+      "n": 27032,
+      "shape_k": 1.3679745455240808,
+      "scale_lambda": 0.0024637784472468483,
+      "mean": 0.0022540608253216687,
+      "weibull_plot_slope": 1.3039107832568315,
+      "weibull_plot_r2": 0.997089133708988,
+      "max": 0.01108301604555399,
+      "p95": 0.00540138919689614
+    },
+    "pitch": {
+      "n": 27032,
+      "shape_k": 1.3391202974157466,
+      "scale_lambda": 0.00019771127840240675,
+      "mean": 0.00018156406908141143,
+      "weibull_plot_slope": 1.2761725545808722,
+      "weibull_plot_r2": 0.9975190075251453,
+      "max": 0.000823924648116258,
+      "p95": 0.0004387499080834758
+    }
+  },
+  "definition": "per-impact peak |heave| / |pitch| over the contact window plus 1.5 s of free decay; 2-parameter Weibull by MLE; R^2 is the coefficient of determination of the Weibull probability plot ln(-ln(1-F)) vs ln(x) with Blom plotting positions",
+  "criterion": {
+    "metric": "Weibull probability-plot R^2 for heave and pitch, per concentration",
+    "threshold": 0.95,
+    "pass_heave": true,
+    "pass_pitch": true
+  },
+  "git_commit": "fe26e5fe67162caaab36f7a46cd535a771e65ab7"
+}
