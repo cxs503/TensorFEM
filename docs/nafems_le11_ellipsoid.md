@@ -172,3 +172,34 @@ PYTHONPATH=src python3 scripts/gen_nafems_le11_report.py
 
 *图5 长宽比敏感性（n=128），b/a=1 处为球极限（机器精度）*
 
+## 返修轮1（m15342）：交付证据补齐（L2/L3/L4 机器可查）
+
+上一轮（m15261）实测只有 L1：实现与算例真实存在，但运行工件写在 `runs/`（推送门禁按
+`^(artifacts?/|runs/|results[-/])` 整类滤除，见 `tp_pusher.py:349`），合并树里看不见 →
+gate 判 `impl_files/entry/run_artifacts` 全缺。本轮不改物理，只把交付面补成**仓库内可复现**
+的形态：
+
+| 阶梯 | 证据 | 位置 |
+|---|---|---|
+| L2 impl | 非占位实现（椭球几何/闭式膜力/Rayleigh-Ritz 参考解/算例驱动）+ 平台侧调用适配层 | `src/tensorfem/ellipsoid_shell.py`（380 行）、`src/tensorfem/integration_callers.py` |
+| L2 entry | 一键入口（写工件 + 渲染报告 + 退出码=判定） | `benchmarks/nafems_le11/run.py` |
+| L2 run_artifacts | 真实运行产物（入库路径，非 `runs/`） | `benchmarks/nafems_le11/results.json`（17.4 KB）、`report.md` |
+| L3 integration | 算例注册进 CLI `tensorfem verify` 的注册表（59 项中 4 项 `shell.spheroid.*`），并暴露 `run_nafems_le11_case()` 给平台算例池结算 | `src/tensorfem/benchmark_registry.py`、`benchmarks/nafems_le11/cli_verify_report.json` |
+| L4 benchmark | ref vs got 五项 + 容差判定 + `repro_cmd` | `benchmarks/nafems_le11/evidence.json` |
+
+**一键复现（实测 35.8 s，判定 PASS）**
+
+```bash
+PYTHONPATH=src python3 benchmarks/nafems_le11/run.py
+PYTHONPATH=src python3 benchmarks/nafems_le11/maturity_evidence.py
+PYTHONPATH=src python3 -m pytest tests/test_ellipsoid_shell.py tests/test_nafems_le11_case_pool.py -q
+```
+
+**复现结果（本轮实测，与上一轮逐位一致）**：极部 $N_\varphi$ 0.005%、极部 $N_\theta$ 0.003%、
+赤道 $N_\varphi$ 0.077%、赤道 $N_\theta$ 2.646%、赤道 $w$ 2.307% —— 五项全部 <5%；
+`tensorfem verify` 59/59 通过（含 4 项椭球壳检查，最差 2.307%）。
+
+**参考解出处（诚实声明，未变）**：本沙箱能访问外网部分站点（`https://www.nafems.org` 返回 200），
+但搜索引擎缓存与站点文档均未给出 LE11 原表数值（zhihu/nafems 文档页 403），因此 ref 仍为
+**闭式薄膜静力解 + 独立 Rayleigh–Ritz 位移解**，不是手册数值转录；后续拿到手册须把手册目标值
+作为新增判定项补入（`evidence.json` 的 `external_anchor` 已如实标注）。
