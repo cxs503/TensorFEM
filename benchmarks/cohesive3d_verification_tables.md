@@ -7,6 +7,7 @@
 | `law_energy_mixed_45` | int t . d(delta) along the envelope == G_c(direction) | mixed_45: measure 594.316809 vs 594.316824 J/m^2 | 1e-05 | PASS |
 | `law_initiation_quadratic` | (t_n/t_n0)^2 + (t_s/t_s0)^2 == 1 at damage onset | max |quadratic criterion - 1| over 11 mode-mix angles | 1e-12 | PASS |
 | `law_tangent_vs_ad` | analytic dt/d(delta) == autograd Jacobian of the traction | max relative tangent difference over 35 (angle, amplitude) points | 1e-10 | PASS |
+| `law_batch_matches_pointwise` | batched update (16 softening points) == 16 independent point calls | max relative difference 0.0e+00 at damage 0.991 | 1e-12 | PASS |
 | `element_patch_small_strain` | uniform opening: reaction on the top face == t * A (unit area) | measure 4615384.615385 N vs 4615384.615385 N | 1e-12 | PASS |
 | `element_rigid_rotation_small_strain` | rigid rotation of the body in a fixed frame must give zero traction | max |f| / (t_n0 A) over theta = [0.01, 0.1, 0.3, 0.7, 1.4, 3.0] (reference-frame separation) | n/a | **KNOWN_LIMIT** |
 | `element_rigid_rotation_corotational` | rigid rotation of the body in a fixed frame must give zero traction | max |f| / (t_n0 A) over theta = [0.01, 0.1, 0.3, 0.7, 1.4, 3.0] (current-frame separation) | 1e-10 | PASS |
