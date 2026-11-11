@@ -1,0 +1,246 @@
+{
+ "audit_mission": 15268,
+ "audited_mission": 15144,
+ "anchor": "REPRO-FEM-HILLERBORG1976",
+ "audited_branch_head": "fb4a40158e417e5596fdefccec4cfdbaa56c343a REPRO-FEM-HILLERBORG1976: reproduce Hillerborg 1976 three-point bend fracture (honest FAIL: solver stalls for ductile concrete)",
+ "deliverables": {
+  "files": {
+   "docs/repro-hillerborg1976.md": {
+    "worktree_exists": true,
+    "bytes": 5293,
+    "sha256": "7b5bae2202de875f340958137bdc09a363cfbde386df828a94651dc889a56121",
+    "in_branch_commit": true,
+    "worktree_matches_branch_commit": true
+   },
+   "scratch/m15144_repro.py": {
+    "worktree_exists": true,
+    "bytes": 8068,
+    "sha256": "4d049ea9dead9951e72b3c9d8f361ebc373d6d353ed909c419026f16620a7efb",
+    "in_branch_commit": true,
+    "worktree_matches_branch_commit": true
+   },
+   "scratch/m15144_precheck.py": {
+    "worktree_exists": true,
+    "bytes": 1707,
+    "sha256": "bbefdc9b88bd2fdb1746fa166c5bbec0c9a71da9a77b143c39933f1eec0c3e1c",
+    "in_branch_commit": false,
+    "worktree_matches_branch_commit": false
+   },
+   "scratch/repro_hillerborg1976/coarse_16x16.json": {
+    "worktree_exists": true,
+    "bytes": 1737,
+    "sha256": "9b32e1e01b139a581f36207119d2a4d98f22668d542c9e3ce9a49a2182c559b2",
+    "in_branch_commit": true,
+    "worktree_matches_branch_commit": true
+   },
+   "scratch/repro_hillerborg1976/coarse_16x16.npz": {
+    "worktree_exists": true,
+    "bytes": 6770,
+    "sha256": "e2c98135a81ba9a8e925afa87eb5c0c17a9777983dd822d830fc6d69988e507c",
+    "in_branch_commit": true,
+    "worktree_matches_branch_commit": true
+   },
+   "scratch/repro_hillerborg1976/fine_32x32.json": {
+    "worktree_exists": true,
+    "bytes": 2330,
+    "sha256": "8ac3a3b903ef2ba82f70214e1c738d5311ded65fe2e8fb16addf0e668732419d",
+    "in_branch_commit": true,
+    "worktree_matches_branch_commit": true
+   },
+   "scratch/repro_hillerborg1976/fine_32x32.npz": {
+    "worktree_exists": true,
+    "bytes": 8682,
+    "sha256": "846e47d58ce899e6c19fcbb93bad16eb3f271664adbf12593d2aff12ffabedd7",
+    "in_branch_commit": true,
+    "worktree_matches_branch_commit": true
+   },
+   "scratch/repro_hillerborg1976/brittle_16x16.npz": {
+    "worktree_exists": true,
+    "bytes": 3744,
+    "sha256": "3dcbde8ca9cc05473b8e5dd070d4f1874ce56e092a5351922d2a18ae44347c6a",
+    "in_branch_commit": true,
+    "worktree_matches_branch_commit": true
+   }
+  },
+  "branch_is_ancestor_of_main": false,
+  "present_on_main": {
+   "docs/repro-hillerborg1976.md": false,
+   "scratch/m15144_repro.py": false,
+   "scratch/m15144_precheck.py": false,
+   "scratch/repro_hillerborg1976/coarse_16x16.json": false,
+   "scratch/repro_hillerborg1976/coarse_16x16.npz": false,
+   "scratch/repro_hillerborg1976/fine_32x32.json": false,
+   "scratch/repro_hillerborg1976/fine_32x32.npz": false,
+   "scratch/repro_hillerborg1976/brittle_16x16.npz": false
+  },
+  "branch_on_origin": false,
+  "branch_head": "fb4a40158e417e5596fdefccec4cfdbaa56c343a REPRO-FEM-HILLERBORG1976: reproduce Hillerborg 1976 three-point bend fracture (honest FAIL: solver stalls for ductile concrete)",
+  "main_head": "1e701d1f1469ccf6309b3b4bf135d98e7614e5ef Merge #684 (m15191) via push-merge"
+ },
+ "benchmark_ledger": {
+  "registered_cases_for_anchor": {
+   "row_count": 0,
+   "rows": []
+  },
+  "all_registered_anchors": [],
+  "tensorbench_results_rows": 0,
+  "tensor_reports_rows": {
+   "count": 0,
+   "rows": []
+  },
+  "pre_existing_verdicts": 0
+ },
+ "committed_artifacts": {
+  "coarse_16x16": {
+   "peak_load_n": 2797.875566433862,
+   "analytic_load_n": 2666.6666666666674,
+   "err_vs_analytic_pct": 4.920333741269791,
+   "steps": 53,
+   "stop_reason": "max_steps",
+   "converged_flag": true,
+   "crack_height_mm": 0.0,
+   "dissipated_j": 0.011573912804809166,
+   "gf_area_j": 0.0,
+   "energy_relative_error_pct": null,
+   "balance_residual_pct": -127.74086073283543,
+   "mesh": {
+    "nx": 16,
+    "ny": 16,
+    "n_dofs": 612,
+    "n_segments": 16,
+    "segment_height": 0.00625,
+    "segment_over_lch": 0.33333333333333337
+   },
+   "law_fracture_energy": 10.0,
+   "law_cohesive_length": 0.01875
+  },
+  "fine_32x32": {
+   "peak_load_n": 4004.263531629244,
+   "analytic_load_n": 2666.6666666666674,
+   "err_vs_analytic_pct": 50.15988243609661,
+   "steps": 76,
+   "stop_reason": "max_steps",
+   "converged_flag": true,
+   "crack_height_mm": 6.25,
+   "dissipated_j": 0.31776216251627465,
+   "gf_area_j": 0.0625,
+   "energy_relative_error_pct": 408.4194600260394,
+   "balance_residual_pct": -42.251275935487286,
+   "mesh": {
+    "nx": 32,
+    "ny": 32,
+    "n_dofs": 2244,
+    "n_segments": 32,
+    "segment_height": 0.003125,
+    "segment_over_lch": 0.016666666666666666
+   },
+   "law_fracture_energy": 100.0,
+   "law_cohesive_length": 0.1875
+  }
+ },
+ "repro": {
+  "cmd": "python3 scratch/m15144_repro.py",
+  "rc": 1,
+  "stdout_tail": "  \"ny\": 32,\n  \"n_dofs\": 2244,\n  \"n_segments\": 32,\n  \"segment_height\": 0.003125,\n  \"segment_over_lch\": 0.16666666666666669\n }\n}\n\nMesh sensitivity: P_cr drift = +2.92% (coarse -> fine)\n  coarse P_cr = 2797.9 N\n  fine   P_cr = 2879.6 N\n  analytic P_cr = 2666.7 N",
+  "stderr_tail": "  File \"/root/tp-agent/work/m15268/artifacts/m15268_audit/repro_copy/scratch/m15144_repro.py\", line 176, in main\n    area = np.trapz(load, cmod)\n           ^^^^^^^^\n  File \"/usr/lib64/python3.11/site-packages/numpy/__init__.py\", line 792, in __getattr__\n    raise AttributeError(f\"module {__name__!r} has no attribute {attr!r}\")\nAttributeError: module 'numpy' has no attribute 'trapz'. Did you mean: 'trace'?",
+  "fail_signature": "AttributeError: module 'numpy' has no attribute 'trapz'. Did you mean: 'trace'?",
+  "artifacts": {
+   "coarse_16x16": {
+    "peak_load_n": 2797.875566433862,
+    "err_vs_analytic_pct": 4.920333741269791,
+    "steps": 53,
+    "dissipated_j": 0.011573912804809166,
+    "balance_residual_pct": -127.74086073283543,
+    "sha256_of_json": "f6655003fa3279510e37d0ecad81970513241d7d3bb11e7378cf4d769b9c73f0"
+   },
+   "fine_32x32": {
+    "peak_load_n": 2879.6078047186693,
+    "err_vs_analytic_pct": 7.985292676950067,
+    "steps": 52,
+    "dissipated_j": 0.014463715048715813,
+    "balance_residual_pct": -163.22919395212895,
+    "sha256_of_json": "9088025c0c9a1b3a4758eac3be4d95d4f51bd1dc5ebe59084eb3cefb47897f51"
+   }
+  },
+  "comparison_vs_committed": {
+   "coarse_peak_identical": true,
+   "fine_peak_recorded_n": 4004.263531629244,
+   "fine_peak_rerun_n": 2879.6078047186693,
+   "fine_steps_recorded": 76,
+   "fine_steps_rerun": 52,
+   "fine_peak_identical": false
+  }
+ },
+ "criteria": {
+  "C1_aW_series": {
+   "text": "三点弯 P_cr 闭式解（a/W 序列）",
+   "tol_pct": 10.0,
+   "status": "NOT_RUN",
+   "why": "build_three_point_bend 无初始缺口参数 → a/W 序列无法构型；被审单只跑了无缺口弯曲极限（σ_MOR 闭式），且该闭式来自梁理论而非论文数值表",
+   "notch_supported_by_module": false,
+   "unnotched_closed_form_vs_fem": {
+    "ref_n": 2666.6666666666674,
+    "got_n": 2797.875566433862,
+    "err_pct": 4.920333741269791,
+    "within_10pct": true,
+    "note": "单是『无缺口极限 vs 梁理论』的数值自洽检查，不构成论文 a/W 序列复现"
+   }
+  },
+  "C2_gf_backcalc": {
+   "text": "裂缝口张开位移 CMOD 断裂能 G_F 反算",
+   "tol_pct": 10.0,
+   "status": "FAIL",
+   "why": "repro_cmd 在 G_F 反算这一步抛 AttributeError（np.trapz 已在 numpy 2.x 移除）；工件里唯一的 G_F 类指标 energy_relative_error_pct（G_F 面积 vs 损伤耗散）记录值远超容差",
+   "gf_area_vs_dissipated_err_pct_committed_fine": 408.4194600260394,
+   "within_10pct": false
+  },
+  "C3_mesh_sensitivity": {
+   "text": "网格敏感性（两尺寸 P_cr 漂移）",
+   "tol_pct": 10.0,
+   "status": "WITHHELD",
+   "why": "被审工件记 P_cr 漂移 +43%（判 FAIL）；本单按同一 repro_cmd 独立复跑漂移 +2.9%（判 PASS）——两次结果相互矛盾，说明细网格工件不是该脚本在其提交状态下的产物，判据无法确定",
+   "drift_pct_recorded": 43.11799923014552,
+   "drift_pct_rerun": 2.9212249202698577,
+   "recorded_within_10pct": false,
+   "rerun_within_10pct": true
+  }
+ },
+ "report": {
+  "doc_sections": [
+   "① Problem setup and paper reference",
+   "② Method and implementation",
+   "③ Parameter table",
+   "④ Results and comparison",
+   "⑤ Convergence / sensitivity",
+   "⑥ Failure modes and artifacts",
+   "⑦ Ecosystem friction and debugging findings",
+   "References"
+  ],
+  "section_count": 8,
+  "has_ref_vs_got_table": true,
+  "has_repro_cmd": true,
+  "friction_items": 7,
+  "doc_lines": 127,
+  "notes": "文档在分支上存在（126 行/7 段），但平台 tensor_reports 无对应行 → 六段报告未入库"
+ },
+ "figures": [
+  "artifacts/m15268_audit/fig1_criteria_vs_tolerance.png",
+  "artifacts/m15268_audit/fig2_committed_vs_rerun.png"
+ ],
+ "level_proposal": {
+  "level": 1,
+  "rationale": "L1（数学/单元级验证脚本+可核工件）：有真实验证脚本与可核工件，但无独立功能实现面（脚本只调用既有 cohesive_bending 模块）、未入库（分支非 main 祖先、origin 无该分支）、repro_cmd 在当前环境不可完成、平台报告缺位 → L2/L3/L4 均不达",
+  "L2_blockers": [
+   "分支未入库（main 无 docs/scratch 该文件；origin 无 agent/m15144）",
+   "无包内入口：交付物为 scratch/ 脚本，无 src/ 实现增量",
+   "repro_cmd 不可完成（np.trapz 在 numpy 2.4.6 被移除，rc!=0）"
+  ],
+  "L3_blockers": [
+   "integration_callers=0：无 api/backend/cli 引用该脚本"
+  ],
+  "L4_blockers": [
+   "tensor_benchmark_cases 无该 anchor 行（0 行）→ 无机器裁判基准",
+   "三条论文判据：C1 NOT_RUN / C2 FAIL / C3 WITHHELD（矛盾不可裁定）"
+  ]
+ }
+}
