@@ -1,0 +1,61 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "CASE-FEM-PINCHED-CYLINDER",
+  "mission": "m16076",
+  "criteria": {
+    "primary_mesh_error": "<= 5% at 16x16",
+    "finest_mesh_error": "<= 5%",
+    "extrapolated_limit_error": "<= 5%",
+    "dense_sparse_consistency": "<= 1e-10 rel",
+    "shear_factor_sensitivity": "<= 1% over k in {0.5, 5/6, 1.0}",
+    "drilling_factor_sensitivity": "<= 0.1% over 1e-10 ... 1e-4"
+  },
+  "gates": [
+    {
+      "id": "G1_primary_16x16_within_5pct",
+      "description": "load-point deflection on the 16x16 octant mesh within 5% of the MacNeal-Harder reference",
+      "threshold_pct": 5.0,
+      "actual_pct": 0.1671068190826297,
+      "passed": true
+    },
+    {
+      "id": "G2_finest_mesh_within_5pct",
+      "description": "finest mesh (64x64) within 5% of reference",
+      "threshold_pct": 5.0,
+      "actual_pct": 2.6670738758630685,
+      "passed": true
+    },
+    {
+      "id": "G3_extrapolated_limit_within_5pct",
+      "description": "extrapolated continuum limit of this ladder (self-generated, model selected by residual) within 5% of the published reference",
+      "threshold_pct": 5.0,
+      "actual_pct": 3.5385283048312344,
+      "passed": true
+    },
+    {
+      "id": "G4_dense_sparse_consistent",
+      "description": "CSR/SuperLU path reproduces the production dense elimination at the primary mesh",
+      "threshold_rel": 1e-10,
+      "actual_rel": 1.2922996006636822e-13,
+      "passed": true
+    },
+    {
+      "id": "G5_shear_factor_insensitive",
+      "description": "k in {0.5, 5/6, 1.0} changes the load-point deflection by < 1% (R/t = 100, bending dominated)",
+      "threshold_pct": 1.0,
+      "actual_pct": 1.3079334291806743,
+      "passed": false
+    },
+    {
+      "id": "G6_drilling_factor_insensitive",
+      "description": "drilling regularisation 1e-10 ... 1e-4 changes the deflection by < 0.1%",
+      "threshold_pct": 0.1,
+      "actual_pct": 1.028066520802895e-11,
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "failed_gates": [
+    "G5_shear_factor_insensitive"
+  ]
+}
