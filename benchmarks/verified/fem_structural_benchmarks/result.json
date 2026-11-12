@@ -2,7 +2,7 @@
   "anchor": "fem_structural_benchmarks",
   "schema": "tensorfem.structural-verification-face.v1",
   "mission": "IN41-N01",
-  "generated_at": "2026-11-07T14:08:07+00:00",
+  "generated_at": "2026-11-12T18:00:53+00:00",
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
@@ -724,55 +724,55 @@
           "elements_per_side": 8,
           "elements": 64,
           "shear_treatment": "mitc",
-          "w_centre_fem_m": 0.0021042106901806965,
+          "w_centre_fem_m": 0.002104210690181216,
           "w_centre_navier_m": 0.0021124233835516787,
           "w_centre_timoshenko_m": 0.0021111999999999997,
-          "w_centre_rel_error_navier": 0.0038878065045720054,
-          "w_centre_rel_error_timoshenko": 0.00331058631077266,
-          "alpha_fem": 0.004046559019578263,
-          "l2_defl_rel_error": 0.04588435907715276
+          "w_centre_rel_error_navier": 0.003887806504326056,
+          "w_centre_rel_error_timoshenko": 0.003310586310526568,
+          "alpha_fem": 0.004046559019579263,
+          "l2_defl_rel_error": 0.045884359077016434
         },
         {
           "elements_per_side": 16,
           "elements": 256,
           "shear_treatment": "mitc",
-          "w_centre_fem_m": 0.002113957030448329,
+          "w_centre_fem_m": 0.002113957030449628,
           "w_centre_navier_m": 0.0021124233835516787,
           "w_centre_timoshenko_m": 0.0021111999999999997,
-          "w_centre_rel_error_navier": 0.0007260130277821363,
-          "w_centre_rel_error_timoshenko": 0.001305906805764078,
-          "alpha_fem": 0.004065301981631402,
-          "l2_defl_rel_error": 0.009768390948740102
+          "w_centre_rel_error_navier": 0.0007260130283972155,
+          "w_centre_rel_error_timoshenko": 0.0013059068063795136,
+          "alpha_fem": 0.004065301981633901,
+          "l2_defl_rel_error": 0.00976839094866504
         },
         {
           "elements_per_side": 32,
           "elements": 1024,
           "shear_treatment": "mitc",
-          "w_centre_fem_m": 0.002118823408440877,
+          "w_centre_fem_m": 0.0021188234084068202,
           "w_centre_navier_m": 0.0021124233835516787,
           "w_centre_timoshenko_m": 0.0021111999999999997,
-          "w_centre_rel_error_navier": 0.003029707462543777,
-          "w_centre_rel_error_timoshenko": 0.003610936169419041,
-          "alpha_fem": 0.004074660400847842,
-          "l2_defl_rel_error": 0.0006827979931078379
+          "w_centre_rel_error_navier": 0.0030297074464215555,
+          "w_centre_rel_error_timoshenko": 0.003610936153287477,
+          "alpha_fem": 0.004074660400782347,
+          "l2_defl_rel_error": 0.000682797976973369
         }
       ],
       "observations": {
-        "worst_centre_rel_error_navier": 0.0038878065045720054,
-        "worst_centre_rel_error_timoshenko": 0.003610936169419041,
+        "worst_centre_rel_error_navier": 0.003887806504326056,
+        "worst_centre_rel_error_timoshenko": 0.003610936153287477,
         "order_l2_field": {
           "per_level": [
-            2.231809610007378,
-            3.8385902176662197
+            2.2318096100141775,
+            3.8385902517459165
           ],
-          "finest": 3.8385902176662197
+          "finest": 3.8385902517459165
         },
         "order_centre_deflection": {
           "per_level": [
-            2.420889076366798,
-            -2.0611111573819
+            2.420889075053277,
+            -2.0611111484825195
           ],
-          "finest": -2.0611111573819
+          "finest": -2.0611111484825195
         },
         "order_note": "the centre deflection error is not monotone: at n = 32 it sits at ~0.3 %, above its n = 16 value (7e-4), so its observed order is not a usable rate.  The L2 norm of the deflection field is monotone and second order, which is the rate this case is graded on."
       }
@@ -1219,8 +1219,8 @@
     }
   },
   "timings_s": {
-    "beam": 0.03553199768066406,
-    "plate": 40.26272654533386,
-    "cylinder": 0.4718332290649414
+    "beam": 0.02866840362548828,
+    "plate": 27.570692777633667,
+    "cylinder": 0.26645421981811523
   }
 }

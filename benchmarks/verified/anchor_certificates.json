@@ -2,10 +2,10 @@
   "schema": "tensorfem.anchor-certificates/1",
   "gate_schema": "tensorfem.verified-gates.v1",
   "git_tracking_checked": true,
-  "anchors": 32,
+  "anchors": 33,
   "certified": 15,
   "contradicted": 8,
-  "uncertified": 9,
+  "uncertified": 10,
   "gates_total": 229,
   "gates_recomputed": 187,
   "gates_contradicted": 0,
@@ -14,9 +14,9 @@
   "gates_unrecomputable": 42,
   "defect_counts": {
     "E_ANCHOR_NAME_MISMATCH": 2,
-    "E_ARTIFACT_MISSING": 1,
+    "E_ARTIFACT_MISSING": 3,
     "E_GATE_VALUE_NOT_FINITE": 1,
-    "E_NO_GATES": 9,
+    "E_NO_GATES": 10,
     "E_OVERALL_ABSENT": 2,
     "E_PASS_WITHOUT_CRITERION": 4,
     "E_SCHEMA": 4
@@ -540,7 +540,9 @@
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
       "defects": [],
-      "warnings": [],
+      "warnings": [
+        "W_ARTIFACT_AMBIGUOUS"
+      ],
       "gate_detail": [
         {
           "id": "C1_tangent_flat",
@@ -1391,9 +1393,12 @@
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
       "defects": [
-        "E_ANCHOR_NAME_MISMATCH"
+        "E_ANCHOR_NAME_MISMATCH",
+        "E_ARTIFACT_MISSING"
       ],
-      "warnings": [],
+      "warnings": [
+        "W_ARTIFACT_AMBIGUOUS"
+      ],
       "gate_detail": [
         {
           "id": "L3.beam_frequencies",
@@ -1972,7 +1977,7 @@
           "quantity": "max relative frequency difference against solve_plate_vibration",
           "operator": "<=",
           "operator_source": "declared",
-          "value": 3.490630007263462e-11,
+          "value": 9.915601673071706e-11,
           "threshold": 1e-09,
           "declared_passed": true,
           "recomputed_passed": true,
@@ -2058,7 +2063,7 @@
           "quantity": "MAC of the panel eigenmode against its DNV-RP-C201 mode family",
           "operator": ">=",
           "operator_source": "declared",
-          "value": 0.980292819222623,
+          "value": 0.9802928192226222,
           "threshold": 0.9,
           "declared_passed": true,
           "recomputed_passed": true,
@@ -2278,6 +2283,30 @@
         "E_NO_GATES"
       ],
       "warnings": [],
+      "gate_detail": []
+    },
+    {
+      "anchor": "fem_shell4_formulation_matrix",
+      "directory": "benchmarks/verified/fem_shell4_formulation_matrix",
+      "grade": "uncertified",
+      "certified": false,
+      "has_runner": false,
+      "has_result": false,
+      "has_gates": false,
+      "declared_overall": null,
+      "recomputed_overall": null,
+      "gates": 0,
+      "gates_passed": 0,
+      "gates_failed": 0,
+      "gates_contradicted": 0,
+      "gates_contradicted_inferred": 0,
+      "gates_unrecomputable": 0,
+      "defects": [
+        "E_NO_GATES"
+      ],
+      "warnings": [
+        "W_NO_RUNNER"
+      ],
       "gate_detail": []
     },
     {
@@ -2784,14 +2813,14 @@
       "defects": [
         "E_SCHEMA",
         "E_PASS_WITHOUT_CRITERION",
-        "E_GATE_VALUE_NOT_FINITE"
+        "E_GATE_VALUE_NOT_FINITE",
+        "E_ARTIFACT_MISSING"
       ],
       "warnings": [
         "W_OPERATOR_ABSENT",
         "W_OPERATOR_INFERRED",
         "W_CONTRADICTION_INFERRED",
-        "W_FAILED_GATES_LIST_UNCHECKED",
-        "W_ARTIFACT_AMBIGUOUS"
+        "W_FAILED_GATES_LIST_UNCHECKED"
       ],
       "gate_detail": [
         {
@@ -3116,7 +3145,7 @@
           "quantity": "SSSS centre deflection vs Timoshenko table 8 alpha = 0.00406, finest level",
           "operator": "<=",
           "operator_source": "declared",
-          "value": 0.003610936169419041,
+          "value": 0.003610936153287477,
           "threshold": 0.02,
           "declared_passed": true,
           "recomputed_passed": true,
@@ -3129,7 +3158,7 @@
           "quantity": "SSSS centre deflection vs converged Navier series, finest level",
           "operator": "<=",
           "operator_source": "declared",
-          "value": 0.003029707462543777,
+          "value": 0.0030297074464215555,
           "threshold": 0.02,
           "declared_passed": true,
           "recomputed_passed": true,
@@ -3142,7 +3171,7 @@
           "quantity": "observed order, L2 deflection field error",
           "operator": ">=",
           "operator_source": "declared",
-          "value": 3.8385902176662197,
+          "value": 3.8385902517459165,
           "threshold": 1.5,
           "declared_passed": true,
           "recomputed_passed": true,

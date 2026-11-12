@@ -3,7 +3,7 @@
   "anchor": "fem_beam_static",
   "title": "Euler-Bernoulli beam statics vs closed form (L1 of the P19 ladder)",
   "mission": "5418",
-  "generated_at": "2026-11-07T11:50:51+00:00",
+  "generated_at": "2026-11-12T17:57:58+00:00",
   "criteria": {
     "section_relative_error_max": 0.005,
     "cantilever_tip_relative_error_max": 0.005,
