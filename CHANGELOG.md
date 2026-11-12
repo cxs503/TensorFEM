@@ -1,5 +1,24 @@
 ## Unreleased
 
+### CASE-FEM-CLAMPED-PLATE-UNIFORM: clamped square plate under uniform pressure (Timoshenko Table 30)
+- **Case pool entry**: `benchmarks/case_clamped_plate_uniform.py` runs the already merged Q4 Mindlin
+  path (`plate_uniform_load.solve_uniform_square_plate`, `winkler_k = 0`) on a fully clamped square
+  plate at `a/t = 100` and reports `alpha = w_max D/(q a^4)` against the Timoshenko &
+  Woinowsky-Krieger (1959) Sec. 30, Table 30 entry `0.00126`.  Primary anchor: `alpha = 0.00126420`,
+  `+0.33 %` (gate 3 %).  All eleven gates pass; artefacts in
+  `benchmarks/artifacts/CASE-FEM-CLAMPED-PLATE-UNIFORM/`, report in
+  `docs/CASE-FEM-CLAMPED-PLATE-UNIFORM.md` (rendered from the artifact by
+  `scripts/render_case_doc.py`, so no number is hand-copied).
+- **What the case adds beyond the existing `verify_plate_uniform_load.py`**: a dyadic mesh study
+  (`nx = 4 ... 32`) with a three-level Richardson limit (`order = 1.99`, `alpha_inf = 0.00126786`,
+  `0.03 %` from the converged Ritz value), a reported reference-quality floor (clamped Ritz
+  deflection drifts `0.22 %` between N = 10 and N = 12; the Ritz *moment* drifts `1.71 %`, so the
+  moment is anchored to the table instead), two sensitivity sweeps (`a/t` 200...10 and `nu`
+  0.25...0.35), and a dimensionless-group scale-invariance gate.
+- **Worth knowing**: only even element counts put a node at the plate centre (`nx = 17` raises), and
+  the clamped Ritz reference is hard-capped at `N <= 12` by `CLAMPED_BEAM_EIGENVALUES`.
+- Tests: `tests/test_case_clamped_plate_uniform.py` (8 tests, ~62 s, all pass).
+
 ### Robinson patch test A/B/C: the case is now an entry point, an integrated gate, and a reproducible artefact
 - **Entry + integration (the case was previously reachable only from its own driver)**: the
   A/B/C patch cases are now callable as `tensorfem patch-test` (`src/tensorfem/cli.py`) and are
