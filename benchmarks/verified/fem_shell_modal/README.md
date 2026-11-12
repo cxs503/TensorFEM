@@ -77,6 +77,23 @@ The key achievement is that the complete cylindrical shell modal analysis
 pipeline (mesh generation → mass matrix → assembly → eigenvalue solve) works
 correctly and produces physically reasonable results.
 
+## Artifacts and provenance
+
+The certificate (`gates_verified.json`) names four figures that were missing from
+every commit until the m16923 repair: `tests/test_verified_anchor_certificates.py`
+reported the anchor as unregistered debt and the fail-closed gate was red. They are
+now committed together with `figure_provenance.json`, which stamps each PNG with
+the sha256 of the `result.json` it was rendered from:
+
+    PYTHONPATH=src python benchmarks/verified/fem_shell_modal/run_verification.py --from-dump
+    PYTHONPATH=src python -m pytest tests/test_shell_modal_anchor_certificate.py -q
+
+`--from-dump` runs **no eigensolve**: it re-renders `beam_convergence.png`,
+`plate_convergence.png`, `shell_fem_vs_dmv.png` and `shell_modal_audit.png` from the
+committed `result.json` and refreshes the stamp. The verdict is unchanged and stays
+FAIL (G3 50.36 % vs a 15 % criterion, G4 eight rotation-only mechanisms in the first
+ten modes) — the repair restores the evidence chain, not the accuracy.
+
 ## Files
 
 - `src/tensorfem/cylindrical_shell_modal.py` - New module for shell modal analysis

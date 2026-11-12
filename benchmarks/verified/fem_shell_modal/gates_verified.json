@@ -46,7 +46,14 @@
   ],
   "artifacts": {
     "result": "result.json",
-    "figure": "shell_modal_audit.png"
+    "figure": "shell_modal_audit.png",
+    "figures": [
+      "beam_convergence.png",
+      "plate_convergence.png",
+      "shell_fem_vs_dmv.png",
+      "shell_modal_audit.png"
+    ],
+    "provenance": "figure_provenance.json"
   },
   "limitations": [
     "the cylinder FE spectrum contains rotation-only mechanisms; the shell element (or its SS constraint set) is not yet certifiable",
