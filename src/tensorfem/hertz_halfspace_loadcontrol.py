@@ -517,9 +517,14 @@ def _contact_state_fixed_indentation(
             a_fit_c = float(np.sqrt(-coeff[0] / coeff[1]))
 
     # Equilibrium audit: the free-dof residual of (internal force + applied
-    # contact force) must vanish; lambda acts downwards, hence f_ext = -lambda.
+    # contact force) must vanish.  ``lam`` is the nodal contact force the
+    # indenter transmits to the body, assembled at the axial dofs with the same
+    # sign as the internal force, so ``(K u)_free + lam == 0`` at the ALM fixed
+    # point.  Using ``f_ext = -lam`` here (the pre-m166xx convention) reports a
+    # residual of exactly ``2 |lam|`` -- i.e. the audit could never pass, and a
+    # real equilibrium violation would have been invisible behind that offset.
     f_ext = np.zeros(ndof)
-    f_ext[cz_all] = -lam
+    f_ext[cz_all] = lam
     resid = (internal + f_ext)[free_dofs]
     return ContactState(
         prescribed_indentation=float(-obstacle[0]),

@@ -3,20 +3,20 @@
   "gate_schema": "tensorfem.verified-gates.v1",
   "git_tracking_checked": true,
   "anchors": 33,
-  "certified": 15,
-  "contradicted": 8,
-  "uncertified": 10,
-  "gates_total": 229,
-  "gates_recomputed": 187,
+  "certified": 6,
+  "contradicted": 18,
+  "uncertified": 9,
+  "gates_total": 243,
+  "gates_recomputed": 201,
   "gates_contradicted": 0,
   "gates_contradicted_inferred": 2,
   "gates_without_numeric_criterion": 9,
   "gates_unrecomputable": 42,
   "defect_counts": {
     "E_ANCHOR_NAME_MISMATCH": 2,
-    "E_ARTIFACT_MISSING": 3,
+    "E_ARTIFACT_MISSING": 13,
     "E_GATE_VALUE_NOT_FINITE": 1,
-    "E_NO_GATES": 10,
+    "E_NO_GATES": 9,
     "E_OVERALL_ABSENT": 2,
     "E_PASS_WITHOUT_CRITERION": 4,
     "E_SCHEMA": 4
@@ -73,8 +73,8 @@
     {
       "anchor": "fem_beam_static",
       "directory": "benchmarks/verified/fem_beam_static",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -86,7 +86,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
@@ -414,8 +416,8 @@
     {
       "anchor": "fem_cantilever",
       "directory": "benchmarks/verified/fem_cantilever",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -427,7 +429,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
@@ -1018,8 +1022,8 @@
     {
       "anchor": "fem_hertz_contact",
       "directory": "benchmarks/verified/fem_hertz_contact",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1031,7 +1035,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
@@ -1130,24 +1136,205 @@
     {
       "anchor": "fem_hertz_contact_loadcontrol",
       "directory": "benchmarks/verified/fem_hertz_contact_loadcontrol",
-      "grade": "uncertified",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
-      "has_result": false,
-      "has_gates": false,
-      "declared_overall": null,
-      "recomputed_overall": null,
-      "gates": 0,
-      "gates_passed": 0,
+      "has_result": true,
+      "has_gates": true,
+      "declared_overall": true,
+      "recomputed_overall": true,
+      "gates": 14,
+      "gates_passed": 14,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_NO_GATES"
-      ],
+      "defects": [],
       "warnings": [],
-      "gate_detail": []
+      "gate_detail": [
+        {
+          "id": "contact_radius_aR005",
+          "quantity": "|a_FE/a_Hertz - 1|, a/R = 0.05, h/a = 0.0075 (primary linear-zero-crossing estimator)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.4451272465144873,
+          "threshold": 3.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "indentation_aR005",
+          "quantity": "|delta_FE/delta_Hertz - 1|, a/R = 0.05, h/a = 0.0075",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 1.0099514889584937,
+          "threshold": 3.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "refinement_stability_indentation_aR005",
+          "quantity": "|indentation error(h/a=0.0075) - indentation error(h/a=0.03)| (pct points)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.014269347237316765,
+          "threshold": 0.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "contact_radius_aR010",
+          "quantity": "|a_FE/a_Hertz - 1|, a/R = 0.1, h/a = 0.0075 (primary linear-zero-crossing estimator)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 1.7499999985327697,
+          "threshold": 3.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "indentation_aR010",
+          "quantity": "|delta_FE/delta_Hertz - 1|, a/R = 0.1, h/a = 0.0075",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 1.0097763874904464,
+          "threshold": 3.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "refinement_stability_indentation_aR010",
+          "quantity": "|indentation error(h/a=0.0075) - indentation error(h/a=0.03)| (pct points)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.013455717677857137,
+          "threshold": 0.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "peak_pressure_aR005",
+          "quantity": "|p0_FE/p0_Hertz - 1| from the mass-matrix consistent pressure field",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.629699927751326,
+          "threshold": 5.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "penetration_aR005",
+          "quantity": "max penetration / prescribed indentation (constraint violation)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 1.5573684749678542e-07,
+          "threshold": 1e-05,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "load_residual_aR005",
+          "quantity": "|sum(lambda) / P - 1| (load-control equilibrium)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.272244728374062e-12,
+          "threshold": 1e-09,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "equilibrium_residual_aR005",
+          "quantity": "|| (K u)_free + lambda || / ||lambda|| (free-dof force balance)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 3.107669907263974e-06,
+          "threshold": 0.0001,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "rho_spread_contact_radius",
+          "quantity": "spread of contact_radius over rho*E/a in {0.3, 1, 3} (% of mean)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.01864766604534853,
+          "threshold": 0.1,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "rho_spread_indentation",
+          "quantity": "spread of indentation over rho*E/a in {0.3, 1, 3} (% of mean)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0003405569791886205,
+          "threshold": 0.1,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "truncation_indentation_d48_to_96",
+          "quantity": "change in indentation error between domain depth 48a and 96a (pct points)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.6283633823631951,
+          "threshold": 1.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "truncation_contact_radius_d48_to_96",
+          "quantity": "change in contact_radius_linear error between domain depth 48a and 96a (pct points)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0005212346468885798,
+          "threshold": 1.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        }
+      ]
     },
     {
       "anchor": "fem_kerr_plate",
@@ -1174,8 +1361,8 @@
     {
       "anchor": "fem_kirsch_plate",
       "directory": "benchmarks/verified/fem_kirsch_plate",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1187,9 +1374,12 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [
-        "W_ARTIFACT_NOT_A_PATH"
+        "W_ARTIFACT_NOT_A_PATH",
+        "W_ARTIFACT_AMBIGUOUS"
       ],
       "gate_detail": [
         {
@@ -1396,9 +1586,7 @@
         "E_ANCHOR_NAME_MISMATCH",
         "E_ARTIFACT_MISSING"
       ],
-      "warnings": [
-        "W_ARTIFACT_AMBIGUOUS"
-      ],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "L3.beam_frequencies",
@@ -1625,8 +1813,8 @@
     {
       "anchor": "fem_panel_buckling",
       "directory": "benchmarks/verified/fem_panel_buckling",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1638,7 +1826,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
@@ -1865,8 +2055,8 @@
     {
       "anchor": "fem_plate_modal",
       "directory": "benchmarks/verified/fem_plate_modal",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1878,7 +2068,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
@@ -2003,8 +2195,8 @@
     {
       "anchor": "fem_plate_postbuckling",
       "directory": "benchmarks/verified/fem_plate_postbuckling",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2016,7 +2208,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
@@ -2102,8 +2296,8 @@
     {
       "anchor": "fem_plate_static",
       "directory": "benchmarks/verified/fem_plate_static",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2115,7 +2309,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
@@ -3085,8 +3281,8 @@
     {
       "anchor": "fem_structural_benchmarks",
       "directory": "benchmarks/verified/fem_structural_benchmarks",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -3098,7 +3294,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
@@ -3446,8 +3644,8 @@
     {
       "anchor": "fem_winkler_plate",
       "directory": "benchmarks/verified/fem_winkler_plate",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -3459,7 +3657,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
