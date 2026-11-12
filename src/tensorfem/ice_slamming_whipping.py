@@ -348,13 +348,18 @@ class SNCurve:
     """Two-slope S-N curve ``N = C * S^-m`` with ``S`` in Pa and ``N`` cycles.
 
     Defaults are the well-known DNV-RP-C203 curve-D in-air pair
-    (``C1 = 1.52e12`` for ``m1 = 3``, knee at ``N = 1e7`` i.e. 53.4 MPa,
+    (``C1 = 1.458814e12`` for ``m1 = 3``, knee at ``N = 1e7`` i.e. 52.64 MPa,
     ``m2 = 5`` above the knee), restated as declared input.
+
+    The first release carried ``C1 = 1.52e12`` / ``C2 = 4.34e15`` (knee 53.37 MPa),
+    i.e. ``log10 a1 = 12.1818`` instead of the published ``12.164``: a 4.19 %
+    unconservative life bias against the other five curve-D implementations in this
+    library.  See ``docs/fatigue-sn-curve-consistency-audit.md``.
     """
 
-    c1: float = 1.52e12
+    c1: float = 1458814260275.3474
     m1: float = 3.0
-    c2: float = 4.34e15
+    c2: float = 4042654873623432.5
     m2: float = 5.0
     knee_cycles: float = 1.0e7
     endurance_limit_stress: float | None = None
