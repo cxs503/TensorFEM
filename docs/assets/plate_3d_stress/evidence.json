@@ -1,0 +1,451 @@
+{
+ "case": {
+  "a": 1.0,
+  "b": 1.0,
+  "h": 0.1,
+  "young": 1000000000.0,
+  "poisson": 0.3,
+  "q0": 1000000.0,
+  "a_over_h": 10.0,
+  "z_samples": 41,
+  "meshes": [
+   [
+    4,
+    2
+   ],
+   [
+    6,
+    4
+   ],
+   [
+    8,
+    4
+   ]
+  ]
+ },
+ "exact_reference": {
+  "exact_peak_tau_over_q0": -2.3833737911769104,
+  "exact_peak_location_z_over_h": 0.0,
+  "shear_force_v_x": 159154.94309189534,
+  "centre_deflection_exact": 0.029165828519475377,
+  "face_report": {
+   "max_abs_face_shear": 2.0687686790091613e-09,
+   "abs_bottom_sigma_zz": 1.862645149230957e-09,
+   "top_sigma_zz_expect": -895652.122551818,
+   "top_sigma_zz_got": -895652.1225518156,
+   "top_sigma_zz_rel_error": 2.7295438673224285e-15
+  },
+  "equilibrium": {
+   "max_abs_div_sigma": 1.0719881895929575,
+   "stress_gradient_scale": 20043946.33189766,
+   "relative": 5.3481892829008934e-08
+  }
+ },
+ "results": [
+  {
+   "nx": 4,
+   "nz": 2,
+   "n_dofs": 735,
+   "n_elements": 32,
+   "h_over_h_element": 0.5,
+   "centre_deflection": 0.028808897818898026,
+   "centre_deflection_exact": 0.029165828519475377,
+   "centre_deflection_rel_error": -0.012237975696079095,
+   "shear_force_v_x": 159154.94309189534,
+   "tau_edge_pointwise": {
+    "peak_fe": -4298400.567308852,
+    "peak_exact": 2383373.7911769105,
+    "peak_rel_error": 0.8034940986685521,
+    "signed_peak_exact": -2383373.7911769105,
+    "peak_value_at_exact_location": -4298400.567308852,
+    "profile_max_over_exact_peak": -1.8034940986685521,
+    "z_peak_over_h": 0.0,
+    "z_peak_over_h_exact": 0.0,
+    "integral_fe": -305026.3990116802,
+    "integral_exact": -159054.8121108656,
+    "integral_rel_error": 0.9177439208759579,
+    "max_pointwise_rel_error_above_5pct": 6.836267186549387,
+    "l2_rel": 0.8570317529777614,
+    "peak_over_meanV_h": -2.700764728888738,
+    "mean_to_peak_shortfall": 1.370265498991266
+   },
+   "tau_edge_nodal_interp": {
+    "peak_fe": -4299714.587597286,
+    "peak_exact": 2383373.7911769105,
+    "peak_rel_error": 0.8040454264935448,
+    "signed_peak_exact": -2383373.7911769105,
+    "peak_value_at_exact_location": -4299714.587597286,
+    "profile_max_over_exact_peak": -1.8040454264935448,
+    "z_peak_over_h": 0.0,
+    "z_peak_over_h_exact": 0.0,
+    "integral_fe": -305029.68406240497,
+    "integral_exact": -159054.8121108656,
+    "integral_rel_error": 0.9177645744524274,
+    "max_pointwise_rel_error_above_5pct": 6.8360145546928095,
+    "l2_rel": 0.8570558786552693,
+    "peak_over_meanV_h": -2.7015903521857005,
+    "mean_to_peak_shortfall": 1.370152343485739
+   },
+   "sigma_xx_centre": {
+    "peak_fe": -20297542.35427985,
+    "peak_exact": 20043946.33189766,
+    "peak_rel_error": 0.01265200066808303,
+    "signed_peak_exact": -20043946.33189766,
+    "peak_value_at_exact_location": -20297542.35427985,
+    "profile_max_over_exact_peak": -1.012652000668083,
+    "z_peak_over_h": 0.5,
+    "z_peak_over_h_exact": 0.5,
+    "integral_fe": -5561.506761125001,
+    "integral_exact": -7499.932045434532,
+    "integral_rel_error": -0.2584590463708958,
+    "max_pointwise_rel_error_above_5pct": 0.39339468499128843,
+    "l2_rel": 0.025796772850480643
+   },
+   "edge_spread": {
+    "n_elements": 4,
+    "min": -4301028.607885666,
+    "max": -4298400.567308846,
+    "relative_spread": 0.0006112127964030398
+   },
+   "barlow": {
+    "point": [
+     0.125,
+     0.4718245836551853,
+     -0.0056350832689629204
+    ],
+    "tau_xz_gauss_nearest": -3047645.1282128072,
+    "tau_xz_barlow_edge": -3862480.457518836,
+    "tau_xz_exact": -2165633.1054873886,
+    "gauss_rel_error": 0.40727675453913825,
+    "barlow_rel_error": 0.7835340842047027,
+    "gauss_natural_s_t": [
+     0.7745966692414834,
+     0.7745966692414834
+    ]
+   },
+   "gauss": {
+    "sxx": {
+     "max_abs_err": 1387905.2787046314,
+     "rms_err": 416303.9602700876,
+     "max_rel": 0.07886330103417646,
+     "rms_rel": 0.02365514782906647
+    },
+    "szz": {
+     "max_abs_err": 620372.9405902161,
+     "rms_err": 243812.88322684346,
+     "max_rel": 0.6310779611295374,
+     "rms_rel": 0.24802006531349502
+    },
+    "txz": {
+     "max_abs_err": 825821.363653942,
+     "rms_err": 323108.4637766466,
+     "max_rel": 0.3536665067443492,
+     "rms_rel": 0.13837452833359407,
+     "near_edge_le_half": {
+      "max_abs_err": 713687.736092811,
+      "rms_err": 294765.0626561323,
+      "max_rel": 0.30564412552058656,
+      "rms_rel": 0.12623617480494068
+     },
+     "interior_gt_half": {
+      "max_abs_err": 825821.363653942,
+      "rms_err": 334820.3096180609,
+      "max_rel": 0.3536665067443492,
+      "rms_rel": 0.14339024697271255
+     }
+    },
+    "tyz": {
+     "max_abs_err": 825821.3636437193,
+     "rms_err": 323108.4637764605,
+     "max_rel": 0.35366650673996486,
+     "rms_rel": 0.13837452833351188,
+     "near_edge_le_half": {
+      "max_abs_err": 713687.7361023724,
+      "rms_err": 294765.0626570274,
+      "max_rel": 0.30564412552467585,
+      "rms_rel": 0.12623617480532176
+     },
+     "interior_gt_half": {
+      "max_abs_err": 825821.3636437193,
+      "rms_err": 334820.3096174555,
+      "max_rel": 0.35366650673996486,
+      "rms_rel": 0.14339024697245073
+     }
+    },
+    "n_gauss_points": 864,
+    "edge_distance_over_h_min": 0.2817541634481435
+   },
+   "runtime_s": 17.208973169326782
+  },
+  {
+   "nx": 6,
+   "nz": 4,
+   "n_dofs": 2583,
+   "n_elements": 144,
+   "h_over_h_element": 0.25,
+   "centre_deflection": 0.02909468790560939,
+   "centre_deflection_exact": 0.029165828519475377,
+   "centre_deflection_rel_error": -0.0024391768544645975,
+   "shear_force_v_x": 159154.94309189534,
+   "tau_edge_pointwise": {
+    "peak_fe": -3301364.5170785403,
+    "peak_exact": 2383373.7911769105,
+    "peak_rel_error": 0.3851643956562625,
+    "signed_peak_exact": -2383373.7911769105,
+    "peak_value_at_exact_location": -3301364.5170785403,
+    "profile_max_over_exact_peak": -1.3851643956562625,
+    "z_peak_over_h": 0.0,
+    "z_peak_over_h_exact": 0.0,
+    "integral_fe": -227259.49142598332,
+    "integral_exact": -159054.8121108656,
+    "integral_rel_error": 0.42881242264821995,
+    "max_pointwise_rel_error_above_5pct": 2.3491556062156262,
+    "l2_rel": 0.4039620370270766,
+    "peak_over_meanV_h": -2.0743085027351915,
+    "mean_to_peak_shortfall": 1.4820883676084806
+   },
+   "tau_edge_nodal_interp": {
+    "peak_fe": -3301674.4843179844,
+    "peak_exact": 2383373.7911769105,
+    "peak_rel_error": 0.3852944496329369,
+    "signed_peak_exact": -2383373.7911769105,
+    "peak_value_at_exact_location": -3301674.4843179844,
+    "profile_max_over_exact_peak": -1.385294449632937,
+    "z_peak_over_h": 0.0,
+    "z_peak_over_h_exact": 0.0,
+    "integral_fe": -227261.52798292402,
+    "integral_exact": -159054.8121108656,
+    "integral_rel_error": 0.42882522676847046,
+    "max_pointwise_rel_error_above_5pct": 2.3098280545671948,
+    "l2_rel": 0.40287523283083926,
+    "peak_over_meanV_h": -2.07450326089565,
+    "mean_to_peak_shortfall": 1.4820431082707761
+   },
+   "sigma_xx_centre": {
+    "peak_fe": -20277488.350778382,
+    "peak_exact": 20043946.33189766,
+    "peak_rel_error": 0.01165149891212125,
+    "signed_peak_exact": -20043946.33189766,
+    "peak_value_at_exact_location": -20277488.350778382,
+    "profile_max_over_exact_peak": -1.0116514989121212,
+    "z_peak_over_h": 0.5,
+    "z_peak_over_h_exact": 0.5,
+    "integral_fe": -6633.19415209224,
+    "integral_exact": -7499.932045434532,
+    "integral_rel_error": -0.1155660995448492,
+    "max_pointwise_rel_error_above_5pct": 0.03599284592820353,
+    "l2_rel": 0.01684349335356828
+   },
+   "edge_spread": {
+    "n_elements": 4,
+    "min": -3301984.451557368,
+    "max": -3301364.5170785403,
+    "relative_spread": 0.00018776365803844985
+   },
+   "barlow": {
+    "point": [
+     0.0833333333333333,
+     0.4812163891034568,
+     -0.0028175416344814602
+    ],
+    "tau_xz_gauss_nearest": -2724372.3406425347,
+    "tau_xz_barlow_edge": -3199222.797297697,
+    "tau_xz_exact": -2290883.164402648,
+    "gauss_rel_error": 0.18922360728637155,
+    "barlow_rel_error": 0.39650194606580924,
+    "gauss_natural_s_t": [
+     0.7745966692414834,
+     0.7745966692414834
+    ]
+   },
+   "gauss": {
+    "sxx": {
+     "max_abs_err": 702268.3118703188,
+     "rms_err": 151667.62766085062,
+     "max_rel": 0.03731030045449128,
+     "rms_rel": 0.008057838665930295
+    },
+    "szz": {
+     "max_abs_err": 307705.60451278876,
+     "rms_err": 84794.97573802677,
+     "max_rel": 0.3095074073335869,
+     "rms_rel": 0.08529150171686359
+    },
+    "txz": {
+     "max_abs_err": 434985.9985371388,
+     "rms_err": 150979.84595763666,
+     "max_rel": 0.1837213376812365,
+     "rms_rel": 0.0637680738127845,
+     "near_edge_le_half": {
+      "max_abs_err": 357024.84669467807,
+      "rms_err": 140365.18104806473,
+      "max_rel": 0.15079354885162896,
+      "rms_rel": 0.059284848047396706
+     },
+     "interior_gt_half": {
+      "max_abs_err": 434985.9985371388,
+      "rms_err": 153676.17617166092,
+      "max_rel": 0.1837213376812365,
+      "rms_rel": 0.0649068998794092
+     }
+    },
+    "tyz": {
+     "max_abs_err": 434985.99848103477,
+     "rms_err": 150979.84595775267,
+     "max_rel": 0.1837213376575391,
+     "rms_rel": 0.06376807381283306,
+     "near_edge_le_half": {
+      "max_abs_err": 357024.8467035922,
+      "rms_err": 140365.1810714157,
+      "max_rel": 0.15079354885539295,
+      "rms_rel": 0.05928484805725885
+     },
+     "interior_gt_half": {
+      "max_abs_err": 434985.99848103477,
+      "rms_err": 153676.1761661398,
+      "max_rel": 0.1837213376575391,
+      "rms_rel": 0.06490689987707686
+     }
+    },
+    "n_gauss_points": 3888,
+    "edge_distance_over_h_min": 0.18783610896542902
+   },
+   "runtime_s": 43.76482677459717
+  },
+  {
+   "nx": 8,
+   "nz": 4,
+   "n_dofs": 4347,
+   "n_elements": 256,
+   "h_over_h_element": 0.25,
+   "centre_deflection": 0.02914129974447625,
+   "centre_deflection_exact": 0.029165828519475377,
+   "centre_deflection_rel_error": -0.0008410107390828259,
+   "shear_force_v_x": 159154.94309189534,
+   "tau_edge_pointwise": {
+    "peak_fe": -2944708.042536242,
+    "peak_exact": 2383373.7911769105,
+    "peak_rel_error": 0.23552086266843797,
+    "signed_peak_exact": -2383373.7911769105,
+    "peak_value_at_exact_location": -2944708.042536242,
+    "profile_max_over_exact_peak": -1.235520862668438,
+    "z_peak_over_h": 0.0,
+    "z_peak_over_h_exact": 0.0,
+    "integral_fe": -199534.20973430094,
+    "integral_exact": -159054.8121108656,
+    "integral_rel_error": 0.25449967269912,
+    "max_pointwise_rel_error_above_5pct": 1.5406256946115804,
+    "l2_rel": 0.23938593848324366,
+    "peak_over_meanV_h": -1.8502146306797276,
+    "mean_to_peak_shortfall": 1.5404778361484595
+   },
+   "tau_edge_nodal_interp": {
+    "peak_fe": -2944896.0099114403,
+    "peak_exact": 2383373.7911769105,
+    "peak_rel_error": 0.23559972875981394,
+    "signed_peak_exact": -2383373.7911769105,
+    "peak_value_at_exact_location": -2944896.0099114403,
+    "profile_max_over_exact_peak": -1.235599728759814,
+    "z_peak_over_h": 0.0,
+    "z_peak_over_h_exact": 0.0,
+    "integral_fe": -199535.42854986648,
+    "integral_exact": -159054.8121108656,
+    "integral_rel_error": 0.25450733556420024,
+    "max_pointwise_rel_error_above_5pct": 1.5228921256473447,
+    "l2_rel": 0.2390149477171102,
+    "peak_over_meanV_h": -1.850332734064735,
+    "mean_to_peak_shortfall": 1.5404433384277005
+   },
+   "sigma_xx_centre": {
+    "peak_fe": -20221351.498157233,
+    "peak_exact": 20043946.33189766,
+    "peak_rel_error": 0.008850810280670807,
+    "signed_peak_exact": -20043946.33189766,
+    "peak_value_at_exact_location": -20221351.498157233,
+    "profile_max_over_exact_peak": -1.0088508102806708,
+    "z_peak_over_h": 0.5,
+    "z_peak_over_h_exact": 0.5,
+    "integral_fe": -7012.368866764791,
+    "integral_exact": -7499.932045434532,
+    "integral_rel_error": -0.06500901284386129,
+    "max_pointwise_rel_error_above_5pct": 0.02301573086196598,
+    "l2_rel": 0.010813758326646649
+   },
+   "edge_spread": {
+    "n_elements": 4,
+    "min": -2945083.977286784,
+    "max": -2944708.0425362014,
+    "relative_spread": 0.0001276563754092822
+   },
+   "barlow": {
+    "point": [
+     0.0625,
+     0.48591229182759266,
+     -0.0028175416344814602
+    ],
+    "tau_xz_gauss_nearest": -2591747.770405518,
+    "tau_xz_barlow_edge": -2869576.1623698557,
+    "tau_xz_exact": -2327899.4680912127,
+    "gauss_rel_error": 0.113341794150007,
+    "barlow_rel_error": 0.2326890407869704,
+    "gauss_natural_s_t": [
+     0.7745966692414834,
+     0.7745966692414834
+    ]
+   },
+   "gauss": {
+    "sxx": {
+     "max_abs_err": 361513.2467086131,
+     "rms_err": 75860.73896481907,
+     "max_rel": 0.019177308340403838,
+     "rms_rel": 0.004024208781571495
+    },
+    "szz": {
+     "max_abs_err": 158794.2561640102,
+     "rms_err": 42576.59579283638,
+     "max_rel": 0.1594807214521199,
+     "rms_rel": 0.04276065380478029
+    },
+    "txz": {
+     "max_abs_err": 270769.86951319757,
+     "rms_err": 91053.90863688508,
+     "max_rel": 0.11418851317736183,
+     "rms_rel": 0.038399067314712716,
+     "near_edge_le_half": {
+      "max_abs_err": 220702.87197316065,
+      "rms_err": 87138.623906252,
+      "max_rel": 0.09307436181838726,
+      "rms_rel": 0.03674792148057393
+     },
+     "interior_gt_half": {
+      "max_abs_err": 270769.86951319757,
+      "rms_err": 91779.24652361206,
+      "max_rel": 0.11418851317736183,
+      "rms_rel": 0.03870495531837232
+     }
+    },
+    "tyz": {
+     "max_abs_err": 270769.86950113694,
+     "rms_err": 91053.90863689002,
+     "max_rel": 0.11418851317227491,
+     "rms_rel": 0.03839906731471455,
+     "near_edge_le_half": {
+      "max_abs_err": 220702.8720107628,
+      "rms_err": 87138.62391313295,
+      "max_rel": 0.09307436183424415,
+      "rms_rel": 0.03674792148347551
+     },
+     "interior_gt_half": {
+      "max_abs_err": 270769.86950113694,
+      "rms_err": 91779.24652237608,
+      "max_rel": 0.11418851317227491,
+      "rms_rel": 0.038704955317850835
+     }
+    },
+    "n_gauss_points": 6912,
+    "edge_distance_over_h_min": 0.1408770817240712
+   },
+   "runtime_s": 97.48726511001587
+  }
+ ]
+}
