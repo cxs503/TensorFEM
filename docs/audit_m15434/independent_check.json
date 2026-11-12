@@ -1,0 +1,152 @@
+{
+  "case": "CASE-THERMAL-BAR",
+  "mission": "m15434",
+  "audit_mission": "m15714",
+  "checks": {
+    "C1": {
+      "E_Pa_recomputed": 206007142857.14285,
+      "E_Pa_in_evidence": 206007142857.14285,
+      "alpha_recomputed": 1.1999999999999997e-05,
+      "alpha_in_evidence": 1.2e-05,
+      "ref_recomputed_Pa": -247208571.42857137,
+      "ref_in_evidence_Pa": -247208571.4285714,
+      "rel_diff": -1.2055537643971385e-16,
+      "pass": true
+    },
+    "C2": {
+      "target_recomputed_Pa": -82402857.14285712,
+      "target_in_evidence_Pa": -82402857.14285713,
+      "rel_diff_target": -1.8083306465957079e-16,
+      "exact_integration_rows": [
+        {
+          "n_elem": 2,
+          "sigma_Pa": -82402857.1428571
+        },
+        {
+          "n_elem": 4,
+          "sigma_Pa": -82402857.1428571
+        },
+        {
+          "n_elem": 8,
+          "sigma_Pa": -82402857.1428571
+        },
+        {
+          "n_elem": 16,
+          "sigma_Pa": -82402857.1428571
+        },
+        {
+          "n_elem": 32,
+          "sigma_Pa": -82402857.1428571
+        }
+      ],
+      "exact_integration_max_rel_error": 1.8083306465957079e-16,
+      "trapezoid_rows": [
+        {
+          "n_elem": 2,
+          "sigma_Pa": -92703214.28571425,
+          "rel_error": -0.12499999999999993
+        },
+        {
+          "n_elem": 4,
+          "sigma_Pa": -84977946.4285714,
+          "rel_error": -0.031249999999999983
+        },
+        {
+          "n_elem": 8,
+          "sigma_Pa": -83046629.4642857,
+          "rel_error": -0.007812500000000132
+        },
+        {
+          "n_elem": 16,
+          "sigma_Pa": -82563800.22321427,
+          "rel_error": -0.001953125000000078
+        },
+        {
+          "n_elem": 32,
+          "sigma_Pa": -82443092.9129464,
+          "rel_error": -0.0004882812499999743
+        }
+      ],
+      "trapezoid_observed_order": 2.0000000000000093,
+      "evidence_observed_order": 1.9999999999998888,
+      "row_by_row_reproduction_vs_evidence": [
+        {
+          "n_elem": 2,
+          "audit_sigma_Pa": -92703214.28571425,
+          "evidence_sigma_Pa": -92703214.2857143,
+          "rel_diff": -4.822215057588552e-16
+        },
+        {
+          "n_elem": 4,
+          "audit_sigma_Pa": -84977946.4285714,
+          "evidence_sigma_Pa": -84977946.42857143,
+          "rel_diff": -3.5070654964280384e-16
+        },
+        {
+          "n_elem": 8,
+          "audit_sigma_Pa": -83046629.4642857,
+          "evidence_sigma_Pa": -83046629.4642857,
+          "rel_diff": 0.0
+        },
+        {
+          "n_elem": 16,
+          "audit_sigma_Pa": -82563800.22321427,
+          "evidence_sigma_Pa": -82563800.2232143,
+          "rel_diff": -3.609611271177396e-16
+        },
+        {
+          "n_elem": 32,
+          "audit_sigma_Pa": -82443092.9129464,
+          "evidence_sigma_Pa": -82443092.91294643,
+          "rel_diff": -3.6148962071527655e-16
+        }
+      ],
+      "max_row_reproduction_rel_diff": 4.822215057588552e-16,
+      "interpretation": "the mechanical solution is exact at every mesh (u=0); the reported O(h^2) error is the trapezoid quadrature error of the element mean temperature, i.e. thermal-field interpolation, not solver accuracy",
+      "pass": true
+    },
+    "C3": {
+      "families": {
+        "uniaxial": {
+          "got_Pa": -247208571.4285714,
+          "ref_recomputed_Pa": -247208571.42857137,
+          "rel_error": -1.2055537643971385e-16,
+          "pass_task_tol": true,
+          "pass_roundoff": true
+        },
+        "biaxial": {
+          "got_Pa": -353155102.0408163,
+          "ref_recomputed_Pa": -353155102.04081625,
+          "rel_error": -1.687775270155994e-16,
+          "pass_task_tol": true,
+          "pass_roundoff": true
+        },
+        "triaxial": {
+          "got_Pa": -618021428.5714285,
+          "ref_recomputed_Pa": -618021428.5714284,
+          "rel_error": -1.9288860230354217e-16,
+          "pass_task_tol": true,
+          "pass_roundoff": true
+        },
+        "free": {
+          "got_Pa": 1.3100535482526927e-07,
+          "ref_recomputed_Pa": 0.0,
+          "rel_error": 1.3100535482526927e-07,
+          "pass_task_tol": true,
+          "pass_roundoff": true
+        }
+      },
+      "pass": true
+    },
+    "C4": {
+      "worst_rel_error_task_case": 7.23332258638283e-16,
+      "recomputed_task_gate_3pct": true,
+      "recomputed_roundoff_gate_1e-8": true,
+      "bar_quadratic_observed_order": 1.9999999999998888,
+      "recomputed_order_gate": true,
+      "evidence_verdict_all_pass": true,
+      "pass": true
+    }
+  },
+  "all_pass": true
+}
