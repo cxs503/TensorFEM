@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0.0",
+  "mission_id": 15973,
+  "task_key": "paper-exp-undex-shock-chain-3",
+  "anchor_sha256": "63391daf1c80dbf82d0de609a13d90fd044fca42b249e8f3e69639ad366aa2d8",
+  "criteria": {
+    "1_citation_closure": {
+      "verdict": "WITHHELD",
+      "detail": "K, A, K_theta, n, K_b are WITHHELD: no chapter/table/page is available because the monograph is unreachable from the sandbox and outbound HTTP is blocked; the deposition shopping list is in cole_anchor.json -> withheld_ledger",
+      "counts_as_pass": false
+    },
+    "2_fem_vs_cole_15pct": {
+      "verdict": "FAIL",
+      "peak_vs_free_field": {
+        "verdict": "FAIL",
+        "cases_passing": 0,
+        "cases": 6,
+        "deviation": "structurally +100.00 %: p_wall(t=0) = 2 p_m identically, so this comparison cannot test the solver",
+        "note": "recorded as FAIL, not as a solver error"
+      },
+      "peak_vs_rigid_wall_2pm": {
+        "verdict": "PASS_TAUTOLOGICAL",
+        "cases_passing": 6,
+        "deviation": 0.0,
+        "note": "same identity: never to be quoted as validation"
+      },
+      "impulse_like_for_like": {
+        "verdict": "FAIL",
+        "cases_passing": 0,
+        "cases": 6,
+        "per_case": {
+          "C1": 0.16553663109063793,
+          "C2": 0.20297484889723727,
+          "C3": 0.2336744165284806,
+          "C4": 0.25639867185029214,
+          "C5": 0.1646149629545356,
+          "C6": 0.2736889955652084
+        },
+        "note": "compares different physical quantities (mass-loaded cavitating panel vs free field); a FAIL indicts the model class, not solver accuracy"
+      },
+      "rigid_limit_coupling": {
+        "verdict": "PASS",
+        "per_case": {
+          "C1": 0.0058647231857072305,
+          "C2": 0.004353072038791356,
+          "C3": 0.0031022415662565125,
+          "C4": 0.0024435608222668163,
+          "C5": 0.0063042494921618985,
+          "C6": 0.0022435728738343795
+        },
+        "note": "anchor-bearing: the coupling must recover 2 x the Cole incident impulse in the rigid limit"
+      },
+      "solver_verification_vs_taylor": {
+        "verdict": "PASS",
+        "per_case_pressure": {
+          "C1": 0.02884489102319746,
+          "C2": 0.029069155628618473,
+          "C3": 0.029491262133328852,
+          "C4": 0.029194399855295993,
+          "C5": 0.028705299198845402,
+          "C6": 0.029612573829321583
+        },
+        "per_case_velocity": {
+          "C1": 0.04435610530552621,
+          "C2": 0.04176192487668022,
+          "C3": 0.03964513523017526,
+          "C4": 0.03768890710827489,
+          "C5": 0.044814921785650524,
+          "C6": 0.03772734112447572
+        }
+      }
+    },
+    "3_energy_residual_5pct": {
+      "verdict": "PASS",
+      "worst_residual": 0.005980479131267733,
+      "threshold": 0.05
+    },
+    "4_grid_convergence_10pct": {
+      "verdict": "FAIL",
+      "converged_pairs": 10,
+      "above_limit": [
+        "C1:wall_impulse_0_4theta_pa_s",
+        "C2:wall_impulse_0_theta_pa_s",
+        "C2:wall_impulse_0_4theta_pa_s",
+        "C3:wall_impulse_0_4theta_pa_s",
+        "C4:wall_impulse_0_4theta_pa_s",
+        "C5:wall_impulse_0_4theta_pa_s",
+        "C6:wall_impulse_0_4theta_pa_s"
+      ],
+      "not_demonstrated": [
+        "C1:peak_center_deflection_m",
+        "C1:wall_impulse_0_theta_pa_s",
+        "C3:wall_impulse_0_theta_pa_s",
+        "C4:wall_impulse_0_theta_pa_s",
+        "C5:peak_center_deflection_m",
+        "C5:wall_impulse_0_theta_pa_s",
+        "C6:wall_impulse_0_theta_pa_s"
+      ],
+      "threshold": 0.1,
+      "note": "a non-monotone quantity is reported NOT_DEMONSTRATED, never scored as 0 %"
+    },
+    "5_wording": {
+      "verdict": "HONOURED",
+      "detail": "anchor is WITHHELD, so no text claims agreement with Cole's formula; only agreement with the repository's transcription plus the Taylor solver verification is claimed"
+    }
+  },
+  "wording_constraint": "anchor WITHHELD -> 'consistent with the transcription', never 'agrees with Cole'"
+}
