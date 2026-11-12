@@ -1,0 +1,896 @@
+{
+ "audit_mission": 15654,
+ "audited_mission": 15427,
+ "anchor": "CASE-BENDING-PATCH",
+ "repo": "TensorFEM",
+ "audit_commit_base": "61217b0d6142a63cd221f92bec64a5b054543bfc",
+ "mission_commit_claim": "3b12fbe0",
+ "A_triplet": {
+  "files": [
+   {
+    "path": "src/tensorfem/bending_patch.py",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 26538,
+    "sha256": "e82ac7f257271a1007d70ffe2e052c0326ba953ea6d663a5c644ffbf1724959d",
+    "same_as_mission_wt": true
+   },
+   {
+    "path": "benchmarks/verified/fem_bending_patch/run.py",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 34480,
+    "sha256": "5c0ed3ba6a58373dba4942325c5f50a877c5612397600b3a989680a317c88dd6",
+    "same_as_mission_wt": true
+   },
+   {
+    "path": "benchmarks/verified/fem_bending_patch/result.json",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 49750,
+    "sha256": "1dd55e1d74fc2f7b3a5b19316e5e8261d13b3d583b1f0566cf80ef52ac4027ed",
+    "same_as_mission_wt": true
+   },
+   {
+    "path": "benchmarks/verified/fem_bending_patch/gates_verified.json",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 6102,
+    "sha256": "85700659341f1f4de47329c4d37e2b3df76dcbb9cc8972ae45a7471544390caf",
+    "same_as_mission_wt": true
+   },
+   {
+    "path": "tests/test_bending_patch.py",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 6019,
+    "sha256": "c02228b0c1ecbeb916b61ab44af7eafbd1222bca0a4b05aed0895a1169c62897",
+    "same_as_mission_wt": true
+   },
+   {
+    "path": "docs/bending-patch.md",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 13183,
+    "sha256": "1ff1bdd742cb7ba61070e2dae7664ee11d37cefc8a5318e5f064f44cfe0546f8",
+    "same_as_mission_wt": true
+   },
+   {
+    "path": "docs/assets/bending_patch/patch_meshes.png",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 97620,
+    "sha256": "398fef57135b283ba9eb3eac5d87b67f78bb065ed251fddab249b9982b605c7e",
+    "same_as_mission_wt": true
+   },
+   {
+    "path": "docs/assets/bending_patch/error_vs_h.png",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 75098,
+    "sha256": "255e5d66870ba7be414001126a4f7d27486c188220184bd16cf77eaf03201cb2",
+    "same_as_mission_wt": true
+   },
+   {
+    "path": "docs/assets/bending_patch/error_budget.png",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 44371,
+    "sha256": "658188020b1e5e58f434a0a722af71fb8d496d315e44baa151a3430d6651ea28",
+    "same_as_mission_wt": true
+   },
+   {
+    "path": "docs/assets/bending_patch/strip_bending.png",
+    "in_main": true,
+    "in_mission_wt": true,
+    "bytes": 66665,
+    "sha256": "cc5f170cda4b3c343a463a92ba9d3da0cfcf93752bf3089d6dec5c85957f90c1",
+    "same_as_mission_wt": true
+   }
+  ],
+  "n_files": 10,
+  "all_in_main": true,
+  "all_identical_to_mission_wt": true
+ },
+ "B_referee": {
+  "table_rows_total": 19,
+  "rows_for_anchor": [],
+  "n_rows_for_anchor": 0,
+  "anchor_slugs_matching_bend_or_patch": [],
+  "all_anchor_slugs": [
+   "CAP-LEDGER-EVIDENCE",
+   "CASE-CAVITY-RE1000-FVM",
+   "CASE-EULER-VORTEX",
+   "CASE-MACNEAL-BEAM",
+   "CASE-SHU-OSHER-DG",
+   "GAP-DEM-CLUMP",
+   "GAP-DEM-FRICTION",
+   "GAP-FEM-3D-COHESIVE",
+   "GAP-FEM-ELASTOPLASTIC",
+   "GAP-FEM-WINKLER",
+   "GAP-FVM-TWOPHASE",
+   "GAP-LBM-MCMP-POISEUILLE",
+   "GAP-LBM-SPHERE",
+   "H1-BROKEN-ICE-DEM",
+   "H2-FRAZIL-RHEOLOGY",
+   "H3-ICE-PLATE-FEM",
+   "H6-MATURITY-GATE",
+   "REPRO-FVM-SOD1978",
+   "XVAL-FEM-TPB1976"
+  ],
+  "conclusion": "no machine-judgeable registry row for the anchor"
+ },
+ "C_independent_ref": {
+  "oracle_state_used": {
+   "kx": 0.001,
+   "ky": 0.0006,
+   "kxy": 0.0004
+  },
+  "moment_ref_independent": [
+   22.69230769230769,
+   17.307692307692307,
+   2.6923076923076925
+  ],
+  "moment_got": [
+   22.69230769230769,
+   17.307692307692307,
+   2.6923076923076925
+  ],
+  "moment_max_rel_diff": 0.0,
+  "strip_ref_rows": [
+   {
+    "case": "strip/symmetry/n=4/sri",
+    "lateral": "symmetry",
+    "n_x": 4,
+    "t": 0.01,
+    "w_declared": 25999.999999999993,
+    "w_independent": 25999.999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51999.999999999985,
+    "theta_independent": -51999.999999999985,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 25999.9999991978,
+    "got_vs_independent_rel_err": 3.0853558340683015e-11
+   },
+   {
+    "case": "strip/symmetry/n=4/mitc",
+    "lateral": "symmetry",
+    "n_x": 4,
+    "t": 0.01,
+    "w_declared": 25999.999999999993,
+    "w_independent": 25999.999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51999.999999999985,
+    "theta_independent": -51999.999999999985,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 25999.999999019954,
+    "got_vs_independent_rel_err": 3.76937980315863e-11
+   },
+   {
+    "case": "strip/symmetry/n=8/sri",
+    "lateral": "symmetry",
+    "n_x": 8,
+    "t": 0.01,
+    "w_declared": 25999.999999999993,
+    "w_independent": 25999.999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51999.999999999985,
+    "theta_independent": -51999.999999999985,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 26000.00000002293,
+    "got_vs_independent_rel_err": 8.822098607197407e-13
+   },
+   {
+    "case": "strip/symmetry/n=8/mitc",
+    "lateral": "symmetry",
+    "n_x": 8,
+    "t": 0.01,
+    "w_declared": 25999.999999999993,
+    "w_independent": 25999.999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51999.999999999985,
+    "theta_independent": -51999.999999999985,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 25999.999999791595,
+    "got_vs_independent_rel_err": 8.015306845593913e-12
+   },
+   {
+    "case": "strip/symmetry/n=16/sri",
+    "lateral": "symmetry",
+    "n_x": 16,
+    "t": 0.01,
+    "w_declared": 25999.999999999993,
+    "w_independent": 25999.999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51999.999999999985,
+    "theta_independent": -51999.999999999985,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 26000.00000017428,
+    "got_vs_independent_rel_err": 6.703395718851917e-12
+   },
+   {
+    "case": "strip/symmetry/n=16/mitc",
+    "lateral": "symmetry",
+    "n_x": 16,
+    "t": 0.01,
+    "w_declared": 25999.999999999993,
+    "w_independent": 25999.999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51999.999999999985,
+    "theta_independent": -51999.999999999985,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 25999.999996215556,
+    "got_vs_independent_rel_err": 1.4555525222721585e-10
+   },
+   {
+    "case": "strip/symmetry/n=32/sri",
+    "lateral": "symmetry",
+    "n_x": 32,
+    "t": 0.01,
+    "w_declared": 25999.999999999993,
+    "w_independent": 25999.999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51999.999999999985,
+    "theta_independent": -51999.999999999985,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 26000.000056558438,
+    "got_vs_independent_rel_err": 2.1753248102658505e-09
+   },
+   {
+    "case": "strip/symmetry/n=32/mitc",
+    "lateral": "symmetry",
+    "n_x": 32,
+    "t": 0.01,
+    "w_declared": 25999.999999999993,
+    "w_independent": 25999.999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51999.999999999985,
+    "theta_independent": -51999.999999999985,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 26000.00001115579,
+    "got_vs_independent_rel_err": 4.290690972433928e-10
+   },
+   {
+    "case": "strip/free/n=4/sri",
+    "lateral": "free",
+    "n_x": 4,
+    "t": 0.01,
+    "w_declared": 28571.42857142856,
+    "w_independent": 28571.42857142856,
+    "rel_diff": 0.0,
+    "theta_declared": -57142.85714285712,
+    "theta_independent": -57142.85714285712,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 28224.55577624883,
+    "got_vs_independent_rel_err": 0.012140547831290555
+   },
+   {
+    "case": "strip/free/n=4/mitc",
+    "lateral": "free",
+    "n_x": 4,
+    "t": 0.01,
+    "w_declared": 28571.42857142856,
+    "w_independent": 28571.42857142856,
+    "rel_diff": 0.0,
+    "theta_declared": -57142.85714285712,
+    "theta_independent": -57142.85714285712,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 28069.244483104005,
+    "got_vs_independent_rel_err": 0.017576443091359494
+   },
+   {
+    "case": "strip/free/n=8/sri",
+    "lateral": "free",
+    "n_x": 8,
+    "t": 0.01,
+    "w_declared": 28571.42857142856,
+    "w_independent": 28571.42857142856,
+    "rel_diff": 0.0,
+    "theta_declared": -57142.85714285712,
+    "theta_independent": -57142.85714285712,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 28368.410147967214,
+    "got_vs_independent_rel_err": 0.007105644821147182
+   },
+   {
+    "case": "strip/free/n=8/mitc",
+    "lateral": "free",
+    "n_x": 8,
+    "t": 0.01,
+    "w_declared": 28571.42857142856,
+    "w_independent": 28571.42857142856,
+    "rel_diff": 0.0,
+    "theta_declared": -57142.85714285712,
+    "theta_independent": -57142.85714285712,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 28165.68569911892,
+    "got_vs_independent_rel_err": 0.01420100053083747
+   },
+   {
+    "case": "strip/free/n=16/sri",
+    "lateral": "free",
+    "n_x": 16,
+    "t": 0.01,
+    "w_declared": 28571.42857142856,
+    "w_independent": 28571.42857142856,
+    "rel_diff": 0.0,
+    "theta_declared": -57142.85714285712,
+    "theta_independent": -57142.85714285712,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 28424.344939252886,
+    "got_vs_independent_rel_err": 0.005147927126148663
+   },
+   {
+    "case": "strip/free/n=16/mitc",
+    "lateral": "free",
+    "n_x": 16,
+    "t": 0.01,
+    "w_declared": 28571.42857142856,
+    "w_independent": 28571.42857142856,
+    "rel_diff": 0.0,
+    "theta_declared": -57142.85714285712,
+    "theta_independent": -57142.85714285712,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 28203.097178872486,
+    "got_vs_independent_rel_err": 0.012891598739462665
+   },
+   {
+    "case": "strip/free/n=32/sri",
+    "lateral": "free",
+    "n_x": 32,
+    "t": 0.01,
+    "w_declared": 28571.42857142856,
+    "w_independent": 28571.42857142856,
+    "rel_diff": 0.0,
+    "theta_declared": -57142.85714285712,
+    "theta_independent": -57142.85714285712,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 28441.379200886448,
+    "got_vs_independent_rel_err": 0.004551727968973993
+   },
+   {
+    "case": "strip/free/n=32/mitc",
+    "lateral": "free",
+    "n_x": 32,
+    "t": 0.01,
+    "w_declared": 28571.42857142856,
+    "w_independent": 28571.42857142856,
+    "rel_diff": 0.0,
+    "theta_declared": -57142.85714285712,
+    "theta_independent": -57142.85714285712,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 28214.11377639973,
+    "got_vs_independent_rel_err": 0.01250601782600916
+   },
+   {
+    "case": "strip-locking/symmetry/t=0.01/8",
+    "lateral": "symmetry",
+    "n_x": 8,
+    "t": 0.01,
+    "w_declared": 25999.999999999993,
+    "w_independent": 25999.999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51999.999999999985,
+    "theta_independent": -51999.999999999985,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 558.2643703871965,
+    "got_vs_independent_rel_err": 0.9785282934466463
+   },
+   {
+    "case": "strip-locking/symmetry/t=0.1/8",
+    "lateral": "symmetry",
+    "n_x": 8,
+    "t": 0.1,
+    "w_declared": 25.999999999999993,
+    "w_independent": 25.999999999999993,
+    "rel_diff": 0.0,
+    "theta_declared": -51.999999999999986,
+    "theta_independent": -51.999999999999986,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 17.860465116276245,
+    "got_vs_independent_rel_err": 0.313059033989375
+   },
+   {
+    "case": "strip-locking/free/t=0.01/8",
+    "lateral": "free",
+    "n_x": 8,
+    "t": 0.01,
+    "w_declared": 28571.42857142856,
+    "w_independent": 28571.42857142856,
+    "rel_diff": 0.0,
+    "theta_declared": -57142.85714285712,
+    "theta_independent": -57142.85714285712,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 558.3243478624679,
+    "got_vs_independent_rel_err": 0.9804586478248136
+   },
+   {
+    "case": "strip-locking/free/t=0.1/8",
+    "lateral": "free",
+    "n_x": 8,
+    "t": 0.1,
+    "w_declared": 28.571428571428566,
+    "w_independent": 28.571428571428566,
+    "rel_diff": 0.0,
+    "theta_declared": -57.14285714285713,
+    "theta_independent": -57.14285714285713,
+    "theta_rel_diff": 0.0,
+    "got_w_tip": 18.689361905186033,
+    "got_vs_independent_rel_err": 0.3458723333184887
+   }
+  ],
+  "strip_ref_max_rel_diff": 0.0,
+  "strip_ref_theta_max_rel_diff": 0.0,
+  "poisson_crosscheck_by_mesh": [
+   {
+    "n_x": 4,
+    "ratio_measured": 1.079586326313925,
+    "ratio_theory": 1.0989010989010988,
+    "rel_diff": 0.017576443054328202
+   },
+   {
+    "n_x": 8,
+    "ratio_measured": 1.0001074356137571,
+    "ratio_theory": 1.0989010989010988,
+    "rel_diff": 0.08990223359148089
+   },
+   {
+    "n_x": 16,
+    "ratio_measured": 1.0847345070376,
+    "ratio_theory": 1.0989010989010988,
+    "rel_diff": 0.01289159859578389
+   },
+   {
+    "n_x": 32,
+    "ratio_measured": 1.0851582217036129,
+    "ratio_theory": 1.0989010989010988,
+    "rel_diff": 0.012506018249712174
+   }
+  ],
+  "poisson_ratio_max_rel_diff": 0.08990223359148089,
+  "verdict": "ref 每个数字由闭式解独立复现（不 import tensorfem）：弯矩 0.0e+00，板条挠度 0.0e+00，转角 0.0e+00"
+ },
+ "D_repro": {
+  "n_scalar_keys": 1369,
+  "n_value_diffs_excluding_timings": 0,
+  "diff_keys": [],
+  "pytest_passed": 21,
+  "pytest_log": "/tmp/bend_pytest.log",
+  "run_wall_seconds": 74.2,
+  "run_log": "/tmp/bend_run.log",
+  "run_gates_passed": true,
+  "run_failed_gates": [],
+  "reproduced_bitwise_up_to_timing": true
+ },
+ "E_gates": {
+  "n_gates": 17,
+  "all_re_evaluated_consistent": true,
+  "gates": [
+   {
+    "id": "oracle_selfcheck",
+    "value": 1.4190298242011679e-13,
+    "op": "<=",
+    "threshold": 1e-10,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 704.7068235954396
+   },
+   {
+    "id": "affine_exact_w",
+    "value": 8.031127203596327e-16,
+    "op": "<=",
+    "threshold": 1e-12,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 1245.1552249753952
+   },
+   {
+    "id": "affine_exact_rot",
+    "value": 4.196911635427758e-16,
+    "op": "<=",
+    "threshold": 1e-12,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 2382.704442854151
+   },
+   {
+    "id": "affine_exact_moment",
+    "value": 9.393615828692852e-16,
+    "op": "<=",
+    "threshold": 1e-12,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 1064.552796533891
+   },
+   {
+    "id": "affine_exact_energy_sri",
+    "value": 1.5463820700136107e-15,
+    "op": "<=",
+    "threshold": 1e-12,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 646.6707157249944
+   },
+   {
+    "id": "skew_energy_mitc",
+    "value": 0.003969907407407478,
+    "op": "<=",
+    "threshold": 0.02,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 5.037900874635478
+   },
+   {
+    "id": "distorted_w",
+    "value": 0.01541517888154085,
+    "op": "<=",
+    "threshold": 0.02,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 1.2974225050316683
+   },
+   {
+    "id": "distorted_moment",
+    "value": 0.007510513870538823,
+    "op": "<=",
+    "threshold": 0.02,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 2.6629336347347894
+   },
+   {
+    "id": "distorted_energy",
+    "value": 0.0016500842193053616,
+    "op": "<=",
+    "threshold": 0.02,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 12.120593461841256
+   },
+   {
+    "id": "strip_symmetry_w",
+    "value": 2.1753248102658505e-09,
+    "op": "<=",
+    "threshold": 0.02,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 9194029.28041618
+   },
+   {
+    "id": "strip_symmetry_theta",
+    "value": 1.3686298748675308e-09,
+    "op": "<=",
+    "threshold": 0.02,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 14613154.63535077
+   },
+   {
+    "id": "strip_free_w",
+    "value": 0.017576443091359494,
+    "op": "<=",
+    "threshold": 0.02,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 1.1378866529503866
+   },
+   {
+    "id": "poisson_crosscheck",
+    "value": 0.0,
+    "op": "<=",
+    "threshold": 0.02,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 0.0
+   },
+   {
+    "id": "order_w_min",
+    "value": 1.7173691653735683,
+    "op": ">=",
+    "threshold": 1.5,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 1.1449127769157121
+   },
+   {
+    "id": "locking_control_strip",
+    "value": 0.9785282934466463,
+    "op": ">=",
+    "threshold": 0.5,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 1.9570565868932925
+   },
+   {
+    "id": "locking_control_patch",
+    "value": 0.021096612867004566,
+    "op": ">=",
+    "threshold": 0.02,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 1.0548306433502284
+   },
+   {
+    "id": "equilibrium_residual",
+    "value": 4.263256414560601e-14,
+    "op": "<=",
+    "threshold": 1e-08,
+    "declared": true,
+    "re_evaluated": true,
+    "consistent": true,
+    "margin": 234562.48059221334
+   }
+  ],
+  "thin_margin_gates_lt_1.5x": [
+   [
+    "distorted_w",
+    0.01541517888154085,
+    0.02
+   ],
+   [
+    "strip_free_w",
+    0.017576443091359494,
+    0.02
+   ]
+  ],
+  "criteria_in_result_json": {
+   "case_pool_tolerance": 0.02,
+   "exact_tolerance": 1e-12
+  },
+  "criteria_in_gates_json": {
+   "case_pool_tolerance": 0.02,
+   "exact_tolerance_affine": 1e-12,
+   "observed_order_min": 1.5,
+   "locking_control_min": 0.5
+  },
+  "criteria_keys_match": false,
+  "declared_limitations": [
+   "A patch test is a consistency (necessary) condition; it proves constant-curvature reproduction, not coarse-mesh accuracy or pointwise moment accuracy.",
+   "The distorted-patch residual is an interpolation limitation of the bilinear w field (quadratic exact field), measured and h-convergent, not a defect.",
+   "A Dirichlet-driven patch contains no zero-energy mode, so this test cannot detect the rank deficiency of the one-point (sri) element.",
+   "Literature criterion cited from the standard statement; the textbooks were not retrievable offline, but every target value is evaluated in code from the closed form, so no table digit enters the evidence chain."
+  ]
+ },
+ "F_orders": {
+  "recomputed": {
+   "displacement_rel_error/sri": {
+    "fitted_order": 1.7173691653735683,
+    "rows": [
+     [
+      0.25,
+      0.01541517888154085
+     ],
+     [
+      0.125,
+      0.008866719657818881
+     ],
+     [
+      0.0625,
+      0.0017267580225587306
+     ],
+     [
+      0.03125,
+      0.0005029524859363439
+     ]
+    ],
+    "monotone_decreasing": true
+   },
+   "moment_rel_error/sri": {
+    "fitted_order": 1.1511895023986738,
+    "rows": [
+     [
+      0.25,
+      0.0016107561431437745
+     ],
+     [
+      0.125,
+      0.0013636010230594522
+     ],
+     [
+      0.0625,
+      0.00045287682204129
+     ],
+     [
+      0.03125,
+      0.00016272600707809205
+     ]
+    ],
+    "monotone_decreasing": true
+   },
+   "energy_rel_error/sri": {
+    "fitted_order": 2.227976384048268,
+    "rows": [
+     [
+      0.25,
+      0.0011318078195938497
+     ],
+     [
+      0.125,
+      0.0002852419164649373
+     ],
+     [
+      0.0625,
+      5.037353332372486e-05
+     ],
+     [
+      0.03125,
+      1.1726019078450714e-05
+     ]
+    ],
+    "monotone_decreasing": true
+   },
+   "displacement_rel_error/mitc": {
+    "fitted_order": 1.8788532865102572,
+    "rows": [
+     [
+      0.25,
+      0.009117594170790715
+     ],
+     [
+      0.125,
+      0.0021087351549573963
+     ],
+     [
+      0.0625,
+      0.0006133136449427823
+     ],
+     [
+      0.03125,
+      0.0001792074550546721
+     ]
+    ],
+    "monotone_decreasing": true
+   },
+   "moment_rel_error/mitc": {
+    "fitted_order": 1.4030702028463193,
+    "rows": [
+     [
+      0.25,
+      0.0025042154283376095
+     ],
+     [
+      0.125,
+      0.003548973983135369
+     ],
+     [
+      0.0625,
+      0.0005267782234113092
+     ],
+     [
+      0.03125,
+      0.00018490243511512717
+     ]
+    ],
+    "monotone_decreasing": false
+   },
+   "energy_rel_error/mitc": {
+    "fitted_order": 1.9329465270398851,
+    "rows": [
+     [
+      0.25,
+      0.0016500842193053616
+     ],
+     [
+      0.125,
+      0.0006272493361109828
+     ],
+     [
+      0.0625,
+      0.0001210569163786618
+     ],
+     [
+      0.03125,
+      3.281507212349319e-05
+     ]
+    ],
+    "monotone_decreasing": true
+   }
+  },
+  "declared_orders": {
+   "w_sri": 1.7173691653735683,
+   "w_mitc": 1.8788532865102572,
+   "M_sri": 1.1511895023986738,
+   "M_mitc": 1.4030702028463193
+  },
+  "declared_order_floor": 1.5,
+  "gated_quantities": [
+   "order_w_min"
+  ]
+ },
+ "G_tautology": {
+  "max_w_err_by_family": {
+   "affine": 6.09863722023096e-16,
+   "skew": 8.031127203596327e-16,
+   "distorted": 0.01541517888154085
+  },
+  "exact_families_machine_precision": {
+   "affine": 6.09863722023096e-16,
+   "skew": 8.031127203596327e-16
+  },
+  "tautology_assessment": "affine/skew 上精确复现（8e-16）是结构性的：精确场落在 Q4 双线性 w 张成的空间内、且边界自由度直接给的是精确节点值，所以 w 精确=插值恒等式，不是精度证据；非恒等证据= (i) distorted patch（精确二次场在双线性 w 空间外）w=1.54%、M=0.75%、E=0.17% 且随 h 收敛；(ii) 载荷驱动悬臂板条（答案未给定）对称胞 2.2e-9 / 自由边 1.76%；(iii) 泊松交叉 1/(1-ν²)=1.0989 实测比值误差 0；(iv) 锁定负控（full 剪切积分）必须落在 >2%/≈0.98 一侧，实测 patch 2.1%、板条 0.979。",
+  "load_driven_case_present": true,
+  "negative_control_present": true
+ },
+ "H_integration": {
+  "impl_imports_production_element": [
+   "76:from .plate import _shape, q4_mindlin_stiffness"
+  ],
+  "bending_patch_referenced_at": [
+   "tests/test_bending_patch.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py",
+   "benchmarks/verified/fem_bending_patch/run.py"
+  ],
+  "src_modules_consuming_q4_mindlin_stiffness": 68,
+  "direction": "harness -> production element（被测的是生产元素本身）；无 src 模块反向调用bending_patch（patch harness 不入求解器主链）"
+ },
+ "I_report": {
+  "report_id": 14500,
+  "status": "published",
+  "markdown_chars": 13165,
+  "figures": [
+   {
+    "name": "patch_meshes.png",
+    "caption": "三种 patch 网格族（affine/skew/distorted），红圈为自由内节点"
+   },
+   {
+    "name": "error_vs_h.png",
+    "caption": "distorted patch 的 h 收敛（实线位移、虚线弯矩，含 slope-2 参考线）"
+   },
+   {
+    "name": "error_budget.png",
+    "caption": "各网格族×剪切处理的误差预算与 2% 容差线"
+   },
+   {
+    "name": "strip_bending.png",
+    "caption": "载荷驱动悬臂板条：端部挠度/转角误差 vs 闭式解"
+   }
+  ],
+  "headings": [
+   "# CASE-BENDING-PATCH — constant-curvature (bending) patch test, Q4 Mindlin plate",
+   "## 1. Problem and reference",
+   "## 2. Method and implementation",
+   "## 3. Parameters (dimensionless)",
+   "## 4. Results — reference vs computed",
+   "### 4.1 Affine / skewed patches: the pass/fail form",
+   "### 4.2 Distorted (non-affine) patch vs the 2% case-pool tolerance",
+   "### 4.3 Load-driven cantilever strip (the answer is *not* prescribed)",
+   "### 4.4 Negative control: the locking element must fail",
+   "## 5. Convergence and sensitivity",
+   "## 6. Failure modes, limits and artefacts",
+   "## 7. Gate table (machine verdict)"
+  ],
+  "six_sections_present": true,
+  "data_injected_note": "report text generated by run.py from result.json"
+ }
+}
