@@ -621,6 +621,9 @@ def run_registered_benchmarks():
         )
     )
 
+    from .foundation_plate_registry import plate_foundation_evidence
+
+    out.extend(plate_foundation_evidence())
     return tuple(out)
 
 
