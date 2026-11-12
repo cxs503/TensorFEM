@@ -96,6 +96,16 @@ LEISSA_CLAMPED_SQUARE_LAMBDA = 35.9853
 #: Transverse shear correction factor shared with ``tensorfem.plate``.
 SHEAR_CORRECTION = 5.0 / 6.0
 
+#: Transverse shear treatments of :func:`tensorfem.plate.q4_mindlin_stiffness`.
+#: ``"sri"`` is the historical one-point rule and stays the default; ``"mitc"``
+#: is the assumed natural transverse shear strain field (Dvorkin--Bathe), which
+#: is rank sufficient and therefore leaves no ``w`` hourglass mode on a free
+#: plate (see ``docs/free-plate-mitc-vibration-validation.md``).
+SHEAR_SRI = "sri"
+SHEAR_MITC = "mitc"
+SHEAR_FULL = "full"
+_SHEAR_TREATMENTS = (SHEAR_SRI, SHEAR_MITC, SHEAR_FULL)
+
 BOUNDARY_SIMPLE = "simple"
 BOUNDARY_CLAMPED = "clamped"
 BOUNDARY_FREE = "free"
@@ -117,6 +127,7 @@ class PlateVibrationResult:
     boundary: str
     winkler_k: float
     rigid_body_modes: int = 0         # zero-energy eigenpairs discarded before the elastic modes
+    shear_treatment: str = SHEAR_SRI  # element transverse shear rule actually used
 
 
 @dataclass(frozen=True)
@@ -408,6 +419,7 @@ def solve_plate_vibration(
     width: float | None = None, young: float = 200.0e9, poisson: float = 0.3,
     thickness: float = 0.01, density: float = 7850.0, winkler_k: float = 0.0,
     boundary: str = BOUNDARY_SIMPLE, modes: int = 4, rotary_inertia: bool = True,
+    shear_treatment: str = SHEAR_SRI,
     rigid_body_relative_tolerance: float = 1e-9, dtype=torch.float64,
     rigidity: PlateRigidity | None = None,
 ) -> PlateVibrationResult:
@@ -416,6 +428,12 @@ def solve_plate_vibration(
     Parameters mirror the bending entry point of ``tensorfem.plate``.  Fixed
     degrees of freedom are removed before the eigen-solve; the remaining
     problem is reduced with the Cholesky factor of the mass matrix.
+
+    ``shear_treatment`` selects the element transverse shear rule
+    (``"sri"`` default, ``"mitc"``, ``"full"``); see
+    :func:`tensorfem.plate.q4_mindlin_stiffness`.  On a free plate the default
+    ``"sri"`` rule leaves one spurious ``w`` hourglass mode, which is counted in
+    ``rigid_body_modes`` (4 instead of the physical 3); ``"mitc"`` removes it.
 
     ``rigidity`` optionally replaces the isotropic ``(young, poisson,
     thickness)`` stiffness by an orthotropic :class:`tensorfem.plate.PlateRigidity`;
@@ -429,6 +447,10 @@ def solve_plate_vibration(
         raise TypeError("rigidity must be a tensorfem.plate.PlateRigidity")
     if boundary not in _SUPPORTED_BOUNDARIES:
         raise ValueError(f"boundary must be one of {_SUPPORTED_BOUNDARIES}")
+    if shear_treatment not in _SHEAR_TREATMENTS:
+        raise ValueError(
+            f"shear_treatment must be one of {_SHEAR_TREATMENTS}"
+        )
     if isinstance(winkler_k, bool) or not isinstance(winkler_k, (int, float)):
         raise TypeError("winkler_k must be a real number")
     winkler_k = float(winkler_k)
@@ -449,8 +471,12 @@ def solve_plate_vibration(
     for connectivity in elements:
         xy = nodes[connectivity]
         element_stiffness = (
-            q4_mindlin_stiffness(xy, rigidity=rigidity) if rigidity is not None
-            else q4_mindlin_stiffness(xy, young, poisson, thickness)
+            q4_mindlin_stiffness(xy, rigidity=rigidity, shear_treatment=shear_treatment)
+            if rigidity is not None
+            else q4_mindlin_stiffness(
+                xy, young, poisson, thickness,
+                shear_correction=SHEAR_CORRECTION, shear_treatment=shear_treatment,
+            )
         )
         if winkler_k > 0.0:
             element_stiffness = element_stiffness + q4_winkler_foundation_stiffness(xy, winkler_k)
@@ -521,6 +547,7 @@ def solve_plate_vibration(
         boundary=boundary,
         winkler_k=winkler_k,
         rigid_body_modes=rigid,
+        shear_treatment=shear_treatment,
     )
 
 
