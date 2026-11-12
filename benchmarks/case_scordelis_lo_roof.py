@@ -266,8 +266,11 @@ def build_gates(ladders: dict, census: list[dict]) -> list[dict]:
     gate("equilibrium.cylindrical_reaction", "max |reaction/applied - 1|, cylindrical",
          cyl_worst, "< 1 %", cyl_worst < 1e-2,
          "the cylindrical element integrates the exact arc area but its reaction "
-         "sum carries a residual that falls ~h^2 (OPEN ITEM, not attributed: it "
-         "is under 1 % and does not affect the 3 % displacement verdict)")
+         "sum carries a residual that falls ~h^2; it is exactly the rigid-mode "
+         "projection (K 1_z)^T u / (-1^T f) and is attributed in "
+         "docs/CASE-FEM-SCORDELIS-LO-ROOF-reaction-residual-attribution.md -- a "
+         "curved-metric discretisation limit, not a load or reaction-extraction "
+         "defect")
 
     gate("accuracy.cylindrical_16x16", "w error, metric-consistent element at 16x16",
          cyl16["relative_error"], "< 3 %",
@@ -490,10 +493,11 @@ def render_doc(payload: dict) -> str:
     A("| cylindrical shell4 | `%.2e` |" % cyl_worst)
     A("")
     A("The flat-facet family is exact to machine precision. The cylindrical "
-      "element integrates the *exact* arc area and its reaction residual falls "
-      "roughly as `h^2` over this ladder; it is reported rather than explained "
-      "(open item) and is an order of magnitude below the displacement error it "
-      "is compared with.")
+      "element integrates the *exact* arc area and its reaction residual falls as "
+      "`h^2`: it is exactly the rigid-mode projection `(K 1_z)^T u / (-1^T f)`, "
+      "attributed to the interpolated rigid vertical translation in "
+      "`docs/CASE-FEM-SCORDELIS-LO-ROOF-reaction-residual-attribution.md`, and is "
+      "an order of magnitude below the displacement error it is compared with.")
     A("")
     A("## 4. Figures")
     A("")
