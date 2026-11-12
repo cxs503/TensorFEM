@@ -192,9 +192,18 @@ def test_gci_flags_oscillation_instead_of_inventing_an_order():
 # ---------------------------------------------------------------------------
 # factor register honesty
 # ---------------------------------------------------------------------------
-def test_csr_factor_register_is_blocked_and_holds_no_values():
+def test_csr_factor_register_holds_no_values_of_its_own():
+    """The W23 register never carried a factor value.
+
+    W24 (mission 15972) transcribed the printed table from the 01 Jan 2019
+    harmonised CSR, so the register now reads RESOLVED -- but its own factor
+    entries must still show no printed value, which is the record that W23 did
+    not invent one.  The transcribed values live in the W24 anchor artifact.
+    """
     payload = json.loads(REGISTER.read_text())
-    assert payload["status"] == "BLOCKED"
+    assert payload["status"] == "RESOLVED"
+    assert payload["status_as_recorded_2026_11_11"] == "BLOCKED"
+    assert payload["resolved"]["by"].endswith("csr_uls_anchor.json")
     assert payload["acquisition_attempts"]
     ids = {factor["id"] for factor in payload["factors"]}
     assert {"gamma_s", "gamma_w", "gamma_R"} <= ids
@@ -202,6 +211,10 @@ def test_csr_factor_register_is_blocked_and_holds_no_values():
         assert factor["status"] == "BLOCKED"
         assert factor["printed_values"] is None
         assert factor["usable_for_compliance_claim"] is False
+    anchor_path = Path(__file__).resolve().parents[1] / payload["resolved"]["by"]
+    anchor = json.loads(anchor_path.read_text())
+    table = anchor["transcription"]["factor_table"]
+    assert payload["resolved"]["how"].count(f"{table['A']['gamma_W']}") == 1
 
 
 def test_study_states_the_unit_factor_status(small_study):
