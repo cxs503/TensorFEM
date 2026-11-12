@@ -2,7 +2,7 @@
   "benchmark": "fem_kirsch_plate",
   "mission": "CASE-KIRSCH-PLATE",
   "title": "KIRSCH-PLATE: circular hole in a tension plate, K_t = 3 (Kirsch 1898)",
-  "generated_at": "2026-11-12T17:55:24+00:00",
+  "generated_at": "2026-11-12T21:50:15+00:00",
   "reference": {
     "citation": "Kirsch (1898) VDI 42, 797; Timoshenko & Goodier, Theory of Elasticity, 3rd ed., Art. 39, eqs. (a)-(c)",
     "closed_form": "sigma_tt(a, theta) = T (1 - 2 cos 2 theta); K_t = sigma_tt(a, pi/2)/T = 3",
@@ -175,7 +175,7 @@
         "net": 2.8223269176710635
       },
       "net_section_average_over_tension": 1.0204081632653061,
-      "wall_seconds": 0.020524263381958008,
+      "wall_seconds": 0.09673070907592773,
       "ktg_error_vs_kirsch": 0.04002485793501235,
       "hoop_profile_rms_over_kt": 0.02141269557293597
     },
@@ -411,7 +411,7 @@
         "net": 2.917916592170136
       },
       "net_section_average_over_tension": 1.0204081632653061,
-      "wall_seconds": 0.0805356502532959,
+      "wall_seconds": 0.18538165092468262,
       "ktg_error_vs_kirsch": 0.007511363207436765,
       "hoop_profile_rms_over_kt": 0.0062149885302890855
     },
@@ -839,7 +839,7 @@
         "net": 2.9413794477053274
       },
       "net_section_average_over_tension": 1.0204081632653061,
-      "wall_seconds": 2.340223550796509,
+      "wall_seconds": 5.6757659912109375,
       "ktg_error_vs_kirsch": 0.0004691998997712332,
       "hoop_profile_rms_over_kt": 0.003176406633680044
     },
@@ -979,7 +979,7 @@
         "net": 2.718220858135639
       },
       "net_section_average_over_tension": 1.0526315789473684,
-      "wall_seconds": 0.020860910415649414,
+      "wall_seconds": 0.04487180709838867,
       "ktg_error_vs_kirsch": 0.046238295391003735,
       "hoop_profile_rms_over_kt": 0.019951931983735273
     },
@@ -1215,7 +1215,7 @@
         "net": 2.821958586528304
       },
       "net_section_average_over_tension": 1.0526315789473684,
-      "wall_seconds": 0.09189271926879883,
+      "wall_seconds": 0.24144959449768066,
       "ktg_error_vs_kirsch": 0.009839092446208989,
       "hoop_profile_rms_over_kt": 0.005310223810340224
     },
@@ -1643,7 +1643,7 @@
         "net": 2.8512811958144617
       },
       "net_section_average_over_tension": 1.0526315789473684,
-      "wall_seconds": 2.5534427165985107,
+      "wall_seconds": 2.99208664894104,
       "ktg_error_vs_kirsch": 0.00044954239103918897,
       "hoop_profile_rms_over_kt": 0.0028263244748521848
     },
@@ -1783,7 +1783,7 @@
         "net": 2.587113581400779
       },
       "net_section_average_over_tension": 1.1111111111111112,
-      "wall_seconds": 0.013068199157714844,
+      "wall_seconds": 0.020035743713378906,
       "ktg_error_vs_kirsch": 0.04180978466637816,
       "hoop_profile_rms_over_kt": 0.01900200504454907
     },
@@ -2019,7 +2019,7 @@
         "net": 2.692115893409034
       },
       "net_section_average_over_tension": 1.1111111111111112,
-      "wall_seconds": 0.07284283638000488,
+      "wall_seconds": 0.08178496360778809,
       "ktg_error_vs_kirsch": 0.002920039478135609,
       "hoop_profile_rms_over_kt": 0.007175736769307343
     },
@@ -2447,7 +2447,7 @@
         "net": 2.7230477877933605
       },
       "net_section_average_over_tension": 1.1111111111111112,
-      "wall_seconds": 2.6044437885284424,
+      "wall_seconds": 2.8364038467407227,
       "ktg_error_vs_kirsch": 0.008536217701244611,
       "hoop_profile_rms_over_kt": 0.0074114414891751496
     }
@@ -2539,7 +2539,7 @@
       "error_vs_kirsch": 0.006579609738004422,
       "displacement_relative_l2": 9.491268996824222e-05,
       "cg_relative_residual": 8.129255379800256e-13,
-      "wall_seconds": 0.17972826957702637
+      "wall_seconds": 0.341475248336792
     },
     {
       "n_theta": 48,
@@ -2550,7 +2550,7 @@
       "error_vs_kirsch": 0.0019096580941819024,
       "displacement_relative_l2": 5.891619741740891e-06,
       "cg_relative_residual": 6.6300790621901e-13,
-      "wall_seconds": 0.9895362854003906
+      "wall_seconds": 2.070283889770508
     },
     {
       "n_theta": 96,
@@ -2561,7 +2561,7 @@
       "error_vs_kirsch": 0.0004920885410074997,
       "displacement_relative_l2": 3.6186670187092456e-07,
       "cg_relative_residual": 9.560067938590796e-13,
-      "wall_seconds": 6.426069021224976
+      "wall_seconds": 9.383658647537231
     }
   ],
   "nu_E_invariance": [
