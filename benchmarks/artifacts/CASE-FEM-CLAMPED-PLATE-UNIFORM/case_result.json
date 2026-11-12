@@ -25,9 +25,9 @@
   },
   "primary": {
     "mesh": "16x16 Q4 elements, 17x17 nodes",
-    "alpha_fe": 0.001264204653912598,
+    "alpha_fe": 0.0012642046539125982,
     "alpha_ref": 0.00126,
-    "relative_error": 0.0033370269147602813,
+    "relative_error": 0.0033370269147604535,
     "gate": 0.03,
     "within_3pct": true
   },
@@ -39,7 +39,7 @@
         "n_elements": 16,
         "w_centre": 0.06311921290115537,
         "alpha": 0.0012138310173299112,
-        "seconds": 0.3061091899871826,
+        "seconds": 0.4184408187866211,
         "alpha_ritz": 0.0012682503400505865,
         "err_vs_table": 0.03664204973816573,
         "err_vs_ritz": 0.04290897546181983,
@@ -51,7 +51,7 @@
         "n_elements": 36,
         "w_centre": 0.06459086760819795,
         "alpha": 0.0012421320693884223,
-        "seconds": 0.6622433662414551,
+        "seconds": 0.9958479404449463,
         "alpha_ritz": 0.0012682503400505865,
         "err_vs_table": 0.014180897310776019,
         "err_vs_ritz": 0.02059393941193223,
@@ -63,7 +63,7 @@
         "n_elements": 64,
         "w_centre": 0.06517165944216098,
         "alpha": 0.0012533011431184807,
-        "seconds": 1.1830670833587646,
+        "seconds": 1.8481667041778564,
         "alpha_ritz": 0.0012682503400505865,
         "err_vs_table": 0.0053165530805709335,
         "err_vs_ritz": 0.011787260338136036,
@@ -73,143 +73,221 @@
         "nx": 10,
         "n_nodes": 121,
         "n_elements": 100,
-        "w_centre": 0.06544388384966014,
-        "alpha": 0.0012585362278780799,
-        "seconds": 1.720961093902588,
+        "w_centre": 0.06544388384966011,
+        "alpha": 0.0012585362278780795,
+        "seconds": 2.8159730434417725,
         "alpha_ritz": 0.0012682503400505865,
-        "err_vs_table": 0.0011617239062858427,
-        "err_vs_ritz": 0.007659459544965813,
+        "err_vs_table": 0.0011617239062861869,
+        "err_vs_ritz": 0.007659459544966155,
         "h_over_a": 0.1
       },
       {
         "nx": 12,
         "n_nodes": 169,
         "n_elements": 144,
-        "w_centre": 0.0655915925035672,
-        "alpha": 0.0012613767789147541,
-        "seconds": 2.4813597202301025,
+        "w_centre": 0.06559159250356725,
+        "alpha": 0.001261376778914755,
+        "seconds": 4.043575763702393,
         "alpha_ritz": 0.0012682503400505865,
-        "err_vs_table": 0.00109268167837625,
-        "err_vs_ritz": 0.005419719529157155,
+        "err_vs_table": 0.0010926816783769383,
+        "err_vs_ritz": 0.005419719529156471,
         "h_over_a": 0.08333333333333333
       },
       {
         "nx": 16,
         "n_nodes": 289,
         "n_elements": 256,
-        "w_centre": 0.06573864200345508,
-        "alpha": 0.001264204653912598,
-        "seconds": 4.360199689865112,
+        "w_centre": 0.0657386420034551,
+        "alpha": 0.0012642046539125982,
+        "seconds": 7.900906085968018,
         "alpha_ritz": 0.0012682503400505865,
-        "err_vs_table": 0.0033370269147602813,
-        "err_vs_ritz": 0.0031899744161133967,
+        "err_vs_table": 0.0033370269147604535,
+        "err_vs_ritz": 0.003189974416113226,
         "h_over_a": 0.0625
       },
       {
         "nx": 20,
         "n_nodes": 441,
         "n_elements": 400,
-        "w_centre": 0.06580689648308942,
-        "alpha": 0.001265517240059412,
-        "seconds": 6.99885630607605,
+        "w_centre": 0.06580689648308936,
+        "alpha": 0.001265517240059411,
+        "seconds": 13.495816469192505,
         "alpha_ritz": 0.0012682503400505865,
-        "err_vs_table": 0.004378761951914318,
-        "err_vs_ritz": 0.0021550161705971914,
+        "err_vs_table": 0.004378761951913458,
+        "err_vs_ritz": 0.002155016170598046,
         "h_over_a": 0.05
       },
       {
         "nx": 24,
         "n_nodes": 625,
         "n_elements": 576,
-        "w_centre": 0.06584404407641947,
-        "alpha": 0.001266231616854221,
-        "seconds": 10.48481559753418,
+        "w_centre": 0.06584404407641943,
+        "alpha": 0.0012662316168542199,
+        "seconds": 19.205674648284912,
         "alpha_ritz": 0.0012682503400505865,
-        "err_vs_table": 0.004945727662080081,
-        "err_vs_ritz": 0.0015917387384930786,
+        "err_vs_table": 0.004945727662079221,
+        "err_vs_ritz": 0.0015917387384939334,
         "h_over_a": 0.041666666666666664
       },
       {
         "nx": 32,
         "n_nodes": 1089,
         "n_elements": 1024,
-        "w_centre": 0.06588102859815886,
-        "alpha": 0.0012669428576569015,
-        "seconds": 20.546666860580444,
+        "w_centre": 0.06588102859815888,
+        "alpha": 0.0012669428576569017,
+        "seconds": 31.717671871185303,
         "alpha_ritz": 0.0012682503400505865,
-        "err_vs_table": 0.005510204489604333,
-        "err_vs_ritz": 0.0010309339981196689,
+        "err_vs_table": 0.005510204489604506,
+        "err_vs_ritz": 0.001030933998119498,
         "h_over_a": 0.03125
       }
     ],
     "richardson": {
-      "order": 1.9934910357898559,
-      "limit": 0.0012678611035599125,
+      "order": 1.9934910357898845,
+      "limit": 0.0012678611035599127,
       "note": "three-level Richardson on nx = [8, 16, 32] (uniform r = 2)"
     }
   },
+  "independent_family_bfs": {
+    "element": "Bogner-Fox-Schmit C1 bicubic Hermite (tensorfem.plate_bfs), 4 dof/node (w, w_x, w_y, w_xy), Kirchhoff bending only, sparse SuperLU",
+    "patch_test": {
+      "n_x": 3,
+      "n_y": 2,
+      "length_x": 2.0,
+      "length_y": 1.0,
+      "n_dof": 48,
+      "n_interior_free_dofs": 8,
+      "max_abs_error": 4.773959005888173e-15,
+      "field_scale": 7.0,
+      "relative_error": 6.819941436983105e-16
+    },
+    "ssss_vs_navier_exact": {
+      "nx": 20,
+      "alpha": 0.004062356988950157,
+      "reference_exact_navier": 0.004062352660676305,
+      "relative_error": 1.06545989795652e-06
+    },
+    "ladder": [
+      {
+        "nx": 10,
+        "n_dof": 484,
+        "n_constrained_dofs": 120,
+        "w_centre_m": 0.06600107382206347,
+        "alpha": 0.0012692514196550669,
+        "centre_moment_coeff": 0.02321568978368137,
+        "total_load_N": 1000000.0,
+        "reaction_N": -999999.9999999867
+      },
+      {
+        "nx": 20,
+        "n_dof": 1764,
+        "n_constrained_dofs": 240,
+        "w_centre_m": 0.06582231330196245,
+        "alpha": 0.001265813717345432,
+        "centre_moment_coeff": 0.022975249715117364,
+        "total_load_N": 1000000.0000000002,
+        "reaction_N": -999999.999999793
+      },
+      {
+        "nx": 40,
+        "n_dof": 6724,
+        "n_constrained_dofs": 480,
+        "w_centre_m": 0.06579986347207374,
+        "alpha": 0.0012653819898475723,
+        "centre_moment_coeff": 0.02292188986203987,
+        "total_load_N": 1000000.0000000002,
+        "reaction_N": -999999.9999986086
+      }
+    ],
+    "self_convergence_order": 2.9932517291051335,
+    "cross_family_ladder": [
+      {
+        "nx": 10,
+        "alpha_mindlin": 0.0012585362278780795,
+        "alpha_bfs": 0.0012692514196550669,
+        "family_gap_relative": 0.008448798662699373,
+        "family_gap_absolute": 1.071519177698742e-05
+      },
+      {
+        "nx": 20,
+        "alpha_mindlin": 0.001265517240059411,
+        "alpha_bfs": 0.001265813717345432,
+        "family_gap_relative": 0.0002337687415948968,
+        "family_gap_absolute": 2.9647728602092555e-07
+      },
+      {
+        "nx": 32,
+        "alpha_mindlin": 0.0012669428576569017,
+        "alpha_bfs": 0.001265441400416913,
+        "family_gap_relative": 0.0011838808101001007,
+        "family_gap_absolute": 1.5014572399888165e-06
+      }
+    ],
+    "mindlin_richardson_limit": 0.0012678611035599127,
+    "cross_family_gap_vs_mindlin": 0.0019591820748445046
+  },
   "sensitivity": {
-    "thin_range_mutual_spread_relative": 0.0075158701298661725,
+    "thin_range_mutual_spread_relative": 0.007515870129868054,
     "thickness_sweep_nx16": [
       {
         "nx": 16,
         "n_nodes": 289,
         "n_elements": 256,
-        "w_centre": 0.5251116206145852,
-        "alpha": 0.0012622875495542914,
-        "seconds": 4.63704776763916,
+        "w_centre": 0.5251116206145853,
+        "alpha": 0.0012622875495542916,
+        "seconds": 7.775931119918823,
         "a_over_t": 200.0,
         "alpha_ritz_kirchhoff": 0.0012682503400505865,
-        "shear_effect_vs_kirchhoff": -0.004701587934174967,
-        "err_vs_table": 0.0018155155192788109
+        "shear_effect_vs_kirchhoff": -0.004701587934174745,
+        "err_vs_table": 0.001815515519278983
       },
       {
         "nx": 16,
         "n_nodes": 289,
         "n_elements": 256,
-        "w_centre": 0.06573864200345508,
-        "alpha": 0.001264204653912598,
-        "seconds": 4.413394212722778,
+        "w_centre": 0.0657386420034551,
+        "alpha": 0.0012642046539125982,
+        "seconds": 6.173144578933716,
         "a_over_t": 100.0,
         "alpha_ritz_kirchhoff": 0.0012682503400505865,
-        "shear_effect_vs_kirchhoff": -0.0031899744161133503,
-        "err_vs_table": 0.0033370269147602813
+        "shear_effect_vs_kirchhoff": -0.0031899744161132393,
+        "err_vs_table": 0.0033370269147604535
       },
       {
         "nx": 16,
         "n_nodes": 289,
         "n_elements": 256,
-        "w_centre": 0.008266827103614755,
-        "alpha": 0.0012718195544022702,
-        "seconds": 4.601747989654541,
+        "w_centre": 0.008266827103614772,
+        "alpha": 0.0012718195544022728,
+        "seconds": 5.924649953842163,
         "a_over_t": 50.0,
         "alpha_ritz_kirchhoff": 0.0012682503400505865,
-        "shear_effect_vs_kirchhoff": 0.0028142821956911312,
-        "err_vs_table": 0.009380598731960413
+        "shear_effect_vs_kirchhoff": 0.0028142821956933517,
+        "err_vs_table": 0.009380598731962479
       },
       {
         "nx": 16,
         "n_nodes": 289,
         "n_elements": 256,
-        "w_centre": 0.0005507717342278954,
-        "alpha": 0.0013239705149709028,
-        "seconds": 4.634616374969482,
+        "w_centre": 0.000550771734227894,
+        "alpha": 0.0013239705149708993,
+        "seconds": 5.911734580993652,
         "a_over_t": 20.0,
         "alpha_ritz_kirchhoff": 0.0012682503400505904,
-        "shear_effect_vs_kirchhoff": 0.043934681632405326,
-        "err_vs_table": 0.05077024997690692
+        "shear_effect_vs_kirchhoff": 0.04393468163240244,
+        "err_vs_table": 0.05077024997690417
       },
       {
         "nx": 16,
         "n_nodes": 289,
         "n_elements": 256,
-        "w_centre": 7.811228457496693e-05,
-        "alpha": 0.0015021593187493644,
-        "seconds": 4.276871919631958,
+        "w_centre": 7.811228457496689e-05,
+        "alpha": 0.0015021593187493636,
+        "seconds": 5.579115390777588,
         "a_over_t": 10.0,
         "alpha_ritz_kirchhoff": 0.0012682503400505904,
-        "shear_effect_vs_kirchhoff": 0.1844343906814514,
-        "err_vs_table": 0.19218993551536856
+        "shear_effect_vs_kirchhoff": 0.1844343906814505,
+        "err_vs_table": 0.19218993551536787
       }
     ],
     "poisson_sweep_nx16": [
@@ -217,34 +295,34 @@
         "nx": 16,
         "n_nodes": 289,
         "n_elements": 256,
-        "w_centre": 0.06771099377616116,
-        "alpha": 0.0012639385504883416,
-        "seconds": 4.3852410316467285,
+        "w_centre": 0.06771099377616105,
+        "alpha": 0.0012639385504883396,
+        "seconds": 5.095685720443726,
         "nu": 0.25,
         "alpha_ritz": 0.0012682564739911304,
-        "err_vs_ritz": 0.0034046138074899914
+        "err_vs_ritz": 0.00340461380749153
       },
       {
         "nx": 16,
         "n_nodes": 289,
         "n_elements": 256,
-        "w_centre": 0.06573864200345508,
-        "alpha": 0.001264204653912598,
-        "seconds": 4.042157411575317,
+        "w_centre": 0.0657386420034551,
+        "alpha": 0.0012642046539125982,
+        "seconds": 5.182478904724121,
         "nu": 0.3,
         "alpha_ritz": 0.0012682503400505865,
-        "err_vs_ritz": 0.0031899744161133967
+        "err_vs_ritz": 0.003189974416113226
       },
       {
         "nx": 16,
         "n_nodes": 289,
         "n_elements": 256,
-        "w_centre": 0.063405490745916,
-        "alpha": 0.0012644969664427693,
-        "seconds": 3.8256638050079346,
+        "w_centre": 0.06340549074591603,
+        "alpha": 0.00126449696644277,
+        "seconds": 5.266753196716309,
         "nu": 0.35,
         "alpha_ritz": 0.0012682442169037306,
-        "err_vs_ritz": 0.0029546757722340045
+        "err_vs_ritz": 0.002954675772233492
       }
     ]
   },
@@ -282,9 +360,9 @@
     {
       "anchor": "finest_mesh_vs_ritz",
       "description": "Finest mesh in the study (32x32) vs the converged clamped Ritz value; the FE series is monotone in nx so the residual is discretisation, not noise",
-      "got": 0.0012669428576569015,
+      "got": 0.0012669428576569017,
       "reference": 0.0012682503400505865,
-      "relative_error": 0.0010309339981196689,
+      "relative_error": 0.001030933998119498,
       "tolerance": 0.01,
       "passed": true,
       "note": ""
@@ -292,9 +370,9 @@
     {
       "anchor": "converged_fe_limit_vs_table",
       "description": "Richardson limit of the FE mesh series vs the Timoshenko table entry",
-      "got": 0.0012678611035599125,
+      "got": 0.0012678611035599127,
       "reference": 0.00126,
-      "relative_error": 0.006238971079295593,
+      "relative_error": 0.006238971079295765,
       "tolerance": 0.03,
       "passed": true,
       "note": "extrapolated order 1.99"
@@ -302,9 +380,9 @@
     {
       "anchor": "converged_fe_limit_vs_ritz",
       "description": "Richardson limit of the FE mesh series vs the converged clamped Ritz value",
-      "got": 0.0012678611035599125,
+      "got": 0.0012678611035599127,
       "reference": 0.0012682503400505865,
-      "relative_error": 0.0003069082486179097,
+      "relative_error": 0.0003069082486177387,
       "tolerance": 0.01,
       "passed": true,
       "note": ""
@@ -312,9 +390,9 @@
     {
       "anchor": "primary_fe_vs_timoshenko_table",
       "description": "Clamped square plate, a/t = 100, uniform pressure, Q4 Mindlin 16x16 (17x17 nodes): alpha = w_max D/(q a^4) vs Timoshenko Table 30 entry 0.00126",
-      "got": 0.001264204653912598,
+      "got": 0.0012642046539125982,
       "reference": 0.00126,
-      "relative_error": 0.0033370269147602813,
+      "relative_error": 0.0033370269147604535,
       "tolerance": 0.03,
       "passed": true,
       "note": "accuracy floor of the table is +-0.40% (3 printed digits)"
@@ -322,9 +400,9 @@
     {
       "anchor": "secondary_fe_centre_moment_vs_table",
       "description": "Centre bending moment coefficient |Mx|/(q a^2), 16x16, vs Timoshenko Table 30 clamped-square entry 0.0231 (secondary: the Ritz moment reference itself drifts 1.71% between N=10 and N=12, so the table entry is the reference here)",
-      "got": 0.022674527123019633,
+      "got": 0.022674527123019636,
       "reference": 0.0231,
-      "relative_error": 0.018418739263219328,
+      "relative_error": 0.01841873926321918,
       "tolerance": 0.03,
       "passed": true,
       "note": ""
@@ -332,9 +410,9 @@
     {
       "anchor": "slenderness_independence_thin_range",
       "description": "For a/t >= 50 the FE alpha must sit on its own Kirchhoff limit: worst |alpha_FE/alpha_Ritz(t) - 1| over a/t in {50,100,200} at nx = 16",
-      "got": 0.0012622875495542914,
+      "got": 0.0012622875495542916,
       "reference": 0.0012682503400505865,
-      "relative_error": 0.004701587934174967,
+      "relative_error": 0.004701587934174745,
       "tolerance": 0.01,
       "passed": true,
       "note": "worst at a/t = 200; mutual spread over the three thin cases = 0.752% (dominated by mesh discretisation, not by shear)"
@@ -342,9 +420,9 @@
     {
       "anchor": "mindlin_shear_raises_thick_plate_deflection",
       "description": "At a/t = 10 transverse shear must raise alpha above the Kirchhoff value (>1 %); confirms the Mindlin shear branch is live, not dead code",
-      "got": 0.0015021593187493644,
+      "got": 0.0015021593187493636,
       "reference": 0.0012682503400505904,
-      "relative_error": 0.1844343906814514,
+      "relative_error": 0.1844343906814505,
       "tolerance": 1.0,
       "passed": true,
       "note": "not a gate on magnitude: sign/liveness check, effect = +18.44% "
@@ -352,15 +430,85 @@
     {
       "anchor": "poisson_sweep_fe_vs_ritz",
       "description": "nu in {0.25,0.30,0.35}: FE vs Ritz, worst case (the table is quoted for nu = 0.3 only, so nu is a sensitivity axis, not a reference axis)",
-      "got": 0.0012639385504883416,
+      "got": 0.0012639385504883396,
       "reference": 0.0012682564739911304,
-      "relative_error": 0.0034046138074899914,
+      "relative_error": 0.00340461380749153,
       "tolerance": 0.01,
       "passed": true,
       "note": "worst of 3 nu values"
+    },
+    {
+      "anchor": "bfs_patch_constant_curvature_exact",
+      "description": "BFS element patch test: w = x^2 + y^2 + x*y (constant curvatures 2 and twist 1) on a 3x2 mesh of 2:1 rectangles must be reproduced to round-off at every dof",
+      "got": 6.819941436983105e-16,
+      "reference": 0.0,
+      "relative_error": 6.819941436983105e-16,
+      "tolerance": 1e-10,
+      "passed": true,
+      "note": "max |err| = 4.774e-15 (field scale 7, 48 dofs)"
+    },
+    {
+      "anchor": "bfs_family_machinery_ss_vs_navier",
+      "description": "BFS family graded on the case that DOES have a closed form: hard simple support, uniform load, 20x20 vs the exact Navier double series (0.00406235).  A family that cannot reproduce a closed-form case is not allowed to grade the clamped case.",
+      "got": 0.004062356988950157,
+      "reference": 0.004062352660676305,
+      "relative_error": 1.06545989795652e-06,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": ""
+    },
+    {
+      "anchor": "independent_family_bfs_vs_table",
+      "description": "Independent family (BFS C1 bicubic Kirchhoff, 40x40) clamped square, a/t = 100: alpha vs the Timoshenko Table 30 entry 0.00126",
+      "got": 0.0012653819898475723,
+      "reference": 0.00126,
+      "relative_error": 0.0042714205139462134,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": "self-convergence order over the 10/20/40 ladder = 2.99"
+    },
+    {
+      "anchor": "independent_family_bfs_vs_ritz",
+      "description": "BFS 40x40 vs the converged clamped Rayleigh-Ritz reference (same Kirchhoff physics, entirely different discretisation)",
+      "got": 0.0012653819898475723,
+      "reference": 0.0012682503400505865,
+      "relative_error": 0.0022616593210610155,
+      "tolerance": 0.01,
+      "passed": true,
+      "note": ""
+    },
+    {
+      "anchor": "cross_family_bfs_vs_mindlin",
+      "description": "CROSS-FAMILY: Q4 Mindlin Richardson limit vs BFS 40x40.  Two unrelated element families must land within 1.0% of each other; this is the check round 1 did not have (one family only).",
+      "got": 0.0012678611035599127,
+      "reference": 0.0012653819898475723,
+      "relative_error": 0.0019591820748445046,
+      "tolerance": 0.01,
+      "passed": true,
+      "note": "Mindlin series nx=16/24/32 -> 0.00126786, BFS 40x40 -> 0.00126538, gap 0.196%"
+    },
+    {
+      "anchor": "bfs_global_equilibrium_reaction",
+      "description": "Discrete equilibrium identity: the reaction of the constrained dofs must equal the total applied load q a^2 (40x40 BFS); catches a wrong load vector or a mis-constrained edge",
+      "got": 999999.9999986086,
+      "reference": 1000000.0,
+      "relative_error": 1.391395926475525e-12,
+      "tolerance": 1e-10,
+      "passed": true,
+      "note": "K u - f at the constrained dofs is the support reaction, i.e. the load sum with the opposite sign; |reaction| is compared with q a^2"
+    },
+    {
+      "anchor": "independent_family_bfs_centre_moment_vs_table",
+      "description": "BFS 40x40 centre bending-moment coefficient |Mx|/(q a^2) vs Timoshenko Table 30 clamped entry 0.0231",
+      "got": 0.02292188986203987,
+      "reference": 0.0231,
+      "relative_error": 0.0077103955826895295,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": ""
     }
   ],
   "all_gates_passed": true,
-  "wall_seconds": 93.44790124893188,
+  "wall_seconds": 151.65552878379822,
   "repro_cmd": "PYTHONPATH=src python benchmarks/case_clamped_plate_uniform.py"
 }

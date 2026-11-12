@@ -61,6 +61,7 @@ __all__ = [
     "bfs_boundary_dofs",
     "bfs_evaluate",
     "bfs_moments",
+    "bfs_patch_test",
     "solve_bfs_static",
     "solve_bfs_modes",
     "solve_bfs_mode_shapes",
@@ -513,6 +514,86 @@ def _free_dofs(n_dof: int, fixed: np.ndarray) -> np.ndarray:
     mask = np.ones(n_dof, dtype=bool)
     mask[np.asarray(fixed, dtype=int)] = False
     return np.flatnonzero(mask)
+
+
+def bfs_patch_test(
+    n_x: int = 3,
+    n_y: int = 2,
+    length_x: float = 2.0,
+    length_y: float = 1.0,
+    young: float = 210.0e9,
+    poisson: float = 0.3,
+    thickness: float = 0.01,
+) -> dict:
+    """Constant-curvature / constant-twist patch test of the assembled mesh.
+
+    The field ``w = x^2 + y^2 + x y`` has constant ``w_,xx = w_,yy = 2`` and
+    ``w_,xy = 1``, so it is contained in the bicubic space and is biharmonic
+    (``grad^4 w = 0``, i.e. an admissible unloaded solution).  Its *complete*
+    nodal trace is prescribed on the boundary of the patch -- all four dofs
+    ``(w, w_x, w_y, w_xy)`` -- and the unloaded discrete problem is solved for
+    the interior dofs, which must return the interpolant field to round-off.
+
+    Why the twist dof has to be part of the prescribed trace: a free boundary
+    twist dof carries the natural condition "zero corner force", while a
+    constant-twist field has ``M_xy = -D (1 - nu) w_,xy != 0``; the exact field
+    therefore does not satisfy that natural condition and is not reproduced at
+    free twist dofs (interior residual ~1e-10 against ~1e-1 at free corner
+    twist dofs for this patch).  That is a boundary-condition property, not an
+    element defect -- which is why the assembled stiffness is graded with the
+    full boundary trace here, and why a "free twist" patch test must not be
+    used as an acceptance gate.
+
+    Using a non-square patch (``length_x/length_y = 2``) also exercises the
+    independent ``x``/``y`` element lengths, i.e. the length scaling of the
+    Hermite slope dofs.
+    """
+    from .plate_bfs import assemble_bfs_plate as _assemble  # local alias, same module
+
+    plate = _assemble(n_x, n_y, length_x, length_y, young, poisson, thickness,
+                      surface_load=0.0)
+    nodes_x = n_x + 1
+
+    def exact(x: float, y: float) -> tuple[float, float, float, float]:
+        return (x * x + y * y + x * y, 2.0 * x + y, 2.0 * y + x, 1.0)
+
+    u = np.zeros(plate.n_dof)
+    for j in range(n_y + 1):
+        for i in range(nodes_x):
+            values = exact(i * length_x / n_x, j * length_y / n_y)
+            for k in range(4):
+                u[4 * (j * nodes_x + i) + k] = values[k]
+
+    boundary = {
+        4 * (j * nodes_x + i) + k
+        for j in range(n_y + 1)
+        for i in range(nodes_x)
+        if i in (0, n_x) or j in (0, n_y)
+        for k in range(4)
+    }
+    fixed = np.array(sorted(boundary), dtype=int)
+    free = _free_dofs(plate.n_dof, fixed)
+    stiffness = plate.stiffness
+    u[free] = spla.spsolve(
+        stiffness[free][:, free].tocsc(),
+        -(stiffness[free][:, fixed] @ u[fixed]),
+    )
+
+    max_error = 0.0
+    scale = 0.0
+    for j in range(n_y + 1):
+        for i in range(nodes_x):
+            values = exact(i * length_x / n_x, j * length_y / n_y)
+            for k in range(4):
+                dof = 4 * (j * nodes_x + i) + k
+                max_error = max(max_error, abs(u[dof] - values[k]))
+                scale = max(scale, abs(values[k]))
+    return {
+        "n_x": n_x, "n_y": n_y, "length_x": length_x, "length_y": length_y,
+        "n_dof": int(plate.n_dof), "n_interior_free_dofs": int(free.size),
+        "max_abs_error": max_error, "field_scale": scale,
+        "relative_error": max_error / scale,
+    }
 
 
 def solve_bfs_static(
