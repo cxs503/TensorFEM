@@ -13,6 +13,9 @@ class ShellBenchmarkResult:
     nodes: torch.Tensor
     elements: torch.Tensor
     probe_dof: int
+    #: assembled global stiffness (ndof x ndof); exposed so that equilibrium
+    #: audits can name the exact algebraic source of a reaction residual.
+    stiffness: torch.Tensor | None = None
     @property
     def probe_displacement(self) -> float:
         return float(self.displacement[self.probe_dof])
@@ -50,4 +53,5 @@ def scordelis_lo_cylindrical(nx: int, nt: int, *, dtype=torch.float64, device=No
     fixed=torch.tensor(sorted(set(constrained)),dtype=torch.long,device=dev)
     mask=torch.ones(ndof,dtype=torch.bool,device=dev); mask[fixed]=False; free=torch.nonzero(mask).flatten()
     u=torch.zeros(ndof,dtype=dtype,device=dev); u[free]=torch.linalg.solve(K[free[:,None],free],f[free])
-    return ShellBenchmarkResult(u,K@u-f,nodes,elements,6*((nx//2)*(nt+1)+nt)+2)
+    probe=6*((nx//2)*(nt+1)+nt)+2
+    return ShellBenchmarkResult(u,K@u-f,nodes,elements,probe,K)

@@ -29,7 +29,7 @@
     "reaction_vertical": 157163.61804356799,
     "applied_vertical": 157079.63267948964,
     "equilibrium_ratio": 1.0005346674336175,
-    "seconds": 4.63
+    "seconds": 8.27
   },
   "ladders": {
     "cyl": [
@@ -48,7 +48,7 @@
         "reaction_vertical": 158399.70308386587,
         "applied_vertical": 157079.63267948964,
         "equilibrium_ratio": 1.0084038292034316,
-        "seconds": 0.3
+        "seconds": 0.61
       },
       {
         "configuration": "cyl",
@@ -65,7 +65,7 @@
         "reaction_vertical": 157413.9858903271,
         "applied_vertical": 157079.63267948964,
         "equilibrium_ratio": 1.0021285586497373,
-        "seconds": 1.25
+        "seconds": 2.44
       },
       {
         "configuration": "cyl",
@@ -82,7 +82,7 @@
         "reaction_vertical": 157163.61804356799,
         "applied_vertical": 157079.63267948964,
         "equilibrium_ratio": 1.0005346674336175,
-        "seconds": 4.63
+        "seconds": 8.27
       }
     ],
     "mitc": [
@@ -101,7 +101,7 @@
         "reaction_vertical": 156283.35990022885,
         "applied_vertical": 156283.35990023724,
         "equilibrium_ratio": 0.9999999999999464,
-        "seconds": 0.57
+        "seconds": 1.19
       },
       {
         "configuration": "mitc",
@@ -118,7 +118,7 @@
         "reaction_vertical": 156880.3369458728,
         "applied_vertical": 156880.33694578477,
         "equilibrium_ratio": 1.000000000000561,
-        "seconds": 2.46
+        "seconds": 6.13
       },
       {
         "configuration": "mitc",
@@ -135,7 +135,7 @@
         "reaction_vertical": 157029.7945150792,
         "applied_vertical": 157029.79451521044,
         "equilibrium_ratio": 0.9999999999991643,
-        "seconds": 10.2
+        "seconds": 23.95
       }
     ],
     "sri": [
@@ -154,7 +154,7 @@
         "reaction_vertical": 156283.35990023555,
         "applied_vertical": 156283.35990023724,
         "equilibrium_ratio": 0.9999999999999892,
-        "seconds": 0.41
+        "seconds": 1.03
       },
       {
         "configuration": "sri",
@@ -171,7 +171,7 @@
         "reaction_vertical": 156880.3369457451,
         "applied_vertical": 156880.33694578477,
         "equilibrium_ratio": 0.9999999999997471,
-        "seconds": 1.62
+        "seconds": 4.38
       },
       {
         "configuration": "sri",
@@ -188,7 +188,7 @@
         "reaction_vertical": 157029.7945150428,
         "applied_vertical": 157029.79451521044,
         "equilibrium_ratio": 0.9999999999989324,
-        "seconds": 7.23
+        "seconds": 17.34
       }
     ]
   },
@@ -210,7 +210,7 @@
           "reaction_vertical": 158399.70308386587,
           "applied_vertical": 157079.63267948964,
           "equilibrium_ratio": 1.0084038292034316,
-          "seconds": 0.3
+          "seconds": 0.61
         },
         {
           "configuration": "cyl",
@@ -227,7 +227,7 @@
           "reaction_vertical": 157413.9858903271,
           "applied_vertical": 157079.63267948964,
           "equilibrium_ratio": 1.0021285586497373,
-          "seconds": 1.25
+          "seconds": 2.44
         },
         {
           "configuration": "cyl",
@@ -244,7 +244,7 @@
           "reaction_vertical": 157163.61804356799,
           "applied_vertical": 157079.63267948964,
           "equilibrium_ratio": 1.0005346674336175,
-          "seconds": 4.63
+          "seconds": 8.27
         }
       ],
       "observed_order": 3.801012504454155,
@@ -269,7 +269,7 @@
           "reaction_vertical": 156283.35990022885,
           "applied_vertical": 156283.35990023724,
           "equilibrium_ratio": 0.9999999999999464,
-          "seconds": 0.57
+          "seconds": 1.19
         },
         {
           "configuration": "mitc",
@@ -286,7 +286,7 @@
           "reaction_vertical": 156880.3369458728,
           "applied_vertical": 156880.33694578477,
           "equilibrium_ratio": 1.000000000000561,
-          "seconds": 2.46
+          "seconds": 6.13
         },
         {
           "configuration": "mitc",
@@ -303,7 +303,7 @@
           "reaction_vertical": 157029.7945150792,
           "applied_vertical": 157029.79451521044,
           "equilibrium_ratio": 0.9999999999991643,
-          "seconds": 10.2
+          "seconds": 23.95
         }
       ],
       "observed_order": null,
@@ -327,7 +327,7 @@
           "reaction_vertical": 156283.35990023555,
           "applied_vertical": 156283.35990023724,
           "equilibrium_ratio": 0.9999999999999892,
-          "seconds": 0.41
+          "seconds": 1.03
         },
         {
           "configuration": "sri",
@@ -344,7 +344,7 @@
           "reaction_vertical": 156880.3369457451,
           "applied_vertical": 156880.33694578477,
           "equilibrium_ratio": 0.9999999999997471,
-          "seconds": 1.62
+          "seconds": 4.38
         },
         {
           "configuration": "sri",
@@ -361,7 +361,7 @@
           "reaction_vertical": 157029.7945150428,
           "applied_vertical": 157029.79451521044,
           "equilibrium_ratio": 0.9999999999989324,
-          "seconds": 7.23
+          "seconds": 17.34
         }
       ],
       "observed_order": null,
@@ -430,7 +430,7 @@
       "value": 0.008403829203431634,
       "bound": "< 1 %",
       "passed": true,
-      "note": "the cylindrical element integrates the exact arc area but its reaction sum carries a residual that falls ~h^2 (OPEN ITEM, not attributed: it is under 1 % and does not affect the 3 % displacement verdict)"
+      "note": "the cylindrical element integrates the exact arc area but its reaction sum carries a residual that falls ~h^2; it is exactly the rigid-mode projection (K 1_z)^T u / (-1^T f) and is attributed in docs/CASE-FEM-SCORDELIS-LO-ROOF-reaction-residual-attribution.md -- a curved-metric discretisation limit, not a load or reaction-extraction defect"
     },
     {
       "gate": "accuracy.cylindrical_16x16",
