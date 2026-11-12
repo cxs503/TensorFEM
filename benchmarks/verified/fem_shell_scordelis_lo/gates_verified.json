@@ -35,11 +35,13 @@
       "verdict": "FAIL"
     }
   ],
-  "overall_verdict": "PASS (cylindrical element)",
+  "overall_verdict": "PARTIAL: cylindrical Shell4 meets the 3% accuracy gate (G2) but its error sequence is NOT monotone (G4 failed); flat-facet Shell4 fails both gates (G1, G3)",
   "limitations": [
     "Flat facet Shell4 element cannot capture curved-shell membrane-bending coupling",
     "Flat facet formulation shows non-monotone convergence (fundamental limitation)",
     "Cylindrical shell4 is specialized for cylindrical geometry only",
-    "General curved shells require either specialized elements or improved flat facet formulations"
-  ]
+    "General curved shells require either specialized elements or improved flat facet formulations",
+    "Corrected 2026-11-12 (selfstart tp-ver-7): the previous overall_verdict 'PASS (cylindrical element)' contradicted G4_cylindrical_convergence=false. Accuracy at one mesh is not monotone convergence; see docs/shell-cylindrical-asymptotic-audit.md for the sparse 96x96 asymptotic check."
+  ],
+  "overall_verdict_previous": "PASS (cylindrical element)"
 }

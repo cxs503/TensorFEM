@@ -51,9 +51,15 @@ Source: Scordelis & Lo (1960), widely cited in FEM literature.
 | 32×32 | 1024 | 1089 | -0.3037 | 0.41% |
 
 **Verdict**: ✅ **PASS**
-- Error within 3% threshold on meshes ≥ 8×8
-- Monotone convergence with mesh refinement
-- Best result: 0.02% error at 16×16 mesh
+- Error within 3% threshold on meshes ≥ 8×8 (16×16: 0.02 %, 32×32: 0.41 %)
+- **NOT monotone**: the error grows again from 16×16 to 32×32 (gate `G4_cylindrical_convergence` failed)
+- Best result: 0.02% error at 16×16 mesh — a single mesh point, not evidence of a converged rate
+
+> Corrected 2026-11-12 (selfstart tp-ver-7): this section previously claimed monotone
+> convergence while `gates_verified.json` recorded `G4_cylindrical_convergence: passed=false`,
+> and the gate file's `overall_verdict` read "PASS (cylindrical element)". The asymptotic
+> behaviour is re-derived with sparse assembly up to 96×96 in
+> `docs/shell-cylindrical-asymptotic-audit.md`.
 
 ## Analysis
 

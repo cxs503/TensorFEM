@@ -28,8 +28,10 @@
       "id": "G3_convergence_order",
       "description": "Observed convergence order >= 1.0",
       "threshold": 1.0,
-      "actual": 4.325411012014273,
-      "passed": true
+      "actual": "not assessable (non-monotone sequence)",
+      "passed": false,
+      "actual_previous": 4.325411012014273,
+      "note": "order 4.33 was fitted to the 8x8/16x16 pair while the sequence is non-monotone (G2 failed); it measures one accidentally accurate mesh, not an asymptotic rate. Replaced by the sparse 96x96 asymptotic audit: docs/shell-cylindrical-asymptotic-audit.md"
     },
     {
       "id": "G4_coarsest_sanity",
@@ -41,7 +43,8 @@
   ],
   "passed": false,
   "failed_gates": [
-    "G2_monotone_convergence"
+    "G2_monotone_convergence",
+    "G3_convergence_order"
   ],
   "limitations": [
     "Cylindrical Shell4 is specialised for cylindrical geometry only",
