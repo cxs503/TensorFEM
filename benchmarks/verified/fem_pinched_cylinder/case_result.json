@@ -1,0 +1,322 @@
+{
+  "benchmark": "fem_pinched_cylinder",
+  "anchor": "CASE-FEM-PINCHED-CYLINDER",
+  "mission": "m16076",
+  "title": "MacNeal--Harder pinched cylinder: load-point deflection (thin-shell bending)",
+  "generated_at": "2026-11-12T09:43:24+00:00",
+  "repro_cmd": "PYTHONPATH=src python benchmarks/verified/fem_pinched_cylinder/run.py",
+  "reference": {
+    "value_in": -1.8248e-05,
+    "quantity": "radial (inward) deflection of the shell at the load point, mid-span, under two diametrically opposed unit point forces",
+    "citation": "MacNeal, R. L. & Harder, R. L. (1985), 'A proposed standard set of problems to test finite element accuracy', Finite Elements in Analysis and Design 1(1), 3-20, DOI 10.1016/0168-874X(85)90003-4",
+    "hand_copied_digits": null,
+    "provenance_note": "converged reference value quoted with the MacNeal-Harder problem statement (the case has no closed-form solution); corroborated here by extrapolation of this driver's own ladder (C1), by dense/sparse operator equivalence (C2) and by parameter sweeps (C3)"
+  },
+  "case_definition": {
+    "anchor": "CASE-FEM-PINCHED-CYLINDER",
+    "mission": "m16076",
+    "title": "MacNeal--Harder pinched cylinder: load-point deflection (thin-shell bending)",
+    "reference_citation": "MacNeal, R. L. & Harder, R. L. (1985), 'A proposed standard set of problems to test finite element accuracy', Finite Elements in Analysis and Design 1(1), 3-20, DOI 10.1016/0168-874X(85)90003-4",
+    "reference_quantity": "radial (inward) deflection of the shell at the load point, mid-span, under two diametrically opposed unit point forces",
+    "reference_value_in": -1.8248e-05,
+    "geometry": {
+      "L_in": 600.0,
+      "R_in": 300.0,
+      "t_in": 3.0
+    },
+    "material": {
+      "E_psi": 3000000.0,
+      "nu": 0.3
+    },
+    "load": {
+      "P_lbf": 1.0,
+      "description": "two diametrically opposed unit radial forces at mid-span"
+    },
+    "end_support": "rigid diaphragms: v = w = 0 on the end ring x = 300, u free",
+    "symmetry_model": "octant x in [0,300], theta in [0,pi/2]; corner load P/4 on the load-point node",
+    "dimensionless": {
+      "R_over_t": 100.0,
+      "L_over_R": 2.0,
+      "nu": 0.3,
+      "P_over_Et2": 3.7037037037037036e-08,
+      "arc_step_over_axial_step_at_equidivision": 1.5707963267948966
+    },
+    "tolerance_pct": 5.0,
+    "primary_mesh": 16,
+    "shear_correction_factor": 0.8333333333333334
+  },
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "scipy": "1.16.0",
+    "machine": "loongarch64",
+    "dtype": "float64",
+    "element": "tensorfem.cylindrical_shell4.cylindrical_shell4_stiffness (Reissner-Mindlin; 2x2 membrane+bending; 1-point selective transverse shear)",
+    "solver_dense": "tensorfem.pinched_cylinder.solve_pinched_cylinder_linear (torch.linalg.solve)",
+    "solver_sparse": "tensorfem.pinched_cylinder.solve_pinched_cylinder_sparse (CSR + scipy SuperLU)"
+  },
+  "levels": [
+    {
+      "mesh": "4x4",
+      "n": 4,
+      "n_elements": 16,
+      "ndof": 150,
+      "displacement_in": -1.772659884661532e-05,
+      "reference_in": -1.8248e-05,
+      "relative_error": 0.028573057506832367,
+      "relative_error_pct": 2.8573057506832367,
+      "solve_seconds": 0.4634993076324463
+    },
+    {
+      "mesh": "8x8",
+      "n": 8,
+      "n_elements": 64,
+      "ndof": 486,
+      "displacement_in": -1.7636652834588067e-05,
+      "reference_in": -1.8248e-05,
+      "relative_error": 0.033502146285178225,
+      "relative_error_pct": 3.3502146285178225,
+      "solve_seconds": 1.8330256938934326
+    },
+    {
+      "mesh": "12x12",
+      "n": 12,
+      "n_elements": 144,
+      "ndof": 1014,
+      "displacement_in": -1.8068243904495505e-05,
+      "reference_in": -1.8248e-05,
+      "relative_error": 0.009850728600640846,
+      "relative_error_pct": 0.9850728600640846,
+      "solve_seconds": 3.619654893875122
+    },
+    {
+      "mesh": "16x16",
+      "n": 16,
+      "n_elements": 256,
+      "ndof": 1734,
+      "displacement_in": -1.8278493652346197e-05,
+      "reference_in": -1.8248e-05,
+      "relative_error": 0.001671068190826297,
+      "relative_error_pct": 0.1671068190826297,
+      "solve_seconds": 6.039053201675415
+    },
+    {
+      "mesh": "24x24",
+      "n": 24,
+      "n_elements": 576,
+      "ndof": 3750,
+      "displacement_in": -1.8480668026974638e-05,
+      "reference_in": -1.8248e-05,
+      "relative_error": 0.01275033028138095,
+      "relative_error_pct": 1.275033028138095,
+      "solve_seconds": 11.58496904373169
+    },
+    {
+      "mesh": "32x32",
+      "n": 32,
+      "n_elements": 1024,
+      "ndof": 6534,
+      "displacement_in": -1.857942384660752e-05,
+      "reference_in": -1.8248e-05,
+      "relative_error": 0.018162201151223245,
+      "relative_error_pct": 1.8162201151223245,
+      "solve_seconds": 19.507394075393677
+    },
+    {
+      "mesh": "48x48",
+      "n": 48,
+      "n_elements": 2304,
+      "ndof": 14406,
+      "displacement_in": -1.86801928080683e-05,
+      "reference_in": -1.8248e-05,
+      "relative_error": 0.02368439325231808,
+      "relative_error_pct": 2.368439325231808,
+      "solve_seconds": 43.34946656227112
+    },
+    {
+      "mesh": "64x64",
+      "n": 64,
+      "n_elements": 4096,
+      "ndof": 25350,
+      "displacement_in": -1.8734687640867493e-05,
+      "reference_in": -1.8248e-05,
+      "relative_error": 0.026670738758630685,
+      "relative_error_pct": 2.6670738758630685,
+      "solve_seconds": 76.90573740005493
+    }
+  ],
+  "oracle_corroboration": {
+    "C1_extrapolation": {
+      "selected": "power",
+      "models": {
+        "power": {
+          "form": "u_inf + C*N^-p",
+          "p": 0.97,
+          "u_inf_in": -1.88937106450656e-05,
+          "residual": 8.086088934638094e-18
+        },
+        "log": {
+          "form": "a + b*log(N)",
+          "a_in": -1.7424948517366607e-05,
+          "b": -3.226283478390547e-07,
+          "u_inf_in": -1.7424948517366607e-05,
+          "residual": 4.98772261421053e-15
+        }
+      },
+      "u_limit_in": -1.88937106450656e-05,
+      "error_pct": 3.5385283048312344,
+      "rungs_used": [
+        "16x16",
+        "24x24",
+        "32x32",
+        "48x48",
+        "64x64"
+      ]
+    },
+    "C2_dense_vs_sparse": {
+      "dense_production_in": -1.827849365234856e-05,
+      "sparse_in": -1.8278493652346197e-05,
+      "relative_difference": 1.2922996006636822e-13
+    },
+    "C3a_shear_sensitivity": [
+      {
+        "k": 1.0,
+        "displacement_in": -1.8218687737856563e-05,
+        "relative_error_pct": 0.16063273862031435,
+        "delta_vs_k_56_pct": 0.3271927962289034
+      },
+      {
+        "k": 0.8333333333333334,
+        "displacement_in": -1.8278493652346197e-05,
+        "relative_error_pct": 0.1671068190826297,
+        "delta_vs_k_56_pct": 0.0
+      },
+      {
+        "k": 0.5,
+        "displacement_in": -1.85175641811759e-05,
+        "relative_error_pct": 1.4772258942125305,
+        "delta_vs_k_56_pct": 1.3079334291806743
+      }
+    ],
+    "C3a_drilling_sensitivity": [
+      {
+        "drilling_factor": 1e-10,
+        "displacement_in": -1.8278493652345798e-05,
+        "delta_vs_default_pct": 2.1871393585115584e-12
+      },
+      {
+        "drilling_factor": 1e-08,
+        "displacement_in": -1.8278493652346197e-05,
+        "delta_vs_default_pct": 0.0
+      },
+      {
+        "drilling_factor": 1e-06,
+        "displacement_in": -1.8278493652348078e-05,
+        "delta_vs_default_pct": 1.028066520802895e-11
+      },
+      {
+        "drilling_factor": 0.0001,
+        "displacement_in": -1.8278493652345408e-05,
+        "delta_vs_default_pct": 4.318767565791859e-12
+      }
+    ],
+    "C3b_end_condition": {
+      "u_free_diaphragm_in": -1.8278493652346197e-05,
+      "u_clamped_end_in": -1.5245459860432027e-05,
+      "stiffening_pct": 16.593455946654856,
+      "u_clamped_error_pct": 16.45407792398056
+    },
+    "C3c_anisotropic_refinement": [
+      {
+        "nx": 8,
+        "n_theta": 8,
+        "n_elements": 64,
+        "displacement_in": -1.7636652834588067e-05,
+        "relative_error_pct": 3.3502146285178225
+      },
+      {
+        "nx": 8,
+        "n_theta": 16,
+        "n_elements": 128,
+        "displacement_in": -1.7972568748723492e-05,
+        "relative_error_pct": 1.509377747021634
+      },
+      {
+        "nx": 16,
+        "n_theta": 8,
+        "n_elements": 128,
+        "displacement_in": -1.8187065597372786e-05,
+        "relative_error_pct": 0.33392373206495574
+      },
+      {
+        "nx": 16,
+        "n_theta": 32,
+        "n_elements": 512,
+        "displacement_in": -1.8393458743766564e-05,
+        "relative_error_pct": 0.797121568207837
+      },
+      {
+        "nx": 32,
+        "n_theta": 16,
+        "n_elements": 512,
+        "displacement_in": -1.874616595669689e-05,
+        "relative_error_pct": 2.7299756504652217
+      }
+    ]
+  },
+  "gates": [
+    {
+      "id": "G1_primary_16x16_within_5pct",
+      "description": "load-point deflection on the 16x16 octant mesh within 5% of the MacNeal-Harder reference",
+      "threshold_pct": 5.0,
+      "actual_pct": 0.1671068190826297,
+      "passed": true
+    },
+    {
+      "id": "G2_finest_mesh_within_5pct",
+      "description": "finest mesh (64x64) within 5% of reference",
+      "threshold_pct": 5.0,
+      "actual_pct": 2.6670738758630685,
+      "passed": true
+    },
+    {
+      "id": "G3_extrapolated_limit_within_5pct",
+      "description": "extrapolated continuum limit of this ladder (self-generated, model selected by residual) within 5% of the published reference",
+      "threshold_pct": 5.0,
+      "actual_pct": 3.5385283048312344,
+      "passed": true
+    },
+    {
+      "id": "G4_dense_sparse_consistent",
+      "description": "CSR/SuperLU path reproduces the production dense elimination at the primary mesh",
+      "threshold_rel": 1e-10,
+      "actual_rel": 1.2922996006636822e-13,
+      "passed": true
+    },
+    {
+      "id": "G5_shear_factor_insensitive",
+      "description": "k in {0.5, 5/6, 1.0} changes the load-point deflection by < 1% (R/t = 100, bending dominated)",
+      "threshold_pct": 1.0,
+      "actual_pct": 1.3079334291806743,
+      "passed": false
+    },
+    {
+      "id": "G6_drilling_factor_insensitive",
+      "description": "drilling regularisation 1e-10 ... 1e-4 changes the deflection by < 0.1%",
+      "threshold_pct": 0.1,
+      "actual_pct": 1.028066520802895e-11,
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "failed_gates": [
+    "G5_shear_factor_insensitive"
+  ],
+  "notes": [
+    "Symmetry octant: normal translation plus the two in-plane rotation components restrained on x=0, theta=0 and theta=pi/2; the two cross-section translations restrained on the diaphragm ring x=300 (axial u free).",
+    "The deflection sequence is non-monotone: the error reaches 0.17% at N=16 and then rises (1.28% at N=24, 1.82% at N=32, 2.37% at N=48).  N=16 is an accidental cancellation of two competing discretisation errors, not the converged answer; the extrapolated limit of the fine rungs is the honest estimate of the discrete limit.",
+    "The point force is singular; the deflection at the load point is therefore not mesh independent in the classical sense.  Both an algebraic and a logarithmic asymptotic model are fitted to the fine rungs and both are reported, so the reader can judge which regularisation the ladder is following.",
+    "The pinched cylinder has no closed form; its only oracle is a converged numerical value, so the asymptotic offset of this formulation is reported as a formulation characteristic rather than hidden."
+  ]
+}
