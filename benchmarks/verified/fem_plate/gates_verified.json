@@ -1,0 +1,64 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_plate",
+  "title": "Kirchhoff thin plate, SSSS square, uniform pressure (BFS bicubic)",
+  "mission": "KPI-QC-RECHECK",
+  "generated_at": "2026-11-07T08:20:51+00:00",
+  "generated_by": "tools/certify_ladder_anchor.py (from the shipped result.json)",
+  "criteria_note": "Thresholds are the ladder's own gate limits (transcribed from the `description` strings' numeric limits), each reproduced here with operator + numeric threshold so the verdict is recomputable from the artifact without re-running the solver.",
+  "criteria": {
+    "G2.centre_deflection": 0.02,
+    "G2.centre_deflection_vs_series": 0.02,
+    "G2.order": 1.5
+  },
+  "gates": [
+    {
+      "id": "G2.centre_deflection",
+      "quantity": "|alpha_FE - 0.00406| / 0.00406, 16x16, alpha = w_c D / (q L^4) recomputed from the raw centre deflection",
+      "reference": "|alpha_FE - 0.00406| / 0.00406 < 2e-2 at 16x16 elements",
+      "value": 0.005315601094098233,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": 0.005315601094098233,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "relative"
+    },
+    {
+      "id": "G2.centre_deflection_vs_series",
+      "quantity": "|alpha_FE - alpha_Navier| / alpha_Navier, 16x16",
+      "reference": "|alpha_FE - alpha_Navier| / alpha_Navier < 2e-2 at 16x16 elements",
+      "value": 0.005891660108691842,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": 0.005891660108691842,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "relative"
+    },
+    {
+      "id": "G2.order",
+      "quantity": "least-squares slope of log(error vs Timoshenko) vs log(h), n = 2..24",
+      "reference": "observed convergence order >= 1.5 (levels 2..24)",
+      "value": 1.9440160244049594,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true,
+      "shipped_value": 1.9440160244049582,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "relative"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_plate/result.json"
+  },
+  "limitations": [
+    "Thin-plate Kirchhoff limit only (a/h = 100); Mindlin/MITC4 thick-plate terms are graded by the separate thick-plate anchors.",
+    "Hard simple support (w = 0, tangential slope = 0) is used, which is the classical Navier/Timoshenko boundary condition; soft simple support is a different (and softer) problem and is not what 0.00406 refers to."
+  ],
+  "upstream_verdict": "PASS",
+  "upstream_module": "tensorfem.structural_verification"
+}

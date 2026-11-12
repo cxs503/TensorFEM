@@ -1,0 +1,117 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_kerr_plate",
+  "title": "Kerr (three-parameter) foundation plate: Navier closed form vs Q4 Mindlin FE",
+  "mission": "KPI-QC-RECHECK",
+  "generated_at": null,
+  "generated_by": "tools/certify_ladder_anchor.py (from the shipped result.json)",
+  "criteria_note": "Thresholds are the ladder's own gate limits (transcribed from the `description` strings' numeric limits), each reproduced here with operator + numeric threshold so the verdict is recomputable from the artifact without re-running the solver.",
+  "criteria": {
+    "exact_formula": 1e-12,
+    "winkler_limit_formula": 1e-12,
+    "kerr_centre_deflection": 0.005,
+    "winkler_limit_centre_deflection": 0.005,
+    "free_plate_centre_deflection": 0.001,
+    "kerr_convergence_order_lsq": 1.5,
+    "mesh_error_monotone": 1.0
+  },
+  "gates": [
+    {
+      "id": "exact_formula",
+      "quantity": "max over branches of |w_exact(recomputed from case params)/w_exact(artifact) - 1|",
+      "reference": null,
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": null,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "new gate: the anchor shipped no gates list, so there is no upstream value"
+    },
+    {
+      "id": "winkler_limit_formula",
+      "quantity": "|q0/(4D(pi/L)^4 + k) / w_exact(gp=0 branch) - 1| (shear-parameter limit)",
+      "reference": null,
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": null,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "new gate: the anchor shipped no gates list, so there is no upstream value"
+    },
+    {
+      "id": "kerr_centre_deflection",
+      "quantity": "|w_FE(n=32)/w_exact - 1|, full Kerr branch (k and gp both active)",
+      "reference": null,
+      "value": 0.0014906826897382874,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": null,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "new gate: the anchor shipped no gates list, so there is no upstream value"
+    },
+    {
+      "id": "winkler_limit_centre_deflection",
+      "quantity": "|w_FE(n=32)/w_exact - 1|, gp = 0 branch",
+      "reference": null,
+      "value": 0.0014969958042474474,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": null,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "new gate: the anchor shipped no gates list, so there is no upstream value"
+    },
+    {
+      "id": "free_plate_centre_deflection",
+      "quantity": "|w_FE(n=32)/w_exact - 1|, k = gp = 0 branch (plain plate)",
+      "reference": null,
+      "value": 2.228274430882138e-05,
+      "threshold": 0.001,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": null,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "new gate: the anchor shipped no gates list, so there is no upstream value"
+    },
+    {
+      "id": "kerr_convergence_order_lsq",
+      "quantity": "least-squares slope of log(rel_err) vs log(h) over n = 4..32, full Kerr branch (threshold 1.5; Q4 Mindlin is a 2nd-order element)",
+      "reference": null,
+      "value": 2.0042374817157937,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true,
+      "shipped_value": null,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "new gate: the anchor shipped no gates list, so there is no upstream value"
+    },
+    {
+      "id": "mesh_error_monotone",
+      "quantity": "max over all branches/levels of rel_err(fine)/rel_err(coarse) (must be <= 1: refinement may not increase the error)",
+      "reference": null,
+      "value": 0.25456849457455716,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": null,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "new gate: the anchor shipped no gates list, so there is no upstream value"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_kerr_plate/result.json"
+  },
+  "limitations": [
+    "Single sinusoidal load mode on a hard simply-supported square plate: the Navier solution has exactly one surviving term, so this grades the discretisation of the bending operator plus the Kerr foundation stiffness, not arbitrary load fields.",
+    "The artifact's stored `convergence_order` is a last-two-level ratio. The certificate gates the least-squares order instead, because the free-plate branch's finest pair of levels drops the error by 72x (2.23e-05 vs 1.6e-03 at n=16), giving a spurious last-pair order of 6.17 for a 2nd-order element. That anomaly is unexplained and is recorded here rather than gated.",
+    "Thin plate (a/h = 100) with Q4 Mindlin: shear locking is not a risk at this aspect ratio, so the certificate does not speak to thick-plate behaviour."
+  ],
+  "upstream_verdict": null,
+  "upstream_module": null
+}

@@ -1,0 +1,64 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_beam",
+  "title": "Euler-Bernoulli cantilever (cubic Hermite beam) vs closed form",
+  "mission": "KPI-QC-RECHECK",
+  "generated_at": "2026-11-07T08:20:51+00:00",
+  "generated_by": "tools/certify_ladder_anchor.py (from the shipped result.json)",
+  "criteria_note": "Thresholds are the ladder's own gate limits (transcribed from the `description` strings' numeric limits), each reproduced here with operator + numeric threshold so the verdict is recomputable from the artifact without re-running the solver.",
+  "criteria": {
+    "G1.tip_deflection": 0.01,
+    "G1.field_order": 1.5,
+    "G1.equilibrium": 1e-08
+  },
+  "gates": [
+    {
+      "id": "G1.tip_deflection",
+      "quantity": "|w_tip(FE)/w_tip(closed form) - 1|, 8 elements, w_tip = qL^4/(8EI)",
+      "reference": "|w_tip(FE) - qL^4/(8EI)| / (qL^4/(8EI)) < 1e-2 at 8 elements",
+      "value": 1.5271339748323953e-11,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": 1.9648634571230638e-13,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "numerically-zero: both values below the 1e-10 noise floor (abs diff 1.507e-11)"
+    },
+    {
+      "id": "G1.field_order",
+      "quantity": "least-squares slope of log(field L2 rel. error) vs log(h), elements 2..32 (must be >= 1.5)",
+      "reference": "field L2 convergence order >= 1.5 (levels 2..32)",
+      "value": 4.000114426089786,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true,
+      "shipped_value": 4.000114426089785,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "relative"
+    },
+    {
+      "id": "G1.equilibrium",
+      "quantity": "|R_clamp(FE)/(-q) - 1|, 32 elements (recovered support shear)",
+      "reference": "recovered clamp shear vs qL, relative error < 1e-8",
+      "value": 4.5315529106915164e-11,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "passed": true,
+      "shipped_value": 2.5579538487363607e-14,
+      "recomputation": "independent, from the artifact's own raw levels/parameters",
+      "agreement": "numerically-zero: both values below the 1e-10 noise floor (abs diff 4.529e-11)"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_beam/result.json"
+  },
+  "limitations": [
+    "Slender Euler-Bernoulli regime only (L/h = 100): transverse shear and rotary inertia are not exercised, so this grades the Hermite element and its consistent load vector, not a thick-beam formulation.",
+    "Displacement/rotation are nodally exact for this element, so the tip-error gate is a codeword check (machine-precision level) rather than a convergence study; the resolution information lives in G1.field_order."
+  ],
+  "upstream_verdict": "PASS",
+  "upstream_module": "tensorfem.structural_verification"
+}
