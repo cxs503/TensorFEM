@@ -20,44 +20,44 @@
     {
       "mesh": "4x4",
       "n_elements": 16,
-      "displacement": -1.772659884661117e-05,
+      "displacement": -2.656165677507929e-06,
       "reference": -1.8248e-05,
-      "relative_error": 0.02857305750705985,
-      "relative_error_pct": 2.857305750705985
+      "relative_error": 0.8544407235035112,
+      "relative_error_pct": 85.44407235035112
     },
     {
       "mesh": "8x8",
       "n_elements": 64,
-      "displacement": -1.7636652834588284e-05,
+      "displacement": -6.260527590930111e-06,
       "reference": -1.8248e-05,
-      "relative_error": 0.033502146285166345,
-      "relative_error_pct": 3.3502146285166345
+      "relative_error": 0.6569197944470566,
+      "relative_error_pct": 65.69197944470567
     },
     {
       "mesh": "16x16",
       "n_elements": 256,
-      "displacement": -1.827849365234856e-05,
+      "displacement": -1.1074445328678748e-05,
       "reference": -1.8248e-05,
-      "relative_error": 0.001671068190955749,
-      "relative_error_pct": 0.1671068190955749
+      "relative_error": 0.39311456988827553,
+      "relative_error_pct": 39.31145698882755
     },
     {
       "mesh": "32x32",
       "n_elements": 1024,
-      "displacement": -1.8579423846604277e-05,
+      "displacement": -1.53334089568423e-05,
       "reference": -1.8248e-05,
-      "relative_error": 0.01816220115104561,
-      "relative_error_pct": 1.816220115104561
+      "relative_error": 0.1597211224878179,
+      "relative_error_pct": 15.972112248781789
     }
   ],
   "convergence": [
     {
       "mesh_range": "4x \u2192 16x",
-      "observed_order": -0.22959810101145503
+      "observed_order": 0.3792631711623622
     },
     {
       "mesh_range": "8x \u2192 32x",
-      "observed_order": 4.325411012014273
+      "observed_order": 0.7407674028674414
     }
   ]
 }
