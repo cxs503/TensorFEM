@@ -1,0 +1,356 @@
+{
+  "schema": "fem-shell-scordelis-shear-study/1",
+  "problem": {
+    "name": "Scordelis-Lo cylindrical roof",
+    "length": 50.0,
+    "radius": 25.0,
+    "half_angle_deg": 40.0,
+    "thickness": 0.25,
+    "young": 432000000.0,
+    "poisson": 0.0,
+    "vertical_surface_load": 90.0,
+    "boundaries": "rigid diaphragms at both curved ends (u_y=u_z=0), one axial DOF fixed",
+    "quantity_of_interest": "vertical displacement at midspan of the free edge",
+    "reference_value": -0.3024,
+    "reference_source": "Scordelis & Lo (1960); MacNeal & Harder (1985)"
+  },
+  "tolerance_pct": 3.0,
+  "element": "flat-facet four-node shell (Q4 membrane + Mindlin Q4 plate, 6 dof/node)",
+  "rank_census": {
+    "sri": {
+      "plate_shear": "sri",
+      "lambda_max": 56962221.512511,
+      "null_tolerance": 5.696222151251129e-05,
+      "zero_modes": 9,
+      "rigid_body_modes": 6,
+      "rigid_basis_residual_over_lambda_max": 0.0,
+      "spurious_modes": 3,
+      "spurious_near_rigid_singular_values": [
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "spurious_mechanisms": [
+        {
+          "blocks": {
+            "ux": 0.174371,
+            "uy": 0.199825,
+            "w": 0.804296,
+            "rx": 0.378086,
+            "ry": 0.329925,
+            "rz": 0.175993
+          },
+          "per_node_w": [
+            0.402148,
+            -0.402148,
+            0.402148,
+            -0.402148
+          ],
+          "w_checkerboard": true
+        },
+        {
+          "blocks": {
+            "ux": 0.514355,
+            "uy": 0.589438,
+            "w": 0.340654,
+            "rx": 0.037314,
+            "ry": 0.032561,
+            "rz": 0.519137
+          },
+          "per_node_w": [
+            -0.170327,
+            0.170327,
+            -0.170327,
+            0.170327
+          ],
+          "w_checkerboard": true
+        },
+        {
+          "blocks": {
+            "ux": 0.071825,
+            "uy": 0.08231,
+            "w": 0.486891,
+            "rx": 0.650667,
+            "ry": 0.567785,
+            "rz": 0.072493
+          },
+          "per_node_w": [
+            0.243445,
+            -0.243445,
+            0.243445,
+            -0.243445
+          ],
+          "w_checkerboard": true
+        }
+      ],
+      "first_elastic_eigenvalues": [
+        94.242995,
+        94.242995,
+        188.48599,
+        271051.351284
+      ]
+    },
+    "mitc": {
+      "plate_shear": "mitc",
+      "lambda_max": 56962221.512511,
+      "null_tolerance": 5.696222151251129e-05,
+      "zero_modes": 7,
+      "rigid_body_modes": 6,
+      "rigid_basis_residual_over_lambda_max": 0.0,
+      "spurious_modes": 1,
+      "spurious_near_rigid_singular_values": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "spurious_mechanisms": [
+        {
+          "blocks": {
+            "ux": 0.547837,
+            "uy": 0.627807,
+            "w": 0.0,
+            "rx": 0.0,
+            "ry": 0.0,
+            "rz": 0.552931
+          },
+          "per_node_w": [
+            -0.0,
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "w_checkerboard": false
+        }
+      ],
+      "first_elastic_eigenvalues": [
+        94.242995,
+        94.242995,
+        188.48599,
+        271051.351284
+      ]
+    },
+    "full": {
+      "plate_shear": "full",
+      "lambda_max": 56962221.512511,
+      "null_tolerance": 5.696222151251129e-05,
+      "zero_modes": 7,
+      "rigid_body_modes": 6,
+      "rigid_basis_residual_over_lambda_max": 0.0,
+      "spurious_modes": 1,
+      "spurious_near_rigid_singular_values": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "spurious_mechanisms": [
+        {
+          "blocks": {
+            "ux": 0.547837,
+            "uy": 0.627807,
+            "w": 0.0,
+            "rx": 0.0,
+            "ry": 0.0,
+            "rz": 0.552931
+          },
+          "per_node_w": [
+            -0.0,
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "w_checkerboard": false
+        }
+      ],
+      "first_elastic_eigenvalues": [
+        94.242995,
+        94.242995,
+        188.48599,
+        500260.510366
+      ]
+    }
+  },
+  "ladders": {
+    "sri": [
+      {
+        "mesh": "4x4",
+        "nx": 4,
+        "nt": 4,
+        "elements": 16,
+        "dof": 150,
+        "probe_displacement": -0.492837409,
+        "relative_error": 0.629753335,
+        "relative_error_pct": 62.9753
+      },
+      {
+        "mesh": "8x8",
+        "nx": 8,
+        "nt": 8,
+        "elements": 64,
+        "dof": 486,
+        "probe_displacement": -0.405556577,
+        "relative_error": 0.341126247,
+        "relative_error_pct": 34.1126
+      },
+      {
+        "mesh": "16x16",
+        "nx": 16,
+        "nt": 16,
+        "elements": 256,
+        "dof": 1734,
+        "probe_displacement": -0.437541561,
+        "relative_error": 0.446896697,
+        "relative_error_pct": 44.6897
+      },
+      {
+        "mesh": "32x32",
+        "nx": 32,
+        "nt": 32,
+        "elements": 1024,
+        "dof": 6534,
+        "probe_displacement": -0.451790946,
+        "relative_error": 0.49401768,
+        "relative_error_pct": 49.4018
+      }
+    ],
+    "mitc": [
+      {
+        "mesh": "4x4",
+        "nx": 4,
+        "nt": 4,
+        "elements": 16,
+        "dof": 150,
+        "probe_displacement": -0.357077717,
+        "relative_error": 0.180812557,
+        "relative_error_pct": 18.0813
+      },
+      {
+        "mesh": "8x8",
+        "nx": 8,
+        "nt": 8,
+        "elements": 64,
+        "dof": 486,
+        "probe_displacement": -0.284873974,
+        "relative_error": 0.057956435,
+        "relative_error_pct": 5.7956
+      },
+      {
+        "mesh": "16x16",
+        "nx": 16,
+        "nt": 16,
+        "elements": 256,
+        "dof": 1734,
+        "probe_displacement": -0.29531011,
+        "relative_error": 0.023445403,
+        "relative_error_pct": 2.3445
+      },
+      {
+        "mesh": "32x32",
+        "nx": 32,
+        "nt": 32,
+        "elements": 1024,
+        "dof": 6534,
+        "probe_displacement": -0.304682355,
+        "relative_error": 0.007547469,
+        "relative_error_pct": 0.7547
+      }
+    ],
+    "full": [
+      {
+        "mesh": "4x4",
+        "nx": 4,
+        "nt": 4,
+        "elements": 16,
+        "dof": 150,
+        "probe_displacement": -0.008569558,
+        "relative_error": 0.971661515,
+        "relative_error_pct": 97.1662
+      },
+      {
+        "mesh": "8x8",
+        "nx": 8,
+        "nt": 8,
+        "elements": 64,
+        "dof": 486,
+        "probe_displacement": -0.020689691,
+        "relative_error": 0.931581709,
+        "relative_error_pct": 93.1582
+      },
+      {
+        "mesh": "16x16",
+        "nx": 16,
+        "nt": 16,
+        "elements": 256,
+        "dof": 1734,
+        "probe_displacement": -0.040756453,
+        "relative_error": 0.865223369,
+        "relative_error_pct": 86.5223
+      },
+      {
+        "mesh": "32x32",
+        "nx": 32,
+        "nt": 32,
+        "elements": 1024,
+        "dof": 6534,
+        "probe_displacement": -0.087824401,
+        "relative_error": 0.709575394,
+        "relative_error_pct": 70.9575
+      }
+    ]
+  },
+  "verdicts": {
+    "sri": {
+      "spurious_zero_energy_modes": 3,
+      "finest_mesh_error": 0.49401768,
+      "best_mesh_error": 0.341126247,
+      "passes_3pct_at_finest": false,
+      "passes_3pct_anywhere": false,
+      "convergence": {
+        "error_monotone_decreasing": false,
+        "observed_order_finest_pair": null,
+        "richardson_limit": null,
+        "richardson_error_pct": null
+      }
+    },
+    "mitc": {
+      "spurious_zero_energy_modes": 1,
+      "finest_mesh_error": 0.007547469,
+      "best_mesh_error": 0.007547469,
+      "passes_3pct_at_finest": true,
+      "passes_3pct_anywhere": true,
+      "convergence": {
+        "error_monotone_decreasing": true,
+        "observed_order_finest_pair": 1.6352,
+        "richardson_limit": -0.309131784,
+        "richardson_error_pct": 2.2261
+      }
+    },
+    "full": {
+      "spurious_zero_energy_modes": 1,
+      "finest_mesh_error": 0.709575394,
+      "best_mesh_error": 0.709575394,
+      "passes_3pct_at_finest": false,
+      "passes_3pct_anywhere": false,
+      "convergence": {
+        "error_monotone_decreasing": true,
+        "observed_order_finest_pair": 0.2861,
+        "richardson_limit": -0.302400002,
+        "richardson_error_pct": 0.0
+      }
+    }
+  },
+  "conclusion": "The Scordelis-Lo failure of the flat-facet Shell4 is a rank deficiency of the element, not a property of faceting: with identical facets, load and diaphragms, replacing the one-point (sri) transverse-shear rule by assumed natural shear (mitc) removes 2 of the 3 spurious zero-energy mechanisms and moves the finest-mesh error from 49.4% to 0.75% (passes the 3% gate from 16x16 on: 2.34%). Equal-order full shear integration (the locking control) misses by 71.0% and still carries 1 spurious mechanism, confirming the shear block is the operative lever. The previously published attribution 'flat facets cannot capture curved-shell membrane-bending coupling' is therefore falsified as a statement about faceting."
+}
