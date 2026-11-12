@@ -1,0 +1,63 @@
+{
+  "impl_files": [
+    "src/tensorfem/hertz_halfspace_loadcontrol.py 710L \u2014 axisymmetric Q4 half-space, sparse assembly, ALM contact, load control via regula falsi",
+    "src/tensorfem/hertz_axisymmetric.py 187L \u2014 dense reference implementation (prescribed-indentation)",
+    "benchmarks/verified/fem_hertz_contact_loadcontrol/run.py \u2014 benchmark runner with truncation/ALM studies"
+  ],
+  "entry": "benchmarks/verified/fem_hertz_contact_loadcontrol/run.py::main \u2192 multi-parameter sweep \u2192 artifacts/contact_hertz_loadcontrol/results.json + 3 PNGs",
+  "run_artifacts": [
+    "artifacts/contact_hertz_loadcontrol/results.json \u2014 full numerical results with error_pct per run",
+    "artifacts/contact_hertz_loadcontrol/full_run.log \u2014 console output with per-case timing",
+    "artifacts/contact_hertz_loadcontrol/figures/hertz_pressure_profile.png \u2014 pressure profile comparison",
+    "artifacts/contact_hertz_loadcontrol/figures/truncation_convergence.png \u2014 domain truncation study",
+    "artifacts/contact_hertz_loadcontrol/figures/alm_parameter_independence.png \u2014 ALM rho sweep",
+    "artifacts/contact_hertz_loadcontrol/pytest.log \u2014 test run log"
+  ],
+  "tests": "tests/test_hertz_contact_loadcontrol.py 8 tests all pass (pytest 52.55s): test_reference_solution_inverts_itself, test_reference_rejects_invalid_inputs, test_ring_areas_reproduce_the_surface_area, test_stiffness_assembly_matches_reference_implementation, test_load_controlled_hertz_within_three_percent, test_contact_is_noninvasive_outside_the_patch, test_alm_parameter_does_not_change_the_answer, test_load_monotonicity_and_hertz_scaling",
+  "integration_callers": [
+    "benchmarks/verified/fem_hertz_contact_loadcontrol/run.py:17 from tensorfem.hertz_halfspace_loadcontrol import ...",
+    "tests/test_hertz_contact_loadcontrol.py:11 from tensorfem.hertz_halfspace_loadcontrol import ...",
+    "benchmarks/make_contact_hertz_report.py \u2014 report generation from results"
+  ],
+  "benchmark": {
+    "anchor_slug": "CASE-FEM-HERTZ-CONTACT",
+    "reference_source": "Hertz 1882 J. reine angew. Math. 92:156; Johnson 1985 Contact Mechanics 4.2 DOI:10.1017/cbo9781139171731",
+    "gate_criterion": "|a_err| <= 3% and |delta_err| <= 3% vs Hertz closed form",
+    "got_ratio0.05_h0.0150_d96": {
+      "contact_radius_pct": -0.531576830679148,
+      "indentation_pct": -1.0107277777946178,
+      "peak_pressure_consistent_pct": 0.4926949739667119,
+      "penetration_over_delta": 1.9e-07
+    },
+    "gate_passed": true,
+    "all_gates_pass": true,
+    "truncation_study": {
+      "H/a=24": {
+        "delta_err_pct": -2.9,
+        "a_err_pct": -0.537
+      },
+      "H/a=48": {
+        "delta_err_pct": -1.639,
+        "a_err_pct": -0.532
+      },
+      "H/a=96": {
+        "delta_err_pct": -1.011,
+        "a_err_pct": -0.532
+      }
+    },
+    "alm_independence": {
+      "rho_spread_contact_radius_pct": 0.0186,
+      "rho_spread_indentation_pct": 0.00034
+    }
+  },
+  "repro_cmd": "cd /root/tp-agent/work/m16233 && PYTHONPATH=src python3 benchmarks/verified/fem_hertz_contact_loadcontrol/run.py",
+  "external_anchor": "Hertz (1882) J. reine angew. Math. 92:156; Johnson, Contact Mechanics (1985) \u00a74.2, DOI:10.1017/cbo9781139171731. Closed form: a=(3PR/(4E*))^(1/3), delta=a^2/R, p0=3P/(2*pi*a^2), E*=E/(1-nu^2).",
+  "level_rationale": "L0(\u6587\u6863\u2705) L1(\u6570\u5b66\u9a8c\u8bc1\u2705: reference solution self-consistency, stiffness assembly matches dense ref) L2(\u771f\u5b9e\u4ee3\u7801\u2705: input\u2192ALM contact solve\u2192output) L3(\u7cfb\u7edf\u96c6\u6210\u2705: integrated into TensorFEM solver suite, called by benchmark runner and tests) L4(\u57fa\u51c6\u9a8c\u8bc1\u2705: complete case with error analysis, all gates pass <3%, reproducible, truncation+ALM studies) L5(\u274c \u975e\u79d1\u7814\u5de5\u7a0b\u8d21\u732e: standard verification case, not a novel research contribution) \u2192 \u6700\u7ec8 L4",
+  "findings": {
+    "F1_all_gates_pass": "Primary gate case ratio0.05_h0.0150_d96: a_err=-0.53%, delta_err=-1.01%, both well within 3% tolerance. PASS.",
+    "F2_truncation_quantified": "Domain truncation is the dominant modelling error: H/a=24\u2192-2.90%, H/a=48\u2192-1.64%, H/a=96\u2192-1.01%. Convergence is monotonic and well-characterized.",
+    "F3_alm_parameter_independent": "ALM rho sweep (0.3, 1, 3) shows contact radius spread 0.019%, indentation spread 0.0003% \u2014 confirms penalty-free constraint enforcement.",
+    "F4_peak_pressure_accurate": "Consistent formulation peak pressure error +0.49%; lumped formulation +31.6% (expected: lumped pressure averaging overestimates peak).",
+    "F5_tests_comprehensive": "8 tests cover: reference self-consistency, input validation, ring area conservation, stiffness assembly match, 3% gate, non-invasiveness, ALM independence, load monotonicity."
+  }
+}
