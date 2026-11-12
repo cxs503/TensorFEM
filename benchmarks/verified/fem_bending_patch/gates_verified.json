@@ -1,0 +1,182 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_bending_patch",
+  "title": "BENDING-PATCH: constant-curvature patch test of the Q4 Mindlin plate element",
+  "mission": "CASE-BENDING-PATCH",
+  "generated_at": "2026-11-11T23:49:49+00:00",
+  "criteria": {
+    "case_pool_tolerance": 0.02,
+    "exact_tolerance_affine": 1e-12,
+    "observed_order_min": 1.5,
+    "locking_control_min": 0.5
+  },
+  "gates": [
+    {
+      "id": "oracle_selfcheck",
+      "quantity": "analytic state residual (shear + curvature)",
+      "reference": "constant-curvature field, closed form; Zienkiewicz & Taylor Vol.2",
+      "value": 1.4190298242011679e-13,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "affine_exact_w",
+      "quantity": "max |w_h - w_exact| / |w_exact| over affine+skew patches",
+      "reference": "constant-curvature closed form (patch test, exact reproduction)",
+      "value": 8.031127203596327e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "affine_exact_rot",
+      "quantity": "max rotation error, affine+skew patches",
+      "reference": "constant-curvature closed form",
+      "value": 4.196911635427758e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "affine_exact_moment",
+      "quantity": "max moment error, affine+skew patches",
+      "reference": "M = Db kappa",
+      "value": 9.393615828692852e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "affine_exact_energy_sri",
+      "quantity": "max strain-energy error, affine+skew patches (sri)",
+      "reference": "1/2 kappa^T Db kappa * Area",
+      "value": 1.5463820700136107e-15,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "skew_energy_mitc",
+      "quantity": "max strain-energy error, affine+skew patches (mitc)",
+      "reference": "1/2 kappa^T Db kappa * Area (documented: MITC shear sampling on a skew element is not exactly shear-free)",
+      "value": 0.003969907407407478,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "distorted_w",
+      "quantity": "max displacement error, distorted patch",
+      "reference": "constant-curvature closed form",
+      "value": 0.01541517888154085,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "distorted_moment",
+      "quantity": "max moment error, distorted patch",
+      "reference": "M = Db kappa",
+      "value": 0.007510513870538823,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "distorted_energy",
+      "quantity": "max energy error, distorted patch",
+      "reference": "1/2 kappa^T Db kappa * Area",
+      "value": 0.0016500842193053616,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "strip_symmetry_w",
+      "quantity": "tip deflection error, symmetry cell (load-driven)",
+      "reference": "M L^2/(2D), D = E t^3/(12(1-nu^2))",
+      "value": 2.1753248102658505e-09,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "strip_symmetry_theta",
+      "quantity": "tip rotation error, symmetry cell (load-driven)",
+      "reference": "M L/D",
+      "value": 1.3686298748675308e-09,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "strip_free_w",
+      "quantity": "tip deflection error, free edges (load-driven)",
+      "reference": "M L^2/(2 D_b), D_b = E t^3/12",
+      "value": 0.017576443091359494,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "poisson_crosscheck",
+      "quantity": "|ratio - 1/(1-nu^2)| / (1/(1-nu^2))",
+      "reference": "D/D_b = 1/(1-nu^2) exactly",
+      "value": 0.0,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "order_w_min",
+      "quantity": "observed order of the distorted patch, w",
+      "reference": "second-order consistency of the element",
+      "value": 1.7173691653735683,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "locking_control_strip",
+      "quantity": "min tip-deflection error of the locking element (thin strip, t/L = 0.01)",
+      "reference": "shear locking must be visible (negative control)",
+      "value": 0.9785282934466463,
+      "threshold": 0.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "locking_control_patch",
+      "quantity": "max energy error of the locking element on the patch",
+      "reference": "shear locking must be visible (negative control)",
+      "value": 0.021096612867004566,
+      "threshold": 0.02,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "equilibrium_residual",
+      "quantity": "max |K_ff u_f + K_fc u_c| over all patch cases",
+      "reference": "discrete equilibrium",
+      "value": 4.263256414560601e-14,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_bending_patch/result.json",
+    "report": "docs/bending-patch.md",
+    "figures": "docs/assets/bending_patch/"
+  },
+  "limitations": [
+    "A patch test is a consistency (necessary) condition; it proves constant-curvature reproduction, not coarse-mesh accuracy or pointwise moment accuracy.",
+    "The distorted-patch residual is an interpolation limitation of the bilinear w field (quadratic exact field), measured and h-convergent, not a defect.",
+    "A Dirichlet-driven patch contains no zero-energy mode, so this test cannot detect the rank deficiency of the one-point (sri) element.",
+    "Literature criterion cited from the standard statement; the textbooks were not retrievable offline, but every target value is evaluated in code from the closed form, so no table digit enters the evidence chain."
+  ]
+}
