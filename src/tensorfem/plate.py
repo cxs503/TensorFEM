@@ -129,8 +129,10 @@ def q4_mindlin_stiffness(
     """Return the 12x12 Mindlin Q4 element stiffness.
 
     ``shear_treatment="sri"`` (default) is the historical one-point shear rule;
-    ``"mitc"`` is the assumed natural transverse shear strain field.  Both use the
-    same 2x2 bending rule, so only the shear block changes.
+    ``"mitc"`` is the assumed natural transverse shear strain field; ``"full"``
+    integrates the shear block with the same 2x2 rule as the bending (the
+    equal-order locking case, kept for benchmarking).  All three share the same
+    2x2 bending rule, so only the shear block changes.
 
     Pass either an isotropic ``(young, poisson, thickness)`` triple or a
     :class:`PlateRigidity` as ``rigidity``; the latter admits orthotropic plates
@@ -141,8 +143,8 @@ def q4_mindlin_stiffness(
     if xy.shape != (4, 2):
         raise ValueError("xy must have shape (4, 2) in counter-clockwise order")
     dtype, device = xy.dtype, xy.device
-    if shear_treatment not in ("sri", "mitc"):
-        raise ValueError("shear_treatment must be 'sri' or 'mitc'")
+    if shear_treatment not in ("sri", "mitc", "full"):
+        raise ValueError("shear_treatment must be 'sri', 'mitc' or 'full'")
     if rigidity is None:
         if young is None or poisson is None or thickness is None:
             raise ValueError("either (young, poisson, thickness) or rigidity must be given")
@@ -205,6 +207,27 @@ def q4_mindlin_stiffness(
             Bs[1, 3*i] = dN[i, 1]
             Bs[1, 3*i+2] = N[i]
         return ke + Bs.T @ Ds @ Bs * detJ * 4.0
+    if shear_treatment == "full":
+        # Full 2x2 Gauss for the shear block too: the equal-order (locking)
+        # case.  In the thin limit the parasitic shear strain cannot vanish, so
+        # the element stiffens and the deflection is underpredicted (shear
+        # locking).  Kept for benchmarking the locking that "sri"/"mitc" remove.
+        gp = 1.0 / 3.0 ** 0.5
+        for xif in (-gp, gp):
+            for etaf in (-gp, gp):
+                xi, eta = xy.new_tensor(xif), xy.new_tensor(etaf)
+                N, dN_nat = _shape(xi, eta)
+                J = dN_nat.T @ xy
+                detJ = torch.linalg.det(J)
+                dN = dN_nat @ torch.linalg.inv(J).T
+                Bs = torch.zeros((2, 12), dtype=dtype, device=device)
+                for i in range(4):
+                    Bs[0, 3*i] = dN[i, 0]
+                    Bs[0, 3*i+1] = N[i]
+                    Bs[1, 3*i] = dN[i, 1]
+                    Bs[1, 3*i+2] = N[i]
+                ke = ke + Bs.T @ Ds @ Bs * detJ
+        return ke
     # Assumed natural shear strain (Dvorkin-Bathe): sample the shear rows at the
     # four mid-side points and interpolate them bilinearly at the 2x2 Gauss
     # points.  This keeps the two rigid-body rotations zero-energy while removing
