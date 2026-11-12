@@ -52,6 +52,7 @@ independent of the node numbering, which is itself verified.
 
 from __future__ import annotations
 
+import contextlib
 import math
 from dataclasses import dataclass, field
 
@@ -76,9 +77,9 @@ THICKNESS = 1.0
 LENGTH = 1.0
 
 #: Load amplitudes of cases A, B and C.
-SIGMA0 = 100.0     # uniaxial tension, MPa
-TAU0 = 50.0        # pure shear, MPa
-KAPPA = 1.0e-3     # bending curvature, 1/mm
+SIGMA0 = 100.0  # uniaxial tension, MPa
+TAU0 = 50.0  # pure shear, MPa
+KAPPA = 1.0e-3  # bending curvature, 1/mm
 
 #: A patch test is "exact" when the reproduction error is at round-off level.
 EXACT_TOL = 1e-10
@@ -93,15 +94,33 @@ def shear_modulus() -> float:
 # --------------------------------------------------------------------------- #
 def _distortion(u: float, v: float, h: float, amp: float) -> tuple[float, float]:
     """Deterministic, smooth interior-node distortion (no RNG: bit-reproducible)."""
-    du = amp * h * (0.35 * math.sin(3.0 * math.pi * u) * math.cos(2.0 * math.pi * v)
-                    + 0.15 * math.sin(5.0 * math.pi * v))
-    dv = amp * h * (0.30 * math.cos(2.0 * math.pi * u) * math.sin(3.0 * math.pi * v)
-                    + 0.12 * math.sin(4.0 * math.pi * u))
+    du = (
+        amp
+        * h
+        * (
+            0.35 * math.sin(3.0 * math.pi * u) * math.cos(2.0 * math.pi * v)
+            + 0.15 * math.sin(5.0 * math.pi * v)
+        )
+    )
+    dv = (
+        amp
+        * h
+        * (
+            0.30 * math.cos(2.0 * math.pi * u) * math.sin(3.0 * math.pi * v)
+            + 0.12 * math.sin(4.0 * math.pi * u)
+        )
+    )
     return du, dv
 
 
-def q4_patch_mesh(nx: int = 3, ny: int | None = None, distortion: float = 1.0,
-                  length: float = LENGTH, *, dtype=torch.float64):
+def q4_patch_mesh(
+    nx: int = 3,
+    ny: int | None = None,
+    distortion: float = 1.0,
+    length: float = LENGTH,
+    *,
+    dtype=torch.float64,
+):
     """Irregular Q4 patch on ``[0, L]^2``: boundary nodes exact, interior nodes moved.
 
     ``distortion = 0`` gives the affine (uniform) grid, which is the control case.
@@ -133,8 +152,9 @@ def _assert_positive_jacobian_q4(nodes: torch.Tensor, elements: torch.Tensor) ->
     x = nodes[elements]
     # corner triangles must all be positively oriented (counter-clockwise quads)
     for a, b, c in ((0, 1, 2), (0, 2, 3), (0, 1, 3), (1, 2, 3)):
-        cr = ((x[:, b, 0] - x[:, a, 0]) * (x[:, c, 1] - x[:, a, 1])
-              - (x[:, b, 1] - x[:, a, 1]) * (x[:, c, 0] - x[:, a, 0]))
+        cr = (x[:, b, 0] - x[:, a, 0]) * (x[:, c, 1] - x[:, a, 1]) - (x[:, b, 1] - x[:, a, 1]) * (
+            x[:, c, 0] - x[:, a, 0]
+        )
         if torch.any(cr <= 0):
             raise ValueError("distortion inverted a Q4 element (negative Jacobian)")
 
@@ -162,8 +182,12 @@ def tet10_patch_mesh(nx: int = 2, distortion: float = 1.0, length: float = LENGT
 
 
 def boundary_nodes_2d(nodes: torch.Tensor, length: float = LENGTH, tol: float = 1e-12):
-    on = ((nodes[:, 0].abs() < tol) | ((nodes[:, 0] - length).abs() < tol)
-          | (nodes[:, 1].abs() < tol) | ((nodes[:, 1] - length).abs() < tol))
+    on = (
+        (nodes[:, 0].abs() < tol)
+        | ((nodes[:, 0] - length).abs() < tol)
+        | (nodes[:, 1].abs() < tol)
+        | ((nodes[:, 1] - length).abs() < tol)
+    )
     return on.nonzero().reshape(-1)
 
 
@@ -184,30 +208,48 @@ def exact_field(case: str, nodes: torch.Tensor):
     probes at Gauss points and centroids are compared at the *same* location.
     """
     if case == "A":
-        u = torch.stack((SIGMA0 / YOUNG * nodes[:, 0],
-                         -POISSON * SIGMA0 / YOUNG * nodes[:, 1]), 1)
+        u = torch.stack((SIGMA0 / YOUNG * nodes[:, 0], -POISSON * SIGMA0 / YOUNG * nodes[:, 1]), 1)
         ex, ey, ez = SIGMA0, 0.0, 0.0
-        fn = lambda p: torch.tensor([SIGMA0, 0.0, 0.0, 0.0, 0.0, 0.0], dtype=p.dtype)
+
+        def fn(p):
+            return torch.tensor([SIGMA0, 0.0, 0.0, 0.0, 0.0, 0.0], dtype=p.dtype)
+
         return u, fn, SIGMA0, ex, ey, ez
     if case == "B":
         g = TAU0 / shear_modulus()
         u = torch.stack((0.5 * g * nodes[:, 1], 0.5 * g * nodes[:, 0]), 1)
-        fn = lambda p: torch.tensor([0.0, 0.0, TAU0, 0.0, 0.0, 0.0], dtype=p.dtype)
+
+        def fn(p):
+            return torch.tensor([0.0, 0.0, TAU0, 0.0, 0.0, 0.0], dtype=p.dtype)
+
         return u, fn, TAU0, 0.0, TAU0, 0.0
     if case in ("C", "C3"):
         if case == "C":
-            u = torch.stack((-KAPPA * nodes[:, 0] * nodes[:, 1],
-                             0.5 * KAPPA * (nodes[:, 0] ** 2 + POISSON * nodes[:, 1] ** 2)), 1)
+            u = torch.stack(
+                (
+                    -KAPPA * nodes[:, 0] * nodes[:, 1],
+                    0.5 * KAPPA * (nodes[:, 0] ** 2 + POISSON * nodes[:, 1] ** 2),
+                ),
+                1,
+            )
         else:  # 3-D: sigma_xx = -E*kappa*y, all other components zero
-            u = torch.stack((-KAPPA * nodes[:, 0] * nodes[:, 1],
-                             0.5 * KAPPA * (nodes[:, 0] ** 2 + POISSON * nodes[:, 1] ** 2
-                                            - POISSON * nodes[:, 2] ** 2),
-                             POISSON * KAPPA * nodes[:, 1] * nodes[:, 2]), 1)
+            u = torch.stack(
+                (
+                    -KAPPA * nodes[:, 0] * nodes[:, 1],
+                    0.5
+                    * KAPPA
+                    * (nodes[:, 0] ** 2 + POISSON * nodes[:, 1] ** 2 - POISSON * nodes[:, 2] ** 2),
+                    POISSON * KAPPA * nodes[:, 1] * nodes[:, 2],
+                ),
+                1,
+            )
         ex, ey, ez = YOUNG * KAPPA, 0.0, 0.0
+
         # exact stress amplitude grows linearly with y; the error is normalised by the
         # amplitude at the top surface so the number is a fraction of the load range.
-        fn = lambda p: torch.cat([-YOUNG * KAPPA * p[1].reshape(1),
-                                  torch.zeros(5, dtype=p.dtype)])
+        def fn(p):
+            return torch.cat([-YOUNG * KAPPA * p[1].reshape(1), torch.zeros(5, dtype=p.dtype)])
+
         return u, fn, YOUNG * KAPPA * LENGTH, ex, ey, ez
     raise ValueError(f"unknown patch case {case!r}")
 
@@ -215,13 +257,13 @@ def exact_field(case: str, nodes: torch.Tensor):
 def exact_energy(case: str, length: float = LENGTH) -> float:
     """Analytical strain energy of the patch (used as an energy-level cross-check)."""
     if case == "A":
-        return 0.5 * SIGMA0 ** 2 / YOUNG * length ** 3
+        return 0.5 * SIGMA0**2 / YOUNG * length**3
     if case == "B":
-        return 0.5 * TAU0 ** 2 / shear_modulus() * length ** 3
+        return 0.5 * TAU0**2 / shear_modulus() * length**3
     if case == "C":
-        return 0.5 * YOUNG * KAPPA ** 2 * length ** 5 / 3.0
+        return 0.5 * YOUNG * KAPPA**2 * length**5 / 3.0
     if case == "C3":
-        return 0.5 * YOUNG * KAPPA ** 2 * length ** 5 / 3.0
+        return 0.5 * YOUNG * KAPPA**2 * length**5 / 3.0
     raise ValueError(case)
 
 
@@ -236,10 +278,10 @@ class PatchResult:
     cells: int
     nodes: int
     free_dofs: int
-    disp_error: float          # max |u_h - u_ex| / max |u_ex|
-    stress_error: float        # max |sigma_h - sigma_ex| / sigma_scale
+    disp_error: float  # max |u_h - u_ex| / max |u_ex|
+    stress_error: float  # max |sigma_h - sigma_ex| / sigma_scale
     energy_error: float
-    expected: str              # "pass" | "documented_defect" | "negative_control"
+    expected: str  # "pass" | "documented_defect" | "negative_control"
     probes: list = field(default_factory=list)
     notes: str = ""
 
@@ -248,16 +290,37 @@ class PatchResult:
         return self.disp_error <= EXACT_TOL and self.stress_error <= EXACT_TOL
 
 
-def _finish(case, family, mesh_name, n_nodes, free_dofs, u, u_ex, stress_err,
-            energy_h, expected, probes, notes=""):
+def _finish(
+    case,
+    family,
+    mesh_name,
+    n_nodes,
+    free_dofs,
+    u,
+    u_ex,
+    stress_err,
+    energy_h,
+    expected,
+    probes,
+    notes="",
+):
     disp_err = float((u.reshape(-1, u_ex.shape[1]) - u_ex).abs().max())
     scale = float(u_ex.abs().max())
     energy_err = abs(energy_h - exact_energy(case, LENGTH)) / exact_energy(case, LENGTH)
-    return PatchResult(case=case, family=family, mesh=mesh_name, nodes=n_nodes,
-                       cells=probes and len(probes) or 0, free_dofs=free_dofs,
-                       disp_error=disp_err / scale, stress_error=stress_err,
-                       energy_error=float(energy_err), expected=expected,
-                       probes=probes, notes=notes)
+    return PatchResult(
+        case=case,
+        family=family,
+        mesh=mesh_name,
+        nodes=n_nodes,
+        cells=probes and len(probes) or 0,
+        free_dofs=free_dofs,
+        disp_error=disp_err / scale,
+        stress_error=stress_err,
+        energy_error=float(energy_err),
+        expected=expected,
+        probes=probes,
+        notes=notes,
+    )
 
 
 def run_q4_patch(case: str = "A", nx: int = 3, distortion: float = 1.0) -> PatchResult:
@@ -268,23 +331,46 @@ def run_q4_patch(case: str = "A", nx: int = 3, distortion: float = 1.0) -> Patch
     fixed = torch.stack([2 * bnd + 0, 2 * bnd + 1], 1).reshape(-1)
     values = torch.stack([u_ex[bnd, 0], u_ex[bnd, 1]], 1).reshape(-1)
     model = ContinuumModel(
-        nodes=nodes, elements=elements, young_modulus=torch.tensor(YOUNG),
-        poisson_ratio=torch.tensor(POISSON), thickness=torch.tensor(THICKNESS),
-        forces=torch.zeros(2 * len(nodes)), fixed_dofs=fixed, element_type="q4",
-        plane="stress", prescribed_values=values)
+        nodes=nodes,
+        elements=elements,
+        young_modulus=torch.tensor(YOUNG),
+        poisson_ratio=torch.tensor(POISSON),
+        thickness=torch.tensor(THICKNESS),
+        forces=torch.zeros(2 * len(nodes)),
+        fixed_dofs=fixed,
+        element_type="q4",
+        plane="stress",
+        prescribed_values=values,
+    )
     res = solve_continuum(model)
     # Q4 stress from solve_continuum is the (single) element-centre value.
     centres = nodes[elements].mean(1)
     exact = torch.stack([sig_fn(c)[:3] for c in centres])
     err = float((res.stress - exact).abs().max()) / scale
-    probes = [{"centre": c.tolist(),
-               "sigma_xx_h": float(s[0]), "sigma_xx_exact": float(e[0]),
-               "tau_xy_h": float(s[2]), "tau_xy_exact": float(e[2])}
-              for c, s, e in zip(centres, res.stress, exact)]
+    probes = [
+        {
+            "centre": c.tolist(),
+            "sigma_xx_h": float(s[0]),
+            "sigma_xx_exact": float(e[0]),
+            "tau_xy_h": float(s[2]),
+            "tau_xy_exact": float(e[2]),
+        }
+        for c, s, e in zip(centres, res.stress, exact)
+    ]
     expected = "pass" if case in ("A", "B") else "negative_control"
-    out = _finish(case, "Q4", f"distortion={distortion:g}", len(nodes),
-                  len(nodes) * 2 - len(fixed), res.displacement, u_ex, err,
-                  float(res.strain_energy), expected, probes)
+    out = _finish(
+        case,
+        "Q4",
+        f"distortion={distortion:g}",
+        len(nodes),
+        len(nodes) * 2 - len(fixed),
+        res.displacement,
+        u_ex,
+        err,
+        float(res.strain_energy),
+        expected,
+        probes,
+    )
     out.cells = len(elements)
     return out
 
@@ -298,29 +384,59 @@ def run_q8_patch(case: str = "C", nx: int = 3, distortion: float = 1.0) -> Patch
     for n in bnd.tolist():
         dirichlet[2 * n] = float(u_ex[n, 0])
         dirichlet[2 * n + 1] = float(u_ex[n, 1])
-    res = solve_q8_plane(nodes, elements, young=YOUNG, poisson=POISSON,
-                         thickness=THICKNESS, plane="stress", dirichlet=dirichlet)
+    res = solve_q8_plane(
+        nodes,
+        elements,
+        young=YOUNG,
+        poisson=POISSON,
+        thickness=THICKNESS,
+        plane="stress",
+        dirichlet=dirichlet,
+    )
     probes, worst = [], 0.0
     for e in range(len(elements)):
         coords = nodes[elements[e]]
         for xi, eta in GAUSS_POINTS_3X3:
-            s = q8_stress_at(nodes, elements, res.displacement, e, xi, eta,
-                             young=YOUNG, poisson=POISSON)
+            s = q8_stress_at(
+                nodes, elements, res.displacement, e, xi, eta, young=YOUNG, poisson=POISSON
+            )
             point = q8_shape(xi, eta) @ coords
             exact = sig_fn(point)[:3]
             err = float((s - exact).abs().max()) / scale
             if err > worst:
-                worst, worst_probe = err, {
-                    "element": e, "xi": xi, "eta": eta, "y": float(point[1]),
-                    "sigma_xx_h": float(s[0]), "sigma_xx_exact": float(sig_fn(point)[0]),
-                    "sigma_yy_h": float(s[1]), "tau_xy_h": float(s[2]),
-                    "rel_error": err}
+                worst, worst_probe = (
+                    err,
+                    {
+                        "element": e,
+                        "xi": xi,
+                        "eta": eta,
+                        "y": float(point[1]),
+                        "sigma_xx_h": float(s[0]),
+                        "sigma_xx_exact": float(sig_fn(point)[0]),
+                        "sigma_yy_h": float(s[1]),
+                        "tau_xy_h": float(s[2]),
+                        "rel_error": err,
+                    },
+                )
     probes.append(worst_probe)
     expected = "pass" if case in ("A", "B") or distortion == 0.0 else "documented_defect"
-    out = _finish(case, "Q8", f"distortion={distortion:g}", len(nodes),
-                  2 * len(nodes) - 2 * len(dirichlet), res.displacement, u_ex, worst,
-                  float(res.strain_energy), expected, probes,
-                  notes="serendipity span omits xi^2*eta^2 -> distorted quadratic patch")
+    # ``dirichlet`` holds one entry per constrained *dof*, so it is subtracted once
+    # (the pre-fix expression used ``2 * len(dirichlet)`` and reported -16 free dofs
+    # for the 3x3 Q8 patch: a reporting bug, not a solver effect).
+    out = _finish(
+        case,
+        "Q8",
+        f"distortion={distortion:g}",
+        len(nodes),
+        2 * len(nodes) - len(dirichlet),
+        res.displacement,
+        u_ex,
+        worst,
+        float(res.strain_energy),
+        expected,
+        probes,
+        notes="serendipity span omits xi^2*eta^2 -> distorted quadratic patch",
+    )
     out.cells = len(elements)
     return out
 
@@ -332,21 +448,36 @@ def run_tet10_patch(nx: int = 2, distortion: float = 1.0) -> PatchResult:
     bnd = boundary_nodes_3d(nodes)
     fixed = torch.stack([3 * bnd + 0, 3 * bnd + 1, 3 * bnd + 2], 1).reshape(-1)
     values = torch.stack([u_ex[bnd, 0], u_ex[bnd, 1], u_ex[bnd, 2]], 1).reshape(-1)
-    model = Tet10Model(nodes=nodes, elements=elements,
-                       young_modulus=torch.tensor(YOUNG),
-                       poisson_ratio=torch.tensor(POISSON),
-                       forces=torch.zeros(3 * len(nodes)), fixed_dofs=fixed,
-                       prescribed_values=values)
+    model = Tet10Model(
+        nodes=nodes,
+        elements=elements,
+        young_modulus=torch.tensor(YOUNG),
+        poisson_ratio=torch.tensor(POISSON),
+        forces=torch.zeros(3 * len(nodes)),
+        fixed_dofs=fixed,
+        prescribed_values=values,
+    )
     res = solve_tet10(model)
-    corners = nodes[elements[:, :4]].mean(1)          # centroid probe location
+    corners = nodes[elements[:, :4]].mean(1)  # centroid probe location
     exact = torch.stack([sig_fn(c) for c in corners])
     stress_err = float((res.stress[:, :3] - exact[:, :3]).abs().max()) / scale
-    probes = [{"centroid": c.tolist(), "sigma_xx_h": float(s[0]),
-               "sigma_xx_exact": float(e[0])}
-              for c, s, e in zip(corners, res.stress, exact)]
-    out = _finish("C3", "TET10", f"distortion={distortion:g}", len(nodes),
-                  3 * len(nodes) - len(fixed), res.displacement, u_ex, stress_err,
-                  float(res.strain_energy), "pass", probes)
+    probes = [
+        {"centroid": c.tolist(), "sigma_xx_h": float(s[0]), "sigma_xx_exact": float(e[0])}
+        for c, s, e in zip(corners, res.stress, exact)
+    ]
+    out = _finish(
+        "C3",
+        "TET10",
+        f"distortion={distortion:g}",
+        len(nodes),
+        3 * len(nodes) - len(fixed),
+        res.displacement,
+        u_ex,
+        stress_err,
+        float(res.strain_energy),
+        "pass",
+        probes,
+    )
     out.cells = len(elements)
     return out
 
@@ -374,10 +505,15 @@ def refinement_study(sizes=(2, 3, 4, 6), distortion: float = 1.0):
         q4 = run_q4_patch("C", n, distortion)
         q8a = run_q8_patch("C", n, 0.0)
         q8d = run_q8_patch("C", n, distortion)
-        rows.append({"h": LENGTH / n, "cells": q4.cells,
-                     "Q4_stress_error": q4.stress_error,
-                     "Q8_affine_stress_error": q8a.stress_error,
-                     "Q8_distorted_stress_error": q8d.stress_error})
+        rows.append(
+            {
+                "h": LENGTH / n,
+                "cells": q4.cells,
+                "Q4_stress_error": q4.stress_error,
+                "Q8_affine_stress_error": q8a.stress_error,
+                "Q8_distorted_stress_error": q8d.stress_error,
+            }
+        )
     for key in ("Q4_stress_error", "Q8_distorted_stress_error"):
         rates = []
         for a, b in zip(rows, rows[1:]):
@@ -399,7 +535,7 @@ def numbering_study(case: str = "A", nx: int = 3, distortion: float = 1.0):
     nodes, elements = q4_patch_mesh(nx, nx, distortion)
     rng = random.Random(20261112)
     perm = list(range(len(nodes)))
-    rng.shuffle(perm)                     # new->old map
+    rng.shuffle(perm)  # new->old map
     inv = [0] * len(nodes)
     for new, old in enumerate(perm):
         inv[old] = new
@@ -410,32 +546,161 @@ def numbering_study(case: str = "A", nx: int = 3, distortion: float = 1.0):
     fixed = torch.stack([2 * bnd, 2 * bnd + 1], 1).reshape(-1)
     values = torch.stack([u_ex[bnd, 0], u_ex[bnd, 1]], 1).reshape(-1)
     model = ContinuumModel(
-        nodes=nodes2, elements=elements2, young_modulus=torch.tensor(YOUNG),
-        poisson_ratio=torch.tensor(POISSON), thickness=torch.tensor(THICKNESS),
-        forces=torch.zeros(2 * len(nodes2)), fixed_dofs=fixed, element_type="q4",
-        plane="stress", prescribed_values=values)
+        nodes=nodes2,
+        elements=elements2,
+        young_modulus=torch.tensor(YOUNG),
+        poisson_ratio=torch.tensor(POISSON),
+        thickness=torch.tensor(THICKNESS),
+        forces=torch.zeros(2 * len(nodes2)),
+        fixed_dofs=fixed,
+        element_type="q4",
+        plane="stress",
+        prescribed_values=values,
+    )
     res = solve_continuum(model)
     err = float((res.displacement.reshape(-1, 2) - u_ex).abs().max()) / float(u_ex.abs().max())
-    return {"case": case, "base_disp_error": base.disp_error,
-            "permuted_disp_error": err,
-            "identical": abs(err - base.disp_error) <= 1e-12}
+    return {
+        "case": case,
+        "base_disp_error": base.disp_error,
+        "permuted_disp_error": err,
+        "identical": abs(err - base.disp_error) <= 1e-12,
+    }
 
 
 def run_suite() -> dict:
     """Full A/B/C suite plus the three sensitivity studies."""
     cases = [
-        run_q4_patch("A"), run_q4_patch("B"), run_q4_patch("C"),
-        run_q8_patch("A"), run_q8_patch("B"),
-        run_q8_patch("C", 3, 0.0), run_q8_patch("C", 3, 1.0),
+        run_q4_patch("A"),
+        run_q4_patch("B"),
+        run_q4_patch("C"),
+        run_q8_patch("A"),
+        run_q8_patch("B"),
+        run_q8_patch("C", 3, 0.0),
+        run_q8_patch("C", 3, 1.0),
         run_tet10_patch(2, 1.0),
     ]
     return {
-        "material": {"E": YOUNG, "nu": POISSON, "thickness": THICKNESS,
-                     "L": LENGTH, "sigma0": SIGMA0, "tau0": TAU0, "kappa": KAPPA,
-                     "G": shear_modulus()},
+        "material": {
+            "E": YOUNG,
+            "nu": POISSON,
+            "thickness": THICKNESS,
+            "L": LENGTH,
+            "sigma0": SIGMA0,
+            "tau0": TAU0,
+            "kappa": KAPPA,
+            "G": shear_modulus(),
+        },
         "exact_tolerance": EXACT_TOL,
         "cases": [dict(c.__dict__, passed=c.passed) for c in cases],
         "distortion_study": distortion_study(),
         "refinement_study": refinement_study(),
         "numbering_study": numbering_study(),
+    }
+
+
+# --------------------------------------------------------------------------- #
+# precision guard
+# --------------------------------------------------------------------------- #
+@contextlib.contextmanager
+def double_precision():
+    """Force ``torch.float64`` for the enclosed block and restore the caller's dtype.
+
+    Exactness is a round-off statement: at the float32 default the round-off alone
+    is ~1e-7, so an entry point that did not pin the dtype would measure torch's
+    default instead of the element.  Every entry (CLI, registry, driver) goes
+    through this guard.
+    """
+    previous = torch.get_default_dtype()
+    torch.set_default_dtype(torch.float64)
+    try:
+        yield
+    finally:
+        torch.set_default_dtype(previous)
+
+
+# --------------------------------------------------------------------------- #
+# machine-checkable qualification entry
+# --------------------------------------------------------------------------- #
+#: ``(id, case, family, distortion, expectation)``.  ``expectation`` is what a
+#: *correct* element family must do, so the gate is able to fail: an element that
+#: passed everything (including case C with bilinear Q4) would mean the test lost
+#: its discriminating power, not that the element improved.
+QUALIFICATION_CASES = (
+    ("patch.A.Q4", "A", "Q4", 1.0, "exact"),
+    ("patch.B.Q4", "B", "Q4", 1.0, "exact"),
+    ("patch.C.Q4", "C", "Q4", 1.0, "must_fail"),
+    ("patch.A.Q8", "A", "Q8", 1.0, "exact"),
+    ("patch.B.Q8", "B", "Q8", 1.0, "exact"),
+    ("patch.C.Q8_affine", "C", "Q8", 0.0, "exact"),
+    ("patch.C.Q8_distorted", "C", "Q8", 1.0, "must_fail"),
+    ("patch.C3.TET10", "C3", "TET10", 1.0, "exact"),
+)
+
+
+def _run_one(case: str, family: str, distortion: float):
+    if family == "Q4":
+        return run_q4_patch(case, 3, distortion)
+    if family == "Q8":
+        return run_q8_patch(case, 3, distortion)
+    if family == "TET10":
+        return run_tet10_patch(2, distortion)
+    raise ValueError(f"unknown element family {family!r}")
+
+
+def qualification_report() -> dict:
+    """Run the A/B/C patch cases and return the verdict bundle.
+
+    This is the single entry point shared by the CLI (``tensorfem patch-test``)
+    and the test suite, so the number a user sees on the command line is the
+    number the gate asserts.
+    """
+    with double_precision():
+        return _qualification_report()
+
+
+def _qualification_report() -> dict:
+    cases = []
+    for cid, case, family, distortion, expectation in QUALIFICATION_CASES:
+        r = _run_one(case, family, distortion)
+        exact = r.disp_error <= EXACT_TOL and r.stress_error <= EXACT_TOL
+        ok = exact if expectation == "exact" else not exact
+        cases.append(
+            {
+                "id": cid,
+                "case": case,
+                "family": family,
+                "distortion": distortion,
+                "mesh": r.mesh,
+                "cells": r.cells,
+                "nodes": r.nodes,
+                "free_dofs": r.free_dofs,
+                "expectation": expectation,
+                "disp_error": r.disp_error,
+                "stress_error": r.stress_error,
+                "energy_error": r.energy_error,
+                "tolerance": EXACT_TOL,
+                "exact": exact,
+                "passed": ok,
+            }
+        )
+    return {
+        "schema": "tensorfem.patch_test.qualification/1",
+        "reference": "Robinson (1987) patch-test criterion: constant-strain and "
+        "linear-stress fields reproduced to round-off on an irregular "
+        "patch with free interior nodes; targets derived analytically "
+        "from sigma = D B u (no tabulated values copied)",
+        "tolerance": EXACT_TOL,
+        "material": {
+            "E": YOUNG,
+            "nu": POISSON,
+            "thickness": THICKNESS,
+            "L": LENGTH,
+            "sigma0": SIGMA0,
+            "tau0": TAU0,
+            "kappa": KAPPA,
+            "G": shear_modulus(),
+        },
+        "cases": cases,
+        "summary": {"total": len(cases), "passed": sum(c["passed"] for c in cases)},
+        "passed": all(c["passed"] for c in cases),
     }

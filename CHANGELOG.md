@@ -1,5 +1,29 @@
 ## Unreleased
 
+### Robinson patch test A/B/C: the case is now an entry point, an integrated gate, and a reproducible artefact
+- **Entry + integration (the case was previously reachable only from its own driver)**: the
+  A/B/C patch cases are now callable as `tensorfem patch-test` (`src/tensorfem/cli.py`) and are
+  registered in the default qualification gate as `patch.robinson_A`, `patch.robinson_B` and
+  `patch.robinson_C` (`benchmark_registry.patch_benchmark_evidence`, called by
+  `run_registered_benchmarks`).  Both go through the same `tensorfem.patch_test` functions, so the
+  CLI, the driver and the gate cannot disagree.
+- **Precision guard**: `patch_test.double_precision()` pins `torch.float64` for every entry and
+  restores the caller's dtype.  Exactness is a round-off statement; at the float32 default the
+  round-off alone (~1e-7) exceeds the 1e-10 tolerance, so an entry that inherited the global dtype
+  would have measured torch, not the element.
+- **Run artefacts (committed, not hand-written)**: `runs/patch_test_robinson/result.json`,
+  `cli_qualification.json` + log, `verify_gate.log`, and `benchmarks/patch_test_robinson_evidence.json`
+  (ref-versus-got per case with the analytical reference at the exact probe point, `repro_cmd`, and
+  an import-provenance block: module path, git commit, dtype, torch version).
+- **Verdicts**: A/B exact for Q4 and Q8 on distorted meshes (`<=7e-12`); C exact for Q8 on affine
+  meshes (`5.4e-15`) and for TET10 in 3-D (`1.6e-15`); the two negative controls stay non-exact as
+  they must (Q4 on C `1.17e-2`, distorted Q8 on C `8.8e-4`), and `tensorfem patch-test` exits 1 if
+  either of them ever becomes "exact".
+- **Defect fix**: `run_q8_patch` reported **-16 free DOFs** for the 3x3 patch (`2*n_nodes -
+  2*len(dirichlet)` double-counted the constrained dofs); the value is now 32 and a regression test
+  pins it.  Lint debt of the touched files paid down (E701/E702/E731/E741) and formatted with the
+  pinned ruff 0.15.
+
 ### 3-D cohesive interface: closed-form dissipated energy + imported-checkout guard
 - **New capability** `BKCohesive3DLaw.dissipated_energy(separation, history)` and
   `Cohesive3DResponse.dissipated_energy`: the energy dissipated per unit reference
