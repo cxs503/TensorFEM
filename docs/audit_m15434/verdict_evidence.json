@@ -1,0 +1,84 @@
+{
+  "anchor_slug": "CASE-THERMAL-BAR",
+  "audit_mission": "m15714",
+  "audited_mission": "m15434",
+  "audited_commit": "fc23eac4",
+  "merged_into_main": "0c88e405 (Merge #708)",
+  "claimed_level": 4,
+  "level": 4,
+  "verdict": {
+    "level": 4,
+    "why_level_4": "real FEM path (1-D thermoelastic bar solve + hex8 thermo-elastic assembly) -> four restraint families + free control + quadratic-dT h-convergence + nu/dT/temperature-dependent sensitivity -> reproducible bit-identically (driver rerun 11.9 s; JSON identical except git_sha/generated_utc) -> benchmark ref vs got from the closed form sigma=-E alpha dT evaluated from a hashed material table, max rel error 7.2e-16 << 3% -> audit-side independent recomputation (no tensorfem import) reproduces ref to 1.2e-16 and every convergence row to 4.8e-16",
+    "why_not_level_5": "no experimental/literature numeric anchor (material table is an offline secondary transcription with no DOI/page); no new physics or new solver (reuses solve_thermoelastic_bar and the hex8 assembly, adds only a restraint-set helper); the governing uniform-dT tolerance is inherently non-discriminating (exact to round-off for any correct implementation), so the case is verification-grade, not research-grade"
+  },
+  "impl_files": [
+    "src/tensorfem/constrained_thermal_bar.py",
+    "benchmarks/constrained_thermal_bar.py"
+  ],
+  "entry": "benchmarks/constrained_thermal_bar.py",
+  "run_artifacts": [
+    "benchmarks/constrained_thermal_bar_evidence.json",
+    "docs/constrained-thermal-bar-verification.md",
+    "docs/assets/constrained_thermal_field.png",
+    "docs/audit_m15434/independent_check.json"
+  ],
+  "tests": [
+    "tests/test_constrained_thermal_bar.py 26 passed on m15434 worktree (95 s, audit re-run)",
+    "tests/test_constrained_thermal_bar.py 26 passed on eco main 0c88e405 (70 s, audit re-run)",
+    "tests/test_constrained_thermal_bar.py::test_hex_restraint_family_matches_closed_form[1|2|3-uniaxial|biaxial|triaxial] (round-off 1e-8 gates)",
+    "tests/test_constrained_thermal_bar.py::test_hex_free_expansion_control",
+    "tests/test_constrained_thermal_bar.py::test_bar_quadratic_dT_converges_second_order",
+    "tests/test_constrained_thermal_bar.py::test_restraint_dofs_remove_all_rigid_body_modes",
+    "mutation probe in /tmp/mut1: biaxial divisor 1-nu -> 1-2nu => 4 failed (tests are non-vacuous)",
+    "mutation probe in /tmp/mut1: drop eps_th in hex stress recovery => 2 failed"
+  ],
+  "integration_callers": [
+    "src/tensorfem/benchmark_registry.py:79",
+    "src/tensorfem/marine_structural_qualification.py:41"
+  ],
+  "benchmark": {
+    "ref_source": "closed form sigma_xx = -E alpha dT (linear thermoelasticity, Hooke + eps_th); value evaluated from tensorfem.polar_thermal_stress.MATERIAL_ANCHORS['EH36'] regression at T_ref=20 C (E=206.007142857 GPa, alpha=1.2e-05 /K), anchor_table_sha256=acf459751128bc73b2034b8fd4ded3d1723439fde5a8619c6ce83691fc0b6d7e",
+    "tolerance": {"task": 0.03, "roundoff": 1e-08, "order": 0.35},
+    "ref_vs_got": {
+      "uniaxial": {"ref_Pa": -247208571.4285714, "got_Pa": -247208571.42857143, "rel_error": -1.21e-16, "pass_3pct": true},
+      "biaxial": {"ref_Pa": -353155102.0408163, "got_Pa": -353155102.0408163, "rel_error": 1.7e-16, "pass_3pct": true},
+      "triaxial": {"ref_Pa": -618021428.5714284, "got_Pa": -618021428.5714285, "rel_error": -1.9e-16, "pass_3pct": true},
+      "free_control": {"ref_Pa": 0.0, "got_Pa": 1.3e-07, "relative_to_scale": 5.3e-16, "pass_3pct": true}
+    },
+    "convergence": {"quantity": "quadratic-dT 1-D stress, n=2..32", "observed_order": 2.0, "theory": 2.0, "gate": true},
+    "sensitivity": {"nu_sweep_max_drift_rel": 1.93e-15, "dT_slope_rel_error": 0.0, "temperature_dependent_EH36_rel_error": 0.0, "frozen_property_contrast_rel": 0.113},
+    "independent_audit_recomputation": {
+      "script": "docs/audit_m15434/independent_check.py (does not import tensorfem)",
+      "ref_rel_diff": -1.21e-16,
+      "convergence_rows_max_rel_diff": 4.82e-16,
+      "recomputed_order": 2.0,
+      "families_all_within_roundoff": true,
+      "finding": "with exact thermal-load integration the FE stress is exact at every mesh (1.8e-16); the reported O(h^2) is the trapezoid thermal-strain/mean-temperature error, i.e. thermal-field interpolation, not solver accuracy"
+    },
+    "registered_row_in_tensor_benchmark_cases": "ABSENT at audit time (0 rows for anchor_slug='CASE-THERMAL-BAR', table total 21) -> audit registered the row with status='passed' (finding F1)"
+  },
+  "repro_cmd": "cd /root/tp-agent/work/m15714 && PYTHONPATH=src python benchmarks/constrained_thermal_bar.py && PYTHONPATH=src python -m pytest tests/test_constrained_thermal_bar.py -q && python docs/audit_m15434/independent_check.py",
+  "external_anchor": {
+    "kind": "textbook analytic closed form (Timoshenko & Goodier, Theory of Elasticity, thermal-stress article; Boley & Weiner, Theory of Thermal Stresses Ch.1) re-derived at run time",
+    "derivation_residual": {"uniaxial": 2.17e-19, "biaxial": 2.17e-19, "triaxial": 2.17e-19},
+    "page_verified": false,
+    "experimental_data": "none available for this idealisation",
+    "note": "no DOI/page quote (offline sandbox, fabricated citations forbidden); therefore L4, not L5"
+  },
+  "findings": {
+    "F1": "no tensor_benchmark_cases row -> 3% tolerance self-declared, machine referee not lit; audit registered the row",
+    "F2": "evidence JSON recorded environment.git_sha=0a555844 (main tip without the code; code first appears in fc23eac4) -> provenance defect; audit regenerated the JSON at 0c88e405, numbers bit-identical",
+    "F3": "3% tolerance is non-discriminating for the governing uniform-dT case (exact to round-off); order-2.0 evidence is thermal-field interpolation (trapezoid), not solver accuracy - claim narrowed",
+    "F4": "3-D restraint family is a patch test by construction (linear analytic displacement field exactly representable by trilinear hex8); validates assembly/restraint bookkeeping, not general accuracy",
+    "F5": "material anchor table is an offline secondary transcription without DOI/page -> blocks any L5 external-anchor claim",
+    "F6": "process: the ~13 min full registry sweep ran locally although the goal routed >10 min work to cluster_queue (cj1120 killed); no impact on numbers",
+    "F7": "mission result carries server_quality_audit={gate_valid:false,key_present:false,gate_missing_warning:true} and succeeded via auto-approve, not a gate verdict; this audit supplies the missing gate evidence"
+  },
+  "not_run": [
+    "GitHub CI (x86) not triggered/verified",
+    "cluster loong64 cross-architecture re-run not submitted (11 s workload)",
+    "textbook page/entry not independently verified (offline)",
+    "full run_registered_benchmarks() sweep (60 entries, ~13 min) not rerun; only the registered expression recomputed (rel=1.21e-16, passed)"
+  ],
+  "verdict_disposition": "approve with notes"
+}
