@@ -1,0 +1,157 @@
+{
+ "gate": "poisson_crosscheck",
+ "declared_value": {
+  "measured": 1.0989010989010988,
+  "theory": 1.0989010989010988,
+  "rel_error": 0.0
+ },
+ "declared_operand_source": "run.py:542 divides w_exact_kirchhoff(free) by w_exact_kirchhoff(symmetry) -- both closed-form",
+ "finding": "F-CRIT: the gate is algebraically satisfied by construction (0.0 to round-off); it never touches a computed number, so it cannot detect a Poisson-coupling defect",
+ "recomputed_from_computed_tip_deflections": [
+  {
+   "t": 0.01,
+   "shear": "sri",
+   "n_x": 4,
+   "w_free": 28224.55577624883,
+   "w_symmetry": 25999.9999991978,
+   "ratio_computed": 1.0855598375815256,
+   "ratio_theory": 1.0989010989010988,
+   "rel_error_computed": 0.012140547800811557,
+   "gate_value_declared": 0.0,
+   "gate_still_passes": true
+  },
+  {
+   "t": 0.01,
+   "shear": "sri",
+   "n_x": 8,
+   "w_free": 28368.410147967214,
+   "w_symmetry": 26000.00000002293,
+   "ratio_computed": 1.0910926979977766,
+   "ratio_theory": 1.0989010989010988,
+   "rel_error_computed": 0.007105644822023142,
+   "gate_value_declared": 0.0,
+   "gate_still_passes": true
+  },
+  {
+   "t": 0.01,
+   "shear": "sri",
+   "n_x": 16,
+   "w_free": 28424.344939252886,
+   "w_symmetry": 26000.00000017428,
+   "ratio_computed": 1.0932440361177829,
+   "ratio_theory": 1.0989010989010988,
+   "rel_error_computed": 0.005147927132817472,
+   "gate_value_declared": 0.0,
+   "gate_still_passes": true
+  },
+  {
+   "t": 0.01,
+   "shear": "sri",
+   "n_x": 32,
+   "w_free": 28441.379200886448,
+   "w_symmetry": 26000.000056558438,
+   "ratio_computed": 1.0938991976545083,
+   "ratio_theory": 1.0989010989010988,
+   "rel_error_computed": 0.0045517301343973565,
+   "gate_value_declared": 0.0,
+   "gate_still_passes": true
+  },
+  {
+   "t": 0.01,
+   "shear": "mitc",
+   "n_x": 4,
+   "w_free": 28069.244483104005,
+   "w_symmetry": 25999.999999019954,
+   "ratio_computed": 1.079586326313925,
+   "ratio_theory": 1.0989010989010988,
+   "rel_error_computed": 0.017576443054328202,
+   "gate_value_declared": 0.0,
+   "gate_still_passes": true
+  },
+  {
+   "t": 0.01,
+   "shear": "mitc",
+   "n_x": 8,
+   "w_free": 28165.68569911892,
+   "w_symmetry": 25999.999999791595,
+   "ratio_computed": 1.0832956038209494,
+   "ratio_theory": 1.0989010989010988,
+   "rel_error_computed": 0.014201000522935967,
+   "gate_value_declared": 0.0,
+   "gate_still_passes": true
+  },
+  {
+   "t": 0.01,
+   "shear": "mitc",
+   "n_x": 16,
+   "w_free": 28203.097178872486,
+   "w_symmetry": 25999.999996215556,
+   "ratio_computed": 1.0847345070376,
+   "ratio_theory": 1.0989010989010988,
+   "rel_error_computed": 0.01289159859578389,
+   "gate_value_declared": 0.0,
+   "gate_still_passes": true
+  },
+  {
+   "t": 0.01,
+   "shear": "mitc",
+   "n_x": 32,
+   "w_free": 28214.11377639973,
+   "w_symmetry": 26000.00001115579,
+   "ratio_computed": 1.0851582217036129,
+   "ratio_theory": 1.0989010989010988,
+   "rel_error_computed": 0.012506018249712174,
+   "gate_value_declared": 0.0,
+   "gate_still_passes": true
+  }
+ ],
+ "max_computed_rel_error": 0.017576443054328202,
+ "all_computed_checks_still_within_tolerance": true,
+ "free_edge_error_convergence": {
+  "sri": {
+   "points_h_vs_err": [
+    [
+     0.25,
+     0.012140547831290555
+    ],
+    [
+     0.125,
+     0.007105644821147182
+    ],
+    [
+     0.0625,
+     0.005147927126148663
+    ],
+    [
+     0.03125,
+     0.004551727968973993
+    ]
+   ],
+   "fitted_order": 0.47110157850309153,
+   "err_to_theory_ratio": 2.6672393240642545
+  },
+  "mitc": {
+   "points_h_vs_err": [
+    [
+     0.25,
+     0.017576443091359494
+    ],
+    [
+     0.125,
+     0.01420100053083747
+    ],
+    [
+     0.0625,
+     0.012891598739462665
+    ],
+    [
+     0.03125,
+     0.01250601782600916
+    ]
+   ],
+   "fitted_order": 0.1612623387115971,
+   "err_to_theory_ratio": 1.4054388323999676
+  }
+ },
+ "remediation": "replace the two w_exact_kirchhoff operands by w_tip (computed); then the gate value becomes max_computed_rel_error above (still < 2%, no physics changes)"
+}
