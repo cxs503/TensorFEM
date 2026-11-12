@@ -1,5 +1,30 @@
 ## Unreleased
 
+### CASE-FEM-SCORDELIS-LO-ROOF: the case pool entry that closes the roof benchmark, with the falsified root cause turned into an inverted gate
+- **New case pool entry** `benchmarks/case_scordelis_lo_roof.py` (artefacts in
+  `benchmarks/artifacts/CASE-FEM-SCORDELIS-LO-ROOF/`, report rendered from the artefact into
+  `docs/CASE-FEM-SCORDELIS-LO-ROOF.md`, figure `docs/assets/case-scordelis-lo-roof/`).  Eleven
+  fail-closed gates; ladder 4/8/16 run through the merged assembly paths of three configurations on
+  identical facets: the metric-consistent `cylindrical_shell4` (`-0.302469`, `+0.023 %` at 16x16),
+  the flat-facet `Shell4` with assumed natural shear (`-0.295310`, `-2.345 %`), and the flat-facet
+  default one-point shear (`-0.437542`, `-44.690 %`).
+- **What the case adds beyond the m16449 rank study**: an independent formulation on the same
+  benchmark (agreement is not one element talking to itself), a geometry budget (facet area is
+  `0.032 %` short of the analytic surface at 16x16 and the chord sagitta is `9.5 %` of the
+  thickness -- faceting is real but is not the limiter), a Richardson limit and observed order for
+  each configuration, a machine-precision vertical-reaction audit of the flat-facet family
+  (`1.1e-12`), and **an inverted gate** (`null.default_sri_16x16`, error must stay `> 20 %`) plus a
+  rank census (`sri` 3 transverse mechanisms, `mitc` 0) so the falsified "faceting cannot capture
+  membrane-bending coupling" explanation cannot silently return as "fixed".
+- **Honest open item**: the cylindrical element's reaction sum carries a residual of `0.84 %` at
+  4x4 falling roughly as `h^2` (`0.053 %` at 16x16). It is reported and gated at `< 1 %`, not
+  attributed -- it is an order of magnitude below the displacement error it accompanies.
+- **Stale claim removed at the source**: `benchmarks/verified/fem_shell_scordelis_lo/run_verification.py`
+  still carried the falsified root cause in its module docstring and in the
+  `elements_compared[0].limitation` string that its generator writes into `result.json` (m16449 had
+  corrected only the `gates.limitations` entry). Both now state the rank-deficiency cause and cite
+  this case.
+
 ### CASE-FEM-CLAMPED-PLATE-UNIFORM: clamped square plate under uniform pressure (Timoshenko Table 30)
 - **Case pool entry**: `benchmarks/case_clamped_plate_uniform.py` runs the already merged Q4 Mindlin
   path (`plate_uniform_load.solve_uniform_square_plate`, `winkler_k = 0`) on a fully clamped square
