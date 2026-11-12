@@ -3,7 +3,7 @@
   "anchor": "fem_plate_postbuckling",
   "title": "Von Karman plate postbuckling path and imperfection sensitivity (p250-N06)",
   "mission": "p250-n06-structural-buckling",
-  "generated_at": "2026-11-10T10:47:50+00:00",
+  "generated_at": "2026-11-12T17:59:14+00:00",
   "criteria": {
     "A1": "< 3 %",
     "A2": "< 5 % (10 stations)",
@@ -43,7 +43,7 @@
       "id": "A4",
       "quantity": "MAC of the panel eigenmode against its DNV-RP-C201 mode family",
       "reference": "DNV-RP-C201 plate/column mode shapes",
-      "value": 0.980292819222623,
+      "value": 0.9802928192226222,
       "threshold": 0.9,
       "operator": ">=",
       "passed": true

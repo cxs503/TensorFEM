@@ -40,9 +40,10 @@
     "fem_modal": {
       "grade": "contradicted",
       "defects": [
-        "E_ANCHOR_NAME_MISMATCH"
+        "E_ANCHOR_NAME_MISMATCH",
+        "E_ARTIFACT_MISSING"
       ],
-      "remedy": "align the anchor field with the directory name"
+      "remedy": "align the anchor field with the directory name; commit the artifact the certificate names, or drop the stale reference"
     },
     "fem_morley_skew_plate": {
       "grade": "contradicted",
@@ -59,6 +60,13 @@
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
     "fem_sent_j_integral": {
+      "grade": "uncertified",
+      "defects": [
+        "E_NO_GATES"
+      ],
+      "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
+    },
+    "fem_shell4_formulation_matrix": {
       "grade": "uncertified",
       "defects": [
         "E_NO_GATES"
@@ -94,9 +102,10 @@
       "defects": [
         "E_SCHEMA",
         "E_PASS_WITHOUT_CRITERION",
-        "E_GATE_VALUE_NOT_FINITE"
+        "E_GATE_VALUE_NOT_FINITE",
+        "E_ARTIFACT_MISSING"
       ],
-      "remedy": "re-emit the file in the canonical envelope (schema/anchor/passed/gates); give the gate a numeric threshold, or mark it informational (not a pass)"
+      "remedy": "re-emit the file in the canonical envelope (schema/anchor/passed/gates); give the gate a numeric threshold, or mark it informational (not a pass); commit the artifact the certificate names, or drop the stale reference"
     },
     "fem_thermal": {
       "grade": "uncertified",
