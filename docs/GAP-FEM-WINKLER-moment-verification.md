@@ -115,3 +115,31 @@ h≲l/3）时以 ~0.5 % 满足 5 % 门与 3 % 精度线，且收敛率为二阶�
 PYTHONPATH=src python -m pytest tests/test_foundation_plate_moments.py -q      # 14 passed
 PYTHONPATH=src python scripts/gen_gap_fem_winkler_moments_figure.py            # 重生成 JSON+PNG
 ```
+## ⑦ 厚板弯矩验证欠账闭合（本单增量）
+
+原「⑤ 注意点」第 1 条把「厚板弯矩级数」列为明确的下一步。本单闭合该验证欠账，
+并给出**决定性发现**：对**均布载荷四边简支板**，**弯矩场与板厚无关**——
+
+| t/a | Mindlin vs Kirchhoff 中心 Mx 相对差 | Mindlin vs Kirchhoff 中心 w 相对差 |
+|---|---:|---:|
+| 0.01 | 0.0000 % | 0.05 % |
+| 0.05 | 0.0000 % | 1.28 % |
+| 0.10 | 0.0000 % | 4.93 % |
+| 0.20 | 0.0000 % | **17.17 %** |
+
+即：**挠度侧**确实需要 Mindlin 级数（t/a=0.2 时 Kirchhoff 偏低 17 %），但**弯矩侧**
+两系列逐位一致（经典结果——简支均布板弯矩由载荷分布决定，与横向剪切无关）。
+故原「厚板需改用 Mindlin 级数弯矩」在**弯矩侧不成立**（falsified-hypothesis），
+仅挠度侧成立。
+
+新增测试（`tests/test_foundation_plate_moments.py` 第 5 节，4 条）：
+1. `test_mindlin_moment_series_collapses_onto_kirchhoff_in_thin_limit` —— 薄板极限
+   Mindlin 级数 == Kirchhoff 级数（解析自洽锚）；
+2. `test_mindlin_moment_is_thickness_independent_for_uniform_load` —— t/a=0.05..0.20
+   弯矩场与 t 无关（falsified-hypothesis 断言）；
+3. `test_mindlin_deflection_does_depend_on_thickness` —— 对照：t/a=0.2 挠度差 >10 %，
+   证明「厚板」caveat 只在挠度侧；
+4. `test_fe_moments_match_mindlin_series_thick_plate` —— FE(Mindlin Q4) vs Mindlin
+   级数在 t/a=0.1 时 <3 %（闭合「厚板弯矩」验收面）。
+
+复现：`PYTHONPATH=src python -m pytest tests/test_foundation_plate_moments.py -q`（18 passed）。
