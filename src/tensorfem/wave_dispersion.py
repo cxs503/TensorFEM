@@ -266,6 +266,7 @@ class BlochCell:
     stiffness: torch.Tensor
     mass: torch.Tensor
     total_mass: float
+    transform: torch.Tensor
 
 
 def bloch_cell_matrices(wave_number: float, *, half_thickness: float, young: float,
@@ -306,24 +307,27 @@ def bloch_cell_matrices(wave_number: float, *, half_thickness: float, young: flo
     right = torch.nonzero(torch.isclose(xs, torch.tensor(cell_length, dtype=_DTYPE))).flatten()
     partner = {int(r): int(l) for r, l in zip(right.tolist(), left.tolist())}
     phase = cmath.exp(1j * wave_number * cell_length)
+    # The reduction lives in *dof* space, not node space: every retained node keeps
+    # two independent unknowns (u_x, u_z).  Numbering the retained nodes and then
+    # indexing the transform by node id would alias u_x of one node onto u_z of
+    # another, collapsing the reduced problem to an unrelated operator.
     reduced: dict[int, int] = {}
-    incoming: list[int] = []
-    for node in range(len(nodes)):
-        if node in partner:
-            reduced[node] = reduced[partner[node]]
-            incoming.append(node)
-        else:
-            reduced[node] = len(set(reduced.values()))
-    nred = len(set(reduced.values()))
-    trans = torch.zeros((ndof, nred), dtype=torch.complex128)
+    nred = 0
+    for node in range(len(nodes)):          # retained nodes (left column + interior)
+        if node not in partner:
+            reduced[node] = nred
+            nred += 1
+    for node in partner:                     # right column follows its left partner
+        reduced[node] = reduced[partner[node]]
+    trans = torch.zeros((ndof, 2 * nred), dtype=torch.complex128)
     for node in range(len(nodes)):
         coeff = complex(phase if node in partner else 1.0)
         for d in (0, 1):
-            trans[2 * node + d, reduced[node]] = coeff
+            trans[2 * node + d, 2 * reduced[node] + d] = coeff
     stiff_red = trans.conj().T @ stiff.to(torch.complex128) @ trans
     mass_red = trans.conj().T @ mass.to(torch.complex128) @ trans
     return BlochCell(wave_number, cell_length, half_thickness, nodes, elements,
-                     stiff_red, mass_red, float(mass.sum()))
+                     stiff_red, mass_red, float(mass.sum()), trans)
 
 
 def bloch_cell_frequencies(wave_number: float, *, half_thickness: float, young: float,
@@ -344,3 +348,72 @@ def bloch_cell_frequencies(wave_number: float, *, half_thickness: float, young: 
     values = np.clip(np.asarray(values).real, 0.0, None)
     omega = np.sqrt(values)
     return np.sort(omega)[:n_modes]
+
+def reduced_dof_count(cell: BlochCell) -> int:
+    """Number of dofs of the Floquet-reduced cell.
+
+    Every node that is not on the ``x = L`` column keeps two independent unknowns,
+    so ``2 * (n_nodes - n_right_column)``.  The value is structural: it does not
+    depend on ``k`` and must not depend on the mesh layout either.
+    """
+    return int(cell.stiffness.shape[0])
+
+
+def midplane_family_fraction(nodes: torch.Tensor, mode: np.ndarray) -> float:
+    """Fraction of a mode's energy that is *symmetric* about the plate mid-plane.
+
+    The strip's branches split into the symmetric (extensional, ``S``) family with
+    ``u_x(z) = u_x(-z)``, ``u_z(z) = -u_z(-z)`` and the antisymmetric (flexural,
+    ``A``) family with the reverse parity.  This classifier reads the mode shape
+    only -- it never consults the analytic Rayleigh--Lamb roots -- so selecting
+    ``A0`` / ``S0`` with it does not feed the oracle into the finite-element side.
+
+    Returns a value in ``[0, 1]``: near 1 for the ``S`` family, near 0 for ``A``;
+    a mode that mixes the two parities (a degenerate pair) lands in between.
+    """
+    coords = np.asarray(nodes, dtype=float)
+    vec = np.asarray(mode).reshape(-1)
+    if vec.shape[0] != 2 * coords.shape[0]:
+        raise ValueError("mode must carry two dofs per node")
+    ux, uz = vec[0::2], vec[1::2]
+    key = {(round(float(x), 9), round(float(y), 9)): i
+           for i, (x, y) in enumerate(coords)}
+    sym = anti = 0.0
+    for i, (x, y) in enumerate(coords):
+        j = key.get((round(float(x), 9), round(-float(y), 9)))
+        if j is None:
+            raise ValueError("mesh is not symmetric about the mid-plane")
+        if j < i:
+            continue                       # each pair once (i == j on the mid-plane)
+        sym += abs(ux[i] + ux[j]) ** 2 + abs(uz[i] - uz[j]) ** 2
+        anti += abs(ux[i] - ux[j]) ** 2 + abs(uz[i] + uz[j]) ** 2
+    total = sym + anti
+    if total <= 0.0:
+        return 0.5
+    return float(sym / total)
+
+
+def bloch_cell_modes(wave_number: float, *, half_thickness: float, young: float,
+                     poisson: float, density: float, nx: int = 16, ny: int = 8,
+                     n_modes: int = 6, cells_per_wavelength: float = 4.0):
+    """Lowest ``n_modes`` angular frequencies *and* their full-cell mode shapes.
+
+    The returned shapes live in the **unreduced** dof space (``2 * n_nodes``), with
+    the Floquet phase already applied to the eliminated ``x = L`` column, so a
+    mid-plane parity classifier can be applied to them directly.
+    """
+    cell = bloch_cell_matrices(wave_number, half_thickness=half_thickness, young=young,
+                               poisson=poisson, density=density, nx=nx, ny=ny,
+                               cells_per_wavelength=cells_per_wavelength)
+    k_red = cell.stiffness.numpy()
+    m_red = cell.mass.numpy()
+    k_red = 0.5 * (k_red + k_red.conj().T)
+    m_red = 0.5 * (m_red + m_red.conj().T)
+    from scipy.linalg import eigh
+
+    values, vectors = eigh(k_red, m_red)
+    values = np.clip(np.asarray(values).real, 0.0, None)
+    omega = np.sqrt(values)
+    order = np.argsort(omega)[:n_modes]
+    full = cell.transform.numpy() @ vectors[:, order]
+    return omega[order], full

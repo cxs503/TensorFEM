@@ -12,9 +12,15 @@ from pathlib import Path
 
 import pytest
 
+import numpy as np
+from tensorfem.continuum import rectangular_q4_mesh
+
 from tensorfem.wave_dispersion import (
     bloch_cell_frequencies,
     bloch_cell_matrices,
+    bloch_cell_modes,
+    midplane_family_fraction,
+    reduced_dof_count,
     flexural_phase_velocity,
     lamb_residual,
     longitudinal_speed,
@@ -58,14 +64,36 @@ def test_a0_matches_thin_plate_and_rayleigh_limits():
     assert abs(thick / rayleigh_speed(E, NU, RHO) - 1.0) < 1e-2
 
 
-def test_roots_satisfy_the_equation():
+def test_lowest_roots_satisfy_the_equation():
+    """The two roots the anchor scores (lowest of each family) are true roots."""
     cL, cT = longitudinal_speed(E, NU, RHO), shear_speed(E, NU, RHO)
     for kh in (0.1, 0.5, 2.0):
         k = kh / H
         roots = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=2)
-        for branch, key in (("symmetric", "symmetric"), ("antisymmetric", "antisymmetric")):
-            for omega in roots[key]:
-                assert abs(lamb_residual(omega, k, cL, cT, H, branch)) < 2e-2
+        for branch in ("symmetric", "antisymmetric"):
+            omega = roots[branch][0]
+            assert abs(lamb_residual(omega, k, cL, cT, H, branch)) < 2e-2
+
+
+def test_higher_root_scan_defect_is_open():
+    """FAIL-CLOSED negative gate: the multi-root scan is not trustworthy yet.
+
+    ``rayleigh_lamb_frequencies(n_roots>=2)`` returns candidates whose normalised
+    residual reaches O(0.1) or worse: at ``q = 0`` (``omega = k c_T``) the
+    ``4 k^2 p q`` term vanishes identically, and the log-grid scan also accepts
+    near-tangential brackets.  Only the lowest root per family -- the one the anchor
+    scores, checked above -- is validated.  When the scanner learns to reject these
+    candidates this test fails, forcing the anchor document section 5 to be updated.
+    """
+    cL, cT = longitudinal_speed(E, NU, RHO), shear_speed(E, NU, RHO)
+    residuals = []
+    for kh in (0.1, 0.5, 2.0):
+        k = kh / H
+        roots = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=2)
+        for branch in ("symmetric", "antisymmetric"):
+            for omega in roots[branch][1:]:
+                residuals.append(abs(lamb_residual(omega, k, cL, cT, H, branch)))
+    assert max(residuals) > 2e-2, "higher roots now validated -- update anchor section 5"
 
 
 def test_consistent_mass_conserves_mass():
@@ -75,24 +103,61 @@ def test_consistent_mass_conserves_mass():
     assert cell.total_mass == pytest.approx(2.0 * RHO * cell.cell_length * 2.0 * H, rel=1e-12)
 
 
-def test_bloch_floquet_reduction_defect_is_open():
-    """FAIL-CLOSED negative gate: the Floquet reduction does not yet work.
+def test_floquet_reduction_lives_in_dof_space():
+    """Regression for the node/dof aliasing defect (docs §8).
 
-    At the Gamma point the periodic cell must own five zero eigenvalues (three
-    rigid modes plus the A0/S0 acoustic branches).  It does not, and the resulting
-    phase-velocity error is mesh-insensitive, so the fault is in the reduction and
-    not in the discretisation.  See section 8 of the anchor document.  When this
-    test starts failing, the defect has been fixed -- update the document and
-    gates_verified.json in the same commit.
+    The reduced cell carries two unknowns per retained node.  Numbering the reduced
+    unknowns by node id collapses ``u_x`` and ``u_z`` of distinct nodes into one
+    column, which is how the pre-fix anchor produced a mesh-converging but wrong
+    dispersion curve.
     """
+    for kh in (0.0, 0.2, 1.0):
+        k = kh / H
+        cell = bloch_cell_matrices(k, half_thickness=H, young=E, poisson=NU,
+                                   density=RHO, nx=8, ny=4)
+        coords = cell.nodes.numpy()
+        n_right = int(np.sum(np.isclose(coords[:, 0], cell.cell_length)))
+        assert reduced_dof_count(cell) == 2 * (len(coords) - n_right)
+        assert cell.transform.shape == (2 * len(coords), 2 * (len(coords) - n_right))
+
+
+def test_gamma_point_owns_two_rigid_translations():
+    """Periodic cell at k=0: two zero modes (translations), not one, not five."""
     omega = bloch_cell_frequencies(0.0, half_thickness=H, young=E, poisson=NU,
                                    density=RHO, nx=8, ny=4, n_modes=8)
-    assert omega[4] / omega[5] > 1e-3, "Floquet reduction now reproduces the Gamma-point zeros?"
-    k = 0.5 / H
-    exact = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=1)["antisymmetric"][0]
-    fem = bloch_cell_frequencies(k, half_thickness=H, young=E, poisson=NU, density=RHO,
-                                 nx=16, ny=8, n_modes=2)[0]
-    assert abs(fem / exact - 1.0) > 3e-2, "Bloch cell now reproduces the A0 branch?"
+    assert omega[0] <= 1e-12 * omega[-1]
+    assert omega[1] <= 1e-10 * omega[-1]
+    assert omega[2] > 1e-3 * omega[-1]
+
+
+def test_parity_classifier_selects_a0_and_s0_without_the_oracle():
+    """Branch picking by mid-plane parity must land on A0/S0 at every kh."""
+    for kh in (0.2, 0.5, 1.0):
+        k = kh / H
+        exact = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=1)
+        nodes, _ = rectangular_q4_mesh(2.0 * math.pi / (4.0 * k), 2.0 * H, 16, 8)
+        omega, modes = bloch_cell_modes(k, half_thickness=H, young=E, poisson=NU,
+                                        density=RHO, nx=16, ny=8, n_modes=8)
+        fractions = [midplane_family_fraction(nodes, modes[:, i]) for i in range(len(omega))]
+        a_index = next(i for i, fr in enumerate(fractions) if fr < 0.5)
+        s_index = next(i for i, fr in enumerate(fractions) if fr >= 0.5)
+        assert abs(omega[a_index] / exact["antisymmetric"][0] - 1.0) < 5e-2
+        assert abs(omega[s_index] / exact["symmetric"][0] - 1.0) < 5e-2
+
+
+def test_fine_cell_matches_the_analytic_branches():
+    """Positive verification gate: A0 and S0 within 1% on the 32x16 cell, kh<=1."""
+    for kh in (0.2, 0.5, 1.0):
+        k = kh / H
+        exact = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=1)
+        nodes, _ = rectangular_q4_mesh(2.0 * math.pi / (4.0 * k), 2.0 * H, 32, 16)
+        omega, modes = bloch_cell_modes(k, half_thickness=H, young=E, poisson=NU,
+                                        density=RHO, nx=32, ny=16, n_modes=8)
+        fractions = [midplane_family_fraction(nodes, modes[:, i]) for i in range(len(omega))]
+        a_index = next(i for i, fr in enumerate(fractions) if fr < 0.5)
+        s_index = next(i for i, fr in enumerate(fractions) if fr >= 0.5)
+        assert abs(omega[a_index] / exact["antisymmetric"][0] - 1.0) < 1e-2
+        assert abs(omega[s_index] / exact["symmetric"][0] - 1.0) < 1e-2
 
 
 def test_recorded_anchor_numbers_match_recomputation():
@@ -104,5 +169,14 @@ def test_recorded_anchor_numbers_match_recomputation():
     row = next(r for r in data["analytic"] if r["kh"] == 0.5)
     assert row["a0_phase"] == pytest.approx(exact["antisymmetric"][0] / k / shear_speed(E, NU, RHO), rel=2e-2)
     assert row["s0_phase"] == pytest.approx(exact["symmetric"][0] / k / shear_speed(E, NU, RHO), rel=2e-2)
-    assert data["gates"]["s0_plate_velocity_extrapolated"]["verdict"] == "PASS"
-    assert data["gates"]["fem_phase_error_fine"]["verdict"] == "FAIL"
+    gates = data["gates"]
+    assert gates["s0_plate_velocity_extrapolated"]["passed"] is True
+    assert gates["fem_phase_error_fine"]["passed"] is True
+    assert gates["fem_phase_error_fine"]["value"] < 3e-2
+    assert gates["gamma_zero_mode_count"]["value"] == 2.0
+    # a branch picked positionally would score S0 against A1 and blow up here
+    assert all(row["s0_error"] < 3e-2 for row in data["fem"])
+
+
+if __name__ == "__main__":
+    raise SystemExit(pytest.main([__file__, "-q"]))

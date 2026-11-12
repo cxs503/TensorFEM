@@ -113,109 +113,158 @@
       "kh": 0.2,
       "nx": 8,
       "ny": 4,
-      "a0_fem": 1.2501934085529145,
-      "s0_fem": 3.8229719727021516,
+      "a0_index": 0,
+      "s0_index": 2,
+      "a0_symmetry": 4.397016538385935e-27,
+      "s0_symmetry": 1.0,
+      "a0_fem": 0.19986357006070396,
+      "s0_fem": 1.691588318715076,
       "a0_exact": 0.1899172795760142,
       "s0_exact": 1.6882104548373218,
-      "a0_error": 5.582831279723159,
-      "s0_error": 1.2645114901095305
+      "a0_error": 0.05237169838834377,
+      "s0_error": 0.002000854732344237
     },
     {
       "kh": 0.2,
       "nx": 16,
       "ny": 8,
-      "a0_fem": 1.2479618099061363,
-      "s0_fem": 3.761773651719909,
+      "a0_index": 0,
+      "s0_index": 2,
+      "a0_symmetry": 3.840819163548566e-27,
+      "s0_symmetry": 1.0,
+      "a0_fem": 0.19244372244766714,
+      "s0_fem": 1.689054191056619,
       "a0_exact": 0.1899172795760142,
       "s0_exact": 1.6882104548373218,
-      "a0_error": 5.571080907920444,
-      "s0_error": 1.228261080211352
+      "a0_error": 0.013302859420128321,
+      "s0_error": 0.0004997814205447426
     },
     {
       "kh": 0.2,
       "nx": 32,
-      "ny": 32,
-      "a0_fem": 1.24740138772714,
-      "s0_fem": 3.746582514988721,
+      "ny": 16,
+      "a0_index": 0,
+      "s0_index": 2,
+      "a0_symmetry": 5.819716332090997e-26,
+      "s0_symmetry": 1.0,
+      "a0_fem": 0.19055150579618765,
+      "s0_fem": 1.688421343153742,
       "a0_exact": 0.1899172795760142,
       "s0_exact": 1.6882104548373218,
-      "a0_error": 5.568130032780239,
-      "s0_error": 1.2192627135162168
+      "a0_error": 0.003339486652238044,
+      "s0_error": 0.00012491826230309755
     },
     {
       "kh": 0.5,
       "nx": 8,
       "ny": 4,
-      "a0_fem": 1.2505669751545576,
-      "s0_fem": 3.8325460621573706,
+      "a0_index": 0,
+      "s0_index": 1,
+      "a0_symmetry": 3.630640771254666e-28,
+      "s0_symmetry": 1.0,
+      "a0_fem": 0.43028916922079646,
+      "s0_fem": 1.679980106079209,
       "a0_exact": 0.42197967002346276,
       "s0_exact": 1.676197475840235,
-      "a0_error": 1.9635716220286725,
-      "s0_error": 1.2864525912951952
+      "a0_error": 0.019691705045581154,
+      "s0_error": 0.0022566733893201185
     },
     {
       "kh": 0.5,
       "nx": 16,
       "ny": 8,
-      "a0_fem": 1.2480556432834604,
-      "s0_fem": 3.7642753185169187,
+      "a0_index": 0,
+      "s0_index": 1,
+      "a0_symmetry": 1.2780428622325978e-26,
+      "s0_symmetry": 1.0,
+      "a0_fem": 0.42408781818235264,
+      "s0_fem": 1.677144368581197,
       "a0_exact": 0.42197967002346276,
       "s0_exact": 1.676197475840235,
-      "a0_error": 1.9576203119312985,
-      "s0_error": 1.2457230563660069
+      "a0_error": 0.004995852427612579,
+      "s0_error": 0.0005649052421388134
     },
     {
       "kh": 0.5,
       "nx": 32,
-      "ny": 32,
-      "a0_fem": 1.2474072602825077,
-      "s0_fem": 3.7467408106047637,
+      "ny": 16,
+      "a0_index": 0,
+      "s0_index": 1,
+      "a0_symmetry": 1.8051619257328516e-25,
+      "s0_symmetry": 1.0,
+      "a0_fem": 0.42250867829363703,
+      "s0_fem": 1.6764342777819696,
       "a0_exact": 0.42197967002346276,
       "s0_exact": 1.676197475840235,
-      "a0_error": 1.956083785299775,
-      "s0_error": 1.2352621720341266
+      "a0_error": 0.001253634494156719,
+      "s0_error": 0.00014127329574686875
     },
     {
       "kh": 1.0,
       "nx": 8,
       "ny": 4,
-      "a0_fem": 1.251884055275275,
-      "s0_fem": 2.7590424396492934,
+      "a0_index": 0,
+      "s0_index": 1,
+      "a0_symmetry": 9.941173978537722e-28,
+      "s0_symmetry": 1.0,
+      "a0_fem": 0.6620759152194625,
+      "s0_fem": 1.6243977635860365,
       "a0_exact": 0.6503451591545449,
       "s0_exact": 1.6153866238870944,
-      "a0_error": 0.9249532923451549,
-      "s0_error": 0.7079765294887903
+      "a0_error": 0.01803773872964265,
+      "s0_error": 0.00557831763968597
     },
     {
       "kh": 1.0,
       "nx": 16,
       "ny": 8,
-      "a0_fem": 1.2483896752974266,
-      "s0_fem": 2.6897325786973276,
+      "a0_index": 0,
+      "s0_index": 1,
+      "a0_symmetry": 7.244572271434185e-27,
+      "s0_symmetry": 1.0,
+      "a0_fem": 0.6534123786967296,
+      "s0_fem": 1.6177306804277245,
       "a0_exact": 0.6503451591545449,
       "s0_exact": 1.6153866238870944,
-      "a0_error": 0.9195801763487337,
-      "s0_error": 0.6650704784375652
+      "a0_error": 0.00471629487666525,
+      "s0_error": 0.0014510808161760647
     },
     {
       "kh": 1.0,
       "nx": 32,
-      "ny": 32,
-      "a0_fem": 1.2474282294657282,
-      "s0_fem": 2.667495820943809,
+      "ny": 16,
+      "a0_index": 0,
+      "s0_index": 1,
+      "a0_symmetry": 4.285162840176611e-26,
+      "s0_symmetry": 1.0,
+      "a0_fem": 0.6511209236414767,
+      "s0_fem": 1.6159787298964146,
       "a0_exact": 0.6503451591545449,
       "s0_exact": 1.6153866238870944,
-      "a0_error": 0.9181018139466082,
-      "s0_error": 0.6513048836104827
+      "a0_error": 0.0011928504056832878,
+      "s0_error": 0.0003665413595510536
     }
   ],
   "assembly": {
     "total_mass": 31.4,
     "expected_mass": 31.400000000000002,
     "mass_relative_error": 1.1102230246251565e-16,
-    "rigid_ratio": 0.7548558610603089,
-    "smallest_rigid": 585262.9357179345,
-    "first_deformable": 775330.7166428362
+    "zero_mode_count": 2,
+    "zero_mode_ratio": 0.0,
+    "gamma_omega": [
+      0.0,
+      0.0,
+      113356.63679996108,
+      113356.63679996779,
+      346988.46720025624,
+      346988.46720025886,
+      366241.6224335231,
+      366241.6224335251
+    ],
+    "n_nodes": 45,
+    "n_right_column": 5,
+    "reduced_dofs": 80,
+    "expected_reduced_dofs": 80
   },
   "plate_velocity_fit": 1.6903122750579034,
   "a0_flexural_ratio": [
@@ -224,72 +273,69 @@
     0.9730365067099669
   ],
   "observed_orders": {
-    "a0": 1.9934916242513114,
-    "s0": 2.0102622434363027
+    "a0": 1.9713122763124808,
+    "s0": 2.001558490468364
   },
   "gates": {
     "s0_plate_velocity_extrapolated": {
-      "value": 0.9996882454343158,
-      "reference": 1.690308509457033,
+      "value": 2.227759518191874e-06,
       "threshold": 0.002,
-      "note": "S0 phase velocity extrapolated to kh->0 vs sqrt(E/(rho(1-nu^2)))",
-      "verdict": "FAIL"
+      "operator": "<=",
+      "passed": true
     },
     "a0_flexural_limit": {
       "value": 0.0017679325410421276,
-      "reference": 0.9982320674589579,
       "threshold": 0.01,
-      "note": "A0 phase velocity at kh=0.05 vs Kirchhoff limit kh*c_p/sqrt(3)",
-      "verdict": "PASS"
+      "operator": "<=",
+      "passed": true
     },
     "a0_rayleigh_limit": {
       "value": 1.8399101542332374e-07,
-      "reference": 0.9274125390673301,
       "threshold": 0.01,
-      "note": "A0 phase velocity at kh=20 vs Rayleigh speed from the classical cubic",
-      "verdict": "PASS"
+      "operator": "<=",
+      "passed": true
     },
-    "s0_longitudinal_limit": {
-      "value": 0.4958161867219243,
-      "reference": 0.9432415446218827,
-      "threshold": 0.05,
-      "note": "S0 phase velocity at kh=5 (before the cL->cR turn) vs cL",
-      "verdict": "FAIL"
+    "s0_rayleigh_limit": {
+      "value": 1.8399651158240715e-07,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
     },
     "root_residual": {
       "value": 4.860013849625548e-15,
-      "reference": 1.0,
       "threshold": 1e-09,
-      "note": "normalised Rayleigh--Lamb residual at every reported root",
-      "verdict": "PASS"
+      "operator": "<=",
+      "passed": true
     },
     "fem_phase_error_fine": {
-      "value": 5.568130032780239,
-      "reference": 1.0,
+      "value": 0.003339486652238044,
       "threshold": 0.03,
-      "note": "max phase-velocity error of the 32x32 Floquet cell over kh=0.2..1",
-      "verdict": "FAIL"
+      "operator": "<=",
+      "passed": true
     },
     "fem_convergence_order": {
-      "value": 0.0,
-      "reference": 1.9934916242513114,
-      "threshold": 0.0,
-      "note": "order shortfall below 1.5 for the kh=0.2 mesh refinement (A0 and S0)",
-      "verdict": "PASS"
+      "value": 1.9713122763124808,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
     },
     "mass_conservation": {
       "value": 1.1102230246251565e-16,
-      "reference": 1.0,
       "threshold": 1e-12,
-      "note": "sum of the consistent mass matrix vs 2*rho*L*2h (one block per translation)",
-      "verdict": "PASS"
+      "operator": "<=",
+      "passed": true
     },
-    "rigid_mode_count": {
-      "value": 0.7548558610603089,
-      "reference": 1.0,
-      "threshold": 1e-06,
-      "note": "5th/6th eigenvalue of the periodic cell at k=0 (3 rigid + A0/S0 acoustic zeros)",
-      "verdict": "FAIL"
+    "gamma_zero_mode_count": {
+      "value": 2.0,
+      "threshold": 2.0,
+      "operator": "==",
+      "passed": true
+    },
+    "floquet_reduction_dofs": {
+      "value": 80.0,
+      "threshold": 80.0,
+      "operator": "==",
+      "passed": true
     }
   }
 }

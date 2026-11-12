@@ -6,20 +6,19 @@
   "certified": 7,
   "contradicted": 17,
   "uncertified": 9,
-  "gates_total": 244,
-  "gates_recomputed": 203,
+  "gates_total": 245,
+  "gates_recomputed": 213,
   "gates_contradicted": 0,
   "gates_contradicted_inferred": 2,
   "gates_without_numeric_criterion": 8,
-  "gates_unrecomputable": 41,
+  "gates_unrecomputable": 32,
   "defect_counts": {
     "E_ANCHOR_NAME_MISMATCH": 2,
-    "E_ARTIFACT_MISSING": 13,
+    "E_ARTIFACT_MISSING": 14,
     "E_GATE_VALUE_NOT_FINITE": 1,
     "E_NO_GATES": 9,
-    "E_OVERALL_ABSENT": 1,
     "E_PASS_WITHOUT_CRITERION": 3,
-    "E_SCHEMA": 3
+    "E_SCHEMA": 2
   },
   "records": [
     {
@@ -2508,8 +2507,8 @@
     {
       "anchor": "fem_shell_modal",
       "directory": "benchmarks/verified/fem_shell_modal",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2521,7 +2520,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {
@@ -3482,162 +3483,151 @@
     {
       "anchor": "fem_wave_dispersion",
       "directory": "benchmarks/verified/fem_wave_dispersion",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
-      "declared_overall": null,
-      "recomputed_overall": null,
-      "gates": 9,
-      "gates_passed": 0,
+      "declared_overall": true,
+      "recomputed_overall": true,
+      "gates": 10,
+      "gates_passed": 10,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
-      "gates_unrecomputable": 9,
-      "defects": [
-        "E_SCHEMA",
-        "E_OVERALL_ABSENT"
-      ],
-      "warnings": [
-        "W_OPERATOR_ABSENT",
-        "W_UNDECLARED_ARTIFACTS"
-      ],
+      "gates_unrecomputable": 0,
+      "defects": [],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "s0_plate_velocity_extrapolated",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.9996882454343158,
+          "quantity": "|c_fit/(c_p/c_T) - 1|, S0 phase velocity extrapolated to kh->0 (both sides normalised by c_T)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.227759518191874e-06,
           "threshold": 0.002,
-          "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "a0_flexural_limit",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "|c_A0(kh=0.05)/c_Kirchhoff - 1|",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.0017679325410421276,
           "threshold": 0.01,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "a0_rayleigh_limit",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "|c_A0(kh=20)/(c_R/c_T) - 1|, both sides normalised by c_T",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.8399101542332374e-07,
           "threshold": 0.01,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
-          "id": "s0_longitudinal_limit",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.4958161867219243,
-          "threshold": 0.05,
-          "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "id": "s0_rayleigh_limit",
+          "quantity": "|c_S0(kh=20)/(c_R/c_T) - 1|, both sides normalised by c_T",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 1.8399651158240715e-07,
+          "threshold": 0.01,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "root_residual",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "max normalised Rayleigh--Lamb residual over every reported analytic root",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 4.860013849625548e-15,
           "threshold": 1e-09,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "fem_phase_error_fine",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 5.568130032780239,
+          "quantity": "max relative phase-velocity error of the 32x16 Floquet cell, A0 and S0, kh=0.2..1 (branches picked by mid-plane parity, not by index)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.003339486652238044,
           "threshold": 0.03,
-          "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "fem_convergence_order",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.0,
-          "threshold": 0.0,
+          "quantity": "observed convergence order of the A0/S0 phase-velocity error, kh=0.2, three meshes (8x4/16x8/32x16)",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 1.9713122763124808,
+          "threshold": 1.5,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "mass_conservation",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "|sum(M)/(2 rho L 2h) - 1|, consistent mass matrix of the cell",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.1102230246251565e-16,
           "threshold": 1e-12,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
-          "id": "rigid_mode_count",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.7548558610603089,
-          "threshold": 1e-06,
-          "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "id": "gamma_zero_mode_count",
+          "quantity": "number of zero-energy modes of the periodic cell at k=0, tol = 1e-10 max(omega)",
+          "operator": "==",
+          "operator_source": "declared",
+          "value": 2.0,
+          "threshold": 2.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
+        },
+        {
+          "id": "floquet_reduction_dofs",
+          "quantity": "dofs of the Floquet-reduced cell",
+          "operator": "==",
+          "operator_source": "declared",
+          "value": 80.0,
+          "threshold": 80.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
         }
       ]
     },
