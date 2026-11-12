@@ -1,7 +1,7 @@
 {
   "benchmark": "fem_hertz_contact",
   "mission": "IN36-N01",
-  "generated_at": "2026-11-07T09:04:41+00:00",
+  "generated_at": "2026-11-12T17:54:45+00:00",
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
@@ -53,7 +53,7 @@
       "force_balance_error": 2.273045621628387e-13,
       "overlap_fraction": 0.027388652411342966,
       "nodes_inside_contact_radius": 7,
-      "seconds": 8.769999610260129,
+      "seconds": 1.5690858997404575,
       "contact_radius_rel_error": 0.011011326004783273,
       "peak_pressure_rel_error": 0.028230549073694267,
       "contact_force_rel_error": 0.03391427211990328
@@ -75,7 +75,7 @@
       "force_balance_error": 1.00983584525294e-12,
       "overlap_fraction": 0.026404347310455073,
       "nodes_inside_contact_radius": 11,
-      "seconds": 16.38842768035829,
+      "seconds": 5.481708200648427,
       "contact_radius_rel_error": 0.03557202759560818,
       "peak_pressure_rel_error": 0.012841414926117789,
       "contact_force_rel_error": 0.02474384974722188
@@ -97,36 +97,13 @@
       "force_balance_error": 6.131118839357652e-13,
       "overlap_fraction": 0.025878499153430597,
       "nodes_inside_contact_radius": 14,
-      "seconds": 52.09640774875879,
+      "seconds": 18.218167720362544,
       "contact_radius_rel_error": 0.011745818761008442,
       "peak_pressure_rel_error": 0.00018365160383626566,
       "contact_force_rel_error": 0.021771012755033015
     }
   ],
-  "penalty_study": [
-    {
-      "radial_elements": 36,
-      "axial_elements": 36,
-      "grading": 2.6,
-      "penalty_factor": 100.0,
-      "penalty": 8931097775942790.0,
-      "nodes": 37,
-      "dofs": 74,
-      "converged": true,
-      "newton_iterations": 3,
-      "contact_radius": 0.0011208394234859052,
-      "peak_pressure": 3624125240.8041663,
-      "contact_force": 10398.0688392607,
-      "pressure_l2_error": 0.034888502154183036,
-      "force_balance_error": 1.0884475034565176e-12,
-      "overlap_fraction": 0.007942486331607091,
-      "nodes_inside_contact_radius": 11,
-      "seconds": 28.870080249384046,
-      "contact_radius_rel_error": 0.04663557311581268,
-      "peak_pressure_rel_error": 0.04913341907151825,
-      "contact_force_rel_error": 0.039806883926070125
-    }
-  ],
+  "penalty_study": [],
   "convergence": {
     "levels": [
       24,

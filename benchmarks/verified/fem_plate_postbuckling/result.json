@@ -670,19 +670,19 @@
         10.0
       ]
     },
-    "fe_critical_stress_pa": 319858217.58557546,
+    "fe_critical_stress_pa": 319858217.58557874,
     "fe_load_factors_pa": [
-      319858217.58557546,
-      375550158.3636126,
-      425590753.32084167
+      319858217.58557874,
+      375550158.36359936,
+      425590753.3208445
     ],
     "fe_mac_plate_family": {
-      "1": 3.1580570271190236e-08,
-      "2": 5.0079694314346434e-26,
-      "3": 0.980292819222623,
-      "4": 6.869396259238473e-28,
-      "5": 2.4304972419627415e-09,
-      "6": 2.186833936663977e-30
+      "1": 3.1580570307170846e-08,
+      "2": 3.610954867067388e-26,
+      "3": 0.9802928192226222,
+      "4": 1.6221656325076005e-27,
+      "5": 2.4304972402901687e-09,
+      "6": 5.412121287926728e-30
     },
     "fe_best_half_waves": 3,
     "dnv_plate_buckling_stress_pa": 167566360.43607754,
@@ -690,11 +690,11 @@
     "dnv_column_buckling_stress_pa": 355000000.0,
     "dnv_column_capped_by_yield": true,
     "dnv_governing_mode": "plate",
-    "mac_plate_mode": 0.980292819222623,
-    "mac_column_mode": 2.0643182851175888e-08,
+    "mac_plate_mode": 0.9802928192226222,
+    "mac_column_mode": 2.0643182875165416e-08,
     "fe_dominant_mode": "plate",
     "mode_agrees_with_dnv": true,
-    "mac_of_dominant_reference": 0.980292819222623
+    "mac_of_dominant_reference": 0.9802928192226222
   },
   "A5_negative_controls": {
     "zero_load_tangent": {
@@ -781,7 +781,7 @@
       "id": "A4",
       "quantity": "MAC of the panel eigenmode against its DNV-RP-C201 mode family",
       "reference": "DNV-RP-C201 plate/column mode shapes",
-      "value": 0.980292819222623,
+      "value": 0.9802928192226222,
       "threshold": 0.9,
       "operator": ">=",
       "passed": true

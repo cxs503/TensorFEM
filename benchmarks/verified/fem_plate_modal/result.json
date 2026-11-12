@@ -1,7 +1,7 @@
 {
   "benchmark": "fem_plate_modal",
   "mission": "IN36-N01",
-  "generated_at": "2026-11-07T09:02:58+00:00",
+  "generated_at": "2026-11-12T17:56:44+00:00",
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
@@ -99,7 +99,7 @@
           2
         ]
       ],
-      "seconds": 3.474849719554186,
+      "seconds": 0.8242849688977003,
       "relative_errors": [
         0.014273729567941817,
         0.025564793570450828,
@@ -153,7 +153,7 @@
           2
         ]
       ],
-      "seconds": 11.060301329940557,
+      "seconds": 3.273430999368429,
       "relative_errors": [
         0.003088824886452679,
         0.005429083955119207,
@@ -207,7 +207,7 @@
           2
         ]
       ],
-      "seconds": 48.74061184935272,
+      "seconds": 13.862263180315495,
       "relative_errors": [
         0.00032654521969810446,
         0.0004986347599134078,
@@ -234,7 +234,7 @@
     ],
     "note": "order per mode from the finest two levels of the uniform r = 2 ladder"
   },
-  "library_equivalence_max_rel": 3.490630007263462e-11,
+  "library_equivalence_max_rel": 9.915601673071706e-11,
   "verdict": {
     "max_frequency_rel_error": 0.002468301338857559,
     "min_mode_mac": 0.9999999999999972,
