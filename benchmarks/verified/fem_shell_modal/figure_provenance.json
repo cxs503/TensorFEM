@@ -1,0 +1,14 @@
+{
+  "schema": "tensorfem.figure-provenance/1",
+  "anchor": "fem_shell_modal",
+  "source": "result.json",
+  "source_sha256": "c8372eb8bed3abbf0b37281b94d418eea2c23dd2ccdd69abba7e99521d7dbf88",
+  "renderer": "benchmarks/verified/fem_shell_modal/run_verification.py --from-dump",
+  "solver_executed": false,
+  "figures": {
+    "beam_convergence.png": "9300f09076fbceff724f97daf489550e35677fbe6593a57a662ecf0d7976c91a",
+    "plate_convergence.png": "a395c4a266f16ae2fa93ba50346dc8e6a1bad186609e0c4e196bf02fe574fc0d",
+    "shell_fem_vs_dmv.png": "b86c1d59f145790572163b35b9877deeeec322dd8a2fbe605538ac84f3696b6b",
+    "shell_modal_audit.png": "71ff83f62e989dbbf9305f0ea603d13bca5e18f131176ba49ee0e87b6c72def5"
+  }
+}
