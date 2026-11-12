@@ -1,0 +1,265 @@
+{
+ "schema": "tensorfem.benchmark.evidence/1",
+ "case": "Robinson patch test A/B/C",
+ "verdict_policy": "expected=pass rows must be exact (<= tolerance); negative_control / documented_defect rows must NOT be exact",
+ "tolerance": 1e-10,
+ "material": {
+  "E": 210000.0,
+  "nu": 0.3,
+  "thickness": 1.0,
+  "L": 1.0,
+  "sigma0": 100.0,
+  "tau0": 50.0,
+  "kappa": 0.001,
+  "G": 80769.23076923077
+ },
+ "registry_ids": [
+  "patch.robinson_A",
+  "patch.robinson_B",
+  "patch.robinson_C"
+ ],
+ "entries": [
+  {
+   "entry": "benchmark driver",
+   "path": "benchmarks/patch_test_robinson.py",
+   "command": "PYTHONPATH=src python3 benchmarks/patch_test_robinson.py",
+   "produces": [
+    "runs/patch_test_robinson/result.json",
+    "benchmarks/patch_test_robinson_evidence.json",
+    "docs/patch-test-robinson.md",
+    "docs/assets/patch_test_robinson/*.png"
+   ]
+  },
+  {
+   "entry": "library CLI",
+   "path": "src/tensorfem/cli.py (tensorfem patch-test)",
+   "command": "PYTHONPATH=src python3 -m tensorfem.cli patch-test --output runs/patch_test_robinson/cli_qualification.json",
+   "produces": [
+    "runs/patch_test_robinson/cli_qualification.json"
+   ]
+  },
+  {
+   "entry": "registered verification gate",
+   "path": "src/tensorfem/benchmark_registry.py",
+   "command": "PYTHONPATH=src python3 -m tensorfem.cli verify",
+   "produces": [
+    "patch.robinson_A",
+    "patch.robinson_B",
+    "patch.robinson_C"
+   ]
+  },
+  {
+   "entry": "pytest gate",
+   "path": "tests/test_patch_test_robinson.py",
+   "command": "PYTHONPATH=src python3 -m pytest tests/test_patch_test_robinson.py -q",
+   "produces": [
+    "exit status"
+   ]
+  }
+ ],
+ "repro_cmd": "PYTHONPATH=src python3 benchmarks/patch_test_robinson.py",
+ "provenance": {
+  "tensorfem_module_file": "/root/tp-agent/work/m15546/src/tensorfem/__init__.py",
+  "imported_from_this_checkout": true,
+  "git_commit": "1fbd5de116a824dd3b4f0e80394a425bf27b75ec",
+  "git_dirty_at_run": true,
+  "torch_version": "2.7.1",
+  "default_dtype": "torch.float64"
+ },
+ "rows": [
+  {
+   "case": "A",
+   "family": "Q4",
+   "mesh": "distortion=1",
+   "nodes": 16,
+   "elements": 9,
+   "free_dofs": 8,
+   "probe": {
+    "centre": [
+     0.15584134911936115,
+     0.15800641262882226
+    ]
+   },
+   "reference_stress": 100.0,
+   "computed_stress": 99.99999999999999,
+   "reference_source": "analytical field sigma = D B u (Robinson 1987 criterion)",
+   "relative_stress_error": 4.263256414560601e-16,
+   "relative_disp_error": 1.1384122811097797e-16,
+   "relative_energy_error": 1.457167719820518e-16,
+   "tolerance": 1e-10,
+   "exact": true,
+   "expected": "pass",
+   "passed": true
+  },
+  {
+   "case": "B",
+   "family": "Q4",
+   "mesh": "distortion=1",
+   "nodes": 16,
+   "elements": 9,
+   "free_dofs": 8,
+   "probe": {
+    "centre": [
+     0.15584134911936115,
+     0.15800641262882226
+    ]
+   },
+   "reference_stress": 50.0,
+   "computed_stress": 49.99999999999999,
+   "reference_source": "analytical field sigma = D B u (Robinson 1987 criterion)",
+   "relative_stress_error": 5.004616382980513e-16,
+   "relative_disp_error": 1.7514035093996609e-16,
+   "relative_energy_error": 0.0,
+   "tolerance": 1e-10,
+   "exact": true,
+   "expected": "pass",
+   "passed": true
+  },
+  {
+   "case": "C",
+   "family": "Q4",
+   "mesh": "distortion=1",
+   "nodes": 16,
+   "elements": 9,
+   "free_dofs": 8,
+   "probe": {
+    "centre": [
+     0.15584134911936115,
+     0.15800641262882226
+    ]
+   },
+   "reference_stress": -33.181346652052675,
+   "computed_stress": -31.328505281044293,
+   "reference_source": "analytical field sigma = D B u (Robinson 1987 criterion)",
+   "relative_stress_error": 0.011703431077501407,
+   "relative_disp_error": 0.0015921247019495867,
+   "relative_energy_error": 0.015741104244148502,
+   "tolerance": 1e-10,
+   "exact": false,
+   "expected": "negative_control",
+   "passed": true
+  },
+  {
+   "case": "A",
+   "family": "Q8",
+   "mesh": "distortion=1",
+   "nodes": 40,
+   "elements": 9,
+   "free_dofs": 32,
+   "probe": {
+    "element": 5,
+    "xi": 0.0,
+    "eta": -0.7745966692414834,
+    "y": 0.38822106320210814
+   },
+   "reference_stress": 100.0,
+   "computed_stress": 99.99999999988648,
+   "reference_source": "analytical field sigma = D B u (Robinson 1987 criterion)",
+   "relative_stress_error": 3.084181798840291e-12,
+   "relative_disp_error": 4.3275319851036886e-13,
+   "relative_energy_error": 2.914335439641036e-15,
+   "tolerance": 1e-10,
+   "exact": true,
+   "expected": "pass",
+   "passed": true
+  },
+  {
+   "case": "B",
+   "family": "Q8",
+   "mesh": "distortion=1",
+   "nodes": 40,
+   "elements": 9,
+   "free_dofs": 32,
+   "probe": {
+    "element": 0,
+    "xi": 0.7745966692414834,
+    "eta": 0.7745966692414834,
+    "y": 0.26849329721469745
+   },
+   "reference_stress": 50.0,
+   "computed_stress": 49.9999999996525,
+   "reference_source": "analytical field sigma = D B u (Robinson 1987 criterion)",
+   "relative_stress_error": 6.949960607016692e-12,
+   "relative_disp_error": 8.472633402159534e-13,
+   "relative_energy_error": 4.483592984063132e-16,
+   "tolerance": 1e-10,
+   "exact": true,
+   "expected": "pass",
+   "passed": true
+  },
+  {
+   "case": "C",
+   "family": "Q8",
+   "mesh": "distortion=0",
+   "nodes": 40,
+   "elements": 9,
+   "free_dofs": 32,
+   "probe": {
+    "element": 5,
+    "xi": 0.7745966692414834,
+    "eta": 0.7745966692414834,
+    "y": 0.6290994448735805
+   },
+   "reference_stress": -132.1108834234519,
+   "computed_stress": -132.11088342345076,
+   "reference_source": "analytical field sigma = D B u (Robinson 1987 criterion)",
+   "relative_stress_error": 5.4136589391245725e-15,
+   "relative_disp_error": 3.2526065174565133e-16,
+   "relative_energy_error": 3.9650822308041307e-16,
+   "tolerance": 1e-10,
+   "exact": true,
+   "expected": "pass",
+   "passed": true
+  },
+  {
+   "case": "C",
+   "family": "Q8",
+   "mesh": "distortion=1",
+   "nodes": 40,
+   "elements": 9,
+   "free_dofs": 32,
+   "probe": {
+    "element": 6,
+    "xi": 0.7745966692414834,
+    "eta": 0.0,
+    "y": 0.8179648753629897
+   },
+   "reference_stress": -171.77262382622783,
+   "computed_stress": -171.9583831613657,
+   "reference_source": "analytical field sigma = D B u (Robinson 1987 criterion)",
+   "relative_stress_error": 0.0008845682625613043,
+   "relative_disp_error": 4.785968823166212e-05,
+   "relative_energy_error": 4.937737520447984e-07,
+   "tolerance": 1e-10,
+   "exact": false,
+   "expected": "documented_defect",
+   "passed": true
+  },
+  {
+   "case": "C3",
+   "family": "TET10",
+   "mesh": "distortion=1",
+   "nodes": 125,
+   "elements": 48,
+   "free_dofs": 81,
+   "probe": {
+    "centroid": [
+     0.4375,
+     0.2875,
+     0.1475
+    ]
+   },
+   "reference_stress": -60.37499999999999,
+   "computed_stress": -60.37499999999997,
+   "reference_source": "analytical field sigma = D B u (Robinson 1987 criterion)",
+   "relative_stress_error": 1.6240976817373718e-15,
+   "relative_disp_error": 5.963111948670274e-16,
+   "relative_energy_error": 2.577303450022685e-15,
+   "tolerance": 1e-10,
+   "exact": true,
+   "expected": "pass",
+   "passed": true
+  }
+ ],
+ "all_expected_behaviour": true
+}

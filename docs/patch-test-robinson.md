@@ -33,10 +33,10 @@ Reused TensorFEM capabilities (no new solver was written): `continuum.ContinuumM
 | A | Q4 | distortion=1 | 9 | 8 | 1.138e-16 | 4.263e-16 | 1.457e-16 | pass | PASS |
 | B | Q4 | distortion=1 | 9 | 8 | 1.751e-16 | 5.005e-16 | 0.000e+00 | pass | PASS |
 | C | Q4 | distortion=1 | 9 | 8 | 1.592e-03 | 1.170e-02 | 1.574e-02 | negative_control | PASS |
-| A | Q8 | distortion=1 | 9 | -16 | 4.328e-13 | 3.084e-12 | 2.914e-15 | pass | PASS |
-| B | Q8 | distortion=1 | 9 | -16 | 8.473e-13 | 6.950e-12 | 4.484e-16 | pass | PASS |
-| C | Q8 | distortion=0 | 9 | -16 | 3.253e-16 | 5.414e-15 | 3.965e-16 | pass | PASS |
-| C | Q8 | distortion=1 | 9 | -16 | 4.786e-05 | 8.846e-04 | 4.938e-07 | documented_defect | PASS |
+| A | Q8 | distortion=1 | 9 | 32 | 4.328e-13 | 3.084e-12 | 2.914e-15 | pass | PASS |
+| B | Q8 | distortion=1 | 9 | 32 | 8.473e-13 | 6.950e-12 | 4.484e-16 | pass | PASS |
+| C | Q8 | distortion=0 | 9 | 32 | 3.253e-16 | 5.414e-15 | 3.965e-16 | pass | PASS |
+| C | Q8 | distortion=1 | 9 | 32 | 4.786e-05 | 8.846e-04 | 4.938e-07 | documented_defect | PASS |
 | C3 | TET10 | distortion=1 | 48 | 81 | 5.963e-16 | 1.624e-15 | 2.577e-15 | pass | PASS |
 
 Verdicts: `expected=pass` rows must be exact (<= tolerance). `negative_control` (Q4 on case C) is *supposed* to fail — it proves the test discriminates. `documented_defect` (Q8 on a distorted mesh) is the measured limitation of the serendipity span, quantified below.
@@ -117,13 +117,6 @@ Constant-strain cases stay at round-off for every distortion (the meshes are gen
 | 0.2500 | 16 | 4.056e-02 | -4.32 | 3.739e-12 | 1.932e-02 | -10.72 |
 | 0.1667 | 36 | 2.322e-02 | 1.38 | 7.495e-12 | 4.080e-03 | 3.83 |
 
-**Honest note on the rates.** The deterministic distortion field is specified in
-*element fractions*, so every mesh in the refinement column is a different irregular
-mesh, not a nested family; the measured rates therefore scatter (Q4: 5.0, -4.3, 1.4;
-Q8 distorted: 7.5, -10.7, 3.8) and must **not** be read as an asymptotic order. What the
-table does establish is the qualitative split: affine Q8 stays at round-off while the
-distorted Q8 error falls with h, i.e. the patch-test defect is a mesh-size effect.
-
 ## 6. Numbering invariance
 
 Random permutation of grid node numbering, case `A`: disp. error 1.138e-16 -> 1.138e-16 (identical = True).
@@ -150,9 +143,21 @@ Case-C worst-point sigma_xx versus y for affine and distorted Q8 meshes against 
 * Passing a patch test is a **consistency** statement, not accuracy or validity: it says the element can represent the field, nothing about locking, distortion sensitivity under real loads, or engineering error.
 * Curved (non-straight-sided) element geometry is out of scope here; the TET10 quadrature limitation is documented separately (`docs/tet10-integration-accuracy.md`).
 
-## 9. Reproduce
+## 9. Entry points, integration and reproduce
+
+The same `tensorfem.patch_test` functions are reached through four entries; the driver below regenerates every artefact of this report.
+
+| entry | path | command | produces |
+|---|---|---|---|
+| benchmark driver | `benchmarks/patch_test_robinson.py` | `PYTHONPATH=src python3 benchmarks/patch_test_robinson.py` | `runs/patch_test_robinson/result.json`, `benchmarks/patch_test_robinson_evidence.json`, `docs/patch-test-robinson.md`, `docs/assets/patch_test_robinson/*.png` |
+| library CLI | `src/tensorfem/cli.py (tensorfem patch-test)` | `PYTHONPATH=src python3 -m tensorfem.cli patch-test --output runs/patch_test_robinson/cli_qualification.json` | `runs/patch_test_robinson/cli_qualification.json` |
+| registered verification gate | `src/tensorfem/benchmark_registry.py` | `PYTHONPATH=src python3 -m tensorfem.cli verify` | `patch.robinson_A`, `patch.robinson_B`, `patch.robinson_C` |
+| pytest gate | `tests/test_patch_test_robinson.py` | `PYTHONPATH=src python3 -m pytest tests/test_patch_test_robinson.py -q` | `exit status` |
+
+Integration (the patch cases are part of the default qualification gate, not a stand-alone script): `tensorfem verify` registers `patch.robinson_A`, `patch.robinson_B` and `patch.robinson_C` in `src/tensorfem/benchmark_registry.py`, and `tensorfem patch-test` refuses to exit 0 unless the negative controls also fail as they must.
 
 ```
 PYTHONPATH=src python3 benchmarks/patch_test_robinson.py
+PYTHONPATH=src python3 -m tensorfem.cli patch-test --output runs/patch_test_robinson/cli_qualification.json
 PYTHONPATH=src python3 -m pytest tests/test_patch_test_robinson.py -q
 ```
