@@ -575,6 +575,52 @@ def run_registered_benchmarks():
         )
     )
 
+    # CASE-FEM-THICK-PLATE-MOMENTS (case pool): thick Mindlin plate (t/a = 0.2) on
+    # hard simple support under uniform pressure.  The reference is the
+    # Mindlin-Reissner Navier solution solved in-process -- the Kirchhoff series is
+    # NOT a valid truth model at this slenderness (it reports 23 % "deflection
+    # error" for the same FE field), see docs/CASE-FEM-THICK-PLATE-MOMENTS.md.
+    from .foundation_plate_bending import compare_finite_plate_moments
+
+    thick = compare_finite_plate_moments(
+        side_x=10.0, side_y=10.0, nx=32, ny=32, thickness=2.0,
+        pressure=1.0e4, reference="mindlin",
+    )
+    centre_row = thick["rows"][-1]
+    out.append(
+        _evidence(
+            "plate.mindlin_thick.center_mx",
+            "Q4 Mindlin plate",
+            "centre bending moment",
+            "N*m/m",
+            "Mindlin-Reissner Navier series Mx=-D(aX+nu bY) (exact for hard simple support)",
+            centre_row["mx_fem"],
+            centre_row["mx_analytic"],
+        )
+    )
+    out.append(
+        _evidence(
+            "plate.mindlin_thick.max_mxy",
+            "Q4 Mindlin plate",
+            "twisting moment at the quarter point",
+            "N*m/m",
+            "Mindlin-Reissner Navier series Mxy=D(1-nu)(bX+aY)/2",
+            thick["mxy_fem"],
+            thick["mxy_analytic"],
+        )
+    )
+    out.append(
+        _evidence(
+            "plate.mindlin_thick.center_w",
+            "Q4 Mindlin plate",
+            "centre deflection (thick plate, shear deformation included)",
+            "m",
+            "Mindlin-Reissner Navier series with shear correction 1+D(a^2+b^2)/S",
+            centre_row["w_fem"],
+            centre_row["w_analytic"],
+        )
+    )
+
     return tuple(out)
 
 
