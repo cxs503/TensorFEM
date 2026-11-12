@@ -10,9 +10,11 @@ unchanged behaviour) is the one-point shear rule; it keeps the bending accuracy
 but leaves two zero-energy mechanisms, so the element is rank deficient by two
 (see :mod:`tensorfem.element_rank_audit` and
 ``docs/element-rank-deficiency-audit.md``).  ``"mitc"`` uses the four-node
-assumed natural shear strain field (Dvorkin-Bathe) sampled at the four mid-side
-points and integrated with the 2x2 rule; the element then has exactly the three
-rigid-body mechanisms and no spurious mode.
+assumed natural shear strain field (Dvorkin-Bathe) in covariant components,
+sampled at the four mid-side points and integrated with the 2x2 rule; the
+element then has exactly the three rigid-body mechanisms, no spurious mode, and
+it is skew-invariant: the exact constant-curvature state stays shear-free on any
+parallelogram (``docs/mitc-skew-invariance.md``).
 """
 from __future__ import annotations
 
@@ -228,27 +230,42 @@ def q4_mindlin_stiffness(
                     Bs[1, 3*i+2] = N[i]
                 ke = ke + Bs.T @ Ds @ Bs * detJ
         return ke
-    # Assumed natural shear strain (Dvorkin-Bathe): sample the shear rows at the
-    # four mid-side points and interpolate them bilinearly at the 2x2 Gauss
-    # points.  This keeps the two rigid-body rotations zero-energy while removing
-    # the two spurious mechanisms of the one-point rule.
-    def shear_rows(xi: torch.Tensor, eta: torch.Tensor) -> torch.Tensor:
+    # Assumed natural shear strain (Dvorkin-Bathe) in *covariant* components.
+    #
+    # The covariant transverse-shear strains are
+    #     gamma_xi  = w,xi  + x,xi  theta_x + y,xi  theta_y
+    #     gamma_eta = w,eta + x,eta theta_x + y,eta theta_y
+    # (they are the physical strains contracted with the Jacobian columns,
+    # gamma_cov = J^T gamma_phys).  gamma_xi is sampled at the two mid-sides
+    # xi = 0, eta = +/-1 and interpolated linearly in eta; gamma_eta is sampled
+    # at eta = 0, xi = +/-1 and interpolated linearly in xi; the physical
+    # components are then recovered with the local J^{-T} at each Gauss point.
+    #
+    # Sampling the *physical* rows gamma_xz/gamma_yz at the mid-sides instead
+    # (the pre-2026-11 implementation) is only equivalent for rectangles: on a
+    # parallelogram it leaves a parasitic shear energy in the exact
+    # constant-curvature state that grows with the skew (24x the bending energy
+    # at 30 deg skew, 60x at 20 deg), i.e. the "locking-free" element locks on
+    # skew meshes -- see tests/test_plate_mitc_skew_invariance.py and
+    # benchmarks/verified/fem_morley_skew_plate/.
+    def covariant_rows(xi: torch.Tensor, eta: torch.Tensor) -> torch.Tensor:
         N, dN_nat = _shape(xi, eta)
         J = dN_nat.T @ xy
-        dN = dN_nat @ torch.linalg.inv(J).T
         rows = torch.zeros((2, 12), dtype=dtype, device=device)
         for i in range(4):
-            rows[0, 3*i] = dN[i, 0]
-            rows[0, 3*i+1] = N[i]
-            rows[1, 3*i] = dN[i, 1]
-            rows[1, 3*i+2] = N[i]
+            rows[0, 3*i] = dN_nat[i, 0]
+            rows[0, 3*i+1] = J[0, 0]*N[i]     # x,xi
+            rows[0, 3*i+2] = J[0, 1]*N[i]     # y,xi
+            rows[1, 3*i] = dN_nat[i, 1]
+            rows[1, 3*i+1] = J[1, 0]*N[i]     # x,eta
+            rows[1, 3*i+2] = J[1, 1]*N[i]     # y,eta
         return rows
 
     zero, one = xy.new_tensor(0.0), xy.new_tensor(1.0)
-    bottom = shear_rows(zero, -one)   # gamma_xz at (0,-1)
-    top = shear_rows(zero, one)       # gamma_xz at (0,+1)
-    left = shear_rows(-one, zero)     # gamma_yz at (-1,0)
-    right = shear_rows(one, zero)     # gamma_yz at (+1,0)
+    xi_bottom = covariant_rows(zero, -one)[0]   # gamma_xi at (0,-1)
+    xi_top = covariant_rows(zero, one)[0]       # gamma_xi at (0,+1)
+    eta_left = covariant_rows(-one, zero)[1]    # gamma_eta at (-1,0)
+    eta_right = covariant_rows(one, zero)[1]    # gamma_eta at (+1,0)
     for xif in (-gp, gp):
         for etaf in (-gp, gp):
             xi, eta = xy.new_tensor(xif), xy.new_tensor(etaf)
@@ -257,9 +274,13 @@ def q4_mindlin_stiffness(
             detJ = torch.linalg.det(J)
             if bool((detJ <= 0).item()):
                 raise ValueError("plate element has non-positive Jacobian")
-            Bs = torch.zeros((2, 12), dtype=dtype, device=device)
-            Bs[0] = 0.5*(1.0-eta)*bottom[0] + 0.5*(1.0+eta)*top[0]
-            Bs[1] = 0.5*(1.0-xi)*left[1] + 0.5*(1.0+xi)*right[1]
+            B_cov = torch.zeros((2, 12), dtype=dtype, device=device)
+            B_cov[0] = 0.5*(1.0-eta)*xi_bottom + 0.5*(1.0+eta)*xi_top
+            B_cov[1] = 0.5*(1.0-xi)*eta_left + 0.5*(1.0+xi)*eta_right
+            # gamma_cov = J gamma_phys  ->  gamma_phys = J^{-1} gamma_cov
+            # (J = [[x,xi, y,xi], [x,eta, y,eta]], the same Jacobian the
+            # gradient transform above uses)
+            Bs = torch.linalg.inv(J) @ B_cov
             ke = ke + Bs.T @ Ds @ Bs * detJ
     return ke
 
