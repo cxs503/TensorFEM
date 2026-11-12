@@ -95,73 +95,114 @@ def run_cylindrical_shell():
     R, L, t = 0.5, 1.0, 0.005
     E, rho, nu = 210e9, 7800.0, 0.3
 
-    # DMV modes
-    all_modes = []
-    for m in range(1, 8):
-        for n in range(0, 15):
-            try:
-                f = dmv_frequency_hz(radius=R, length=L, thickness=t,
-                                     young=E, poisson=nu, density=rho,
-                                     n_axial=m, n_circ=n)
-                all_modes.append((f, m, n))
-            except ValueError:
-                pass
-    all_modes.sort()
-    dmv_freqs = [f for f, _, _ in all_modes[:10]]
-    dmv_modes = [(m, n) for _, m, n in all_modes[:10]]
+    geometry = dict(radius=R, length=L, thickness=t, young=E, poisson=nu, density=rho)
 
-    # FEM
-    fem = cylindrical_shell_modal_analysis(
-        radius=R, length=L, thickness=t, young=E, poisson=nu, density=rho,
-        n_axial_mesh=4, n_circ_mesh=8, n_modes=10,
+    # Euler-Bernoulli beam limit: the n = 1 mode of a cylinder is beam bending,
+    # omega = (m pi/L)^2 sqrt(E I/(rho A)) with I/A = R^2/2.  Donnell is only
+    # accurate for n >= 2, so this is the bracket for the n = 1 row.
+    beam_hz = (math.pi / L) ** 2 * math.sqrt(E * R ** 2 / 2.0 / rho) / (2 * math.pi)
+
+    # Donnell-Mushtari-Vlasov oracle over the (m, n) grid.  n = 0 is the
+    # axisymmetric breathing mode and is admissible since m16863; before that
+    # repair the validator rejected it and the n = 1 branch dropped the membrane
+    # term (17.33 Hz against a 2881.62 Hz beam limit, see
+    # docs/fem-shell-modal-anchor-audit.md).
+    oracle = []
+    for m in (1, 2, 3):
+        for n in range(0, 9):
+            oracle.append((dmv_frequency_hz(n_axial=m, n_circ=n, **geometry), m, n))
+    oracle.sort()
+    oracle_min_hz, oracle_min_mode = oracle[0][0], [oracle[0][1], oracle[0][2]]
+
+    def classify(mesh_axial, mesh_circ, result):
+        """Split the FE spectrum into physical modes and rotation-only mechanisms.
+
+        A shell mode carries transverse displacement.  The pre-existing shell4
+        spectrum of this cylinder contains DOFs that store only rotation: their
+        radial participation is ~1e-25 and their frequencies are mesh-dependent
+        (75.85 Hz at 4x8, 39.17 Hz at 8x8, 0.001 Hz at 8x16), so a "lowest
+        frequency" quote that does not discard them is not a shell mode.
+        """
+        modes = result.modes.numpy()
+        freqs = result.frequencies_hz.numpy()
+        rows = []
+        for index in range(freqs.size):
+            phi = modes[:, index]
+            total = float((phi ** 2).sum())
+            radial = float((phi.reshape(mesh_axial + 1, mesh_circ, 6)[:, :, 2] ** 2).sum())
+            rotation = float((phi.reshape(-1, 6)[:, 3:6] ** 2).sum())
+            rows.append({
+                "frequency_hz": float(freqs[index]),
+                "radial_participation": radial / total if total else 0.0,
+                "rotation_participation": rotation / total if total else 0.0,
+                "physical": (radial / total if total else 0.0) > 1e-6,
+            })
+        return rows
+
+    ladder = []
+    for n_axial_mesh, n_circ_mesh in ((4, 8), (8, 8), (8, 16)):
+        fem = cylindrical_shell_modal_analysis(
+            radius=R, length=L, thickness=t, young=E, poisson=nu, density=rho,
+            n_axial_mesh=n_axial_mesh, n_circ_mesh=n_circ_mesh, n_modes=20,
+        )
+        rows = classify(n_axial_mesh, n_circ_mesh, fem)
+        physical = [row["frequency_hz"] for row in rows if row["physical"]]
+        mechanisms = [row["frequency_hz"] for row in rows if not row["physical"]]
+        ladder.append({
+            "mesh": f"{n_axial_mesh}x{n_circ_mesh}",
+            "n_dof": fem.n_dof,
+            "n_free_dof": fem.n_free_dof,
+            "n_modes_requested": 20,
+            "n_mechanism_modes": len(mechanisms),
+            "lowest_mechanism_hz": mechanisms[0] if mechanisms else None,
+            "lowest_physical_hz": physical[0] if physical else None,
+            "first_physical_hz": physical[:4],
+            "first_six_hz": [row["frequency_hz"] for row in rows[:6]],
+            "mechanism_free_first_ten": not any(
+                not row["physical"] for row in rows[:10]
+            ),
+            "n_mechanism_first_ten": sum(1 for row in rows[:10] if not row["physical"]),
+        })
+
+    # The anchor's own mesh (4x8) is the one whose spectrum a reader sees first;
+    # coarser-to-finer only adds mechanisms, it never adds physical shell modes,
+    # so the honest comparison uses the first mesh that has one at all.
+    graded = next((row for row in ladder if row["lowest_physical_hz"] is not None), None)
+    matched_error_pct = (
+        abs(graded["lowest_physical_hz"] - oracle_min_hz) / oracle_min_hz * 100.0
+        if graded is not None else 999.0
     )
-    fem_freqs = fem.frequencies_hz.tolist()[:10]
-
-    # Match FEM to DMV by closest frequency
-    matched = []
-    used = set()
-    for f_fem in fem_freqs:
-        best_j, best_err = None, float('inf')
-        for j, f_dmv in enumerate(dmv_freqs):
-            if j not in used:
-                err = abs(f_fem - f_dmv) / f_dmv * 100
-                if err < best_err:
-                    best_err, best_j = err, j
-        if best_j is not None:
-            used.add(best_j)
-            matched.append({"fem_hz": f_fem, "dmv_hz": dmv_freqs[best_j],
-                            "dmv_mode": dmv_modes[best_j], "error_pct": best_err})
-
-    first3 = matched[:3]
-    max_err = max(m["error_pct"] for m in first3) if first3 else 0
-
-    # Key verification: FEM produces physically reasonable frequencies
-    # and the solver completes without error
-    all_positive = all(f > 0 for f in fem_freqs)
-    frequencies_in_range = all(10 < f < 500 for f in fem_freqs[:5])
+    graded_mesh = graded["mesh"] if graded is not None else "none"
 
     return {
         "description": "Cylindrical shell, Shell4 element + consistent mass",
-        "parameters": {"R": R, "L": L, "t": t, "E": E, "rho": rho, "nu": nu, "R_over_t": R/t},
+        "parameters": {"R": R, "L": L, "t": t, "E": E, "rho": rho, "nu": nu, "R_over_t": R / t},
         "nasa_experimental_freqs_hz": NASA_TN_D3939_FREQS,
         "nasa_note": "NASA TN D-3939: clamped BCs; this uses simply supported (diaphragm)",
-        "dmv_all_freqs_hz": dmv_freqs[:10],
-        "dmv_all_modes": dmv_modes[:10],
-        "fem_result": {
-            "n_axial_mesh": 4, "n_circ_mesh": 8,
-            "n_nodes": fem.n_nodes, "n_dof": fem.n_dof, "n_free_dof": fem.n_free_dof,
-            "frequencies_hz": fem_freqs[:10], "solver": fem.solver,
+        "oracle": {
+            "theory": "Donnell-Mushtari-Vlasov, simply supported, membrane term retained for all n",
+            "grid": "m = 1..3, n = 0..8",
+            "lowest_hz": oracle_min_hz,
+            "lowest_mode_mn": oracle_min_mode,
+            "first_six": [[f, m, n] for f, m, n in oracle[:6]],
+            "beam_limit_n1_hz": beam_hz,
         },
-        "mode_matching": first3,
-        "max_matched_error_pct": max_err,
-        "all_frequencies_positive": all_positive,
-        "frequencies_in_expected_range": frequencies_in_range,
-        "verdict": "PASS" if (all_positive and frequencies_in_range) else "FAIL",
-        "note": "Coarse mesh (4x8) with simply supported BCs. FEM frequencies are in the "
-                "expected range (10-500 Hz) for this shell geometry. Mode matching to DMV "
-                "shows ~35-60% error due to coarse mesh and BC differences. "
-                "The key achievement is that the cylindrical shell modal analysis pipeline "
-                "(mesh generation + mass matrix + assembly + eigenvalue solve) works correctly.",
+        "fem_ladder": ladder,
+        "lowest_physical_vs_oracle_pct": matched_error_pct,
+        "lowest_physical_mesh": graded_mesh,
+        "verdict": "FAIL",
+        "note": (
+            "The FE spectrum of this cylinder is dominated by rotation-only DOFs: at "
+            "the anchor's original 4x8 mesh the three lowest 'frequencies' (75.85, "
+            "75.85, 79.84 Hz) have radial participation ~1e-25 and 100% rotation "
+            "participation, i.e. they are mechanisms, not shell modes; their frequency "
+            "is mesh dependent (39.17 Hz at 8x8, 0.001 Hz at 8x16). The first physical "
+            "mode is 100.35 Hz (4x8) / 98.87 Hz (8x8) against a Donnell minimum of "
+            f"{oracle_min_hz:.2f} Hz, so the FE evidence does not converge to the "
+            "oracle. The anchor verdict is FAIL: the shell element and/or its "
+            "simply-supported constraint set needs repair before this anchor can "
+            "support a PASS."
+        ),
     }
 
 
@@ -190,20 +231,43 @@ def generate_figures(beam, plate, shell):
     fig.tight_layout(); fig.savefig('/tmp/plate.png', dpi=150); plt.close(fig)
 
     fig, ax = plt.subplots(figsize=(8, 5))
-    dmv = shell["dmv_all_freqs_hz"][:5]
-    fem = shell["fem_result"]["frequencies_hz"][:5]
-    x = range(1, 6)
+    fem = shell["fem_ladder"][0]["first_physical_hz"]
+    dmv = [row[0] for row in shell["oracle"]["first_six"]][:len(fem)]
+    x = range(1, len(fem) + 1)
     ax.plot(x, dmv, 's--', color='red', label='DMV (SS)', alpha=0.7)
     ax.plot(x, fem, 'o-', color='blue', label='FEM (4x8)')
     ax.set_xlabel('Mode index'); ax.set_ylabel('Frequency (Hz)')
     ax.set_title('Cylindrical Shell: FEM vs DMV'); ax.legend(); ax.grid(True, alpha=0.3)
     fig.tight_layout(); fig.savefig('/tmp/shell.png', dpi=150); plt.close(fig)
 
+    fig, ax = plt.subplots(figsize=(8, 5))
+    oracle_n = [row[2] for row in shell["oracle"]["first_six"]]
+    oracle_f = [row[0] for row in shell["oracle"]["first_six"]]
+    ax.plot(oracle_n, oracle_f, 's--', color='black', label='Donnell oracle (m=1)')
+    ax.axhline(shell["oracle"]["beam_limit_n1_hz"], color='grey', ls=':',
+               label='Euler-Bernoulli n=1 bracket')
+    for entry in shell["fem_ladder"]:
+        phys = [f for f in entry["first_physical_hz"]]
+        ax.scatter([-1 - 0.4 * shell["fem_ladder"].index(entry)] * len(phys), phys,
+                   marker='o', label=f'FE physical {entry["mesh"]}')
+        if entry["lowest_mechanism_hz"] is not None:
+            ax.scatter([-1 - 0.4 * shell["fem_ladder"].index(entry)],
+                       [entry["lowest_mechanism_hz"]], marker='x', color='red')
+    ax.set_yscale('log')
+    ax.set_xlabel('circumferential wavenumber n (oracle) / mesh slot (FE)')
+    ax.set_ylabel('frequency (Hz)')
+    ax.set_title('Shell modal anchor: Donnell oracle vs FE (x = rotation-only mechanism)')
+    ax.legend(fontsize=7); ax.grid(True, alpha=0.3)
+    fig.tight_layout(); fig.savefig(str(Path(__file__).parent / "shell_modal_audit.png"),
+                                    dpi=150); plt.close(fig)
+
     import base64
     for name, caption, path in [
         ("beam", "Cantilever beam convergence", "/tmp/beam.png"),
         ("plate", "Simply supported plate convergence", "/tmp/plate.png"),
         ("shell", "Cylindrical shell: FEM vs DMV", "/tmp/shell.png"),
+        ("shell_audit", "Donnell oracle ladder vs FE spectrum, rotation-only mechanisms marked",
+         str(Path(__file__).parent / "shell_modal_audit.png")),
     ]:
         with open(path, 'rb') as f:
             figures.append({"name": name, "caption": caption, "png_base64": base64.b64encode(f.read()).decode()})
@@ -221,7 +285,44 @@ def main():
 
     figures = generate_figures(beam, plate, shell)
 
-    all_pass = beam["verdict"] == "PASS" and plate["verdict"] == "PASS" and shell["verdict"] == "PASS"
+    gates = [
+        {
+            "id": "G1.beam", "quantity": "cantilever beam modes 1-3, max relative error [%]",
+            "value": beam["max_error_pct_finest"], "operator": "<=", "threshold": 3.0,
+            "passed": beam["max_error_pct_finest"] <= 3.0,
+            "reference": "beta_n roots of cos(beta)cosh(beta) = -1, Euler-Bernoulli",
+        },
+        {
+            "id": "G2.plate", "quantity": "SS plate modes 1-3, max relative error [%]",
+            "value": plate["max_error_pct_finest"], "operator": "<=", "threshold": 10.0,
+            "passed": plate["max_error_pct_finest"] <= 10.0,
+            "reference": "Kirchhoff Navier series, thin plate",
+        },
+        {
+            "id": "G3.shell_lowest_physical_vs_donnell",
+            "quantity": "lowest FE shell mode (radial participation > 1e-6) vs Donnell minimum [%]"
+                        " at mesh " + str(shell["lowest_physical_mesh"]),
+            "value": shell["lowest_physical_vs_oracle_pct"], "operator": "<=", "threshold": 15.0,
+            "passed": (
+                shell["lowest_physical_vs_oracle_pct"] == shell["lowest_physical_vs_oracle_pct"]
+                and shell["lowest_physical_vs_oracle_pct"] <= 15.0
+            ),
+            "reference": (
+                "Donnell-Mushtari-Vlasov over m=1..3, n=0..8: "
+                f"{shell['oracle']['lowest_hz']:.2f} Hz at (m,n)="
+                f"({shell['oracle']['lowest_mode_mn'][0]},{shell['oracle']['lowest_mode_mn'][1]})"
+            ),
+        },
+        {
+            "id": "G4.shell_mechanism_free_low_spectrum",
+            "quantity": "rotation-only modes inside the first ten FE modes (must be zero)",
+            "value": float(shell["fem_ladder"][0]["n_mechanism_first_ten"]),
+            "operator": "==", "threshold": 0.0,
+            "passed": shell["fem_ladder"][0]["mechanism_free_first_ten"],
+            "reference": "a shell mode must carry transverse displacement; radial participation > 1e-6",
+        },
+    ]
+    all_pass = all(gate["passed"] for gate in gates)
 
     result = {
         "benchmark": "IN28-E1 Structural Dynamics Modal Analysis",
@@ -229,22 +330,29 @@ def main():
         "environment": {"python": sys.version, "torch": torch.__version__, "machine": os.uname().machine},
         "anchors": {"beam": beam, "plate": plate, "shell": shell},
         "overall_verdict": "PASS" if all_pass else "FAIL",
-        "gates": [
-            {"id": "G1.beam", "description": "Beam error < 3%",
-             "value": beam["max_error_pct_finest"], "limit": 3.0, "passed": beam["verdict"] == "PASS"},
-            {"id": "G2.plate", "description": "Plate error < 10% (thin plate)",
-             "value": plate["max_error_pct_finest"], "limit": 10.0, "passed": plate["verdict"] == "PASS"},
-            {"id": "G3.shell", "description": "Shell: frequencies positive and in expected range",
-             "value": shell["max_matched_error_pct"], "limit": None,
-             "passed": shell["verdict"] == "PASS"},
-        ],
+        "gates": gates,
     }
 
     out = Path(__file__).parent
+    envelope = {
+        "schema": "tensorfem.verified-gates.v1",
+        "anchor": "fem_shell_modal",
+        "passed": all_pass,
+        "gates": gates,
+        "failed_gates": [gate["id"] for gate in gates if not gate["passed"]],
+        "artifacts": {"result": "result.json", "figure": "shell_modal_audit.png"},
+        "limitations": [
+            "the cylinder FE spectrum contains rotation-only mechanisms; the shell "
+            "element (or its SS constraint set) is not yet certifiable",
+            "Donnell theory is a thin-shell approximation: n = 1 is bracketed by the "
+            "Euler-Bernoulli beam limit, not gated",
+            "G2 plate error is 6.84% on a 10x8 mesh: discretisation, not physics",
+        ],
+    }
     with open(out / "result.json", 'w') as f:
         json.dump(result, f, indent=2, default=str)
     with open(out / "gates_verified.json", 'w') as f:
-        json.dump(result["gates"], f, indent=2)
+        json.dump(envelope, f, indent=2)
 
     print(f"\nOverall: {result['overall_verdict']}")
     for g in result["gates"]:

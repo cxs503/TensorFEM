@@ -3,23 +3,23 @@
   "gate_schema": "tensorfem.verified-gates.v1",
   "git_tracking_checked": true,
   "anchors": 33,
-  "certified": 6,
-  "contradicted": 18,
+  "certified": 7,
+  "contradicted": 17,
   "uncertified": 9,
-  "gates_total": 243,
-  "gates_recomputed": 201,
+  "gates_total": 244,
+  "gates_recomputed": 203,
   "gates_contradicted": 0,
   "gates_contradicted_inferred": 2,
-  "gates_without_numeric_criterion": 9,
-  "gates_unrecomputable": 42,
+  "gates_without_numeric_criterion": 8,
+  "gates_unrecomputable": 41,
   "defect_counts": {
     "E_ANCHOR_NAME_MISMATCH": 2,
     "E_ARTIFACT_MISSING": 13,
     "E_GATE_VALUE_NOT_FINITE": 1,
     "E_NO_GATES": 9,
-    "E_OVERALL_ABSENT": 2,
-    "E_PASS_WITHOUT_CRITERION": 4,
-    "E_SCHEMA": 4
+    "E_OVERALL_ABSENT": 1,
+    "E_PASS_WITHOUT_CRITERION": 3,
+    "E_SCHEMA": 3
   },
   "records": [
     {
@@ -2508,72 +2508,72 @@
     {
       "anchor": "fem_shell_modal",
       "directory": "benchmarks/verified/fem_shell_modal",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
-      "declared_overall": null,
-      "recomputed_overall": null,
-      "gates": 3,
+      "declared_overall": false,
+      "recomputed_overall": false,
+      "gates": 4,
       "gates_passed": 2,
-      "gates_failed": 0,
+      "gates_failed": 2,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
-      "gates_unrecomputable": 1,
-      "defects": [
-        "E_SCHEMA",
-        "E_PASS_WITHOUT_CRITERION",
-        "E_OVERALL_ABSENT"
-      ],
-      "warnings": [
-        "W_OPERATOR_INFERRED",
-        "W_UNDECLARED_ARTIFACTS"
-      ],
+      "gates_unrecomputable": 0,
+      "defects": [],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "G1.beam",
-          "quantity": "Beam error < 3%",
-          "operator": "<",
-          "operator_source": "inferred",
+          "quantity": "cantilever beam modes 1-3, max relative error [%]",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 6.443028509097842e-06,
           "threshold": 3.0,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
           "id": "G2.plate",
-          "quantity": "Plate error < 10% (thin plate)",
-          "operator": "<",
-          "operator_source": "inferred",
-          "value": 6.842545540515209,
+          "quantity": "SS plate modes 1-3, max relative error [%]",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 6.842545539601385,
           "threshold": 10.0,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
-          "id": "G3.shell",
-          "quantity": "Shell: frequencies positive and in expected range",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 60.500108050743094,
-          "threshold": null,
-          "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
-          "defects": [
-            "E_PASS_WITHOUT_CRITERION"
-          ],
+          "id": "G3.shell_lowest_physical_vs_donnell",
+          "quantity": "lowest FE shell mode (radial participation > 1e-6) vs Donnell minimum [%] at mesh 4x8",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 50.35601855387917,
+          "threshold": 15.0,
+          "declared_passed": false,
+          "recomputed_passed": false,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "G4.shell_mechanism_free_low_spectrum",
+          "quantity": "rotation-only modes inside the first ten FE modes (must be zero)",
+          "operator": "==",
+          "operator_source": "declared",
+          "value": 8.0,
+          "threshold": 0.0,
+          "declared_passed": false,
+          "recomputed_passed": false,
+          "status": "agrees",
+          "defects": [],
           "warnings": []
         }
       ]

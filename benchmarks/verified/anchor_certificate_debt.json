@@ -122,15 +122,6 @@
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
-    "fem_shell_modal": {
-      "grade": "contradicted",
-      "defects": [
-        "E_SCHEMA",
-        "E_PASS_WITHOUT_CRITERION",
-        "E_OVERALL_ABSENT"
-      ],
-      "remedy": "re-emit the file in the canonical envelope (schema/anchor/passed/gates); give the gate a numeric threshold, or mark it informational (not a pass); add an aggregate passed flag so the anchor's verdict needs no prose"
-    },
     "fem_shell_scordelis_lo": {
       "grade": "contradicted",
       "defects": [

@@ -329,6 +329,12 @@ def shell_fe_beam_limit_check() -> dict:
             CYLINDER["poisson"], CYLINDER["rho_struct"], 1, 1,
         ),
         "legacy_dmv_n1_hz": _legacy_dmv_n1(),
+        # pre-repair the helper dropped the membrane term at n = 1; this ratio
+        # is 1.0 once the repair (m16863) is in place
+        "legacy_dmv_n1_ratio": _legacy_dmv_n1() / fsi.donnell_shell_frequency_hz(
+            radius, length, CYLINDER["thickness"], CYLINDER["young"],
+            CYLINDER["poisson"], CYLINDER["rho_struct"], 1, 1,
+        ),
         "rows": rows,
     }
 
@@ -739,13 +745,16 @@ adjudication.
 
 ## 7. Defects found in the existing library (evidence, not fixed here)
 
-1. `tensorfem.cylindrical_shell_modal.dmv_angular_frequency` **drops the membrane
-   term** `lambda^4/(lambda^2+n^2)^2` in its `n = 1` branch, which returns
-   `{shell_check['legacy_dmv_n1_hz']:.2f} Hz` for this shell where the
-   Euler-Bernoulli beam limit is `{shell_check['beam_limit_hz']:.2f} Hz` and
-   Donnell with the membrane term gives `{shell_check['donnell_n1_hz']:.2f} Hz`.
-   `fsi_wet_modal.donnell_shell_frequency_hz` keeps the term; the legacy helper is
-   left untouched (out of scope, pinned by its own tests).
+1. `tensorfem.cylindrical_shell_modal.dmv_angular_frequency` **dropped the
+   membrane term** `lambda^4/(lambda^2+n^2)^2` in its `n = 1` branch, which
+   returned `{shell_check['legacy_dmv_n1_ratio']:.3f}` times the retained-term
+   Donnell value `{shell_check['donnell_n1_hz']:.2f} Hz` for this shell, whose
+   Euler-Bernoulli beam limit is `{shell_check['beam_limit_hz']:.2f} Hz`.
+   `fsi_wet_modal.donnell_shell_frequency_hz` always kept the term; the legacy
+   helper was **repaired** (mission m16863) and now returns
+   `{shell_check['legacy_dmv_n1_hz']:.2f} Hz`, i.e. the two agree.  The
+   `n = 0` axisymmetric branch of the legacy helper was unreachable (the
+   validator rejected `n_circ = 0`) and is now live.
 2. The curved `shell4` FE spectrum of this slender shell does not reproduce the
    beam limit and its lowest modes are radial-dominated spurious modes:
 
