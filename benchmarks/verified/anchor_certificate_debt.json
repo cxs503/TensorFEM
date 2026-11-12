@@ -170,14 +170,6 @@
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
-    "fem_wave_dispersion": {
-      "grade": "contradicted",
-      "defects": [
-        "E_SCHEMA",
-        "E_OVERALL_ABSENT"
-      ],
-      "remedy": "re-emit the file in the canonical envelope (schema/anchor/passed/gates); add an aggregate passed flag so the anchor's verdict needs no prose"
-    },
     "fem_winkler_plate": {
       "grade": "contradicted",
       "defects": [

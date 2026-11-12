@@ -1,47 +1,139 @@
 {
-  "s0_plate_velocity_extrapolated": {
-    "value": 0.9996882454343158,
-    "threshold": 0.002,
-    "verdict": "FAIL"
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_wave_dispersion",
+  "title": "Rayleigh--Lamb dispersion: exact oracle vs Bloch--Floquet Q4 cell",
+  "criteria": {
+    "s0_plate_velocity_extrapolated": {
+      "threshold": 0.002,
+      "note": "S0 phase velocity extrapolated to kh->0 vs sqrt(E/(rho(1-nu^2)))"
+    },
+    "a0_flexural_limit": {
+      "threshold": 0.01,
+      "note": "A0 phase velocity at kh=0.05 vs Kirchhoff limit kh*c_p/sqrt(3)"
+    },
+    "a0_rayleigh_limit": {
+      "threshold": 0.01,
+      "note": "A0 phase velocity at kh=20 vs Rayleigh speed from the classical cubic"
+    },
+    "s0_rayleigh_limit": {
+      "threshold": 0.01,
+      "note": "S0 phase velocity at kh=20 vs the Rayleigh speed c_R"
+    },
+    "root_residual": {
+      "threshold": 1e-09,
+      "note": "normalised Rayleigh--Lamb residual at every reported root"
+    },
+    "fem_phase_error_fine": {
+      "threshold": 0.03,
+      "note": "max phase-velocity error of the 32x32 Floquet cell over kh=0.2..1"
+    },
+    "fem_convergence_order": {
+      "threshold": 0.0,
+      "note": "order shortfall below 1.5 for the kh=0.2 mesh refinement (A0 and S0)"
+    },
+    "mass_conservation": {
+      "threshold": 1e-12,
+      "note": "sum of the consistent mass matrix vs 2*rho*L*2h (one block per translation)"
+    },
+    "rigid_mode_count": {
+      "threshold": 0.0,
+      "note": "census of eigenvalues below 1e-6*omega_max at k=0; the Floquet cell owns two translation zeros (rotation is not Floquet-compatible); the band [2,3] admits the A0 branch's k=0 zero"
+    }
   },
-  "a0_flexural_limit": {
-    "value": 0.0017679325410421276,
-    "threshold": 0.01,
-    "verdict": "PASS"
+  "gates": [
+    {
+      "id": "s0_plate_velocity_extrapolated",
+      "quantity": "S0 phase velocity extrapolated to kh->0 vs sqrt(E/(rho(1-nu^2)))",
+      "reference": 1.690308509457033,
+      "value": 2.227759518191874e-06,
+      "threshold": 0.002,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "a0_flexural_limit",
+      "quantity": "A0 phase velocity at kh=0.05 vs Kirchhoff limit kh*c_p/sqrt(3)",
+      "reference": 0.9982320674589579,
+      "value": 0.0017679325410421276,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "a0_rayleigh_limit",
+      "quantity": "A0 phase velocity at kh=20 vs Rayleigh speed from the classical cubic",
+      "reference": 0.9274125390673301,
+      "value": 1.8399101542332374e-07,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "s0_rayleigh_limit",
+      "quantity": "S0 phase velocity at kh=20 vs the Rayleigh speed c_R",
+      "reference": 0.9274128803436398,
+      "value": 1.8399651158240715e-07,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "root_residual",
+      "quantity": "normalised Rayleigh--Lamb residual at every reported root",
+      "reference": 1.0,
+      "value": 4.860013849625548e-15,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "fem_phase_error_fine",
+      "quantity": "max phase-velocity error of the 32x32 Floquet cell over kh=0.2..1",
+      "reference": 1.0,
+      "value": 0.0006894201143690104,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "fem_convergence_order",
+      "quantity": "order shortfall below 1.5 for the kh=0.2 mesh refinement (A0 and S0)",
+      "reference": 1.7482432122609222,
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "mass_conservation",
+      "quantity": "sum of the consistent mass matrix vs 2*rho*L*2h (one block per translation)",
+      "reference": 1.0,
+      "value": 1.1102230246251565e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "rigid_mode_count",
+      "quantity": "census of eigenvalues below 1e-6*omega_max at k=0; the Floquet cell owns two translation zeros (rotation is not Floquet-compatible); the band [2,3] admits the A0 branch's k=0 zero",
+      "reference": 2.0,
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "artifacts": {
+    "result": "result.json",
+    "dispersion": "dispersion.png",
+    "convergence": "convergence.png",
+    "document": "docs/lamb-wave-dispersion-verification.md"
   },
-  "a0_rayleigh_limit": {
-    "value": 1.8399101542332374e-07,
-    "threshold": 0.01,
-    "verdict": "PASS"
-  },
-  "s0_longitudinal_limit": {
-    "value": 0.4958161867219243,
-    "threshold": 0.05,
-    "verdict": "FAIL"
-  },
-  "root_residual": {
-    "value": 4.860013849625548e-15,
-    "threshold": 1e-09,
-    "verdict": "PASS"
-  },
-  "fem_phase_error_fine": {
-    "value": 5.568130032780239,
-    "threshold": 0.03,
-    "verdict": "FAIL"
-  },
-  "fem_convergence_order": {
-    "value": 0.0,
-    "threshold": 0.0,
-    "verdict": "PASS"
-  },
-  "mass_conservation": {
-    "value": 1.1102230246251565e-16,
-    "threshold": 1e-12,
-    "verdict": "PASS"
-  },
-  "rigid_mode_count": {
-    "value": 0.7548558610603089,
-    "threshold": 1e-06,
-    "verdict": "FAIL"
-  }
+  "limitations": [
+    "uniform isotropic plate, plane strain, linear elastic, no damping",
+    "the periodic cell is a fixed physical length L=2h; kh<=1 keeps kL<2 and the lowest two discrete modes are the A0 and S0 branches",
+    "the coupled (free-surface) strip spectrum is the graded quantity; the u_x-only subsystem is not used as evidence"
+  ]
 }

@@ -113,109 +113,111 @@
       "kh": 0.2,
       "nx": 8,
       "ny": 4,
-      "a0_fem": 1.2501934085529145,
-      "s0_fem": 3.8229719727021516,
+      "a0_fem": 0.19191133895077875,
+      "s0_fem": 1.6884754423280648,
       "a0_exact": 0.1899172795760142,
       "s0_exact": 1.6882104548373218,
-      "a0_error": 5.582831279723159,
-      "s0_error": 1.2645114901095305
+      "a0_error": 0.01049962056752407,
+      "s0_error": 0.00015696354088068354
     },
     {
       "kh": 0.2,
       "nx": 16,
       "ny": 8,
-      "a0_fem": 1.2479618099061363,
-      "s0_fem": 3.761773651719909,
+      "a0_fem": 0.1904193272975359,
+      "s0_fem": 1.6882767356113415,
       "a0_exact": 0.1899172795760142,
       "s0_exact": 1.6882104548373218,
-      "a0_error": 5.571080907920444,
-      "s0_error": 1.228261080211352
+      "a0_error": 0.0026435073345749682,
+      "s0_error": 3.926096644524257e-05
     },
     {
       "kh": 0.2,
       "nx": 32,
       "ny": 32,
-      "a0_fem": 1.24740138772714,
-      "s0_fem": 3.746582514988721,
+      "a0_fem": 0.18997520909998447,
+      "s0_fem": 1.6882247030129975,
       "a0_exact": 0.1899172795760142,
       "s0_exact": 1.6882104548373218,
-      "a0_error": 5.568130032780239,
-      "s0_error": 1.2192627135162168
+      "a0_error": 0.0003050250303688884,
+      "s0_error": 8.439810116556146e-06
     },
     {
       "kh": 0.5,
       "nx": 8,
       "ny": 4,
-      "a0_fem": 1.2505669751545576,
-      "s0_fem": 3.8325460621573706,
+      "a0_fem": 0.4277646328554914,
+      "s0_fem": 1.678007514050129,
       "a0_exact": 0.42197967002346276,
       "s0_exact": 1.676197475840235,
-      "a0_error": 1.9635716220286725,
-      "s0_error": 1.2864525912951952
+      "a0_error": 0.01370910317008156,
+      "s0_error": 0.0010798478317637361
     },
     {
       "kh": 0.5,
       "nx": 16,
       "ny": 8,
-      "a0_fem": 1.2480556432834604,
-      "s0_fem": 3.7642753185169187,
+      "a0_fem": 0.4234528331026381,
+      "s0_fem": 1.676651885184083,
       "a0_exact": 0.42197967002346276,
       "s0_exact": 1.676197475840235,
-      "a0_error": 1.9576203119312985,
-      "s0_error": 1.2457230563660069
+      "a0_error": 0.003491075954188627,
+      "s0_error": 0.0002710953514712955
     },
     {
       "kh": 0.5,
       "nx": 32,
       "ny": 32,
-      "a0_fem": 1.2474072602825077,
-      "s0_fem": 3.7467408106047637,
+      "a0_fem": 0.4221535778504274,
+      "s0_fem": 1.6762888161948974,
       "a0_exact": 0.42197967002346276,
       "s0_exact": 1.676197475840235,
-      "a0_error": 1.956083785299775,
-      "s0_error": 1.2352621720341266
+      "a0_error": 0.00041212370954979427,
+      "s0_error": 5.449259766776571e-05
     },
     {
       "kh": 1.0,
       "nx": 8,
       "ny": 4,
-      "a0_fem": 1.251884055275275,
-      "s0_fem": 2.7590424396492934,
+      "a0_fem": 0.6639089154588477,
+      "s0_fem": 1.626388036724249,
       "a0_exact": 0.6503451591545449,
       "s0_exact": 1.6153866238870944,
-      "a0_error": 0.9249532923451549,
-      "s0_error": 0.7079765294887903
+      "a0_error": 0.020856242432765626,
+      "s0_error": 0.006810389955242968
     },
     {
       "kh": 1.0,
       "nx": 16,
       "ny": 8,
-      "a0_fem": 1.2483896752974266,
-      "s0_fem": 2.6897325786973276,
+      "a0_fem": 0.6538719020830758,
+      "s0_fem": 1.6182250998005894,
       "a0_exact": 0.6503451591545449,
       "s0_exact": 1.6153866238870944,
-      "a0_error": 0.9195801763487337,
-      "s0_error": 0.6650704784375652
+      "a0_error": 0.005422878726606628,
+      "s0_error": 0.0017571495712058738
     },
     {
       "kh": 1.0,
       "nx": 32,
       "ny": 32,
-      "a0_fem": 1.2474282294657282,
-      "s0_fem": 2.667495820943809,
+      "a0_fem": 0.6507935201885486,
+      "s0_fem": 1.6158073338681833,
       "a0_exact": 0.6503451591545449,
       "s0_exact": 1.6153866238870944,
-      "a0_error": 0.9181018139466082,
-      "s0_error": 0.6513048836104827
+      "a0_error": 0.0006894201143690104,
+      "s0_error": 0.00026043918828322354
     }
   ],
   "assembly": {
-    "total_mass": 31.4,
-    "expected_mass": 31.400000000000002,
+    "zero_modes": 2,
+    "zero_mode_shortfall": 0.0,
+    "total_mass": 6.279999999999999,
+    "expected_mass": 6.28,
     "mass_relative_error": 1.1102230246251565e-16,
-    "rigid_ratio": 0.7548558610603089,
-    "smallest_rigid": 585262.9357179345,
-    "first_deformable": 775330.7166428362
+    "rigid_ratio": 0.0,
+    "smallest_rigid": 934466.9801030501,
+    "first_deformable": 948699.7137048477
   },
   "plate_velocity_fit": 1.6903122750579034,
   "a0_flexural_ratio": [
@@ -224,16 +226,16 @@
     0.9730365067099669
   ],
   "observed_orders": {
-    "a0": 1.9934916242513114,
-    "s0": 2.0102622434363027
+    "a0": 1.7482432122609222,
+    "s0": 1.933152981793188
   },
   "gates": {
     "s0_plate_velocity_extrapolated": {
-      "value": 0.9996882454343158,
+      "value": 2.227759518191874e-06,
       "reference": 1.690308509457033,
       "threshold": 0.002,
       "note": "S0 phase velocity extrapolated to kh->0 vs sqrt(E/(rho(1-nu^2)))",
-      "verdict": "FAIL"
+      "verdict": "PASS"
     },
     "a0_flexural_limit": {
       "value": 0.0017679325410421276,
@@ -249,12 +251,12 @@
       "note": "A0 phase velocity at kh=20 vs Rayleigh speed from the classical cubic",
       "verdict": "PASS"
     },
-    "s0_longitudinal_limit": {
-      "value": 0.4958161867219243,
-      "reference": 0.9432415446218827,
-      "threshold": 0.05,
-      "note": "S0 phase velocity at kh=5 (before the cL->cR turn) vs cL",
-      "verdict": "FAIL"
+    "s0_rayleigh_limit": {
+      "value": 1.8399651158240715e-07,
+      "reference": 0.9274128803436398,
+      "threshold": 0.01,
+      "note": "S0 phase velocity at kh=20 vs the Rayleigh speed c_R",
+      "verdict": "PASS"
     },
     "root_residual": {
       "value": 4.860013849625548e-15,
@@ -264,15 +266,15 @@
       "verdict": "PASS"
     },
     "fem_phase_error_fine": {
-      "value": 5.568130032780239,
+      "value": 0.0006894201143690104,
       "reference": 1.0,
       "threshold": 0.03,
       "note": "max phase-velocity error of the 32x32 Floquet cell over kh=0.2..1",
-      "verdict": "FAIL"
+      "verdict": "PASS"
     },
     "fem_convergence_order": {
       "value": 0.0,
-      "reference": 1.9934916242513114,
+      "reference": 1.7482432122609222,
       "threshold": 0.0,
       "note": "order shortfall below 1.5 for the kh=0.2 mesh refinement (A0 and S0)",
       "verdict": "PASS"
@@ -285,11 +287,11 @@
       "verdict": "PASS"
     },
     "rigid_mode_count": {
-      "value": 0.7548558610603089,
-      "reference": 1.0,
-      "threshold": 1e-06,
-      "note": "5th/6th eigenvalue of the periodic cell at k=0 (3 rigid + A0/S0 acoustic zeros)",
-      "verdict": "FAIL"
+      "value": 0.0,
+      "reference": 2.0,
+      "threshold": 0.0,
+      "note": "census of eigenvalues below 1e-6*omega_max at k=0; the Floquet cell owns two translation zeros (rotation is not Floquet-compatible); the band [2,3] admits the A0 branch's k=0 zero",
+      "verdict": "PASS"
     }
   }
 }
