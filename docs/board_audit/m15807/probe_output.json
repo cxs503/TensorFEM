@@ -1,0 +1,48 @@
+{
+ "P1_equilibrium": {
+  "Ku_minus_f_over_f_free_dofs": 2.3419525682058736e-15,
+  "absolute_n": 5.577895066814142e-13,
+  "free_dofs": 23,
+  "ndof": 27
+ },
+ "P2_energy": {
+  "fem_half_u_dot_f_j": 0.004027681501753478,
+  "note": "U = N^2(1-nu)/(E t) * A/1 (half model); W = 1/2 u.f",
+  "rel_diff": 3.444819871180187e-07,
+  "strain_energy_ref_j": 0.004027682889217683
+ },
+ "P3_stress_from_nodal_w": {
+  "library_reported_rel_error_at_facets8": 7.309107154185312e-07,
+  "rel_error_independent": 1.269283135115984e-06,
+  "sigma_independent_pa": 124.99984133960811,
+  "sigma_reference_pR_2t_pa": 125.0,
+  "w_equator_m": 1.2820496547652114e-05,
+  "w_nonuniform_rel": 7.530901202361443e-06,
+  "w_pole_m": 1.2820593098272093e-05
+ },
+ "P4_sensitivity": {
+  "chord_meridian": {
+   "rel_error": 1.980992833178764,
+   "sigma_from_w_pa": 372.6241041473455,
+   "w_pole_m": 3.821785683562518e-05
+  },
+  "facets16": {
+   "rel_error": 5.780401719620623e-06,
+   "w_pole_m": 1.2820518990093701e-05
+  },
+  "full_shear_integration": {
+   "identical_to_reduced": false,
+   "rel_error": 5.141348339520846e-06,
+   "sigma_from_w_pa": 125.00064266854244,
+   "w_pole_m": 1.2820578735235122e-05
+  }
+ },
+ "case": {
+  "E": 68250000.0,
+  "R": 10.0,
+  "facets": 8,
+  "nu": 0.3,
+  "p": 1.0,
+  "t": 0.04
+ }
+}
