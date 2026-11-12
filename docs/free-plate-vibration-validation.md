@@ -171,3 +171,13 @@ OMP_NUM_THREADS=8 PYTHONPATH=src python -m pytest -q tests/test_free_plate_vibra
 模型还有精确位移恒等式 `ω²(k_w) = ω²(0) + k_w/(ρh)`，因此自由边地基工况的参考解不需要特征
 函数。证据：`benchmarks/free_plate_winkler_foundation_evidence.json`、
 `tests/test_free_plate_winkler_foundation.py`。上文原有记录保留不动。
+
+## 8. 后续（清偿记录，不改写上文结论）
+
+上文 §4 第 1 条把「自由边界多出的 1 个零能量模态」列为能力保留，并写明「需要 MITC4 或
+沙漏控制，本单未做」。该项已由 [自由板 MITC4 剪切规则验证](free-plate-mitc-vibration-validation.md)
+清偿：`solve_plate_vibration` 新增 `shear_treatment="mitc"`，自由板刚度零空间由 4 维回到物理上
+正确的 3 维，隔离出的多余位移场在 SRI 下能量只有舍入量级（1e-8 J）而在 MITC4 下为 6~7e8 J，
+即伪机构而非刚体；MITC4 频率在 n>=12 对 Rayleigh-Ritz 参考三阶以内 <3%。默认 SRI 路径逐位
+不变，上文结论保留不动。证据：`benchmarks/free_plate_mitc_vibration_evidence.json`、
+`tests/test_plate_vibration_mitc.py`。
