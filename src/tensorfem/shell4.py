@@ -28,7 +28,14 @@ def shell4_local_frame(xyz: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     basis = torch.stack((e1, e2, e3))
     local3 = (xyz - xyz[0]) @ basis.T
     scale = torch.linalg.vector_norm(local3[:, :2], dim=1).max()
-    if bool((local3[:, 2].abs().max() > 1e-10 * scale).item()):
+    # The out-of-plane residual is a cancellation in the projection, so its
+    # floor scales with both the *coordinate* magnitude and the dtype epsilon.
+    # A fixed 1e-10 relative bound alone rejects perfectly planar facets in
+    # float32 once the model is O(100) long (measured: a R=100 cylinder ring
+    # residual 1.6e-7, i.e. exactly float32 eps times the coordinate).
+    eps = torch.finfo(xyz.dtype).eps
+    tol = 1e-10 * scale + 32.0 * eps * torch.linalg.vector_norm(xyz, dim=1).max()
+    if bool((local3[:, 2].abs().max() > tol).item()):
         raise ValueError("shell4 nodes must be coplanar")
     return local3[:, :2], basis
 

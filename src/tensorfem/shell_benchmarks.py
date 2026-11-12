@@ -11,6 +11,7 @@ import math
 import torch
 
 from .shell4 import shell4_stiffness
+from .shell4_mitc import shell4_mitc_stiffness
 
 
 @dataclass(frozen=True)
@@ -33,6 +34,7 @@ def scordelis_lo_roof(
     dtype: torch.dtype = torch.float64,
     device: torch.device | str | None = None,
     plate_shear: str = "sri",
+    formulation: str = "shell4",
 ) -> ShellBenchmarkResult:
     """Solve the full Scordelis--Lo cylindrical-roof benchmark.
 
@@ -43,7 +45,10 @@ def scordelis_lo_roof(
     translation.  The reported response is downward displacement at the
     midspan of the positive-angle free edge.
 
-    ``plate_shear`` is forwarded to :func:`tensorfem.shell4.shell4_stiffness`.
+    ``plate_shear`` is forwarded to the element builder; ``formulation``
+    selects ``"shell4"`` (full 2x2 membrane block) or ``"shell4_mitc"``
+    (assumed constant in-plane shear).  ``plate_shear`` is forwarded to
+    :func:`tensorfem.shell4.shell4_stiffness`.
     The default ``"sri"`` (one-point transverse shear) leaves the flat facet
     with three spurious zero-energy mechanisms and the ladder then plateaus
     ~50 % above the published reference; ``"mitc"`` (assumed natural shear)
@@ -55,6 +60,11 @@ def scordelis_lo_roof(
     """
     if nx < 1 or nt < 1 or nx % 2 or nt % 2:
         raise ValueError("nx and nt must be positive even integers")
+    builder = {"shell4": shell4_stiffness, "shell4_mitc": shell4_mitc_stiffness}.get(
+        formulation.lower()
+    )
+    if builder is None:
+        raise ValueError(f"unknown formulation {formulation!r}")
     dev = torch.device(device or "cpu")
     L, R, angle = 50.0, 25.0, math.radians(40.0)
     E, nu, thickness, pressure = 4.32e8, 0.0, .25, 90.0
@@ -74,7 +84,7 @@ def scordelis_lo_roof(
     # Consistent resultant of uniform vertical load on each planar facet.
     for element in elements:
         xyz = nodes[element]
-        ke = shell4_stiffness(xyz, E, nu, thickness, plate_shear=plate_shear)
+        ke = builder(xyz, E, nu, thickness, plate_shear=plate_shear)
         dofs = torch.stack(tuple(6*element+k for k in range(6)), 1).reshape(-1)
         K[dofs[:, None], dofs] += ke
         area = .5*torch.linalg.vector_norm(torch.linalg.cross(xyz[1]-xyz[0], xyz[2]-xyz[0]))
