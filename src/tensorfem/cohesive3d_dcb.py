@@ -33,11 +33,24 @@ specimen width, ``z`` the opening direction.  The specimen is clamped at
 ``x = L - a0`` to the loaded end, so the cohesive ligament occupies
 ``0 <= x <= L - a0``.  Symmetric opening is prescribed at the loaded end
 (``+u_z`` on the upper arm, ``-u_z`` on the lower arm) and the reported load
-``P`` is the **total** load (sum of the two arm reactions), which makes
+``P`` is the **total** load (sum of the two arm reactions, i.e. ``P = 2*P_arm``
+where ``P_arm`` is the reaction of one arm -- the load tabulated by ASTM D5528),
+which makes
 
     ``C(a) = delta / P = 4 a**3 / (E b h**3) + a / (k G b h)``
 
-the standard DCB compliance, and ``G_I = 6 P**2 a**2 / (E b**2 h**3)``.
+the standard DCB compliance.  *Load conjugacy*: ``P`` is conjugate to
+``delta / 2`` (each arm carries ``P/2`` and moves ``delta/2``), so the strain
+energy is ``U = delta**2 / (2 C) / 2 = P**2 C / 4`` and Irwin-Kies gives
+
+    ``G_I = P**2 / (4 b) dC/da = 3 P**2 a**2 / (E b**2 h**3)``.
+
+The factor ``1/4`` (not the textbook ``1/2``, which belongs to the per-arm load)
+is what the earlier ``6 P**2 a**2 / (...)`` and ``P**2/(2b) dC/da`` combination
+got wrong: that pair double-counted, inflating ``G_I`` by 2x and under-predicting
+the LEFM peak load by ``sqrt(2)``.  The same doubled load convention is why the
+external-work accumulator must use ``dW = (P/2) d(delta)`` -- see
+``solve_dcb`` and ``docs/GAP-FEM-3D-COHESIVE-energy-convention-repair.md``.
 """
 
 from __future__ import annotations
@@ -446,14 +459,26 @@ def beam_serr(
     modulus: float | None = None,
     root_rotation: bool = True,
 ) -> float:
-    """Mode-I strain energy release rate ``G_I`` for the total load ``P``."""
+    """Mode-I strain energy release rate ``G_I`` for the total load ``P``.
+
+    ``G_I = P**2 / (4 b) dC/da`` with ``C`` and ``P`` the *total* convention
+    above (``P`` is conjugate to ``delta/2``, hence the ``1/4`` rather than the
+    per-arm ``1/2``).  With ``C = 4 a**3 / (E b h**3)`` this is
+
+        ``G_I = 3 P**2 a**2 / (E b**2 h**3)``.
+
+    The legazy ``6 P**2 a**2 / (E b**2 h**3)`` used the per-arm Irwin-Kies
+    prefactor on the total load and therefore overstated ``G_I`` by exactly 2x
+    (falsified against a convention-free FE energy-release-rate oracle; see
+    ``tests/test_cohesive3d_dcb_load_convention.py``).
+    """
     g = geometry or DCBGeometry()
     e = modulus if modulus is not None else effective_modulus(g)
     h, b = g.arm_thickness, g.width
     a = crack + (
         williams_root_rotation(h, e, g.shear_modulus) if root_rotation else 0.0
     )
-    return 6.0 * load**2 * a**2 / (e * b**2 * h**3)
+    return 3.0 * load**2 * a**2 / (e * b**2 * h**3)
 
 
 def beam_peak_load(
@@ -464,14 +489,19 @@ def beam_peak_load(
     modulus: float | None = None,
     root_rotation: bool = True,
 ) -> float:
-    """``P`` at which ``G_I == toughness`` (LEFM limit of the CZM peak)."""
+    """``P`` at which ``G_I == toughness`` (LEFM limit of the CZM peak).
+
+    Inverse of :func:`beam_serr` in the *total* load convention:
+    ``P = b h**1.5 sqrt(toughness * E / 3) / a`` (``/6`` before the
+    load-convention repair, which under-predicted the peak by ``sqrt(2)``).
+    """
     g = geometry or DCBGeometry()
     e = modulus if modulus is not None else effective_modulus(g)
     h, b = g.arm_thickness, g.width
     a = crack + (
         williams_root_rotation(h, e, g.shear_modulus) if root_rotation else 0.0
     )
-    return b * h**1.5 * math.sqrt(toughness * e / 6.0) / a
+    return b * h**1.5 * math.sqrt(toughness * e / 3.0) / a
 
 
 # --------------------------------------------------------------------------- #
@@ -500,7 +530,9 @@ def _reaction(fint: np.ndarray, upper: np.ndarray, lower: np.ndarray) -> float:
 
     The prescribed opening is symmetric (``+delta/2`` upper, ``-delta/2``
     lower), so each arm carries ``P/2`` and the total load is the sum of the two
-    reaction magnitudes.
+    reaction magnitudes.  ``P`` is therefore conjugate to ``delta/2``: work and
+    energy release rates must use the ``1/2`` (work) and ``1/4`` (Irwin-Kies)
+    prefactors of the total-load convention, not the per-arm ones.
     """
     return abs(float(fint[upper].sum())) + abs(float(fint[lower].sum()))
 
@@ -602,10 +634,13 @@ def solve_dcb(
         steps_taken += 1
         load = _reaction(fint, model.upper_load_dofs, model.lower_load_dofs)
         scale = max(scale, load)
-        if not curve:
-            work += 0.0
-        else:
-            work += 0.5 * (curve[-1]["load"] + load) * (delta - prev_delta)
+        # External work.  ``load`` is the *total* reaction of both arms, hence
+        # conjugate to ``delta / 2``: dW = (P/2) d(delta).  The previous
+        # accumulator used the per-arm prefactor 1/2 on the doubled load and
+        # skipped the very first increment, so W_ext came out 2x too large
+        # (measured energy-balance residual 46-50 % of W_ext).
+        prev_load = curve[-1]["load"] if curve else 0.0
+        work += 0.25 * (prev_load + load) * (delta - prev_delta)
         committed_damage = diag["damage"].mean(axis=1)
         sep_now = diag["separation"]
         tra_now = diag["traction"]
