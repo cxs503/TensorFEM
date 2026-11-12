@@ -108,10 +108,25 @@ AR3 = torch.arange(3, dtype=torch.long)
 # Specimen / interface properties
 # --------------------------------------------------------------------------- #
 LX = 150.0e-3        # specimen length
-WIDTH = 12.0e-3      # specimen width (single element)
+WIDTH = 48.0e-3      # specimen width: b/(2h) = 8 -> a genuine wide strip, so
+#                      the 3-D (anti-elastic) restraint is saturated and the
+#                      strip modulus E/(1-nu^2) is the correct 2-D reference
+#                      (measured saturation in artifacts/m16496/
+#                      enf_residual_probe.json: ratio 0.9386 at b/t=1 ->
+#                      0.8715 at b/t=8 vs the plane-strain limit 0.8911)
 H_ARM = 3.0e-3       # adherend thickness
 E_ADH = 70.0e9       # adherend modulus (aluminium)
 NU_ADH = 0.33
+# Bending of a strip restrained against transverse strain: the 2-D stress
+# state that the 3-D specimen converges to is plane strain, not plane stress.
+E_STRIP = E_ADH / (1.0 - NU_ADH ** 2)
+# ASTM D5528 modified-beam-theory crack-length offset: the arm root of a DCB
+# with a bonded ligament is not perfectly built in, which is equivalent to a
+# constant apparent crack extension.  Measured on this specimen by the
+# data-reduction route ``root_offset()`` below (declared value used for the
+# quick bands; the full run re-derives it and checks it by prediction).
+ROOT_OFFSET_H = 0.50
+ROOT_OFFSET = ROOT_OFFSET_H * H_ARM
 
 KN = 1.0e16          # penalty normal stiffness [Pa/m]
 KS = 4.0e15          # penalty shear stiffness [Pa/m]
@@ -135,20 +150,30 @@ CRACK_ENF = 45.0e-3  # initial debond from the left support (must be < L = LX/2)
 DA_ELEMS = 1         # elements the crack front is moved for dC/da
 
 # Predeclared acceptance thresholds (see module docstring).
-TOL_DCB_COMPLIANCE = 0.02
+# Declared-mesh bands: 2x the measured residual of the declared mesh (floor 5 %),
+# i.e. a regression gate rather than a physics allowance -- the 3-D restraint and
+# the arm-root rotation are now in the reference instead of in the band.
+TOL_DCB_COMPLIANCE = 0.03
 TOL_DCB_SERR = 0.05
-TOL_ENF_COMPLIANCE = 0.15
-TOL_ENF_SERR = 0.15
+TOL_ENF_COMPLIANCE = 0.05
+TOL_ENF_SERR = 0.05
+TOL_DCB_ROOT_OFFSET = 0.03   # da reduced at a=30/60 mm must predict a=45 mm
+TOL_QUICK_ROOT_OFFSET = 0.06  # same, coarse mesh (dx = 1 mm vs da = 1.7 mm)
 # Coarse-mesh bands for the regression smoke gate (``--quick``).  They are wider
 # than the verification thresholds above *because the mesh is coarser*, and are
 # declared here rather than relaxed after seeing a result.  The first version of
 # this file missed them by two orders of magnitude (99.99 % / 100 % / 104 % /
 # 99.8 %), so they still detect the defect they were written for.
+# Coarse-mesh (QUICK_MESH) bands.  They are set from the discretisation budget of
+# that mesh, not from the physics: measured coarse-mesh residuals with the strip
+# reference are 5.4 / 6.2 / 2.2 / 7.3 % (dcb C, dcb G, enf C, enf G), so ~40 %
+# head-room is kept on top of them.  The headline precision numbers are the full
+# MESH criteria.
 QUICK_TOL = {
     "dcb_linear_compliance": 0.10,
-    "dcb_linear_serr": 0.15,
-    "enf_linear_compliance": 0.20,
-    "enf_linear_serr": 0.25,
+    "dcb_linear_serr": 0.10,
+    "enf_linear_compliance": 0.08,
+    "enf_linear_serr": 0.12,
 }
 
 
@@ -405,29 +430,69 @@ def enf_rig(spec: Specimen):
 # --------------------------------------------------------------------------- #
 # Closed-form anchors
 # --------------------------------------------------------------------------- #
-def dcb_compliance(a: float, b=WIDTH, h=H_ARM, e=E_ADH) -> float:
-    """Two cantilever arms of length a: C = 4a^3/(E b h^3)."""
-    return 4.0 * a**3 / (e * b * h**3)
+def dcb_compliance(a: float, b=WIDTH, h=H_ARM, e=E_STRIP,
+                   da: float = ROOT_OFFSET) -> float:
+    """Two cantilever arms, ASTM D5528 modified beam theory:
+
+    ``C = 4 (a + da)^3 / (E_eff b h^3)``, ``da`` = apparent crack extension that
+    carries the arm-root flexibility (see ``root_offset``).
+    """
+    return 4.0 * (a + da) ** 3 / (e * b * h**3)
 
 
-def dcb_g(p: float, a: float, b=WIDTH, h=H_ARM, e=E_ADH) -> float:
-    return 6.0 * p**2 * a**2 / (e * b**2 * h**3)
+def dcb_g(p: float, a: float, b=WIDTH, h=H_ARM, e=E_STRIP,
+          da: float = ROOT_OFFSET) -> float:
+    """G_I = P^2/(2b) dC/da with C = 4 (a+da)^3 / (E_eff b h^3)."""
+    return 6.0 * p**2 * (a + da) ** 2 / (e * b**2 * h**3)
 
 
 def enf_compliance(a: float, half_span: float = LX / 2.0, b=WIDTH, h=H_ARM,
-                   e=E_ADH) -> float:
+                   e=E_STRIP) -> float:
     """ENF, crack tip before midspan: C = (2L^3+3a^3)/(96 E I), I = b h^3/12."""
     i_arm = b * h**3 / 12.0
     return (2.0 * half_span**3 + 3.0 * a**3) / (96.0 * e * i_arm)
 
 
-def enf_g(p: float, a: float, b=WIDTH, h=H_ARM, e=E_ADH) -> float:
+def enf_g(p: float, a: float, b=WIDTH, h=H_ARM, e=E_STRIP) -> float:
     return 9.0 * p**2 * a**2 / (16.0 * e * b**2 * h**3)
 
 
-def dcb_onset_load(a: float = CRACK_DCB, b=WIDTH, h=H_ARM, e=E_ADH, gic=GIC) -> float:
-    """LEFM propagation load of the DCB: P = sqrt(G_Ic E b^2 h^3 / (6 a^2))."""
-    return math.sqrt(gic * e * b**2 * h**3 / (6.0 * a**2))
+def dcb_onset_load(a: float = CRACK_DCB, b=WIDTH, h=H_ARM, e=E_STRIP, gic=GIC,
+                   da: float = ROOT_OFFSET) -> float:
+    """LEFM propagation load of the DCB: P = sqrt(G_Ic E b^2 h^3 / (6 (a+da)^2))."""
+    return math.sqrt(gic * e * b**2 * h**3 / (6.0 * (a + da) ** 2))
+
+
+def root_offset(mesh, a_lo: float, a_hi: float) -> dict:
+    """Data-reduce the DCB crack-length offset da from two measured compliances.
+
+    ASTM D5528 modified beam theory carries the root flexibility as a constant
+    apparent crack extension; with ``C = k (a + da)^3`` the offset follows from
+    the *measured* FE pair ``(a_lo, a_hi)`` alone and can then be checked by
+    prediction at the working crack length -- a falsifiable statement, unlike a
+    tuned reference.
+    """
+    c_lo, _ = dcb_compliance_fe(mesh, a_lo)
+    c_hi, _ = dcb_compliance_fe(mesh, a_hi)
+    k = 4.0 / (E_STRIP * WIDTH * H_ARM**3)
+    target = (c_hi - c_lo) / k
+    lo, hi = 0.0, 10.0 * H_ARM
+    for _ in range(200):
+        mid = 0.5 * (lo + hi)
+        if (a_hi + mid) ** 3 - (a_lo + mid) ** 3 < target:
+            lo = mid
+        else:
+            hi = mid
+    da = 0.5 * (lo + hi)
+    c_pred = k * (CRACK_DCB + da) ** 3
+    c_meas, _ = dcb_compliance_fe(mesh, CRACK_DCB)
+    return {
+        "da_m": da, "da_over_h": da / H_ARM,
+        "crack_lengths_used_m": [a_lo, a_hi],
+        "c_predicted_at_working_length_m": c_pred,
+        "c_measured_at_working_length_m": c_meas,
+        "prediction_rel_error": abs(c_pred - c_meas) / c_meas,
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -464,19 +529,19 @@ def _compliance_derivative(cfun, a: float, dx: float, n_elem: int = DA_ELEMS) ->
     return (c_hi - c_lo) / (2.0 * n_elem * dx)
 
 
-def check_dcb_linear(mesh) -> dict:
+def check_dcb_linear(mesh, da: float = ROOT_OFFSET) -> dict:
     a = CRACK_DCB
     c_fem, dx = dcb_compliance_fe(mesh, a)
-    c_ref = dcb_compliance(a)
+    c_ref = dcb_compliance(a, da=da)
     g_fem = _compliance_derivative(lambda x: dcb_compliance_fe(mesh, x)[0], a, dx)
     g_fem /= 2.0 * WIDTH
-    g_ref = dcb_g(1.0, a)
+    g_ref = dcb_g(1.0, a, da=da)
     return {
         "compliance_fem": c_fem, "compliance_ref": c_ref,
         "compliance_rel_error": abs(c_fem - c_ref) / c_ref,
         "G_I_fem": g_fem, "G_I_ref": g_ref,
         "G_I_rel_error": abs(g_fem - g_ref) / g_ref,
-        "dx": dx,
+        "dx": dx, "root_offset_m": da,
     }
 
 
@@ -539,7 +604,7 @@ def simulate_dcb_czm(mesh, d_max=2.2e-3, n_steps=140) -> dict:
 # --------------------------------------------------------------------------- #
 # Driver
 # --------------------------------------------------------------------------- #
-def linear_criteria(mesh, tol=None) -> tuple[dict, dict]:
+def linear_criteria(mesh, tol=None, da: float = ROOT_OFFSET) -> tuple[dict, dict]:
     """The four linear specimen checks (compliance + SERR for DCB and ENF)."""
     tol = tol or {
         "dcb_linear_compliance": TOL_DCB_COMPLIANCE,
@@ -548,15 +613,17 @@ def linear_criteria(mesh, tol=None) -> tuple[dict, dict]:
         "enf_linear_serr": TOL_ENF_SERR,
     }
     out = {}
-    dcb_lin = check_dcb_linear(mesh)
+    dcb_lin = check_dcb_linear(mesh, da)
     out["dcb_linear_compliance"] = {
-        "criterion": f"FE compliance vs 4a^3/(E b h^3), rel < {tol['dcb_linear_compliance']:.0%}",
+        "criterion": f"FE compliance vs 4(a+da)^3/(E_strip b h^3), rel < "
+                     f"{tol['dcb_linear_compliance']:.0%}",
         "ref": dcb_lin["compliance_ref"], "got": dcb_lin["compliance_fem"],
         "rel_error": dcb_lin["compliance_rel_error"],
         "passed": dcb_lin["compliance_rel_error"] < tol["dcb_linear_compliance"],
     }
     out["dcb_linear_serr"] = {
-        "criterion": f"FE dC/da SERR vs 6P^2a^2/(E b^2 h^3), rel < {tol['dcb_linear_serr']:.0%}",
+        "criterion": f"FE dC/da SERR vs 6P^2(a+da)^2/(E_strip b^2 h^3), rel < "
+                     f"{tol['dcb_linear_serr']:.0%}",
         "ref": dcb_lin["G_I_ref"], "got": dcb_lin["G_I_fem"],
         "rel_error": dcb_lin["G_I_rel_error"],
         "passed": dcb_lin["G_I_rel_error"] < tol["dcb_linear_serr"],
@@ -585,8 +652,31 @@ def run(quick: bool = False) -> dict:
     t_start = time.time()
     mesh = dict(QUICK_MESH) if quick else dict(MESH)
     out = {"criteria": {}, "mesh": mesh}
-    crit, _ = linear_criteria(mesh, QUICK_TOL if quick else None)
+    # ASTM D5528 data reduction first: the arm-root offset is a specimen
+    # property, reduced from two measured compliances and then *used* as the
+    # reference parameter (and checked by prediction at the working length).
+    ro = root_offset(QUICK_MESH if quick else mesh, 30.0e-3, 60.0e-3)
+    # On QUICK_MESH the reduction is a difference of two compliances that each
+    # carry ~4 % discretisation error while da is well below one element, so the
+    # reduced value is a fraction of an element and is *not* used as the reference
+    # there: the declared offsets stands (it is a specimen property, not a mesh
+    # property) and the reduction is only checked by prediction.
+    da_used = ROOT_OFFSET if quick else ro["da_m"]
+    crit, _ = linear_criteria(mesh, QUICK_TOL if quick else None, da=da_used)
     out["criteria"].update(crit)
+    # the offset (1.7 mm) is smaller than the coarse-mesh element width (1 mm), so
+    # its reduction is only accurate to a few percent on QUICK_MESH
+    tol_ro = TOL_QUICK_ROOT_OFFSET if quick else TOL_DCB_ROOT_OFFSET
+    out["criteria"]["dcb_root_offset_prediction"] = {
+        "criterion": f"C = 4(a+da)^3/(E_strip b h^3) with da reduced at a=30/60 mm "
+                     f"predicts C at a=45 mm, rel < {100 * tol_ro:.0f}%",
+        "ref": ro["c_measured_at_working_length_m"],
+        "got": ro["c_predicted_at_working_length_m"],
+        "rel_error": ro["prediction_rel_error"],
+        "da_m": ro["da_m"], "da_over_h": ro["da_over_h"],
+        "crack_lengths_used_m": ro["crack_lengths_used_m"],
+        "passed": ro["prediction_rel_error"] < tol_ro,
+    }
 
     if quick:
         czm = simulate_dcb_czm(QUICK_CZM_MESH, d_max=QUICK_CZM_D_MAX,
@@ -652,6 +742,9 @@ def run(quick: bool = False) -> dict:
         "nu": NU_ADH, "kn": KN, "ks": KS, "tn0": TN0, "ts0": TS0,
         "G_Ic": GIC, "G_IIc": GIIC, "bk_eta": BK_ETA,
         "a_dcb_m": CRACK_DCB, "a_enf_m": CRACK_ENF, "contact_k": KC,
+        "E_strip_Pa": E_STRIP, "strip_convention": "E/(1-nu^2)",
+        "dcb_root_offset_m": ROOT_OFFSET,
+        "dcb_root_offset_over_h": ROOT_OFFSET_H,
         "process_zone_m": E_ADH * GIC / TN0**2,
     }
     return out

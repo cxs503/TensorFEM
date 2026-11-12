@@ -112,3 +112,82 @@ of the stored artifact whose references are recomputed from the closed forms.
   D5528 area method) is the natural next step.
 * Runtime of the production route is ~8 min (dominated by the per-element
   Python loop over `cohesive_hex8_response`, ~11 ms per element).
+
+## Reference conventions: strip modulus and DCB root offset (m16496)
+
+The first version of this benchmark compared the 3-D specimen against
+plane-stress Euler-Bernoulli beam theory with a perfectly built-in DCB arm
+root.  Two model errors of order 10 % were then carried into the criteria,
+and on the DCB they *cancelled*, so the 0.04 % agreement that the previous
+artifact reported was not a statement about the cohesive element.  The
+controlled study that exposed this lives in `artifacts/m16496/` (probe
+scripts plus their JSON output); the outcome is summarised here.
+
+### Controlled study (predeclared alternatives)
+
+Candidate explanations for the ENF residual, each with a discriminating
+measurement:
+
+* **semi-discretisation** -- shrink the element size; measured: the ratio
+  moves by <1 % between `nx`=300 and 600 (`artifacts/m16496/enf_residual_probe.json`,
+  key `P2_mesh`), so refinement is not the cause;
+* **transverse shear (Timoshenko)** -- has the opposite sign (it makes the
+  specimen *more* compliant) and accounts for <1 % here;
+* **3-D (anti-elastic) restraint of the strip** -- signature: the residual
+  vanishes as `nu -> 0` and grows with the width/thickness ratio.  Both are
+  observed.
+
+| b/(2h) | C_FE / C_EB (nu=0.33) |
+|---|---|
+| 1 | 0.9386 |
+| 2 | 0.9055 |
+| 4 | 0.8813 |
+| 8 | 0.8715 |
+
+At `nu`=0 -- where the plane-stress and plane-strain moduli coincide -- the
+ENF specimen matches the Euler-Bernoulli closed form to
+1.8 %.  The stiffening that appears at
+`nu`=0.33 therefore comes from the transverse restraint, and it saturates
+at the plane-strain limit `1/(1-nu^2)` = 1.1222 as the strip
+gets wider.
+
+### What was changed
+
+1. **Specimen width** 48 mm (`b/(2h)` = 8), i.e. a
+   genuine wide strip: the 3-D restraint is saturated, so the 2-D reference
+   is unambiguous.  The mesh still has one element across the width, so the
+   change costs no degrees of freedom.
+2. **Strip modulus** `E_eff = E/(1-nu^2)` = 7.8555e+10 Pa in
+   all four closed forms (compliance and SERR, DCB and ENF).
+3. **DCB root offset** `da` = 1.246 mm = 0.42 h (ASTM D5528 modified beam theory).  It is not tuned:
+   the production code reduces it from the *measured* compliances at
+   `a` = 30 mm and 60 mm and then **predicts** the
+   working length `a` = 45 mm; that prediction is
+   itself a criterion (`dcb_root_offset_prediction`).
+
+### Resulting residuals (declared mesh)
+
+| criterion | reference | residual | band | pass |
+|---|---|---|---|---|
+| DCB compliance | FE compliance vs 4(a+da)^3/(E_strip b h^3), rel < 3% | 1.52 % | see criterion | yes |
+| DCB SERR (mode I) | FE dC/da SERR vs 6P^2(a+da)^2/(E_strip b^2 h^3), rel < 5% | 0.10 % | see criterion | yes |
+| ENF compliance | FE compliance vs (2L^3+3a^3)/(96 E I), rel < 5% | 0.01 % | see criterion | yes |
+| ENF SERR (mode II) | FE dC/da SERR vs 9P^2a^2/(16 E b^2 h^3), rel < 5% | 1.88 % | see criterion | yes |
+| DCB root-offset prediction | C = 4(a+da)^3/(E_strip b h^3) with da reduced at a=30/60 mm predicts C at a=45 mm, rel < 3% | 1.50 % | see criterion | yes |
+
+The ENF is the criterion that moved: 11.8 % -> 1.9 % on the mode II SERR and 7.4 % -> 0.0 % on the
+compliance.  The DCB compliance number stays small, but it is now small for
+the right reason: at `nu`=0, where no 3-D restraint exists, the DCB specimen
+is 11.4 % more compliant than the plane-stress closed form --
+that excess is the root rotation, and `da` now carries it instead of
+cancelling against the strip stiffening.
+
+### Standing limitations
+
+* The plane-strain reference is exact only in the wide-strip limit; the
+  residue quoted above is the measured deviation from that limit.
+* `da` is a specimen property (arm root flexibility), not a property of the
+  cohesive element; it is reduced at run time and it is *not* transferable to
+  a specimen with different root bonding.
+* The cohesive-zone propagation route stays a diagnostic: with a process zone
+  `l_ch/a ~ 7 %` its peak load lags the LEFM onset load by `O(l_ch/a)`.

@@ -67,12 +67,71 @@ def test_linear_routes_pass_quick_bands():
     failed = {k: v for k, v in criteria.items() if not v["passed"]}
     assert not failed, failed
     # the shipped (inverted) rig missed these two by two orders of magnitude
-    assert criteria["dcb_linear_compliance"]["rel_error"] < 0.10
-    assert criteria["enf_linear_compliance"]["rel_error"] < 0.20
+    assert criteria["dcb_linear_compliance"]["rel_error"] < 0.08
+    assert criteria["enf_linear_compliance"]["rel_error"] < 0.08
     # the SERR routes must be energy-consistent with the compliance derivative
     assert criteria["dcb_linear_serr"]["got"] == pytest.approx(
         detail["dcb"]["G_I_fem"], rel=1e-12
     )
+
+
+def test_reference_uses_the_strip_modulus():
+    B = benchmark()
+    """Material control (nu = 0 vs 0.33) on the same mesh and geometry.
+
+    A wide strip restrained against transverse strain is a plane-strain
+    problem: the 3-D solution must follow ``E/(1-nu^2)``.  At ``nu = 0`` the two
+    moduli coincide, so the FE compliance must then match the closed form; at
+    ``nu = 0.33`` the *plane-stress* closed form is missed by O(10 %) while the
+    strip form is not.  This is what justifies ``E_STRIP`` in the reference --
+    without it the criterion would be measuring the specimen's 3-D restraint
+    instead of the cohesive element.
+    """
+    mesh = B.QUICK_MESH
+    a = B.CRACK_ENF
+
+    def c_of(nu):
+        spec = B.build_specimen(mesh["nx"], mesh["nz"], a)
+        model = B.InterfaceModel(spec, B.make_law(), nu=nu, with_contact=True)
+        fixed, load_z = B.enf_rig(spec)
+        fext = np.zeros(spec.n_dofs)
+        fext[load_z] = -1.0 / load_z.size
+        u, _ = B.linear_solution(model, fixed, fext)
+        return float(-u[torch.from_numpy(load_z)].mean())
+
+    c0, c33 = c_of(0.0), c_of(0.33)
+    ref_plane_stress = B.enf_compliance(a, e=B.E_ADH)
+    ref_strip = B.enf_compliance(a)  # E_STRIP
+
+    # nu = 0: both references coincide, the FE tracks the beam closed form
+    assert abs(c0 - ref_plane_stress) / ref_plane_stress < 0.06
+    # nu = 0.33: the plane-stress form is off by the 3-D restraint factor
+    assert abs(c33 - ref_plane_stress) / ref_plane_stress > 0.06
+    assert abs(c33 - ref_strip) / ref_strip < 0.06
+    # and the shift is the Poisson factor, 1 - nu^2, to within the mesh budget
+    assert c33 / c0 == pytest.approx(1.0 - B.NU_ADH**2, rel=0.05)
+
+
+def test_dcb_root_offset_is_a_constant_crack_extension():
+    B = benchmark()
+    """ASTM D5528 data reduction: da from two crack lengths predicts a third.
+
+    The DCB closed form assumes the arm root at the crack tip is built in.  It is
+    not: the bonded ligament rotates, which is equivalent to a constant apparent
+    crack extension ``da`` (measured here as a fraction of the arm thickness).
+    Reducing ``da`` at a = 30/60 mm and *predicting* the compliance at the working
+    length a = 45 mm is a falsifiable statement about that model, so it is used as
+    a criterion rather than a tuned reference.
+    """
+    ro = B.root_offset(B.QUICK_MESH, 30.0e-3, 60.0e-3)
+    # the reduction is a difference of two compliances, so on QUICK_MESH
+    # (dx = 1 mm, ~4 % discretisation error) the offset itself is only resolved
+    # to a fraction of an element; what must hold is that it stays a small
+    # correction and that it still predicts the working crack length.  The
+    # sharp ``da/h`` range is asserted on the declared mesh, in the stored
+    # artifact test.
+    assert 0.0 < ro["da_m"] < 0.2 * 30.0e-3, ro
+    assert ro["prediction_rel_error"] < B.TOL_QUICK_ROOT_OFFSET, ro
 
 
 def test_dcb_rig_is_not_the_rigid_one():
@@ -143,11 +202,14 @@ def test_stored_artifact_is_self_consistent():
     assert set(out["criteria"]) == {
         "dcb_linear_compliance", "dcb_linear_serr",
         "enf_linear_compliance", "enf_linear_serr",
+        "dcb_root_offset_prediction",
     }
     # references are recomputed from the closed forms, not trusted from the JSON
+    # the DCB reference carries the root offset the artifact reduced at run time
+    da = out["criteria"]["dcb_root_offset_prediction"]["da_m"]
     refs = {
-        "dcb_linear_compliance": B.dcb_compliance(B.CRACK_DCB),
-        "dcb_linear_serr": B.dcb_g(1.0, B.CRACK_DCB),
+        "dcb_linear_compliance": B.dcb_compliance(B.CRACK_DCB, da=da),
+        "dcb_linear_serr": B.dcb_g(1.0, B.CRACK_DCB, da=da),
         "enf_linear_compliance": B.enf_compliance(B.CRACK_ENF),
         "enf_linear_serr": B.enf_g(1.0, B.CRACK_ENF),
     }
@@ -165,4 +227,15 @@ def test_stored_artifact_is_self_consistent():
     assert out["mesh"]["nx"] * out["mesh"]["nz"] > 0
     assert math.isclose(out["model"]["process_zone_m"],
                         B.E_ADH * B.GIC / B.TN0**2, rel_tol=1e-12)
+    # reference conventions are part of the evidence: plane-strain strip modulus
+    # and the DCB root-flexibility offset
+    assert math.isclose(out["model"]["E_strip_Pa"],
+                        B.E_ADH / (1.0 - B.NU_ADH**2), rel_tol=1e-12)
+    assert math.isclose(out["model"]["dcb_root_offset_m"],
+                        B.ROOT_OFFSET_H * B.H_ARM, rel_tol=1e-12)
+    ro = out["criteria"]["dcb_root_offset_prediction"]
+    assert ro["passed"] and ro["rel_error"] < B.TOL_DCB_ROOT_OFFSET
+    assert 0.3 < ro["da_over_h"] < 0.9
+
+    assert math.isclose(out["model"]["WIDTH_m"], B.WIDTH, rel_tol=1e-12)
     assert "dcb_cohesive_zone_propagation" in out["diagnostics"]
