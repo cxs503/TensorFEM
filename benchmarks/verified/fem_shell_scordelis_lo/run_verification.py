@@ -355,8 +355,16 @@ def generate_gates(flat_results, cyl_results, flat_ladder=None, cyl_ladder=None)
             },
         },
         "limitations": [
-            "Flat facet Shell4 element cannot capture curved-shell membrane-bending coupling: "
-            "its ladder oscillates around a value ~50% above the reference",
+            # Corrected in m16449: the ~50% plateau is a rank deficiency of the
+            # one-point transverse-shear block (3 spurious zero-energy modes per
+            # element), not a limitation of faceting.  The same faceted mesh with
+            # assumed natural shear reaches 2.35% at 16x16 and 0.75% at 32x32 --
+            # see shear_treatment_study.py and
+            # docs/CASE-FEM-SCORDELIS-LO-shear-rank-diagnosis.md.
+            "Flat facet Shell4 with the default one-point transverse-shear rule is rank "
+            "deficient (3 spurious zero-energy modes per element) and its ladder plateaus "
+            "~50% above the reference; with assumed natural shear the same facets reach "
+            "2.35% at 16x16",
             "Cylindrical shell4 is specialized for cylindrical geometry only",
             "General curved shells require either specialized elements or improved flat facet formulations",
             "Accuracy is certified at the Richardson limit of a 4-level ladder; a finer reference "

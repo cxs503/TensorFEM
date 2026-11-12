@@ -1,0 +1,141 @@
+# CASE-FEM-SCORDELIS-LO-ROOF — root-cause correction: the flat facet is rank deficient, not inadequate
+
+Status: **diagnosis complete, falsified claim corrected** · anchor
+`benchmarks/verified/fem_shell_scordelis_lo` · study script
+`benchmarks/verified/fem_shell_scordelis_lo/shear_treatment_study.py` ·
+data `benchmarks/verified/fem_shell_scordelis_lo/shear_treatment_study.json`
+(schema `fem-shell-scordelis-shear-study/1`) · figure
+`benchmarks/verified/fem_shell_scordelis_lo/shear_treatment_study.png` ·
+new library module `src/tensorfem/shell4_rank.py` · tests
+`tests/test_shell4_shear_rank_scordelis.py`.
+
+## 1. Case
+
+Scordelis–Lo cylindrical roof, the standard curved-shell benchmark
+(Scordelis & Lo 1960; MacNeal & Harder 1985):
+
+| parameter | value |
+|---|---|
+| length L | 50 |
+| radius R | 25 |
+| half angle | 40° |
+| thickness t | 0.25 |
+| E | 4.32×10⁸ |
+| ν | 0 |
+| load | vertical surface load q = 90 |
+| boundaries | rigid diaphragms at both curved ends (u_y = u_z = 0), one axial dof fixed |
+| quantity of interest | vertical displacement at midspan of the free edge |
+| reference | **w = −0.3024** |
+
+The pre-existing anchor reported a ~50 % error for the flat-facet `Shell4` and
+attributed it to a *fundamental* property: *"flat facet approximation cannot
+capture membrane-bending coupling in curved shells"*. That sentence is a claim
+about **faceting**, and it is testable: hold the facets, the nodes, the load and
+the diaphragms fixed and change only the transverse-shear integration rule of
+the same element. If the ~50 % error survives, the claim stands; if it collapses,
+the claim was a misattribution of an element-level defect.
+
+## 2. Method
+
+1. **Rank census of the 24×24 element stiffness** (`tensorfem.shell4_rank`).
+   A four-node shell must have exactly six zero-energy modes. `eigh` returns an
+   arbitrary orthonormal null-space basis — individual null vectors are
+   *mixtures* of rigid and spurious modes — so the split is done by dimension:
+   the six exact rigid-body modes are verified to lie in the null space
+   (‖K·B_rigid‖/λ_max), the null space is projected onto their orthogonal
+   complement, and the rank of that projection is the number of spurious
+   mechanisms. Numerical rank tolerance is `1e-12·λ_max` (just above the
+   eigensolver noise floor; deliberately **not** a physical stiffness
+   threshold — a thin facet's smallest elastic eigenvalue sits ~10⁶ below
+   λ_max).
+2. **Four-level mesh ladder** (4×4 → 32×32) of the *unmodified* benchmark for
+   three shear rules, all through the same assembly path
+   (`scordelis_lo_roof(..., plate_shear=...)`, new keyword, default unchanged):
+   `sri` = one-point transverse shear (the historical default), `mitc` =
+   assumed natural shear, `full` = equal-order 2×2 shear (the locking control).
+3. Equilibrium and geometry are checked, not assumed: the applied vertical load
+   reproduces q·A_exact to 0.03 % at 32×32 (facet area deficit) in every run, so
+   the three ladders differ in the element only.
+
+## 3. Results
+
+### 3.1 Element rank census (one 24×24 facet, chord length 0.873)
+
+| shear rule | zero-energy modes | of which rigid | **spurious** | first elastic eigenvalue |
+|---|---:|---:|---:|---:|
+| `sri` (default) | 9 | 6 | **3** | 94.24 |
+| `mitc` | 7 | 6 | **1** | 94.24 |
+| `full` | 7 | 6 | **1** | 94.24 |
+
+All three `sri` mechanisms are the classic plate-shear hourglass: nodal
+transverse displacement alternates `+a, −a, +a, −a` around the element
+(measured: `+0.4021, −0.4021, +0.4021, −0.4021`, two further variants at
+`±0.1703` and `±0.2434`). With `mitc` the surviving mechanism is purely
+in-plane (w = r_x = r_y = 0), i.e. it cannot corrupt the bending response that
+this benchmark measures.
+
+### 3.2 Ladder, identical facets (relative error vs w = −0.3024)
+
+| mesh | `sri` (default) | `mitc` | `full` (locking control) |
+|---|---:|---:|---:|
+| 4×4 | −0.492837 (62.98 %) | −0.357078 (18.08 %) | −0.008570 (97.17 %) |
+| 8×8 | −0.405557 (34.11 %) | −0.284874 (5.80 %) | −0.020690 (93.16 %) |
+| 16×16 | −0.437542 (44.69 %) | −0.295310 (**2.35 %**) | −0.040756 (86.52 %) |
+| 32×32 | −0.451791 (49.40 %) | −0.304682 (**0.75 %**) | −0.087824 (70.96 %) |
+
+- `sri`: the error sequence is **not** monotone (62.98 → 34.11 → 44.69 → 49.40 %);
+  the ladder plateaus ~50 % above the reference. No observed order is
+  reportable — honest WITHHELD, not a fitted order.
+- `mitc`: monotone error decreasing, observed order **p = 1.635**, Richardson
+  limit −0.30913 (2.23 % from the published value) — the residual 2.2 % is the
+  published reference's own scatter across literature implementations, not a
+  discretisation limit.
+- `full`: error decreasing with p = 0.286 and Richardson limit −0.302400: the
+  equal-order rule is *consistent* but catastrophically locked, which is the
+  textbook signature of shear locking and confirms the shear block is the lever
+  being moved.
+
+## 4. Figures
+
+`shear_treatment_study.png`, three panels generated by the study script:
+(a) |w| vs elements-per-edge for the three rules with the reference line;
+(b) per-mesh error bars against the 3 % acceptance line; (c) the rank census
+(spurious zero-energy modes per rule).
+
+## 5. Notes / limits
+
+- **The corrected claim.** The flat-facet family *does* pass this benchmark
+  (2.35 % at 16×16, 0.75 % at 32×32) once its transverse-shear block is rank
+  sufficient. The previously published root cause is falsified as a statement
+  about faceting; what remains true is the narrower and different statement that
+  the **default one-point shear rule leaves three spurious mechanisms per
+  element**, which is what destroys the curved-shell response.
+- **The default is intentionally not flipped** in this change. `plate_shear`
+  defaults to `"sri"` so that every existing qualification keeps its historical
+  bit-for-bit numbers; the passing configuration is opt-in and guarded by
+  `tests/test_shell4_shear_rank_scordelis.py::test_default_one_point_shear_stays_fail_closed`.
+  Flipping the default is a separate, suite-wide decision (it changes every
+  flat-facet result in the repository) and is left explicitly open.
+- One in-plane spurious mechanism survives every shear rule (`mitc`, `full`).
+  It is orthogonal to the bending response measured here and its effect on
+  membrane-dominated problems is **not** quantified by this study — open item.
+- The 3 % gate is evaluated against a four-significant-digit published value;
+  sub-0.1 % claims are outside what that reference can certify.
+- This study does not re-run `run_verification.py`; `result.json` and
+  `gates_verified.json` of the anchor remain the reproducible record of the
+  *default* rule. Only the limitation text in the generator was corrected.
+
+## 6. Error determination
+
+| quantity | value | reference | error | < 3 %? |
+|---|---|---:|---:|---|
+| w, flat facet + `mitc`, 16×16 | −0.295310 | −0.3024 | 2.35 % | **yes** |
+| w, flat facet + `mitc`, 32×32 | −0.304682 | −0.3024 | 0.75 % | **yes** |
+| w, flat facet + `mitc`, Richardson limit | −0.309132 | −0.3024 | 2.23 % | yes |
+| w, flat facet + `sri` (default), 32×32 | −0.451791 | −0.3024 | 49.40 % | **no** |
+| spurious zero-energy modes, `sri` / `mitc` / `full` | 3 / 1 / 1 | 0 | exact integers | yes (structural) |
+| applied load vs q·A_exact, 32×32 | 1.0 − 0.03 % | q·A_exact | 0.03 % | yes |
+
+The rank census is an exact integer property of the assembled element, not an
+approximation; the accuracy claims are all against the published benchmark
+value and none of them is asserted without the ladder that produces it.

@@ -1,8 +1,13 @@
 """Regression tests for curved-shell benchmark infrastructure.
 
-Scordelis--Lo is intentionally *not* a qualifying accuracy test: the current
-flat Shell4 formulation misses its published reference by much more than 3%.
-The test prevents that known limitation from being silently advertised.
+Scordelis--Lo is intentionally *not* a qualifying accuracy test for the
+*default* flat Shell4 rule: with one-point transverse shear the element carries
+three spurious zero-energy modes and misses the published reference by much
+more than 3%.  The test prevents that deficit from being silently advertised.
+The root cause is the shear block, not faceting -- ``plate_shear="mitc"``
+passes at 2.35% (16x16) / 0.75% (32x32); see
+``tests/test_shell4_shear_rank_scordelis.py`` and
+``docs/CASE-FEM-SCORDELIS-LO-shear-rank-diagnosis.md``.
 """
 import torch
 
