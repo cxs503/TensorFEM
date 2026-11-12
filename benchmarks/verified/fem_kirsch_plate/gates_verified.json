@@ -3,7 +3,7 @@
   "anchor": "fem_kirsch_plate",
   "title": "KIRSCH-PLATE: circular hole in a tension plate, K_t = 3 (Kirsch 1898)",
   "mission": "CASE-KIRSCH-PLATE",
-  "generated_at": "2026-11-12T17:55:24+00:00",
+  "generated_at": "2026-11-12T21:50:15+00:00",
   "criteria": {
     "kirsch_limit_rel_error_max": 0.05,
     "kirsch_extrapolated_rel_error_max": 0.01,
