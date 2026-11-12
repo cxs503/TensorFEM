@@ -1,0 +1,1224 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "benchmarks/hull_girder_uls/csr_uls_anchor",
+  "topic": "w24_ship_hull_girder_structure",
+  "mission_id": 15972,
+  "repository": "TensorFEM",
+  "generated_by": "src/tensorfem/csr_uls_factors.py",
+  "generator_sha256": "6c42c0b061c3906886afc730e37a58ff7a3195f848da73ddc11901e572d2f5d2",
+  "anchor_id": "AN-IACS-CSR",
+  "status": "TRANSCRIBED",
+  "document_citation": "IACS Common Structural Rules for Bulk Carriers and Oil Tankers, 01 January 2019 edition, Pt 1 Ch 5 (ULS) and Pt 1 Ch 4 Sec 4 (wave loads); IACS UR S7 Rev.4 (2010); IACS UR S11 Rev.10 (2020) as cross-check",
+  "supersedes": "benchmarks/hull_girder_uls/csr_factor_register.json (status=BLOCKED, mission 15094) and benchmarks/anchors/iacs-csr-w22.json (status=NOT_OBTAINED, mission 14512)",
+  "acquisition_channel": "IACS public object store: unauthenticated ListObjectsV2 on https://iacs.s3.af-south-1.amazonaws.com locates the documents, then GetObject retrieves them (sha256 recorded per document). www.iacs.org.uk still answers HTTP 403 through the sandbox proxy, which is why the earlier missions recorded BLOCKED",
+  "source_documents": [
+    {
+      "id": "AN-IACS-CSR",
+      "title": "IACS Common Structural Rules for Bulk Carriers and Oil Tankers (harmonised CSR), 01 January 2019 edition",
+      "assigned_by_mission": true,
+      "url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2022/03/15144815/csr-h-01-jan-2019.pdf",
+      "sha256": "ffb51b3153e43a7d3a2e840971bc948128152e1c9ffe66c3891d6e620e250e7f",
+      "bytes": 21439977,
+      "pdf_pages": 820,
+      "retrieved_utc": "2026-11-12",
+      "retrieval_note": "unauthenticated GET from the IACS public object store; www.iacs.org.uk itself answers HTTP 403 through the sandbox proxy, the object store does not",
+      "text_extraction": "pypdf 6.19.0"
+    },
+    {
+      "id": "AN-IACS-UR-S7",
+      "title": "IACS UR S7 Rev.4 (May 2010), Minimum Longitudinal Strength Standards",
+      "assigned_by_mission": true,
+      "url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2022/05/18114816/ur-s7rev4.pdf",
+      "sha256": "25a82bfec5f2beeafb780cbf2a1498efbe1a1573f05b923b1cf9b9729cac2096",
+      "bytes": 18903,
+      "pdf_pages": 1,
+      "retrieved_utc": "2026-11-12",
+      "text_extraction": "pypdf 6.19.0 (single printed page)"
+    },
+    {
+      "id": "AN-IACS-UR-S11",
+      "title": "IACS UR S11 Rev.10 (2020), Longitudinal Strength Standard",
+      "assigned_by_mission": false,
+      "role": "cross-check only: independent statement of the wave bending moment coefficients and of the permissible bending stress 175/k",
+      "url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2022/05/18115332/ur-s11rev10.pdf",
+      "sha256": "4711024b4b537cd7e0c6203e01b5936575fc3f542349ec1addf589397986ed53",
+      "bytes": 1501639,
+      "pdf_pages": 31,
+      "retrieved_utc": "2026-11-12",
+      "text_extraction": "pypdf 6.19.0"
+    }
+  ],
+  "transcription": {
+    "entries": [
+      {
+        "id": "CSR-ULS-01",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 5, Sec 2, [2.1.2]",
+        "table": null,
+        "page": 343,
+        "status": "TRANSCRIBED",
+        "subject": "hull girder ultimate strength checking criterion",
+        "quote": "The vertical hull girder ultimate bending capacity at any hull transverse section is to satisfy the following criteria:",
+        "printed_form": "M <= MU / gamma_R",
+        "relation": {
+          "name": "uls_criterion",
+          "lhs": {
+            "expr": [
+              [
+                "M",
+                1
+              ]
+            ],
+            "unit": "kNm"
+          },
+          "rhs": [
+            {
+              "expr": [
+                [
+                  "MU",
+                  1
+                ],
+                [
+                  "gamma_R",
+                  -1
+                ]
+              ],
+              "unit": "kNm"
+            }
+          ],
+          "factor": 1.0
+        },
+        "symbols": {
+          "M": "vertical bending moment in the ULS check, kNm",
+          "MU": "vertical hull girder ultimate bending capacity, kNm",
+          "gamma_R": "partial safety factor for the vertical hull girder ultimate bending capacity"
+        }
+      },
+      {
+        "id": "CSR-ULS-02",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 5, Sec 2, [2.2.1]",
+        "table": null,
+        "page": 343,
+        "status": "TRANSCRIBED",
+        "subject": "ULS bending moment load combination",
+        "quote": "The vertical hull girder bending moment, M in hogging and sagging conditions, to be considered in the ultimate strength check is to be taken as:",
+        "printed_form": "M = gamma_S * Msw-U + gamma_W * f_beta * Mwv",
+        "relation": {
+          "name": "uls_load_combination",
+          "lhs": {
+            "expr": [
+              [
+                "M",
+                1
+              ]
+            ],
+            "unit": "kNm"
+          },
+          "rhs": [
+            {
+              "expr": [
+                [
+                  "gamma_S",
+                  1
+                ],
+                [
+                  "Msw_U",
+                  1
+                ]
+              ],
+              "unit": "kNm"
+            },
+            {
+              "expr": [
+                [
+                  "gamma_W",
+                  1
+                ],
+                [
+                  "f_beta",
+                  1
+                ],
+                [
+                  "Mwv",
+                  1
+                ]
+              ],
+              "unit": "kNm"
+            }
+          ],
+          "factor": 1.0
+        },
+        "symbols": {
+          "gamma_S": "partial safety factor for the still water bending moment, Table 2",
+          "gamma_W": "partial safety factor for the vertical wave bending moment, Table 2",
+          "f_beta": "heading correction factor, Sec 1",
+          "Msw_U": "permissible still water bending moment, kNm",
+          "Mwv": "vertical wave bending moment, kNm"
+        }
+      },
+      {
+        "id": "CSR-ULS-03",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 5, Sec 2, Table 1",
+        "table": "Table 1",
+        "page": 343,
+        "status": "TRANSCRIBED",
+        "subject": "design load scenarios and the still water moment they use",
+        "quote": "Table 1 : Design load scenarios. A / S+D: Msw-h or Msw-s; A / S: Msw-p-h or Msw-p-s; A:S+D: Msw-f; B / S+D: maximum sagging still water bending moment for operational seagoing homogeneous full load condition",
+        "values": {
+          "A_S+D": "Msw-h or Msw-s (intact seagoing)",
+          "A_S": "Msw-p-h or Msw-p-s (harbour/sheltered water)",
+          "A_flooded": "Msw-f (flooded at sea)",
+          "B_S+D": "maximum sagging still water bending moment, homogeneous full load, operational seagoing"
+        }
+      },
+      {
+        "id": "CSR-ULS-04",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 5, Sec 2, Table 2",
+        "table": "Table 2",
+        "page": 344,
+        "status": "TRANSCRIBED",
+        "subject": "partial safety factors gamma_S and gamma_W",
+        "quote": "Table 2 : Partial safety factors",
+        "values": {
+          "A": {
+            "gamma_S": 1.0,
+            "gamma_W": 1.2
+          },
+          "B": {
+            "gamma_S": 1.0,
+            "gamma_W": 1.3
+          }
+        },
+        "read_from": "table body is vector text on printed page 344; the rows were reconstructed from the text-showing coordinates (gamma_S column x=352.4, gamma_W column x=396.6; row A y=699.3, row B y=682.8)"
+      },
+      {
+        "id": "CSR-ULS-05",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 5, Sec 2, [2.1.2]",
+        "table": null,
+        "page": 343,
+        "status": "TRANSCRIBED",
+        "subject": "capacity partial safety factor gamma_R = gamma_M * gamma_DB",
+        "quote": "gamma_R = gamma_M gamma_DB ... gamma_M = 1.1 ... gamma_DB = 1.25 for empty cargo holds in alternate condition of BC-A bulk carriers, gamma_DB = 1.10 for oil tankers ... for sagging condition, except flooded condition: gamma_DB = 1.0",
+        "values": {
+          "gamma_M": 1.1,
+          "gamma_DB": {
+            "hogging_oil_tanker": 1.1,
+            "hogging_BC_A_empty_hold": 1.25,
+            "sagging": 1.0,
+            "flooded": 1.0
+          }
+        },
+        "relation": {
+          "name": "capacity_factor_product",
+          "lhs": {
+            "expr": [
+              [
+                "gamma_R",
+                1
+              ]
+            ],
+            "unit": "1"
+          },
+          "rhs": [
+            {
+              "expr": [
+                [
+                  "gamma_M",
+                  1
+                ],
+                [
+                  "gamma_DB",
+                  1
+                ]
+              ],
+              "unit": "1"
+            }
+          ],
+          "factor": 1.0
+        }
+      },
+      {
+        "id": "CSR-ULS-06",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 5, Sec 2, [2.3.1]",
+        "table": null,
+        "page": 344,
+        "status": "TRANSCRIBED",
+        "subject": "definition of M_U",
+        "quote": "The ultimate bending moment capacities of a hull girder transverse section, in hogging and sagging conditions, are defined as the maximum values of the curve of bending moment capacity versus the curvature",
+        "note": "the capacity curve itself is to be computed per Ch 5, App 2; this study uses the repo Smith solver, see CSR-ULS-W02"
+      },
+      {
+        "id": "CSR-ULS-07",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 5, Sec 1, SYMBOLS (f_beta)",
+        "table": null,
+        "page": 324,
+        "status": "TRANSCRIBED",
+        "subject": "heading correction factor used in the ULS load combination",
+        "quote": "f_beta = 1.05 for seagoing conditions. f_beta = 1.0 for ballast water exchange at sea, harbour/sheltered water and accidental flooded design load scenarios.",
+        "values": {
+          "seagoing": 1.05,
+          "harbour_sheltered": 1.0,
+          "flooded": 1.0
+        }
+      },
+      {
+        "id": "CSR-WAV-01",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 4, Sec 4, [3.1.1]",
+        "table": null,
+        "page": 187,
+        "status": "TRANSCRIBED",
+        "subject": "vertical wave bending moment",
+        "quote": "The vertical wave bending moments at any longitudinal position, in kNm, are to be taken as: Hogging condition: ... Sagging condition: ...",
+        "printed_form": "Mwv-h = 0.19 * fnl-vh * fm * fp * Cw * L^2 * B * CB ; Mwv-s = -0.19 * fnl-vs * fm * fp * Cw * L^2 * B * CB",
+        "relation": {
+          "name": "vertical_wave_bending_moment",
+          "lhs": {
+            "expr": [
+              [
+                "Mwv",
+                1
+              ]
+            ],
+            "unit": "kNm"
+          },
+          "rhs": [
+            {
+              "expr": [
+                [
+                  "fnl",
+                  1
+                ],
+                [
+                  "fm",
+                  1
+                ],
+                [
+                  "fp",
+                  1
+                ],
+                [
+                  "Cw",
+                  1
+                ],
+                [
+                  "L",
+                  2
+                ],
+                [
+                  "B",
+                  1
+                ],
+                [
+                  "CB",
+                  1
+                ]
+              ],
+              "unit": "kNm"
+            }
+          ],
+          "factor_hogging": 0.19,
+          "factor_sagging": -0.19,
+          "factor_unit": "kN/m2"
+        },
+        "symbols": {
+          "fnl": "nonlinear-effect coefficient (hogging or sagging)",
+          "fm": "distribution factor along the ship length",
+          "fp": "probability factor, fp = fps for strength assessment",
+          "Cw": "wave coefficient",
+          "L": "rule length, m",
+          "B": "rule breadth, m",
+          "CB": "block coefficient"
+        }
+      },
+      {
+        "id": "CSR-WAV-02",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 4, Sec 4, [3.1.1]",
+        "table": null,
+        "page": 187,
+        "status": "TRANSCRIBED",
+        "subject": "nonlinear effect coefficients",
+        "quote": "fnl-vh = 1.0 for strength and fatigue assessment; fnl-vs = 0.58 (CB + 0.7) / CB for strength assessment",
+        "values": {
+          "fnl_vh_strength": 1.0,
+          "fnl_vs_strength_expression": "0.58 * (CB + 0.7) / CB"
+        }
+      },
+      {
+        "id": "CSR-WAV-03",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 4, Sec 4, [3.1.1]",
+        "table": null,
+        "page": 187,
+        "status": "TRANSCRIBED",
+        "subject": "longitudinal distribution factor of the wave bending moment",
+        "quote": "fm = 0.0 for x <= 0; fm = 1.0 for 0.4 L <= x <= 0.65 L; fm = 0.0 for x >= L. Intermediate values of fm are to be obtained by linear interpolation",
+        "values": {
+          "knots": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.4,
+              1.0
+            ],
+            [
+              0.65,
+              1.0
+            ],
+            [
+              1.0,
+              0.0
+            ]
+          ]
+        }
+      },
+      {
+        "id": "CSR-WAV-04",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 4, Sec 4, SYMBOLS (Cw)",
+        "table": null,
+        "page": 182,
+        "status": "TRANSCRIBED",
+        "subject": "wave coefficient",
+        "quote": "Cw = 10.75 - ((300 - L)/100)^1.5 for 90 <= L <= 300 m; Cw = 10.75 for 300 < L <= 350 m; Cw = 10.75 - ((L - 350)/150)^1.5 for 350 < L <= 500 m",
+        "relation": {
+          "name": "wave_coefficient",
+          "lhs": {
+            "expr": [
+              [
+                "Cw",
+                1
+              ]
+            ],
+            "unit": "1"
+          },
+          "rhs": [
+            {
+              "expr": [
+                [
+                  "Cw_constant",
+                  1
+                ]
+              ],
+              "unit": "1"
+            }
+          ],
+          "factor": 1.0,
+          "implicit_units": {
+            "300": "m",
+            "350": "m",
+            "100": "m",
+            "150": "m"
+          }
+        }
+      },
+      {
+        "id": "CSR-WAV-05",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 4, Sec 3 (fps); Pt 1, Ch 4, Sec 4, [3.1.1] (fp = fps)",
+        "table": null,
+        "page": 176,
+        "status": "TRANSCRIBED",
+        "subject": "probability factor for strength assessment",
+        "quote": "fps = 1.0 for extreme sea loads design load scenario",
+        "values": {
+          "fps_extreme_sea_loads": 1.0,
+          "fps_ballast_exchange": 0.8,
+          "fps_flooded_sea": 0.8,
+          "fps_harbour_sheltered": 0.4
+        }
+      },
+      {
+        "id": "S7-01",
+        "document": "AN-IACS-UR-S7",
+        "clause": "S7.1",
+        "table": null,
+        "page": 1,
+        "status": "TRANSCRIBED",
+        "subject": "minimum midship section modulus",
+        "quote": "Wmin = c L^2 B (Cb + 0.7) k (cm3)",
+        "printed_form": "Wmin = c L^2 B (Cb + 0.7) k cm3; c = cn for new ships; cn = 10.75 - ((300 - L)/100)^2/3 for 90 <= L <= 300 m, 10.75 for 300 < L < 350 m, 10.75 - ((L - 350)/150)^2/3 for 350 <= L <= 500 m",
+        "relation": {
+          "name": "minimum_section_modulus",
+          "lhs": {
+            "expr": [
+              [
+                "Wmin",
+                1
+              ]
+            ],
+            "unit": "cm3"
+          },
+          "rhs": [
+            {
+              "expr": [
+                [
+                  "c",
+                  1
+                ],
+                [
+                  "L",
+                  2
+                ],
+                [
+                  "B",
+                  1
+                ],
+                [
+                  "CBp",
+                  1
+                ],
+                [
+                  "k",
+                  1
+                ]
+              ],
+              "unit": "m3"
+            }
+          ],
+          "factor": 1.0,
+          "factor_unit": "cm3/m3",
+          "factor_note": "printed result is cm3 while L^2 B is m3: the implicit coefficient carries the unit cm3/m3 (1e-6), so the printed formula is numerically exact with no written constant"
+        },
+        "symbols": {
+          "Wmin": "minimum midship section modulus, cm3",
+          "c": "cn for new ships (0.9 cn for ships in service)",
+          "k": "material factor",
+          "CBp": "Cb + 0.7, Cb not less than 0.60"
+        }
+      },
+      {
+        "id": "S7-02",
+        "document": "AN-IACS-UR-S7",
+        "clause": "S7.0",
+        "table": null,
+        "page": 1,
+        "status": "TRANSCRIBED",
+        "subject": "scope exclusion",
+        "quote": "This UR does not apply to CSR Bulk Carriers and Oil Tankers.",
+        "note": "so UR S7 is not a compliance route for the KVLCC2 CSR check; it is used here as an independent closed-form modulus cross-check"
+      },
+      {
+        "id": "S11-01",
+        "document": "AN-IACS-UR-S11",
+        "clause": "S11.2.2.1",
+        "table": null,
+        "page": 4,
+        "status": "TRANSCRIBED",
+        "subject": "wave bending moment (independent cross-check)",
+        "quote": "The wave bending moments, Mw, at each section along the ship length are given by the following formulae",
+        "printed_form": "Mw = +0.19 C L^2 B Cb M (kNm, positive); Mw = -0.11 C L^2 B (Cb + 0.7) M (kNm, negative)",
+        "relation": {
+          "name": "ur_s11_wave_bending_moment",
+          "lhs": {
+            "expr": [
+              [
+                "Mw",
+                1
+              ]
+            ],
+            "unit": "kNm"
+          },
+          "rhs": [
+            {
+              "expr": [
+                [
+                  "C",
+                  1
+                ],
+                [
+                  "L",
+                  2
+                ],
+                [
+                  "B",
+                  1
+                ],
+                [
+                  "CB",
+                  1
+                ],
+                [
+                  "Mdist",
+                  1
+                ]
+              ],
+              "unit": "kNm"
+            }
+          ],
+          "factor": 0.19,
+          "factor_unit": "kN/m2"
+        },
+        "read_from": "the PDF text layer returns the superscripts of this formula out of line; the exponents were recovered from the text-showing coordinates and are validated numerically by consistency check CC-02 (0.19 x 0.58 against the printed 0.11)"
+      },
+      {
+        "id": "S11-02",
+        "document": "AN-IACS-UR-S11",
+        "clause": "S11.3.1.1",
+        "table": null,
+        "page": 5,
+        "status": "TRANSCRIBED",
+        "subject": "section modulus criterion and permissible bending stress",
+        "quote": "Hull section modulus, Z ... is not to be less than the values given by the following formula ... sigma = permissible bending stress = 175/ k (N/mm2)",
+        "relation": {
+          "name": "ur_s11_section_modulus",
+          "lhs": {
+            "expr": [
+              [
+                "Z",
+                1
+              ]
+            ],
+            "unit": "cm3"
+          },
+          "rhs": [
+            {
+              "expr": [
+                [
+                  "Msum",
+                  1
+                ],
+                [
+                  "sigma",
+                  -1
+                ]
+              ],
+              "unit": "cm3"
+            }
+          ],
+          "factor": 1000.0,
+          "factor_unit": "cm3/(kNm/(N/mm2))",
+          "factor_note": "(Ms + Mw) in kNm over sigma in N/mm2 gives 1e6 mm3 = 1e3 cm3 per kNm/(N/mm2)"
+        }
+      },
+      {
+        "id": "CSR-ULS-W01",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 5, App 2, [2] and [3]",
+        "table": "App 2 element curves",
+        "page": 356,
+        "status": "WITHHELD",
+        "subject": "CSR ultimate capacity method (incremental-iterative)",
+        "why": "M_U in this study comes from the repo Smith solver (tensorfem.hull_girder_smith_collapse) on the study scantlings, not from a transcription of the CSR App 2 element curves and their coefficients; the absolute PASS/FAIL level therefore depends on the repo capacity model and is reported as such",
+        "needed": [
+          "Pt 1, Ch 5, App 2, [2.2] plate element load-end-shortening curves",
+          "Pt 1, Ch 5, App 2, [2.3] stiffener element curves",
+          "Pt 1, Ch 5, App 2, [2.4] shear and twist failure criteria"
+        ]
+      },
+      {
+        "id": "CSR-ULS-W02",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 5, Sec 2, [1.1.1] and [1.1.3]",
+        "table": null,
+        "page": 342,
+        "status": "WITHHELD",
+        "subject": "applicability and check locations (clause bodies not verified)",
+        "why": "the KVLCC2 study hull is 320 m long, so the 150 m applicability threshold is met; the clause bodies were not transcribed verbatim in this pass and are listed for completeness rather than used",
+        "needed": [
+          "Pt 1, Ch 5, Sec 2, [1.1.1] clause body (printed page 342)",
+          "Pt 1, Ch 5, Sec 2, [1.1.3] list of check locations (page 342)"
+        ]
+      },
+      {
+        "id": "CSR-ULS-W03",
+        "document": "AN-IACS-CSR",
+        "clause": "Pt 1, Ch 4, Sec 4, [2.2.2]",
+        "table": null,
+        "page": 184,
+        "status": "TRANSCRIBED",
+        "subject": "permissible still water bending moment Msw-U",
+        "quote": "The permissible vertical still water bending moments, Msw-h and Msw-s in seagoing condition at any longitudinal position are to envelop: the most severe still water bending moments calculated ... for the seagoing loading conditions",
+        "definition_type": "envelope over loading conditions, not a closed formula",
+        "study_substitution": "the W23 beam-equilibrium still water moment (homogeneous loaded tanker) is used as the demand proxy and flagged per row as m_sw_basis = study_beam_equilibrium"
+      }
+    ],
+    "summary": {
+      "entries": 19,
+      "required_entries": 15,
+      "required_transcribed": 15,
+      "required_missing": [],
+      "required_completeness_percent": 100.0,
+      "transcribed": 17,
+      "withheld": 2,
+      "transcribed_ids": [
+        "CSR-ULS-01",
+        "CSR-ULS-02",
+        "CSR-ULS-03",
+        "CSR-ULS-04",
+        "CSR-ULS-05",
+        "CSR-ULS-06",
+        "CSR-ULS-07",
+        "CSR-WAV-01",
+        "CSR-WAV-02",
+        "CSR-WAV-03",
+        "CSR-WAV-04",
+        "CSR-WAV-05",
+        "S7-01",
+        "S7-02",
+        "S11-01",
+        "S11-02",
+        "CSR-ULS-W03"
+      ],
+      "withheld_ids": [
+        "CSR-ULS-W01",
+        "CSR-ULS-W02"
+      ],
+      "withheld_detail": [
+        {
+          "id": "CSR-ULS-W01",
+          "clause": "Pt 1, Ch 5, App 2, [2] and [3]",
+          "needed": [
+            "Pt 1, Ch 5, App 2, [2.2] plate element load-end-shortening curves",
+            "Pt 1, Ch 5, App 2, [2.3] stiffener element curves",
+            "Pt 1, Ch 5, App 2, [2.4] shear and twist failure criteria"
+          ]
+        },
+        {
+          "id": "CSR-ULS-W02",
+          "clause": "Pt 1, Ch 5, Sec 2, [1.1.1] and [1.1.3]",
+          "needed": [
+            "Pt 1, Ch 5, Sec 2, [1.1.1] clause body (printed page 342)",
+            "Pt 1, Ch 5, Sec 2, [1.1.3] list of check locations (page 342)"
+          ]
+        }
+      ],
+      "locator_completeness": true,
+      "completeness_percent": 89.47368421052632
+    },
+    "factor_table": {
+      "A": {
+        "gamma_S": 1.0,
+        "gamma_W": 1.2
+      },
+      "B": {
+        "gamma_S": 1.0,
+        "gamma_W": 1.3
+      }
+    },
+    "capacity_factors": {
+      "gamma_M": 1.1,
+      "gamma_DB": {
+        "hogging_oil_tanker": 1.1,
+        "hogging_BC_A_empty_hold": 1.25,
+        "sagging": 1.0,
+        "flooded": 1.0
+      }
+    },
+    "heading_factor": {
+      "seagoing": 1.05,
+      "harbour_sheltered": 1.0,
+      "flooded": 1.0
+    },
+    "probability_factors": {
+      "fps_extreme_sea_loads": 1.0,
+      "fps_ballast_exchange": 0.8,
+      "fps_flooded_sea": 0.8,
+      "fps_harbour_sheltered": 0.4
+    }
+  },
+  "unit_symbol_table": {
+    "M": "kNm",
+    "MU": "kNm",
+    "Msw_U": "kNm",
+    "Mwv": "kNm",
+    "Mw": "kNm",
+    "Msum": "kNm",
+    "gamma_R": "1",
+    "gamma_S": "1",
+    "gamma_W": "1",
+    "gamma_M": "1",
+    "gamma_DB": "1",
+    "f_beta": "1",
+    "fnl": "1",
+    "fm": "1",
+    "fp": "1",
+    "Cw": "1",
+    "Cw_constant": "1",
+    "CB": "1",
+    "CBp": "1",
+    "C": "1",
+    "Mdist": "1",
+    "c": "1",
+    "k": "1",
+    "L": "m",
+    "B": "m",
+    "Wmin": "cm3",
+    "Z": "cm3",
+    "sigma": "N/mm2"
+  },
+  "dimension_check": {
+    "checked_relations": 8,
+    "checked_terms": 11,
+    "max_residual": 0.0,
+    "tolerance": 1e-06,
+    "verdict": "PASS",
+    "entries": [
+      {
+        "clause": "CSR-ULS-01",
+        "relation": "uls_criterion",
+        "factor": "factor",
+        "rhs_term": 0,
+        "lhs_unit": "kNm",
+        "rhs_unit": "kNm*1^-1",
+        "coefficient_unit": "1",
+        "lhs_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "printed_factor": 1.0,
+        "printed_coefficient_scale": 1.0,
+        "required_coefficient_scale": 1.0,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "CSR-ULS-02",
+        "relation": "uls_load_combination",
+        "factor": "factor",
+        "rhs_term": 0,
+        "lhs_unit": "kNm",
+        "rhs_unit": "1*kNm",
+        "coefficient_unit": "1",
+        "lhs_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "printed_factor": 1.0,
+        "printed_coefficient_scale": 1.0,
+        "required_coefficient_scale": 1.0,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "CSR-ULS-02",
+        "relation": "uls_load_combination",
+        "factor": "factor",
+        "rhs_term": 1,
+        "lhs_unit": "kNm",
+        "rhs_unit": "1*1*kNm",
+        "coefficient_unit": "1",
+        "lhs_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "printed_factor": 1.0,
+        "printed_coefficient_scale": 1.0,
+        "required_coefficient_scale": 1.0,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "CSR-ULS-05",
+        "relation": "capacity_factor_product",
+        "factor": "factor",
+        "rhs_term": 0,
+        "lhs_unit": "1",
+        "rhs_unit": "1*1",
+        "coefficient_unit": "1",
+        "lhs_dims": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "printed_factor": 1.0,
+        "printed_coefficient_scale": 1.0,
+        "required_coefficient_scale": 1.0,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "CSR-WAV-01",
+        "relation": "vertical_wave_bending_moment",
+        "factor": "factor",
+        "rhs_term": 0,
+        "lhs_unit": "kNm",
+        "rhs_unit": "1*1*1*1*m^2*m*1",
+        "coefficient_unit": "kN/m2",
+        "lhs_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "printed_factor": 1.0,
+        "printed_coefficient_scale": 1000.0,
+        "required_coefficient_scale": 1000.0,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "CSR-WAV-01",
+        "relation": "vertical_wave_bending_moment",
+        "factor": "factor_hogging",
+        "rhs_term": 0,
+        "lhs_unit": "kNm",
+        "rhs_unit": "1*1*1*1*m^2*m*1",
+        "coefficient_unit": "kN/m2",
+        "lhs_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "printed_factor": 0.19,
+        "printed_coefficient_scale": 1000.0,
+        "required_coefficient_scale": 1000.0,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "CSR-WAV-01",
+        "relation": "vertical_wave_bending_moment",
+        "factor": "factor_sagging",
+        "rhs_term": 0,
+        "lhs_unit": "kNm",
+        "rhs_unit": "1*1*1*1*m^2*m*1",
+        "coefficient_unit": "kN/m2",
+        "lhs_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "printed_factor": -0.19,
+        "printed_coefficient_scale": 1000.0,
+        "required_coefficient_scale": 1000.0,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "CSR-WAV-04",
+        "relation": "wave_coefficient",
+        "factor": "factor",
+        "rhs_term": 0,
+        "lhs_unit": "1",
+        "rhs_unit": "1",
+        "coefficient_unit": "1",
+        "lhs_dims": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "printed_factor": 1.0,
+        "printed_coefficient_scale": 1.0,
+        "required_coefficient_scale": 1.0,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "S7-01",
+        "relation": "minimum_section_modulus",
+        "factor": "factor",
+        "rhs_term": 0,
+        "lhs_unit": "cm3",
+        "rhs_unit": "1*m^2*m*1*1",
+        "coefficient_unit": "cm3/m3",
+        "lhs_dims": [
+          0.0,
+          3.0,
+          0.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          0.0,
+          3.0,
+          0.0
+        ],
+        "printed_factor": 1.0,
+        "printed_coefficient_scale": 1e-06,
+        "required_coefficient_scale": 1e-06,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "S11-01",
+        "relation": "ur_s11_wave_bending_moment",
+        "factor": "factor",
+        "rhs_term": 0,
+        "lhs_unit": "kNm",
+        "rhs_unit": "1*m^2*m*1*1",
+        "coefficient_unit": "kN/m2",
+        "lhs_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          1.0,
+          2.0,
+          -2.0
+        ],
+        "printed_factor": 0.19,
+        "printed_coefficient_scale": 1000.0,
+        "required_coefficient_scale": 1000.0,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      },
+      {
+        "clause": "S11-02",
+        "relation": "ur_s11_section_modulus",
+        "factor": "factor",
+        "rhs_term": 0,
+        "lhs_unit": "cm3",
+        "rhs_unit": "kNm*N/mm2^-1",
+        "coefficient_unit": "cm3/(kNm/(N/mm2))",
+        "lhs_dims": [
+          0.0,
+          3.0,
+          0.0
+        ],
+        "rhs_plus_coefficient_dims": [
+          0.0,
+          3.0,
+          0.0
+        ],
+        "printed_factor": 1000.0,
+        "printed_coefficient_scale": 0.001,
+        "required_coefficient_scale": 0.001,
+        "dimension_residual": 0.0,
+        "scale_residual": 0.0,
+        "residual": 0.0,
+        "verdict": "PASS"
+      }
+    ]
+  },
+  "consistency_checks": {
+    "checks": [
+      {
+        "id": "CC-01",
+        "kind": "cross_document",
+        "statement": "0.19 x fnl-vs coefficient 0.58 reproduces the 0.11 of UR S11 S11.2.2.1 negative moment (both multiply (Cb + 0.7))",
+        "computed": 0.11019999999999999,
+        "printed": 0.11,
+        "residual": 0.001818181818181744,
+        "tolerance": 0.005,
+        "verdict": "PASS"
+      },
+      {
+        "id": "CC-02",
+        "kind": "cross_document",
+        "statement": "UR S7.1 minimum modulus for the study hull against the UR S11 closure target already used by the repo mid-ship scantling loop",
+        "inputs": {
+          "Lpp": 320.0,
+          "B": 58.0,
+          "Cb": 0.8095,
+          "k": 1.0
+        },
+        "computed_m3": 96.37614079999999,
+        "printed_m3": 96.37614079999999,
+        "residual": 0.0,
+        "tolerance": 1e-06,
+        "verdict": "PASS"
+      },
+      {
+        "id": "CC-03",
+        "kind": "internal",
+        "statement": "Cw branches join at L = 300 m and L = 350 m",
+        "computed": [
+          10.75,
+          10.75,
+          10.75
+        ],
+        "residual": 0.0,
+        "tolerance": 1e-06,
+        "verdict": "PASS"
+      },
+      {
+        "id": "CC-04",
+        "kind": "internal",
+        "statement": "unit-factor utilisation times gamma* equals one for every scanned case",
+        "cases": 12,
+        "worst_case": "kvlcc2_x0.70_sagging",
+        "residual": 1.1102230246251565e-16,
+        "tolerance": 1e-12,
+        "verdict": "PASS"
+      },
+      {
+        "id": "CC-05",
+        "kind": "internal",
+        "statement": "gamma_s and gamma_w columns of section_scan.csv are 1.0, i.e. the W23 utilisation is a unit-factor reference value",
+        "residual": 0.0,
+        "tolerance": 1e-12,
+        "verdict": "PASS"
+      }
+    ],
+    "max_internal_residual": 1.1102230246251565e-16,
+    "internal_tolerance": 1e-06,
+    "max_cross_document_residual": 0.001818181818181744,
+    "verdict": "PASS"
+  },
+  "hull_model": {
+    "case": "kvlcc2",
+    "Lpp": 320.0,
+    "B": 58.0,
+    "D": 30.0,
+    "T": 20.8,
+    "Cb": 0.8095,
+    "reference_modulus_m3": 96.37614079999999,
+    "reference_modulus_m3_achieved": 96.3761408
+  },
+  "utilisation_summary": {
+    "scenarios": [
+      "A",
+      "B"
+    ],
+    "cases": 24,
+    "failures": [
+      "A:kvlcc2_x0.60_sagging",
+      "A:kvlcc2_x0.70_sagging",
+      "B:kvlcc2_x0.40_sagging",
+      "B:kvlcc2_x0.50_sagging",
+      "B:kvlcc2_x0.60_sagging",
+      "B:kvlcc2_x0.70_sagging"
+    ],
+    "utilisation_min": 0.4363456497635484,
+    "utilisation_max": 1.1053097409959391,
+    "rel_diff_min_percent": 33.172512852561866,
+    "rel_diff_max_percent": 52.460000000000036
+  },
+  "criteria": {
+    "W24-C1": {
+      "statement": "CSR clause transcription completeness (clause number + table number + printed value + quote), missing clauses named with the needed locator",
+      "transcribed": 17,
+      "withheld": 2,
+      "required_clauses": [
+        "CSR-ULS-01",
+        "CSR-ULS-02",
+        "CSR-ULS-03",
+        "CSR-ULS-04",
+        "CSR-ULS-05",
+        "CSR-ULS-06",
+        "CSR-ULS-07",
+        "CSR-WAV-01",
+        "CSR-WAV-02",
+        "CSR-WAV-03",
+        "CSR-WAV-04",
+        "CSR-WAV-05",
+        "S7-01",
+        "S7-02",
+        "CSR-ULS-W03"
+      ],
+      "required_completeness_percent": 100.0,
+      "verdict": "PASS",
+      "note": "both assigned documents were transcribed: the ULS criterion, the load combination, Table 1, Table 2, gamma_R, f_beta, the wave moment formula with its coefficients and both UR S7 clauses; the two WITHHELD entries (CSR App 2 capacity curves, applicability clause bodies) are listed with the exact clauses still needed"
+    },
+    "W24-C2": {
+      "statement": "dimensional homogeneity and internal consistency residuals < 1e-6",
+      "dimension_max_residual": 0.0,
+      "internal_consistency_max_residual": 1.1102230246251565e-16,
+      "verdict": "PASS"
+    },
+    "W24-C3": {
+      "statement": ">= 12 cases with factored utilisation and a PASS/FAIL verdict",
+      "cases_in_table": 24,
+      "cases_with_verdict": 18,
+      "verdicts": {
+        "PASS": 12,
+        "FAIL": 6
+      },
+      "failed_case_ids": [
+        "A:kvlcc2_x0.60_sagging",
+        "A:kvlcc2_x0.70_sagging",
+        "B:kvlcc2_x0.40_sagging",
+        "B:kvlcc2_x0.50_sagging",
+        "B:kvlcc2_x0.60_sagging",
+        "B:kvlcc2_x0.70_sagging"
+      ],
+      "verdict": "PASS"
+    },
+    "W24-C4": {
+      "statement": "relative difference between the factored utilisation and the gamma* basis reported per case, with attribution for > 15 %",
+      "cases": 18,
+      "cases_above_15_percent": 18,
+      "attribution_residual_max": 1.6357109927104365e-16,
+      "verdict": "PASS"
+    },
+    "W24-C5": {
+      "statement": "no estimated factor value is used in place of a printed one",
+      "gamma_s": 1.0,
+      "gamma_w_A": 1.2,
+      "gamma_w_B": 1.3,
+      "withheld_ids": [
+        "CSR-ULS-W01",
+        "CSR-ULS-W02"
+      ],
+      "verdict": "PASS",
+      "note": "the factors were obtained, so no WITHHELD substitution was needed; the remaining WITHHELD entries are capacity-method and applicability clauses, not factor values"
+    }
+  },
+  "limitations": [
+    "study_beam_equilibrium (W23 homogeneous loaded tanker); not the CSR permissible envelope",
+    "repo Smith progressive collapse on study scantlings; not CSR App 2 net scantlings",
+    "f_p = f_ps = 1.0 for the extreme sea loads scenario (CSR-WAV-05); harbour and flooded scenarios would use 0.4 and 0.8 and are not scanned",
+    "scenario B is a sagging-only load case (Table 1 gives a sagging still water moment), so the six scenario-B hogging rows are marked NOT_APPLICABLE; scenario B reuses the study still water field, which happens to be the homogeneous full load condition CSR names"
+  ]
+}

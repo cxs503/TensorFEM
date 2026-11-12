@@ -1,0 +1,473 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "benchmarks/hull_girder_uls/factor_sensitivity",
+  "topic": "w24_ship_hull_girder_structure",
+  "mission_id": 15972,
+  "repository": "TensorFEM",
+  "status": "SENSITIVITY_ENVELOPE",
+  "statement": "the transcribed CSR values are the reference points of scenario A and B; every other (gamma_S, gamma_W) pair in the grid is a sensitivity probe and must never be quoted as a CSR value",
+  "reference_transcribed_points": {
+    "A": {
+      "gamma_S": 1.0,
+      "gamma_W": 1.2,
+      "utilisation_min": 0.4363456497635484,
+      "utilisation_max": 1.0266673558716326,
+      "verdicts": {
+        "kvlcc2_x0.20_sagging": "PASS",
+        "kvlcc2_x0.20_hogging": "PASS",
+        "kvlcc2_x0.30_sagging": "PASS",
+        "kvlcc2_x0.30_hogging": "PASS",
+        "kvlcc2_x0.40_sagging": "PASS",
+        "kvlcc2_x0.40_hogging": "PASS",
+        "kvlcc2_x0.50_sagging": "PASS",
+        "kvlcc2_x0.50_hogging": "PASS",
+        "kvlcc2_x0.60_sagging": "FAIL",
+        "kvlcc2_x0.60_hogging": "PASS",
+        "kvlcc2_x0.70_sagging": "FAIL",
+        "kvlcc2_x0.70_hogging": "PASS"
+      },
+      "failures": 2,
+      "source": "csr_uls_anchor.json#CSR-ULS-04 (Table 2, printed page 344)"
+    },
+    "B": {
+      "gamma_S": 1.0,
+      "gamma_W": 1.3,
+      "utilisation_min": 0.47183142115371707,
+      "utilisation_max": 1.1053097409959391,
+      "verdicts": {
+        "kvlcc2_x0.20_sagging": "PASS",
+        "kvlcc2_x0.20_hogging": "NOT_APPLICABLE",
+        "kvlcc2_x0.30_sagging": "PASS",
+        "kvlcc2_x0.30_hogging": "NOT_APPLICABLE",
+        "kvlcc2_x0.40_sagging": "FAIL",
+        "kvlcc2_x0.40_hogging": "NOT_APPLICABLE",
+        "kvlcc2_x0.50_sagging": "FAIL",
+        "kvlcc2_x0.50_hogging": "NOT_APPLICABLE",
+        "kvlcc2_x0.60_sagging": "FAIL",
+        "kvlcc2_x0.60_hogging": "NOT_APPLICABLE",
+        "kvlcc2_x0.70_sagging": "FAIL",
+        "kvlcc2_x0.70_hogging": "NOT_APPLICABLE"
+      },
+      "failures": 4,
+      "source": "csr_uls_anchor.json#CSR-ULS-04 (Table 2, printed page 344)"
+    }
+  },
+  "break_even": [
+    {
+      "case_id": "kvlcc2_x0.20_sagging",
+      "condition": "sagging",
+      "station_x_over_L": 0.2,
+      "gamma_R": 1.1,
+      "M_sw_Nm": 0.0,
+      "M_wv_csr_Nm": 5310325358.080001,
+      "M_u_smith_Nm": 12729605057.040668,
+      "capacity_limit_Nm": 11572368233.673334,
+      "break_even_gamma_w_at_gamma_s_1": 2.0754477996191456,
+      "break_even_gamma_s_at_scenario_A_gamma_w": null,
+      "gamma_star": 2.3971422085601133
+    },
+    {
+      "case_id": "kvlcc2_x0.20_hogging",
+      "condition": "hogging",
+      "station_x_over_L": 0.2,
+      "gamma_R": 1.2100000000000002,
+      "M_sw_Nm": 152784301.25462508,
+      "M_wv_csr_Nm": 4909947776.0,
+      "M_u_smith_Nm": 17579126520.372807,
+      "capacity_limit_Nm": 14528203735.845293,
+      "break_even_gamma_w_at_gamma_s_1": 2.788395371313846,
+      "break_even_gamma_s_at_scenario_A_gamma_w": 54.597687521464344,
+      "gamma_star": 3.472260876563206
+    },
+    {
+      "case_id": "kvlcc2_x0.30_sagging",
+      "condition": "sagging",
+      "station_x_over_L": 0.3,
+      "gamma_R": 1.1,
+      "M_sw_Nm": 463329189.7725404,
+      "M_wv_csr_Nm": 7965488037.119998,
+      "M_u_smith_Nm": 14751109193.433535,
+      "capacity_limit_Nm": 13410099266.757757,
+      "break_even_gamma_w_at_gamma_s_1": 1.5479600444713648,
+      "break_even_gamma_s_at_scenario_A_gamma_w": 7.2811823957017126,
+      "gamma_star": 1.750080562474344
+    },
+    {
+      "case_id": "kvlcc2_x0.30_hogging",
+      "condition": "hogging",
+      "station_x_over_L": 0.3,
+      "gamma_R": 1.2100000000000002,
+      "M_sw_Nm": 0.0,
+      "M_wv_csr_Nm": 7364921664.0,
+      "M_u_smith_Nm": 20771067764.21458,
+      "capacity_limit_Nm": 17166171705.962461,
+      "break_even_gamma_w_at_gamma_s_1": 2.2198111132631166,
+      "break_even_gamma_s_at_scenario_A_gamma_w": null,
+      "gamma_star": 2.82027001940079
+    },
+    {
+      "case_id": "kvlcc2_x0.40_sagging",
+      "condition": "sagging",
+      "station_x_over_L": 0.4,
+      "gamma_R": 1.1,
+      "M_sw_Nm": 414543507.5993377,
+      "M_wv_csr_Nm": 10620650716.160002,
+      "M_u_smith_Nm": 15598270014.032726,
+      "capacity_limit_Nm": 14180245467.302477,
+      "break_even_gamma_w_at_gamma_s_1": 1.234405752806315,
+      "break_even_gamma_s_at_scenario_A_gamma_w": 1.925553169469417,
+      "gamma_star": 1.4135020823148585
+    },
+    {
+      "case_id": "kvlcc2_x0.40_hogging",
+      "condition": "hogging",
+      "station_x_over_L": 0.4,
+      "gamma_R": 1.2100000000000002,
+      "M_sw_Nm": 0.0,
+      "M_wv_csr_Nm": 9819895552.0,
+      "M_u_smith_Nm": 22172689740.616604,
+      "capacity_limit_Nm": 18324536975.716198,
+      "break_even_gamma_w_at_gamma_s_1": 1.7772021998052887,
+      "break_even_gamma_s_at_scenario_A_gamma_w": null,
+      "gamma_star": 2.2579353948526197
+    },
+    {
+      "case_id": "kvlcc2_x0.50_sagging",
+      "condition": "sagging",
+      "station_x_over_L": 0.5,
+      "gamma_R": 1.1,
+      "M_sw_Nm": 544654962.7547607,
+      "M_wv_csr_Nm": 10620650716.160002,
+      "M_u_smith_Nm": 15692563195.65774,
+      "capacity_limit_Nm": 14265966541.507034,
+      "break_even_gamma_w_at_gamma_s_1": 1.2304251536494093,
+      "break_even_gamma_s_at_scenario_A_gamma_w": 1.6229479204129498,
+      "gamma_star": 1.4054754654225476
+    },
+    {
+      "case_id": "kvlcc2_x0.50_hogging",
+      "condition": "hogging",
+      "station_x_over_L": 0.5,
+      "gamma_R": 1.2100000000000002,
+      "M_sw_Nm": 0.0,
+      "M_wv_csr_Nm": 9819895552.0,
+      "M_u_smith_Nm": 22416012502.346146,
+      "capacity_limit_Nm": 18525630167.228218,
+      "break_even_gamma_w_at_gamma_s_1": 1.796705189855986,
+      "break_even_gamma_s_at_scenario_A_gamma_w": null,
+      "gamma_star": 2.2827139437120305
+    },
+    {
+      "case_id": "kvlcc2_x0.60_sagging",
+      "condition": "sagging",
+      "station_x_over_L": 0.6,
+      "gamma_R": 1.1,
+      "M_sw_Nm": 1176375217.1645353,
+      "M_wv_csr_Nm": 10620650716.160002,
+      "M_u_smith_Nm": 15598270014.032726,
+      "capacity_limit_Nm": 14180245467.302477,
+      "break_even_gamma_w_at_gamma_s_1": 1.1660903521307489,
+      "break_even_gamma_s_at_scenario_A_gamma_w": 0.6785467368692698,
+      "gamma_star": 1.3222205411933816
+    },
+    {
+      "case_id": "kvlcc2_x0.60_hogging",
+      "condition": "hogging",
+      "station_x_over_L": 0.6,
+      "gamma_R": 1.2100000000000002,
+      "M_sw_Nm": 0.0,
+      "M_wv_csr_Nm": 9819895552.0,
+      "M_u_smith_Nm": 22172689740.616604,
+      "capacity_limit_Nm": 18324536975.716198,
+      "break_even_gamma_w_at_gamma_s_1": 1.7772021998052887,
+      "break_even_gamma_s_at_scenario_A_gamma_w": null,
+      "gamma_star": 2.2579353948526197
+    },
+    {
+      "case_id": "kvlcc2_x0.70_sagging",
+      "condition": "sagging",
+      "station_x_over_L": 0.7,
+      "gamma_R": 1.1,
+      "M_sw_Nm": 2132210161.2181206,
+      "M_wv_csr_Nm": 9103414899.565718,
+      "M_u_smith_Nm": 14751109193.433535,
+      "capacity_limit_Nm": 13410099266.757757,
+      "break_even_gamma_w_at_gamma_s_1": 1.1798700691641553,
+      "break_even_gamma_s_at_scenario_A_gamma_w": 0.9097585822387962,
+      "gamma_star": 1.3128872771769444
+    },
+    {
+      "case_id": "kvlcc2_x0.70_hogging",
+      "condition": "hogging",
+      "station_x_over_L": 0.7,
+      "gamma_R": 1.2100000000000002,
+      "M_sw_Nm": 0.0,
+      "M_wv_csr_Nm": 8417053330.285715,
+      "M_u_smith_Nm": 20771067764.214592,
+      "capacity_limit_Nm": 17166171705.962471,
+      "break_even_gamma_w_at_gamma_s_1": 1.942334724105228,
+      "break_even_gamma_s_at_scenario_A_gamma_w": null,
+      "gamma_star": 2.4677362669756926
+    }
+  ],
+  "grid": [
+    {
+      "gamma_S": 1.0,
+      "gamma_W": 1.0,
+      "failures": 0,
+      "cases": 12,
+      "failed_case_ids": [],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.0,
+      "gamma_W": 1.1,
+      "failures": 0,
+      "cases": 12,
+      "failed_case_ids": [],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.0,
+      "gamma_W": 1.2,
+      "failures": 2,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": true
+    },
+    {
+      "gamma_S": 1.0,
+      "gamma_W": 1.3,
+      "failures": 4,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": true
+    },
+    {
+      "gamma_S": 1.0,
+      "gamma_W": 1.4,
+      "failures": 4,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.0,
+      "gamma_W": 1.5,
+      "failures": 4,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.0,
+      "gamma_W": 1.6,
+      "failures": 5,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.30_sagging",
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.1,
+      "gamma_W": 1.0,
+      "failures": 0,
+      "cases": 12,
+      "failed_case_ids": [],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.1,
+      "gamma_W": 1.1,
+      "failures": 0,
+      "cases": 12,
+      "failed_case_ids": [],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.1,
+      "gamma_W": 1.2,
+      "failures": 2,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.1,
+      "gamma_W": 1.3,
+      "failures": 4,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.1,
+      "gamma_W": 1.4,
+      "failures": 4,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.1,
+      "gamma_W": 1.5,
+      "failures": 4,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.1,
+      "gamma_W": 1.6,
+      "failures": 5,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.30_sagging",
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.2,
+      "gamma_W": 1.0,
+      "failures": 0,
+      "cases": 12,
+      "failed_case_ids": [],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.2,
+      "gamma_W": 1.1,
+      "failures": 0,
+      "cases": 12,
+      "failed_case_ids": [],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.2,
+      "gamma_W": 1.2,
+      "failures": 2,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.2,
+      "gamma_W": 1.3,
+      "failures": 4,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.2,
+      "gamma_W": 1.4,
+      "failures": 4,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.2,
+      "gamma_W": 1.5,
+      "failures": 4,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    },
+    {
+      "gamma_S": 1.2,
+      "gamma_W": 1.6,
+      "failures": 5,
+      "cases": 12,
+      "failed_case_ids": [
+        "kvlcc2_x0.30_sagging",
+        "kvlcc2_x0.40_sagging",
+        "kvlcc2_x0.50_sagging",
+        "kvlcc2_x0.60_sagging",
+        "kvlcc2_x0.70_sagging"
+      ],
+      "is_transcribed_csr_point": false
+    }
+  ],
+  "grid_axes": {
+    "gamma_S": [
+      1.0,
+      1.1,
+      1.2
+    ],
+    "gamma_W": [
+      1.0,
+      1.1,
+      1.2,
+      1.3,
+      1.4,
+      1.5,
+      1.6
+    ]
+  },
+  "factor_source": "csr_uls_anchor.json#CSR-ULS-04 / CSR-ULS-05 / CSR-ULS-07",
+  "wave_moment_basis": "CSR Ch 4 Sec 4 [3.1.1] with f_p = f_ps = 1.0 (extreme sea loads)"
+}

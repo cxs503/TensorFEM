@@ -219,5 +219,11 @@
     "M_u comes from the Smith incremental collapse engine, which does not depend on the rule text.",
     "the ULS inequality is evaluated at unit factors (gamma_s = gamma_w = 1) and the admissible factor M_u/(M_sw+M_wv) is reported so that any factor table can be applied without this file inventing numbers.",
     "the yield criterion is reported as sigma and as sigma_y/sigma (the admissible gamma_R)."
-  ]
+  ],
+  "superseded_for_factors_by": {
+    "artifact": "benchmarks/hull_girder_uls/csr_uls_anchor.json",
+    "mission_id": 15972,
+    "date": "2026-11-12",
+    "note": "the factor table this file recorded as NOT_OBTAINED was transcribed in W24 from the 01 Jan 2019 harmonised CSR retrieved from the IACS public object store; the acquisition_attempts above stay as the W22 record"
+  }
 }
