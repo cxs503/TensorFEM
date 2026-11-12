@@ -1,0 +1,115 @@
+{
+  "schema": "tensorfem.maturity-evidence.v1",
+  "case": "CASE-FEM-PINCHED-CYLINDER",
+  "mission": "m16190 (repair of m16076)",
+  "generated_at": "2026-11-12T10:55:00+00:00",
+  "L2": {
+    "impl_files": [
+      {
+        "path": "src/tensorfem/cylindrical_shell4.py",
+        "lines": 108,
+        "sha256": "727df10e11dd960ae2428d428a6189123d2ff7f560a6ff93eb7f593cd387bedf",
+        "role": "Reissner-Mindlin cylindrical Shell4 element: exact cylindrical metric, 2x2 membrane+bending, 1-point selective transverse shear, drilling stabilisation",
+        "docstring": "Four-node cylindrical Reissner--Mindlin shell.",
+        "non_placeholder": true
+      },
+      {
+        "path": "src/tensorfem/pinched_cylinder.py",
+        "lines": 156,
+        "sha256": "2813a457caebc1401af25cd3a8b8d63123bbffa58fbcd1c4cfdf93364753158c",
+        "role": "symmetry-octant model builder + dense and CSR/SuperLU solvers, radial-field post-processor, nonlinear step",
+        "docstring": "MacNeal--Harder pinched-cylinder benchmark for the cylindrical shell.",
+        "non_placeholder": true
+      }
+    ],
+    "entry": "benchmarks/verified/fem_pinched_cylinder/run.py",
+    "entry_sha256": "d8fc6faa2e726218d1768c118b3cb1192f51d0716310c45b5bc27d90af68c3dd",
+    "run_artifacts": [
+      {
+        "path": "benchmarks/verified/fem_pinched_cylinder/case_result.json",
+        "bytes": 11524,
+        "sha256": "ba76f0dcf04472b7edc238ca6779544692f41a46bf3e74d2c1a7749e8a6b0f89"
+      },
+      {
+        "path": "benchmarks/verified/fem_pinched_cylinder/case_gates.json",
+        "bytes": 2062,
+        "sha256": "b28b6376c3a2085cc7f4bff1572712f2e7336d2b6175f9734308208e41a8128b"
+      },
+      {
+        "path": "benchmarks/verified/fem_pinched_cylinder/case_convergence.png",
+        "bytes": 79635,
+        "sha256": "6662623aaf6db898ced6c7e1bf8293431a5687f4c08a03c746f952a34cd35d8d"
+      },
+      {
+        "path": "benchmarks/verified/fem_pinched_cylinder/case_field.png",
+        "bytes": 60098,
+        "sha256": "e4c964425b746ad5a6b4a8e5da304cf524b0102313dfd800e5898e79eb529424"
+      },
+      {
+        "path": "benchmarks/verified/fem_pinched_cylinder/case_sensitivity.png",
+        "bytes": 109523,
+        "sha256": "dff08daacf2a2fa59cb7be3e63ab5d14766fe110ef7a0a9a5e9a4a60d01d061c"
+      }
+    ]
+  },
+  "L3": {
+    "integration_callers": [
+      {
+        "path": "src/tensorfem/benchmark_cases.py",
+        "call": "solve_pinched_cylinder_linear",
+        "call_lines": [
+          108,
+          109
+        ],
+        "role": "benchmark-case registry runner (case.runner=='pinched_cylinder')",
+        "present": true
+      },
+      {
+        "path": "src/tensorfem/shell_benchmark_suite.py",
+        "call": "pinched_cylinder_case",
+        "call_lines": [
+          29,
+          59
+        ],
+        "role": "classical_shell_cases() suite includes the pinched cylinder",
+        "present": true
+      },
+      {
+        "path": "src/tensorfem/project_workflow.py",
+        "call": "solve_pinched_cylinder_linear",
+        "call_lines": [
+          6,
+          55
+        ],
+        "role": "project workflow driver calls the production linear solver",
+        "present": true
+      },
+      {
+        "path": "src/tensorfem/cylindrical_shell4_diagnostics.py",
+        "call": "solve_pinched_cylinder_linear",
+        "call_lines": [
+          34,
+          152
+        ],
+        "role": "element diagnostics drive the production solver",
+        "present": true
+      }
+    ]
+  },
+  "L4": {
+    "benchmark": {
+      "reference_in": -1.8248e-05,
+      "got_16x16_in": -1.8278493652346197e-05,
+      "relative_error_pct": 0.1671068190826297,
+      "tolerance_pct": 5.0,
+      "pass": true,
+      "citation": "MacNeal, R. L. & Harder, R. L. (1985), 'A proposed standard set of problems to test finite element accuracy', Finite Elements in Analysis and Design 1(1), 3-20, DOI 10.1016/0168-874X(85)90003-4"
+    },
+    "repro_cmd": "PYTHONPATH=src python benchmarks/verified/fem_pinched_cylinder/run.py"
+  },
+  "verdicts": {
+    "L2": true,
+    "L3": true,
+    "L4": true
+  }
+}
