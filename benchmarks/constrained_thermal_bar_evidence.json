@@ -1,0 +1,646 @@
+{
+  "case": "CASE-THERMAL-BAR",
+  "repo": "TensorFEM",
+  "title": "Constrained (fully restrained) thermal stress: sigma = E alpha dT",
+  "parameters": {
+    "dT_K": 100.0,
+    "T_ref_C": 20.0,
+    "bar_length_m": 1.0,
+    "bar_area_m2": 1.0,
+    "hex_side_m": 0.2,
+    "hex_levels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "bar_levels": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "nu_levels": [
+      0.0,
+      0.2,
+      0.3,
+      0.45
+    ],
+    "dT_levels_K": [
+      25.0,
+      50.0,
+      100.0,
+      150.0
+    ],
+    "E_Pa": 206007142857.14285,
+    "E_GPa": 206.00714285714287,
+    "alpha_per_K": 1.2e-05,
+    "nu": 0.3,
+    "dimensionless_groups": {
+      "alpha_dT": 0.0012000000000000001,
+      "dT_over_T_ref": 5.0,
+      "nu": 0.3,
+      "sigma_over_E": 0.0012,
+      "slenderness_L_over_side": 5.0,
+      "note": "linear elastic, uniform dT -> no length scale enters, so the dimensionless answer is sigma/(E alpha dT) = -1 (uniaxial), -1/(1-nu) (biaxial), -1/(1-2nu) (triaxial), 0 (free)"
+    }
+  },
+  "reference": {
+    "expression": "sigma_xx = -E alpha dT   (axial restraint, lateral free)",
+    "value_Pa": -247208571.4285714,
+    "value_MPa": -247.2085714285714,
+    "source": "closed-form linear thermoelasticity (Hooke's law with eps_th = alpha dT I); the classical result of Timoshenko & Goodier, Theory of Elasticity (thermal-stress article) and Boley & Weiner, Theory of Thermal Stresses, Ch. 1. No page number is claimed: this sandbox has no library access, so the formula is re-derived from the constitutive law in `derivation_residual` (residual reported below)",
+    "derivation_residual": {
+      "uniaxial": 2.168404344971009e-19,
+      "biaxial": 2.168404344971009e-19,
+      "triaxial": 2.168404344971009e-19
+    },
+    "material": {
+      "name": "EH36",
+      "E_ref_Pa": 206007142857.14285,
+      "dE_dT_Pa_per_K": 0.0,
+      "alpha_ref_per_K": 1.2e-05,
+      "dalpha_dT_per_K2": 0.0,
+      "nu": 0.3,
+      "T_ref_C": 20.0,
+      "anchor_source": "offline secondary-literature transcription of normalised EH36 hull steel low-temperature properties (E, alpha: ferritic-steel cryogenic trend; sigma_y: low-temperature tensile data, about +10% yield at -60 degC); the primary ASTM/EN table was not machine-readable here",
+      "anchor_table_sha256": "acf459751128bc73b2034b8fd4ded3d1723439fde5a8619c6ce83691fc0b6d7e",
+      "anchor_residual": {
+        "E_max_rel": 0.00017228309558255626,
+        "alpha_max_rel": 1.7111776712208087e-16,
+        "yield_max_rel": 0.0,
+        "anchor_band": 0.03
+      }
+    }
+  },
+  "environment": {
+    "python": "3.11.6",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "matplotlib": "3.10.8",
+    "dtype": "torch.float64",
+    "torch_threads": 4,
+    "git_sha": "0a5558442b41143b1fc7e16ac40cc20735ce6836",
+    "generated_utc": "2026-11-11T23:51:41+00:00",
+    "determinism": "direct dense solves, no sampling, no seed; reruns are bit-identical"
+  },
+  "studies": {
+    "bar_uniform": [
+      {
+        "n_elem": 1,
+        "h_m": 1.0,
+        "sigma_Pa": -247208571.42857143,
+        "sigma_MPa": -247.20857142857145,
+        "reference_Pa": -247208571.4285714,
+        "reference_MPa": -247.2085714285714,
+        "rel_error": -1.2055537643971385e-16,
+        "pass_task_tol": true,
+        "pass_roundoff": true,
+        "sigma_spread_over_elements": 0.0,
+        "max_abs_displacement": 0.0,
+        "reaction_sum_N": 0.0
+      },
+      {
+        "n_elem": 2,
+        "h_m": 0.5,
+        "sigma_Pa": -247208571.42857143,
+        "sigma_MPa": -247.20857142857145,
+        "reference_Pa": -247208571.4285714,
+        "reference_MPa": -247.2085714285714,
+        "rel_error": -1.2055537643971385e-16,
+        "pass_task_tol": true,
+        "pass_roundoff": true,
+        "sigma_spread_over_elements": 0.0,
+        "max_abs_displacement": 0.0,
+        "reaction_sum_N": 0.0
+      },
+      {
+        "n_elem": 4,
+        "h_m": 0.25,
+        "sigma_Pa": -247208571.42857143,
+        "sigma_MPa": -247.20857142857145,
+        "reference_Pa": -247208571.4285714,
+        "reference_MPa": -247.2085714285714,
+        "rel_error": -1.2055537643971385e-16,
+        "pass_task_tol": true,
+        "pass_roundoff": true,
+        "sigma_spread_over_elements": 0.0,
+        "max_abs_displacement": 0.0,
+        "reaction_sum_N": 0.0
+      },
+      {
+        "n_elem": 8,
+        "h_m": 0.125,
+        "sigma_Pa": -247208571.42857143,
+        "sigma_MPa": -247.20857142857145,
+        "reference_Pa": -247208571.4285714,
+        "reference_MPa": -247.2085714285714,
+        "rel_error": -1.2055537643971385e-16,
+        "pass_task_tol": true,
+        "pass_roundoff": true,
+        "sigma_spread_over_elements": 0.0,
+        "max_abs_displacement": 0.0,
+        "reaction_sum_N": 0.0
+      },
+      {
+        "n_elem": 16,
+        "h_m": 0.0625,
+        "sigma_Pa": -247208571.42857143,
+        "sigma_MPa": -247.20857142857145,
+        "reference_Pa": -247208571.4285714,
+        "reference_MPa": -247.2085714285714,
+        "rel_error": -1.2055537643971385e-16,
+        "pass_task_tol": true,
+        "pass_roundoff": true,
+        "sigma_spread_over_elements": 0.0,
+        "max_abs_displacement": 0.0,
+        "reaction_sum_N": 0.0
+      }
+    ],
+    "bar_quadratic_convergence": {
+      "reference_Pa": -82402857.14285713,
+      "reference_expression": "-E alpha dT / 3 (constant axial force, quadratic T)",
+      "rows": [
+        {
+          "n_elem": 2,
+          "h_m": 0.5,
+          "sigma_Pa": -92703214.2857143,
+          "reference_Pa": -82402857.14285713,
+          "abs_rel_error": 0.12500000000000028,
+          "u_rms_error_m": 1.5649110403512075e-20
+        },
+        {
+          "n_elem": 4,
+          "h_m": 0.25,
+          "sigma_Pa": -84977946.42857143,
+          "reference_Pa": -82402857.14285713,
+          "abs_rel_error": 0.03125000000000016,
+          "u_rms_error_m": 1.818262319272905e-20
+        },
+        {
+          "n_elem": 8,
+          "h_m": 0.125,
+          "sigma_Pa": -83046629.4642857,
+          "reference_Pa": -82402857.14285713,
+          "abs_rel_error": 0.007812499999999949,
+          "u_rms_error_m": 3.892667063347256e-20
+        },
+        {
+          "n_elem": 16,
+          "h_m": 0.0625,
+          "sigma_Pa": -82563800.2232143,
+          "reference_Pa": -82402857.14285713,
+          "abs_rel_error": 0.0019531250000002585,
+          "u_rms_error_m": 4.9249746356431384e-20
+        },
+        {
+          "n_elem": 32,
+          "h_m": 0.03125,
+          "sigma_Pa": -82443092.91294643,
+          "reference_Pa": -82402857.14285713,
+          "abs_rel_error": 0.000488281250000155,
+          "u_rms_error_m": 3.4194301174420864e-20
+        }
+      ],
+      "observed_order": 1.9999999999998888,
+      "theory_order": 2.0,
+      "order_gate": true
+    },
+    "hex_restraint_family": [
+      {
+        "n_elem_per_side": 1,
+        "n_nodes": 8,
+        "n_elements": 1,
+        "h_m": 0.2,
+        "restraint": "uniaxial",
+        "sigma_xx_Pa": -247208571.4285714,
+        "sigma_yy_Pa": 1.2749192395809236e-08,
+        "sigma_zz_Pa": 2.4293200681675134e-09,
+        "max_shear_Pa": 6.436883250950822e-08,
+        "reference_Pa": -247208571.4285714,
+        "rel_error_xx": 0.0,
+        "lateral_measure": [
+          5.1572614663537244e-17,
+          9.827005811849217e-18
+        ],
+        "max_abs_displacement_m": 0.0003120000000000002,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 1,
+        "n_nodes": 8,
+        "n_elements": 1,
+        "h_m": 0.2,
+        "restraint": "biaxial",
+        "sigma_xx_Pa": -353155102.0408163,
+        "sigma_yy_Pa": -353155102.0408163,
+        "sigma_zz_Pa": -4.441326140037258e-08,
+        "max_shear_Pa": 5.836042500569797e-08,
+        "reference_Pa": -353155102.0408163,
+        "rel_error_xx": 0.0,
+        "lateral_measure": [
+          0.0,
+          1.7965906741710764e-16
+        ],
+        "max_abs_displacement_m": 0.00044571428571428605,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 1,
+        "n_nodes": 8,
+        "n_elements": 1,
+        "h_m": 0.2,
+        "restraint": "triaxial",
+        "sigma_xx_Pa": -618021428.5714285,
+        "sigma_yy_Pa": -618021428.5714285,
+        "sigma_zz_Pa": -618021428.5714287,
+        "max_shear_Pa": 0.0,
+        "reference_Pa": -618021428.5714284,
+        "rel_error_xx": -1.9288860230354217e-16,
+        "lateral_measure": [
+          -1.9288860230354217e-16,
+          -3.8577720460708435e-16
+        ],
+        "max_abs_displacement_m": 0.0,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 1,
+        "n_nodes": 8,
+        "n_elements": 1,
+        "h_m": 0.2,
+        "restraint": "free",
+        "sigma_xx_Pa": 1.3100535482526927e-07,
+        "sigma_yy_Pa": 5.369071919068412e-08,
+        "sigma_zz_Pa": 1.0738143838136822e-08,
+        "max_shear_Pa": 6.003580247948846e-08,
+        "reference_Pa": 0.0,
+        "rel_error_xx": 5.299385618719213e-16,
+        "lateral_measure": [
+          2.1718793519341034e-16,
+          4.343758703868206e-17
+        ],
+        "max_abs_displacement_m": 0.00024000000000000047,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 2,
+        "n_nodes": 27,
+        "n_elements": 8,
+        "h_m": 0.1,
+        "restraint": "uniaxial",
+        "sigma_xx_Pa": -247208571.42857146,
+        "sigma_yy_Pa": -4.97104143783726e-08,
+        "sigma_zz_Pa": -4.5365671641195664e-08,
+        "max_shear_Pa": 9.175008239453567e-08,
+        "reference_Pa": -247208571.4285714,
+        "rel_error_xx": -2.411107528794277e-16,
+        "lateral_measure": [
+          2.0108693679634794e-16,
+          1.8351172606611517e-16
+        ],
+        "max_abs_displacement_m": 0.00031200000000000027,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 2,
+        "n_nodes": 27,
+        "n_elements": 8,
+        "h_m": 0.1,
+        "restraint": "biaxial",
+        "sigma_xx_Pa": -353155102.0408163,
+        "sigma_yy_Pa": -353155102.04081637,
+        "sigma_zz_Pa": -3.1523515557742766e-08,
+        "max_shear_Pa": 1.2569288673041276e-07,
+        "reference_Pa": -353155102.0408163,
+        "rel_error_xx": 0.0,
+        "lateral_measure": [
+          -1.6877752701559937e-16,
+          1.2751789056331806e-16
+        ],
+        "max_abs_displacement_m": 0.0004457142857142853,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 2,
+        "n_nodes": 27,
+        "n_elements": 8,
+        "h_m": 0.1,
+        "restraint": "triaxial",
+        "sigma_xx_Pa": -618021428.5714285,
+        "sigma_yy_Pa": -618021428.5714285,
+        "sigma_zz_Pa": -618021428.5714285,
+        "max_shear_Pa": 6.8479601074667535e-09,
+        "reference_Pa": -618021428.5714284,
+        "rel_error_xx": -1.9288860230354217e-16,
+        "lateral_measure": [
+          -1.9288860230354217e-16,
+          -1.9288860230354217e-16
+        ],
+        "max_abs_displacement_m": 6.78424519455809e-20,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 2,
+        "n_nodes": 27,
+        "n_elements": 8,
+        "h_m": 0.1,
+        "restraint": "free",
+        "sigma_xx_Pa": 1.055022632096943e-07,
+        "sigma_yy_Pa": 1.3154226201717613e-08,
+        "sigma_zz_Pa": 5.932824470570595e-08,
+        "max_shear_Pa": 5.8679548067372195e-08,
+        "reference_Pa": 0.0,
+        "rel_error_xx": 4.2677429265505135e-16,
+        "lateral_measure": [
+          5.321104412238555e-17,
+          2.399926683887184e-16
+        ],
+        "max_abs_displacement_m": 0.0002400000000000008,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 3,
+        "n_nodes": 64,
+        "n_elements": 27,
+        "h_m": 0.06666666666666667,
+        "restraint": "uniaxial",
+        "sigma_xx_Pa": -247208571.42857155,
+        "sigma_yy_Pa": -2.765243744380722e-07,
+        "sigma_zz_Pa": -1.859320395457498e-07,
+        "max_shear_Pa": 2.699905259591872e-07,
+        "reference_Pa": -247208571.4285714,
+        "rel_error_xx": -6.027768821985692e-16,
+        "lateral_measure": [
+          1.1185873242181302e-15,
+          7.521261842632876e-16
+        ],
+        "max_abs_displacement_m": 0.00031199999999999875,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 3,
+        "n_nodes": 64,
+        "n_elements": 27,
+        "h_m": 0.06666666666666667,
+        "restraint": "biaxial",
+        "sigma_xx_Pa": -353155102.0408164,
+        "sigma_yy_Pa": -353155102.0408164,
+        "sigma_zz_Pa": -3.0470970182364346e-07,
+        "max_shear_Pa": 3.1239728880101447e-07,
+        "reference_Pa": -353155102.0408163,
+        "rel_error_xx": -3.3755505403119875e-16,
+        "lateral_measure": [
+          -3.3755505403119875e-16,
+          1.232601685543442e-15
+        ],
+        "max_abs_displacement_m": 0.0004457142857142814,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 3,
+        "n_nodes": 64,
+        "n_elements": 27,
+        "h_m": 0.06666666666666667,
+        "restraint": "triaxial",
+        "sigma_xx_Pa": -618021428.5714284,
+        "sigma_yy_Pa": -618021428.5714285,
+        "sigma_zz_Pa": -618021428.5714285,
+        "max_shear_Pa": 4.800335492616819e-09,
+        "reference_Pa": -618021428.5714284,
+        "rel_error_xx": 0.0,
+        "lateral_measure": [
+          -1.9288860230354217e-16,
+          -1.9288860230354217e-16
+        ],
+        "max_abs_displacement_m": 5.896213000485084e-20,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 3,
+        "n_nodes": 64,
+        "n_elements": 27,
+        "h_m": 0.06666666666666667,
+        "restraint": "free",
+        "sigma_xx_Pa": -9.501268751595877e-08,
+        "sigma_yy_Pa": -1.907810221908976e-07,
+        "sigma_zz_Pa": -1.7900883487205125e-07,
+        "max_shear_Pa": 1.9926314882375914e-07,
+        "reference_Pa": 0.0,
+        "rel_error_xx": 3.843422053163387e-16,
+        "lateral_measure": [
+          7.71741129720585e-16,
+          7.241206639300295e-16
+        ],
+        "max_abs_displacement_m": 0.00024000000000000052,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 4,
+        "n_nodes": 125,
+        "n_elements": 64,
+        "h_m": 0.05,
+        "restraint": "uniaxial",
+        "sigma_xx_Pa": -247208571.42857158,
+        "sigma_yy_Pa": -1.4083666588317903e-07,
+        "sigma_zz_Pa": -3.3979960859454626e-07,
+        "max_shear_Pa": 1.8227255132673408e-07,
+        "reference_Pa": -247208571.4285714,
+        "rel_error_xx": -7.23332258638283e-16,
+        "lateral_measure": [
+          5.697078587093913e-16,
+          1.3745462247967732e-15
+        ],
+        "max_abs_displacement_m": 0.0003120000000000029,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 4,
+        "n_nodes": 125,
+        "n_elements": 64,
+        "h_m": 0.05,
+        "restraint": "biaxial",
+        "sigma_xx_Pa": -353155102.0408163,
+        "sigma_yy_Pa": -353155102.04081637,
+        "sigma_zz_Pa": -1.5306716257936072e-07,
+        "max_shear_Pa": 5.2019632755872397e-08,
+        "reference_Pa": -353155102.0408163,
+        "rel_error_xx": 0.0,
+        "lateral_measure": [
+          -1.6877752701559937e-16,
+          6.191822625518794e-16
+        ],
+        "max_abs_displacement_m": 0.0004457142857142838,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 4,
+        "n_nodes": 125,
+        "n_elements": 64,
+        "h_m": 0.05,
+        "restraint": "triaxial",
+        "sigma_xx_Pa": -618021428.5714284,
+        "sigma_yy_Pa": -618021428.5714284,
+        "sigma_zz_Pa": -618021428.5714284,
+        "max_shear_Pa": 1.7063302896776184e-08,
+        "reference_Pa": -618021428.5714284,
+        "rel_error_xx": 0.0,
+        "lateral_measure": [
+          0.0,
+          0.0
+        ],
+        "max_abs_displacement_m": 1.0288736695262169e-19,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      },
+      {
+        "n_elem_per_side": 4,
+        "n_nodes": 125,
+        "n_elements": 64,
+        "h_m": 0.05,
+        "restraint": "free",
+        "sigma_xx_Pa": -4.622435355322963e-08,
+        "sigma_yy_Pa": -1.369616689854858e-07,
+        "sigma_zz_Pa": -2.4192702500327326e-07,
+        "max_shear_Pa": 1.7874667924717253e-07,
+        "reference_Pa": 0.0,
+        "rel_error_xx": 1.8698523795557681e-16,
+        "lateral_measure": [
+          5.540328484324403e-16,
+          9.786352617355576e-16
+        ],
+        "max_abs_displacement_m": 0.00024000000000000174,
+        "pass_task_tol": true,
+        "pass_roundoff": true
+      }
+    ],
+    "nu_sensitivity": {
+      "rows": [
+        {
+          "nu": 0.0,
+          "sigma_xx_Pa": -247208571.42857146,
+          "sigma_xx_MPa": -247.20857142857147,
+          "reference_Pa": -247208571.4285714,
+          "reference_MPa": -247.2085714285714,
+          "rel_error": -2.411107528794277e-16
+        },
+        {
+          "nu": 0.2,
+          "sigma_xx_Pa": -247208571.42857146,
+          "sigma_xx_MPa": -247.20857142857147,
+          "reference_Pa": -247208571.4285714,
+          "reference_MPa": -247.2085714285714,
+          "rel_error": -2.411107528794277e-16
+        },
+        {
+          "nu": 0.3,
+          "sigma_xx_Pa": -247208571.42857146,
+          "sigma_xx_MPa": -247.20857142857147,
+          "reference_Pa": -247208571.4285714,
+          "reference_MPa": -247.2085714285714,
+          "rel_error": -2.411107528794277e-16
+        },
+        {
+          "nu": 0.45,
+          "sigma_xx_Pa": -247208571.42857194,
+          "sigma_xx_MPa": -247.20857142857193,
+          "reference_Pa": -247208571.4285714,
+          "reference_MPa": -247.2085714285714,
+          "rel_error": -2.169996775914849e-15
+        }
+      ],
+      "max_drift_Pa": 4.76837158203125e-07,
+      "max_drift_rel": 1.9288860230354208e-15,
+      "invariance_gate": true
+    },
+    "dt_sensitivity": {
+      "rows": [
+        {
+          "dT_K": 25.0,
+          "sigma_Pa": -61802142.85714286,
+          "sigma_over_dT_Pa_per_K": -2472085.7142857146,
+          "reference_Pa": -61802142.85714285,
+          "rel_error": -1.2055537643971385e-16
+        },
+        {
+          "dT_K": 50.0,
+          "sigma_Pa": -123604285.71428572,
+          "sigma_over_dT_Pa_per_K": -2472085.7142857146,
+          "reference_Pa": -123604285.7142857,
+          "rel_error": -1.2055537643971385e-16
+        },
+        {
+          "dT_K": 100.0,
+          "sigma_Pa": -247208571.42857143,
+          "sigma_over_dT_Pa_per_K": -2472085.7142857146,
+          "reference_Pa": -247208571.4285714,
+          "rel_error": -1.2055537643971385e-16
+        },
+        {
+          "dT_K": 150.0,
+          "sigma_Pa": -370812857.14285713,
+          "sigma_over_dT_Pa_per_K": -2472085.714285714,
+          "reference_Pa": -370812857.14285713,
+          "rel_error": 0.0
+        }
+      ],
+      "slope_Pa_per_K": -2472085.714285714,
+      "analytic_slope_Pa_per_K": -2472085.714285714,
+      "slope_rel_error": 0.0
+    },
+    "temperature_dependent_EH36": {
+      "steel": "EH36",
+      "T_hot_C": 120.0,
+      "E_at_T_Pa": 202685714285.7143,
+      "alpha_at_T_per_K": 1.3750000000000002e-05,
+      "sigma_xx_Pa": -278692857.1428572,
+      "reference_Pa": -278692857.1428572,
+      "rel_error": 0.0,
+      "reference_convention": "-E(T) alpha(T) dT with E, alpha at the element temperature",
+      "constant_property_value_Pa": -247208571.4285714,
+      "frozen_property_rel_error": 0.11297126893405464,
+      "pass_task_tol": true
+    }
+  },
+  "gates": {
+    "task_rel_tol": 0.03,
+    "roundoff_rel_tol": 1e-08,
+    "order_tol": 0.35,
+    "bar_uniform_max_abs_rel_error": 1.2055537643971385e-16,
+    "bar_quadratic_observed_order": 1.9999999999998888,
+    "hex_max_abs_rel_error_xx": 7.23332258638283e-16,
+    "hex_free_control_measure_max": 9.786352617355576e-16,
+    "hex_lateral_measure_max": 1.3745462247967732e-15,
+    "nu_max_drift_rel": 1.9288860230354208e-15,
+    "dT_slope_rel_error": 0.0
+  },
+  "verdict": {
+    "task_gate_3pct": true,
+    "roundoff_gate": true,
+    "convergence_order_gate": true,
+    "derivation_gate": true,
+    "all_pass": true
+  },
+  "figures": [
+    "constrained_thermal_field.png",
+    "constrained_thermal_profile.png",
+    "constrained_thermal_convergence.png",
+    "constrained_thermal_sensitivity.png"
+  ]
+}

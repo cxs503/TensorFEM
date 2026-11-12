@@ -76,6 +76,12 @@ def run_registered_benchmarks():
     temperature=solve_steady_thermal(tm); heat=(100.-20.)/(2./(5.*2.)+1./(4.*2.)); exact=100.-heat*2./(5.*2.)
     out.append(_evidence("thermal.rod_convection","thermal","end temperature","temperature","One-dimensional conduction and convection resistances in series",temperature[-1],exact))
 
+    from .constrained_thermal_bar import (constant_steel, restrained_uniaxial_stress,
+                                          solve_bar)
+    _cs=constant_steel("EH36",T_ref=20.0); _E=_cs.E(20.0); _a=_cs.alpha(20.0); _dT=100.
+    _bar=solve_bar(8,_E,_a,_dT,T_ref=20.0,length=1.0)
+    out.append(_evidence("thermal.constrained_bar","thermoelasticity","restrained bar axial stress","stress","sigma_xx = -E alpha dT (bar fully restrained at both ends, uniform dT; closed-form linear thermoelasticity)",float(_bar.sigma.mean()),restrained_uniaxial_stress(_E,_a,_dT)))
+
     from .explicit_dynamics import central_difference
     omega=20.; mass=torch.tensor([[2.]],dtype=torch.float64); stiffness=mass*omega**2
     period=2*math.pi/omega; dt=period/100; time=torch.arange(0.,period+dt/2,dt,dtype=torch.float64)
