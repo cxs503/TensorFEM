@@ -1,0 +1,488 @@
+{
+  "anchor": "NEW:rainflow-fix-spec-satisfiability",
+  "anchors": {
+    "const_amplitude_3": {
+      "counters": {
+        "four_point": {
+          "arc": 30.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": true,
+          "full_ranges": [
+            10.0,
+            10.0,
+            10.0
+          ],
+          "half_ranges": [],
+          "max_range": 10.0,
+          "sum_count": 3.0
+        },
+        "production": {
+          "arc": 30.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": false,
+          "full_ranges": [],
+          "half_ranges": [
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0,
+            10.0
+          ],
+          "max_range": 10.0,
+          "sum_count": 3.0
+        },
+        "remainder": {
+          "arc": 30.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": true,
+          "full_ranges": [
+            10.0,
+            10.0,
+            10.0
+          ],
+          "half_ranges": [],
+          "max_range": 10.0,
+          "sum_count": 3.0
+        }
+      },
+      "half_path": 30.0
+    },
+    "nested_zigzag": {
+      "counters": {
+        "four_point": {
+          "arc": 8.0,
+          "arc_conservation_residual": -4.0,
+          "c1_pass": false,
+          "full_ranges": [
+            1.0,
+            2.0,
+            5.0
+          ],
+          "half_ranges": [],
+          "max_range": 5.0,
+          "sum_count": 3.0
+        },
+        "production": {
+          "arc": 12.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": false,
+          "full_ranges": [],
+          "half_ranges": [
+            1.0,
+            2.0,
+            3.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0
+          ],
+          "max_range": 6.0,
+          "sum_count": 3.5
+        },
+        "remainder": {
+          "arc": 12.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": true,
+          "full_ranges": [
+            1.0,
+            1.0,
+            2.0,
+            2.0,
+            3.0,
+            3.0
+          ],
+          "half_ranges": [],
+          "max_range": 3.0,
+          "sum_count": 6.0
+        }
+      },
+      "half_path": 12.0
+    },
+    "sine_40_periods": {
+      "counters": {
+        "four_point": {
+          "arc": 3998.4302370117675,
+          "arc_conservation_residual": 0.0,
+          "c3_pass": true,
+          "full_ranges": [
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0
+          ],
+          "half_ranges": [
+            46.860474,
+            50.0,
+            100.0
+          ],
+          "max_range": 100.0,
+          "sum_count": 40.5
+        },
+        "production": {
+          "arc": 3998.4302370117675,
+          "arc_conservation_residual": 0.0,
+          "c3_pass": true,
+          "full_ranges": [],
+          "half_ranges": [
+            46.860474,
+            50.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0,
+            100.0
+          ],
+          "max_range": 100.0,
+          "sum_count": 40.5
+        },
+        "remainder": {
+          "arc": 3998.4302370117675,
+          "arc_conservation_residual": 0.0,
+          "c3_pass": false,
+          "full_ranges": [
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0,
+            50.0
+          ],
+          "half_ranges": [
+            46.860474,
+            50.0
+          ],
+          "max_range": 50.0,
+          "sum_count": 80.0
+        }
+      },
+      "half_path": 3998.4302370117675
+    },
+    "triangle": {
+      "counters": {
+        "four_point": {
+          "arc": 100.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": true,
+          "full_ranges": [
+            100.0
+          ],
+          "half_ranges": [],
+          "max_range": 100.0,
+          "sum_count": 1.0
+        },
+        "production": {
+          "arc": 100.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": false,
+          "full_ranges": [],
+          "half_ranges": [
+            100.0,
+            100.0
+          ],
+          "max_range": 100.0,
+          "sum_count": 1.0
+        },
+        "remainder": {
+          "arc": 100.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": true,
+          "full_ranges": [
+            100.0
+          ],
+          "half_ranges": [],
+          "max_range": 100.0,
+          "sum_count": 1.0
+        }
+      },
+      "half_path": 100.0
+    },
+    "two_level_block": {
+      "counters": {
+        "four_point": {
+          "arc": 50.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": true,
+          "full_ranges": [
+            5.0,
+            5.0,
+            20.0,
+            20.0
+          ],
+          "half_ranges": [],
+          "max_range": 20.0,
+          "sum_count": 4.0
+        },
+        "production": {
+          "arc": 50.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": false,
+          "full_ranges": [],
+          "half_ranges": [
+            5.0,
+            5.0,
+            5.0,
+            5.0,
+            20.0,
+            20.0,
+            20.0,
+            20.0
+          ],
+          "max_range": 20.0,
+          "sum_count": 4.0
+        },
+        "remainder": {
+          "arc": 50.0,
+          "arc_conservation_residual": 0.0,
+          "c1_pass": true,
+          "full_ranges": [
+            5.0,
+            5.0,
+            20.0,
+            20.0
+          ],
+          "half_ranges": [],
+          "max_range": 20.0,
+          "sum_count": 4.0
+        }
+      },
+      "half_path": 50.0
+    }
+  },
+  "conclusion": "No candidate satisfies C1 and C3 together: the nested-zigzag expectation (full 1,1,2,2,3,3) requires closing loops at the interpolated record-start level, while the 40-period sine expectation forbids exactly that closure (it halves every cycle range and doubles the count). C1 and C3 are mutually inconsistent as written.",
+  "environment": {
+    "numpy": "2.4.6",
+    "python": "3.11.6"
+  },
+  "narrow_band_gate": {
+    "four_point": {
+      "c2_pass": true,
+      "count_rate_error": 0.003143421673120095,
+      "cycles_counted": 2006.5,
+      "damage_rate_ratio": 1.0122569797316587,
+      "relative_error": 0.009085000072410754
+    },
+    "production": {
+      "c2_pass": true,
+      "count_rate_error": 0.003143421673120095,
+      "cycles_counted": 2006.5,
+      "damage_rate_ratio": 1.0122569797316587,
+      "relative_error": 0.009085000072410754
+    },
+    "remainder": {
+      "c2_pass": false,
+      "count_rate_error": 1.0057868964627747,
+      "cycles_counted": 4012.0,
+      "damage_rate_ratio": 0.439564580146678,
+      "relative_error": 0.7808518038871156
+    }
+  },
+  "references": {
+    "counting": "ASTM E1049-85 (reapproved 2017) four-point / stack cycle counting",
+    "spec_under_test": "docs/rainflow-counting-defect.md \u00a75",
+    "spectral_oracle": "Rayleigh narrow-band law (Bendat 1964; DNV-RP-C203 App. B)"
+  },
+  "title": "Satisfiability of the published rainflow fix spec (three criteria)",
+  "verdict": {
+    "four_point": {
+      "C1_structured_anchors": false,
+      "C2_rayleigh_gate": true,
+      "C3_sine_40_periods": true,
+      "satisfies_all_three": false
+    },
+    "production": {
+      "C1_structured_anchors": false,
+      "C2_rayleigh_gate": true,
+      "C3_sine_40_periods": true,
+      "satisfies_all_three": false
+    },
+    "remainder": {
+      "C1_structured_anchors": true,
+      "C2_rayleigh_gate": false,
+      "C3_sine_40_periods": false,
+      "satisfies_all_three": false
+    }
+  }
+}

@@ -139,3 +139,19 @@ python3 -m pytest tests/test_rainflow_counting_defect.py \
   `weld_fatigue_ice`、`marine_benchmark_suite` 的
   `marine.fatigue_advanced.rainflow.triangle_count`（该例的等效循环数仍为 1，
   资格门不受影响）
+
+## 8. 后续验证（2026-11-12, tp-ver-7 / mission 16502）：§5 的修复规格不可满足
+
+独立复核 `docs/verification/rainflow-fix-spec-contradiction.md`（复现
+`benchmarks/verified/rainflow_fix_spec/run.py`，绊线
+`tests/test_rainflow_fix_spec_satisfiability.py`）的结论：
+
+* §5 的 **C1（嵌套 → full 1,1,2,2,3,3）与 C3（40 周期正弦 → 40 循环、max 2A）互斥**：
+  满足 C1 的唯一规则（在插值闭合层级闭环）必然把正弦每周期劈成两个 range=A 的循环，
+  `Σcount` 翻倍到 80、`max_range` 减半到 50，并让工程门 C2 的 Rayleigh 误差从 0.91%
+  恶化到 78.1%（损伤降至律的 0.44 倍）。
+* §5 推荐的 **ASTM 四点规则亦不满足 C1**：嵌套记录上给出 full `{1,2,5}` 且弧守恒
+  残差 −4（丢弧）。其残余配对约定是否合于标准原文，**本单未定论（WITHHELD）**。
+* 因此 §5 的"三条判据缺一不可"实际上**没有解**；修复者应先改规格（用真实反转点
+  闭环的教科书答案替换 C1 的嵌套期望），再改算法。缺陷本体仍未修复，两个
+  `xfail(strict=True)` 绊线保持有效。
