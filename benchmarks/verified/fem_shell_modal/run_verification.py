@@ -2,6 +2,8 @@
 """Structural dynamics modal analysis verification: beam / plate / cylindrical shell."""
 from __future__ import annotations
 
+import argparse
+import hashlib
 import json
 import math
 import os
@@ -206,39 +208,66 @@ def run_cylindrical_shell():
     }
 
 
-def generate_figures(beam, plate, shell):
-    figures = []
+ANCHOR_DIR = Path(__file__).resolve().parent
+
+# Figures named by ``gates_verified.json`` (``artifacts``) plus the two per-anchor
+# convergence panels the README tables quote.  Every one of them is a pure
+# function of the numbers in ``result.json``, which is what makes
+# ``--from-dump`` able to rebuild them without re-running an eigensolve.
+FIGURE_CAPTIONS = {
+    "beam_convergence.png": "Cantilever beam: FE modes 1-3 over the mesh ladder vs Euler-Bernoulli",
+    "plate_convergence.png": "Simply supported plate: FE modes over the mesh ladder vs Kirchhoff-Navier",
+    "shell_fem_vs_dmv.png": "Cylindrical shell: lowest FE physical modes vs the Donnell-Mushtari-Vlasov spectrum",
+    "shell_modal_audit.png": "Shell modal anchor: Donnell oracle vs FE spectrum, rotation-only mechanisms marked",
+}
+CERTIFICATE_FIGURE = "shell_modal_audit.png"
+
+
+def render_figures(beam, plate, shell, out_dir):
+    """Render the anchor figures from recorded numbers only (no solver call).
+
+    ``--from-dump`` and the live run share this function, so a rebuilt figure and
+    a freshly produced one cannot diverge: both read the same ``result.json``
+    fields.  The certificate names ``shell_modal_audit.png``; the other three are
+    the panels the README tables summarise.
+    """
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c']
+    written = []
 
     fig, ax = plt.subplots(figsize=(8, 5))
     for i in range(3):
         n = [r["n_elements"] for r in beam["mesh_convergence"]]
         f = [r["frequencies_hz"][i] for r in beam["mesh_convergence"]]
-        ax.plot(n, f, 'o-', color=colors[i], label=f'Mode {i+1}')
+        ax.plot(n, f, 'o-', color=colors[i], label=f'FE mode {i+1}')
         ax.axhline(y=beam["analytical_frequencies_hz"][i], color=colors[i], ls='--', alpha=0.5)
     ax.set_xlabel('Elements'); ax.set_ylabel('Frequency (Hz)')
-    ax.set_title('Cantilever Beam'); ax.legend(); ax.grid(True, alpha=0.3)
-    fig.tight_layout(); fig.savefig('/tmp/beam.png', dpi=150); plt.close(fig)
+    ax.set_title('Cantilever Beam (dashed = Euler-Bernoulli)'); ax.legend(); ax.grid(True, alpha=0.3)
+    fig.tight_layout(); ax.figure.savefig(out_dir / "beam_convergence.png", dpi=150)
+    plt.close(fig); written.append(out_dir / "beam_convergence.png")
 
     fig, ax = plt.subplots(figsize=(8, 5))
     for i in range(3):
         n = [r["n_elements_total"] for r in plate["mesh_convergence"]]
         f = [r["frequencies_hz"][i] for r in plate["mesh_convergence"]]
-        ax.plot(n, f, 'o-', color=colors[i], label=f'Mode {plate["mode_indices"][i]}')
+        ax.plot(n, f, 'o-', color=colors[i], label=f'FE mode {plate["mode_indices"][i]}')
         ax.axhline(y=plate["analytical_frequencies_hz"][i], color=colors[i], ls='--', alpha=0.5)
     ax.set_xlabel('Elements'); ax.set_ylabel('Frequency (Hz)')
-    ax.set_title('Simply Supported Plate'); ax.legend(); ax.grid(True, alpha=0.3)
-    fig.tight_layout(); fig.savefig('/tmp/plate.png', dpi=150); plt.close(fig)
+    ax.set_title('Simply Supported Plate (dashed = Kirchhoff-Navier)'); ax.legend(); ax.grid(True, alpha=0.3)
+    fig.tight_layout(); fig.savefig(out_dir / "plate_convergence.png", dpi=150)
+    plt.close(fig); written.append(out_dir / "plate_convergence.png")
 
     fig, ax = plt.subplots(figsize=(8, 5))
     fem = shell["fem_ladder"][0]["first_physical_hz"]
     dmv = [row[0] for row in shell["oracle"]["first_six"]][:len(fem)]
     x = range(1, len(fem) + 1)
     ax.plot(x, dmv, 's--', color='red', label='DMV (SS)', alpha=0.7)
-    ax.plot(x, fem, 'o-', color='blue', label='FEM (4x8)')
+    ax.plot(x, fem, 'o-', color='blue', label=f'FEM ({shell["fem_ladder"][0]["mesh"]})')
     ax.set_xlabel('Mode index'); ax.set_ylabel('Frequency (Hz)')
     ax.set_title('Cylindrical Shell: FEM vs DMV'); ax.legend(); ax.grid(True, alpha=0.3)
-    fig.tight_layout(); fig.savefig('/tmp/shell.png', dpi=150); plt.close(fig)
+    fig.tight_layout(); fig.savefig(out_dir / "shell_fem_vs_dmv.png", dpi=150)
+    plt.close(fig); written.append(out_dir / "shell_fem_vs_dmv.png")
 
     fig, ax = plt.subplots(figsize=(8, 5))
     oracle_n = [row[2] for row in shell["oracle"]["first_six"]]
@@ -247,34 +276,67 @@ def generate_figures(beam, plate, shell):
     ax.axhline(shell["oracle"]["beam_limit_n1_hz"], color='grey', ls=':',
                label='Euler-Bernoulli n=1 bracket')
     for entry in shell["fem_ladder"]:
-        phys = [f for f in entry["first_physical_hz"]]
-        ax.scatter([-1 - 0.4 * shell["fem_ladder"].index(entry)] * len(phys), phys,
-                   marker='o', label=f'FE physical {entry["mesh"]}')
+        phys = list(entry["first_physical_hz"])
+        slot = -1 - 0.4 * shell["fem_ladder"].index(entry)
+        ax.scatter([slot] * len(phys), phys, marker='o', label=f'FE physical {entry["mesh"]}')
         if entry["lowest_mechanism_hz"] is not None:
-            ax.scatter([-1 - 0.4 * shell["fem_ladder"].index(entry)],
-                       [entry["lowest_mechanism_hz"]], marker='x', color='red')
+            ax.scatter([slot], [entry["lowest_mechanism_hz"]], marker='x', color='red')
     ax.set_yscale('log')
     ax.set_xlabel('circumferential wavenumber n (oracle) / mesh slot (FE)')
     ax.set_ylabel('frequency (Hz)')
     ax.set_title('Shell modal anchor: Donnell oracle vs FE (x = rotation-only mechanism)')
     ax.legend(fontsize=7); ax.grid(True, alpha=0.3)
-    fig.tight_layout(); fig.savefig(str(Path(__file__).parent / "shell_modal_audit.png"),
-                                    dpi=150); plt.close(fig)
+    fig.tight_layout(); fig.savefig(out_dir / "shell_modal_audit.png", dpi=150)
+    plt.close(fig); written.append(out_dir / "shell_modal_audit.png")
 
-    import base64
-    for name, caption, path in [
-        ("beam", "Cantilever beam convergence", "/tmp/beam.png"),
-        ("plate", "Simply supported plate convergence", "/tmp/plate.png"),
-        ("shell", "Cylindrical shell: FEM vs DMV", "/tmp/shell.png"),
-        ("shell_audit", "Donnell oracle ladder vs FE spectrum, rotation-only mechanisms marked",
-         str(Path(__file__).parent / "shell_modal_audit.png")),
-    ]:
-        with open(path, 'rb') as f:
-            figures.append({"name": name, "caption": caption, "png_base64": base64.b64encode(f.read()).decode()})
-    return figures
+    return written
 
 
-def main():
+def write_figure_provenance(result_path, out_dir, figures):
+    """Stamp every figure with the sha256 of the ``result.json`` it was built from.
+
+    Without this stamp a rebuilt figure is indistinguishable from a figure some
+    other (possibly stale) run produced; with it, ``tests/test_shell_modal_anchor_certificate.py``
+    can prove the PNG on disk is the render of the JSON on disk.
+    """
+    result_path, out_dir = Path(result_path), Path(out_dir)
+    payload = {
+        "schema": "tensorfem.figure-provenance/1",
+        "anchor": "fem_shell_modal",
+        "source": result_path.name,
+        "source_sha256": hashlib.sha256(result_path.read_bytes()).hexdigest(),
+        "renderer": "benchmarks/verified/fem_shell_modal/run_verification.py --from-dump",
+        "solver_executed": False,
+        "figures": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in figures},
+    }
+    path = out_dir / "figure_provenance.json"
+    path.write_text(json.dumps(payload, indent=2) + "\n")
+    return path
+
+
+def rebuild_from_dump(result_path, out_dir):
+    """``--from-dump``: rebuild the figures of the committed result.json, zero solve."""
+    result_path, out_dir = Path(result_path), Path(out_dir)
+    payload = json.loads(result_path.read_text())
+    anchors = payload["anchors"]
+    figures = render_figures(anchors["beam"], anchors["plate"], anchors["shell"], out_dir)
+    provenance = write_figure_provenance(result_path, out_dir, figures)
+    for path in figures:
+        print(f"wrote {path}")
+    print(f"wrote {provenance} (source sha256 {json.loads(provenance.read_text())['source_sha256'][:16]}...)")
+    return 0
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--from-dump", action="store_true",
+                        help="rebuild the figures from the committed result.json; no solver is run")
+    parser.add_argument("--result", default=str(ANCHOR_DIR / "result.json"))
+    parser.add_argument("--out-dir", default=str(ANCHOR_DIR))
+    args = parser.parse_args(argv)
+    if args.from_dump:
+        return rebuild_from_dump(args.result, args.out_dir)
+
     print("TensorFEM Modal Analysis Verification (IN28-E1)")
     print(f"Date: {datetime.now(timezone.utc).isoformat()}")
     print(f"Python: {sys.version.split()[0]}, PyTorch: {torch.__version__}\n")
@@ -283,7 +345,6 @@ def main():
     plate = run_simply_supported_plate()
     shell = run_cylindrical_shell()
 
-    figures = generate_figures(beam, plate, shell)
 
     gates = [
         {
@@ -353,6 +414,11 @@ def main():
         json.dump(result, f, indent=2, default=str)
     with open(out / "gates_verified.json", 'w') as f:
         json.dump(envelope, f, indent=2)
+
+    figures = render_figures(beam, plate, shell, out)
+    provenance = write_figure_provenance(out / "result.json", out, figures)
+    print(f"\nfigures: {', '.join(p.name for p in figures)}")
+    print(f"provenance: {provenance.name} (result.json sha256 {json.loads(provenance.read_text())['source_sha256'][:16]}...)")
 
     print(f"\nOverall: {result['overall_verdict']}")
     for g in result["gates"]:

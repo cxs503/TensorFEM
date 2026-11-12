@@ -1,0 +1,347 @@
+{
+  "schema": "tensorfem.anchor-artifact-triage/1",
+  "source_audit": {
+    "anchors": 33,
+    "certified": 7,
+    "contradicted": 17,
+    "uncertified": 9,
+    "gates": 244
+  },
+  "debt_registry_size": 26,
+  "defective_anchors": 17,
+  "named_artifacts_missing": 48,
+  "anchors_missing_any_artifact": 14,
+  "by_remedy": {
+    "other_defect": [
+      "fem_shell_scordelis_lo",
+      "fem_sphere_pressure_membrane",
+      "fem_wave_dispersion"
+    ],
+    "rebuild_from_dump_candidate": [
+      "fem_beam_static",
+      "fem_cantilever",
+      "fem_hertz_contact",
+      "fem_kirsch_plate",
+      "fem_modal",
+      "fem_morley_skew_plate",
+      "fem_plate_modal",
+      "fem_plate_postbuckling",
+      "fem_plate_static",
+      "fem_structural_acoustics",
+      "fem_winkler_plate",
+      "fem_winkler_plate_k_sweep"
+    ],
+    "stale_reference": [
+      "fem_panel_buckling",
+      "fem_structural_benchmarks"
+    ]
+  },
+  "rows": [
+    {
+      "anchor": "fem_beam_static",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 3,
+      "missing_artifacts": [
+        "deflection_profile.png",
+        "convergence.png"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_cantilever",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 4,
+      "missing_artifacts": [
+        "cantilever_field.png",
+        "cantilever_convergence.png"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_hertz_contact",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 5,
+      "missing_artifacts": [
+        "hertz_pressure.png",
+        "hertz_convergence.png",
+        "hertz_penalty.png"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_kirsch_plate",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 6,
+      "missing_artifacts": [
+        "every number of the ladder, cross-checks and sensitivity studies",
+        "benchmarks/verified/fem_kirsch_plate/kirsch_field.png",
+        "benchmarks/verified/fem_kirsch_plate/kirsch_convergence.png",
+        "benchmarks/verified/fem_kirsch_plate/kirsch_hoop_profile.png",
+        "benchmarks/verified/fem_kirsch_plate/kirsch_width_trend.png",
+        "this driver"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_modal",
+      "grade": "contradicted",
+      "defects": [
+        "E_ANCHOR_NAME_MISMATCH",
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 5,
+      "missing_artifacts": [
+        "beam_modes.png",
+        "plate_modes.png",
+        "modal_convergence.png"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_morley_skew_plate",
+      "grade": "contradicted",
+      "defects": [
+        "E_ANCHOR_NAME_MISMATCH"
+      ],
+      "named_artifacts": 5,
+      "missing_artifacts": [
+        "all meshes, moments, diagnostics",
+        "generated evidence table",
+        "mesh convergence vs both references",
+        "normalised deflection field",
+        "pre-fix MITC parasitic shear (parent commit df250c73)"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_panel_buckling",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 7,
+      "missing_artifacts": [
+        "benchmarks/verified/fem_panel_buckling/figures/buckling_convergence.png",
+        "benchmarks/verified/fem_panel_buckling/figures/buckling_modes.png",
+        "benchmarks/verified/fem_panel_buckling/figures/linear_path_evidence.png",
+        "src/tensorfem/stiffened_panel_buckling.py",
+        "tests/test_stiffened_panel_buckling.py"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "stale_reference",
+      "reason": "certificate names a source file that is absent: correct or drop the pointer"
+    },
+    {
+      "anchor": "fem_plate_modal",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 4,
+      "missing_artifacts": [
+        "plate_modes.png",
+        "plate_convergence.png"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_plate_postbuckling",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 3,
+      "missing_artifacts": [
+        "benchmarks/verified/fem_plate_postbuckling/buckling_mode.png",
+        "benchmarks/verified/fem_plate_postbuckling/postbuckling_path.png",
+        "benchmarks/verified/fem_plate_postbuckling/imperfection_sensitivity.png"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_plate_static",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 4,
+      "missing_artifacts": [
+        "fields_ssss.png",
+        "fields_cccc.png",
+        "convergence.png"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_shell_scordelis_lo",
+      "grade": "contradicted",
+      "defects": [
+        "E_PASS_WITHOUT_CRITERION"
+      ],
+      "named_artifacts": 0,
+      "missing_artifacts": [],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "other_defect",
+      "reason": "artifacts resolve; defect is in the gate envelope"
+    },
+    {
+      "anchor": "fem_sphere_pressure_membrane",
+      "grade": "contradicted",
+      "defects": [
+        "E_SCHEMA",
+        "E_PASS_WITHOUT_CRITERION"
+      ],
+      "named_artifacts": 0,
+      "missing_artifacts": [],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "other_defect",
+      "reason": "artifacts resolve; defect is in the gate envelope"
+    },
+    {
+      "anchor": "fem_structural_acoustics",
+      "grade": "contradicted",
+      "defects": [
+        "E_SCHEMA",
+        "E_PASS_WITHOUT_CRITERION",
+        "E_GATE_VALUE_NOT_FINITE",
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 6,
+      "missing_artifacts": [
+        "fig_cylinder.png",
+        "fig_esm_validation.png",
+        "fig_plate_modes.png",
+        "fig_plate_sigma.png",
+        "docs/reports/fem-structural-acoustics.md"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_structural_benchmarks",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 7,
+      "missing_artifacts": [
+        "benchmarks/verified/fem_structural_benchmarks/case_a_beam.png",
+        "benchmarks/verified/fem_structural_benchmarks/case_b_plate.png",
+        "benchmarks/verified/fem_structural_benchmarks/case_c_cylinder.png",
+        "tests/test_fem_structural_benchmarks.py"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "stale_reference",
+      "reason": "certificate names a source file that is absent: correct or drop the pointer"
+    },
+    {
+      "anchor": "fem_wave_dispersion",
+      "grade": "contradicted",
+      "defects": [
+        "E_SCHEMA",
+        "E_OVERALL_ABSENT"
+      ],
+      "named_artifacts": 0,
+      "missing_artifacts": [],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "other_defect",
+      "reason": "artifacts resolve; defect is in the gate envelope"
+    },
+    {
+      "anchor": "fem_winkler_plate",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 3,
+      "missing_artifacts": [
+        "winkler_deflection_profile.png",
+        "winkler_convergence.png"
+      ],
+      "result_json_present": true,
+      "driver_present": true,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    },
+    {
+      "anchor": "fem_winkler_plate_k_sweep",
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "named_artifacts": 4,
+      "missing_artifacts": [
+        "winkler_k_sweep_profile.png",
+        "winkler_k_sweep_error.png",
+        "winkler_k_sweep_beam.png"
+      ],
+      "result_json_present": true,
+      "driver_present": false,
+      "driver_carries_from_dump": false,
+      "remedy": "rebuild_from_dump_candidate",
+      "reason": "result.json present: add a --from-dump renderer to the driver, then rebuild"
+    }
+  ]
+}
