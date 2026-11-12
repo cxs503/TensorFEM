@@ -1,0 +1,3214 @@
+{
+  "task_key": "paper-exp-ice-coupled-6dof-4",
+  "slug": "ice-coupled-6dof",
+  "domain": "ice",
+  "generated_utc": "2026-11-12T07:15:40Z",
+  "git": {
+    "commit": "9ac00e601eae33bc0354371aae1f0b38a24e1378",
+    "branch": "agent/m15975"
+  },
+  "environment": {
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "wall_time_s": 125.7
+  },
+  "experiment": {
+    "concentrations": [
+      0.3,
+      0.5,
+      0.7
+    ],
+    "seeds": [
+      1101,
+      1102,
+      1103,
+      1104,
+      1105
+    ],
+    "duration_s": 40.0,
+    "dt_s": 0.01,
+    "commanded_speed_mps": 5.0,
+    "rate_exponents": [
+      0.15,
+      0.33,
+      0.5
+    ],
+    "rate_reference_strain_rate_s": 1.0,
+    "rate_target_pressure_MPa": 1.9,
+    "random_strength_cv": 0.35,
+    "min_impacts_per_concentration": 15,
+    "deviation_threshold": 0.15,
+    "metric": "per impact: peak-force sample (A_peak, N_peak/A_peak); secondary: impulse-weighted (int A dt, int N dt / int A dt)",
+    "total_impacts": 19025
+  },
+  "anchor": {
+    "anchor_id": "AN-ISO19906",
+    "name": "ISO 19906 polar ice load area law",
+    "statement_copy": "p_G = C_R (A/A_0)^ex (C_R, ex from the standard's table; global pressure ex < 0; the local-pressure calibre is defined differently)",
+    "catalogue_source": "ISO 19906:2010 Petroleum and natural gas industries -- Arctic offshore structures (ecosystem anchor catalogue, id-level entry: coefficients not carried)",
+    "status": "WITHHELD",
+    "withheld_reason": "the catalogue entry carries the algebraic form only and no licensed copy of ISO 19906 is reachable from this work tree, so C_R, ex and the clause/table/page that carry them cannot be transcribed; writing a recalled number would be fabrication",
+    "required_documents": [
+      {
+        "document": "ISO 19906:2010 (or :2019) -- Annex A, pressure-area clause",
+        "locator_needed": "clause number + table number + page",
+        "carries": "global pressure-area exponent ex_g and coefficient C_R (with its A_0 normalisation and validity range in A)"
+      },
+      {
+        "document": "ISO 19906:2010 (or :2019) -- local pressure clause/table",
+        "locator_needed": "clause number + table number + page",
+        "carries": "local (high-pressure-zone) exponent ex_l and coefficient, plus the definition of the local area"
+      },
+      {
+        "document": "ISO 19906:2010 (or :2019) -- global ice action clauses",
+        "locator_needed": "clause number (+ any design table)",
+        "carries": "whether a tabulated design global ice force exists and how the area law is combined with the pressure factors"
+      }
+    ],
+    "search_scope_performed": [
+      "repository grep for '19906' over src/, benchmarks/, docs/, papers/ -> code and prose mentions only, no transcription of the coefficients",
+      "ecosystem anchor catalogue lookup by id AN-ISO19906 -> id + statement (algebraic form), no numbers",
+      "sibling-repository anchor registries (ice-abrasion-extremes, ice-hull-propeller-threefield, ice-polygon-floe-field) -> certify that the primary text is absent and keep candidate values in a comparison-only registry"
+    ]
+  },
+  "declared_reference": {
+    "label": "declared_reference",
+    "is_normative": false,
+    "C_R_MPa": 1.0,
+    "A_0_m2": 1.0,
+    "exponent": -0.28,
+    "provenance": "PressureAreaLaw defaults of the W22/W23 chain; declared reference normalisation, not a transcription"
+  },
+  "unverified_candidate": {
+    "label": "unverified_candidate",
+    "is_normative": false,
+    "exponent": -0.3,
+    "provenance": "sibling anchor registry 'ice-hull-propeller-threefield' candidate_value (verification_status != VERIFIED, quote = null) -- comparison only, may not be cited as the standard's value"
+  },
+  "arms": {
+    "C1_iso_area_law": {
+      "role": "closure (imposed ISO area law as pressure source)",
+      "pressure_source": "p = C_R (A/A_0)^ex with the declared normalisation (C_R = 1 MPa, A_0 = 1 m^2, ex = -0.28)",
+      "analytic_exponent": -0.28
+    },
+    "C0_random_strength": {
+      "role": "negative control (no area dependence)",
+      "pressure_source": "p = sigma_floe, sigma_floe ~ lognormal(mean = 1.9 MPa, cv = 0.35); no area dependence",
+      "analytic_exponent": 0.0
+    },
+    "T_rate_n015": {
+      "role": "treatment (rate-dependent crushing, n = 0.15)",
+      "pressure_source": "p = p_ref (epsdot/epsdot_ref)^n, epsdot = V_close/(4D), n = 0.15, p_ref = 1.900 MPa at epsdot_ref = 1 1/s (one-constant level calibration, no area exponent)",
+      "analytic_exponent": -0.15
+    },
+    "T_rate_n033": {
+      "role": "treatment (rate-dependent crushing, n = 0.33)",
+      "pressure_source": "p = p_ref (epsdot/epsdot_ref)^n, epsdot = V_close/(4D), n = 0.33, p_ref = 1.900 MPa at epsdot_ref = 1 1/s (one-constant level calibration, no area exponent)",
+      "analytic_exponent": -0.33
+    },
+    "T_rate_n050": {
+      "role": "treatment (rate-dependent crushing, n = 0.5)",
+      "pressure_source": "p = p_ref (epsdot/epsdot_ref)^n, epsdot = V_close/(4D), n = 0.5, p_ref = 1.900 MPa at epsdot_ref = 1 1/s (one-constant level calibration, no area exponent)",
+      "analytic_exponent": -0.5
+    }
+  },
+  "fits": {
+    "arms": {
+      "C1_iso_area_law": {
+        "role": "closure (imposed ISO area law as pressure source)",
+        "per_concentration": {
+          "0.3": {
+            "peak": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.000588689553106636,
+              "area_max_m2": 0.6476018760536805,
+              "pressure_min_MPa": 1.1293634606762806,
+              "pressure_max_MPa": 8.024755847617765,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.28,
+              "prefactor_MPa": 0.9999999999999999,
+              "r2": 1.0,
+              "stderr_exponent": 5.662529508751029e-18,
+              "stderr_ln_prefactor": 1.327697414835603e-17,
+              "residual_rms_ln": 1.343433556251682e-16,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.2800000000000001,
+                "exponent_median": -0.28,
+                "exponent_p95": -0.27999999999999997,
+                "prefactor_p05_MPa": 0.9999999999999999,
+                "prefactor_median_MPa": 1.0,
+                "prefactor_p95_MPa": 1.0000000000000002
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 4.007529724190558e-05,
+              "area_max_m2": 0.30455252134768646,
+              "pressure_min_MPa": 1.2350928568079143,
+              "pressure_max_MPa": 8.575998584175794,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.20485355501031213,
+              "prefactor_MPa": 0.8631697890140639,
+              "r2": 0.9262900201926998,
+              "stderr_exponent": 0.0020961693309430444,
+              "stderr_ln_prefactor": 0.008827370486900184,
+              "residual_rms_ln": 0.06427731218382012,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.21004382167618996,
+                "exponent_median": -0.2049738613647796,
+                "exponent_p95": -0.19839559671979964,
+                "prefactor_p05_MPa": 0.8470813852658067,
+                "prefactor_median_MPa": 0.86233033687025,
+                "prefactor_p95_MPa": 0.8855992520422495
+              }
+            },
+            "decomposition": {
+              "n_points": 762,
+              "partial_exponents": {
+                "A": -0.27999999999999986,
+                "h": -2.249690834390347e-16,
+                "V_close": -8.82292121972488e-19
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.09973095037302815,
+              "beta_V_vs_A": 0.31364977633762536,
+              "raw_total_exponent": -0.2799999999999998,
+              "predicted_total_exponent": -0.27999999999999986,
+              "residual": 5.551115123125783e-17,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 172,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.009327940796128632,
+                "area_max_m2": 0.47522207794736154,
+                "pressure_min_MPa": 1.2315979277163553,
+                "pressure_max_MPa": 3.70220089377989,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.28,
+                "prefactor_MPa": 1.0,
+                "r2": 1.0,
+                "stderr_exponent": 1.2948400145920242e-17,
+                "stderr_ln_prefactor": 2.9288050055666916e-17,
+                "residual_rms_ln": 1.2322132207019724e-16
+              },
+              "1102": {
+                "n_points": 156,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.000588689553106636,
+                "area_max_m2": 0.6462372339479758,
+                "pressure_min_MPa": 1.13003071082037,
+                "pressure_max_MPa": 8.024755847617765,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.2800000000000001,
+                "prefactor_MPa": 0.9999999999999998,
+                "r2": 1.0,
+                "stderr_exponent": 1.3532947293038251e-17,
+                "stderr_ln_prefactor": 3.0804059143721333e-17,
+                "residual_rms_ln": 1.3611918939439415e-16
+              },
+              "1103": {
+                "n_points": 143,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0035196758553699124,
+                "area_max_m2": 0.4984304131193859,
+                "pressure_min_MPa": 1.21526427292555,
+                "pressure_max_MPa": 4.863839693857366,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.28,
+                "prefactor_MPa": 1.0,
+                "r2": 1.0,
+                "stderr_exponent": 7.167473128983994e-18,
+                "stderr_ln_prefactor": 1.7177419030020836e-17,
+                "residual_rms_ln": 7.206439362862193e-17
+              },
+              "1104": {
+                "n_points": 131,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0009227358157239264,
+                "area_max_m2": 0.6389577354863898,
+                "pressure_min_MPa": 1.133620792420157,
+                "pressure_max_MPa": 7.075845379193309,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.28,
+                "prefactor_MPa": 1.0,
+                "r2": 1.0,
+                "stderr_exponent": 7.348822663582871e-18,
+                "stderr_ln_prefactor": 1.7622241072454555e-17,
+                "residual_rms_ln": 7.610841995773118e-17
+              },
+              "1105": {
+                "n_points": 160,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0018143805665060031,
+                "area_max_m2": 0.6476018760536805,
+                "pressure_min_MPa": 1.1293634606762806,
+                "pressure_max_MPa": 5.855393038281058,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.27999999999999997,
+                "prefactor_MPa": 1.0,
+                "r2": 1.0,
+                "stderr_exponent": 6.246836311896236e-18,
+                "stderr_ln_prefactor": 1.5030887917960227e-17,
+                "residual_rms_ln": 7.786570622664426e-17
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.2800000000000001,
+              "max": -0.27999999999999997,
+              "p05": -0.2800000000000001,
+              "median": -0.28,
+              "p95": -0.27999999999999997,
+              "mean": -0.28,
+              "std": 3.925231146709438e-17
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 0.9999999999999998,
+              "max": 1.0,
+              "p05": 0.9999999999999998,
+              "median": 1.0,
+              "p95": 1.0,
+              "mean": 1.0,
+              "std": 1.1102230246251565e-16
+            },
+            "impacts_per_seed": {
+              "1101": 172,
+              "1102": 156,
+              "1103": 143,
+              "1104": 131,
+              "1105": 160
+            },
+            "log_correlation_A_h": 0.3290106274382302,
+            "log_correlation_A_rate": -0.3853261760507203,
+            "log_correlation_A_speed": 0.8403448760601573
+          },
+          "0.5": {
+            "peak": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0002112261398962452,
+              "area_max_m2": 0.7209599990149561,
+              "pressure_min_MPa": 1.0959351909902508,
+              "pressure_max_MPa": 10.692288157766008,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.2800000000000001,
+              "prefactor_MPa": 0.9999999999999999,
+              "r2": 1.0,
+              "stderr_exponent": 2.829536049264261e-18,
+              "stderr_ln_prefactor": 6.5783133928916204e-18,
+              "residual_rms_ln": 8.324116530312345e-17,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.2800000000000001,
+                "exponent_median": -0.28,
+                "exponent_p95": -0.27999999999999997,
+                "prefactor_p05_MPa": 0.9999999999999998,
+                "prefactor_median_MPa": 1.0,
+                "prefactor_p95_MPa": 1.0000000000000002
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 1.787741170730316e-05,
+              "area_max_m2": 0.4004699549378747,
+              "pressure_min_MPa": 1.195175677972178,
+              "pressure_max_MPa": 11.570023695841396,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.20066039405994784,
+              "prefactor_MPa": 0.878849195797246,
+              "r2": 0.9189987589386885,
+              "stderr_exponent": 0.0016749612805663913,
+              "stderr_ln_prefactor": 0.007017262471762395,
+              "residual_rms_ln": 0.06473041540437227,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.20588620106466748,
+                "exponent_median": -0.2001973283882469,
+                "exponent_p95": -0.19436987436771455,
+                "prefactor_p05_MPa": 0.8614195680410204,
+                "prefactor_median_MPa": 0.880508959926943,
+                "prefactor_p95_MPa": 0.8996424329969894
+              }
+            },
+            "decomposition": {
+              "n_points": 1267,
+              "partial_exponents": {
+                "A": -0.2799999999999998,
+                "h": 3.478482975609743e-17,
+                "V_close": -4.9568655629134733e-17
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.11807476676398641,
+              "beta_V_vs_A": 0.31850472022522236,
+              "raw_total_exponent": -0.2799999999999998,
+              "predicted_total_exponent": -0.2799999999999998,
+              "residual": 0.0,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 279,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.005529251917573615,
+                "area_max_m2": 0.7209599990149561,
+                "pressure_min_MPa": 1.0959351909902508,
+                "pressure_max_MPa": 4.286012313127582,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.28,
+                "prefactor_MPa": 1.0,
+                "r2": 1.0,
+                "stderr_exponent": 5.2859535266228e-18,
+                "stderr_ln_prefactor": 1.1879400990578535e-17,
+                "residual_rms_ln": 6.694334307773726e-17
+              },
+              "1102": {
+                "n_points": 256,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0009989371527828316,
+                "area_max_m2": 0.5803805093717677,
+                "pressure_min_MPa": 1.1645560892975448,
+                "pressure_max_MPa": 6.9203699805526995,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.28,
+                "prefactor_MPa": 1.0,
+                "r2": 1.0,
+                "stderr_exponent": 1.0430596117963027e-17,
+                "stderr_ln_prefactor": 2.4554978911426175e-17,
+                "residual_rms_ln": 1.3584114354517266e-16
+              },
+              "1103": {
+                "n_points": 243,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0002112261398962452,
+                "area_max_m2": 0.6950224813900552,
+                "pressure_min_MPa": 1.1072363149523514,
+                "pressure_max_MPa": 10.692288157766008,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.2800000000000001,
+                "prefactor_MPa": 0.9999999999999999,
+                "r2": 1.0,
+                "stderr_exponent": 6.053532955165397e-18,
+                "stderr_ln_prefactor": 1.4743233458936605e-17,
+                "residual_rms_ln": 8.784304638250486e-17
+              },
+              "1104": {
+                "n_points": 227,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.00032079690726487026,
+                "area_max_m2": 0.4545527184516774,
+                "pressure_min_MPa": 1.247028581160533,
+                "pressure_max_MPa": 9.511643220811404,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.27999999999999997,
+                "prefactor_MPa": 1.0000000000000002,
+                "r2": 1.0,
+                "stderr_exponent": 1.098402864929421e-17,
+                "stderr_ln_prefactor": 2.5343519437891347e-17,
+                "residual_rms_ln": 1.321900466349074e-16
+              },
+              "1105": {
+                "n_points": 262,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0009589650893538472,
+                "area_max_m2": 0.5847878741566069,
+                "pressure_min_MPa": 1.1620918611146227,
+                "pressure_max_MPa": 6.999954495123586,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.28,
+                "prefactor_MPa": 1.0,
+                "r2": 1.0,
+                "stderr_exponent": 4.9191661664320854e-18,
+                "stderr_ln_prefactor": 1.1250705820858748e-17,
+                "residual_rms_ln": 6.443427424056282e-17
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.2800000000000001,
+              "max": -0.27999999999999997,
+              "p05": -0.2800000000000001,
+              "median": -0.28,
+              "p95": -0.27999999999999997,
+              "mean": -0.28,
+              "std": 3.925231146709438e-17
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 0.9999999999999999,
+              "max": 1.0000000000000002,
+              "p05": 0.9999999999999999,
+              "median": 1.0,
+              "p95": 1.0000000000000002,
+              "mean": 1.0,
+              "std": 1.2412670766236366e-16
+            },
+            "impacts_per_seed": {
+              "1101": 279,
+              "1102": 256,
+              "1103": 243,
+              "1104": 227,
+              "1105": 262
+            },
+            "log_correlation_A_h": 0.35650755534728507,
+            "log_correlation_A_rate": -0.35815027994677495,
+            "log_correlation_A_speed": 0.8127584104276435
+          },
+          "0.7": {
+            "peak": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0004101050116240846,
+              "area_max_m2": 0.6507529423652432,
+              "pressure_min_MPa": 1.127829579674865,
+              "pressure_max_MPa": 8.879517726420806,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.28,
+              "prefactor_MPa": 1.0000000000000002,
+              "r2": 1.0,
+              "stderr_exponent": 6.809087289444676e-18,
+              "stderr_ln_prefactor": 1.5807946410688478e-17,
+              "residual_rms_ln": 2.313713882567639e-16,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.2800000000000001,
+                "exponent_median": -0.28,
+                "exponent_p95": -0.27999999999999997,
+                "prefactor_p05_MPa": 0.9999999999999998,
+                "prefactor_median_MPa": 1.0,
+                "prefactor_p95_MPa": 1.0000000000000002
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 3.787684122712837e-05,
+              "area_max_m2": 0.3494539114148617,
+              "pressure_min_MPa": 1.2343495050554207,
+              "pressure_max_MPa": 9.435293250388234,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.19747786149890695,
+              "prefactor_MPa": 0.8895959420896122,
+              "r2": 0.9190250272368222,
+              "stderr_exponent": 0.0013917247283619625,
+              "stderr_ln_prefactor": 0.005839631022267622,
+              "residual_rms_ln": 0.06300602504680146,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.20154308145356045,
+                "exponent_median": -0.19753144980159354,
+                "exponent_p95": -0.1928545158494432,
+                "prefactor_p05_MPa": 0.8762549722533862,
+                "prefactor_median_MPa": 0.8895483945921046,
+                "prefactor_p95_MPa": 0.905612400196527
+              }
+            },
+            "decomposition": {
+              "n_points": 1776,
+              "partial_exponents": {
+                "A": -0.27999999999999964,
+                "h": -2.7155810619074976e-16,
+                "V_close": 1.3020473819807624e-16
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.12011567151698005,
+              "beta_V_vs_A": 0.21017030491854333,
+              "raw_total_exponent": -0.2799999999999997,
+              "predicted_total_exponent": -0.2799999999999997,
+              "residual": 0.0,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 385,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.00188971580729302,
+                "area_max_m2": 0.6507529423652432,
+                "pressure_min_MPa": 1.127829579674865,
+                "pressure_max_MPa": 5.789072401548491,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.2800000000000001,
+                "prefactor_MPa": 0.9999999999999999,
+                "r2": 1.0,
+                "stderr_exponent": 5.637840069457969e-18,
+                "stderr_ln_prefactor": 1.2749045456263601e-17,
+                "residual_rms_ln": 8.366528506582409e-17
+              },
+              "1102": {
+                "n_points": 360,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0025247107586561816,
+                "area_max_m2": 0.48126827825707386,
+                "pressure_min_MPa": 1.2272458540743194,
+                "pressure_max_MPa": 5.338026720460695,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.28,
+                "prefactor_MPa": 1.0,
+                "r2": 1.0,
+                "stderr_exponent": 4.352891647787756e-18,
+                "stderr_ln_prefactor": 1.0336115688272822e-17,
+                "residual_rms_ln": 6.717957901287729e-17
+              },
+              "1103": {
+                "n_points": 340,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0012187636258500897,
+                "area_max_m2": 0.6354963213098828,
+                "pressure_min_MPa": 1.1353462989076535,
+                "pressure_max_MPa": 6.54549573829435,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.28,
+                "prefactor_MPa": 0.9999999999999999,
+                "r2": 1.0,
+                "stderr_exponent": 8.8499796019504e-18,
+                "stderr_ln_prefactor": 2.076424399489182e-17,
+                "residual_rms_ln": 1.302547884343768e-16
+              },
+              "1104": {
+                "n_points": 323,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0016125880472282615,
+                "area_max_m2": 0.4676136472672136,
+                "pressure_min_MPa": 1.2371762956009857,
+                "pressure_max_MPa": 6.051923613788253,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.27999999999999997,
+                "prefactor_MPa": 1.0000000000000004,
+                "r2": 1.0,
+                "stderr_exponent": 1.7061043116294436e-17,
+                "stderr_ln_prefactor": 3.866474752336456e-17,
+                "residual_rms_ln": 2.275563143245371e-16
+              },
+              "1105": {
+                "n_points": 368,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0004101050116240846,
+                "area_max_m2": 0.5502963202188497,
+                "pressure_min_MPa": 1.1820421129525995,
+                "pressure_max_MPa": 8.879517726420806,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.2800000000000001,
+                "prefactor_MPa": 0.9999999999999998,
+                "r2": 1.0,
+                "stderr_exponent": 7.600973909482529e-18,
+                "stderr_ln_prefactor": 1.790995943440653e-17,
+                "residual_rms_ln": 1.303217991992766e-16
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.2800000000000001,
+              "max": -0.27999999999999997,
+              "p05": -0.2800000000000001,
+              "median": -0.28,
+              "p95": -0.27999999999999997,
+              "mean": -0.28,
+              "std": 4.8074067159589095e-17
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 0.9999999999999998,
+              "max": 1.0000000000000004,
+              "p05": 0.9999999999999998,
+              "median": 0.9999999999999999,
+              "p95": 1.0000000000000004,
+              "mean": 1.0,
+              "std": 2.603703785810335e-16
+            },
+            "impacts_per_seed": {
+              "1101": 385,
+              "1102": 360,
+              "1103": 340,
+              "1104": 323,
+              "1105": 368
+            },
+            "log_correlation_A_h": 0.3558113655629332,
+            "log_correlation_A_rate": -0.407165343331278,
+            "log_correlation_A_speed": 0.8076835837283132
+          }
+        }
+      },
+      "C0_random_strength": {
+        "role": "negative control (no area dependence)",
+        "per_concentration": {
+          "0.3": {
+            "peak": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0016596511369592832,
+              "area_max_m2": 0.6334352534111188,
+              "pressure_min_MPa": 0.7609081825535243,
+              "pressure_max_MPa": 4.880841210207682,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.12597933536804143,
+              "prefactor_MPa": 1.3609882572564507,
+              "r2": 0.08195800956767474,
+              "stderr_exponent": 0.015294246599145089,
+              "stderr_ln_prefactor": 0.034120367242030734,
+              "residual_rms_ln": 0.3272056527168776,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.1543066000590558,
+                "exponent_median": -0.12760646127859793,
+                "exponent_p95": -0.10255590504155933,
+                "prefactor_p05_MPa": 1.281550090492833,
+                "prefactor_median_MPa": 1.3565848022993952,
+                "prefactor_p95_MPa": 1.4370727733472553
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0002612136557753427,
+              "area_max_m2": 0.26729186098724506,
+              "pressure_min_MPa": 0.7609081825535238,
+              "pressure_max_MPa": 4.880841210207682,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.13105644954912682,
+              "prefactor_MPa": 1.0574059280563368,
+              "r2": 0.1393452083643576,
+              "stderr_exponent": 0.011814628712561281,
+              "stderr_ln_prefactor": 0.04790596297960006,
+              "residual_rms_ln": 0.3168137487395338,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.15231498493909448,
+                "exponent_median": -0.13201589754598186,
+                "exponent_p95": -0.11311638894521199,
+                "prefactor_p05_MPa": 0.9714737728988899,
+                "prefactor_median_MPa": 1.0554725134440277,
+                "prefactor_p95_MPa": 1.137785231620374
+              }
+            },
+            "decomposition": {
+              "n_points": 762,
+              "partial_exponents": {
+                "A": -0.17005838641004534,
+                "h": 0.21635729297338446,
+                "V_close": 0.04646475863845197
+              },
+              "partial_r2": 0.129838668928551,
+              "beta_h_vs_A": 0.1044401161843367,
+              "beta_V_vs_A": 0.4623433082628126,
+              "raw_total_exponent": -0.12597933536804157,
+              "predicted_total_exponent": -0.12597933536804148,
+              "residual": -8.326672684688674e-17,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 172,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.011638830812957364,
+                "area_max_m2": 0.545879116037616,
+                "pressure_min_MPa": 0.7609081825535243,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.13491385856896573,
+                "prefactor_MPa": 1.3479191209422832,
+                "r2": 0.06885740380408412,
+                "stderr_exponent": 0.0380508951360498,
+                "stderr_ln_prefactor": 0.08232860736159839,
+                "residual_rms_ln": 0.3277166773409159
+              },
+              "1102": {
+                "n_points": 156,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0016596511369592832,
+                "area_max_m2": 0.6334352534111188,
+                "pressure_min_MPa": 0.7609081825535243,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.12083019297880845,
+                "prefactor_MPa": 1.3751847180552004,
+                "r2": 0.06543799867255407,
+                "stderr_exponent": 0.0367963010884106,
+                "stderr_ln_prefactor": 0.07960186084301238,
+                "residual_rms_ln": 0.328289735858293
+              },
+              "1103": {
+                "n_points": 143,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.006430533738045876,
+                "area_max_m2": 0.43809369562837563,
+                "pressure_min_MPa": 0.7609081825535243,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.13300040665225818,
+                "prefactor_MPa": 1.3340878215572396,
+                "r2": 0.09038451232611844,
+                "stderr_exponent": 0.03553246411518941,
+                "stderr_ln_prefactor": 0.08109243001876362,
+                "residual_rms_ln": 0.3262415275107826
+              },
+              "1104": {
+                "n_points": 131,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0027050076975722024,
+                "area_max_m2": 0.6211798015308898,
+                "pressure_min_MPa": 0.7609081825535243,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.11759326985135078,
+                "prefactor_MPa": 1.3786480592772243,
+                "r2": 0.07781490062898044,
+                "stderr_exponent": 0.03564226364100307,
+                "stderr_ln_prefactor": 0.08103117138412255,
+                "residual_rms_ln": 0.3297877542249967
+              },
+              "1105": {
+                "n_points": 160,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.002980708767296549,
+                "area_max_m2": 0.5423617709815717,
+                "pressure_min_MPa": 0.7609081825535243,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.12582119497671182,
+                "prefactor_MPa": 1.3602096627445486,
+                "r2": 0.10890985589634494,
+                "stderr_exponent": 0.02863205307667164,
+                "stderr_ln_prefactor": 0.06542228883051994,
+                "residual_rms_ln": 0.32395258389921133
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.13491385856896573,
+              "max": -0.11759326985135078,
+              "p05": -0.13453116818562422,
+              "median": -0.12582119497671182,
+              "p95": -0.11824065447684232,
+              "mean": -0.126431784605619,
+              "std": 0.00749937273745576
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.3340878215572396,
+              "max": 1.3786480592772243,
+              "p05": 1.3368540814342482,
+              "median": 1.3602096627445486,
+              "p95": 1.3779553910328195,
+              "mean": 1.3592098765152991,
+              "std": 0.018659025232715884
+            },
+            "impacts_per_seed": {
+              "1101": 172,
+              "1102": 156,
+              "1103": 143,
+              "1104": 131,
+              "1105": 160
+            },
+            "log_correlation_A_h": 0.3106950333978991,
+            "log_correlation_A_rate": -0.2619670993161238,
+            "log_correlation_A_speed": 0.8277048422448343
+          },
+          "0.5": {
+            "peak": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0007582224743272563,
+              "area_max_m2": 0.6622606398716328,
+              "pressure_min_MPa": 0.7115125322204685,
+              "pressure_max_MPa": 4.880841210207682,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.1174304926118427,
+              "prefactor_MPa": 1.4292884610772683,
+              "r2": 0.06322201158642249,
+              "stderr_exponent": 0.012709246518751256,
+              "stderr_ln_prefactor": 0.028260726474798138,
+              "residual_rms_ln": 0.3330268414026643,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.1379747311863204,
+                "exponent_median": -0.11653813748010652,
+                "exponent_p95": -0.09969575780790485,
+                "prefactor_p05_MPa": 1.3692534324982213,
+                "prefactor_median_MPa": 1.4331780701909147,
+                "prefactor_p95_MPa": 1.4837092262856117
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.00010981103339130485,
+              "area_max_m2": 0.33673705072791843,
+              "pressure_min_MPa": 0.7115125322204683,
+              "pressure_max_MPa": 4.880841210207684,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.13183699896772497,
+              "prefactor_MPa": 1.0867779425965054,
+              "r2": 0.13048567909961495,
+              "stderr_exponent": 0.009568613006695231,
+              "stderr_ln_prefactor": 0.038827796991533964,
+              "residual_rms_ln": 0.32084795028652147,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.1468973787696742,
+                "exponent_median": -0.13144555755371917,
+                "exponent_p95": -0.11813636093743476,
+                "prefactor_p05_MPa": 1.0266024591281406,
+                "prefactor_median_MPa": 1.0893905501558376,
+                "prefactor_p95_MPa": 1.1455405701916983
+              }
+            },
+            "decomposition": {
+              "n_points": 1267,
+              "partial_exponents": {
+                "A": -0.15831085850543575,
+                "h": 0.16880829533175531,
+                "V_close": 0.0629664317725517
+              },
+              "partial_r2": 0.12396834735511619,
+              "beta_h_vs_A": 0.12922083766252054,
+              "beta_V_vs_A": 0.30280922754706646,
+              "raw_total_exponent": -0.11743049261184275,
+              "predicted_total_exponent": -0.11743049261184273,
+              "residual": -2.7755575615628914e-17,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 279,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.010295440661200708,
+                "area_max_m2": 0.527003707260795,
+                "pressure_min_MPa": 0.7115125322204685,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.12288629997207151,
+                "prefactor_MPa": 1.4267948626503888,
+                "r2": 0.05804386943999584,
+                "stderr_exponent": 0.029744093921225657,
+                "stderr_ln_prefactor": 0.0642838233726472,
+                "residual_rms_ln": 0.33839547496490213
+              },
+              "1102": {
+                "n_points": 256,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0025066869358102437,
+                "area_max_m2": 0.6018080251448654,
+                "pressure_min_MPa": 0.7115125322204685,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.11513134458999563,
+                "prefactor_MPa": 1.4269858284109362,
+                "r2": 0.05989703046573913,
+                "stderr_exponent": 0.028619483041915302,
+                "stderr_ln_prefactor": 0.06434684029155771,
+                "residual_rms_ln": 0.33251428222932206
+              },
+              "1103": {
+                "n_points": 243,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.00124724035323234,
+                "area_max_m2": 0.6622606398716328,
+                "pressure_min_MPa": 0.7609081825535243,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.11750713993963419,
+                "prefactor_MPa": 1.4118623225478655,
+                "r2": 0.08043043687205087,
+                "stderr_exponent": 0.025593979328117304,
+                "stderr_ln_prefactor": 0.05911820926465657,
+                "residual_rms_ln": 0.3264450534015246
+              },
+              "1104": {
+                "n_points": 227,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0007582224743272563,
+                "area_max_m2": 0.39979145798728405,
+                "pressure_min_MPa": 0.7609081825535243,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.1122926282306654,
+                "prefactor_MPa": 1.4402846057686096,
+                "r2": 0.05526386021005225,
+                "stderr_exponent": 0.030952422404625677,
+                "stderr_ln_prefactor": 0.0682948255020623,
+                "residual_rms_ln": 0.3305137178304041
+              },
+              "1105": {
+                "n_points": 262,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.001932078714913048,
+                "area_max_m2": 0.5452667607625624,
+                "pressure_min_MPa": 0.7115125322204685,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.12166091098790006,
+                "prefactor_MPa": 1.4313102834735265,
+                "r2": 0.06583754811837728,
+                "stderr_exponent": 0.028420961693936625,
+                "stderr_ln_prefactor": 0.06247051181991455,
+                "residual_rms_ln": 0.33533510732581806
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.12288629997207151,
+              "max": -0.1122926282306654,
+              "p05": -0.12264122217523722,
+              "median": -0.11750713993963419,
+              "p95": -0.11286037150253145,
+              "mean": -0.11789566474405336,
+              "std": 0.004423515425091082
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.4118623225478655,
+              "max": 1.4402846057686096,
+              "p05": 1.4148488305683702,
+              "median": 1.4269858284109362,
+              "p95": 1.438489741309593,
+              "mean": 1.4274475805702653,
+              "std": 0.010286510742547014
+            },
+            "impacts_per_seed": {
+              "1101": 279,
+              "1102": 256,
+              "1103": 243,
+              "1104": 227,
+              "1105": 262
+            },
+            "log_correlation_A_h": 0.3475207240525252,
+            "log_correlation_A_rate": -0.3230613282596031,
+            "log_correlation_A_speed": 0.7869853699511467
+          },
+          "0.7": {
+            "peak": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0016876013200020365,
+              "area_max_m2": 0.617676267170689,
+              "pressure_min_MPa": 0.7115125322204685,
+              "pressure_max_MPa": 4.880841210207682,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.12045869026810858,
+              "prefactor_MPa": 1.4195547427416602,
+              "r2": 0.06429434904985332,
+              "stderr_exponent": 0.010910497481938907,
+              "stderr_ln_prefactor": 0.024258765080665302,
+              "residual_rms_ln": 0.33226685317138827,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.1393925069634088,
+                "exponent_median": -0.12009245960160567,
+                "exponent_p95": -0.10304665798222662,
+                "prefactor_p05_MPa": 1.364165210731756,
+                "prefactor_median_MPa": 1.4199367892558983,
+                "prefactor_p95_MPa": 1.4727013601778465
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.00030517760471710024,
+              "area_max_m2": 0.2507003561181206,
+              "pressure_min_MPa": 0.7115125322204684,
+              "pressure_max_MPa": 4.8808412102076835,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.13386162898000026,
+              "prefactor_MPa": 1.0765970825797768,
+              "r2": 0.13517224876111644,
+              "stderr_exponent": 0.008038968687705199,
+              "stderr_ln_prefactor": 0.03270893519394041,
+              "residual_rms_ln": 0.3194347803751968,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.1476382590929975,
+                "exponent_median": -0.13311136446143002,
+                "exponent_p95": -0.12047537091598516,
+                "prefactor_p05_MPa": 1.0194971782531344,
+                "prefactor_median_MPa": 1.0792153378718772,
+                "prefactor_p95_MPa": 1.1341967326613287
+              }
+            },
+            "decomposition": {
+              "n_points": 1776,
+              "partial_exponents": {
+                "A": -0.15742203365250085,
+                "h": 0.12208725726232565,
+                "V_close": 0.06218431722513312
+              },
+              "partial_r2": 0.1244042689486008,
+              "beta_h_vs_A": 0.13244994765039997,
+              "beta_V_vs_A": 0.3343751845973921,
+              "raw_total_exponent": -0.12045869026810867,
+              "predicted_total_exponent": -0.12045869026810822,
+              "residual": -4.440892098500626e-16,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 385,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0038044629811618985,
+                "area_max_m2": 0.6029504457251721,
+                "pressure_min_MPa": 0.7115125322204685,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.12706185624404592,
+                "prefactor_MPa": 1.404993481559596,
+                "r2": 0.06518714830293948,
+                "stderr_exponent": 0.024586525202328284,
+                "stderr_ln_prefactor": 0.05344192619264311,
+                "residual_rms_ln": 0.32950920264571654
+              },
+              "1102": {
+                "n_points": 360,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.005675133124120829,
+                "area_max_m2": 0.5584353066500284,
+                "pressure_min_MPa": 0.7115125322204685,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.10366918159321124,
+                "prefactor_MPa": 1.467352471803539,
+                "r2": 0.048108115686809616,
+                "stderr_exponent": 0.02437209124907594,
+                "stderr_ln_prefactor": 0.055339685769361824,
+                "residual_rms_ln": 0.33577872261660546
+              },
+              "1103": {
+                "n_points": 340,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.002489409186164707,
+                "area_max_m2": 0.5504656873282784,
+                "pressure_min_MPa": 0.7115125322204685,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.1131295293318396,
+                "prefactor_MPa": 1.4373548607887594,
+                "r2": 0.056640422946925506,
+                "stderr_exponent": 0.025112677400298527,
+                "stderr_ln_prefactor": 0.05642280297758872,
+                "residual_rms_ln": 0.3324731670122535
+              },
+              "1104": {
+                "n_points": 323,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.002649965747555969,
+                "area_max_m2": 0.4335975429365922,
+                "pressure_min_MPa": 0.7115125322204685,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.141408394753651,
+                "prefactor_MPa": 1.3622779059700247,
+                "r2": 0.07583975264363119,
+                "stderr_exponent": 0.02755166592781079,
+                "stderr_ln_prefactor": 0.05997318375952942,
+                "residual_rms_ln": 0.33281334259852025
+              },
+              "1105": {
+                "n_points": 368,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0016876013200020365,
+                "area_max_m2": 0.617676267170689,
+                "pressure_min_MPa": 0.7115125322204685,
+                "pressure_max_MPa": 4.880841210207682,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.12210431402256158,
+                "prefactor_MPa": 1.4152934750012416,
+                "r2": 0.07924731846391786,
+                "stderr_exponent": 0.021755530294279558,
+                "stderr_ln_prefactor": 0.04888549563890432,
+                "residual_rms_ln": 0.33040258457608707
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.141408394753651,
+              "max": -0.10366918159321124,
+              "p05": -0.13853908705173,
+              "median": -0.12210431402256158,
+              "p95": -0.10556125114093692,
+              "mean": -0.12147465518906189,
+              "std": 0.014279734542785612
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.3622779059700247,
+              "max": 1.467352471803539,
+              "p05": 1.370821021087939,
+              "median": 1.4152934750012416,
+              "p95": 1.461352949600583,
+              "mean": 1.4174544390246322,
+              "std": 0.039019980420218744
+            },
+            "impacts_per_seed": {
+              "1101": 385,
+              "1102": 360,
+              "1103": 340,
+              "1104": 323,
+              "1105": 368
+            },
+            "log_correlation_A_h": 0.35163625664493015,
+            "log_correlation_A_rate": -0.2846376523840516,
+            "log_correlation_A_speed": 0.7780138126563217
+          }
+        }
+      },
+      "T_rate_n015": {
+        "role": "treatment (rate-dependent crushing, n = 0.15)",
+        "per_concentration": {
+          "0.3": {
+            "peak": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0020086248851715178,
+              "area_max_m2": 0.6829188431123502,
+              "pressure_min_MPa": 1.605529029641704,
+              "pressure_max_MPa": 2.4014536304587386,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.03527760244220338,
+              "prefactor_MPa": 1.8007776119302572,
+              "r2": 0.1739673941174954,
+              "stderr_exponent": 0.0027884119271188415,
+              "stderr_ln_prefactor": 0.005998816856069598,
+              "residual_rms_ln": 0.05878386829001943,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.042974409787794945,
+                "exponent_median": -0.03515223956459611,
+                "exponent_p95": -0.02897993799351928,
+                "prefactor_p05_MPa": 1.7768507960987159,
+                "prefactor_median_MPa": 1.8008359758367245,
+                "prefactor_p95_MPa": 1.8218256015734402
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0005294855064512842,
+              "area_max_m2": 0.43486052192788066,
+              "pressure_min_MPa": 0.5665455021468652,
+              "pressure_max_MPa": 0.7774859539428803,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.02751866425311838,
+              "prefactor_MPa": 0.6009016042526816,
+              "r2": 0.35621004485991015,
+              "stderr_exponent": 0.0013419599986239025,
+              "stderr_ln_prefactor": 0.004924669170722734,
+              "residual_rms_ln": 0.03608428500379884,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.030672216632393993,
+                "exponent_median": -0.027599232615124696,
+                "exponent_p95": -0.0245630482085462,
+                "prefactor_p05_MPa": 0.5943658455903837,
+                "prefactor_median_MPa": 0.600635807861281,
+                "prefactor_p95_MPa": 0.606625161513255
+              }
+            },
+            "decomposition": {
+              "n_points": 762,
+              "partial_exponents": {
+                "A": -0.15000000000000013,
+                "h": 0.15000000000000033,
+                "V_close": 0.15000000000000027
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.11035706657097173,
+              "beta_V_vs_A": 0.6544589171476727,
+              "raw_total_exponent": -0.03527760244220341,
+              "predicted_total_exponent": -0.035277602442203265,
+              "residual": -1.457167719820518e-16,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 172,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.01672616487323127,
+                "area_max_m2": 0.499302943044361,
+                "pressure_min_MPa": 1.6800196930354827,
+                "pressure_max_MPa": 2.4014536304587386,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.04419464809828151,
+                "prefactor_MPa": 1.7646364095191158,
+                "r2": 0.20046710801188006,
+                "stderr_exponent": 0.006769269806060711,
+                "stderr_ln_prefactor": 0.014079747088417034,
+                "residual_rms_ln": 0.05830211007533621
+              },
+              "1102": {
+                "n_points": 156,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0020086248851715178,
+                "area_max_m2": 0.6783315531137223,
+                "pressure_min_MPa": 1.605529029641704,
+                "pressure_max_MPa": 2.3088534738123734,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.028775179726698002,
+                "prefactor_MPa": 1.8264632963356602,
+                "r2": 0.10991784103751301,
+                "stderr_exponent": 0.006598399975811295,
+                "stderr_ln_prefactor": 0.013756930002724953,
+                "residual_rms_ln": 0.057908486227782635
+              },
+              "1103": {
+                "n_points": 143,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.006747946412460525,
+                "area_max_m2": 0.5351187477521617,
+                "pressure_min_MPa": 1.6076404408175116,
+                "pressure_max_MPa": 2.2918446740596483,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.039035909928295386,
+                "prefactor_MPa": 1.7846910140778882,
+                "r2": 0.21405063678649372,
+                "stderr_exponent": 0.0062993214698746185,
+                "stderr_ln_prefactor": 0.013893397550865797,
+                "residual_rms_ln": 0.05731593995355341
+              },
+              "1104": {
+                "n_points": 131,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.003574900183202296,
+                "area_max_m2": 0.6829188431123502,
+                "pressure_min_MPa": 1.630294808556133,
+                "pressure_max_MPa": 2.3085663915921635,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.03826555776991978,
+                "prefactor_MPa": 1.7994847862708416,
+                "r2": 0.2219714870513303,
+                "stderr_exponent": 0.006307573992185104,
+                "stderr_ln_prefactor": 0.013902052970656744,
+                "residual_rms_ln": 0.05779556226084105
+              },
+              "1105": {
+                "n_points": 160,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.006135753781330317,
+                "area_max_m2": 0.6820238621786825,
+                "pressure_min_MPa": 1.661216063632634,
+                "pressure_max_MPa": 2.301007916435416,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.029078364824988642,
+                "prefactor_MPa": 1.8200727274835833,
+                "r2": 0.1475326121815954,
+                "stderr_exponent": 0.00556078761574793,
+                "stderr_ln_prefactor": 0.012219181553853375,
+                "residual_rms_ln": 0.06103028872228295
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.04419464809828151,
+              "max": -0.028775179726698002,
+              "p05": -0.04316290046428429,
+              "median": -0.03826555776991978,
+              "p95": -0.02883581674635613,
+              "mean": -0.035869932069636665,
+              "std": 0.006736546439036107
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.7646364095191158,
+              "max": 1.8264632963356602,
+              "p05": 1.7686473304308703,
+              "median": 1.7994847862708416,
+              "p95": 1.8251851825652448,
+              "mean": 1.7990696467374179,
+              "std": 0.025417054719533254
+            },
+            "impacts_per_seed": {
+              "1101": 172,
+              "1102": 156,
+              "1103": 143,
+              "1104": 131,
+              "1105": 160
+            },
+            "log_correlation_A_h": 0.323501003991351,
+            "log_correlation_A_rate": -0.41709398715097223,
+            "log_correlation_A_speed": 0.8025693609443604
+          },
+          "0.5": {
+            "peak": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0016186987550432645,
+              "area_max_m2": 0.7693622579697339,
+              "pressure_min_MPa": 1.5878357797372373,
+              "pressure_max_MPa": 2.4971742280468607,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.03935488182577577,
+              "prefactor_MPa": 1.7830554034399584,
+              "r2": 0.18902007210805782,
+              "stderr_exponent": 0.0022919463124724732,
+              "stderr_ln_prefactor": 0.004869645543425409,
+              "residual_rms_ln": 0.05993539521956323,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.04636606401199334,
+                "exponent_median": -0.03969276883012122,
+                "exponent_p95": -0.033740315187427324,
+                "prefactor_p05_MPa": 1.7599004866443833,
+                "prefactor_median_MPa": 1.7821178015789552,
+                "prefactor_p95_MPa": 1.8031784865031104
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.00048664748018206495,
+              "area_max_m2": 0.5810298359308077,
+              "pressure_min_MPa": 0.5587963257334538,
+              "pressure_max_MPa": 0.7993288717246456,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.030209680948461957,
+              "prefactor_MPa": 0.5948943827686206,
+              "r2": 0.375280875159832,
+              "stderr_exponent": 0.0010958851959907805,
+              "stderr_ln_prefactor": 0.003988107194593386,
+              "residual_rms_ln": 0.037260387728204246,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.03303640468048816,
+                "exponent_median": -0.03051183697187238,
+                "exponent_p95": -0.02764276002152629,
+                "prefactor_p05_MPa": 0.589586430717871,
+                "prefactor_median_MPa": 0.5943125387531866,
+                "prefactor_p95_MPa": 0.6001613426141768
+              }
+            },
+            "decomposition": {
+              "n_points": 1267,
+              "partial_exponents": {
+                "A": -0.15000000000000016,
+                "h": 0.15000000000000008,
+                "V_close": 0.15000000000000016
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.1303740605041593,
+              "beta_V_vs_A": 0.6072600606573361,
+              "raw_total_exponent": -0.039354881825776046,
+              "predicted_total_exponent": -0.03935488182577575,
+              "residual": -2.983724378680108e-16,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 279,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.011001518212171284,
+                "area_max_m2": 0.7693622579697339,
+                "pressure_min_MPa": 1.6151021388503894,
+                "pressure_max_MPa": 2.401496228720648,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.04963470501164617,
+                "prefactor_MPa": 1.747845599037512,
+                "r2": 0.2540621250344246,
+                "stderr_exponent": 0.005110070913171806,
+                "stderr_ln_prefactor": 0.010535148299570626,
+                "residual_rms_ln": 0.05917262000448438
+              },
+              "1102": {
+                "n_points": 256,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0026622993782051034,
+                "area_max_m2": 0.6225556961553027,
+                "pressure_min_MPa": 1.6869500888762408,
+                "pressure_max_MPa": 2.3094282603706797,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.0317452766848649,
+                "prefactor_MPa": 1.8136862744343245,
+                "r2": 0.14661678157868108,
+                "stderr_exponent": 0.004805542987063981,
+                "stderr_ln_prefactor": 0.010350856958605296,
+                "residual_rms_ln": 0.05561533910934151
+              },
+              "1103": {
+                "n_points": 243,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0016186987550432645,
+                "area_max_m2": 0.7548912849058672,
+                "pressure_min_MPa": 1.5878357797372373,
+                "pressure_max_MPa": 2.4971742280468607,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.0304230984505845,
+                "prefactor_MPa": 1.806700117520926,
+                "r2": 0.11325002331258172,
+                "stderr_exponent": 0.0054837337992820305,
+                "stderr_ln_prefactor": 0.012100555182765628,
+                "residual_rms_ln": 0.06843250491819519
+              },
+              "1104": {
+                "n_points": 227,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0016983497111364386,
+                "area_max_m2": 0.4947520974276336,
+                "pressure_min_MPa": 1.603180348307861,
+                "pressure_max_MPa": 2.308860672138069,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.038875383275947285,
+                "prefactor_MPa": 1.7944849501266407,
+                "r2": 0.1848230628311549,
+                "stderr_exponent": 0.005442911656411526,
+                "stderr_ln_prefactor": 0.011504043080150926,
+                "residual_rms_ln": 0.05757421845943202
+              },
+              "1105": {
+                "n_points": 262,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0024026797249594323,
+                "area_max_m2": 0.6376028714119686,
+                "pressure_min_MPa": 1.5878799972063247,
+                "pressure_max_MPa": 2.31011531339571,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.0473951476854782,
+                "prefactor_MPa": 1.7525975519421635,
+                "r2": 0.2776153483203728,
+                "stderr_exponent": 0.004741434172688759,
+                "stderr_ln_prefactor": 0.00992811008612119,
+                "residual_rms_ln": 0.0564172615811691
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.04963470501164617,
+              "max": -0.0304230984505845,
+              "p05": -0.049186793546412574,
+              "median": -0.038875383275947285,
+              "p95": -0.03068753409744058,
+              "mean": -0.03961472222170421,
+              "std": 0.008773480184508908
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.747845599037512,
+              "max": 1.8136862744343245,
+              "p05": 1.7487959896184422,
+              "median": 1.7944849501266407,
+              "p95": 1.8122890430516447,
+              "mean": 1.7830628986123134,
+              "std": 0.030803279299205646
+            },
+            "impacts_per_seed": {
+              "1101": 279,
+              "1102": 256,
+              "1103": 243,
+              "1104": 227,
+              "1105": 262
+            },
+            "log_correlation_A_h": 0.34991200823615776,
+            "log_correlation_A_rate": -0.4347643868902532,
+            "log_correlation_A_speed": 0.7702962321222379
+          },
+          "0.7": {
+            "peak": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.002097668266585345,
+              "area_max_m2": 0.7070948007941392,
+              "pressure_min_MPa": 1.5886468967495206,
+              "pressure_max_MPa": 2.497641314469317,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.04361659847464331,
+              "prefactor_MPa": 1.7703398995181912,
+              "r2": 0.22246638061597168,
+              "stderr_exponent": 0.001935986743097046,
+              "stderr_ln_prefactor": 0.004106262135526083,
+              "residual_rms_ln": 0.059387637805221195,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.04860529197537165,
+                "exponent_median": -0.04352896285707672,
+                "exponent_p95": -0.03898971158508961,
+                "prefactor_p05_MPa": 1.753002586982721,
+                "prefactor_median_MPa": 1.7709162141853987,
+                "prefactor_p95_MPa": 1.7852825041259412
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.00047864510704531075,
+              "area_max_m2": 0.5383518578643463,
+              "pressure_min_MPa": 0.559243849885681,
+              "pressure_max_MPa": 0.8099315735627566,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.03049015774829148,
+              "prefactor_MPa": 0.5945178575028888,
+              "r2": 0.3885138276373461,
+              "stderr_exponent": 0.0009081821122478768,
+              "stderr_ln_prefactor": 0.0033089776375387486,
+              "residual_rms_ln": 0.0366797653524444,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.03281871357812756,
+                "exponent_median": -0.03051079410952689,
+                "exponent_p95": -0.02822739533596657,
+                "prefactor_p05_MPa": 0.5901194110943783,
+                "prefactor_median_MPa": 0.5947436677536402,
+                "prefactor_p95_MPa": 0.5990283867928958
+              }
+            },
+            "decomposition": {
+              "n_points": 1776,
+              "partial_exponents": {
+                "A": -0.1499999999999997,
+                "h": 0.15,
+                "V_close": 0.14999999999999977
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.1285276485486418,
+              "beta_V_vs_A": 0.5806950282870702,
+              "raw_total_exponent": -0.04361659847464277,
+              "predicted_total_exponent": -0.043616598474643026,
+              "residual": 2.5673907444456745e-16,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 385,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0042371768288073,
+                "area_max_m2": 0.7070948007941392,
+                "pressure_min_MPa": 1.616042264706805,
+                "pressure_max_MPa": 2.401601105912531,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.0499696089425416,
+                "prefactor_MPa": 1.7463486837956521,
+                "r2": 0.26330981082554783,
+                "stderr_exponent": 0.004270861484273136,
+                "stderr_ln_prefactor": 0.008825140392336141,
+                "residual_rms_ln": 0.058171890931297585
+              },
+              "1102": {
+                "n_points": 360,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.006342946029789835,
+                "area_max_m2": 0.5290039900576411,
+                "pressure_min_MPa": 1.6885633189209255,
+                "pressure_max_MPa": 2.4823041328273865,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.040834840146404344,
+                "prefactor_MPa": 1.783926191948811,
+                "r2": 0.20885163989922706,
+                "stderr_exponent": 0.004200484318969338,
+                "stderr_ln_prefactor": 0.009126690903766686,
+                "residual_rms_ln": 0.058687334672474986
+              },
+              "1103": {
+                "n_points": 340,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0025722925553685696,
+                "area_max_m2": 0.699529895068678,
+                "pressure_min_MPa": 1.5886468967495206,
+                "pressure_max_MPa": 2.497641314469317,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.048336365449732493,
+                "prefactor_MPa": 1.758456378951329,
+                "r2": 0.24508907513983136,
+                "stderr_exponent": 0.00461425424064751,
+                "stderr_ln_prefactor": 0.009933023832573024,
+                "residual_rms_ln": 0.062095490624045145
+              },
+              "1104": {
+                "n_points": 323,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.003299360715751494,
+                "area_max_m2": 0.5336292446760654,
+                "pressure_min_MPa": 1.6056746783070324,
+                "pressure_max_MPa": 2.4915596153298147,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.04850872627863821,
+                "prefactor_MPa": 1.755543744445322,
+                "r2": 0.23847965727033693,
+                "stderr_exponent": 0.004838184661108178,
+                "stderr_ln_prefactor": 0.010050709227239819,
+                "residual_rms_ln": 0.0586741904975595
+              },
+              "1105": {
+                "n_points": 368,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.002097668266585345,
+                "area_max_m2": 0.6174705413421842,
+                "pressure_min_MPa": 1.6155281482915593,
+                "pressure_max_MPa": 2.299107253603389,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.03341533407662504,
+                "prefactor_MPa": 1.798899837713794,
+                "r2": 0.1688549853354121,
+                "stderr_exponent": 0.003875133985557619,
+                "stderr_ln_prefactor": 0.008271914852957375,
+                "residual_rms_ln": 0.05818769275205726
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.0499696089425416,
+              "max": -0.03341533407662504,
+              "p05": -0.04967743240976092,
+              "median": -0.048336365449732493,
+              "p95": -0.0348992352905809,
+              "mean": -0.04421297497878834,
+              "std": 0.007010625984826684
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.7463486837956521,
+              "max": 1.798899837713794,
+              "p05": 1.748187695925586,
+              "median": 1.758456378951329,
+              "p95": 1.7959051085607973,
+              "mean": 1.7686349673709814,
+              "std": 0.02191715162528458
+            },
+            "impacts_per_seed": {
+              "1101": 385,
+              "1102": 360,
+              "1103": 340,
+              "1104": 323,
+              "1105": 368
+            },
+            "log_correlation_A_h": 0.34370798861012475,
+            "log_correlation_A_rate": -0.471663418780778,
+            "log_correlation_A_speed": 0.7700576714498002
+          }
+        }
+      },
+      "T_rate_n033": {
+        "role": "treatment (rate-dependent crushing, n = 0.33)",
+        "per_concentration": {
+          "0.3": {
+            "peak": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0015442841914569234,
+              "area_max_m2": 0.6139772739265427,
+              "pressure_min_MPa": 1.4887091298085853,
+              "pressure_max_MPa": 4.6331303301569315,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.08639419169814337,
+              "prefactor_MPa": 1.9636953176295824,
+              "r2": 0.19713123350572803,
+              "stderr_exponent": 0.006324443417687935,
+              "stderr_ln_prefactor": 0.01506002765263031,
+              "residual_rms_ln": 0.1360366800296346,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.10420760265595878,
+                "exponent_median": -0.08607195106584457,
+                "exponent_p95": -0.07181204204834578,
+                "prefactor_p05_MPa": 1.8945106015055417,
+                "prefactor_median_MPa": 1.9661015192492068,
+                "prefactor_p95_MPa": 2.02442306946388
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0004594936282708326,
+              "area_max_m2": 0.5206527772440096,
+              "pressure_min_MPa": 0.1828506014887944,
+              "pressure_max_MPa": 0.9178377745299123,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.08807464938877815,
+              "prefactor_MPa": 0.49527895492202206,
+              "r2": 0.4133493457050129,
+              "stderr_exponent": 0.003806056923239183,
+              "stderr_ln_prefactor": 0.014295142169154895,
+              "residual_rms_ln": 0.10755144981068372,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.09628396617535513,
+                "exponent_median": -0.08842219133329035,
+                "exponent_p95": -0.08071825276335969,
+                "prefactor_p05_MPa": 0.4800097044170084,
+                "prefactor_median_MPa": 0.49496801816096847,
+                "prefactor_p95_MPa": 0.5074999542861626
+              }
+            },
+            "decomposition": {
+              "n_points": 762,
+              "partial_exponents": {
+                "A": -0.33,
+                "h": 0.33000000000000035,
+                "V_close": 0.33000000000000035
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.10581962805849805,
+              "beta_V_vs_A": 0.6323797910380374,
+              "raw_total_exponent": -0.08639419169814336,
+              "predicted_total_exponent": -0.08639419169814302,
+              "residual": -3.3306690738754696e-16,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 172,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.011647718011019718,
+                "area_max_m2": 0.40541249485888664,
+                "pressure_min_MPa": 1.6940890663607717,
+                "pressure_max_MPa": 4.6331303301569315,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.11845496001046077,
+                "prefactor_MPa": 1.8233199849188495,
+                "r2": 0.26713055883411607,
+                "stderr_exponent": 0.015048052923946944,
+                "stderr_ln_prefactor": 0.034801807005152056,
+                "residual_rms_ln": 0.1336680041944699
+              },
+              "1102": {
+                "n_points": 156,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0015442841914569234,
+                "area_max_m2": 0.5857724482609175,
+                "pressure_min_MPa": 1.563127198279113,
+                "pressure_max_MPa": 3.5100224766994073,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.06900977485904432,
+                "prefactor_MPa": 2.0488850627485737,
+                "r2": 0.13102383166277487,
+                "stderr_exponent": 0.014321187648393323,
+                "stderr_ln_prefactor": 0.0331796954968837,
+                "residual_rms_ln": 0.1278844206937676
+              },
+              "1103": {
+                "n_points": 143,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.00512599717845401,
+                "area_max_m2": 0.4554463836466732,
+                "pressure_min_MPa": 1.4887091298085853,
+                "pressure_max_MPa": 3.5258159718401094,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.09268698593362347,
+                "prefactor_MPa": 1.9384399567609232,
+                "r2": 0.2088171182327564,
+                "stderr_exponent": 0.015193736679093283,
+                "stderr_ln_prefactor": 0.03705631640034834,
+                "residual_rms_ln": 0.1406558527025576
+              },
+              "1104": {
+                "n_points": 131,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0029355096911908895,
+                "area_max_m2": 0.6139772739265427,
+                "pressure_min_MPa": 1.5446525327690983,
+                "pressure_max_MPa": 3.527633324251229,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.0990142815054422,
+                "prefactor_MPa": 1.9333917023133467,
+                "r2": 0.27032786521834606,
+                "stderr_exponent": 0.014322586655967442,
+                "stderr_ln_prefactor": 0.03496830244513811,
+                "residual_rms_ln": 0.13499762928018663
+              },
+              "1105": {
+                "n_points": 160,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.005072082676735247,
+                "area_max_m2": 0.5890103728822493,
+                "pressure_min_MPa": 1.6165032790168148,
+                "pressure_max_MPa": 3.517132349080776,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.0628564100760348,
+                "prefactor_MPa": 2.04369833572666,
+                "r2": 0.14058340873144148,
+                "stderr_exponent": 0.012363910769112203,
+                "stderr_ln_prefactor": 0.02983993459972312,
+                "residual_rms_ln": 0.13720113223690378
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.11845496001046077,
+              "max": -0.0628564100760348,
+              "p05": -0.11456682430945705,
+              "median": -0.09268698593362347,
+              "p95": -0.0640870830326367,
+              "mean": -0.08840448247692112,
+              "std": 0.02270901560096729
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.8233199849188495,
+              "max": 2.0488850627485737,
+              "p05": 1.845334328397749,
+              "median": 1.9384399567609232,
+              "p95": 2.047847717344191,
+              "mean": 1.9575470084936704,
+              "std": 0.0931801258845145
+            },
+            "impacts_per_seed": {
+              "1101": 172,
+              "1102": 156,
+              "1103": 143,
+              "1104": 131,
+              "1105": 160
+            },
+            "log_correlation_A_h": 0.3165003530734126,
+            "log_correlation_A_rate": -0.44399463229382397,
+            "log_correlation_A_speed": 0.7833314083848265
+          },
+          "0.5": {
+            "peak": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.001274106757778879,
+              "area_max_m2": 0.6870002680224149,
+              "pressure_min_MPa": 1.4843596465799849,
+              "pressure_max_MPa": 4.633071401381694,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.09695568850031566,
+              "prefactor_MPa": 1.9139088498240033,
+              "r2": 0.22529672567595094,
+              "stderr_exponent": 0.005054966568929377,
+              "stderr_ln_prefactor": 0.011908697034125964,
+              "residual_rms_ln": 0.1354570098901122,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.11372111409816839,
+                "exponent_median": -0.09752306013650258,
+                "exponent_p95": -0.08344746918965819,
+                "prefactor_p05_MPa": 1.8510307164769517,
+                "prefactor_median_MPa": 1.9127880475154595,
+                "prefactor_p95_MPa": 1.9693067396788992
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.00045104537985613663,
+              "area_max_m2": 0.707827125355435,
+              "pressure_min_MPa": 0.23328818209415814,
+              "pressure_max_MPa": 1.0368647151929318,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.08959320746383363,
+              "prefactor_MPa": 0.4935820115126746,
+              "r2": 0.45405822788502515,
+              "stderr_exponent": 0.0027621496830184146,
+              "stderr_ln_prefactor": 0.010306458319625207,
+              "residual_rms_ln": 0.09912796816947747,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.09557279110587727,
+                "exponent_median": -0.09007837445041689,
+                "exponent_p95": -0.08394889460933783,
+                "prefactor_p05_MPa": 0.48393323807724253,
+                "prefactor_median_MPa": 0.49299300204925767,
+                "prefactor_p95_MPa": 0.5025504215265889
+              }
+            },
+            "decomposition": {
+              "n_points": 1267,
+              "partial_exponents": {
+                "A": -0.3300000000000005,
+                "h": 0.3300000000000002,
+                "V_close": 0.3300000000000001
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.12451802596631073,
+              "beta_V_vs_A": 0.5816768573660659,
+              "raw_total_exponent": -0.09695568850031594,
+              "predicted_total_exponent": -0.09695568850031613,
+              "residual": 1.942890293094024e-16,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 279,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.009032431972943797,
+                "area_max_m2": 0.6870002680224149,
+                "pressure_min_MPa": 1.578608956279399,
+                "pressure_max_MPa": 4.633071401381694,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.1266486223473621,
+                "prefactor_MPa": 1.7977137963903147,
+                "r2": 0.32507923400319283,
+                "stderr_exponent": 0.010964589249486975,
+                "stderr_ln_prefactor": 0.025157624919206513,
+                "residual_rms_ln": 0.13121421753688986
+              },
+              "1102": {
+                "n_points": 256,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0020512722357904157,
+                "area_max_m2": 0.5375968143357969,
+                "pressure_min_MPa": 1.7209893491252646,
+                "pressure_max_MPa": 3.5273602972933924,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.07985543130271705,
+                "prefactor_MPa": 1.9997800545767117,
+                "r2": 0.1837451952622995,
+                "stderr_exponent": 0.010560694533814195,
+                "stderr_ln_prefactor": 0.025226307794522663,
+                "residual_rms_ln": 0.12491261148350945
+              },
+              "1103": {
+                "n_points": 243,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.001274106757778879,
+                "area_max_m2": 0.6747792083704325,
+                "pressure_min_MPa": 1.4843596465799849,
+                "pressure_max_MPa": 3.527086116604057,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.07171002821881657,
+                "prefactor_MPa": 1.993614650127671,
+                "r2": 0.13240330498029718,
+                "stderr_exponent": 0.011824448760313978,
+                "stderr_ln_prefactor": 0.02874135375009301,
+                "residual_rms_ln": 0.15010995885734416
+              },
+              "1104": {
+                "n_points": 227,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0013146654345450278,
+                "area_max_m2": 0.42039394943829356,
+                "pressure_min_MPa": 1.554051942989654,
+                "pressure_max_MPa": 3.5277436859840448,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.09923812164035552,
+                "prefactor_MPa": 1.933755894638493,
+                "r2": 0.22068070965772324,
+                "stderr_exponent": 0.01243262411905646,
+                "stderr_ln_prefactor": 0.029229069770613247,
+                "residual_rms_ln": 0.13487438708140898
+              },
+              "1105": {
+                "n_points": 262,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0017661695486890778,
+                "area_max_m2": 0.5504264241735057,
+                "pressure_min_MPa": 1.5178273318329583,
+                "pressure_max_MPa": 3.521770706271488,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.11099298633746404,
+                "prefactor_MPa": 1.8470490905096888,
+                "r2": 0.2960805785308457,
+                "stderr_exponent": 0.010613665005846784,
+                "stderr_ln_prefactor": 0.024639381579426526,
+                "residual_rms_ln": 0.12966157711829585
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.1266486223473621,
+              "max": -0.07171002821881657,
+              "p05": -0.12351749514538249,
+              "median": -0.09923812164035552,
+              "p95": -0.07333910883559666,
+              "mean": -0.09768903796934306,
+              "std": 0.02242208010035481
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.7977137963903147,
+              "max": 1.9997800545767117,
+              "p05": 1.8075808552141894,
+              "median": 1.933755894638493,
+              "p95": 1.9985469736869035,
+              "mean": 1.9143826972485758,
+              "std": 0.08957005470121562
+            },
+            "impacts_per_seed": {
+              "1101": 279,
+              "1102": 256,
+              "1103": 243,
+              "1104": 227,
+              "1105": 262
+            },
+            "log_correlation_A_h": 0.34245550014779147,
+            "log_correlation_A_rate": -0.4746543222977654,
+            "log_correlation_A_speed": 0.7504524564077587
+          },
+          "0.7": {
+            "peak": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0016247454179206062,
+              "area_max_m2": 0.6438871574875363,
+              "pressure_min_MPa": 1.4422335191474982,
+              "pressure_max_MPa": 4.633094880895898,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.10678081718553603,
+              "prefactor_MPa": 1.8768099109872465,
+              "r2": 0.262819047706627,
+              "stderr_exponent": 0.004245951864073726,
+              "stderr_ln_prefactor": 0.009989808142562647,
+              "residual_rms_ln": 0.13382657830782219,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.11980815477847447,
+                "exponent_median": -0.10632920069995316,
+                "exponent_p95": -0.09584452482433574,
+                "prefactor_p05_MPa": 1.8260834733978906,
+                "prefactor_median_MPa": 1.878499287624742,
+                "prefactor_p95_MPa": 1.9193789264591368
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0003607942168247947,
+              "area_max_m2": 0.6559751268858665,
+              "pressure_min_MPa": 0.20403526628340776,
+              "pressure_max_MPa": 0.9805922243627447,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.0908442108543516,
+              "prefactor_MPa": 0.49181846108218824,
+              "r2": 0.4898410403432295,
+              "stderr_exponent": 0.002201129648626048,
+              "stderr_ln_prefactor": 0.008229992771286967,
+              "residual_rms_ln": 0.09458912945905208,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.09578424449048563,
+                "exponent_median": -0.09099678023996835,
+                "exponent_p95": -0.08620216623325859,
+                "prefactor_p05_MPa": 0.4832456250418241,
+                "prefactor_median_MPa": 0.49166037482616454,
+                "prefactor_p95_MPa": 0.49917157299404236
+              }
+            },
+            "decomposition": {
+              "n_points": 1776,
+              "partial_exponents": {
+                "A": -0.3299999999999997,
+                "h": 0.3299999999999993,
+                "V_close": 0.32999999999999985
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.12253759519209331,
+              "beta_V_vs_A": 0.5538841709123431,
+              "raw_total_exponent": -0.10678081718553574,
+              "predicted_total_exponent": -0.10678081718553584,
+              "residual": 9.71445146547012e-17,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 385,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0032087806629215554,
+                "area_max_m2": 0.631325571607968,
+                "pressure_min_MPa": 1.5795470405142036,
+                "pressure_max_MPa": 4.632919861131304,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.12493708542755323,
+                "prefactor_MPa": 1.802141836561476,
+                "r2": 0.33499560594000977,
+                "stderr_exponent": 0.008994658633401636,
+                "stderr_ln_prefactor": 0.020676571601791364,
+                "residual_rms_ln": 0.12669987763701382
+              },
+              "1102": {
+                "n_points": 360,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0048540960422775396,
+                "area_max_m2": 0.44543673636041914,
+                "pressure_min_MPa": 1.72293436100924,
+                "pressure_max_MPa": 4.633094880895898,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.10040905482259044,
+                "prefactor_MPa": 1.908004070389354,
+                "r2": 0.25085017107927277,
+                "stderr_exponent": 0.009170827132754423,
+                "stderr_ln_prefactor": 0.022060830997494948,
+                "residual_rms_ln": 0.13152932201754852
+              },
+              "1103": {
+                "n_points": 340,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.001873005413238701,
+                "area_max_m2": 0.6438871574875363,
+                "pressure_min_MPa": 1.4422335191474982,
+                "pressure_max_MPa": 3.527547058786657,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.1138664969167489,
+                "prefactor_MPa": 1.849796842388514,
+                "r2": 0.27571725451258955,
+                "stderr_exponent": 0.010038289274870537,
+                "stderr_ln_prefactor": 0.023926556274871717,
+                "residual_rms_ln": 0.13863035485811448
+              },
+              "1104": {
+                "n_points": 323,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.002434430247558517,
+                "area_max_m2": 0.4556010143319807,
+                "pressure_min_MPa": 1.535598126326518,
+                "pressure_max_MPa": 3.527965817636584,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.11795479963766342,
+                "prefactor_MPa": 1.8428377922340076,
+                "r2": 0.2685564434928357,
+                "stderr_exponent": 0.010865149885090802,
+                "stderr_ln_prefactor": 0.025125542471043,
+                "residual_rms_ln": 0.135668623264452
+              },
+              "1105": {
+                "n_points": 368,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0016247454179206062,
+                "area_max_m2": 0.5330824696548677,
+                "pressure_min_MPa": 1.5669718241148853,
+                "pressure_max_MPa": 3.517512334358176,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.08376197543179334,
+                "prefactor_MPa": 1.9597808029134207,
+                "r2": 0.20003306398014664,
+                "stderr_exponent": 0.008755712513533846,
+                "stderr_ln_prefactor": 0.020688990072429567,
+                "residual_rms_ln": 0.1344482543915873
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.12493708542755323,
+              "max": -0.08376197543179334,
+              "p05": -0.12354062826957526,
+              "median": -0.1138664969167489,
+              "p95": -0.08709139130995276,
+              "mean": -0.10818588244726986,
+              "std": 0.01631954508338771
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.802141836561476,
+              "max": 1.9597808029134207,
+              "p05": 1.8102810276959824,
+              "median": 1.849796842388514,
+              "p95": 1.9494254564086073,
+              "mean": 1.8725122688973546,
+              "std": 0.06169284382390168
+            },
+            "impacts_per_seed": {
+              "1101": 385,
+              "1102": 360,
+              "1103": 340,
+              "1104": 323,
+              "1105": 368
+            },
+            "log_correlation_A_h": 0.3366945238596177,
+            "log_correlation_A_rate": -0.512658802427723,
+            "log_correlation_A_speed": 0.7490365573047313
+          }
+        }
+      },
+      "T_rate_n050": {
+        "role": "treatment (rate-dependent crushing, n = 0.5)",
+        "per_concentration": {
+          "0.3": {
+            "peak": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0010835958828055185,
+              "area_max_m2": 0.5023171680738235,
+              "pressure_min_MPa": 1.664019904994577,
+              "pressure_max_MPa": 7.333322220539181,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.1572879811945963,
+              "prefactor_MPa": 2.3380422286894955,
+              "r2": 0.24184070880070896,
+              "stderr_exponent": 0.010101928013656855,
+              "stderr_ln_prefactor": 0.02724243201599626,
+              "residual_rms_ln": 0.22349895351664598,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.18772429009092614,
+                "exponent_median": -0.1567398407689224,
+                "exponent_p95": -0.13343940194966775,
+                "prefactor_p05_MPa": 2.172282668699715,
+                "prefactor_median_MPa": 2.341237116081593,
+                "prefactor_p95_MPa": 2.4774722098053976
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 762,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0002672722449112092,
+              "area_max_m2": 0.650524381517461,
+              "pressure_min_MPa": 0.10215722410930808,
+              "pressure_max_MPa": 1.3290452614770594,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.16374861852528202,
+              "prefactor_MPa": 0.3955823040844972,
+              "r2": 0.5165476614521891,
+              "stderr_exponent": 0.00574635538291782,
+              "stderr_ln_prefactor": 0.02228244335468015,
+              "residual_rms_ln": 0.1775326529792479,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.17930990541880665,
+                "exponent_median": -0.16345532784668315,
+                "exponent_p95": -0.15163001654071803,
+                "prefactor_p05_MPa": 0.3735430831180525,
+                "prefactor_median_MPa": 0.3965068003838802,
+                "prefactor_p95_MPa": 0.4147298250019639
+              }
+            },
+            "decomposition": {
+              "n_points": 762,
+              "partial_exponents": {
+                "A": -0.5000000000000002,
+                "h": 0.5000000000000004,
+                "V_close": 0.5000000000000003
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.10077409822649454,
+              "beta_V_vs_A": 0.5846499393843133,
+              "raw_total_exponent": -0.15728798119459594,
+              "predicted_total_exponent": -0.15728798119459603,
+              "residual": 8.326672684688674e-17,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 172,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.00821225572690626,
+                "area_max_m2": 0.32519914003075195,
+                "pressure_min_MPa": 1.928243292909516,
+                "pressure_max_MPa": 7.33331906960829,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.21026484775630627,
+                "prefactor_MPa": 2.0461711302120613,
+                "r2": 0.3159709713314879,
+                "stderr_exponent": 0.023727713293254824,
+                "stderr_ln_prefactor": 0.06252102597496022,
+                "residual_rms_ln": 0.2182521426199184
+              },
+              "1102": {
+                "n_points": 156,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0010835958828055185,
+                "area_max_m2": 0.4363516599511626,
+                "pressure_min_MPa": 1.7285958012049707,
+                "pressure_max_MPa": 7.333311760017591,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.12804665200286688,
+                "prefactor_MPa": 2.5211962531227745,
+                "r2": 0.166665115490792,
+                "stderr_exponent": 0.023072533994953896,
+                "stderr_ln_prefactor": 0.06066391561581235,
+                "residual_rms_ln": 0.2113792014128011
+              },
+              "1103": {
+                "n_points": 143,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.003306594407043685,
+                "area_max_m2": 0.3584649827089772,
+                "pressure_min_MPa": 1.664019904994577,
+                "pressure_max_MPa": 7.333318855847063,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.18015951199367167,
+                "prefactor_MPa": 2.2007060210358738,
+                "r2": 0.3113192164073013,
+                "stderr_exponent": 0.022565951925967866,
+                "stderr_ln_prefactor": 0.06221651492060582,
+                "residual_rms_ln": 0.21823280433834277
+              },
+              "1104": {
+                "n_points": 131,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0022786451621354615,
+                "area_max_m2": 0.5023171680738235,
+                "pressure_min_MPa": 1.706324268250661,
+                "pressure_max_MPa": 7.333322220539181,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.16633070881488954,
+                "prefactor_MPa": 2.3072030412813405,
+                "r2": 0.28981763226525536,
+                "stderr_exponent": 0.02292451328497386,
+                "stderr_ln_prefactor": 0.06299120155915516,
+                "residual_rms_ln": 0.2209362946394731
+              },
+              "1105": {
+                "n_points": 160,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.00334057697639509,
+                "area_max_m2": 0.43874799123669345,
+                "pressure_min_MPa": 1.775265107192991,
+                "pressure_max_MPa": 7.333318237398351,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.11798392248365432,
+                "prefactor_MPa": 2.558935182493728,
+                "r2": 0.1656414354177752,
+                "stderr_exponent": 0.02106619784458652,
+                "stderr_ln_prefactor": 0.05752168248194909,
+                "residual_rms_ln": 0.23835695464731035
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.21026484775630627,
+              "max": -0.11798392248365432,
+              "p05": -0.20424378060377935,
+              "median": -0.16633070881488954,
+              "p95": -0.11999646838749684,
+              "mean": -0.16055712861027774,
+              "std": 0.037940262171373
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 2.0461711302120613,
+              "max": 2.558935182493728,
+              "p05": 2.0770781083768237,
+              "median": 2.3072030412813405,
+              "p95": 2.5513873966195373,
+              "mean": 2.3268423256291557,
+              "std": 0.21605145920749877
+            },
+            "impacts_per_seed": {
+              "1101": 172,
+              "1102": 156,
+              "1103": 143,
+              "1104": 131,
+              "1105": 160
+            },
+            "log_correlation_A_h": 0.3100233467946186,
+            "log_correlation_A_rate": -0.4917730256944853,
+            "log_correlation_A_speed": 0.7633966416817463
+          },
+          "0.5": {
+            "peak": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0009399875615005497,
+              "area_max_m2": 0.5693008794227576,
+              "pressure_min_MPa": 1.5527163296563116,
+              "pressure_max_MPa": 7.333322426968116,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.17335428145181372,
+              "prefactor_MPa": 2.2408028321368483,
+              "r2": 0.26325832972187846,
+              "stderr_exponent": 0.008153721355876126,
+              "stderr_ln_prefactor": 0.021797937130912104,
+              "residual_rms_ln": 0.22500255625282511,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.20238363525407466,
+                "exponent_median": -0.17465477121638484,
+                "exponent_p95": -0.14947926831686928,
+                "prefactor_p05_MPa": 2.094602927075844,
+                "prefactor_median_MPa": 2.23274079136534,
+                "prefactor_p95_MPa": 2.368423841068014
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1267,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0003261889932038628,
+              "area_max_m2": 0.9164301214102917,
+              "pressure_min_MPa": 0.10293087120204991,
+              "pressure_max_MPa": 1.3296267159460693,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.16918765831922455,
+              "prefactor_MPa": 0.3882006330393965,
+              "r2": 0.5307162390603177,
+              "stderr_exponent": 0.004473114257522704,
+              "stderr_ln_prefactor": 0.017184275787401098,
+              "residual_rms_ln": 0.17397671048230928,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.17930383393599333,
+                "exponent_median": -0.16952245192586035,
+                "exponent_p95": -0.16170987013379304,
+                "prefactor_p05_MPa": 0.37347312462175847,
+                "prefactor_median_MPa": 0.38777509894160483,
+                "prefactor_p95_MPa": 0.398918268811762
+              }
+            },
+            "decomposition": {
+              "n_points": 1267,
+              "partial_exponents": {
+                "A": -0.5000000000000004,
+                "h": 0.5000000000000004,
+                "V_close": 0.5000000000000007
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.11702389790701478,
+              "beta_V_vs_A": 0.5362675391893577,
+              "raw_total_exponent": -0.17335428145181322,
+              "predicted_total_exponent": -0.17335428145181386,
+              "residual": 6.38378239159465e-16,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 279,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0069215955197316475,
+                "area_max_m2": 0.5539726299583388,
+                "pressure_min_MPa": 1.7657623848791801,
+                "pressure_max_MPa": 7.333313698317758,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.21624082829978725,
+                "prefactor_MPa": 2.0314793797807877,
+                "r2": 0.34168988756962504,
+                "stderr_exponent": 0.018034205409180527,
+                "stderr_ln_prefactor": 0.04716500897448913,
+                "residual_rms_ln": 0.22117593403971428
+              },
+              "1102": {
+                "n_points": 256,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0014109212885548594,
+                "area_max_m2": 0.4328670748016251,
+                "pressure_min_MPa": 2.0097162839162666,
+                "pressure_max_MPa": 7.333297312528943,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.13515479315931628,
+                "prefactor_MPa": 2.46945677677258,
+                "r2": 0.21022075010641128,
+                "stderr_exponent": 0.016437269010044057,
+                "stderr_ln_prefactor": 0.044352920467020024,
+                "residual_rms_ln": 0.1984049394089667
+              },
+              "1103": {
+                "n_points": 243,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0010276651282413003,
+                "area_max_m2": 0.5693008794227576,
+                "pressure_min_MPa": 1.554273024701791,
+                "pressure_max_MPa": 7.333322426968116,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.1456562264459172,
+                "prefactor_MPa": 2.3525722117682437,
+                "r2": 0.18258047767399377,
+                "stderr_exponent": 0.019852530250964114,
+                "stderr_ln_prefactor": 0.054618167252779605,
+                "residual_rms_ln": 0.2609370122391116
+              },
+              "1104": {
+                "n_points": 227,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0009399875615005497,
+                "area_max_m2": 0.3304459136483952,
+                "pressure_min_MPa": 1.7159421865592754,
+                "pressure_max_MPa": 7.333316437831547,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.17396937089539222,
+                "prefactor_MPa": 2.279389574144195,
+                "r2": 0.2599630949914006,
+                "stderr_exponent": 0.019568267365861182,
+                "stderr_ln_prefactor": 0.05218133592697416,
+                "residual_rms_ln": 0.21826821746287056
+              },
+              "1105": {
+                "n_points": 262,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0013612623967239387,
+                "area_max_m2": 0.4399362622811028,
+                "pressure_min_MPa": 1.5527163296563116,
+                "pressure_max_MPa": 7.33329621732882,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.19989814556904098,
+                "prefactor_MPa": 2.0904596349552658,
+                "r2": 0.34978571565113015,
+                "stderr_exponent": 0.016902436355098065,
+                "stderr_ln_prefactor": 0.044664292739204504,
+                "residual_rms_ln": 0.2146526254857952
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.21624082829978725,
+              "max": -0.13515479315931628,
+              "p05": -0.212972291753638,
+              "median": -0.17396937089539222,
+              "p95": -0.13725507981663645,
+              "mean": -0.17418387287389078,
+              "std": 0.03452228629856826
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 2.0314793797807877,
+              "max": 2.46945677677258,
+              "p05": 2.0432754308156835,
+              "median": 2.279389574144195,
+              "p95": 2.446079863771713,
+              "mean": 2.2446715154842147,
+              "std": 0.18207725583542694
+            },
+            "impacts_per_seed": {
+              "1101": 279,
+              "1102": 256,
+              "1103": 243,
+              "1104": 227,
+              "1105": 262
+            },
+            "log_correlation_A_h": 0.3314323284130961,
+            "log_correlation_A_rate": -0.5130870586185919,
+            "log_correlation_A_speed": 0.7278864395243
+          },
+          "0.7": {
+            "peak": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.0011620869654415688,
+              "area_max_m2": 0.5272901532997956,
+              "pressure_min_MPa": 1.5552743648690925,
+              "pressure_max_MPa": 7.333324188336717,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.1877526508459151,
+              "prefactor_MPa": 2.169172795581096,
+              "r2": 0.29707613339642247,
+              "stderr_exponent": 0.006856927111794225,
+              "stderr_ln_prefactor": 0.01831917776442468,
+              "residual_rms_ln": 0.22265961336111792,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.2088337326614042,
+                "exponent_median": -0.18748144533996683,
+                "exponent_p95": -0.16872884943302813,
+                "prefactor_p05_MPa": 2.061772472893638,
+                "prefactor_median_MPa": 2.169618862547086,
+                "prefactor_p95_MPa": 2.271625375230613
+              }
+            },
+            "impulse_weighted": {
+              "n_points": 1776,
+              "reference_area_m2": 1.0,
+              "area_min_m2": 0.00027756691939576886,
+              "area_max_m2": 0.8495471633702478,
+              "pressure_min_MPa": 0.10186958858582698,
+              "pressure_max_MPa": 1.330449763612475,
+              "fit_ok": true,
+              "note": "",
+              "exponent": -0.17035586245489173,
+              "prefactor_MPa": 0.3876829752828242,
+              "r2": 0.5465837513460752,
+              "stderr_exponent": 0.0036838374364523588,
+              "stderr_ln_prefactor": 0.014199196740904425,
+              "residual_rms_ln": 0.17218987597073152,
+              "bootstrap": {
+                "n_boot": 400,
+                "exponent_p05": -0.17788149879702544,
+                "exponent_median": -0.17047991308455826,
+                "exponent_p95": -0.1627412063289901,
+                "prefactor_p05_MPa": 0.3771432071111772,
+                "prefactor_median_MPa": 0.3880811449547631,
+                "prefactor_p95_MPa": 0.3993090311669165
+              }
+            },
+            "decomposition": {
+              "n_points": 1776,
+              "partial_exponents": {
+                "A": -0.49999999999999983,
+                "h": 0.4999999999999991,
+                "V_close": 0.49999999999999895
+              },
+              "partial_r2": 1.0,
+              "beta_h_vs_A": 0.1148320964776719,
+              "beta_V_vs_A": 0.5096626018304963,
+              "raw_total_exponent": -0.18775265084591494,
+              "predicted_total_exponent": -0.1877526508459164,
+              "residual": 1.4710455076283324e-15,
+              "identity_ok": true,
+              "note": "total = a_A + a_h beta_h + a_V beta_V; the last two terms are the population covariance, not the contact law"
+            },
+            "per_seed_fits": {
+              "1101": {
+                "n_points": 385,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.002068432837199353,
+                "area_max_m2": 0.5089393462293833,
+                "pressure_min_MPa": 1.7661474091499862,
+                "pressure_max_MPa": 7.33331498161496,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.22323817883012692,
+                "prefactor_MPa": 1.9896837395180693,
+                "r2": 0.38117537673889745,
+                "stderr_exponent": 0.014534177436831868,
+                "stderr_ln_prefactor": 0.03812915838362853,
+                "residual_rms_ln": 0.21326870424438066
+              },
+              "1102": {
+                "n_points": 360,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0036367017635177265,
+                "area_max_m2": 0.35690999522863653,
+                "pressure_min_MPa": 2.0118028309957667,
+                "pressure_max_MPa": 7.333324188336717,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.16738229421363834,
+                "prefactor_MPa": 2.2871818674274027,
+                "r2": 0.2783156531404063,
+                "stderr_exponent": 0.014245340331525766,
+                "stderr_ln_prefactor": 0.03876910880636461,
+                "residual_rms_ln": 0.20875954540675562
+              },
+              "1103": {
+                "n_points": 340,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0014176195577754172,
+                "area_max_m2": 0.5272901532997956,
+                "pressure_min_MPa": 1.5552743648690925,
+                "pressure_max_MPa": 7.33331237470286,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.20350368273561162,
+                "prefactor_MPa": 2.088156702834062,
+                "r2": 0.31919966555424983,
+                "stderr_exponent": 0.01616562831554931,
+                "stderr_ln_prefactor": 0.04371973575368769,
+                "residual_rms_ln": 0.23073656642301527
+              },
+              "1104": {
+                "n_points": 323,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.00182363882071912,
+                "area_max_m2": 0.37759646573568545,
+                "pressure_min_MPa": 1.6618556508014648,
+                "pressure_max_MPa": 7.333320736209245,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.21061724227866316,
+                "prefactor_MPa": 2.0704066500329033,
+                "r2": 0.3074883010175319,
+                "stderr_exponent": 0.01764170942926377,
+                "stderr_ln_prefactor": 0.04648073432609866,
+                "residual_rms_ln": 0.22793762875983392
+              },
+              "1105": {
+                "n_points": 368,
+                "reference_area_m2": 1.0,
+                "area_min_m2": 0.0011620869654415688,
+                "area_max_m2": 0.4221522959313101,
+                "pressure_min_MPa": 1.642585569126643,
+                "pressure_max_MPa": 7.3333211386231465,
+                "fit_ok": true,
+                "note": "",
+                "exponent": -0.14616374636792298,
+                "prefactor_MPa": 2.3747533622172754,
+                "r2": 0.2189490515224516,
+                "stderr_exponent": 0.014430031239364819,
+                "stderr_ln_prefactor": 0.038585779578229146,
+                "residual_rms_ln": 0.22664277716654174
+              }
+            },
+            "per_seed_exponent": {
+              "n": 5,
+              "min": -0.22323817883012692,
+              "max": -0.14616374636792298,
+              "p05": -0.22071399151983417,
+              "median": -0.20350368273561162,
+              "p95": -0.15040745593706606,
+              "mean": -0.1901810288851926,
+              "std": 0.032191654775704216
+            },
+            "per_seed_prefactor": {
+              "n": 5,
+              "min": 1.9896837395180693,
+              "max": 2.3747533622172754,
+              "p05": 2.005828321621036,
+              "median": 2.088156702834062,
+              "p95": 2.3572390632593008,
+              "mean": 2.1620364644059427,
+              "std": 0.16160875157313664
+            },
+            "impacts_per_seed": {
+              "1101": 385,
+              "1102": 360,
+              "1103": 340,
+              "1104": 323,
+              "1105": 368
+            },
+            "log_correlation_A_h": 0.325068287639681,
+            "log_correlation_A_rate": -0.5450469093540689,
+            "log_correlation_A_speed": 0.7252344315614773
+          }
+        }
+      }
+    }
+  },
+  "criteria": [
+    {
+      "id": 1,
+      "criterion": "per-concentration fitted ex, C, R2 for at least 3 concentrations, listed one by one; primary arm = rate-dependent crushing n = 0.33",
+      "status": "PASS",
+      "rows": [
+        {
+          "concentration": 0.3,
+          "exponent": -0.08639419169814337,
+          "prefactor_MPa": 1.9636953176295824,
+          "r2": 0.19713123350572803,
+          "n_points": 762,
+          "fit_ok": true
+        },
+        {
+          "concentration": 0.5,
+          "exponent": -0.09695568850031566,
+          "prefactor_MPa": 1.9139088498240033,
+          "r2": 0.22529672567595094,
+          "n_points": 1267,
+          "fit_ok": true
+        },
+        {
+          "concentration": 0.7,
+          "exponent": -0.10678081718553603,
+          "prefactor_MPa": 1.8768099109872465,
+          "r2": 0.262819047706627,
+          "n_points": 1776,
+          "fit_ok": true
+        }
+      ],
+      "note": "C is the prefactor at A_0 = 1 m2 (MPa); R2 is the coefficient of determination of the log-log regression; the per-concentration numbers are in rows and in pressure_area_fit.csv"
+    },
+    {
+      "id": 2,
+      "criterion": "relative deviation of the fitted ex/C from the ISO 19906 value, per concentration; > 15 % is a FAIL with an attribution",
+      "status": "WITHHELD",
+      "rows": [
+        {
+          "concentration": 0.3,
+          "sim_exponent": -0.08639419169814337,
+          "iso_normative_exponent": null,
+          "relative_deviation_vs_normative": null,
+          "status": "WITHHELD",
+          "declared_reference_exponent": -0.28,
+          "relative_deviation_vs_declared_reference": 0.6914493153637736,
+          "unverified_candidate_exponent": -0.3,
+          "relative_deviation_vs_unverified_candidate": 0.7120193610061887,
+          "threshold": 0.15
+        },
+        {
+          "concentration": 0.5,
+          "sim_exponent": -0.09695568850031566,
+          "iso_normative_exponent": null,
+          "relative_deviation_vs_normative": null,
+          "status": "WITHHELD",
+          "declared_reference_exponent": -0.28,
+          "relative_deviation_vs_declared_reference": 0.6537296839274441,
+          "unverified_candidate_exponent": -0.3,
+          "relative_deviation_vs_unverified_candidate": 0.6768143716656144,
+          "threshold": 0.15
+        },
+        {
+          "concentration": 0.7,
+          "sim_exponent": -0.10678081718553603,
+          "iso_normative_exponent": null,
+          "relative_deviation_vs_normative": null,
+          "status": "WITHHELD",
+          "declared_reference_exponent": -0.28,
+          "relative_deviation_vs_declared_reference": 0.6186399386230856,
+          "unverified_candidate_exponent": -0.3,
+          "relative_deviation_vs_unverified_candidate": 0.6440639427148799,
+          "threshold": 0.15
+        }
+      ],
+      "reason": "the normative numbers are not available (no primary text, no transcription with clause/table locators -- see anchor.required_documents), so the deviation from the standard cannot be computed. The table reports the deviation from the DECLARED reference normalisation (C_R = 1 MPa, ex = -0.28; not normative) and from the ecosystem's UNVERIFIED candidate (ex = -0.30, quote = null, comparison only); neither may be presented as the standard's value.",
+      "note": "reading the 15 % threshold mechanically is only valid against the declared reference / candidate; if a row exceeds it, the conclusion is 'differs from the declared reference', never 'differs from ISO'"
+    },
+    {
+      "id": 3,
+      "criterion": "ensemble of at least 15 impacts per concentration; parameter distribution reported as median with 5-95 % quantiles",
+      "status": "PASS",
+      "rows": {
+        "0.3": {
+          "impacts_pooled": 762,
+          "impacts_per_seed": {
+            "1101": 172,
+            "1102": 156,
+            "1103": 143,
+            "1104": 131,
+            "1105": 160
+          },
+          "exponent_quantiles_per_seed": {
+            "n": 5,
+            "min": -0.11845496001046077,
+            "max": -0.0628564100760348,
+            "p05": -0.11456682430945705,
+            "median": -0.09268698593362347,
+            "p95": -0.0640870830326367,
+            "mean": -0.08840448247692112,
+            "std": 0.02270901560096729
+          },
+          "prefactor_quantiles_per_seed": {
+            "n": 5,
+            "min": 1.8233199849188495,
+            "max": 2.0488850627485737,
+            "p05": 1.845334328397749,
+            "median": 1.9384399567609232,
+            "p95": 2.047847717344191,
+            "mean": 1.9575470084936704,
+            "std": 0.0931801258845145
+          },
+          "threshold_impacts": 15
+        },
+        "0.5": {
+          "impacts_pooled": 1267,
+          "impacts_per_seed": {
+            "1101": 279,
+            "1102": 256,
+            "1103": 243,
+            "1104": 227,
+            "1105": 262
+          },
+          "exponent_quantiles_per_seed": {
+            "n": 5,
+            "min": -0.1266486223473621,
+            "max": -0.07171002821881657,
+            "p05": -0.12351749514538249,
+            "median": -0.09923812164035552,
+            "p95": -0.07333910883559666,
+            "mean": -0.09768903796934306,
+            "std": 0.02242208010035481
+          },
+          "prefactor_quantiles_per_seed": {
+            "n": 5,
+            "min": 1.7977137963903147,
+            "max": 1.9997800545767117,
+            "p05": 1.8075808552141894,
+            "median": 1.933755894638493,
+            "p95": 1.9985469736869035,
+            "mean": 1.9143826972485758,
+            "std": 0.08957005470121562
+          },
+          "threshold_impacts": 15
+        },
+        "0.7": {
+          "impacts_pooled": 1776,
+          "impacts_per_seed": {
+            "1101": 385,
+            "1102": 360,
+            "1103": 340,
+            "1104": 323,
+            "1105": 368
+          },
+          "exponent_quantiles_per_seed": {
+            "n": 5,
+            "min": -0.12493708542755323,
+            "max": -0.08376197543179334,
+            "p05": -0.12354062826957526,
+            "median": -0.1138664969167489,
+            "p95": -0.08709139130995276,
+            "mean": -0.10818588244726986,
+            "std": 0.01631954508338771
+          },
+          "prefactor_quantiles_per_seed": {
+            "n": 5,
+            "min": 1.802141836561476,
+            "max": 1.9597808029134207,
+            "p05": 1.8102810276959824,
+            "median": 1.849796842388514,
+            "p95": 1.9494254564086073,
+            "mean": 1.8725122688973546,
+            "std": 0.06169284382390168
+          },
+          "threshold_impacts": 15
+        }
+      },
+      "note": "impact counts are pooled over all seeds of a concentration; quantiles are taken over the per-seed fits (each seed fitting its own impacts) with quantile_summary (linear interpolation)"
+    },
+    {
+      "id": 4,
+      "criterion": "global vs local pressure calibre bridged item by item; incomparable items marked WITHHELD with a reason",
+      "status": "PASS",
+      "rows": [
+        {
+          "item": "contact-area definition (this model)",
+          "value": "A = w*h with w the penetrating width of the wedged bow and h the floe thickness (identical to the W23 chain)",
+          "comparable_with_iso": "only if the standard also uses a nominal contact area",
+          "status": "CONDITIONAL"
+        },
+        {
+          "item": "pressure calibre (this model)",
+          "value": "p = N/A with a single uniform pressure across the contact patch -> p is the GLOBAL (area-average) calibre, participation factor kappa = 1",
+          "comparable_with_iso": "same family as the standard's global-pressure calibre; not comparable with the local calibre",
+          "status": "CONDITIONAL"
+        },
+        {
+          "item": "local (high-pressure-zone) calibre",
+          "value": "the model carries no sub-patch pressure field, so neither the high-pressure-zone area A_loc nor its internal pressure distribution exists; p_loc cannot be sampled",
+          "comparable_with_iso": "not comparable",
+          "status": "WITHHELD",
+          "reason": "a non-uniform pressure field inside the contact patch (high-pressure zones / non-simultaneous contact) would be needed; the chain is a uniform-pressure idealisation, so using the global pressure as a local one would systematically under-predict local peaks and that bias cannot be quantified from this model"
+        },
+        {
+          "item": "validity range of the area law (A range)",
+          "value": "simulated A in [0.001274, 0.687] m2 (concentration 0.5, peak samples)",
+          "comparable_with_iso": "the standard states its validity range with the clause/table; that range is absent here, so whether the simulation lies inside it cannot be decided",
+          "status": "WITHHELD",
+          "reason": "the validity range is part of the clause/table text, not transcribed"
+        },
+        {
+          "item": "population semantics of ex",
+          "value": "the ex reported here is a regression slope over a SPECIFIC ensemble (fixed C, floe-diameter, thickness and speed distributions); the multifactor decomposition shows that the raw slope mixes in the co-variation of h and closing speed",
+          "comparable_with_iso": "the standard's ex is a design constant that corresponds to no particular ice population; a comparison must declare the population",
+          "status": "CONDITIONAL"
+        },
+        {
+          "item": "C_R dimension and normalisation point",
+          "value": "C is reported at A_0 = 1 m2 (MPa); the standard's A_0 and units must be confirmed from the clause",
+          "comparable_with_iso": "if the normalisation point differs, C is not directly comparable",
+          "status": "WITHHELD",
+          "reason": "the reference area/units of C_R are not transcribed"
+        }
+      ],
+      "note": "6 items itemised (3 CONDITIONAL, 3 WITHHELD); the analytic bridge is p_global = kappa p_loc with kappa = N_hp A_loc / A_nom, and kappa = 1 in this model by construction, so no local-calibre number is claimed"
+    },
+    {
+      "id": 5,
+      "criterion": "normative values must carry a clause/table locator; if unobtainable, report WITHHELD and list the search scope",
+      "status": "WITHHELD",
+      "rows": [
+        {
+          "document": "ISO 19906:2010 (or :2019) -- Annex A, pressure-area clause",
+          "locator_needed": "clause number + table number + page",
+          "carries": "global pressure-area exponent ex_g and coefficient C_R (with its A_0 normalisation and validity range in A)"
+        },
+        {
+          "document": "ISO 19906:2010 (or :2019) -- local pressure clause/table",
+          "locator_needed": "clause number + table number + page",
+          "carries": "local (high-pressure-zone) exponent ex_l and coefficient, plus the definition of the local area"
+        },
+        {
+          "document": "ISO 19906:2010 (or :2019) -- global ice action clauses",
+          "locator_needed": "clause number (+ any design table)",
+          "carries": "whether a tabulated design global ice force exists and how the area law is combined with the pressure factors"
+        }
+      ],
+      "reason": "the catalogue entry carries the algebraic form only and no licensed copy of ISO 19906 is reachable from this work tree, so C_R, ex and the clause/table/page that carry them cannot be transcribed; writing a recalled number would be fabrication",
+      "search_scope": [
+        "repository grep for '19906' over src/, benchmarks/, docs/, papers/ -> code and prose mentions only, no transcription of the coefficients",
+        "ecosystem anchor catalogue lookup by id AN-ISO19906 -> id + statement (algebraic form), no numbers",
+        "sibling-repository anchor registries (ice-abrasion-extremes, ice-hull-propeller-threefield, ice-polygon-floe-field) -> certify that the primary text is absent and keep candidate values in a comparison-only registry"
+      ]
+    },
+    {
+      "id": 6,
+      "supplementary": true,
+      "criterion": "negative control: the apparent exponent produced with a material law that has no area dependence (endogeneity floor of the coupled contact)",
+      "status": "PASS",
+      "rows": {
+        "endogeneity_floor_abs_exponent": {
+          "0.3": 0.12597933536804143,
+          "0.5": 0.1174304926118427,
+          "0.7": 0.12045869026810858
+        },
+        "primary_arm_raw_exponent": {
+          "0.3": -0.08639419169814337,
+          "0.5": -0.09695568850031566,
+          "0.7": -0.10678081718553603
+        },
+        "note": "the floor is |ex| ~ 0.12, so an apparent exponent of that size cannot be attributed to a pressure-area law; the primary arm is reported against this baseline rather than against zero"
+      }
+    }
+  ],
+  "bridge": {
+    "items": [
+      {
+        "item": "contact-area definition (this model)",
+        "value": "A = w*h with w the penetrating width of the wedged bow and h the floe thickness (identical to the W23 chain)",
+        "comparable_with_iso": "only if the standard also uses a nominal contact area",
+        "status": "CONDITIONAL"
+      },
+      {
+        "item": "pressure calibre (this model)",
+        "value": "p = N/A with a single uniform pressure across the contact patch -> p is the GLOBAL (area-average) calibre, participation factor kappa = 1",
+        "comparable_with_iso": "same family as the standard's global-pressure calibre; not comparable with the local calibre",
+        "status": "CONDITIONAL"
+      },
+      {
+        "item": "local (high-pressure-zone) calibre",
+        "value": "the model carries no sub-patch pressure field, so neither the high-pressure-zone area A_loc nor its internal pressure distribution exists; p_loc cannot be sampled",
+        "comparable_with_iso": "not comparable",
+        "status": "WITHHELD",
+        "reason": "a non-uniform pressure field inside the contact patch (high-pressure zones / non-simultaneous contact) would be needed; the chain is a uniform-pressure idealisation, so using the global pressure as a local one would systematically under-predict local peaks and that bias cannot be quantified from this model"
+      },
+      {
+        "item": "validity range of the area law (A range)",
+        "value": "simulated A in [0.001274, 0.687] m2 (concentration 0.5, peak samples)",
+        "comparable_with_iso": "the standard states its validity range with the clause/table; that range is absent here, so whether the simulation lies inside it cannot be decided",
+        "status": "WITHHELD",
+        "reason": "the validity range is part of the clause/table text, not transcribed"
+      },
+      {
+        "item": "population semantics of ex",
+        "value": "the ex reported here is a regression slope over a SPECIFIC ensemble (fixed C, floe-diameter, thickness and speed distributions); the multifactor decomposition shows that the raw slope mixes in the co-variation of h and closing speed",
+        "comparable_with_iso": "the standard's ex is a design constant that corresponds to no particular ice population; a comparison must declare the population",
+        "status": "CONDITIONAL"
+      },
+      {
+        "item": "C_R dimension and normalisation point",
+        "value": "C is reported at A_0 = 1 m2 (MPa); the standard's A_0 and units must be confirmed from the clause",
+        "comparable_with_iso": "if the normalisation point differs, C is not directly comparable",
+        "status": "WITHHELD",
+        "reason": "the reference area/units of C_R are not transcribed"
+      }
+    ],
+    "kappa_demo": {
+      "prefactor_MPa": 1.9139088498240033,
+      "exponent": -0.09695568850031566,
+      "local_area_m2": 0.1,
+      "nominal_area_m2": 1.0,
+      "participation_factor_kappa": 0.1,
+      "pressure_local_calibre_MPa": 2.392637686839052,
+      "pressure_global_calibre_MPa": 0.2392637686839052,
+      "note": "kappa = 1 in the simulated model (single uniform pressure over the contact patch), so a local-calibre (high-pressure-zone) comparison is WITHHELD"
+    },
+    "summary": "the simulated side has the global calibre only; the local calibre and the standard's validity range are WITHHELD. Any ex comparison must first align (i) the area definition, (ii) the pressure calibre, (iii) the population / A range and (iv) the C normalisation point -- missing any one makes the comparison meaningless."
+  },
+  "limitations": [
+    "the contact patch carries a SINGLE uniform pressure: the model's p can only be the global (area-average) calibre, there is no high-pressure-zone / non-simultaneous contact structure, so a local-calibre ex cannot be sampled from this chain",
+    "the pressure source is a declared engineering constitutive law: p_ref, epsdot_ref and n are declared inputs and the pressure level scales exactly linearly in p_ref; n is swept (0.15 / 0.33 / 0.50) as a sensitivity, not calibrated to ice measurements",
+    "floes are point masses, the ice is level and homogeneous and no floe-size statistics of the crushed layer are resolved",
+    "ex is a POPULATION-dependent quantity: the raw p-A slope mixes in the co-variation of thickness and closing speed, and the multifactor decomposition separates the mechanism-level partial exponent dlnp/dlnA; any reported ex must state its population",
+    "the primary ISO 19906 text is not reachable -> the quantitative deviation from the standard is WITHHELD; every 'standard value' slot is left empty and in-ecosystem candidates are used for comparison only (quote = null)",
+    "the hydrodynamic / radiation model is still the declared synthetic W23 model: this node is about the ice contact statistics, so the hull response quantities are not a full-scale validation"
+  ],
+  "figures": [
+    {
+      "path": "benchmarks/ice_coupled_6dof/figures/w24_pressure_area_scatter.png",
+      "caption": "impact pressure vs nominal contact area (log-log) for the closure arm C1, the negative control C0 and the primary rate-dependent arm T (n = 0.33), with the fitted power laws and the declared normalisation line; the imposed-law arm collapses exactly onto its own line (R2 = 1), the rate-dependent arm does not",
+      "sha256": "706eee38eaf88c5ffbf50d8355ae67eb90650dad5a2e462b14c245cb76de01b8"
+    },
+    {
+      "path": "benchmarks/ice_coupled_6dof/figures/w24_exponent_by_concentration.png",
+      "caption": "fitted exponent per ice concentration and arm: median with 5-95 % quantiles over the per-seed fits; dotted grey lines are the analytic -n of the rate law and the dashed line the declared (non-normative) normalisation ex = -0.28",
+      "sha256": "fee51d1a83cf0a955c8da48bdca1d3cc9f061383f964dbf435657d9321266aba"
+    },
+    {
+      "path": "benchmarks/ice_coupled_6dof/figures/w24_exponent_decomposition.png",
+      "caption": "multifactor log-log decomposition of the rate-dependent arms: the partial area exponent dlnp/dlnA recovers -n while the raw p(A) slope is confounded by the thickness and the closing speed (confounding is the main finding)",
+      "sha256": "19bcb1c2cd00a008a1ffa30e46813b61db1d989d3823b7f08436ccbde0a55c4d"
+    }
+  ],
+  "artefacts": {
+    "pressure_area_fit.csv": {
+      "path": "benchmarks/ice_coupled_6dof/pressure_area_fit.csv",
+      "sha256": "3f7ad27cb181c0ffd7e5ee7d789540ddc4469e707a722bab3cf8b4ea76a90523",
+      "rows": 19025
+    },
+    "iso19906_comparison.json": {
+      "path": "benchmarks/ice_coupled_6dof/iso19906_comparison.json",
+      "sha256": null,
+      "note": "a JSON file cannot carry its own digest; the final value is reported in README.md"
+    }
+  },
+  "clean_room": {
+    "platform_untouched": true,
+    "note": "executed inside the TensorFEM work tree only; the TensorPlatform repository was not modified"
+  }
+}

@@ -455,13 +455,23 @@ class Cummins6DOF:
     # -- main driver ----------------------------------------------------------
     def run(self, duration_s, dt_s, *, excitation=None, ice=None, seed=0,
             commanded_speed=None, mutation=None, initial_velocity=None,
-            peak_window_s=1.5):
+            peak_window_s=1.5, contact_law=None):
         """Integrate the coupled system.
 
         Scheme: velocity-Verlet with the force evaluated at the integer-step
         states (predictor velocity for the velocity-dependent terms).  The
         velocity update is *exactly* the trapezoid rule on the recorded force
         history, which is what makes the momentum ledger below close.
+
+        ``contact_law`` is the pressure source of the ice contact.  It defaults
+        to :class:`PressureAreaLaw` (the ISO 19906 global area law), which is
+        what every W22/W23 result used.  An alternative object may be injected
+        as long as it either exposes ``force_N(area_m2)`` or -- when the local
+        contact pressure must also depend on the penetration history, e.g. on
+        the indentation strain rate -- ``contact_force(area_m2, penetration_m,
+        thickness_m, event)``.  See :mod:`tensorfem.ice_pressure_area` for the
+        recording laws used by the W24 pressure--area study; the default path is
+        bit-identical to a call without the argument.
         """
         model = self.model
         self.commanded_speed = commanded_speed
@@ -474,7 +484,7 @@ class Cummins6DOF:
         X = np.zeros((self.n_terms, n))
         Y = np.zeros((self.n_terms, n))
         rng = np.random.default_rng(seed)
-        law = PressureAreaLaw()
+        law = PressureAreaLaw() if contact_law is None else contact_law
 
         floes = []
         rate = 0.0
@@ -526,7 +536,10 @@ class Cummins6DOF:
             area = float(model.contact_area_m2(pen, ev["thickness"]))
             if area <= 0.0:
                 return 0.0
-            mag = float(law.force_N(area))
+            if hasattr(law, "contact_force"):
+                mag = float(law.contact_force(area, pen, ev["thickness"], ev))
+            else:
+                mag = float(law.force_N(area))
             if ev.get("unloading", False):
                 mag *= model.rebound_factor
             return mag
