@@ -279,8 +279,12 @@ def test_ice_train_is_reproducible(ship):
 # ---------------------------------------------------------------------------
 def test_sn_curve_knee_and_slopes():
     curve = m.SNCurve()
-    assert curve.knee_stress / 1e6 == pytest.approx(53.4, rel=0.01)
-    assert curve.cycles_to_failure(100e6) == pytest.approx(1.52e6, rel=0.01)
+    # Published DNV-RP-C203 curve D in air: log a1 = 12.164 -> knee 52.642 MPa,
+    # N(100 MPa) = 1.458814e6.  v1 pinned 53.4 MPa / 1.52e6 (log a1 = 12.182,
+    # +4.19 % unconservative life); corrected in
+    # docs/fatigue-sn-curve-consistency-audit.md.
+    assert curve.knee_stress / 1e6 == pytest.approx(52.642115, rel=1e-6)
+    assert curve.cycles_to_failure(100e6) == pytest.approx(1.458814e6, rel=1e-5)
     low = curve.cycles_to_failure(40e6)
     high = curve.cycles_to_failure(80e6)
     assert low > high
