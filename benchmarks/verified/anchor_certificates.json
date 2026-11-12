@@ -3,22 +3,23 @@
   "gate_schema": "tensorfem.verified-gates.v1",
   "git_tracking_checked": true,
   "anchors": 33,
-  "certified": 7,
-  "contradicted": 17,
-  "uncertified": 9,
-  "gates_total": 245,
-  "gates_recomputed": 213,
+  "certified": 20,
+  "contradicted": 7,
+  "uncertified": 6,
+  "gates_total": 257,
+  "gates_recomputed": 216,
   "gates_contradicted": 0,
   "gates_contradicted_inferred": 2,
   "gates_without_numeric_criterion": 8,
-  "gates_unrecomputable": 32,
+  "gates_unrecomputable": 41,
   "defect_counts": {
     "E_ANCHOR_NAME_MISMATCH": 2,
-    "E_ARTIFACT_MISSING": 14,
+    "E_ARTIFACT_MISSING": 1,
     "E_GATE_VALUE_NOT_FINITE": 1,
-    "E_NO_GATES": 9,
+    "E_NO_GATES": 6,
+    "E_OVERALL_ABSENT": 1,
     "E_PASS_WITHOUT_CRITERION": 3,
-    "E_SCHEMA": 2
+    "E_SCHEMA": 3
   },
   "records": [
     {
@@ -48,32 +49,70 @@
     {
       "anchor": "fem_beam",
       "directory": "benchmarks/verified/fem_beam",
-      "grade": "uncertified",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": false,
       "has_result": true,
-      "has_gates": false,
-      "declared_overall": null,
-      "recomputed_overall": null,
-      "gates": 0,
-      "gates_passed": 0,
+      "has_gates": true,
+      "declared_overall": true,
+      "recomputed_overall": true,
+      "gates": 3,
+      "gates_passed": 3,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_NO_GATES"
-      ],
+      "defects": [],
       "warnings": [
         "W_NO_RUNNER"
       ],
-      "gate_detail": []
+      "gate_detail": [
+        {
+          "id": "G1.tip_deflection",
+          "quantity": "|w_tip(FE)/w_tip(closed form) - 1|, 8 elements, w_tip = qL^4/(8EI)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 1.5271339748323953e-11,
+          "threshold": 0.01,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "G1.field_order",
+          "quantity": "least-squares slope of log(field L2 rel. error) vs log(h), elements 2..32 (must be >= 1.5)",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 4.000114426089786,
+          "threshold": 1.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "G1.equilibrium",
+          "quantity": "|R_clamp(FE)/(-q) - 1|, 32 elements (recovered support shear)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 4.5315529106915164e-11,
+          "threshold": 1e-08,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        }
+      ]
     },
     {
       "anchor": "fem_beam_static",
       "directory": "benchmarks/verified/fem_beam_static",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -85,9 +124,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -415,8 +452,8 @@
     {
       "anchor": "fem_cantilever",
       "directory": "benchmarks/verified/fem_cantilever",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -428,9 +465,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -543,9 +578,7 @@
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
       "defects": [],
-      "warnings": [
-        "W_ARTIFACT_AMBIGUOUS"
-      ],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "C1_tangent_flat",
@@ -1021,8 +1054,8 @@
     {
       "anchor": "fem_hertz_contact",
       "directory": "benchmarks/verified/fem_hertz_contact",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1034,9 +1067,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -1338,24 +1369,114 @@
     {
       "anchor": "fem_kerr_plate",
       "directory": "benchmarks/verified/fem_kerr_plate",
-      "grade": "uncertified",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
-      "has_gates": false,
-      "declared_overall": null,
-      "recomputed_overall": null,
-      "gates": 0,
-      "gates_passed": 0,
+      "has_gates": true,
+      "declared_overall": true,
+      "recomputed_overall": true,
+      "gates": 7,
+      "gates_passed": 7,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_NO_GATES"
-      ],
+      "defects": [],
       "warnings": [],
-      "gate_detail": []
+      "gate_detail": [
+        {
+          "id": "exact_formula",
+          "quantity": "max over branches of |w_exact(recomputed from case params)/w_exact(artifact) - 1|",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0,
+          "threshold": 1e-12,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "winkler_limit_formula",
+          "quantity": "|q0/(4D(pi/L)^4 + k) / w_exact(gp=0 branch) - 1| (shear-parameter limit)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0,
+          "threshold": 1e-12,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "kerr_centre_deflection",
+          "quantity": "|w_FE(n=32)/w_exact - 1|, full Kerr branch (k and gp both active)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0014906826897382874,
+          "threshold": 0.005,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "winkler_limit_centre_deflection",
+          "quantity": "|w_FE(n=32)/w_exact - 1|, gp = 0 branch",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0014969958042474474,
+          "threshold": 0.005,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "free_plate_centre_deflection",
+          "quantity": "|w_FE(n=32)/w_exact - 1|, k = gp = 0 branch (plain plate)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.228274430882138e-05,
+          "threshold": 0.001,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "kerr_convergence_order_lsq",
+          "quantity": "least-squares slope of log(rel_err) vs log(h) over n = 4..32, full Kerr branch (threshold 1.5; Q4 Mindlin is a 2nd-order element)",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 2.0042374817157937,
+          "threshold": 1.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "mesh_error_monotone",
+          "quantity": "max over all branches/levels of rel_err(fine)/rel_err(coarse) (must be <= 1: refinement may not increase the error)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.25456849457455716,
+          "threshold": 1.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        }
+      ]
     },
     {
       "anchor": "fem_kirsch_plate",
@@ -1579,8 +1700,7 @@
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
       "defects": [
-        "E_ANCHOR_NAME_MISMATCH",
-        "E_ARTIFACT_MISSING"
+        "E_ANCHOR_NAME_MISMATCH"
       ],
       "warnings": [],
       "gate_detail": [
@@ -1809,8 +1929,8 @@
     {
       "anchor": "fem_panel_buckling",
       "directory": "benchmarks/verified/fem_panel_buckling",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1822,9 +1942,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -2027,32 +2145,70 @@
     {
       "anchor": "fem_plate",
       "directory": "benchmarks/verified/fem_plate",
-      "grade": "uncertified",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": false,
       "has_result": true,
-      "has_gates": false,
-      "declared_overall": null,
-      "recomputed_overall": null,
-      "gates": 0,
-      "gates_passed": 0,
+      "has_gates": true,
+      "declared_overall": true,
+      "recomputed_overall": true,
+      "gates": 3,
+      "gates_passed": 3,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_NO_GATES"
-      ],
+      "defects": [],
       "warnings": [
         "W_NO_RUNNER"
       ],
-      "gate_detail": []
+      "gate_detail": [
+        {
+          "id": "G2.centre_deflection",
+          "quantity": "|alpha_FE - 0.00406| / 0.00406, 16x16, alpha = w_c D / (q L^4) recomputed from the raw centre deflection",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.005315601094098233,
+          "threshold": 0.02,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "G2.centre_deflection_vs_series",
+          "quantity": "|alpha_FE - alpha_Navier| / alpha_Navier, 16x16",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.005891660108691842,
+          "threshold": 0.02,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "G2.order",
+          "quantity": "least-squares slope of log(error vs Timoshenko) vs log(h), n = 2..24",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 1.9440160244049594,
+          "threshold": 1.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        }
+      ]
     },
     {
       "anchor": "fem_plate_modal",
       "directory": "benchmarks/verified/fem_plate_modal",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2064,9 +2220,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -2191,8 +2345,8 @@
     {
       "anchor": "fem_plate_postbuckling",
       "directory": "benchmarks/verified/fem_plate_postbuckling",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2204,9 +2358,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -2292,8 +2444,8 @@
     {
       "anchor": "fem_plate_static",
       "directory": "benchmarks/verified/fem_plate_static",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2305,9 +2457,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -2504,8 +2654,8 @@
     {
       "anchor": "fem_shell_modal",
       "directory": "benchmarks/verified/fem_shell_modal",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2517,9 +2667,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -3007,14 +3155,14 @@
       "defects": [
         "E_SCHEMA",
         "E_PASS_WITHOUT_CRITERION",
-        "E_GATE_VALUE_NOT_FINITE",
-        "E_ARTIFACT_MISSING"
+        "E_GATE_VALUE_NOT_FINITE"
       ],
       "warnings": [
         "W_OPERATOR_ABSENT",
         "W_OPERATOR_INFERRED",
         "W_CONTRADICTION_INFERRED",
-        "W_FAILED_GATES_LIST_UNCHECKED"
+        "W_FAILED_GATES_LIST_UNCHECKED",
+        "W_ARTIFACT_AMBIGUOUS"
       ],
       "gate_detail": [
         {
@@ -3279,8 +3427,8 @@
     {
       "anchor": "fem_structural_benchmarks",
       "directory": "benchmarks/verified/fem_structural_benchmarks",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -3292,9 +3440,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -3480,159 +3626,170 @@
     {
       "anchor": "fem_wave_dispersion",
       "directory": "benchmarks/verified/fem_wave_dispersion",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
-      "declared_overall": true,
-      "recomputed_overall": true,
-      "gates": 10,
-      "gates_passed": 10,
+      "declared_overall": null,
+      "recomputed_overall": null,
+      "gates": 9,
+      "gates_passed": 0,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
-      "gates_unrecomputable": 0,
-      "defects": [],
-      "warnings": [],
+      "gates_unrecomputable": 9,
+      "defects": [
+        "E_SCHEMA",
+        "E_OVERALL_ABSENT"
+      ],
+      "warnings": [
+        "W_OPERATOR_ABSENT",
+        "W_UNDECLARED_ARTIFACTS"
+      ],
       "gate_detail": [
         {
           "id": "s0_plate_velocity_extrapolated",
-          "quantity": "|c_fit/(c_p/c_T) - 1|, S0 phase velocity extrapolated to kh->0 (both sides normalised by c_T)",
-          "operator": "<=",
-          "operator_source": "declared",
-          "value": 2.227759518191874e-06,
+          "quantity": "",
+          "operator": null,
+          "operator_source": "absent",
+          "value": 0.9996882454343158,
           "threshold": 0.002,
-          "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
+          "declared_passed": false,
+          "recomputed_passed": null,
+          "status": "unrecomputable",
           "defects": [],
-          "warnings": []
+          "warnings": [
+            "W_OPERATOR_ABSENT"
+          ]
         },
         {
           "id": "a0_flexural_limit",
-          "quantity": "|c_A0(kh=0.05)/c_Kirchhoff - 1|",
-          "operator": "<=",
-          "operator_source": "declared",
+          "quantity": "",
+          "operator": null,
+          "operator_source": "absent",
           "value": 0.0017679325410421276,
           "threshold": 0.01,
           "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
+          "recomputed_passed": null,
+          "status": "unrecomputable",
           "defects": [],
-          "warnings": []
+          "warnings": [
+            "W_OPERATOR_ABSENT"
+          ]
         },
         {
           "id": "a0_rayleigh_limit",
-          "quantity": "|c_A0(kh=20)/(c_R/c_T) - 1|, both sides normalised by c_T",
-          "operator": "<=",
-          "operator_source": "declared",
+          "quantity": "",
+          "operator": null,
+          "operator_source": "absent",
           "value": 1.8399101542332374e-07,
           "threshold": 0.01,
           "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
+          "recomputed_passed": null,
+          "status": "unrecomputable",
           "defects": [],
-          "warnings": []
+          "warnings": [
+            "W_OPERATOR_ABSENT"
+          ]
         },
         {
-          "id": "s0_rayleigh_limit",
-          "quantity": "|c_S0(kh=20)/(c_R/c_T) - 1|, both sides normalised by c_T",
-          "operator": "<=",
-          "operator_source": "declared",
-          "value": 1.8399651158240715e-07,
-          "threshold": 0.01,
-          "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
+          "id": "s0_longitudinal_limit",
+          "quantity": "",
+          "operator": null,
+          "operator_source": "absent",
+          "value": 0.4958161867219243,
+          "threshold": 0.05,
+          "declared_passed": false,
+          "recomputed_passed": null,
+          "status": "unrecomputable",
           "defects": [],
-          "warnings": []
+          "warnings": [
+            "W_OPERATOR_ABSENT"
+          ]
         },
         {
           "id": "root_residual",
-          "quantity": "max normalised Rayleigh--Lamb residual over every reported analytic root",
-          "operator": "<=",
-          "operator_source": "declared",
+          "quantity": "",
+          "operator": null,
+          "operator_source": "absent",
           "value": 4.860013849625548e-15,
           "threshold": 1e-09,
           "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
+          "recomputed_passed": null,
+          "status": "unrecomputable",
           "defects": [],
-          "warnings": []
+          "warnings": [
+            "W_OPERATOR_ABSENT"
+          ]
         },
         {
           "id": "fem_phase_error_fine",
-          "quantity": "max relative phase-velocity error of the 32x16 Floquet cell, A0 and S0, kh=0.2..1 (branches picked by mid-plane parity, not by index)",
-          "operator": "<=",
-          "operator_source": "declared",
-          "value": 0.003339486652238044,
+          "quantity": "",
+          "operator": null,
+          "operator_source": "absent",
+          "value": 5.568130032780239,
           "threshold": 0.03,
-          "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
+          "declared_passed": false,
+          "recomputed_passed": null,
+          "status": "unrecomputable",
           "defects": [],
-          "warnings": []
+          "warnings": [
+            "W_OPERATOR_ABSENT"
+          ]
         },
         {
           "id": "fem_convergence_order",
-          "quantity": "observed convergence order of the A0/S0 phase-velocity error, kh=0.2, three meshes (8x4/16x8/32x16)",
-          "operator": ">=",
-          "operator_source": "declared",
-          "value": 1.9713122763124808,
-          "threshold": 1.5,
+          "quantity": "",
+          "operator": null,
+          "operator_source": "absent",
+          "value": 0.0,
+          "threshold": 0.0,
           "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
+          "recomputed_passed": null,
+          "status": "unrecomputable",
           "defects": [],
-          "warnings": []
+          "warnings": [
+            "W_OPERATOR_ABSENT"
+          ]
         },
         {
           "id": "mass_conservation",
-          "quantity": "|sum(M)/(2 rho L 2h) - 1|, consistent mass matrix of the cell",
-          "operator": "<=",
-          "operator_source": "declared",
+          "quantity": "",
+          "operator": null,
+          "operator_source": "absent",
           "value": 1.1102230246251565e-16,
           "threshold": 1e-12,
           "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
+          "recomputed_passed": null,
+          "status": "unrecomputable",
           "defects": [],
-          "warnings": []
+          "warnings": [
+            "W_OPERATOR_ABSENT"
+          ]
         },
         {
-          "id": "gamma_zero_mode_count",
-          "quantity": "number of zero-energy modes of the periodic cell at k=0, tol = 1e-10 max(omega)",
-          "operator": "==",
-          "operator_source": "declared",
-          "value": 2.0,
-          "threshold": 2.0,
-          "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
+          "id": "rigid_mode_count",
+          "quantity": "",
+          "operator": null,
+          "operator_source": "absent",
+          "value": 0.7548558610603089,
+          "threshold": 1e-06,
+          "declared_passed": false,
+          "recomputed_passed": null,
+          "status": "unrecomputable",
           "defects": [],
-          "warnings": []
-        },
-        {
-          "id": "floquet_reduction_dofs",
-          "quantity": "dofs of the Floquet-reduced cell",
-          "operator": "==",
-          "operator_source": "declared",
-          "value": 80.0,
-          "threshold": 80.0,
-          "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
-          "defects": [],
-          "warnings": []
+          "warnings": [
+            "W_OPERATOR_ABSENT"
+          ]
         }
       ]
     },
     {
       "anchor": "fem_winkler_plate",
       "directory": "benchmarks/verified/fem_winkler_plate",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -3644,9 +3801,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
