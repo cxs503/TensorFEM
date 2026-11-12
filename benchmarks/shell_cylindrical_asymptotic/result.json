@@ -1,0 +1,407 @@
+{
+  "schema": "tensorfem.shell-asymptotic-audit.v1",
+  "generated_by": "benchmarks/shell_cylindrical_asymptotic/run_audit.py",
+  "element": "src/tensorfem/cylindrical_shell4.py",
+  "assembly": "scipy sparse COO->CSR + SuperLU",
+  "reference_tolerance": 0.03,
+  "consistency": {
+    "n": 8,
+    "scordelis_lo_dense": -0.2967296525275531,
+    "scordelis_lo_sparse": -0.29672965252757444,
+    "scordelis_lo_rel_diff": 7.183738426958749e-14,
+    "pinched_cylinder_dense": -1.763665283458828e-05,
+    "pinched_cylinder_sparse": -1.7636652834588067e-05,
+    "pinched_cylinder_rel_diff": 1.2102767158259745e-14
+  },
+  "scordelis_lo": {
+    "case": "Scordelis-Lo roof",
+    "reference": -0.3024,
+    "reference_tolerance": 0.03,
+    "levels": [
+      {
+        "mesh": "4x4",
+        "n": 4,
+        "elements": 16,
+        "ndof": 150,
+        "h": 0.25,
+        "value": -0.2167305383708988,
+        "relative_error": 0.28329848422321824,
+        "relative_error_pct": 28.329848422321824,
+        "wall_s": 0.2093575093895197
+      },
+      {
+        "mesh": "8x8",
+        "n": 8,
+        "elements": 64,
+        "ndof": 486,
+        "h": 0.125,
+        "value": -0.29672965252757444,
+        "relative_error": 0.018751149049026333,
+        "relative_error_pct": 1.8751149049026332,
+        "wall_s": 1.0518358796834946,
+        "observed_order": 3.9172719725201453
+      },
+      {
+        "mesh": "16x16",
+        "n": 16,
+        "elements": 256,
+        "ndof": 1734,
+        "h": 0.0625,
+        "value": -0.30246905129591456,
+        "relative_error": 0.0002283442325216841,
+        "relative_error_pct": 0.02283442325216841,
+        "wall_s": 4.166161490604281,
+        "observed_order": 6.359624843958883
+      },
+      {
+        "mesh": "32x32",
+        "n": 32,
+        "elements": 1024,
+        "ndof": 6534,
+        "h": 0.03125,
+        "value": -0.3036540570069931,
+        "relative_error": 0.004147013912014231,
+        "relative_error_pct": 0.41470139120142313,
+        "wall_s": 12.466967830434442,
+        "observed_order": -4.182790631117902
+      },
+      {
+        "mesh": "64x64",
+        "n": 64,
+        "elements": 4096,
+        "ndof": 25350,
+        "h": 0.015625,
+        "value": -0.3040211013660093,
+        "relative_error": 0.005360784940506918,
+        "relative_error_pct": 0.5360784940506919,
+        "wall_s": 61.56125462986529,
+        "observed_order": -0.37037137235637857
+      }
+    ],
+    "pairwise_observed_orders": [
+      3.9172719725201453,
+      6.359624843958883,
+      -4.182790631117902,
+      -0.37037137235637857
+    ],
+    "monotone_error_decrease": false,
+    "richardson_limit": null,
+    "richardson_limit_error": null,
+    "study_report": {
+      "schema": "tensorfem.convergence-verification/1.0",
+      "qoi": "probe displacement",
+      "levels": [
+        {
+          "label": "4x4",
+          "mesh_size": 0.25,
+          "value": -0.2167305383708988
+        },
+        {
+          "label": "8x8",
+          "mesh_size": 0.125,
+          "value": -0.29672965252757444
+        },
+        {
+          "label": "16x16",
+          "mesh_size": 0.0625,
+          "value": -0.30246905129591456
+        },
+        {
+          "label": "32x32",
+          "mesh_size": 0.03125,
+          "value": -0.3036540570069931
+        },
+        {
+          "label": "64x64",
+          "mesh_size": 0.015625,
+          "value": -0.3040211013660093
+        }
+      ],
+      "refinement_ratios": [
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ],
+      "checks": [
+        {
+          "name": "measured_order",
+          "passed": true,
+          "detail": "observed order per triple: 3.801, 2.276, 1.691"
+        },
+        {
+          "name": "asymptotic_range_drift",
+          "passed": false,
+          "detail": "order drift between first and last triple = 1.248 (band 0.150)"
+        },
+        {
+          "name": "gci_band_contracts",
+          "passed": true,
+          "detail": "absolute GCI 2.059e-04 (fine pair) <= 3.854e-04 (coarser pair)"
+        },
+        {
+          "name": "reference_tolerance",
+          "passed": true,
+          "detail": "Richardson -0.304185805433 vs Scordelis-Lo roof -0.3024: rel. error 5.905e-03 (<= 3.000e-02); finest-level error 5.361e-03"
+        },
+        {
+          "name": "finest_error_inside_gci_band",
+          "passed": false,
+          "detail": "finest-mesh true error 5.361e-03 vs GCI band 6.772e-04 -> outside the band"
+        }
+      ],
+      "observed_orders": [
+        3.8010125047163275,
+        2.276005602920171,
+        1.6908676770235151
+      ],
+      "mean_observed_order": 2.589295261553338,
+      "finest_order": 1.6908676770235151,
+      "gci": {
+        "refinement_ratio": 2.0,
+        "observed_order": 1.6908676770235151,
+        "safety_factor": 1.25,
+        "relative_gci": 0.0006771901129803609,
+        "absolute_gci": 0.0002058800839824616,
+        "richardson_value": -0.3041858054331953,
+        "band_lower": -0.3042269814499918,
+        "band_upper": -0.3038152212820268
+      },
+      "richardson_value": -0.3041858054331953,
+      "gci_coarser_pair": {
+        "refinement_ratio": 2.0,
+        "observed_order": 2.276005602920171,
+        "safety_factor": 1.25,
+        "relative_gci": 0.0012692328477853585,
+        "absolute_gci": 0.00038540770351656346,
+        "richardson_value": -0.30396238316980634,
+        "band_lower": -0.3040394647105097,
+        "band_upper": -0.3032686493034765
+      },
+      "reference": {
+        "label": "Scordelis-Lo roof",
+        "value": -0.3024,
+        "extrapolated_value": -0.3041858054331953,
+        "extrapolated_relative_error": 0.005905441247338911,
+        "finest_relative_error": 0.005360784940506918,
+        "tolerance": 0.03,
+        "within_tolerance": true,
+        "detail": "Richardson -0.304185805433 vs Scordelis-Lo roof -0.3024: rel. error 5.905e-03 (<= 3.000e-02); finest-level error 5.361e-03",
+        "finest_inside_gci": false,
+        "relative_gci": 0.0006771901129803609,
+        "gci_detail": "finest-mesh true error 5.361e-03 vs GCI band 6.772e-04 -> outside the band"
+      },
+      "status": "failed",
+      "passed": false
+    },
+    "verdict": {
+      "evaluator_status": "failed",
+      "reference_check_passed": true,
+      "worst_reference_error": null,
+      "notes": [
+        "error sequence is not monotone in h",
+        "Richardson limit unavailable (finest errors not decreasing)"
+      ]
+    }
+  },
+  "pinched_cylinder": {
+    "case": "MacNeal-Harder pinched cylinder",
+    "reference": -1.8248e-05,
+    "reference_tolerance": 0.03,
+    "levels": [
+      {
+        "mesh": "4x4",
+        "n": 4,
+        "elements": 16,
+        "ndof": 150,
+        "h": 0.25,
+        "value": -1.772659884661532e-05,
+        "relative_error": 0.028573057506832394,
+        "relative_error_pct": 2.8573057506832393,
+        "wall_s": 0.36718297004699707
+      },
+      {
+        "mesh": "8x8",
+        "n": 8,
+        "elements": 64,
+        "ndof": 486,
+        "h": 0.125,
+        "value": -1.7636652834588067e-05,
+        "relative_error": 0.033502146285178204,
+        "relative_error_pct": 3.3502146285178203,
+        "wall_s": 1.3306096084415913,
+        "observed_order": -0.22959810102345068
+      },
+      {
+        "mesh": "16x16",
+        "n": 16,
+        "elements": 256,
+        "ndof": 1734,
+        "h": 0.0625,
+        "value": -1.8278493652346197e-05,
+        "relative_error": 0.0016710681908263202,
+        "relative_error_pct": 0.16710681908263203,
+        "wall_s": 4.866547020152211,
+        "observed_order": 4.325411012126511
+      },
+      {
+        "mesh": "32x32",
+        "n": 32,
+        "elements": 1024,
+        "ndof": 6534,
+        "h": 0.03125,
+        "value": -1.857942384660752e-05,
+        "relative_error": 0.018162201151223207,
+        "relative_error_pct": 1.8162201151223207,
+        "wall_s": 19.806316301226616,
+        "observed_order": -3.4420965479420773
+      },
+      {
+        "mesh": "64x64",
+        "n": 64,
+        "elements": 4096,
+        "ndof": 25350,
+        "h": 0.015625,
+        "value": -1.8734687640867493e-05,
+        "relative_error": 0.026670738758630748,
+        "relative_error_pct": 2.6670738758630748,
+        "wall_s": 76.48026926070452,
+        "observed_order": -0.5543187276478514
+      }
+    ],
+    "pairwise_observed_orders": [
+      -0.22959810102345068,
+      4.325411012126511,
+      -3.4420965479420773,
+      -0.5543187276478514
+    ],
+    "monotone_error_decrease": false,
+    "richardson_limit": null,
+    "richardson_limit_error": null,
+    "study_report": {
+      "schema": "tensorfem.convergence-verification/1.0",
+      "qoi": "probe displacement",
+      "levels": [
+        {
+          "label": "4x4",
+          "mesh_size": 0.25,
+          "value": -1.772659884661532e-05
+        },
+        {
+          "label": "8x8",
+          "mesh_size": 0.125,
+          "value": -1.7636652834588067e-05
+        },
+        {
+          "label": "16x16",
+          "mesh_size": 0.0625,
+          "value": -1.8278493652346197e-05
+        },
+        {
+          "label": "32x32",
+          "mesh_size": 0.03125,
+          "value": -1.857942384660752e-05
+        },
+        {
+          "label": "64x64",
+          "mesh_size": 0.015625,
+          "value": -1.8734687640867493e-05
+        }
+      ],
+      "refinement_ratios": [
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ],
+      "checks": [
+        {
+          "name": "measured_order",
+          "passed": true,
+          "detail": "observed order per triple: 1.093, 0.955"
+        },
+        {
+          "name": "asymptotic_range_drift",
+          "passed": true,
+          "detail": "order drift between first and last triple = 0.145 (band 0.150)"
+        },
+        {
+          "name": "gci_band_contracts",
+          "passed": true,
+          "detail": "absolute GCI 2.069e-07 (fine pair) <= 3.320e-07 (coarser pair)"
+        },
+        {
+          "name": "reference_tolerance",
+          "passed": false,
+          "detail": "Richardson -1.89001811645e-05 vs MacNeal-Harder pinched cylinder -1.8248e-05: rel. error 3.574e-02 (<= 3.000e-02); finest-level error 2.667e-02"
+        },
+        {
+          "name": "finest_error_inside_gci_band",
+          "passed": false,
+          "detail": "finest-mesh true error 2.667e-02 vs GCI band 1.104e-02 -> outside the band"
+        }
+      ],
+      "observed_orders": [
+        1.0927866716804684,
+        0.9547074198335621
+      ],
+      "mean_observed_order": 1.0237470457570153,
+      "finest_order": 0.9547074198335621,
+      "gci": {
+        "refinement_ratio": 2.0,
+        "observed_order": 0.9547074198335621,
+        "safety_factor": 1.25,
+        "relative_gci": 0.011041919058363553,
+        "absolute_gci": 2.068669045141829e-07,
+        "richardson_value": -1.890018116447884e-05,
+        "band_lower": -1.8941554545381675e-05,
+        "band_upper": -1.852782073635331e-05
+      },
+      "richardson_value": -1.890018116447884e-05,
+      "gci_coarser_pair": {
+        "refinement_ratio": 2.0,
+        "observed_order": 1.0927866716804684,
+        "safety_factor": 1.25,
+        "relative_gci": 0.017871819384118172,
+        "absolute_gci": 3.3204810724754763e-07,
+        "richardson_value": -1.8845062332405557e-05,
+        "band_lower": -1.8911471953855068e-05,
+        "band_upper": -1.824737573935997e-05
+      },
+      "reference": {
+        "label": "MacNeal-Harder pinched cylinder",
+        "value": -1.8248e-05,
+        "extrapolated_value": -1.890018116447884e-05,
+        "extrapolated_relative_error": 0.03573987091620131,
+        "finest_relative_error": 0.026670738758630748,
+        "tolerance": 0.03,
+        "within_tolerance": false,
+        "detail": "Richardson -1.89001811645e-05 vs MacNeal-Harder pinched cylinder -1.8248e-05: rel. error 3.574e-02 (<= 3.000e-02); finest-level error 2.667e-02",
+        "finest_inside_gci": false,
+        "relative_gci": 0.011041919058363553,
+        "gci_detail": "finest-mesh true error 2.667e-02 vs GCI band 1.104e-02 -> outside the band"
+      },
+      "status": "failed",
+      "passed": false
+    },
+    "verdict": {
+      "evaluator_status": "failed",
+      "reference_check_passed": false,
+      "worst_reference_error": null,
+      "notes": [
+        "error sequence is not monotone in h",
+        "Richardson limit unavailable (finest errors not decreasing)"
+      ]
+    }
+  },
+  "figures": [
+    {
+      "name": "error_vs_h.png",
+      "caption": "Relative error vs mesh size for both anchors (log-log)."
+    },
+    {
+      "name": "displacement_vs_mesh.png",
+      "caption": "Probe displacement vs mesh: reference, sequence and Richardson limit."
+    }
+  ]
+}

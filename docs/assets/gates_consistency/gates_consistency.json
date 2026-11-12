@@ -1,0 +1,9 @@
+{
+  "schema": "tensorfem.gates-consistency.v1",
+  "corpus": "benchmarks/verified",
+  "files_scanned": 21,
+  "findings": [],
+  "counts_by_rule": {},
+  "total_findings": 0,
+  "platform_max_acceptable_error": 0.15
+}

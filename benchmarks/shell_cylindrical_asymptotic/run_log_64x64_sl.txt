@@ -1,0 +1,21 @@
+[1/4] transcribed-model consistency check (n=8)
+    {
+  "n": 8,
+  "scordelis_lo_dense": -0.2967296525275531,
+  "scordelis_lo_sparse": -0.29672965252757444,
+  "scordelis_lo_rel_diff": 7.183738426958749e-14,
+  "pinched_cylinder_dense": -1.763665283458828e-05,
+  "pinched_cylinder_sparse": -1.7636652834588067e-05,
+  "pinched_cylinder_rel_diff": 1.2102767158259745e-14
+}
+[2/4] Scordelis-Lo ladder
+  Scordelis-Lo roof   4x4   value=-2.16730538e-01  err=28.330%  (0.21s)
+  Scordelis-Lo roof   8x8   value=-2.96729653e-01  err= 1.875%  (1.05s)
+  Scordelis-Lo roof  16x16  value=-3.02469051e-01  err= 0.023%  (4.17s)
+  Scordelis-Lo roof  32x32  value=-3.03654057e-01  err= 0.415%  (12.47s)
+  Scordelis-Lo roof  64x64  value=-3.04021101e-01  err= 0.536%  (61.56s)
+[3/4] pinched cylinder ladder
+  MacNeal-Harder pinched cylinder   4x4   value=-1.77265988e-05  err= 2.857%  (0.37s)
+  MacNeal-Harder pinched cylinder   8x8   value=-1.76366528e-05  err= 3.350%  (1.33s)
+  MacNeal-Harder pinched cylinder  16x16  value=-1.82784937e-05  err= 0.167%  (4.87s)
+  MacNeal-Harder pinched cylinder  32x32  value=-1.85794238e-05  err= 1.816%  (19.81s)
