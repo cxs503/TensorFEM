@@ -1361,8 +1361,8 @@
     {
       "anchor": "fem_kirsch_plate",
       "directory": "benchmarks/verified/fem_kirsch_plate",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1374,12 +1374,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [
-        "W_ARTIFACT_NOT_A_PATH",
-        "W_ARTIFACT_AMBIGUOUS"
+        "W_ARTIFACT_NOT_A_PATH"
       ],
       "gate_detail": [
         {
@@ -2508,8 +2505,8 @@
     {
       "anchor": "fem_shell_modal",
       "directory": "benchmarks/verified/fem_shell_modal",
-      "grade": "certified",
-      "certified": true,
+      "grade": "contradicted",
+      "certified": false,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2521,7 +2518,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [],
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
       "warnings": [],
       "gate_detail": [
         {

@@ -51,13 +51,6 @@
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
-    "fem_kirsch_plate": {
-      "grade": "contradicted",
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
-      "remedy": "commit the artifact the certificate names, or drop the stale reference"
-    },
     "fem_modal": {
       "grade": "contradicted",
       "defects": [
@@ -121,6 +114,13 @@
         "E_NO_GATES"
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
+    },
+    "fem_shell_modal": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
     },
     "fem_shell_scordelis_lo": {
       "grade": "contradicted",
