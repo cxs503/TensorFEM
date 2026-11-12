@@ -1,0 +1,670 @@
+{
+  "schema": "fem-shell4-formulation-matrix/1",
+  "element": {
+    "young": 200000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.01
+  },
+  "rank_accounting": [
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "zero_modes": 9,
+      "rigid_modes": 6,
+      "gauge_modes": 1,
+      "spurious_modes": 2,
+      "legacy_spurious_modes": 3,
+      "gauge_residual": 1.4451499403273395e-16,
+      "rigid_residual": 2.0324730193050368e-16,
+      "mechanism_plate_content": [
+        0.7641024104859336,
+        0.6450949591258531
+      ],
+      "mechanism_section_content": [
+        0.4561510201049656,
+        0.5403019959777348
+      ]
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "zero_modes": 7,
+      "rigid_modes": 6,
+      "gauge_modes": 1,
+      "spurious_modes": 0,
+      "legacy_spurious_modes": 1,
+      "gauge_residual": 1.4451499403273395e-16,
+      "rigid_residual": 2.5340876550350683e-16,
+      "mechanism_plate_content": [],
+      "mechanism_section_content": []
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "zero_modes": 9,
+      "rigid_modes": 6,
+      "gauge_modes": 1,
+      "spurious_modes": 2,
+      "legacy_spurious_modes": 3,
+      "gauge_residual": 1.441007930121509e-16,
+      "rigid_residual": 3.636493294785704e-16,
+      "mechanism_plate_content": [
+        0.8805232309429317,
+        0.47400299552831987
+      ],
+      "mechanism_section_content": [
+        0.33517073244101375,
+        0.6226239475894269
+      ]
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "zero_modes": 7,
+      "rigid_modes": 6,
+      "gauge_modes": 1,
+      "spurious_modes": 0,
+      "legacy_spurious_modes": 1,
+      "gauge_residual": 1.441007930121509e-16,
+      "rigid_residual": 3.9803588461649533e-16,
+      "mechanism_plate_content": [],
+      "mechanism_section_content": []
+    }
+  ],
+  "gauge_identification": {
+    "legacy_mechanism_count": 1,
+    "gauge_overlap": 1.0000000000000002,
+    "gauge_transverse_displacement_norm": 0.0,
+    "gauge_in_plane_section_norm": 0.0,
+    "gauge_normal_section_norm": 0.5773502691896252,
+    "mechanism_transverse_displacement_norm": 1.26155000425114e-12
+  },
+  "mesh_census": [
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "n": 2,
+      "dofs": 54,
+      "null_dim": 8,
+      "expected_rigid_dim": 7,
+      "spurious": 1,
+      "first_positive_ratio": 5.926475134876888e-08
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "n": 3,
+      "dofs": 96,
+      "null_dim": 8,
+      "expected_rigid_dim": 7,
+      "spurious": 1,
+      "first_positive_ratio": 1.3822649095216628e-08
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "n": 4,
+      "dofs": 150,
+      "null_dim": 8,
+      "expected_rigid_dim": 7,
+      "spurious": 1,
+      "first_positive_ratio": 4.989953021214922e-09
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "n": 2,
+      "dofs": 54,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 5.926475135641919e-08
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "n": 3,
+      "dofs": 96,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 1.3822649160087232e-08
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "n": 4,
+      "dofs": 150,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 4.989953019374328e-09
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "n": 2,
+      "dofs": 54,
+      "null_dim": 8,
+      "expected_rigid_dim": 7,
+      "spurious": 1,
+      "first_positive_ratio": 5.926475134876888e-08
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "n": 3,
+      "dofs": 96,
+      "null_dim": 8,
+      "expected_rigid_dim": 7,
+      "spurious": 1,
+      "first_positive_ratio": 1.3822649095216628e-08
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "n": 4,
+      "dofs": 150,
+      "null_dim": 8,
+      "expected_rigid_dim": 7,
+      "spurious": 1,
+      "first_positive_ratio": 4.989953021214922e-09
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "n": 2,
+      "dofs": 54,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 5.926475135641919e-08
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "n": 3,
+      "dofs": 96,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 1.3822649160087232e-08
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "n": 4,
+      "dofs": 150,
+      "null_dim": 7,
+      "expected_rigid_dim": 7,
+      "spurious": 0,
+      "first_positive_ratio": 4.989953019374328e-09
+    }
+  ],
+  "scordelis_lo": [
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "n": 8,
+      "w": -0.40555657723897504,
+      "reference": -0.3024,
+      "relative_error": 0.34112624748338294
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "n": 16,
+      "w": -0.4375415612745877,
+      "reference": -0.3024,
+      "relative_error": 0.44689669733659954
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "n": 8,
+      "w": -0.28487397400655307,
+      "reference": -0.3024,
+      "relative_error": -0.05795643516351501
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "n": 16,
+      "w": -0.2953101101177319,
+      "reference": -0.3024,
+      "relative_error": -0.02344540304982845
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "n": 8,
+      "w": -0.4653246282494419,
+      "reference": -0.3024,
+      "relative_error": 0.5387719188142919
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "n": 16,
+      "w": -0.45758003882024856,
+      "reference": -0.3024,
+      "relative_error": 0.5131615040352135
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "n": 8,
+      "w": -0.31625601875197173,
+      "reference": -0.3024,
+      "relative_error": 0.04582016783059428
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "n": 16,
+      "w": -0.3052324565649218,
+      "reference": -0.3024,
+      "relative_error": 0.009366589169715
+    }
+  ],
+  "membrane": [
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "nt": 8,
+      "radial_displacement": 9.80785280430426,
+      "perimeter_radial_displacement": 9.807852804032269,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0192147195695741,
+      "perimeter_error": -0.019214719596773122,
+      "axial_displacement": -1.4711779206048459,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.01921471959676946,
+      "relative_ripple": 2.391433903324618e-11,
+      "rigid_translation": [
+        -9.807852804819214,
+        -3.486767418002677e-10
+      ],
+      "reaction_residual": 4.810287356867385e-13
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "nt": 16,
+      "radial_displacement": 9.951847264367649,
+      "perimeter_radial_displacement": 9.951847266722513,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0048152735632351895,
+      "perimeter_error": -0.00481527332774867,
+      "axial_displacement": -1.4927770900083226,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.004815273327784975,
+      "relative_ripple": 2.0322367148937735e-10,
+      "rigid_translation": [
+        -9.9518472594798,
+        3.320623681573848e-09
+      ],
+      "reaction_residual": 3.44981787080308e-13
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "nt": 24,
+      "radial_displacement": 9.978589232883133,
+      "perimeter_radial_displacement": 9.978589232385882,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.002141076711686729,
+      "perimeter_error": -0.002141076761411731,
+      "axial_displacement": -1.4967883848579122,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.002141076761391858,
+      "relative_ripple": 4.256203703643905e-11,
+      "rigid_translation": [
+        -9.97858923359824,
+        -7.286198903481516e-10
+      ],
+      "reaction_residual": 3.2609816711127675e-13
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "nt": 32,
+      "radial_displacement": 9.98795456356729,
+      "perimeter_radial_displacement": 9.98795456205135,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0012045436432709389,
+      "perimeter_error": -0.0012045437948650095,
+      "axial_displacement": -1.49819318430776,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.0012045437948265958,
+      "relative_ripple": 1.3617749048071676e-10,
+      "rigid_translation": [
+        -9.987954567750092,
+        -2.2458483991861154e-09
+      ],
+      "reaction_residual": 5.029182923553024e-13
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "sri",
+      "nt": 48,
+      "radial_displacement": 9.994645876010695,
+      "perimeter_radial_displacement": 9.994645874763265,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0005354123989305126,
+      "perimeter_error": -0.0005354125236735063,
+      "axial_displacement": -1.4991968812145466,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.0005354125236355367,
+      "relative_ripple": 1.0855000466512036e-10,
+      "rigid_translation": [
+        -9.994645878998062,
+        -1.8875439201067257e-09
+      ],
+      "reaction_residual": 3.3930594735261807e-13
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "nt": 8,
+      "radial_displacement": 9.807852803874257,
+      "perimeter_radial_displacement": 9.807852804032358,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.01921471961257437,
+      "perimeter_error": -0.01921471959676424,
+      "axial_displacement": -1.471177920604843,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.019214719596771346,
+      "relative_ripple": 1.385076266450475e-11,
+      "rigid_translation": [
+        -9.807852803675786,
+        2.0321443293546002e-10
+      ],
+      "reaction_residual": 4.1448325841782216e-13
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "nt": 16,
+      "radial_displacement": 9.95184726543957,
+      "perimeter_radial_displacement": 9.951847266722291,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0048152734560430455,
+      "perimeter_error": -0.004815273327770875,
+      "axial_displacement": -1.492777090008307,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.0048152733277953,
+      "relative_ripple": 1.1208638766509402e-10,
+      "rigid_translation": [
+        -9.95184726265221,
+        1.8111878680264619e-09
+      ],
+      "reaction_residual": 4.0120909703034153e-13
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "nt": 24,
+      "radial_displacement": 9.978589231061862,
+      "perimeter_radial_displacement": 9.978589232386348,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0021410768938137092,
+      "perimeter_error": -0.0021410767613652126,
+      "axial_displacement": -1.4967883848579058,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.002141076761396188,
+      "relative_ripple": 1.1523026018921221e-10,
+      "rigid_translation": [
+        -9.978589228094096,
+        1.935194404723007e-09
+      ],
+      "reaction_residual": 5.650261560802411e-13
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "nt": 32,
+      "radial_displacement": 9.98795456557851,
+      "perimeter_radial_displacement": 9.98795456205077,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.001204543442148931,
+      "perimeter_error": -0.0012045437949229632,
+      "axial_displacement": -1.4981931843077592,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.001204543794827262,
+      "relative_ripple": 2.9778987012761794e-10,
+      "rigid_translation": [
+        -9.987954572326052,
+        -5.235783830072058e-09
+      ],
+      "reaction_residual": 9.557303341807407e-13
+    },
+    {
+      "formulation": "shell4",
+      "plate_shear": "mitc",
+      "nt": 48,
+      "radial_displacement": 9.9946458760031,
+      "perimeter_radial_displacement": 9.994645874763375,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0005354123996900162,
+      "perimeter_error": -0.0005354125236625151,
+      "axial_displacement": -1.4991968812145517,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.000535412523632206,
+      "relative_ripple": 1.1128753545687571e-10,
+      "rigid_translation": [
+        -9.994645879224077,
+        -1.8778839224372255e-09
+      ],
+      "reaction_residual": 5.539436073297916e-13
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "nt": 8,
+      "radial_displacement": 9.807852802975797,
+      "perimeter_radial_displacement": 9.807852804032603,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.01921471970242039,
+      "perimeter_error": -0.019214719596739704,
+      "axial_displacement": -1.4711779206048539,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.01921471959676413,
+      "relative_ripple": 9.279707189528413e-11,
+      "rigid_translation": [
+        -9.80785280115524,
+        1.3676447628717545e-09
+      ],
+      "reaction_residual": 3.4428364873510656e-13
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "nt": 16,
+      "radial_displacement": 9.951847267627263,
+      "perimeter_radial_displacement": 9.951847266721735,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0048152732372737095,
+      "perimeter_error": -0.004815273327826497,
+      "axial_displacement": -1.4927770900082906,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.004815273327806291,
+      "relative_ripple": 7.754969581028606e-11,
+      "rigid_translation": [
+        -9.951847269447732,
+        -1.2751700903779875e-09
+      ],
+      "reaction_residual": 1.3398848400495583e-13
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "nt": 24,
+      "radial_displacement": 9.978589233555248,
+      "perimeter_radial_displacement": 9.978589232385682,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0021410766444752705,
+      "perimeter_error": -0.002141076761431826,
+      "axial_displacement": -1.4967883848578987,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.002141076761400851,
+      "relative_ripple": 1.0444427982388388e-10,
+      "rigid_translation": [
+        -9.978589236613862,
+        -1.7019331721712662e-09
+      ],
+      "reaction_residual": 4.264360646839773e-13
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "nt": 32,
+      "radial_displacement": 9.987954565561802,
+      "perimeter_radial_displacement": 9.987954562050705,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0012045434438198166,
+      "perimeter_error": -0.0012045437949295135,
+      "axial_displacement": -1.4981931843077765,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.0012045437948157156,
+      "relative_ripple": 2.982703969090753e-10,
+      "rigid_translation": [
+        -9.987954572690636,
+        -5.216294057610233e-09
+      ],
+      "reaction_residual": 4.126266579910604e-13
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "sri",
+      "nt": 48,
+      "radial_displacement": 9.994645873836602,
+      "perimeter_radial_displacement": 9.994645874764018,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0005354126163398254,
+      "perimeter_error": -0.0005354125235982332,
+      "axial_displacement": -1.4991968812145513,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.0005354125236324281,
+      "relative_ripple": 7.874239088260301e-11,
+      "rigid_translation": [
+        -9.994645871779385,
+        1.4017627693517301e-09
+      ],
+      "reaction_residual": 1.012355449478303e-12
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "nt": 8,
+      "radial_displacement": 9.807852804013157,
+      "perimeter_radial_displacement": 9.807852804032336,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.01921471959868426,
+      "perimeter_error": -0.01921471959676635,
+      "axial_displacement": -1.4711779206048374,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.01921471959677501,
+      "relative_ripple": 4.119981718419055e-12,
+      "rigid_translation": [
+        -9.807852804070066,
+        2.5427561291103806e-11
+      ],
+      "reaction_residual": 2.9280009998323216e-13
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "nt": 16,
+      "radial_displacement": 9.951847265104277,
+      "perimeter_radial_displacement": 9.951847266722446,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.004815273489572336,
+      "perimeter_error": -0.004815273327755443,
+      "axial_displacement": -1.492777090008301,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.0048152733277992965,
+      "relative_ripple": 1.3778889099866057e-10,
+      "rigid_translation": [
+        -9.951847262312038,
+        2.284485153793518e-09
+      ],
+      "reaction_residual": 3.0302454270567595e-13
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "nt": 24,
+      "radial_displacement": 9.978589236414381,
+      "perimeter_radial_displacement": 9.97858923238486,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0021410763585618664,
+      "perimeter_error": -0.0021410767615140935,
+      "axial_displacement": -1.4967883848578953,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.0021410767614030712,
+      "relative_ripple": 3.4356726751242607e-10,
+      "rigid_translation": [
+        -9.978589244683342,
+        -5.877265133828284e-09
+      ],
+      "reaction_residual": 3.8741577118348267e-13
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "nt": 32,
+      "radial_displacement": 9.98795456193921,
+      "perimeter_radial_displacement": 9.987954562051748,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0012045438060790392,
+      "perimeter_error": -0.0012045437948252635,
+      "axial_displacement": -1.4981931843077592,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.001204543794827262,
+      "relative_ripple": 3.166023909965604e-11,
+      "rigid_translation": [
+        -9.987954560795698,
+        1.6186971161662414e-10
+      ],
+      "reaction_residual": 7.235968165115959e-13
+    },
+    {
+      "formulation": "shell4_mitc",
+      "plate_shear": "mitc",
+      "nt": 48,
+      "radial_displacement": 9.994645867582237,
+      "perimeter_radial_displacement": 9.994645874765752,
+      "exact_radial_displacement": 10.0,
+      "radial_error": -0.0005354132417763058,
+      "perimeter_error": -0.0005354125234248164,
+      "axial_displacement": -1.499196881214548,
+      "exact_axial_displacement": -1.5,
+      "axial_error": -0.0005354125236346485,
+      "relative_ripple": 6.138247424538388e-10,
+      "rigid_translation": [
+        -9.994645850983124,
+        1.0852429135238273e-08
+      ],
+      "reaction_residual": 6.203533851670325e-13
+    }
+  ],
+  "orders": {
+    "scordelis_lo::shell4+sri": 0.3896356175633464,
+    "membrane::shell4+sri": -1.998271932092216,
+    "scordelis_lo::shell4+mitc": -1.305663778404577,
+    "membrane::shell4+mitc": -1.9982719592236338,
+    "scordelis_lo::shell4_mitc+sri": -0.0702617109686222,
+    "membrane::shell4_mitc+sri": -1.9982717888882826,
+    "scordelis_lo::shell4_mitc+mitc": -2.290387049715276,
+    "membrane::shell4_mitc+mitc": -1.9982712433223324
+  },
+  "gates": {
+    "scordelis_lo_best_error": 0.009366589169715,
+    "membrane_worst_error": 0.01921471970242039,
+    "membrane_worst_perimeter_error": 0.019214719596773122,
+    "membrane_max_relative_ripple": 6.138247424538388e-10,
+    "membrane_max_reaction_residual": 1.012355449478303e-12,
+    "mesh_census_max_spurious": 1
+  }
+}
