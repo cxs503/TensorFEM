@@ -82,8 +82,8 @@
     "matplotlib": "3.10.8",
     "dtype": "torch.float64",
     "torch_threads": 4,
-    "git_sha": "0a5558442b41143b1fc7e16ac40cc20735ce6836",
-    "generated_utc": "2026-11-11T23:51:41+00:00",
+    "git_sha": "0c88e405e764420c3df0f6e942351e8151ab4f09",
+    "generated_utc": "2026-11-12T02:16:32+00:00",
     "determinism": "direct dense solves, no sampling, no seed; reruns are bit-identical"
   },
   "studies": {
