@@ -1,0 +1,309 @@
+{
+ "findings": {
+  "independent_reference": {
+   "A_Pa": 1049180.3278688525,
+   "B_Pa_m3": 1049180327.8688525,
+   "sigma_r_inner_Pa": -1000000.0,
+   "sigma_r_outer_Pa": 0.0,
+   "u_r_inner_m": 6.672911787665888e-05,
+   "u_r_outer_m": 5.245901639344263e-05,
+   "artifact_u_r_inner_m": 6.672911787665888e-05,
+   "artifact_u_r_outer_m": 5.245901639344263e-05
+  },
+  "independent_exact_layer_integrals": {
+   "hex8": {
+    "layer_edges": [
+     8.0,
+     9.0,
+     10.0
+    ],
+    "inner": {
+     "radial_stress": -659238.7131544626,
+     "hoop_stress": 1903389.8483805102,
+     "von_mises": 2562628.5615349724,
+     "radial_stress_quad": -659238.7131544626,
+     "hoop_stress_quad": 1903389.84838051
+    },
+    "outer": {
+     "hoop_stress": 1661037.414745105,
+     "radial_stress": -174533.84588365234
+    }
+   },
+   "hex20": {
+    "layer_edges": [
+     8.0,
+     8.666666666666666,
+     9.333333333333334,
+     10.0
+    ],
+    "inner": {
+     "radial_stress": -763804.20750294,
+     "hoop_stress": 1955672.5955547488,
+     "von_mises": 2719476.8030576888,
+     "radial_stress_quad": -763804.2075029399,
+     "hoop_stress_quad": 1955672.5955547486
+    },
+    "outer": {
+     "hoop_stress": 1629931.4219368757,
+     "radial_stress": -112321.86026719376
+    }
+   }
+  },
+  "metric_readings": {
+   "hex8": {
+    "worst_scored": [
+     "radial_stress_outer",
+     0.3401523324110198
+    ],
+    "worst_primary_under_exact_layer_integral": [
+     "radial_stress_inner",
+     0.04103912393147382
+    ],
+    "artifact_verdict": {
+     "selected_ladder": "hex20",
+     "selected_passed": true,
+     "baseline_reached_tolerance": false,
+     "monotone_convergence": true,
+     "tolerance": 0.05
+    },
+    "tolerance": 0.05
+   },
+   "hex20": {
+    "worst_scored": [
+     "radial_stress_outer",
+     0.07248872763954269
+    ],
+    "worst_primary_under_exact_layer_integral": [
+     "radial_stress_inner",
+     0.08029371660666741
+    ],
+    "artifact_verdict": {
+     "selected_ladder": "hex20",
+     "selected_passed": true,
+     "baseline_reached_tolerance": false,
+     "monotone_convergence": true,
+     "tolerance": 0.05
+    },
+    "tolerance": 0.05
+   }
+  },
+  "declared_vs_scored_reference": {
+   "artifact_reference_functional": "exact Lam\u00e9 field volume-averaged over the same radial layer (lame_layer_average); displacements are nodal averages on the exact sphere surfaces, where the exact field is constant",
+   "pairs": [
+    {
+     "order": "hex8",
+     "probe": "radial_stress_inner",
+     "declared_lame_layer_average": -659238.7131544626,
+     "declared_layer_bounds": null,
+     "scored_ref": -747124.3464530173,
+     "rel_gap": 0.13331382327051336
+    },
+    {
+     "order": "hex8",
+     "probe": "hoop_stress_inner",
+     "declared_lame_layer_average": 1903389.8483805102,
+     "declared_layer_bounds": null,
+     "scored_ref": 1947332.6650297872,
+     "rel_gap": 0.023086608708492128
+    },
+    {
+     "order": "hex8",
+     "probe": "von_mises_inner",
+     "declared_lame_layer_average": 2562628.5615349724,
+     "declared_layer_bounds": null,
+     "scored_ref": 2694457.011482805,
+     "rel_gap": 0.05144266786321524
+    },
+    {
+     "order": "hex8",
+     "probe": "radial_stress_outer",
+     "declared_lame_layer_average": -174533.84588365234,
+     "declared_layer_bounds": null,
+     "scored_ref": -237486.07611763926,
+     "rel_gap": 0.3606878076585335
+    },
+    {
+     "order": "hex8",
+     "probe": "hoop_stress_outer",
+     "declared_lame_layer_average": 1661037.414745105,
+     "declared_layer_bounds": null,
+     "scored_ref": 1692513.5298620986,
+     "rel_gap": 0.01894967255859426
+    },
+    {
+     "order": "hex20",
+     "probe": "radial_stress_inner",
+     "declared_lame_layer_average": -877083.037710917,
+     "declared_layer_bounds": null,
+     "scored_ref": -811263.2794383276,
+     "rel_gap": 0.07504393021254988
+    },
+    {
+     "order": "hex20",
+     "probe": "hoop_stress_inner",
+     "declared_lame_layer_average": 2012312.0106587373,
+     "declared_layer_bounds": null,
+     "scored_ref": 1979402.1315224424,
+     "rel_gap": 0.01635426264017659
+    },
+    {
+     "order": "hex20",
+     "probe": "von_mises_inner",
+     "declared_lame_layer_average": 2889395.048369654,
+     "declared_layer_bounds": null,
+     "scored_ref": 2790665.4109607707,
+     "rel_gap": 0.034169656885302574
+    },
+    {
+     "order": "hex20",
+     "probe": "radial_stress_outer",
+     "declared_lame_layer_average": -54257.48490180611,
+     "declared_layer_bounds": null,
+     "scored_ref": -141418.97809373957,
+     "rel_gap": 1.606441827329008
+    },
+    {
+     "order": "hex20",
+     "probe": "hoop_stress_outer",
+     "declared_lame_layer_average": 1600899.2342541819,
+     "declared_layer_bounds": null,
+     "scored_ref": 1644479.9808501485,
+     "rel_gap": 0.02722266690087449
+    }
+   ]
+  }
+ },
+ "rows": {
+  "hex8": [
+   {
+    "quantity": "radial_displacement_inner",
+    "got": 6.5361995742414e-05,
+    "ref_scored": 6.672911787665888e-05,
+    "err_scored": 0.020487639845199822,
+    "ref_exact_layer_integral": 6.672911787665888e-05,
+    "err_exact_layer_integral": 0.020487639845199822,
+    "artifact_layer_integrals_ref": null
+   },
+   {
+    "quantity": "radial_displacement_outer",
+    "got": 5.148653819139214e-05,
+    "ref_scored": 5.245901639344263e-05,
+    "err_scored": 0.018537865726587364,
+    "ref_exact_layer_integral": 5.245901639344263e-05,
+    "err_exact_layer_integral": 0.018537865726587364,
+    "artifact_layer_integrals_ref": null
+   },
+   {
+    "quantity": "radial_stress_inner",
+    "got": -632184.1339048913,
+    "ref_scored": -747124.3464530173,
+    "err_scored": 0.1538434841453182,
+    "ref_exact_layer_integral": -659238.7131544626,
+    "err_exact_layer_integral": 0.04103912393147382,
+    "artifact_layer_integrals_ref": -659238.7131544626
+   },
+   {
+    "quantity": "hoop_stress_inner",
+    "got": 1900937.3387705726,
+    "ref_scored": 1947332.6650297872,
+    "err_scored": 0.023825064454770485,
+    "ref_exact_layer_integral": 1903389.8483805102,
+    "err_exact_layer_integral": 0.0012884956868002492,
+    "artifact_layer_integrals_ref": 1903389.8483805102
+   },
+   {
+    "quantity": "von_mises_inner",
+    "got": 2533589.995935077,
+    "ref_scored": 2694457.011482805,
+    "err_scored": 0.059702943807294344,
+    "ref_exact_layer_integral": 2562628.5615349724,
+    "err_exact_layer_integral": 0.011331554652813955,
+    "artifact_layer_integrals_ref": 2562628.5615349724
+   },
+   {
+    "quantity": "hoop_stress_outer",
+    "got": 1656184.5055792707,
+    "ref_scored": 1692513.5298620986,
+    "err_scored": 0.021464539953064934,
+    "ref_exact_layer_integral": 1661037.414745105,
+    "err_exact_layer_integral": 0.0029216133982021197,
+    "artifact_layer_integrals_ref": 1661037.414745105
+   },
+   {
+    "quantity": "radial_stress_outer",
+    "got": -156704.63341108328,
+    "ref_scored": -237486.07611763926,
+    "err_scored": 0.3401523324110198,
+    "ref_exact_layer_integral": -174533.84588365234,
+    "err_exact_layer_integral": 0.10215332379975373,
+    "artifact_layer_integrals_ref": -174533.84588365234
+   }
+  ],
+  "hex20": [
+   {
+    "quantity": "radial_displacement_inner",
+    "got": 6.673704984136779e-05,
+    "ref_scored": 6.672911787665888e-05,
+    "err_scored": 0.00011886811876598695,
+    "ref_exact_layer_integral": 6.672911787665888e-05,
+    "err_exact_layer_integral": 0.00011886811876598695,
+    "artifact_layer_integrals_ref": null
+   },
+   {
+    "quantity": "radial_displacement_outer",
+    "got": 5.240641146747564e-05,
+    "ref_scored": 5.245901639344263e-05,
+    "err_scored": 0.0010027814012457442,
+    "ref_exact_layer_integral": 5.245901639344263e-05,
+    "err_exact_layer_integral": 0.0010027814012457442,
+    "artifact_layer_integrals_ref": null
+   },
+   {
+    "quantity": "radial_stress_inner",
+    "got": -825132.8860831612,
+    "ref_scored": -811263.2794383276,
+    "err_scored": 0.017096307692412875,
+    "ref_exact_layer_integral": -763804.20750294,
+    "err_exact_layer_integral": 0.08029371660666741,
+    "artifact_layer_integrals_ref": -877083.037710917
+   },
+   {
+    "quantity": "hoop_stress_inner",
+    "got": 1951680.9568801243,
+    "ref_scored": 1979402.1315224424,
+    "err_scored": 0.014004822062607674,
+    "ref_exact_layer_integral": 1955672.5955547488,
+    "err_exact_layer_integral": 0.0020410567104624296,
+    "artifact_layer_integrals_ref": 2012312.0106587373
+   },
+   {
+    "quantity": "von_mises_inner",
+    "got": 2776817.365879318,
+    "ref_scored": 2790665.4109607707,
+    "err_scored": 0.004962273523390559,
+    "ref_exact_layer_integral": 2719476.8030576888,
+    "err_exact_layer_integral": 0.021085145038618327,
+    "artifact_layer_integrals_ref": 2889395.048369654
+   },
+   {
+    "quantity": "hoop_stress_outer",
+    "got": 1625399.8875626482,
+    "ref_scored": 1644479.9808501485,
+    "err_scored": 0.011602508701648325,
+    "ref_exact_layer_integral": 1629931.4219368757,
+    "err_exact_layer_integral": 0.002780199407925159,
+    "artifact_layer_integrals_ref": 1600899.2342541819
+   },
+   {
+    "quantity": "radial_stress_outer",
+    "got": -151670.2598798391,
+    "ref_scored": -141418.97809373957,
+    "err_scored": 0.07248872763954269,
+    "ref_exact_layer_integral": -112321.86026719376,
+    "err_exact_layer_integral": 0.35031826858140086,
+    "artifact_layer_integrals_ref": -54257.48490180611
+   }
+  ]
+ },
+ "artifact": "/root/tp-agent/work/m15862/artifacts/case_hollow_sphere_3d/case_hollow_sphere_3d.json"
+}
