@@ -1,0 +1,122 @@
+{
+  "oracle_min_hz": 202.14,
+  "oracle_tolerance_pct": 15.0,
+  "source_log": "integration_variants.log",
+  "rules": {
+    "membrane=1pt shear=1pt": [
+      {
+        "mesh": "4x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 0,
+        "lowest_physical_hz": 100.35,
+        "error_vs_oracle_pct": 50.36
+      },
+      {
+        "mesh": "8x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 0,
+        "lowest_physical_hz": 98.87,
+        "error_vs_oracle_pct": 51.09
+      },
+      {
+        "mesh": "8x16",
+        "n_modes": 18,
+        "mechanisms_in_first_ten": 1,
+        "lowest_physical_hz": 159.79,
+        "error_vs_oracle_pct": 20.95
+      }
+    ],
+    "membrane=2x2 shear=1pt": [
+      {
+        "mesh": "4x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 2,
+        "lowest_physical_hz": 845.96,
+        "error_vs_oracle_pct": 318.51
+      },
+      {
+        "mesh": "8x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 2,
+        "lowest_physical_hz": 839.19,
+        "error_vs_oracle_pct": 315.16
+      },
+      {
+        "mesh": "8x16",
+        "n_modes": 19,
+        "mechanisms_in_first_ten": 1,
+        "lowest_physical_hz": 653.5,
+        "error_vs_oracle_pct": 223.3
+      }
+    ],
+    "membrane=2x2 shear=mitc": [
+      {
+        "mesh": "4x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 2,
+        "lowest_physical_hz": 845.96,
+        "error_vs_oracle_pct": 318.51
+      },
+      {
+        "mesh": "8x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 2,
+        "lowest_physical_hz": 839.19,
+        "error_vs_oracle_pct": 315.16
+      },
+      {
+        "mesh": "8x16",
+        "n_modes": 19,
+        "mechanisms_in_first_ten": 1,
+        "lowest_physical_hz": 653.5,
+        "error_vs_oracle_pct": 223.3
+      }
+    ],
+    "membrane=2x2 shear=2x2": [
+      {
+        "mesh": "4x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 2,
+        "lowest_physical_hz": 1105.51,
+        "error_vs_oracle_pct": 446.91
+      },
+      {
+        "mesh": "8x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 2,
+        "lowest_physical_hz": 1059.3,
+        "error_vs_oracle_pct": 424.05
+      },
+      {
+        "mesh": "8x16",
+        "n_modes": 19,
+        "mechanisms_in_first_ten": 3,
+        "lowest_physical_hz": 775.24,
+        "error_vs_oracle_pct": 283.52
+      }
+    ],
+    "membrane=1pt shear=mitc": [
+      {
+        "mesh": "4x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 0,
+        "lowest_physical_hz": 100.35,
+        "error_vs_oracle_pct": 50.35
+      },
+      {
+        "mesh": "8x8",
+        "n_modes": 20,
+        "mechanisms_in_first_ten": 0,
+        "lowest_physical_hz": 98.87,
+        "error_vs_oracle_pct": 51.09
+      },
+      {
+        "mesh": "8x16",
+        "n_modes": 18,
+        "mechanisms_in_first_ten": 1,
+        "lowest_physical_hz": 159.79,
+        "error_vs_oracle_pct": 20.95
+      }
+    ]
+  }
+}
