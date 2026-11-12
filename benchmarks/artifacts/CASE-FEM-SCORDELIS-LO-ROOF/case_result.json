@@ -1,0 +1,509 @@
+{
+  "case": "CASE-FEM-SCORDELIS-LO-ROOF",
+  "repro_cmd": "PYTHONPATH=src python benchmarks/case_scordelis_lo_roof.py",
+  "parameters": {
+    "length_m": 50.0,
+    "radius_m": 25.0,
+    "half_angle_deg": 40.0,
+    "thickness_m": 0.25,
+    "young_pa": 432000000.0,
+    "poisson": 0.0,
+    "vertical_load_pa": 90.0,
+    "support": "rigid end diaphragms u_y = u_z = 0, one axial dof fixed"
+  },
+  "reference": -0.3024,
+  "reference_source": "Scordelis & Lo (1960); MacNeal & Harder (1985)",
+  "exact_surface_area": 1745.3292519943295,
+  "primary": {
+    "configuration": "cyl",
+    "formulation": "metric-consistent cylindrical shell4 (curved geometry)",
+    "mesh": "16x16",
+    "elements": 256,
+    "nodes": 289,
+    "probe_displacement": -0.3024690512969349,
+    "reference": -0.3024,
+    "relative_error": 0.00022834423589590536,
+    "facet_area": 1744.7754946134494,
+    "facet_area_deficit": -0.00031727960798655364,
+    "sagitta_over_thickness": 0.09517784181422018,
+    "reaction_vertical": 157163.61804356799,
+    "applied_vertical": 157079.63267948964,
+    "equilibrium_ratio": 1.0005346674336175,
+    "seconds": 4.63
+  },
+  "ladders": {
+    "cyl": [
+      {
+        "configuration": "cyl",
+        "formulation": "metric-consistent cylindrical shell4 (curved geometry)",
+        "mesh": "4x4",
+        "elements": 16,
+        "nodes": 25,
+        "probe_displacement": -0.21673053837085443,
+        "reference": -0.3024,
+        "relative_error": -0.283298484223365,
+        "facet_area": 1736.4817766693025,
+        "facet_area_deficit": -0.005069229954701826,
+        "sagitta_over_thickness": 1.519224698779198,
+        "reaction_vertical": 158399.70308386587,
+        "applied_vertical": 157079.63267948964,
+        "equilibrium_ratio": 1.0084038292034316,
+        "seconds": 0.3
+      },
+      {
+        "configuration": "cyl",
+        "formulation": "metric-consistent cylindrical shell4 (curved geometry)",
+        "mesh": "8x8",
+        "elements": 64,
+        "nodes": 81,
+        "probe_displacement": -0.29672965252755035,
+        "reference": -0.3024,
+        "relative_error": -0.01875114904910602,
+        "facet_area": 1743.1148549531642,
+        "facet_area_deficit": -0.001268756046250319,
+        "sagitta_over_thickness": 0.3805301908254455,
+        "reaction_vertical": 157413.9858903271,
+        "applied_vertical": 157079.63267948964,
+        "equilibrium_ratio": 1.0021285586497373,
+        "seconds": 1.25
+      },
+      {
+        "configuration": "cyl",
+        "formulation": "metric-consistent cylindrical shell4 (curved geometry)",
+        "mesh": "16x16",
+        "elements": 256,
+        "nodes": 289,
+        "probe_displacement": -0.3024690512969349,
+        "reference": -0.3024,
+        "relative_error": 0.00022834423589590536,
+        "facet_area": 1744.7754946134494,
+        "facet_area_deficit": -0.00031727960798655364,
+        "sagitta_over_thickness": 0.09517784181422018,
+        "reaction_vertical": 157163.61804356799,
+        "applied_vertical": 157079.63267948964,
+        "equilibrium_ratio": 1.0005346674336175,
+        "seconds": 4.63
+      }
+    ],
+    "mitc": [
+      {
+        "configuration": "mitc",
+        "formulation": "flat-facet Shell4, assumed natural transverse shear",
+        "mesh": "4x4",
+        "elements": 16,
+        "nodes": 25,
+        "probe_displacement": -0.35707771737890537,
+        "reference": -0.3024,
+        "relative_error": 0.18081255746992508,
+        "facet_area": 1736.4817766693025,
+        "facet_area_deficit": -0.005069229954701826,
+        "sagitta_over_thickness": 1.519224698779198,
+        "reaction_vertical": 156283.35990022885,
+        "applied_vertical": 156283.35990023724,
+        "equilibrium_ratio": 0.9999999999999464,
+        "seconds": 0.57
+      },
+      {
+        "configuration": "mitc",
+        "formulation": "flat-facet Shell4, assumed natural transverse shear",
+        "mesh": "8x8",
+        "elements": 64,
+        "nodes": 81,
+        "probe_displacement": -0.28487397400655307,
+        "reference": -0.3024,
+        "relative_error": -0.05795643516351501,
+        "facet_area": 1743.1148549531642,
+        "facet_area_deficit": -0.001268756046250319,
+        "sagitta_over_thickness": 0.3805301908254455,
+        "reaction_vertical": 156880.3369458728,
+        "applied_vertical": 156880.33694578477,
+        "equilibrium_ratio": 1.000000000000561,
+        "seconds": 2.46
+      },
+      {
+        "configuration": "mitc",
+        "formulation": "flat-facet Shell4, assumed natural transverse shear",
+        "mesh": "16x16",
+        "elements": 256,
+        "nodes": 289,
+        "probe_displacement": -0.2953101101177319,
+        "reference": -0.3024,
+        "relative_error": -0.02344540304982845,
+        "facet_area": 1744.7754946134494,
+        "facet_area_deficit": -0.00031727960798655364,
+        "sagitta_over_thickness": 0.09517784181422018,
+        "reaction_vertical": 157029.7945150792,
+        "applied_vertical": 157029.79451521044,
+        "equilibrium_ratio": 0.9999999999991643,
+        "seconds": 10.2
+      }
+    ],
+    "sri": [
+      {
+        "configuration": "sri",
+        "formulation": "flat-facet Shell4, default one-point transverse shear",
+        "mesh": "4x4",
+        "elements": 16,
+        "nodes": 25,
+        "probe_displacement": -0.4928374085406344,
+        "reference": -0.3024,
+        "relative_error": 0.6297533351211455,
+        "facet_area": 1736.4817766693025,
+        "facet_area_deficit": -0.005069229954701826,
+        "sagitta_over_thickness": 1.519224698779198,
+        "reaction_vertical": 156283.35990023555,
+        "applied_vertical": 156283.35990023724,
+        "equilibrium_ratio": 0.9999999999999892,
+        "seconds": 0.41
+      },
+      {
+        "configuration": "sri",
+        "formulation": "flat-facet Shell4, default one-point transverse shear",
+        "mesh": "8x8",
+        "elements": 64,
+        "nodes": 81,
+        "probe_displacement": -0.40555657723897504,
+        "reference": -0.3024,
+        "relative_error": 0.34112624748338294,
+        "facet_area": 1743.1148549531642,
+        "facet_area_deficit": -0.001268756046250319,
+        "sagitta_over_thickness": 0.3805301908254455,
+        "reaction_vertical": 156880.3369457451,
+        "applied_vertical": 156880.33694578477,
+        "equilibrium_ratio": 0.9999999999997471,
+        "seconds": 1.62
+      },
+      {
+        "configuration": "sri",
+        "formulation": "flat-facet Shell4, default one-point transverse shear",
+        "mesh": "16x16",
+        "elements": 256,
+        "nodes": 289,
+        "probe_displacement": -0.4375415612745877,
+        "reference": -0.3024,
+        "relative_error": 0.44689669733659954,
+        "facet_area": 1744.7754946134494,
+        "facet_area_deficit": -0.00031727960798655364,
+        "sagitta_over_thickness": 0.09517784181422018,
+        "reaction_vertical": 157029.7945150428,
+        "applied_vertical": 157029.79451521044,
+        "equilibrium_ratio": 0.9999999999989324,
+        "seconds": 7.23
+      }
+    ]
+  },
+  "richardson": {
+    "cyl": {
+      "levels": [
+        {
+          "configuration": "cyl",
+          "formulation": "metric-consistent cylindrical shell4 (curved geometry)",
+          "mesh": "4x4",
+          "elements": 16,
+          "nodes": 25,
+          "probe_displacement": -0.21673053837085443,
+          "reference": -0.3024,
+          "relative_error": -0.283298484223365,
+          "facet_area": 1736.4817766693025,
+          "facet_area_deficit": -0.005069229954701826,
+          "sagitta_over_thickness": 1.519224698779198,
+          "reaction_vertical": 158399.70308386587,
+          "applied_vertical": 157079.63267948964,
+          "equilibrium_ratio": 1.0084038292034316,
+          "seconds": 0.3
+        },
+        {
+          "configuration": "cyl",
+          "formulation": "metric-consistent cylindrical shell4 (curved geometry)",
+          "mesh": "8x8",
+          "elements": 64,
+          "nodes": 81,
+          "probe_displacement": -0.29672965252755035,
+          "reference": -0.3024,
+          "relative_error": -0.01875114904910602,
+          "facet_area": 1743.1148549531642,
+          "facet_area_deficit": -0.001268756046250319,
+          "sagitta_over_thickness": 0.3805301908254455,
+          "reaction_vertical": 157413.9858903271,
+          "applied_vertical": 157079.63267948964,
+          "equilibrium_ratio": 1.0021285586497373,
+          "seconds": 1.25
+        },
+        {
+          "configuration": "cyl",
+          "formulation": "metric-consistent cylindrical shell4 (curved geometry)",
+          "mesh": "16x16",
+          "elements": 256,
+          "nodes": 289,
+          "probe_displacement": -0.3024690512969349,
+          "reference": -0.3024,
+          "relative_error": 0.00022834423589590536,
+          "facet_area": 1744.7754946134494,
+          "facet_area_deficit": -0.00031727960798655364,
+          "sagitta_over_thickness": 0.09517784181422018,
+          "reaction_vertical": 157163.61804356799,
+          "applied_vertical": 157079.63267948964,
+          "equilibrium_ratio": 1.0005346674336175,
+          "seconds": 4.63
+        }
+      ],
+      "observed_order": 3.801012504454155,
+      "richardson_limit": -0.3029126390222878,
+      "limit_relative_error": 0.001695234862062911,
+      "reason": ""
+    },
+    "mitc": {
+      "levels": [
+        {
+          "configuration": "mitc",
+          "formulation": "flat-facet Shell4, assumed natural transverse shear",
+          "mesh": "4x4",
+          "elements": 16,
+          "nodes": 25,
+          "probe_displacement": -0.35707771737890537,
+          "reference": -0.3024,
+          "relative_error": 0.18081255746992508,
+          "facet_area": 1736.4817766693025,
+          "facet_area_deficit": -0.005069229954701826,
+          "sagitta_over_thickness": 1.519224698779198,
+          "reaction_vertical": 156283.35990022885,
+          "applied_vertical": 156283.35990023724,
+          "equilibrium_ratio": 0.9999999999999464,
+          "seconds": 0.57
+        },
+        {
+          "configuration": "mitc",
+          "formulation": "flat-facet Shell4, assumed natural transverse shear",
+          "mesh": "8x8",
+          "elements": 64,
+          "nodes": 81,
+          "probe_displacement": -0.28487397400655307,
+          "reference": -0.3024,
+          "relative_error": -0.05795643516351501,
+          "facet_area": 1743.1148549531642,
+          "facet_area_deficit": -0.001268756046250319,
+          "sagitta_over_thickness": 0.3805301908254455,
+          "reaction_vertical": 156880.3369458728,
+          "applied_vertical": 156880.33694578477,
+          "equilibrium_ratio": 1.000000000000561,
+          "seconds": 2.46
+        },
+        {
+          "configuration": "mitc",
+          "formulation": "flat-facet Shell4, assumed natural transverse shear",
+          "mesh": "16x16",
+          "elements": 256,
+          "nodes": 289,
+          "probe_displacement": -0.2953101101177319,
+          "reference": -0.3024,
+          "relative_error": -0.02344540304982845,
+          "facet_area": 1744.7754946134494,
+          "facet_area_deficit": -0.00031727960798655364,
+          "sagitta_over_thickness": 0.09517784181422018,
+          "reaction_vertical": 157029.7945150792,
+          "applied_vertical": 157029.79451521044,
+          "equilibrium_ratio": 0.9999999999991643,
+          "seconds": 10.2
+        }
+      ],
+      "observed_order": null,
+      "richardson_limit": null,
+      "reason": "differences do not have a constant sign"
+    },
+    "sri": {
+      "levels": [
+        {
+          "configuration": "sri",
+          "formulation": "flat-facet Shell4, default one-point transverse shear",
+          "mesh": "4x4",
+          "elements": 16,
+          "nodes": 25,
+          "probe_displacement": -0.4928374085406344,
+          "reference": -0.3024,
+          "relative_error": 0.6297533351211455,
+          "facet_area": 1736.4817766693025,
+          "facet_area_deficit": -0.005069229954701826,
+          "sagitta_over_thickness": 1.519224698779198,
+          "reaction_vertical": 156283.35990023555,
+          "applied_vertical": 156283.35990023724,
+          "equilibrium_ratio": 0.9999999999999892,
+          "seconds": 0.41
+        },
+        {
+          "configuration": "sri",
+          "formulation": "flat-facet Shell4, default one-point transverse shear",
+          "mesh": "8x8",
+          "elements": 64,
+          "nodes": 81,
+          "probe_displacement": -0.40555657723897504,
+          "reference": -0.3024,
+          "relative_error": 0.34112624748338294,
+          "facet_area": 1743.1148549531642,
+          "facet_area_deficit": -0.001268756046250319,
+          "sagitta_over_thickness": 0.3805301908254455,
+          "reaction_vertical": 156880.3369457451,
+          "applied_vertical": 156880.33694578477,
+          "equilibrium_ratio": 0.9999999999997471,
+          "seconds": 1.62
+        },
+        {
+          "configuration": "sri",
+          "formulation": "flat-facet Shell4, default one-point transverse shear",
+          "mesh": "16x16",
+          "elements": 256,
+          "nodes": 289,
+          "probe_displacement": -0.4375415612745877,
+          "reference": -0.3024,
+          "relative_error": 0.44689669733659954,
+          "facet_area": 1744.7754946134494,
+          "facet_area_deficit": -0.00031727960798655364,
+          "sagitta_over_thickness": 0.09517784181422018,
+          "reaction_vertical": 157029.7945150428,
+          "applied_vertical": 157029.79451521044,
+          "equilibrium_ratio": 0.9999999999989324,
+          "seconds": 7.23
+        }
+      ],
+      "observed_order": null,
+      "richardson_limit": null,
+      "reason": "differences do not have a constant sign"
+    }
+  },
+  "rank_census": [
+    {
+      "plate_shear": "sri",
+      "zero_modes": 9,
+      "spurious_modes": 3,
+      "rigid_basis_residual": 6.151489267165592e-16,
+      "first_elastic_eigenvalue": 327.2030858600185,
+      "mechanisms": [
+        {
+          "transverse_displacement_norm": 0.046584572769740255,
+          "transverse_rotation_norm": 0.8466497291929657
+        },
+        {
+          "transverse_displacement_norm": 0.9819344452031095,
+          "transverse_rotation_norm": 0.058619302849669076
+        },
+        {
+          "transverse_displacement_norm": 0.18339744519355528,
+          "transverse_rotation_norm": 0.5289121036532407
+        }
+      ],
+      "transverse_mechanisms": 3
+    },
+    {
+      "plate_shear": "mitc",
+      "zero_modes": 7,
+      "spurious_modes": 1,
+      "rigid_basis_residual": 6.228575455491739e-16,
+      "first_elastic_eigenvalue": 327.2030858601112,
+      "mechanisms": [
+        {
+          "transverse_displacement_norm": 6.693692219208708e-16,
+          "transverse_rotation_norm": 8.715313467072344e-15
+        }
+      ],
+      "transverse_mechanisms": 0
+    }
+  ],
+  "gates": [
+    {
+      "gate": "geometry.exact_area_vs_facets",
+      "quantity": "facet area deficit at 16x16",
+      "value": -0.00031727960798655364,
+      "bound": "< 1e-3",
+      "passed": true,
+      "note": "planar facets under-measure the cylindrical surface; the deficit is reported, not ignored"
+    },
+    {
+      "gate": "equilibrium.flat_facet_reaction",
+      "quantity": "max |reaction/applied - 1|, flat facet",
+      "value": 1.0675904604795505e-12,
+      "bound": "< 1e-9",
+      "passed": true,
+      "note": "vertical reaction sum over the diaphragm rings equals q * faceted area to machine precision for both shear rules -- the load integral and the assembled rigid-body reproduction are exact"
+    },
+    {
+      "gate": "equilibrium.cylindrical_reaction",
+      "quantity": "max |reaction/applied - 1|, cylindrical",
+      "value": 0.008403829203431634,
+      "bound": "< 1 %",
+      "passed": true,
+      "note": "the cylindrical element integrates the exact arc area but its reaction sum carries a residual that falls ~h^2 (OPEN ITEM, not attributed: it is under 1 % and does not affect the 3 % displacement verdict)"
+    },
+    {
+      "gate": "accuracy.cylindrical_16x16",
+      "quantity": "w error, metric-consistent element at 16x16",
+      "value": 0.00022834423589590536,
+      "bound": "< 3 %",
+      "passed": true,
+      "note": "independent formulation; primary anchor"
+    },
+    {
+      "gate": "accuracy.cylindrical_8x8",
+      "quantity": "w error, metric-consistent element at 8x8",
+      "value": -0.01875114904910602,
+      "bound": "< 3 %",
+      "passed": true,
+      "note": "the independent formulation clears the gate on a coarse mesh"
+    },
+    {
+      "gate": "accuracy.flat_facet_mitc_16x16",
+      "quantity": "w error, flat facet + mitc at 16x16",
+      "value": -0.02344540304982845,
+      "bound": "< 3 %",
+      "passed": true,
+      "note": "the same facets the historical artefact reported at ~50 % error"
+    },
+    {
+      "gate": "null.default_sri_16x16",
+      "quantity": "w error, flat facet + default sri at 16x16",
+      "value": 0.44689669733659954,
+      "bound": "> 20 %",
+      "passed": true,
+      "note": "INVERTED gate: the documented default failure must stay visible; if this ever passes, the null (and the corrected root cause) must be re-derived, not quietly dropped"
+    },
+    {
+      "gate": "rank.sri_transverse_mechanisms",
+      "quantity": "spurious mechanisms with transverse content (sri)",
+      "value": 3,
+      "bound": ">= 1",
+      "passed": true,
+      "note": "the rank defect that explains the 50 % plateau"
+    },
+    {
+      "gate": "rank.mitc_transverse_mechanisms",
+      "quantity": "spurious mechanisms with transverse content (mitc)",
+      "value": 0,
+      "bound": "== 0",
+      "passed": true,
+      "note": "assumed natural shear leaves only an in-plane (drilling gauge) direction, which cannot carry bending energy"
+    },
+    {
+      "gate": "convergence.cylindrical_order",
+      "quantity": "observed order, cylindrical element",
+      "value": 3.801012504454155,
+      "bound": "1.5 <= p <= 5",
+      "passed": true,
+      "note": "dyadic 4/8/16 ladder"
+    },
+    {
+      "gate": "convergence.flat_facet_mitc_monotone",
+      "quantity": "flat facet + mitc error strictly decreasing",
+      "value": true,
+      "bound": "true",
+      "passed": true,
+      "note": "the historical sri ladder oscillates; this one must not"
+    }
+  ],
+  "figures": [
+    "docs/assets/case-scordelis-lo-roof/scordelis_lo_roof_case.png"
+  ],
+  "all_passed": true,
+  "environment": {
+    "torch": "2.7.1",
+    "python": "3.11.6",
+    "dtype": "float64"
+  }
+}
