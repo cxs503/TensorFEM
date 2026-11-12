@@ -108,6 +108,11 @@ __all__ = [
     "navier_foundation_deflection",
     "navier_mindlin_foundation_deflection",
     "compare_infinite_plate_point_load",
+    "element_bending_moments",
+    "nodal_bending_moments",
+    "bending_energy_from_moments",
+    "navier_foundation_moments",
+    "compare_finite_plate_moments",
 ]
 
 _GAMMA = 0.5772156649015329
@@ -1053,5 +1058,325 @@ def compare_infinite_plate_point_load(
             abs(solution.foundation_reaction - solution.applied_load)
             / solution.applied_load
         ),
+        "solution": solution,
+    }
+
+# ---------------------------------------------------------------------------
+# Bending-moment field: FE recovery + Navier series reference
+# ---------------------------------------------------------------------------
+#
+# The deflection half of the foundation-plate acceptance ("w vs series < 5 %")
+# is closed by :func:`compare_infinite_plate_point_load` /
+# ``finite_plate_foundation_fem``.  The *moment* half needs two pieces that were
+# missing: a recovery operator on the Mindlin Q4 solution and a closed-form
+# moment field to compare against.  Both are provided below; the FE rotational
+# dofs satisfy ``theta_x = -w_,x`` (thin limit), so with the curvature
+# ``kappa = (theta_x,x ; theta_y,y ; theta_x,y + theta_y,x)`` the constitutive
+# relation of the very same ``Db`` used in the element stiffness gives
+# ``M = Db kappa`` and the series reduces to ``Mx = -D(w,xx + nu w,yy)`` etc.
+
+_GAUSS_ABSCISSA = 1.0 / math.sqrt(3.0)
+# Bilinear extrapolation from the 2x2 Gauss points (+-1/sqrt3) to the element
+# corners (+-1) uses the 1-D Lagrange weights evaluated at the corner, e.g. for
+# the corner at s = -1: L(-1|-g) = (-1+g)/(-2g) = 1.36603 and
+# L(-1|+g) = (-1-g)/(-2g) = -0.36603.
+_L_NEAR = (1.0 + _GAUSS_ABSCISSA) / (2.0 * _GAUSS_ABSCISSA)
+_L_FAR = (_GAUSS_ABSCISSA - 1.0) / (2.0 * _GAUSS_ABSCISSA)
+
+
+def _plate_bending_matrix(young: float, poisson: float, thickness: float,
+                          like: torch.Tensor) -> torch.Tensor:
+    """Bending rigidity matrix ``Db`` (3x3) identical to the element stiffness."""
+    if thickness <= 0.0 or not -1.0 < poisson < 0.5:
+        raise ValueError("invalid plate material or thickness")
+    return young * thickness**3 / (12.0 * (1.0 - poisson**2)) * like.new_tensor([
+        [1.0, poisson, 0.0],
+        [poisson, 1.0, 0.0],
+        [0.0, 0.0, 0.5 * (1.0 - poisson)],
+    ])
+
+
+def element_bending_moments(
+    nodes: torch.Tensor,
+    elements: torch.Tensor,
+    dofs: torch.Tensor,
+    *,
+    young: float,
+    poisson: float,
+    thickness: float,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Bending moments ``(Mx, My, Mxy)`` at the 2x2 Gauss points of each element.
+
+    ``dofs`` is the full solution vector of the 3-dof/node Mindlin model
+    (``w, theta_x, theta_y`` interleaved) produced by
+    :func:`solve_assembled_system` / :func:`finite_plate_foundation_fem`, whose
+    ``deflection`` field *is* that vector.
+
+    Returns ``(moments, coordinates)`` with shapes ``(ne, 4, 3)`` and
+    ``(ne, 4, 2)``; the four Gauss points are ordered
+    ``(-g,-g), (+g,-g), (+g,+g), (-g,+g)``.
+    """
+    conn = elements.reshape(-1, 4)
+    xy = nodes[conn]                                  # (ne, 4, 2)
+    u = torch.as_tensor(dofs, dtype=torch.float64).reshape(-1)
+    dof_ix = torch.stack((3 * conn, 3 * conn + 1, 3 * conn + 2), dim=2).reshape(-1, 12)
+    ue = u[dof_ix]                                    # (ne, 12)
+    Db = _plate_bending_matrix(young, poisson, thickness, xy)
+    g = _GAUSS_ABSCISSA
+    out = xy.new_zeros((xy.shape[0], 4, 3))
+    coords = xy.new_zeros((xy.shape[0], 4, 2))
+    for k, (xif, etaf) in enumerate(((-g, -g), (g, -g), (g, g), (-g, g))):
+        N, dN, _ = _gauss_kinematics(xy, xif, etaf)
+        Bb = xy.new_zeros((xy.shape[0], 3, 12))
+        Bb[:, 0, 1::3] = dN[:, :, 0]                  # kappa_x = theta_x,x
+        Bb[:, 1, 2::3] = dN[:, :, 1]                  # kappa_y = theta_y,y
+        Bb[:, 2, 1::3] = dN[:, :, 1]                  # kappa_xy
+        Bb[:, 2, 2::3] = dN[:, :, 0]
+        kappa = torch.einsum("nij,nj->ni", Bb, ue)
+        out[:, k, :] = torch.einsum("ij,nj->ni", Db, kappa)
+        coords[:, k, :] = torch.einsum("i,nid->nd", N, xy)
+    return out, coords
+
+
+def nodal_bending_moments(
+    nodes: torch.Tensor,
+    elements: torch.Tensor,
+    dofs: torch.Tensor,
+    *,
+    young: float,
+    poisson: float,
+    thickness: float,
+) -> torch.Tensor:
+    """Nodal moments ``(nnodes, 3)`` by Gauss-point extrapolation + averaging.
+
+    Each element's four Gauss-point moments are extrapolated bilinearly to its
+    corners and the contributions of the elements sharing a node are averaged
+    (the standard ``M_nodal`` recovery; it is second-order accurate in the
+    element size for smooth fields).
+    """
+    values, _ = element_bending_moments(
+        nodes, elements, dofs,
+        young=young, poisson=poisson, thickness=thickness,
+    )
+    # Gauss point k = (a, b) in {(-g,-g), (g,-g), (g,g), (-g,g)}; corner
+    # (p, q) in the same ordering uses the 1-D weight L(p, a) * L(q, b).
+    weights = nodes.new_tensor([
+        [_L_NEAR * _L_NEAR, _L_FAR * _L_NEAR, _L_FAR * _L_FAR, _L_NEAR * _L_FAR],
+        [_L_NEAR * _L_FAR, _L_FAR * _L_FAR, _L_FAR * _L_NEAR, _L_NEAR * _L_NEAR],
+        [_L_FAR * _L_FAR, _L_NEAR * _L_FAR, _L_NEAR * _L_NEAR, _L_FAR * _L_NEAR],
+        [_L_FAR * _L_NEAR, _L_NEAR * _L_NEAR, _L_NEAR * _L_FAR, _L_FAR * _L_FAR],
+    ])                                                # (corner, gauss)
+    corner = torch.einsum("cg,ngm->ncm", weights, values)   # (ne, 4, 3)
+    nnodes = nodes.shape[0]
+    total = nodes.new_zeros((nnodes, 3))
+    count = nodes.new_zeros((nnodes, 1))
+    conn = elements.reshape(-1, 4)
+    total.index_add_(0, conn.reshape(-1), corner.reshape(-1, 3))
+    count.index_add_(0, conn.reshape(-1), nodes.new_ones((conn.numel(), 1)))
+    return total / count.clamp_min(1.0)
+
+
+def navier_foundation_moments(
+    points: torch.Tensor,
+    *,
+    side_x: float,
+    side_y: float,
+    young: float = 3.0e10,
+    poisson: float = 0.3,
+    thickness: float = 0.1,
+    winkler: float = 0.0,
+    pasternak: float = 0.0,
+    pressure: float = 0.0,
+    point_load: float = 0.0,
+    point: tuple[float, float] | None = None,
+    n_modes: int = 99,
+) -> torch.Tensor:
+    """Kirchhoff Navier double-sine **bending moments** for an SS foundation plate.
+
+    Companion of :func:`navier_foundation_deflection`: with
+
+        w = sum_mn W_mn sin(a x) sin(b y),  a = m pi / a_side,  b = n pi / b_side,
+
+    and ``W_mn`` the same mode coefficient (foundation in the denominator), the
+    curvatures are ``w,xx = -a^2 w``-type contractions, so
+
+        Mx  = -D (w,xx + nu w,yy) =  D sum W_mn (a^2 + nu b^2) sin sin
+        My  = -D (w,yy + nu w,xx) =  D sum W_mn (b^2 + nu a^2) sin sin
+        Mxy = -D (1 - nu) w,xy    = -D (1 - nu) sum W_mn a b cos cos
+
+    Returns ``(N, 3)`` columns ``[Mx, My, Mxy]`` evaluated at ``points``.
+    """
+    if side_x <= 0.0 or side_y <= 0.0:
+        raise ValueError("plate sides must be positive")
+    if n_modes < 1:
+        raise ValueError("n_modes must be positive")
+    rigidity = plate_rigidity(young, poisson, thickness)
+    pts = torch.as_tensor(points, dtype=torch.float64).reshape(-1, 2)
+    odd = torch.arange(1, n_modes + 1, 2, dtype=torch.float64)
+    mm = odd.repeat_interleave(odd.numel())
+    nn = odd.repeat(odd.numel())
+    aa = mm * math.pi / side_x
+    bb = nn * math.pi / side_y
+    lam = mm**2 / side_x**2 + nn**2 / side_y**2
+    denom = rigidity * math.pi**4 * lam**2 + pasternak * math.pi**2 * lam + winkler
+    coeff = torch.zeros_like(mm)
+    if pressure:
+        coeff = coeff + 16.0 * pressure / (math.pi**2 * mm * nn)
+    if point_load:
+        x0, y0 = (0.5 * side_x, 0.5 * side_y) if point is None else point
+        coeff = coeff + (
+            4.0 * point_load / (side_x * side_y)
+            * torch.sin(aa * x0) * torch.sin(bb * y0)
+        )
+    W = coeff / denom
+    sx = torch.sin(pts[:, None, 0] * aa[None, :])
+    sy = torch.sin(pts[:, None, 1] * bb[None, :])
+    cx = torch.cos(pts[:, None, 0] * aa[None, :])
+    cy = torch.cos(pts[:, None, 1] * bb[None, :])
+    mx = rigidity * (W[None, :] * (aa**2 + poisson * bb**2)[None, :] * sx * sy).sum(dim=1)
+    my = rigidity * (W[None, :] * (bb**2 + poisson * aa**2)[None, :] * sx * sy).sum(dim=1)
+    mxy = -rigidity * (1.0 - poisson) * (
+        W[None, :] * (aa * bb)[None, :] * cx * cy
+    ).sum(dim=1)
+    return torch.stack((mx, my, mxy), dim=1)
+
+
+def bending_energy_from_moments(
+    nodes: torch.Tensor,
+    elements: torch.Tensor,
+    dofs: torch.Tensor,
+    *,
+    young: float,
+    poisson: float,
+    thickness: float,
+) -> float:
+    """Bending strain energy ``(1/2) int M : kappa dA`` of the recovered field.
+
+    Because the moment recovery uses the *same* Gauss rule, shape functions and
+    ``Db`` as the element stiffness, this number must equal
+    ``(1/2) u^T K_b u`` (the bending part of the element energy) to machine
+    precision -- an exactness audit of the recovery operator, independent of any
+    analytical solution.  It is also the variational counterpart of the moment
+    field: the energy follows from the moments alone.
+    """
+    conn = elements.reshape(-1, 4)
+    xy = nodes[conn]
+    u = torch.as_tensor(dofs, dtype=torch.float64).reshape(-1)
+    dof_ix = torch.stack((3 * conn, 3 * conn + 1, 3 * conn + 2), dim=2).reshape(-1, 12)
+    ue = u[dof_ix]
+    Db = _plate_bending_matrix(young, poisson, thickness, xy)
+    g = _GAUSS_ABSCISSA
+    energy = 0.0
+    for xif, etaf in ((-g, -g), (g, -g), (g, g), (-g, g)):
+        _, dN, det_j = _gauss_kinematics(xy, xif, etaf)
+        Bb = xy.new_zeros((xy.shape[0], 3, 12))
+        Bb[:, 0, 1::3] = dN[:, :, 0]
+        Bb[:, 1, 2::3] = dN[:, :, 1]
+        Bb[:, 2, 1::3] = dN[:, :, 1]
+        Bb[:, 2, 2::3] = dN[:, :, 0]
+        kappa = torch.einsum("nij,nj->ni", Bb, ue)
+        moment = torch.einsum("ij,nj->ni", Db, kappa)
+        energy += 0.5 * float((moment * kappa).sum(dim=1).mul(det_j).sum())
+    return energy
+
+
+def compare_finite_plate_moments(
+    *,
+    side_x: float = 10.0,
+    side_y: float = 10.0,
+    nx: int = 32,
+    ny: int = 32,
+    young: float = 3.0e10,
+    poisson: float = 0.3,
+    thickness: float = 0.1,
+    winkler: float = 0.0,
+    pasternak: float = 0.0,
+    pressure: float = 1.0e4,
+    n_modes: int = 99,
+    shear_treatment: str = "mitc",
+    dense_limit: int = 4000,
+) -> dict[str, object]:
+    """FE vs Navier series for the bending-moment *field* of an SS foundation plate.
+
+    Samples ``Mx`` along the centre line ``y = b/2``, ``My`` along
+    ``x = a/2`` and ``Mxy`` on the quarter line, plus the deflections at the same
+    points, and returns per-point relative errors.  This is the moment half of
+    the ``GAP-FEM-WINKLER`` acceptance criterion.
+    """
+    solution = finite_plate_foundation_fem(
+        side_x=side_x, side_y=side_y, nx=nx, ny=ny,
+        young=young, poisson=poisson, thickness=thickness,
+        winkler=winkler, pasternak=pasternak, pressure=pressure,
+        shear_treatment=shear_treatment, dense_limit=dense_limit,
+    )
+    nodal = nodal_bending_moments(
+        solution.nodes, solution.elements, solution.deflection,
+        young=young, poisson=poisson, thickness=thickness,
+    )
+    xs = torch.linspace(0.0, side_x, nx + 1, dtype=torch.float64)
+    ys = torch.linspace(0.0, side_y, ny + 1, dtype=torch.float64)
+    node_of = lambda i, j: j * (nx + 1) + i   # noqa: E731 - product_mesh ordering
+    fractions = (0.2, 0.3, 0.4, 0.5)
+    rows: list[dict[str, float]] = []
+    for frac in fractions:
+        i = int(round(frac * nx))
+        j = int(round(0.5 * ny))
+        pts = torch.tensor([
+            [xs[i], ys[j]],          # Mx on y = b/2
+            [xs[j], ys[i]],          # My on x = a/2 (square: same indices)
+        ], dtype=torch.float64)
+        analytic = navier_foundation_moments(
+            pts, side_x=side_x, side_y=side_y, young=young, poisson=poisson,
+            thickness=thickness, winkler=winkler, pasternak=pasternak,
+            pressure=pressure, n_modes=n_modes,
+        )
+        m_fem = nodal[node_of(i, j)]
+        m_fem_y = nodal[node_of(j, i)]
+        w_analytic = navier_foundation_deflection(
+            pts, side_x=side_x, side_y=side_y, young=young, poisson=poisson,
+            thickness=thickness, winkler=winkler, pasternak=pasternak,
+            pressure=pressure, n_modes=n_modes,
+        )
+        w_fem = solution.deflection_at(pts)
+        rows.append({
+            "x_over_a": float(frac),
+            "mx_analytic": float(analytic[0, 0]),
+            "mx_fem": float(m_fem[0]),
+            "mx_rel_error": float(abs(m_fem[0] - analytic[0, 0]) / abs(analytic[0, 0])),
+            "my_analytic": float(analytic[1, 1]),
+            "my_fem": float(m_fem_y[1]),
+            "my_rel_error": float(abs(m_fem_y[1] - analytic[1, 1]) / abs(analytic[1, 1])),
+            "w_analytic": float(w_analytic[0]),
+            "w_fem": float(w_fem[0]),
+            "w_rel_error": float(abs(w_fem[0] - w_analytic[0]) / abs(w_analytic[0])),
+        })
+    # Mxy at the quarter point of the diagonal.
+    i = max(int(round(0.25 * nx)), 1)
+    j = max(int(round(0.25 * ny)), 1)
+    p = torch.tensor([[xs[i], ys[j]]], dtype=torch.float64)
+    mxy_analytic = navier_foundation_moments(
+        p, side_x=side_x, side_y=side_y, young=young, poisson=poisson,
+        thickness=thickness, winkler=winkler, pasternak=pasternak,
+        pressure=pressure, n_modes=n_modes,
+    )[0, 2]
+    mxy_fem = nodal[node_of(i, j)][2]
+    return {
+        "nx": nx,
+        "ny": ny,
+        "n_modes": n_modes,
+        "ndof": solution.ndof,
+        "winkler": winkler,
+        "pasternak": pasternak,
+        "rows": rows,
+        "max_mx_rel_error": max(r["mx_rel_error"] for r in rows),
+        "max_my_rel_error": max(r["my_rel_error"] for r in rows),
+        "max_w_rel_error": max(r["w_rel_error"] for r in rows),
+        "center_mx": rows[-1]["mx_fem"],
+        "center_mx_rel_error": rows[-1]["mx_rel_error"],
+        "mxy_analytic": float(mxy_analytic),
+        "mxy_fem": float(mxy_fem),
+        "mxy_rel_error": float(abs(mxy_fem - mxy_analytic) / abs(mxy_analytic)),
+        "foundation_reaction": solution.foundation_reaction,
+        "applied_load": solution.applied_load,
         "solution": solution,
     }
