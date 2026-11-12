@@ -183,31 +183,72 @@ def symmetric_layup(half_angles: Sequence[float]) -> List[float]:
 
 @dataclass(frozen=True)
 class Laminate:
-    """Laminate: full top-to-bottom ply angles, equal ply thickness, one material."""
+    """Laminate: full top-to-bottom ply angles, one material and equal ply thickness.
+
+    Two optional overrides generalise the stack to a heterogeneous layup without
+    changing any existing call site:
+
+    ``ply_materials``
+        one :class:`Ply3D` per ply (default: ``material`` for every ply),
+    ``ply_thicknesses``
+        one thickness per ply (default: ``ply_thickness`` for every ply).
+
+    With both set the class also represents a sandwich panel (thin stiff faces,
+    thick soft core) or any graded layup; the derived quantities below are the
+    only places where per-ply data is consumed, so a default-constructed laminate
+    is bit-identical to the previous equal-thickness/equal-material behaviour.
+    """
 
     angles_deg: Sequence[float]
     ply_thickness: float
     material: Ply3D = PAGANO_MATERIAL
+    ply_materials: Sequence[Ply3D] | None = None
+    ply_thicknesses: Sequence[float] | None = None
 
     def __post_init__(self) -> None:
         if not len(self.angles_deg):
             raise ValueError("angles_deg must not be empty")
         if not float(self.ply_thickness) > 0.0:
             raise ValueError("ply_thickness must be positive")
+        if self.ply_materials is not None:
+            if len(self.ply_materials) != len(self.angles_deg):
+                raise ValueError("ply_materials must have one entry per ply")
+            if not all(isinstance(m, Ply3D) for m in self.ply_materials):
+                raise TypeError("ply_materials must contain Ply3D instances")
+        if self.ply_thicknesses is not None:
+            if len(self.ply_thicknesses) != len(self.angles_deg):
+                raise ValueError("ply_thicknesses must have one entry per ply")
+            if not all(float(t) > 0.0 for t in self.ply_thicknesses):
+                raise ValueError("every ply thickness must be positive")
 
     @property
     def n_plies(self) -> int:
         return len(self.angles_deg)
 
+    def material_at(self, k: int) -> Ply3D:
+        """Ply material, ply ``k`` counted from the bottom."""
+        return self.material if self.ply_materials is None else self.ply_materials[k]
+
+    def thickness_at(self, k: int) -> float:
+        """Ply thickness, ply ``k`` counted from the bottom."""
+        return (float(self.ply_thickness) if self.ply_thicknesses is None
+                else float(self.ply_thicknesses[k]))
+
+    @property
+    def is_heterogeneous(self) -> bool:
+        return self.ply_materials is not None or self.ply_thicknesses is not None
+
     @property
     def thickness(self) -> float:
-        return self.n_plies * self.ply_thickness
+        return sum(self.thickness_at(k) for k in range(self.n_plies))
 
     @property
     def z_interfaces(self) -> List[float]:
         """Ply interfaces bottom to top, midsurface at z = 0."""
-        return [-0.5 * self.thickness + k * self.ply_thickness
-                for k in range(self.n_plies + 1)]
+        z = [-0.5 * self.thickness]
+        for k in range(self.n_plies):
+            z.append(z[-1] + self.thickness_at(k))
+        return z
 
     @property
     def is_balanced(self) -> bool:
@@ -229,7 +270,7 @@ class Laminate:
         As = np.zeros((2, 2))
         ip, op = [0, 1, 5], [2, 3, 4]   # xx, yy, xy and zz, yz, xz (TENSOR_ORDER)
         for k, theta in enumerate(self.angles_deg):
-            C = ply_stiffness_3d(self.material, theta)
+            C = ply_stiffness_3d(self.material_at(k), theta)
             Q = C[np.ix_(ip, ip)] - C[np.ix_(ip, op)] @ np.linalg.solve(C[np.ix_(op, op)],
                                                                         C[np.ix_(op, ip)])
             z0, z1 = z[k], z[k + 1]
@@ -567,11 +608,12 @@ class LayeredExact3D:
         self.laminate = laminate
         self.a, self.b, self.q0, self.m, self.n = float(a), float(b), float(q0), m, n
         self._z = laminate.z_interfaces
-        self._C = [ply_stiffness_3d(laminate.material, t) for t in laminate.angles_deg]
+        self._C = [ply_stiffness_3d(laminate.material_at(k), t)
+                   for k, t in enumerate(laminate.angles_deg)]
         self._T = [self._to_derivative_state(C) for C in self._C]
         self._R = [self._traction_rows(C) for C in self._C]
         self._A = [self._ply_matrix(self._C[k], self._T[k]) for k in range(laminate.n_plies)]
-        self._E = [_expm(A * self.laminate.ply_thickness) for A in self._A]
+        self._E = [_expm(A * self.laminate.thickness_at(k)) for k, A in enumerate(self._A)]
         self._J = [self._T[k + 1] @ np.linalg.inv(self._T[k])
                    for k in range(laminate.n_plies - 1)]
         self._x0 = self._solve_bottom_state()
@@ -836,6 +878,27 @@ def layered_hex20_fem(laminate: Laminate, a: float, q0: float = 1.0, nx: int = 8
     h = laminate.thickness
     nz = laminate.n_plies * int(nz_per_ply)
     nodes, cells = structured_hex20_mesh(a, b, h, int(nx), int(nx), nz)
+    if laminate.is_heterogeneous:
+        # re-space the through-thickness nodes so every ply interface falls on an
+        # element face (the mesh generator produces a uniform grid, which only
+        # agrees with the interfaces for equal ply thicknesses)
+        z_int = [zz + 0.5 * h for zz in laminate.z_interfaces]
+        levels = np.rint(nodes[:, 2].double().numpy() / h * (2 * nz)).astype(int)
+        z_new = np.empty_like(nodes[:, 2].double().numpy())
+        for i, lv in enumerate(levels):
+            if lv >= 2 * nz:
+                z_new[i] = z_int[-1]
+                continue
+            if lv % 2 == 0:
+                e, frac = lv // 2, 0.0
+            else:
+                e, frac = (lv - 1) // 2, 0.5
+            p = e // int(nz_per_ply)
+            r = e % int(nz_per_ply)
+            f = (r + frac) / int(nz_per_ply)
+            z_new[i] = z_int[p] + f * (z_int[p + 1] - z_int[p])
+        nodes = nodes.clone()
+        nodes[:, 2] = torch.from_numpy(z_new)
     n_nodes = nodes.shape[0]
     ndof = 3 * n_nodes
     # per-element ply index from the element centroid height
@@ -843,7 +906,8 @@ def layered_hex20_fem(laminate: Laminate, a: float, q0: float = 1.0, nx: int = 8
     C = np.zeros((len(cells), 6, 6))
     for e in range(len(cells)):
         k = laminate.incident_ply(float(cent_z[e]))
-        C[e] = to_fe_order(ply_stiffness_3d(laminate.material, laminate.angles_deg[k]))
+        C[e] = to_fe_order(ply_stiffness_3d(laminate.material_at(k),
+                                            laminate.angles_deg[k]))
     d = torch.from_numpy(C)
 
     ke, _ = hex20_stiffness(nodes[cells], d)
