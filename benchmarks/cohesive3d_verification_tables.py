@@ -60,6 +60,12 @@ from tensorfem.cohesive3d import (  # noqa: E402
     cohesive_hex8_response,
     interface_area,
 )
+from tensorfem.cohesive3d_dcb import (  # noqa: E402
+    DCBGeometry,
+    beam_compliance,
+    build_dcb_model,
+    opening_prescription,
+)
 from tensorfem.mixed_mode_cohesive import BenzeggaghKenaneLaw  # noqa: E402
 import tensorfem  # noqa: E402
 
@@ -783,6 +789,73 @@ def check_compression():
     )
 
 
+def _linear_dcb_compliance(g) -> float:
+    """``delta / P`` of the intact DCB specimen from the tangent stiffness.
+
+    The loaded face is *prescribed* (``+delta/2`` / ``-delta/2`` per node), so
+    the linear solve is ``K_ff u_f = -K_fc u_c`` and the load is the sum of both
+    arm reactions -- identical to the production path follower.  Circular
+    import note: ``numpy``/``scipy`` are imported here because the rest of this
+    file is pure ``torch`` closed-form work.
+    """
+    import numpy as np
+    import scipy.sparse.linalg as spla
+
+    model = build_dcb_model(g, BKCohesive3DLaw(K_N, K_S, T_N0, T_S0, G_IC, G_IIC, ETA))
+    k_solid = model.solid_stiffness()
+    u = np.zeros(model.n_dofs)
+    _, k_coh, _, _ = model.interface_response(u, None)
+    k_all = k_solid + k_coh
+    free = model.free_dofs
+    faced = np.concatenate((model.upper_load_dofs, model.lower_load_dofs))
+    delta = 1e-8
+    u[faced] = delta * opening_prescription(model)[faced]
+    u[free] = spla.spsolve(k_all[free][:, free].tocsc(),
+                           -(k_all[free][:, faced] @ u[faced]))
+    fint = k_all @ u
+    load = abs(float(fint[model.upper_load_dofs].sum()))
+    load += abs(float(fint[model.lower_load_dofs].sum()))
+    return delta / load
+
+
+def check_specimen_compliance():
+    """Specimen-level DCB compliance calibration (ASTM D5528 compliance method).
+
+    Three rows, one per initial crack length.  The oracle is the closed-form
+    Williams-root-rotation Timoshenko beam ``C(a)``; the FE value has to be
+    *bracketed* by the plain beam and the root-rotation beam with 10 % margin,
+    because the root rotation itself is only known asymptotically.  A
+    mesh-dependent opening prescription (the historical
+    ``delta / n_loaded_dofs`` defect) breaks every row by a factor ~6-20.
+    """
+    rows = []
+    arm = 3e-3
+    for crack in (20e-3, 30e-3, 40e-3):
+        g = DCBGeometry(length=60e-3, width=3e-3, arm_thickness=arm,
+                        initial_crack=crack, nx=24, ny=1, nz=2)
+        c_fem = _linear_dcb_compliance(g)
+        c_plain = beam_compliance(crack, g, root_rotation=False, shear=True)
+        c_root = beam_compliance(crack, g, root_rotation=True, shear=True)
+        # worst-case relative distance to the bracket [c_plain, 1.10 * c_root]
+        if c_fem < c_plain:
+            err = (c_plain - c_fem) / c_plain
+        elif c_fem > 1.10 * c_root:
+            err = (c_fem - 1.10 * c_root) / c_root
+        else:
+            err = 0.0
+        rows.append(
+            record(
+                f"specimen_compliance_a{crack*1e3:.0f}mm",
+                f"bracket [plain {c_plain:.6e}, 1.10x root rotation {1.10*c_root:.6e}] m/N",
+                f"C_fem = {c_fem:.6e} m/N ({100*(c_fem-c_root)/c_root:+.1f}% vs root rotation)",
+                err,  # 0.0 inside the bracket, distance outside it otherwise
+                0.0,
+                "PASS" if err == 0.0 else "FAIL",
+            )
+        )
+    return rows
+
+
 def build_tables():
     rows = []
     rows.append(check_law_reduces_to_2d())
@@ -805,6 +878,7 @@ def build_tables():
     rows.append(check_mesh_objectivity())
     rows.append(check_assembly_consistency())
     rows.append(check_compression())
+    rows.extend(check_specimen_compliance())
     return rows
 
 

@@ -10,10 +10,10 @@
     "bk_eta": 1.6
   },
   "provenance": {
-    "tensorfem_module_file": "/root/tp-agent/work/m15257/src/tensorfem/__init__.py",
+    "tensorfem_module_file": "/root/tp-agent/work/m16164/src/tensorfem/__init__.py",
     "imported_from_this_checkout": true,
-    "repo": "/root/tp-agent/work/m15257",
-    "git_commit": "1e701d1f1469ccf6309b3b4bf135d98e7614e5ef",
+    "repo": "/root/tp-agent/work/m16164",
+    "git_commit": "df250c73d8c0f1f150172eecfdb5b649551c99d7",
     "git_dirty": true
   },
   "checks": [
@@ -224,9 +224,33 @@
       "value": 5.263560524326749e-10,
       "tolerance": 1e-08,
       "status": "PASS"
+    },
+    {
+      "check": "specimen_compliance_a20mm",
+      "oracle": "bracket [plain 5.742787e-06, 1.10x root rotation 8.535434e-06] m/N",
+      "measure": "C_fem = 7.931011e-06 m/N (+2.2% vs root rotation)",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "status": "PASS"
+    },
+    {
+      "check": "specimen_compliance_a30mm",
+      "oracle": "bracket [plain 1.919619e-05, 1.10x root rotation 2.592416e-05] m/N",
+      "measure": "C_fem = 2.202375e-05 m/N (-6.6% vs root rotation)",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "status": "PASS"
+    },
+    {
+      "check": "specimen_compliance_a40mm",
+      "oracle": "bracket [plain 4.534801e-05, 1.10x root rotation 5.827473e-05] m/N",
+      "measure": "C_fem = 4.715234e-05 m/N (-11.0% vs root rotation)",
+      "value": 0.0,
+      "tolerance": 0.0,
+      "status": "PASS"
     }
   ],
-  "passed": 24,
+  "passed": 27,
   "failed": 0,
   "known_limits": 2
 }

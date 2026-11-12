@@ -48,6 +48,7 @@ from tensorfem.cohesive3d_dcb import (  # noqa: E402
     beam_compliance,
     beam_peak_load,
     build_dcb_model,
+    opening_prescription,
     solve_dcb,
     williams_root_rotation,
 )
@@ -69,17 +70,36 @@ def make_law() -> BKCohesive3DLaw:
 
 
 def linear_compliance(g: DCBGeometry) -> dict:
-    """Compliance of the intact specimen (linear solve, penalty interface)."""
+    """Compliance of the intact specimen (linear solve, penalty interface).
+
+    The loaded face is *prescribed* (``+delta/2`` / ``-delta/2``, see
+    :func:`tensorfem.cohesive3d_dcb.opening_prescription`) and the compliance is
+    ``delta / P`` with ``P`` the sum of both arm reactions -- the same
+    convention as :func:`tensorfem.cohesive3d_dcb.solve_dcb`.
+
+    Regression (GAP-FEM-3D-COHESIVE): this helper used to assemble a unit-load
+    right-hand side on the loaded dofs.  Since displacement control moved those
+    dofs into the constrained set, ``unit[free]`` was identically zero and the
+    helper reported ``compliance = 0.0``; it also divided the prescribed opening
+    by the number of loaded dofs, which made the result depend on the mesh.
+    Both defects are gone now that the helper shares the production
+    prescription.
+    """
     model = build_dcb_model(g, make_law())
     k_solid = model.solid_stiffness()
     u = np.zeros(model.n_dofs)
     _, k_coh, _, _ = model.interface_response(u, None)
+    k_all = k_solid + k_coh
     free = model.free_dofs
-    unit = np.zeros(model.n_dofs)
-    unit[model.upper_load_dofs] = 0.5 / model.upper_load_dofs.size
-    unit[model.lower_load_dofs] = -0.5 / model.lower_load_dofs.size
-    u[free] = spla.spsolve((k_solid + k_coh)[free][:, free].tocsc(), unit[free])
-    delta = u[model.upper_load_dofs].mean() - u[model.lower_load_dofs].mean()
+    faced = np.concatenate((model.upper_load_dofs, model.lower_load_dofs))
+    delta = 1.0e-8
+    u[faced] = delta * opening_prescription(model)[faced]
+    u[free] = spla.spsolve(k_all[free][:, free].tocsc(),
+                           -(k_all[free][:, faced] @ u[faced]))
+    fint = k_all @ u
+    delta = abs(float(fint[model.upper_load_dofs].sum()))
+    delta += abs(float(fint[model.lower_load_dofs].sum()))
+    delta = 1.0e-8 / delta
     c_plain = beam_compliance(g.initial_crack, g, root_rotation=False, shear=False)
     c_shear = beam_compliance(g.initial_crack, g, root_rotation=False, shear=True)
     c_root = beam_compliance(g.initial_crack, g, root_rotation=True, shear=True)

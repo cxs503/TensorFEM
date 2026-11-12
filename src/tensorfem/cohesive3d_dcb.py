@@ -55,6 +55,7 @@ from .solid3d import elasticity_matrix_3d, hex8_stiffness
 
 __all__ = [
     "DCBGeometry",
+    "opening_prescription",
     "DCBModel",
     "DCBResult",
     "build_dcb_model",
@@ -504,6 +505,29 @@ def _reaction(fint: np.ndarray, upper: np.ndarray, lower: np.ndarray) -> float:
     return abs(float(fint[upper].sum())) + abs(float(fint[lower].sum()))
 
 
+def opening_prescription(model: DCBModel, delta: float | None = None) -> np.ndarray:
+    """Unit (or ``delta``-scaled) symmetric opening imposed on the loaded face.
+
+    Every node of the loaded end face is *translated by the same amount*:
+    ``+delta/2`` on the upper arm and ``-delta/2`` on the lower arm, so the
+    total opening is exactly ``delta`` regardless of how many nodes the face
+    carries.
+
+    Regression note (GAP-FEM-3D-COHESIVE): an earlier version divided the
+    ``+/-0.5`` by the number of loaded dofs, i.e. it prescribed
+    ``delta / n_face`` per node.  The applied opening then *shrank* as the face
+    was refined, so ``delta / P`` came out ``n_face`` times too large (6x for
+    ``ny=1, nz=2``, 20x for ``nz=4``).  That mesh-dependent scaling is the whole
+    explanation of the "specimen far too compliant / free span = 2a" gap: the
+    specimen-level DCB compliance is mesh independent once the opening is
+    prescribed per node.
+    """
+    prescription = np.zeros(model.n_dofs)
+    prescription[model.upper_load_dofs] = 0.5
+    prescription[model.lower_load_dofs] = -0.5
+    return prescription if delta is None else delta * prescription
+
+
 def solve_dcb(
     model: DCBModel,
     *,
@@ -527,15 +551,7 @@ def solve_dcb(
     free = model.free_dofs
     u = np.zeros(n)
 
-    faced = np.concatenate((model.upper_load_dofs, model.lower_load_dofs))
-    signs = np.concatenate(
-        (
-            np.full(model.upper_load_dofs.size, 0.5 / model.upper_load_dofs.size),
-            np.full(model.lower_load_dofs.size, -0.5 / model.lower_load_dofs.size),
-        )
-    )
-    prescription = np.zeros(n)
-    prescription[faced] = signs
+    prescription = opening_prescription(model)
 
     # interface geometry (for area weighting and the crack-front read-out)
     iface_x = model.nodes[model.iface][:, :, 0].mean(dim=1).numpy()
