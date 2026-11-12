@@ -1,0 +1,59 @@
+{
+  "case": "CASE-FEM-MORLEY-SKEW-PLATE",
+  "artifact": "prefix_mitc_skew_defect.json",
+  "measured_on_commit": "df250c73d8c0f1f150172eecfdb5b649551c99d7",
+  "target": "constant-curvature (shear-free) state on a parallelogram element, side=1, h=0.1",
+  "method": "u^T K u / u^T K_bend u - 1, K_bend from shear_correction=1e-14",
+  "note": "Measured BEFORE the covariant MITC fix; the mitc column regenerates only on the parent commit.",
+  "rows": [
+    {
+      "skew_angle_deg": 90,
+      "sri_parasitic_shear_energy_ratio": 9.170239437746406e-15,
+      "sri_zero_modes": 5,
+      "mitc_parasitic_shear_energy_ratio": 7.860205232354062e-15,
+      "mitc_zero_modes": 3
+    },
+    {
+      "skew_angle_deg": 80,
+      "sri_parasitic_shear_energy_ratio": -4.595386963287922e-15,
+      "sri_zero_modes": 5,
+      "mitc_parasitic_shear_energy_ratio": 0.2490256177403388,
+      "mitc_zero_modes": 3
+    },
+    {
+      "skew_angle_deg": 70,
+      "sri_parasitic_shear_energy_ratio": -2.5347441501121057e-14,
+      "sri_zero_modes": 5,
+      "mitc_parasitic_shear_energy_ratio": 1.0610557920528416,
+      "mitc_zero_modes": 3
+    },
+    {
+      "skew_angle_deg": 60,
+      "sri_parasitic_shear_energy_ratio": -2.5578334510971007e-14,
+      "sri_zero_modes": 5,
+      "mitc_parasitic_shear_energy_ratio": 2.669839962164443,
+      "mitc_zero_modes": 3
+    },
+    {
+      "skew_angle_deg": 45,
+      "sri_parasitic_shear_energy_ratio": -8.353849069612855e-14,
+      "sri_zero_modes": 5,
+      "mitc_parasitic_shear_energy_ratio": 8.00951988649281,
+      "mitc_zero_modes": 3
+    },
+    {
+      "skew_angle_deg": 30,
+      "sri_parasitic_shear_energy_ratio": -2.7498808911364084e-13,
+      "sri_zero_modes": 5,
+      "mitc_parasitic_shear_energy_ratio": 24.028559659473785,
+      "mitc_zero_modes": 3
+    },
+    {
+      "skew_angle_deg": 20,
+      "sri_parasitic_shear_energy_ratio": -7.187005190651473e-13,
+      "sri_zero_modes": 5,
+      "mitc_parasitic_shear_energy_ratio": 60.4609194847041,
+      "mitc_zero_modes": 3
+    }
+  ]
+}

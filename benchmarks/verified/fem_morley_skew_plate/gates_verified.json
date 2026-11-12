@@ -1,0 +1,120 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "CASE-FEM-MORLEY-SKEW-PLATE",
+  "title": "Morley 30 deg simply supported rhombic plate (thin-plate benchmark)",
+  "mission": "16138",
+  "generated_at": "2026-11-12T10:30:27+00:00",
+  "criteria": {
+    "wc_vs_morley_1962_max": 0.05,
+    "wc_vs_accurate_2022_max": 0.03,
+    "square_control_max": 0.01,
+    "thick_cross_check_max": 0.02,
+    "shear_field_spread_max": 0.03,
+    "moments_max": 0.1,
+    "mitc_parasitic_shear_max": 1e-09
+  },
+  "gates": [
+    {
+      "id": "G1_square_pipeline_control",
+      "quantity": "|alpha_FE - 0.0040624|/0.0040624",
+      "reference": "Timoshenko/Navier square SSSS alpha = 0.0040624",
+      "value": 0.008417603727083467,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "same code path on a square footprint; pipeline self-check"
+    },
+    {
+      "id": "G2_thick_cross_check_Lh10",
+      "quantity": "|wc_N - 0.5177|/0.5177",
+      "reference": "Grbac & Ribaric 2022 Table 4, L/h = 10",
+      "value": 0.0002940251472017834,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true,
+      "note": "pins geometry, support and normalisation against the published value"
+    },
+    {
+      "id": "G3_morley_thin_Lh1000",
+      "quantity": "|wc_N - 0.408|/0.408",
+      "reference": "Morley 1962 series solution, wc_N = 0.408",
+      "value": 0.01809124611426898,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G4_morley_thin_Lh100",
+      "quantity": "|wc_N - 0.408|/0.408",
+      "reference": "Morley 1962 series solution, wc_N = 0.408",
+      "value": 0.035932000773179956,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G5_accurate_Lh1000",
+      "quantity": "|wc_N - 0.4134|/0.4134",
+      "reference": "Grbac & Ribaric 2022 Table 4 dense-mesh, L/h = 1000",
+      "value": 0.030917340141803966,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": false
+    },
+    {
+      "id": "G6_monotone_convergence",
+      "quantity": "number of non-monotone steps",
+      "reference": "0 (displacement FE converges from below)",
+      "value": 1.0,
+      "threshold": 0.5,
+      "operator": "<=",
+      "passed": false
+    },
+    {
+      "id": "G7_shear_field_independence",
+      "quantity": "|wc_MITC - wc_SRI|/wc_SRI at n=40",
+      "reference": "0",
+      "value": 0.026880747162083135,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G8_moments_Lh1000",
+      "quantity": "max(|M1_N - 1.922|/1.922, |M2_N - 1.106|/1.106)",
+      "reference": "Grbac & Ribaric 2022 Table 4, L/h = 1000",
+      "value": 0.043361040544038935,
+      "threshold": 0.1,
+      "operator": "<=",
+      "passed": true,
+      "note": "bending moments at an obtuse corner are singular, so the tolerance is looser"
+    },
+    {
+      "id": "G9_mitc_skew_invariance",
+      "quantity": "max parasitic shear energy ratio (90..20 deg)",
+      "reference": "0 (covariant assumed shear field)",
+      "value": 2.2128593985767092e-13,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "failed_gates": [
+    "G5_accurate_Lh1000",
+    "G6_monotone_convergence"
+  ],
+  "undefined_terms": [],
+  "artifacts": {
+    "result.json": "all meshes, moments, diagnostics",
+    "summary.md": "generated evidence table",
+    "convergence.png": "mesh convergence vs both references",
+    "deflection_field.png": "normalised deflection field",
+    "artifacts/prefix_mitc_skew_defect.json": "pre-fix MITC parasitic shear (parent commit df250c73)"
+  },
+  "limitations": [
+    "the FE levels stop at n=80; the published dense-mesh study needed n=1024 because of the obtuse-corner singularity, so the finest FE value still sits ~1-2 % below the converged thin-plate value",
+    "the Rayleigh-Ritz sine-basis diagnostic converges very slowly on the 150 deg corner and is reported as a lower bound only, not as an oracle",
+    "the membrane/bending coupling of a real stiffened skew panel is out of scope"
+  ]
+}
