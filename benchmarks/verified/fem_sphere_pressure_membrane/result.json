@@ -1275,7 +1275,7 @@
   "w_exact_m": 1.282051282051282e-05,
   "w_fit_m": -3.580650863206703e-05,
   "w_rel_error": 3.7929076733012286,
-  "wall_clock_s": 1.46
+  "wall_clock_s": 13.23
  },
  "gates": {
   "all_gating_pass": true,
@@ -1366,7 +1366,10 @@
   },
   "tolerance": 0.03
  },
- "mission": 15405,
+ "mission": 15703,
+ "mission_history": [
+  15405
+ ],
  "parameters": {
   "R_over_t": 250.0,
   "pR_over_Et": 3.663003663003663e-06,
@@ -1491,7 +1494,7 @@
   }
  },
  "repo": "TensorFEM",
- "repro_cmd": "python3 benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py",
+ "repro_cmd": "tensorfem-sphere-pressure --out artifacts/CASE-SPHERE-PRESSURE  # equivalent: PYTHONPATH=src python3 -m tensorfem.sphere_pressure_case --out artifacts/CASE-SPHERE-PRESSURE",
  "thickness_sensitivity": {
   "deviation_model": "|sigma_thin - sigma_Lame| / sigma_Lame ~ (t/R)^slope",
   "rows": [
