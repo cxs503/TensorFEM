@@ -1,0 +1,46 @@
+{
+  "anchor": "fem_cylinder_radiation",
+  "passed": true,
+  "gates": {
+    "G1_piston_law": 0.0005219044959425823,
+    "G2_high_ka_plateau": 0.005201090706804856,
+    "G3_evanescent_cutoff": 3.0039790212337655e-16,
+    "G4_window_closure": 3.9960279241135765e-07,
+    "G5_window_convergence": 1.1875621597212671e-08,
+    "G6_esm_pulsating_sphere": 1.672835284582952e-05,
+    "G7_compact_body_asymptote": 0.010000000000000009,
+    "G7b_dipole_null": 6.042119702890095e-17,
+    "G8_rigid_body_null": 0.0,
+    "G9_velocity_squared_scaling": 0.0,
+    "G10_axial_spectrum_closed_form": 2.0374087449188696e-11,
+    "G11_mode_identification": 1.0000000000000018,
+    "G11b_dominant_pair": 0.0,
+    "G12_grid_lateral_area": 2.8271597168564594e-16,
+    "G12b_grid_caps_zero": 0.0
+  },
+  "piston_law_errors": [
+    9.826271163415612e-08,
+    7.5236439229797725e-06,
+    0.0005219044959425823
+  ],
+  "esm_sphere_ratios": [
+    0.9999832716471542,
+    0.9999854736681153,
+    0.9999913066149453,
+    0.9999987697829436
+  ],
+  "esm_sphere_ka": [
+    0.5,
+    1.0,
+    2.0,
+    3.0
+  ],
+  "window_closure_ratio": 1.0000003996027924,
+  "window_coarse_over_fine": 1.0000000118756216,
+  "velocity_scaling_ratio": 4.0,
+  "mode_share": 1.0000000000000018,
+  "dominant_pair": [
+    2,
+    3
+  ]
+}

@@ -1,0 +1,165 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_cylinder_radiation",
+  "module": "tensorfem.struct_acoustics.cylinder_radiation",
+  "criteria": {
+    "G1": "<= 5e-3",
+    "G2": "<= 0.02",
+    "G3": "<= 1e-3",
+    "G4": "<= 0.02",
+    "G5": "<= 5e-3",
+    "G6": "<= 0.01",
+    "G7": "<= 0.02",
+    "G7b": "<= 1e-12",
+    "G8": "<= 1e-30",
+    "G9": "<= 1e-9",
+    "G10": "<= 1e-4",
+    "G11": ">= 0.95",
+    "G11b": "<= 0.0",
+    "G12": "<= 1e-12",
+    "G12b": "<= 1e-14"
+  },
+  "gates": [
+    {
+      "id": "G1_piston_law",
+      "quantity": "max |sigma/((pi/2)ka) - 1|, ka in {1e-4,1e-3,1e-2}",
+      "reference": "sigma -> (pi/2) k R  (Junger & Feit 1992, low-ka piston law)",
+      "value": 0.0005219044959425823,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G2_high_ka_plateau",
+      "quantity": "max |sigma - plateau| at ka = 20 (n = 0..3)",
+      "reference": "sigma_0 -> 1, sigma_n -> 1/2  (high-ka plateau, <cos^2 n theta> = 1/2)",
+      "value": 0.005201090706804856,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G3_evanescent_cutoff",
+      "quantity": "max collapse ratio |G(k_x> k)| / |G(0)|",
+      "reference": "evanescent decay for k_x > k (Hankel exponential decay)",
+      "value": 3.0039790212337655e-16,
+      "threshold": 0.001,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G4_window_closure",
+      "quantity": "finite/infinite-cylinder sigma ratio - 1",
+      "reference": "window closure: Pi = (1/2pi) int G_n(k_x)|V(k_x)|^2 dk_x",
+      "value": 3.9960279241135765e-07,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G5_window_convergence",
+      "quantity": "coarse/fine sigma ratio - 1",
+      "reference": "sampling 2001->8001, band 8->16 half-waves",
+      "value": 1.1875621597212671e-08,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G6_esm_pulsating_sphere",
+      "quantity": "max |Pi_ESM/Pi_exact - 1|, ka in {0.5,1,2,3}",
+      "reference": "Pi = 2 pi a^2 rho c V^2 (ka)^2 / (1 + (ka)^2)  (pulsating sphere, exact)",
+      "value": 1.672835284582952e-05,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G7_compact_body_asymptote",
+      "quantity": "|Pi_mono+Pi_dip / Pi_exact - 1| at ka = 0.1",
+      "reference": "monopole + dipole asymptote, dipole = 0 for breathing sphere",
+      "value": 0.010000000000000009,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G7b_dipole_null",
+      "quantity": "|dipole moment| for breathing sphere",
+      "reference": "D = 0 by symmetry (v_n uniform)",
+      "value": 6.042119702890095e-17,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G8_rigid_body_null",
+      "quantity": "|Pi| for v_n = 0 (negative control)",
+      "reference": "rigid body radiates nothing",
+      "value": 0.0,
+      "threshold": 1e-30,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G9_velocity_squared_scaling",
+      "quantity": "Pi(2V)/Pi(V) - 4",
+      "reference": "Pi ~ |V|^2 (linearity of the exterior problem)",
+      "value": 0.0,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G10_axial_spectrum_closed_form",
+      "quantity": "max rel. error vs 4e5-point quadrature",
+      "reference": "q (1 - (-1)^m e^{-i k_x L}) / (q^2 - k_x^2),  q = m pi / L",
+      "value": 2.0374087449188696e-11,
+      "threshold": 0.0001,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G11_mode_identification",
+      "quantity": "energy share of excited (m, n) = (2, 3)",
+      "reference": "Fourier decomposition isolates the injected mode",
+      "value": 1.0000000000000018,
+      "threshold": 0.95,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "G11b_dominant_pair",
+      "quantity": "dominant pair == (2, 3)",
+      "reference": "planted harmonic (2, 3)",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G12_grid_lateral_area",
+      "quantity": "|sum w_lateral - 2 pi R L| / (2 pi R L)",
+      "reference": "lateral surface area of the cylinder",
+      "value": 2.8271597168564594e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "G12b_grid_caps_zero",
+      "quantity": "cap weight sum (rigid matching points)",
+      "reference": "caps carry zero area weight",
+      "value": 0.0,
+      "threshold": 1e-14,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "limitations": [
+    "Donnell roots are a branch-structure anchor only (lowest root is thickness-independent); they are not the shell frequency reference.",
+    "ESM uses a shrunk interior source ring (shrink=0.6) with Tikhonov regularization 1e-6; the pulsating-sphere check is the calibration.",
+    "Window closure integrates the infinite-cylinder conductance over a finite band; the band width and sampling are convergence-controlled (G5), not a closed-form identity."
+  ]
+}
