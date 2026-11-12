@@ -1,0 +1,116 @@
+{
+ "audit_mission": 15883,
+ "audited_mission": 15862,
+ "audited_repo": "TensorFEM",
+ "audited_commit": "e92f7e43 (m15862: matured mission deliverables), worktree /root/tp-agent/work/m15862",
+ "scope": "m15862 CASE-HOLLOW-SPHERE-3D",
+ "claimed_by_delivery": "verdict.passed=true, worst_relative_error=1.71% < 5% pool tolerance (hex20 ladder), baseline hex8 fails at 15.4%",
+ "level": 2,
+ "impl_files": [
+  "/root/tp-agent/work/m15862/src/tensorfem/hollow_sphere_3d.py",
+  "/root/tp-agent/work/m15862/src/tensorfem/hex20.py",
+  "/root/tp-agent/work/m15862/src/tensorfem/cli.py"
+ ],
+ "entry": "/root/tp-agent/work/m15862/benchmarks/case_hollow_sphere_3d.py:191 main(); CLI: src/tensorfem/cli.py:201-207 `tensorfem hollow-sphere`",
+ "run_artifacts": [
+  "/root/tp-agent/work/m15862/artifacts/case_hollow_sphere_3d/case_hollow_sphere_3d.json",
+  "/root/tp-agent/work/m15862/artifacts/case_hollow_sphere_3d/convergence.png",
+  "/root/tp-agent/work/m15862/artifacts/case_hollow_sphere_3d/field_cut.png",
+  "/root/tp-agent/work/m15862/artifacts/case_hollow_sphere_3d/profiles.png"
+ ],
+ "tests": [
+  "tests/test_hollow_sphere_3d.py (13 tests; 13 passed in 329.93 s, m15883 rerun on this host)",
+  "tests/test_hollow_sphere_3d.py::test_hex20_case_meets_five_percent_acceptance",
+  "tests/test_hollow_sphere_3d.py::test_perturbed_field_is_rejected (negative control: perturbed field must fail)",
+  "tests/test_hollow_sphere_3d.py::test_strain_energy_matches_clapeyron",
+  "tests/test_hollow_sphere_3d.py::test_lame_reference_satisfies_strong_form_equilibrium"
+ ],
+ "integration_callers": [
+  "src/tensorfem/cli.py:205 from .hollow_sphere_3d import TOLERANCE, solve_hollow_sphere (console script `tensorfem hollow-sphere`, pyproject.toml:40)",
+  "src/tensorfem/__init__.py:442 solve_hollow_sphere re-exported in the package public surface"
+ ],
+ "integration_gap": "NOT registered in src/tensorfem/benchmark_registry.py:run_registered_benchmarks() (31 _evidence() entries, none for hollow-sphere) -> the platform-facing benchmark harness cannot see this case; L3 (system integration) not satisfied",
+ "benchmark": {
+  "referee": "tensor_benchmark_cases id=25 anchor_slug=CASE-HOLLOW-SPHERE-3D, metric='worst volume-weighted probe relative error (radial/hoop/von Mises stress + surface radial displacement)', tolerance '<5%', repo=TensorFEM, status=in_progress, passed_at=NULL",
+  "reference": "Lame 1852 / Timoshenko & Goodier 3rd ed. (1970) Sec. 5.6; independently re-derived in m15883: A=1049180.33 Pa, B=1.0491803e9 Pa*m^3, sigma_r(a)=-1.000000e6 Pa, sigma_r(b)=0, u_r(a)=6.672912e-05 m, u_r(b)=5.245902e-05 m; artifact refs for u_r match to all printed digits",
+  "scored_by_delivery": {
+   "functional": "exact Lame field sampled at the FE element isoparametric centres, volume-weighted (probe_metrics.layer_average)",
+   "hex20_worst_primary": ["radial_stress_inner", 0.01710],
+   "hex20_worst_secondary_p_normalised": 0.01025,
+   "hex8_worst_primary": ["radial_stress_inner", 0.15384],
+   "verdict": "PASS (delivered), tension: hex8 baseline recorded as failing"
+  },
+  "independent_recheck_exact_volume_weighted_layer_integral": {
+   "functional": "exact volume-weighted average of the analytic field over the true element radial layer (matches the artifact's own declared reference_functional = lame_layer_average, and the pool metric text 'volume-weighted')",
+   "hex20_layer_edges_m": [8.0, 8.6666667, 9.3333333, 10.0],
+   "hex20": {
+    "radial_stress_inner": {"ref": -763803.9, "got": -825133.0, "err": 0.08029, "pass": false},
+    "hoop_stress_inner": {"ref": 1955668.0, "got": 1951680.0, "err": 0.00204, "pass": true},
+    "von_mises_inner": {"ref": 2719493.0, "got": 2776820.0, "err": 0.02109, "pass": true},
+    "hoop_stress_outer": {"ref": 1629930.0, "got": 1625400.0, "err": 0.00278, "pass": true},
+    "radial_stress_outer_p_normalised": {"ref": -112322.0, "got": -151670.0, "err_over_p": 0.03935}
+   },
+   "hex8_layer_edges_m": [8.0, 9.0, 10.0],
+   "hex8": {
+    "radial_stress_inner": {"ref": -659239.0, "got": -632184.0, "err": 0.04104, "pass": true},
+    "hoop_stress_inner": {"ref": 1903389.8, "got": 1900940.0, "err": 0.00129, "pass": true},
+    "von_mises_inner": {"ref": 2562628.6, "got": 2533590.0, "err": 0.01133, "pass": true},
+    "hoop_stress_outer": {"ref": 1661040.0, "got": 1656180.0, "err": 0.00292, "pass": true},
+    "radial_stress_outer_p_normalised": {"ref": -174534.0, "got": -156705.0, "err_over_p": 0.01783}
+   },
+   "verdict": "FAIL: worst primary probe hex20 radial_stress_inner = 8.03% > 5%; the delivered 'baseline fails (15.4%) / selected passes (1.71%)' ranking INVERTS under the declared functional (hex8 = 4.10% passes)"
+  }
+ },
+ "repro_cmd": "cd /root/tp-agent/work/m15862 && PYTHONPATH=$PWD/src python3 benchmarks/case_hollow_sphere_3d.py --quick  (m15883 rerun exit 0, ~6 min on a loaded host; hex8 n=4 worst=0.282996 / n=6 worst=0.153843 / hex20 n=4 worst=0.028848 / hex20 n=6,3 worst=0.017096307692412875 - identical to the delivered artifact 'generated 2026-11-12T03:35:00Z'; 'CASE VERDICT: PASS')",
+ "external_anchor": [
+  "Lame (1852); Timoshenko & Goodier, Theory of Elasticity 3rd ed. (1970) Sec. 5.6 eqs. 5.6.3-5.6.5 - closed form re-derived independently in docs/audit_m15883/analyze_m15862.py (boundary conditions sigma_r(a)=-p, sigma_r(b)=0 exact; Clapeyron strain energy 26833.37 J vs FE 26822.05 J, 0.042%)"
+ ],
+ "findings": {
+  "F1_high_declared_reference_functional_contradicts_scored_numbers": {
+   "statement": "The artifact scores `ref` as the exact field sampled at FE element isoparametric centres, but its own `reference_functional` string declares 'exact Lame field volume-averaged over the same radial layer (lame_layer_average)'. The two differ by 7.5% (hex20 sigma_r inner: declared -877083 vs scored -811263) and by 13.3% (hex8: -659239 vs -747124). Scored against the declared functional, the selected hex20 ladder is 8.03% on sigma_r_inner (>5%), i.e. the case does NOT meet the pool tolerance, and the hex8 baseline (4.10%) would have passed.",
+   "evidence": "artifacts/case_hollow_sphere_3d/case_hollow_sphere_3d.json -> ladders.hex20[-1].metrics.reference_functional and ...reference_layer_integrals vs summary.hex20.table[].ref; docs/audit_m15883/analysis_m15862.json",
+   "severity": "high",
+   "impact": "the delivered pass claim and the baseline/selected ranking are functional-dependent"
+  },
+  "F2_high_layer_bounds_are_half_layers": {
+   "statement": "`probe_metrics` derives layer bounds from torch.unique(node radii); for HEX20 the unique radii include edge-midside nodes (8.333, 9.667 ...), so the advertised exact `layer_integrals` are integrated over half-layers ([8,8.333] and [9.667,10]) instead of the true element layers ([8,8.667] and [9.333,10]). Verified on the delivered mesh (_mesh(6,3,2): node radii = 8.0, 8.333, 8.667, 9.0, 9.333, 9.667, 10.0; last-ring element-centre radii 9.549-9.628, i.e. elements span [9.333,10]).",
+   "evidence": "src/tensorfem/hollow_sphere_3d.py:581-584 (levels = torch.unique(...round(9))), :576-579; artifact ladders.hex20[-1].metrics.reference_layer_integrals.inner.layer_bounds=[8.0,8.333333333]",
+   "severity": "high",
+   "impact": "the artifact's 'independent global check' is computed on the wrong intervals and therefore cannot detect the 8.03% error"
+  },
+  "F3_medium_probe_locations_biassed_inward": {
+   "statement": "Stress probes are evaluated at the isoparametric centre (xi=eta=zeta=0) of curved HEX20 bricks. Measured on the delivered mesh: inner ring centres 8.224-8.298 m, outer ring centres 9.549-9.628 m, i.e. the outer-ring sample sits ~0.08 m inside the element volume centroid (~9.68 m). For sigma_r ~ 1/r^3 this location bias alone shifts the layer value by ~2-3%, so `got` is not a volume average of the FE field either.",
+   "evidence": "src/tensorfem/hollow_sphere_3d.py:643-651 _element_centres/_hex20_centre; probe strings 'layer volume average at r=9.5874 m' in summary.hex20.table; recomputed ring radii recorded in docs/audit_m15883/audit-m15883-note.md",
+   "severity": "medium"
+  },
+  "F4_info_genuine_implementation_verified": {
+   "statement": "No fabrication found: the module is a real 668-line FE path (HEX8/HEX20 stiffness assembly, consistent pressure loads, gauge-constrained Jacobi-PCG, stress recovery); the delivered numbers reproduce bit-identically on an independent rerun; energy check 0.042% vs Clapeyron, free residual 8e-12, pressure-load resultants 6e-17, mesh volume error 2.8e-4 (hex20), negative-control test rejects a perturbed field.",
+   "evidence": "docs/audit_m15883/analysis_m15862.json; /tmp/m15883_repro_quick.log; tests 13 passed",
+   "severity": "info"
+  },
+  "F5_low_two_level_ladders": {
+   "statement": "Each ladder has only two levels (hex8: n=4,6; hex20: (4,2),(6,3)) and the observed rate on the last hex20 pair is 1.29 (vs ~2 expected for quadratic elements). The (8,4) level is coded (LONG_HEX20_LADDER) but was never run, so the mesh-independence (GCI) band of the case metric is unquantified.",
+   "evidence": "benchmarks/case_hollow_sphere_3d.py:36-44; artifact summary.hex20.convergence",
+   "severity": "low"
+  }
+ },
+ "level_rationale": {
+  "L1": "analytic reference + element-level checks: met (Clapeyron identity, strong-form equilibrium, partition of unity, serendipity shape functions, self-equilibrated pressure loads)",
+  "L2": "independent functional implementation: met - 668-line module, input->assembly->constrained solve->stress recovery->error table->artifact+figures; rerun reproduces all four ladder numbers bit-identically; run artifacts non-empty (187 kB json + 3 png)",
+  "L3": "system integration: NOT met - only a case-specific CLI subcommand (src/tensorfem/cli.py:201) and package re-export; the library's platform-facing benchmark registry (src/tensorfem/benchmark_registry.py run_registered_benchmarks, 31 entries) has no hollow-sphere entry, and no main solver path calls solve_hollow_sphere",
+  "L4": "benchmark validation: NOT met - the artifact carries a ref-vs-got table, a convergence ladder and a working repro command, but the pass claim is scored against a reference functional that contradicts the artifact's own declared functional (F1) and whose exact integrals are integrated over wrong layer bounds (F2); against the declared/literal volume-weighted functional the selected ladder is 8.03% on sigma_r_inner, i.e. above the 5% pool line, so tolerance compliance is NOT established",
+  "L5": "not claimed (no new physics/experiment)"
+ },
+ "disposition": "request_changes (grade L2 confirmed; L3/L4 blocked with concrete remediation)",
+ "checks_not_run": [
+  "mesh-independence/GCI study at (8,4) (LONG_HEX20_LADDER) - runtime > 10 min on this host, not executed",
+  "hex20 stress recovery at Gauss points (would give a true FE layer integral instead of element-centre sampling) - recommended fix, not executed here",
+  "loong64 cluster rerun (this audit ran on the x86_64 control host only; architecture-dependent numerics not checked)",
+  "cross-repo platform consumption of the case (ship-performance-platform / TensorPlatform API) - no caller found, nothing to execute"
+ ],
+ "remediation": [
+  "F1/F2: score the case metric against the exact volume-weighted layer integral; fix probe_metrics layer bounds to use corner-node radii (or element layer thickness) instead of torch.unique(node radii); recompute FE layer averages with within-element Gauss quadrature",
+  "then re-establish the hex20 pass honestly: with correct integrals the sigma_r_inner error is 8.03% (hex8 4.10%), so radial refinement of the inner layer (e.g. the (8,4) level, or graded thin boundary layers with proper volume integration) is required before a <5% claim can be made",
+  "F4: register the case in src/tensorfem/benchmark_registry.py so the platform harness consumes the evidence (this is the missing L3 rung)"
+ ]
+}
