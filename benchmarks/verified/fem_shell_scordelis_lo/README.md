@@ -55,9 +55,40 @@ Source: Scordelis & Lo (1960), widely cited in FEM literature.
 - Monotone convergence with mesh refinement
 - Best result: 0.02% error at 16×16 mesh
 
+## Update (m16449): the flat-facet failure is a rank deficiency, not faceting
+
+The two tables above are the *default-rule* record and stay reproducible
+(`result.json`, `gates_verified.json` are unchanged).  The **interpretation**
+below them ("flat facets cannot capture membrane-bending coupling") has since
+been tested and **falsified** -- see
+`docs/CASE-FEM-SCORDELIS-LO-shear-rank-diagnosis.md` and reproduce with
+
+```bash
+OMP_NUM_THREADS=8 python3 shear_treatment_study.py   # writes shear_treatment_study.{json,png}
+```
+
+Holding nodes, facets, load and diaphragms fixed and changing **only** the
+transverse-shear integration rule of the same flat-facet element:
+
+| rule | spurious zero-energy modes (24x24 facet) | 16x16 error | 32x32 error |
+|---|---:|---:|---:|
+| `sri` one-point (default) | 3 (plate hourglass, w = +a,-a,+a,-a) | 44.69 % | 49.40 % |
+| `mitc` assumed natural shear | 1 (in-plane only) | **2.35 %** | **0.75 %** |
+| `full` equal-order (locking control) | 1 | 86.52 % | 70.96 % |
+
+So the flat-facet family **does** pass this benchmark (`mitc`: 2.35 % < 3 % at
+16x16, Richardson limit 2.23 %).  The operative defect is the rank deficiency of
+the one-point shear block, and the library already carries the remedy
+(`shell4_stiffness(..., plate_shear="mitc")`, exposed here as
+`scordelis_lo_roof(..., plate_shear=...)`).  The default is deliberately left at
+`sri` so every existing qualification keeps its numbers; flipping it suite-wide
+is an open decision.  Guarded by
+`tests/test_shell4_shear_rank_scordelis.py` and the rank census in
+`tensorfem.shell4_rank`.
+
 ## Analysis
 
-### Why Flat Facet Fails
+### Why Flat Facet Fails (superseded interpretation -- see update above)
 
 The flat facet Shell4 element approximates the curved cylindrical surface using flat quadrilateral facets. This introduces several issues:
 

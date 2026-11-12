@@ -32,6 +32,7 @@ def scordelis_lo_roof(
     *,
     dtype: torch.dtype = torch.float64,
     device: torch.device | str | None = None,
+    plate_shear: str = "sri",
 ) -> ShellBenchmarkResult:
     """Solve the full Scordelis--Lo cylindrical-roof benchmark.
 
@@ -41,6 +42,16 @@ def scordelis_lo_roof(
     vertical translations fixed); one axial DOF removes the remaining rigid
     translation.  The reported response is downward displacement at the
     midspan of the positive-angle free edge.
+
+    ``plate_shear`` is forwarded to :func:`tensorfem.shell4.shell4_stiffness`.
+    The default ``"sri"`` (one-point transverse shear) leaves the flat facet
+    with three spurious zero-energy mechanisms and the ladder then plateaus
+    ~50 % above the published reference; ``"mitc"`` (assumed natural shear)
+    leaves one spurious mechanism and pulls the same faceted ladder inside 3 %
+    at >= 16x16.  ``benchmarks/verified/fem_shell_scordelis_lo/
+    shear_treatment_study.py`` measures both.  The geometry, load and
+    diaphragms are identical for every rule, so this knob isolates the shear
+    block: the historical failure is a rank deficiency, not faceting.
     """
     if nx < 1 or nt < 1 or nx % 2 or nt % 2:
         raise ValueError("nx and nt must be positive even integers")
@@ -63,7 +74,7 @@ def scordelis_lo_roof(
     # Consistent resultant of uniform vertical load on each planar facet.
     for element in elements:
         xyz = nodes[element]
-        ke = shell4_stiffness(xyz, E, nu, thickness)
+        ke = shell4_stiffness(xyz, E, nu, thickness, plate_shear=plate_shear)
         dofs = torch.stack(tuple(6*element+k for k in range(6)), 1).reshape(-1)
         K[dofs[:, None], dofs] += ke
         area = .5*torch.linalg.vector_norm(torch.linalg.cross(xyz[1]-xyz[0], xyz[2]-xyz[0]))
