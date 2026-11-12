@@ -1,0 +1,214 @@
+{
+  "benchmark": "macneal_1985_slender_beam_shear_locking",
+  "reference": "MacNeal, R.H. (1985). A simple quadrilateral, 4-node shell element with enhanced interpolation. Finite Elements in Analysis and Design 5(2):113-118 -- slender-beam test (L=10, h=1, E=1, nu=0.3, centre point load P=1, simply supported).",
+  "generated_by": "benchmarks/macneal_beam_shear_locking/run.py",
+  "generated_at": "2026-11-11T23:53:47.268269+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64",
+    "dtype": "torch.float64"
+  },
+  "case": {
+    "young": 1.0,
+    "poisson": 0.3,
+    "length": 10.0,
+    "height": 1.0,
+    "width": 1.0,
+    "load": 1.0,
+    "shear_correction_factor": 0.8333333333333334
+  },
+  "analytic": {
+    "inertia": 0.08333333333333333,
+    "area": 1.0,
+    "shear_modulus": 0.3846153846153846,
+    "slenderness": 10.0,
+    "euler_bernoulli": 250.0,
+    "timoshenko": 257.8,
+    "shear_correction": 7.800000000000001,
+    "shear_correction_pct": 3.1200000000000006
+  },
+  "tolerance": 0.05,
+  "levels": [
+    2,
+    4,
+    8,
+    16
+  ],
+  "treatments": [
+    "full",
+    "sri",
+    "mitc"
+  ],
+  "rows": [
+    {
+      "treatment": "full",
+      "n_elements": 2,
+      "n_nodes": 6,
+      "dofs": 18,
+      "free_dofs": 8,
+      "centre_deflection": 28.603698435277344,
+      "error_vs_eb": -0.8855852062588906,
+      "error_vs_timoshenko": -0.8890469416785207,
+      "seconds": 0.031538600102066994
+    },
+    {
+      "treatment": "full",
+      "n_elements": 4,
+      "n_nodes": 10,
+      "dofs": 30,
+      "free_dofs": 16,
+      "centre_deflection": 85.84162219850428,
+      "error_vs_eb": -0.6566335112059828,
+      "error_vs_timoshenko": -0.6670224119530478,
+      "seconds": 0.05209789052605629
+    },
+    {
+      "treatment": "full",
+      "n_elements": 8,
+      "n_nodes": 18,
+      "dofs": 54,
+      "free_dofs": 32,
+      "centre_deflection": 171.77490656700914,
+      "error_vs_eb": -0.31290037373196344,
+      "error_vs_timoshenko": -0.33368926855310654,
+      "seconds": 0.07829918898642063
+    },
+    {
+      "treatment": "full",
+      "n_elements": 16,
+      "n_nodes": 34,
+      "dofs": 102,
+      "free_dofs": 64,
+      "centre_deflection": 229.11475876802837,
+      "error_vs_eb": -0.08354096492788654,
+      "error_vs_timoshenko": -0.11126936086878061,
+      "seconds": 0.1685833688825369
+    },
+    {
+      "treatment": "sri",
+      "n_elements": 2,
+      "n_nodes": 6,
+      "dofs": 18,
+      "free_dofs": 8,
+      "centre_deflection": 195.29999999999356,
+      "error_vs_eb": -0.21880000000002575,
+      "error_vs_timoshenko": -0.24243599689684425,
+      "seconds": 0.014472849667072296
+    },
+    {
+      "treatment": "sri",
+      "n_elements": 4,
+      "n_nodes": 10,
+      "dofs": 30,
+      "free_dofs": 16,
+      "centre_deflection": 242.17499999999632,
+      "error_vs_eb": -0.03130000000001473,
+      "error_vs_timoshenko": -0.06060899922421914,
+      "seconds": 0.026830388233065605
+    },
+    {
+      "treatment": "sri",
+      "n_elements": 8,
+      "n_nodes": 18,
+      "dofs": 54,
+      "free_dofs": 32,
+      "centre_deflection": 253.8937500000039,
+      "error_vs_eb": 0.01557500000001562,
+      "error_vs_timoshenko": -0.015152249806036099,
+      "seconds": 0.054528919979929924
+    },
+    {
+      "treatment": "sri",
+      "n_elements": 16,
+      "n_nodes": 34,
+      "dofs": 102,
+      "free_dofs": 64,
+      "centre_deflection": 256.823437500006,
+      "error_vs_eb": 0.02729375000002392,
+      "error_vs_timoshenko": -0.0037880624514896486,
+      "seconds": 0.11609040014445782
+    },
+    {
+      "treatment": "mitc",
+      "n_elements": 2,
+      "n_nodes": 6,
+      "dofs": 18,
+      "free_dofs": 8,
+      "centre_deflection": 195.30000000000186,
+      "error_vs_eb": -0.21879999999999256,
+      "error_vs_timoshenko": -0.24243599689681206,
+      "seconds": 0.02693113125860691
+    },
+    {
+      "treatment": "mitc",
+      "n_elements": 4,
+      "n_nodes": 10,
+      "dofs": 30,
+      "free_dofs": 16,
+      "centre_deflection": 242.17499999997636,
+      "error_vs_eb": -0.031300000000094544,
+      "error_vs_timoshenko": -0.06060899922429653,
+      "seconds": 0.04818863049149513
+    },
+    {
+      "treatment": "mitc",
+      "n_elements": 8,
+      "n_nodes": 18,
+      "dofs": 54,
+      "free_dofs": 32,
+      "centre_deflection": 253.89375000001448,
+      "error_vs_eb": 0.015575000000057912,
+      "error_vs_timoshenko": -0.015152249805995086,
+      "seconds": 0.1008788701146841
+    },
+    {
+      "treatment": "mitc",
+      "n_elements": 16,
+      "n_nodes": 34,
+      "dofs": 102,
+      "free_dofs": 64,
+      "centre_deflection": 256.8234374999955,
+      "error_vs_eb": 0.027293749999982082,
+      "error_vs_timoshenko": -0.0037880624515302195,
+      "seconds": 0.20131185092031956
+    }
+  ],
+  "verdicts": {
+    "full": {
+      "finest_n": 16,
+      "centre_deflection": 229.11475876802837,
+      "error_vs_eb": -0.08354096492788654,
+      "error_vs_timoshenko": -0.11126936086878061,
+      "pass_vs_timoshenko_5pct": false,
+      "pass_vs_eb_5pct": false
+    },
+    "sri": {
+      "finest_n": 16,
+      "centre_deflection": 256.823437500006,
+      "error_vs_eb": 0.02729375000002392,
+      "error_vs_timoshenko": -0.0037880624514896486,
+      "pass_vs_timoshenko_5pct": true,
+      "pass_vs_eb_5pct": true
+    },
+    "mitc": {
+      "finest_n": 16,
+      "centre_deflection": 256.8234374999955,
+      "error_vs_eb": 0.027293749999982082,
+      "error_vs_timoshenko": -0.0037880624515302195,
+      "pass_vs_timoshenko_5pct": true,
+      "pass_vs_eb_5pct": true
+    }
+  },
+  "decay_factors_vs_coarsest": {
+    "full": 0.12515577710520442,
+    "sri": 0.01562499999990289,
+    "mitc": 0.015625000000072314
+  },
+  "figures": [
+    "convergence.png",
+    "error_decay.png",
+    "deflection_field.png"
+  ],
+  "total_seconds": 2.158149551600218
+}
