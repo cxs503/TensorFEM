@@ -26,11 +26,15 @@ def test_path_nodes_are_interpolated_before_linear_and_quadratic_extrapolation()
     assert hot_spot_stress_from_path_pa(path, 0.01, method="quadratic") == pytest.approx(150e6)
 
 
-def test_rainflow_triangle_has_two_half_cycles_and_one_equivalent_cycle():
+def test_rainflow_triangle_is_one_closed_loop():
+    """0 -> peak -> 0 is a closed loop: one full cycle, not two half cycles.
+
+    The previous expectation (two half cycles) was a by-product of a counter that
+    could never report a full cycle; see docs/rainflow-four-point-adjudication.md.
+    """
     cycles = rainflow_cycles((0.0, 100e6, 0.0))
     assert [(row.range_pa, row.mean_pa, row.count) for row in cycles] == [
-        (100e6, 50e6, 0.5),
-        (100e6, 50e6, 0.5),
+        (100e6, 50e6, 1.0),
     ]
     assert sum(row.count for row in cycles) == 1.0
 

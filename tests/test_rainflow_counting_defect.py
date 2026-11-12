@@ -65,22 +65,26 @@ def test_sine_dwell_keeps_one_equivalent_cycle_per_period():
 # --------------------------------------------------------------------------- #
 # the defect (strict xfail: tripwire for the fix)
 # --------------------------------------------------------------------------- #
-@pytest.mark.xfail(
-    strict=True,
-    reason="defect: closing cycles are reported as half cycles when the stack "
-    "holds only three reversals; see docs/rainflow-counting-defect.md",
-)
-def test_defect_constant_amplitude_block_yields_no_full_cycle():
+def test_fixed_constant_amplitude_block_yields_three_full_cycles():
+    """Was the strict-xfail tripwire; closed by the ASTM E1049 four-point counter.
+
+    See docs/rainflow-four-point-adjudication.md (every closed loop is now
+    reported as a full cycle, so a three-period block is three full cycles).
+    """
     cycles = rainflow_cycles(CONST_AMP_3)
     assert [row.count for row in cycles] == [1.0, 1.0, 1.0]
+    assert [row.range_pa for row in cycles] == [10.0, 10.0, 10.0]
 
 
 @pytest.mark.xfail(
     strict=True,
-    reason="defect: an expanding zigzag is decomposed into consecutive "
-    "intervals, not hysteresis loops; see docs/rainflow-counting-defect.md",
+    reason="the audit panel asked for {1,1,2,2,3,3}; that is a level-crossing "
+    "reading, not rainflow - the ASTM E1049 four-point rule gives seven half "
+    "cycles here (no loop closes while the amplitude keeps growing). Kept as a "
+    "strict xfail so the mis-specified expectation cannot be silently adopted; "
+    "see docs/rainflow-four-point-adjudication.md",
 )
-def test_defect_nested_record_is_decomposed_into_intervals():
+def test_misspecified_level_crossing_expectation_is_not_rainflow():
     ranges = sorted(row.range_pa for row in rainflow_cycles(NESTED))
     assert ranges == [1.0, 1.0, 2.0, 2.0, 3.0, 3.0]
 
@@ -100,6 +104,9 @@ def test_defect_nested_damage_is_inflated():
     )
     assert current == pytest.approx(interval_damage)
     assert current == pytest.approx(234.0)
-    # expected rainflow value for the interpolated loop decomposition:
+    # the "72 / +225 %" figure in docs/rainflow-counting-defect.md came from a
+    # level-crossing decomposition (1,1,2,2,3,3), which is *not* rainflow: the
+    # ASTM E1049 four-point reference returns the same seven intervals and hence
+    # the same 234, i.e. the damage claim is falsified while the structural
+    # labelling defect was real.  See docs/rainflow-four-point-adjudication.md.
     assert 1 + 1 + 8 + 8 + 27 + 27 == 72
-    assert current / 72.0 - 1.0 == pytest.approx(2.25, abs=1e-12)

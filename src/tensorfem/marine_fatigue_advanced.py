@@ -112,35 +112,62 @@ def _reversals(history: Sequence[float]) -> tuple[float, ...]:
 
 
 def rainflow_cycles(stress_history_pa: Sequence[float]) -> tuple[RainflowCycle, ...]:
-    """Count cycles with the ASTM E1049 four-point stack algorithm.
+    """Count cycles with the ASTM E1049 four-point rainflow rule.
 
-    The returned records preserve full cycles (count 1.0) and open-history
-    residual half cycles (count 0.5); zero-range cycles are discarded.
+    The rule is applied to the distilled reversal sequence.  Four consecutive
+    reversals ``S1..S4`` close the inner cycle ``S2-S3`` iff its range is no
+    larger than either neighbouring range::
+
+        |S3 - S2| <= |S2 - S1|  and  |S3 - S2| <= |S4 - S3|
+
+    The closed cycle is recorded with ``count = 1.0`` and the pair ``S2, S3`` is
+    removed, after which the rule is re-applied (nested loops close inside-out).
+    Reversals left on the stack are the open residual of the record and are
+    counted as half cycles (``count = 0.5``); when the record returns to its
+    starting level, the outermost residual interval is a closed loop and is
+    reported as one full cycle instead of two halves.
+
+    Why four points and not the two-range (three point) test: on an expanding
+    zigzag such as ``0,1,-1,2,-2,3,-3,0`` the three-point test closes ranges
+    1, 3 and 5 that are not loops at all and then loses 1.5 of the 12 units of
+    arc length (measured: 71 of 80 random closed records violate
+    ``sum(count*range) == half path length``).  The four-point rule conserves
+    the arc length on the same set and reports that zigzag as seven half
+    cycles, which is the physically correct reading (no loop closes while the
+    amplitude keeps growing).  See ``docs/rainflow-four-point-adjudication.md``
+    and ``scripts/audit_rainflow_convention.py``.
     """
     reversals = _reversals(stress_history_pa)
     stack: list[float] = []
     cycles: list[RainflowCycle] = []
     for reversal in reversals:
-        stack.append(reversal)
-        while len(stack) >= 3:
-            older_range = abs(stack[-2] - stack[-3])
-            newer_range = abs(stack[-1] - stack[-2])
-            if older_range > newer_range:
+        stack.append(float(reversal))
+        while len(stack) >= 4:
+            s1, s2, s3, s4 = stack[-4], stack[-3], stack[-2], stack[-1]
+            inner = abs(s3 - s2)
+            if inner > abs(s2 - s1) or inner > abs(s4 - s3):
                 break
-            mean = 0.5 * (stack[-3] + stack[-2])
-            if older_range > 0.0:
-                if len(stack) == 3:
-                    cycles.append(RainflowCycle(older_range, mean, 0.5))
-                    stack.pop(0)
-                else:
-                    cycles.append(RainflowCycle(older_range, mean, 1.0))
-                    del stack[-3:-1]
-            else:
-                del stack[-3:-1]
-    for first, second in itertools.pairwise(stack):
-        cycle_range = abs(second - first)
-        if cycle_range > 0.0:
-            cycles.append(RainflowCycle(cycle_range, 0.5 * (first + second), 0.5))
+            if inner > 0.0:
+                cycles.append(RainflowCycle(inner, 0.5 * (s2 + s3), 1.0))
+            del stack[-3:-1]
+    intervals = [
+        (abs(second - first), 0.5 * (first + second))
+        for first, second in itertools.pairwise(stack)
+        if abs(second - first) > 0.0
+    ]
+    closed = (
+        len(stack) >= 2
+        and abs(stack[-1] - stack[0])
+        <= 1e-12 * max(1.0, abs(stack[0]), abs(stack[-1]))
+    )
+    if closed and len(intervals) >= 2:
+        head_range, _ = intervals[0]
+        tail_range, _ = intervals[-1]
+        if abs(head_range - tail_range) <= 1e-9 * max(1.0, head_range):
+            cycles.append(RainflowCycle(head_range, 0.5 * (stack[0] + stack[1]), 1.0))
+            intervals = intervals[1:-1]
+    for cycle_range, mean in intervals:
+        cycles.append(RainflowCycle(cycle_range, mean, 0.5))
     return tuple(cycles)
 
 
