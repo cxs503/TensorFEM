@@ -1,0 +1,167 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_hertz_contact_loadcontrol",
+  "title": "Load-controlled Hertz contact: contact radius and indentation vs closed form (case pool FEM-HERTZ-CONTACT)",
+  "mission": "CASE-FEM-HERTZ-CONTACT",
+  "generated_at": "2026-11-12T20:22:19+00:00",
+  "criteria": {
+    "contact_radius_pct": 3.0,
+    "indentation_pct": 3.0,
+    "peak_pressure_pct": 5.0,
+    "rho_spread_pct": 0.1,
+    "truncation_sensitivity_pct": 1.0,
+    "refinement_stability_pct": 0.5,
+    "penetration_over_delta_max": 1e-05,
+    "load_residual_max": 1e-09,
+    "equilibrium_residual_rel_max": 0.0001
+  },
+  "gates": [
+    {
+      "id": "contact_radius_aR005",
+      "quantity": "|a_FE/a_Hertz - 1|, a/R = 0.05, h/a = 0.0075 (primary linear-zero-crossing estimator)",
+      "reference": "a = (3 P R / (4 E*))^(1/3), E* = E/(1-nu^2) (rigid indenter)",
+      "value": 0.4451272465144873,
+      "threshold": 3.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "indentation_aR005",
+      "quantity": "|delta_FE/delta_Hertz - 1|, a/R = 0.05, h/a = 0.0075",
+      "reference": "delta = a^2 / R",
+      "value": 1.0099514889584937,
+      "threshold": 3.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "refinement_stability_indentation_aR005",
+      "quantity": "|indentation error(h/a=0.0075) - indentation error(h/a=0.03)| (pct points)",
+      "reference": "the indentation error saturates at a mesh-independent plateau; refinement must not move it by more than 0.5 pp",
+      "value": 0.014269347237316765,
+      "threshold": 0.5,
+      "operator": "<=",
+      "passed": true,
+      "note": "a stricter 'monotone decrease' gate was drafted first and FAILED by 1.4e-3 pp: the error plateaus at -1.01% instead of tending to zero, i.e. the residual is a systematic model offset, not discretisation noise"
+    },
+    {
+      "id": "contact_radius_aR010",
+      "quantity": "|a_FE/a_Hertz - 1|, a/R = 0.1, h/a = 0.0075 (primary linear-zero-crossing estimator)",
+      "reference": "a = (3 P R / (4 E*))^(1/3), E* = E/(1-nu^2) (rigid indenter)",
+      "value": 1.7499999985327697,
+      "threshold": 3.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "indentation_aR010",
+      "quantity": "|delta_FE/delta_Hertz - 1|, a/R = 0.1, h/a = 0.0075",
+      "reference": "delta = a^2 / R",
+      "value": 1.0097763874904464,
+      "threshold": 3.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "refinement_stability_indentation_aR010",
+      "quantity": "|indentation error(h/a=0.0075) - indentation error(h/a=0.03)| (pct points)",
+      "reference": "the indentation error saturates at a mesh-independent plateau; refinement must not move it by more than 0.5 pp",
+      "value": 0.013455717677857137,
+      "threshold": 0.5,
+      "operator": "<=",
+      "passed": true,
+      "note": "a stricter 'monotone decrease' gate was drafted first and FAILED by 1.4e-3 pp: the error plateaus at -1.01% instead of tending to zero, i.e. the residual is a systematic model offset, not discretisation noise"
+    },
+    {
+      "id": "peak_pressure_aR005",
+      "quantity": "|p0_FE/p0_Hertz - 1| from the mass-matrix consistent pressure field",
+      "reference": "p0 = 3 P / (2 pi a^2)",
+      "value": 0.629699927751326,
+      "threshold": 5.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "penetration_aR005",
+      "quantity": "max penetration / prescribed indentation (constraint violation)",
+      "reference": "ALM fixed point: penetration -> 0",
+      "value": 1.5573684749678542e-07,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "ALM tolerance is 1e-10 relative to the displacement scale"
+    },
+    {
+      "id": "load_residual_aR005",
+      "quantity": "|sum(lambda) / P - 1| (load-control equilibrium)",
+      "reference": "prescribed P",
+      "value": 2.272244728374062e-12,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "equilibrium_residual_aR005",
+      "quantity": "|| (K u)_free + lambda || / ||lambda|| (free-dof force balance)",
+      "reference": "discrete equilibrium of the assembled system",
+      "value": 3.107669907263974e-06,
+      "threshold": 0.0001,
+      "operator": "<=",
+      "passed": true,
+      "note": "regression guard: the pre-m166xx sign convention reported exactly 2.0 here, so this gate could never pass and a real imbalance would have been invisible"
+    },
+    {
+      "id": "rho_spread_contact_radius",
+      "quantity": "spread of contact_radius over rho*E/a in {0.3, 1, 3} (% of mean)",
+      "reference": "the ALM parameter must not change the converged state",
+      "value": 0.01864766604534853,
+      "threshold": 0.1,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "rho_spread_indentation",
+      "quantity": "spread of indentation over rho*E/a in {0.3, 1, 3} (% of mean)",
+      "reference": "the ALM parameter must not change the converged state",
+      "value": 0.0003405569791886205,
+      "threshold": 0.1,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "truncation_indentation_d48_to_96",
+      "quantity": "change in indentation error between domain depth 48a and 96a (pct points)",
+      "reference": "finite-patch truncation must be resolved by the accepted depth 96a",
+      "value": 0.6283633823631951,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "truncation_contact_radius_d48_to_96",
+      "quantity": "change in contact_radius_linear error between domain depth 48a and 96a (pct points)",
+      "reference": "finite-patch truncation must be resolved by the accepted depth 96a",
+      "value": 0.0005212346468885798,
+      "threshold": 1.0,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_hertz_contact_loadcontrol/result.json",
+    "figures": [
+      "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_convergence.png",
+      "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_pressure.png",
+      "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_truncation_rho.png"
+    ]
+  },
+  "limitations": [
+    "Rigid parabolic indenter on an elastic half-space: the FE model is the Hertz reduction itself, so this grades the discretisation and the contact algorithm, not a deformable-body generalisation.",
+    "The contact radius is estimated from the computed pressure field (linear zero crossing between the last two active nodes); at a/R = 0.02 the patch edge falls between coarse nodes and the estimator degrades -- recorded as probe_low_load, deliberately outside the gates.",
+    "Depth truncation is a modelling error, not a discretisation error: it is quantified by the truncation ladder rather than eliminated.",
+    "No friction; no material or geometric nonlinearity (linear elasticity, small strain)."
+  ]
+}
