@@ -1,0 +1,76 @@
+{
+  "schema": "tensorfem.shell4-rank-census/1",
+  "element": "cylindrical_shell4",
+  "element_params": {
+    "radius": 300.0,
+    "young": 3000000.0,
+    "poisson": 0.3,
+    "thickness": 3.0,
+    "chord_m": 25.0,
+    "dtheta": 0.06544984694978735
+  },
+  "rank_tolerance_relative": 1e-09,
+  "rigid_modes_expected": 6,
+  "variants": {
+    "production_membrane1pt_shear1pt": {
+      "nullspace_dimension": 11,
+      "spurious_mechanisms": 5,
+      "smallest_positive_eigenvalue": 88.35729338224625,
+      "largest_eigenvalue": 357672306.09826314,
+      "rule": [
+        "1pt",
+        "1pt"
+      ]
+    },
+    "membrane1pt_shear2x2": {
+      "nullspace_dimension": 8,
+      "spurious_mechanisms": 2,
+      "smallest_positive_eigenvalue": 38.7587039034536,
+      "largest_eigenvalue": 357672306.09826297,
+      "rule": [
+        "1pt",
+        "2x2"
+      ]
+    },
+    "membrane1pt_shear_mitc": {
+      "nullspace_dimension": 9,
+      "spurious_mechanisms": 3,
+      "smallest_positive_eigenvalue": 79736.39664382454,
+      "largest_eigenvalue": 357672306.098263,
+      "rule": [
+        "1pt",
+        "mitc"
+      ]
+    },
+    "membrane2x2_shear1pt": {
+      "nullspace_dimension": 6,
+      "spurious_mechanisms": 0,
+      "smallest_positive_eigenvalue": 792.5285311177977,
+      "largest_eigenvalue": 357672352.28863835,
+      "rule": [
+        "2x2",
+        "1pt"
+      ]
+    },
+    "membrane2x2_shear2x2": {
+      "nullspace_dimension": 5,
+      "spurious_mechanisms": -1,
+      "smallest_positive_eigenvalue": 792.5564117641844,
+      "largest_eigenvalue": 357672352.2886386,
+      "rule": [
+        "2x2",
+        "2x2"
+      ]
+    },
+    "membrane2x2_shear_mitc": {
+      "nullspace_dimension": 5,
+      "spurious_mechanisms": -1,
+      "smallest_positive_eigenvalue": 792.5285311108016,
+      "largest_eigenvalue": 357672352.2886385,
+      "rule": [
+        "2x2",
+        "mitc"
+      ]
+    }
+  }
+}
