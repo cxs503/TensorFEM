@@ -1,6 +1,6 @@
 {
  "schema": "tensorfem.cohesive3d-dcb-probe/1.1",
- "generated_utc": "2026-11-12T10:35:27.264152+00:00",
+ "generated_utc": "2026-11-12T18:09:12.784791+00:00",
  "generator": "benchmarks/cohesive3d_dcb_displacement_control_probe.py",
  "host": {
   "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
@@ -49,9 +49,9 @@
   },
   "peak_load_vs_lefm": {
    "criterion": "peak load vs LEFM with root rotation",
-   "ref": 28.699409983263223,
+   "ref": 40.587094830436655,
    "got": 34.7789767567368,
-   "rel_error": 0.21183594983377815,
+   "rel_error": -0.14310258218689473,
    "tolerance": "|rel_error| <= 0.05",
    "passed": false
   }
@@ -136,8 +136,8 @@
  "peak": {
   "nx60_peak_load_N": 34.7789767567368,
   "nx60_peak_disp_m": 0.001343750000000001,
-  "lefm_peak_load_N": 28.699409983263223,
-  "rel_error": 0.21183594983377815,
+  "lefm_peak_load_N": 40.587094830436655,
+  "rel_error": -0.14310258218689473,
   "tolerance": "|rel_error| <= 0.05",
   "passed": false,
   "mesh_check_nx24_peak_load_N": 37.924099886500926,
@@ -145,11 +145,11 @@
   "peak_is_mesh_converged": true,
   "peak_is_penalty_independent": true,
   "process_zone_span_m": 0.0225,
-  "energy_balance_rel": 0.49986178905571793,
-  "runtime_s": 39.33857274055481,
+  "energy_balance_rel": 2.7256795988402732e-05,
+  "runtime_s": 42.0378315448761,
   "note": "OPEN: the peak is mesh- and penalty-converged but strength-controlled (process zone ~25% of a at t_n0 = 5 MPa), so the LEFM peak is not the applicable reference in this parameter range; it rises instead of converging as t_n0 grows (34.8 / 37.3 / 38.7 N at 5 / 10 / 20 MPa). Recorded, not hidden."
  },
  "declared_criteria_passed": true,
  "all_criteria_passed": false,
- "runtime_s": 40.06393122673035
+ "runtime_s": 42.82072734832764
 }
