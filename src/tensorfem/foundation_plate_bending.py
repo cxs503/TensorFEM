@@ -107,6 +107,7 @@ __all__ = [
     "deflection_on_grid",
     "navier_foundation_deflection",
     "navier_mindlin_foundation_deflection",
+    "navier_mindlin_foundation_moments",
     "compare_infinite_plate_point_load",
     "element_bending_moments",
     "nodal_bending_moments",
@@ -870,32 +871,26 @@ def _foundation_reaction(
 # Finite simply supported plate on a foundation: Navier double-sine series
 # ---------------------------------------------------------------------------
 
-def navier_mindlin_foundation_deflection(
-    points: torch.Tensor,
+def _navier_mindlin_amplitudes(
     *,
     side_x: float,
     side_y: float,
-    young: float = 3.0e10,
-    poisson: float = 0.3,
-    thickness: float = 0.1,
-    winkler: float = 0.0,
-    pasternak: float = 0.0,
-    pressure: float = 0.0,
-    point_load: float = 0.0,
-    point: tuple[float, float] | None = None,
-    n_modes: int = 99,
-    shear_correction: float = 5.0 / 6.0,
-) -> torch.Tensor:
-    """Exact Navier solution of the *Mindlin-Reissner* plate on a foundation.
+    young: float,
+    poisson: float,
+    thickness: float,
+    winkler: float,
+    pasternak: float,
+    pressure: float,
+    point_load: float,
+    point: tuple[float, float] | None,
+    n_modes: int,
+    shear_correction: float,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Per-mode amplitudes of the Mindlin-Reissner Navier solution.
 
     Mode shapes ``w = W sin(ax) sin(by)``, ``theta_x = X cos(ax) sin(by)``,
-    ``theta_y = Y sin(ax) cos(by)`` satisfy ``w = 0`` and zero tangential
-    rotation on all four edges -- the *hard* simple support enforced by
-    :func:`finite_plate_foundation_fem` -- so this series is the exact reference
-    for the thick-plate FE model (the Kirchhoff series
-    :func:`navier_foundation_deflection` is its ``G h -> inf`` limit).
-
-    Per mode the three equilibrium equations are
+    ``theta_y = Y sin(ax) cos(by)`` (hard simple support on all four edges).
+    The three equilibrium equations per mode are
 
         [D(a^2 + (1-nu) b^2/2) + S] X + [D(1+nu) a b/2] Y + S a W = 0
         [D(1+nu) a b/2] X + [D(b^2 + (1-nu) a^2/2) + S] Y + S b W = 0
@@ -903,7 +898,7 @@ def navier_mindlin_foundation_deflection(
 
     with ``S = kappa G_s h`` the transverse shear stiffness, ``D`` the flexural
     rigidity and ``G`` the foundation shear modulus (which adds to the shear
-    stiffness acting on ``w``).
+    stiffness acting on ``w``).  Returns ``(a, b, W, X, Y)``.
     """
     if side_x <= 0.0 or side_y <= 0.0:
         raise ValueError("plate sides must be positive")
@@ -911,7 +906,6 @@ def navier_mindlin_foundation_deflection(
         raise ValueError("n_modes must be positive")
     rigidity = plate_rigidity(young, poisson, thickness)
     shear = shear_correction * young / (2.0 * (1.0 + poisson)) * thickness
-    pts = torch.as_tensor(points, dtype=torch.float64).reshape(-1, 2)
     odd = torch.arange(1, n_modes + 1, 2, dtype=torch.float64)
     mm = odd.repeat_interleave(odd.numel())
     nn = odd.repeat(odd.numel())
@@ -937,10 +931,99 @@ def navier_mindlin_foundation_deflection(
     rhs = torch.zeros((m, 3), dtype=torch.float64)
     rhs[:, 2] = q_mn
     unknowns = torch.linalg.solve(K, rhs)
-    W = unknowns[:, 2]
+    return a, b, unknowns[:, 2], unknowns[:, 0], unknowns[:, 1]
+
+
+def navier_mindlin_foundation_deflection(
+    points: torch.Tensor,
+    *,
+    side_x: float,
+    side_y: float,
+    young: float = 3.0e10,
+    poisson: float = 0.3,
+    thickness: float = 0.1,
+    winkler: float = 0.0,
+    pasternak: float = 0.0,
+    pressure: float = 0.0,
+    point_load: float = 0.0,
+    point: tuple[float, float] | None = None,
+    n_modes: int = 99,
+    shear_correction: float = 5.0 / 6.0,
+) -> torch.Tensor:
+    """Exact Navier solution of the *Mindlin-Reissner* plate on a foundation.
+
+    Mode shapes ``w = W sin(ax) sin(by)``, ``theta_x = X cos(ax) sin(by)``,
+    ``theta_y = Y sin(ax) cos(by)`` satisfy ``w = 0`` and zero tangential
+    rotation on all four edges -- the *hard* simple support enforced by
+    :func:`finite_plate_foundation_fem` -- so this series is the exact reference
+    for the thick-plate FE model (the Kirchhoff series
+    :func:`navier_foundation_deflection` is its ``G h -> inf`` limit).
+
+    See :func:`_navier_mindlin_amplitudes` for the per-mode equilibrium system.
+    """
+    _a, _b, W, _X, _Y = _navier_mindlin_amplitudes(
+        side_x=side_x, side_y=side_y, young=young, poisson=poisson,
+        thickness=thickness, winkler=winkler, pasternak=pasternak,
+        pressure=pressure, point_load=point_load, point=point,
+        n_modes=n_modes, shear_correction=shear_correction,
+    )
+    pts = torch.as_tensor(points, dtype=torch.float64).reshape(-1, 2)
+    sx = torch.sin(pts[:, None, 0] * _a[None, :])
+    sy = torch.sin(pts[:, None, 1] * _b[None, :])
+    return (W[None, :] * sx * sy).sum(dim=1)
+
+
+def navier_mindlin_foundation_moments(
+    points: torch.Tensor,
+    *,
+    side_x: float,
+    side_y: float,
+    young: float = 3.0e10,
+    poisson: float = 0.3,
+    thickness: float = 0.1,
+    winkler: float = 0.0,
+    pasternak: float = 0.0,
+    pressure: float = 0.0,
+    point_load: float = 0.0,
+    point: tuple[float, float] | None = None,
+    n_modes: int = 99,
+    shear_correction: float = 5.0 / 6.0,
+) -> torch.Tensor:
+    """Mindlin-Reissner Navier *bending-moment* field, ``(Mx, My, Mxy)``.
+
+    Companion of :func:`navier_mindlin_foundation_deflection`: the rotations of
+    the same per-mode solution give
+
+        Mx  = -D (a X + nu b Y) sin(ax) sin(by)
+        My  = -D (b Y + nu a X) sin(ax) sin(by)
+        Mxy =  D (1 - nu)/2 (b X + a Y) cos(ax) cos(by)
+
+    so the reference carries transverse shear deformation.  In the limit
+    ``S -> inf`` (``thickness -> 0``) it collapses analytically onto the
+    Kirchhoff series :func:`navier_foundation_moments` because ``X -> -a W`` and
+    ``Y -> -b W``; :func:`compare_finite_plate_moments` with
+    ``reference="mindlin"`` uses it as the thick-plate benchmark, where the
+    Kirchhoff series is only accurate to ``O((t/a)^2)``.
+    """
+    a, b, _W, X, Y = _navier_mindlin_amplitudes(
+        side_x=side_x, side_y=side_y, young=young, poisson=poisson,
+        thickness=thickness, winkler=winkler, pasternak=pasternak,
+        pressure=pressure, point_load=point_load, point=point,
+        n_modes=n_modes, shear_correction=shear_correction,
+    )
+    rigidity = plate_rigidity(young, poisson, thickness)
+    mx_coeff = -rigidity * (a * X + poisson * b * Y)
+    my_coeff = -rigidity * (b * Y + poisson * a * X)
+    mxy_coeff = 0.5 * rigidity * (1.0 - poisson) * (b * X + a * Y)
+    pts = torch.as_tensor(points, dtype=torch.float64).reshape(-1, 2)
     sx = torch.sin(pts[:, None, 0] * a[None, :])
     sy = torch.sin(pts[:, None, 1] * b[None, :])
-    return (W[None, :] * sx * sy).sum(dim=1)
+    cx = torch.cos(pts[:, None, 0] * a[None, :])
+    cy = torch.cos(pts[:, None, 1] * b[None, :])
+    mx = (mx_coeff[None, :] * sx * sy).sum(dim=1)
+    my = (my_coeff[None, :] * sx * sy).sum(dim=1)
+    mxy = (mxy_coeff[None, :] * cx * cy).sum(dim=1)
+    return torch.stack((mx, my, mxy), dim=1)
 
 
 def navier_foundation_deflection(
@@ -1295,6 +1378,7 @@ def compare_finite_plate_moments(
     n_modes: int = 99,
     shear_treatment: str = "mitc",
     dense_limit: int = 4000,
+    reference: str = "kirchhoff",
 ) -> dict[str, object]:
     """FE vs Navier series for the bending-moment *field* of an SS foundation plate.
 
@@ -1302,7 +1386,25 @@ def compare_finite_plate_moments(
     ``x = a/2`` and ``Mxy`` on the quarter line, plus the deflections at the same
     points, and returns per-point relative errors.  This is the moment half of
     the ``GAP-FEM-WINKLER`` acceptance criterion.
+
+    ``reference`` selects the series used as truth:
+
+    * ``"kirchhoff"`` (default) -- :func:`navier_foundation_moments`, valid for
+      ``t/a <~ 0.05`` (the FE model is Mindlin, so the thin-plate series is only
+      a ``O((t/a)^2)`` approximation of it);
+    * ``"mindlin"`` -- :func:`navier_mindlin_foundation_moments`, the exact
+      thick-plate reference that matches the FE kinematics at any ``t/a``.
     """
+    if reference not in ("kirchhoff", "mindlin"):
+        raise ValueError("reference must be 'kirchhoff' or 'mindlin'")
+    moment_series = (
+        navier_mindlin_foundation_moments if reference == "mindlin"
+        else navier_foundation_moments
+    )
+    deflection_series = (
+        navier_mindlin_foundation_deflection if reference == "mindlin"
+        else navier_foundation_deflection
+    )
     solution = finite_plate_foundation_fem(
         side_x=side_x, side_y=side_y, nx=nx, ny=ny,
         young=young, poisson=poisson, thickness=thickness,
@@ -1325,14 +1427,14 @@ def compare_finite_plate_moments(
             [xs[i], ys[j]],          # Mx on y = b/2
             [xs[j], ys[i]],          # My on x = a/2 (square: same indices)
         ], dtype=torch.float64)
-        analytic = navier_foundation_moments(
+        analytic = moment_series(
             pts, side_x=side_x, side_y=side_y, young=young, poisson=poisson,
             thickness=thickness, winkler=winkler, pasternak=pasternak,
             pressure=pressure, n_modes=n_modes,
         )
         m_fem = nodal[node_of(i, j)]
         m_fem_y = nodal[node_of(j, i)]
-        w_analytic = navier_foundation_deflection(
+        w_analytic = deflection_series(
             pts, side_x=side_x, side_y=side_y, young=young, poisson=poisson,
             thickness=thickness, winkler=winkler, pasternak=pasternak,
             pressure=pressure, n_modes=n_modes,
@@ -1354,7 +1456,7 @@ def compare_finite_plate_moments(
     i = max(int(round(0.25 * nx)), 1)
     j = max(int(round(0.25 * ny)), 1)
     p = torch.tensor([[xs[i], ys[j]]], dtype=torch.float64)
-    mxy_analytic = navier_foundation_moments(
+    mxy_analytic = moment_series(
         p, side_x=side_x, side_y=side_y, young=young, poisson=poisson,
         thickness=thickness, winkler=winkler, pasternak=pasternak,
         pressure=pressure, n_modes=n_modes,
@@ -1363,6 +1465,7 @@ def compare_finite_plate_moments(
     return {
         "nx": nx,
         "ny": ny,
+        "reference": reference,
         "n_modes": n_modes,
         "ndof": solution.ndof,
         "winkler": winkler,

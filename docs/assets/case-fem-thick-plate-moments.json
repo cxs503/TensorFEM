@@ -1,0 +1,268 @@
+{
+  "meta": {
+    "case": "CASE-FEM-THICK-PLATE-MOMENTS",
+    "anchor": "GAP-FEM-WINKLER",
+    "geometry": {
+      "side_x_m": 10.0,
+      "side_y_m": 10.0,
+      "boundary": "hard simple support (w=0, tangential rotation=0)",
+      "pressure_Pa": 10000.0
+    },
+    "material": {
+      "young_Pa": 30000000000.0,
+      "poisson": 0.3
+    },
+    "series": "Mindlin-Reissner Navier solution: w=W sin(ax)sin(by), theta_x=X cos(ax)sin(by), theta_y=Y sin(ax)cos(by)",
+    "moment_recovery": "Mx=-D(aX+nu bY) sin sin, My=-D(bY+nu aX) sin sin, Mxy=D(1-nu)/2 (bX+aY) cos cos",
+    "fe": "Q4 Mindlin plate with MITC/SRI transverse shear, 3 dof/node"
+  },
+  "literature_anchor": {
+    "timoshenko_coefficient": 0.0479,
+    "reference_center_mx": 47900.0,
+    "kirchhoff_series_center_mx": 47886.2959626352,
+    "mindlin_series_center_mx": 47886.295962628654,
+    "kirchhoff_rel_error": 0.0002860968134613328,
+    "mindlin_rel_error": 0.0002860968135980418
+  },
+  "identity_kirchhoff_vs_mindlin_no_foundation": {
+    "0.1": 1.385714474411004e-13,
+    "0.5": 1.0180139230870315e-14,
+    "1.0": 1.9752508955420012e-15,
+    "2.0": 1.8233085189618475e-15,
+    "3.0": 6.077695063206159e-16
+  },
+  "foundation_moment_shift": [
+    {
+      "thickness": 0.5,
+      "slenderness": 0.05,
+      "winkler": 100000.0,
+      "kirchhoff_center_mx": 47492.2985250419,
+      "mindlin_center_mx": 47486.88986163934,
+      "rel_shift": 0.00011389803413779873
+    },
+    {
+      "thickness": 0.5,
+      "slenderness": 0.05,
+      "winkler": 1000000.0,
+      "kirchhoff_center_mx": 44194.10706348976,
+      "mindlin_center_mx": 44146.774191734585,
+      "rel_shift": 0.001072170563348648
+    },
+    {
+      "thickness": 1.0,
+      "slenderness": 0.1,
+      "winkler": 100000.0,
+      "kirchhoff_center_mx": 47836.72294674774,
+      "mindlin_center_mx": 47833.98218564069,
+      "rel_shift": 5.72973643801617e-05
+    },
+    {
+      "thickness": 1.0,
+      "slenderness": 0.1,
+      "winkler": 1000000.0,
+      "kirchhoff_center_mx": 47394.715286338,
+      "mindlin_center_mx": 47367.78580101599,
+      "rel_shift": 0.0005685189811307375
+    },
+    {
+      "thickness": 2.0,
+      "slenderness": 0.2,
+      "winkler": 100000.0,
+      "kirchhoff_center_mx": 47880.09424635029,
+      "mindlin_center_mx": 47878.721536041805,
+      "rel_shift": 2.8670571486515495e-05
+    },
+    {
+      "thickness": 2.0,
+      "slenderness": 0.2,
+      "winkler": 1000000.0,
+      "kirchhoff_center_mx": 47824.34421836267,
+      "mindlin_center_mx": 47810.64989120881,
+      "rel_shift": 0.0002864283833209335
+    },
+    {
+      "thickness": 4.0,
+      "slenderness": 0.4,
+      "winkler": 100000.0,
+      "kirchhoff_center_mx": 47885.52066850614,
+      "mindlin_center_mx": 47884.834160627164,
+      "rel_shift": 1.4336645224143597e-05
+    },
+    {
+      "thickness": 4.0,
+      "slenderness": 0.4,
+      "winkler": 1000000.0,
+      "kirchhoff_center_mx": 47878.54404465901,
+      "mindlin_center_mx": 47871.681639829505,
+      "rel_shift": 0.00014334998467638494
+    }
+  ],
+  "fe_vs_mindlin_convergence": {
+    "0.1": {
+      "16": {
+        "max_mx_rel_error": 0.018801145144393048,
+        "max_my_rel_error": 0.018801145145157124,
+        "mxy_rel_error": 0.020246323366143282,
+        "max_w_rel_error": 0.0026734722581547334,
+        "center_mx": 47446.627403997874,
+        "center_mx_rel_error": 0.009181511114868956,
+        "ndof": 867.0
+      },
+      "24": {
+        "max_mx_rel_error": 0.007466252484767826,
+        "max_my_rel_error": 0.007466252484326378,
+        "mxy_rel_error": 0.008970202797607258,
+        "max_w_rel_error": 0.0010901077720381128,
+        "center_mx": 47691.004073667995,
+        "center_mx_rel_error": 0.00407824169806469,
+        "ndof": 1875.0
+      },
+      "32": {
+        "max_mx_rel_error": 0.004683881277461818,
+        "max_my_rel_error": 0.004683881281535286,
+        "mxy_rel_error": 0.0050410631059839145,
+        "max_w_rel_error": 0.0006629551899866675,
+        "center_mx": 47776.49458367394,
+        "center_mx_rel_error": 0.00229296037096714,
+        "ndof": 3267.0
+      },
+      "48": {
+        "max_mx_rel_error": 0.001865042209008076,
+        "max_my_rel_error": 0.001865042230078902,
+        "mxy_rel_error": 0.0022390716947458976,
+        "max_w_rel_error": 0.0002715578639104443,
+        "center_mx": 47837.546175467425,
+        "center_mx_rel_error": 0.0010180321150600963,
+        "ndof": 7203.0
+      }
+    },
+    "1.0": {
+      "16": {
+        "max_mx_rel_error": 0.018867187552277898,
+        "max_my_rel_error": 0.01886718755226687,
+        "mxy_rel_error": 0.020537408186559,
+        "max_w_rel_error": 0.00236251396167667,
+        "center_mx": 47446.627404046005,
+        "center_mx_rel_error": 0.009181511113997695,
+        "ndof": 867.0
+      },
+      "24": {
+        "max_mx_rel_error": 0.007493813460177989,
+        "max_my_rel_error": 0.0074938134601695095,
+        "mxy_rel_error": 0.009104207643368131,
+        "max_w_rel_error": 0.0009588823695965488,
+        "center_mx": 47691.00407362581,
+        "center_mx_rel_error": 0.004078241699080177,
+        "ndof": 1875.0
+      },
+      "32": {
+        "max_mx_rel_error": 0.004701052445461595,
+        "max_my_rel_error": 0.004701052445480789,
+        "mxy_rel_error": 0.005116616968293772,
+        "max_w_rel_error": 0.000585644684511806,
+        "center_mx": 47776.49458359047,
+        "center_mx_rel_error": 0.00229296037284499,
+        "ndof": 3267.0
+      },
+      "48": {
+        "max_mx_rel_error": 0.0018719976580697027,
+        "max_my_rel_error": 0.0018719976580188183,
+        "mxy_rel_error": 0.0022726553097680005,
+        "max_w_rel_error": 0.0002388467518457987,
+        "center_mx": 47837.546174974,
+        "center_mx_rel_error": 0.0010180321254991598,
+        "ndof": 7203.0
+      }
+    },
+    "2.0": {
+      "16": {
+        "max_mx_rel_error": 0.019030730157016323,
+        "max_my_rel_error": 0.01903073015702217,
+        "mxy_rel_error": 0.021160951354126507,
+        "max_w_rel_error": 0.0015980103421401172,
+        "center_mx": 47446.62740404642,
+        "center_mx_rel_error": 0.009181511113989184,
+        "ndof": 867.0
+      },
+      "24": {
+        "max_mx_rel_error": 0.007561687875535544,
+        "max_my_rel_error": 0.007561687875535132,
+        "mxy_rel_error": 0.009390572534927135,
+        "max_w_rel_error": 0.0006352383388051505,
+        "center_mx": 47691.00407362786,
+        "center_mx_rel_error": 0.004078241699037481,
+        "ndof": 1875.0
+      },
+      "32": {
+        "max_mx_rel_error": 0.004743245704970945,
+        "max_my_rel_error": 0.004743245704999403,
+        "mxy_rel_error": 0.005279173706195059,
+        "max_w_rel_error": 0.00039552145859911395,
+        "center_mx": 47776.49458359505,
+        "center_mx_rel_error": 0.0022929603727495696,
+        "ndof": 3267.0
+      },
+      "48": {
+        "max_mx_rel_error": 0.001889134346106789,
+        "max_my_rel_error": 0.0018891343460676951,
+        "mxy_rel_error": 0.002345323553768942,
+        "max_w_rel_error": 0.0001581633443376223,
+        "center_mx": 47837.5461749806,
+        "center_mx_rel_error": 0.0010180321253614997,
+        "ndof": 7203.0
+      }
+    }
+  },
+  "reference_boundary": {
+    "0.1": {
+      "slenderness": 0.01,
+      "kirchhoff_max_w_rel_error": 0.0002036740290485372,
+      "mindlin_max_w_rel_error": 0.0006629551899866675,
+      "kirchhoff_max_mx_rel_error": 0.004683881277591805,
+      "mindlin_max_mx_rel_error": 0.004683881277461818
+    },
+    "0.2": {
+      "slenderness": 0.02,
+      "kirchhoff_max_w_rel_error": 0.0017593121030625462,
+      "mindlin_max_w_rel_error": 0.0006604817731040836,
+      "kirchhoff_max_mx_rel_error": 0.004684425731918392,
+      "mindlin_max_mx_rel_error": 0.004684425731989753
+    },
+    "1.0": {
+      "slenderness": 0.1,
+      "kirchhoff_max_w_rel_error": 0.05758975931906075,
+      "mindlin_max_w_rel_error": 0.000585644684511806,
+      "kirchhoff_max_mx_rel_error": 0.004701052445463132,
+      "mindlin_max_mx_rel_error": 0.004701052445461595
+    },
+    "2.0": {
+      "slenderness": 0.2,
+      "kirchhoff_max_w_rel_error": 0.23235036246286894,
+      "mindlin_max_w_rel_error": 0.00039552145859911395,
+      "kirchhoff_max_mx_rel_error": 0.004743245704972481,
+      "mindlin_max_mx_rel_error": 0.004743245704970945
+    }
+  },
+  "deflection_shear_excess": {
+    "0.1": {
+      "kirchhoff_w_center": 0.14786963680110235,
+      "mindlin_w_center": 0.14794625487462257,
+      "shear_excess": 0.0005181460858206898
+    },
+    "0.5": {
+      "kirchhoff_w_center": 0.0011829570944088188,
+      "mindlin_w_center": 0.001198280709116851,
+      "shear_excess": 0.012953652148889045
+    },
+    "1.0": {
+      "kirchhoff_w_center": 0.00014786963680110234,
+      "mindlin_w_center": 0.00015553144415512372,
+      "shear_excess": 0.05181460859559137
+    },
+    "2.0": {
+      "kirchhoff_w_center": 1.8483704600137793e-05,
+      "mindlin_w_center": 2.2314608277148574e-05,
+      "shear_excess": 0.20725843438237063
+    }
+  }
+}
