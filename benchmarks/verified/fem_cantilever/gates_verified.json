@@ -3,7 +3,7 @@
   "anchor": "fem_cantilever",
   "title": "Cantilever bending: Euler--Bernoulli deflection, stress and GCI ladder",
   "mission": "IN36-N01",
-  "generated_at": "2026-11-12T17:54:28+00:00",
+  "generated_at": "2026-11-12T21:56:00+00:00",
   "criteria": {
     "tip_deflection_rel_error_max": 0.01,
     "gci_fine_max": 0.03,

@@ -3,7 +3,7 @@
   "anchor": "fem_winkler_plate",
   "title": "Winkler plate on elastic foundation vs Het\u00e9nyi analytical solution",
   "mission": "GAP-FEM-WINKLER",
-  "generated_at": "2026-11-12T17:56:09+00:00",
+  "generated_at": "2026-11-12T21:53:59+00:00",
   "criteria": {
     "centre_error": "< 5%",
     "equilibrium_residual": "< 1%",
