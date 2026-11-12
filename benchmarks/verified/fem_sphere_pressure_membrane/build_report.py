@@ -336,6 +336,29 @@ report = f"""# CASE-SPHERE-PRESSURE — 均压球壳薄膜应力（TensorFEM · 
   {R["gates"]["all_pass_including_prediction"]}；被证伪预测：
   {R["gates"]["falsified_predictions"]}。
 
+## 生产模块、入口与集成调用者（m15703 返修轮补齐）
+
+本算例的逻辑已从一次性脚本迁入**生产模块** `src/tensorfem/sphere_pressure_case.py`
+（唯一真源；复用既有 `AxisymShell` + `axisym_shell_benchmarks.sphere_pressure`，未新增单元）：
+
+| 层 | 位置 | 说明 |
+|---|---|---|
+| 实现 | `src/tensorfem/sphere_pressure_case.py` | `membrane_reference` / `axisym_case` / `quick_check` / `convergence` / `thickness_sensitivity` / `poisson_sensitivity` / `pressure_scaling` / `gates` / `figures` / `run_case` / `cli` |
+| 入口 | `tensorfem-sphere-pressure`（`pyproject.toml [project.scripts]` → `sphere_pressure_case:cli`） | `--out DIR`（默认 `artifacts/CASE-SPHERE-PRESSURE`）、`--no-figures`、`--quiet`；`python3 -m tensorfem.sphere_pressure_case` 等价 |
+| 集成调用者 | `src/tensorfem/benchmark_registry.py::run_registered_benchmarks()` | 注册 3 条 `_evidence`：`shell.sphere.pressure_sigma_theta/-_sigma_phi/-_radial_displacement`，随 `tensorfem verify` 一起跑 |
+| | `src/tensorfem/cli.py` capabilities 清单 | 声明该算例入口 |
+| | `benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py` | 薄壳 runner（只做路径转发 + 复用导出，不再持有逻辑） |
+| 测试 | `tests/test_sphere_pressure_case_module.py` | 引用推导=0 残差、生产网格 <3%、chord 对照必须失败、注册/入口/runner 接线、CLI 端到端写工件 |
+| 工件 | `artifacts/CASE-SPHERE-PRESSURE/`（result.json、gates_verified.json、figures/*.png、run.log） | 由 CLI 真实运行产生（含环境、repro_cmd、逐门判据） |
+
+复现（一键）：
+
+```
+tensorfem-sphere-pressure --out artifacts/CASE-SPHERE-PRESSURE
+# 或（未安装时）
+PYTHONPATH=src python3 -m tensorfem.sphere_pressure_case --out artifacts/CASE-SPHERE-PRESSURE
+```
+
 **生态摩擦（如实记）**
 
 * `knowledge_base` / `negative_knowledge_ledger` / `oss_solutions` 三张表在任务书里要求先查，

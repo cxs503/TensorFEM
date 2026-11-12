@@ -1,0 +1,144 @@
+{
+ "audit_mission": 15807,
+ "audited_mission": 15703,
+ "audited_commit": "a5408f06 (agent/m15703, 2026-11-12T02:05:33Z); merged into audit branch agent/m15807 as 46262ef9 so the gate-visible mainline tree contains the code",
+ "case_pool_row": "tensor_case_pool id 46 SPHERE-PRESSURE TensorFEM tol '<3%' (linked_anchor set to CASE-SPHERE-PRESSURE by this audit)",
+ "impl_files": [
+  "src/tensorfem/sphere_pressure_case.py"
+ ],
+ "impl_pointers": [
+  "src/tensorfem/sphere_pressure_case.py:226 axisym_case() (FE solve -> compared scalars)",
+  "src/tensorfem/sphere_pressure_case.py:252 idealised_meridian_error() / :259 chord_control()",
+  "src/tensorfem/sphere_pressure_case.py:270 flat_facet_shell4_control() (element control)",
+  "src/tensorfem/sphere_pressure_case.py:306 convergence() (ladder 2..64 + observed order)",
+  "src/tensorfem/sphere_pressure_case.py:326 thickness_sensitivity(), :211 poisson_sensitivity(), :228 pressure_scaling()",
+  "src/tensorfem/sphere_pressure_case.py:446 gates() (G1..G10 predeclared), :568 quick_check(), :642 cli()"
+ ],
+ "entry": [
+  "pyproject.toml",
+  "src/tensorfem/cli.py",
+  "src/tensorfem/sphere_pressure_case.py"
+ ],
+ "entry_pointers": [
+  "pyproject.toml:41 tensorfem-sphere-pressure = tensorfem.sphere_pressure_case:cli",
+  "src/tensorfem/cli.py:102 capability string",
+  "python3 -m tensorfem.sphere_pressure_case --out ... (module main)"
+ ],
+ "run_artifacts": [
+  "artifacts/CASE-SPHERE-PRESSURE/result.json",
+  "artifacts/CASE-SPHERE-PRESSURE/gates_verified.json",
+  "artifacts/CASE-SPHERE-PRESSURE/run.log",
+  "artifacts/CASE-SPHERE-PRESSURE/figures/convergence.png",
+  "artifacts/CASE-SPHERE-PRESSURE/figures/field_meridian.png",
+  "artifacts/CASE-SPHERE-PRESSURE/figures/sensitivity.png"
+ ],
+ "run_artifact_pointers": [
+  "artifacts/CASE-SPHERE-PRESSURE/run.log:2-6 date/host/python/cmd/git head",
+  "artifacts/CASE-SPHERE-PRESSURE/result.json (1613 lines: parameters/reference/convergence/thickness/poisson/pressure/flat_facet_control/gates/environment/repro_cmd)",
+  "artifacts/CASE-SPHERE-PRESSURE/gates_verified.json (11 gates, all_gating_pass=true, 1 falsified prediction)"
+ ],
+ "tests": [
+  "tests/test_sphere_pressure_case_module.py (+ tests/test_sphere_pressure_membrane_case.py): 16 passed in 16.3 s, audit re-run on the merged audit tree 46262ef9",
+  "same 16 tests passed at 20.4 s on a clean `git archive a5408f06` extraction (independent of the mission worktree)",
+  "test module covers: symbolic reference residual == 0, production mesh 4 quantities < 3%, chord control must fail, registry/entry/runner wiring, CLI end-to-end artifact write"
+ ],
+ "integration_callers": [
+  "from .sphere_pressure_case import quick_check",
+  "src/tensorfem/benchmark_registry.py:131 imports quick_check and appends 3 _evidence entries (shell.sphere.pressure_sigma_theta / _sigma_phi / _radial_displacement); executed in-process by this audit: sigma_theta 125.000045626 vs 125.0 Pa, pass=True",
+  "pyproject.toml:41 console script tensorfem-sphere-pressure -> sphere_pressure_case:cli"
+ ],
+ "benchmark": {
+  "referee": "tensor_benchmark_cases row registered by this audit (anchor_slug CASE-SPHERE-PRESSURE, tol '<3%'); before the audit the table had NO row for this anchor (0/22 rows) - the referee row was missing, tolerance only self-declared in tensor_case_pool 46",
+  "ref_source": "closed form sigma=pR/(2t), w=pR^2(1-nu)/(2Et); machine-derived in-process via sympy axial equilibrium p*pi*r^2=sigma*2*pi*r*t AND Laplace 2*sigma*t/R=p (symbolic residual exactly 0), cross-checked against the thin limit of the Lame thick-sphere solution",
+  "ref_vs_got": {
+   "sigma_theta": {
+    "ref_Pa": 125.0,
+    "got_Pa": 125.00004562601107,
+    "rel_error": 7.309107154185312e-07,
+    "tolerance": 0.03,
+    "pass": true
+   },
+   "sigma_phi": {
+    "ref_Pa": 125.0,
+    "got_Pa": 125.00015048189998,
+    "rel_error": 1.203855199882753e-06,
+    "tolerance": 0.03,
+    "pass": true
+   },
+   "w_pole": {
+    "ref_m": 1.282051282051282e-05,
+    "got_m": 1.2820593098272093e-05,
+    "rel_error": 6.261665223315587e-06,
+    "tolerance": 0.03,
+    "pass": true
+   },
+   "isotropy": {
+    "ref": 0.0,
+    "got_abs_Pa": 0.000191,
+    "rel_error_vs_pR_2t": 1.5248483988372641e-06,
+    "pass": true
+   }
+  },
+  "controls_that_must_fail": {
+   "chord_meridian_facets8_rel_error": 2.078740587504627,
+   "flat_facet_shell4_24facets_N_mean_rel_error": 133.16588851674985,
+   "audit_recomputed_chord_sigma_Pa": 372.6241041473455
+  },
+  "convergence": {
+   "observed_orders_sigma": [
+    3.456,
+    3.948,
+    3.989,
+    4.025,
+    3.48
+   ],
+   "e_facets8": 7.309107154185312e-07,
+   "e_facets32": 2.8281590402912116e-09
+  },
+  "verdict": "all four gated quantities < 3% (worst 6.26e-06); 10/11 gates pass, the only FAIL is the predeclared and honestly kept prediction G8b"
+ },
+ "repro_cmd": "PYTHONPATH=src python3 -m tensorfem.sphere_pressure_case --out artifacts/CASE-SPHERE-PRESSURE  # or: tensorfem-sphere-pressure --out artifacts/CASE-SPHERE-PRESSURE",
+ "repro_result": "audit re-ran it twice: on a clean `git archive a5408f06` tree (14.3 s) and on the merged audit tree (rc=0). All 1419 JSON leaves identical to the recorded artifacts/result.json except flat_facet_control/wall_clock_s (1.64 -> 1.60 s); bit-identical numbers.",
+ "audit_probes": {
+  "script": "docs/board_audit/m15807/probe_sphere_case.py -> docs/board_audit/m15807/probe_output.json",
+  "purpose": "rule out an analytic value echoed back into the report (the 7.3e-07 error was implausibly small a priori)",
+  "P1_equilibrium_residual_rel": 2.3419525682058736e-15,
+  "P2_energy_identity_rel": 3.444819871180187e-07,
+  "P3_independent_stress_from_nodal_w": {
+   "sigma_Pa": 124.99984133960811,
+   "rel_error": 1.269283135115984e-06,
+   "note": "recomputed as sigma=E*w/(r(1-nu)) from the solved nodal w only, no library stress recovery; agrees with the reported 7.3e-07"
+  },
+  "P4_sensitivity": {
+   "chord_meridian_rel_error": 1.980992833178764,
+   "full_shear_integration_rel_error": 5.141348339520846e-06,
+   "identical_to_reduced": false,
+   "reading": "the reported error reacts to element physics (geometry switch and integration rule), so it is produced by the solve"
+  },
+  "conclusion": "REAL solve: dense K u = f (27 DOF, residual 2.3e-15), energy matches the independently derived membrane strain energy, stress recovered independently from nodal w agrees to 1.3e-06"
+ },
+ "external_anchor": "WITHHELD (page level): reference is machine-derived (symbolic equilibrium + Lame thin limit, exact), but the printed handbook page (Roark's Table 13.1 case 1 / Timoshenko) was NOT verified - no network, no handbook file on disk; scan command and result recorded in result.json reference.provenance. Not required at L4; blocks L5.",
+ "level_rationale": {
+  "L1": "analytic reference derived symbolically with exactly zero residual + Lame cross-theory check + element-level membrane reproduction",
+  "L2": "real 719-line module: input -> AxisymShell assembly/solve -> stress/displacement recovery -> error/gates/artifacts",
+  "L3": "registered in benchmark_registry (3 in-process evidence entries), console script in pyproject, cli capability line; audit executed the registry call path",
+  "L4": "complete case (parameters table in result.json), error analysis (6-level convergence ladder with observed order 3.4-4.0, thickness sweep measuring the reference's own validity band, nu and pressure invariance), reproducible bit-identically in 14 s by an independent re-run",
+  "L5": "no new physics/solver (reuses AxisymShell, no new element) and no experimental/literature numeric anchor -> research-grade claim not supported"
+ },
+ "findings": {
+  "F1": "tensor_benchmark_cases had NO row for CASE-SPHERE-PRESSURE (0 of 22 anchors) -> the machine referee was absent and the 3% tolerance was only self-declared; this audit inserted the row (status passed) so the gate can re-check it",
+  "F2": "run.log records 'git: 0c88e405' - the parent of the commit that contains the code, because the case ran 20 s before the commit; benign and closed by the clean-tree re-run (numbers bit-identical), but the artifact provenance alone does not identify the code revision",
+  "F3": "the production-path 3% tolerance is non-discriminating (facets=8 error 7.3e-07): the element reproduces a constant-membrane state almost exactly. The discriminating power of the case rests on the two negative controls (chord 207.87%, flat-facet Shell4 133.2x) and the observed order, not on the 3% pass",
+  "F4": "G8b is a predeclared prediction measured false (thin-shell band ends at t/R 0.02, not 0.05) and is kept in the record; all_gating_pass=true excludes it. Honest, but note all_gating_pass is therefore not a pure 'all gates pass' flag - read gates.gates directly",
+  "F5": "before this audit the deliverable lived only on branch agent/m15703 (git merge-base --is-ancestor a5408f06 main -> false) so any mainline-relative check would miss it; the audit merged it (46262ef9) and re-ran tests+case on the merged tree",
+  "F6": "mission result carries server_quality_audit={gate_valid:false,key_present:false,gate_missing_warning:true} and succeeded via auto-approve (TP_AUTO_APPROVE_DEV_ACCEPTANCE), not via a gate verdict; this verdict supplies the missing gate evidence",
+  "F7": "flat_facet_control.recorded_error_curve_percent {'24':13316.6,...} is a transcription from docs/sphere-membrane-validation.md, labelled as such; the freshly computed 24-facet value in the same block is 133.2x and differs from the recorded 13317% because the recorded curve uses a different (facet-plane) error definition - the numbers are not comparable at face value"
+ },
+ "not_run": [
+  "GitHub CI (x86) not triggered",
+  "cluster loong64 cross-architecture re-run not submitted (14 s workload, ran locally as allowed)",
+  "full run_registered_benchmarks() sweep (~13 min, 60+ entries) not re-run end to end; the three new entries were executed in-process instead",
+  "handbook page not verified (offline)"
+ ],
+ "disposition": "approve at L4 (level 4): deliverable is real, reproducible and now mainline; remediation notes F1-F7 are bookkeeping/claim-narrowing, not correctness defects"
+}

@@ -533,6 +533,48 @@ def run_registered_benchmarks():
         )
     )
 
+    # CASE-SPHERE-PRESSURE (case pool): closed sphere under uniform internal
+    # pressure.  Reference sigma = pR/(2t) is derived in-process from axial
+    # equilibrium and the Laplace equation
+    # (tensorfem.sphere_pressure_case.reference); the production axisymmetric
+    # shell of revolution is driven on a circular-arc meridian.
+    from .sphere_pressure_case import quick_check
+
+    q = quick_check()
+    out.append(
+        _evidence(
+            "shell.sphere.pressure_sigma_theta",
+            "axisym shell",
+            "hoop membrane stress",
+            "stress",
+            "axial equilibrium p*pi*r**2=sigma*2*pi*r*t and Laplace 2*sigma*t/R=p",
+            q["sigma_theta_pa"],
+            q["sigma_ref_pa"],
+        )
+    )
+    out.append(
+        _evidence(
+            "shell.sphere.pressure_sigma_phi",
+            "axisym shell",
+            "meridional membrane stress",
+            "stress",
+            "axial equilibrium p*pi*r**2=sigma*2*pi*r*t and Laplace 2*sigma*t/R=p",
+            q["sigma_phi_pa"],
+            q["sigma_ref_pa"],
+        )
+    )
+    out.append(
+        _evidence(
+            "shell.sphere.pressure_radial_displacement",
+            "axisym shell",
+            "pole radial displacement",
+            "m",
+            "Hooke on the equi-biaxial membrane state w=p*R**2*(1-nu)/(2*E*t)",
+            q["w_m"],
+            q["w_ref_m"],
+        )
+    )
+
     return tuple(out)
 
 
