@@ -1,0 +1,29 @@
+{
+ "defect": "GAP-FEM-3D-COHESIVE load-convention / energy-accounting repair",
+ "file": "src/tensorfem/cohesive3d_dcb.py",
+ "energy_balance_rel": {
+  "before_small_model_delta_1e-6": 0.4667,
+  "after_small_model_delta_1e-6": 0.0001,
+  "before_specimen_probe_documented": 0.499,
+  "after_specimen_probe": 2.7256795988402732e-05
+ },
+ "external_work_vs_strain_energy_elastic": {
+  "before_W_over_Es": 1.875,
+  "after_W_over_Es": 1.0000000000001
+ },
+ "serr_oracle_slim_geometry": {
+  "G_fixed_grip_FE_energy_derivative": 7.17902106486364e-10,
+  "G_repaired_beam_serr_3P2a2": 8.780131939697951e-10,
+  "G_prerepair_beam_serr_6P2a2": 1.6920854943900236e-09,
+  "ratio_FE_over_repaired": 0.8176438707492372,
+  "ratio_FE_over_prerepair": 0.42427058731164113
+ },
+ "lefm_peak_load": {
+  "prerepair_N": 28.699409983263223,
+  "repaired_N": 40.587094830436655,
+  "fem_peak_N": 34.7789767567368,
+  "prerepair_rel_error": 0.21183594983377807,
+  "repaired_rel_error": -0.14310258218689476
+ },
+ "compliance_calibration_still_passes": true
+}
