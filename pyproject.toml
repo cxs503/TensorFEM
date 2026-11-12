@@ -38,6 +38,7 @@ reproducible = ["threadpoolctl>=3.1"]
 
 [project.scripts]
 tensorfem = "tensorfem.cli:main"
+tensorfem-sphere-pressure = "tensorfem.sphere_pressure_case:cli"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

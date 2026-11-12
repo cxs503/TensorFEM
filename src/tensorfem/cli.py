@@ -98,6 +98,7 @@ def main() -> None:
                         "marine reduced-order postbuckling, progressive section and spectrum fatigue prototypes",
                         "Shell4 initial-stress buckling and ResultDB hotspot/LEFM qualification",
                         "numerical Mode-I contour J integration qualification",
+                        "CASE-SPHERE-PRESSURE closed-sphere membrane case (tensorfem-sphere-pressure)",
                         "ResultDB initial-field transfer to reduced structural response",
                         "real-residual Shell4 arc-length integration prototype",
                         "multi-facet Shell4 transactional elastic state path",
