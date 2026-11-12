@@ -1,0 +1,256 @@
+{
+ "audit_mission": 15645,
+ "audited_mission": 15446,
+ "anchor": "REPRO-FEM-HILLERBORG1976",
+ "repo": "TensorFEM",
+ "artifacts": {
+  "mission_worktree": "/root/tp-agent/work/m15446",
+  "files": [
+   {
+    "path": "/root/tp-agent/work/m15446/artifacts/hillerborg1976/repro.json",
+    "exists": true,
+    "bytes": 91603,
+    "sha256": "de3e1f2de48f74117931fd2bab8f2913d29c6867b5f683924434dab4c8aa82a4",
+    "copied_to": "docs/board_audit/m15645/artifacts_m15446/repro.json"
+   },
+   {
+    "path": "/root/tp-agent/work/m15446/artifacts/hillerborg1976/fig_size_effect.png",
+    "exists": true,
+    "bytes": 77158,
+    "sha256": "48cdfe15b6922edd56d8f781c1d138246941484bd7a73ef6fae922b8815badef",
+    "copied_to": "docs/board_audit/m15645/artifacts_m15446/fig_size_effect.png"
+   },
+   {
+    "path": "/root/tp-agent/work/m15446/artifacts/hillerborg1976/fig_load_cmod.png",
+    "exists": true,
+    "bytes": 97851,
+    "sha256": "731d5819a7c517e341d3e2c7432fe08874e42932eac8f4bcb72a40d169a0be91",
+    "copied_to": "docs/board_audit/m15645/artifacts_m15446/fig_load_cmod.png"
+   }
+  ],
+  "present_in_main_checkout": false,
+  "mission_head": "ece3d0d692bc1a205b4f4de08ad3c0e9466576de",
+  "present_in_mission_branch_commit": true,
+  "main_landing_commit": "af10148d m15446: matured mission deliverables\uff084 \u4e2a\u6587\u4ef6\u88ab\u95e8\u7981\u6ee4\u9664\uff09"
+ },
+ "benchmark": {
+  "anchor": "REPRO-FEM-HILLERBORG1976",
+  "registered_rows": 0,
+  "rows": [],
+  "referee_available": false,
+  "same_paper_other_anchor": [
+   [
+    "XVAL-FEM-TPB1976",
+    "SENB \u4e09\u70b9\u5f2f\uff08a0/W=0.3, S/W=4, \u5e73\u9762\u5e94\u529b\uff09\u8de8\u6c42\u89e3\u5668\u5bf9\u6bd4 + DCB",
+    "P_cr vs \u95ed\u5f0f\uff08\u4e3b\uff09\uff1b\u8de8\u5de5\u5177 spread / CMOD\uff08M1/M3\uff09",
+    "vs \u95ed\u5f0f <10%(M2)\uff1b\u8de8\u5de5\u5177 spread <5%(M1)\uff1bCMOD <10%(M3)\u2014\u2014\u5bb9\u5dee\u53d6\u81ea\u539f\u7b97\u4f8b xval_cases.py \u9884\u5148\u58f0\u660e\uff0c\u975e\u4e8b\u540e\u56de\u586b"
+   ]
+  ]
+ },
+ "criteria": {
+  "artifact": "../m15446/artifacts/hillerborg1976/repro.json",
+  "n_criteria": 10,
+  "n_passed": 4,
+  "n_failed": 6,
+  "checks": [
+   {
+    "criterion": "K2_law_area",
+    "quantity": "int f(w)dw vs G_F (rel.)",
+    "got": 1.0193539811131913e-06,
+    "ref": 0.0,
+    "tolerance": 0.0001,
+    "unit": "-",
+    "passed_recomputed": true,
+    "note": ""
+   },
+   {
+    "criterion": "K1_elastic",
+    "quantity": "K_I from model compliance vs Srawley-Gross",
+    "got": 11.803020020033202,
+    "ref": 0.0,
+    "tolerance": 5.0,
+    "unit": "%",
+    "passed_recomputed": false,
+    "note": ""
+   },
+   {
+    "criterion": "K3_balance",
+    "quantity": "worst |W_ext-U_solid-U_if-D|/W_ext",
+    "got": 2.926056672771998e+33,
+    "ref": 0.0,
+    "tolerance": 0.01,
+    "unit": "-",
+    "passed_recomputed": false,
+    "note": ""
+   },
+   {
+    "criterion": "K4_lefm",
+    "quantity": "P_peak/P_LEFM at W/l_ch=8",
+    "got": 0.46375563945166925,
+    "ref": 1.0,
+    "tolerance": 5.0,
+    "unit": "ratio",
+    "passed_recomputed": false,
+    "note": "LEFM asymptote"
+   },
+   {
+    "criterion": "K5_strength",
+    "quantity": "P_peak/P_strength at W/l_ch=0.25",
+    "got": 0.5876612791161089,
+    "ref": [
+     0.75,
+     1.05
+    ],
+    "tolerance": 0.0,
+    "unit": "ratio",
+    "passed_recomputed": false,
+    "note": "plastic-limit band"
+   },
+   {
+    "criterion": "K6_mesh",
+    "quantity": "P_peak drift nodes_y 48->96",
+    "got": 1.3193369245199538,
+    "ref": 0.0,
+    "tolerance": 2.0,
+    "unit": "%",
+    "passed_recomputed": true,
+    "note": ""
+   },
+   {
+    "criterion": "K7_penalty",
+    "quantity": "P_peak drift over k0 1e2..1e4",
+    "got": 0.5011304207881883,
+    "ref": 0.0,
+    "tolerance": 1.0,
+    "unit": "%",
+    "passed_recomputed": true,
+    "note": ""
+   },
+   {
+    "criterion": "K8_aW",
+    "quantity": "P_peak(a0/W) monotone decreasing",
+    "got": true,
+    "ref": true,
+    "tolerance": 0.0,
+    "unit": "bool",
+    "passed_recomputed": true,
+    "note": ""
+   },
+   {
+    "criterion": "K9_master",
+    "quantity": "size-effect master-curve collapse deviation",
+    "got": 36.665658571024636,
+    "ref": 0.0,
+    "tolerance": 3.0,
+    "unit": "%",
+    "passed_recomputed": false,
+    "note": ""
+   },
+   {
+    "criterion": "K10_gf",
+    "quantity": "G_F back-calculated vs 100 J/m^2 (rel.)",
+    "got": 0.8026613816199695,
+    "ref": 0.0,
+    "tolerance": 0.05,
+    "unit": "-",
+    "passed_recomputed": false,
+    "note": ""
+   }
+  ],
+  "flag_disagreements": [],
+  "size_series": [
+   {
+    "W_over_lch": 0.25,
+    "peak_load_N": 1958.8709303870298,
+    "peak_over_lefm": 0.22093713449649238,
+    "peak_over_strength": 0.5876612791161089,
+    "G_F_backcalc": 86.95717451537647,
+    "balance": 0.38440552488223073,
+    "converged_steps": 38,
+    "steps": 40
+   },
+   {
+    "W_over_lch": 0.5,
+    "peak_load_N": 6682.237793822831,
+    "peak_over_lefm": 0.26646478874979707,
+    "peak_over_strength": 0.5011678345367123,
+    "G_F_backcalc": 86.60922752436302,
+    "balance": 0.4768348861200814,
+    "converged_steps": 38,
+    "steps": 40
+   },
+   {
+    "W_over_lch": 1.0,
+    "peak_load_N": 22375.526340474975,
+    "peak_over_lefm": 0.31546135811118653,
+    "peak_over_strength": 0.4195411188839058,
+    "G_F_backcalc": 85.76657779684858,
+    "balance": 0.003223779211783399,
+    "converged_steps": 40,
+    "steps": 40
+   },
+   {
+    "W_over_lch": 2.0,
+    "peak_load_N": 73058.59430567904,
+    "peak_over_lefm": 0.36416585840479976,
+    "peak_over_strength": 0.3424621608078705,
+    "G_F_backcalc": 82.7141664357476,
+    "balance": 0.06287954337571572,
+    "converged_steps": 36,
+    "steps": 40
+   },
+   {
+    "W_over_lch": 4.0,
+    "peak_load_N": 234687.2462299847,
+    "peak_over_lefm": 0.41359226762168,
+    "peak_over_strength": 0.2750241166757633,
+    "G_F_backcalc": 69.86888962237867,
+    "balance": 0.4753588598560954,
+    "converged_steps": 29,
+    "steps": 40
+   },
+   {
+    "W_over_lch": 8.0,
+    "peak_load_N": 744305.5813762404,
+    "peak_over_lefm": 0.46375563945166925,
+    "peak_over_strength": 0.2180582757938204,
+    "G_F_backcalc": 49.57129729561284,
+    "balance": 6.162024437743786e+32,
+    "converged_steps": 33,
+    "steps": 40
+   },
+   {
+    "W_over_lch": 16.0,
+    "peak_load_N": 2546824.3475375073,
+    "peak_over_lefm": 0.5610375478712117,
+    "peak_over_strength": 0.18653498639190727,
+    "G_F_backcalc": 19.733861838003047,
+    "balance": 2.926056672771998e+33,
+    "converged_steps": 35,
+    "steps": 40
+   }
+  ],
+  "law_shape_difference_pct": 13.069447244106968,
+  "runtime_s": 367.8110775947571,
+  "env": {
+   "python": "3.11.6",
+   "numpy": "2.4.6"
+  }
+ },
+ "integration": {
+  "main_solver_callers": [],
+  "n_callers": 0,
+  "exported_in_package_init": false,
+  "driver_calls_module": "benchmarks/hillerborg1976_repro.py:46",
+  "l3_satisfied": false
+ },
+ "level": {
+  "ladder": {
+   "L1_tests": true,
+   "L2_impl+entry+run_artifacts": true,
+   "L3_integration_callers": false,
+   "L4_benchmark+repro_cmd": false
+  },
+  "assigned_level": 2
+ }
+}
