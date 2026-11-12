@@ -1,0 +1,42 @@
+{
+  "impl_files": [
+    "src/tensorfem/cylindrical_shell4.py 108L sha256=727df10e11dd960a…（圆柱 Reissner-Mindlin Q4 单元，精确度量与曲率项）",
+    "src/tensorfem/cylindrical_shell_benchmarks.py 53L sha256=9006b7eeb147e161…（scordelis_lo_cylindrical 基准函数）",
+    "benchmarks/scordelis_lo_1964.py 274L sha256=13edaacc3f35a5db…（Scordelis-Lo 1964 + MacNeal-Harder 1985 双算例脚本）"
+  ],
+  "entry": "benchmarks/scordelis_lo_1964.py::main → 4网格序列求解 → result.json + 2张PNG",
+  "run_artifacts": [
+    "artifacts/scordelis_lo_1964/result.json 4711B sha256=5b732b827241474c…",
+    "artifacts/scordelis_lo_1964/convergence.png 58161B",
+    "artifacts/scordelis_lo_1964/deflection_field_16x16.png 62765B",
+    "artifacts/scordelis_lo_1964/README.md 2148B"
+  ],
+  "tests": "tests/test_scordelis_lo_verification.py 90L, 4 tests all pass (pytest 17.66s): test_flat_facet_shell4_fails_accuracy_gate, test_cylindrical_shell4_passes_accuracy_gate, test_cylindrical_shell4_high_accuracy, test_verification_artifacts_exist",
+  "integration_callers": [
+    "benchmarks/scordelis_lo_1964.py:41 from tensorfem.cylindrical_shell_benchmarks import scordelis_lo_cylindrical",
+    "src/tensorfem/cylindrical_shell_benchmarks.py:17 from .cylindrical_shell4 import cylindrical_shell4_stiffness",
+    "src/tensorfem/benchmark_cases.py:104-106 runner=scordelis_lo → scordelis_lo_cylindrical"
+  ],
+  "benchmark": {
+    "anchor_slug": "CASE-FEM-SCORDELIS-LO-ROOF",
+    "reference_value_in": 0.3024,
+    "reference_source": "Scordelis & Lo (1964) ACI Journal 61(3):539-550, DOI 10.14359/7796",
+    "gate_criterion": "|w(16x16)| within 5% of 0.3024 in",
+    "got_16x16": 0.2532963596646652,
+    "error_16x16_pct": 16.237976301367336,
+    "gate_passed": false,
+    "got_32x32": 0.30101199830764863,
+    "error_32x32_pct": 0.45899526863471246,
+    "convergence_orders": [0.71, 1.41, 5.14],
+    "tensorbench_l4_verdict": "CLAIMED_NOT_PROVEN (no tensorbench_results row)"
+  },
+  "repro_cmd": "cd /root/tp-agent/work/m16067 && PYTHONPATH=src python3 benchmarks/scordelis_lo_1964.py — 审计窗口内重跑数值逐位匹配 result.json",
+  "external_anchor": "Scordelis & Lo (1964) ACI Journal 61(3):539-550, DOI 10.14359/7796; 目标值 0.3024 in 来自原文表（45° panel, self-weight）。仓库既有 benchmarks/verified/fem_shell_scordelis_lo 实为 MacNeal-Harder 1985 标准问题（L=50, R=25, 80°, t=0.25, E=4.32e8, ν=0, p=90, diaphragm ends），非 Scordelis-Lo 1964 原始问题。",
+  "level_rationale": "L0(文档✅) L1(收敛研究✅) L2(真实代码✅) L3(集成主求解器✅) L4(❌ 16x16门限FAIL 16.24%>5% + 无平台复算tensorbench_results行) L5(❌ 非科研工程贡献) → 最终 L3",
+  "findings": {
+    "F1_misnamed_verified_benchmark": "benchmarks/verified/fem_shell_scordelis_lo 实为 MacNeal-Harder 1985 标准问题，非 Scordelis-Lo 1964。m16067 正确识别并报告此问题。",
+    "F2_honest_fail_16x16": "16x16 误差 16.24% > 5% 门限，原因：薄壳 h/R=1/800 下 Q4 单元前渐近区较长。32x32 达 0.46% 证明单元能力真实。honest-FAIL 合规。",
+    "F3_no_platform_recompute": "平台 /tensor/bench/l4-verdict/16067 返回 CLAIMED_NOT_PROVEN，无 tensorbench_results 行 → 结果为自声明，未经平台独立复算。",
+    "F4_bc_trap_correctly_handled": "m16067 正确识别近刚体模态问题（条件数≈4.8e19），额外约束 y 平移和绕竖轴转动。"
+  }
+}
