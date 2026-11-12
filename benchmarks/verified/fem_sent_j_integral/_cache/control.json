@@ -1,0 +1,64 @@
+{
+  "width_m": 0.1,
+  "height_over_width": 2.0,
+  "sigma_pa": 100000000.0,
+  "young_pa": 210000000000.0,
+  "poisson": 0.3,
+  "plane": "stress",
+  "quarter_point": false,
+  "contour_fractions": [
+    0.15
+  ],
+  "levels": [
+    {
+      "level": "medium",
+      "name": "medium",
+      "n_sectors": 48,
+      "first_ring": 0.05,
+      "growth": 1.45,
+      "cases": [
+        {
+          "a_over_w": 0.2,
+          "crack_length_m": 0.020000000000000004,
+          "shape_factor_tada": 1.3706640000000003,
+          "k_reference_pa_sqrt_m": 34357451.37418826,
+          "n_nodes": 2173,
+          "n_elements": 1050,
+          "n_stations": 12,
+          "contours": [
+            {
+              "requested_fraction": 0.15,
+              "station_fraction": 0.15243125,
+              "j_j_m2": 5397.034563237822,
+              "k_pa_sqrt_m": 33665668.83755531,
+              "shape_factor": 1.3430658697293767,
+              "rel_error_vs_tada": -0.020134861841139457
+            }
+          ],
+          "reaction_ratio": 1.000000000000165
+        },
+        {
+          "a_over_w": 0.5,
+          "crack_length_m": 0.05,
+          "shape_factor_tada": 2.8263750000000005,
+          "k_reference_pa_sqrt_m": 112018491.90771191,
+          "n_nodes": 2173,
+          "n_elements": 1050,
+          "n_stations": 12,
+          "contours": [
+            {
+              "requested_fraction": 0.15,
+              "station_fraction": 0.15243125,
+              "j_j_m2": 57360.91657226111,
+              "k_pa_sqrt_m": 109753325.59961376,
+              "shape_factor": 2.769221852202533,
+              "rel_error_vs_tada": -0.020221360505052532
+            }
+          ],
+          "reaction_ratio": 1.0000000000000453
+        }
+      ]
+    }
+  ],
+  "generated_at": "2026-11-12T13:44:42+00:00"
+}
