@@ -327,6 +327,7 @@ def generate_gates(flat_results, cyl_results, flat_ladder=None, cyl_ladder=None)
                 "description": f"{label}: {g['description']}",
                 "status": g["status"],
                 "passed": bool(g["passed"]),
+                "operator": g.get("operator"),
                 "threshold": g["threshold"],
                 "actual": g["actual"],
                 "detail": g["detail"],

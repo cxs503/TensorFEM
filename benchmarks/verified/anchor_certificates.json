@@ -3,22 +3,22 @@
   "gate_schema": "tensorfem.verified-gates.v1",
   "git_tracking_checked": true,
   "anchors": 33,
-  "certified": 6,
-  "contradicted": 18,
+  "certified": 7,
+  "contradicted": 17,
   "uncertified": 9,
   "gates_total": 243,
-  "gates_recomputed": 201,
+  "gates_recomputed": 216,
   "gates_contradicted": 0,
   "gates_contradicted_inferred": 2,
-  "gates_without_numeric_criterion": 9,
-  "gates_unrecomputable": 42,
+  "gates_without_numeric_criterion": 6,
+  "gates_unrecomputable": 27,
   "defect_counts": {
     "E_ANCHOR_NAME_MISMATCH": 2,
     "E_ARTIFACT_MISSING": 13,
     "E_GATE_VALUE_NOT_FINITE": 1,
     "E_NO_GATES": 9,
     "E_OVERALL_ABSENT": 2,
-    "E_PASS_WITHOUT_CRITERION": 4,
+    "E_PASS_WITHOUT_CRITERION": 3,
     "E_SCHEMA": 4
   },
   "records": [
@@ -1920,111 +1920,95 @@
       "has_result": true,
       "has_gates": true,
       "declared_overall": false,
-      "recomputed_overall": null,
+      "recomputed_overall": false,
       "gates": 6,
-      "gates_passed": 1,
-      "gates_failed": 0,
+      "gates_passed": 3,
+      "gates_failed": 3,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
-      "gates_unrecomputable": 5,
+      "gates_unrecomputable": 0,
       "defects": [],
       "warnings": [
-        "W_OPERATOR_ABSENT",
-        "W_UNRECOMPUTABLE_FAIL",
-        "W_OPERATOR_INFERRED",
-        "W_FAILED_GATES_LIST_UNCHECKED",
         "W_UNDECLARED_ARTIFACTS"
       ],
       "gate_detail": [
         {
           "id": "G1_accuracy_finest",
           "quantity": "finest-mesh value within tolerance of the reference",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.018162201151045335,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.01816220115104552,
           "threshold": 0.03,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "G2_accuracy_asymptotic",
           "quantity": "Richardson limit of the ladder within tolerance (certified accuracy)",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.032719329920341135,
           "threshold": 0.03,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "G3_monotone_qoi",
-          "quantity": "quantity of interest moves monotonically along the ladder",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "quantity of interest moves monotonically along the ladder (count of sign reversals + exact stagnation, must be 0)",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.0,
-          "threshold": null,
+          "threshold": 0.0,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_UNRECOMPUTABLE_FAIL"
-          ]
+          "warnings": []
         },
         {
           "id": "G4_observed_order",
           "quantity": "finest observed order >= 1",
           "operator": ">=",
-          "operator_source": "inferred",
-          "value": 1.0927866717121475,
+          "operator_source": "declared",
+          "value": 1.0927866717121553,
           "threshold": 1.0,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
           "id": "G5_asymptotic_range_consistency",
           "quantity": "finest-mesh error inside the GCI band (ladder in the asymptotic range)",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.017871819383049638,
-          "threshold": 0.017871819383049638,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.01816220115104552,
+          "threshold": 0.017871819383049454,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "G6_coarsest_sanity",
           "quantity": "coarsest level within 0.5 of the reference",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.028573057507059844,
           "threshold": 0.5,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         }
       ]
     },
@@ -2581,208 +2565,179 @@
     {
       "anchor": "fem_shell_scordelis_lo",
       "directory": "benchmarks/verified/fem_shell_scordelis_lo",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
       "declared_overall": false,
-      "recomputed_overall": null,
+      "recomputed_overall": false,
       "gates": 12,
-      "gates_passed": 2,
-      "gates_failed": 0,
+      "gates_passed": 6,
+      "gates_failed": 6,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
-      "gates_unrecomputable": 10,
-      "defects": [
-        "E_PASS_WITHOUT_CRITERION"
-      ],
+      "gates_unrecomputable": 0,
+      "defects": [],
       "warnings": [
-        "W_OPERATOR_ABSENT",
-        "W_UNRECOMPUTABLE_FAIL",
-        "W_OPERATOR_INFERRED",
         "W_UNDECLARED_ARTIFACTS"
       ],
       "gate_detail": [
         {
           "id": "flat_facet.accuracy_finest",
           "quantity": "Flat facet Shell4: finest-mesh value within tolerance of the reference",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.49401767980614847,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.4940176798061499,
           "threshold": 0.03,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "flat_facet.accuracy_asymptotic",
           "quantity": "Flat facet Shell4: Richardson limit of the ladder within tolerance (certified accuracy)",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.5318762842904877,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.5318762842904944,
           "threshold": 0.03,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "flat_facet.monotone_qoi",
-          "quantity": "Flat facet Shell4: quantity of interest moves monotonically along the ladder",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "Flat facet Shell4: quantity of interest moves monotonically along the ladder (count of sign reversals + exact stagnation, must be 0)",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.0,
-          "threshold": null,
+          "threshold": 0.0,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_UNRECOMPUTABLE_FAIL"
-          ]
+          "warnings": []
         },
         {
           "id": "flat_facet.observed_order",
           "quantity": "Flat facet Shell4: finest observed order >= 1",
           "operator": ">=",
-          "operator_source": "inferred",
-          "value": 1.1664950989284777,
+          "operator_source": "declared",
+          "value": 1.1664950989284393,
           "threshold": 1.0,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
           "id": "flat_facet.asymptotic_range_consistency",
           "quantity": "Flat facet Shell4: finest-mesh error inside the GCI band (ladder in the asymptotic range)",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.03167516438732134,
-          "threshold": 0.03167516438732134,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.4940176798061499,
+          "threshold": 0.03167516438732553,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "flat_facet.coarsest_sanity",
           "quantity": "Flat facet Shell4: coarsest level within 0.5 of the reference",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.6297533351211455,
           "threshold": 0.5,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "cylindrical.accuracy_finest",
           "quantity": "Cylindrical shell4: finest-mesh value within tolerance of the reference",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.004147013919962935,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.004147013919966423,
           "threshold": 0.03,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "cylindrical.accuracy_asymptotic",
           "quantity": "Cylindrical shell4: Richardson limit of the ladder within tolerance (certified accuracy)",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.005166611021669927,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.005166611021675066,
           "threshold": 0.03,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "cylindrical.monotone_qoi",
-          "quantity": "Cylindrical shell4: quantity of interest moves monotonically along the ladder",
-          "operator": null,
-          "operator_source": "absent",
-          "value": null,
-          "threshold": null,
+          "quantity": "Cylindrical shell4: quantity of interest moves monotonically along the ladder (count of sign reversals + exact stagnation, must be 0)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0,
+          "threshold": 0.0,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
-          "defects": [
-            "E_PASS_WITHOUT_CRITERION"
-          ],
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
           "warnings": []
         },
         {
           "id": "cylindrical.observed_order",
           "quantity": "Cylindrical shell4: finest observed order >= 1",
           "operator": ">=",
-          "operator_source": "inferred",
-          "value": 2.2760056014979373,
+          "operator_source": "declared",
+          "value": 2.2760056014972694,
           "threshold": 1.0,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
           "id": "cylindrical.asymptotic_range_consistency",
           "quantity": "Cylindrical shell4: finest-mesh error inside the GCI band (ladder in the asymptotic range)",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.0012692328508337033,
-          "threshold": 0.0012692328508337033,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.004147013919966423,
+          "threshold": 0.0012692328508356284,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "cylindrical.coarsest_sanity",
           "quantity": "Cylindrical shell4: coarsest level within 0.5 of the reference",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.28329848422336495,
           "threshold": 0.5,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         }
       ]
     },
