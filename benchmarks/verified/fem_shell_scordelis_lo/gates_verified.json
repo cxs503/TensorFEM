@@ -18,8 +18,9 @@
       "description": "Flat facet Shell4: finest-mesh value within tolerance of the reference",
       "status": "FAIL",
       "passed": false,
+      "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.49401767980614847,
+      "actual": 0.4940176798061499,
       "detail": "finest level 32x32 rel. error 4.9402e-01"
     },
     {
@@ -27,26 +28,29 @@
       "description": "Flat facet Shell4: Richardson limit of the ladder within tolerance (certified accuracy)",
       "status": "FAIL",
       "passed": false,
+      "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.5318762842904877,
+      "actual": 0.5318762842904944,
       "detail": "extrapolated -0.463239388369 vs Scordelis & Lo (1960) -0.3024: rel. error 5.3188e-01 (order p=1.166)"
     },
     {
       "id": "flat_facet.monotone_qoi",
-      "description": "Flat facet Shell4: quantity of interest moves monotonically along the ladder",
+      "description": "Flat facet Shell4: quantity of interest moves monotonically along the ladder (count of sign reversals + exact stagnation, must be 0)",
       "status": "FAIL",
       "passed": false,
-      "threshold": null,
+      "operator": "<=",
+      "threshold": 0.0,
       "actual": 1.0,
-      "detail": "non-monotone: sign flips between 4x4->8x8 (0.0872808) and 8x8->16x16 (-0.031985)"
+      "detail": "non-monotone: sign flips between 4x4->8x8 (0.0872808) and 8x8->16x16 (-0.031985) [1 sign reversal(s), 0 stagnation step(s)]"
     },
     {
       "id": "flat_facet.observed_order",
       "description": "Flat facet Shell4: finest observed order >= 1",
       "status": "PASS",
       "passed": true,
+      "operator": ">=",
       "threshold": 1.0,
-      "actual": 1.1664950989284777,
+      "actual": 1.1664950989284393,
       "detail": "4x4->16x16: n/a (non-monotone convergence: |df| = 0.0872808 then 0.031985), 8x8->32x32: p=1.166"
     },
     {
@@ -54,8 +58,9 @@
       "description": "Flat facet Shell4: finest-mesh error inside the GCI band (ladder in the asymptotic range)",
       "status": "WITHHELD",
       "passed": false,
-      "threshold": 0.03167516438732134,
-      "actual": 0.03167516438732134,
+      "operator": "<=",
+      "threshold": 0.03167516438732553,
+      "actual": 0.4940176798061499,
       "detail": "finest-mesh true error 4.940e-01 vs GCI band 3.168e-02 -> outside the band; ladder pre-asymptotic -> accuracy not certifiable from these levels"
     },
     {
@@ -63,6 +68,7 @@
       "description": "Flat facet Shell4: coarsest level within 0.5 of the reference",
       "status": "FAIL",
       "passed": false,
+      "operator": "<=",
       "threshold": 0.5,
       "actual": 0.6297533351211455,
       "detail": "coarsest level 4x4 rel. error 6.2975e-01"
@@ -72,8 +78,9 @@
       "description": "Cylindrical shell4: finest-mesh value within tolerance of the reference",
       "status": "PASS",
       "passed": true,
+      "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.004147013919962935,
+      "actual": 0.004147013919966423,
       "detail": "finest level 32x32 rel. error 4.1470e-03"
     },
     {
@@ -81,26 +88,29 @@
       "description": "Cylindrical shell4: Richardson limit of the ladder within tolerance (certified accuracy)",
       "status": "PASS",
       "passed": true,
+      "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.005166611021669927,
+      "actual": 0.005166611021675066,
       "detail": "extrapolated -0.303962383173 vs Scordelis & Lo (1960) -0.3024: rel. error 5.1666e-03 (order p=2.276)"
     },
     {
       "id": "cylindrical.monotone_qoi",
-      "description": "Cylindrical shell4: quantity of interest moves monotonically along the ladder",
+      "description": "Cylindrical shell4: quantity of interest moves monotonically along the ladder (count of sign reversals + exact stagnation, must be 0)",
       "status": "PASS",
       "passed": true,
-      "threshold": null,
-      "actual": null,
-      "detail": "monotone"
+      "operator": "<=",
+      "threshold": 0.0,
+      "actual": 0.0,
+      "detail": "monotone [0 sign reversal(s), 0 stagnation step(s)]"
     },
     {
       "id": "cylindrical.observed_order",
       "description": "Cylindrical shell4: finest observed order >= 1",
       "status": "PASS",
       "passed": true,
+      "operator": ">=",
       "threshold": 1.0,
-      "actual": 2.2760056014979373,
+      "actual": 2.2760056014972694,
       "detail": "4x4->16x16: p=3.801, 8x8->32x32: p=2.276"
     },
     {
@@ -108,8 +118,9 @@
       "description": "Cylindrical shell4: finest-mesh error inside the GCI band (ladder in the asymptotic range)",
       "status": "WITHHELD",
       "passed": false,
-      "threshold": 0.0012692328508337033,
-      "actual": 0.0012692328508337033,
+      "operator": "<=",
+      "threshold": 0.0012692328508356284,
+      "actual": 0.004147013919966423,
       "detail": "finest-mesh true error 4.147e-03 vs GCI band 1.269e-03 -> outside the band; ladder pre-asymptotic -> accuracy not certifiable from these levels"
     },
     {
@@ -117,6 +128,7 @@
       "description": "Cylindrical shell4: coarsest level within 0.5 of the reference",
       "status": "PASS",
       "passed": true,
+      "operator": "<=",
       "threshold": 0.5,
       "actual": 0.28329848422336495,
       "detail": "coarsest level 4x4 rel. error 2.8330e-01"
@@ -150,16 +162,16 @@
   "passed": false,
   "reported_vs_certified": {
     "flat_facet": {
-      "reported_finest_error": 0.49401767980614847,
-      "certified_error": 0.5318762842904877
+      "reported_finest_error": 0.4940176798061499,
+      "certified_error": 0.5318762842904944
     },
     "cylindrical": {
-      "reported_finest_error": 0.004147013919962935,
-      "certified_error": 0.005166611021669927
+      "reported_finest_error": 0.004147013919966423,
+      "certified_error": 0.005166611021675066
     }
   },
   "limitations": [
-    "Flat facet Shell4 element cannot capture curved-shell membrane-bending coupling: its ladder oscillates around a value ~50% above the reference",
+    "Flat facet Shell4 with the default one-point transverse-shear rule is rank deficient (3 spurious zero-energy modes per element) and its ladder plateaus ~50% above the reference; with assumed natural shear the same facets reach 2.35% at 16x16",
     "Cylindrical shell4 is specialized for cylindrical geometry only",
     "General curved shells require either specialized elements or improved flat facet formulations",
     "Accuracy is certified at the Richardson limit of a 4-level ladder; a finer reference value (more than four significant digits) is required to certify sub-0.1% claims"

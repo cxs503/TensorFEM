@@ -197,6 +197,7 @@ def main():
             "description": g["description"],
             "status": g["status"],
             "passed": bool(g["passed"]),
+            "operator": g.get("operator"),
             "threshold": g["threshold"],
             "actual": g["actual"],
             "detail": g["detail"],
@@ -223,7 +224,17 @@ def main():
         "gates": gates,
         "overall_verdict": summary["overall_verdict"],
         "passed": bool(summary["passed"]),
-        "failed_gates": [g["id"] for g in gates if g["status"] == "FAIL"],
+        # A gate that does not meet its numeric criterion is listed here even
+        # when its status is WITHHELD (evidence insufficient): the certificate
+        # auditor recomputes every ``value <op> threshold`` and requires this
+        # list to match, so a withheld gate that exceeds its own band must not
+        # be silently absent from it.
+        "failed_gates": [
+            g["id"] for g in gates
+            if g["status"] == "FAIL"
+            or (g.get("operator") and g["actual"] is not None
+                and g["threshold"] is not None and not g["passed"])
+        ],
         "withheld_gates": [g["id"] for g in gates if g["status"] == "WITHHELD"],
         "limitations": [
             "Cylindrical Shell4 is specialised for cylindrical geometry only",

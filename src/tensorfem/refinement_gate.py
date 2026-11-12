@@ -111,6 +111,9 @@ class GateVerdict:
     actual: float | None
     threshold: float | None
     detail: str
+    #: Comparison applied to ``(actual, threshold)``; emitted so a certificate
+    #: can be recomputed by a reader that never runs the solver.
+    operator: str | None = None
 
     def __post_init__(self) -> None:
         if self.status not in (PASS, FAIL, WITHHELD):
@@ -124,6 +127,7 @@ class GateVerdict:
             "passed": self.status == PASS,
             "actual": self.actual,
             "threshold": self.threshold,
+            "operator": self.operator,
             "detail": self.detail,
         }
 
@@ -217,6 +221,13 @@ def evaluate_reference_ladder(
     values = [lv.value for lv in study]
     steps = [b - a for a, b in zip(values, values[1:])]
     monotone = all(s > 0.0 for s in steps) or all(s < 0.0 for s in steps)
+    # The gate used to be marked ``actual=None`` (pass) / ``1.0`` (fail) with no
+    # threshold, i.e. a verdict no reader can recompute.  It now carries the
+    # count of ladder steps that break monotonicity (sign reversal or exact
+    # stagnation) against a threshold of 0, so PASS/FAIL is machine-checkable.
+    reversals = sum(1 for s1, s2 in zip(steps, steps[1:]) if s1 * s2 < 0.0)
+    stagnant = sum(1 for s in steps if s == 0.0)
+    violations = reversals + stagnant
     worst_flip = ""
     for i, (s1, s2) in enumerate(zip(steps, steps[1:])):
         if s1 * s2 < 0.0:
@@ -232,6 +243,7 @@ def evaluate_reference_ladder(
         status=PASS if abs(finest_error) <= tolerance else FAIL,
         actual=finest_error,
         threshold=tolerance,
+        operator="<=",
         detail=f"finest level {finest.label or finest.mesh_size} rel. error {finest_error:.4e}",
     ))
 
@@ -242,6 +254,7 @@ def evaluate_reference_ladder(
             status=PASS if abs(float(asymptotic_error)) <= tolerance else FAIL,
             actual=float(asymptotic_error),
             threshold=tolerance,
+            operator="<=",
             detail=(f"extrapolated {float(ref['extrapolated_value']):.12g} vs "
                     f"{reference_label} {reference_value:.12g}: rel. error "
                     f"{float(asymptotic_error):.4e} (order p={float(order):.3f})"),
@@ -254,16 +267,20 @@ def evaluate_reference_ladder(
             status=WITHHELD,
             actual=None,
             threshold=tolerance,
+            operator="<=",
             detail=f"cannot certify: {reason}",
         ))
 
     gates.append(GateVerdict(
         id="monotone_qoi",
-        description="quantity of interest moves monotonically along the ladder",
+        description="quantity of interest moves monotonically along the ladder "
+                    "(count of sign reversals + exact stagnation, must be 0)",
         status=PASS if monotone else FAIL,
-        actual=None if monotone else 1.0,
-        threshold=None,
-        detail="monotone" if monotone else f"non-monotone: {worst_flip}",
+        actual=float(violations),
+        threshold=0.0,
+        operator="<=",
+        detail=("monotone" if monotone else f"non-monotone: {worst_flip}")
+               + f" [{reversals} sign reversal(s), {stagnant} stagnation step(s)]",
     ))
 
     if min_order is not None:
@@ -274,6 +291,7 @@ def evaluate_reference_ladder(
                 status=WITHHELD,
                 actual=None,
                 threshold=float(min_order),
+                operator=">=",
                 detail=f"cannot certify: {study_report.get('blocked_reason', 'order not measurable')}",
             ))
         else:
@@ -283,6 +301,7 @@ def evaluate_reference_ladder(
                 status=PASS if float(order) >= min_order else FAIL,
                 actual=float(order),
                 threshold=float(min_order),
+                operator=">=",
                 detail=", ".join(
                     f"{e['from']}->{e['to']}: "
                     + (f"p={e['order']:.3f}" if e["order"] is not None else f"n/a ({e.get('reason', '')})")
@@ -296,12 +315,19 @@ def evaluate_reference_ladder(
         # is still pre-asymptotic: the extrapolation is not conservative, so the
         # study cannot *certify* the value.  That is missing evidence, not a
         # demonstrated violation of the tolerance -- hence WITHHELD, never FAIL.
+        band = float(ref.get("relative_gci", float("nan")))
+        # ``actual`` is the measured finest-mesh error; ``threshold`` is the GCI
+        # band.  Writing the band into both fields made the gate reproduce its
+        # own threshold and left the verdict unsupported by its own numbers.
+        # The comparison is repeated here without the 1e-12 estimator slack, so
+        # a band-edge ladder is reported WITHHELD rather than promoted.
         gates.append(GateVerdict(
             id="asymptotic_range_consistency",
             description="finest-mesh error inside the GCI band (ladder in the asymptotic range)",
-            status=PASS if inside else WITHHELD,
-            actual=float(ref.get("relative_gci", float("nan"))),
-            threshold=float(ref.get("relative_gci", float("nan"))),
+            status=PASS if (inside and finest_error <= band) else WITHHELD,
+            actual=finest_error,
+            threshold=band,
+            operator="<=",
             detail=(str(ref.get("gci_detail", "")) if inside else
                     str(ref.get("gci_detail", ""))
                     + "; ladder pre-asymptotic -> accuracy not certifiable from these levels"),
@@ -325,6 +351,7 @@ def evaluate_reference_ladder(
             status=PASS if coarsest_error <= coarsest_sanity else FAIL,
             actual=coarsest_error,
             threshold=float(coarsest_sanity),
+            operator="<=",
             detail=f"coarsest level {coarsest.label or coarsest.mesh_size} rel. error {coarsest_error:.4e}",
         ))
 

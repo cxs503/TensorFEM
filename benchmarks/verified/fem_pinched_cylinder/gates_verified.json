@@ -22,7 +22,7 @@
       "asymptotic_range_consistency"
     ]
   },
-  "reported_accuracy_finest": 0.018162201151045335,
+  "reported_accuracy_finest": 0.01816220115104552,
   "certified_accuracy": 0.032719329920341135,
   "gates": [
     {
@@ -30,8 +30,9 @@
       "description": "finest-mesh value within tolerance of the reference",
       "status": "PASS",
       "passed": true,
+      "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.018162201151045335,
+      "actual": 0.01816220115104552,
       "detail": "finest level 32x32 rel. error 1.8162e-02"
     },
     {
@@ -39,26 +40,29 @@
       "description": "Richardson limit of the ladder within tolerance (certified accuracy)",
       "status": "FAIL",
       "passed": false,
+      "operator": "<=",
       "threshold": 0.03,
       "actual": 0.032719329920341135,
       "detail": "extrapolated -1.88450623324e-05 vs MacNeal & Harder (1985) -1.8248e-05: rel. error 3.2719e-02 (order p=1.093)"
     },
     {
       "id": "G3_monotone_qoi",
-      "description": "quantity of interest moves monotonically along the ladder",
+      "description": "quantity of interest moves monotonically along the ladder (count of sign reversals + exact stagnation, must be 0)",
       "status": "FAIL",
       "passed": false,
-      "threshold": null,
+      "operator": "<=",
+      "threshold": 0.0,
       "actual": 1.0,
-      "detail": "non-monotone: sign flips between 4x4->8x8 (8.9946e-08) and 8x8->16x16 (-6.41841e-07)"
+      "detail": "non-monotone: sign flips between 4x4->8x8 (8.9946e-08) and 8x8->16x16 (-6.41841e-07) [1 sign reversal(s), 0 stagnation step(s)]"
     },
     {
       "id": "G4_observed_order",
       "description": "finest observed order >= 1",
       "status": "PASS",
       "passed": true,
+      "operator": ">=",
       "threshold": 1.0,
-      "actual": 1.0927866717121475,
+      "actual": 1.0927866717121553,
       "detail": "4x4->16x16: n/a (non-monotone convergence: |df| = 8.9946e-08 then 6.41841e-07), 8x8->32x32: p=1.093"
     },
     {
@@ -66,8 +70,9 @@
       "description": "finest-mesh error inside the GCI band (ladder in the asymptotic range)",
       "status": "WITHHELD",
       "passed": false,
-      "threshold": 0.017871819383049638,
-      "actual": 0.017871819383049638,
+      "operator": "<=",
+      "threshold": 0.017871819383049454,
+      "actual": 0.01816220115104552,
       "detail": "finest-mesh true error 1.816e-02 vs GCI band 1.787e-02 -> outside the band; ladder pre-asymptotic -> accuracy not certifiable from these levels"
     },
     {
@@ -75,6 +80,7 @@
       "description": "coarsest level within 0.5 of the reference",
       "status": "PASS",
       "passed": true,
+      "operator": "<=",
       "threshold": 0.5,
       "actual": 0.028573057507059844,
       "detail": "coarsest level 4x4 rel. error 2.8573e-02"
@@ -84,7 +90,8 @@
   "passed": false,
   "failed_gates": [
     "G2_accuracy_asymptotic",
-    "G3_monotone_qoi"
+    "G3_monotone_qoi",
+    "G5_asymptotic_range_consistency"
   ],
   "withheld_gates": [
     "G5_asymptotic_range_consistency"

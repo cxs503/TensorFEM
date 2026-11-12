@@ -131,13 +131,6 @@
       ],
       "remedy": "re-emit the file in the canonical envelope (schema/anchor/passed/gates); give the gate a numeric threshold, or mark it informational (not a pass); add an aggregate passed flag so the anchor's verdict needs no prose"
     },
-    "fem_shell_scordelis_lo": {
-      "grade": "contradicted",
-      "defects": [
-        "E_PASS_WITHOUT_CRITERION"
-      ],
-      "remedy": "give the gate a numeric threshold, or mark it informational (not a pass)"
-    },
     "fem_sphere_pressure_membrane": {
       "grade": "contradicted",
       "defects": [
