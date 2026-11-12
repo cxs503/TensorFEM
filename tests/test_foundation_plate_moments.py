@@ -33,6 +33,8 @@ from tensorfem.foundation_plate_bending import (
     finite_plate_foundation_fem,
     navier_foundation_deflection,
     navier_foundation_moments,
+    navier_mindlin_foundation_deflection,
+    navier_mindlin_foundation_moments,
     nodal_bending_moments,
     plate_rigidity,
 )
@@ -249,3 +251,94 @@ def test_deflection_and_moment_consistency_at_centre():
     assert row["w_analytic"] == pytest.approx(float(w_series[0]), rel=1e-12)
     assert row["w_rel_error"] <= 0.01
     assert math.isfinite(report["foundation_reaction"])
+
+# ---------------------------------------------------------------------------
+# 5. Mindlin (thick-plate) moment series: thickness-independence of the moment
+# ---------------------------------------------------------------------------
+# ``GAP-FEM-WINKLER`` doc flagged "厚板弯矩级数" as the next step: for a thick
+# plate (t/a > 0.05) the Kirchhoff series is only accurate to O((t/a)^2) on the
+# *deflection* side.  This section closes that verification debt with the
+# decisive finding that the *bending-moment* field of a uniformly-loaded,
+# simply-supported plate is **thickness-independent**: the Mindlin and
+# Kirchhoff series give the same Mx/My/Mxy (a classical result -- the moment is
+# fixed by the load distribution, not by transverse shear), while the
+# deflection does need the Mindlin series (up to ~17 % at t/a = 0.2).
+
+def test_mindlin_moment_series_collapses_onto_kirchhoff_in_thin_limit():
+    """In the thin-plate limit the Mindlin moment series == Kirchhoff series.
+
+    ``navier_mindlin_foundation_moments`` is documented to collapse onto
+    ``navier_foundation_moments`` as ``S -> inf`` (``X -> -a W``, ``Y -> -b W``).
+    This is the analytic-consistency anchor for the thick-plate reference.
+    """
+    center = _center()
+    for t in (0.1, 0.3, 0.5):
+        mk = navier_foundation_moments(
+            center, side_x=SIDE, side_y=SIDE, young=YOUNG, poisson=POISSON,
+            thickness=t, pressure=PRESSURE, n_modes=99,
+        )
+        mm = navier_mindlin_foundation_moments(
+            center, side_x=SIDE, side_y=SIDE, young=YOUNG, poisson=POISSON,
+            thickness=t, pressure=PRESSURE, n_modes=99,
+        )
+        assert torch.allclose(mk, mm, rtol=1e-6, atol=1e-6 * D_PLATE)
+
+
+def test_mindlin_moment_is_thickness_independent_for_uniform_load():
+    """The SS-plate bending moment under uniform load does not depend on t.
+
+    Classical result: for a uniformly-loaded simply-supported plate the moment
+    field is fixed by the load distribution (the Kirchhoff and Mindlin
+    solutions give the same Mx/My/Mxy at any t/a).  This falsifies the doc's
+    "厚板需改用 Mindlin 级数弯矩" as a *moment*-side requirement -- the
+    deflection side is the one that needs the Mindlin series.
+    """
+    center = _center()
+    m_thin = navier_mindlin_foundation_moments(
+        center, side_x=SIDE, side_y=SIDE, young=YOUNG, poisson=POISSON,
+        thickness=0.1, pressure=PRESSURE, n_modes=99,
+    )
+    for t in (0.5, 1.0, 2.0):                      # t/a = 0.05 .. 0.20
+        m_thick = navier_mindlin_foundation_moments(
+            center, side_x=SIDE, side_y=SIDE, young=YOUNG, poisson=POISSON,
+            thickness=t, pressure=PRESSURE, n_modes=99,
+        )
+        assert torch.allclose(m_thick, m_thin, rtol=1e-6, atol=1e-6 * D_PLATE)
+
+
+def test_mindlin_deflection_does_depend_on_thickness():
+    """Contrast: the *deflection* does need the Mindlin series for thick plates.
+
+    At t/a = 0.2 the Kirchhoff deflection is ~17 % below the Mindlin one, so the
+    doc's "厚板" caveat is real on the deflection side -- only the moment side
+    is thickness-independent.
+    """
+    center = _center()
+    dk = navier_foundation_deflection(
+        center, side_x=SIDE, side_y=SIDE, young=YOUNG, poisson=POISSON,
+        thickness=2.0, pressure=PRESSURE, n_modes=99,
+    )
+    dm = navier_mindlin_foundation_deflection(
+        center, side_x=SIDE, side_y=SIDE, young=YOUNG, poisson=POISSON,
+        thickness=2.0, pressure=PRESSURE, n_modes=99,
+    )
+    rel = abs(float(dk[0]) - float(dm[0])) / float(dm[0])
+    assert rel > 0.10                              # >10 % at t/a = 0.2
+
+
+def test_fe_moments_match_mindlin_series_thick_plate():
+    """FE vs Mindlin moment series for a thick plate (t/a = 0.1) < 3 %.
+
+    Closes the ``GAP-FEM-WINKLER`` "厚板弯矩" verification debt: the FE
+    (Mindlin Q4) moment field matches the Mindlin series to < 3 % even at
+    t/a = 0.1, where the Kirchhoff series is only a O((t/a)^2) approximation
+    of the FE kinematics on the deflection side.
+    """
+    report = compare_finite_plate_moments(
+        nx=32, ny=32, thickness=1.0, pressure=PRESSURE, reference="mindlin",
+    )
+    assert report["max_mx_rel_error"] <= 0.03
+    assert report["max_my_rel_error"] <= 0.03
+    assert report["center_mx_rel_error"] <= 0.01
+    assert report["mxy_rel_error"] <= 0.05
+    assert report["max_w_rel_error"] <= 0.03
