@@ -1275,7 +1275,7 @@
   "w_exact_m": 1.282051282051282e-05,
   "w_fit_m": -3.580650863206703e-05,
   "w_rel_error": 3.7929076733012286,
-  "wall_clock_s": 1.27
+  "wall_clock_s": 1.46
  },
  "gates": {
   "all_gating_pass": true,
