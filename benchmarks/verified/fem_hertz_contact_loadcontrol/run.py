@@ -222,6 +222,39 @@ def _abs_pct(row, field):
     return abs(float(row["error_pct"][field]))
 
 
+TRUNCATION_GATES = os.path.join(HERE, "gates_truncation.json")
+
+
+def truncation_gates(path=TRUNCATION_GATES):
+    """Gate rows from the sibling truncation-vs-model-bias study (if present).
+
+    ``truncation_extrapolation.py`` owns those numbers; they are merged here so
+    that the *anchor certificate* answers, in one machine-recomputable place,
+    both the case-pool question ("is a and delta within 3 %?") and the follow-up
+    the certificate itself raised (finding F2 in
+    ``docs/CASE-FEM-HERTZ-CONTACT-verification.md``: is the mesh-independent
+    -1.01 % indentation plateau truncation or a model bias?).  Absent file ->
+    no extra gates, so the certificate stays reproducible from this directory
+    alone.
+    """
+    if not os.path.exists(path):
+        return []
+    with open(path) as fh:
+        doc = json.load(fh)
+    return [
+        Gate(
+            id=g["id"],
+            quantity=g["quantity"],
+            reference=g["reference"],
+            value=float(g["value"]),
+            threshold=float(g["threshold"]),
+            operator=g.get("operator", "<="),
+            note=g.get("note", ""),
+        )
+        for g in doc.get("gates", [])
+    ]
+
+
 def build_gates(results):
     """Grade the declared criteria.  Every value is a number already in ``results``."""
     finest, coarse = 0.0075, 0.0300
@@ -312,6 +345,7 @@ def build_gates(results):
             value=abs(abs(float(hi["error_pct"][field])) - abs(float(lo["error_pct"][field]))),
             threshold=CRITERIA["truncation_sensitivity_pct"],
         ))
+    gates.extend(truncation_gates())
     return gates
 
 
@@ -354,7 +388,10 @@ def write_certificate(results, outdir):
                      if isinstance(v, (int, float))},
         "runs": {k: _trim(v, keep_surface=(k == f"ratio{0.05:.2f}_h{0.0075:.4f}_d96"))
                  for k, v in results["runs"].items()},
-        "probe_low_load": _trim(results["probe"]),
+        # the *raw* dump uses "probe" while this certificate itself writes
+        # "probe_low_load"; accept both so a committed result.json can rebuild the
+        # certificate without a solver run (the --from-dump promise).
+        "probe_low_load": _trim(results.get("probe") or results.get("probe_low_load") or {}),
         "truncation": [_trim(r) for r in results["truncation"]],
         "truncation_failure_mode": {
             "depth_over_a": 24,
