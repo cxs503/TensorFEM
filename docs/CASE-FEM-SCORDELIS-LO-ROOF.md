@@ -68,7 +68,7 @@ Order and limit: observed order and the Richardson limit from the dyadic 4/8/16 
 | flat facet (`sri`, `mitc`) | `1.07e-12` |
 | cylindrical shell4 | `8.40e-03` |
 
-The flat-facet family is exact to machine precision. The cylindrical element integrates the *exact* arc area and its reaction residual falls roughly as `h^2` over this ladder; it is reported rather than explained (open item) and is an order of magnitude below the displacement error it is compared with.
+The flat-facet family is exact to machine precision. The cylindrical element integrates the *exact* arc area and its reaction residual falls as `h^2`: it is exactly the rigid-mode projection `(K 1_z)^T u / (-1^T f)`, attributed to the interpolated rigid vertical translation in `docs/CASE-FEM-SCORDELIS-LO-ROOF-reaction-residual-attribution.md`, and is an order of magnitude below the displacement error it is compared with.
 
 ## 4. Figures
 
