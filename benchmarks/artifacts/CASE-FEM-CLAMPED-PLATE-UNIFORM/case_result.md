@@ -19,20 +19,27 @@ Independent (computed) reference: Rayleigh-Ritz N=12 alpha = 0.00126825 (the tab
 | slenderness_independence_thin_range | 0.0012622875 | 0.0012682503 | 0.470% | 1.0% | PASS |
 | mindlin_shear_raises_thick_plate_deflection | 0.0015021593 | 0.0012682503 | 18.443% | 100.0% | PASS |
 | poisson_sweep_fe_vs_ritz | 0.0012639386 | 0.0012682565 | 0.340% | 1.0% | PASS |
+| bfs_patch_constant_curvature_exact | 6.8199414e-16 | 0 | 0.000% | 0.0% | PASS |
+| bfs_family_machinery_ss_vs_navier | 0.004062357 | 0.0040623527 | 0.000% | 0.5% | PASS |
+| independent_family_bfs_vs_table | 0.001265382 | 0.00126 | 0.427% | 3.0% | PASS |
+| independent_family_bfs_vs_ritz | 0.001265382 | 0.0012682503 | 0.226% | 1.0% | PASS |
+| cross_family_bfs_vs_mindlin | 0.0012678611 | 0.001265382 | 0.196% | 1.0% | PASS |
+| bfs_global_equilibrium_reaction | 1000000 | 1000000 | 0.000% | 0.0% | PASS |
+| independent_family_bfs_centre_moment_vs_table | 0.02292189 | 0.0231 | 0.771% | 3.0% | PASS |
 
 ## Mesh convergence (a/t = 100, clamped)
 
 | nx | nodes | alpha | err vs table | err vs Ritz | s |
 |---|---|---|---|---|---|
-| 4 | 25 | 0.00121383 | -3.664% | -4.291% | 0.3 |
-| 6 | 49 | 0.00124213 | -1.418% | -2.059% | 0.7 |
-| 8 | 81 | 0.00125330 | -0.532% | -1.179% | 1.2 |
-| 10 | 121 | 0.00125854 | -0.116% | -0.766% | 1.7 |
-| 12 | 169 | 0.00126138 | +0.109% | -0.542% | 2.5 |
-| 16 | 289 | 0.00126420 | +0.334% | -0.319% | 4.4 |
-| 20 | 441 | 0.00126552 | +0.438% | -0.216% | 7.0 |
-| 24 | 625 | 0.00126623 | +0.495% | -0.159% | 10.5 |
-| 32 | 1089 | 0.00126694 | +0.551% | -0.103% | 20.5 |
+| 4 | 25 | 0.00121383 | -3.664% | -4.291% | 0.4 |
+| 6 | 49 | 0.00124213 | -1.418% | -2.059% | 1.0 |
+| 8 | 81 | 0.00125330 | -0.532% | -1.179% | 1.8 |
+| 10 | 121 | 0.00125854 | -0.116% | -0.766% | 2.8 |
+| 12 | 169 | 0.00126138 | +0.109% | -0.542% | 4.0 |
+| 16 | 289 | 0.00126420 | +0.334% | -0.319% | 7.9 |
+| 20 | 441 | 0.00126552 | +0.438% | -0.216% | 13.5 |
+| 24 | 625 | 0.00126623 | +0.495% | -0.159% | 19.2 |
+| 32 | 1089 | 0.00126694 | +0.551% | -0.103% | 31.7 |
 
 Richardson (last three meshes): order = 1.99, limit = 0.00126786 (table +0.624%, Ritz -0.031%)
 
@@ -53,6 +60,34 @@ Richardson (last three meshes): order = 1.99, limit = 0.00126786 (table +0.624%,
 | 0.25 | 0.00126394 | 0.00126826 | -0.340% |
 | 0.30 | 0.00126420 | 0.00126825 | -0.319% |
 | 0.35 | 0.00126450 | 0.00126824 | -0.295% |
+
+## Independent family B -- BFS C1 bicubic Kirchhoff (round 2: cross-family verification)
+
+Element: Bogner--Fox--Schmit C1 bicubic Hermite (``tensorfem.plate_bfs``), 4 dof/node, Kirchhoff bending only, sparse SuperLU -- no element code, kinematics or solver shared with the Q4 Mindlin path above.
+
+| check | got | reference | rel. error | gate |
+|---|---|---|---|---|
+| patch test w=x^2+y^2+xy (2:1 elements) | 4.774e-15 | 0 (exact) | 6.82e-16 | 1e-10 |
+| BFS SSSS 20x20 vs exact Navier | 0.00406236 | 0.00406235 | 0.000% | 0.5% |
+| equilibrium: |reaction| vs q a^2 (40x40) | 1.000000e+06 | 1.000000e+06 | 1.4e-12 | 1e-10 |
+
+### BFS ladder (clamped, a/t = 100)
+
+| nx | dofs | alpha | err vs table | err vs Ritz | self-convergence vs finer |
+|---|---|---|---|---|---|
+| 10 | 484 | 0.00126925 | +0.734% | +0.079% | - |
+| 20 | 1764 | 0.00126581 | +0.461% | -0.192% | - |
+| 40 | 6724 | 0.00126538 | +0.427% | -0.226% | - |
+
+Self-convergence order over the 10/20/40 ladder: **2.99**.  Cross-family gap to the Q4 Mindlin Richardson limit (0.00126786): **0.196%**.
+
+### Cross-family ladder at matched meshes
+
+| nx | alpha Q4 Mindlin | alpha BFS | family gap |
+|---|---|---|---|
+| 10 | 0.00125854 | 0.00126925 | 0.845% |
+| 20 | 0.00126552 | 0.00126581 | 0.023% |
+| 32 | 0.00126694 | 0.00126544 | 0.118% |
 
 ## Verdict
 
