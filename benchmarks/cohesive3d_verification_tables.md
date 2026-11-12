@@ -26,3 +26,6 @@
 | `corotational_mesh_objectivity` | n x n patches (n = 1, 2, 4) of the same unit interface give the same reaction | max relative reaction difference from t * A | 1e-11 | PASS |
 | `corotational_assembly_consistency` | dense patch assembly == sum of element contributions (force and tangent) | max relative difference, 2 x 2 patch | 1e-12 | PASS |
 | `corotational_compression_undamaged` | closing uses the penalty stiffness k_n and never damages the interface | reaction -9999.999995 N vs -10000.000000 N, damage 0.0e+00 | 1e-08 | PASS |
+| `specimen_compliance_a20mm` | bracket [plain 5.742787e-06, 1.10x root rotation 8.535434e-06] m/N | C_fem = 7.931011e-06 m/N (+2.2% vs root rotation) | 0e+00 | PASS |
+| `specimen_compliance_a30mm` | bracket [plain 1.919619e-05, 1.10x root rotation 2.592416e-05] m/N | C_fem = 2.202375e-05 m/N (-6.6% vs root rotation) | 0e+00 | PASS |
+| `specimen_compliance_a40mm` | bracket [plain 4.534801e-05, 1.10x root rotation 5.827473e-05] m/N | C_fem = 4.715234e-05 m/N (-11.0% vs root rotation) | 0e+00 | PASS |

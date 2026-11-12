@@ -26,8 +26,15 @@ import numpy as np
 import pytest
 import torch
 
+import scipy.sparse.linalg as spla
+
 from tensorfem.cohesive3d import BKCohesive3DLaw
-from tensorfem.cohesive3d_dcb import DCBGeometry, build_dcb_model, solve_dcb
+from tensorfem.cohesive3d_dcb import (
+    DCBGeometry,
+    build_dcb_model,
+    opening_prescription,
+    solve_dcb,
+)
 
 TORCH_DTYPE = torch.float64
 
@@ -88,3 +95,59 @@ def test_follower_terminates_at_delta_max(model):
     # the last committed step is the target, and it appears exactly once
     tops = [c for c in result.curve if c["disp"] == pytest.approx(delta_max, rel=1e-12)]
     assert len(tops) == 1
+
+def _linear_compliance(g: DCBGeometry) -> float:
+    """``delta / P`` of the intact specimen from the tangent stiffness."""
+    m = build_dcb_model(g, _law())
+    k_solid = m.solid_stiffness()
+    u = np.zeros(m.n_dofs)
+    _, k_coh, _, _ = m.interface_response(u, None)
+    k_all = k_solid + k_coh
+    free = m.free_dofs
+    faced = np.concatenate((m.upper_load_dofs, m.lower_load_dofs))
+    delta = 1e-8
+    u[faced] = delta * opening_prescription(m)[faced]
+    u[free] = spla.spsolve(k_all[free][:, free].tocsc(),
+                           -(k_all[free][:, faced] @ u[faced]))
+    fint = k_all @ u
+    load = abs(float(fint[m.upper_load_dofs].sum()))
+    load += abs(float(fint[m.lower_load_dofs].sum()))
+    return delta / load
+
+
+def test_prescribed_opening_is_per_node_not_per_dof():
+    """Defect 3: the opening was prescribed as ``delta / n_loaded_dofs``.
+
+    Displacement control must translate *every* node of the loaded face by
+    ``+delta/2`` (upper) / ``-delta/2`` (lower); dividing by the number of
+    loaded dofs made the applied opening -- and therefore ``delta / P`` -- scale
+    with the mesh, which is what made the DCB specimen look 6x (``nz=2``) and
+    20x (``nz=4``) too compliant.
+    """
+    m = build_dcb_model(_geometry(), _law())
+    presc = opening_prescription(m)
+    assert np.allclose(presc[m.upper_load_dofs], 0.5)
+    assert np.allclose(presc[m.lower_load_dofs], -0.5)
+    opening = presc[m.upper_load_dofs].mean() - presc[m.lower_load_dofs].mean()
+    assert opening == pytest.approx(1.0, rel=1e-15)
+    # mesh independence: nz=4 carries 20/12 more loaded dofs than nz=2, so the
+    # pre-fix prescription would have inflated the compliance by 20/12 = 1.67x
+    c2 = _linear_compliance(_geometry(nz=2))
+    c4 = _linear_compliance(_geometry(nz=4))
+    assert c4 / c2 == pytest.approx(1.0, abs=0.05)
+
+
+def test_path_follower_load_matches_the_linear_tangent():
+    """``delta / P`` from the nonlinear follower == the linear elastic value.
+
+    A single regression pin for the whole chain: prescribed opening -> reaction
+    -> compliance.  The pre-fix code returned a value inflated by the number of
+    loaded dofs (12 here).
+    """
+    g = _geometry()
+    m = build_dcb_model(g, _law())
+    delta_max = 2.0e-6
+    r = solve_dcb(m, delta_max=delta_max, n_steps=2, tol=1e-8)
+    c_follower = r.stats["reach_delta"] / r.peak["load"]
+    assert r.peak["max_damage"] == pytest.approx(0.0, abs=1e-12)
+    assert c_follower / _linear_compliance(g) == pytest.approx(1.0, rel=0.02)

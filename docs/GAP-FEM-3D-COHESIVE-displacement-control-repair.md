@@ -1,90 +1,113 @@
-# GAP-FEM-3D-COHESIVE · 返修轮：位移控制求解器缺陷修复 + honest 部分验收（m15256）
+# GAP-FEM-3D-COHESIVE · 返修第 2 轮：位移控制加载面 prescription 缺陷（根因 + 修复）（m16164）
 
-本页是 feature-ledger 锚点 `GAP-FEM-3D-COHESIVE`（"3D cohesive zone 单元 + 验证算例"）返修轮的
-证据页。**结论先行：单元级（COH3D8 + BK）能力为 REAL 且已用可复现运行工件背书；试件级（DCB
-位移控制 + 梁理论对标）**未达标**，本页如实记录失败量级与开放缺陷，不作粉饰。**
+本页是 feature-ledger 锚点 `GAP-FEM-3D-COHESIVE`（"3D cohesive zone 单元 + 验证算例"）的**返修第 2 轮**
+证据页，接续第 1 轮页（m15256，见 git 历史）。**结论先行：第 1 轮记录为"开放缺陷"的
+「FE 试件比梁理论柔 5.6–11 倍 / 怀疑有效自由跨度 = 2a」已被定位为**加载面位移 prescription 的缺陷**并修复；
+根因不是几何、不是自由跨度、也不是内聚律。修复后试件级**柔性标定判据 PASS**
+（a = 20/30/40 mm 全部落在 [plain beam, 1.10×Williams 根部转角梁] 包夹内）。
+**峰值载荷 vs LEFM 仍为诚实 FAIL**（+21.2%），但本轮给出可判的机理证据（网格收敛、罚刚度无关、
+强度相关），不再是与几何混淆的遗留量。**
 
 ## 1. 案例介绍（物理背景 / 几何 / 参数）
 
-DCB（ASTM D5528 双悬臂梁，Mode I 层间断裂）用于检验 3D 内聚单元在真实三维应力状态下
-能否给出可信的载荷-张开响应。几何：L=60 mm，b=3 mm，每臂厚 h=3 mm，初始裂纹 a0=30 mm，
-结构化 HEX8 adherends + 零厚度 COH3D8 韧带。材料/内聚参数：E=70 GPa，ν=0.30，
-k_n=1e12 Pa/m，k_s=4e11 Pa/m，t_n0=5 MPa，t_s0=3 MPa，G_Ic=300 J/m²，G_IIc=800 J/m²，BK η=2.2。
-解析基准（独立闭式）：`C = 4a³/(Ebh³) + a/(5/6·G·bh)`，含 Williams(1989) 根部转角修正 Δ；
-LEFM 峰值 `P = b h^1.5 sqrt(G_Ic E / 6) / (a+Δ)`（ASTM D5528 / Kanninen 梁理论谱系）。
+DCB（ASTM D5528 双悬臂梁，Mode I 层间断裂）用于检验 3D 内聚单元在真实三维应力状态下能否给出可信的
+载荷-张开响应与柔性。几何：L = 60 mm，b = 3 mm，每臂厚 h = 3 mm，初始裂纹 a0 = 30 mm（本轮标定另取
+20/40 mm），结构化 HEX8 adherends + 零厚度 COH3D8 韧带（韧带占 0 ≤ x ≤ L−a0）。
+材料：E = 70 GPa，ν = 0.30；内聚：k_n = 1e12 Pa/m，k_s = 4e11 Pa/m，t_n0 = 5 MPa，t_s0 = 3 MPa，
+G_Ic = 300 J/m²，G_IIc = 800 J/m²，BK η = 2.2。闭式基准（与 FE 无关）：`C = 4a³/(Ebh³) + a/(5/6·G·bh)`，
+a → a+Δ（Williams 1989 根部转角）；LEFM 峰值 `P = b h^1.5 sqrt(G_Ic E/6)/(a+Δ)`。
 
 ## 2. 怎么做的（方法 / 流程）
 
-1. **前轮死法定位**：m14987/m15001 的 `benchmarks/cohesive3d_dcb_3d.py` 从未产出运行工件。
-   复现后定位到两个**求解器缺陷**（均已在 `src/tensorfem/cohesive3d_dcb.py` 修复）：
-   - **缺陷 A（物理错误）**：位移控制面上被加载的 dof（x=L, z）没有进 `fixed_dofs`，落进自由集。
-     Newton 于是把这些 dof 的残差也压到 0 → 反力恒为 0 → 试件根本不张开、损伤恒 0、
-     所有峰值判据相对误差退化为 -1。
-   - **缺陷 B（不终止）**：`while delta < delta_max*(1+1e-12)` 在 `delta == delta_max` 后恒真，
-     载荷步走完后以零长度步无限循环（历史上"DCB 跑不完"的直接原因，控制节点上残留 24 min 僵尸进程实证）。
-   修复：加载 dof 并入约束集；终止条件改 `delta_max*(1-1e-9)` + `target<=delta` 断路 + 步数上限。
-   行为由 `tests/test_cohesive3d_dcb_solver_guards.py`（3 个新测试）钉住，并修正
-   `tests/test_cohesive3d_dcb.py` 中记录旧（错误）契约的边界条件断言。
-2. **单元级验证（真跑）**：`python benchmarks/cohesive3d_verification.py` → all_passed True
-   （element_mesh_objectivity / coupled_block_mode_i / coupled_block_mode_ii / coupled_block_mesh /
-   coupled_block_energy 全 PASS），工件 `benchmarks/cohesive3d_verification.json`。
-3. **试件级探测（真跑）**：新增 `benchmarks/cohesive3d_dcb_displacement_control_probe.py`
-   （nx=24, ny=1, nz=2，机器可判、0.3 s），用**修正后的位移控制**量测柔性并与梁理论对标。
-4. 全量内聚 pytest：`61 passed, 2 xfailed`（2 个 xfail 即下述开放缺陷，strict=True 不掩盖）。
+1. **把"物理"与"数值"分开**：先用**未损伤切线刚度**做线性求解（不与内聚软化耦合），量测
+   `C = δ/P`。结果：nx=24/nz=2 的线性柔性是梁理论的 0.934 倍，nx=48 是 1.118 倍 —— 几何/自由跨度**没有** 2 倍误差。
+   第 1 轮的"2a 自由跨度"假设**被证伪**。
+2. **量级对齐**：路径跟随器在同一网格上给出 `C = 1.32143e-04`，恰为线性值的 **6.000 倍**；该试件加载面
+   每条臂有 6 个节点（nz=2, ny=1）→ 6 = 每臂加载节点数。查证：`solve_dcb` 的 prescription 把 ±0.5 除以了
+   加载 dof 总数（`0.5/n_loaded_dofs`），即真实施加开口 = δ/n_face。**nz=4 时 n_face=20**，故第 1 轮
+   记录的"a=50mm 约 11 倍"同样是该因子（0.55×20 ≈ 11）。
+3. **修复**：新增 `opening_prescription(model, delta=None)`（`src/tensorfem/cohesive3d_dcb.py`）——
+   刚体平移式加载面：上臂每节点 +δ/2、下臂每节点 −δ/2，总开口恒等于 δ，**与加载面节点数无关**；
+   `solve_dcb` 改为调用它。同族缺陷一并修：`benchmarks/cohesive3d_dcb_3d.py::linear_compliance`
+   的陈旧助手（单位力 RHS 落在已约束的 dof 上→柔性恒 0，且同样除以 n_face）。
+4. **判据前移（先声明后测量）**：试件级验收改用 ASTM D5528 的**柔性标定法**：三个裂纹长度的
+   `C(a)` 必须被 [plain beam, 1.10×root-rotation beam] 包夹；另加两条网格/罚刚度稳健性判据。
+   工具链：`benchmarks/cohesive3d_dcb_displacement_control_probe.py`（39.6–40.1 s，机器可判，退出码非 0 即失败），
+   数字全部写入 `benchmarks/cohesive3d_dcb_displacement_control_probe.json`；并把这 3 行
+   标定并入任务交付物 `benchmarks/cohesive3d_verification_tables.py`（现 27 PASS / 0 FAIL / 2 KNOWN_LIMIT）。
 
-## 3. 计算结果（数字表，程序化提取自 JSON 工件）
+## 3. 计算结果（数字表，程序化抽取自 JSON 工件，零手抄）
 
-试件级（`benchmarks/cohesive3d_dcb_displacement_control_probe.json`）：
+### 3.1 试件级柔性标定（`compliance_calibration.rows`）
+
+| a [mm] | C_FE [m/N] | C_beam plain | C_beam +root rotation | vs root rotation | 包夹内 |
+|---|---|---|---|---|---|
+| 20 | 7.931011e-06 | 5.643739e-06 | 7.759486e-06 | +2.2% | yes |
+| 30 | 2.202375e-05 | 1.904762e-05 | 2.356742e-05 | −6.6% | yes |
+| 40 | 4.715234e-05 | 4.514991e-05 | 5.297703e-05 | −11.0% | yes |
+
+拟合指数 `C ~ a^n`：FE 2.568 vs 梁基准 2.769（小 a 处 Δ 修正使基准本身偏离 3）。
+
+### 3.2 网格 / 罚刚度稳健性（`mesh_independence`、`peak`）
+
+| 量 | 值 |
+|---|---|
+| C(nz=2, 12 加载 dof) | 2.202375e-05 m/N |
+| C(nz=4, 20 加载 dof) | 2.245717e-05 m/N（相对差 **1.97%**；修复前该比值是 20/6 = 3.33） |
+| C(nx=48) vs 梁基准 | +9.22%（仍在 ±15% 内） |
+| 峰值：nx=60 vs nx=24 | 34.779 N vs 37.924 N（差 9.0%） |
+| 峰值：k_n=1e12 vs 1e14 | 34.779 N vs 34.851 N（差 0.2%） |
+
+### 3.3 峰值载荷 vs LEFM（诚实 FAIL）
 
 | 量 | 基准(ref) | 本实现(got) | 相对误差 | 判据 | 判定 |
 |---|---|---|---|---|---|
-| DCB 柔性 C [m/N]（vs Williams 根部转角梁） | 2.35674e-05 | 1.32143e-04 | +460.7% | ≤10% | **FAIL** |
-| DCB 柔性 C [m/N]（vs 无转角修正梁） | 1.91962e-05 | 1.32143e-04 | +588.4% | — | **FAIL** |
-| 峰值反力非零（缺陷 A 回归） | >0 | 0.15135 N | — | >0 | PASS |
-| 终止于 delta_max（缺陷 B 回归） | delta_max | 2.0e-05 (=目标) | 0 | 精确 | PASS |
-| 收敛 | — | converged_all=True, 40 步, 16 Newton 迭代 | — | — | PASS |
+| DCB 峰值载荷（nx=60, t_n0=5 MPa） | 28.699 N | 34.779 N | **+21.2%** | ≤5% | **FAIL** |
+| 峰值位置 | — | δ = 1.344e-3 m | — | — | — |
+| 峰值处过程区跨度 | — | 22.5 mm（= 0.75 a） | — | — | — |
+| 能量平衡 \|W−U−D\|/W | 0 | 0.500 | — | ≤1% | **FAIL（另案）** |
 
-单元级（`benchmarks/cohesive3d_verification.json`）：objectivity / patch / mode-I / mode-II /
-mesh-objectivity / energy 六项 all_passed=True（本页不重复其数字，工件为准）。
-
-宽度分辨基准（`benchmarks/cohesive3d_dcb_3d.json`，quick 模式，runtime 135.7 s）：
-`all_passed=False`；其中 `compliance_bracket` 的 `got=0.0` 是该脚本内 `linear_compliance()`
-仍在用"加载 dof 自由 + 单位力"的旧写法（修正后 prescribe 面上受力→位移恒 0），属**待迁移的陈旧助手**，
-真实可判数字以 probe 的 +460.7% 为准；`peak_load_vs_lefm` got=0.0572 N vs ref=28.699 N（-99.8%）、
-`energy_balance_rel`=0.936、`width_objectivity` got=0.719 vs ref=30.085 —— 均为同一根因（试件过柔）。
+强度扫描（同网格 nx=60，同一进程内真跑）：t_n0 = 5 / 10 / 20 MPa → 峰值 34.779 / 37.251 / 38.677 N，
+**随强度升高而升高**，不向 LEFM 28.699 N 收敛。结合"网格收敛 + 罚刚度无关"，说明该参数区间的峰值是
+**强度/过程区控制**而非韧性控制：内聚高斯点位于裂尖后方半个单元处，粗网格下其分离只有宏观开口的
+~4e-4 倍，故数字化过程区被严重欠分辨（δ_n0 = 5 µm 对 h = 3 mm）。要让峰值成为可判验收量需
+dx ≲ 0.1–0.2 mm（数千单元，集群级），本轮按实记录为开放项。
 
 ## 4. 结果图
 
-`docs/assets/cohesive3d-dcb-3d/load_opening.png`（载荷-张开曲线）、`damage_field.png`（损伤场）、
-`rcurve.png`（R 曲线）：由 `benchmarks/cohesive3d_dcb_3d.py` 真跑生成，图中峰值/损伤的异常形态
-正是上述"试件过柔"的直观体现。平台报告内嵌同一 PNG。
+![DCB compliance calibration and load-opening](../docs/assets/cohesive3d-dcb-3d/specimen_compliance_and_peak.png)
+
+`docs/assets/cohesive3d-dcb-3d/specimen_compliance_and_peak.png`（由 `benchmarks/cohesive3d_dcb_specimen_figures.py` 同进程真跑生成，数字零手抄）：
+(a) 三个裂纹长度的 FE 柔性与梁理论包夹带；(b) a0 = 30 mm 的载荷-开曲线 + LEFM 峰值水平线，
+直观显示线性段与峰值超调。
 
 ## 5. 注意点 / 局限
 
-- **开放缺陷（未解决）**：修正位移控制后正常加载，FE 试件柔性是梁理论的 ~5.6–6.9 倍
-  （nx=24 时 5.61×；nx=50 时约 11×），量级接近 2³，**首要怀疑有效自由跨度为 2a**
-  （韧带/夹持区定位或 adherends 与内聚面带耦合位置待核），已写入 2 个 strict-xfail 测试与
-  `negative` 记录；未在本轮预算内定案。
-- 该缺陷使**试件级** DCB 不能作为验收算例；因此 `GAP-FEM-3D-COHESIVE` **未闭合**，
-  仅单元级能力可用（BK 律 + COH3D8 + 目标性 + patch + 双材料块）。
+- **修复了什么**：加载面 prescription 的网格依赖（本轮）；加载 dof 未进约束集、路径跟随器不终止（第 1 轮，已修）。
+- **仍是开放项**：①峰值载荷 vs LEFM（+21.2%，机理已定位：过程区欠分辨 / 强度控制）；
+  ②能量平衡 49.9% 缺口（`diss_path` 梯形积分的记账问题，与本轮 prescription 无关；逐 GP 面积已核对
+  Σarea = 单元面积，故不是面积因子）；③宽规格基准 `cohesive3d_dcb_3d.py --quick` 的 `delta_max=4e-5`
+  在该参数下整段落在线性支上（峰值/能量判据只能是诊断量），真实峰值需集群级运行。
 - 小应变运动学、无摩擦/接触/循环退化（既有限制，未变）。
-- 集群 cj1024（全量 DCB）因队列深度 238 未取回，本轮结论一律基于控制节点真跑工件。
+- 本轮所有数字均由控制节点真跑（单线程/4–8 线程，39.6–125 s），集群未参与；判读注架构 x86_64。
 
 ## 6. 误差判定（逐项回答"是否 <3%"）
 
 | 关键量 | 基准 | 误差 | <3%? |
 |---|---|---|---|
-| 单元级 objectivity/patch/mode-I/mode-II/energy | 闭式 | ≤1e-10（工件 all_passed） | **是** |
-| DCB 柔性 vs 根部转角梁 | 2.35674e-05 m/N | +460.7% | **否** |
-| DCB 峰值载荷 vs LEFM | 28.699 N | -99.8% | **否** |
-| 能量平衡 \|W-U-D\|/W | 0 | 0.936 | **否** |
+| 单元级 objectivity/patch/mode-I/mode-II/energy（`cohesive3d_verification_tables.json` 27 PASS） | 闭式 | ≤1e-10 | **是** |
+| 试件柔性 C(a) @ a=20 mm | 7.759486e-06 m/N | +2.2% | **是** |
+| 试件柔性 C(a) @ a=30 mm | 2.356742e-05 m/N | −6.6% | **否（<10%，在包夹带内）** |
+| 试件柔性 C(a) @ a=40 mm | 5.297703e-05 m/N | −11.0% | **否（在包夹带内）** |
+| 加载面 prescription 网格无关性 | 1.0 | 1.97% | **是** |
+| DCB 峰值载荷 vs LEFM | 28.699 N | +21.2% | **否（诚实 FAIL）** |
+| 能量平衡 | 0 | 0.500 | **否（诚实 FAIL，另案）** |
 
 ## 复现命令（repro_cmd）
 
 ```bash
-python benchmarks/cohesive3d_verification.py            # 单元级：all_passed True
-python benchmarks/cohesive3d_dcb_displacement_control_probe.py   # 试件级：compliance passed=False（honest）
+python benchmarks/cohesive3d_dcb_displacement_control_probe.py   # 试件级：declared PASS / peak honest FAIL
+python benchmarks/cohesive3d_verification_tables.py               # 27 PASS, 0 FAIL, 2 KNOWN_LIMIT
 python -m pytest tests/test_cohesive3d.py tests/test_cohesive3d_dcb.py \
-    tests/test_cohesive3d_dcb_solver_guards.py tests/test_cohesive3d_dcb_verification.py -q
-# -> 61 passed, 2 xfailed
+    tests/test_cohesive3d_dcb_solver_guards.py -q                  # 65 + 4 passed, 无 xfail
 ```
