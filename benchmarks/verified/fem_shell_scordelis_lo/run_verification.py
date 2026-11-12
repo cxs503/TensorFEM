@@ -15,8 +15,14 @@ This verification compares two formulations:
 1. Shell4 (flat facet): Q4 membrane + Mindlin plate, flat facets approximate curvature
 2. Cylindrical shell4: Specialized element with exact cylindrical metric and curvature
 
-The flat facet formulation fails to capture membrane-bending coupling properly,
-while the cylindrical formulation achieves <3% error.
+The flat facet formulation with the historical default (one-point transverse
+shear) plateaus ~50 % above the reference.  That plateau is NOT a faceting
+limitation: holding the facets, nodes, load and diaphragms fixed and switching
+only the transverse-shear rule of the same element brings the same faceted mesh
+inside 3 % (see docs/CASE-FEM-SCORDELIS-LO-shear-rank-diagnosis.md and the case
+pool entry CASE-FEM-SCORDELIS-LO-ROOF,
+benchmarks/case_scordelis_lo_roof.py).  The cylindrical formulation achieves
+<3 % error.
 """
 from __future__ import annotations
 
@@ -233,7 +239,14 @@ def generate_report(flat_results, cyl_results, flat_orders, cyl_orders,
                 "name": "Shell4 (flat facet)",
                 "formulation": "Q4 membrane + Mindlin plate with selective reduced integration",
                 "curvature_treatment": "Flat facets approximate curved geometry",
-                "limitation": "Membrane-bending coupling through faceted approximation misses true curved-shell behavior",
+                # Corrected in m16588: the ~50 % plateau is a rank deficiency of
+                # the default one-point transverse-shear block, not a faceting
+                # limitation.  Recorded here (and not only in `gates`) so a
+                # regeneration cannot re-emit the falsified cause.
+                "limitation": "Default one-point transverse shear is rank deficient: 3 spurious "
+                              "zero-energy mechanisms per element leave the ladder ~50 % above the "
+                              "reference; with assumed natural shear the same facets reach 2.35 % at "
+                              "16x16 (CASE-FEM-SCORDELIS-LO-ROOF)",
             },
             {
                 "name": "Cylindrical shell4",
