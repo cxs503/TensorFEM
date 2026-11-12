@@ -1,0 +1,501 @@
+{
+  "anchor": "CASE-FEM-MORLEY-SKEW-PLATE",
+  "mission": "16138",
+  "started_utc": "2026-11-12T10:25:05+00:00",
+  "finished_utc": "2026-11-12T10:30:29+00:00",
+  "parameters": {
+    "geometry": "rhombus, side L, acute angle 30 deg",
+    "L_m": 100.0,
+    "young_Pa": 10.92,
+    "poisson": 0.3,
+    "q_Pa": 1.0,
+    "shear_correction": 0.8333333333333334,
+    "thickness_ratios": [
+      100.0,
+      1000.0,
+      10.0
+    ],
+    "element": "Q4 Mindlin-Reissner, 2x2 bending + SRI/MITC shear",
+    "support": "soft simple support w = 0, rotations free",
+    "normalisation": "wc^N = wc/(1e-3 q L^4/D); M^N = M/(1e-2 q L^2)"
+  },
+  "reference": {
+    "morley_1962": {
+      "wc_N": 0.408,
+      "M1_N": 1.91,
+      "M2_N": 1.08,
+      "source": "Morley, Q. Jl. Mech. Appl. Math. 15(4) 1962 413-426; values as tabulated in Grbac & Ribaric 2022 p.240 / Table 4"
+    },
+    "accurate_2022": {
+      "1000.0": [
+        0.4134,
+        1.922,
+        1.106
+      ],
+      "100.0": [
+        0.4248,
+        1.956,
+        1.143
+      ],
+      "10.0": [
+        0.5177,
+        2.064,
+        1.205
+      ]
+    },
+    "square_ssss_alpha": 0.0040624
+  },
+  "square_control": {
+    "alpha": 0.004096595673380904,
+    "error": 0.008417603727083467
+  },
+  "thin_cases": {
+    "1000.0": [
+      {
+        "n": 10,
+        "thickness_ratio": 1000.0,
+        "shear_treatment": "sri",
+        "support": "soft",
+        "n_dof": 363,
+        "n_free_dof": 323,
+        "K_nnz": 8649,
+        "centre_deflection_m": 38158001.99503476,
+        "wc_N": 0.38158001995034774,
+        "M1_N": 1.7687311049724772,
+        "M2_N": 0.9578373211586936,
+        "moment_spread_rel": 1.1123649588654259,
+        "seconds": 1.3337647914886475
+      },
+      {
+        "n": 20,
+        "thickness_ratio": 1000.0,
+        "shear_treatment": "sri",
+        "support": "soft",
+        "n_dof": 1323,
+        "n_free_dof": 1243,
+        "K_nnz": 33489,
+        "centre_deflection_m": 37471980.25496017,
+        "wc_N": 0.37471980254960185,
+        "M1_N": 1.7941206031595565,
+        "M2_N": 0.9622513643895232,
+        "moment_spread_rel": 1.0937103802896821,
+        "seconds": 4.722713947296143
+      },
+      {
+        "n": 40,
+        "thickness_ratio": 1000.0,
+        "shear_treatment": "sri",
+        "support": "soft",
+        "n_dof": 5043,
+        "n_free_dof": 4883,
+        "K_nnz": 131769,
+        "centre_deflection_m": 38875069.79142382,
+        "wc_N": 0.38875069791423833,
+        "M1_N": 1.847345915627492,
+        "M2_N": 1.0133018514689414,
+        "moment_spread_rel": 1.0844327366566682,
+        "seconds": 19.043230295181274
+      },
+      {
+        "n": 80,
+        "thickness_ratio": 1000.0,
+        "shear_treatment": "sri",
+        "support": "soft",
+        "n_dof": 19683,
+        "n_free_dof": 19363,
+        "K_nnz": 522729,
+        "centre_deflection_m": 40061877.15853781,
+        "wc_N": 0.40061877158537823,
+        "M1_N": 1.8845297373313377,
+        "M2_N": 1.058042689158293,
+        "moment_spread_rel": 1.0804501929845198,
+        "seconds": 64.63896155357361
+      }
+    ],
+    "100.0": [
+      {
+        "n": 10,
+        "thickness_ratio": 100.0,
+        "shear_treatment": "sri",
+        "support": "soft",
+        "n_dof": 363,
+        "n_free_dof": 323,
+        "K_nnz": 8649,
+        "centre_deflection_m": 40647.11382817549,
+        "wc_N": 0.4064711382817549,
+        "M1_N": 1.8338568285360284,
+        "M2_N": 1.0314192083301137,
+        "moment_spread_rel": 1.1054566338992544,
+        "seconds": 0.9174020290374756
+      },
+      {
+        "n": 20,
+        "thickness_ratio": 100.0,
+        "shear_treatment": "sri",
+        "support": "soft",
+        "n_dof": 1323,
+        "n_free_dof": 1243,
+        "K_nnz": 33489,
+        "centre_deflection_m": 41297.73656270635,
+        "wc_N": 0.4129773656270635,
+        "M1_N": 1.9034060987047423,
+        "M2_N": 1.0979776817831493,
+        "moment_spread_rel": 1.0841153761405837,
+        "seconds": 3.272505760192871
+      },
+      {
+        "n": 40,
+        "thickness_ratio": 100.0,
+        "shear_treatment": "sri",
+        "support": "soft",
+        "n_dof": 5043,
+        "n_free_dof": 4883,
+        "K_nnz": 131769,
+        "centre_deflection_m": 41940.999930678096,
+        "wc_N": 0.41940999930678097,
+        "M1_N": 1.9358732118562616,
+        "M2_N": 1.1225303031287692,
+        "moment_spread_rel": 1.0778070153913455,
+        "seconds": 14.662780284881592
+      },
+      {
+        "n": 80,
+        "thickness_ratio": 100.0,
+        "shear_treatment": "sri",
+        "support": "soft",
+        "n_dof": 19683,
+        "n_free_dof": 19363,
+        "K_nnz": 522729,
+        "centre_deflection_m": 42266.02563154574,
+        "wc_N": 0.4226602563154574,
+        "M1_N": 1.9485262863120167,
+        "M2_N": 1.1349977361496726,
+        "moment_spread_rel": 1.0766041052961681,
+        "seconds": 69.57884931564331
+      }
+    ]
+  },
+  "mitc_cases": [
+    {
+      "n": 10,
+      "thickness_ratio": 100.0,
+      "shear_treatment": "mitc",
+      "support": "soft",
+      "n_dof": 363,
+      "n_free_dof": 323,
+      "K_nnz": 8649,
+      "centre_deflection_m": 36403.15223576898,
+      "wc_N": 0.3640315223576898,
+      "M1_N": 1.7228517102653023,
+      "M2_N": 0.905247459565988,
+      "moment_spread_rel": 1.1080820075088815,
+      "seconds": 2.1366143226623535
+    },
+    {
+      "n": 20,
+      "thickness_ratio": 100.0,
+      "shear_treatment": "mitc",
+      "support": "soft",
+      "n_dof": 1323,
+      "n_free_dof": 1243,
+      "K_nnz": 33489,
+      "centre_deflection_m": 39131.9737848186,
+      "wc_N": 0.39131973784818597,
+      "M1_N": 1.8424599315329129,
+      "M2_N": 1.0222326688008816,
+      "moment_spread_rel": 1.0862548119414002,
+      "seconds": 8.090900897979736
+    },
+    {
+      "n": 40,
+      "thickness_ratio": 100.0,
+      "shear_treatment": "mitc",
+      "support": "soft",
+      "n_dof": 5043,
+      "n_free_dof": 4883,
+      "K_nnz": 131769,
+      "centre_deflection_m": 40813.59451581659,
+      "wc_N": 0.4081359451581659,
+      "M1_N": 1.9025912476359652,
+      "M2_N": 1.0829169083837318,
+      "moment_spread_rel": 1.0796274887779822,
+      "seconds": 33.65200614929199
+    }
+  ],
+  "thick_cases": [
+    {
+      "n": 10,
+      "thickness_ratio": 10.0,
+      "shear_treatment": "sri",
+      "support": "soft",
+      "n_dof": 363,
+      "n_free_dof": 323,
+      "K_nnz": 8649,
+      "centre_deflection_m": 52.27075329160219,
+      "wc_N": 0.5227075329160219,
+      "M1_N": 2.0142647206524296,
+      "M2_N": 1.1190132811816356,
+      "moment_spread_rel": 1.0920481250159797,
+      "seconds": 0.9968550205230713
+    },
+    {
+      "n": 20,
+      "thickness_ratio": 10.0,
+      "shear_treatment": "sri",
+      "support": "soft",
+      "n_dof": 1323,
+      "n_free_dof": 1243,
+      "K_nnz": 33489,
+      "centre_deflection_m": 51.78608509298036,
+      "wc_N": 0.5178608509298036,
+      "M1_N": 2.0510500683841544,
+      "M2_N": 1.1858143117401532,
+      "moment_spread_rel": 1.0796691816256914,
+      "seconds": 4.1347198486328125
+    },
+    {
+      "n": 40,
+      "thickness_ratio": 10.0,
+      "shear_treatment": "sri",
+      "support": "soft",
+      "n_dof": 5043,
+      "n_free_dof": 4883,
+      "K_nnz": 131769,
+      "centre_deflection_m": 51.74322341578545,
+      "wc_N": 0.5174322341578546,
+      "M1_N": 2.0608226589428025,
+      "M2_N": 1.2002240184637356,
+      "moment_spread_rel": 1.0769923625974924,
+      "seconds": 17.50908136367798
+    },
+    {
+      "n": 80,
+      "thickness_ratio": 10.0,
+      "shear_treatment": "sri",
+      "support": "soft",
+      "n_dof": 19683,
+      "n_free_dof": 19363,
+      "K_nnz": 522729,
+      "centre_deflection_m": 51.75477831812937,
+      "wc_N": 0.5175477831812937,
+      "M1_N": 2.0634883307723566,
+      "M2_N": 1.2038124377746602,
+      "moment_spread_rel": 1.0763902716115508,
+      "seconds": 68.15250992774963
+    }
+  ],
+  "ritz_diagnostic": [
+    {
+      "n_terms": 16,
+      "n_basis": 256,
+      "M_x": 79.96281694438267,
+      "M_y": 138.65583382317433,
+      "M_xy": -15.840752931086573,
+      "M1": 142.65819359556733,
+      "M2": 75.96045717198967,
+      "rigidity": 1.0,
+      "area": 4999.999999999999,
+      "wc_N": 0.26662547436009143,
+      "M1_N": 1.4265819359556733,
+      "M2_N": 0.7596045717198967
+    },
+    {
+      "n_terms": 32,
+      "n_basis": 1024,
+      "M_x": 80.82308194401377,
+      "M_y": 139.01687586789896,
+      "M_xy": -15.269448608954935,
+      "M1": 142.78006827947178,
+      "M2": 77.05988953244095,
+      "rigidity": 1.0,
+      "area": 4999.999999999999,
+      "wc_N": 0.2724012276814926,
+      "M1_N": 1.4278006827947178,
+      "M2_N": 0.7705988953244095
+    },
+    {
+      "n_terms": 48,
+      "n_basis": 2304,
+      "M_x": 81.34408881583818,
+      "M_y": 139.29294724424747,
+      "M_xy": -15.173141232818192,
+      "M1": 143.025424994169,
+      "M2": 77.61161106591668,
+      "rigidity": 1.0,
+      "area": 4999.999999999999,
+      "wc_N": 0.2749115964175056,
+      "M1_N": 1.43025424994169,
+      "M2_N": 0.7761161106591667
+    },
+    {
+      "n_terms": 64,
+      "n_basis": 4096,
+      "M_x": 81.70550530042394,
+      "M_y": 139.51762174816085,
+      "M_xy": -15.166950489552626,
+      "M1": 143.25504050200135,
+      "M2": 77.96808654658345,
+      "rigidity": 1.0,
+      "area": 4999.999999999999,
+      "wc_N": 0.2764471474831957,
+      "M1_N": 1.4325504050200135,
+      "M2_N": 0.7796808654658345
+    }
+  ],
+  "mitc_skew_sweep": [
+    {
+      "skew_angle_deg": 90.0,
+      "parasitic_shear_energy_ratio": 3.0964444854728123e-15
+    },
+    {
+      "skew_angle_deg": 75.0,
+      "parasitic_shear_energy_ratio": -2.6755058565021463e-14
+    },
+    {
+      "skew_angle_deg": 60.0,
+      "parasitic_shear_energy_ratio": -3.781743005654437e-14
+    },
+    {
+      "skew_angle_deg": 45.0,
+      "parasitic_shear_energy_ratio": -8.926491949385563e-15
+    },
+    {
+      "skew_angle_deg": 30.0,
+      "parasitic_shear_energy_ratio": -8.57476934438625e-15
+    },
+    {
+      "skew_angle_deg": 20.0,
+      "parasitic_shear_energy_ratio": -2.2128593985767092e-13
+    }
+  ],
+  "gates": {
+    "schema": "tensorfem.verified-gates.v1",
+    "anchor": "CASE-FEM-MORLEY-SKEW-PLATE",
+    "title": "Morley 30 deg simply supported rhombic plate (thin-plate benchmark)",
+    "mission": "16138",
+    "generated_at": "2026-11-12T10:30:27+00:00",
+    "criteria": {
+      "wc_vs_morley_1962_max": 0.05,
+      "wc_vs_accurate_2022_max": 0.03,
+      "square_control_max": 0.01,
+      "thick_cross_check_max": 0.02,
+      "shear_field_spread_max": 0.03,
+      "moments_max": 0.1,
+      "mitc_parasitic_shear_max": 1e-09
+    },
+    "gates": [
+      {
+        "id": "G1_square_pipeline_control",
+        "quantity": "|alpha_FE - 0.0040624|/0.0040624",
+        "reference": "Timoshenko/Navier square SSSS alpha = 0.0040624",
+        "value": 0.008417603727083467,
+        "threshold": 0.01,
+        "operator": "<=",
+        "passed": true,
+        "note": "same code path on a square footprint; pipeline self-check"
+      },
+      {
+        "id": "G2_thick_cross_check_Lh10",
+        "quantity": "|wc_N - 0.5177|/0.5177",
+        "reference": "Grbac & Ribaric 2022 Table 4, L/h = 10",
+        "value": 0.0002940251472017834,
+        "threshold": 0.02,
+        "operator": "<=",
+        "passed": true,
+        "note": "pins geometry, support and normalisation against the published value"
+      },
+      {
+        "id": "G3_morley_thin_Lh1000",
+        "quantity": "|wc_N - 0.408|/0.408",
+        "reference": "Morley 1962 series solution, wc_N = 0.408",
+        "value": 0.01809124611426898,
+        "threshold": 0.05,
+        "operator": "<=",
+        "passed": true
+      },
+      {
+        "id": "G4_morley_thin_Lh100",
+        "quantity": "|wc_N - 0.408|/0.408",
+        "reference": "Morley 1962 series solution, wc_N = 0.408",
+        "value": 0.035932000773179956,
+        "threshold": 0.05,
+        "operator": "<=",
+        "passed": true
+      },
+      {
+        "id": "G5_accurate_Lh1000",
+        "quantity": "|wc_N - 0.4134|/0.4134",
+        "reference": "Grbac & Ribaric 2022 Table 4 dense-mesh, L/h = 1000",
+        "value": 0.030917340141803966,
+        "threshold": 0.03,
+        "operator": "<=",
+        "passed": false
+      },
+      {
+        "id": "G6_monotone_convergence",
+        "quantity": "number of non-monotone steps",
+        "reference": "0 (displacement FE converges from below)",
+        "value": 1.0,
+        "threshold": 0.5,
+        "operator": "<=",
+        "passed": false
+      },
+      {
+        "id": "G7_shear_field_independence",
+        "quantity": "|wc_MITC - wc_SRI|/wc_SRI at n=40",
+        "reference": "0",
+        "value": 0.026880747162083135,
+        "threshold": 0.03,
+        "operator": "<=",
+        "passed": true
+      },
+      {
+        "id": "G8_moments_Lh1000",
+        "quantity": "max(|M1_N - 1.922|/1.922, |M2_N - 1.106|/1.106)",
+        "reference": "Grbac & Ribaric 2022 Table 4, L/h = 1000",
+        "value": 0.043361040544038935,
+        "threshold": 0.1,
+        "operator": "<=",
+        "passed": true,
+        "note": "bending moments at an obtuse corner are singular, so the tolerance is looser"
+      },
+      {
+        "id": "G9_mitc_skew_invariance",
+        "quantity": "max parasitic shear energy ratio (90..20 deg)",
+        "reference": "0 (covariant assumed shear field)",
+        "value": 2.2128593985767092e-13,
+        "threshold": 1e-09,
+        "operator": "<=",
+        "passed": true
+      }
+    ],
+    "passed": false,
+    "failed_gates": [
+      "G5_accurate_Lh1000",
+      "G6_monotone_convergence"
+    ],
+    "undefined_terms": [],
+    "artifacts": {
+      "result.json": "all meshes, moments, diagnostics",
+      "summary.md": "generated evidence table",
+      "convergence.png": "mesh convergence vs both references",
+      "deflection_field.png": "normalised deflection field",
+      "artifacts/prefix_mitc_skew_defect.json": "pre-fix MITC parasitic shear (parent commit df250c73)"
+    },
+    "limitations": [
+      "the FE levels stop at n=80; the published dense-mesh study needed n=1024 because of the obtuse-corner singularity, so the finest FE value still sits ~1-2 % below the converged thin-plate value",
+      "the Rayleigh-Ritz sine-basis diagnostic converges very slowly on the 150 deg corner and is reported as a lower bound only, not as an oracle",
+      "the membrane/bending coupling of a real stiffened skew panel is out of scope"
+    ]
+  },
+  "figures": {
+    "convergence.png": "centre deflection vs mesh density with the two references",
+    "deflection_field.png": "normalised deflection field on the finest rhombic mesh"
+  },
+  "errors": {
+    "vs_morley_Lh1000": 0.01809124611426898,
+    "vs_morley_Lh100": 0.035932000773179956,
+    "vs_accurate_Lh1000": 0.030917340141803966,
+    "vs_accurate_Lh100": 0.005037061404290529
+  }
+}
