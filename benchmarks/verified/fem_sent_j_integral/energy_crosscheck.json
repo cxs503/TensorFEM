@@ -1,0 +1,160 @@
+{
+  "generated_at": "2026-11-12T13:41:56+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64"
+  },
+  "setting": {
+    "width_m": 0.1,
+    "height_over_width": 2.0,
+    "sigma_pa": 100000000.0,
+    "young_pa": 210000000000.0,
+    "poisson": 0.3,
+    "plane": "stress",
+    "step_over_width": 0.01,
+    "level": {
+      "name": "medium",
+      "n_sectors": 48,
+      "first_ring": 0.05,
+      "growth": 1.45
+    },
+    "canonical_contour_fraction": 0.15
+  },
+  "rows": [
+    {
+      "a_over_w": 0.2,
+      "crack_length_m": 0.020000000000000004,
+      "step_m": 0.001,
+      "mirror_factor": 2.0,
+      "potential_low": -496.8230176109065,
+      "potential_high": -502.4044889381188,
+      "energy_release_rate": 5581.471327212284,
+      "k_energy": 34236077.1513703,
+      "k_tada": 34357451.37418826,
+      "shape_factor_tada": 1.3706640000000003,
+      "clapeyron_ratio_low": 1.9999999999999958,
+      "clapeyron_ratio_high": 2.000000000000049,
+      "reaction_ratio_low": 1.000000000000084,
+      "reaction_ratio_high": 1.0000000000000147,
+      "n_elements_low": 1050,
+      "n_elements_high": 1050,
+      "station_fraction": 0.15243125,
+      "j": 5443.954940528006,
+      "k_j": 33811692.31953469,
+      "rel_error_energy": -0.0035326899395437196,
+      "rel_error_j": -0.015884736289362336,
+      "rel_error_energy_vs_j": 0.012551422384452036
+    },
+    {
+      "a_over_w": 0.35,
+      "crack_length_m": 0.034999999999999996,
+      "step_m": 0.001,
+      "mirror_factor": 2.0,
+      "potential_low": -571.1291194070408,
+      "potential_high": -589.2240928866088,
+      "energy_release_rate": 18094.973479568012,
+      "k_energy": 61643689.30157638,
+      "k_tada": 61554780.59951357,
+      "shape_factor_tada": 1.8563199375000003,
+      "clapeyron_ratio_low": 1.999999999999957,
+      "clapeyron_ratio_high": 1.9999999999996323,
+      "reaction_ratio_low": 0.9999999999998933,
+      "reaction_ratio_high": 1.0000000000001334,
+      "n_elements_low": 1050,
+      "n_elements_high": 1050,
+      "station_fraction": 0.15243125,
+      "j": 17683.875021945576,
+      "k_j": 60939426.9304247,
+      "rel_error_energy": 0.0014443833800866154,
+      "rel_error_j": -0.00999684611163626,
+      "rel_error_energy_vs_j": 0.011556760649484788
+    },
+    {
+      "a_over_w": 0.5,
+      "crack_length_m": 0.05,
+      "step_m": 0.001,
+      "mirror_factor": 2.0,
+      "potential_low": -809.4507544144012,
+      "potential_high": -868.922506011103,
+      "energy_release_rate": 59471.751596701775,
+      "k_energy": 111754498.05402632,
+      "k_tada": 112018491.90771191,
+      "shape_factor_tada": 2.8263750000000005,
+      "clapeyron_ratio_low": 2.0000000000015388,
+      "clapeyron_ratio_high": 1.9999999999988638,
+      "reaction_ratio_low": 1.0000000000000435,
+      "reaction_ratio_high": 1.0000000000000173,
+      "n_elements_low": 1050,
+      "n_elements_high": 1050,
+      "station_fraction": 0.15243125,
+      "j": 57877.21800973698,
+      "k_j": 110246159.94239783,
+      "rel_error_energy": -0.002356698873459954,
+      "rel_error_j": -0.01582178027154871,
+      "rel_error_energy_vs_j": 0.013681547841816664
+    }
+  ],
+  "gates": {
+    "schema": "tensorfem.verified-gates.v1",
+    "anchor": "fem_sent_j_integral",
+    "title": "SENT K_I: energy release rate (dPi/da) as an independent oracle for the J route",
+    "mission": "m16362-verifier-recheck",
+    "generated_at": "2026-11-12T13:41:56+00:00",
+    "criteria": {
+      "energy_vs_j": 0.03,
+      "energy_vs_tada": 0.03,
+      "reaction_balance": 1e-09,
+      "clapeyron": 1e-06
+    },
+    "gates": [
+      {
+        "id": "energy_vs_j",
+        "quantity": "max |K_(dPi/da) - K_J| / K_J at the medium level",
+        "reference": "both routes discretise the same elastic field; global energy vs local contour",
+        "value": 0.013681547841816664,
+        "threshold": 0.03,
+        "operator": "<=",
+        "passed": true
+      },
+      {
+        "id": "energy_vs_tada",
+        "quantity": "max |K_(dPi/da) - K_Tada| / K_Tada at the medium level",
+        "reference": "K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed.",
+        "value": 0.0035326899395437196,
+        "threshold": 0.03,
+        "operator": "<=",
+        "passed": true
+      },
+      {
+        "id": "reaction_balance",
+        "quantity": "max |vertical reaction / applied load - 1| over all cross-check solves",
+        "reference": "global equilibrium of the discrete system",
+        "value": 1.0669243266647754e-13,
+        "threshold": 1e-09,
+        "operator": "<=",
+        "passed": true
+      },
+      {
+        "id": "clapeyron",
+        "quantity": "max |f.u / U - 2| over all cross-check solves",
+        "reference": "f.u = 2U at equilibrium of a linear traction problem; audits the potential bookkeeping",
+        "value": 1.538769112130467e-12,
+        "threshold": 1e-06,
+        "operator": "<=",
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "failed_gates": [],
+    "undefined_terms": [],
+    "artifacts": {
+      "result": "energy_crosscheck.json"
+    },
+    "limitations": [
+      "both routes use the SAME medium ray-fan discretisation; the cross-check validates the J operator, not the mesh",
+      "central-difference step h = 0.01 W; the truncation error of the finite difference is O(h^2) in dPi/da and is not separated from discretisation noise",
+      "linear elastic plane stress, small strain, stationary mode-I"
+    ]
+  }
+}
