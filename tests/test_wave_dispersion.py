@@ -75,24 +75,28 @@ def test_consistent_mass_conserves_mass():
     assert cell.total_mass == pytest.approx(2.0 * RHO * cell.cell_length * 2.0 * H, rel=1e-12)
 
 
-def test_bloch_floquet_reduction_defect_is_open():
-    """FAIL-CLOSED negative gate: the Floquet reduction does not yet work.
+def test_bloch_floquet_reduction_is_fixed():
+    """Positive gate: the Floquet cell now reproduces the analytic branches.
 
-    At the Gamma point the periodic cell must own five zero eigenvalues (three
-    rigid modes plus the A0/S0 acoustic branches).  It does not, and the resulting
-    phase-velocity error is mesh-insensitive, so the fault is in the reduction and
-    not in the discretisation.  See section 8 of the anchor document.  When this
-    test starts failing, the defect has been fixed -- update the document and
-    gates_verified.json in the same commit.
+    Regression guard for the defect fixed in this mission: the reduced unknown set
+    must keep both displacement components per retained node (collapsing them onto
+    one column added their stiffness/mass entries together, which produced a
+    mesh- and k-insensitive spurious branch), and the cell length must be a fixed
+    physical length rather than ``2 pi/(4k)``.
     """
     omega = bloch_cell_frequencies(0.0, half_thickness=H, young=E, poisson=NU,
-                                   density=RHO, nx=8, ny=4, n_modes=8)
-    assert omega[4] / omega[5] > 1e-3, "Floquet reduction now reproduces the Gamma-point zeros?"
-    k = 0.5 / H
-    exact = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=1)["antisymmetric"][0]
-    fem = bloch_cell_frequencies(k, half_thickness=H, young=E, poisson=NU, density=RHO,
-                                 nx=16, ny=8, n_modes=2)[0]
-    assert abs(fem / exact - 1.0) > 3e-2, "Bloch cell now reproduces the A0 branch?"
+                                   density=RHO, nx=8, ny=8, n_modes=8)
+    # Floquet-compatible zeros: x and y translations (a rotation is not periodic);
+    # the A0 branch's k=0 zero sits in the same numerical band, hence 2..3.
+    assert 2 <= int((omega < 1e-6 * omega.max()).sum()) <= 3
+    for kh in (0.2, 0.5):
+        k = kh / H
+        exact = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=2)
+        fem = bloch_cell_frequencies(k, half_thickness=H, young=E, poisson=NU,
+                                     density=RHO, nx=16, ny=16, n_modes=2)
+        assert abs(fem[0] / exact["antisymmetric"][0] - 1.0) < 3e-2   # A0
+        assert abs(fem[1] / exact["symmetric"][0] - 1.0) < 3e-2       # S0
+        assert fem[0] < fem[1]
 
 
 def test_recorded_anchor_numbers_match_recomputation():
@@ -105,4 +109,4 @@ def test_recorded_anchor_numbers_match_recomputation():
     assert row["a0_phase"] == pytest.approx(exact["antisymmetric"][0] / k / shear_speed(E, NU, RHO), rel=2e-2)
     assert row["s0_phase"] == pytest.approx(exact["symmetric"][0] / k / shear_speed(E, NU, RHO), rel=2e-2)
     assert data["gates"]["s0_plate_velocity_extrapolated"]["verdict"] == "PASS"
-    assert data["gates"]["fem_phase_error_fine"]["verdict"] == "FAIL"
+    assert data["gates"]["fem_phase_error_fine"]["verdict"] == "PASS"

@@ -213,7 +213,12 @@ def rayleigh_lamb_frequencies(wave_number: float, half_thickness: float, young: 
         for omega in grid[1:]:
             f_cur = func(omega)
             if f_prev * f_cur < 0.0:
-                roots.append(_bisect(func, w_prev, omega, f_prev, f_cur))
+                root = _bisect(func, w_prev, omega, f_prev, f_cur)
+                # A sign change across a tan/ tanh pole is not a root: the
+                # normalised residual jumps between +-1 there, so a genuine root
+                # is the only case with |residual| below this tolerance.
+                if abs(func(root)) < 1e-6:
+                    roots.append(root)
             f_prev, w_prev = f_cur, omega
         out[branch] = roots[:n_roots]
     return out
@@ -270,20 +275,35 @@ class BlochCell:
 
 def bloch_cell_matrices(wave_number: float, *, half_thickness: float, young: float,
                         poisson: float, density: float, nx: int = 16, ny: int = 8,
-                        cells_per_wavelength: float = 4.0) -> BlochCell:
+                        cells_per_wavelength: float | None = None,
+                        cell_length_in_half_thickness: float = 2.0) -> BlochCell:
     """Assemble the Floquet-reduced stiffness and mass matrices of one cell.
 
-    The cell length is ``2 pi / (k * cells_per_wavelength)`` so that a fixed
-    number of cells fit in one wavelength regardless of ``k``; ``nx`` refines
-    the cell along the propagation direction and ``ny`` through the thickness.
+    The cell length is a *fixed physical length*,
+    ``cell_length_in_half_thickness * half_thickness``, independent of ``k``:
+    every wave number then samples a different phase advance ``k L`` over one and
+    the same cell, which is what a dispersion relation is.  (An earlier version
+    set ``L = 2 pi / (k * cells_per_wavelength)``, i.e. a constant ``k L``; the
+    discrete problem is then scale invariant and the "dispersion curve" collapses
+    to a single phase velocity -- a defect recorded in section 8 of the anchor
+    document.)  ``cells_per_wavelength`` is kept only as a compatibility shim for
+    callers that explicitly want the old geometry; pass ``None`` (default) for the
+    physical cell.
+
+    The reduced unknown set keeps *both* displacement components per retained
+    node: collapsing ``u_x`` and ``u_y`` onto one column would add their stiffness
+    and mass entries together (the defect fixed here).
     """
     if wave_number < 0.0:
         raise ValueError("wave_number must be non-negative")
     if nx < 2 or ny < 1:
         raise ValueError("nx must be >= 2 and ny >= 1")
     # k = 0 is the periodic (Gamma point) cell: used by the rigid-mode count check.
-    cell_length = (2.0 * math.pi / (wave_number * cells_per_wavelength)
-                   if wave_number > 0.0 else 10.0 * half_thickness)
+    if cells_per_wavelength is not None:            # legacy 1/k-scaled geometry
+        cell_length = (2.0 * math.pi / (wave_number * cells_per_wavelength)
+                       if wave_number > 0.0 else 10.0 * half_thickness)
+    else:                                           # fixed physical cell
+        cell_length = float(cell_length_in_half_thickness) * half_thickness
     nodes, elements = rectangular_q4_mesh(cell_length, 2.0 * half_thickness, nx, ny,
                                           dtype=_DTYPE)
     dmat = elasticity_matrix(torch.tensor([young], dtype=_DTYPE),
@@ -306,20 +326,22 @@ def bloch_cell_matrices(wave_number: float, *, half_thickness: float, young: flo
     right = torch.nonzero(torch.isclose(xs, torch.tensor(cell_length, dtype=_DTYPE))).flatten()
     partner = {int(r): int(l) for r, l in zip(right.tolist(), left.tolist())}
     phase = cmath.exp(1j * wave_number * cell_length)
+    # Retained node -> compact index; the right column is eliminated by
+    # u_right = exp(i k L) u_left, so both columns share one compact index.
     reduced: dict[int, int] = {}
-    incoming: list[int] = []
+    next_index = 0
     for node in range(len(nodes)):
         if node in partner:
             reduced[node] = reduced[partner[node]]
-            incoming.append(node)
         else:
-            reduced[node] = len(set(reduced.values()))
-    nred = len(set(reduced.values()))
+            reduced[node] = next_index
+            next_index += 1
+    nred = 2 * next_index           # one unknown per component per retained node
     trans = torch.zeros((ndof, nred), dtype=torch.complex128)
     for node in range(len(nodes)):
         coeff = complex(phase if node in partner else 1.0)
         for d in (0, 1):
-            trans[2 * node + d, reduced[node]] = coeff
+            trans[2 * node + d, 2 * reduced[node] + d] = coeff
     stiff_red = trans.conj().T @ stiff.to(torch.complex128) @ trans
     mass_red = trans.conj().T @ mass.to(torch.complex128) @ trans
     return BlochCell(wave_number, cell_length, half_thickness, nodes, elements,
@@ -328,11 +350,13 @@ def bloch_cell_matrices(wave_number: float, *, half_thickness: float, young: flo
 
 def bloch_cell_frequencies(wave_number: float, *, half_thickness: float, young: float,
                            poisson: float, density: float, nx: int = 16, ny: int = 8,
-                           n_modes: int = 4, cells_per_wavelength: float = 4.0) -> np.ndarray:
+                           n_modes: int = 4, cells_per_wavelength: float | None = None,
+                           cell_length_in_half_thickness: float = 2.0) -> np.ndarray:
     """Lowest ``n_modes`` angular frequencies of the Floquet cell (ascending)."""
     cell = bloch_cell_matrices(wave_number, half_thickness=half_thickness, young=young,
                                poisson=poisson, density=density, nx=nx, ny=ny,
-                               cells_per_wavelength=cells_per_wavelength)
+                               cells_per_wavelength=cells_per_wavelength,
+                               cell_length_in_half_thickness=cell_length_in_half_thickness)
     k_red = cell.stiffness.numpy()
     m_red = cell.mass.numpy()
     # Symmetrise away the round-off of the Hermitian reduction.

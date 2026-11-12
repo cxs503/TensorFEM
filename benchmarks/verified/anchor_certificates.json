@@ -3,23 +3,23 @@
   "gate_schema": "tensorfem.verified-gates.v1",
   "git_tracking_checked": true,
   "anchors": 33,
-  "certified": 6,
-  "contradicted": 18,
+  "certified": 7,
+  "contradicted": 17,
   "uncertified": 9,
   "gates_total": 243,
-  "gates_recomputed": 201,
+  "gates_recomputed": 210,
   "gates_contradicted": 0,
   "gates_contradicted_inferred": 2,
   "gates_without_numeric_criterion": 9,
-  "gates_unrecomputable": 42,
+  "gates_unrecomputable": 33,
   "defect_counts": {
     "E_ANCHOR_NAME_MISMATCH": 2,
     "E_ARTIFACT_MISSING": 13,
     "E_GATE_VALUE_NOT_FINITE": 1,
     "E_NO_GATES": 9,
-    "E_OVERALL_ABSENT": 2,
+    "E_OVERALL_ABSENT": 1,
     "E_PASS_WITHOUT_CRITERION": 4,
-    "E_SCHEMA": 4
+    "E_SCHEMA": 3
   },
   "records": [
     {
@@ -3482,162 +3482,138 @@
     {
       "anchor": "fem_wave_dispersion",
       "directory": "benchmarks/verified/fem_wave_dispersion",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
-      "declared_overall": null,
-      "recomputed_overall": null,
+      "declared_overall": true,
+      "recomputed_overall": true,
       "gates": 9,
-      "gates_passed": 0,
+      "gates_passed": 9,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
-      "gates_unrecomputable": 9,
-      "defects": [
-        "E_SCHEMA",
-        "E_OVERALL_ABSENT"
-      ],
-      "warnings": [
-        "W_OPERATOR_ABSENT",
-        "W_UNDECLARED_ARTIFACTS"
-      ],
+      "gates_unrecomputable": 0,
+      "defects": [],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "s0_plate_velocity_extrapolated",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.9996882454343158,
+          "quantity": "S0 phase velocity extrapolated to kh->0 vs sqrt(E/(rho(1-nu^2)))",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.227759518191874e-06,
           "threshold": 0.002,
-          "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "a0_flexural_limit",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "A0 phase velocity at kh=0.05 vs Kirchhoff limit kh*c_p/sqrt(3)",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.0017679325410421276,
           "threshold": 0.01,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "a0_rayleigh_limit",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "A0 phase velocity at kh=20 vs Rayleigh speed from the classical cubic",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.8399101542332374e-07,
           "threshold": 0.01,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
-          "id": "s0_longitudinal_limit",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.4958161867219243,
-          "threshold": 0.05,
-          "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "id": "s0_rayleigh_limit",
+          "quantity": "S0 phase velocity at kh=20 vs the Rayleigh speed c_R",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 1.8399651158240715e-07,
+          "threshold": 0.01,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "root_residual",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "normalised Rayleigh--Lamb residual at every reported root",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 4.860013849625548e-15,
           "threshold": 1e-09,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "fem_phase_error_fine",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 5.568130032780239,
+          "quantity": "max phase-velocity error of the 32x32 Floquet cell over kh=0.2..1",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0006894201143690104,
           "threshold": 0.03,
-          "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "fem_convergence_order",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "order shortfall below 1.5 for the kh=0.2 mesh refinement (A0 and S0)",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.0,
           "threshold": 0.0,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "mass_conservation",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
+          "quantity": "sum of the consistent mass matrix vs 2*rho*L*2h (one block per translation)",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.1102230246251565e-16,
           "threshold": 1e-12,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "rigid_mode_count",
-          "quantity": "",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.7548558610603089,
-          "threshold": 1e-06,
-          "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "quantity": "census of eigenvalues below 1e-6*omega_max at k=0; the Floquet cell owns two translation zeros (rotation is not Floquet-compatible); the band [2,3] admits the A0 branch's k=0 zero",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0,
+          "threshold": 0.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         }
       ]
     },

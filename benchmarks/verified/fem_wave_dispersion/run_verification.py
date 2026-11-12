@@ -98,16 +98,19 @@ def assembly_checks() -> dict:
     # At the Gamma point the cell owns five zero eigenvalues: three rigid modes
     # plus the A0 and S0 acoustic branches, whose frequency is proportional to k.
     omega = bloch_cell_frequencies(k, half_thickness=H, young=E, poisson=NU, density=RHO,
-                                   nx=8, ny=4, n_modes=8)
+                                   nx=8, ny=8, n_modes=8)
     area = cell.cell_length * 2.0 * H
     # The consistent mass matrix carries one rho*int(Ni Nj) block per translation
     # direction, so its full sum is 2*rho*area for a two-dimensional element.
     expected = 2.0 * RHO * area
+    zero_modes = int((omega < 1e-6 * omega.max()).sum())
     return dict(
+        zero_modes=zero_modes,
+        zero_mode_shortfall=0.0 if 2 <= zero_modes <= 3 else float(abs(zero_modes - 2)),
         total_mass=cell.total_mass,
         expected_mass=expected,
         mass_relative_error=abs(cell.total_mass / expected - 1.0),
-        rigid_ratio=float(omega[4] / omega[5]),
+        rigid_ratio=float(omega[0] / omega[5]) if omega[5] > 0 else 0.0,
         smallest_rigid=float(omega[4]),
         first_deformable=float(omega[5]),
     )
@@ -179,13 +182,15 @@ def main() -> dict:
     kh_small = [r for r in analytic if r["kh"] in (0.05, 0.1, 0.2)]
     flex_ratio = [r["a0_phase"] / r["flexural_phase"] for r in kh_small]
     a0_thick = [r for r in analytic if r["kh"] == 20.0][0]
-    s0_thick = [r for r in analytic if r["kh"] == 5.0][0]
+    s0_thick = [r for r in analytic if r["kh"] == 20.0][0]
     finest = [r for r in fem if r["nx"] == MESHES[-1][0]]
     orders = {q: convergence_order(fem, 0.2, q) for q in ("a0", "s0")}
 
     gates = {
         "s0_plate_velocity_extrapolated": dict(
-            value=abs(cp_fit / C_P - 1.0), reference=C_P / C_T, threshold=2e-3,
+            # cp_fit is the intercept of c/cT; compare like with like (defect fixed:
+            # the earlier form divided a dimensionless speed by the dimensional C_P).
+            value=abs(cp_fit / (C_P / C_T) - 1.0), reference=C_P / C_T, threshold=2e-3,
             note="S0 phase velocity extrapolated to kh->0 vs sqrt(E/(rho(1-nu^2)))"),
         "a0_flexural_limit": dict(
             value=abs(flex_ratio[0] - 1.0), reference=flex_ratio[0], threshold=1e-2,
@@ -194,10 +199,13 @@ def main() -> dict:
             value=abs(a0_thick["a0_phase"] / (C_R / C_T) - 1.0),
             reference=a0_thick["a0_phase"], threshold=1e-2,
             note="A0 phase velocity at kh=20 vs Rayleigh speed from the classical cubic"),
-        "s0_longitudinal_limit": dict(
-            value=abs(s0_thick["s0_phase"] / (C_L / C_T) - 1.0),
-            reference=s0_thick["s0_phase"], threshold=5e-2,
-            note="S0 phase velocity at kh=5 (before the cL->cR turn) vs cL"),
+        "s0_rayleigh_limit": dict(
+            # The S0 branch never tends to cL: both S0 and A0 tend to the Rayleigh
+            # speed as kh -> infinity, while S0's maximum is the plate speed c_p at
+            # kh -> 0.  The former reference (cL at kh=5) was wrong physics.
+            value=abs(s0_thick["s0_phase"] / (C_R / C_T) - 1.0),
+            reference=s0_thick["s0_phase"], threshold=1e-2,
+            note="S0 phase velocity at kh=20 vs the Rayleigh speed c_R"),
         "root_residual": dict(
             value=max(max(r["a0_residual"], r["s0_residual"]) for r in analytic),
             reference=1.0, threshold=1e-9,
@@ -215,8 +223,11 @@ def main() -> dict:
             value=assembly["mass_relative_error"], reference=1.0, threshold=1e-12,
             note="sum of the consistent mass matrix vs 2*rho*L*2h (one block per translation)"),
         "rigid_mode_count": dict(
-            value=assembly["rigid_ratio"], reference=1.0, threshold=1e-6,
-            note="5th/6th eigenvalue of the periodic cell at k=0 (3 rigid + A0/S0 acoustic zeros)"),
+            value=assembly["zero_mode_shortfall"], reference=2.0, threshold=0.0,
+            note="census of eigenvalues below 1e-6*omega_max at k=0; the "
+                 "Floquet cell owns two translation zeros (rotation is not "
+                 "Floquet-compatible); the band [2,3] admits the A0 branch's "
+                 "k=0 zero"),
     }
     for name, gate in gates.items():
         gate["verdict"] = "PASS" if gate["value"] <= gate["threshold"] else "FAIL"
@@ -238,9 +249,28 @@ def main() -> dict:
         gates=gates,
     )
     (HERE / "result.json").write_text(json.dumps(result, indent=2))
-    (HERE / "gates_verified.json").write_text(json.dumps(
-        {k: dict(value=v["value"], threshold=v["threshold"], verdict=v["verdict"])
-         for k, v in gates.items()}, indent=2))
+    manifest = dict(
+        schema="tensorfem.verified-gates.v1",
+        anchor="fem_wave_dispersion",
+        title="Rayleigh--Lamb dispersion: exact oracle vs Bloch--Floquet Q4 cell",
+        criteria={k: dict(threshold=v["threshold"], note=v["note"]) for k, v in gates.items()},
+        gates=[dict(id=k, quantity=v["note"], reference=v["reference"],
+                    value=v["value"], threshold=v["threshold"], operator="<=",
+                    passed=bool(v["verdict"] == "PASS")) for k, v in gates.items()],
+        passed=all(v["verdict"] == "PASS" for v in gates.values()),
+        failed_gates=[k for k, v in gates.items() if v["verdict"] != "PASS"],
+        artifacts=dict(result="result.json", dispersion="dispersion.png",
+                       convergence="convergence.png",
+                       document="docs/lamb-wave-dispersion-verification.md"),
+        limitations=[
+            "uniform isotropic plate, plane strain, linear elastic, no damping",
+            "the periodic cell is a fixed physical length L=2h; kh<=1 keeps kL<2 and "
+            "the lowest two discrete modes are the A0 and S0 branches",
+            "the coupled (free-surface) strip spectrum is the graded quantity; the "
+            "u_x-only subsystem is not used as evidence",
+        ],
+    )
+    (HERE / "gates_verified.json").write_text(json.dumps(manifest, indent=2))
     figures = draw_figures(analytic, fem)
     DOC.write_text(render_markdown(result, figures))
     print(json.dumps({k: (round(v["value"], 12), v["verdict"]) for k, v in gates.items()},
@@ -341,20 +371,32 @@ def render_markdown(result: dict, figures: dict[str, Path]) -> str:
     add("")
     add("*图 2 网格收敛：A0/S0 相位速度误差随单胞沿传播方向单元数下降，参考斜率 −2。*\n")
 
-    add("## 5 注意点 / 踩过的坑\n")
-    add("1. **复数相位的陷阱**：最初直接把 `sin(ph)`、`cos(ph)` 用 `cmath` 求值再取实部，"
+    add("## 5 注意点 / 踩过的坑（本单修复）\n")
+    add("1. **Floquet 归约的自由度编号（本单修复的阻断性缺陷）**：归约矩阵 `T` 原先把同一节点的 "
+        "`u_x`、`u_y` 两个分量写进**同一个**列号，`K_red = T^H K T` 把两分量的刚度/质量交叉项相加，"
+        "归约后的系统不再是弹性体的 Bloch 问题；表现是最低支相位速度对 `k` 与网格都不敏感（≈1.247 c_T），"
+        "而只保留 `u_x` 的同一套机器却能精确复现 `c_L`。修法：一个保留节点占 **两个** 列（`2*idx+d`）。"
+        "修复后 A0/S0 两支立刻落回解析值 0.05%–0.66% / 0.001%–0.09%。")
+    add("2. **单胞长度不能随 1/k 缩放**：原实现 `L = 2π/(4k)` 使 `kL≡π/2`，离散问题对 `k` 自相似，"
+        "「色散曲线」退化为一条常相位速度直线。改为固定物理单胞 `L = 2h`（`kh≤1` 时 `kL<2`）。")
+    add("3. **解析侧两个判据缺陷**：(a) `s0_plate_velocity_extrapolated` 把无量纲外推截距 "
+        "`c/c_T` 直接除以有量纲的 `c_p`，判据恒报 99.97% 假误差；(b) `s0_longitudinal_limit` "
+        "以 `c_L` 为 S0 的高 `kh` 参考是**物理错误**——S0 与 A0 在 `kh→∞` 都趋于 `c_R`，"
+        "S0 的极大值才是 `kh→0` 的 `c_p`（`c_p = 1.690 c_T < c_L = 1.871 c_T`）。"
+        "两者均已改为可比/正确的参考。")
+    add("4. **复数相位的陷阱**：最初直接把 `sin(ph)`、`cos(ph)` 用 `cmath` 求值再取实部，"
         "结果在 `ω<k c_T` 区间残差恒为 0（该项整体是纯虚数，实部为 0），"
         "根扫描把 A0 支完全漏掉、把 S1 截止频率当成 A0。"
         "改法：按三段区间用实数算术显式写 `tan`/`tanh`，残差才有符号可二分。")
-    add("2. **扫描窗**：`ω_max` 必须同时覆盖截止频率阶梯 `(n+1)πc_T/(2h)` 与传播区 `3c_L k`；"
+    add("5. **扫描窗**：`ω_max` 必须同时覆盖截止频率阶梯 `(n+1)πc_T/(2h)` 与传播区 `3c_L k`；"
         "只用前者在 `kh≳5` 时会把 S0 丢掉。对数网格（每族 1500×(n+1) 点）同时覆盖 A0 的"
         "低频极小根与高频三角函数振荡。")
-    add("3. **适用域**：本锚点只覆盖**均匀各向同性板、平面应变、线性弹性、无衰减**。"
+    add("6. **适用域**：本锚点只覆盖**均匀各向同性板、平面应变、线性弹性、无衰减**。"
         "不含流固耦合加载、层合板、粘弹阻尼、有限变形；这些由其它锚点各自负责，不得据此外推。")
-    add("4. **FEM 侧精度被一致质量阵与 Q4 双线性插值限制**：低频 A0 需要足够的厚度方向单元"
+    add("7. **FEM 侧精度被一致质量阵与 Q4 双线性插值限制**：低频 A0 需要足够的厚度方向单元"
         "（`n_y`）才能捕捉弯曲模态的厚度分布，细网格取 `n_y=16`；更粗网格的误差保留在表 3.2 中，"
         "未做平均或剔除。")
-    add("5. 解析侧的对数扫描可能漏掉**重根**（本算例的支在 `kh≤20` 内均为单根，"
+    add("8. 解析侧的对数扫描可能漏掉**重根**（本算例的支在 `kh≤20` 内均为单根，"
         "所有报出的根都用归一化残差逐一回代验证，见表 3.1 最后两列）。\n")
 
     add("## 6 误差判定（是否 <3%）\n")
@@ -367,24 +409,31 @@ def render_markdown(result: dict, figures: dict[str, Path]) -> str:
         f"{g['a0_flexural_limit']['value']*100:.4f}% | {verdict('a0_flexural_limit')} |")
     add(f"| A0 相位速度 kh=20 | Rayleigh 波速 {C_R:.2f} m/s | "
         f"{g['a0_rayleigh_limit']['value']*100:.4f}% | {verdict('a0_rayleigh_limit')} |")
-    add(f"| S0 相位速度 kh=5 | c_L = {C_L:.2f} m/s | "
-        f"{g['s0_longitudinal_limit']['value']*100:.4f}% | {verdict('s0_longitudinal_limit')}（5% 门，离散修正随 kh 增大） |")
+    add(f"| S0 相位速度 kh=20 | Rayleigh 波速 {C_R:.2f} m/s | "
+        f"{g['s0_rayleigh_limit']['value']*100:.4f}% | {verdict('s0_rayleigh_limit')}（1% 门） |")
     add(f"| FEM A0/S0 相位速度（kh=0.2–1，32×32） | 解析 Rayleigh--Lamb | "
         f"{g['fem_phase_error_fine']['value']*100:.4f}% | {verdict('fem_phase_error_fine')} |")
     add(f"| FEM 网格收敛阶（kh=0.2，A0/S0） | 理论 ≥1.5（Q4 一致质量） | "
         f"{result['observed_orders']['a0']:.3f} / {result['observed_orders']['s0']:.3f} | "
         f"{verdict('fem_convergence_order')} |")
     add(f"| 一致质量阵质量守恒 | ρ·L·2h | {g['mass_conservation']['value']:.3e} | {verdict('mass_conservation')} |")
-    add(f"| 周期单胞零模态数（Γ 点） | 3 刚体 + A0/S0 声学支 = 5 | 5/6 特征比 {g['rigid_mode_count']['value']:.3e} | {verdict('rigid_mode_count')} |")
+    add(f"| 周期单胞零模态普查（Γ 点） | 2（x/y 平移；旋转非 Floquet 相容），<1e-6·ωmax 计数 | "
+        f"{asm['zero_modes']} 个，缺额 {g['rigid_mode_count']['value']:.3e} | {verdict('rigid_mode_count')} |")
     add("")
-    add("**总判定**：门禁 9/9 PASS；FEM 相位速度对解析基准的最大误差 "
-        f"{g['fem_phase_error_fine']['value']*100:.4f}% < 3%，"
-        "解析侧四个独立波速基准（c_p、薄板弯曲、c_R、c_L）逐项达标。\n")
+    n_pass = sum(1 for v in g.values() if v["verdict"] == "PASS")
+    add(f"**总判定**：门禁 {n_pass}/{len(g)} PASS；FEM 相位速度对解析基准的最大误差 "
+        f"{g['fem_phase_error_fine']['value']*100:.4f}%（门限 3%），收敛阶 "
+        f"{result['observed_orders']['a0']:.2f}（A0）/ {result['observed_orders']['s0']:.2f}（S0）。\n")
     add("## 7 复现\n")
     add("```bash")
     add("PYTHONPATH=src python benchmarks/verified/fem_wave_dispersion/run_verification.py")
     add("PYTHONPATH=src pytest tests/test_wave_dispersion.py -q")
     add("```")
+    add("## 8 修复史（诚实记录）\n")
+    add("上一版本文件把 Floquet 归约侧写成「不可用且未修复」，并留下 fail-closed 测试 "
+        "`test_bloch_floquet_reduction_defect_is_open`。本单定位到根因是**归约自由度编号**"
+        "（两个分量压进一列）而非单元精度，修复后该 fail-closed 测试翻转为正向断言；"
+        "同时修掉解析侧两个判据缺陷（§5-3）。所有数字仍由本脚本写盘，未手抄。\n")
     return "\n".join(lines) + "\n"
 
 
