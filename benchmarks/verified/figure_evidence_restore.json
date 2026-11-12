@@ -1,0 +1,1028 @@
+{
+  "schema": "tensorfem.figure-evidence-restore/1",
+  "generated_at": "2026-11-12T22:51:53+0000",
+  "note": "Every entry is the anchor's own driver re-executed, never a private re-implementation; status=figure_missing/timeout/runner_failed means the evidence is still absent and the anchor stays in anchor_certificate_debt.json.",
+  "summary": {
+    "anchors": 33,
+    "status_counts": {
+      "no_gates": 6,
+      "already_complete": 25,
+      "not_attempted": 1,
+      "no_runner": 1
+    },
+    "figures_restored": 0,
+    "missing_after": 7,
+    "physics_drift": []
+  },
+  "entries": [
+    {
+      "anchor": "fem_axisym_shell",
+      "anchor_dir": "benchmarks/verified/fem_axisym_shell",
+      "has_gates": false,
+      "runner": null,
+      "declared": [],
+      "missing": [],
+      "status": "no_gates",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_beam",
+      "anchor_dir": "benchmarks/verified/fem_beam",
+      "has_gates": true,
+      "runner": null,
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_beam/result.json",
+          "path": "benchmarks/verified/fem_beam/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "2d56e69bdaaec96a7916d9e1ced3bdc9df1ae7db3cb5c7821e84a522481d8bef",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_beam_static",
+      "anchor_dir": "benchmarks/verified/fem_beam_static",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_beam_static/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_beam_static/result.json",
+          "path": "benchmarks/verified/fem_beam_static/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "59a4c07eba45f8cc17b2f74729b4a88b08422a3d9a21cfcf92ddfae4bf977b0d",
+          "git_tracked": true
+        },
+        {
+          "declared": "deflection_profile.png",
+          "path": "benchmarks/verified/fem_beam_static/deflection_profile.png",
+          "present": true,
+          "note": "73320 B",
+          "sha256": "da1f510dc2d7291f858a2138710c26cdce1b672b99c69d9187986a8a089b49c1",
+          "git_tracked": true
+        },
+        {
+          "declared": "convergence.png",
+          "path": "benchmarks/verified/fem_beam_static/convergence.png",
+          "present": true,
+          "note": "23438 B",
+          "sha256": "70364c7f58fdea023902b6080c1183025526ad61dd31789132e78caccd8f11f3",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_bending_patch",
+      "anchor_dir": "benchmarks/verified/fem_bending_patch",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_bending_patch/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_bending_patch/result.json",
+          "path": "benchmarks/verified/fem_bending_patch/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "1dd55e1d74fc2f7b3a5b19316e5e8261d13b3d583b1f0566cf80ef52ac4027ed",
+          "git_tracked": true
+        },
+        {
+          "declared": "docs/bending-patch.md",
+          "path": "docs/bending-patch.md",
+          "present": true,
+          "note": "",
+          "sha256": "1ff1bdd742cb7ba61070e2dae7664ee11d37cefc8a5318e5f064f44cfe0546f8",
+          "git_tracked": true
+        },
+        {
+          "declared": "docs/assets/bending_patch/",
+          "path": "docs/assets/bending_patch",
+          "present": true,
+          "note": "",
+          "git_tracked": false
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_cantilever",
+      "anchor_dir": "benchmarks/verified/fem_cantilever",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_cantilever/run.py",
+      "declared": [
+        {
+          "declared": "result.json",
+          "path": "benchmarks/verified/fem_cantilever/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "5543801a3e8171327c7e79e8ffb7000a9662d565e58d2e5ab489614916ccd5a0",
+          "git_tracked": true
+        },
+        {
+          "declared": "gates_verified.json",
+          "path": "benchmarks/verified/fem_cantilever/gates_verified.json",
+          "present": true,
+          "note": "",
+          "sha256": "b06cefa69ea42ce48262a106e290aac6f64e801166b3fe4558ce0df4230216d7",
+          "git_tracked": true
+        },
+        {
+          "declared": "cantilever_field.png",
+          "path": "benchmarks/verified/fem_cantilever/cantilever_field.png",
+          "present": true,
+          "note": "77030 B",
+          "sha256": "30911cc1284df7b224764437000c6f3d1f58034e709ce43b2847a9e23e2c3bf1",
+          "git_tracked": true
+        },
+        {
+          "declared": "cantilever_convergence.png",
+          "path": "benchmarks/verified/fem_cantilever/cantilever_convergence.png",
+          "present": true,
+          "note": "52740 B",
+          "sha256": "b038e6ead2058589c61b2f5a5b55d0b5d708e0ea441039fd2576a96270211ab1",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_curved_beam",
+      "anchor_dir": "benchmarks/verified/fem_curved_beam",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_curved_beam/run.py",
+      "declared": [
+        {
+          "declared": "result.json",
+          "path": "benchmarks/verified/fem_curved_beam/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "a454bb288d96c6f1e699e3b6badc4a53948de90c9535c2b40c26e1b9c71982e9",
+          "git_tracked": true
+        },
+        {
+          "declared": "gates_verified.json",
+          "path": "benchmarks/verified/fem_curved_beam/gates_verified.json",
+          "present": true,
+          "note": "",
+          "sha256": "114288c1ba70c6d09751af7f10f162514e6bb1181c07aefa68e46a67ab139abb",
+          "git_tracked": true
+        },
+        {
+          "declared": "curved_beam_convergence.png",
+          "path": "benchmarks/verified/fem_curved_beam/curved_beam_convergence.png",
+          "present": true,
+          "note": "92003 B",
+          "sha256": "65c563180fc0be6047e76a2b2c4cac3fd371c70864a6079fe552072447e2e7b9",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_curved_ring_solid",
+      "anchor_dir": "benchmarks/verified/fem_curved_ring_solid",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_curved_ring_solid/run_verification.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_curved_ring_solid/run_verification.py",
+          "path": "benchmarks/verified/fem_curved_ring_solid/run_verification.py",
+          "present": true,
+          "note": "",
+          "sha256": "4b1e75e45e610c5100138af26cab18fcce5a1cb882b0fad149fa736e3092f389",
+          "git_tracked": true
+        },
+        {
+          "declared": "src/tensorfem/curved_ring_continuum.py",
+          "path": "src/tensorfem/curved_ring_continuum.py",
+          "present": true,
+          "note": "",
+          "sha256": "db478bf509bc508cde2fd730289f370a710ed2cf2628c3486a6dd4ec1386e435",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_curved_ring_solid/result.json",
+          "path": "benchmarks/verified/fem_curved_ring_solid/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "c1a7ff1bccabc01d10984f368ac8dd14f780305c1cd51e3a57cbc5e6fb8986e2",
+          "git_tracked": true
+        },
+        {
+          "declared": "docs/assets/curved_ring_continuum/fig1_convergence.png",
+          "path": "docs/assets/curved_ring_continuum/fig1_convergence.png",
+          "present": true,
+          "note": "73889 B",
+          "sha256": "d60f31fe0223f395a3f88476d762e9c729dd21f2a75c35fc2070a5227ae2e70b",
+          "git_tracked": true
+        },
+        {
+          "declared": "docs/assets/curved_ring_continuum/fig2_validity_envelope.png",
+          "path": "docs/assets/curved_ring_continuum/fig2_validity_envelope.png",
+          "present": true,
+          "note": "48451 B",
+          "sha256": "ef168f57aa44e0e7a0a034137b08d04ee461ffa2546554b2d8298c2790e0dc9b",
+          "git_tracked": true
+        },
+        {
+          "declared": "docs/assets/curved_ring_continuum/fig3_hoop_stress_t10.png",
+          "path": "docs/assets/curved_ring_continuum/fig3_hoop_stress_t10.png",
+          "present": true,
+          "note": "52085 B",
+          "sha256": "d07c2eb4833821571fe413ea52cc3955dfcb74d0536d96f923bc1372f4a998af",
+          "git_tracked": true
+        },
+        {
+          "declared": "docs/assets/curved_ring_continuum/fig3_hoop_stress_t30.png",
+          "path": "docs/assets/curved_ring_continuum/fig3_hoop_stress_t30.png",
+          "present": true,
+          "note": "57867 B",
+          "sha256": "4ad5a77f9d4af746c2c63a7f3f14381b3378c92d36024537c61c8ace5e6f1445",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_cylinder_radiation",
+      "anchor_dir": "benchmarks/verified/fem_cylinder_radiation",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_cylinder_radiation/run.py",
+      "declared": [],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_elastoplastic_plate_buckling",
+      "anchor_dir": "benchmarks/verified/fem_elastoplastic_plate_buckling",
+      "has_gates": false,
+      "runner": null,
+      "declared": [],
+      "missing": [],
+      "status": "no_gates",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_hertz_contact",
+      "anchor_dir": "benchmarks/verified/fem_hertz_contact",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_hertz_contact/run.py",
+      "declared": [
+        {
+          "declared": "result.json",
+          "path": "benchmarks/verified/fem_hertz_contact/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "670e384ed1cce0c5e910d4162acbf88ff15f24f1cb6bf2213afab18acfc39b53",
+          "git_tracked": true
+        },
+        {
+          "declared": "gates_verified.json",
+          "path": "benchmarks/verified/fem_hertz_contact/gates_verified.json",
+          "present": true,
+          "note": "",
+          "sha256": "0664a0c0003ad05ea889a08fe7cb2cafa4d1863790f44e8eb06d9b304996a6d3",
+          "git_tracked": true
+        },
+        {
+          "declared": "hertz_pressure.png",
+          "path": "benchmarks/verified/fem_hertz_contact/hertz_pressure.png",
+          "present": true,
+          "note": "79194 B",
+          "sha256": "7017cede85de9a3ba804c993c5fc1c2d02c78bdc567da77a50d8ac742d9086da",
+          "git_tracked": true
+        },
+        {
+          "declared": "hertz_convergence.png",
+          "path": "benchmarks/verified/fem_hertz_contact/hertz_convergence.png",
+          "present": true,
+          "note": "64385 B",
+          "sha256": "eff1dfb0494126367d8c87e00790a726e9583defd71aaac7c35f42032bc5b95f",
+          "git_tracked": true
+        },
+        {
+          "declared": "hertz_penalty.png",
+          "path": "benchmarks/verified/fem_hertz_contact/hertz_penalty.png",
+          "present": true,
+          "note": "32415 B",
+          "sha256": "dcd8f56b174e1fccd4999b04f09d2fceea6f2a7a302e90190e6a43c2f916136d",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_hertz_contact_loadcontrol",
+      "anchor_dir": "benchmarks/verified/fem_hertz_contact_loadcontrol",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_hertz_contact_loadcontrol/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_hertz_contact_loadcontrol/result.json",
+          "path": "benchmarks/verified/fem_hertz_contact_loadcontrol/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "629cc232deb7299671de1ff7274eed82de30a67c91461efa39dce938f4f79737",
+          "git_tracked": true
+        },
+        {
+          "declared": "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_convergence.png",
+          "path": "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_convergence.png",
+          "present": true,
+          "note": "47762 B",
+          "sha256": "f0030ae571c459f71260b472015d5b9734b54aba1a60a7c1bfe8cc00cab76a37",
+          "git_tracked": true
+        },
+        {
+          "declared": "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_pressure.png",
+          "path": "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_pressure.png",
+          "present": true,
+          "note": "62737 B",
+          "sha256": "39ecd02a2482fa1d9546c72f78404503e36a0d3692c30a887421c082462652e9",
+          "git_tracked": true
+        },
+        {
+          "declared": "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_truncation_rho.png",
+          "path": "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_truncation_rho.png",
+          "present": true,
+          "note": "86053 B",
+          "sha256": "6b9867422a7a585952fa9d9d113dcffff27cc461239b2bbce62e255a35e52e54",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_kerr_plate",
+      "anchor_dir": "benchmarks/verified/fem_kerr_plate",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_kerr_plate/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_kerr_plate/result.json",
+          "path": "benchmarks/verified/fem_kerr_plate/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "b684b9ed7f6036b8cc0b16718ba2ec711910b08351d210a8682c584dbae15313",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_kirsch_plate",
+      "anchor_dir": "benchmarks/verified/fem_kirsch_plate",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_kirsch_plate/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_kirsch_plate/kirsch_field.png",
+          "path": "benchmarks/verified/fem_kirsch_plate/kirsch_field.png",
+          "present": true,
+          "note": "33181 B",
+          "sha256": "ed853e798e97700282d1145d9f6c82ff826037df0bc8b97b9a14aed3bed79082",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_kirsch_plate/kirsch_convergence.png",
+          "path": "benchmarks/verified/fem_kirsch_plate/kirsch_convergence.png",
+          "present": true,
+          "note": "60801 B",
+          "sha256": "481c434296e3c13d481fcd1ebbbef0f213a71dcd375d6590b1a9e7839bd266ec",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_kirsch_plate/kirsch_hoop_profile.png",
+          "path": "benchmarks/verified/fem_kirsch_plate/kirsch_hoop_profile.png",
+          "present": true,
+          "note": "44498 B",
+          "sha256": "57f4976a08cb775f0d1b4556d2dd7323b0d4c98eac48edfba5aa3ba4942e13ab",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_kirsch_plate/kirsch_width_trend.png",
+          "path": "benchmarks/verified/fem_kirsch_plate/kirsch_width_trend.png",
+          "present": true,
+          "note": "57317 B",
+          "sha256": "f59d6244317117c27c8d43a07b05fcf0039bd95320c4e8e2f5ae47e698c96f70",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_modal",
+      "anchor_dir": "benchmarks/verified/fem_modal",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_modal/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_modal/result_p19.json",
+          "path": "benchmarks/verified/fem_modal/result_p19.json",
+          "present": true,
+          "note": "",
+          "sha256": "491d9c2a7e5e787bda06f0f55f2d6504eaca213fa57fe3f590a0272a34922a67",
+          "git_tracked": true
+        },
+        {
+          "declared": "beam_modes.png",
+          "path": "benchmarks/verified/fem_modal/beam_modes.png",
+          "present": true,
+          "note": "60719 B",
+          "sha256": "6d35b31b84b725afbe1306078bf06c83e4f1a9c3d222d2c50181cff51783c1bd",
+          "git_tracked": true
+        },
+        {
+          "declared": "plate_modes.png",
+          "path": "benchmarks/verified/fem_modal/plate_modes.png",
+          "present": true,
+          "note": "45536 B",
+          "sha256": "27749b42cc0f153efb90b8463df878f4760268106d582fbafae9c5c64b4da69c",
+          "git_tracked": true
+        },
+        {
+          "declared": "modal_convergence.png",
+          "path": "benchmarks/verified/fem_modal/modal_convergence.png",
+          "present": true,
+          "note": "33260 B",
+          "sha256": "f417f95d10ecc2aa404a5803aed9b2feac677c3a25a32cdda85016075e31d57a",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_modal/result.json",
+          "path": "benchmarks/verified/fem_modal/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "380271ba33a618a9d593c8fce98255767effc8e0c530df53ad1ad8a7725ae763",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_morley_skew_plate",
+      "anchor_dir": "benchmarks/verified/fem_morley_skew_plate",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_morley_skew_plate/run.py",
+      "declared": [],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_panel_buckling",
+      "anchor_dir": "benchmarks/verified/fem_panel_buckling",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_panel_buckling/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_panel_buckling/result.json",
+          "path": "benchmarks/verified/fem_panel_buckling/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "bf271ef4168422915af75e757fa0172586e7b9b50338f553b66babb256d85448",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_panel_buckling/run.py",
+          "path": "benchmarks/verified/fem_panel_buckling/run.py",
+          "present": true,
+          "note": "",
+          "sha256": "1f90d7de62a45c31b2d4598fdb3e332e47793ae9b1f6946a2c5912ef50f2e61d",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_panel_buckling/figures/buckling_convergence.png",
+          "path": "benchmarks/verified/fem_panel_buckling/figures/buckling_convergence.png",
+          "present": true,
+          "note": "81439 B",
+          "sha256": "027a4f752071a74934193506109a4a602b7a24dd406ef5e0c1a89f47aa0ed86a",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_panel_buckling/figures/buckling_modes.png",
+          "path": "benchmarks/verified/fem_panel_buckling/figures/buckling_modes.png",
+          "present": true,
+          "note": "79252 B",
+          "sha256": "850043f950554b6527f7bc25caf216949943f3a4c05c5a401911db0a2203dbd5",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_panel_buckling/figures/linear_path_evidence.png",
+          "path": "benchmarks/verified/fem_panel_buckling/figures/linear_path_evidence.png",
+          "present": true,
+          "note": "46638 B",
+          "sha256": "80ba79ca7e12f19ae0daaa614ee4372d5da903a1df841b5f08003ea8cdc9a517",
+          "git_tracked": true
+        },
+        {
+          "declared": "src/tensorfem/stiffened_panel_buckling.py",
+          "path": "src/tensorfem/stiffened_panel_buckling.py",
+          "present": true,
+          "note": "",
+          "sha256": "5faba7075fa8fe91e6b7f589fc744d4455b27e5b1ad00e36cb7b7b37d32e1227",
+          "git_tracked": true
+        },
+        {
+          "declared": "tests/test_stiffened_panel_buckling.py",
+          "path": "tests/test_stiffened_panel_buckling.py",
+          "present": true,
+          "note": "",
+          "sha256": "a2835184a565ea98214739d431d6faa7cf861d0f7183f038f0873a6db949c2d7",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_pinched_cylinder",
+      "anchor_dir": "benchmarks/verified/fem_pinched_cylinder",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_pinched_cylinder/run.py",
+      "declared": [],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_plate",
+      "anchor_dir": "benchmarks/verified/fem_plate",
+      "has_gates": true,
+      "runner": null,
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_plate/result.json",
+          "path": "benchmarks/verified/fem_plate/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "3ff847953c547ba7b364ad4b6748c5ffff146663d3eb7f83381e2a9ed29cf96e",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_plate_modal",
+      "anchor_dir": "benchmarks/verified/fem_plate_modal",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_plate_modal/run.py",
+      "declared": [
+        {
+          "declared": "result.json",
+          "path": "benchmarks/verified/fem_plate_modal/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "fbb67f56396e625116e7e83007e2fd1701cb31a567f4c9ac0f7ed70da805dab4",
+          "git_tracked": true
+        },
+        {
+          "declared": "gates_verified.json",
+          "path": "benchmarks/verified/fem_plate_modal/gates_verified.json",
+          "present": true,
+          "note": "",
+          "sha256": "2285a5500628db318fb793b3dd44ac90a14d8519d3821f46617355bb2aa61e05",
+          "git_tracked": true
+        },
+        {
+          "declared": "plate_modes.png",
+          "path": "benchmarks/verified/fem_plate_modal/plate_modes.png",
+          "present": true,
+          "note": "117249 B",
+          "sha256": "02038a4a19f45f5eca806b9c79069daba328a5dd9886075bc33b00b1299a2fa0",
+          "git_tracked": true
+        },
+        {
+          "declared": "plate_convergence.png",
+          "path": "benchmarks/verified/fem_plate_modal/plate_convergence.png",
+          "present": true,
+          "note": "117203 B",
+          "sha256": "e7c3230a36365a59953ba39818d84e31eb515f2ba8ed3f6e499dd0bb2379cec3",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_plate_postbuckling",
+      "anchor_dir": "benchmarks/verified/fem_plate_postbuckling",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_plate_postbuckling/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_plate_postbuckling/buckling_mode.png",
+          "path": "benchmarks/verified/fem_plate_postbuckling/buckling_mode.png",
+          "present": true,
+          "note": "75801 B",
+          "sha256": "3ab6e09e555f46ce9f1b68cfbef534a1a404c9e4963dabc584a56a3db9b99205",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_plate_postbuckling/postbuckling_path.png",
+          "path": "benchmarks/verified/fem_plate_postbuckling/postbuckling_path.png",
+          "present": true,
+          "note": "76135 B",
+          "sha256": "e0ca73774504685ce8e55007b9f383ec56fd5eea257e0a67f33ec6c5f7da224b",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_plate_postbuckling/imperfection_sensitivity.png",
+          "path": "benchmarks/verified/fem_plate_postbuckling/imperfection_sensitivity.png",
+          "present": true,
+          "note": "97563 B",
+          "sha256": "411ae5b699771838c22584e5bd090b8d034ec25b2e32c9d4f4818204dd260349",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_plate_static",
+      "anchor_dir": "benchmarks/verified/fem_plate_static",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_plate_static/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_plate_static/result.json",
+          "path": "benchmarks/verified/fem_plate_static/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "97dcbff81f4a74872f0af642b9e4a81567649edf4dba87d8db70666cf6915abf",
+          "git_tracked": true
+        },
+        {
+          "declared": "fields_ssss.png",
+          "path": "benchmarks/verified/fem_plate_static/fields_ssss.png",
+          "present": true,
+          "note": "61879 B",
+          "sha256": "05ed1dffad7b270b12bb01a08b34ab142eb0b4178e71545e69742d6710b21e15",
+          "git_tracked": true
+        },
+        {
+          "declared": "fields_cccc.png",
+          "path": "benchmarks/verified/fem_plate_static/fields_cccc.png",
+          "present": true,
+          "note": "67029 B",
+          "sha256": "4c585752080e6ccde25034ab18b698784b657ee317d9caca1e9234dfbfa3b1f2",
+          "git_tracked": true
+        },
+        {
+          "declared": "convergence.png",
+          "path": "benchmarks/verified/fem_plate_static/convergence.png",
+          "present": true,
+          "note": "43278 B",
+          "sha256": "80c36dae085d46feb0ff901d597319c40b30e03495d55aad55a2885fffb3e3c6",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_sent_j_integral",
+      "anchor_dir": "benchmarks/verified/fem_sent_j_integral",
+      "has_gates": false,
+      "runner": null,
+      "declared": [],
+      "missing": [],
+      "status": "no_gates",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_shell4_formulation_matrix",
+      "anchor_dir": "benchmarks/verified/fem_shell4_formulation_matrix",
+      "has_gates": false,
+      "runner": null,
+      "declared": [],
+      "missing": [],
+      "status": "no_gates",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_shell_modal",
+      "anchor_dir": "benchmarks/verified/fem_shell_modal",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_shell_modal/run_verification.py",
+      "declared": [
+        {
+          "declared": "result.json",
+          "path": "benchmarks/verified/fem_shell_modal/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "c8372eb8bed3abbf0b37281b94d418eea2c23dd2ccdd69abba7e99521d7dbf88",
+          "git_tracked": true
+        },
+        {
+          "declared": "shell_modal_audit.png",
+          "path": "benchmarks/verified/fem_shell_modal/shell_modal_audit.png",
+          "present": true,
+          "note": "65304 B",
+          "sha256": "71ff83f62e989dbbf9305f0ea603d13bca5e18f131176ba49ee0e87b6c72def5",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_shell_scordelis_lo",
+      "anchor_dir": "benchmarks/verified/fem_shell_scordelis_lo",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_shell_scordelis_lo/run_verification.py",
+      "declared": [],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_sphere_pressure_membrane",
+      "anchor_dir": "benchmarks/verified/fem_sphere_pressure_membrane",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py",
+      "declared": [],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_structural_acoustics",
+      "anchor_dir": "benchmarks/verified/fem_structural_acoustics",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_structural_acoustics/run.py",
+      "declared": [
+        {
+          "declared": "result.json",
+          "path": "benchmarks/verified/fem_structural_acoustics/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "9485073041ef51c19b5bdd7f285306461da95d3e9fe0138033f20f261b19bbc6",
+          "git_tracked": true
+        },
+        {
+          "declared": "fig_cylinder.png",
+          "path": "benchmarks/verified/fem_structural_acoustics/fig_cylinder.png",
+          "present": false,
+          "note": "missing",
+          "git_tracked": false
+        },
+        {
+          "declared": "fig_esm_validation.png",
+          "path": "benchmarks/verified/fem_structural_acoustics/fig_esm_validation.png",
+          "present": false,
+          "note": "missing",
+          "git_tracked": false
+        },
+        {
+          "declared": "fig_plate_modes.png",
+          "path": "benchmarks/verified/fem_structural_acoustics/fig_plate_modes.png",
+          "present": false,
+          "note": "missing",
+          "git_tracked": false
+        },
+        {
+          "declared": "fig_plate_sigma.png",
+          "path": "benchmarks/verified/fem_structural_acoustics/fig_plate_sigma.png",
+          "present": false,
+          "note": "missing",
+          "git_tracked": false
+        },
+        {
+          "declared": "docs/reports/fem-structural-acoustics.md",
+          "path": "docs/reports/fem-structural-acoustics.md",
+          "present": true,
+          "note": "",
+          "sha256": "f883c7303d944d234dd81a73c4b29572712567b292ad7a0e760282bfdb94c3b9",
+          "git_tracked": true
+        }
+      ],
+      "missing": [
+        "benchmarks/verified/fem_structural_acoustics/fig_cylinder.png",
+        "benchmarks/verified/fem_structural_acoustics/fig_esm_validation.png",
+        "benchmarks/verified/fem_structural_acoustics/fig_plate_modes.png",
+        "benchmarks/verified/fem_structural_acoustics/fig_plate_sigma.png"
+      ],
+      "status": "not_attempted",
+      "missing_after": [
+        "benchmarks/verified/fem_structural_acoustics/fig_cylinder.png",
+        "benchmarks/verified/fem_structural_acoustics/fig_esm_validation.png",
+        "benchmarks/verified/fem_structural_acoustics/fig_plate_modes.png",
+        "benchmarks/verified/fem_structural_acoustics/fig_plate_sigma.png"
+      ]
+    },
+    {
+      "anchor": "fem_structural_benchmarks",
+      "anchor_dir": "benchmarks/verified/fem_structural_benchmarks",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_structural_benchmarks/run.py",
+      "declared": [
+        {
+          "declared": "benchmarks/verified/fem_structural_benchmarks/result.json",
+          "path": "benchmarks/verified/fem_structural_benchmarks/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "4b77c7bc588520c408e908b09a767b3095c4c6d34c6ffcdabd8da1365ad0542e",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_structural_benchmarks/gates_verified.json",
+          "path": "benchmarks/verified/fem_structural_benchmarks/gates_verified.json",
+          "present": true,
+          "note": "",
+          "sha256": "67d7887df6deeb0cdb5d3b7afc60d9f8fa5ff1da42ad44ad23399761c6925a37",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_structural_benchmarks/case_a_beam.png",
+          "path": "benchmarks/verified/fem_structural_benchmarks/case_a_beam.png",
+          "present": true,
+          "note": "65805 B",
+          "sha256": "df33aaeb2ae755a4803ca922e0a4a01e8d2f50d792171d76b91021a291c719fd",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_structural_benchmarks/case_b_plate.png",
+          "path": "benchmarks/verified/fem_structural_benchmarks/case_b_plate.png",
+          "present": true,
+          "note": "84803 B",
+          "sha256": "6a17ad232fff709fa436397afd92d5d859ae42859767dc78de89073d552856cf",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_structural_benchmarks/case_c_cylinder.png",
+          "path": "benchmarks/verified/fem_structural_benchmarks/case_c_cylinder.png",
+          "present": true,
+          "note": "103637 B",
+          "sha256": "3f60ecfc6e9ed8cf76976dc404a95ad305eae01cba3151477a5db5d1c489e067",
+          "git_tracked": true
+        },
+        {
+          "declared": "benchmarks/verified/fem_structural_benchmarks/run.py",
+          "path": "benchmarks/verified/fem_structural_benchmarks/run.py",
+          "present": true,
+          "note": "",
+          "sha256": "df76d7886a2d0440a67076c92669d2ae67cba1f5c95257ad36034f900a85f374",
+          "git_tracked": true
+        },
+        {
+          "declared": "tests/test_fem_structural_benchmarks.py",
+          "path": "tests/test_fem_structural_benchmarks.py",
+          "present": true,
+          "note": "",
+          "sha256": "8d9aaa9bf47396e366e033fc7e0e6720469528b00a19f0379d1722eafc6b7aa8",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_thermal",
+      "anchor_dir": "benchmarks/verified/fem_thermal",
+      "has_gates": false,
+      "runner": null,
+      "declared": [],
+      "missing": [],
+      "status": "no_gates",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_wave_dispersion",
+      "anchor_dir": "benchmarks/verified/fem_wave_dispersion",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_wave_dispersion/run_verification.py",
+      "declared": [],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_winkler_plate",
+      "anchor_dir": "benchmarks/verified/fem_winkler_plate",
+      "has_gates": true,
+      "runner": "benchmarks/verified/fem_winkler_plate/run.py",
+      "declared": [
+        {
+          "declared": "result.json",
+          "path": "benchmarks/verified/fem_winkler_plate/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "d5c369809d037556b65d004ae6fb147c23086a8cca371ae78deb6c7e12099d12",
+          "git_tracked": true
+        },
+        {
+          "declared": "winkler_deflection_profile.png",
+          "path": "benchmarks/verified/fem_winkler_plate/winkler_deflection_profile.png",
+          "present": true,
+          "note": "60245 B",
+          "sha256": "5ece77b97a0c3d9a140775caa5c063ab57088f06ad447192655301a3d862df60",
+          "git_tracked": true
+        },
+        {
+          "declared": "winkler_convergence.png",
+          "path": "benchmarks/verified/fem_winkler_plate/winkler_convergence.png",
+          "present": true,
+          "note": "54394 B",
+          "sha256": "940befcd5b9f1b7b5d0e50b55c5b99f41a7e380eebcb91454ed4ede63cf325e7",
+          "git_tracked": true
+        }
+      ],
+      "missing": [],
+      "status": "already_complete",
+      "missing_after": []
+    },
+    {
+      "anchor": "fem_winkler_plate_k_sweep",
+      "anchor_dir": "benchmarks/verified/fem_winkler_plate_k_sweep",
+      "has_gates": true,
+      "runner": null,
+      "declared": [
+        {
+          "declared": "result.json",
+          "path": "benchmarks/verified/fem_winkler_plate_k_sweep/result.json",
+          "present": true,
+          "note": "",
+          "sha256": "c6dfbcef7695b9c4e46682d04221114b3a3c9ca6728691f651c52c813fc79383",
+          "git_tracked": true
+        },
+        {
+          "declared": "winkler_k_sweep_profile.png",
+          "path": "benchmarks/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_profile.png",
+          "present": false,
+          "note": "missing",
+          "git_tracked": false
+        },
+        {
+          "declared": "winkler_k_sweep_error.png",
+          "path": "benchmarks/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_error.png",
+          "present": false,
+          "note": "missing",
+          "git_tracked": false
+        },
+        {
+          "declared": "winkler_k_sweep_beam.png",
+          "path": "benchmarks/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_beam.png",
+          "present": false,
+          "note": "missing",
+          "git_tracked": false
+        }
+      ],
+      "missing": [
+        "benchmarks/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_profile.png",
+        "benchmarks/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_error.png",
+        "benchmarks/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_beam.png"
+      ],
+      "status": "no_runner",
+      "missing_after": [
+        "benchmarks/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_profile.png",
+        "benchmarks/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_error.png",
+        "benchmarks/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_beam.png"
+      ]
+    },
+    {
+      "anchor": "rainflow_fix_spec",
+      "anchor_dir": "benchmarks/verified/rainflow_fix_spec",
+      "has_gates": false,
+      "runner": null,
+      "declared": [],
+      "missing": [],
+      "status": "no_gates",
+      "missing_after": []
+    }
+  ]
+}
