@@ -15,7 +15,7 @@
     {
       "id": "G2.plate",
       "quantity": "SS plate modes 1-3, max relative error [%]",
-      "value": 6.842545539601385,
+      "value": 6.842545540515209,
       "operator": "<=",
       "threshold": 10.0,
       "passed": true,

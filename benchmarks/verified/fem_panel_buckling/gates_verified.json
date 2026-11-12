@@ -3,7 +3,7 @@
   "anchor": "fem_panel_buckling",
   "title": "Linearised buckling of a longitudinally stiffened panel unit cell",
   "mission": "p127w2-n08-fem-structural-ultimate",
-  "generated_at": "2026-11-12T17:56:16+00:00",
+  "generated_at": "2026-11-12T21:54:49+00:00",
   "criteria": {
     "a_plate_buckling_vs_classical_relative_error": 0.05,
     "b_ultimate_vs_experiment_relative_error": 0.1,

@@ -2,7 +2,7 @@
   "anchor": "fem_structural_benchmarks",
   "schema": "tensorfem.structural-verification-face.v1",
   "mission": "IN41-N01",
-  "generated_at": "2026-11-12T18:00:53+00:00",
+  "generated_at": "2026-11-12T21:57:20+00:00",
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
@@ -1219,8 +1219,8 @@
     }
   },
   "timings_s": {
-    "beam": 0.02866840362548828,
-    "plate": 27.570692777633667,
-    "cylinder": 0.26645421981811523
+    "beam": 0.024863243103027344,
+    "plate": 34.76002097129822,
+    "cylinder": 0.2803070545196533
   }
 }

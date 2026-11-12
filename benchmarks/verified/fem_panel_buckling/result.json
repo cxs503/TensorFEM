@@ -1,6 +1,6 @@
 {
   "anchor": "fem_panel_buckling",
-  "generated_at": "2026-11-09T01:45:32+00:00",
+  "generated_at": "2026-11-12T21:54:49+00:00",
   "campaign_case": {
     "node": "p127w2-n08-fem-structural-ultimate",
     "span_m": 0.8,
@@ -22,7 +22,7 @@
       "column_euler_stress": 10484316129.111782,
       "column_limiting_stress": 351994916.06204844,
       "tripping_stress": 234836907.35664994,
-      "flange_local_buckling_stress": 3165142363.792576,
+      "flange_local_buckling_stress": 19782139773.703598,
       "governing_stiffener_mode": "column",
       "stiffener_limiting_stress": 351994916.06204844,
       "panel_ultimate_stress": 274651275.16142917,
