@@ -140,43 +140,56 @@ def test_root_rotation_matches_williams_formula():
     )
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="OPEN GAP (GAP-FEM-3D-COHESIVE, specimen level): with displacement "
-    "control *correctly* applied (loaded face prescribed, see "
-    "test_cohesive3d_dcb_solver_guards.py) the measured DCB compliance is "
-    "~1.1e1 x the beam-theory value, so the FE specimen is far too compliant "
-    "and the width-resolved DCB benchmark cannot yet be used as an acceptance "
-    "case.  Recorded honestly instead of being hidden; the element-level "
-    "capability is verified by benchmarks/cohesive3d_verification.py.",
-)
 def test_linear_compliance_is_bracketed_by_beam_theory():
-    g = _geometry()
-    m = build_dcb_model(g, _law())
-    r = solve_dcb(m, delta_max=2.0e-6, n_steps=2, tol=1e-8)
-    c_fem = r.stats["reach_delta"] / r.peak["load"]
-    c_plain = beam_compliance(g.initial_crack, g, root_rotation=False, shear=True)
-    c_root = beam_compliance(g.initial_crack, g, root_rotation=True, shear=True)
-    assert c_plain < c_fem < c_root * 1.10  # coarse mesh: within the bracket +10%
+    """ASTM D5528 compliance calibration against closed-form beam theory.
+
+    For ``a = 20 / 30 / 40 mm`` the measured ``delta / P`` must sit **above** the
+    plain Timoshenko beam (the root always rotates a little) and **below** the
+    Williams root-rotation beam with 10 % margin.  Before the prescription fix
+    (``delta / n_face`` per node) every one of these rows was ~6x too large.
+    """
+    for crack in (20e-3, 30e-3, 40e-3):
+        g = _geometry(initial_crack=crack)
+        r = solve_dcb(build_dcb_model(g, _law()), delta_max=2.0e-6, n_steps=2,
+                      tol=1e-8)
+        c_fem = r.stats["reach_delta"] / r.peak["load"]
+        c_plain = beam_compliance(crack, g, root_rotation=False, shear=True)
+        c_root = beam_compliance(crack, g, root_rotation=True, shear=True)
+        assert c_plain < c_fem <= 1.10 * c_root, (crack, c_fem, c_plain, c_root)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="OPEN GAP (GAP-FEM-3D-COHESIVE, specimen level): after the "
-    "displacement-control fix no interface damage initiates at the initial "
-    "crack front for a 6e-6 opening (the specimen is too compliant, see "
-    "test_linear_compliance_is_bracketed_by_beam_theory), so the committed "
-    "damage history is still all zero.  Honest record of an open defect.",
-)
+def _soft_law() -> BKCohesive3DLaw:
+    """Penalty ``k_n = 1e12 Pa/m`` with ``t_n0 = 5 MPa`` (probe / specimen set).
+
+    ``delta_n0 = t_n0 / k_n = 5 um`` is *measurably* reachable on a coarse mesh,
+    unlike the stiff production law of ``_law()`` whose ``delta_n0 = 0.5 um`` is
+    four orders of magnitude below the arm thickness.
+    """
+    return BKCohesive3DLaw(1e12, 4e11, 5e6, 3e6, 300.0, 800.0, 2.2)
+
+
 def test_damage_history_is_committed_and_monotone():
-    g = _geometry(nx=40, nz=2)
-    m = build_dcb_model(g, _law())
-    r = solve_dcb(m, delta_max=6e-6, n_steps=6, tol=1e-8)
+    """Damage initiation is a quadratic (opening-controlled) event.
+
+    The cohesive Gauss points sit one half element behind the crack tip, so the
+    separation they see is a small fraction of the imposed opening; with
+    ``delta_n0 = 5 um`` initiation lands at a *total* opening of a few 1e-4 m.
+    Below it the committed history must stay exactly zero (the pre-fix
+    mesh-dependent prescription shifted this threshold by ``n_face``).
+    """
+    g = _geometry(nx=24, nz=2)
+    m = build_dcb_model(g, _soft_law())
+    below = solve_dcb(m, delta_max=1.0e-4, n_steps=4, tol=1e-8)
+    assert below.stats["converged_all"]
+    assert below.damage.max() == pytest.approx(0.0, abs=1e-12)
+
+    r = solve_dcb(m, delta_max=6.0e-4, n_steps=12, tol=1e-8)
     assert r.stats["converged_all"]
-    assert r.curve and r.curve[-1]["disp"] == pytest.approx(6e-6, rel=1e-6)
+    assert r.curve[-1]["disp"] == pytest.approx(6.0e-4, rel=1e-6)
     assert np.all(np.diff([c["disp"] for c in r.curve]) > 0.0)
-    assert r.damage.max() > 0.0  # damage has initiated at the initial front
+    assert r.damage.max() > 0.5  # damage has initiated and propagated at the front
     assert np.all(r.damage >= 0.0) and np.all(r.damage <= 1.0)
+    assert r.curve[-1]["max_damage"] >= r.curve[0]["max_damage"]
 
 
 def test_vectorised_assembly_with_damage_matches_production_element():
