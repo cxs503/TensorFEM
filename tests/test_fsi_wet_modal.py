@@ -128,9 +128,13 @@ def test_donnell_keeps_n1_membrane_term():
 
     Euler-Bernoulli beam limit for the shell ``n = 1`` mode:
     ``omega = (pi/L)^2 sqrt(E I / rho A)`` with ``I/A = R^2/2``.  Donnell with
-    the membrane term is within 50% of it, whereas
-    :func:`tensorfem.cylindrical_shell_modal.dmv_angular_frequency` drops that
-    term and lands more than 3x low (see docs/fsi-wet-modal-dual-criteria.md).
+    the membrane term is within 50% of it.
+
+    ``tensorfem.cylindrical_shell_modal.dmv_angular_frequency`` used to drop that
+    term for ``n = 1`` and returned a value ~68x low on an ``L/R = 2`` shell;
+    that branch was repaired (m16863), so the two implementations must now
+    agree exactly -- this test pins the repair instead of the defect.  See
+    ``docs/fem-shell-modal-anchor-audit.md``.
     """
     from tensorfem.cylindrical_shell_modal import dmv_frequency_hz
 
@@ -147,7 +151,8 @@ def test_donnell_keeps_n1_membrane_term():
         poisson=POISSON, density=RHO_STRUCT, n_axial=1, n_circ=1,
     )
     assert 0.5 < donnell / beam_hz < 1.5
-    assert legacy < 0.3 * beam_hz
+    assert legacy == pytest.approx(donnell, rel=1e-12)
+    assert legacy > 0.3 * beam_hz
 
 
 def test_donnell_frequency_increases_with_mode_order():
