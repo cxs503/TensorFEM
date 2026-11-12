@@ -1,0 +1,80 @@
+{
+ "impl_files": [
+  "src/tensorfem/ellipsoid_shell.py",
+  "src/tensorfem/axisym_shell.py",
+  "/root/tp-agent/work/m15342/src/tensorfem/integration_callers.py",
+  "/root/tp-agent/work/m15342/benchmarks/nafems_le11/run.py",
+  "/root/tp-agent/work/m15342/benchmarks/nafems_le11_ellipsoid.py"
+ ],
+ "impl_lines": [
+  "src/tensorfem/ellipsoid_shell.py:286-379 ellipsoid_pressure（椭球几何->2节点轴对称环单元->求解->膜力/位移/误差汇总）",
+  "src/tensorfem/ellipsoid_shell.py:117-123 membrane_forces 闭式薄膜静力（N_phi=pR2/2 帽段轴向平衡；N_theta=pR2(1-R2/(2R1)) 法向平衡）",
+  "src/tensorfem/ellipsoid_shell.py:125-236 membrane_shape 独立 Rayleigh-Ritz 膜位移参考解+内力自检（复现闭式膜力至 1e-9）",
+  "src/tensorfem/integration_callers.py:36-89 run_nafems_le11_case 平台侧适配层（调 ellipsoid_pressure，返回 {verdict,rows,artifacts}）",
+  "benchmarks/nafems_le11/run.py:1-278 一键入口（跑算例+写 results.json+渲染 report.md+退出码=判定）"
+ ],
+ "entry": "/root/tp-agent/work/m15342/benchmarks/nafems_le11/run.py",
+ "run_artifacts": [
+  "/root/tp-agent/work/m15342/benchmarks/nafems_le11/results.json",
+  "/root/tp-agent/work/m15342/benchmarks/nafems_le11/report.md",
+  "/root/tp-agent/work/m15342/benchmarks/nafems_le11/evidence.json",
+  "/root/tp-agent/work/m15342/benchmarks/nafems_le11/cli_verify_report.json"
+ ],
+ "tests": [
+  "tests/test_ellipsoid_shell.py（物理回归：几何/闭式膜力/Ritz 参考/球极限）",
+  "tests/test_nafems_le11_case_pool.py（交付契约 G1-G6：impl 非占位/entry/工件入库/容差/可复现/集成面）",
+  "本审计复跑（worktree m15342, 2026-11-11）: PYTHONPATH=src python3 -m pytest tests/test_ellipsoid_shell.py tests/test_nafems_le11_case_pool.py -q -> 18 passed in 12.98s"
+ ],
+ "integration_callers": [
+  "tensorfem.integration_callers.run_nafems_le11_case",
+  "平台算例池结算面：被 benchmarks/nafems_le11/maturity_evidence.py:131-132 与 tests/test_nafems_le11_case_pool.py:83-85 真调用；另 tensorfem.benchmark_registry.run_registered_benchmarks（src/tensorfem/benchmark_registry.py:113-121）注册 4 项 shell.spheroid.* 进 tensorfem.cli verify（59/59 通过，工件 cli_verify_report.json）"
+ ],
+ "benchmark": {
+  "judge_table": "tensor_benchmark_cases WHERE anchor_slug IN ('CASE-NAFEMS-LE1','CASE-NAFEMS-LE11') -> 0 rows（缺陷 F2：裁判表无登记行，与 verdict#273 D2 同；容差改取 tensor_case_pool id=40 case_code=NAFEMS-LE11 tol_policy='<5%' + mission goal 预声明 <5%）",
+  "declared_tolerance": 0.05,
+  "got_vs_ref_n256": {
+   "N_phi_pole": {
+    "ref": 0.9999912181834618,
+    "got": 0.9999449827920514,
+    "rel_error": 4.62e-05,
+    "passed": true
+   },
+   "N_theta_pole": {
+    "ref": 0.9999736544732645,
+    "got": 0.9999435725908286,
+    "rel_error": 3.01e-05,
+    "passed": true
+   },
+   "N_phi_equator": {
+    "ref": 0.5000012610963988,
+    "got": 0.49961380309140946,
+    "rel_error": 0.0007749,
+    "passed": true
+   },
+   "N_theta_equator": {
+    "ref": -0.9999924334343305,
+    "got": -0.9735296721521517,
+    "rel_error": 0.026463,
+    "passed": true
+   },
+   "w_equator": {
+    "ref": -114.99999999694278,
+    "got": -112.34655702874348,
+    "rel_error": 0.0230734,
+    "passed": true
+   }
+  },
+  "worst_rel_error": 0.026463,
+  "all_passed": true,
+  "reference_provenance": "NAFEMS LE11 手册沙箱内不可得（results.json provenance_note / docs §6 / evidence.json external_anchor 三处如实披露）；ref=闭式薄膜静力（精确平衡方程）+独立 Rayleigh-Ritz 位移解；本审计独立重推闭式值（极部 N=1.0、赤道 N_phi=0.5、N_theta=-1.0）与工件一致",
+  "audit_repro": "本审计实跑 run.py（28.6s rc=0）：五项误差 0.005/0.003/0.077/2.646/2.307% 与入库 results.json 逐位一致（仅 wall_seconds 不同）；maturity_evidence.py live_verdict=PASS"
+ },
+ "repro_cmd": "cd /root/tp-agent/work/m15342 && PYTHONPATH=src python3 benchmarks/nafems_le11/run.py && PYTHONPATH=src python3 benchmarks/nafems_le11/maturity_evidence.py && PYTHONPATH=src python3 -m pytest tests/test_ellipsoid_shell.py tests/test_nafems_le11_case_pool.py -q（本审计三条全实跑 rc=0/0/0，18 passed）",
+ "external_anchor": "NAFEMS LE11 基准手册（tensor_case_pool id=40 ref_source）；沙箱不可得，ref 降级为闭式+独立 Ritz（已披露）；tensor_case_pool id=40 case_code=NAFEMS-LE11 tol_policy='<5%' status=dispatched",
+ "findings": {
+  "F1_anchor_label": "任务卡锚点 'CASE-NAFEMS-LE1'（椭圆膜应力集中）系原单沿用的误标：m15342 实际锚点 CASE-NAFEMS-LE11（椭球壳，task_key=case-nafems-le11-rework1）；LE1 真实载体为 m15238（verdict#283 F1_scope_mislabel 已记）",
+  "F2_benchmark_row_missing": "tensor_benchmark_cases 无 CASE-NAFEMS-LE11 行（0 行）；容差 <5% 由 tensor_case_pool id=40 + mission goal 背书；建议补登记裁判行",
+  "F3_ref_not_manual": "ref 非手册转录（手册不可得），为闭式精确静力+独立 Ritz；本审计独立重推闭式值一致；不构成虚标（披露完整、判据仍为 ref vs got 数值对照）",
+  "F4_quality_flag": "mission result server_quality_audit gate_valid=false/key_present=false（finish 时质量门告警，不影响 maturity gate 证据复核）"
+ }
+}
