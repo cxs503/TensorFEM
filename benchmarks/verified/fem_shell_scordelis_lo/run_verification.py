@@ -327,6 +327,7 @@ def generate_gates(flat_results, cyl_results, flat_ladder=None, cyl_ladder=None)
                 "description": f"{label}: {g['description']}",
                 "status": g["status"],
                 "passed": bool(g["passed"]),
+                "operator": g["operator"],
                 "threshold": g["threshold"],
                 "actual": g["actual"],
                 "detail": g["detail"],
@@ -392,15 +393,26 @@ def generate_gates(flat_results, cyl_results, flat_ladder=None, cyl_ladder=None)
     return document
 
 
-if __name__ == "__main__":
+def main(argv=None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    from_dump = "--from-dump" in argv
+
     print("=" * 70)
     print("Scordelis-Lo Cylindrical Roof Benchmark Verification")
     print("Comparing flat facet vs cylindrical shell formulations")
     print("=" * 70)
     print()
-    
-    flat_results = mesh_convergence_flat_facet()
-    cyl_results = mesh_convergence_cylindrical()
+
+    if from_dump:
+        # Re-grade the committed ladder without touching the solver: the
+        # certificate must be rebuildable from the artifact it certifies.
+        dumped = json.loads((OUT / "result.json").read_text())
+        flat_results = dumped["flat_facet_results"]
+        cyl_results = dumped["cylindrical_results"]
+        print(f"Re-grading the committed ladder from {OUT / 'result.json'} (no solves)")
+    else:
+        flat_results = mesh_convergence_flat_facet()
+        cyl_results = mesh_convergence_cylindrical()
     print()
     
     flat_orders = compute_convergence_order(flat_results)
@@ -423,7 +435,8 @@ if __name__ == "__main__":
         print("\nCylindrical shell4: non-monotone convergence (no valid orders)")
     
     print()
-    plot_convergence(flat_results, cyl_results)
+    if not from_dump:
+        plot_convergence(flat_results, cyl_results)
     print()
     
     flat_ladder = grade_ladder(flat_results)
@@ -444,3 +457,7 @@ if __name__ == "__main__":
     print(f"    Best error: {report['verdict']['cylindrical']['best_error']}")
     print(f"  Conclusion: {report['verdict']['conclusion']}")
     print("=" * 70)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
