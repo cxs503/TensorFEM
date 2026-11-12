@@ -1,43 +1,52 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "artifact": "benchmarks/undex_shock/cole_anchor",
-  "topic": "w23_undex_shock_chain",
-  "mission_id": 15095,
+  "topic": "paper-exp-undex-shock-chain-3",
+  "mission_id": 15973,
   "repository": "TensorFEM",
-  "generated_by": "scripts/w23_cole_anchor_record.py",
-  "script_sha256": "1430fe3106bfb6c91099edfd9a6499a20f3011b584e9096bc99eb9e93bf16713",
-  "git_commit_at_record": "fe26e5fe67162caaab36f7a46cd535a771e65ab7",
+  "generated_by": "scripts/w24_cole_anchor_citation.py (chain-3); base record by scripts/w23_cole_anchor_record.py",
+  "script_sha256": "35c4d1a086c74c4961652663d002466bd18e878096b68d267885de339c03ab20",
+  "git_commit_at_record": "9ac00e601eae33bc0354371aae1f0b38a24e1378",
   "document": {
     "citation_as_assigned": "Cole, R.H., Underwater Explosions, Princeton University Press, 1948 (anchor AN-COLE)",
     "subject_quantity": "peak shock overpressure p_m = K (W^(1/3)/R)^A and the bubble-pulsation period T (K, A charge-dependent implementation parameters)",
     "why_it_matters": "without a transcribed copy of Cole's tables the coefficient values cannot be validated; the chain therefore reports transcription fidelity of the recorded parameters, the coefficient-free scaling structure, and the FSI/solver verification separately"
   },
-  "acquisition_status": "NOT_OBTAINED",
+  "acquisition_status": "WITHHELD",
   "acquisition_attempts": [
     {
-      "channel": "local filesystem corpus",
-      "action": "grep -rIl -i 'cole|undex|underwater explosion|bubble period|Cole (1948)' /root /opt /srv /data --include=*.py --include=*.json --include=*.md --include=*.csv --include=*.txt --include=*.tex --include=*.bib (excluding this worktree)",
-      "result": "only this repository's own UNDEX code (src/tensorfem/undex_shock.py, present in this repository's history at commit a706ec07) and unrelated wall-law scripts (compare_wall_law_coles.py in /tmp/stage). No Cole (1948) text, table or page image."
-    },
-    {
-      "channel": "local PDF corpus",
-      "action": "find / -maxdepth 5 -iname '*.pdf' -not -path '/proc/*' -not -path '/sys/*'  (bounded depth-5 sweep; the full sweep exceeded the tool timeout at 120 s after listing 35 files)",
-      "result": "35 PDFs, all tooling/platform manuals (SDAA programming guide, hermes-kanban spec, one unrelated paper under /root/.worktrees). No Cole monograph or UNDEX report."
-    },
-    {
-      "channel": "network",
-      "action": "timeout 12 curl -sS -o /dev/null -w '%{http_code}' https://en.wikipedia.org/wiki/Underwater_explosion ; timeout 10 curl -sS -o /dev/null -w '%{http_code}' https://www.google.com",
-      "result": "both rejected by the execution sandbox: 'REJECTED: \u547d\u4ee4\u88ab\u5b89\u5168\u7b56\u7565\u62e6\u622a' (security policy). No outbound HTTP, so no full text and no authorised copy either way."
+      "channel": "network (direct HTTP, no proxy)",
+      "action": "urllib.request.urlopen on archive.org and wikipedia, 8 s timeout",
+      "result": [
+        {
+          "url": "https://archive.org/advancedsearch.php?q=cole+underwater+explosions",
+          "error": "URLError: <urlopen error [Errno 99] Cannot assign requested address>"
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Underwater_explosion",
+          "error": "URLError: <urlopen error _ssl.c:989: The handshake operation timed out>"
+        }
+      ],
+      "verdict": "no outbound connectivity: the sandbox answers with Errno 99 (Cannot assign requested address) / TLS handshake timeout, so no full text, no table image, no authorised or unauthorised copy of Cole (1948) could be read"
     },
     {
       "channel": "operator-supplied deposition",
       "action": "ls benchmarks/anchors/sources/",
-      "result": "only sname_tr_bulletin_3-37_4-7.transcription.json (different topic, SNAME Transactions); no Cole deposition."
+      "result": [
+        "sname_tr_bulletin_3-37_4-7.transcription.json"
+      ],
+      "verdict": "no Cole deposition; the only transcription on file is the SNAME Transactions item, unrelated to UNDEX"
     },
     {
       "channel": "repository history",
       "action": "git log --all --oneline -- '*undex*'",
-      "result": "a706ec07 'undex shock chain: Cole(1948) environment -> Taylor air-backed plate FSI ...' whose src/tensorfem/undex_shock.py declares K, A, K_theta, -0.24 as implementation parameters. Self-declared, therefore not an anchor."
+      "result": [
+        "72809b34 api-sync: GitHub main ae7f66e8459736d47f8d0dd313896775f92a9338 @2026-11-11 20:38:09",
+        "9cf271c3 api-sync: GitHub main 89a6d03a712b4b80cf3220a69553a66b308cf99b @2026-11-11 19:38:10",
+        "d582f272 Merge #676 (m15095) via merge-master",
+        "54fce683 W23 undex shock chain (multi-case ensemble): Cole(1948) environment recomputation vs anchor register, FE ship-panel FSI (Q4 MITC + plane-wave impedance, energy ledger), 4-case x 3-level GCI, band-wise SRS, 29 tests"
+      ],
+      "verdict": "the constants originate in src/tensorfem/undex_shock.py as self-declared implementation parameters -- circular, therefore not an anchor"
     }
   ],
   "usable_for_physics_validation": false,
@@ -154,6 +163,18 @@
       "weight_kg": 50.0,
       "range_m": 30.0,
       "depth_m": 40.0
+    },
+    {
+      "case_id": "C5",
+      "weight_kg": 2.0,
+      "range_m": 25.0,
+      "depth_m": 40.0
+    },
+    {
+      "case_id": "C6",
+      "weight_kg": 100.0,
+      "range_m": 20.0,
+      "depth_m": 40.0
     }
   ],
   "recorded_values": [
@@ -212,6 +233,36 @@
       "energy_flux_j_m2": 3995.8417148237277,
       "shock_energy_j": 45191905.114312306,
       "form_cross_check_max_rel": 4.235904373079521e-16
+    },
+    {
+      "case_id": "C5",
+      "weight_kg": 2.0,
+      "range_m": 25.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.05039684199579493,
+      "peak_pressure_pa": 1790799.820655274,
+      "decay_time_s": 0.00021679328211989183,
+      "bubble_period_s": 0.10149313756507558,
+      "specific_impulse_pa_s": 388.2333707395705,
+      "energy_flux_j_m2": 226.0969920952245,
+      "shock_energy_j": 1775761.623412767,
+      "form_cross_check_max_rel": null,
+      "added_by": "scripts/w24_cole_anchor_citation.py (chain-3)"
+    },
+    {
+      "case_id": "C6",
+      "weight_kg": 100.0,
+      "range_m": 20.0,
+      "depth_m": 40.0,
+      "reduced_range": 0.23207944168063893,
+      "peak_pressure_pa": 10057747.42516728,
+      "decay_time_s": 0.0005535962654139657,
+      "bubble_period_s": 0.37390391568558023,
+      "specific_impulse_pa_s": 5567.931413049535,
+      "energy_flux_j_m2": 18211.657831904708,
+      "shock_energy_j": 91541776.72704457,
+      "form_cross_check_max_rel": null,
+      "added_by": "scripts/w24_cole_anchor_citation.py (chain-3)"
     }
   ],
   "scaling_structure": {
@@ -219,5 +270,509 @@
     "decay_time": "theta = K_theta W^(1/3) (W^(1/3)/R)^n (linear in Hopkinson scale)",
     "bubble_period": "T = K_b W^(1/3) (H + 10.33)^(-5/6); the 1/3 and -5/6 exponents are derived from the Rayleigh collapse integral, only K_b is empirical"
   },
-  "evidence_note": "every value in recorded_values is produced by this script from the parameters block above; the chain recomputes them through tensorfem.undex_chain.cole_recompute_vs_anchor and must agree within 1 %"
+  "evidence_note": "every Cole-side number used by chain-3 is produced from the parameters block by scripts/w24_cole_anchor_citation.py (independent_recompute) and re-checked against the chain-2 record (scripts/w23_cole_anchor_record.py) within 1e-9 relative; the chain-2 generation path is preserved verbatim",
+  "supersedes": {
+    "artifact": "benchmarks/undex_shock/cole_anchor.json",
+    "sha256_at_chain_3": "1014da4dae9791b4597db9762647ff32a5768c229edfe6edf0bbb56b53e267c9",
+    "mission_id_at_chain_2": 15095,
+    "note": "chain-3 adds the citation ledger, unit conventions, the withheld-deposition list, the implied imperial constants and the independent recomputation; the chain-2 fields are preserved verbatim so the base record stays auditable"
+  },
+  "acquisition_note": "chain-2 recorded NOT_OBTAINED; chain-3 re-ran the acquisition attempts below and classifies the anchor WITHHELD: the constants cannot be verified against Cole (1948) chapter/table because no copy is reachable from the sandbox.  Consequence for the wording of results: no text may claim agreement with Cole's formula; the only defensible claim is agreement with the repository's transcription of it.",
+  "citation_ledger": {
+    "K": {
+      "symbol": "K",
+      "law": "p_m = K (W^(1/3)/R)^A",
+      "value": 52400000.0,
+      "unit": "Pa",
+      "unit_convention": {
+        "W": "kg of TNT-equivalent charge mass",
+        "R": "m, slant range from charge centre to the field point",
+        "H": "m, depth of the charge centre below the free surface",
+        "p": "Pa (overpressure above hydrostatic)",
+        "t": "s"
+      },
+      "citation_status": "WITHHELD",
+      "edition_assigned": "Cole, R.H., Underwater Explosions, Princeton University Press, 1948 (AN-COLE)",
+      "chapter": null,
+      "table": null,
+      "page": null,
+      "provenance_in_repo": {
+        "file": "src/tensorfem/undex_shock.py",
+        "commit": "a706ec07315bf1c4c810f569171b19370dcad3d9",
+        "quote": "The Cole coefficients are implementation parameters for a TNT charge (metric fit widely quoted for UNDEX work): K = 52.4 MPa, A = 1.13, K_theta = 0.084 ms, decay exponent -0.24, W in kg, R in m."
+      },
+      "reason": "no copy of the monograph in the sandbox, outbound network blocked (Errno 99 / TLS timeout): neither the chapter/table number nor the printed digits could be read, so the value below is the repository's own declaration and NOT a transcription of Cole (1948)",
+      "required_deposition": [
+        {
+          "item": "chapter/table/page number of Cole's peak-overpressure fit for TNT and the printed constant K with its unit system (bar, kp/cm^2, psi or MPa)",
+          "format": "page image or verbatim transcription with page no.",
+          "closes": [
+            "K",
+            "A"
+          ]
+        },
+        {
+          "item": "the stated dimension basis of the fit: W in kg or lb of TNT, R in m or ft, and the range of W^(1/3)/R over which Cole declares the fit valid (this case matrix spans 0.050..0.232, i.e. very near field)",
+          "format": "the sentence preceding/after the formula in Cole",
+          "closes": [
+            "validity of any +/-15 % verdict"
+          ]
+        },
+        {
+          "item": "whether Cole's tabulated fit is the TNT curve or a composite/Pentolite curve, and the TNT-equivalence factor assumed",
+          "format": "table caption + charge description",
+          "closes": [
+            "K"
+          ]
+        }
+      ]
+    },
+    "A": {
+      "symbol": "A",
+      "law": "p_m = K (W^(1/3)/R)^A",
+      "value": 1.13,
+      "unit": "1 (dimensionless exponent)",
+      "unit_convention": {
+        "W": "kg of TNT-equivalent charge mass",
+        "R": "m, slant range from charge centre to the field point",
+        "H": "m, depth of the charge centre below the free surface",
+        "p": "Pa (overpressure above hydrostatic)",
+        "t": "s"
+      },
+      "citation_status": "WITHHELD",
+      "chapter": null,
+      "table": null,
+      "page": null,
+      "provenance_in_repo": {
+        "file": "src/tensorfem/undex_shock.py",
+        "quote": "same declared implementation-parameter block (K = 52.4 MPa, A = 1.13)"
+      },
+      "reason": "no copy of the monograph in the sandbox, outbound network blocked (Errno 99 / TLS timeout): neither the chapter/table number nor the printed digits could be read, so the value below is the repository's own declaration and NOT a transcription of Cole (1948)",
+      "required_deposition": [
+        {
+          "item": "the printed exponent A in Cole's TNT fit (same page as K); a transcription that gives only K is insufficient, since A sets the slope in log-log space",
+          "format": "page image or verbatim transcription with page no.",
+          "closes": [
+            "A"
+          ]
+        }
+      ]
+    },
+    "K_theta": {
+      "symbol": "K_theta",
+      "law": "theta = K_theta W^(1/3) (W^(1/3)/R)^n",
+      "value": 8.4e-05,
+      "unit": "s",
+      "unit_convention": {
+        "W": "kg of TNT-equivalent charge mass",
+        "R": "m, slant range from charge centre to the field point",
+        "H": "m, depth of the charge centre below the free surface",
+        "p": "Pa (overpressure above hydrostatic)",
+        "t": "s"
+      },
+      "citation_status": "WITHHELD",
+      "chapter": null,
+      "table": null,
+      "page": null,
+      "provenance_in_repo": {
+        "file": "src/tensorfem/undex_shock.py",
+        "quote": "K_theta = 0.084 ms, decay exponent -0.24"
+      },
+      "reason": "no copy of the monograph in the sandbox, outbound network blocked (Errno 99 / TLS timeout): neither the chapter/table number nor the printed digits could be read, so the value below is the repository's own declaration and NOT a transcription of Cole (1948)",
+      "required_deposition": [
+        {
+          "item": "Cole's decay-time constant and the exponent n of the reduced range, with the fitted range of validity",
+          "format": "page image or transcription with page/table no.",
+          "closes": [
+            "K_theta",
+            "n"
+          ]
+        }
+      ]
+    },
+    "decay_exponent": {
+      "symbol": "n",
+      "law": "theta = K_theta W^(1/3) (W^(1/3)/R)^n",
+      "value": -0.24,
+      "unit": "1",
+      "unit_convention": {
+        "W": "kg of TNT-equivalent charge mass",
+        "R": "m, slant range from charge centre to the field point",
+        "H": "m, depth of the charge centre below the free surface",
+        "p": "Pa (overpressure above hydrostatic)",
+        "t": "s"
+      },
+      "citation_status": "WITHHELD",
+      "chapter": null,
+      "table": null,
+      "page": null,
+      "reason": "no copy of the monograph in the sandbox, outbound network blocked (Errno 99 / TLS timeout): neither the chapter/table number nor the printed digits could be read, so the value below is the repository's own declaration and NOT a transcription of Cole (1948)",
+      "required_deposition": [
+        {
+          "item": "printed n in Cole's decay law",
+          "format": "page image / transcription",
+          "closes": [
+            "n"
+          ]
+        }
+      ]
+    },
+    "K_b": {
+      "symbol": "K_b",
+      "law": "T = K_b W^(1/3) (H + head)^(-5/6)",
+      "value": 2.11,
+      "unit": "s m^(5/6) kg^(-1/3)",
+      "unit_convention": {
+        "W": "kg of TNT-equivalent charge mass",
+        "R": "m, slant range from charge centre to the field point",
+        "H": "m, depth of the charge centre below the free surface",
+        "p": "Pa (overpressure above hydrostatic)",
+        "t": "s",
+        "head": "atmospheric head expressed as metres of water: 10.33 m (fresh) or 33 ft = 10.058 m if the fit was written in ft"
+      },
+      "citation_status": "WITHHELD",
+      "chapter": null,
+      "table": null,
+      "page": null,
+      "provenance_in_repo": {
+        "file": "src/tensorfem/undex_chain.py",
+        "quote": "UNCITED CANDIDATE: carried as a declared implementation parameter, NOT transcribed from Cole (1948)."
+      },
+      "reason": "carried in the repository as an explicitly UNcited candidate; no copy of the monograph in the sandbox, outbound network blocked (Errno 99 / TLS timeout): neither the chapter/table number nor the printed digits could be read, so the value below is the repository's own declaration and NOT a transcription of Cole (1948)",
+      "required_deposition": [
+        {
+          "item": "Cole's bubble-pulsation period constant and the definition of H (charge depth vs. charge-centre depth vs. depth below the free surface of the bubble centre)",
+          "format": "page image / transcription with page no.",
+          "closes": [
+            "K_b",
+            "the head offset convention"
+          ]
+        },
+        {
+          "item": "the unit system of the printed bubble law (the W23/chain-3 metric form uses 10.33 m; the ft form would imply 33 ft = 10.058 m, a 2.6 % difference in the head and 0.45 % in T)",
+          "format": "formula image",
+          "closes": [
+            "head offset"
+          ]
+        }
+      ]
+    },
+    "bubble_exponent": {
+      "symbol": "m",
+      "law": "T = K_b W^(1/3) (H + head)^(-5/6); m = 5/6",
+      "value": 0.8333333333333334,
+      "unit": "1",
+      "citation_status": "DERIVED_NOT_NEEDED",
+      "note": "the 1/3 (weight) and 5/6 (head) exponents follow from the Rayleigh collapse integral and are re-derived inside the repository (tensorfem.undex_chain.bubble_scaling_exponents, Rayleigh prefactor 0.914686...) and re-recovered here by regression -- no anchor is required for the exponents; only the prefactor K_b needs a citation",
+      "required_deposition": []
+    }
+  },
+  "unit_conventions": {
+    "symbols": {
+      "W": "charge mass, kg of TNT equivalent (the fit is TNT-specific)",
+      "R": "slant range charge centre -> field point, m",
+      "H": "charge depth below still-water surface, m",
+      "p_m": "peak free-field overpressure above hydrostatic, Pa",
+      "theta": "shock decay time, s, p(t) = p_m exp(-t/theta)",
+      "T": "first bubble-pulsation period, s"
+    },
+    "formulas": {
+      "peak": "p_m = K (W^(1/3)/R)^A",
+      "decay": "theta = K_theta W^(1/3) (W^(1/3)/R)^n",
+      "bubble": "T = K_b W^(1/3) (H + head)^(-5/6)"
+    },
+    "head_offset_sensitivity": {
+      "probe": {
+        "weight_kg": 25.0,
+        "depth_m": 40.0,
+        "K_b": 2.11
+      },
+      "rows": [
+        {
+          "head_convention": "10.33 m (fresh water, p_atm/(1000 g))",
+          "head_m": 10.33,
+          "T_s": 0.23554470700519023,
+          "rel_dev_vs_33ft": 0.004499013100619357
+        },
+        {
+          "head_convention": "10.08 m (seawater 1025 kg/m^3)",
+          "head_m": 10.080267832194007,
+          "T_s": 0.23652311453632055,
+          "rel_dev_vs_33ft": 0.00036389295627852673
+        },
+        {
+          "head_convention": "10.058 m (33 ft, imperial form of the same law)",
+          "head_m": 10.0584,
+          "T_s": 0.2366092149630362,
+          "rel_dev_vs_33ft": 0.0
+        },
+        {
+          "head_convention": "10.0 m (rounded folklore value)",
+          "head_m": 10.0,
+          "T_s": 0.23683949219327768,
+          "rel_dev_vs_33ft": 0.0009732386385604977
+        }
+      ],
+      "max_rel_dev_in_T": 0.004499013100619357,
+      "judgement": "the competing head conventions move T by at most 0.45 %, i.e. far inside the +/-15 % band; the convention therefore cannot rescue or break any verdict here, but it must be pinned in any citation that is deposited"
+    },
+    "implied_imperial_constants": {
+      "K_psi_lb_ft": 21604.92809371786,
+      "K_b_imperial": 4.3634020693617845,
+      "use": "if a deposited source prints the fit in (lb, ft, psi) or (lb, ft, s), its printed constant must reproduce these numbers to the rounding of the fit; a mismatch beyond a few per cent would falsify the unit convention recorded here, and the conversion is only arithmetic -- it carries no independent evidence about the fit itself"
+    }
+  },
+  "withheld_ledger": {
+    "verdict": "WITHHELD",
+    "constants_withheld": [
+      "K",
+      "A",
+      "K_theta",
+      "decay_exponent n",
+      "K_b"
+    ],
+    "constants_not_needing_anchor": [
+      "bubble exponent 5/6 (Rayleigh-derived)",
+      "bubble weight exponent 1/3 (Rayleigh-derived)"
+    ],
+    "deposition_shopping_list": [
+      "Cole's bubble-pulsation period constant and the definition of H (charge depth vs. charge-centre depth vs. depth below the free surface of the bubble centre)",
+      "Cole's decay-time constant and the exponent n of the reduced range, with the fitted range of validity",
+      "chapter/table/page number of Cole's peak-overpressure fit for TNT and the printed constant K with its unit system (bar, kp/cm^2, psi or MPa)",
+      "printed n in Cole's decay law",
+      "the printed exponent A in Cole's TNT fit (same page as K); a transcription that gives only K is insufficient, since A sets the slope in log-log space",
+      "the stated dimension basis of the fit: W in kg or lb of TNT, R in m or ft, and the range of W^(1/3)/R over which Cole declares the fit valid (this case matrix spans 0.050..0.232, i.e. very near field)",
+      "the unit system of the printed bubble law (the W23/chain-3 metric form uses 10.33 m; the ft form would imply 33 ft = 10.058 m, a 2.6 % difference in the head and 0.45 % in T)",
+      "whether Cole's tabulated fit is the TNT curve or a composite/Pentolite curve, and the TNT-equivalence factor assumed"
+    ],
+    "what_a_deposition_would_unlock": [
+      "criterion 1 -> PASS (constants traceable to chapter/table)",
+      "criterion 2 -> the +/-15 % verdict becomes a statement about Cole's law rather than about our own transcription",
+      "the validity range of the fit (very-near-field rr = 0.05 .. 0.23) becomes checkable"
+    ]
+  },
+  "independent_recompute": {
+    "method": "log-log least squares on a 30-point (W,R) grid and on a depth sweep; the exponent/coefficient are recovered from the values, so the recorded law is checked against itself without re-using the law's code",
+    "grid_points": 30,
+    "depth_sweep_points": 7,
+    "peak_fit": {
+      "slope": 1.129999999999998,
+      "intercept_log": 17.774417149291267,
+      "prefactor": 52399999.999999814,
+      "max_abs_log_residual": 7.105427357601002e-15,
+      "n_points": 30,
+      "expected_A": 1.13,
+      "expected_K": 52400000.0,
+      "rel_err_A": 1.7684968533852053e-15,
+      "rel_err_K": 3.554666315326254e-15
+    },
+    "decay_fit": {
+      "intercept_log_K_theta": -9.384693759120962,
+      "slope_weight": 0.3333333333333328,
+      "slope_reduced_range": -0.24000000000000057,
+      "K_theta": 8.399999999999987e-05,
+      "prefactor": 8.399999999999987e-05,
+      "max_abs_log_residual": 4.440892098500626e-15,
+      "n_points": 30,
+      "condition_number": 16.142008381815575,
+      "expected_n": -0.24,
+      "expected_K_theta": 8.4e-05,
+      "expected_weight_exponent": 0.3333333333333333,
+      "rel_err_n": 2.42861286636753e-15,
+      "rel_err_weight_exponent": 1.4988010832439613e-15,
+      "rel_err_K_theta": 1.452056481007372e-15
+    },
+    "bubble_weight_fit": {
+      "slope": 0.3333333333333333,
+      "intercept_log": -2.518813153168916,
+      "prefactor": 0.08055515666917705,
+      "max_abs_log_residual": 8.881784197001252e-16,
+      "n_points": 30,
+      "expected": 0.3333333333333333,
+      "rel_err": 0.0
+    },
+    "bubble_head_fit": {
+      "slope": -0.833333333333333,
+      "intercept_log": 1.8196465557773747,
+      "prefactor": 6.169677427629143,
+      "max_abs_log_residual": 1.3322676295501878e-15,
+      "n_points": 7,
+      "expected": -0.8333333333333334,
+      "rel_err": 3.9968028886505636e-16
+    },
+    "pass_exponent_1_3": true,
+    "pass_exponent_m5_6": true,
+    "pass_n": true,
+    "pass_A": true,
+    "pass_K": true,
+    "rows": [
+      {
+        "case_id": "C1",
+        "reduced_range": 0.1424979955563914,
+        "peak_pressure_pa": 5796090.802537563,
+        "decay_time_s": 0.00022927419971641258,
+        "bubble_period_s": 0.1377473802850657,
+        "specific_impulse_pa_s": 1328.8940802354593,
+        "energy_flux_j_m2": 2504.842522276215,
+        "shock_energy_j": 4532656.243036196
+      },
+      {
+        "case_id": "C2",
+        "reduced_range": 0.11969081611288243,
+        "peak_pressure_pa": 4759266.485094873,
+        "decay_time_s": 0.0003012159886337374,
+        "bubble_period_s": 0.17355082398902835,
+        "specific_impulse_pa_s": 1433.5671594792648,
+        "energy_flux_j_m2": 2218.773377639779,
+        "shock_energy_j": 9033744.85755317
+      },
+      {
+        "case_id": "C3",
+        "reduced_range": 0.11696070952851464,
+        "peak_pressure_pa": 4636779.892322652,
+        "decay_time_s": 0.00041108316382968703,
+        "bubble_period_s": 0.23554470700519023,
+        "specific_impulse_pa_s": 1906.1021481178714,
+        "energy_flux_j_m2": 2874.203614018198,
+        "shock_energy_j": 22573942.396802012
+      },
+      {
+        "case_id": "C4",
+        "reduced_range": 0.12280104995467954,
+        "peak_pressure_pa": 4899250.40786096,
+        "decay_time_s": 0.000511910599009715,
+        "bubble_period_s": 0.29676773454715955,
+        "specific_impulse_pa_s": 2507.978210986694,
+        "energy_flux_j_m2": 3995.8417148237277,
+        "shock_energy_j": 45191905.114312306
+      },
+      {
+        "case_id": "C5",
+        "reduced_range": 0.05039684199579493,
+        "peak_pressure_pa": 1790799.820655274,
+        "decay_time_s": 0.00021679328211989183,
+        "bubble_period_s": 0.10149313756507558,
+        "specific_impulse_pa_s": 388.2333707395705,
+        "energy_flux_j_m2": 226.0969920952245,
+        "shock_energy_j": 1775761.623412767
+      },
+      {
+        "case_id": "C6",
+        "reduced_range": 0.23207944168063893,
+        "peak_pressure_pa": 10057747.42516728,
+        "decay_time_s": 0.0005535962654139657,
+        "bubble_period_s": 0.37390391568558023,
+        "specific_impulse_pa_s": 5567.931413049535,
+        "energy_flux_j_m2": 18211.657831904708,
+        "shock_energy_j": 91541776.72704457
+      }
+    ],
+    "anchor_selfcheck_rel_dev": {
+      "C1": {
+        "peak_pressure_pa": 0.0,
+        "decay_time_s": 0.0,
+        "bubble_period_s": 0.0,
+        "specific_impulse_pa_s": 0.0,
+        "energy_flux_j_m2": 0.0,
+        "shock_energy_j": 0.0
+      },
+      "C2": {
+        "peak_pressure_pa": 0.0,
+        "decay_time_s": 0.0,
+        "bubble_period_s": 0.0,
+        "specific_impulse_pa_s": 0.0,
+        "energy_flux_j_m2": 0.0,
+        "shock_energy_j": 0.0
+      },
+      "C3": {
+        "peak_pressure_pa": 0.0,
+        "decay_time_s": 0.0,
+        "bubble_period_s": 0.0,
+        "specific_impulse_pa_s": 0.0,
+        "energy_flux_j_m2": 0.0,
+        "shock_energy_j": 0.0
+      },
+      "C4": {
+        "peak_pressure_pa": 0.0,
+        "decay_time_s": 0.0,
+        "bubble_period_s": 0.0,
+        "specific_impulse_pa_s": 0.0,
+        "energy_flux_j_m2": 0.0,
+        "shock_energy_j": 0.0
+      },
+      "C5": {
+        "peak_pressure_pa": 0.0,
+        "decay_time_s": 0.0,
+        "bubble_period_s": 0.0,
+        "specific_impulse_pa_s": 0.0,
+        "energy_flux_j_m2": 0.0,
+        "shock_energy_j": 0.0
+      },
+      "C6": {
+        "peak_pressure_pa": 0.0,
+        "decay_time_s": 0.0,
+        "bubble_period_s": 0.0,
+        "specific_impulse_pa_s": 0.0,
+        "energy_flux_j_m2": 0.0,
+        "shock_energy_j": 0.0
+      }
+    },
+    "anchor_selfcheck_max_rel_dev": 0.0,
+    "anchor_selfcheck_chain2_cases": [
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5",
+      "C6"
+    ],
+    "anchor_selfcheck_chain2_max_rel_dev": 0.0,
+    "anchor_selfcheck_chain3_added_cases": [],
+    "anchor_selfcheck_note": "chain-2 cases are an independent cross-check (different script); the chain-3 added cases are generated by the same formulas and therefore prove only that the arithmetic is reproducible",
+    "note": "agreement with recorded_values is a transcription/arithmetic check ONLY; because acquisition_status is WITHHELD it is not evidence that the physics matches Cole (1948)"
+  },
+  "anchor_catalog": {
+    "id": "AN-COLE",
+    "klass": "A",
+    "name": "Cole (1948) underwater-explosion shock wave",
+    "source": "Cole R.H., Underwater Explosions, Princeton Univ. Press, 1948",
+    "statement": "p_m = K (W^(1/3)/R)^A, K and A being charge-dependent implementation parameters",
+    "observed_in": "papers/registry.md (research-plan registry, mission m8860 worktree; read-only, not modified)",
+    "content_note": "the catalog entry registers the FORM of the law and its citation only -- it carries no numeric table, so the catalog on its own cannot close the numeric verification of K/A"
+  },
+  "cross_implementation_probe": {
+    "probe": {
+      "scaled_distance": 0.23207944168063893,
+      "p_m_MPa": 43.18689256989767,
+      "origin": "papers/registry.md -> 'A \u7ea7\u951a\u771f\u6570\u503c\u6c42\u503c' table, row AN-COLE",
+      "registry_caveat": "the registry states that for A-level anchors the code-table values (including Cole's K/A) are only shown to be structurally evaluable, and that the actual table values must be transcribed verbatim from the source and registered before they may be quoted as anchor values"
+    },
+    "reduced_range_from_our_case_matrix": {
+      "weight_kg": 100.0,
+      "range_m": 20.0,
+      "reduced_range": 0.23207944168063893,
+      "matches_probe": 0.0
+    },
+    "implied_K_at_A_1_13_Pa": 225000000.00000003,
+    "implied_K_at_A_1.0_Pa": 186086679.01453552,
+    "repo_declared_K_Pa": 52400000.0,
+    "ratio_probe_over_repo_at_A_1_13": 4.293893129770993,
+    "ratio_probe_over_repo_at_A_1.0": 3.5512725002773955,
+    "verdict": "CROSS_IMPLEMENTATION_CONFLICT_UNARBITRATED",
+    "unit_confusion_hypotheses": [
+      {
+        "what": "225 kgf/cm^2 = 22.06 MPa would be a candidate for the same printed number '225' read in a different pressure unit; it does not reproduce the probe either",
+        "status": "HYPOTHESIS_UNVERIFIED"
+      },
+      {
+        "what": "the repository's K = 52.4 MPa is numerically 524 bar, i.e. self-consistent with a bar-based fit; the imperial equivalent implied by it is 21605 psi, and the often seen coefficient differs from that by a few per cent",
+        "status": "HYPOTHESIS_UNVERIFIED"
+      },
+      {
+        "what": "no hypothesis can be settled from inside the ecosystem; the deposition must quote the pressure unit together with K",
+        "status": "CONCLUSION"
+      }
+    ],
+    "reading": "two implementations of the same nominal law differ by a factor 4.29 on K at the identical reduced range; neither is traceable to a printed table, so the discrepancy cannot be resolved from inside the ecosystem -- it is the strongest single argument for the deposition listed above"
+  }
 }

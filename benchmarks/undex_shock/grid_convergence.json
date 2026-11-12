@@ -1,0 +1,908 @@
+{
+  "schema_version": "1.0.0",
+  "mission_id": 15973,
+  "task_key": "paper-exp-undex-shock-chain-3",
+  "generated_by": "scripts/w24_undex_fem_vs_cole.py",
+  "anchor_sha256": "63391daf1c80dbf82d0de609a13d90fd044fca42b249e8f3e69639ad366aa2d8",
+  "anchor_acquisition_status": "WITHHELD",
+  "levels_note": "levels are (nx, ny, steps_per_decay); the refinement ratio between levels is 1.5 in each space direction and 1.5 in steps/decay, so time and space errors decrease together.  The reported order is the OBSERVED order from the three levels; no order is assumed.",
+  "levels": [
+    [
+      12,
+      8,
+      40
+    ],
+    [
+      18,
+      12,
+      60
+    ],
+    [
+      27,
+      18,
+      90
+    ]
+  ],
+  "refinement_ratio": 1.5,
+  "safety_factor_Fs": 1.25,
+  "quantities": {
+    "peak_center_deflection_m": "peak centre deflection [m]",
+    "peak_center_acceleration_ms2": "peak centre acceleration [m/s^2]",
+    "wall_impulse_0_theta_pa_s": "wall impulse over [0, theta] [Pa s]",
+    "wall_impulse_0_4theta_pa_s": "wall impulse over [0, 4 theta] [Pa s]"
+  },
+  "supplementary_quantities": {
+    "wall_impulse_precav_pa_s": "wall impulse up to cavitation onset [Pa s] (threshold-defined: convergence not claimed)",
+    "peak_wall_pressure_pa": "peak wall pressure [Pa] (= 2 p_m at t=0 by construction: mesh independent, not evidence)",
+    "wall_abs_impulse_0_4theta_pa_s": "integral of |p_wall| over [0, 4 theta] (POST-HOC conditioning diagnostic: the net impulse cancels, |p| does not; never used to flip a verdict)"
+  },
+  "cases": {
+    "C1": {
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": false,
+          "values": [
+            0.0017077735544875749,
+            0.0016975602335215715,
+            0.0017006568228867896
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_DEMONSTRATED"
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            147673.21001509187,
+            147563.89945533074,
+            146040.54256196372
+          ],
+          "ratio": 1.5,
+          "observed_order": 6.497423835915119,
+          "order_used": 4.0,
+          "order_clipped": true,
+          "gci_fine": 0.003209555303865064,
+          "gci_fine_p2": 0.010431054737561458,
+          "extrapolated_fine": 145665.56240359647,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "wall_impulse_0_theta_pa_s": {
+          "available": false,
+          "values": [
+            271.14509788489755,
+            311.4615272740422,
+            155.94353779871062
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_DEMONSTRATED"
+        },
+        "wall_impulse_0_4theta_pa_s": {
+          "available": true,
+          "values": [
+            -7.524812433899853,
+            34.336786665320155,
+            187.77779013082758
+          ],
+          "ratio": 1.5,
+          "observed_order": 3.203598059396567,
+          "order_used": 3.203598059396567,
+          "order_clipped": false,
+          "gci_fine": 0.383211906947523,
+          "gci_fine_p2": 0.8171413848176762,
+          "extrapolated_fine": 245.34473816156856,
+          "monotone": true,
+          "status": "ABOVE_LIMIT"
+        }
+      },
+      "raw_values": {
+        "peak_center_deflection_m": [
+          0.0017006568228867896,
+          0.0016975602335215715,
+          0.0017077735544875749
+        ],
+        "peak_center_acceleration_ms2": [
+          146040.54256196372,
+          147563.89945533074,
+          147673.21001509187
+        ],
+        "wall_impulse_0_theta_pa_s": [
+          155.94353779871062,
+          311.4615272740422,
+          271.14509788489755
+        ],
+        "wall_impulse_0_4theta_pa_s": [
+          187.77779013082758,
+          34.336786665320155,
+          -7.524812433899853
+        ]
+      },
+      "supplementary": {
+        "wall_impulse_precav_pa_s": {
+          "available": true,
+          "values": [
+            352.746402237793,
+            383.01529505080384,
+            389.9556833917219
+          ],
+          "ratio": 1.5,
+          "observed_order": -3.6322800310461494,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.09898941100579425,
+          "gci_fine_p2": 0.017797889956501094,
+          "extrapolated_fine": 420.83687012556874,
+          "monotone": true,
+          "status": "SUPPLEMENTARY_AVAILABLE",
+          "note": "wall impulse up to cavitation onset [Pa s] (threshold-defined: convergence not claimed)"
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            11592181.605075127,
+            11592181.605075127,
+            11592181.605075127
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "peak wall pressure [Pa] (= 2 p_m at t=0 by construction: mesh independent, not evidence)"
+        },
+        "wall_abs_impulse_0_4theta_pa_s": {
+          "available": false,
+          "values": [
+            668.2151616031708,
+            823.9218691113178,
+            793.4978837976787
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "integral of |p_wall| over [0, 4 theta] (POST-HOC conditioning diagnostic: the net impulse cancels, |p| does not; never used to flip a verdict)"
+        }
+      },
+      "energy_ledger": {
+        "residual_full_record_fine": 0.0005247227251220928,
+        "residual_full_record_worst_level": 0.0024769163299451775,
+        "residual_late_tail_fine": 0.0005247227251220928,
+        "definition": "|E_inc - E_ref - E_plate| / max(E_inc) from the discrete energy identity of the consistent impedance coupling; it measures time-integration error only (the identity is exact in space for the consistent load/impedance matrices used)",
+        "verdict": "PASS"
+      },
+      "timing_s": [
+        4.610140800476074,
+        12.633797883987427,
+        54.117496728897095
+      ]
+    },
+    "C2": {
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": true,
+          "values": [
+            0.001858903946022547,
+            0.0018621723824021434,
+            0.0018656336162855413
+          ],
+          "ratio": 1.5,
+          "observed_order": 0.14135233557526825,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.010318695835503214,
+          "gci_fine_p2": 0.0018552591747832755,
+          "extrapolated_fine": 0.0018810343409470937,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            121256.9269728325,
+            121167.17025554455,
+            119916.31659323389
+          ],
+          "ratio": 1.5,
+          "observed_order": 6.497423835912288,
+          "order_used": 4.0,
+          "order_clipped": true,
+          "gci_fine": 0.003209555303864784,
+          "gci_fine_p2": 0.010431054737560548,
+          "extrapolated_fine": 119608.4141532805,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "wall_impulse_0_theta_pa_s": {
+          "available": true,
+          "values": [
+            227.78617486417258,
+            209.07405467550117,
+            134.22620688788302
+          ],
+          "ratio": 1.5,
+          "observed_order": 3.4190017259606598,
+          "order_used": 3.4190017259606598,
+          "order_clipped": false,
+          "gci_fine": 0.2323462430868879,
+          "gci_fine_p2": 0.5576246958251405,
+          "extrapolated_fine": 109.27664297252065,
+          "monotone": true,
+          "status": "ABOVE_LIMIT"
+        },
+        "wall_impulse_0_4theta_pa_s": {
+          "available": true,
+          "values": [
+            25.269495955860158,
+            83.68335018045839,
+            202.66681454043018
+          ],
+          "ratio": 1.5,
+          "observed_order": 1.7546058161322893,
+          "order_used": 1.7546058161322893,
+          "order_clipped": false,
+          "gci_fine": 0.707742157509081,
+          "gci_fine_p2": 0.587089033938685,
+          "extrapolated_fine": 317.4154934030997,
+          "monotone": true,
+          "status": "ABOVE_LIMIT"
+        }
+      },
+      "raw_values": {
+        "peak_center_deflection_m": [
+          0.0018656336162855413,
+          0.0018621723824021434,
+          0.001858903946022547
+        ],
+        "peak_center_acceleration_ms2": [
+          119916.31659323389,
+          121167.17025554455,
+          121256.9269728325
+        ],
+        "wall_impulse_0_theta_pa_s": [
+          134.22620688788302,
+          209.07405467550117,
+          227.78617486417258
+        ],
+        "wall_impulse_0_4theta_pa_s": [
+          202.66681454043018,
+          83.68335018045839,
+          25.269495955860158
+        ]
+      },
+      "supplementary": {
+        "wall_impulse_precav_pa_s": {
+          "available": false,
+          "values": [
+            305.53105280309205,
+            343.68474751093595,
+            341.88092262685393
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "wall impulse up to cavitation onset [Pa s] (threshold-defined: convergence not claimed)"
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            9518532.970189746,
+            9518532.970189746,
+            9518532.970189746
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "peak wall pressure [Pa] (= 2 p_m at t=0 by construction: mesh independent, not evidence)"
+        },
+        "wall_abs_impulse_0_4theta_pa_s": {
+          "available": false,
+          "values": [
+            563.8071589089207,
+            749.0669688835333,
+            700.1761292121485
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "integral of |p_wall| over [0, 4 theta] (POST-HOC conditioning diagnostic: the net impulse cancels, |p| does not; never used to flip a verdict)"
+        }
+      },
+      "energy_ledger": {
+        "residual_full_record_fine": 0.0006893663841106491,
+        "residual_full_record_worst_level": 0.0032541065037968425,
+        "residual_late_tail_fine": 0.0006893663841106491,
+        "definition": "|E_inc - E_ref - E_plate| / max(E_inc) from the discrete energy identity of the consistent impedance coupling; it measures time-integration error only (the identity is exact in space for the consistent load/impedance matrices used)",
+        "verdict": "PASS"
+      },
+      "timing_s": [
+        3.8242480754852295,
+        10.874904155731201,
+        54.092325925827026
+      ]
+    },
+    "C3": {
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": true,
+          "values": [
+            0.0025307780610501237,
+            0.0025366027474994796,
+            0.0025522434503657274
+          ],
+          "ratio": 1.5,
+          "observed_order": 2.436144282419596,
+          "order_used": 2.436144282419596,
+          "order_clipped": false,
+          "gci_fine": 0.0045454978453948825,
+          "gci_fine_p2": 0.006128217456687571,
+          "extrapolated_fine": 0.002561524424049376,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            118136.2049284908,
+            118048.75822988186,
+            116830.0970921194
+          ],
+          "ratio": 1.5,
+          "observed_order": 6.49742383591203,
+          "order_used": 4.0,
+          "order_clipped": true,
+          "gci_fine": 0.003209555303864926,
+          "gci_fine_p2": 0.010431054737561011,
+          "extrapolated_fine": 116530.11896590094,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "wall_impulse_0_theta_pa_s": {
+          "available": false,
+          "values": [
+            209.78720400279664,
+            143.79706512923588,
+            161.91593911534832
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_DEMONSTRATED"
+        },
+        "wall_impulse_0_4theta_pa_s": {
+          "available": true,
+          "values": [
+            83.25210837998063,
+            150.07762442017088,
+            238.24010390437763
+          ],
+          "ratio": 1.5,
+          "observed_order": 0.6834040217793526,
+          "order_used": 0.6834040217793526,
+          "order_clipped": false,
+          "gci_fine": 1.4487339812701776,
+          "gci_fine_p2": 0.370057257528701,
+          "extrapolated_fine": 514.3573312864655,
+          "monotone": true,
+          "status": "ABOVE_LIMIT"
+        }
+      },
+      "raw_values": {
+        "peak_center_deflection_m": [
+          0.0025522434503657274,
+          0.0025366027474994796,
+          0.0025307780610501237
+        ],
+        "peak_center_acceleration_ms2": [
+          116830.0970921194,
+          118048.75822988186,
+          118136.2049284908
+        ],
+        "wall_impulse_0_theta_pa_s": [
+          161.91593911534832,
+          143.79706512923588,
+          209.78720400279664
+        ],
+        "wall_impulse_0_4theta_pa_s": [
+          238.24010390437763,
+          150.07762442017088,
+          83.25210837998063
+        ]
+      },
+      "supplementary": {
+        "wall_impulse_precav_pa_s": {
+          "available": false,
+          "values": [
+            311.88575936299776,
+            367.3007742995236,
+            354.26943566773247
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "wall impulse up to cavitation onset [Pa s] (threshold-defined: convergence not claimed)"
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            9273559.784645304,
+            9273559.784645304,
+            9273559.784645304
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "peak wall pressure [Pa] (= 2 p_m at t=0 by construction: mesh independent, not evidence)"
+        },
+        "wall_abs_impulse_0_4theta_pa_s": {
+          "available": false,
+          "values": [
+            585.9879877402113,
+            800.021744955179,
+            736.1509523196023
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "integral of |p_wall| over [0, 4 theta] (POST-HOC conditioning diagnostic: the net impulse cancels, |p| does not; never used to flip a verdict)"
+        }
+      },
+      "energy_ledger": {
+        "residual_full_record_fine": 0.000940788840818232,
+        "residual_full_record_worst_level": 0.004440978294268369,
+        "residual_late_tail_fine": 0.000940788840818232,
+        "definition": "|E_inc - E_ref - E_plate| / max(E_inc) from the discrete energy identity of the consistent impedance coupling; it measures time-integration error only (the identity is exact in space for the consistent load/impedance matrices used)",
+        "verdict": "PASS"
+      },
+      "timing_s": [
+        5.579182147979736,
+        12.616038084030151,
+        52.41149306297302
+      ]
+    },
+    "C4": {
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": true,
+          "values": [
+            0.00340272097279031,
+            0.0034138368936688737,
+            0.003454204774302073
+          ],
+          "ratio": 1.5,
+          "observed_order": 3.1806831588745856,
+          "order_used": 3.1806831588745856,
+          "order_clipped": false,
+          "gci_fine": 0.0055512190073703244,
+          "gci_fine_p2": 0.011686591638550414,
+          "extrapolated_fine": 0.003469544812060837,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            124823.44722408918,
+            124731.05049968672,
+            123443.40557910014
+          ],
+          "ratio": 1.5,
+          "observed_order": 6.4974238359130645,
+          "order_used": 4.0,
+          "order_clipped": true,
+          "gci_fine": 0.0032095553038650297,
+          "gci_fine_p2": 0.010431054737561346,
+          "extrapolated_fine": 123126.4468294173,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "wall_impulse_0_theta_pa_s": {
+          "available": false,
+          "values": [
+            194.58600667136457,
+            123.74266583493967,
+            215.0758935763875
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_DEMONSTRATED"
+        },
+        "wall_impulse_0_4theta_pa_s": {
+          "available": true,
+          "values": [
+            138.1430395446816,
+            204.23156808300848,
+            268.74226309634867
+          ],
+          "ratio": 1.5,
+          "observed_order": -0.05959615271884372,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 1.3351066950472663,
+          "gci_fine_p2": 0.24004670597795777,
+          "extrapolated_fine": 555.7819388580199,
+          "monotone": true,
+          "status": "ABOVE_LIMIT"
+        }
+      },
+      "raw_values": {
+        "peak_center_deflection_m": [
+          0.003454204774302073,
+          0.0034138368936688737,
+          0.00340272097279031
+        ],
+        "peak_center_acceleration_ms2": [
+          123443.40557910014,
+          124731.05049968672,
+          124823.44722408918
+        ],
+        "wall_impulse_0_theta_pa_s": [
+          215.0758935763875,
+          123.74266583493967,
+          194.58600667136457
+        ],
+        "wall_impulse_0_4theta_pa_s": [
+          268.74226309634867,
+          204.23156808300848,
+          138.1430395446816
+        ]
+      },
+      "supplementary": {
+        "wall_impulse_precav_pa_s": {
+          "available": false,
+          "values": [
+            340.14863066097365,
+            410.1431702807988,
+            388.11262486759813
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "wall impulse up to cavitation onset [Pa s] (threshold-defined: convergence not claimed)"
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            9798500.81572192,
+            9798500.81572192,
+            9798500.81572192
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "peak wall pressure [Pa] (= 2 p_m at t=0 by construction: mesh independent, not evidence)"
+        },
+        "wall_abs_impulse_0_4theta_pa_s": {
+          "available": false,
+          "values": [
+            674.9275721154717,
+            878.7337298610618,
+            807.7531031213186
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "integral of |p_wall| over [0, 4 theta] (POST-HOC conditioning diagnostic: the net impulse cancels, |p| does not; never used to flip a verdict)"
+        }
+      },
+      "energy_ledger": {
+        "residual_full_record_fine": 0.001171512533856416,
+        "residual_full_record_worst_level": 0.005530173024674976,
+        "residual_late_tail_fine": 0.001171512533856416,
+        "definition": "|E_inc - E_ref - E_plate| / max(E_inc) from the discrete energy identity of the consistent impedance coupling; it measures time-integration error only (the identity is exact in space for the consistent load/impedance matrices used)",
+        "verdict": "PASS"
+      },
+      "timing_s": [
+        3.791597604751587,
+        11.389519691467285,
+        56.2353937625885
+      ]
+    },
+    "C5": {
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": false,
+          "values": [
+            0.0005002992314014898,
+            0.0004944044448724321,
+            0.000495399714660824
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_DEMONSTRATED"
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            45626.12405844919,
+            45592.35072095587,
+            45121.683965659126
+          ],
+          "ratio": 1.5,
+          "observed_order": 6.497423835913976,
+          "order_used": 4.0,
+          "order_clipped": true,
+          "gci_fine": 0.0032095553038650744,
+          "gci_fine_p2": 0.010431054737561491,
+          "extrapolated_fine": 45005.82753358608,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "wall_impulse_0_theta_pa_s": {
+          "available": false,
+          "values": [
+            83.31484820622899,
+            98.05219604448513,
+            48.674940466820345
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_DEMONSTRATED"
+        },
+        "wall_impulse_0_4theta_pa_s": {
+          "available": true,
+          "values": [
+            -3.615794444797813,
+            6.944214814961079,
+            54.12507783456584
+          ],
+          "ratio": 1.5,
+          "observed_order": 3.6918447007987725,
+          "order_used": 3.6918447007987725,
+          "order_clipped": false,
+          "gci_fine": 0.31420507378038043,
+          "gci_fine_p2": 0.8717006036243277,
+          "extrapolated_fine": 67.73017709406872,
+          "monotone": true,
+          "status": "ABOVE_LIMIT"
+        }
+      },
+      "raw_values": {
+        "peak_center_deflection_m": [
+          0.000495399714660824,
+          0.0004944044448724321,
+          0.0005002992314014898
+        ],
+        "peak_center_acceleration_ms2": [
+          45121.683965659126,
+          45592.35072095587,
+          45626.12405844919
+        ],
+        "wall_impulse_0_theta_pa_s": [
+          48.674940466820345,
+          98.05219604448513,
+          83.31484820622899
+        ],
+        "wall_impulse_0_4theta_pa_s": [
+          54.12507783456584,
+          6.944214814961079,
+          -3.615794444797813
+        ]
+      },
+      "supplementary": {
+        "wall_impulse_precav_pa_s": {
+          "available": true,
+          "values": [
+            107.51060176210403,
+            116.13037896147979,
+            118.67170795634685
+          ],
+          "ratio": 1.5,
+          "observed_order": -3.0122741573972456,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 0.11910607728695062,
+          "gci_fine_p2": 0.021414784017449895,
+          "extrapolated_fine": 129.97932525204533,
+          "monotone": true,
+          "status": "SUPPLEMENTARY_AVAILABLE",
+          "note": "wall impulse up to cavitation onset [Pa s] (threshold-defined: convergence not claimed)"
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            3581599.641310548,
+            3581599.641310548,
+            3581599.641310548
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "peak wall pressure [Pa] (= 2 p_m at t=0 by construction: mesh independent, not evidence)"
+        },
+        "wall_abs_impulse_0_4theta_pa_s": {
+          "available": false,
+          "values": [
+            204.54669524364095,
+            248.93254322800033,
+            241.70371314066566
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "integral of |p_wall| over [0, 4 theta] (POST-HOC conditioning diagnostic: the net impulse cancels, |p| does not; never used to flip a verdict)"
+        }
+      },
+      "energy_ledger": {
+        "residual_full_record_fine": 0.0004961582835277082,
+        "residual_full_record_worst_level": 0.002342082388048339,
+        "residual_late_tail_fine": 0.0004961582835277082,
+        "definition": "|E_inc - E_ref - E_plate| / max(E_inc) from the discrete energy identity of the consistent impedance coupling; it measures time-integration error only (the identity is exact in space for the consistent load/impedance matrices used)",
+        "verdict": "PASS"
+      },
+      "timing_s": [
+        3.3532307147979736,
+        12.308018922805786,
+        58.352985858917236
+      ]
+    },
+    "C6": {
+      "gci": {
+        "peak_center_deflection_m": {
+          "available": true,
+          "values": [
+            0.007622107038074776,
+            0.007652126334195911,
+            0.007758971124303298
+          ],
+          "ratio": 1.5,
+          "observed_order": 3.1310631107769487,
+          "order_used": 3.1310631107769487,
+          "order_clipped": false,
+          "gci_fine": 0.006725961407808024,
+          "gci_fine_p2": 0.013770484307219355,
+          "extrapolated_fine": 0.0078007203565803864,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "peak_center_acceleration_ms2": {
+          "available": true,
+          "values": [
+            256251.99783709776,
+            256062.315163303,
+            253418.88886205113
+          ],
+          "ratio": 1.5,
+          "observed_order": 6.4974238359115315,
+          "order_used": 4.0,
+          "order_clipped": true,
+          "gci_fine": 0.003209555303864827,
+          "gci_fine_p2": 0.010431054737560688,
+          "extrapolated_fine": 252768.19931097375,
+          "monotone": true,
+          "status": "CONVERGED_UNDER_LIMIT"
+        },
+        "wall_impulse_0_theta_pa_s": {
+          "available": false,
+          "values": [
+            377.56259792651696,
+            242.3696957361537,
+            484.03728236843324
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_DEMONSTRATED"
+        },
+        "wall_impulse_0_4theta_pa_s": {
+          "available": true,
+          "values": [
+            318.71228234274645,
+            446.8616758855943,
+            558.1726377325665
+          ],
+          "ratio": 1.5,
+          "observed_order": -0.3474256476286049,
+          "order_used": 0.5,
+          "order_clipped": true,
+          "gci_fine": 1.1091482937281032,
+          "gci_fine_p2": 0.1994203125024983,
+          "extrapolated_fine": 1053.4496207299992,
+          "monotone": true,
+          "status": "ABOVE_LIMIT"
+        }
+      },
+      "raw_values": {
+        "peak_center_deflection_m": [
+          0.007758971124303298,
+          0.007652126334195911,
+          0.007622107038074776
+        ],
+        "peak_center_acceleration_ms2": [
+          253418.88886205113,
+          256062.315163303,
+          256251.99783709776
+        ],
+        "wall_impulse_0_theta_pa_s": [
+          484.03728236843324,
+          242.3696957361537,
+          377.56259792651696
+        ],
+        "wall_impulse_0_4theta_pa_s": [
+          558.1726377325665,
+          446.8616758855943,
+          318.71228234274645
+        ]
+      },
+      "supplementary": {
+        "wall_impulse_precav_pa_s": {
+          "available": false,
+          "values": [
+            703.0124329081764,
+            856.3718604482035,
+            805.8278772867642
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "wall impulse up to cavitation onset [Pa s] (threshold-defined: convergence not claimed)"
+        },
+        "peak_wall_pressure_pa": {
+          "available": false,
+          "values": [
+            20115494.85033456,
+            20115494.85033456,
+            20115494.85033456
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "peak wall pressure [Pa] (= 2 p_m at t=0 by construction: mesh independent, not evidence)"
+        },
+        "wall_abs_impulse_0_4theta_pa_s": {
+          "available": false,
+          "values": [
+            1445.573888597818,
+            1820.1987960167053,
+            1671.8329982087184
+          ],
+          "ratio": 1.5,
+          "reason": "non-monotone or vanishing differences",
+          "status": "NOT_CLAIMED_SUPPLEMENTARY",
+          "note": "integral of |p_wall| over [0, 4 theta] (POST-HOC conditioning diagnostic: the net impulse cancels, |p| does not; never used to flip a verdict)"
+        }
+      },
+      "energy_ledger": {
+        "residual_full_record_fine": 0.0012668993009830268,
+        "residual_full_record_worst_level": 0.005980479131267733,
+        "residual_late_tail_fine": 0.0012668993009830268,
+        "definition": "|E_inc - E_ref - E_plate| / max(E_inc) from the discrete energy identity of the consistent impedance coupling; it measures time-integration error only (the identity is exact in space for the consistent load/impedance matrices used)",
+        "verdict": "PASS"
+      },
+      "timing_s": [
+        3.8573973178863525,
+        12.660338401794434,
+        55.996689558029175
+      ]
+    }
+  },
+  "criterion4": {
+    "threshold": 0.1,
+    "safety_factor_Fs": 1.25,
+    "ratio": 1.5,
+    "converged": 10,
+    "above_limit": [
+      "C1:wall_impulse_0_4theta_pa_s",
+      "C2:wall_impulse_0_theta_pa_s",
+      "C2:wall_impulse_0_4theta_pa_s",
+      "C3:wall_impulse_0_4theta_pa_s",
+      "C4:wall_impulse_0_4theta_pa_s",
+      "C5:wall_impulse_0_4theta_pa_s",
+      "C6:wall_impulse_0_4theta_pa_s"
+    ],
+    "not_demonstrated": [
+      "C1:peak_center_deflection_m",
+      "C1:wall_impulse_0_theta_pa_s",
+      "C3:wall_impulse_0_theta_pa_s",
+      "C4:wall_impulse_0_theta_pa_s",
+      "C5:peak_center_deflection_m",
+      "C5:wall_impulse_0_theta_pa_s",
+      "C6:wall_impulse_0_theta_pa_s"
+    ],
+    "verdict": "FAIL",
+    "wording": "PASS only if every quantity of every case is monotone with a definable observed order and GCI_fine < 10 %; a non-monotone quantity is reported NOT_DEMONSTRATED and is NOT scored as 0 %."
+  },
+  "criterion3": {
+    "threshold": 0.05,
+    "worst_residual": 0.005980479131267733,
+    "failing_cases": [],
+    "verdict": "PASS",
+    "wording": "residual of the discrete energy identity over the whole shock record (all levels, all cases), not only the late tail"
+  }
+}
