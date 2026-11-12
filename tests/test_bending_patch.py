@@ -69,15 +69,17 @@ def test_mitc_patch_reproduces_displacements_and_moments(state):
     assert rep["moment_rel_error"] < 1e-12
 
 
-def test_mitc_energy_on_skew_patch_is_not_exact_but_within_tolerance():
-    """Documented property: the MITC assumed-natural shear field sampled at the
-    mid-sides is not exactly shear-free on a skew element, so a small spurious
-    shear energy survives even though the displacement field is exact."""
+def test_mitc_energy_on_skew_patch_is_exact():
+    """The MITC assumed-natural shear field is sampled in covariant components,
+    so the shear-free constant-curvature state survives the skew mapping
+    exactly (until 2026-11 the physical sampling left a spurious shear energy
+    here; see tests/test_plate_mitc_skew_invariance.py and
+    docs/mitc-skew-invariance.md)."""
     patch = affine_patch_mesh(3, skew=0.35)
     rep = run_patch_case(patch, STATES[0], young=E, poisson=NU, thickness=T,
                          shear_treatment="mitc")
     assert rep["displacement_rel_error"] < 1e-12
-    assert 0.0 < rep["energy_rel_error"] < 0.02
+    assert rep["energy_rel_error"] < 1e-10
 
 
 @pytest.mark.parametrize("state", STATES, ids=lambda s: s.label())
