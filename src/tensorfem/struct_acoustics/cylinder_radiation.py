@@ -247,6 +247,12 @@ def infinite_cylinder_conductance(
     omega = k * c
     kap = _kappa(k, float(k_axial))
     x = kap * radius
+    if x == 0.0:
+        # Exact axial cutoff (k_x == k).  The Hankel functions are singular at
+        # x = 0, but the physical limit on the evanescent side is zero: the
+        # mode is at grazing and carries no radiated power.  Returning 0.0 keeps
+        # the sweep continuous with k_x > k (where G ~ 0) instead of nan.
+        return 0.0
     h_n = hankel1(n, x)
     h_n_prime = 0.5 * (hankel1(n - 1, x) - hankel1(n + 1, x))
     ratio = -1j * omega * rho * h_n / (kap * h_n_prime)      # P / V
