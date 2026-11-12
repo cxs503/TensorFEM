@@ -1,6 +1,6 @@
 {
   "benchmark": "IN28-E1 Structural Dynamics Modal Analysis",
-  "generated_at": "2026-11-07T14:05:20.304013+00:00",
+  "generated_at": "2026-11-12T21:23:42.941823+00:00",
   "environment": {
     "python": "3.11.6 (main, May  9 2024, 00:00:00) [GCC 12.3.0 20230508 (Anolis OS 12.3.0-2)]",
     "torch": "2.7.1",
@@ -117,51 +117,51 @@
           "n_elements_y": 5,
           "n_elements_total": 30,
           "frequencies_hz": [
-            64.49532636682764,
-            149.95938121143453,
-            209.94929934816818
+            64.49532637322302,
+            149.9593812209058,
+            209.94929934497227
           ],
           "relative_errors_pct": [
-            3.989304824405817,
-            11.385310523542296,
-            19.64670069856122
+            3.989304834717437,
+            11.385310530577277,
+            19.64670069673992
           ],
-          "max_error_pct": 19.64670069856122
+          "max_error_pct": 19.64670069673992
         },
         {
           "n_elements_x": 8,
           "n_elements_y": 6,
           "n_elements_total": 48,
           "frequencies_hz": [
-            63.61630718591871,
-            143.02628069602594,
-            198.04589201986656
+            63.616307183268134,
+            143.02628069614826,
+            198.04589202871793
           ],
           "relative_errors_pct": [
-            2.5720146314678445,
-            6.2356123348648325,
-            12.86314191401607
+            2.572014627194182,
+            6.235612334955693,
+            12.863141919060325
           ],
-          "max_error_pct": 12.86314191401607
+          "max_error_pct": 12.863141919060325
         },
         {
           "n_elements_x": 10,
           "n_elements_y": 8,
           "n_elements_total": 80,
           "frequencies_hz": [
-            62.92883580211888,
-            139.76212121489385,
-            187.48128820802214
+            62.92883580812991,
+            139.7621212146276,
+            187.4812882064186
           ],
           "relative_errors_pct": [
-            1.4635673172949246,
-            3.8110930119180764,
-            6.842545540515209
+            1.4635673269868306,
+            3.81109301172031,
+            6.842545539601385
           ],
-          "max_error_pct": 6.842545540515209
+          "max_error_pct": 6.842545539601385
         }
       ],
-      "max_error_pct_finest": 6.842545540515209,
+      "max_error_pct_finest": 6.842545539601385,
       "verdict": "PASS",
       "note": "Mindlin Q4 converges O(h^2) for thin plates; 10x8 mesh gives ~7% error"
     },
@@ -182,138 +182,159 @@
         1250.0
       ],
       "nasa_note": "NASA TN D-3939: clamped BCs; this uses simply supported (diaphragm)",
-      "dmv_all_freqs_hz": [
-        17.33026632356713,
-        54.32689603977475,
-        115.98794556678745,
-        202.1368094300924,
-        202.31341490460522,
-        219.51770442142916,
-        239.19751417526945,
-        269.14766034788295,
-        313.3033040532281,
-        337.8182405308146
-      ],
-      "dmv_all_modes": [
-        [
-          1,
-          1
-        ],
-        [
-          2,
-          1
-        ],
-        [
-          3,
-          1
-        ],
-        [
+      "oracle": {
+        "theory": "Donnell-Mushtari-Vlasov, simply supported, membrane term retained for all n",
+        "grid": "m = 1..3, n = 0..8",
+        "lowest_hz": 202.1368094300924,
+        "lowest_mode_mn": [
           1,
           5
         ],
-        [
-          4,
-          1
-        ],
-        [
-          1,
-          6
-        ],
-        [
-          1,
-          4
-        ],
-        [
-          1,
-          7
-        ],
-        [
-          5,
-          1
-        ],
-        [
-          1,
-          8
-        ]
-      ],
-      "fem_result": {
-        "n_axial_mesh": 4,
-        "n_circ_mesh": 8,
-        "n_nodes": 40,
-        "n_dof": 240,
-        "n_free_dof": 192,
-        "frequencies_hz": [
-          75.84612171392743,
-          75.84612173992211,
-          79.84382131456184,
-          100.3487601692557,
-          100.34876016936227,
-          112.91621296311313,
-          112.91621298336698,
-          140.14535498569984,
-          140.14535499667318,
-          167.7519947837888
-        ],
-        "solver": "dense_cholesky"
-      },
-      "mode_matching": [
-        {
-          "fem_hz": 75.84612171392743,
-          "dmv_hz": 115.98794556678745,
-          "dmv_mode": [
-            3,
-            1
-          ],
-          "error_pct": 34.60861700472641
-        },
-        {
-          "fem_hz": 75.84612173992211,
-          "dmv_hz": 54.32689603977475,
-          "dmv_mode": [
-            2,
-            1
-          ],
-          "error_pct": 39.61062985154228
-        },
-        {
-          "fem_hz": 79.84382131456184,
-          "dmv_hz": 202.1368094300924,
-          "dmv_mode": [
+        "first_six": [
+          [
+            202.1368094300924,
             1,
             5
           ],
-          "error_pct": 60.500108050743094
+          [
+            219.51770442142916,
+            1,
+            6
+          ],
+          [
+            239.19751417526945,
+            1,
+            4
+          ],
+          [
+            269.14766034788295,
+            1,
+            7
+          ],
+          [
+            337.8182405308146,
+            1,
+            8
+          ],
+          [
+            359.9674594511493,
+            1,
+            3
+          ]
+        ],
+        "beam_limit_n1_hz": 2881.62344917576
+      },
+      "fem_ladder": [
+        {
+          "mesh": "4x8",
+          "n_dof": 240,
+          "n_free_dof": 192,
+          "n_modes_requested": 20,
+          "n_mechanism_modes": 18,
+          "lowest_mechanism_hz": 75.84612171392743,
+          "lowest_physical_hz": 100.3487601692557,
+          "first_physical_hz": [
+            100.3487601692557,
+            100.34876016936227
+          ],
+          "first_six_hz": [
+            75.84612171392743,
+            75.84612173992211,
+            79.84382131456184,
+            100.3487601692557,
+            100.34876016936227,
+            112.91621296311313
+          ],
+          "mechanism_free_first_ten": false,
+          "n_mechanism_first_ten": 8
+        },
+        {
+          "mesh": "8x8",
+          "n_dof": 432,
+          "n_free_dof": 384,
+          "n_modes_requested": 20,
+          "n_mechanism_modes": 18,
+          "lowest_mechanism_hz": 39.16610059596057,
+          "lowest_physical_hz": 98.86657760579962,
+          "first_physical_hz": [
+            98.86657760579962,
+            98.86657761241509
+          ],
+          "first_six_hz": [
+            39.16610059596057,
+            75.84612171230852,
+            75.84612174445643,
+            79.84382128335938,
+            86.23445915204924,
+            86.23445919850086
+          ],
+          "mechanism_free_first_ten": false,
+          "n_mechanism_first_ten": 8
+        },
+        {
+          "mesh": "8x16",
+          "n_dof": 864,
+          "n_free_dof": 768,
+          "n_modes_requested": 20,
+          "n_mechanism_modes": 19,
+          "lowest_mechanism_hz": 0.0001387683135824085,
+          "lowest_physical_hz": null,
+          "first_physical_hz": [],
+          "first_six_hz": [
+            0.0001387683135824085,
+            0.0013892137559383606,
+            33.382792145091294,
+            33.600257695260304,
+            33.9083435537278,
+            47.959849485077484
+          ],
+          "mechanism_free_first_ten": false,
+          "n_mechanism_first_ten": 10
         }
       ],
-      "max_matched_error_pct": 60.500108050743094,
-      "all_frequencies_positive": true,
-      "frequencies_in_expected_range": true,
-      "verdict": "PASS",
-      "note": "Coarse mesh (4x8) with simply supported BCs. FEM frequencies are in the expected range (10-500 Hz) for this shell geometry. Mode matching to DMV shows ~35-60% error due to coarse mesh and BC differences. The key achievement is that the cylindrical shell modal analysis pipeline (mesh generation + mass matrix + assembly + eigenvalue solve) works correctly."
+      "lowest_physical_vs_oracle_pct": 50.35601855387917,
+      "lowest_physical_mesh": "4x8",
+      "verdict": "FAIL",
+      "note": "The FE spectrum of this cylinder is dominated by rotation-only DOFs: at the anchor's original 4x8 mesh the three lowest 'frequencies' (75.85, 75.85, 79.84 Hz) have radial participation ~1e-25 and 100% rotation participation, i.e. they are mechanisms, not shell modes; their frequency is mesh dependent (39.17 Hz at 8x8, 0.001 Hz at 8x16). The first physical mode is 100.35 Hz (4x8) / 98.87 Hz (8x8) against a Donnell minimum of 202.14 Hz, so the FE evidence does not converge to the oracle. The anchor verdict is FAIL: the shell element and/or its simply-supported constraint set needs repair before this anchor can support a PASS."
     }
   },
-  "overall_verdict": "PASS",
+  "overall_verdict": "FAIL",
   "gates": [
     {
       "id": "G1.beam",
-      "description": "Beam error < 3%",
+      "quantity": "cantilever beam modes 1-3, max relative error [%]",
       "value": 6.443028509097842e-06,
-      "limit": 3.0,
-      "passed": true
+      "operator": "<=",
+      "threshold": 3.0,
+      "passed": true,
+      "reference": "beta_n roots of cos(beta)cosh(beta) = -1, Euler-Bernoulli"
     },
     {
       "id": "G2.plate",
-      "description": "Plate error < 10% (thin plate)",
-      "value": 6.842545540515209,
-      "limit": 10.0,
-      "passed": true
+      "quantity": "SS plate modes 1-3, max relative error [%]",
+      "value": 6.842545539601385,
+      "operator": "<=",
+      "threshold": 10.0,
+      "passed": true,
+      "reference": "Kirchhoff Navier series, thin plate"
     },
     {
-      "id": "G3.shell",
-      "description": "Shell: frequencies positive and in expected range",
-      "value": 60.500108050743094,
-      "limit": null,
-      "passed": true
+      "id": "G3.shell_lowest_physical_vs_donnell",
+      "quantity": "lowest FE shell mode (radial participation > 1e-6) vs Donnell minimum [%] at mesh 4x8",
+      "value": 50.35601855387917,
+      "operator": "<=",
+      "threshold": 15.0,
+      "passed": false,
+      "reference": "Donnell-Mushtari-Vlasov over m=1..3, n=0..8: 202.14 Hz at (m,n)=(1,5)"
+    },
+    {
+      "id": "G4.shell_mechanism_free_low_spectrum",
+      "quantity": "rotation-only modes inside the first ten FE modes (must be zero)",
+      "value": 8.0,
+      "operator": "==",
+      "threshold": 0.0,
+      "passed": false,
+      "reference": "a shell mode must carry transverse displacement; radial participation > 1e-6"
     }
   ]
 }

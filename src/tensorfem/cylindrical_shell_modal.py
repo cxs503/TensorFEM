@@ -78,11 +78,11 @@ def _positive(name: str, value: float) -> float:
     return result
 
 
-def _count(name: str, value: int) -> int:
+def _count(name: str, value: int, *, minimum: int = 1) -> int:
     if isinstance(value, bool) or not isinstance(value, int):
         raise TypeError(f"{name} must be an integer")
-    if value < 1:
-        raise ValueError(f"{name} must be at least 1")
+    if value < minimum:
+        raise ValueError(f"{name} must be at least {minimum}")
     return value
 
 
@@ -581,6 +581,15 @@ def dmv_angular_frequency(
     where lambda = m*pi*R/L, n = circumferential wave number,
     k = t^2 / (12 R^2 (1-nu^2)).
 
+    Accuracy
+    --------
+    Donnell theory is a thin-shell (Love-Kirchhoff) approximation.  It is
+    reliable for ``n >= 2``; the ``n = 1`` branch keeps the membrane term but
+    thin-shell theory is inaccurate there (the Euler-Bernoulli beam limit
+    ``omega = (m pi/L)^2 sqrt(E I/(rho A))`` with ``I/A = R^2/2`` is an upper
+    bracket, 2.45x this value on the R = 0.5 m, L = 1 m, t = 5 mm steel shell).
+    The axisymmetric ``n = 0`` branch is the breathing mode.
+
     Parameters
     ----------
     n_axial : axial half-wave number (m >= 1)
@@ -597,7 +606,9 @@ def dmv_angular_frequency(
     density = _positive("density", density)
     poisson = _poisson(poisson)
     n_axial = _count("n_axial", n_axial)
-    n_circ = _count("n_circ", n_circ)
+    # n = 0 is the axisymmetric breathing mode and is admissible here; the mesh
+    # generator keeps its own ``minimum=1``.
+    n_circ = _count("n_circ", n_circ, minimum=0)
 
     lam = n_axial * math.pi * radius / length
     n = n_circ
@@ -605,18 +616,18 @@ def dmv_angular_frequency(
     # Bending parameter
     k = thickness ** 2 / (12.0 * radius ** 2 * (1.0 - poisson ** 2))
 
-    if n == 0:
-        # Axisymmetric breathing mode
-        omega_sq = (young / (density * radius ** 2)) * (1.0 + k * lam ** 4)
-    elif n == 1:
-        # Beam-like mode
-        omega_sq = (young / (density * radius ** 2)) * k * (lam ** 2 + 1) ** 2
-    else:
-        # General case (n >= 2)
-        denom = (lam ** 2 + n ** 2) ** 2
-        omega_sq = (young / (density * radius ** 2)) * (
-            lam ** 4 / denom + k * denom
-        )
+    # One Donnell shell equation for every circumferential wavenumber, exactly
+    # as written in the docstring above.  n = 0 reduces it to the axisymmetric
+    # breathing mode ``1 + k lambda^4``; the membrane term MUST be kept for
+    # n = 1 as well.  The pre-2026-11 code dropped it there and returned
+    # 17.33 Hz on the R = 0.5 m, L = 1 m, t = 5 mm steel shell, where the
+    # Euler-Bernoulli beam limit is 2881.6 Hz and this retained-term form gives
+    # 1175.5 Hz -- a 68x under-prediction that seeded an unphysical mode into
+    # the fem_shell_modal reference ladder (docs/fem-shell-modal-anchor-audit.md).
+    span = lam ** 2 + n ** 2
+    omega_sq = (young / (density * radius ** 2)) * (
+        lam ** 4 / span ** 2 + k * span ** 2
+    )
 
     if omega_sq <= 0:
         raise ValueError(f"non-positive omega^2 for m={n_axial}, n={n_circ}")
