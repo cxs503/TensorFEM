@@ -255,7 +255,11 @@ class DNVDualSlopeSN:
       - Above knee (N > 1e7): m2 = 5, log10(a2) = 15.606
 
     The knee point is at N = 1e7 cycles, corresponding to stress range:
-        Δσ_knee = (a1 / 1e7)^(1/m1) = 10^((12.164 - 7) / 3) = 169.3 MPa
+        Δσ_knee = (a1 / 1e7)^(1/m1) = 10^((12.164 - 7) / 3) = 52.64 MPa
+
+    (The value was printed as 169.3 MPa in the first release; that is an
+    arithmetic slip -- ``10**((12.164 - 7)/3) = 52.642``, see
+    ``docs/fatigue-sn-curve-consistency-audit.md``.)
 
     Attributes
     ----------
@@ -464,6 +468,79 @@ class FatigueDetailVerification:
     summary: str
 
 
+def sn_curve_verification_report(sn_curve: "DNVDualSlopeSN | None" = None) -> dict:
+    """Machine-checkable dual-slope verification of a DNV curve-D style S-N line.
+
+    Three checks, each with an *explicit branch guard* so that a stress range can
+    never be used to "verify" a slope branch it does not belong to:
+
+    * m1 check -- ``ds`` and ``2 ds`` both above the knee, ``N(ds)/N(2ds) = 2**m1``;
+    * knee check -- the knee stress maps back onto ``n_knee`` cycles;
+    * m2 check -- ``ds`` and ``ds/2`` both **strictly below** the knee,
+      ``N(ds/2)/N(ds) = 2**m2``.
+
+    The first release hard-coded 100 MPa / 50 MPa for the m2 check.  Both are
+    above the 52.64 MPa knee of curve D, so the "m2" check actually measured
+    ``N(50 MPa, m=5) / N(100 MPa, m=3) = 8.85`` against an expectation of 32
+    (72.3 % error) and returned ``passed=False`` for a curve that is correct.
+    """
+    sn_curve = DNVDualSlopeSN() if sn_curve is None else sn_curve
+    stress_knee = sn_curve.stress_knee_pa
+
+    # Test 1: m1 slope, both ranges above the knee.
+    ds1 = 1.6 * stress_knee
+    ds2 = 2.0 * ds1
+    n1 = sn_curve.cycles_to_failure(ds1)
+    n2 = sn_curve.cycles_to_failure(ds2)
+    expected_ratio = 2.0 ** sn_curve.m1
+    actual_ratio = n1 / n2
+    ratio_error = abs(actual_ratio - expected_ratio) / expected_ratio
+
+    # Test 2: knee point round-trip.
+    n_at_knee = sn_curve.cycles_to_failure(stress_knee)
+    knee_error = abs(n_at_knee - sn_curve.n_knee) / sn_curve.n_knee * 100.0
+
+    # Test 3: m2 slope, both ranges strictly below the knee (branch-guarded).
+    ds3 = 0.45 * stress_knee
+    ds4 = 0.5 * ds3
+    n3 = sn_curve.cycles_to_failure(ds3)
+    n4 = sn_curve.cycles_to_failure(ds4)
+    expected_ratio_m5 = 2.0 ** sn_curve.m2
+    actual_ratio_m5 = n4 / n3
+    ratio_error_m5 = abs(actual_ratio_m5 - expected_ratio_m5) / expected_ratio_m5
+    branch_guard = bool(ds1 > stress_knee and ds2 > stress_knee
+                        and ds3 < stress_knee and ds4 < stress_knee)
+
+    return {
+        "m1": sn_curve.m1,
+        "m2": sn_curve.m2,
+        "log_a1": sn_curve.log_a1,
+        "log_a2": sn_curve.log_a2,
+        "stress_knee_pa": stress_knee,
+        "n_at_knee": n_at_knee,
+        "knee_error_percent": knee_error,
+        "ds1_pa": ds1,
+        "n1": n1,
+        "ds2_pa": ds2,
+        "n2": n2,
+        "ratio_m3_actual": actual_ratio,
+        "ratio_m3_expected": expected_ratio,
+        "ratio_m3_error_percent": ratio_error * 100.0,
+        "ds3_pa": ds3,
+        "n3": n3,
+        "ds4_pa": ds4,
+        "n4": n4,
+        "ratio_m5_actual": actual_ratio_m5,
+        "ratio_m5_expected": expected_ratio_m5,
+        "ratio_m5_error_percent": ratio_error_m5 * 100.0,
+        "branch_guard": branch_guard,
+        "passed": bool(branch_guard and ratio_error <= 1e-6
+                       and knee_error <= 1e-6 and ratio_error_m5 <= 1e-6),
+        "criterion": ("S-N dual-slope: branch-guarded ratio error <= 1e-6, "
+                      "knee error <= 1e-6 %"),
+    }
+
+
 def run_fatigue_detail_verification(
     plate_thickness_m: float = 0.015,
     weld_leg_m: float = 0.010,
@@ -618,64 +695,32 @@ def run_fatigue_detail_verification(
 
     # ---- (d) S-N curve dual-slope verification ----
     sn_curve = DNVDualSlopeSN()
-
-    # Verify dual-slope behavior
-    # Test 1: Doubling stress should change N by 2^m
-    ds1 = 80e6  # 80 MPa (above knee → m=3)
-    ds2 = 160e6  # 160 MPa (2× ds1, also above knee → m=3)
-    n1 = sn_curve.cycles_to_failure(ds1)
-    n2 = sn_curve.cycles_to_failure(ds2)
-    expected_ratio = 2.0 ** 3.0  # = 8
-    actual_ratio = n1 / n2
-    ratio_error = abs(actual_ratio - expected_ratio) / expected_ratio
-
-    # Test 2: Verify knee point
-    stress_knee = sn_curve.stress_knee_pa
-    n_at_knee = sn_curve.cycles_to_failure(stress_knee)
-    knee_error = abs(n_at_knee - 1e7) / 1e7 * 100
-
-    # Test 3: Verify second slope (m=5)
-    ds3 = 100e6  # 100 MPa (below knee → m=5)
-    ds4 = 50e6  # 50 MPa (2× lower, also below knee → m=5)
-    n3 = sn_curve.cycles_to_failure(ds3)
-    n4 = sn_curve.cycles_to_failure(ds4)
-    expected_ratio_m5 = 2.0 ** 5.0  # = 32
-    actual_ratio_m5 = n4 / n3
-    ratio_error_m5 = abs(actual_ratio_m5 - expected_ratio_m5) / expected_ratio_m5
-
-    sn_curve_verification = {
-        "m1": sn_curve.m1,
-        "m2": sn_curve.m2,
-        "log_a1": sn_curve.log_a1,
-        "log_a2": sn_curve.log_a2,
-        "stress_knee_pa": stress_knee,
-        "n_at_knee": n_at_knee,
-        "knee_error_percent": knee_error,
-        "ds1_pa": ds1,
-        "n1": n1,
-        "ds2_pa": ds2,
-        "n2": n2,
-        "ratio_m3_actual": actual_ratio,
-        "ratio_m3_expected": expected_ratio,
-        "ratio_m3_error_percent": ratio_error * 100,
-        "ds3_pa": ds3,
-        "n3": n3,
-        "ds4_pa": ds4,
-        "n4": n4,
-        "ratio_m5_actual": actual_ratio_m5,
-        "ratio_m5_expected": expected_ratio_m5,
-        "ratio_m5_error_percent": ratio_error_m5 * 100,
-        "passed": ratio_error <= 0.01 and knee_error <= 1.0 and ratio_error_m5 <= 0.01,
-        "criterion": "S-N curve dual-slope: ratio error ≤ 1%, knee error ≤ 1%",
-    }
+    sn_curve_verification = sn_curve_verification_report(sn_curve)
+    stress_knee = sn_curve_verification["stress_knee_pa"]
 
     # ---- Fatigue life prediction ----
     # Use hot-spot stress for fatigue life
     sigma_hot = hs_result.sigma_hot_linear * stress_range_pa
     n_fatigue = sn_curve.cycles_to_failure(sigma_hot)
 
-    # Reference life (using nominal stress without SCF)
+    # Reference life (using nominal stress without SCF).
+    #
+    # The first release hard-coded a passing flag here with the comment "computed
+    # correctly if the S-N curve is valid" -- a gate that cannot fail.  It is now
+    # a real check: the life is recomputed from the *knee-anchored* power law
+    # (an independent route through the same published constants, which exposes a
+    # wrong second-slope intercept or a flipped branch) and compared.
+    def _knee_anchored_life(ds_pa: float) -> float:
+        s_mpa = ds_pa / 1e6
+        knee_stress_mpa = stress_knee / 1e6
+        n_low = 10.0 ** sn_curve.log_a1 * s_mpa ** (-sn_curve.m1)
+        if n_low <= sn_curve.n_knee:
+            return n_low
+        return sn_curve.n_knee * (knee_stress_mpa / s_mpa) ** sn_curve.m2
+
     n_reference = sn_curve.cycles_to_failure(stress_range_pa)
+    _independent_life = _knee_anchored_life(sigma_hot)
+    _life_error = abs(n_fatigue / _independent_life - 1.0)
 
     # Life reduction due to stress concentration
     life_reduction = n_reference / n_fatigue
@@ -688,8 +733,11 @@ def run_fatigue_detail_verification(
         "cycles_reference": n_reference,
         "life_reduction_factor": life_reduction,
         "slope_active": sn_curve.m1 if sigma_hot >= stress_knee else sn_curve.m2,
-        "passed": True,  # Fatigue life is computed correctly if S-N curve is valid
-        "criterion": "Fatigue life N error ≤ 15% (verified via S-N curve consistency)",
+        "independent_life": _independent_life,
+        "life_relative_error": _life_error,
+        "passed": bool(_life_error <= 1e-9 and math.isfinite(n_fatigue) and n_fatigue > 0.0),
+        "criterion": ("Life recomputed from the knee-anchored power law agrees "
+                      "with the curve object to <= 1e-9 relative"),
     }
 
     # ---- Overall pass/fail ----
