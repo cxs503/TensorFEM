@@ -2729,6 +2729,41 @@
       "name": "nevel_moment_applicability",
       "object": "nevel_moment_applicability",
       "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cook_xval",
+      "name": "CookXvalResult",
+      "object": "CookXvalResult",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cook_xval",
+      "name": "run_cook_xval",
+      "object": "run_cook_xval",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cook_xval",
+      "name": "load_cook_xval_results",
+      "object": "load_cook_xval_results",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cook_xval",
+      "name": "generate_convergence_plot",
+      "object": "generate_convergence_plot",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.cook_xval",
+      "name": "generate_error_plot",
+      "object": "generate_error_plot",
+      "stability": "experimental"
     }
   ],
   "package_version": "0.45.0",
