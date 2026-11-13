@@ -290,21 +290,41 @@ def _shell_tets(nsub: int, layers: int):
     return nodes, np.array(tets), radii
 
 
-def _rigid_modes(p: np.ndarray) -> np.ndarray:
-    n = p.shape[1]
+def _dof_coords(basis) -> np.ndarray:
+    """Node coordinates in *dof* order (one row per scalar-node dof, 3 columns).
+
+    ``basis.doflocs`` is ``(3, N)`` with the three components of one node
+    stored consecutively, so ``doflocs[:, ::3].T`` is the coordinate of the
+    node owning dofs ``3i, 3i+1, 3i+2``.  Using this (and not ``mesh.p``)
+    keeps the rigid-body modes aligned with the assembled load vector for
+    both the linear and the quadratic element.
+    """
+    return np.ascontiguousarray(basis.doflocs[:, ::3].T)
+
+
+def _rigid_modes(coords: np.ndarray) -> np.ndarray:
+    """Six rigid-body modes in dof order (3 translations, 3 rotations).
+
+    ``coords`` is ``(n, 3)`` (see :func:`_dof_coords`); the returned rows are
+    laid out node-major (``[u_x, u_y, u_z]`` per node), which is the ordering
+    of a ``skfem`` vector basis.  Building them component-major (the previous
+    bug) silently mixed components and made the equilibrium check report a
+    spurious O(1) relative rigid-mode load.
+    """
+    n = coords.shape[0]
     modes = []
     for k in range(3):
-        d = np.zeros((3, n))
-        d[k] = 1.0
+        d = np.zeros((n, 3))
+        d[:, k] = 1.0
         modes.append(d.ravel())
     for k in range(3):
         axis = np.zeros(3)
         axis[k] = 1.0
-        modes.append(np.cross(np.broadcast_to(axis[:, None], p.shape).T, p.T).T.ravel())
+        modes.append(np.cross(np.broadcast_to(axis, coords.shape), coords).ravel())
     return np.array(modes)
 
 
-def arm_skfem(nsub: int, order: int = 1, layers: int = 2, project: bool = True) -> dict:
+def arm_skfem(nsub: int, order: int = 1, layers: int = 2, project: bool = False) -> dict:
     """Independent arm: scikit-fem + icosphere tet shell + consistent pressure load."""
     import scipy.sparse.linalg as spla
     import skfem as sk
@@ -316,18 +336,33 @@ def arm_skfem(nsub: int, order: int = 1, layers: int = 2, project: bool = True) 
     started = time.time()
     nodes, tets, radii = _shell_tets(nsub, layers)
     mesh = MeshTet(nodes.T, tets.T)
+    mesh_projected_midpoints = 0
     if order == 2:
         mesh = MeshTet2.from_mesh(mesh)
         if project:
+            # MeshTet2 keeps the linear connectivity in ``mesh.t`` (4 rows) and
+            # stores the edge midpoints as extra columns of ``mesh.p``; the P2
+            # connectivity lives in ``mesh.dofs.element_dofs``.  The previous
+            # ``mesh.t[4:]`` mask was therefore always empty and the "curved
+            # projection" never moved a node.
             p = mesh.p.copy()
             r = np.linalg.norm(p, axis=0)
-            mid = np.zeros(p.shape[1], dtype=bool)
-            mid[mesh.t[4:]] = True
-            target = np.where(np.abs(r - A) < 1e-9 * A, A,
-                              np.where(np.abs(r - B) < 1e-9 * B, B, 0.0))
-            sel = mid & (target > 0)
-            p[:, sel] = p[:, sel] / r[sel] * target[sel]
+            vids = np.unique(mesh.t[:4])
+            mids = np.setdiff1d(np.arange(p.shape[1]), vids)
+            gap = (B - A) / float(layers)
+            projected = 0
+            for target_radius in (A, B):
+                # a tangential edge of the shell has both endpoints on the
+                # same sphere, so its chord midpoint sits within O(h^2) of it
+                # (<0.15 * gap here); radial-edge midpoints sit at half the
+                # layer gap and are left alone.
+                sel = mids[np.abs(r[mids] - target_radius) < 0.3 * gap]
+                p[:, sel] = p[:, sel] / r[sel] * target_radius
+                projected += int(sel.size)
             mesh = MeshTet2(p, mesh.t)
+            mesh_projected_midpoints = projected
+        else:
+            mesh_projected_midpoints = 0
     lam, mu = lame_parameters(E, NU)
     element = ElementTetP1() if order == 1 else ElementTetP2()
     basis = Basis(mesh, ElementVector(element))
@@ -343,8 +378,12 @@ def arm_skfem(nsub: int, order: int = 1, layers: int = 2, project: bool = True) 
         return -P * (w.n[0] * v[0] + w.n[1] * v[1] + w.n[2] * v[2])
 
     f = sk.asm(pressure, fb)
-    R = _rigid_modes(p)
-    load_rigid = float(np.linalg.norm(R @ f) / np.linalg.norm(f))
+    coords = _dof_coords(basis)
+    R = _rigid_modes(coords)
+    # relative rigid-body contamination of the discrete load: each mode is
+    # normalised so the measure is scale free (rotation rows grow with |x|).
+    row = np.linalg.norm(R, axis=1)
+    load_rigid = float(np.max(np.abs(R @ f) / (row * np.linalg.norm(f))))
     count = [0]
     u, info = spla.cg(K, f, rtol=1e-13, atol=0.0, maxiter=200000,
                       callback=lambda xk: count.__setitem__(0, count[0] + 1))
@@ -367,12 +406,17 @@ def arm_skfem(nsub: int, order: int = 1, layers: int = 2, project: bool = True) 
     dev = sig_e - (tr / 3.0)[None, None, :] * np.eye(3)[:, :, None]
     vm = np.sqrt(1.5 * (dev * dev).sum((0, 1)))
 
-    un = u[basis.nodal_dofs]
-    rr = np.linalg.norm(p, axis=0)
+    # vertex-associated dofs only: for the P2 basis ``mesh.p`` also holds the
+    # edge midpoints, so indexing the nodal dofs with a mask built on ``p``
+    # raised an IndexError (276 nodal dofs vs 2050 mesh columns).
+    un = u[basis.nodal_dofs]                     # (3, n_nodal_dofs)
+    nv = un.shape[1]
+    vcoords = coords[:nv]                        # dof-ordered ↔ nodal_dofs
+    rv = np.linalg.norm(vcoords, axis=1)
     surf = {}
     for tag, target in (("inner", A), ("outer", B)):
-        sel = np.abs(rr - target) < 1e-9 * target
-        surf[tag] = float(((un[:, sel] * p[:, sel] / rr[sel]).sum(0)).mean())
+        sel = np.abs(rv - target) < 1e-9 * target
+        surf[tag] = float(((un[:, sel] * vcoords[sel].T / rv[sel]).sum(0)).mean())
 
     def band_stats(r1, r2):
         sel = (rad > r1 - 1e-12) & (rad < r2 + 1e-12)
@@ -392,6 +436,7 @@ def arm_skfem(nsub: int, order: int = 1, layers: int = 2, project: bool = True) 
         "n": nsub,
         "layers": layers,
         "curved_projection": bool(order == 2 and project),
+        "curved_projection_midpoints": int(mesh_projected_midpoints),
         "nodes": int(p.shape[1]),
         "elements": int(mesh.t.shape[1]),
         "dofs": int(basis.N),
@@ -473,11 +518,11 @@ def reproduce_claims(rows: list[dict]) -> list[dict]:
         first_n = crossing[0] if crossing else None
         at12 = [r for r in hex8_ladder if r["n"] == 12]
         got = at12[0]["worst_m1"] if at12 else (hex8_ladder[-1]["worst_m1"])
-        dev = abs(got - CASE_LINE) / CASE_LINE
+        dev_c3 = abs(got - CASE_LINE) / CASE_LINE
         claims.append({
             "id": "C3", "text": "HEX8 needs n >= 12 before approaching 5%",
-            "kind": "threshold", "recorded": CASE_LINE, "got": got, "deviation": dev,
-            "reproduced": bool(dev <= CLAIM_TOLERANCE),
+            "kind": "threshold", "recorded": CASE_LINE, "got": got, "deviation": dev_c3,
+            "reproduced": bool(dev_c3 <= CLAIM_TOLERANCE),
             "strict_crossing_n": first_n,
             "strict_below_line": bool(first_n is not None),
             "ladder_worst_m1": [{"n": r["n"], "worst": r["worst_m1"]} for r in hex8_ladder]})
