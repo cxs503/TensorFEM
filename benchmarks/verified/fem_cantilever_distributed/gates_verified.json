@@ -1,0 +1,181 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_cantilever_distributed",
+  "title": "CASE-CANTILEVER-TIP distributed-load ladder: consistent load vector, fixed-end forces and the shear-free end rotation, graded on an Euler-Bernoulli frame and a Timoshenko beam",
+  "mission": "CASE-CANTILEVER-TIP",
+  "generated_at": "2026-11-13T14:06:39+00:00",
+  "criteria": {
+    "case_pool_tolerance": 0.03,
+    "nodal_exactness": 1e-10,
+    "oracle_separation_min": 0.03,
+    "partial_boundary_cost_min": 0.001
+  },
+  "gates": [
+    {
+      "id": "oracle_castigliano_selfcheck",
+      "quantity": "symbolic residual of the unit-load re-derivation of all six closed forms",
+      "reference": "Castigliano: delta = int M m/(EI) + int V v/(kappa G A); rotation with m = 1, v = 0",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "uniform, partial and tip-moment oracles are machine-derived; no handbook digit is copied"
+    },
+    {
+      "id": "rotation_has_no_shear_term",
+      "quantity": "symbolic shear work of the unit-moment rotation under a uniform load",
+      "reference": "v = dm/dx = 0 for a unit end moment, so theta = q L^3/(6 EI) exactly",
+      "value": 0.0,
+      "threshold": 1e-30,
+      "operator": "<=",
+      "passed": true,
+      "note": "falsifiable: a model that adds q L/(kappa G A) to the rotation would be wrong"
+    },
+    {
+      "id": "fixed_end_forces_phi_independent",
+      "quantity": "symbolic residual of V(0)=qL/2, M(0)=M(L)=-qL^2/12 for the clamped-clamped Timoshenko element",
+      "reference": "exact solution of EI theta''=V, V=kappa G A (w'-theta), V'=-q with four zero end displacements",
+      "value": 0.0,
+      "threshold": 1e-24,
+      "operator": "<=",
+      "passed": true,
+      "note": "dM/dphi = 0: the Timoshenko element reuses the Euler-Bernoulli load vector"
+    },
+    {
+      "id": "frame_uniform_load_nodal_exact",
+      "quantity": "max relative error of the frame tip deflection vs q L^4/(8 EI), n = 1..8",
+      "reference": "q L^4/(8 EI) at L/h = 100",
+      "value": 2.0851376181241224e-13,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "consistent load vector + fixed-end moment q L^2/12 at every mesh, including n = 1"
+    },
+    {
+      "id": "frame_partial_load_nodal_exact",
+      "quantity": "relative error of the frame tip deflection vs q a^3 (4L - a)/(24 EI)",
+      "reference": "q a^3 (4L - a)/(24 EI) at a = 0.6 L, conforming mesh (node at a)",
+      "value": 2.306734605812365e-14,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "shear-rigid frame against the bending-only oracle; the load boundary must coincide with a node"
+    },
+    {
+      "id": "partial_load_shear_share_measurable",
+      "quantity": "shear share q a^2/(2 kappa G A) / (q a^3 (4L-a)/(24 EI)) of the partial-load case",
+      "reference": "ratio of the two partial-load oracle terms",
+      "value": 0.015294117647058823,
+      "threshold": 0.01,
+      "operator": ">=",
+      "passed": true,
+      "note": "the frame's mesh-independent offset against the shear-inclusive oracle is exactly this term, so the two oracles must not be mixed"
+    },
+    {
+      "id": "frame_partial_rotation_exact",
+      "quantity": "relative error of the frame tip rotation vs q a^3/(6 EI)",
+      "reference": "partial-load rotation oracle",
+      "value": 2.548941739422664e-14,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodal rotation of the cubic Hermite field is exact for the cubic exact slope"
+    },
+    {
+      "id": "frame_tip_moment_exact",
+      "quantity": "max relative error of the frame tip rotation and deflection vs M L/(EI) and M L^2/(2 EI)",
+      "reference": "pure bending oracle at M = 5 N m",
+      "value": 1.3010426069826052e-14,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "constant moment: the Hermite field contains the exact solution"
+    },
+    {
+      "id": "timoshenko_uniform_load_nodal_exact",
+      "quantity": "max relative error of the Timoshenko tip deflection vs qL^4/(8EI)+qL^2/(2 kappa G A), n=1..8",
+      "reference": "shear-flexible oracle at L/h = 100",
+      "value": 3.811369335468816e-13,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "new load path (timoshenko_fixed_end_forces); the shear term is 1.0e-4 of the bending term here"
+    },
+    {
+      "id": "timoshenko_thick_rung_passes",
+      "quantity": "relative error of the Timoshenko tip deflection vs the shear-flexible oracle at L/h = 5",
+      "reference": "q L^4/(8 EI) + q L^2/(2 kappa G A)",
+      "value": 4.0660183719964486e-16,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "the same model is graded where the shear term is 4.2 % of the response"
+    },
+    {
+      "id": "thick_rung_oracle_separation",
+      "quantity": "(delta_TI - delta_EB)/delta_EB for a uniform load at L/h = 5",
+      "reference": "E/(3 kappa G)(h/L)^2",
+      "value": 0.04160000000000001,
+      "threshold": 0.03,
+      "operator": ">=",
+      "passed": true,
+      "note": "a uniform load separates the theories at a lower slenderness than a tip force does (4.16 % vs 3.12 % at the same L/h)"
+    },
+    {
+      "id": "shear_rigid_frame_rejected_at_thick_rung",
+      "quantity": "relative error of the shear-rigid frame vs the shear-flexible oracle at L/h = 5",
+      "reference": "q L^4/(8 EI) + q L^2/(2 kappa G A)",
+      "value": 0.03993855606758875,
+      "threshold": 0.03,
+      "operator": ">=",
+      "passed": true,
+      "note": "fail-closed pair with the gate above: a shear-rigid model must not pass where shear matters"
+    },
+    {
+      "id": "rotation_no_shear_term_numerical",
+      "quantity": "relative error of the tip rotation at L/h = 5, where the shear share of the deflection is 4.2 %",
+      "reference": "q L^3/(6 EI)",
+      "value": 5.082197683525802e-16,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "the shear-flexible model still returns the shear-free rotation: the symbolic gate, measured"
+    },
+    {
+      "id": "end_force_recovery",
+      "quantity": "relative error of the recovered root bending moment (element end forces minus fixed-end forces)",
+      "reference": "q L^2/2",
+      "value": 1.0103029524088922e-13,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "exercises the equivalent-load subtraction in solve_frame_static; root shear q L is in the evidence"
+    },
+    {
+      "id": "partial_load_boundary_cost",
+      "quantity": "relative error when the load boundary falls inside an element (n = 4, patch spread over that element)",
+      "reference": "q a^3 (4L - a)/(24 EI) with a = 0.6 L (bending-only oracle)",
+      "value": 0.2712333197167938,
+      "threshold": 0.001,
+      "operator": ">=",
+      "passed": true,
+      "note": "measured modelling constraint, not a bug: a partially loaded element is unrepresentable"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "result.json",
+    "doc": "docs/CASE-CANTILEVER-TIP-distributed-load.md",
+    "figures": [
+      "docs/assets/cantilever_distributed/fields.png",
+      "docs/assets/cantilever_distributed/errors.png"
+    ]
+  },
+  "limitations": [
+    "the distributed load is per element and full-span, so a load boundary inside an element is not representable; the measured cost of ignoring that is reported (partial_load_boundary_cost) and the conforming mesh is required",
+    "both graded models are beam kinematics; the model-free 3-D check of the shear term for a tip-loaded section exists in the sibling anchor fem_cantilever_shear and is not repeated here (no distributed traction on the HEX20 face in this run)",
+    "the frame is shear rigid, so it is expected to be rejected at L/h = 5 by the Timoshenko oracle; that rejection is the point of the fail-closed gate pair, not a defect of the element"
+  ]
+}
