@@ -1,12 +1,26 @@
 {
   "schema": "tensorfem.cohesive3d-verification/1.0",
-  "generated_utc": "2026-11-11T21:16:10.751149+00:00",
+  "generated_utc": "2026-11-13T02:44:08.412976+00:00",
   "generator": "benchmarks/cohesive3d_verification.py",
+  "reproduce": {
+    "write": "python benchmarks/cohesive3d_verification.py",
+    "check": "python benchmarks/cohesive3d_verification.py --check",
+    "runtime_s": 46.94
+  },
   "host": {
     "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
     "machine": "loongarch64",
     "python": "3.11.6",
     "torch": "2.7.1"
+  },
+  "provenance": {
+    "module": "tensorfem.cohesive3d",
+    "source_files": {
+      "src/tensorfem/cohesive3d.py": "7a962794e8a506f91eea00a9387a2108985cd608ea7b8770eda4d15676d70f2f",
+      "src/tensorfem/mixed_mode_cohesive.py": "4d668809baf2cf69180e1453a1ef4a468bb7c685361026a173618bf6c3e961c7",
+      "src/tensorfem/solid3d.py": "d638564b5ef76f269e1578073a38ce5f706d911ff7e5e0b330b06064e7645e88"
+    },
+    "git_head": "951b7338e6b2b07ef9a86bd101c99817548d5f72"
   },
   "model": {
     "normal_stiffness_Pa_per_m": 1000000000000.0,
@@ -614,5 +628,6 @@
       "passed": true
     }
   },
+  "checks_digest": "82fdcd8ad044cc024a858d441bcdfcf9a5e00dd8f46fd1cff69430e8b6c9f981",
   "all_passed": true
 }
