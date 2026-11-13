@@ -95,6 +95,7 @@ __all__ = [
     "edge_parent",
     "j_integral_subring",
     "tada_sent_shape_factor",
+    "tada_sent_shape_factor_closed_form",
     "sent_k_reference",
     "sent_k_from_j",
     "sent_convergence",
@@ -134,6 +135,33 @@ def tada_sent_shape_factor(alpha: float) -> float:
         + 10.55 * alpha ** 2
         - 21.72 * alpha ** 3
         + 30.39 * alpha ** 4
+    )
+
+
+def tada_sent_shape_factor_closed_form(alpha: float) -> float:
+    """Independent closed-form geometry factor of the SENT specimen.
+
+    ``F(a/W) = sqrt( (2 / (pi alpha)) tan(pi alpha / 2) )
+    * (0.752 + 2.02 alpha + 0.37 (1 - sin(pi alpha / 2))**3) / cos(pi alpha / 2)``
+
+    This is the secant form quoted in the same handbook chapter (Tada, Paris &
+    Irwin, 3rd ed.; also reproduced by Anderson, *Fracture Mechanics*, table 2.1)
+    for the single-edge-notch tension specimen.  It is *not* a re-expansion of
+    the polynomial fit used by :func:`tada_sent_shape_factor` -- the two agree
+    only because both approximate the same boundary-collocation solution -- so
+    the difference between them bounds the uncertainty of the reference itself
+    and lets a finite-element error be separated from handbook error.
+    """
+    alpha = float(alpha)
+    if not math.isfinite(alpha) or alpha <= 0.0:
+        raise ValueError("alpha = a/W must be positive and finite")
+    if alpha >= 1.0:
+        raise ValueError("the closed-form factor is quoted for a/W < 1")
+    half = 0.5 * math.pi * alpha
+    return (
+        math.sqrt(2.0 / (math.pi * alpha) * math.tan(half))
+        * (0.752 + 2.02 * alpha + 0.37 * (1.0 - math.sin(half)) ** 3)
+        / math.cos(half)
     )
 
 

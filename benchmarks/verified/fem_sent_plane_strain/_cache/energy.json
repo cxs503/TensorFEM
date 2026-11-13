@@ -1,0 +1,20 @@
+{
+  "a_over_w": 0.3,
+  "step_m": 0.001,
+  "mirror_factor": 2.0,
+  "potential_low": -488.08960525816326,
+  "potential_high": -499.3166891534295,
+  "energy_release_rate": 11227.083895266218,
+  "k_energy_pa_sqrt_m": 50900545.3241142,
+  "clapeyron_ratio_low": 2.000000000000251,
+  "clapeyron_ratio_high": 1.9999999999999025,
+  "reaction_ratio_low": 0.9999999999999524,
+  "reaction_ratio_high": 1.0000000000000346,
+  "level": {
+    "name": "medium",
+    "n_sectors": 48,
+    "first_ring": 0.05,
+    "growth": 1.45
+  },
+  "plane": "strain"
+}

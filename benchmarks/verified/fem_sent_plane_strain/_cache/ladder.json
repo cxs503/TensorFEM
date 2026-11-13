@@ -1,0 +1,277 @@
+{
+  "width_m": 0.1,
+  "height_over_width": 2.0,
+  "sigma_pa": 100000000.0,
+  "young_pa": 210000000000.0,
+  "poisson": 0.3,
+  "plane": "strain",
+  "quarter_point": true,
+  "contour_fractions": [
+    0.06,
+    0.09,
+    0.12,
+    0.15,
+    0.18,
+    0.22,
+    0.27,
+    0.33
+  ],
+  "levels": [
+    {
+      "level": "coarse",
+      "name": "coarse",
+      "n_sectors": 24,
+      "first_ring": 0.08,
+      "growth": 1.6,
+      "cases": [
+        {
+          "a_over_w": 0.3,
+          "crack_length_m": 0.03,
+          "shape_factor_tada": 1.6599190000000006,
+          "k_reference_pa_sqrt_m": 50959183.37183483,
+          "n_nodes": 823,
+          "n_elements": 390,
+          "n_stations": 9,
+          "contours": [
+            {
+              "requested_fraction": 0.06,
+              "station_fraction": 0.08,
+              "j_j_m2": 10775.889852970495,
+              "k_pa_sqrt_m": 49867261.928282775,
+              "shape_factor": 1.6243512959919875,
+              "rel_error_vs_tada": -0.021427373268221563
+            },
+            {
+              "requested_fraction": 0.09,
+              "station_fraction": 0.08,
+              "j_j_m2": 10775.889852970495,
+              "k_pa_sqrt_m": 49867261.928282775,
+              "shape_factor": 1.6243512959919875,
+              "rel_error_vs_tada": -0.021427373268221563
+            },
+            {
+              "requested_fraction": 0.12,
+              "station_fraction": 0.128,
+              "j_j_m2": 10812.5375078897,
+              "k_pa_sqrt_m": 49951986.5807073,
+              "shape_factor": 1.627111074524969,
+              "rel_error_vs_tada": -0.0197647749528932
+            },
+            {
+              "requested_fraction": 0.15,
+              "station_fraction": 0.128,
+              "j_j_m2": 10812.5375078897,
+              "k_pa_sqrt_m": 49951986.5807073,
+              "shape_factor": 1.627111074524969,
+              "rel_error_vs_tada": -0.0197647749528932
+            },
+            {
+              "requested_fraction": 0.18,
+              "station_fraction": 0.2048,
+              "j_j_m2": 10778.536721404867,
+              "k_pa_sqrt_m": 49873385.96903671,
+              "shape_factor": 1.6245507774383454,
+              "rel_error_vs_tada": -0.02130719785824192
+            },
+            {
+              "requested_fraction": 0.22,
+              "station_fraction": 0.2048,
+              "j_j_m2": 10778.536721404867,
+              "k_pa_sqrt_m": 49873385.96903671,
+              "shape_factor": 1.6245507774383454,
+              "rel_error_vs_tada": -0.02130719785824192
+            },
+            {
+              "requested_fraction": 0.27,
+              "station_fraction": 0.32768,
+              "j_j_m2": 10798.593532885594,
+              "k_pa_sqrt_m": 49919766.85616229,
+              "shape_factor": 1.626061565301935,
+              "rel_error_vs_tada": -0.020397040276101213
+            },
+            {
+              "requested_fraction": 0.33,
+              "station_fraction": 0.32768,
+              "j_j_m2": 10798.593532885594,
+              "k_pa_sqrt_m": 49919766.85616229,
+              "shape_factor": 1.626061565301935,
+              "rel_error_vs_tada": -0.020397040276101213
+            }
+          ],
+          "reaction_ratio": 1.0000000000001181
+        }
+      ]
+    },
+    {
+      "level": "medium",
+      "name": "medium",
+      "n_sectors": 48,
+      "first_ring": 0.05,
+      "growth": 1.45,
+      "cases": [
+        {
+          "a_over_w": 0.3,
+          "crack_length_m": 0.03,
+          "shape_factor_tada": 1.6599190000000006,
+          "k_reference_pa_sqrt_m": 50959183.37183483,
+          "n_nodes": 2173,
+          "n_elements": 1050,
+          "n_stations": 12,
+          "contours": [
+            {
+              "requested_fraction": 0.06,
+              "station_fraction": 0.05,
+              "j_j_m2": 10966.366302118822,
+              "k_pa_sqrt_m": 50306062.41670654,
+              "shape_factor": 1.6386445640498595,
+              "rel_error_vs_tada": -0.012816550657074896
+            },
+            {
+              "requested_fraction": 0.09,
+              "station_fraction": 0.105125,
+              "j_j_m2": 10965.175977270124,
+              "k_pa_sqrt_m": 50303332.151298635,
+              "shape_factor": 1.6385556297474286,
+              "rel_error_vs_tada": -0.012870128152380953
+            },
+            {
+              "requested_fraction": 0.12,
+              "station_fraction": 0.105125,
+              "j_j_m2": 10965.175977270124,
+              "k_pa_sqrt_m": 50303332.151298635,
+              "shape_factor": 1.6385556297474286,
+              "rel_error_vs_tada": -0.012870128152380953
+            },
+            {
+              "requested_fraction": 0.15,
+              "station_fraction": 0.15243125,
+              "j_j_m2": 10952.2565419303,
+              "k_pa_sqrt_m": 50273689.116361156,
+              "shape_factor": 1.63759005232537,
+              "rel_error_vs_tada": -0.013451829682430633
+            },
+            {
+              "requested_fraction": 0.18,
+              "station_fraction": 0.15243125,
+              "j_j_m2": 10952.2565419303,
+              "k_pa_sqrt_m": 50273689.116361156,
+              "shape_factor": 1.63759005232537,
+              "rel_error_vs_tada": -0.013451829682430633
+            },
+            {
+              "requested_fraction": 0.22,
+              "station_fraction": 0.2210253125,
+              "j_j_m2": 10925.032425826616,
+              "k_pa_sqrt_m": 50211167.37377166,
+              "shape_factor": 1.6355535002935182,
+              "rel_error_vs_tada": -0.01467872812256639
+            },
+            {
+              "requested_fraction": 0.27,
+              "station_fraction": 0.2210253125,
+              "j_j_m2": 10925.032425826616,
+              "k_pa_sqrt_m": 50211167.37377166,
+              "shape_factor": 1.6355535002935182,
+              "rel_error_vs_tada": -0.01467872812256639
+            },
+            {
+              "requested_fraction": 0.33,
+              "station_fraction": 0.320486703125,
+              "j_j_m2": 10923.073684528925,
+              "k_pa_sqrt_m": 50206666.009747826,
+              "shape_factor": 1.635406875108916,
+              "rel_error_vs_tada": -0.014767060857237377
+            }
+          ],
+          "reaction_ratio": 0.9999999999999756
+        }
+      ]
+    },
+    {
+      "level": "fine",
+      "name": "fine",
+      "n_sectors": 96,
+      "first_ring": 0.03,
+      "growth": 1.32,
+      "cases": [
+        {
+          "a_over_w": 0.3,
+          "crack_length_m": 0.03,
+          "shape_factor_tada": 1.6599190000000006,
+          "k_reference_pa_sqrt_m": 50959183.37183483,
+          "n_nodes": 5813,
+          "n_elements": 2842,
+          "n_stations": 16,
+          "contours": [
+            {
+              "requested_fraction": 0.06,
+              "station_fraction": 0.052272000000000006,
+              "j_j_m2": 11097.472937306235,
+              "k_pa_sqrt_m": 50605882.00223879,
+              "shape_factor": 1.6484107375571093,
+              "rel_error_vs_tada": -0.006933026516890999
+            },
+            {
+              "requested_fraction": 0.09,
+              "station_fraction": 0.09107873280000002,
+              "j_j_m2": 11095.110754121093,
+              "k_pa_sqrt_m": 50600495.78836105,
+              "shape_factor": 1.6482352897150887,
+              "rel_error_vs_tada": -0.007038723145473836
+            },
+            {
+              "requested_fraction": 0.12,
+              "station_fraction": 0.12022392729600004,
+              "j_j_m2": 11093.3178650938,
+              "k_pa_sqrt_m": 50596407.28753635,
+              "shape_factor": 1.6481021129302311,
+              "rel_error_vs_tada": -0.007118954039184684
+            },
+            {
+              "requested_fraction": 0.15,
+              "station_fraction": 0.15869558403072007,
+              "j_j_m2": 11087.59422362234,
+              "k_pa_sqrt_m": 50583352.89466974,
+              "shape_factor": 1.6476768856538315,
+              "rel_error_vs_tada": -0.007375127549096671
+            },
+            {
+              "requested_fraction": 0.18,
+              "station_fraction": 0.15869558403072007,
+              "j_j_m2": 11087.59422362234,
+              "k_pa_sqrt_m": 50583352.89466974,
+              "shape_factor": 1.6476768856538315,
+              "rel_error_vs_tada": -0.007375127549096671
+            },
+            {
+              "requested_fraction": 0.22,
+              "station_fraction": 0.2094781709205505,
+              "j_j_m2": 11074.49168448695,
+              "k_pa_sqrt_m": 50553456.13495971,
+              "shape_factor": 1.646703043527693,
+              "rel_error_vs_tada": -0.00796180805949419
+            },
+            {
+              "requested_fraction": 0.27,
+              "station_fraction": 0.27651118561512666,
+              "j_j_m2": 11061.152452409955,
+              "k_pa_sqrt_m": 50523001.126851484,
+              "shape_factor": 1.6457110172969127,
+              "rel_error_vs_tada": -0.008559443384338523
+            },
+            {
+              "requested_fraction": 0.33,
+              "station_fraction": 0.3649947650119672,
+              "j_j_m2": 11061.494440144463,
+              "k_pa_sqrt_m": 50523782.153657705,
+              "shape_factor": 1.6457364580742049,
+              "rel_error_vs_tada": -0.008544116867025215
+            }
+          ],
+          "reaction_ratio": 0.9999999999997732
+        }
+      ]
+    }
+  ],
+  "note": "plane strain, a/W = 0.3, quarter-point singular ring"
+}
