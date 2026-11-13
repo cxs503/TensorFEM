@@ -151,3 +151,110 @@ def test_path_follower_load_matches_the_linear_tangent():
     c_follower = r.stats["reach_delta"] / r.peak["load"]
     assert r.peak["max_damage"] == pytest.approx(0.0, abs=1e-12)
     assert c_follower / _linear_compliance(g) == pytest.approx(1.0, rel=0.02)
+
+
+# --------------------------------------------------------------------------- #
+# Defects 5-7 (m17614): clamp face, penalty-conditioned Newton, admissible state
+# --------------------------------------------------------------------------- #
+def _bench_law() -> BKCohesive3DLaw:
+    """The specimen law of ``benchmarks/cohesive3d_dcb_3d.py`` (G_Ic = 300 J/m^2)."""
+    return BKCohesive3DLaw(2.4e14, 1.0e14, 120.0e6, 80.0e6, 300.0, 800.0, 2.2)
+
+
+def _narrow() -> DCBGeometry:
+    return DCBGeometry(
+        length=60e-3,
+        width=3e-3,
+        arm_thickness=3e-3,
+        initial_crack=30e-3,
+        nx=100,
+        ny=1,
+        nz=3,
+    )
+
+
+def test_clamp_face_is_fully_fixed():
+    """Defect 5: the clamp multiplied the *mask* by 3 instead of the node index.
+
+    ``3 * clamp.numpy()[:, None]`` is ``3`` for every clamped node and ``0``
+    otherwise (``3 * True == 3``, ``3 * False == 0``), so the fixed set was
+    ``{0, 1, 2, 3, 4, 5}`` -- the six dofs of the first two nodes -- instead of
+    the 48 dofs of the 16-node clamp face.  The specimen was held by two nodes,
+    which produced a spurious near-null mode (``|lambda|_min = 4.7e-11`` against
+    ``|lambda|_max = 2.3e8``) along which Newton drifted even with a converged
+    residual (measured ``max|u|`` growing from 1e-4 m to 1.5 m in six steps).
+    """
+    m = build_dcb_model(_geometry(), _law())
+    clamp_nodes = np.flatnonzero((m.nodes[:, 0] == 0.0).numpy())
+    assert clamp_nodes.size == 2 * 2 * 3  # both arms, ny+1 columns, nz+1 layers
+    expected = (3 * clamp_nodes[:, None] + np.arange(3)).reshape(-1)
+    assert np.all(np.isin(expected, m.fixed_dofs))
+    # every clamped dof is constrained: no free dof on the clamp face
+    assert not np.intersect1d(expected, m.free_dofs).size
+    # ... and the clamp is not just the first two nodes (the pre-fix signature)
+    assert not np.array_equal(
+        np.sort(m.fixed_dofs)[:6], np.arange(6)
+    ) or m.fixed_dofs.size > 6
+
+
+def test_tangent_has_no_spurious_near_null_mode():
+    """The clamped-free assembly must not be numerically singular.
+
+    With the pre-fix clamp the smallest eigenvalue of the free-free tangent was
+    ``4.7e-11`` (condition number ``5e18``): a *linear* solve survived it, but a
+    Newton path follower drifted along the mode.  The threshold ``10`` is two
+    orders above the measured ``4.7e-11`` and two below the physical smallest
+    eigenvalue of the *test* mesh (``702``; the reference specimen gives
+    ``37.5``), so it separates the two regimes without pinning a mesh-dependent
+    value.
+    """
+    m = build_dcb_model(_geometry(), _law())
+    k_solid = m.solid_stiffness()
+    _, k_coh, _, _ = m.interface_response(np.zeros(m.n_dofs), None)
+    free = m.free_dofs
+    a = (k_solid + k_coh)[free][:, free].tocsc()
+    smallest = spla.eigsh(a, k=1, sigma=0.0, which="LM", return_eigenvectors=False)
+    assert float(np.min(np.abs(smallest))) > 10.0
+
+
+def test_follower_crosses_cohesive_onset():
+    """Defect 6: unconditional Newton + an unreachable absolute tolerance froze
+    the follower at ``delta = 9e-6 m`` (6 % of the peak opening) with
+    ``converged_all = False`` and zero damage.
+
+    The follower must now march *through* the cohesive onset (damage appears in
+    the ligament) with a converged, energy-consistent path.  On the reference
+    specimen the onset is at ``delta ~ 5.2e-4 m``, so a 5.5e-4 m window is
+    enough -- and cheap.
+    """
+    g = _narrow()
+    m = build_dcb_model(g, _bench_law())
+    delta_max = 5.5e-4
+    r = solve_dcb(m, delta_max=delta_max, n_steps=22, tol=1e-8)
+    assert r.stats["converged_all"] is True
+    assert r.stats["reach_delta"] == pytest.approx(delta_max, rel=1e-9)
+    assert r.peak["max_damage"] > 0.0  # the cohesive law really is active
+    assert abs(r.stats["energy_balance_rel"]) < 1e-3
+    # the load must still be on the rising branch and of the right order
+    assert 20.0 < r.peak["load"] < 30.0
+
+
+def test_follower_never_commits_an_inadmissible_state():
+    """Defect 7: a relative equilibrium tolerance can be met by a diverged state.
+
+    Before the admissibility screen, ``solve_dcb(delta_max=1e-3)`` committed a
+    state with ``max|u| = 1 m`` and reported ``final_strain_energy = -13.5 J``
+    (negative for a positive-semidefinite ``K_solid``) plus a 3000x energy
+    imbalance.  Every committed state must now be bounded and positive-energy.
+    """
+    g = _narrow()
+    m = build_dcb_model(g, _bench_law())
+    delta_max = 6.0e-4
+    r = solve_dcb(m, delta_max=delta_max, n_steps=24, tol=1e-8)
+    assert np.max(np.abs(r.displacement)) <= 1.0e2 * delta_max
+    for c in r.curve:
+        assert np.isfinite(c["strain_energy"])
+        assert c["strain_energy"] >= 0.0
+        assert np.isfinite(c["load"])
+    assert r.stats["final_strain_energy"] >= 0.0
+    assert r.stats["final_external_work"] > 0.0
