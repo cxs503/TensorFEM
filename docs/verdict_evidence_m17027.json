@@ -1,0 +1,26 @@
+{
+ "impl_files": [
+  "src/tensorfem/edge_crack_sent.py:119 (tada_sent_shape_factor, Tada 3rd ed. fit, alpha<=0.6, H/W>=1, +-0.5%)",
+  "src/tensorfem/edge_crack_sent.py:584 (j_integral_subring, Rice J contour integral, 3-pt Gauss, K=sqrt(J*E'))",
+  "benchmarks/verified/fem_sent_j_integral/run.py:218 (run_plane_strain stage, a/W=0.20/0.30/0.50 ladder)"
+ ],
+ "entry": "benchmarks/verified/fem_sent_j_integral/run.py (main, --stage plane_strain/assemble)",
+ "run_artifacts": [
+  "benchmarks/verified/fem_sent_j_integral/result.json (38464 B, generated 2026-11-13T00:36:39Z)",
+  "benchmarks/verified/fem_sent_j_integral/gates_verified.json (13 gates passed:true)",
+  "benchmarks/verified/fem_sent_j_integral/_cache/plane_strain.json",
+  "benchmarks/verified/fem_sent_j_integral/sent_plane_strain_{shape_factor,convergence,path_independence}.png (+3 plane-stress figs)"
+ ],
+ "tests": "tests/test_sent_edge_crack_j_integral_plane_strain.py (9 tests; audit re-run 2026-11-13: 9 passed, 48.89s, incl. medium-mesh a/W=0.3 plane-strain <3% acceptance test)",
+ "integration_callers": "src/tensorfem/edge_crack_sent.py (tensorfem package module); run.py imports tensorfem.elasticity_matrix + j_integral_subring",
+ "benchmark": "GAP: tensor_benchmark_cases has NO row for anchor_slug=CASE-FEM-JINTEGRAL-EDGE-CRACK (0 rows; full-table ILIKE sweep). Acceptance judged against feature_ledger CASE-FEM-JINTEGRAL-EDGE-CRACK (tolerance <5%): got F_FEM=1.647677 vs F_Tada=1.659919 at a/W=0.3 plane strain, rel_error=-0.7375% (PASS <5%, PASS <3% platform gate); a/W=0.20 -1.046%, a/W=0.50 -0.837% (PASS). Tada ref independently recomputed by auditor: F(0.2)=1.370664, F(0.3)=1.659919, F(0.5)=2.826375 exact match.",
+ "repro_cmd": "cd <TensorFEM> && PYTHONPATH=src python benchmarks/verified/fem_sent_j_integral/run.py --stage plane_strain && python -m pytest tests/test_sent_edge_crack_j_integral_plane_strain.py -q",
+ "external_anchor": "Tada, Paris & Irwin, The Stress Intensity Factor Handbook, 3rd ed. (2000), DOI:10.1115/1.3601206; Rice (1968) J. Appl. Mech. 35:379",
+ "gaps": [
+  "A: tensor_benchmark_cases row missing for the anchor (registration defect, not numerical)",
+  "B: tensor_reports has no report for mission_id=17027 (report_owed=t); six-section report unverifiable for the original mission",
+  "height/field stages honestly recorded not_run in result.json (CG non-convergence at H/W=3.0)"
+ ],
+ "commit": "3e6577d2bc869b51a57150201836944ac620d534 (12 files, +2586/-28)",
+ "level_rationale": "L4: complete benchmark case + error analysis (GCI, path independence 0.16-0.43%, 3-level convergence ladder, non-singular control) + reproducible (9/9 green on audit re-run). Gaps A/B are ledger/report registration debts, not functional inflation."
+}
