@@ -1,0 +1,558 @@
+{
+ "benchmark": "fem_hertz_contact_loadcontrol_far_field",
+ "case_pool": "FEM-HERTZ-CONTACT (id 104)",
+ "criteria": {
+  "far_field_indentation_pct": 0.5,
+  "depth_sensitivity_pp": 0.1,
+  "near_field_invariance_pp": 0.05,
+  "far_field_selfconsistency": 0.0001,
+  "case_pool_pct": 3.0,
+  "penetration_over_delta_max": 1e-05,
+  "load_residual_max": 1e-09,
+  "reference": "Hertz 1882 J. reine angew. Math. 92:156; Johnson 1985 Contact Mechanics 4.2 DOI:10.1017/cbo9781139171731"
+ },
+ "depths": [
+  24.0,
+  96.0
+ ],
+ "ratios": [
+  0.05,
+  0.1
+ ],
+ "surface_spacings": [
+  0.015
+ ],
+ "rows": [
+  {
+   "a_over_R": 0.05,
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 24.0,
+   "far_field": "zero",
+   "outer_vertical": false,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "wall_s": 23.63821244239807,
+   "load_residual": 6.84541191731114e-13,
+   "penetration_over_delta": 1.9069322977679992e-07,
+   "equilibrium_residual_rel": 2.535078024650878e-06,
+   "far_field_passes": 0,
+   "far_field_history": [],
+   "far_field_selfconsistent": true,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "numeric": {
+    "contact_radius_linear": 0.49731593724113315,
+    "contact_radius_fit": 0.4975610178312656,
+    "indentation": 0.024275060736100744,
+    "peak_pressure_consistent": 3518.5652177010325
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.5368125517733691,
+    "contact_radius_fit": -0.48779643374687875,
+    "indentation": -2.89975705559703,
+    "peak_pressure_consistent": 0.5904776158658143
+   }
+  },
+  {
+   "a_over_R": 0.05,
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 24.0,
+   "far_field": "boussinesq",
+   "outer_vertical": true,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "wall_s": 52.20962977409363,
+   "load_residual": 4.9658410716801886e-15,
+   "penetration_over_delta": 1.8621080302066625e-07,
+   "equilibrium_residual_rel": 2.540940157941631e-06,
+   "far_field_passes": 2,
+   "far_field_history": [
+    {
+     "pass": 1,
+     "relative_update": 1.0,
+     "max_abs_displacement": 0.0007574027589676509,
+     "indentation": 0.024270007438222663,
+     "reaction": 1831.501831503093
+    },
+    {
+     "pass": 2,
+     "relative_update": 1.494494310655215e-08,
+     "max_abs_displacement": 0.0007574027476483099,
+     "indentation": 0.024922685820872925,
+     "reaction": 1831.5018315018224
+    }
+   ],
+   "far_field_selfconsistent": true,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "numeric": {
+    "contact_radius_linear": 0.49734395302574425,
+    "contact_radius_fit": 0.4975685022794968,
+    "indentation": 0.024922685820872925,
+    "peak_pressure_consistent": 3518.4729527379604
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.5312093948511509,
+    "contact_radius_fit": -0.48629954410064347,
+    "indentation": -0.30925671650829933,
+    "peak_pressure_consistent": 0.5878398996012724
+   }
+  },
+  {
+   "a_over_R": 0.05,
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 96.0,
+   "far_field": "zero",
+   "outer_vertical": false,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "wall_s": 26.56531047821045,
+   "load_residual": 1.8125319911632686e-14,
+   "penetration_over_delta": 1.8657146598907233e-07,
+   "equilibrium_residual_rel": 2.528518151942718e-06,
+   "far_field_passes": 0,
+   "far_field_history": [],
+   "far_field_selfconsistent": true,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "numeric": {
+    "contact_radius_linear": 0.49734211584660426,
+    "contact_radius_fit": 0.49756802551054535,
+    "indentation": 0.024747318055551346,
+    "peak_pressure_consistent": 3518.47883788306
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.531576830679148,
+    "contact_radius_fit": -0.4863948978909294,
+    "indentation": -1.0107277777946178,
+    "peak_pressure_consistent": 0.5880081470316156
+   }
+  },
+  {
+   "a_over_R": 0.05,
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 96.0,
+   "far_field": "boussinesq",
+   "outer_vertical": true,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "wall_s": 51.365225076675415,
+   "load_residual": 4.096818884136155e-15,
+   "penetration_over_delta": 1.8633610091588712e-07,
+   "equilibrium_residual_rel": 2.541220819451663e-06,
+   "far_field_passes": 2,
+   "far_field_history": [
+    {
+     "pass": 1,
+     "relative_update": 1.0,
+     "max_abs_displacement": 0.00018946269516241114,
+     "indentation": 0.024746121086957975,
+     "reaction": 1831.5018315018751
+    },
+    {
+     "pass": 2,
+     "relative_update": 1.4622014554086103e-11,
+     "max_abs_displacement": 0.00018946269515964095,
+     "indentation": 0.024909347277511682,
+     "reaction": 1831.501831501839
+    }
+   ],
+   "far_field_selfconsistent": true,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "numeric": {
+    "contact_radius_linear": 0.4973426125210299,
+    "contact_radius_fit": 0.49756814101591845,
+    "indentation": 0.024909347277511682,
+    "peak_pressure_consistent": 3518.477402638784
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.5314774957940194,
+    "contact_radius_fit": -0.4863717968163095,
+    "indentation": -0.3626108899532743,
+    "peak_pressure_consistent": 0.5879671155604616
+   }
+  },
+  {
+   "a_over_R": 0.1,
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 24.0,
+   "far_field": "zero",
+   "outer_vertical": false,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "wall_s": 28.94568419456482,
+   "load_residual": 3.0172450351528825e-12,
+   "penetration_over_delta": 1.2692375358414052e-05,
+   "equilibrium_residual_rel": 4.031355361898405e-05,
+   "far_field_passes": 0,
+   "far_field_history": [],
+   "far_field_selfconsistent": true,
+   "analytic": {
+    "contact_radius": 1.0,
+    "indentation": 0.1,
+    "peak_pressure": 6995.821674369026
+   },
+   "numeric": {
+    "contact_radius_linear": 0.996199503261079,
+    "contact_radius_fit": 0.9950970891550475,
+    "indentation": 0.09710003757935788,
+    "peak_pressure_consistent": 7037.116358332095
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.3800496738921022,
+    "contact_radius_fit": -0.4902910844952535,
+    "indentation": -2.8999624206421215,
+    "peak_pressure_consistent": 0.5902763947566392
+   }
+  },
+  {
+   "a_over_R": 0.1,
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 24.0,
+   "far_field": "boussinesq",
+   "outer_vertical": true,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "wall_s": 54.6473183631897,
+   "load_residual": 2.9795046430081128e-15,
+   "penetration_over_delta": 1.2333683890037573e-05,
+   "equilibrium_residual_rel": 4.021097270020593e-05,
+   "far_field_passes": 2,
+   "far_field_history": [
+    {
+     "pass": 1,
+     "relative_update": 1.0,
+     "max_abs_displacement": 0.0030296110156965025,
+     "indentation": 0.09707982448669224,
+     "reaction": 14652.014652059937
+    },
+    {
+     "pass": 2,
+     "relative_update": 1.4929412001540567e-08,
+     "max_abs_displacement": 0.003029610970466192,
+     "indentation": 0.09969053856101945,
+     "reaction": 14652.014652014695
+    }
+   ],
+   "far_field_selfconsistent": true,
+   "analytic": {
+    "contact_radius": 1.0,
+    "indentation": 0.1,
+    "peak_pressure": 6995.821674369026
+   },
+   "numeric": {
+    "contact_radius_linear": 0.9962570543288001,
+    "contact_radius_fit": 0.995112173747226,
+    "indentation": 0.09969053856101945,
+    "peak_pressure_consistent": 7036.931872905073
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.37429456711999265,
+    "contact_radius_fit": -0.48878262527739524,
+    "indentation": -0.3094614389805517,
+    "peak_pressure_consistent": 0.587639314573507
+   }
+  },
+  {
+   "a_over_R": 0.1,
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 96.0,
+   "far_field": "zero",
+   "outer_vertical": false,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "wall_s": 25.6316556930542,
+   "load_residual": 3.972672857344151e-15,
+   "penetration_over_delta": 1.2411112072186574e-05,
+   "equilibrium_residual_rel": 4.01714481660946e-05,
+   "far_field_passes": 0,
+   "far_field_history": [],
+   "far_field_selfconsistent": true,
+   "analytic": {
+    "contact_radius": 1.0,
+    "indentation": 0.1,
+    "peak_pressure": 6995.821674369026
+   },
+   "numeric": {
+    "contact_radius_linear": 0.9962515135358325,
+    "contact_radius_fit": 0.9951112422041805,
+    "indentation": 0.0989890677811604,
+    "peak_pressure_consistent": 7036.943665476495
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.37484864641674775,
+    "contact_radius_fit": -0.4888757795819543,
+    "indentation": -1.0109322188395997,
+    "peak_pressure_consistent": 0.5878078804971487
+   }
+  },
+  {
+   "a_over_R": 0.1,
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 96.0,
+   "far_field": "boussinesq",
+   "outer_vertical": true,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "wall_s": 51.00498700141907,
+   "load_residual": 1.3656062947120518e-15,
+   "penetration_over_delta": 1.234449078478633e-05,
+   "equilibrium_residual_rel": 4.0221753976621155e-05,
+   "far_field_passes": 2,
+   "far_field_history": [
+    {
+     "pass": 1,
+     "relative_update": 1.0,
+     "max_abs_displacement": 0.0007578507803346617,
+     "indentation": 0.09898427990821536,
+     "reaction": 14652.014652014706
+    },
+    {
+     "pass": 2,
+     "relative_update": 1.5209716340022558e-11,
+     "max_abs_displacement": 0.0007578507803231354,
+     "indentation": 0.0996371843729945,
+     "reaction": 14652.014652014672
+    }
+   ],
+   "far_field_selfconsistent": true,
+   "analytic": {
+    "contact_radius": 1.0,
+    "indentation": 0.1,
+    "peak_pressure": 6995.821674369026
+   },
+   "numeric": {
+    "contact_radius_linear": 0.9962545314585065,
+    "contact_radius_fit": 0.9951114426466009,
+    "indentation": 0.0996371843729945,
+    "peak_pressure_consistent": 7036.940774739649
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.3745468541493491,
+    "contact_radius_fit": -0.48885573533991034,
+    "indentation": -0.3628156270055083,
+    "peak_pressure_consistent": 0.5877665595918957
+   }
+  }
+ ],
+ "gates": [
+  {
+   "id": "far_field_indentation_aR005",
+   "kind": "gate",
+   "quantity": "|delta_FE/delta_Hertz - 1|, a/R = 0.05, h/a = 0.015, D = 96a, absorbing Boussinesq boundary",
+   "reference": "delta = a^2/R (Hertz 1882)",
+   "value": 0.3626108899532743,
+   "threshold": 0.5,
+   "operator": "<=",
+   "passed": true,
+   "note": "clamped control on the same mesh: -1.0107% -> absorbing -0.3626% (improvement 2.79x)"
+  },
+  {
+   "id": "far_field_contact_radius_aR005",
+   "kind": "gate",
+   "quantity": "|a_FE/a_Hertz - 1|, a/R = 0.05, h/a = 0.015, D = 96a, absorbing boundary",
+   "reference": "a = (3 P R/(4 E*))^(1/3)",
+   "value": 0.5314774957940194,
+   "threshold": 3.0,
+   "operator": "<=",
+   "passed": true,
+   "note": "case-pool mandate"
+  },
+  {
+   "id": "far_field_depth_sensitivity_aR005",
+   "kind": "gate",
+   "quantity": "|delta_err(24a) - delta_err(96a)| in pp, a/R = 0.05, absorbing boundary",
+   "reference": "the answer must not depend on where the half-space was cut",
+   "value": 0.05335417344497495,
+   "threshold": 0.1,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "near_field_invariance_aR005",
+   "kind": "gate",
+   "quantity": "|a_err(boussinesq) - a_err(zero)| in pp, a/R = 0.05, D = 96a",
+   "reference": "a is a near-field quantity: changing the far field must not move it",
+   "value": 9.933488512858801e-05,
+   "threshold": 0.05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "far_field_selfconsistency_aR005",
+   "kind": "gate",
+   "quantity": "last relative update of the boundary/traction fixed point",
+   "reference": "boundary data reproduces itself to 1e-4",
+   "value": 1.4622014554086103e-11,
+   "threshold": 0.0001,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR005_d24",
+   "kind": "gate",
+   "quantity": "max penetration / delta, a/R = 0.05, 24a",
+   "reference": "constraint quality",
+   "value": 1.8621080302066625e-07,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR005_d24",
+   "kind": "gate",
+   "quantity": "|P_fe/P - 1|, a/R = 0.05, 24a",
+   "reference": "load control",
+   "value": 4.9658410716801886e-15,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR005_d96",
+   "kind": "gate",
+   "quantity": "max penetration / delta, a/R = 0.05, 96a",
+   "reference": "constraint quality",
+   "value": 1.8633610091588712e-07,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR005_d96",
+   "kind": "gate",
+   "quantity": "|P_fe/P - 1|, a/R = 0.05, 96a",
+   "reference": "load control",
+   "value": 4.096818884136155e-15,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "far_field_indentation_aR010",
+   "kind": "gate",
+   "quantity": "|delta_FE/delta_Hertz - 1|, a/R = 0.1, h/a = 0.015, D = 96a, absorbing Boussinesq boundary",
+   "reference": "delta = a^2/R (Hertz 1882)",
+   "value": 0.3628156270055083,
+   "threshold": 0.5,
+   "operator": "<=",
+   "passed": true,
+   "note": "clamped control on the same mesh: -1.0109% -> absorbing -0.3628% (improvement 2.79x)"
+  },
+  {
+   "id": "far_field_contact_radius_aR010",
+   "kind": "gate",
+   "quantity": "|a_FE/a_Hertz - 1|, a/R = 0.1, h/a = 0.015, D = 96a, absorbing boundary",
+   "reference": "a = (3 P R/(4 E*))^(1/3)",
+   "value": 0.3745468541493491,
+   "threshold": 3.0,
+   "operator": "<=",
+   "passed": true,
+   "note": "case-pool mandate"
+  },
+  {
+   "id": "far_field_depth_sensitivity_aR010",
+   "kind": "gate",
+   "quantity": "|delta_err(24a) - delta_err(96a)| in pp, a/R = 0.1, absorbing boundary",
+   "reference": "the answer must not depend on where the half-space was cut",
+   "value": 0.05335418802495662,
+   "threshold": 0.1,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "near_field_invariance_aR010",
+   "kind": "gate",
+   "quantity": "|a_err(boussinesq) - a_err(zero)| in pp, a/R = 0.1, D = 96a",
+   "reference": "a is a near-field quantity: changing the far field must not move it",
+   "value": 0.0003017922673986817,
+   "threshold": 0.05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "far_field_selfconsistency_aR010",
+   "kind": "gate",
+   "quantity": "last relative update of the boundary/traction fixed point",
+   "reference": "boundary data reproduces itself to 1e-4",
+   "value": 1.5209716340022558e-11,
+   "threshold": 0.0001,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR010_d24",
+   "kind": "gate",
+   "quantity": "|P_fe/P - 1|, a/R = 0.1, 24a",
+   "reference": "load control",
+   "value": 2.9795046430081128e-15,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR010_d96",
+   "kind": "gate",
+   "quantity": "|P_fe/P - 1|, a/R = 0.1, 96a",
+   "reference": "load control",
+   "value": 1.3656062947120518e-15,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "clamped_depth_sensitivity_aR005",
+   "kind": "control",
+   "quantity": "|delta_err(24a) - delta_err(96a)| in pp, a/R = 0.05, clamped",
+   "reference": "the defect the absorbing boundary removes (reproducibility row)",
+   "value": 1.889029277802412,
+   "threshold": 0.1,
+   "operator": "<=",
+   "passed": null,
+   "note": "expected to exceed the threshold; not a pass condition"
+  },
+  {
+   "id": "clamped_depth_sensitivity_aR010",
+   "kind": "control",
+   "quantity": "|delta_err(24a) - delta_err(96a)| in pp, a/R = 0.1, clamped",
+   "reference": "the defect the absorbing boundary removes (reproducibility row)",
+   "value": 1.8890302018025218,
+   "threshold": 0.1,
+   "operator": "<=",
+   "passed": null,
+   "note": "expected to exceed the threshold; not a pass condition"
+  }
+ ],
+ "verdict": {
+  "passed": true,
+  "failed_gates": [],
+  "gate_count": 16,
+  "control_count": 2
+ },
+ "figure": "hertz_far_field_bc.png"
+}
