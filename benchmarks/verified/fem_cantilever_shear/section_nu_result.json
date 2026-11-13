@@ -1,0 +1,939 @@
+{
+  "generated_at": "2026-11-13T09:30:07+00:00",
+  "mission": "CASE-CANTILEVER-TIP",
+  "schema": "tensorfem.verified-section-nu.v1",
+  "criteria": {
+    "case_pool_tolerance": 0.03,
+    "equilibrium_max": 1e-05,
+    "mesh_sensitivity_max": 0.01,
+    "section_probe_max": 0.005,
+    "nu_scaling_max": 0.15,
+    "slenderness": 4.0,
+    "nu_ladder": [
+      0.0,
+      0.15,
+      0.3,
+      0.45
+    ],
+    "width_ladder": [
+      1.0,
+      2.0,
+      4.0
+    ],
+    "mesh_levels": [
+      [
+        20,
+        2,
+        2
+      ],
+      [
+        24,
+        2,
+        3
+      ]
+    ]
+  },
+  "oracle_derivation": {
+    "kappa_exact_from_2d_field": 0.6666666666666666,
+    "kappa_reference_5_6": 0.8333333333333334,
+    "kappa_cowper_fn": "10 (1+nu)/(12+11 nu)",
+    "source": "Timoshenko & Goodier, Theory of Elasticity 3rd ed. Art. 24; Cowper, J. Appl. Mech. 33 (1966) 335"
+  },
+  "studies": {
+    "slenderness": 4.0,
+    "length_m": 0.04,
+    "nu_study": [
+      {
+        "poisson": 0.0,
+        "oracles": {
+          "delta_eb_m": 6.400000000000001e-07,
+          "delta_ti_5_6_m": 6.640000000000001e-07,
+          "delta_ti_2_3_m": 6.700000000000001e-07,
+          "delta_ti_cowper_m": 6.640000000000001e-07,
+          "delta_exact_plane_stress_m": 6.700000000000001e-07,
+          "delta_airy_module_m": 6.699999778717756e-07,
+          "delta_plane_strain_strip_m": 6.7e-07,
+          "delta_plane_stress_strip_m": 6.7e-07,
+          "kappa_cowper": 0.8333333333333334,
+          "oracle_gap_ti56_over_eb": 0.0375,
+          "oracle_gap_ti23_over_eb": 0.04687500000000004
+        },
+        "levels": [
+          {
+            "mesh": {
+              "axial": 20,
+              "cross_y": 2,
+              "cross_z": 2
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.0,
+            "root_condition": "clamp_all",
+            "nodes": 621,
+            "dofs": 1863,
+            "tip_nodes": 21,
+            "tip_deflection_m": 6.65129768296912e-07,
+            "reaction_sum_z_N": 5.000000000004105,
+            "reaction_moment_y_Nm": -0.2000000000000947,
+            "force_residual": 8.210321311707957e-13,
+            "moment_residual": 4.735101200026293e-13,
+            "seconds": 7.677,
+            "error_vs_eb": 0.03926526296392485,
+            "error_vs_ti_5_6": 0.0017014582784817837,
+            "error_vs_ti_2_3": -0.007269002541922569,
+            "error_vs_ti_cowper": 0.0017014582784817837,
+            "error_vs_exact_plane_stress": -0.007269002541922569,
+            "shear_share_vs_5_6": 1.047073679037996,
+            "kappa_apparent_orientation_only": 0.7958688581485139
+          },
+          {
+            "mesh": {
+              "axial": 24,
+              "cross_y": 2,
+              "cross_z": 3
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.0,
+            "root_condition": "clamp_all",
+            "nodes": 1013,
+            "dofs": 3039,
+            "tip_nodes": 29,
+            "tip_deflection_m": 6.65228532012547e-07,
+            "reaction_sum_z_N": 5.000000000002057,
+            "reaction_moment_y_Nm": -0.20000000000003057,
+            "force_residual": 4.11404244005098e-13,
+            "moment_residual": 1.5279444376403717e-13,
+            "seconds": 18.055,
+            "error_vs_eb": 0.03941958126960457,
+            "error_vs_ti_5_6": 0.0018501988140766975,
+            "error_vs_ti_2_3": -0.007121594011124028,
+            "error_vs_ti_cowper": 0.0018501988140766975,
+            "error_vs_exact_plane_stress": -0.007121594011124028,
+            "shear_share_vs_5_6": 1.051188833856122,
+            "kappa_apparent_orientation_only": 0.7927532204431627
+          }
+        ],
+        "mesh_trend": 0.00014848788964582152,
+        "ranking_medium": [
+          "error_vs_ti_5_6",
+          "error_vs_ti_cowper",
+          "error_vs_ti_2_3"
+        ]
+      },
+      {
+        "poisson": 0.15,
+        "oracles": {
+          "delta_eb_m": 6.400000000000001e-07,
+          "delta_ti_5_6_m": 6.676000000000001e-07,
+          "delta_ti_2_3_m": 6.745000000000001e-07,
+          "delta_ti_cowper_m": 6.673000000000002e-07,
+          "delta_exact_plane_stress_m": 6.745000000000002e-07,
+          "delta_airy_module_m": 6.744999777711927e-07,
+          "delta_plane_strain_strip_m": 6.601e-07,
+          "delta_plane_stress_strip_m": 6.745e-07,
+          "kappa_cowper": 0.8424908424908425,
+          "oracle_gap_ti56_over_eb": 0.04312499999999992,
+          "oracle_gap_ti23_over_eb": 0.053906249999999906
+        },
+        "levels": [
+          {
+            "mesh": {
+              "axial": 20,
+              "cross_y": 2,
+              "cross_z": 2
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.15,
+            "root_condition": "clamp_all",
+            "nodes": 621,
+            "dofs": 1863,
+            "tip_nodes": 21,
+            "tip_deflection_m": 6.653411901785969e-07,
+            "reaction_sum_z_N": 5.000000000002674,
+            "reaction_moment_y_Nm": -0.2000000000000663,
+            "force_residual": 5.348610443434155e-13,
+            "moment_residual": 3.3140157285060923e-13,
+            "seconds": 11.149,
+            "error_vs_eb": 0.039595609654057506,
+            "error_vs_ti_5_6": -0.003383477863096388,
+            "error_vs_ti_2_3": -0.013578665413496126,
+            "error_vs_ti_cowper": -0.002935426077331383,
+            "error_vs_exact_plane_stress": -0.01357866541349628,
+            "shear_share_vs_5_6": 0.9181590644419148,
+            "kappa_apparent_orientation_only": 0.9076132509129656
+          },
+          {
+            "mesh": {
+              "axial": 24,
+              "cross_y": 2,
+              "cross_z": 3
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.15,
+            "root_condition": "clamp_all",
+            "nodes": 1013,
+            "dofs": 3039,
+            "tip_nodes": 29,
+            "tip_deflection_m": 6.656016090312024e-07,
+            "reaction_sum_z_N": 4.999999999994438,
+            "reaction_moment_y_Nm": -0.19999999999991158,
+            "force_residual": 1.112354652832437e-12,
+            "moment_residual": 4.421463195569686e-13,
+            "seconds": 25.159,
+            "error_vs_eb": 0.04000251411125357,
+            "error_vs_ti_5_6": -0.002993395699217595,
+            "error_vs_ti_2_3": -0.013192573712079547,
+            "error_vs_ti_cowper": -0.0025451685430806976,
+            "error_vs_exact_plane_stress": -0.013192573712079702,
+            "shear_share_vs_5_6": 0.9275945301160264,
+            "kappa_apparent_orientation_only": 0.8983810342532932
+          }
+        ],
+        "mesh_trend": 0.0003914064790360842,
+        "ranking_medium": [
+          "error_vs_ti_cowper",
+          "error_vs_ti_5_6",
+          "error_vs_ti_2_3"
+        ]
+      },
+      {
+        "poisson": 0.3,
+        "oracles": {
+          "delta_eb_m": 6.400000000000001e-07,
+          "delta_ti_5_6_m": 6.712000000000001e-07,
+          "delta_ti_2_3_m": 6.790000000000001e-07,
+          "delta_ti_cowper_m": 6.706000000000001e-07,
+          "delta_exact_plane_stress_m": 6.790000000000001e-07,
+          "delta_airy_module_m": 6.789999776706099e-07,
+          "delta_plane_strain_strip_m": 6.213999999999999e-07,
+          "delta_plane_stress_strip_m": 6.79e-07,
+          "kappa_cowper": 0.8496732026143791,
+          "oracle_gap_ti56_over_eb": 0.048750000000000016,
+          "oracle_gap_ti23_over_eb": 0.060937499999999936
+        },
+        "levels": [
+          {
+            "mesh": {
+              "axial": 20,
+              "cross_y": 2,
+              "cross_z": 2
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.3,
+            "root_condition": "clamp_all",
+            "nodes": 621,
+            "dofs": 1863,
+            "tip_nodes": 21,
+            "tip_deflection_m": 6.586191505759626e-07,
+            "reaction_sum_z_N": 4.999999999983461,
+            "reaction_moment_y_Nm": -0.19999999999949777,
+            "force_residual": 3.3077540706472062e-12,
+            "moment_residual": 2.511185703824026e-12,
+            "seconds": 13.785,
+            "error_vs_eb": 0.029092422774941448,
+            "error_vs_ti_5_6": -0.018743816185991483,
+            "error_vs_ti_2_3": -0.030015978533192097,
+            "error_vs_ti_cowper": -0.017865865529432506,
+            "error_vs_exact_plane_stress": -0.030015978533192097,
+            "shear_share_vs_5_6": 0.5967676466654654,
+            "kappa_apparent_orientation_only": 1.3964117156647424
+          },
+          {
+            "mesh": {
+              "axial": 24,
+              "cross_y": 2,
+              "cross_z": 3
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.3,
+            "root_condition": "clamp_all",
+            "nodes": 1013,
+            "dofs": 3039,
+            "tip_nodes": 29,
+            "tip_deflection_m": 6.593919751504982e-07,
+            "reaction_sum_z_N": 4.9999999999866445,
+            "reaction_moment_y_Nm": -0.19999999999957696,
+            "force_residual": 2.6711077794061567e-12,
+            "moment_residual": 2.1152524176670795e-12,
+            "seconds": 21.004,
+            "error_vs_eb": 0.030299961172653187,
+            "error_vs_ti_5_6": -0.017592408893775283,
+            "error_vs_ti_2_3": -0.028877798011048485,
+            "error_vs_ti_cowper": -0.016713428048765175,
+            "error_vs_exact_plane_stress": -0.028877798011048485,
+            "shear_share_vs_5_6": 0.6215376650800651,
+            "kappa_apparent_orientation_only": 1.340760793999484
+          }
+        ],
+        "mesh_trend": 0.0011734013106962917,
+        "ranking_medium": [
+          "error_vs_ti_cowper",
+          "error_vs_ti_5_6",
+          "error_vs_ti_2_3"
+        ]
+      },
+      {
+        "poisson": 0.45,
+        "oracles": {
+          "delta_eb_m": 6.400000000000001e-07,
+          "delta_ti_5_6_m": 6.748000000000001e-07,
+          "delta_ti_2_3_m": 6.835000000000001e-07,
+          "delta_ti_cowper_m": 6.739000000000001e-07,
+          "delta_exact_plane_stress_m": 6.835000000000001e-07,
+          "delta_airy_module_m": 6.83499977570027e-07,
+          "delta_plane_strain_strip_m": null,
+          "delta_plane_stress_strip_m": 6.835e-07,
+          "kappa_cowper": 0.8554572271386431,
+          "oracle_gap_ti56_over_eb": 0.05437499999999994,
+          "oracle_gap_ti23_over_eb": 0.06796874999999997
+        },
+        "levels": [
+          {
+            "mesh": {
+              "axial": 20,
+              "cross_y": 2,
+              "cross_z": 2
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.45,
+            "root_condition": "clamp_all",
+            "nodes": 621,
+            "dofs": 1863,
+            "tip_nodes": 21,
+            "tip_deflection_m": 6.416194635216289e-07,
+            "reaction_sum_z_N": 5.000000000019075,
+            "reaction_moment_y_Nm": -0.20000000000048299,
+            "force_residual": 3.815081583979918e-12,
+            "moment_residual": 2.4148738564377936e-12,
+            "seconds": 10.599,
+            "error_vs_eb": 0.0025304117525450373,
+            "error_vs_ti_5_6": -0.04917091949966085,
+            "error_vs_ti_2_3": -0.06127364517684149,
+            "error_vs_ti_cowper": -0.0479010780210286,
+            "error_vs_exact_plane_stress": -0.06127364517684149,
+            "shear_share_vs_5_6": 0.04653630809278235,
+            "kappa_apparent_orientation_only": 17.907164695400084
+          },
+          {
+            "mesh": {
+              "axial": 24,
+              "cross_y": 2,
+              "cross_z": 3
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.45,
+            "root_condition": "clamp_all",
+            "nodes": 1013,
+            "dofs": 3039,
+            "tip_nodes": 29,
+            "tip_deflection_m": 6.438376219465593e-07,
+            "reaction_sum_z_N": 5.000000000043354,
+            "reaction_moment_y_Nm": -0.2000000000014953,
+            "force_residual": 8.670753004480502e-12,
+            "moment_residual": 7.476380625703882e-12,
+            "seconds": 18.052,
+            "error_vs_eb": 0.0059962842914987055,
+            "error_vs_ti_5_6": -0.04588378490432838,
+            "error_vs_ti_2_3": -0.05802835121205678,
+            "error_vs_ti_cowper": -0.04460955342549462,
+            "error_vs_exact_plane_stress": -0.05802835121205678,
+            "shear_share_vs_5_6": 0.11027649271721769,
+            "kappa_apparent_orientation_only": 7.55676312149546
+          }
+        ],
+        "mesh_trend": 0.003457124590260461,
+        "ranking_medium": [
+          "error_vs_ti_cowper",
+          "error_vs_ti_5_6",
+          "error_vs_ti_2_3"
+        ]
+      }
+    ],
+    "width_study": [
+      {
+        "width_over_height": 1.0,
+        "width_m": 0.01,
+        "oracles": {
+          "delta_eb_m": 6.400000000000001e-07,
+          "delta_ti_5_6_m": 6.712000000000001e-07,
+          "delta_ti_2_3_m": 6.790000000000001e-07,
+          "delta_ti_cowper_m": 6.706000000000001e-07,
+          "delta_exact_plane_stress_m": 6.790000000000001e-07,
+          "delta_airy_module_m": 6.789999776706099e-07,
+          "delta_plane_strain_strip_m": 6.213999999999999e-07,
+          "delta_plane_stress_strip_m": 6.79e-07,
+          "kappa_cowper": 0.8496732026143791,
+          "oracle_gap_ti56_over_eb": 0.048750000000000016,
+          "oracle_gap_ti23_over_eb": 0.060937499999999936
+        },
+        "levels": [
+          {
+            "mesh": {
+              "axial": 20,
+              "cross_y": 2,
+              "cross_z": 2
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.3,
+            "root_condition": "clamp_all",
+            "nodes": 621,
+            "dofs": 1863,
+            "tip_nodes": 21,
+            "tip_deflection_m": 6.586191505759626e-07,
+            "reaction_sum_z_N": 4.999999999983461,
+            "reaction_moment_y_Nm": -0.19999999999949777,
+            "force_residual": 3.3077540706472062e-12,
+            "moment_residual": 2.511185703824026e-12,
+            "seconds": 10.458,
+            "error_vs_eb": 0.029092422774941448,
+            "error_vs_ti_5_6": -0.018743816185991483,
+            "error_vs_ti_2_3": -0.030015978533192097,
+            "error_vs_ti_cowper": -0.017865865529432506,
+            "error_vs_exact_plane_stress": -0.030015978533192097,
+            "shear_share_vs_5_6": 0.5967676466654654,
+            "kappa_apparent_orientation_only": 1.3964117156647424
+          },
+          {
+            "mesh": {
+              "axial": 24,
+              "cross_y": 2,
+              "cross_z": 3
+            },
+            "width_over_height": 1.0,
+            "poisson": 0.3,
+            "root_condition": "clamp_all",
+            "nodes": 1013,
+            "dofs": 3039,
+            "tip_nodes": 29,
+            "tip_deflection_m": 6.593919751504982e-07,
+            "reaction_sum_z_N": 4.9999999999866445,
+            "reaction_moment_y_Nm": -0.19999999999957696,
+            "force_residual": 2.6711077794061567e-12,
+            "moment_residual": 2.1152524176670795e-12,
+            "seconds": 14.192,
+            "error_vs_eb": 0.030299961172653187,
+            "error_vs_ti_5_6": -0.017592408893775283,
+            "error_vs_ti_2_3": -0.028877798011048485,
+            "error_vs_ti_cowper": -0.016713428048765175,
+            "error_vs_exact_plane_stress": -0.028877798011048485,
+            "shear_share_vs_5_6": 0.6215376650800651,
+            "kappa_apparent_orientation_only": 1.340760793999484
+          }
+        ],
+        "mesh_trend": 0.0011734013106962917,
+        "ranking_medium": [
+          "error_vs_ti_cowper",
+          "error_vs_ti_5_6",
+          "error_vs_ti_2_3"
+        ]
+      },
+      {
+        "width_over_height": 2.0,
+        "width_m": 0.02,
+        "oracles": {
+          "delta_eb_m": 3.2000000000000006e-07,
+          "delta_ti_5_6_m": 3.3560000000000007e-07,
+          "delta_ti_2_3_m": 3.3950000000000004e-07,
+          "delta_ti_cowper_m": 3.3530000000000004e-07,
+          "delta_exact_plane_stress_m": 3.3950000000000004e-07,
+          "delta_airy_module_m": 3.3949998883530493e-07,
+          "delta_plane_strain_strip_m": 3.1069999999999994e-07,
+          "delta_plane_stress_strip_m": 3.395e-07,
+          "kappa_cowper": 0.8496732026143791,
+          "oracle_gap_ti56_over_eb": 0.048750000000000016,
+          "oracle_gap_ti23_over_eb": 0.060937499999999936
+        },
+        "levels": [
+          {
+            "mesh": {
+              "axial": 20,
+              "cross_y": 2,
+              "cross_z": 2
+            },
+            "width_over_height": 2.0,
+            "poisson": 0.3,
+            "root_condition": "clamp_all",
+            "nodes": 621,
+            "dofs": 1863,
+            "tip_nodes": 21,
+            "tip_deflection_m": 3.250652417197069e-07,
+            "reaction_sum_z_N": 4.999999999986736,
+            "reaction_moment_y_Nm": -0.1999999999995799,
+            "force_residual": 2.6528113039603342e-12,
+            "moment_residual": 2.100541962590796e-12,
+            "seconds": 7.448,
+            "error_vs_eb": 0.015828880374083816,
+            "error_vs_ti_5_6": -0.03139081728335275,
+            "error_vs_ti_2_3": -0.042517697438271454,
+            "error_vs_ti_cowper": -0.030524182166099496,
+            "error_vs_exact_plane_stress": -0.042517697438271454,
+            "shear_share_vs_5_6": 0.3246949820324885,
+            "kappa_apparent_orientation_only": 2.5665112781137815
+          },
+          {
+            "mesh": {
+              "axial": 24,
+              "cross_y": 2,
+              "cross_z": 3
+            },
+            "width_over_height": 2.0,
+            "poisson": 0.3,
+            "root_condition": "clamp_all",
+            "nodes": 1013,
+            "dofs": 3039,
+            "tip_nodes": 29,
+            "tip_deflection_m": 3.2551556971674767e-07,
+            "reaction_sum_z_N": 5.000000000004706,
+            "reaction_moment_y_Nm": -0.20000000000012164,
+            "force_residual": 9.411138535142526e-13,
+            "moment_residual": 6.081246617384295e-13,
+            "seconds": 13.842,
+            "error_vs_eb": 0.017236155364836286,
+            "error_vs_ti_5_6": -0.03004895793579378,
+            "error_vs_ti_2_3": -0.04119125267526471,
+            "error_vs_ti_cowper": -0.029181122228608324,
+            "error_vs_exact_plane_stress": -0.04119125267526471,
+            "shear_share_vs_5_6": 0.35356216132997503,
+            "kappa_apparent_orientation_only": 2.3569641338276415
+          }
+        ],
+        "mesh_trend": 0.0013853465066224879,
+        "ranking_medium": [
+          "error_vs_ti_cowper",
+          "error_vs_ti_5_6",
+          "error_vs_ti_2_3"
+        ]
+      },
+      {
+        "width_over_height": 4.0,
+        "width_m": 0.04,
+        "oracles": {
+          "delta_eb_m": 1.6000000000000003e-07,
+          "delta_ti_5_6_m": 1.6780000000000003e-07,
+          "delta_ti_2_3_m": 1.6975000000000002e-07,
+          "delta_ti_cowper_m": 1.6765000000000002e-07,
+          "delta_exact_plane_stress_m": 1.6975000000000002e-07,
+          "delta_airy_module_m": 1.6974999441765246e-07,
+          "delta_plane_strain_strip_m": 1.5534999999999997e-07,
+          "delta_plane_stress_strip_m": 1.6975e-07,
+          "kappa_cowper": 0.8496732026143791,
+          "oracle_gap_ti56_over_eb": 0.048750000000000016,
+          "oracle_gap_ti23_over_eb": 0.060937499999999936
+        },
+        "levels": [
+          {
+            "mesh": {
+              "axial": 20,
+              "cross_y": 2,
+              "cross_z": 2
+            },
+            "width_over_height": 4.0,
+            "poisson": 0.3,
+            "root_condition": "clamp_all",
+            "nodes": 621,
+            "dofs": 1863,
+            "tip_nodes": 21,
+            "tip_deflection_m": 1.5857434320562535e-07,
+            "reaction_sum_z_N": 4.999999999994763,
+            "reaction_moment_y_Nm": -0.1999999999998289,
+            "force_residual": 1.0473399925103877e-12,
+            "moment_residual": 8.555656183517613e-13,
+            "seconds": 14.24,
+            "error_vs_eb": -0.008910354964841754,
+            "error_vs_ti_5_6": -0.054980076247763306,
+            "error_vs_ti_2_3": -0.06583597522459306,
+            "error_vs_ti_cowper": -0.054134546939306125,
+            "error_vs_exact_plane_stress": -0.06583597522459306,
+            "shear_share_vs_5_6": -0.18277651209931797,
+            "kappa_apparent_orientation_only": -4.559302088446205
+          },
+          {
+            "mesh": {
+              "axial": 24,
+              "cross_y": 2,
+              "cross_z": 3
+            },
+            "width_over_height": 4.0,
+            "poisson": 0.3,
+            "root_condition": "clamp_all",
+            "nodes": 1013,
+            "dofs": 3039,
+            "tip_nodes": 29,
+            "tip_deflection_m": 1.5886999597822038e-07,
+            "reaction_sum_z_N": 5.000000000011402,
+            "reaction_moment_y_Nm": -0.2000000000003168,
+            "force_residual": 2.2804869104220415e-12,
+            "moment_residual": 1.584010700383942e-12,
+            "seconds": 34.199,
+            "error_vs_eb": -0.007062525136122818,
+            "error_vs_ti_5_6": -0.05321814077341867,
+            "error_vs_ti_2_3": -0.06409427995157373,
+            "error_vs_ti_cowper": -0.05237103502403604,
+            "error_vs_exact_plane_stress": -0.06409427995157373,
+            "shear_share_vs_5_6": -0.14487231048457058,
+            "kappa_apparent_orientation_only": -5.752191916771331
+          }
+        ],
+        "mesh_trend": 0.0018644426747626704,
+        "ranking_medium": [
+          "error_vs_ti_cowper",
+          "error_vs_ti_5_6",
+          "error_vs_ti_2_3"
+        ]
+      }
+    ],
+    "section_probes": [
+      {
+        "width_over_height": 2.0,
+        "probe": {
+          "mesh": {
+            "axial": 20,
+            "cross_y": 4,
+            "cross_z": 2
+          },
+          "width_over_height": 2.0,
+          "poisson": 0.3,
+          "root_condition": "clamp_all",
+          "nodes": 1077,
+          "dofs": 3231,
+          "tip_nodes": 37,
+          "tip_deflection_m": 3.2491624027956184e-07,
+          "reaction_sum_z_N": 4.999999999984659,
+          "reaction_moment_y_Nm": -0.1999999999995391,
+          "force_residual": 3.0681235330121127e-12,
+          "moment_residual": 2.3045454433656687e-12,
+          "seconds": 22.287,
+          "error_vs_eb": 0.015363250873630564,
+          "error_vs_ti_5_6": -0.03183480250428553,
+          "error_vs_ti_2_3": -0.04295658238715228,
+          "error_vs_ti_cowper": -0.03096856462999762,
+          "error_vs_exact_plane_stress": -0.04295658238715228,
+          "shear_share_vs_5_6": 0.3151436076642166,
+          "kappa_apparent_orientation_only": 2.6442971174628567
+        },
+        "reference_level": {
+          "mesh": {
+            "axial": 20,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "width_over_height": 2.0,
+          "poisson": 0.3,
+          "root_condition": "clamp_all",
+          "nodes": 621,
+          "dofs": 1863,
+          "tip_nodes": 21,
+          "tip_deflection_m": 3.250652417197069e-07,
+          "reaction_sum_z_N": 4.999999999986736,
+          "reaction_moment_y_Nm": -0.1999999999995799,
+          "force_residual": 2.6528113039603342e-12,
+          "moment_residual": 2.100541962590796e-12,
+          "seconds": 7.448,
+          "error_vs_eb": 0.015828880374083816,
+          "error_vs_ti_5_6": -0.03139081728335275,
+          "error_vs_ti_2_3": -0.042517697438271454,
+          "error_vs_ti_cowper": -0.030524182166099496,
+          "error_vs_exact_plane_stress": -0.042517697438271454,
+          "shear_share_vs_5_6": 0.3246949820324885,
+          "kappa_apparent_orientation_only": 2.5665112781137815
+        }
+      },
+      {
+        "width_over_height": 4.0,
+        "probe": {
+          "mesh": {
+            "axial": 20,
+            "cross_y": 4,
+            "cross_z": 2
+          },
+          "width_over_height": 4.0,
+          "poisson": 0.3,
+          "root_condition": "clamp_all",
+          "nodes": 1077,
+          "dofs": 3231,
+          "tip_nodes": 37,
+          "tip_deflection_m": 1.5854315012428298e-07,
+          "reaction_sum_z_N": 4.99999999998561,
+          "reaction_moment_y_Nm": -0.19999999999955992,
+          "force_residual": 2.878053351196286e-12,
+          "moment_residual": 2.2004620348070603e-12,
+          "seconds": 40.537,
+          "error_vs_eb": -0.009105311723231554,
+          "error_vs_ti_5_6": -0.05516597065385608,
+          "error_vs_ti_2_3": -0.06601973417211805,
+          "error_vs_ti_cowper": -0.05432060766905482,
+          "error_vs_exact_plane_stress": -0.06601973417211805,
+          "shear_share_vs_5_6": -0.18677562509192927,
+          "kappa_apparent_orientation_only": -4.461681404750616
+        },
+        "reference_level": {
+          "mesh": {
+            "axial": 20,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "width_over_height": 4.0,
+          "poisson": 0.3,
+          "root_condition": "clamp_all",
+          "nodes": 621,
+          "dofs": 1863,
+          "tip_nodes": 21,
+          "tip_deflection_m": 1.5857434320562535e-07,
+          "reaction_sum_z_N": 4.999999999994763,
+          "reaction_moment_y_Nm": -0.1999999999998289,
+          "force_residual": 1.0473399925103877e-12,
+          "moment_residual": 8.555656183517613e-13,
+          "seconds": 14.24,
+          "error_vs_eb": -0.008910354964841754,
+          "error_vs_ti_5_6": -0.054980076247763306,
+          "error_vs_ti_2_3": -0.06583597522459306,
+          "error_vs_ti_cowper": -0.054134546939306125,
+          "error_vs_exact_plane_stress": -0.06583597522459306,
+          "shear_share_vs_5_6": -0.18277651209931797,
+          "kappa_apparent_orientation_only": -4.559302088446205
+        }
+      }
+    ],
+    "live_recompute": {
+      "mesh": {
+        "axial": 12,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "width_over_height": 1.0,
+      "poisson": 0.3,
+      "root_condition": "clamp_all",
+      "nodes": 381,
+      "dofs": 1143,
+      "tip_nodes": 21,
+      "tip_deflection_m": 6.569448815263528e-07,
+      "reaction_sum_z_N": 5.000000000004932,
+      "reaction_moment_y_Nm": -0.20000000000012627,
+      "force_residual": 9.86410952918959e-13,
+      "moment_residual": 6.313005673774796e-13,
+      "seconds": 7.881,
+      "error_vs_eb": 0.02647637738492608,
+      "error_vs_ti_5_6": -0.021238257559069305,
+      "error_vs_ti_2_3": -0.03248176505691792,
+      "error_vs_ti_cowper": -0.02036253873195239,
+      "error_vs_exact_plane_stress": -0.03248176505691792,
+      "shear_share_vs_5_6": 0.5431051771266887,
+      "kappa_apparent_orientation_only": 1.534386650007838
+    }
+  },
+  "fit": {
+    "slope_fit": -0.07331496258194535,
+    "slope_predicted_kappa_constant": 0.02330766244050245,
+    "slope_ratio": -3.1455304781891664,
+    "intercept": 0.045425451792190215,
+    "error_at_nu_ref": 0.030299961172653187
+  },
+  "figures": {
+    "nu_shear_share": "docs/assets/cantilever_shear/section_nu_shear_share.png",
+    "nu_residuals": "docs/assets/cantilever_shear/section_nu_residuals.png",
+    "width_ladder": "docs/assets/cantilever_shear/section_nu_width_ladder.png"
+  },
+  "gates": [
+    {
+      "id": "exact2d_is_ti_2_3",
+      "quantity": "max |delta_2D/delta_TI(2/3) - 1| over the nu ladder",
+      "reference": "Timoshenko & Goodier Art. 24 closed form == Timoshenko with kappa = 2/3",
+      "value": 2.220446049250313e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "note": "two independently coded closed forms; no handbook digit is copied",
+      "passed": true
+    },
+    {
+      "id": "airy_module_matches_closed_form",
+      "quantity": "max |delta(airy module)/delta_2D(closed form) - 1|",
+      "reference": "tensorfem.airy_cantilever field (independent code path)",
+      "value": 3.302720086306721e-08,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "note": "the module evaluates a difference of large terms in float64; 1e-6 is its evaluation floor, not a model error",
+      "passed": true
+    },
+    {
+      "id": "cowper_value_at_nu_0p3",
+      "quantity": "|kappa_C(0.3) - 0.8496|",
+      "reference": "Cowper, J. Appl. Mech. 33 (1966) 335, solid rectangle; the published 0.8496 is a 4-digit rounding of 10*1.3/(12+3.3) = 0.849673",
+      "value": 7.320261437904207e-05,
+      "threshold": 0.0005,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "cowper_limit_at_nu_0_is_5_6",
+      "quantity": "|kappa_C(0) - 5/6|",
+      "reference": "Cowper (1966) closed form at nu = 0",
+      "value": 0.0,
+      "threshold": 1e-15,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "force_equilibrium_all_solves",
+      "quantity": "max root reaction residual / P",
+      "reference": "sum R_z = P",
+      "value": 8.670753004480502e-12,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "moment_equilibrium_all_solves",
+      "quantity": "max root moment residual / (P L)",
+      "reference": "M_y(root) = -P L",
+      "value": 7.476380625703882e-12,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "mesh_sensitivity_bound",
+      "quantity": "max |delta(level1)-delta(level0)|/delta",
+      "reference": "axial+section refinement pair (20,2,2) -> (24,2,3)",
+      "value": 0.003457124590260461,
+      "threshold": 0.01,
+      "operator": "<=",
+      "note": "a trend under 1 % bounds the discretisation error of the conclusions",
+      "passed": true
+    },
+    {
+      "id": "section_resolution_probe_b_2",
+      "quantity": "|delta(ny=4) - delta(ny=2)| / delta at level 0",
+      "reference": "cross-section mesh doubling isolates the b-direction discretisation",
+      "value": 0.00045837395396930436,
+      "threshold": 0.005,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "section_resolution_probe_b_4",
+      "quantity": "|delta(ny=4) - delta(ny=2)| / delta at level 0",
+      "reference": "cross-section mesh doubling isolates the b-direction discretisation",
+      "value": 0.00019670950994843395,
+      "threshold": 0.005,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "nu_scaling_follows_1_over_G",
+      "quantity": "|slope(de/dnu) / [e(0.3)/(1+0.3)] - 1|",
+      "reference": "shear term P L/(kappa G A), G = E/(2(1+nu)) => de/dnu = e/(1+nu)",
+      "value": 4.145530478189166,
+      "threshold": 0.15,
+      "operator": "<=",
+      "note": "a nu-compensated kappa would drive the slope towards 0 (ratio -> 0)",
+      "passed": false
+    },
+    {
+      "id": "oracle_ranking_stable_in_nu",
+      "quantity": "number of distinct rankings over the nu ladder - 1",
+      "reference": "medium mesh (24,2,3), three Timoshenko oracles",
+      "value": 1.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "note": "rankings observed: [['error_vs_ti_5_6', 'error_vs_ti_cowper', 'error_vs_ti_2_3'], ['error_vs_ti_cowper', 'error_vs_ti_5_6', 'error_vs_ti_2_3']]",
+      "passed": false
+    },
+    {
+      "id": "ti_2_3_beats_ti_5_6_nu_0.00",
+      "quantity": "|e_5/6| - |e_2/3| at the medium mesh",
+      "reference": "exact-elasticity field carries kappa = 2/3 (gate exact2d_is_ti_2_3)",
+      "value": -0.005271395197047331,
+      "threshold": 0.0,
+      "operator": ">=",
+      "note": "pre-registered prediction P5; an honest FAIL is a result, not a bug",
+      "passed": false
+    },
+    {
+      "id": "ti_2_3_beats_ti_5_6_nu_0.15",
+      "quantity": "|e_5/6| - |e_2/3| at the medium mesh",
+      "reference": "exact-elasticity field carries kappa = 2/3 (gate exact2d_is_ti_2_3)",
+      "value": -0.010199178012861953,
+      "threshold": 0.0,
+      "operator": ">=",
+      "note": "pre-registered prediction P5; an honest FAIL is a result, not a bug",
+      "passed": false
+    },
+    {
+      "id": "ti_2_3_beats_ti_5_6_nu_0.30",
+      "quantity": "|e_5/6| - |e_2/3| at the medium mesh",
+      "reference": "exact-elasticity field carries kappa = 2/3 (gate exact2d_is_ti_2_3)",
+      "value": -0.011285389117273201,
+      "threshold": 0.0,
+      "operator": ">=",
+      "note": "pre-registered prediction P5; an honest FAIL is a result, not a bug",
+      "passed": false
+    },
+    {
+      "id": "ti_2_3_beats_ti_5_6_nu_0.45",
+      "quantity": "|e_5/6| - |e_2/3| at the medium mesh",
+      "reference": "exact-elasticity field carries kappa = 2/3 (gate exact2d_is_ti_2_3)",
+      "value": -0.0121445663077284,
+      "threshold": 0.0,
+      "operator": ">=",
+      "note": "pre-registered prediction P5; an honest FAIL is a result, not a bug",
+      "passed": false
+    },
+    {
+      "id": "width_stiffens_monotone",
+      "quantity": "delta decreasing in b/h",
+      "reference": "wider section, same total load",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "note": "deltas = [6.593919752e-07, 3.255155697e-07, 1.58869996e-07]",
+      "passed": true
+    },
+    {
+      "id": "bracket_plane_strain_le_solid",
+      "quantity": "delta_plane_strain_strip / delta_solid - 1 (<= 0 expected)",
+      "reference": "b/h -> infinity limit of the same field, E -> E/(1-nu^2)",
+      "value": -0.022156455386975416,
+      "threshold": 0.0,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "bracket_solid_le_plane_stress",
+      "quantity": "delta_solid / delta_plane_stress_strip - 1 (<= 0 expected)",
+      "reference": "b/h -> 0 limit of the same field",
+      "value": -0.06409427995157357,
+      "threshold": 0.0,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "case_pool_tolerance_vs_ti_5_6",
+      "quantity": "max |delta/delta_TI(5/6) - 1|",
+      "reference": "case-pool tolerance 3 %",
+      "value": 0.05516597065385608,
+      "threshold": 0.03,
+      "operator": "<=",
+      "note": "",
+      "passed": false
+    },
+    {
+      "id": "solid_vs_exact_plane_stress_2pct",
+      "quantity": "max |delta/delta_2D - 1| over every recorded solve",
+      "reference": "Timoshenko & Goodier Art. 24 plane-stress field",
+      "value": 0.06601973417211805,
+      "threshold": 0.02,
+      "operator": "<=",
+      "note": "the 3-D solid is not plane stress: a bound, not an equality",
+      "passed": false
+    }
+  ],
+  "passed_count": 12,
+  "doc": "docs/CASE-CANTILEVER-TIP-section-nu-limits.md"
+}
