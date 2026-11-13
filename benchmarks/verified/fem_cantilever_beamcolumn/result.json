@@ -1,0 +1,1224 @@
+{
+  "anchor": "fem_cantilever_beamcolumn",
+  "mission": "CASE-CANTILEVER-TIP",
+  "title": "CASE-CANTILEVER-TIP axial-preload rung: beam-column amplification delta_N/delta_0 vs the exact tanh/tan oracle on the geometric stiffness of tensorfem.buckling",
+  "generated_at": "2026-11-13T16:14:16+00:00",
+  "environment": {
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "sympy": "1.14.0",
+    "threads": 4
+  },
+  "problem": {
+    "length_m": 1.0,
+    "width_m": 0.01,
+    "height_m": 0.01,
+    "young_modulus_Pa": 200000000000.0,
+    "poisson": 0.3,
+    "tip_load_N": 5.0,
+    "inertia_m4": 8.333333333333335e-10,
+    "EI_Nm2": 166.66666666666669,
+    "delta_EB_m": 0.009999999999999998,
+    "delta_shear_m": 7.799999999999999e-07,
+    "pcr_fixed_free_N": 411.23351671205666,
+    "u_cr": 1.5707963267948966,
+    "levels_u": [
+      0.5,
+      1.0,
+      1.25,
+      1.5
+    ],
+    "ladder_elements": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "case_tolerance": 0.03,
+    "preload_N_at_levels": [
+      41.66666666666667,
+      166.66666666666669,
+      260.41666666666674,
+      375.00000000000006
+    ]
+  },
+  "oracle_selfcheck": {
+    "derivations": [
+      {
+        "case": "tension",
+        "ode": "E I w'''' - N w'' = 0",
+        "amplification_from_ode": "3*(u - tanh(u))/u**3",
+        "closed_form": "3*(u - tanh(u))/u**3",
+        "residual": "0",
+        "series_small_u": "17*u**4/105 - 2*u**2/5 + 1"
+      },
+      {
+        "case": "compression",
+        "ode": "E I w'''' + C w'' = 0",
+        "amplification_from_ode": "3*(-u + tan(u))/u**3",
+        "closed_form": "3*(-u + tan(u))/u**3",
+        "residual": "0",
+        "series_small_u": "17*u**4/105 + 2*u**2/5 + 1"
+      }
+    ],
+    "numeric_from_ode": {
+      "tension": [
+        0.9091882257597663,
+        0.7152175321327054,
+        0.6170363290252602,
+        0.5287571078712299
+      ],
+      "compression": [
+        1.1112597562509716,
+        1.6722231739647069,
+        2.7026990190533087,
+        11.20126217526375
+      ]
+    },
+    "pole_from_closed_form": 1.5707963267948966,
+    "residual_ladder_tension": 0.0,
+    "residual_ladder_compression": 0.0,
+    "series_residual_tension": 5.356373044925502e-11,
+    "series_residual_compression": 1.9476701343700062e-10,
+    "continuation_identity_max_rel": 0.0,
+    "pole_u": 1.5707963267948966,
+    "pole_vs_euler_load_rel": 0.0,
+    "af_compression_at_u_1p55": 37.483923987152416
+  },
+  "ladder": [
+    {
+      "u": 0.5,
+      "case": "tension",
+      "preload_N": 41.66666666666667,
+      "preload_over_pcr": 0.10132118364233778,
+      "elements": 1,
+      "amplification_exact": 0.9091882257597663,
+      "amplification_FE": 0.9091335994364869,
+      "rel_error": 6.0082523873219034e-05,
+      "w_tip_m": 0.009091335994364867,
+      "w_tip_mm": 9.091335994364867,
+      "delta_over_L": 0.009091335994364867
+    },
+    {
+      "u": 0.5,
+      "case": "tension",
+      "preload_N": 41.66666666666667,
+      "preload_over_pcr": 0.10132118364233778,
+      "elements": 2,
+      "amplification_exact": 0.9091882257597663,
+      "amplification_FE": 0.9091840113306854,
+      "rel_error": 4.635375779771046e-06,
+      "w_tip_m": 0.009091840113306852,
+      "w_tip_mm": 9.091840113306851,
+      "delta_over_L": 0.009091840113306852
+    },
+    {
+      "u": 0.5,
+      "case": "tension",
+      "preload_N": 41.66666666666667,
+      "preload_over_pcr": 0.10132118364233778,
+      "elements": 4,
+      "amplification_exact": 0.9091882257597663,
+      "amplification_FE": 0.9091879496757697,
+      "rel_error": 3.0365989004479585e-07,
+      "w_tip_m": 0.009091879496757695,
+      "w_tip_mm": 9.091879496757695,
+      "delta_over_L": 0.009091879496757695
+    },
+    {
+      "u": 0.5,
+      "case": "tension",
+      "preload_N": 41.66666666666667,
+      "preload_over_pcr": 0.10132118364233778,
+      "elements": 8,
+      "amplification_exact": 0.9091882257597663,
+      "amplification_FE": 0.9091882083057409,
+      "rel_error": 1.9197372945065046e-08,
+      "w_tip_m": 0.009091882083057407,
+      "w_tip_mm": 9.091882083057408,
+      "delta_over_L": 0.009091882083057407
+    },
+    {
+      "u": 0.5,
+      "case": "tension",
+      "preload_N": 41.66666666666667,
+      "preload_over_pcr": 0.10132118364233778,
+      "elements": 16,
+      "amplification_exact": 0.9091882257597663,
+      "amplification_FE": 0.9091882246649247,
+      "rel_error": 1.2041969206763363e-09,
+      "w_tip_m": 0.009091882246649245,
+      "w_tip_mm": 9.091882246649245,
+      "delta_over_L": 0.009091882246649245
+    },
+    {
+      "u": 0.5,
+      "case": "tension",
+      "preload_N": 41.66666666666667,
+      "preload_over_pcr": 0.10132118364233778,
+      "elements": 32,
+      "amplification_exact": 0.9091882257597663,
+      "amplification_FE": 0.9091882256687334,
+      "rel_error": 1.0012553657156374e-10,
+      "w_tip_m": 0.009091882256687332,
+      "w_tip_mm": 9.091882256687333,
+      "delta_over_L": 0.009091882256687332
+    },
+    {
+      "u": 0.5,
+      "case": "compression",
+      "preload_N": -41.66666666666667,
+      "preload_over_pcr": -0.10132118364233778,
+      "elements": 1,
+      "amplification_exact": 1.1112597562509716,
+      "amplification_FE": 1.1111759556463376,
+      "rel_error": 7.541045571261638e-05,
+      "w_tip_m": 0.011111759556463374,
+      "w_tip_mm": 11.111759556463374,
+      "delta_over_L": 0.011111759556463374
+    },
+    {
+      "u": 0.5,
+      "case": "compression",
+      "preload_N": -41.66666666666667,
+      "preload_over_pcr": -0.10132118364233778,
+      "elements": 2,
+      "amplification_exact": 1.1112597562509716,
+      "amplification_FE": 1.1112534176019517,
+      "rel_error": 5.704021030395761e-06,
+      "w_tip_m": 0.011112534176019515,
+      "w_tip_mm": 11.112534176019516,
+      "delta_over_L": 0.011112534176019515
+    },
+    {
+      "u": 0.5,
+      "case": "compression",
+      "preload_N": -41.66666666666667,
+      "preload_over_pcr": -0.10132118364233778,
+      "elements": 4,
+      "amplification_exact": 1.1112597562509716,
+      "amplification_FE": 1.1112593431058033,
+      "rel_error": 3.717809143854261e-07,
+      "w_tip_m": 0.011112593431058032,
+      "w_tip_mm": 11.112593431058032,
+      "delta_over_L": 0.011112593431058032
+    },
+    {
+      "u": 0.5,
+      "case": "compression",
+      "preload_N": -41.66666666666667,
+      "preload_over_pcr": -0.10132118364233778,
+      "elements": 8,
+      "amplification_exact": 1.1112597562509716,
+      "amplification_FE": 1.1112597301646294,
+      "rel_error": 2.3474567535388953e-08,
+      "w_tip_m": 0.011112597301646293,
+      "w_tip_mm": 11.112597301646293,
+      "delta_over_L": 0.011112597301646293
+    },
+    {
+      "u": 0.5,
+      "case": "compression",
+      "preload_N": -41.66666666666667,
+      "preload_over_pcr": -0.10132118364233778,
+      "elements": 16,
+      "amplification_exact": 1.1112597562509716,
+      "amplification_FE": 1.1112597546120073,
+      "rel_error": 1.4748705587445771e-09,
+      "w_tip_m": 0.011112597546120071,
+      "w_tip_mm": 11.112597546120071,
+      "delta_over_L": 0.011112597546120071
+    },
+    {
+      "u": 0.5,
+      "case": "compression",
+      "preload_N": -41.66666666666667,
+      "preload_over_pcr": -0.10132118364233778,
+      "elements": 32,
+      "amplification_exact": 1.1112597562509716,
+      "amplification_FE": 1.1112597561163866,
+      "rel_error": 1.211103066103925e-10,
+      "w_tip_m": 0.011112597561163865,
+      "w_tip_mm": 11.112597561163865,
+      "delta_over_L": 0.011112597561163865
+    },
+    {
+      "u": 1.0,
+      "case": "tension",
+      "preload_N": 166.66666666666669,
+      "preload_over_pcr": 0.4052847345693511,
+      "elements": 1,
+      "amplification_exact": 0.7152175321327054,
+      "amplification_FE": 0.7146974063400573,
+      "rel_error": 0.0007272274088376859,
+      "w_tip_m": 0.007146974063400572,
+      "w_tip_mm": 7.146974063400572,
+      "delta_over_L": 0.007146974063400572
+    },
+    {
+      "u": 1.0,
+      "case": "tension",
+      "preload_N": 166.66666666666669,
+      "preload_over_pcr": 0.4052847345693511,
+      "elements": 2,
+      "amplification_exact": 0.7152175321327054,
+      "amplification_FE": 0.7151761915641021,
+      "rel_error": 5.780139152925135e-05,
+      "w_tip_m": 0.007151761915641019,
+      "w_tip_mm": 7.1517619156410195,
+      "delta_over_L": 0.007151761915641019
+    },
+    {
+      "u": 1.0,
+      "case": "tension",
+      "preload_N": 166.66666666666669,
+      "preload_over_pcr": 0.4052847345693511,
+      "elements": 4,
+      "amplification_exact": 0.7152175321327054,
+      "amplification_FE": 0.7152148017342148,
+      "rel_error": 3.8175776850631064e-06,
+      "w_tip_m": 0.0071521480173421465,
+      "w_tip_mm": 7.152148017342147,
+      "delta_over_L": 0.0071521480173421465
+    },
+    {
+      "u": 1.0,
+      "case": "tension",
+      "preload_N": 166.66666666666669,
+      "preload_over_pcr": 0.4052847345693511,
+      "elements": 8,
+      "amplification_exact": 0.7152175321327054,
+      "amplification_FE": 0.715217359155063,
+      "rel_error": 2.4185319103707923e-07,
+      "w_tip_m": 0.007152173591550629,
+      "w_tip_mm": 7.152173591550629,
+      "delta_over_L": 0.007152173591550629
+    },
+    {
+      "u": 1.0,
+      "case": "tension",
+      "preload_N": 166.66666666666669,
+      "preload_over_pcr": 0.4052847345693511,
+      "elements": 16,
+      "amplification_exact": 0.7152175321327054,
+      "amplification_FE": 0.7152175212831396,
+      "rel_error": 1.5169602692732352e-08,
+      "w_tip_m": 0.007152175212831395,
+      "w_tip_mm": 7.152175212831395,
+      "delta_over_L": 0.007152175212831395
+    },
+    {
+      "u": 1.0,
+      "case": "tension",
+      "preload_N": 166.66666666666669,
+      "preload_over_pcr": 0.4052847345693511,
+      "elements": 32,
+      "amplification_exact": 0.7152175321327054,
+      "amplification_FE": 0.7152175314484522,
+      "rel_error": 9.567064269357544e-10,
+      "w_tip_m": 0.007152175314484521,
+      "w_tip_mm": 7.152175314484521,
+      "delta_over_L": 0.007152175314484521
+    },
+    {
+      "u": 1.0,
+      "case": "compression",
+      "preload_N": -166.66666666666669,
+      "preload_over_pcr": -0.4052847345693511,
+      "elements": 1,
+      "amplification_exact": 1.6722231739647069,
+      "amplification_FE": 1.6690647482014382,
+      "rel_error": 0.0018887585176685846,
+      "w_tip_m": 0.01669064748201438,
+      "w_tip_mm": 16.69064748201438,
+      "delta_over_L": 0.01669064748201438
+    },
+    {
+      "u": 1.0,
+      "case": "compression",
+      "preload_N": -166.66666666666669,
+      "preload_over_pcr": -0.4052847345693511,
+      "elements": 2,
+      "amplification_exact": 1.6722231739647069,
+      "amplification_FE": 1.6719909733843736,
+      "rel_error": 0.00013885741086981394,
+      "w_tip_m": 0.016719909733843734,
+      "w_tip_mm": 16.719909733843735,
+      "delta_over_L": 0.016719909733843734
+    },
+    {
+      "u": 1.0,
+      "case": "compression",
+      "preload_N": -166.66666666666669,
+      "preload_over_pcr": -0.4052847345693511,
+      "elements": 4,
+      "amplification_exact": 1.6722231739647069,
+      "amplification_FE": 1.6722081422290802,
+      "rel_error": 8.98907266727463e-06,
+      "w_tip_m": 0.0167220814222908,
+      "w_tip_mm": 16.7220814222908,
+      "delta_over_L": 0.0167220814222908
+    },
+    {
+      "u": 1.0,
+      "case": "compression",
+      "preload_N": -166.66666666666669,
+      "preload_over_pcr": -0.4052847345693511,
+      "elements": 8,
+      "amplification_exact": 1.6722231739647069,
+      "amplification_FE": 1.6722222264611004,
+      "rel_error": 5.666131298831209e-07,
+      "w_tip_m": 0.016722222264611,
+      "w_tip_mm": 16.722222264611002,
+      "delta_over_L": 0.016722222264611
+    },
+    {
+      "u": 1.0,
+      "case": "compression",
+      "preload_N": -166.66666666666669,
+      "preload_over_pcr": -0.4052847345693511,
+      "elements": 16,
+      "amplification_exact": 1.6722231739647069,
+      "amplification_FE": 1.6722231146076325,
+      "rel_error": 3.54959046680604e-08,
+      "w_tip_m": 0.016722231146076322,
+      "w_tip_mm": 16.72223114607632,
+      "delta_over_L": 0.016722231146076322
+    },
+    {
+      "u": 1.0,
+      "case": "compression",
+      "preload_N": -166.66666666666669,
+      "preload_over_pcr": -0.4052847345693511,
+      "elements": 32,
+      "amplification_exact": 1.6722231739647069,
+      "amplification_FE": 1.672223170216233,
+      "rel_error": 2.241611068440587e-09,
+      "w_tip_m": 0.016722231702162325,
+      "w_tip_mm": 16.722231702162325,
+      "delta_over_L": 0.016722231702162325
+    },
+    {
+      "u": 1.25,
+      "case": "tension",
+      "preload_N": 260.41666666666674,
+      "preload_over_pcr": 0.6332573977646112,
+      "elements": 1,
+      "amplification_exact": 0.6170363290252602,
+      "amplification_FE": 0.6161178096554353,
+      "rel_error": 0.0014885985259180698,
+      "w_tip_m": 0.006161178096554352,
+      "w_tip_mm": 6.161178096554352,
+      "delta_over_L": 0.006161178096554352
+    },
+    {
+      "u": 1.25,
+      "case": "tension",
+      "preload_N": 260.41666666666674,
+      "preload_over_pcr": 0.6332573977646112,
+      "elements": 2,
+      "amplification_exact": 0.6170363290252602,
+      "amplification_FE": 0.6169616900188832,
+      "rel_error": 0.0001209637145593196,
+      "w_tip_m": 0.006169616900188832,
+      "w_tip_mm": 6.1696169001888315,
+      "delta_over_L": 0.006169616900188832
+    },
+    {
+      "u": 1.25,
+      "case": "tension",
+      "preload_N": 260.41666666666674,
+      "preload_over_pcr": 0.6332573977646112,
+      "elements": 4,
+      "amplification_exact": 0.6170363290252602,
+      "amplification_FE": 0.6170313672700206,
+      "rel_error": 8.041269218947365e-06,
+      "w_tip_m": 0.006170313672700205,
+      "w_tip_mm": 6.170313672700205,
+      "delta_over_L": 0.006170313672700205
+    },
+    {
+      "u": 1.25,
+      "case": "tension",
+      "preload_N": 260.41666666666674,
+      "preload_over_pcr": 0.6332573977646112,
+      "elements": 8,
+      "amplification_exact": 0.6170363290252602,
+      "amplification_FE": 0.6170360141534177,
+      "rel_error": 5.102970889668006e-07,
+      "w_tip_m": 0.0061703601415341765,
+      "w_tip_mm": 6.170360141534177,
+      "delta_over_L": 0.0061703601415341765
+    },
+    {
+      "u": 1.25,
+      "case": "tension",
+      "preload_N": 260.41666666666674,
+      "preload_over_pcr": 0.6332573977646112,
+      "elements": 16,
+      "amplification_exact": 0.6170363290252602,
+      "amplification_FE": 0.6170363092697926,
+      "rel_error": 3.201670090697483e-08,
+      "w_tip_m": 0.006170363092697925,
+      "w_tip_mm": 6.170363092697925,
+      "delta_over_L": 0.006170363092697925
+    },
+    {
+      "u": 1.25,
+      "case": "tension",
+      "preload_N": 260.41666666666674,
+      "preload_over_pcr": 0.6332573977646112,
+      "elements": 32,
+      "amplification_exact": 0.6170363290252602,
+      "amplification_FE": 0.6170363277852472,
+      "rel_error": 2.009627185394431e-09,
+      "w_tip_m": 0.006170363277852471,
+      "w_tip_mm": 6.170363277852471,
+      "delta_over_L": 0.006170363277852471
+    },
+    {
+      "u": 1.25,
+      "case": "compression",
+      "preload_N": -260.41666666666674,
+      "preload_over_pcr": -0.6332573977646112,
+      "elements": 1,
+      "amplification_exact": 2.7026990190533087,
+      "amplification_FE": 2.6820170389131928,
+      "rel_error": 0.0076523430816059996,
+      "w_tip_m": 0.026820170389131925,
+      "w_tip_mm": 26.820170389131924,
+      "delta_over_L": 0.026820170389131925
+    },
+    {
+      "u": 1.25,
+      "case": "compression",
+      "preload_N": -260.41666666666674,
+      "preload_over_pcr": -0.6332573977646112,
+      "elements": 2,
+      "amplification_exact": 2.7026990190533087,
+      "amplification_FE": 2.7012049317789995,
+      "rel_error": 0.0005528130449511033,
+      "w_tip_m": 0.02701204931778999,
+      "w_tip_mm": 27.012049317789987,
+      "delta_over_L": 0.02701204931778999
+    },
+    {
+      "u": 1.25,
+      "case": "compression",
+      "preload_N": -260.41666666666674,
+      "preload_over_pcr": -0.6332573977646112,
+      "elements": 4,
+      "amplification_exact": 2.7026990190533087,
+      "amplification_FE": 2.7026027043439376,
+      "rel_error": 3.5636491038073635e-05,
+      "w_tip_m": 0.02702602704343937,
+      "w_tip_mm": 27.02602704343937,
+      "delta_over_L": 0.02702602704343937
+    },
+    {
+      "u": 1.25,
+      "case": "compression",
+      "preload_N": -260.41666666666674,
+      "preload_over_pcr": -0.6332573977646112,
+      "elements": 8,
+      "amplification_exact": 2.7026990190533087,
+      "amplification_FE": 2.7026929544087026,
+      "rel_error": 2.243921562596838e-06,
+      "w_tip_m": 0.027026929544087024,
+      "w_tip_mm": 27.026929544087025,
+      "delta_over_L": 0.027026929544087024
+    },
+    {
+      "u": 1.25,
+      "case": "compression",
+      "preload_N": -260.41666666666674,
+      "preload_over_pcr": -0.6332573977646112,
+      "elements": 16,
+      "amplification_exact": 2.7026990190533087,
+      "amplification_FE": 2.7026986393099253,
+      "rel_error": 1.4050524336157844e-07,
+      "w_tip_m": 0.02702698639309925,
+      "w_tip_mm": 27.02698639309925,
+      "delta_over_L": 0.02702698639309925
+    },
+    {
+      "u": 1.25,
+      "case": "compression",
+      "preload_N": -260.41666666666674,
+      "preload_over_pcr": -0.6332573977646112,
+      "elements": 32,
+      "amplification_exact": 2.7026990190533087,
+      "amplification_FE": 2.702698995319949,
+      "rel_error": 8.78135506566984e-09,
+      "w_tip_m": 0.027026989953199486,
+      "w_tip_mm": 27.026989953199486,
+      "delta_over_L": 0.027026989953199486
+    },
+    {
+      "u": 1.5,
+      "case": "tension",
+      "preload_N": 375.00000000000006,
+      "preload_over_pcr": 0.91189065278104,
+      "elements": 1,
+      "amplification_exact": 0.5287571078712299,
+      "amplification_FE": 0.5274051360674589,
+      "rel_error": 0.002556886297404161,
+      "w_tip_m": 0.0052740513606745875,
+      "w_tip_mm": 5.274051360674587,
+      "delta_over_L": 0.0052740513606745875
+    },
+    {
+      "u": 1.5,
+      "case": "tension",
+      "preload_N": 375.00000000000006,
+      "preload_over_pcr": 0.91189065278104,
+      "elements": 2,
+      "amplification_exact": 0.5287571078712299,
+      "amplification_FE": 0.5286442826766307,
+      "rel_error": 0.00021337811429796502,
+      "w_tip_m": 0.005286442826766306,
+      "w_tip_mm": 5.286442826766306,
+      "delta_over_L": 0.005286442826766306
+    },
+    {
+      "u": 1.5,
+      "case": "tension",
+      "preload_N": 375.00000000000006,
+      "preload_over_pcr": 0.91189065278104,
+      "elements": 4,
+      "amplification_exact": 0.5287571078712299,
+      "amplification_FE": 0.5287495453180961,
+      "rel_error": 1.4302508696608843e-05,
+      "w_tip_m": 0.005287495453180961,
+      "w_tip_mm": 5.287495453180961,
+      "delta_over_L": 0.005287495453180961
+    },
+    {
+      "u": 1.5,
+      "case": "tension",
+      "preload_N": 375.00000000000006,
+      "preload_over_pcr": 0.91189065278104,
+      "elements": 8,
+      "amplification_exact": 0.5287571078712299,
+      "amplification_FE": 0.5287566269011336,
+      "rel_error": 9.096238880690765e-07,
+      "w_tip_m": 0.0052875662690113345,
+      "w_tip_mm": 5.287566269011334,
+      "delta_over_L": 0.0052875662690113345
+    },
+    {
+      "u": 1.5,
+      "case": "tension",
+      "preload_N": 375.00000000000006,
+      "preload_over_pcr": 0.91189065278104,
+      "elements": 16,
+      "amplification_exact": 0.5287571078712299,
+      "amplification_FE": 0.5287570776799637,
+      "rel_error": 5.7098553767585506e-08,
+      "w_tip_m": 0.005287570776799637,
+      "w_tip_mm": 5.287570776799637,
+      "delta_over_L": 0.005287570776799637
+    },
+    {
+      "u": 1.5,
+      "case": "tension",
+      "preload_N": 375.00000000000006,
+      "preload_over_pcr": 0.91189065278104,
+      "elements": 32,
+      "amplification_exact": 0.5287571078712299,
+      "amplification_FE": 0.5287571059797058,
+      "rel_error": 3.5773023574437722e-09,
+      "w_tip_m": 0.0052875710597970575,
+      "w_tip_mm": 5.287571059797058,
+      "delta_over_L": 0.0052875710597970575
+    },
+    {
+      "u": 1.5,
+      "case": "compression",
+      "preload_N": -375.00000000000006,
+      "preload_over_pcr": -0.91189065278104,
+      "elements": 1,
+      "amplification_exact": 11.20126217526375,
+      "amplification_FE": 10.477876106194689,
+      "rel_error": 0.06458076400234138,
+      "w_tip_m": 0.10477876106194688,
+      "w_tip_mm": 104.77876106194688,
+      "delta_over_L": 0.10477876106194688
+    },
+    {
+      "u": 1.5,
+      "case": "compression",
+      "preload_N": -375.00000000000006,
+      "preload_over_pcr": -0.91189065278104,
+      "elements": 2,
+      "amplification_exact": 11.20126217526375,
+      "amplification_FE": 11.147595180719543,
+      "rel_error": 0.004791156005858161,
+      "w_tip_m": 0.11147595180719541,
+      "w_tip_mm": 111.47595180719541,
+      "delta_over_L": 0.11147595180719541
+    },
+    {
+      "u": 1.5,
+      "case": "compression",
+      "preload_N": -375.00000000000006,
+      "preload_over_pcr": -0.91189065278104,
+      "elements": 4,
+      "amplification_exact": 11.20126217526375,
+      "amplification_FE": 11.197805347657091,
+      "rel_error": 0.00030861054339862976,
+      "w_tip_m": 0.1119780534765709,
+      "w_tip_mm": 111.9780534765709,
+      "delta_over_L": 0.1119780534765709
+    },
+    {
+      "u": 1.5,
+      "case": "compression",
+      "preload_N": -375.00000000000006,
+      "preload_over_pcr": -0.91189065278104,
+      "elements": 8,
+      "amplification_exact": 11.20126217526375,
+      "amplification_FE": 11.201044686560568,
+      "rel_error": 1.941644609143656e-05,
+      "w_tip_m": 0.11201044686560567,
+      "w_tip_mm": 112.01044686560567,
+      "delta_over_L": 0.11201044686560567
+    },
+    {
+      "u": 1.5,
+      "case": "compression",
+      "preload_N": -375.00000000000006,
+      "preload_over_pcr": -0.91189065278104,
+      "elements": 16,
+      "amplification_exact": 11.20126217526375,
+      "amplification_FE": 11.201248560289146,
+      "rel_error": 1.215485754256582e-06,
+      "w_tip_m": 0.11201248560289145,
+      "w_tip_mm": 112.01248560289146,
+      "delta_over_L": 0.11201248560289145
+    },
+    {
+      "u": 1.5,
+      "case": "compression",
+      "preload_N": -375.00000000000006,
+      "preload_over_pcr": -0.91189065278104,
+      "elements": 32,
+      "amplification_exact": 11.20126217526375,
+      "amplification_FE": 11.201261323174498,
+      "rel_error": 7.607082480147863e-08,
+      "w_tip_m": 0.11201261323174495,
+      "w_tip_mm": 112.01261323174495,
+      "delta_over_L": 0.11201261323174495
+    }
+  ],
+  "buckling_ladder": [
+    {
+      "elements": 1,
+      "pcr_FE_N": 414.32694985332347,
+      "pcr_exact_N": 411.23351671205666,
+      "rel_error": 0.007522327377398128,
+      "u_FE": 1.5766932799755127
+    },
+    {
+      "elements": 2,
+      "pcr_FE_N": 411.44412606838137,
+      "pcr_exact_N": 411.23351671205666,
+      "rel_error": 0.0005121405424552919,
+      "u_FE": 1.57119850954941
+    },
+    {
+      "elements": 4,
+      "pcr_FE_N": 411.24699122466467,
+      "pcr_exact_N": 411.23351671205666,
+      "rel_error": 3.27660855947404e-05,
+      "u_FE": 1.5708220610075438
+    },
+    {
+      "elements": 8,
+      "pcr_FE_N": 411.2343639399553,
+      "pcr_exact_N": 411.23351671205666,
+      "rel_error": 2.0602112041349516e-06,
+      "u_FE": 1.5707979448801592
+    },
+    {
+      "elements": 16,
+      "pcr_FE_N": 411.23356974373223,
+      "pcr_exact_N": 411.23351671205666,
+      "rel_error": 1.2895757136027272e-07,
+      "u_FE": 1.570796428077933
+    },
+    {
+      "elements": 32,
+      "pcr_FE_N": 411.23352003496205,
+      "pcr_exact_N": 411.23351671205666,
+      "rel_error": 8.080336997565642e-09,
+      "u_FE": 1.5707963331411785
+    }
+  ],
+  "convergence": {
+    "tension_u0.5": {
+      "slope": -3.7914775576519246,
+      "order": 3.7914775576519246,
+      "window": [
+        8,
+        32
+      ],
+      "ratios_per_doubling": [
+        12.961737457278314,
+        15.265024890469519,
+        15.817783553705242,
+        15.942054505738858,
+        12.026871085136692
+      ],
+      "errors": [
+        6.0082523873219034e-05,
+        4.635375779771046e-06,
+        3.0365989004479585e-07,
+        1.9197372945065046e-08,
+        1.2041969206763363e-09,
+        1.0012553657156374e-10
+      ]
+    },
+    "tension_u1": {
+      "slope": -3.99091978380248,
+      "order": 3.99091978380248,
+      "window": [
+        8,
+        32
+      ],
+      "ratios_per_doubling": [
+        12.581486182208268,
+        15.140855353227964,
+        15.784690161387294,
+        15.94327787852673,
+        15.856068555240336
+      ],
+      "errors": [
+        0.0007272274088376859,
+        5.780139152925135e-05,
+        3.8175776850631064e-06,
+        2.4185319103707923e-07,
+        1.5169602692732352e-08,
+        9.567064269357544e-10
+      ]
+    },
+    "tension_u1.25": {
+      "slope": -3.9941328579479003,
+      "order": 3.9941328579479003,
+      "window": [
+        8,
+        32
+      ],
+      "ratios_per_doubling": [
+        12.30615752286669,
+        15.04286341692142,
+        15.758015071629229,
+        15.93846569168632,
+        15.931661922005143
+      ],
+      "errors": [
+        0.0014885985259180698,
+        0.0001209637145593196,
+        8.041269218947365e-06,
+        5.102970889668006e-07,
+        3.201670090697483e-08,
+        2.009627185394431e-09
+      ]
+    },
+    "tension_u1.5": {
+      "slope": -3.9951271350925373,
+      "order": 3.9951271350925373,
+      "window": [
+        8,
+        32
+      ],
+      "ratios_per_doubling": [
+        11.982889181566575,
+        14.918929176988192,
+        15.72354121764524,
+        15.930769311104063,
+        15.96134406944185
+      ],
+      "errors": [
+        0.002556886297404161,
+        0.00021337811429796502,
+        1.4302508696608843e-05,
+        9.096238880690765e-07,
+        5.7098553767585506e-08,
+        3.5773023574437722e-09
+      ]
+    },
+    "compression_u0.5": {
+      "slope": -3.799316562252968,
+      "order": 3.799316562252968,
+      "window": [
+        8,
+        32
+      ],
+      "ratios_per_doubling": [
+        13.220578134401476,
+        15.342425632108673,
+        15.83760441273092,
+        15.916357809305458,
+        12.177911195363272
+      ],
+      "errors": [
+        7.541045571261638e-05,
+        5.704021030395761e-06,
+        3.717809143854261e-07,
+        2.3474567535388953e-08,
+        1.4748705587445771e-09,
+        1.211103066103925e-10
+      ]
+    },
+    "compression_u1": {
+      "slope": -3.9908421191566177,
+      "order": 3.9908421191566177,
+      "window": [
+        8,
+        32
+      ],
+      "ratios_per_doubling": [
+        13.602144140793422,
+        15.447356586106418,
+        15.864568244524913,
+        15.96277472519148,
+        15.834997055378434
+      ],
+      "errors": [
+        0.0018887585176685846,
+        0.00013885741086981394,
+        8.98907266727463e-06,
+        5.666131298831209e-07,
+        3.54959046680604e-08,
+        2.241611068440587e-09
+      ]
+    },
+    "compression_u1.25": {
+      "slope": -3.998681474862141,
+      "order": 3.998681474862141,
+      "window": [
+        8,
+        32
+      ],
+      "ratios_per_doubling": [
+        13.842551566927758,
+        15.512555497130284,
+        15.881344353602252,
+        15.970375972534308,
+        16.000405667557494
+      ],
+      "errors": [
+        0.0076523430816059996,
+        0.0005528130449511033,
+        3.5636491038073635e-05,
+        2.243921562596838e-06,
+        1.4050524336157844e-07,
+        8.78135506566984e-09
+      ]
+    },
+    "compression_u1.5": {
+      "slope": -3.9978600984178145,
+      "order": 3.9978600984178145,
+      "window": [
+        8,
+        32
+      ],
+      "ratios_per_doubling": [
+        13.479161171829572,
+        15.524926508001585,
+        15.894285800053776,
+        15.97422760689786,
+        15.978343306104865
+      ],
+      "errors": [
+        0.06458076400234138,
+        0.004791156005858161,
+        0.00030861054339862976,
+        1.941644609143656e-05,
+        1.215485754256582e-06,
+        7.607082480147863e-08
+      ]
+    }
+  },
+  "gates": [
+    {
+      "id": "oracle_ode_residual_tension",
+      "quantity": "max relative residual of the sympy ODE solution vs 3(u - tanh u)/u^3",
+      "reference": "E I w'''' - N w'' = 0, clamped root, free tip",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "machine-derived oracle; no handbook digit is transcribed"
+    },
+    {
+      "id": "oracle_ode_residual_compression",
+      "quantity": "max relative residual of the sympy ODE solution vs 3(tan u - u)/u^3",
+      "reference": "E I w'''' + C w'' = 0, clamped root, free tip",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "same derivation path, compression branch"
+    },
+    {
+      "id": "oracle_small_u_series_tension",
+      "quantity": "relative residual of AF_t vs 1 - 2u^2/5 at u = 1e-3",
+      "reference": "Taylor expansion of 3(u - tanh u)/u^3",
+      "value": 5.356373044925502e-11,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true,
+      "note": ""
+    },
+    {
+      "id": "oracle_small_u_series_compression",
+      "quantity": "relative residual of AF_c vs 1 + 2u^2/5 at u = 1e-3",
+      "reference": "Taylor expansion of 3(tan u - u)/u^3",
+      "value": 1.9476701343700062e-10,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true,
+      "note": ""
+    },
+    {
+      "id": "analytic_continuation_identity",
+      "quantity": "|AF_c(i u) - AF_t(u)| / AF_t(u) over the ladder",
+      "reference": "AF_c(i u) = AF_t(u)",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "one analytic function in two branches: a slip in either is caught"
+    },
+    {
+      "id": "pole_is_the_euler_load",
+      "quantity": "|u_pole - pi/2| / (pi/2) from the closed form",
+      "reference": "fixed-free N_cr = pi^2 E I/(4 L^2) <=> cos u = 0",
+      "value": 0.0,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true,
+      "note": "static amplification and eigenvalue must diverge at the same load"
+    },
+    {
+      "id": "buckling_eigenvalue_from_same_matrices",
+      "quantity": "|P_cr,FE - pi^2 E I/(4 L^2)| / P_cr on the finest mesh (n = 32)",
+      "reference": "pi^2 E I/(4 L^2)",
+      "value": 8.080336997565642e-09,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "confirms that K and Kg are the matrices whose static sum is graded below"
+    },
+    {
+      "id": "buckling_convergence_order",
+      "quantity": "log-log slope of the P_cr error over n = 16..32",
+      "reference": "consistent Hermite element: order >= 2",
+      "value": 3.9970805327724195,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "the eigenvalue must converge under refinement, not merely sit close"
+    },
+    {
+      "id": "fe_vs_exact_tension_u0.5",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 0.5",
+      "reference": "AF_t(u = 0.5) = 0.909188",
+      "value": 3.0365989004479585e-07,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_tension_u1",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1",
+      "reference": "AF_t(u = 1) = 0.715218",
+      "value": 3.8175776850631064e-06,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_tension_u1.25",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1.25",
+      "reference": "AF_t(u = 1.25) = 0.617036",
+      "value": 8.041269218947365e-06,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_tension_u1.5",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1.5",
+      "reference": "AF_t(u = 1.5) = 0.528757",
+      "value": 1.4302508696608843e-05,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_compression_u0.5",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 0.5",
+      "reference": "AF_c(u = 0.5) = 1.111260",
+      "value": 3.717809143854261e-07,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_compression_u1",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1",
+      "reference": "AF_c(u = 1) = 1.672223",
+      "value": 8.98907266727463e-06,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_compression_u1.25",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1.25",
+      "reference": "AF_c(u = 1.25) = 2.702699",
+      "value": 3.5636491038073635e-05,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "OUTSIDE the small-deflection domain (delta/L = 2.7 %): numerical-stiffness check only, not an engineering prediction"
+    },
+    {
+      "id": "fe_vs_exact_compression_u1.5",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1.5",
+      "reference": "AF_c(u = 1.5) = 11.201262",
+      "value": 0.00030861054339862976,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "OUTSIDE the small-deflection domain (delta/L = 11.2 %): numerical-stiffness check only, not an engineering prediction"
+    },
+    {
+      "id": "tension_stiffens",
+      "quantity": "max AF_FE over the tension rungs",
+      "reference": "AF_t(u) < 1 for u > 0",
+      "value": 0.9091882256687334,
+      "threshold": 1.0,
+      "operator": "<",
+      "passed": true,
+      "note": ""
+    },
+    {
+      "id": "compression_amplifies",
+      "quantity": "min AF_FE over the compression rungs",
+      "reference": "AF_c(u) > 1 for 0 < u < pi/2",
+      "value": 1.1111759556463376,
+      "threshold": 1.0,
+      "operator": ">",
+      "passed": true,
+      "note": ""
+    },
+    {
+      "id": "zero_preload_recovers_euler_bernoulli",
+      "quantity": "|AF_FE - 1| at N = 0, n = 1",
+      "reference": "delta = P L^3/(3 E I), the case-pool rung",
+      "value": 3.3306690738754696e-16,
+      "threshold": 1e-14,
+      "operator": "<=",
+      "passed": true,
+      "note": "with Kg switched off the rung degenerates to the original case"
+    },
+    {
+      "id": "single_element_fails_near_critical",
+      "quantity": "single-element relative error at u = 1.5 compression (0.955 N_cr)",
+      "reference": "AF_c(1.5) = 11.2013",
+      "value": 0.06458076400234138,
+      "threshold": 0.05,
+      "operator": ">=",
+      "passed": true,
+      "note": "graded as a required failure: a one-element beam-column is wrong by construction near P_cr"
+    },
+    {
+      "id": "refinement_recovers_near_critical",
+      "quantity": "32-element relative error at u = 1.5 compression",
+      "reference": "AF_c(1.5) = 11.2013",
+      "value": 7.607082480147863e-08,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "same rung inside tolerance once the mesh resolves the shape"
+    },
+    {
+      "id": "convergence_order_tension_u1",
+      "quantity": "fitted order of the nodal-displacement error over n = 8..32",
+      "reference": "consistent Hermite beam-column: order >= 3 measured, 2 required",
+      "value": 3.99091978380248,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "nodal super-convergence of the Hermite beam-column is the measured result; the gate only demands better-than-second order"
+    },
+    {
+      "id": "convergence_order_tension_u1.5",
+      "quantity": "fitted order of the nodal-displacement error over n = 8..32",
+      "reference": "consistent Hermite beam-column: order >= 3 measured, 2 required",
+      "value": 3.9951271350925373,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "nodal super-convergence of the Hermite beam-column is the measured result; the gate only demands better-than-second order"
+    },
+    {
+      "id": "convergence_order_compression_u1",
+      "quantity": "fitted order of the nodal-displacement error over n = 8..32",
+      "reference": "consistent Hermite beam-column: order >= 3 measured, 2 required",
+      "value": 3.9908421191566177,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "nodal super-convergence of the Hermite beam-column is the measured result; the gate only demands better-than-second order"
+    },
+    {
+      "id": "convergence_order_compression_u1.5",
+      "quantity": "fitted order of the nodal-displacement error over n = 8..32",
+      "reference": "consistent Hermite beam-column: order >= 3 measured, 2 required",
+      "value": 3.9978600984178145,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "nodal super-convergence of the Hermite beam-column is the measured result; the gate only demands better-than-second order"
+    },
+    {
+      "id": "shear_compliance_negligible",
+      "quantity": "delta_shear/delta_EB at L/h = 100",
+      "reference": "E/(4 kappa G) (h/L)^2",
+      "value": 7.800000000000001e-05,
+      "threshold": 0.001,
+      "operator": "<=",
+      "passed": true,
+      "note": "the beam-column oracle is Euler-Bernoulli; at L/h = 100 the shear share is < 0.1 %"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "limitations": [
+    "Euler-Bernoulli beam-column only: the axial force acts on the bending stiffness, the Timoshenko beam-column coupling (shear deformation amplified by N) is not modelled; at L/h = 100 the shear share of the deflection is 7.80e-05, so the oracle is inside its range.",
+    "small-deflection (linearised) theory: valid while delta/L stays small. The u = 1.25 and u = 1.5 compression rungs reach delta/L = 4.0 % and 11.2 % and are graded as numerical stiffness checks, not as engineering predictions.",
+    "the axial force is a dead (load-direction-fixed) load; follower axial force would change the geometric stiffness at finite rotation, which this linear rung does not address.",
+    "the geometric stiffness is the consistent (Hermite) matrix: it is exact for the eigenvalue problem in the limit and second-order accurate for nodal displacements, but the interior bending moment along an element is only O(h^2) accurate.",
+    "beam theory itself is the limit here: no root warping, no 3-D Poisson contraction. The root-clamp and Poisson residuals of the 3-D model are quantified separately in docs/CASE-CANTILEVER-TIP-shear-validity.md and ...-side-convergence.md."
+  ],
+  "seconds": 2.02,
+  "figures": [
+    "docs/assets/cantilever_beamcolumn/amplification.png",
+    "docs/assets/cantilever_beamcolumn/convergence.png",
+    "docs/assets/cantilever_beamcolumn/profiles.png",
+    "docs/assets/cantilever_beamcolumn/error_vs_preload.png"
+  ]
+}
