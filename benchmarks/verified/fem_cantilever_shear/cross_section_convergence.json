@@ -1,0 +1,596 @@
+{
+  "anchor": "fem_cantilever_shear",
+  "case": "CASE-CANTILEVER-TIP",
+  "title": "Cross-section convergence of the HEX20 shear recovery (sparse solve)",
+  "generated_at": "2026-11-13T10:28:53+0000",
+  "criterion": "case-pool tolerance 3%; kappa = 5/6 Timoshenko oracle",
+  "environment": {
+    "torch": "2.7.1",
+    "threads": 8,
+    "dtype": "float64",
+    "solver": "scipy SuperLU on CSC; dense LAPACK for the cross-check"
+  },
+  "problem": {
+    "E_Pa": 200000000000.0,
+    "nu": 0.3,
+    "P_N": 5.0,
+    "B_m": 0.01,
+    "H_m": 0.01,
+    "kappa": 0.8333333333333334,
+    "slenderness_rungs": [
+      20.0,
+      10.0,
+      5.0,
+      4.0
+    ],
+    "section_subdivisions": [
+      2,
+      3,
+      4,
+      6
+    ],
+    "mesh_family": "axial = round(slenderness*n), cross = n x n (isotropic h)"
+  },
+  "sparse_crosscheck": [
+    {
+      "slenderness_L_over_h": 4.0,
+      "mesh": [
+        40,
+        2,
+        2
+      ],
+      "dofs": 3663,
+      "dense_tip_deflection_m": 6.597265366449845e-07,
+      "sparse_tip_deflection_m": 6.597265366448707e-07,
+      "displacement_relative_difference": 2.873542478746524e-13,
+      "published_tip_deflection_m": 6.597265366449845e-07,
+      "published_relative_difference": 1.725261088725101e-13,
+      "dense_seconds": 2.266,
+      "sparse_seconds": 0.887
+    },
+    {
+      "slenderness_L_over_h": 5.0,
+      "mesh": [
+        30,
+        3,
+        3
+      ],
+      "dofs": 5160,
+      "dense_tip_deflection_m": 1.2698344368774502e-06,
+      "sparse_tip_deflection_m": 1.269834436881259e-06,
+      "displacement_relative_difference": 3.084547503707815e-12,
+      "published_tip_deflection_m": 1.2698344368774502e-06,
+      "published_relative_difference": 2.999521272184057e-12,
+      "dense_seconds": 4.286,
+      "sparse_seconds": 1.329
+    }
+  ],
+  "ladder": [
+    {
+      "slenderness_L_over_h": 20.0,
+      "length_m": 0.2,
+      "shear_fraction_of_eb": 0.0019500000000000001,
+      "oracle_eb_m": 8e-05,
+      "oracle_timoshenko_m": 8.015600000000001e-05,
+      "levels": [
+        {
+          "mesh": {
+            "axial": 40,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 1221,
+          "dofs": 3663,
+          "tip_deflection_m": 7.973747576852329e-05,
+          "force_residual": 1.797094029143409e-10,
+          "moment_residual": 1.2792811254769276e-10,
+          "seconds": 1.152,
+          "cross_subdivisions": 2,
+          "relative_element_size": 0.5,
+          "error_vs_eb": -0.0032815528934589393,
+          "error_vs_timoshenko": -0.005221371219580797,
+          "shear_recovery": -1.682847637671216
+        },
+        {
+          "mesh": {
+            "axial": 60,
+            "cross_y": 3,
+            "cross_z": 3
+          },
+          "nodes": 3400,
+          "dofs": 10200,
+          "tip_deflection_m": 7.980613036135989e-05,
+          "force_residual": 5.826887417015314e-10,
+          "moment_residual": 4.28316271339213e-10,
+          "seconds": 1.534,
+          "cross_subdivisions": 3,
+          "relative_element_size": 0.3333333333333333,
+          "error_vs_eb": -0.0024233704830014346,
+          "error_vs_timoshenko": -0.0043648590079359995,
+          "shear_recovery": -1.2427540938468637
+        },
+        {
+          "mesh": {
+            "axial": 80,
+            "cross_y": 4,
+            "cross_z": 4
+          },
+          "nodes": 7265,
+          "dofs": 21795,
+          "tip_deflection_m": 7.983319214451686e-05,
+          "force_residual": 1.1447660597241338e-10,
+          "moment_residual": 7.151512715353192e-11,
+          "seconds": 3.872,
+          "cross_subdivisions": 4,
+          "relative_element_size": 0.25,
+          "error_vs_eb": -0.0020850981935393773,
+          "error_vs_timoshenko": -0.004027245065661378,
+          "shear_recovery": -1.069281124891966
+        },
+        {
+          "mesh": {
+            "axial": 120,
+            "cross_y": 6,
+            "cross_z": 6
+          },
+          "nodes": 21973,
+          "dofs": 65919,
+          "tip_deflection_m": 7.98558087321024e-05,
+          "force_residual": 2.549893451941898e-09,
+          "moment_residual": 1.891547363186419e-09,
+          "seconds": 20.599,
+          "cross_subdivisions": 6,
+          "relative_element_size": 0.16666666666666666,
+          "error_vs_eb": -0.0018023908487200208,
+          "error_vs_timoshenko": -0.0037450879272619003,
+          "shear_recovery": -0.9243029993435812
+        }
+      ],
+      "richardson": {
+        "order_assumed": 2.0,
+        "refinement_ratio": 1.5,
+        "extrapolated_limit": -0.8083204989048733,
+        "limit_order_minus_one": -0.6343467482468115,
+        "spread": 0.17397375065806187,
+        "last_increment": 0.14497812554838485
+      },
+      "observed_order": 1.5234699544371155,
+      "recovery_sequence": [
+        -1.682848,
+        -1.242754,
+        -1.069281,
+        -0.924303
+      ],
+      "eb_residual_sequence": [
+        -0.003282,
+        -0.002423,
+        -0.002085,
+        -0.001802
+      ],
+      "monotone_rising": true,
+      "finest_recovery": -0.9243029993435812,
+      "finest_error_vs_eb": -0.0018023908487200208
+    },
+    {
+      "slenderness_L_over_h": 10.0,
+      "length_m": 0.1,
+      "shear_fraction_of_eb": 0.0078000000000000005,
+      "oracle_eb_m": 1e-05,
+      "oracle_timoshenko_m": 1.0078e-05,
+      "levels": [
+        {
+          "mesh": {
+            "axial": 20,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 621,
+          "dofs": 1863,
+          "tip_deflection_m": 9.97302781723779e-06,
+          "force_residual": 1.766480295373185e-11,
+          "moment_residual": 1.1263212584822213e-11,
+          "seconds": 0.81,
+          "cross_subdivisions": 2,
+          "relative_element_size": 0.5,
+          "error_vs_eb": -0.002697218276221023,
+          "error_vs_timoshenko": -0.010415973681505274,
+          "shear_recovery": -0.3457972149001315
+        },
+        {
+          "mesh": {
+            "axial": 30,
+            "cross_y": 3,
+            "cross_z": 3
+          },
+          "nodes": 1720,
+          "dofs": 5160,
+          "tip_deflection_m": 9.990458193728025e-06,
+          "force_residual": 2.249560537848083e-11,
+          "moment_residual": 1.881372835299544e-11,
+          "seconds": 1.241,
+          "cross_subdivisions": 3,
+          "relative_element_size": 0.3333333333333333,
+          "error_vs_eb": -0.0009541806271976248,
+          "error_vs_timoshenko": -0.008686426500493767,
+          "shear_recovery": -0.12233084964072125
+        },
+        {
+          "mesh": {
+            "axial": 40,
+            "cross_y": 4,
+            "cross_z": 4
+          },
+          "nodes": 3665,
+          "dofs": 10995,
+          "tip_deflection_m": 9.997240635722014e-06,
+          "force_residual": 2.6103030847934862e-11,
+          "moment_residual": 1.705724450573598e-11,
+          "seconds": 2.684,
+          "cross_subdivisions": 4,
+          "relative_element_size": 0.25,
+          "error_vs_eb": -0.00027593642779866597,
+          "error_vs_timoshenko": -0.008013431660844075,
+          "shear_recovery": -0.035376465102393104
+        },
+        {
+          "mesh": {
+            "axial": 60,
+            "cross_y": 6,
+            "cross_z": 6
+          },
+          "nodes": 11053,
+          "dofs": 33159,
+          "tip_deflection_m": 1.0002877282029324e-05,
+          "force_residual": 9.686385027407596e-11,
+          "moment_residual": 6.139644348479578e-11,
+          "seconds": 11.638,
+          "cross_subdivisions": 6,
+          "relative_element_size": 0.16666666666666666,
+          "error_vs_eb": 0.0002877282029323404,
+          "error_vs_timoshenko": -0.007454129586294555,
+          "shear_recovery": 0.03688823114517188
+        }
+      ],
+      "richardson": {
+        "order_assumed": 2.0,
+        "refinement_ratio": 1.5,
+        "extrapolated_limit": 0.09469998814322386,
+        "limit_order_minus_one": 0.18141762364030184,
+        "spread": 0.08671763549707798,
+        "last_increment": 0.07226469624756499
+      },
+      "observed_order": 1.5710917102089321,
+      "recovery_sequence": [
+        -0.345797,
+        -0.122331,
+        -0.035376,
+        0.036888
+      ],
+      "eb_residual_sequence": [
+        -0.002697,
+        -0.000954,
+        -0.000276,
+        0.000288
+      ],
+      "monotone_rising": true,
+      "finest_recovery": 0.03688823114517188,
+      "finest_error_vs_eb": 0.0002877282029323404
+    },
+    {
+      "slenderness_L_over_h": 5.0,
+      "length_m": 0.05,
+      "shear_fraction_of_eb": 0.031200000000000002,
+      "oracle_eb_m": 1.25e-06,
+      "oracle_timoshenko_m": 1.2890000000000003e-06,
+      "levels": [
+        {
+          "mesh": {
+            "axial": 10,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 321,
+          "dofs": 963,
+          "tip_deflection_m": 1.2629273667479472e-06,
+          "force_residual": 5.512212908342917e-12,
+          "moment_residual": 4.288569499522055e-12,
+          "seconds": 0.709,
+          "cross_subdivisions": 2,
+          "relative_element_size": 0.5,
+          "error_vs_eb": 0.010341893398357688,
+          "error_vs_timoshenko": -0.020227023469397254,
+          "shear_recovery": 0.33147094225505264
+        },
+        {
+          "mesh": {
+            "axial": 15,
+            "cross_y": 3,
+            "cross_z": 3
+          },
+          "nodes": 880,
+          "dofs": 2640,
+          "tip_deflection_m": 1.2673386369363018e-06,
+          "force_residual": 6.764366844436154e-13,
+          "moment_residual": 1.2105871860512707e-12,
+          "seconds": 0.817,
+          "cross_subdivisions": 3,
+          "relative_element_size": 0.3333333333333333,
+          "error_vs_eb": 0.013870909549041396,
+          "error_vs_timoshenko": -0.016804781275173333,
+          "shear_recovery": 0.44458043426414534
+        },
+        {
+          "mesh": {
+            "axial": 20,
+            "cross_y": 4,
+            "cross_z": 4
+          },
+          "nodes": 1865,
+          "dofs": 5595,
+          "tip_deflection_m": 1.2689888892256283e-06,
+          "force_residual": 2.41051623106614e-12,
+          "moment_residual": 1.396660564978447e-12,
+          "seconds": 1.34,
+          "cross_subdivisions": 4,
+          "relative_element_size": 0.25,
+          "error_vs_eb": 0.015191111380502534,
+          "error_vs_timoshenko": -0.015524523486712183,
+          "shear_recovery": 0.4868945955289252
+        },
+        {
+          "mesh": {
+            "axial": 30,
+            "cross_y": 6,
+            "cross_z": 6
+          },
+          "nodes": 5593,
+          "dofs": 16779,
+          "tip_deflection_m": 1.270327462978374e-06,
+          "force_residual": 6.942535435427999e-12,
+          "moment_residual": 5.678346681747826e-12,
+          "seconds": 5.737,
+          "cross_subdivisions": 6,
+          "relative_element_size": 0.16666666666666666,
+          "error_vs_eb": 0.016261970382699036,
+          "error_vs_timoshenko": -0.014486064407778413,
+          "shear_recovery": 0.5212169994454796
+        }
+      ],
+      "richardson": {
+        "order_assumed": 2.0,
+        "refinement_ratio": 1.5,
+        "extrapolated_limit": 0.5486749225787231,
+        "limit_order_minus_one": 0.5898618072785884,
+        "spread": 0.04118688469986531,
+        "last_increment": 0.03432240391655439
+      },
+      "observed_order": 1.7771956222446124,
+      "recovery_sequence": [
+        0.331471,
+        0.44458,
+        0.486895,
+        0.521217
+      ],
+      "eb_residual_sequence": [
+        0.010342,
+        0.013871,
+        0.015191,
+        0.016262
+      ],
+      "monotone_rising": true,
+      "finest_recovery": 0.5212169994454796,
+      "finest_error_vs_eb": 0.016261970382699036
+    },
+    {
+      "slenderness_L_over_h": 4.0,
+      "length_m": 0.04,
+      "shear_fraction_of_eb": 0.04875,
+      "oracle_eb_m": 6.400000000000001e-07,
+      "oracle_timoshenko_m": 6.712e-07,
+      "levels": [
+        {
+          "mesh": {
+            "axial": 8,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 261,
+          "dofs": 783,
+          "tip_deflection_m": 6.546771433034728e-07,
+          "force_residual": 3.8049563499953363e-13,
+          "moment_residual": 2.42861286636753e-13,
+          "seconds": 0.54,
+          "cross_subdivisions": 2,
+          "relative_element_size": 0.5,
+          "error_vs_eb": 0.022933036411676044,
+          "error_vs_timoshenko": -0.024616890191488734,
+          "shear_recovery": 0.4704212597266895
+        },
+        {
+          "mesh": {
+            "axial": 12,
+            "cross_y": 3,
+            "cross_z": 3
+          },
+          "nodes": 712,
+          "dofs": 2136,
+          "tip_deflection_m": 6.574920488224026e-07,
+          "force_residual": 7.23154869319842e-13,
+          "moment_residual": 3.7511660444522477e-13,
+          "seconds": 0.716,
+          "cross_subdivisions": 3,
+          "relative_element_size": 0.3333333333333333,
+          "error_vs_eb": 0.0273313262850039,
+          "error_vs_timoshenko": -0.020423050026217835,
+          "shear_recovery": 0.5606425904616201
+        },
+        {
+          "mesh": {
+            "axial": 16,
+            "cross_y": 4,
+            "cross_z": 4
+          },
+          "nodes": 1505,
+          "dofs": 4515,
+          "tip_deflection_m": 6.5851646069773e-07,
+          "force_residual": 2.255617914670438e-12,
+          "moment_residual": 1.579153474651207e-12,
+          "seconds": 1.024,
+          "cross_subdivisions": 4,
+          "relative_element_size": 0.25,
+          "error_vs_eb": 0.028931969840202874,
+          "error_vs_timoshenko": -0.018896810641045984,
+          "shear_recovery": 0.5934763044144198
+        },
+        {
+          "mesh": {
+            "axial": 24,
+            "cross_y": 6,
+            "cross_z": 6
+          },
+          "nodes": 4501,
+          "dofs": 13503,
+          "tip_deflection_m": 6.59330776704703e-07,
+          "force_residual": 7.476508301351714e-12,
+          "moment_residual": 6.205869151898469e-12,
+          "seconds": 4.008,
+          "cross_subdivisions": 6,
+          "relative_element_size": 0.16666666666666666,
+          "error_vs_eb": 0.030204338601098175,
+          "error_vs_timoshenko": -0.017683586554375852,
+          "shear_recovery": 0.619576176432785
+        }
+      ],
+      "richardson": {
+        "order_assumed": 2.0,
+        "refinement_ratio": 1.5,
+        "extrapolated_limit": 0.6404560740474771,
+        "limit_order_minus_one": 0.6717759204695153,
+        "spread": 0.03131984642203822,
+        "last_increment": 0.026099872018365167
+      },
+      "observed_order": 1.948713919869539,
+      "recovery_sequence": [
+        0.470421,
+        0.560643,
+        0.593476,
+        0.619576
+      ],
+      "eb_residual_sequence": [
+        0.022933,
+        0.027331,
+        0.028932,
+        0.030204
+      ],
+      "monotone_rising": true,
+      "finest_recovery": 0.619576176432785,
+      "finest_error_vs_eb": 0.030204338601098175
+    }
+  ],
+  "published_residuals": [
+    {
+      "slenderness_L_over_h": 100.0,
+      "mesh": {
+        "axial": 32,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "dofs": 2943,
+      "error_vs_eb": -0.004015415811684833
+    },
+    {
+      "slenderness_L_over_h": 20.0,
+      "mesh": {
+        "axial": 32,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "dofs": 2943,
+      "error_vs_eb": -0.003795841876294209
+    },
+    {
+      "slenderness_L_over_h": 10.0,
+      "mesh": {
+        "axial": 24,
+        "cross_y": 3,
+        "cross_z": 3
+      },
+      "dofs": 4152,
+      "error_vs_eb": -0.0014644027339342123
+    }
+  ],
+  "gates": {
+    "infrastructure": [
+      {
+        "name": "sparse_matches_dense",
+        "value": 3.084547503707815e-12,
+        "criterion": "<= 1e-09",
+        "pass": true,
+        "note": "same discretisation; only SuperLU vs dense LAPACK differ"
+      },
+      {
+        "name": "sparse_reproduces_published",
+        "value": 2.999521272184057e-12,
+        "criterion": "<= 1e-09",
+        "pass": true,
+        "note": "sparse solve vs the tip deflections in the published result.json"
+      },
+      {
+        "name": "force_equilibrium",
+        "value": 2.549893451941898e-09,
+        "criterion": "<= 1e-05",
+        "pass": true
+      },
+      {
+        "name": "moment_equilibrium",
+        "value": 1.891547363186419e-09,
+        "criterion": "<= 1e-05",
+        "pass": true
+      },
+      {
+        "name": "dof_cap_removed",
+        "value": 65919,
+        "criterion": ">= 50000",
+        "pass": true,
+        "note": "the dense path could not exceed ~5e3 dof (published cap)"
+      }
+    ],
+    "claim": [
+      {
+        "name": "fine_increment_below_1pp",
+        "value": 0.026099872018365167,
+        "criterion": "<= 0.01",
+        "pass": false,
+        "note": "last cross-section increment of shear recovery at L/h = 4"
+      },
+      {
+        "name": "timoshenko_recovery_inside_extrapolation_band",
+        "value": [
+          0.6091362276254388,
+          0.6717759204695153
+        ],
+        "criterion": "band contains 1.0",
+        "pass": false,
+        "note": "1.0 = the continuum recovers the full kappa = 5/6 shear deflection"
+      },
+      {
+        "name": "recovery_rung_independent",
+        "value": 1.5438791757763661,
+        "criterion": "<= 0.10",
+        "pass": false,
+        "note": "kappa is a section property; the metric must not depend on L/h. Values per rung: 20:-0.924, 10:+0.037, 5:+0.521, 4:+0.620"
+      },
+      {
+        "name": "slender_noise_floor_below_gap",
+        "value": 0.2310757498359001,
+        "criterion": "<= 0.10",
+        "pass": false,
+        "note": "finest-mesh |error_vs_EB| on L/h >= 10 (0.180%) over the L/h = 10 oracle gap (0.780%)"
+      }
+    ]
+  },
+  "infrastructure_passed": true,
+  "claim_supported": false,
+  "timoshenko_supported": false,
+  "seconds": 70.16
+}
