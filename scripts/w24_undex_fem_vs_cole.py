@@ -608,8 +608,13 @@ def write_readme(anchor, doc, cases_res, figures) -> None:
       "relative deviations, PASS/FAIL of every criterion |")
     A("| `grid_convergence.json` | three-level GCI per quantity per case, observed "
       "orders, energy-ledger residuals, criterion verdicts |")
-    A("| `case_matrix.csv`, `chain_metrics.json`, `srs_comparison.json` | chain-2 "
-      "artifacts, unchanged |")
+    A("| `case_matrix.csv`, `srs_comparison.json` | chain-2 artifacts, extended "
+      "to the full %d-case ensemble; `gci_*` recomputed with "
+      "`roache_gci(fine, medium, coarse)` and non-demonstrated quantities "
+      "marked `n/a` (see `srs_comparison.json` -> `extension`) |"
+      % len(rows))
+    A("| `chain_metrics.json` | chain-2 provenance record (mission 15095, "
+      "cases C1-C4 as generated there; not rewritten) |")
     A("")
     A("## 2. Anchor status: %s (criterion 1)" % crit1)
     A("")
