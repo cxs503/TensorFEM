@@ -3,7 +3,7 @@
   "anchor": "fem_hertz_contact_loadcontrol",
   "title": "Load-controlled Hertz contact: contact radius and indentation vs closed form (case pool FEM-HERTZ-CONTACT)",
   "mission": "CASE-FEM-HERTZ-CONTACT",
-  "generated_at": "2026-11-13T01:53:53+00:00",
+  "generated_at": "2026-11-13T17:25:58+00:00",
   "criteria": {
     "contact_radius_pct": 3.0,
     "indentation_pct": 3.0,
@@ -198,6 +198,44 @@
       "reference": "delta = a^2/R at infinite half-space; load independence of the plateau is what made it look mesh-independent",
       "value": 0.4038540392683778,
       "threshold": 3.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "plateau_vertical_resolution_significance",
+      "quantity": "|e_delta(dz=a/6) - e_delta(dz=a/24)| (pct points), radial near field bit-identical",
+      "reference": "a genuinely mesh-independent model bias would leave e_delta unchanged (0 pp); a discretisation artefact of the unrefined vertical spacing must move it",
+      "value": 0.17045936093442737,
+      "threshold": 0.1,
+      "operator": ">=",
+      "passed": true,
+      "note": "the h/a ladder refined r only and never dz, so 'mesh independent' was a one-directional statement; this gate makes the dz axis part of the record"
+    },
+    {
+      "id": "plateau_far_field_hypothesis_rejected",
+      "quantity": "shift (pp) of |e_delta| when the stretched far field is refined from 16 to 64 vertical (26 -> 104 radial) layers",
+      "reference": "H_far predicted a collapse of the offset; the pre-declared equivalence band is 0.05 pp",
+      "value": 0.019498049329391698,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "passing this gate means 'the far field is NOT the mechanism', i.e. H_far is rejected; the extrapolated limit only moves -0.4278 -> -0.3878 %"
+    },
+    {
+      "id": "plateau_indentation_dz_a48",
+      "quantity": "|e_delta| at dz=a/48, depth 768a (case-pool metric, vertical-refined near field)",
+      "reference": "delta = a^2/R (Hertz 1882; Johnson 1985 4.2), case-pool band 3%",
+      "value": 0.298765232634679,
+      "threshold": 3.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "plateau_peak_pressure_dz_a24",
+      "quantity": "|p0_FE/p0_Hertz - 1| (mass-matrix consistent) at dz=a/24, depth 768a",
+      "reference": "p0 = 3P/(2 pi a^2); the 5% band of the case certificate does not apply to this refined model, 0.05% is the pre-declared study bound",
+      "value": 0.022824156398115747,
+      "threshold": 0.05,
       "operator": "<=",
       "passed": true
     }
