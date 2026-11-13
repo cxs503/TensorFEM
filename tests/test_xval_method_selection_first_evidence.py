@@ -50,12 +50,28 @@ def test_lame_band_average_matches_numerical_integration():
 
 
 def test_band_average_is_not_centroid_sampling():
-    """The two functionals differ materially on the inner band (the m15883 gap)."""
+    """M1 (Lamé at the volume-averaged radius) and M2 (exact band integral)
+    really are different functionals on the inner band.
+
+    The measured gap is 1.816 % for the case constants (a=8 m, b=10 m,
+    p=1 MPa), i.e. below the 3 % target of claim C1 -- the earlier assertion
+    of "> 3 %" was an unverified guess and is replaced by (a) an independent
+    high-resolution quadrature of the exact band integral and (b) the pinned
+    analytic gap.  The functional difference is what makes C1 metric
+    dependent: the *FE* worst probe moves from 2.88 % (M1) to 11.99 % (M2) on
+    the same HEX20 mesh, far larger than this 1.8 % reference gap.
+    """
     analytic = xval.lame_band_average(8.0, 9.0)
+    r = np.linspace(8.0, 9.0, 200001)
+    w = 4 * math.pi * r ** 2
+    num = {k: float((xval.lame_sphere(r, xval.CASE)[k] * w).sum() / w.sum())
+           for k in ("radial_stress", "hoop_stress", "von_mises")}
+    for k, v in num.items():
+        assert abs(analytic[k] - v) / abs(v) < 2e-6, (k, analytic[k], v)
     centroid = xval.lame_at(analytic["radius"])
     gap = abs(analytic["radial_stress"] - centroid["radial_stress"]) / abs(
         centroid["radial_stress"])
-    assert gap > 0.03, f"functionals collapsed to the same value (gap={gap:.3%})"
+    assert 0.015 < gap < 0.021, f"unexpected functional gap {gap:.3%}"
 
 
 def test_metric_m2_is_exact_for_a_perfect_layer():
@@ -79,7 +95,7 @@ def test_metric_m2_is_exact_for_a_perfect_layer():
 @pytest.mark.parametrize("order", [1, 2])
 def test_independent_scikitfem_arm_matches_lame(order):
     """scikit-fem icosphere tet shell reproduces the Lame displacement field."""
-    row = xval.arm_skfem(3, order=order, layers=2, project=True)
+    row = xval.arm_skfem(3, order=order, layers=2, project=False)
     ur_a = xval.lame_at(xval.A)["radial_displacement"]
     ur_b = xval.lame_at(xval.B)["radial_displacement"]
     assert abs(row["u_inner"] - ur_a) / abs(ur_a) < 0.05
@@ -88,8 +104,11 @@ def test_independent_scikitfem_arm_matches_lame(order):
     assert row["loads"]["load_rigid_mode_relative"] < 1e-6
     # the discrete system is solved to high accuracy
     assert row["equilibrium"]["free_residual_relative"] < 1e-8
-    # geometric fidelity of the icosphere shell improves with the element order
-    assert row["mesh_volume_error"] < 0.05
+    # geometric fidelity of the *straight-sided* icosphere shell: the faceted
+    # sphere under-integrates the shell volume by 5.906% at nsub=3 (measured,
+    # independent of the element order); the opt-in midpoint projection reduces
+    # it to 0.045% (see test_p2_curved_projection_moves_the_edge_midpoints).
+    assert row["mesh_volume_error"] < 0.07
     assert row["worst_m1"] < 0.25
 
 
@@ -126,3 +145,26 @@ def test_decision_table_flags_functional_dependence():
     assert decision["verdict"]["ranking_m1_reproduced"] is True
     assert decision["verdict"]["ranking_m2_reproduced"] is False
     assert decision["verdict"]["selection_robust"] is False
+
+def test_p2_curved_projection_moves_the_edge_midpoints():
+    """Regression for the no-op projection bug (``mesh.t[4:]`` is always empty
+    for a ``MeshTet2``: the geometry connectivity stays linear and the P2
+    connectivity lives in ``mesh.dofs.element_dofs``)."""
+    import numpy as np
+    row = xval.arm_skfem(3, order=2, layers=2, project=True)
+    flat = xval.arm_skfem(3, order=2, layers=2, project=False)
+    assert row["curved_projection_midpoints"] > 0
+    assert flat["curved_projection_midpoints"] == 0
+    radii = np.array(row["mesh_layer_radii"])
+    assert radii[0] == xval.A and radii[-1] == xval.B
+    # projecting the boundary midpoints onto the exact sphere removes the facet
+    # under-integration of the shell volume
+    assert row["mesh_volume_error"] < flat["mesh_volume_error"]
+    assert row["loads"]["load_rigid_mode_relative"] < 1e-6
+
+
+def test_rigid_body_modes_follow_dof_ordering():
+    """Regression for the component-major rigid-mode bug: the self-equilibrated
+    inner pressure load must not project onto any rigid-body mode."""
+    row = xval.arm_skfem(3, order=1, layers=2, project=False)
+    assert row["loads"]["load_rigid_mode_relative"] < 1e-12
