@@ -1,0 +1,225 @@
+{
+ "benchmark": "fem_hertz_contact_loadcontrol",
+ "case_pool": "FEM-HERTZ-CONTACT (case pool id 104)",
+ "mission": "CASE-FEM-HERTZ-CONTACT",
+ "schema": "tensorfem.hertz-truncation-crosscheck.v1",
+ "what": "exact Hertz tractions on the FE mesh, single linear solve, no contact algorithm",
+ "environment": {
+  "python": "3.11.6",
+  "numpy": "2.4.6",
+  "machine": "loongarch64",
+  "float": "float64"
+ },
+ "params": {
+  "R": 10.0,
+  "E": 100000.0,
+  "nu": 0.3,
+  "a_over_R": 0.05,
+  "units": "dimensionless: lengths/R, forces/(E R^2)"
+ },
+ "reference": "Hertz 1882; Johnson 1985 Contact Mechanics 4.2 DOI:10.1017/cbo9781139171731 (delta = a^2/R)",
+ "depth_ladder_h0.015": [
+  {
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 24.0,
+   "n_outer_band": 26,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "prescribed_force_over_P": 0.9999888786501703,
+   "w_fe_centre": 0.024195418869667282,
+   "delta_hertz": 0.025,
+   "indentation_error_pct": -3.218324521330873,
+   "contact_radius_over_h": 66.66666666666667
+  },
+  {
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 48.0,
+   "n_outer_band": 26,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "prescribed_force_over_P": 0.9999888786501703,
+   "w_fe_centre": 0.02451085518696141,
+   "delta_hertz": 0.025,
+   "indentation_error_pct": -1.9565792521543668,
+   "contact_radius_over_h": 66.66666666666667
+  },
+  {
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 96.0,
+   "n_outer_band": 26,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "prescribed_force_over_P": 0.9999888786501703,
+   "w_fe_centre": 0.024667974414265537,
+   "delta_hertz": 0.025,
+   "indentation_error_pct": -1.3281023429378536,
+   "contact_radius_over_h": 66.66666666666667
+  },
+  {
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 192.0,
+   "n_outer_band": 26,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "prescribed_force_over_P": 0.9999888786501703,
+   "w_fe_centre": 0.024745925676403744,
+   "delta_hertz": 0.025,
+   "indentation_error_pct": -1.0162972943850268,
+   "contact_radius_over_h": 66.66666666666667
+  }
+ ],
+ "depth_law": {
+  "model": "err_pct(D) = e_inf_pct + c_pct_depth / D",
+  "e_inf_pct": -0.6996483697896734,
+  "c_pct_depth": -60.42508712511265,
+  "max_resid_pp": 0.0019349291520585066,
+  "points": [
+   {
+    "depth_over_a": 24.0,
+    "measured_pct": -3.218324521330873,
+    "predicted_pct": -3.2173603333360337
+   },
+   {
+    "depth_over_a": 48.0,
+    "measured_pct": -1.9565792521543668,
+    "predicted_pct": -1.9585043515628535
+   },
+   {
+    "depth_over_a": 96.0,
+    "measured_pct": -1.3281023429378536,
+    "predicted_pct": -1.3290763606762634
+   },
+   {
+    "depth_over_a": 192.0,
+    "measured_pct": -1.0162972943850268,
+    "predicted_pct": -1.0143623652329683
+   }
+  ]
+ },
+ "mesh_ladder_d192": [
+  {
+   "h_over_a": 0.03,
+   "domain_depth_over_a": 192.0,
+   "n_outer_band": 26,
+   "n_elements": 5040,
+   "ndof": 10414,
+   "prescribed_force_over_P": 1.0021533820262412,
+   "w_fe_centre": 0.024714711843709703,
+   "delta_hertz": 0.025,
+   "indentation_error_pct": -1.1411526251611903,
+   "contact_radius_over_h": 33.333333333333336
+  },
+  {
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 192.0,
+   "n_outer_band": 26,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "prescribed_force_over_P": 0.9999888786501703,
+   "w_fe_centre": 0.024745925676403744,
+   "delta_hertz": 0.025,
+   "indentation_error_pct": -1.0162972943850268,
+   "contact_radius_over_h": 66.66666666666667
+  },
+  {
+   "h_over_a": 0.0075,
+   "domain_depth_over_a": 192.0,
+   "n_outer_band": 26,
+   "n_elements": 17040,
+   "ndof": 35014,
+   "prescribed_force_over_P": 1.0002618741047393,
+   "w_fe_centre": 0.024766917417813453,
+   "delta_hertz": 0.025,
+   "indentation_error_pct": -0.9323303287461893,
+   "contact_radius_over_h": 133.33333333333334
+  }
+ ],
+ "farfield_pair_d192": [
+  {
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 192.0,
+   "n_outer_band": 26,
+   "n_elements": 9040,
+   "ndof": 18614,
+   "prescribed_force_over_P": 0.9999888786501703,
+   "w_fe_centre": 0.024745925676403744,
+   "delta_hertz": 0.025,
+   "indentation_error_pct": -1.0162972943850268,
+   "contact_radius_over_h": 66.66666666666667
+  },
+  {
+   "h_over_a": 0.015,
+   "domain_depth_over_a": 192.0,
+   "n_outer_band": 52,
+   "n_elements": 10080,
+   "ndof": 20746,
+   "prescribed_force_over_P": 0.9999888786501703,
+   "w_fe_centre": 0.024746579898430227,
+   "delta_hertz": 0.025,
+   "indentation_error_pct": -1.0136804062790938,
+   "contact_radius_over_h": 66.66666666666667
+  }
+ ],
+ "contact_solve_law": {
+  "model": "err_pct(D) = e_inf_pct + c_pct_depth / D",
+  "e_inf_pct": -0.3827483510587029,
+  "c_pct_depth": -60.38717163725862,
+  "max_resid_pp": 0.0017232666771112015,
+  "points": [
+   [
+    24.0,
+    -2.89975705559703
+   ],
+   [
+    48.0,
+    -1.6390911601578129
+   ],
+   [
+    96.0,
+    -1.0107277777946178
+   ],
+   [
+    144.0,
+    -0.8023663304977613
+   ],
+   [
+    192.0,
+    -0.6989025739991939
+   ]
+  ],
+  "predicted_pct": [
+   -2.8988805026111453,
+   -1.640814426834924,
+   -1.0117813889468135,
+   -0.8021037096507766,
+   -0.6972648700027582
+  ],
+  "holdout": {
+   "fit_depths": [
+    24.0,
+    48.0,
+    96.0
+   ],
+   "e_inf_pct_on_fit_subset": -0.38039483007500974,
+   "c_pct_depth_on_fit_subset": -60.45794061702079,
+   "points": [
+    {
+     "depth_over_a": 144.0,
+     "measured_pct": -0.8023663304977613,
+     "predicted_pct": -0.800241639915432
+    },
+    {
+     "depth_over_a": 192.0,
+     "measured_pct": -0.6989025739991939,
+     "predicted_pct": -0.6952799374553263
+    }
+   ],
+   "max_abs_deviation_pp": 0.003622636543867519
+  }
+ },
+ "comparison": {
+  "static_truncation_coeff_pct_depth": -60.42508712511265,
+  "contact_truncation_coeff_pct_depth": -60.38717163725862,
+  "note": "the two code paths (linear static solve vs load-controlled contact solve) share the mesh generator and the stiffness matrix; agreement of the truncation coefficient shows the O(1/D) term is the boundary condition, not the contact algorithm"
+ }
+}
