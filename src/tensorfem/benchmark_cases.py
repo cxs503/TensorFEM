@@ -1,13 +1,169 @@
-"""Versioned benchmark case schema, evidence archives and drift comparison."""
+"""Versioned benchmark case schema, evidence archives and drift comparison.
+
+Adds JSON round-trip (from_dict / from_json / to_json) and a units converter
+supporting SI, mm-tonne-s and mm-kg-s unit systems for FEM benchmark cases.
+"""
 from __future__ import annotations
 from dataclasses import asdict,dataclass,replace
 from pathlib import Path
-import hashlib,json
+import hashlib,json,math
+from typing import Any,Dict,Optional
 
 
 SCHEMA_VERSION="tensorfem.benchmark-case/1.0"
 EVIDENCE_VERSION="tensorfem.benchmark-evidence/2.0"
 
+
+# ---------------------------------------------------------------------------
+# Unit-system registry & converter
+# ---------------------------------------------------------------------------
+
+# Canonical (SI) base units: length=m, mass=kg, time=s, force=N, pressure=Pa
+_UNIT_SYSTEMS: Dict[str, Dict[str, float]] = {
+    # length(m), mass(kg), time(s), force(N), pressure(Pa)
+    "SI":          {"length": 1.0, "mass": 1.0,      "time": 1.0, "force": 1.0,   "pressure": 1.0},
+    "mm-tonne-s":  {"length": 1e-3, "mass": 1e3,     "time": 1.0, "force": 1.0,   "pressure": 1e6},
+    "mm-kg-s":     {"length": 1e-3, "mass": 1.0,      "time": 1.0, "force": 1.0,   "pressure": 1e6},
+    "m-kg-s":      {"length": 1.0,   "mass": 1.0,     "time": 1.0, "force": 1.0,   "pressure": 1.0},
+    "inch-lbf-s":  {"length": 0.0254, "mass": 0.45359237, "time": 1.0, "force": 4.4482216152605, "pressure": 6894.757293168},
+}
+
+# Dimensional exponents for common FEM quantities (L, M, T)
+_DIM_EXP: Dict[str, tuple] = {
+    "length":       (1, 0, 0),
+    "area":         (2, 0, 0),
+    "volume":       (3, 0, 0),
+    "mass":         (0, 1, 0),
+    "density":      (-3, 1, 0),
+    "time":         (0, 0, 1),
+    "velocity":     (1, 0, -1),
+    "acceleration": (1, 0, -2),
+    "force":        (1, 1, -2),
+    "pressure":     (-1, 1, -2),
+    "stress":       (-1, 1, -2),
+    "young_modulus":(-1, 1, -2),
+    "energy":       (2, 1, -2),
+    "moment":       (2, 1, -2),
+    "frequency":    (0, 0, -1),
+}
+
+# Map human-readable unit tags to dimensional category
+_UNIT_TAG_MAP: Dict[str, str] = {
+    "m": "length", "mm": "length", "inch": "length", "in": "length",
+    "kg": "mass", "tonne": "mass", "t": "mass", "lb": "mass",
+    "s": "time", "ms": "time",
+    "N": "force", "kN": "force", "MN": "force", "lbf": "force",
+    "Pa": "pressure", "MPa": "pressure", "GPa": "pressure", "psi": "pressure",
+    "kg/m^3": "density", "kg/mm^3": "density", "tonne/mm^3": "density",
+    "length": "length", "mass": "mass", "time": "time",
+    "force": "force", "pressure": "pressure", "stress": "stress",
+    "young_modulus": "young_modulus", "density": "density",
+}
+
+# Explicit conversion factors to SI for common unit tags
+_TAG_TO_SI: Dict[str, float] = {
+    "m": 1.0, "mm": 1e-3, "inch": 0.0254, "in": 0.0254,
+    "kg": 1.0, "tonne": 1e3, "t": 1e3, "lb": 0.45359237,
+    "s": 1.0, "ms": 1e-3,
+    "N": 1.0, "kN": 1e3, "MN": 1e6, "lbf": 4.4482216152605,
+    "Pa": 1.0, "MPa": 1e6, "GPa": 1e9, "psi": 6894.757293168,
+    "kg/m^3": 1.0, "kg/mm^3": 1e9, "tonne/mm^3": 1e12,
+}
+
+
+def _dim_factor(unit_system: str, dim_category: str) -> float:
+    """Return factor to convert a quantity in *unit_system* to SI."""
+    sys_factors = _UNIT_SYSTEMS[unit_system]
+    exp = _DIM_EXP.get(dim_category)
+    if exp is None:
+        return 1.0
+    L, M, T = exp
+    return (sys_factors["length"] ** L *
+            sys_factors["mass"] ** M *
+            sys_factors["time"] ** T)
+
+
+def convert_value(value: float, from_unit: str, to_unit: str) -> float:
+    """Convert a scalar *value* between two unit tags via SI.
+
+    Supports: m/mm/inch, kg/tonne/lb, s/ms, N/kN/MN/lbf, Pa/MPa/GPa/psi,
+    and dimensional categories (length, mass, force, pressure, density,
+    young_modulus, stress).
+    """
+    if from_unit == to_unit:
+        return value
+    # Direct tag conversion
+    f_si = _TAG_TO_SI.get(from_unit)
+    t_si = _TAG_TO_SI.get(to_unit)
+    if f_si is not None and t_si is not None:
+        return value * f_si / t_si
+    # Dimensional category conversion (assumes SI base)
+    cat = _UNIT_TAG_MAP.get(from_unit, from_unit)
+    exp = _DIM_EXP.get(cat)
+    if exp is not None:
+        # Both are dimensional categories; treat as SI-to-SI identity
+        # unless they differ, in which case we try tag lookup
+        if from_unit == to_unit:
+            return value
+    # Fallback: return unchanged (unknown units)
+    return value
+
+
+def convert_case_units(case_dict: dict, from_system: str, to_system: str) -> dict:
+    """Return a *copy* of a case dict with numeric fields converted between
+    unit systems.  Only geometry, material and quick_values are touched;
+    mesh_sequence, case_id, etc. are preserved verbatim.
+    """
+    out = dict(case_dict)
+    # Geometry: length-type values
+    geo = dict(out.get("geometry", {}))
+    for k, v in geo.items():
+        if isinstance(v, (int, float)) and not isinstance(v, bool):
+            # Heuristic: keys containing radius, thickness, length, depth,
+            # width, height, diameter are lengths
+            if any(tok in k.lower() for tok in ("radius", "thickness", "length",
+                                                  "depth", "width", "height",
+                                                  "diameter", "span", "gap")):
+                f = _dim_factor(from_system, "length") / _dim_factor(to_system, "length")
+                geo[k] = v * f
+    out["geometry"] = geo
+
+    # Material: young_modulus (pressure dim), density
+    mat = dict(out.get("material", {}))
+    for k, v in mat.items():
+        if isinstance(v, (int, float)) and not isinstance(v, bool):
+            if "young" in k.lower() or "modulus" in k.lower():
+                f = _dim_factor(from_system, "pressure") / _dim_factor(to_system, "pressure")
+                mat[k] = v * f
+            elif "density" in k.lower() or "rho" in k.lower():
+                f = _dim_factor(from_system, "density") / _dim_factor(to_system, "density")
+                mat[k] = v * f
+    out["material"] = mat
+
+    # quick_values: same dimension as the reference quantity
+    qv = out.get("quick_values", [])
+    if qv:
+        qty = out.get("quantity", {})
+        unit_tag = qty.get("unit", "length")
+        cat = _UNIT_TAG_MAP.get(unit_tag, unit_tag)
+        f = _dim_factor(from_system, cat) / _dim_factor(to_system, cat)
+        out["quick_values"] = tuple(v * f for v in qv)
+
+    # Reference quantity value
+    qty = dict(out.get("quantity", {}))
+    if "value" in qty:
+        unit_tag = qty.get("unit", "length")
+        cat = _UNIT_TAG_MAP.get(unit_tag, unit_tag)
+        f = _dim_factor(from_system, cat) / _dim_factor(to_system, cat)
+        qty["value"] = qty["value"] * f
+    out["quantity"] = qty
+
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Data classes
+# ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class Citation:
@@ -17,6 +173,16 @@ class Citation:
     year: int
     doi: str
 
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> "Citation":
+        return cls(
+            authors=str(d["authors"]),
+            title=str(d["title"]),
+            publication=str(d["publication"]),
+            year=int(d["year"]),
+            doi=str(d["doi"]),
+        )
+
 
 @dataclass(frozen=True)
 class ReferenceQuantity:
@@ -24,6 +190,15 @@ class ReferenceQuantity:
     value: float
     unit: str
     sign_policy: str
+
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> "ReferenceQuantity":
+        return cls(
+            name=str(d["name"]),
+            value=float(d["value"]),
+            unit=str(d["unit"]),
+            sign_policy=str(d["sign_policy"]),
+        )
 
 
 @dataclass(frozen=True)
@@ -49,6 +224,53 @@ class BenchmarkCase:
 
     def to_dict(self):return asdict(self)
 
+    @classmethod
+    def from_dict(cls, d: Dict[str, Any]) -> "BenchmarkCase":
+        """Reconstruct a BenchmarkCase from a plain dict (JSON-decoded)."""
+        return cls(
+            schema_version=str(d["schema_version"]),
+            case_id=str(d["case_id"]),
+            case_version=str(d["case_version"]),
+            title=str(d["title"]),
+            citation=Citation.from_dict(d["citation"]) if isinstance(d["citation"], dict) else d["citation"],
+            geometry=dict(d["geometry"]),
+            material=dict(d["material"]),
+            boundary_conditions=tuple(d["boundary_conditions"]),
+            loads=tuple(d["loads"]),
+            mesh_sequence=tuple(int(x) for x in d["mesh_sequence"]),
+            quantity=ReferenceQuantity.from_dict(d["quantity"]) if isinstance(d["quantity"], dict) else d["quantity"],
+            error_strategy=str(d["error_strategy"]),
+            tolerance=float(d["tolerance"]),
+            maturity=str(d["maturity"]),
+            capability_boundaries=tuple(d["capability_boundaries"]),
+            runner=str(d["runner"]),
+            quick_values=tuple(float(x) for x in d["quick_values"]),
+            qualifying_meshes=tuple(int(x) for x in d["qualifying_meshes"]),
+        )
+
+    def to_json(self, *, indent: Optional[int] = None) -> str:
+        """Serialise to a JSON string."""
+        return json.dumps(self.to_dict(), indent=indent, sort_keys=True,
+                          ensure_ascii=False, allow_nan=False)
+
+    @classmethod
+    def from_json(cls, text: str) -> "BenchmarkCase":
+        """Deserialise from a JSON string."""
+        return cls.from_dict(json.loads(text))
+
+    def with_units_converted(self, from_system: str, to_system: str) -> "BenchmarkCase":
+        """Return a new BenchmarkCase with geometry/material/quick_values
+        converted between unit systems.  The case_id and schema_version are
+        preserved; a suffix is appended to case_version to record the conversion.
+        """
+        d = convert_case_units(self.to_dict(), from_system, to_system)
+        d["case_version"] = f"{d['case_version']}+{from_system}2{to_system}"
+        return self.from_dict(d)
+
+
+# ---------------------------------------------------------------------------
+# Canonicalisation & hashing
+# ---------------------------------------------------------------------------
 
 def _canonical(value):
     return json.dumps(value,sort_keys=True,separators=(",",":"),ensure_ascii=False,allow_nan=False)
@@ -56,6 +278,10 @@ def _canonical(value):
 
 def _hash(value):return hashlib.sha256(_canonical(value).encode()).hexdigest()
 
+
+# ---------------------------------------------------------------------------
+# Validation
+# ---------------------------------------------------------------------------
 
 def validate_case(case: BenchmarkCase):
     if case.schema_version!=SCHEMA_VERSION:raise ValueError("unsupported benchmark case schema")
@@ -77,6 +303,10 @@ def validate_case(case: BenchmarkCase):
 
 def case_hash(case):validate_case(case);return _hash(case.to_dict())
 
+
+# ---------------------------------------------------------------------------
+# Built-in cases
+# ---------------------------------------------------------------------------
 
 def hemisphere_case():
     return BenchmarkCase(SCHEMA_VERSION,"shell.hemisphere_18deg","2.0.0",
@@ -127,6 +357,10 @@ def _computed(case,tier):
         return tuple(out)
     raise ValueError("runner is not available")
 
+
+# ---------------------------------------------------------------------------
+# Archive seal / validate / run / IO
+# ---------------------------------------------------------------------------
 
 def seal_archive(payload):
     clean={k:v for k,v in payload.items() if k!="evidence_hash"}
