@@ -951,9 +951,15 @@ def run_inversion(
     warnings: list[str] = []
     if not diagnostics["identifiable"]:
         warnings.append(
+            # Report *both* ranks: the numerical rank can be full (2 of 2) while the
+            # engineering rank -- the one ``identifiable`` is built from -- is 1,
+            # because one direction sits below cond_limit.  Naming only the
+            # numerical rank made the message look self-contradictory.
             "parameter set is not identifiable from these data "
-            f"(rank {diagnostics['rank']} of {diagnostics['n_parameters']}, "
-            f"condition {diagnostics['condition_number']}); the fitted combination is "
+            f"(numerical rank {diagnostics['rank']}, effective rank "
+            f"{diagnostics['effective_rank']} of {diagnostics['n_parameters']}, "
+            f"condition {diagnostics['condition_number']:.6g} vs "
+            f"cond_limit {float(options.cond_limit):.6g}); the fitted combination is "
             "constrained but individual values are not"
         )
     at_bound = [

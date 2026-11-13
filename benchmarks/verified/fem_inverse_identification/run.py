@@ -28,6 +28,17 @@ in the JOUR-DIFFLBM inverse-experiment line.
 Numbers in the report are read back from the artifacts written here -- nothing
 is hand-copied.
 
+Certificate
+-----------
+Besides the raw dump under ``runs/inverse-identification-benchmark/``, the driver
+emits the canonical anchor certificate ``gates_verified.json`` (schema
+``tensorfem.verified-gates.v1``) next to this file, so
+``tools/verified_anchor_audit.py`` can recompute every verdict from the numbers
+in the artifact alone and ``tests/test_verified_anchor_certificates.py`` can hold
+the registry fail-closed.  ``result.json`` is the machine-readable dump the
+certificate is derived from; ``--from-dump`` rebuilds the certificate from it
+without touching the solver.
+
 Usage
 -----
     PYTHONPATH=src python benchmarks/verified/fem_inverse_identification/run.py
@@ -50,9 +61,14 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt  # noqa: E402
 
-ROOT = Path(__file__).resolve().parents[3]
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
 if str(ROOT / "src") not in sys.path:
     sys.path.insert(0, str(ROOT / "src"))
+if str(HERE.parent) not in sys.path:
+    sys.path.insert(0, str(HERE.parent))
+
+from _harness import Gate, gate_manifest, read_json, write_json  # noqa: E402
 
 from tensorfem.inverse import OptimizerOptions, SeedControl, run_inversion  # noqa: E402
 from tensorfem.inverse_cases import (  # noqa: E402
@@ -68,6 +84,34 @@ from tensorfem.inverse_cases import (  # noqa: E402
 
 OUT = ROOT / "runs" / "inverse-identification-benchmark"
 SEEDS = (1, 2, 3)
+
+#: artifact directory of the anchor: everything the certificate declares lives
+#: here and is committed, so the audit can check existence and git tracking.
+#: Resolved at call time (``_artifact``) so a test can redirect the whole
+#: artifact set to a temporary directory without the run leaking into the tree.
+ARTIFACT_DIR = HERE
+
+
+def _artifact(name: str) -> Path:
+    return ARTIFACT_DIR / name
+
+
+def artifact_paths() -> dict[str, Path]:
+    return {
+        "result": _artifact("result.json"),
+        "gates": _artifact("gates_verified.json"),
+        "figure": _artifact("inverse_identification_recovery.png"),
+    }
+
+#: thresholds declared *before* the run (3 % is the platform standard for a
+#: recovered scalar; 1e-6 is the loose bound on multi-start spread).
+CRITERIA = {
+    "scalar_rel_error_max": TOLERANCE,
+    "product_rel_error_max": TOLERANCE,
+    "start_spread_rel_max": 1.0e-6,
+    "nonconverged_cases_max": 0.0,
+    "log_replay_identical_min": 1.0,
+}
 
 
 def git_commit() -> str:
@@ -233,8 +277,184 @@ def make_figure(decay_runs, decay_rows, bar, product, repro, path: Path) -> None
     plt.close(figure)
 
 
-def main() -> int:
+def build_gates(payload: dict) -> list[Gate]:
+    """Grade the artifact against the pre-declared criteria.
+
+    Every ``value`` is read from ``payload`` (the dump written by the driver or
+    by ``--from-dump``); the ``reference`` of each gate names the independent
+    statement it is graded against, never the model's own output again.
+    """
+    rows = payload["rows"]
+    product = payload["negative_control"]
+    repro = payload["reproducibility"]
+    gates: list[Gate] = []
+
+    for row in rows:
+        if row["case"] == "decay":
+            gates.append(
+                Gate(
+                    id=f"tau_rel_error_seed{row['seed']}",
+                    quantity=f"|tau - tau_true| / tau_true, decay case, seed {row['seed']}",
+                    reference=f"generating time constant tau_true = {DECAY_TRUTH['tau']} s",
+                    value=float(row["tau_relative_error"]),
+                    threshold=CRITERIA["scalar_rel_error_max"],
+                    note=f"tau = {row['tau']:.10g} s",
+                )
+            )
+        else:
+            gates.append(
+                Gate(
+                    id="axial_bar_E_rel_error",
+                    quantity="|E - E_true| / E_true, solver-in-the-loop axial bar",
+                    reference=f"generating Young's modulus E_true = {BAR_TRUTH['E']:.6g} Pa",
+                    value=float(row["E_relative_error"]),
+                    threshold=CRITERIA["scalar_rel_error_max"],
+                    note=f"E = {row['E']:.10g} Pa",
+                )
+            )
+
+    gates.append(
+        Gate(
+            id="axial_bar_E_product_rel_error",
+            quantity="|E*A - E_true*A_true| / (E_true*A_true) with E and A both unknowns",
+            reference=f"E_true * A = {product['product_reference']:.6g} N",
+            value=float(product["product_relative_error"]),
+            threshold=CRITERIA["product_rel_error_max"],
+            note=f"E*A = {product['product']:.10g} N",
+        )
+    )
+    gates.append(
+        Gate(
+            id="non_identifiable_flag",
+            quantity="identifiable flag of the E+A control (1 = claims E and A separately)",
+            reference="the observations contain only the product E*A, so the correct diagnosis is not identifiable",
+            value=float(bool(product["identifiable"])),
+            threshold=0.0,
+            note=f"identifiable={product['identifiable']}, condition={product['condition_number']:.4g}",
+        )
+    )
+    gates.append(
+        Gate(
+            id="effective_rank",
+            quantity="effective rank of the weighted Jacobian, E+A control",
+            reference="rank 1: one identifiable combination (E*A) out of two unknowns",
+            value=float(product["effective_rank"]),
+            threshold=1.0,
+            note=f"numerical rank {product.get('rank', 'n/a')}",
+        )
+    )
+
+    decay_rows = [r for r in rows if r["case"] == "decay"]
+    taus = [float(r["tau"]) for r in decay_rows]
+    spread = (max(taus) - min(taus)) / DECAY_TRUTH["tau"]
+    gates.append(
+        Gate(
+            id="multi_start_spread",
+            quantity="(max tau - min tau) / tau_true over the three multi-start seeds",
+            reference="the recovered optimum must not depend on the start point",
+            value=float(spread),
+            threshold=CRITERIA["start_spread_rel_max"],
+            note=f"tau in [{min(taus):.12g}, {max(taus):.12g}] s",
+        )
+    )
+    gates.append(
+        Gate(
+            id="same_seed_log_replay",
+            quantity="convergence log of one seed replayed in the same process is bit-for-bit identical",
+            reference="the JSON-lines convergence log hash must repeat exactly",
+            value=1.0 if repro["same_seed_identical"] else 0.0,
+            threshold=CRITERIA["log_replay_identical_min"],
+            operator=">=",
+            note=f"sha256 {repro['log_sha256_first'][:16]}...",
+        )
+    )
+    gates.append(
+        Gate(
+            id="distinct_seeds_differ",
+            quantity="a different seed reaches a different start sequence (the seed control is live)",
+            reference="seed control is wired: seed 1 and seed 2 logs must differ",
+            value=1.0 if repro["distinct_seeds_differ"] else 0.0,
+            threshold=CRITERIA["log_replay_identical_min"],
+            operator=">=",
+            note=f"seed2 sha256 {repro['log_sha256_seed2'][:16]}...",
+        )
+    )
+
+    nonconverged = [f"{r['case']} s{r['seed']}" for r in rows if not r["converged"]]
+    gates.append(
+        Gate(
+            id="nonconverged_cases",
+            quantity="number of inversion runs that did not reach the convergence tolerance",
+            reference="every run must report converged before its estimate is graded",
+            value=float(len(nonconverged)),
+            threshold=CRITERIA["nonconverged_cases_max"],
+            note=", ".join(nonconverged) or "all runs converged",
+        )
+    )
+    return gates
+
+
+def emit_certificate(payload: dict) -> dict:
+    """Write ``gates_verified.json`` from the dump and return the manifest."""
+    gates = build_gates(payload)
+    manifest = gate_manifest(
+        anchor="fem_inverse_identification",
+        title="tensorfem.inverse: recovered tau / E against generating truth, ill-posed E+A control, log replay",
+        mission="GAP-PP-4-opt-loop",
+        criteria=CRITERIA,
+        gates=gates,
+        artifacts={
+            "result": _relative(artifact_paths()["result"]),
+            "figure": _relative(artifact_paths()["figure"]),
+        },
+        limitations=[
+            "Both cases are inverse crimes in the strict sense: the data are generated by the "
+            "same forward model the optimiser inverts (single exponential / 4-element truss), so "
+            "the residual error is the optimiser's, not a model error; a discretisation-error "
+            "study of the forward model is not attempted here.",
+            "The decay case is 1 % noisy and the axial bar 0.5 % noisy with a single noise draw "
+            "per case, so the reported errors are one realisation, not an ensemble mean.",
+            "The log replay is checked in-process only (same interpreter, same process); "
+            "cross-process determinism depends on torch thread scheduling and is not asserted.",
+            "The E+A control expects effective rank 1 from a weighted-Jacobian singular-value "
+            "cut, which is a tolerance choice, not a theorem; the reported condition number "
+            "(~4.5e11) is the tolerance-free statement.",
+        ],
+    )
+    write_json(artifact_paths()["gates"], manifest)
+    return manifest
+
+
+def load_dump() -> dict:
+    path = artifact_paths()["result"]
+    if not path.is_file():
+        raise SystemExit(f"no dump at {path}; run the driver without --from-dump first")
+    return read_json(path)
+
+
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--from-dump",
+        action="store_true",
+        help="rebuild gates_verified.json from the committed result.json (no solver run)",
+    )
+    # ``argv is None`` means "no options" rather than "consult sys.argv": the
+    # driver is also imported and called as ``main()`` from a test, where
+    # sys.argv belongs to pytest.
+    args = parser.parse_args([] if argv is None else list(argv))
+
+    if args.from_dump:
+        payload = load_dump()
+        manifest = emit_certificate(payload)
+        print(f"certificate: {artifact_paths()['gates']}  passed={manifest['passed']}")
+        print(f"failed gates: {manifest['failed_gates']}")
+        return 0 if manifest["passed"] else 1
+
     OUT.mkdir(parents=True, exist_ok=True)
+    ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
     provenance = {"script": "benchmarks/verified/fem_inverse_identification/run.py",
                   "git_commit": git_commit()}
 
@@ -254,8 +474,10 @@ def main() -> int:
     product["reference_quantity"] = "E*A (product) with E,A both unknown"
     product["passed"] = bool(product["passed"] and product["product_relative_error"] < TOLERANCE)
 
-    figure_path = OUT / "inverse-identification-benchmark.png"
-    make_figure(decay_runs, decay, bar, product, repro, figure_path)
+    figure = artifact_paths()["figure"]
+    make_figure(decay_runs, decay, bar, product, repro, figure)
+    if figure.parent != OUT and figure.is_file():
+        (OUT / figure.name).write_bytes(figure.read_bytes())
 
     passed = all(r["passed"] for r in rows) and product["passed"] and repro["passed"]
     payload = {
@@ -267,11 +489,15 @@ def main() -> int:
         "negative_control": product,
         "reproducibility": repro,
         "passed": passed,
-        "figure": str(_relative(figure_path)),
+        "figure": _relative(artifact_paths()["figure"]),
         "repro_cmd": "PYTHONPATH=src python benchmarks/verified/fem_inverse_identification/run.py",
     }
-    (OUT / "benchmark.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n",
-                                        encoding="utf-8")
+    write_json(artifact_paths()["result"], payload)
+    (OUT / "benchmark.json").write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    manifest = emit_certificate(payload)
+    passed = bool(passed and manifest["passed"])
 
     header = f"{'check':34s} {'reference':>16s} {'got':>16s} {'rel.err':>9s}  verdict"
     print(header)
@@ -295,11 +521,13 @@ def main() -> int:
         f"{'PASS' if repro['passed'] else 'FAIL'}"
     )
     print("-" * len(header))
-    print(f"artifact: {OUT / 'benchmark.json'}")
-    print(f"figure  : {figure_path}")
+    paths = artifact_paths()
+    print(f"artifact   : {paths['result']}")
+    print(f"certificate: {paths['gates']}  ({len(manifest['gates'])} gates, failed={manifest['failed_gates']})")
+    print(f"figure     : {paths['figure']}")
     print(f"GATE: {'PASS' if passed else 'FAIL'}")
     return 0 if passed else 1
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(main(sys.argv[1:]))
