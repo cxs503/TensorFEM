@@ -1,5 +1,34 @@
 ## Unreleased
 
+### 3-D cohesive evidence artifact: provenance + reproducibility gate (the artifact a re-run can no longer fake)
+- **Defect fix** `benchmarks/cohesive3d_verification.json` recorded only its numbers: no source
+  identity, no way to tell whether the file still described the checked-out code. Re-running
+  `benchmarks/cohesive3d_verification.py` therefore produced a one-line diff (the timestamp) and
+  nothing else -- which is exactly the submission that was rejected as a no-op. The payload now
+  carries `provenance` (repo-relative SHA-256 of `cohesive3d.py`, `mixed_mode_cohesive.py`,
+  `solid3d.py` + `git_head`), `checks_digest` (SHA-256 of the criteria dictionary) and `reproduce`
+  (both commands + measured runtime). No host paths are emitted.
+- **New `--check` mode** `python benchmarks/cohesive3d_verification.py --check`: re-derives all
+  eleven criteria, compares them leaf by leaf with the committed artifact
+  (`atol 1e-10`, `rtol 1e-8`) and verifies the recorded source hashes; exit codes `0` reproducible,
+  `1` numeric/flag mismatch, `2` artifact missing, `3` stale source hash. Demonstrated
+  `0 leaf differences, 0 stale sources` on an unchanged checkout and `exit 1` naming
+  `/criteria/coupled_block_mesh/rows/1/reaction` after a 2 % edit.
+- **New gate** `tests/test_cohesive3d_verification_artifact.py` (14 tests, 15.3 s): schema +
+  `all_passed` conjunction, digest-vs-numbers tamper gate, reproduction of the eight fast
+  closed-form checks from the current checkout, source-hash freshness, no-host-path guard. On
+  `HEAD` no test referenced the artifact at all, so a hand-edited number was accepted silently.
+- **Figure** `scripts/cohesive3d_artifact_gate_figure.py` -> `docs/assets/cohesive3d_artifact_gate.png`:
+  left panel, each criterion's measured error divided by the tolerance parsed out of that check's own
+  criterion string (tightest is `coupled_block_mode_ii`, 38.1 % of its 3 % budget); right panel, the
+  measured resolution of the numeric gate (threshold `atol+rtol*|v| = 1.81e-2 N` on a 1.81e6 N leaf:
+  a 1e-12 relative perturbation is accepted, 1e-6 and 2e-2 are rejected).
+- **Docs** `docs/cohesive-3d-element.md` (via `scripts/cohesive3d_report.py`, no hand-copied
+  numbers) gains "7. Evidence integrity" with the source-hash table, the digest and the three
+  gates, and states the honest limit: an `atol` floor of `1e-10` means machine-precision residuals
+  are protected by the digest gate only. The page's status timestamp is now the artifact's own
+  `generated_utc` (it had drifted 1 h 49 min behind the artifact it described).
+
 ### CASE-FEM-HHT-alpha: absorbed upstream transient scheme (Hilbert-Hughes-Taylor) with closed-form qualification
 - **New capability** `tensorfem.dynamics.hht_alpha`: the alpha-variant of the Newmark family that
   Abaqus (`*DYNAMIC`), ANSYS (`TINTP`) and Code_Aster (`SCHEMA_THETA`) ship as their default

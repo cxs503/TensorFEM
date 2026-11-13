@@ -1,6 +1,6 @@
 # 3-D zero-thickness cohesive interface element (COH3D8 topology)
 
-Status: **verified** -- all eleven checks in `benchmarks/cohesive3d_verification.json` pass (2026-11-11T19:27:33.177741+00:00).
+Status: **verified** -- all eleven checks in `benchmarks/cohesive3d_verification.json` pass (2026-11-13T02:44:08.412976+00:00).
 
 ## 1. What was missing
 
@@ -79,10 +79,34 @@ Every criterion is a closed-form statement, not a snapshot of the code.
 * Prescribed crack path: the interface plane is pre-meshed (standard cohesive practice); there is no crack-path search or remeshing.
 
 
-## 7. Reproduce
+## 7. Evidence integrity (how the artifact is gated)
+
+`benchmarks/cohesive3d_verification.json` is not a claim taken on trust: it declares the content of the code that produced it and the two commands that re-derive it.
+
+| source module | SHA-256 |
+|---|---|
+| `src/tensorfem/cohesive3d.py` | `7a962794e8a506f91eea00a9387a2108985cd608ea7b8770eda4d15676d70f2f` |
+| `src/tensorfem/mixed_mode_cohesive.py` | `4d668809baf2cf69180e1453a1ef4a468bb7c685361026a173618bf6c3e961c7` |
+| `src/tensorfem/solid3d.py` | `d638564b5ef76f269e1578073a38ce5f706d911ff7e5e0b330b06064e7645e88` |
+
+`git_head` at generation: `951b7338e6b2b07ef9a86bd101c99817548d5f72`. `checks_digest` (SHA-256 of the criteria dictionary): `82fdcd8ad044cc024a858d441bcdfcf9a5e00dd8f46fd1cff69430e8b6c9f981`. Measured generation runtime: 46.94 s.
+
+Three gates, none of them a human reading the numbers:
+
+1. **Tamper gate.** `checks_digest` hashes the stored criteria, so a hand-edited number (or a partial regeneration) changes the digest and `tests/test_cohesive3d_verification_artifact.py` fails without re-running the benchmark.
+
+2. **Reproducibility gate.** The same test module recomputes the eight fast closed-form checks from the current checkout and compares them leaf by leaf with the committed numbers (`atol = 1e-10`, `rtol = 1e-8`); `python benchmarks/cohesive3d_verification.py --check` does the same for all eleven, the three coupled specimen solves included (exit codes: 0 reproducible, 1 numeric mismatch, 2 artifact missing, 3 stale source hash).
+
+3. **Freshness gate.** The recorded SHA-256 of every source module is compared with the checkout, so an artifact cannot outlive the code it describes: editing `src/tensorfem/cohesive3d.py` without regenerating fails the test suite, and the failure message names the regeneration command.
+
+Known limit of gate 2 (stated, not hidden): an absolute floor of `atol = 1e-10` means a change confined to a machine-precision residual (~1e-16) is invisible to the numeric comparison -- those leaves are protected by gate 1 only. The floor is deliberate: cross-architecture float64 reduction order moves such leaves by more than any sane relative tolerance.
+
+
+## 8. Reproduce
 
 ```bash
-python benchmarks/cohesive3d_verification.py     # writes benchmarks/cohesive3d_verification.json
-python -m pytest tests/test_cohesive3d.py -q     # 26 unit tests
-python scripts/cohesive3d_report.py              # doc page + figures + platform report
+python benchmarks/cohesive3d_verification.py          # writes benchmarks/cohesive3d_verification.json
+python benchmarks/cohesive3d_verification.py --check  # re-derive all 11 and diff vs the artifact
+python -m pytest tests/test_cohesive3d.py tests/test_cohesive3d_verification_artifact.py -q
+python scripts/cohesive3d_report.py                  # doc page + figures + platform report
 ```
