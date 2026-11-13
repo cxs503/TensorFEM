@@ -1,0 +1,303 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_cantilever_beamcolumn",
+  "title": "CASE-CANTILEVER-TIP axial-preload rung: beam-column amplification delta_N/delta_0 vs the exact tanh/tan oracle on the geometric stiffness of tensorfem.buckling",
+  "mission": "CASE-CANTILEVER-TIP",
+  "generated_at": "2026-11-13T16:14:16+00:00",
+  "criteria": {
+    "case_pool_tolerance": 0.03,
+    "small_deflection_limit": 0.02,
+    "shear_negligible": 0.001,
+    "oracle_exact": 1e-12,
+    "buckling_eigenvalue": 0.0001
+  },
+  "gates": [
+    {
+      "id": "oracle_ode_residual_tension",
+      "quantity": "max relative residual of the sympy ODE solution vs 3(u - tanh u)/u^3",
+      "reference": "E I w'''' - N w'' = 0, clamped root, free tip",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "machine-derived oracle; no handbook digit is transcribed"
+    },
+    {
+      "id": "oracle_ode_residual_compression",
+      "quantity": "max relative residual of the sympy ODE solution vs 3(tan u - u)/u^3",
+      "reference": "E I w'''' + C w'' = 0, clamped root, free tip",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "same derivation path, compression branch"
+    },
+    {
+      "id": "oracle_small_u_series_tension",
+      "quantity": "relative residual of AF_t vs 1 - 2u^2/5 at u = 1e-3",
+      "reference": "Taylor expansion of 3(u - tanh u)/u^3",
+      "value": 5.356373044925502e-11,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true,
+      "note": ""
+    },
+    {
+      "id": "oracle_small_u_series_compression",
+      "quantity": "relative residual of AF_c vs 1 + 2u^2/5 at u = 1e-3",
+      "reference": "Taylor expansion of 3(tan u - u)/u^3",
+      "value": 1.9476701343700062e-10,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true,
+      "note": ""
+    },
+    {
+      "id": "analytic_continuation_identity",
+      "quantity": "|AF_c(i u) - AF_t(u)| / AF_t(u) over the ladder",
+      "reference": "AF_c(i u) = AF_t(u)",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "one analytic function in two branches: a slip in either is caught"
+    },
+    {
+      "id": "pole_is_the_euler_load",
+      "quantity": "|u_pole - pi/2| / (pi/2) from the closed form",
+      "reference": "fixed-free N_cr = pi^2 E I/(4 L^2) <=> cos u = 0",
+      "value": 0.0,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true,
+      "note": "static amplification and eigenvalue must diverge at the same load"
+    },
+    {
+      "id": "buckling_eigenvalue_from_same_matrices",
+      "quantity": "|P_cr,FE - pi^2 E I/(4 L^2)| / P_cr on the finest mesh (n = 32)",
+      "reference": "pi^2 E I/(4 L^2)",
+      "value": 8.080336997565642e-09,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "confirms that K and Kg are the matrices whose static sum is graded below"
+    },
+    {
+      "id": "buckling_convergence_order",
+      "quantity": "log-log slope of the P_cr error over n = 16..32",
+      "reference": "consistent Hermite element: order >= 2",
+      "value": 3.9970805327724195,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "the eigenvalue must converge under refinement, not merely sit close"
+    },
+    {
+      "id": "fe_vs_exact_tension_u0.5",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 0.5",
+      "reference": "AF_t(u = 0.5) = 0.909188",
+      "value": 3.0365989004479585e-07,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_tension_u1",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1",
+      "reference": "AF_t(u = 1) = 0.715218",
+      "value": 3.8175776850631064e-06,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_tension_u1.25",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1.25",
+      "reference": "AF_t(u = 1.25) = 0.617036",
+      "value": 8.041269218947365e-06,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_tension_u1.5",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1.5",
+      "reference": "AF_t(u = 1.5) = 0.528757",
+      "value": 1.4302508696608843e-05,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_compression_u0.5",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 0.5",
+      "reference": "AF_c(u = 0.5) = 1.111260",
+      "value": 3.717809143854261e-07,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_compression_u1",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1",
+      "reference": "AF_c(u = 1) = 1.672223",
+      "value": 8.98907266727463e-06,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "small-deflection domain (delta/L <= 2 %)"
+    },
+    {
+      "id": "fe_vs_exact_compression_u1.25",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1.25",
+      "reference": "AF_c(u = 1.25) = 2.702699",
+      "value": 3.5636491038073635e-05,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "OUTSIDE the small-deflection domain (delta/L = 2.7 %): numerical-stiffness check only, not an engineering prediction"
+    },
+    {
+      "id": "fe_vs_exact_compression_u1.5",
+      "quantity": "worst FE amplification error over n in [4, 8, 16, 32], u = 1.5",
+      "reference": "AF_c(u = 1.5) = 11.201262",
+      "value": 0.00030861054339862976,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "OUTSIDE the small-deflection domain (delta/L = 11.2 %): numerical-stiffness check only, not an engineering prediction"
+    },
+    {
+      "id": "tension_stiffens",
+      "quantity": "max AF_FE over the tension rungs",
+      "reference": "AF_t(u) < 1 for u > 0",
+      "value": 0.9091882256687334,
+      "threshold": 1.0,
+      "operator": "<",
+      "passed": true,
+      "note": ""
+    },
+    {
+      "id": "compression_amplifies",
+      "quantity": "min AF_FE over the compression rungs",
+      "reference": "AF_c(u) > 1 for 0 < u < pi/2",
+      "value": 1.1111759556463376,
+      "threshold": 1.0,
+      "operator": ">",
+      "passed": true,
+      "note": ""
+    },
+    {
+      "id": "zero_preload_recovers_euler_bernoulli",
+      "quantity": "|AF_FE - 1| at N = 0, n = 1",
+      "reference": "delta = P L^3/(3 E I), the case-pool rung",
+      "value": 3.3306690738754696e-16,
+      "threshold": 1e-14,
+      "operator": "<=",
+      "passed": true,
+      "note": "with Kg switched off the rung degenerates to the original case"
+    },
+    {
+      "id": "single_element_fails_near_critical",
+      "quantity": "single-element relative error at u = 1.5 compression (0.955 N_cr)",
+      "reference": "AF_c(1.5) = 11.2013",
+      "value": 0.06458076400234138,
+      "threshold": 0.05,
+      "operator": ">=",
+      "passed": true,
+      "note": "graded as a required failure: a one-element beam-column is wrong by construction near P_cr"
+    },
+    {
+      "id": "refinement_recovers_near_critical",
+      "quantity": "32-element relative error at u = 1.5 compression",
+      "reference": "AF_c(1.5) = 11.2013",
+      "value": 7.607082480147863e-08,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "same rung inside tolerance once the mesh resolves the shape"
+    },
+    {
+      "id": "convergence_order_tension_u1",
+      "quantity": "fitted order of the nodal-displacement error over n = 8..32",
+      "reference": "consistent Hermite beam-column: order >= 3 measured, 2 required",
+      "value": 3.99091978380248,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "nodal super-convergence of the Hermite beam-column is the measured result; the gate only demands better-than-second order"
+    },
+    {
+      "id": "convergence_order_tension_u1.5",
+      "quantity": "fitted order of the nodal-displacement error over n = 8..32",
+      "reference": "consistent Hermite beam-column: order >= 3 measured, 2 required",
+      "value": 3.9951271350925373,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "nodal super-convergence of the Hermite beam-column is the measured result; the gate only demands better-than-second order"
+    },
+    {
+      "id": "convergence_order_compression_u1",
+      "quantity": "fitted order of the nodal-displacement error over n = 8..32",
+      "reference": "consistent Hermite beam-column: order >= 3 measured, 2 required",
+      "value": 3.9908421191566177,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "nodal super-convergence of the Hermite beam-column is the measured result; the gate only demands better-than-second order"
+    },
+    {
+      "id": "convergence_order_compression_u1.5",
+      "quantity": "fitted order of the nodal-displacement error over n = 8..32",
+      "reference": "consistent Hermite beam-column: order >= 3 measured, 2 required",
+      "value": 3.9978600984178145,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "nodal super-convergence of the Hermite beam-column is the measured result; the gate only demands better-than-second order"
+    },
+    {
+      "id": "shear_compliance_negligible",
+      "quantity": "delta_shear/delta_EB at L/h = 100",
+      "reference": "E/(4 kappa G) (h/L)^2",
+      "value": 7.800000000000001e-05,
+      "threshold": 0.001,
+      "operator": "<=",
+      "passed": true,
+      "note": "the beam-column oracle is Euler-Bernoulli; at L/h = 100 the shear share is < 0.1 %"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "oracle_selfcheck": {
+    "residual_ladder_tension": 0.0,
+    "residual_ladder_compression": 0.0,
+    "continuation_identity_max_rel": 0.0,
+    "pole_vs_euler_load_rel": 0.0
+  },
+  "artifacts": {
+    "result": "benchmarks/verified/fem_cantilever_beamcolumn/result.json",
+    "docs": "docs/CASE-CANTILEVER-TIP-beamcolumn-amplification.md",
+    "readme": "benchmarks/verified/fem_cantilever_beamcolumn/README.md",
+    "figures": [
+      "docs/assets/cantilever_beamcolumn/amplification.png",
+      "docs/assets/cantilever_beamcolumn/convergence.png",
+      "docs/assets/cantilever_beamcolumn/profiles.png",
+      "docs/assets/cantilever_beamcolumn/error_vs_preload.png"
+    ]
+  },
+  "limitations": [
+    "Euler-Bernoulli beam-column only: the axial force acts on the bending stiffness, the Timoshenko beam-column coupling (shear deformation amplified by N) is not modelled; at L/h = 100 the shear share of the deflection is 7.80e-05, so the oracle is inside its range.",
+    "small-deflection (linearised) theory: valid while delta/L stays small. The u = 1.25 and u = 1.5 compression rungs reach delta/L = 4.0 % and 11.2 % and are graded as numerical stiffness checks, not as engineering predictions.",
+    "the axial force is a dead (load-direction-fixed) load; follower axial force would change the geometric stiffness at finite rotation, which this linear rung does not address.",
+    "the geometric stiffness is the consistent (Hermite) matrix: it is exact for the eigenvalue problem in the limit and second-order accurate for nodal displacements, but the interior bending moment along an element is only O(h^2) accurate.",
+    "beam theory itself is the limit here: no root warping, no 3-D Poisson contraction. The root-clamp and Poisson residuals of the 3-D model are quantified separately in docs/CASE-CANTILEVER-TIP-shear-validity.md and ...-side-convergence.md."
+  ],
+  "summary": "Static beam-column load path (K + N Kg) u = f of the merged tensorfem.buckling matrices vs the exact tanh/tan amplification; PASS"
+}
