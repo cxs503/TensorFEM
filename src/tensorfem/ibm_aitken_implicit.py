@@ -575,6 +575,7 @@ class ImplicitIBMFSI:
                 omega = self.aitken.relax_max if self.relax_mode == "aitken" else self.fixed_omega
             r_km1 = r_k.copy()
             beam.u = u_km1 + omega * (u_new - u_km1)
+            u_km1 = beam.u.copy()  # update for next sub-iteration
         if not converged:
             self.n_maxit_hits += 1
         self.ibm.move(beam.markers())
