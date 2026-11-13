@@ -64,6 +64,9 @@ TS0 = 80.0e6
 KN = 2.4e14
 KS = 1.0e14
 
+#: how far past the LEFM peak opening the displacement control is driven.
+DELTA_FACTOR = 1.35
+
 
 def make_law() -> BKCohesive3DLaw:
     return BKCohesive3DLaw(KN, KS, TN0, TS0, TOUGHNESS, 800.0, 2.2)
@@ -178,6 +181,21 @@ def propagate(g: DCBGeometry, *, n_steps: int, delta_max: float) -> dict:
         "iface_x": result.iface_x.tolist(),
         "runtime_s": time.time() - t0,
     }
+
+
+def peak_opening(g: DCBGeometry) -> float:
+    """Opening ``delta`` at the LEFM peak load: ``P_c * C`` (root-rotation CBBT).
+
+    The follower has to be driven *past* this value, otherwise the peak-load
+    criterion cannot be met no matter how good the element is.  The hard-coded
+    ``delta_max = 4e-5 m`` used before this fix was 4.5 % of the peak opening of
+    the reference specimen (``P_c = 40.6 N``, ``C = 2.36e-5 m/N`` =>
+    ``delta_peak = 9.6e-4 m``), which is exactly why the committed artefact
+    reported a "peak load" of 0.41 N (-98.6 % against LEFM) with zero failed
+    area: the run never left the linear branch.
+    """
+    c = beam_compliance(g.initial_crack, g, root_rotation=True, shear=True)
+    return beam_peak_load(g.initial_crack, TOUGHNESS, g, root_rotation=True) * c
 
 
 def figures(out: dict, dest: Path) -> list[str]:
@@ -376,8 +394,20 @@ def run(quick: bool = False) -> dict:
             "torch": torch.__version__,
         },
         "quick_mode": quick,
+        "drive": {"delta_factor": DELTA_FACTOR},
         "criteria": {},
         "propagation": {},
+    }
+
+    # 0. is the driving window even able to reach the peak? ------------------
+    out["criteria"]["window_covers_peak"] = {
+        "criterion": "delta_max >= LEFM peak opening P_c*C (else the peak is outside the run)",
+        "ref": peak_opening(narrow),
+        "got": DELTA_FACTOR * peak_opening(narrow),
+        "rel_error": (DELTA_FACTOR * peak_opening(narrow) - peak_opening(narrow))
+        / peak_opening(narrow),
+        "tolerance": "delta_max >= delta_peak",
+        "passed": DELTA_FACTOR >= 1.0,
     }
 
     # 1. linear compliance of the intact specimen ---------------------------
@@ -393,7 +423,12 @@ def run(quick: bool = False) -> dict:
     }
 
     # 2. propagation: reference crack --------------------------------------
-    ref = propagate(narrow, n_steps=n_steps, delta_max=4.0e-5)
+    # Drive every specimen 1.35x past its LEFM peak opening: enough to reach the
+    # limit point and to see the first post-peak step, without spending the run
+    # on the flat tail.  The window is *derived*, never hard-coded (see
+    # :func:`peak_opening` and the ``window_covers_peak`` criterion).
+    ref = propagate(narrow, n_steps=n_steps,
+                    delta_max=DELTA_FACTOR * peak_opening(narrow))
     out["propagation"]["a0_reference"] = ref
     out["criteria"]["peak_load_vs_lefm"] = {
         "criterion": "peak load vs LEFM with root rotation",
@@ -431,7 +466,8 @@ def run(quick: bool = False) -> dict:
         }
 
     # 3. propagation: longer initial crack -> load ratio test ---------------
-    long_run = propagate(long_crack, n_steps=steps_long, delta_max=4.0e-5)
+    long_run = propagate(long_crack, n_steps=steps_long,
+                         delta_max=DELTA_FACTOR * peak_opening(long_crack))
     out["propagation"]["a0_long"] = long_run
     a1, a2 = narrow.initial_crack, long_crack.initial_crack
     delta_root = williams_root_rotation(H_ARM, E_ADH, narrow.shear_modulus)
@@ -447,7 +483,8 @@ def run(quick: bool = False) -> dict:
     }
 
     # 4. width objectivity (true 3-D stress state) -------------------------
-    wide = propagate(wide, n_steps=steps_wide, delta_max=4.0e-5)
+    wide = propagate(wide, n_steps=steps_wide,
+                     delta_max=DELTA_FACTOR * peak_opening(wide))
     out["propagation"]["wide_ny3"] = wide
     fronts = wide["crack_front_by_width_column"]
     spread = (max(fronts) - min(fronts)) if fronts else float("nan")
