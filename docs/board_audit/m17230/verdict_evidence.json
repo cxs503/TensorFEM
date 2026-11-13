@@ -1,0 +1,151 @@
+{
+  "subject_mission": "m17194",
+  "subject_branch": "agent/m17194",
+  "subject_commits": [
+    "54ec5a32 (product entry + ledger acceptance)",
+    "2089919d (docs)"
+  ],
+  "subject_worktree": "/root/tp-agent/work/m17194",
+  "audit_worktree": "/root/tp-agent/work/m17230 (agent/m17230)",
+  "impl_files": [
+    "/root/tp-agent/work/m17194/src/tensorfem/edge_crack_sent.py",
+    "/root/tp-agent/work/m17194/src/tensorfem/cli.py",
+    "/root/tp-agent/work/m17194/src/tensorfem/marine_benchmark_suite.py",
+    "/root/tp-agent/work/m17194/benchmarks/verified/fem_sent_j_integral/ledger_acceptance.py"
+  ],
+  "impl_refs": [
+    "src/tensorfem/edge_crack_sent.py:909 run_sent_j_qualification (product entry)",
+    "src/tensorfem/edge_crack_sent.py:616 j_integral_subring (3-pt Gauss on fan mesh lines, J = int W n_x ds - int t.du/dx ds, K = sqrt(J E'))",
+    "src/tensorfem/edge_crack_sent.py:130 tada_sent_shape_factor (grading step only, no handbook number in the numerical path)",
+    "src/tensorfem/cli.py:223 subcommand sent-j-integral, exit code carries the verdict",
+    "src/tensorfem/marine_benchmark_suite.py:177 run_sent_j_qualification() -> marine.fracture.sent_j.* rows of the ship-structure suite"
+  ],
+  "entry": "/root/tp-agent/work/m17194/benchmarks/verified/fem_sent_j_integral/ledger_acceptance.py",
+  "entry_alt": "/root/tp-agent/work/m17194/src/tensorfem/cli.py (python -m tensorfem.cli sent-j-integral)",
+  "run_artifacts": [
+    "/root/tp-agent/work/m17194/benchmarks/verified/fem_sent_j_integral/ledger_acceptance.json",
+    "/root/tp-agent/work/m17194/benchmarks/verified/fem_sent_j_integral/ledger_acceptance.md",
+    "/root/tp-agent/work/m17194/benchmarks/verified/fem_sent_j_integral/ledger_acceptance.png",
+    "/root/tp-agent/work/m17194/benchmarks/verified/fem_sent_j_integral/result.json",
+    "/root/tp-agent/work/m17194/benchmarks/verified/fem_sent_j_integral/gates_verified.json",
+    "docs/board_audit/m17230/rerun/ledger_acceptance.json",
+    "docs/board_audit/m17230/rerun/ledger_acceptance.md",
+    "docs/board_audit/m17230/rerun/ledger_acceptance.png",
+    "docs/board_audit/m17230/rerun/full_run.log",
+    "docs/board_audit/m17230/rerun/fast_mode_failure.log"
+  ],
+  "tests": [
+    "tests/test_sent_edge_crack_j_integral_plane_strain.py (13 tests; audit rerun 2026-11-13: 13 passed, 55.05 s, -p no:cacheprovider)",
+    "tests/test_sent_edge_crack_j_integral.py + tests/test_crack_tip_j_integral.py (audit rerun: 24 passed, 40.33 s; trio total 37 passed = subject claim)"
+  ],
+  "integration_callers": [
+    "run_marine_benchmarks",
+    "tensorfem.marine_benchmark_suite.run_marine_benchmarks -> marine.fracture.sent_j.* (src/tensorfem/marine_benchmark_suite.py:177, branch agent/m17194)",
+    "tensorfem.cli sent-j-integral (src/tensorfem/cli.py:223, branch agent/m17194)"
+  ],
+  "benchmark": {
+    "anchor_slug": "CASE-FEM-JINTEGRAL-EDGE-CRACK",
+    "tensor_benchmark_cases": {
+      "id": 37,
+      "case_name": "SENT edge crack, plane strain, a/W=0.3",
+      "tolerance": "<5% (ledger) / <3% (platform)",
+      "status": "passed"
+    },
+    "tensorbench_results": {
+      "result_id": "m17194-sent-j-a03-ps",
+      "ref_value": 50959183.37183483,
+      "got_value": 49951986.5807073,
+      "rel_error": 0.0197647749528932,
+      "tolerance_rel": 0.05,
+      "passed": true,
+      "run_id": "m17194/ledger_acceptance.json"
+    },
+    "metric": "K_I from contour J (plane strain a/W=0.3) vs Tada finite-width F(a/W); K_I = sigma sqrt(pi a) F, sigma=100 MPa, W=100 mm, E=210 GPa, nu=0.3",
+    "ref_recomputed_by_auditor": {
+      "F_tada": 1.6599190000000006,
+      "K_ref_Pa_sqrt_m": 50959183.37183483,
+      "matches_db_ref": true
+    },
+    "got": {
+      "K_FEM_Pa_sqrt_m": 49951986.5807073,
+      "F_FEM": 1.627111074524969,
+      "rel_error": -0.019764774952893194,
+      "abs_rel_error": 0.0197647749528932,
+      "inside_3pct": true,
+      "inside_5pct_ledger": true
+    },
+    "ladder": [
+      {
+        "level": "coarse",
+        "n_sectors": 24,
+        "n_elements": 390,
+        "F_FEM": 1.627111074524969,
+        "rel_error": -0.0197647749528932
+      },
+      {
+        "level": "medium",
+        "n_sectors": 48,
+        "n_elements": 1050,
+        "F_FEM": 1.63759005232537,
+        "rel_error": -0.013451829682430633
+      },
+      {
+        "level": "fine",
+        "n_sectors": 96,
+        "n_elements": 2842,
+        "F_FEM": 1.6476768856538315,
+        "rel_error": -0.007375127549096671
+      }
+    ],
+    "path_independence_rel_spread": 0.0016961217806149493,
+    "equilibrium_reaction_ratio": 1.0000000000001181,
+    "control_quarter_point_vs_midpoint": {
+      "quarter_point_rel_error": -0.0197647749528932,
+      "midpoint_rel_error": -0.025502534645594724,
+      "gain_pp": 0.5737759692701523,
+      "limitation": "both rings are inside the 3 % band on this mesh, so the band alone does not demonstrate the necessity of the quarter-point ring"
+    },
+    "gci": {
+      "applicable_at_aW03": false,
+      "observed_order": -0.055024667977895944,
+      "medium_to_fine_change": 0.006121851569495647,
+      "note": "Roache GCI honestly rejected at the ledger point; run.py's gci_fine=0.0222 belongs to the a/W=0.20 ladder (CRACK_RATIOS 0.2/0.35/0.5), not a/W=0.30"
+    },
+    "cross_ratio_check_result_json": {
+      "a/W=0.2": -0.01046265594976061,
+      "a/W=0.3": -0.007375127549096671,
+      "a/W=0.5": -0.008373726127958104
+    }
+  },
+  "repro_cmd": "cd /root/tp-agent/work/m17194 && PYTHONPATH=src python -B benchmarks/verified/fem_sent_j_integral/ledger_acceptance.py   # auditor rerun 2026-11-13 02:44-02:46Z: verdict PASS, artifacts in docs/board_audit/m17230/rerun/ ; ALL floats identical to the subject artifact (numeric keys differing: [])",
+  "external_anchor": "docs/board_audit/m17230/external_anchor_tada_2000.md",
+  "external_anchor_note": "Tada, Paris & Irwin, The Stress Analysis of Cracks Handbook, 3rd ed. (2000), SENT F(a/W) 1.12-0.231a+10.55a^2-21.72a^3+30.39a^4 (+-0.5%, a/W<=0.6, H/W>=1) and the independent secant form in the same chapter; Rice (1968) J. Appl. Mech. 35:379",
+  "audit": {
+    "level_claimed": 4,
+    "report_rows_in_tensor_reports": 0,
+    "numeric_keys_differing_from_rerun": [],
+    "keys_differing_from_rerun": [
+      "/gci/note",
+      "/generated_at"
+    ],
+    "findings": {
+      "S1_blocking": [],
+      "S2_medium": [
+        "documented --fast variant of the repro script crashes: TypeError: 'NoneType' object is not subscriptable at ledger_acceptance.py:152 (make_figure) -> exit 1, no artifacts written (reproduced twice; rerun/fast_mode_failure.log). The graded full run is unaffected."
+      ],
+      "S3_low": [
+        "tensor_reports has 0 rows for mission 17194 (its own finish recorded the report POST as 401) -> six-section platform report missing; content exists only as docs/CASE-FEM-JINTEGRAL-EDGE-CRACK_ledger_acceptance_m17194.md in the worktree.",
+        "deliverable not yet on main: product entry (run_sent_j_qualification / CLI / marine suite hook / ledger_acceptance.py) lives only on branch agent/m17194 (tip 2089919d); ecosystem checkout 74567201 does not import it."
+      ],
+      "S4_info": [
+        "3 % pass at the 24-sector qualification mesh is partly a cancellation between discretisation error and the H/W=2 far-field bias (coarse -1.976 %, fine -0.738 %, and the midpoint-ring control also lands inside 3 %); m17194 states this limitation itself, so the pass is not overstated.",
+        "run.py gates_verified.json gci_fine=0.0222 is computed on the a/W=0.20 ladder, not the ledger point - checked, not a contradiction."
+      ]
+    },
+    "checks_not_run": [
+      "benchmarks/verified/fem_sent_j_integral/run.py --stage height/field (known CG non-convergence at H/W=3.0, recorded not_run in result.json) -> far-field truncation bias unquantified; caps the claim below L5",
+      "full TensorFEM test suite (not required for this verdict)",
+      "cluster/loongarch re-run (auditor rerun executed on the control node, x86_64)"
+    ]
+  }
+}
