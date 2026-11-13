@@ -1,0 +1,493 @@
+{
+  "anchor": "fem_cantilever_shear",
+  "mission": "CASE-CANTILEVER-TIP",
+  "title": "CASE-CANTILEVER-TIP: measured shear coefficient of the HEX20 continuum, with the exact plane-stress elasticity oracle",
+  "generated_at": "2026-11-13T02:10:57+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "numpy": "2.4.6"
+  },
+  "problem": {
+    "young_modulus_Pa": 200000000000.0,
+    "poisson_ratio": 0.3,
+    "tip_force_N": 5.0,
+    "width_m": 0.01,
+    "height_m": 0.01,
+    "shear_factor_kappa": 0.8333333333333334,
+    "tolerance": 0.03,
+    "elements_per_h": 2.0,
+    "fit_slenderness": [
+      4.0,
+      5.0,
+      6.0,
+      8.0,
+      10.0,
+      12.0,
+      16.0,
+      20.0
+    ]
+  },
+  "exact_plane_stress": {
+    "airy_function": "P*c**2*x*y/(2*I) + P*y**3*(L - x)/(6*I)",
+    "biharmonic_residual": "0",
+    "equilibrium_x": "0",
+    "equilibrium_y": "0",
+    "strain_compatibility": "0",
+    "flank_shear_traction": [
+      "0",
+      "0"
+    ],
+    "end_normal_stress": "0",
+    "shear_resultant": "-P",
+    "axial_resultant": "0",
+    "tau_sq_integral_over_area": "8*P**2*c**6/(15*I**2)",
+    "b_energy": "6/5",
+    "kappa_energy": "5/6",
+    "tip_centroid_deflection": "L*P*(-L**2 - 3*c**2*(nu + 1))/(3*E*I)",
+    "b_centroid": "3/2",
+    "kappa_centroid": "2/3",
+    "b_energy_float": 1.2,
+    "kappa_energy_float": 0.8333333333333334,
+    "b_centroid_float": 1.5,
+    "kappa_centroid_float": 0.6666666666666666,
+    "shear_strain_identity": "0",
+    "eps_x_identity": "0",
+    "eps_y_identity": "0",
+    "all_symbolic_checks_zero": true
+  },
+  "sweep": {
+    "fit": [
+      {
+        "mesh": {
+          "axial": 24,
+          "cross_y": 2,
+          "cross_z": 2
+        },
+        "nodes": 741,
+        "dofs": 2223,
+        "root_nodes": 21,
+        "tip_nodes": 21,
+        "tip_deflection_m": 6.590120453250145e-07,
+        "reaction_sum_z_N": 5.000000000009656,
+        "reaction_moment_y_Nm": -0.20000000000024937,
+        "force_residual": 1.9312551557959524e-12,
+        "moment_residual": 1.2467804566540508e-12,
+        "seconds": 16.132,
+        "length_m": 0.04,
+        "oracle_eb_m": 6.400000000000001e-07,
+        "oracle_timoshenko_m": 6.712e-07,
+        "error_vs_eb": 0.029706320820334982,
+        "error_vs_timoshenko": -0.018158454521730507,
+        "slenderness_L_over_h": 4.0
+      },
+      {
+        "mesh": {
+          "axial": 24,
+          "cross_y": 2,
+          "cross_z": 2
+        },
+        "nodes": 741,
+        "dofs": 2223,
+        "root_nodes": 21,
+        "tip_nodes": 21,
+        "tip_deflection_m": 1.2685976016317378e-06,
+        "reaction_sum_z_N": 5.000000000007115,
+        "reaction_moment_y_Nm": -0.25000000000014255,
+        "force_residual": 1.4230394640435407e-12,
+        "moment_residual": 5.702105454474804e-13,
+        "seconds": 17.786,
+        "length_m": 0.05,
+        "oracle_eb_m": 1.25e-06,
+        "oracle_timoshenko_m": 1.2890000000000003e-06,
+        "error_vs_eb": 0.01487808130539017,
+        "error_vs_timoshenko": -0.01582808251998639,
+        "slenderness_L_over_h": 5.0
+      },
+      {
+        "mesh": {
+          "axial": 24,
+          "cross_y": 2,
+          "cross_z": 2
+        },
+        "nodes": 741,
+        "dofs": 2223,
+        "root_nodes": 21,
+        "tip_nodes": 21,
+        "tip_deflection_m": 2.1759783514330832e-06,
+        "reaction_sum_z_N": 4.999999999987635,
+        "reaction_moment_y_Nm": -0.299999999999571,
+        "force_residual": 2.4730439918130288e-12,
+        "moment_residual": 1.4299672557172016e-12,
+        "seconds": 20.719,
+        "length_m": 0.06,
+        "oracle_eb_m": 2.1599999999999992e-06,
+        "oracle_timoshenko_m": 2.2067999999999994e-06,
+        "error_vs_eb": 0.007397384922724072,
+        "error_vs_timoshenko": -0.013966670548720386,
+        "slenderness_L_over_h": 6.0
+      },
+      {
+        "mesh": {
+          "axial": 24,
+          "cross_y": 2,
+          "cross_z": 2
+        },
+        "nodes": 741,
+        "dofs": 2223,
+        "root_nodes": 21,
+        "tip_nodes": 21,
+        "tip_deflection_m": 5.123362646735996e-06,
+        "reaction_sum_z_N": 5.000000000062529,
+        "reaction_moment_y_Nm": -0.4000000000034167,
+        "force_residual": 1.2505729785061704e-11,
+        "moment_residual": 8.54163961783172e-12,
+        "seconds": 21.143,
+        "length_m": 0.08,
+        "oracle_eb_m": 5.120000000000001e-06,
+        "oracle_timoshenko_m": 5.1824e-06,
+        "error_vs_eb": 0.0006567669406241143,
+        "error_vs_timoshenko": -0.011391894347021321,
+        "slenderness_L_over_h": 8.0
+      },
+      {
+        "mesh": {
+          "axial": 24,
+          "cross_y": 2,
+          "cross_z": 2
+        },
+        "nodes": 741,
+        "dofs": 2223,
+        "root_nodes": 21,
+        "tip_nodes": 21,
+        "tip_deflection_m": 9.979503818196786e-06,
+        "reaction_sum_z_N": 4.999999999920131,
+        "reaction_moment_y_Nm": -0.4999999999995215,
+        "force_residual": 1.5973711242622812e-11,
+        "moment_residual": 9.57012247226885e-13,
+        "seconds": 29.164,
+        "length_m": 0.1,
+        "oracle_eb_m": 1e-05,
+        "oracle_timoshenko_m": 1.0078e-05,
+        "error_vs_eb": -0.0020496181803214735,
+        "error_vs_timoshenko": -0.009773385771305284,
+        "slenderness_L_over_h": 10.0
+      },
+      {
+        "mesh": {
+          "axial": 24,
+          "cross_y": 2,
+          "cross_z": 2
+        },
+        "nodes": 741,
+        "dofs": 2223,
+        "root_nodes": 21,
+        "tip_nodes": 21,
+        "tip_deflection_m": 1.7222531055799378e-05,
+        "reaction_sum_z_N": 5.000000000023039,
+        "reaction_moment_y_Nm": -0.599999999999224,
+        "force_residual": 4.60786964140425e-12,
+        "moment_residual": 1.2932247865175366e-12,
+        "seconds": 16.619,
+        "length_m": 0.12,
+        "oracle_eb_m": 1.7279999999999994e-05,
+        "oracle_timoshenko_m": 1.7373599999999996e-05,
+        "error_vs_eb": -0.0033257490856838114,
+        "error_vs_timoshenko": -0.008695316123349117,
+        "slenderness_L_over_h": 12.0
+      },
+      {
+        "mesh": {
+          "axial": 32,
+          "cross_y": 2,
+          "cross_z": 2
+        },
+        "nodes": 981,
+        "dofs": 2943,
+        "root_nodes": 21,
+        "tip_nodes": 21,
+        "tip_deflection_m": 4.081661706002471e-05,
+        "reaction_sum_z_N": 4.999999999720723,
+        "reaction_moment_y_Nm": -0.7999999999438054,
+        "force_residual": 5.5855409186733594e-11,
+        "moment_residual": 7.024325565652134e-11,
+        "seconds": 25.056,
+        "length_m": 0.16,
+        "oracle_eb_m": 4.096000000000001e-05,
+        "oracle_timoshenko_m": 4.1084800000000003e-05,
+        "error_vs_eb": -0.0035005600579906654,
+        "error_vs_timoshenko": -0.006527546439931398,
+        "slenderness_L_over_h": 16.0
+      },
+      {
+        "mesh": {
+          "axial": 40,
+          "cross_y": 2,
+          "cross_z": 2
+        },
+        "nodes": 1221,
+        "dofs": 3663,
+        "root_nodes": 21,
+        "tip_nodes": 21,
+        "tip_deflection_m": 7.973747577480371e-05,
+        "reaction_sum_z_N": 4.999999999558339,
+        "reaction_moment_y_Nm": -0.9999999999577759,
+        "force_residual": 8.833218601012049e-11,
+        "moment_residual": 4.2224113094846416e-11,
+        "seconds": 28.625,
+        "length_m": 0.2,
+        "oracle_eb_m": 8e-05,
+        "oracle_timoshenko_m": 8.015600000000001e-05,
+        "error_vs_eb": -0.0032815528149537235,
+        "error_vs_timoshenko": -0.005221371141228368,
+        "slenderness_L_over_h": 20.0
+      }
+    ],
+    "cross_section": [
+      {
+        "mesh": {
+          "axial": 24,
+          "cross_y": 3,
+          "cross_z": 3
+        },
+        "nodes": 1384,
+        "dofs": 4152,
+        "root_nodes": 40,
+        "tip_nodes": 40,
+        "tip_deflection_m": 9.985355972660659e-06,
+        "reaction_sum_z_N": 5.000000000069697,
+        "reaction_moment_y_Nm": -0.5000000000009083,
+        "force_residual": 1.3939427390141645e-11,
+        "moment_residual": 1.8165469128916811e-12,
+        "seconds": 40.229,
+        "length_m": 0.1,
+        "oracle_eb_m": 1e-05,
+        "oracle_timoshenko_m": 1.0078e-05,
+        "error_vs_eb": -0.0014644027339342123,
+        "error_vs_timoshenko": -0.009192699676457835,
+        "slenderness_L_over_h": 10.0
+      }
+    ],
+    "axial_refinement": [
+      {
+        "mesh": {
+          "axial": 40,
+          "cross_y": 2,
+          "cross_z": 2
+        },
+        "nodes": 1221,
+        "dofs": 3663,
+        "root_nodes": 21,
+        "tip_nodes": 21,
+        "tip_deflection_m": 9.99119887440376e-06,
+        "reaction_sum_z_N": 4.999999999954981,
+        "reaction_moment_y_Nm": -0.49999999999885214,
+        "force_residual": 9.00381991186805e-12,
+        "moment_residual": 2.2957191703198987e-12,
+        "seconds": 24.285,
+        "length_m": 0.1,
+        "oracle_eb_m": 1e-05,
+        "oracle_timoshenko_m": 1.0078e-05,
+        "error_vs_eb": -0.0008801125596241291,
+        "error_vs_timoshenko": -0.00861293169242322,
+        "slenderness_L_over_h": 10.0
+      }
+    ]
+  },
+  "fit": {
+    "A": -0.004713145428227087,
+    "B": 0.1683354648507065,
+    "C": 1.5454501536797045,
+    "a_bending_ratio": 0.9952868545717729,
+    "b_shear_ratio": 1.2158146985265468,
+    "kappa_eff": 0.6854114647102516,
+    "c_end_offset_m": 1.5454501536797044e-08,
+    "c_end_offset_over_ph_over_ga": 2.377615621045699,
+    "c_end_offset_relative_to_eb_at_4": 0.02414765865124538,
+    "r2": 0.9980464602238869,
+    "max_abs_residual": 0.0008175726819366338,
+    "r2_without_end_effect": 0.9869812318293512,
+    "a_bending_ratio_without_end_effect": 0.9931885790369307,
+    "b_shear_ratio_without_end_effect": 1.719391684294965,
+    "design_condition_number": 1361.394781898682,
+    "sigma_b": 0.09570267837070459,
+    "sigma_kappa": 0.05395206443733127,
+    "corr_a_c": 0.773673054695374,
+    "slenderness": [
+      4.0,
+      5.0,
+      6.0,
+      8.0,
+      10.0,
+      12.0,
+      16.0,
+      20.0
+    ],
+    "e_vs_eb": [
+      0.029706320820334982,
+      0.01487808130539017,
+      0.007397384922724072,
+      0.0006567669406241143,
+      -0.0020496181803214735,
+      -0.0033257490856838114,
+      -0.0035005600579906654,
+      -0.0032815528149537235
+    ],
+    "holdout": {
+      "train_slenderness": [
+        4.0,
+        5.0,
+        6.0,
+        8.0,
+        10.0,
+        12.0
+      ],
+      "holdout": [
+        {
+          "slenderness_L_over_h": 16.0,
+          "predicted_error_vs_eb": -0.004755177944892098,
+          "measured_error_vs_eb": -0.0035005600579906654,
+          "residual": 0.0012546178869014325
+        },
+        {
+          "slenderness_L_over_h": 20.0,
+          "predicted_error_vs_eb": -0.005332777581648673,
+          "measured_error_vs_eb": -0.0032815528149537235,
+          "residual": 0.0020512247666949496
+        }
+      ],
+      "max_abs_residual": 0.0020512247666949496
+    }
+  },
+  "ladder_crosscheck": [
+    {
+      "slenderness_L_over_h": 100.0,
+      "measured_delta_m": 0.00995984584188315,
+      "predicted_delta_m": 0.009953052335684116,
+      "measured_error_vs_ti": -0.0040930965501538045,
+      "predicted_error_vs_ti": -0.004772394184841655,
+      "ladder_shear_recovery": -51.47968989347203
+    },
+    {
+      "slenderness_L_over_h": 20.0,
+      "measured_delta_m": 7.969633264989647e-05,
+      "predicted_delta_m": 7.967206996024877e-05,
+      "measured_error_vs_ti": -0.005734659290677428,
+      "predicted_error_vs_ti": -0.00603735265920502,
+      "ladder_shear_recovery": -1.9465855775867333
+    },
+    {
+      "slenderness_L_over_h": 10.0,
+      "measured_delta_m": 9.985355972660659e-06,
+      "predicted_delta_m": 9.985156593739598e-06,
+      "measured_error_vs_ti": -0.009192699676457835,
+      "predicted_error_vs_ti": -0.009212483256638482,
+      "ladder_shear_recovery": -0.18774394024797614
+    },
+    {
+      "slenderness_L_over_h": 5.0,
+      "measured_delta_m": 1.2698344368774502e-06,
+      "predicted_delta_m": 1.2679798429940488e-06,
+      "measured_error_vs_ti": -0.0148685516854539,
+      "predicted_error_vs_ti": -0.016307336699729613,
+      "ladder_shear_recovery": 0.5085753045500001
+    },
+    {
+      "slenderness_L_over_h": 4.0,
+      "measured_delta_m": 6.597265366449845e-07,
+      "predicted_delta_m": 6.591715070567601e-07,
+      "measured_error_vs_ti": -0.017093956130833643,
+      "predicted_error_vs_ti": -0.017920877448212136,
+      "ladder_shear_recovery": 0.632260789903347
+    }
+  ],
+  "gates": [
+    {
+      "name": "symbolic_oracle_checks",
+      "value": 1.0,
+      "criterion": "== 1",
+      "note": "biharmonic residual, equilibrium, compatibility, flanks, end stress all symbolically zero",
+      "verdict": true
+    },
+    {
+      "name": "fit_reproduces_sweep",
+      "value": 0.0008175726819366338,
+      "criterion": "<= 1e-3",
+      "note": "3-parameter model (F) must explain the whole sweep to within 0.1 pp of error (the measured axial-mesh dependence of the thick rungs)",
+      "verdict": true
+    },
+    {
+      "name": "end_effect_required_by_data",
+      "value": 0.01106522839453572,
+      "criterion": ">= 1e-3",
+      "note": "dropping the L^0 term must measurably degrade the fit",
+      "verdict": true
+    },
+    {
+      "name": "kappa_eff_within_10pct_of_energy_5_6",
+      "value": 0.1775062423476981,
+      "criterion": "<= 0.10",
+      "note": "primary criterion: the continuum must recover the strain-energy kappa that the ladder's Timoshenko oracle is built on (pre-registered)",
+      "verdict": false
+    },
+    {
+      "name": "kappa_eff_not_centroid_value",
+      "value": 0.028117197065377464,
+      "criterion": ">= 0.10",
+      "note": "and must be distinguishable from the centroid reading tau_max/G (2/3)",
+      "verdict": false
+    },
+    {
+      "name": "best_candidate",
+      "value": "centroid_2_3",
+      "criterion": "informational",
+      "note": "nearest of the three theory candidates to the measurement (0.6667)",
+      "verdict": true
+    },
+    {
+      "name": "holdout_prediction",
+      "value": 0.0020512247666949496,
+      "criterion": "<= 1e-3",
+      "note": "rungs 16 and 20 held out of the fit and predicted: the 3-parameter model must generalise",
+      "verdict": false
+    },
+    {
+      "name": "design_conditioning",
+      "value": 1361.394781898682,
+      "criterion": "<= 1e4",
+      "note": "informational scale check: the (1, x^2, x^3) regressors must stay separable",
+      "verdict": true
+    },
+    {
+      "name": "kappa_eff_uncertainty",
+      "value": 0.07871485555051048,
+      "criterion": "<= 0.15",
+      "note": "residual-based standard error of the recovered kappa (the a and c carriers are strongly correlated, so this is the honest precision of b)",
+      "verdict": true
+    },
+    {
+      "name": "end_offset_magnitude",
+      "value": 2.377615621045699,
+      "criterion": "informational",
+      "note": "L-independent offset in units of P h/(G A); sign is not gated because it trades against the bending ratio a (see corr_a_c)",
+      "verdict": true
+    },
+    {
+      "name": "bending_ratio_within_1pct",
+      "value": 0.9952868545717729,
+      "criterion": "between 0.99 and 1.01",
+      "note": "the L^3 carrier is recovered to ~1 %: bending is not the source of the residual",
+      "verdict": true
+    },
+    {
+      "name": "all_fit_levels_equilibrium",
+      "value": 8.833218601012049e-11,
+      "criterion": "<= 1e-5",
+      "note": "static force equilibrium of every sweep level",
+      "verdict": true
+    }
+  ],
+  "figures": {
+    "fit": "docs/assets/cantilever_shear/kappa_recovery_fit.png",
+    "kappa": "docs/assets/cantilever_shear/kappa_recovery_candidates.png"
+  }
+}
