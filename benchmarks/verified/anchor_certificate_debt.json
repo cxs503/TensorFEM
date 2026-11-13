@@ -16,6 +16,13 @@
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
+    "fem_inverse_identification": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
+    },
     "fem_sent_j_integral": {
       "grade": "contradicted",
       "defects": [
