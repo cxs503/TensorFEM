@@ -1,0 +1,291 @@
+{
+  "schema_version": "1.0.0",
+  "purpose": "Verbatim transcription registry for Lindqvist (1989) POAC'89 and Riska ice resistance formulas. An entry may only be created by copying characters from an authorised copy of the source document held by the operator: quote (verbatim, character exact), table/figure/page locator, and the numeric values exactly as printed (as strings, no re-rounding). The anchor reconciliation script refuses to promote any anchor whose entry is not VERBATIM.",
+  "sources_sought": [
+    {
+      "id": "LINDQVIST-1989-POAC",
+      "citation_as_assigned": "Lindqvist, G. (1989). A straightforward method for calculation of ice resistance of ships. Proceedings of the 10th International Conference on Port and Ocean Engineering under Arctic Conditions (POAC'89), Luleå, Sweden, Vol. 1, pp. 722-737.",
+      "expected_contribution": "Three-component level ice resistance model: crushing (R_c), bending (R_b), submersion (R_s) plus momentum term (R_mom); coefficient table and validation cases",
+      "acquisition_status": "NOT_OBTAINED",
+      "acquisition_attempts": [
+        {
+          "channel": "local filesystem corpus",
+          "action": "find /root /data /srv /media /opt -iname '*lindqvist*' -o -iname '*poac*'",
+          "result": "no matching PDF or full-text document; found derivative implementation docs in ship-performance-platform-incoming but no source paper"
+        },
+        {
+          "channel": "local PDF corpus",
+          "action": "find /root -maxdepth 5 -iname '*.pdf' | xargs grep -il 'lindqvist\\|POAC' 2>/dev/null",
+          "result": "no PDF containing Lindqvist 1989 POAC paper found"
+        },
+        {
+          "channel": "repository corpus",
+          "action": "grep -rIl 'Lindqvist.*1989\\|POAC.*89\\|ice resistance.*straightforward' over the TensorFEM worktree",
+          "result": "no verbatim text, no table extract, no page locator for Lindqvist 1989 POAC paper"
+        },
+        {
+          "channel": "network",
+          "action": "curl attempts to POAC proceedings repositories and Luleå University archive",
+          "result": "POAC'89 proceedings not freely available online; Luleå University digital archive requires institutional access"
+        }
+      ]
+    },
+    {
+      "id": "RISKA-1997-POAC",
+      "citation_as_assigned": "Riska, K. (1997). On the mechanics of ice-ship interaction. Proceedings of POAC'97, or Riska et al. model as cited in ITTC Ice Committee reports.",
+      "expected_contribution": "Alternative ice resistance formulation; speed dependence model; comparison with Lindqvist method",
+      "acquisition_status": "NOT_OBTAINED",
+      "acquisition_attempts": [
+        {
+          "channel": "same four channels as LINDQVIST-1989-POAC",
+          "action": "shared search",
+          "result": "no copy, no verbatim extract, no page locator available"
+        }
+      ]
+    },
+    {
+      "id": "LINDQVIST-1983-THESIS",
+      "citation_as_assigned": "Lindqvist, G. (1983). Ice resistance of ships - a straightforward method. Licentiate thesis, Helsinki University of Technology.",
+      "expected_contribution": "Earlier formulation of ice resistance method; precursor to 1989 POAC paper",
+      "acquisition_status": "NOT_OBTAINED",
+      "acquisition_attempts": [
+        {
+          "channel": "same four channels",
+          "action": "shared search",
+          "result": "no copy available"
+        }
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "anchor_id": "LINDQVIST-Rc-crushing",
+      "source_id": "LINDQVIST-1989-POAC",
+      "locator": {
+        "document_part": "Equation for crushing resistance component",
+        "page": "TBD — requires source document",
+        "section": "TBD"
+      },
+      "quote": "WITHHELD — source document not obtained; formula below is from secondary literature synthesis, NOT verbatim",
+      "verbatim_status": "WITHHELD",
+      "formula_as_known_from_secondary_sources": "R_c = f_c · σ_c · h² · (tan ψ + μ · cos ψ / sin α)",
+      "values": [
+        {
+          "symbol": "f_c",
+          "printed_value": "1.0",
+          "unit_as_printed": "dimensionless",
+          "definition_in_quote": false,
+          "note": "coefficient from secondary sources; Lindqvist original value TBD"
+        },
+        {
+          "symbol": "σ_c",
+          "printed_value": "TBD",
+          "unit_as_printed": "Pa or MPa",
+          "definition_in_quote": false,
+          "note": "ice crushing strength; value range typically 2-5 MPa for first-year ice"
+        },
+        {
+          "symbol": "ψ",
+          "printed_value": "TBD",
+          "unit_as_printed": "degrees",
+          "definition_in_quote": false,
+          "note": "stem angle (angle between stem and waterline plane)"
+        },
+        {
+          "symbol": "μ",
+          "printed_value": "0.10",
+          "unit_as_printed": "dimensionless",
+          "definition_in_quote": false,
+          "note": "ice-steel friction coefficient; Lindqvist observed 0.05-0.15"
+        },
+        {
+          "symbol": "α",
+          "printed_value": "TBD",
+          "unit_as_printed": "degrees",
+          "definition_in_quote": false,
+          "note": "waterline half-angle at bow"
+        }
+      ],
+      "operator": "agent/m17161, 2026-11-13, from secondary literature only — NOT verbatim",
+      "verification": "NOT VERIFIED — requires source document"
+    },
+    {
+      "anchor_id": "LINDQVIST-Rb-bending",
+      "source_id": "LINDQVIST-1989-POAC",
+      "locator": {
+        "document_part": "Equation for bending resistance component",
+        "page": "TBD — requires source document",
+        "section": "TBD"
+      },
+      "quote": "WITHHELD — source document not obtained; formula below is from secondary literature synthesis, NOT verbatim",
+      "verbatim_status": "WITHHELD",
+      "formula_as_known_from_secondary_sources": "R_b = f_b · σ_f · B · h² · λ · (sin ψ + μ · cos ψ)",
+      "values": [
+        {
+          "symbol": "f_b",
+          "printed_value": "TBD",
+          "unit_as_printed": "dimensionless",
+          "definition_in_quote": false,
+          "note": "bending coefficient; derived from elastic foundation plate theory"
+        },
+        {
+          "symbol": "σ_f",
+          "printed_value": "TBD",
+          "unit_as_printed": "Pa or MPa",
+          "definition_in_quote": false,
+          "note": "ice flexural strength; typically 0.3-0.7 MPa for first-year ice"
+        },
+        {
+          "symbol": "B",
+          "printed_value": "TBD",
+          "unit_as_printed": "m",
+          "definition_in_quote": false,
+          "note": "ship beam (moulded breadth)"
+        },
+        {
+          "symbol": "λ",
+          "printed_value": "(k/4D)^{1/4}",
+          "unit_as_printed": "m^{-1}",
+          "definition_in_quote": false,
+          "note": "characteristic length parameter of ice sheet on elastic foundation; k = ρ_w·g, D = E·h³/(12(1-ν²))"
+        }
+      ],
+      "operator": "agent/m17161, 2026-11-13, from secondary literature only — NOT verbatim",
+      "verification": "NOT VERIFIED — requires source document"
+    },
+    {
+      "anchor_id": "LINDQVIST-Rs-submersion",
+      "source_id": "LINDQVIST-1989-POAC",
+      "locator": {
+        "document_part": "Equation for submersion resistance component",
+        "page": "TBD — requires source document",
+        "section": "TBD"
+      },
+      "quote": "WITHHELD — source document not obtained; formula below is from secondary literature synthesis, NOT verbatim",
+      "verbatim_status": "WITHHELD",
+      "formula_as_known_from_secondary_sources": "R_s = A · (h + δ), where A = f_s · μ · ρ_w · g · B · (T/tan α) and δ = C_p · v²/(2g)",
+      "values": [
+        {
+          "symbol": "f_s",
+          "printed_value": "TBD",
+          "unit_as_printed": "dimensionless",
+          "definition_in_quote": false,
+          "note": "submersion coefficient"
+        },
+        {
+          "symbol": "ρ_w",
+          "printed_value": "1025",
+          "unit_as_printed": "kg/m³",
+          "definition_in_quote": false,
+          "note": "sea water density"
+        },
+        {
+          "symbol": "T",
+          "printed_value": "TBD",
+          "unit_as_printed": "m",
+          "definition_in_quote": false,
+          "note": "ship draft"
+        },
+        {
+          "symbol": "C_p",
+          "printed_value": "1.0",
+          "unit_as_printed": "dimensionless",
+          "definition_in_quote": false,
+          "note": "pressure coefficient for dynamic submersion depth"
+        }
+      ],
+      "operator": "agent/m17161, 2026-11-13, from secondary literature only — NOT verbatim",
+      "verification": "NOT VERIFIED — requires source document"
+    },
+    {
+      "anchor_id": "LINDQVIST-Rmom-momentum",
+      "source_id": "LINDQVIST-1989-POAC",
+      "locator": {
+        "document_part": "Equation for momentum resistance component",
+        "page": "TBD — requires source document",
+        "section": "TBD"
+      },
+      "quote": "WITHHELD — source document not obtained; formula below is from secondary literature synthesis, NOT verbatim",
+      "verbatim_status": "WITHHELD",
+      "formula_as_known_from_secondary_sources": "R_mom = C_m · ρ_i · h · B · v²",
+      "values": [
+        {
+          "symbol": "C_m",
+          "printed_value": "1.0",
+          "unit_as_printed": "dimensionless",
+          "definition_in_quote": false,
+          "note": "momentum coefficient"
+        },
+        {
+          "symbol": "ρ_i",
+          "printed_value": "900",
+          "unit_as_printed": "kg/m³",
+          "definition_in_quote": false,
+          "note": "ice density (first-year ice)"
+        }
+      ],
+      "operator": "agent/m17161, 2026-11-13, from secondary literature only — NOT verbatim",
+      "verification": "NOT VERIFIED — requires source document"
+    },
+    {
+      "anchor_id": "LINDQVIST-total-resistance",
+      "source_id": "LINDQVIST-1989-POAC",
+      "locator": {
+        "document_part": "Total ice resistance equation",
+        "page": "TBD — requires source document",
+        "section": "TBD"
+      },
+      "quote": "WITHHELD — source document not obtained; formula below is from secondary literature synthesis, NOT verbatim",
+      "verbatim_status": "WITHHELD",
+      "formula_as_known_from_secondary_sources": "R_ice = R_c + R_b + R_s + R_mom",
+      "values": [],
+      "operator": "agent/m17161, 2026-11-13, from secondary literature only — NOT verbatim",
+      "verification": "NOT VERIFIED — requires source document"
+    },
+    {
+      "anchor_id": "LINDQVIST-table1-validation",
+      "source_id": "LINDQVIST-1989-POAC",
+      "locator": {
+        "document_part": "Table 1 — Validation cases / comparison with model tests",
+        "page": "TBD — requires source document",
+        "section": "TBD"
+      },
+      "quote": "WITHHELD — source document not obtained; table contents unknown",
+      "verbatim_status": "WITHHELD",
+      "values": [],
+      "note": "Lindqvist 1989 paper contains a table comparing calculated vs. measured ice resistance for several ship cases. This table is critical for validation but cannot be transcribed without the source document.",
+      "operator": "agent/m17161, 2026-11-13",
+      "verification": "NOT VERIFIED — requires source document"
+    }
+  ],
+  "entry_schema": {
+    "anchor_id": "string, stable key used by the reconciliation script",
+    "source_id": "one of sources_sought[].id",
+    "locator": {
+      "document_part": "e.g. 'Eq. (3)', 'Table 1', 'Fig. 2', 'p. 728'",
+      "page": "integer or range, as printed",
+      "section": "section heading as printed (optional)"
+    },
+    "quote": "character-exact sentence(s) from the document containing the anchor value and its nondimensionalisation",
+    "verbatim_status": "VERBATIM | TRANSCRIBED_OCR_REVIEWED | WITHHELD",
+    "values": [
+      {
+        "symbol": "as printed",
+        "printed_value": "string, exactly as printed (no re-rounding, no unit conversion)",
+        "unit_as_printed": "string",
+        "definition_in_quote": true
+      }
+    ],
+    "operator": "who transcribed, from which copy (edition, ISBN/accession), and the date",
+    "verification": "second-person re-read result; two independent readings required before verbatim_status=VERBATIM"
+  },
+  "promotion_rule": "An entry with verbatim_status != VERBATIM, or with an empty quote, or without a page/table locator, is claim_ineligible: its numbers may only be used as a cross-check against computed values, never as a basis for a pass/compliance statement. The generator script enforces this (see benchmarks/anchors/lindqvist_riska_anchor.py, function classify_entries).",
+  "m1_threshold": {
+    "required_verbatim_entries": 4,
+    "required_components": ["formula", "quote", "page/table locator"],
+    "current_verbatim_count": 0,
+    "current_withheld_count": 6,
+    "status": "WITHHELD — M1 threshold not met; 0 of 4 required verbatim entries obtained",
+    "path_to_pass": "Obtain authorised copy of Lindqvist 1989 POAC'89 paper; transcribe ≥4 (formula, quote, page/table) triplets verbatim; run reconciliation script to promote entries to VERBATIM status"
+  }
+}
