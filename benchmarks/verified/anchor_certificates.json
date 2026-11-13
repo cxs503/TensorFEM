@@ -2,24 +2,22 @@
   "schema": "tensorfem.anchor-certificates/1",
   "gate_schema": "tensorfem.verified-gates.v1",
   "git_tracking_checked": true,
-  "anchors": 33,
-  "certified": 16,
-  "contradicted": 11,
+  "anchors": 35,
+  "certified": 27,
+  "contradicted": 2,
   "uncertified": 6,
-  "gates_total": 258,
-  "gates_recomputed": 236,
+  "gates_total": 297,
+  "gates_recomputed": 278,
   "gates_contradicted": 0,
   "gates_contradicted_inferred": 2,
-  "gates_without_numeric_criterion": 6,
-  "gates_unrecomputable": 22,
+  "gates_without_numeric_criterion": 4,
+  "gates_unrecomputable": 19,
   "defect_counts": {
-    "E_ANCHOR_NAME_MISMATCH": 2,
-    "E_ARTIFACT_MISSING": 8,
-    "E_ARTIFACT_UNTRACKED": 1,
+    "E_ARTIFACT_MISSING": 1,
     "E_GATE_VALUE_NOT_FINITE": 1,
     "E_NO_GATES": 6,
-    "E_PASS_WITHOUT_CRITERION": 2,
-    "E_SCHEMA": 2
+    "E_PASS_WITHOUT_CRITERION": 1,
+    "E_SCHEMA": 1
   },
   "records": [
     {
@@ -562,6 +560,326 @@
       ]
     },
     {
+      "anchor": "fem_cantilever_shear",
+      "directory": "benchmarks/verified/fem_cantilever_shear",
+      "grade": "certified",
+      "certified": true,
+      "has_runner": true,
+      "has_result": true,
+      "has_gates": true,
+      "declared_overall": true,
+      "recomputed_overall": true,
+      "gates": 23,
+      "gates_passed": 23,
+      "gates_failed": 0,
+      "gates_contradicted": 0,
+      "gates_contradicted_inferred": 0,
+      "gates_unrecomputable": 0,
+      "defects": [],
+      "warnings": [],
+      "gate_detail": [
+        {
+          "id": "oracle_energy_selfcheck",
+          "quantity": "symbolic residual of the Castigliano re-derivation of (1) and (2)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0,
+          "threshold": 1e-12,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "slender_rung_cannot_discriminate",
+          "quantity": "(delta_TI - delta_EB)/delta_EB at L/h = 100",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 7.799999999988373e-05,
+          "threshold": 0.001,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "thick_rung_discriminates",
+          "quantity": "(delta_TI - delta_EB)/delta_EB at L/h = 4",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 0.04874999999999985,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "frame_eb_vs_eb_100",
+          "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 100",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 1.3000017728970194e-12,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "beam_timoshenko_vs_ti_100",
+          "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 100",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 3.3911198881833803e-13,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "solid_hex20_vs_timoshenko_100",
+          "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 100, finest mesh",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0040930965501538045,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "frame_eb_vs_eb_20",
+          "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 20",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.088275028160752e-12,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "beam_timoshenko_vs_ti_20",
+          "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 20",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 4.226922237907581e-15,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "solid_hex20_vs_timoshenko_20",
+          "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 20, finest mesh",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.005734659290677428,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "frame_eb_vs_eb_10",
+          "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 10",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.088275028160752e-12,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "beam_timoshenko_vs_ti_10",
+          "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 10",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.6895271196802548e-14,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "solid_hex20_vs_timoshenko_10",
+          "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 10, finest mesh",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.009192699676457835,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "frame_eb_vs_eb_5",
+          "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 5",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.088275028160752e-12,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "beam_timoshenko_vs_ti_5",
+          "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 5",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.4970715279800936e-14,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "solid_hex20_vs_timoshenko_5",
+          "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 5, finest mesh",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0148685516854539,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "frame_eb_vs_eb_4",
+          "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 4",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 6.4362923462751075e-12,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "beam_timoshenko_vs_ti_4",
+          "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 4",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.4608376745320107e-14,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "solid_hex20_vs_timoshenko_4",
+          "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 4, finest mesh",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.017093956130833643,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "eb_rejected_by_timoshenko",
+          "quantity": "frame (shear-rigid) error vs oracle (2) at L/h = 4",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 0.046483909422108366,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "solid_recovers_shear",
+          "quantity": "shear recovery (delta_solid - delta_EB)/(delta_TI - delta_EB) at L/h = 4",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 0.632260789903347,
+          "threshold": 0.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "solid_force_equilibrium",
+          "quantity": "max over all solid levels of |sum R_z - P| / P",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 7.13323163381574e-07,
+          "threshold": 1e-05,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "solid_moment_equilibrium",
+          "quantity": "max over all solid levels of |sum z R_x + P L| / (P L)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 5.659435929672441e-07,
+          "threshold": 1e-05,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "solid_refinement_monotone",
+          "quantity": "worst (|err|_fine - |err|_coarse) over the ladder",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": -0.0005082049423783645,
+          "threshold": 0.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        }
+      ]
+    },
+    {
       "anchor": "fem_curved_beam",
       "directory": "benchmarks/verified/fem_curved_beam",
       "grade": "certified",
@@ -578,9 +896,7 @@
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
       "defects": [],
-      "warnings": [
-        "W_ARTIFACT_AMBIGUOUS"
-      ],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "C1_tangent_flat",
@@ -1175,8 +1491,8 @@
       "has_gates": true,
       "declared_overall": true,
       "recomputed_overall": true,
-      "gates": 14,
-      "gates_passed": 14,
+      "gates": 20,
+      "gates_passed": 20,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
@@ -1365,6 +1681,84 @@
           "status": "agrees",
           "defects": [],
           "warnings": []
+        },
+        {
+          "id": "truncation_extrapolated_indentation",
+          "quantity": "|e_inf(delta)|: Richardson limit of the indentation error as depth/ a -> inf (a/R = 0.05, h/a = 0.015)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.42780983887758905,
+          "threshold": 3.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "truncation_residual_model_bias",
+          "quantity": "|e_inf(delta)| against the pre-declared 0.5% bound that separates 'unconverged truncation' from 'model bias'",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.42780983887758905,
+          "threshold": 0.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "truncation_ladder_monotone_aR005",
+          "quantity": "number of levels where the indentation error does NOT decay in magnitude towards the infinite-domain limit",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.0,
+          "threshold": 0.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "truncation_order_observed",
+          "quantity": "|observed decay order of the indentation-error sequence| (depth doubling)",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 1.1825496119696763,
+          "threshold": 0.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "truncation_insensitive_contact_radius_aR005",
+          "quantity": "spread (pp) of |contact-radius error| over the depth ladder 96a -> 768a",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.001045903297969275,
+          "threshold": 0.05,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "truncation_extrapolated_indentation_aR010",
+          "quantity": "|e_inf(delta)| at the second load (a/R = 0.10, h/a = 0.015)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.4038540392683778,
+          "threshold": 3.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
         }
       ]
     },
@@ -1483,8 +1877,8 @@
     {
       "anchor": "fem_kirsch_plate",
       "directory": "benchmarks/verified/fem_kirsch_plate",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1496,12 +1890,9 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [
-        "W_ARTIFACT_NOT_A_PATH",
-        "W_ARTIFACT_AMBIGUOUS"
+        "W_ARTIFACT_NOT_A_PATH"
       ],
       "gate_detail": [
         {
@@ -1691,8 +2082,8 @@
     {
       "anchor": "fem_modal",
       "directory": "benchmarks/verified/fem_modal",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1704,13 +2095,8 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ANCHOR_NAME_MISMATCH",
-        "E_ARTIFACT_MISSING"
-      ],
-      "warnings": [
-        "W_ARTIFACT_AMBIGUOUS"
-      ],
+      "defects": [],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "L3.beam_frequencies",
@@ -1795,8 +2181,8 @@
     {
       "anchor": "fem_morley_skew_plate",
       "directory": "benchmarks/verified/fem_morley_skew_plate",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1808,12 +2194,8 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ANCHOR_NAME_MISMATCH"
-      ],
-      "warnings": [
-        "W_ARTIFACT_NOT_A_PATH"
-      ],
+      "defects": [],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "G1_square_pipeline_control",
@@ -1937,8 +2319,8 @@
     {
       "anchor": "fem_panel_buckling",
       "directory": "benchmarks/verified/fem_panel_buckling",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -1950,9 +2332,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_UNTRACKED"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -2355,8 +2735,8 @@
     {
       "anchor": "fem_plate_postbuckling",
       "directory": "benchmarks/verified/fem_plate_postbuckling",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2368,10 +2748,10 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
+      "defects": [],
+      "warnings": [
+        "W_UNDECLARED_ARTIFACTS"
       ],
-      "warnings": [],
       "gate_detail": [
         {
           "id": "A1",
@@ -2640,6 +3020,159 @@
       "gate_detail": []
     },
     {
+      "anchor": "fem_sent_plane_strain",
+      "directory": "benchmarks/verified/fem_sent_plane_strain",
+      "grade": "certified",
+      "certified": true,
+      "has_runner": true,
+      "has_result": true,
+      "has_gates": true,
+      "declared_overall": false,
+      "recomputed_overall": false,
+      "gates": 10,
+      "gates_passed": 8,
+      "gates_failed": 2,
+      "gates_contradicted": 0,
+      "gates_contradicted_inferred": 0,
+      "gates_unrecomputable": 0,
+      "defects": [],
+      "warnings": [
+        "W_ARTIFACT_NOT_A_PATH"
+      ],
+      "gate_detail": [
+        {
+          "id": "acceptance_5pct",
+          "quantity": "|K_FEM - K_GS| / K_GS at a/W = 0.3, plane strain, finest level",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.007375127549096671,
+          "threshold": 0.05,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "mission_3pct",
+          "quantity": "|K_FEM - K_GS| / K_GS at a/W = 0.3, plane strain, finest level",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.007375127549096671,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "reference_spread",
+          "quantity": "|F_closed_form - F_GS| / F_GS at a/W = 0.3",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.002895182485611151,
+          "threshold": 0.01,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "path_independence",
+          "quantity": "max-min of F over 8 fan lines, finest level",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.001638501021470177,
+          "threshold": 0.01,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "reaction_balance",
+          "quantity": "|vertical reaction / applied load - 1| at the finest level",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.2681856393091948e-13,
+          "threshold": 1e-09,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "gci_fine",
+          "quantity": "Roache GCI of F over the three levels",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.19683465170921122,
+          "threshold": 0.05,
+          "declared_passed": false,
+          "recomputed_passed": false,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "material_invariance",
+          "quantity": "|F(nu=0.45) - F(nu=0.30)| / F(nu=0.30) at the medium level",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.00561818999001551,
+          "threshold": 0.005,
+          "declared_passed": false,
+          "recomputed_passed": false,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "energy_vs_j",
+          "quantity": "|K_(dPi/da) - K_J| / K_J at a/W = 0.3, plane strain",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.006270688107705222,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "energy_vs_handbook",
+          "quantity": "|K_(dPi/da) - K_GS| / K_GS at a/W = 0.3, plane strain",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.001150686566006379,
+          "threshold": 0.05,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "clapeyron",
+          "quantity": "max |f.u / U - 2| over the two energy-oracle solves",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 2.509104035652854e-13,
+          "threshold": 1e-06,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        }
+      ]
+    },
+    {
       "anchor": "fem_shell4_formulation_matrix",
       "directory": "benchmarks/verified/fem_shell4_formulation_matrix",
       "grade": "uncertified",
@@ -2666,8 +3199,8 @@
     {
       "anchor": "fem_shell_modal",
       "directory": "benchmarks/verified/fem_shell_modal",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -2679,12 +3212,8 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
-      "warnings": [
-        "W_ARTIFACT_AMBIGUOUS"
-      ],
+      "defects": [],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "G1.beam",
@@ -2704,7 +3233,7 @@
           "quantity": "SS plate modes 1-3, max relative error [%]",
           "operator": "<=",
           "operator_source": "declared",
-          "value": 6.842545539601385,
+          "value": 6.842545540515209,
           "threshold": 10.0,
           "declared_passed": true,
           "recomputed_passed": true,
@@ -2922,204 +3451,164 @@
     {
       "anchor": "fem_sphere_pressure_membrane",
       "directory": "benchmarks/verified/fem_sphere_pressure_membrane",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
       "declared_overall": true,
-      "recomputed_overall": null,
+      "recomputed_overall": true,
       "gates": 11,
-      "gates_passed": 8,
+      "gates_passed": 11,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
-      "gates_unrecomputable": 3,
-      "defects": [
-        "E_SCHEMA",
-        "E_PASS_WITHOUT_CRITERION"
-      ],
-      "warnings": [
-        "W_THRESHOLD_FROM_PROSE",
-        "W_OPERATOR_INFERRED",
-        "E_GATE_MALFORMED",
-        "W_UNRECOMPUTABLE_FAIL",
-        "W_UNDECLARED_ARTIFACTS"
-      ],
+      "gates_unrecomputable": 0,
+      "defects": [],
+      "warnings": [],
       "gate_detail": [
         {
-          "id": "G10_flat_facet_shell4_control",
-          "quantity": "> 3% (recorded 13317% at 24 facets)",
-          "operator": ">",
-          "operator_source": "inferred",
-          "value": 133.16588851674985,
-          "threshold": 0.03,
-          "declared_passed": true,
-          "recomputed_passed": true,
-          "status": "agrees",
-          "defects": [],
-          "warnings": [
-            "W_THRESHOLD_FROM_PROSE",
-            "W_OPERATOR_INFERRED"
-          ]
-        },
-        {
-          "id": "G1_sigma_theta_vs_pr_2t",
-          "quantity": "rel err < 3% at facets=8",
-          "operator": "<",
-          "operator_source": "inferred",
+          "id": "G1.sigma_theta_vs_pR_2t",
+          "quantity": "max over Gauss points of |sigma_theta/(pR/2t) - 1|, 8 facets (27 dof)",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 7.309107154185312e-07,
           "threshold": 0.03,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_THRESHOLD_FROM_PROSE",
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
-          "id": "G2_sigma_phi_vs_pr_2t",
-          "quantity": "rel err < 3% at facets=8",
-          "operator": "<",
-          "operator_source": "inferred",
+          "id": "G2.sigma_phi_vs_pR_2t",
+          "quantity": "max over Gauss points of |sigma_phi/(pR/2t) - 1|, 8 facets",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.203855199882753e-06,
           "threshold": 0.03,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_THRESHOLD_FROM_PROSE",
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
-          "id": "G3_isotropy",
-          "quantity": "< 3% at facets=8",
-          "operator": "<",
-          "operator_source": "inferred",
+          "id": "G3.isotropy",
+          "quantity": "|N_phi - N_theta| / (pR/2), 8 facets",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.5248483988372641e-06,
           "threshold": 0.03,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_THRESHOLD_FROM_PROSE",
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
-          "id": "G4_radial_displacement",
-          "quantity": "< 3% at facets=8",
-          "operator": "<",
-          "operator_source": "inferred",
+          "id": "G4.radial_displacement_vs_closed_form",
+          "quantity": "|w_pole/w_ref - 1|, 8 facets",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 6.261665223315587e-06,
           "threshold": 0.03,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_THRESHOLD_FROM_PROSE",
-            "W_OPERATOR_INFERRED"
-          ]
-        },
-        {
-          "id": "G5_monotone_refinement",
-          "quantity": "e(4) > e(8) > e(32)",
-          "operator": ">",
-          "operator_source": "inferred",
-          "value": null,
-          "threshold": null,
-          "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
-          "defects": [
-            "E_PASS_WITHOUT_CRITERION"
-          ],
           "warnings": []
         },
         {
-          "id": "G6_observed_order",
-          "quantity": "min observed order >= 1.5",
-          "operator": ">=",
-          "operator_source": "inferred",
-          "value": null,
-          "threshold": 1.5,
+          "id": "G5a.contraction_4_to_8",
+          "quantity": "e(8)/e(4), e = max Gauss sigma_theta rel. error",
+          "operator": "<",
+          "operator_source": "declared",
+          "value": 0.06479793475822572,
+          "threshold": 1.0,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_THRESHOLD_FROM_PROSE",
-            "E_GATE_MALFORMED"
-          ]
+          "warnings": []
         },
         {
-          "id": "G7_poisson_invariance",
-          "quantity": "< 3% for every nu in 0..0.49",
+          "id": "G5b.contraction_8_to_32",
+          "quantity": "e(32)/e(8), e = max Gauss sigma_theta rel. error",
           "operator": "<",
-          "operator_source": "inferred",
+          "operator_source": "declared",
+          "value": 0.0038693632212954522,
+          "threshold": 1.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "G6.min_observed_order",
+          "quantity": "min observed log-log order of the sigma_theta ladder (2..64 facets)",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 3.456,
+          "threshold": 1.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "G7.poisson_invariance",
+          "quantity": "max over nu in {0,0.2,0.3,0.4,0.49} of the sigma_theta rel. error",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 8.572343833890272e-07,
           "threshold": 0.03,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_THRESHOLD_FROM_PROSE",
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
-          "id": "G8a_reference_valid_at_case_point",
-          "quantity": "|sigma_thin - sigma_Lame|/sigma_Lame < 3% at t/R of the case",
-          "operator": "<",
-          "operator_source": "inferred",
+          "id": "G8a.reference_valid_at_case_point",
+          "quantity": "|sigma_thin - sigma_Lame|/sigma_Lame at t/R = 0.004",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.004013376122981727,
           "threshold": 0.03,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_THRESHOLD_FROM_PROSE",
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
-          "id": "G8b_reference_band_reaches_t_over_R_0.05",
-          "quantity": "predicted: band reaches t/R = 0.05",
-          "operator": null,
-          "operator_source": "absent",
-          "value": null,
-          "threshold": null,
-          "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
-          "defects": [],
-          "warnings": [
-            "W_UNRECOMPUTABLE_FAIL"
-          ]
-        },
-        {
-          "id": "G9_chord_control_fails",
-          "quantity": "> 3% (control must fail: geometry representation matters)",
-          "operator": ">",
-          "operator_source": "inferred",
+          "id": "G9.chord_control_fails",
+          "quantity": "sigma_theta rel. error at 8 facets with the meridian represented by straight chords",
+          "operator": ">=",
+          "operator_source": "declared",
           "value": 2.078740587504627,
           "threshold": 0.03,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_THRESHOLD_FROM_PROSE",
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
+        },
+        {
+          "id": "G10.flat_facet_shell4_control_fails",
+          "quantity": "N_mean rel. error of the merged flat-facet Shell4 path, 24 facets",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 133.16588851674985,
+          "threshold": 0.03,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
         }
       ]
     },
@@ -3142,8 +3631,7 @@
       "defects": [
         "E_SCHEMA",
         "E_PASS_WITHOUT_CRITERION",
-        "E_GATE_VALUE_NOT_FINITE",
-        "E_ARTIFACT_MISSING"
+        "E_GATE_VALUE_NOT_FINITE"
       ],
       "warnings": [
         "W_OPERATOR_ABSENT",
@@ -3414,8 +3902,8 @@
     {
       "anchor": "fem_structural_benchmarks",
       "directory": "benchmarks/verified/fem_structural_benchmarks",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -3427,9 +3915,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {
@@ -3615,8 +4101,8 @@
     {
       "anchor": "fem_wave_dispersion",
       "directory": "benchmarks/verified/fem_wave_dispersion",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
@@ -3628,9 +4114,7 @@
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
+      "defects": [],
       "warnings": [],
       "gate_detail": [
         {

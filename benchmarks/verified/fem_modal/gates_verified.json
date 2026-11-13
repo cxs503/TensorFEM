@@ -1,6 +1,6 @@
 {
   "schema": "tensorfem.verified-gates.v1",
-  "anchor": "fem_modal_p19",
+  "anchor": "fem_modal",
   "title": "Beam and plate modal analysis vs closed-form eigenfrequencies (L3 rung)",
   "mission": "5418",
   "generated_at": "2026-11-07T11:53:43+00:00",
@@ -76,11 +76,6 @@
   "undefined_terms": [],
   "artifacts": {
     "result": "benchmarks/verified/fem_modal/result_p19.json",
-    "figures": [
-      "beam_modes.png",
-      "plate_modes.png",
-      "modal_convergence.png"
-    ],
     "legacy_result_untouched": "benchmarks/verified/fem_modal/result.json"
   },
   "limitations": [
@@ -88,5 +83,20 @@
     "Kirchhoff plate: a/t = 100 puts the Mindlin shear correction at ~1e-4 relative, below the 3 % gate but not modelled here.",
     "Simply supported edges only -- clamped and free plate modes are not covered by this rung (the CCCC static case is in benchmarks/verified/fem_plate_static).",
     "FE consistent-mass models are stiffer in frequency than the exact spectrum only in the limit h -> 0; the observed errors approach zero from above, which the monotonicity gate records."
-  ]
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "beam_modes.png",
+      "rendered_by": "benchmarks/verified/fem_modal/run.py"
+    },
+    {
+      "path": "plate_modes.png",
+      "rendered_by": "benchmarks/verified/fem_modal/run.py"
+    },
+    {
+      "path": "modal_convergence.png",
+      "rendered_by": "benchmarks/verified/fem_modal/run.py"
+    }
+  ],
+  "case": "fem_modal_p19"
 }

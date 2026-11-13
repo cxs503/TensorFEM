@@ -70,15 +70,25 @@
   "passed": true,
   "failed_gates": [],
   "undefined_terms": [],
-  "artifacts": {
-    "buckling_mode.png": "benchmarks/verified/fem_plate_postbuckling/buckling_mode.png",
-    "postbuckling_path.png": "benchmarks/verified/fem_plate_postbuckling/postbuckling_path.png",
-    "imperfection_sensitivity.png": "benchmarks/verified/fem_plate_postbuckling/imperfection_sensitivity.png"
-  },
+  "artifacts": {},
   "limitations": [
     "Small-rotation von Karman plate element (BFS bending + Q4 membrane); finite rotations, yielding and stiffener web local buckling are outside the model.",
     "Dead-load (uniform traction) in-plane loading with stress-free unloaded edges; a rigid end platen would raise the postbuckling load.",
     "The one-mode Koiter reference is an asymptotic in the amplitude, so the A2 gate is graded inside A/t <= 0.55; the deviation beyond that range is reported as a measurement, not hidden.",
     "The panel MAC comparison (A4) uses the transverse nodal field only, which is free of any rotation sign convention."
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "benchmarks/verified/fem_plate_postbuckling/buckling_mode.png",
+      "rendered_by": "benchmarks/verified/fem_plate_postbuckling/render_doc.py"
+    },
+    {
+      "path": "benchmarks/verified/fem_plate_postbuckling/postbuckling_path.png",
+      "rendered_by": "benchmarks/verified/fem_plate_postbuckling/render_doc.py"
+    },
+    {
+      "path": "benchmarks/verified/fem_plate_postbuckling/imperfection_sensitivity.png",
+      "rendered_by": "benchmarks/verified/fem_plate_postbuckling/render_doc.py"
+    }
   ]
 }

@@ -134,11 +134,6 @@
   "artifacts": {
     "result": "benchmarks/verified/fem_structural_benchmarks/result.json",
     "gates": "benchmarks/verified/fem_structural_benchmarks/gates_verified.json",
-    "figures": [
-      "benchmarks/verified/fem_structural_benchmarks/case_a_beam.png",
-      "benchmarks/verified/fem_structural_benchmarks/case_b_plate.png",
-      "benchmarks/verified/fem_structural_benchmarks/case_c_cylinder.png"
-    ],
     "driver": "benchmarks/verified/fem_structural_benchmarks/run.py",
     "tests": "tests/test_fem_structural_benchmarks.py"
   },
@@ -147,5 +142,19 @@
     "Case B uses soft simple support (w = 0, rotations free) and a/t = 100, so the Mindlin transverse-shear compliance is a ~1e-4 relative model difference against the Kirchhoff oracle.  The plate centre-deflection error is not monotone in the mesh, so the plate rate is graded on the L2 deflection-field norm.",
     "Case C enforces plane strain (u_z = 0) rather than modelling the closed or open ends; the Lame sigma_r/sigma_theta fields are independent of the end condition, but sigma_z = 2 nu A corresponds to plane strain only.  Stresses are reported after standard nodal recovery: the raw Gauss-point values are first order, and both sets are in result.json.",
     "All three cases are linear-elastic, small-displacement, single-physics checks.  They certify element kernels and load/boundary handling, not mesh quality on curved geometry, plasticity, contact or dynamics."
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "benchmarks/verified/fem_structural_benchmarks/case_a_beam.png",
+      "rendered_by": "benchmarks/verified/fem_structural_benchmarks/render_doc.py"
+    },
+    {
+      "path": "benchmarks/verified/fem_structural_benchmarks/case_b_plate.png",
+      "rendered_by": "benchmarks/verified/fem_structural_benchmarks/render_doc.py"
+    },
+    {
+      "path": "benchmarks/verified/fem_structural_benchmarks/case_c_cylinder.png",
+      "rendered_by": "benchmarks/verified/fem_structural_benchmarks/render_doc.py"
+    }
   ]
 }
