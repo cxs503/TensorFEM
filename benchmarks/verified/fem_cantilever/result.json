@@ -1,7 +1,7 @@
 {
   "benchmark": "fem_cantilever",
   "mission": "IN36-N01",
-  "generated_at": "2026-11-12T17:54:28+00:00",
+  "generated_at": "2026-11-13T00:00:25+00:00",
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
@@ -58,7 +58,7 @@
       "stress_probe_sigma_xx": 24508806.203045856,
       "stress_probe_reference": 24530451.289367262,
       "stress_relative_error": 0.0008823761970815358,
-      "solve_seconds": 0.005779389292001724
+      "solve_seconds": 0.01541915163397789
     },
     {
       "axial_elements": 40,
@@ -74,7 +74,7 @@
       "stress_probe_sigma_xx": 27196833.971770864,
       "stress_probe_reference": 27198050.245816994,
       "stress_relative_error": 4.471916314363611e-05,
-      "solve_seconds": 0.005849819630384445
+      "solve_seconds": 0.007401289418339729
     },
     {
       "axial_elements": 80,
@@ -90,7 +90,7 @@
       "stress_probe_sigma_xx": 29727786.621177364,
       "stress_probe_reference": 29727152.659690477,
       "stress_relative_error": 2.1326007712429984e-05,
-      "solve_seconds": 0.02343772165477276
+      "solve_seconds": 0.03608245961368084
     },
     {
       "axial_elements": 160,
@@ -106,7 +106,7 @@
       "stress_probe_sigma_xx": 29287181.534131754,
       "stress_probe_reference": 29286998.280608997,
       "stress_relative_error": 6.257163025047419e-06,
-      "solve_seconds": 0.19330657087266445
+      "solve_seconds": 0.3316857684403658
     }
   ],
   "q8_richardson": {
@@ -125,7 +125,7 @@
       "dofs": 1503,
       "tip_deflection": 0.18695006219043622,
       "relative_error": 0.018512173500209506,
-      "solve_seconds": 0.3913526311516762
+      "solve_seconds": 3.9041521698236465
     },
     {
       "axial_elements": 32,
@@ -135,7 +135,7 @@
       "dofs": 8835,
       "tip_deflection": 0.18815113055697025,
       "relative_error": 0.012206564575905854,
-      "solve_seconds": 1.6251206900924444
+      "solve_seconds": 31.767323890700936
     },
     {
       "axial_elements": 64,
@@ -145,7 +145,7 @@
       "dofs": 17475,
       "tip_deflection": 0.18845534043080545,
       "relative_error": 0.010609462738271014,
-      "solve_seconds": 2.9511613193899393
+      "solve_seconds": 57.83348895981908
     }
   ],
   "verdict": {
