@@ -26,12 +26,21 @@ def main() -> None:
             "resume",
             "status",
             "inspect",
+            "inverse-identify",
         ),
         help="run, validate, inspect, or verify TensorFEM projects and results",
     )
     parser.add_argument("target", nargs="?", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--runs", type=Path, default=Path("runs"))
+    parser.add_argument(
+        "--case",
+        default="decay",
+        choices=("decay", "axial-bar", "axial-bar-product"),
+        help="inverse-identify case (default: decay)",
+    )
+    parser.add_argument("--seed", type=int, default=1, help="inverse-identify seed")
+    parser.add_argument("--starts", type=int, default=3, help="inverse-identify start count")
     args = parser.parse_args()
     if args.command == "capabilities":
         print(
@@ -198,6 +207,25 @@ def main() -> None:
             )
         )
         return
+    if args.command == "inverse-identify":
+        # Entry point of tensorfem.inverse: one identification run, the
+        # JSON-lines convergence log and the run summary are written under
+        # --output (or runs/inverse-identify/<case>-seed<seed>/).  The exit
+        # status is the gate: 0 only when the recovered scalar is inside 3 %
+        # of its independent ground truth (inverted for the negative control,
+        # which passes only when non-identifiability is reported).
+        from .inverse_cases import identify
+
+        outcome = identify(args.case, seed=args.seed, starts=args.starts)
+        directory = args.output or (
+            args.runs / "inverse-identify" / f"{args.case}-seed{args.seed}"
+        )
+        paths = outcome["run"].write(directory)
+        row = dict(outcome["row"])
+        row["artifacts"] = paths
+        payload = json.dumps(row, indent=2, ensure_ascii=False)
+        print(payload)
+        raise SystemExit(0 if row["passed"] else 1)
     if args.command == "patch-test":
         # Entry point of the Robinson patch test A/B/C (tensorfem.patch_test).
         # Exit status is the gate: 0 only when every case behaves as a correct

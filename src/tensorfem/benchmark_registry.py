@@ -624,7 +624,34 @@ def run_registered_benchmarks():
     from .foundation_plate_registry import plate_foundation_evidence
 
     out.extend(plate_foundation_evidence())
+    out.extend(inverse_identification_evidence())
     return tuple(out)
+
+
+def inverse_identification_evidence():
+    """``tensorfem.inverse`` recovery of Young's modulus (solver in the loop).
+
+    The forward model is a real ``TrussModel`` assembly/solve, so this registered
+    check is discretisation evidence: the optimiser has to invert the finite-
+    element operator, not a closed form.  Reference = the generating modulus
+    (210 GPa), data = free-node displacements with 0.5 % relative noise.
+    """
+    from .inverse_cases import axial_bar_case
+
+    row = axial_bar_case()["row"]
+    return [
+        _evidence(
+            "inverse.axial_bar.modulus",
+            "inverse identification",
+            "recovered Young's modulus",
+            "Pa",
+            "tensorfem.inverse_cases.axial_bar_case: Levenberg-Marquardt over a "
+            "TrussModel forward solve (4 axial elements, 0.5 % noise data); "
+            "reference = generating modulus",
+            row["E"],
+            row["E_reference"],
+        )
+    ]
 
 
 def verification_report():
