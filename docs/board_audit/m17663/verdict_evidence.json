@@ -1,0 +1,93 @@
+{
+  "impl_files": [
+    "/root/tp-agent/work/m17604/src/tensorfem/xval_method_selection.py",
+    "/root/tp-agent/work/m17604/benchmarks/xval_method_selection_first_evidence.py"
+  ],
+  "entry": "/root/tp-agent/work/m17604/src/tensorfem/cli.py",
+  "run_artifacts": [
+    "/root/tp-agent/work/m17604/artifacts/xval_method_selection_first_evidence/fig_xval_convergence.png",
+    "/root/tp-agent/work/m17604/artifacts/xval_method_selection_first_evidence/fig_xval_probe_split.png",
+    "/root/tp-agent/work/m17663/docs/board_audit/m17663/reproduced_numbers.json",
+    "/root/tp-agent/work/m17663/docs/board_audit/m17663/fig_xval_audit.png"
+  ],
+  "tests": [
+    "tests/test_xval_method_selection.py::test_claim_table_runs_to_completion",
+    "tests/test_xval_method_selection.py::test_numeric_claim_rule_rejects_a_wrong_record_and_accepts_the_right_one",
+    "tests/test_xval_method_selection.py::test_independent_arm_confirms_quadratic_beats_linear_in_both_functionals",
+    "tests/test_xval_method_selection.py::test_tet10_arm_produces_numbers_and_keeps_equilibrium",
+    "tests/test_xval_method_selection.py::test_negative_control_perturbed_stress_field_is_rejected",
+    "17 passed in 108.43s (audit rerun, rootdir overridden to the audit copy)"
+  ],
+  "integration_callers": "NONE: grep -rn 'xval_method_selection' /root/tensor-ecosystem/TensorFEM -> 0 hits; delivered branch agent/m17604 == HEAD a86365e7 (no commit), so nothing of this delivery is in the ecosystem repo or main",
+  "benchmark": {
+    "registered_rows": 0,
+    "sql": "SELECT count(*) FROM tensor_benchmark_cases WHERE anchor_slug='XVAL-FEM-METHOD-SELECTION-FIRST-EVIDENCE' -> 0",
+    "audit_ref_vs_got": {
+      "HEX20_n4_M1_worst": {
+        "ref": "lame-at-<r> probes",
+        "got_pct": 2.875,
+        "within_3pct": true
+      },
+      "HEX20_n4_M2_worst": {
+        "ref": "exact layer integral",
+        "got_pct": 18.186,
+        "within_3pct": false
+      },
+      "HEX8_n4_M1_worst": {
+        "ref": "lame-at-<r> probes",
+        "got_pct": 28.182,
+        "recorded_pct": 15.4,
+        "reproduced": false
+      },
+      "HEX8_n6_M1_worst": {
+        "ref": "lame-at-<r> probes",
+        "got_pct": 15.35,
+        "recorded_pct": 15.35,
+        "reproduced": true
+      },
+      "TET10_n3_projected_M1_worst": {
+        "ref": "lame-at-<r> probes",
+        "got_pct": 10.237
+      },
+      "TET4_n3_M1_worst": {
+        "ref": "lame-at-<r> probes",
+        "got_pct": 24.62
+      },
+      "mesh_volume_error_HEX8_n4": {
+        "got_pct": 7.116,
+        "recorded_pct": 7.1,
+        "reproduced": true
+      },
+      "mesh_volume_error_HEX20_n4": {
+        "got_pct": 0.1359,
+        "recorded_pct": 0.14,
+        "reproduced": true
+      }
+    },
+    "selection_robust": false,
+    "functional_dependence_gap_m2_minus_m1_hex20": 0.1531
+  },
+  "repro_cmd": "PYTHONPATH=$PWD/src python3 benchmarks/xval_method_selection_first_evidence.py --quick -> ZeroDivisionError in observed_order (xval_method_selection.py:674); full mode -> KeyError 'fields_radial_stress' in make_figures (benchmarks/...py:135) before evidence.json is written => delivered repro_cmd NOT runnable end-to-end. Working audit-side reproduction: PYTHONPATH=<copy>/src python3 collect_rows.py",
+  "external_anchor": "Lame thick-walled sphere closed form (Timoshenko & Goodier) recomputed in-tree + scikit-fem 12.0.2 independent arm (real numbers produced: TET4/TET10); oss_inventory has no 3-D structural FEM reference => no external numerical benchmark",
+  "findings": [
+    "B1 blocking: make_figures() reads row['fields_radial_stress'] which arm_tensorfem never stores (it stores fields_radius/fields_von_mises/fields_centres) => benchmark entry always dies at figure 3, evidence.json therefore never written (reproduced in 15 s).",
+    "B2 blocking: run(quick=True) => ZeroDivisionError in observed_order because the quick skfem ladder has two order-2 rows with the same n (3, projected and flat): log(n_hi/n_lo)=0. CLI --quick and benchmark --quick both crash (reproduced twice).",
+    "M1 major: run_artifacts delivered = 2 PNGs only; no evidence.json, no run.log, no ref-vs-got table on disk; figures are untraceable to numbers.",
+    "M2 major: 0 files committed (branch agent/m17604 == HEAD a86365e7, in_main=false); main already carries a different benchmarks/xval_method_selection_first_evidence.py from m17412 => merge hazard.",
+    "M3 major: 0 rows registered in tensor_benchmark_cases for this anchor; scripts/register_xval_method_selection_cases.py was never run (needs the missing evidence.json).",
+    "M4 major: no tensor_reports row for mission 17604 (report_owed).",
+    "m1 minor: C5 rule uses strict '< 1e-16' while the measured closure is exactly 0.0 for HEX20 n=4 => claim reported 'not reproduced' by a rule pathology, not by a physical failure.",
+    "m2 minor: M2 functional definition changed vs m17488 audit (centroid band -> index-slice layer), HEX20 n=4 M2 11.989% -> 18.186%; not documented as a definition change.",
+    "fixed: m17488 F1 (dev rebinding TypeError) and F2 (skfem TET10 IndexError) are genuinely repaired - 17/17 tests green incl. the two negative controls; TET4/TET10 both produce numbers.",
+    "entry: cli.py subcommand 'xval-method-selection' (uncommitted hunk) -> xval_method_selection.run/write_evidence; --quick path crashes (B2)"
+  ],
+  "audit_scope": {
+    "audited_tree": "/root/tp-agent/work/m17604 (read-only; all execution in /root/tp-agent/work/m17663/.scratch/m17604_repro copy)",
+    "not_run": [
+      "cluster job cj1642 (HEX8 n=8/n=12, HEX20 n=6) still queued at finish; C3/C6 not re-measured by this audit (m17488 measured them: n=12 -> 5.685%, n=8 iterations 67)",
+      "GitHub CI (x86); local rerun is loongarch64",
+      "tensor_benchmark_cases registration (cannot be done without the delivered evidence.json)"
+    ]
+  },
+  "audited_scope_note": "delivered branch agent/m17604 == HEAD a86365e7; 0 commits; 7 working-tree changes (see README §⑤M2)"
+}
