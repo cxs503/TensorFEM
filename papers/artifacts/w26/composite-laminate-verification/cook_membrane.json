@@ -1,0 +1,64 @@
+{
+  "benchmark": "Cook (1974) membrane, clamped left edge, unit shear resultant on the right edge, E = 1, nu = 1/3, unit thickness, plane stress",
+  "reference": 23.96,
+  "reference_source": "Cook (1974) / standard FE benchmark value 23.96 (tip vertical deflection); the value is an external anchor, all computed numbers come from the solver",
+  "meshes": [
+    8,
+    16,
+    32,
+    48,
+    64
+  ],
+  "rows": [
+    {
+      "nx": 8,
+      "n_dofs": 162,
+      "n_elements": 64,
+      "tip_deflection": 22.079183389482466,
+      "rel_err_pct": -7.849818908670845,
+      "abs_rel_err_pct": 7.849818908670845
+    },
+    {
+      "nx": 16,
+      "n_dofs": 578,
+      "n_elements": 256,
+      "tip_deflection": 23.430411260069476,
+      "rel_err_pct": -2.2103035890255605,
+      "abs_rel_err_pct": 2.2103035890255605
+    },
+    {
+      "nx": 32,
+      "n_dofs": 2178,
+      "n_elements": 1024,
+      "tip_deflection": 23.817633955706196,
+      "rel_err_pct": -0.5941821548155469,
+      "abs_rel_err_pct": 0.5941821548155469
+    },
+    {
+      "nx": 48,
+      "n_dofs": 4802,
+      "n_elements": 2304,
+      "tip_deflection": 23.89559617885238,
+      "rel_err_pct": -0.26879725019875395,
+      "abs_rel_err_pct": 0.26879725019875395
+    },
+    {
+      "nx": 64,
+      "n_dofs": 8450,
+      "n_elements": 4096,
+      "tip_deflection": 23.924516228901034,
+      "rel_err_pct": -0.1480958727001964,
+      "abs_rel_err_pct": 0.1480958727001964
+    }
+  ],
+  "richardson": {
+    "p": 1.8571409165692088,
+    "extrapolated": 23.965266043800327,
+    "uncertainty": 0.04074981489929286
+  },
+  "p_observed_finest_pair": 2.004373842528594,
+  "p_observed_note": "observed order on the 16/32/64 sequence, e = |w - 23.96|, p = log2(e32/e64)",
+  "criterion_pct": 3.0,
+  "verdict": "PASS",
+  "note": "bilinear Q4 under integrated shear; convergence is monotone from below and sub-quadratic because the exact Cook field is dominated by a boundary layer, so the criterion is scored on the finest mesh and cross-checked by the Richardson extrapolation"
+}
