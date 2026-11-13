@@ -31,6 +31,9 @@ def test_registry_traceable_and_below_three_percent(report):
         "shell.spheroid.meridional_equator", "shell.spheroid.hoop_pole", "shell.spheroid.displacement_equator",
         "shell.sphere.pressure_sigma_theta", "shell.sphere.pressure_sigma_phi", "shell.sphere.pressure_radial_displacement",
         "plate.mindlin_thick.center_mx", "plate.mindlin_thick.max_mxy", "plate.mindlin_thick.center_w",
+        "inverse.axial_bar.modulus",
+        "plate.foundation.winkler_center_w", "plate.foundation.pasternak_center_w",
+        "plate.foundation.pasternak_zero_reduces_to_winkler",
     }
     assert report["passed"]
     assert report["summary"] == {"total": len(expected), "passed": len(expected)}
