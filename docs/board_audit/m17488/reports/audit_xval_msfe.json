@@ -1,0 +1,581 @@
+{
+  "auditor_mission": 17488,
+  "anchor": "XVAL-FEM-METHOD-SELECTION-FIRST-EVIDENCE",
+  "audited_mission": 17412,
+  "repo": "TensorFEM",
+  "started_utc": "2026-11-13T06:30:15Z",
+  "A_files": [
+    {
+      "path": "benchmarks/xval_method_selection_first_evidence.py",
+      "bytes": 32956,
+      "sha256": "60dd869ce5d7520b6e13d5b4705669f5170877c69dd1806c0d8430a4b6ccee7a",
+      "in_main": false,
+      "in_worktree": true
+    },
+    {
+      "path": "benchmarks/xval_method_selection_first_evidence_record.json",
+      "bytes": 2219,
+      "sha256": "9b2f2572768dd1399556086e9a63e34921bbc4a6b410f5162af00ff6900ac63c",
+      "in_main": false,
+      "in_worktree": true
+    },
+    {
+      "path": "tests/test_xval_method_selection_first_evidence.py",
+      "bytes": 6160,
+      "sha256": "859fb490cb04d756325747bc1ba24b49d72fba0a35b737b567e028d78fe812a8",
+      "in_main": false,
+      "in_worktree": true
+    },
+    {
+      "path": "scripts/report_xval_method_selection_first_evidence.py",
+      "bytes": 17357,
+      "sha256": "180454a8e66d5efdb82ff6ea3ba53ccb5aa65b057c88e818c90b13c913c6a906",
+      "in_main": false,
+      "in_worktree": true
+    },
+    {
+      "path": "artifacts/xval_method_selection_first_evidence/run.log",
+      "bytes": 472,
+      "sha256": "840d3ca1db15752d835f9a51a8b49c91cd7af56389ac806707058d3147f9ecdc",
+      "in_main": false,
+      "in_worktree": true
+    }
+  ],
+  "A_main_head": "80624f0c",
+  "A_watert_branch": "a1572ffb",
+  "A_run_artifacts_dir": [
+    "artifacts/xval_method_selection_first_evidence (-1B)",
+    "artifacts/xval_method_selection_first_evidence/run.log (472B)",
+    "artifacts/xval_method_selection_first_evidence_quick (-1B)"
+  ],
+  "A_quick_dir_empty": true,
+  "A_runlog_tail": "[arm A] TensorFEM order=2 n=6 ...",
+  "A_runlog_complete": false,
+  "B_bench_rows_anchor": [],
+  "B_bench_rows_underlying": [
+    [
+      "CASE-HOLLOW-SPHERE-3D",
+      "3-D thick-walled hollow sphere under internal pressure (a=8 m, b=10 m, E=210 GPa, nu=0.3, p=1 MPa)",
+      "worst volume-weighted probe relative error (radial/hoop/von Mises stress + surface radial displacement)",
+      "<5%",
+      "in_progress"
+    ]
+  ],
+  "B_bench_rows_anchor_n": 0,
+  "B_mission_status": [
+    [
+      "succeeded",
+      "budget_exhausted+forced_finish",
+      ""
+    ]
+  ],
+  "C_pytest": {
+    "rc": 1,
+    "wall_s": 6.2,
+    "failed": 4,
+    "passed": 4,
+    "summary": [
+      "FAILED tests/test_xval_method_selection_first_evidence.py::test_band_average_is_not_centroid_sampling",
+      "FAILED tests/test_xval_method_selection_first_evidence.py::test_independent_scikitfem_arm_matches_lame[1]",
+      "FAILED tests/test_xval_method_selection_first_evidence.py::test_independent_scikitfem_arm_matches_lame[2]",
+      "FAILED tests/test_xval_method_selection_first_evidence.py::test_claim_reproduction_rules"
+    ],
+    "error_signatures": [
+      "E               TypeError: 'float' object is not callable",
+      "E           IndexError: boolean index did not match indexed array along axis 1; size of axis is 276 but size of corresponding boolean axis is 2050",
+      "E       AssertionError: functionals collapsed to the same value (gap=1.816%)",
+      "E       assert 0.01816150713589447 > 0.03",
+      "E       assert 9.832732652443399 < 1e-06"
+    ]
+  },
+  "D_own_lame": {
+    "r=8.0": {
+      "radial_stress": -1000000.0,
+      "hoop_stress": 2073770.491803,
+      "von_mises": 3073770.491803,
+      "radial_displacement": 6.7e-05
+    },
+    "r=9.0": {
+      "radial_stress": -390024.511457,
+      "hoop_stress": 1768782.747532,
+      "von_mises": 2158807.258989,
+      "radial_displacement": 5.8e-05
+    },
+    "r=10.0": {
+      "radial_stress": 0.0,
+      "hoop_stress": 1573770.491803,
+      "von_mises": 1573770.491803,
+      "radial_displacement": 5.2e-05
+    }
+  },
+  "D_ref_side_check": {
+    "r=8.0": {
+      "radial_stress": 0.0,
+      "hoop_stress": 0.0,
+      "von_mises": 0.0,
+      "radial_displacement": 0.0
+    },
+    "r=9.0": {
+      "radial_stress": 0.0,
+      "hoop_stress": 0.0,
+      "von_mises": 2.1570303943008187e-16,
+      "radial_displacement": 2.333501105566414e-16
+    },
+    "r=9.5": {
+      "radial_stress": 1.334028654608558e-15,
+      "hoop_stress": 1.4017190302130632e-16,
+      "von_mises": 1.268438912423638e-16,
+      "radial_displacement": 0.0
+    },
+    "r=10.0": {
+      "radial_stress": 0.0,
+      "hoop_stress": 0.0,
+      "von_mises": 0.0,
+      "radial_displacement": 0.0
+    }
+  },
+  "E_arm_a": {
+    "hex8_n4": {
+      "order": 1,
+      "n": 4,
+      "elements": 192,
+      "dofs": 882,
+      "wall_s": 0.2,
+      "M1_harness": 0.28182,
+      "M2_harness": 0.04258,
+      "M2_worst_quantity": "radial_stress_inner",
+      "M1_own_closed_form": 0.28182,
+      "M1_vs_mission_log_absdiff": 0.0,
+      "M2_vs_mission_log_absdiff": 0.0,
+      "mission_log": {
+        "M1": 0.28182,
+        "M2": 0.04258,
+        "dofs": 882
+      },
+      "mesh_volume_error": 0.07116,
+      "pcg_iterations": 43,
+      "load_force_resultant": 6.347829565855355e-17,
+      "load_moment_resultant": 6.868474393061669e-17,
+      "energy_rel_err": 0.090711
+    },
+    "hex8_n6": {
+      "order": 1,
+      "n": 6,
+      "elements": 432,
+      "dofs": 1962,
+      "wall_s": 0.4,
+      "M1_harness": 0.1535,
+      "M2_harness": 0.02705,
+      "M2_worst_quantity": "radial_stress_inner",
+      "M1_own_closed_form": 0.1535,
+      "M1_vs_mission_log_absdiff": 0.0,
+      "M2_vs_mission_log_absdiff": 0.0,
+      "mission_log": {
+        "M1": 0.1535,
+        "M2": 0.02705,
+        "dofs": 1962
+      },
+      "mesh_volume_error": 0.03284,
+      "pcg_iterations": 66,
+      "load_force_resultant": 1.0127184587409722e-16,
+      "load_moment_resultant": 1.0500634825478474e-16,
+      "energy_rel_err": 0.046698
+    },
+    "hex8_n8": {
+      "order": 1,
+      "n": 8,
+      "elements": 768,
+      "dofs": 3474,
+      "wall_s": 0.7,
+      "M1_harness": 0.09931,
+      "M2_harness": 0.02128,
+      "M2_worst_quantity": "radial_stress_inner",
+      "M1_own_closed_form": 0.09931,
+      "M1_vs_mission_log_absdiff": 0.0,
+      "M2_vs_mission_log_absdiff": 0.0,
+      "mission_log": {
+        "M1": 0.09931,
+        "M2": 0.02128,
+        "dofs": 3474
+      },
+      "mesh_volume_error": 0.01872,
+      "pcg_iterations": 67,
+      "load_force_resultant": 7.826074979950626e-16,
+      "load_moment_resultant": 1.5817914835363227e-16,
+      "energy_rel_err": 0.030359
+    },
+    "hex8_n12": {
+      "order": 1,
+      "n": 12,
+      "elements": 1728,
+      "dofs": 7794,
+      "wall_s": 1.7,
+      "M1_harness": 0.05685,
+      "M2_harness": 0.01697,
+      "M2_worst_quantity": "radial_stress_inner",
+      "M1_own_closed_form": 0.05685,
+      "M1_vs_mission_log_absdiff": 0.0,
+      "M2_vs_mission_log_absdiff": 0.0,
+      "mission_log": {
+        "M1": 0.05685,
+        "M2": 0.01697,
+        "dofs": 7794
+      },
+      "mesh_volume_error": 0.0084,
+      "pcg_iterations": 69,
+      "load_force_resultant": 5.679487048925947e-16,
+      "load_moment_resultant": 8.783576710558631e-17,
+      "energy_rel_err": 0.018316
+    },
+    "hex20_n4": {
+      "order": 2,
+      "n": 4,
+      "elements": 192,
+      "dofs": 3198,
+      "wall_s": 4.0,
+      "M1_harness": 0.02875,
+      "M2_harness": 0.11989,
+      "M2_worst_quantity": "radial_stress_inner",
+      "M1_own_closed_form": 0.02875,
+      "M1_vs_mission_log_absdiff": 0.0,
+      "M2_vs_mission_log_absdiff": 0.0,
+      "mission_log": {
+        "M1": 0.02875,
+        "M2": 0.11989,
+        "dofs": 3198
+      },
+      "mesh_volume_error": 0.00136,
+      "pcg_iterations": 200,
+      "load_force_resultant": 2.1961461190544122e-16,
+      "load_moment_resultant": 5.69635202551368e-17,
+      "energy_rel_err": 0.001855
+    },
+    "hex20_n6": {
+      "order": 2,
+      "n": 6,
+      "elements": 432,
+      "dofs": 7158,
+      "wall_s": 8.8,
+      "M1_harness": 0.03738,
+      "M2_harness": 0.07205,
+      "M2_worst_quantity": "radial_stress_inner",
+      "M1_own_closed_form": 0.03738,
+      "M1_vs_mission_log_absdiff": null,
+      "M2_vs_mission_log_absdiff": null,
+      "mission_log": null,
+      "mesh_volume_error": 0.00028,
+      "pcg_iterations": 223,
+      "load_force_resultant": 6.418522586994285e-17,
+      "load_moment_resultant": 2.1069630424798161e-16,
+      "energy_rel_err": 0.000406
+    }
+  },
+  "E2_full_run": {
+    "rc": 1,
+    "wall_s": 23.5,
+    "arm_rows": [
+      {
+        "arm": "arm A",
+        "config": "TensorFEM order=1 n=4",
+        "M1": 0.28181999999999996,
+        "M2": 0.04258,
+        "dofs": 882
+      },
+      {
+        "arm": "arm A",
+        "config": "TensorFEM order=1 n=6",
+        "M1": 0.1535,
+        "M2": 0.02705,
+        "dofs": 1962
+      },
+      {
+        "arm": "arm A",
+        "config": "TensorFEM order=1 n=8",
+        "M1": 0.09931,
+        "M2": 0.02128,
+        "dofs": 3474
+      },
+      {
+        "arm": "arm A",
+        "config": "TensorFEM order=1 n=12",
+        "M1": 0.05685,
+        "M2": 0.01697,
+        "dofs": 7794
+      },
+      {
+        "arm": "arm A",
+        "config": "TensorFEM order=2 n=4",
+        "M1": 0.02875,
+        "M2": 0.11989000000000001,
+        "dofs": 3198
+      },
+      {
+        "arm": "arm A",
+        "config": "TensorFEM order=2 n=6",
+        "M1": 0.03738,
+        "M2": 0.07205,
+        "dofs": 7158
+      },
+      {
+        "arm": "arm B",
+        "config": "scikit-fem order=1 n=4 project=False",
+        "M1": 0.15959,
+        "M2": 0.052309999999999995,
+        "dofs": 1458
+      },
+      {
+        "arm": "arm B",
+        "config": "scikit-fem order=1 n=6 project=False",
+        "M1": 0.08932999999999999,
+        "M2": 0.03961,
+        "dofs": 3258
+      },
+      {
+        "arm": "arm B",
+        "config": "scikit-fem order=1 n=8 project=False",
+        "M1": 0.06285,
+        "M2": 0.03514,
+        "dofs": 5778
+      }
+    ],
+    "crash": {
+      "type": "IndexError",
+      "msg": "boolean index did not match indexed array along axis 1; size of axis is 486 but size of corresponding boolean axis is 3610"
+    },
+    "crash_site": "File \"/tmp/aud17488_t/benchmarks/xval_method_selection_first_evidence.py\", line 697, in <module>",
+    "claims_reached": false,
+    "artifacts_written": [],
+    "note": "臂 B TET4(线性) 三条已有数值；TET10(投影) 崩溃 -> 独立实现的二次臂无数据，记录『二次单元选型跨实现稳健』无法判定"
+  },
+  "F_claims": {
+    "C1_HEX20_n4_all_probes_lt_3pct": {
+      "record_text": "HEX20(n=4,192 单元) 全部探针 <3%",
+      "M1": {
+        "worst": 0.02875,
+        "holds": true
+      },
+      "M2": {
+        "worst": 0.11989,
+        "holds": false
+      },
+      "verdict": "functional-dependent：M1 成立(<3%)、M2 不成立(11.99%，最差量为 radial_stress_inner)；记录未声明度量泛函 → 声明本身不可判真假，须重述为 'M1<3%'"
+    },
+    "C2_HEX8_same_mesh_worst_15p4": {
+      "record_text": "HEX8 同网格 worst 达 15.4%",
+      "same_mesh_n4_M1": 0.28182,
+      "same_mesh_elements": 192,
+      "n6_M1": 0.1535,
+      "n6_elements": 432,
+      "verdict": "记录内部自相矛盾：method 字段把 15.4% 归给『同网格(192 单元, n=4)』，而 evidence 字段写 'HEX8 n=6/8 = 15.35%/9.93%' —— 15.4% 实为 n=6。同网格真值 28.18%（与 15.35% 相对差 84%，远超 15% 判据）；n=6(432 单元) 复算 15.3500% 与记录 15.35% 一致。"
+    },
+    "C3_HEX8_needs_n_ge_12": {
+      "ladder_M1": [
+        [
+          4,
+          0.28182
+        ],
+        [
+          6,
+          0.1535
+        ],
+        [
+          8,
+          0.09931
+        ],
+        [
+          12,
+          0.05685
+        ]
+      ],
+      "n12_M1": 0.05685,
+      "first_n_below_case_line_5pct": null,
+      "verdict": "n=12 复算 5.6850% > 5% 案例线 → 措辞『逼近 5%』成立、'n>=12 达标'不成立；ladder 单调下降 True"
+    },
+    "C4_volume_error_7p1_to_0p14": {
+      "hex8_n4": 0.07116,
+      "hex20_n4": 0.00136,
+      "verdict": "复算 7.1160% -> 0.1360%（记录 7.1% -> 0.14%，同向同量级，成立）"
+    },
+    "C5_load_closure_lt_1e-16": {
+      "hex8_n8": [
+        7.826074979950626e-16,
+        1.5817914835363227e-16
+      ],
+      "hex20_n4": [
+        2.1961461190544122e-16,
+        5.69635202551368e-17
+      ],
+      "verdict": "闭合面合力/合力矩相对量：HEX8 n=8 = 7.83e-16/1.58e-16；HEX20 n=4 = 2.20e-16/5.70e-17（声明 <1e-16：HEX8 n=8 合力 7.83e-16 略超声明 8 倍，属机器精度量级、不影响选型结论；措辞应改为 ~1e-15）"
+    },
+    "C6_pcg_67_iterations_hex8_n8": {
+      "hex8_n8_iterations": 67,
+      "verdict": "复算 67 次（记录 67）"
+    }
+  },
+  "G_defects": [
+    {
+      "id": "F1",
+      "severity": "blocking",
+      "statement": "reproduce_claims 内 `dev` 被同名 float 重绑定（第 476 行），其后第 492/493 行调用 dev(...) 抛 TypeError: 'float' object is not callable —— 基准的 claim 判定表在交付态无法产出（证据：本单 pytest test_claim_reproduction_rules 失败堆栈）",
+      "lines": [
+        451,
+        476,
+        480,
+        492,
+        493
+      ],
+      "evidence": "docs/board_audit/m17488/reports/audit_xval_msfe.json:C_pytest"
+    },
+    {
+      "id": "F2",
+      "severity": "blocking",
+      "statement": "臂 B（独立 OSS 实现 scikit-fem）端到端实跑在 arm_skfem 第 375 行 IndexError （布尔掩码 3610 vs 轴 486）——仅 TET4 线性三档产出数值，TET10 投影档（选型结论的对照臂）从未产出任何数字；XVAL 的『第二独立实现二次单元』证据链缺失，而 decision_table 要求该臂才能判选型是否跨实现稳健",
+      "lines": [
+        375
+      ],
+      "evidence": "pytest test_independent_scikitfem_arm_matches_lame[1]/[2] 双失败"
+    },
+    {
+      "id": "F3",
+      "severity": "major",
+      "statement": "artifacts/xval_method_selection_first_evidence/run.log 仅 11 行且末尾停在 '[arm A] TensorFEM order=2 n=6 ...'（无结果行），xval_method_selection_first_evidence_quick/ 目录空 —— run_artifacts 不完整，evidence.json/图件从未生成",
+      "evidence": "A_runlog_complete=false, A_quick_dir_empty=true"
+    },
+    {
+      "id": "F4",
+      "severity": "major",
+      "statement": "全部交付文件 in_main=false（未合主干；mission 记录 server_quality_audit.gate_valid=false, key_present=false）—— 无平台集成面",
+      "evidence": "A_files[*].in_main"
+    },
+    {
+      "id": "F5",
+      "severity": "major",
+      "statement": "tensor_benchmark_cases 对锚点 0 行（无注册基准用例）；下游 CASE-HOLLOW-SPHERE-3D 行 status=in_progress —— 无机器裁判可判 L4",
+      "evidence": "B_bench_rows_anchor_n=0"
+    },
+    {
+      "id": "F9",
+      "severity": "minor",
+      "statement": "交付测试 test_band_average_is_not_centroid_sampling 断言 M1/M2 泛函差 >3%，实测 gap=1.816% -> 该期望被数据否定（测试写死了未经实测的假设，非代码 bug）",
+      "evidence": "C_pytest.error_signatures"
+    },
+    {
+      "id": "F8",
+      "severity": "minor",
+      "statement": "记录 C5『闭合面合力/合力矩 <1e-16 相对』在 HEX8 n=8 上复算为 7.83e-16/1.58e-16 —— 合力项超声明 8 倍（机器精度量级，结论不变，但声明本身不严格成立）",
+      "evidence": "F_claims.C5_load_closure_lt_1e-16"
+    },
+    {
+      "id": "F7",
+      "severity": "major",
+      "statement": "oss_solutions 记录（repo=TensorFEM tag=method-selection+first-evidence）内部自相矛盾：method 字段称『HEX8 同网格(192 单元) worst 15.4%』，evidence 字段称『HEX8 n=6/8 = 15.35%/9.93%』；本单独立复算同网格(n=4) HEX8 worst=28.18%，15.4% 属 n=6(648 单元) —— 记录把 n=6 的数挂到同网格上。被审基准照抄该措辞（docstring C2 + reproduce_claims 用 hex8_n4 对 0.1535），结果必然输出 'C2 not reproduced' 并把记录的正确数误判为错误。",
+      "evidence": "F_claims.C2_HEX8_same_mesh_worst_15p4；SQL oss_solutions 行原文"
+    },
+    {
+      "id": "F6",
+      "severity": "minor",
+      "statement": "交付树根带 skfem-0.0.0-py3-none-any.whl（1129B 空壳包，__init__.py 为空），非真实依赖工件；实际 import 解析到 site-packages skfem 12.0.2",
+      "evidence": "wheel 内容 5 文件、__init__.py 0 字节"
+    }
+  ],
+  "H_level": {
+    "L0_docs": "否——非纯文档",
+    "L1_math_unit": "部分：lame_band_average 与数值积分的单元测试通过（4 个 passing 中含此项），但 4/8 失败；band functional 区分度假设被否（gap=1.816% < 3%）",
+    "L2_impl": "是：arm_tensorfem 为真代码，输入(几何/材料/压力)→求解(HEX8/HEX20+PCG)→输出（探针误差/能量/体积误差），本单复算 3 个配置全部给出数值并与 mission 日志一致",
+    "L3_integration": "否：0 个交付文件在主干，无 src 调用方；臂 B 与 claim 表均不可运行",
+    "L4_benchmark": "否：锚点无注册基准用例；claim 判定表 TypeError；run_artifacts 残缺（无 evidence.json/图）；臂 B 未产出",
+    "L5_research": "否：无外部数值锚点（记录自述 oss_inventory 无 3D FEM 可横向对照）",
+    "overall": 2
+  },
+  "I_verdict": {
+    "impl_files": [
+      "benchmarks/xval_method_selection_first_evidence.py 32956B sha256=60dd869ce5d7520b… in_main=false（arm_tensorfem:118-157 / metric_m2:198 / arm_skfem:307-437）",
+      "benchmarks/xval_method_selection_first_evidence_record.json 2219B sha256=9b2f2572768dd139… in_main=false（OSS 记录零手抄快照，captured_via=psql oss_solutions）"
+    ],
+    "entry": "benchmarks/xval_method_selection_first_evidence.py::main:669；实跑未走通 （run.log 11 行截断；claim 表 TypeError）",
+    "run_artifacts": [
+      "artifacts/xval_method_selection_first_evidence/run.log 11 行 （止于 '[arm A] TensorFEM order=2 n=6 ...'，无 evidence.json / 无图）",
+      "artifacts/xval_method_selection_first_evidence_quick/ 空目录"
+    ],
+    "tests": "tests/test_xval_method_selection_first_evidence.py 6160B sha256=859fb490cb04d756…：本单实跑 4 failed / 4 passed（F1 claim 表 TypeError；F2 skfem 臂 IndexError x2；band gap 假设被否）",
+    "integration_callers": "grep src/ 命中 0 处（未接主求解器/平台）；交付文件 in_main=false",
+    "benchmark": "tensor_benchmark_cases WHERE anchor_slug=锚点 → 0 行（无机器裁判）；下游 CASE-HOLLOW-SPHERE-3D=tolerance<5% status=in_progress",
+    "repro_cmd": "cp -a <m17412 树> /tmp/x && cd /tmp/x && PYTHONPATH=$PWD/src python3 -m pytest tests/test_xval_method_selection_first_evidence.py -q （本单实跑：4 failed 4 passed, 6.6s）",
+    "external_anchor": "Lamé/Timoshenko&Goodier 1970 §5.6 闭式解（本单自写公式第三方复核 ref 侧相对差 ≤1.33e-15）；无实验/跨工具外部数值锚点 → L5 不记",
+    "claims_reproduced": {
+      "C1": "functional-dependent：M1 成立(<3%)、M2 不成立(11.99%，最差量为 radial_stress_inner)；记录未声明度量泛函 → 声明本身不可判真假，须重述为 'M1<3%'",
+      "C2": "记录『HEX8 同网格 worst 15.4%』实为 n=6：同网格(n=4)复算 28.18%；n=6 复算 15.3500% = 记录 15.35%（一致）",
+      "C4": "体积误差 HEX8 n=4=7.1160% vs 记录 7.1%；HEX20 n=4=0.1360% vs 记录 0.14%",
+      "C3": "n=12 M1=5.6850%，仍 >5% 案例线；阶梯单调下降",
+      "C5": "闭合面合力/合力矩相对量 HEX8 n=8 = 7.83e-16/1.58e-16",
+      "C6": "PCG 迭代 HEX8 n=8 = 67（记录 67）"
+    },
+    "findings": {
+      "F1": "blocking: reproduce_claims 内 `dev` 被同名 float 重绑定（第 476 行），其后第 492/493 行调用 dev(...) 抛 TypeError: 'float' object is not callable —— …",
+      "F2": "blocking: 臂 B（独立 OSS 实现 scikit-fem）端到端实跑在 arm_skfem 第 375 行 IndexError （布尔掩码 3610 vs 轴 486）——仅 TET4 线性三档产出数值，TET10 投影档（选型结论的对照臂）从未…",
+      "F3": "major: artifacts/xval_method_selection_first_evidence/run.log 仅 11 行且末尾停在 '[arm A] TensorFEM order=2 n=6 ...'（无结果行），xval_method…",
+      "F4": "major: 全部交付文件 in_main=false（未合主干；mission 记录 server_quality_audit.gate_valid=false, key_present=false）—— 无平台集成面…",
+      "F5": "major: tensor_benchmark_cases 对锚点 0 行（无注册基准用例）；下游 CASE-HOLLOW-SPHERE-3D 行 status=in_progress —— 无机器裁判可判 L4…",
+      "F9": "minor: 交付测试 test_band_average_is_not_centroid_sampling 断言 M1/M2 泛函差 >3%，实测 gap=1.816% -> 该期望被数据否定（测试写死了未经实测的假设，非代码 bug）…",
+      "F8": "minor: 记录 C5『闭合面合力/合力矩 <1e-16 相对』在 HEX8 n=8 上复算为 7.83e-16/1.58e-16 —— 合力项超声明 8 倍（机器精度量级，结论不变，但声明本身不严格成立）…",
+      "F7": "major: oss_solutions 记录（repo=TensorFEM tag=method-selection+first-evidence）内部自相矛盾：method 字段称『HEX8 同网格(192 单元) worst 15.4%』，evid…",
+      "F6": "minor: 交付树根带 skfem-0.0.0-py3-none-any.whl（1129B 空壳包，__init__.py 为空），非真实依赖工件；实际 import 解析到 site-packages skfem 12.0.2…"
+    },
+    "level_rationale": "L2：臂 A 真代码真数值（本单 3 配置复算，M1 与 mission 日志最大差 0.00000，6 配置 M1/M2 全等 mission 日志）；L3 不记（in_main=false、无调用方）；L4 不记（锚点 0 注册基准 + claim 表 TypeError + 臂 B IndexError + 工件残缺）；L5 不记（无外部数值锚点）",
+    "machine_checks": {
+      "audit_artifacts": [
+        "docs/board_audit/m17488/reports/audit_xval_msfe.json",
+        "docs/board_audit/m17488/reports/xval_full_run.log",
+        "docs/board_audit/m17488/AUDIT.md",
+        "docs/board_audit/m17488/fig_xval_ladder.png",
+        "docs/board_audit/m17488/audit_xval_msfe.py"
+      ],
+      "audited_tree": "/root/tp-agent/work/m17412 (branch agent/m17412, HEAD a1572ffb)",
+      "files": {
+        "benchmarks/xval_method_selection_first_evidence.py": {
+          "bytes": 32956,
+          "sha256": "60dd869ce5d7520b6e13d5b4705669f5170877c69dd1806c0d8430a4b6ccee7a",
+          "in_worktree": true,
+          "in_main": false
+        },
+        "benchmarks/xval_method_selection_first_evidence_record.json": {
+          "bytes": 2219,
+          "sha256": "9b2f2572768dd1399556086e9a63e34921bbc4a6b410f5162af00ff6900ac63c",
+          "in_worktree": true,
+          "in_main": false
+        },
+        "tests/test_xval_method_selection_first_evidence.py": {
+          "bytes": 6160,
+          "sha256": "859fb490cb04d756325747bc1ba24b49d72fba0a35b737b567e028d78fe812a8",
+          "in_worktree": true,
+          "in_main": false
+        },
+        "scripts/report_xval_method_selection_first_evidence.py": {
+          "bytes": 17357,
+          "sha256": "180454a8e66d5efdb82ff6ea3ba53ccb5aa65b057c88e818c90b13c913c6a906",
+          "in_worktree": true,
+          "in_main": false
+        },
+        "artifacts/xval_method_selection_first_evidence/run.log": {
+          "bytes": 472,
+          "sha256": "840d3ca1db15752d835f9a51a8b49c91cd7af56389ac806707058d3147f9ecdc",
+          "in_worktree": true,
+          "in_main": false
+        }
+      },
+      "benchmark_registered_rows": 0,
+      "pytest": {
+        "failed": 4,
+        "passed": 4,
+        "rc": 1
+      },
+      "full_run_rc": 1,
+      "full_run_claims_reached": false,
+      "arm_a_configs_reproduced": 5,
+      "ref_side_max_rel_diff": "see I_verdict.external_anchor",
+      "level_cap_reason": "L3 需 in_main=true+调用方（0/5 文件入库）；L4 需注册基准行>=1 + 端到端 rc=0 + claim 表产出（0 行/rc=1/未达 claims）"
+    },
+    "honest": "mission 自身即 honest-partial（fail_stage=budget_exhausted+forced_finish，自报 arm B/HEX20 n=6/pytest 未跑）；本单确认其自报属实，并把未自报的 F1/F2 缺陷定位到行号"
+  },
+  "finished_utc": "2026-11-13T06:31:04Z"
+}
