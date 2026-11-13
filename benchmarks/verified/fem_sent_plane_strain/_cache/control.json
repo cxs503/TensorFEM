@@ -1,0 +1,107 @@
+{
+  "width_m": 0.1,
+  "height_over_width": 2.0,
+  "sigma_pa": 100000000.0,
+  "young_pa": 210000000000.0,
+  "poisson": 0.3,
+  "plane": "strain",
+  "quarter_point": false,
+  "contour_fractions": [
+    0.06,
+    0.09,
+    0.12,
+    0.15,
+    0.18,
+    0.22,
+    0.27,
+    0.33
+  ],
+  "levels": [
+    {
+      "level": "coarse",
+      "name": "coarse",
+      "n_sectors": 24,
+      "first_ring": 0.08,
+      "growth": 1.6,
+      "cases": [
+        {
+          "a_over_w": 0.3,
+          "crack_length_m": 0.03,
+          "shape_factor_tada": 1.6599190000000006,
+          "k_reference_pa_sqrt_m": 50959183.37183483,
+          "n_nodes": 823,
+          "n_elements": 390,
+          "n_stations": 9,
+          "contours": [
+            {
+              "requested_fraction": 0.06,
+              "station_fraction": 0.08,
+              "j_j_m2": 10634.479180281436,
+              "k_pa_sqrt_m": 49538980.41002607,
+              "shape_factor": 1.6136580176965523,
+              "rel_error_vs_tada": -0.02786942152204313
+            },
+            {
+              "requested_fraction": 0.09,
+              "station_fraction": 0.08,
+              "j_j_m2": 10634.479180281436,
+              "k_pa_sqrt_m": 49538980.41002607,
+              "shape_factor": 1.6136580176965523,
+              "rel_error_vs_tada": -0.02786942152204313
+            },
+            {
+              "requested_fraction": 0.12,
+              "station_fraction": 0.128,
+              "j_j_m2": 10686.326641381378,
+              "k_pa_sqrt_m": 49659595.0323834,
+              "shape_factor": 1.6175868581936197,
+              "rel_error_vs_tada": -0.025502534645594724
+            },
+            {
+              "requested_fraction": 0.15,
+              "station_fraction": 0.128,
+              "j_j_m2": 10686.326641381378,
+              "k_pa_sqrt_m": 49659595.0323834,
+              "shape_factor": 1.6175868581936197,
+              "rel_error_vs_tada": -0.025502534645594724
+            },
+            {
+              "requested_fraction": 0.18,
+              "station_fraction": 0.2048,
+              "j_j_m2": 10657.845619403812,
+              "k_pa_sqrt_m": 49593374.91285538,
+              "shape_factor": 1.615429837077626,
+              "rel_error_vs_tada": -0.026802008364489083
+            },
+            {
+              "requested_fraction": 0.22,
+              "station_fraction": 0.2048,
+              "j_j_m2": 10657.845619403812,
+              "k_pa_sqrt_m": 49593374.91285538,
+              "shape_factor": 1.615429837077626,
+              "rel_error_vs_tada": -0.026802008364489083
+            },
+            {
+              "requested_fraction": 0.27,
+              "station_fraction": 0.32768,
+              "j_j_m2": 10681.04821805591,
+              "k_pa_sqrt_m": 49647329.04285814,
+              "shape_factor": 1.6171873119740852,
+              "rel_error_vs_tada": -0.025743236884399397
+            },
+            {
+              "requested_fraction": 0.33,
+              "station_fraction": 0.32768,
+              "j_j_m2": 10681.04821805591,
+              "k_pa_sqrt_m": 49647329.04285814,
+              "shape_factor": 1.6171873119740852,
+              "rel_error_vs_tada": -0.025743236884399397
+            }
+          ],
+          "reaction_ratio": 0.999999999999937
+        }
+      ]
+    }
+  ],
+  "note": "coarse level with a straight-sided (non-quarter-point) tip ring"
+}
