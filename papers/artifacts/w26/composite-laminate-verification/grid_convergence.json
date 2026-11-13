@@ -1,0 +1,563 @@
+{
+  "provenance": {
+    "module": "src/tensorfem/composite_laminate_bending.py",
+    "module_sha256": "570a71fd502b6f6cacaeced7e1e91ae49599b59cfeb169f3fbf8b232f79bd0b7",
+    "runner_sha256": "c99f7606429663e1c04c9c3b04d136687d671595400f233c22e3aaa190fa126d",
+    "git_commit": "80624f0c52897e56ea897f75427db0442ad221ba",
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "material": {
+      "E1": 25000000000.0,
+      "E2": 1000000000.0,
+      "E3": 1000000000.0,
+      "nu12": 0.25,
+      "nu13": 0.25,
+      "nu23": 0.25,
+      "G12": 500000000.0,
+      "G13": 500000000.0,
+      "G23": 200000000.0
+    },
+    "plate": {
+      "a": 1.0,
+      "b": 1.0,
+      "q0": 1.0
+    },
+    "load": "q = q0 sin(pi x / a) sin(pi y / b), SS1 (shear diaphragm) edges"
+  },
+  "theoretical_order": 2.0,
+  "gci_limit_pct": 5.0,
+  "gci_formula": "GCI = Fs |e_fine| / (r^p - 1), Fs = 1.25, r = 2, p = observed order from the three-level errors",
+  "cases": [
+    {
+      "case": "cross_ply_0_90_s__t0p01",
+      "layup": "cross_ply_0_90_s",
+      "t_over_a": 0.01,
+      "reference": 5.0915119455071965e-06,
+      "reference_kind": "exact3d",
+      "paths": {
+        "plate_fem": {
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            4.111330785370821e-06,
+            4.276983372224534e-06,
+            4.316731995762117e-06,
+            4.3265685005534825e-06
+          ],
+          "rel_err_pct": [
+            0.15997773981487184,
+            0.1521708989465798,
+            0.15023895713899052
+          ],
+          "p_observed": 3.915619196372913,
+          "p_theory": 2.0,
+          "order_gap_pct": 95.78095981864566,
+          "gci_fine_pct": 1.332753679844066,
+          "gci_medium_pct": 1.3498917284723404,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        "hex20_fem": {
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            4.834843032216234e-06,
+            5.028655656907544e-06,
+            5.067552489719583e-06
+          ],
+          "rel_err_pct": [
+            0.05041113838836217,
+            0.012345309069758241,
+            0.004705764425978762
+          ],
+          "p_observed": 1.4587388307622449,
+          "p_theory": 2.0,
+          "order_gap_pct": -27.063058461887756,
+          "gci_fine_pct": 1.1280834585882489,
+          "gci_medium_pct": 2.9594636900798843,
+          "gci_verdict": "PASS",
+          "order_verdict": "PASS"
+        }
+      }
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p10",
+      "layup": "cross_ply_0_90_s",
+      "t_over_a": 0.1,
+      "reference": 7.623865075766066e-09,
+      "reference_kind": "exact3d",
+      "paths": {
+        "plate_fem": {
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            5.92196708121089e-09,
+            6.018816588425193e-09,
+            6.041832420527017e-09,
+            6.047515535342251e-09
+          ],
+          "rel_err_pct": [
+            0.21052949801575457,
+            0.20751057888837074,
+            0.20676514140242952
+          ],
+          "p_observed": 4.013459583803412,
+          "p_theory": 2.0,
+          "order_gap_pct": 100.6729791901706,
+          "gci_fine_pct": 1.7059863881106963,
+          "gci_medium_pct": 1.712136874578471,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        "hex20_fem": {
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            7.59052161686256e-09,
+            7.61775750692925e-09,
+            7.622021981385989e-09
+          ],
+          "rel_err_pct": [
+            0.004373563615323532,
+            0.0008011118738485598,
+            0.00024175327891568776
+          ],
+          "p_observed": 1.4167073185404533,
+          "p_theory": 2.0,
+          "order_gap_pct": -29.164634072977336,
+          "gci_fine_pct": 0.06006023074668018,
+          "gci_medium_pct": 0.1990250730540457,
+          "gci_verdict": "PASS",
+          "order_verdict": "PASS"
+        }
+      }
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p50",
+      "layup": "cross_ply_0_90_s",
+      "t_over_a": 0.5,
+      "reference": 4.210582325620275e-10,
+      "reference_kind": "exact3d",
+      "paths": {
+        "plate_fem": {
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            3.9852944250956124e-10,
+            3.859606110007435e-10,
+            3.8289959022788596e-10,
+            3.82139549213583e-10
+          ],
+          "rel_err_pct": [
+            0.08335574238205562,
+            0.09062557001191106,
+            0.09243064340918988
+          ],
+          "p_observed": 4.23984513120114,
+          "p_theory": 2.0,
+          "order_gap_pct": 111.99225656005697,
+          "gci_fine_pct": 0.6456870748322221,
+          "gci_medium_pct": 0.6330774843462325,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        "hex20_fem": {
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            4.19517829819385e-10,
+            4.2074953834349657e-10,
+            4.209594625089586e-10
+          ],
+          "rel_err_pct": [
+            0.0036584078484099315,
+            0.000733139016550315,
+            0.00023457575563337125
+          ],
+          "p_observed": 1.410590546337783,
+          "p_theory": 2.0,
+          "order_gap_pct": -29.47047268311085,
+          "gci_fine_pct": 0.05858478697372569,
+          "gci_medium_pct": 0.18309988170242383,
+          "gci_verdict": "PASS",
+          "order_verdict": "PASS"
+        }
+      }
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p01",
+      "layup": "angle_ply_pm45_s",
+      "t_over_a": 0.01,
+      "reference": 3.0268574063846064e-06,
+      "reference_kind": "clt_series",
+      "paths": {
+        "plate_fem": {
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            2.8385610266187407e-06,
+            2.986491627914915e-06,
+            3.042968625129599e-06,
+            3.064083873788403e-06
+          ],
+          "rel_err_pct": [
+            0.013335870525168167,
+            0.00532275445516821,
+            0.012298718573684387
+          ],
+          "p_observed": -1.096670996318738,
+          "p_theory": 2.0,
+          "order_gap_pct": -154.83354981593692,
+          "gci_fine_pct": -2.887534060086627,
+          "gci_medium_pct": -1.2496939978497035,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        "hex20_fem": {
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            2.6808907028132473e-06,
+            2.951517439093551e-06,
+            3.0155583224414564e-06
+          ],
+          "rel_err_pct": [
+            0.11429897650335463,
+            0.02489049108561888,
+            0.0037329422652407087
+          ],
+          "p_observed": 0.8034261935577435,
+          "p_theory": 2.0,
+          "order_gap_pct": -59.82869032211282,
+          "gci_fine_pct": 1.7945134027876433,
+          "gci_medium_pct": 11.96544620339293,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        }
+      }
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p10",
+      "layup": "angle_ply_pm45_s",
+      "t_over_a": 0.1,
+      "reference": 3.0268574063846043e-09,
+      "reference_kind": "clt_series",
+      "paths": {
+        "plate_fem": {
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            4.832903577883561e-09,
+            4.9207884361612215e-09,
+            4.956137520389758e-09,
+            4.971491729629606e-09
+          ],
+          "rel_err_pct": [
+            0.6257087055973349,
+            0.6373871824737064,
+            0.6424598394173276
+          ],
+          "p_observed": 2.3328271185944405,
+          "p_theory": 2.0,
+          "order_gap_pct": 16.641355929722025,
+          "gci_fine_pct": 19.88834744761985,
+          "gci_medium_pct": 19.731315431628285,
+          "gci_verdict": "FAIL",
+          "order_verdict": "PASS"
+        },
+        "hex20_fem": {
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            5.455563454572434e-09,
+            5.565039715712589e-09,
+            5.609729372622383e-09
+          ],
+          "rel_err_pct": [
+            0.8023853528960159,
+            0.8385536444413112,
+            0.8533180191408029
+          ],
+          "p_observed": 2.5260807869608177,
+          "p_theory": 2.0,
+          "order_gap_pct": 26.304039348040888,
+          "gci_fine_pct": 99.84896268267855,
+          "gci_medium_pct": 98.12134476610508,
+          "gci_verdict": "FAIL",
+          "order_verdict": "PASS"
+        }
+      }
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p50",
+      "layup": "angle_ply_pm45_s",
+      "t_over_a": 0.5,
+      "reference": 3.6354271469619555e-10,
+      "reference_kind": "hex20_richardson",
+      "paths": {
+        "plate_fem": {
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            3.921410619189571e-10,
+            3.801139213875236e-10,
+            3.7723578851128324e-10,
+            3.7655405301507044e-10
+          ],
+          "rel_err_pct": [
+            0.04558255748619865,
+            0.03766565319987414,
+            0.03579039764212625
+          ],
+          "p_observed": 3.735662576918701,
+          "p_theory": 2.0,
+          "order_gap_pct": 86.78312884593504,
+          "gci_fine_pct": 0.36309488743387563,
+          "gci_medium_pct": 0.3821194233571308,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        "hex20_fem": {
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            3.585043266804818e-10,
+            3.6151365448661705e-10,
+            3.6272557133183886e-10
+          ],
+          "rel_err_pct": [
+            0.013859136250121806,
+            0.005581352967763759,
+            0.002247723118422424
+          ],
+          "p_observed": 0.9999999999999902,
+          "p_theory": 2.0,
+          "order_gap_pct": -50.00000000000049,
+          "gci_fine_pct": 0.8428961694084187,
+          "gci_medium_pct": 2.093007362911434,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        }
+      }
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p01",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "t_over_a": 0.01,
+      "reference": 3.3003567039333794e-06,
+      "reference_kind": "clt_series",
+      "paths": {
+        "plate_fem": {
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            3.1840283584142585e-06,
+            3.2871296715009658e-06,
+            3.313269674211635e-06,
+            3.3198854110833174e-06
+          ],
+          "rel_err_pct": [
+            0.004007758439155871,
+            0.003912598375462213,
+            0.005917150448211735
+          ],
+          "p_observed": -0.058093077985601614,
+          "p_theory": 2.0,
+          "order_gap_pct": -102.90465389928008,
+          "gci_fine_pct": -18.740765010278142,
+          "gci_medium_pct": -12.391959166137724,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        "hex20_fem": {
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            3.1862500939073065e-06,
+            3.295346268968743e-06,
+            3.317183257914995e-06
+          ],
+          "rel_err_pct": [
+            0.03457402343512752,
+            0.0015181495256755533,
+            0.005098404654733708
+          ],
+          "p_observed": -2.5800882102198766,
+          "p_theory": 2.0,
+          "order_gap_pct": -229.00441051099386,
+          "gci_fine_pct": -1.2163244733748193,
+          "gci_medium_pct": -0.3621843591028174,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        }
+      }
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p10",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "t_over_a": 0.1,
+      "reference": 3.3003567039333833e-09,
+      "reference_kind": "clt_series",
+      "paths": {
+        "plate_fem": {
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            5.228372597167791e-09,
+            5.257022179376467e-09,
+            5.264516482839195e-09,
+            5.26661588359539e-09
+          ],
+          "rel_err_pct": [
+            0.592864847945411,
+            0.5951356035439792,
+            0.595771716832489
+          ],
+          "p_observed": 3.5784732260495473,
+          "p_theory": 2.0,
+          "order_gap_pct": 78.92366130247737,
+          "gci_fine_pct": 6.803442216218098,
+          "gci_medium_pct": 6.796178091589366,
+          "gci_verdict": "FAIL",
+          "order_verdict": "FAIL"
+        },
+        "hex20_fem": {
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            6.008106215386782e-09,
+            6.060094253026403e-09,
+            6.081491793997924e-09
+          ],
+          "rel_err_pct": [
+            0.8204414717434293,
+            0.8361937198497208,
+            0.8426771223698241
+          ],
+          "p_observed": 2.4622995862070325,
+          "p_theory": 2.0,
+          "order_gap_pct": 23.114979310351625,
+          "gci_fine_pct": 102.20143795692778,
+          "gci_medium_pct": 101.41511892343523,
+          "gci_verdict": "FAIL",
+          "order_verdict": "PASS"
+        }
+      }
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p50",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "t_over_a": 0.5,
+      "reference": 4.290294483422885e-10,
+      "reference_kind": "hex20_richardson",
+      "paths": {
+        "plate_fem": {
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            4.008044126477556e-10,
+            3.8834087945292613e-10,
+            3.8531668030453597e-10,
+            3.8456886798253753e-10
+          ],
+          "rel_err_pct": [
+            0.0948386388080759,
+            0.10188757020445266,
+            0.103630602821183
+          ],
+          "p_observed": 4.226504418048218,
+          "p_theory": 2.0,
+          "order_gap_pct": 111.32522090241088,
+          "gci_fine_pct": 0.7310307198249592,
+          "gci_medium_pct": 0.7187350238259168,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        "hex20_fem": {
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            4.2588038035641503e-10,
+            4.279200026735661e-10,
+            4.286385804101357e-10
+          ],
+          "rel_err_pct": [
+            0.0073399809687680435,
+            0.0025859429300462825,
+            0.0009110515226006997
+          ],
+          "p_observed": 0.9999999999999901,
+          "p_theory": 2.0,
+          "order_gap_pct": -50.00000000000049,
+          "gci_fine_pct": 0.3416443209752663,
+          "gci_medium_pct": 0.9697285987673671,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        }
+      }
+    }
+  ]
+}

@@ -139,7 +139,14 @@ def run_case(layup_name: str, angles: list, ratio: float, verbose: bool = True) 
     h = ratio * A
     lam = Laminate(angles, h / len(angles), PAGANO_MATERIAL)
     A_abd, B_abd, D, As = lam.abd()
-    clt_single = navier_clt(lam, A, A, Q0)
+    # single-mode Navier is only defined for specially orthotropic laminates
+    # (D16 = D26 = 0); for angle-ply / quasi-isotropic families the truncated
+    # series below is the CLT reference instead.
+    _dscale = max(abs(D[0, 0]), abs(D[1, 1]), 1e-300)
+    if abs(D[0, 2]) <= 1e-9 * _dscale and abs(D[1, 2]) <= 1e-9 * _dscale:
+        clt_single = navier_clt(lam, A, A, Q0)
+    else:
+        clt_single = None
     clt_series = navier_clt_series(lam, A, A, Q0, modes=CLT_MODES)
     clt_series_sens = [navier_clt_series(lam, A, A, Q0, modes=m)["W"]
                        for m in (CLT_MODES - 40, CLT_MODES - 20, CLT_MODES)]
@@ -193,7 +200,8 @@ def run_case(layup_name: str, angles: list, ratio: float, verbose: bool = True) 
             "clt_series_modes": [CLT_MODES - 40, CLT_MODES - 20, CLT_MODES],
             "clt_series_sequence": clt_series_sens,
             "clt_series_truncation_pct": clt_truncation_pct,
-            "clt_single_mode": clt_single.W,
+            "clt_single_mode": None if clt_single is None else clt_single.W,
+            "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
             "fsdt_navier": None if fsdt is None else fsdt.W,
             "exact3d": None if exact3d is None else exact3d.center_deflection,
             "exact3d_verification": None if exact3d is None else exact3d.verification(),
@@ -281,20 +289,30 @@ def _worker(args):
 
 
 def main() -> int:
+    global OUT
     import argparse
     import multiprocessing as mp
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--only", default=None, help="substring filter on case id")
+    parser.add_argument("--out", default=None,
+                        help="artifact directory (default: this benchmark directory)")
     args = parser.parse_args()
+    if args.out:
+        OUT = Path(args.out).resolve()
+        OUT.mkdir(parents=True, exist_ok=True)
     t_start = time.time()
     todo = [(name, angles, ratio) for name, angles in LAYUPS.items()
             for ratio in THICKNESS_RATIOS]
     if args.only:
         todo = [t for t in todo if args.only in case_id(t[0], t[2])]
     if args.jobs > 1:
-        with mp.Pool(min(args.jobs, len(todo))) as pool:
+        # spawn, not fork: this module imports torch/OpenMP, and a forked child
+        # inherits locked BLAS/torch mutexes and then hangs in futex_wait, so the
+        # pool never returns.  spawn re-imports in a clean interpreter.
+        ctx = mp.get_context("spawn")
+        with ctx.Pool(min(args.jobs, len(todo))) as pool:
             cases = pool.map(_worker, todo)
     else:
         cases = [_worker(t) for t in todo]
@@ -324,7 +342,8 @@ def main() -> int:
                 f"{c['A55']:.10e}", f"{c['A44']:.10e}",
                 f"{c['reference']['clt_series']:.10e}",
                 f"{c['reference']['clt_series_truncation_pct']:.4f}",
-                f"{c['reference']['clt_single_mode']:.10e}",
+                "" if c["reference"]["clt_single_mode"] is None
+                else f"{c['reference']['clt_single_mode']:.10e}",
                 ("" if c["reference"]["fsdt_navier"] is None else f"{c['reference']['fsdt_navier']:.10e}"),
                 "" if c["reference"]["exact3d"] is None else f"{c['reference']['exact3d']:.10e}",
                 c["primary_reference"], f"{c['w_reference']:.10e}",

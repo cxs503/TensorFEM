@@ -1,0 +1,337 @@
+{
+  "provenance": {
+    "module": "src/tensorfem/composite_laminate_bending.py",
+    "module_sha256": "570a71fd502b6f6cacaeced7e1e91ae49599b59cfeb169f3fbf8b232f79bd0b7",
+    "runner_sha256": "c99f7606429663e1c04c9c3b04d136687d671595400f233c22e3aaa190fa126d",
+    "git_commit": "80624f0c52897e56ea897f75427db0442ad221ba",
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "material": {
+      "E1": 25000000000.0,
+      "E2": 1000000000.0,
+      "E3": 1000000000.0,
+      "nu12": 0.25,
+      "nu13": 0.25,
+      "nu23": 0.25,
+      "G12": 500000000.0,
+      "G13": 500000000.0,
+      "G23": 200000000.0
+    },
+    "plate": {
+      "a": 1.0,
+      "b": 1.0,
+      "q0": 1.0
+    },
+    "load": "q = q0 sin(pi x / a) sin(pi y / b), SS1 (shear diaphragm) edges"
+  },
+  "criterion_pct": 10.0,
+  "evaluation_point": "tau_xz at the ply interfaces, peak of the cos(pi x/a) sin(pi y/b) field (edge x = 0, y = b/2)",
+  "cases": [
+    {
+      "case": "cross_ply_0_90_s__t0p01",
+      "layup": "cross_ply_0_90_s",
+      "t_over_a": 0.01,
+      "interfaces_z": [
+        -0.0025,
+        0.0,
+        0.0025
+      ],
+      "reference": "exact3d",
+      "exact": {
+        "-0.002500": -27.274173189332984,
+        "0.000000": -28.03180667115295,
+        "0.002500": -3.671005115684608
+      },
+      "fem_finest": {
+        "-0.002500": -70.5002903457617,
+        "0.000000": -71.62206330087105,
+        "0.002500": -16.31799326492632
+      },
+      "rel_err_pct": {
+        "-0.002500": 158.48736039167846,
+        "0.000000": 155.5028441123493,
+        "0.002500": 344.5102295065357
+      },
+      "worst_abs_rel_pct": 344.5102295065357,
+      "verdict": "FAIL"
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p10",
+      "layup": "cross_ply_0_90_s",
+      "t_over_a": 0.1,
+      "interfaces_z": [
+        -0.025,
+        0.0,
+        0.025
+      ],
+      "reference": "exact3d",
+      "exact": {
+        "-0.025000": -2.6456597999995664,
+        "0.000000": -2.712872376022582,
+        "0.025000": -0.4255006854651723
+      },
+      "fem_finest": {
+        "-0.025000": -2.7558352178683627,
+        "0.000000": -2.8231521023460573,
+        "0.025000": -0.5294039883005858
+      },
+      "rel_err_pct": {
+        "-0.025000": 4.164383412743189,
+        "0.000000": 4.065053973720634,
+        "0.025000": 24.41906826115281
+      },
+      "worst_abs_rel_pct": 24.41906826115281,
+      "verdict": "FAIL"
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p50",
+      "layup": "cross_ply_0_90_s",
+      "t_over_a": 0.5,
+      "interfaces_z": [
+        -0.125,
+        0.0,
+        0.125
+      ],
+      "reference": "exact3d",
+      "exact": {
+        "-0.125000": -0.3337914018128826,
+        "0.000000": -0.325351974705057,
+        "0.125000": -0.24635825409140166
+      },
+      "fem_finest": {
+        "-0.125000": -0.3435932068645347,
+        "0.000000": -0.33624075689818844,
+        "0.125000": -0.2613514762365693
+      },
+      "rel_err_pct": {
+        "-0.125000": 2.93650615276988,
+        "0.000000": 3.3467699721209554,
+        "0.125000": 6.085942685567569
+      },
+      "worst_abs_rel_pct": 6.085942685567569,
+      "verdict": "PASS"
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p01",
+      "layup": "angle_ply_pm45_s",
+      "t_over_a": 0.01,
+      "interfaces_z": [
+        -0.0025,
+        0.0,
+        0.0025
+      ],
+      "reference": null,
+      "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion",
+      "fem_coarse": {
+        "-0.002500": -77.74895359472121,
+        "0.000000": -106.15650599503515,
+        "0.002500": -77.74901049545892
+      },
+      "fem_finest": {
+        "-0.002500": -74.64223013756481,
+        "0.000000": -41.979042817576385,
+        "0.002500": -74.64227027583527
+      },
+      "change_coarse_to_finest_pct": {
+        "-0.002500": -3.9958395753474596,
+        "0.000000": -60.4555157273736,
+        "0.002500": -3.995858210703662
+      },
+      "worst_abs_change_pct": 60.4555157273736,
+      "verdict": "WITHHELD"
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p10",
+      "layup": "angle_ply_pm45_s",
+      "t_over_a": 0.1,
+      "interfaces_z": [
+        -0.025,
+        0.0,
+        0.025
+      ],
+      "reference": null,
+      "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion",
+      "fem_coarse": {
+        "-0.025000": -3.126337623434168,
+        "0.000000": -2.450024916476867,
+        "0.025000": -3.1361023964674186
+      },
+      "fem_finest": {
+        "-0.025000": -3.9166240321297288,
+        "0.000000": -1.8681891863972349,
+        "0.025000": -3.9291120455452444
+      },
+      "change_coarse_to_finest_pct": {
+        "-0.025000": 25.278344948152466,
+        "0.000000": -23.74815562758893,
+        "0.025000": 25.286471831120405
+      },
+      "worst_abs_change_pct": 25.286471831120405,
+      "verdict": "WITHHELD"
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p50",
+      "layup": "angle_ply_pm45_s",
+      "t_over_a": 0.5,
+      "interfaces_z": [
+        -0.125,
+        0.0,
+        0.125
+      ],
+      "reference": null,
+      "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion",
+      "fem_coarse": {
+        "-0.125000": -0.3567183526808999,
+        "0.000000": -0.4041131681644908,
+        "0.125000": -0.4718410959322078
+      },
+      "fem_finest": {
+        "-0.125000": -0.39307755292830804,
+        "0.000000": -0.39122541748021966,
+        "0.125000": -0.516113788944825
+      },
+      "change_coarse_to_finest_pct": {
+        "-0.125000": 10.192691229411732,
+        "0.000000": -3.189143957572116,
+        "0.125000": 9.38296672212251
+      },
+      "worst_abs_change_pct": 10.192691229411732,
+      "verdict": "WITHHELD"
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p01",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "t_over_a": 0.01,
+      "interfaces_z": [
+        -0.00375,
+        -0.0025,
+        -0.00125,
+        0.0,
+        0.00125,
+        0.0025,
+        0.00375
+      ],
+      "reference": null,
+      "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion",
+      "fem_coarse": {
+        "-0.003750": -76.99708120997653,
+        "-0.002500": -98.93153730266857,
+        "-0.001250": -104.58599558953875,
+        "0.000000": -95.19290071356411,
+        "0.001250": -104.58511352409445,
+        "0.002500": -98.93101880300146,
+        "0.003750": -76.99693699730787
+      },
+      "fem_finest": {
+        "-0.003750": -35.78542557597726,
+        "-0.002500": -58.172098691647975,
+        "-0.001250": -59.150172868266914,
+        "0.000000": -58.52166318352518,
+        "0.001250": -59.14929437239043,
+        "0.002500": -58.17156655454465,
+        "0.003750": -35.785262887736444
+      },
+      "change_coarse_to_finest_pct": {
+        "-0.003750": -53.523659580825075,
+        "-0.002500": -41.19964141093071,
+        "-0.001250": -43.44350547619263,
+        "0.000000": -38.52308024564023,
+        "0.001250": -43.443868463398914,
+        "0.002500": -41.199871123959575,
+        "0.003750": -53.52378382404011
+      },
+      "worst_abs_change_pct": 53.52378382404011,
+      "verdict": "WITHHELD"
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p10",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "t_over_a": 0.1,
+      "interfaces_z": [
+        -0.0375,
+        -0.025,
+        -0.0125,
+        0.0,
+        0.0125,
+        0.025,
+        0.0375
+      ],
+      "reference": null,
+      "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion",
+      "fem_coarse": {
+        "-0.037500": -1.553698113800213,
+        "-0.025000": -3.315765283630483,
+        "-0.012500": -3.3562778782600775,
+        "0.000000": -3.2838629167188973,
+        "0.012500": -3.3478284093357766,
+        "0.025000": -3.3145633845858535,
+        "0.037500": -1.55792931771489
+      },
+      "fem_finest": {
+        "-0.037500": -0.8625452593793499,
+        "-0.025000": -3.782215083549307,
+        "-0.012500": -3.1081938981199633,
+        "0.000000": -3.0870230457911676,
+        "0.012500": -3.097762503643497,
+        "0.025000": -3.780628193460948,
+        "0.037500": -0.8675625022583997
+      },
+      "change_coarse_to_finest_pct": {
+        "-0.037500": -44.484372368217805,
+        "-0.025000": 14.067636277562467,
+        "-0.012500": -7.391640058978755,
+        "0.000000": -5.994156148405983,
+        "0.012500": -7.469495897547917,
+        "0.025000": 14.061122229325784,
+        "0.037500": -44.313102501279936
+      },
+      "worst_abs_change_pct": 44.484372368217805,
+      "verdict": "WITHHELD"
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p50",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "t_over_a": 0.5,
+      "interfaces_z": [
+        -0.1875,
+        -0.125,
+        -0.0625,
+        0.0,
+        0.0625,
+        0.125,
+        0.1875
+      ],
+      "reference": null,
+      "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion",
+      "fem_coarse": {
+        "-0.187500": -0.23723400313185583,
+        "-0.125000": -0.4801261993882411,
+        "-0.062500": -0.42115922885164847,
+        "0.000000": -0.39358452484179307,
+        "0.062500": -0.39931140457250985,
+        "0.125000": -0.5820758614637872,
+        "0.187500": -0.3484030278468224
+      },
+      "fem_finest": {
+        "-0.187500": -0.20407089539388754,
+        "-0.125000": -0.5713140844165983,
+        "-0.062500": -0.42469675969412624,
+        "0.000000": -0.3815238535780419,
+        "0.062500": -0.3906933655521206,
+        "0.125000": -0.6882024884940386,
+        "0.187500": -0.3168050263785708
+      },
+      "change_coarse_to_finest_pct": {
+        "-0.187500": -13.979070158646723,
+        "-0.125000": 18.992482631555085,
+        "-0.062500": 0.8399509259534366,
+        "0.000000": -3.06431541448412,
+        "0.062500": -2.158225114961454,
+        "0.125000": 18.23243911255268,
+        "0.187500": -9.0693819923241
+      },
+      "worst_abs_change_pct": 18.992482631555085,
+      "verdict": "WITHHELD"
+    }
+  ]
+}
