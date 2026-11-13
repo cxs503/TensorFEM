@@ -70,7 +70,7 @@ def validate_case(case: BenchmarkCase):
         raise ValueError("invalid reference quantity")
     if case.error_strategy!="absolute_relative" or not 0<case.tolerance<=.03:raise ValueError("unsupported error policy")
     if case.maturity not in ("experimental","qualified","stable"):raise ValueError("invalid maturity")
-    runners=("hemisphere_18deg","scordelis_lo","pinched_cylinder","pure_bending_90deg")
+    runners=("hemisphere_18deg","scordelis_lo","pinched_cylinder","pure_bending_90deg","hertz_ball_plane")
     if not case.capability_boundaries or case.runner not in runners:raise ValueError("missing capability boundary or runner")
     return case
 
@@ -110,6 +110,21 @@ def _computed(case,tier):
     if case.runner=="pure_bending_90deg":
         from .large_rotation_shell_benchmark import pure_bending_shell
         return tuple(float(pure_bending_shell(n).tip[2]) for n in case.mesh_sequence)
+    if case.runner=="hertz_ball_plane":
+        from .hertz_halfspace_loadcontrol import (
+            hertz_load_reference, solve_axisymmetric_contact_load_control,
+            two_zone_axis, graded_depth,
+        )
+        ref = hertz_load_reference(1831.5, 10.0, 1e5, 0.3)
+        out = []
+        for n in case.mesh_sequence:
+            r_axis = two_zone_axis(3*ref.contact_radius, 96*ref.contact_radius, n, 22)
+            z_axis = graded_depth(96*ref.contact_radius, 4*ref.contact_radius, 20, 14)
+            _, state, _ = solve_axisymmetric_contact_load_control(
+                load=ref.load, radius=10.0, young=1e5, poisson=0.3,
+                r_axis=r_axis, z_axis=z_axis)
+            out.append(float(state.prescribed_indentation))
+        return tuple(out)
     raise ValueError("runner is not available")
 
 
@@ -175,3 +190,34 @@ def to_legacy_evidence(archive,mesh=16):
     return BenchmarkEvidence(c["case_id"],"curved shell",c["quantity"]["name"],row["unit"],
         f"{citation['authors']} ({citation['year']}), DOI:{citation['doi']}",row["computed"],row["reference"],
         row["error"],row["tolerance"],row["passed"])
+
+
+def hertz_ball_plane_case():
+    """Hertz rigid sphere on an elastic half-space, load-controlled.
+
+    Case FEM-HERTZ-CONTACT: contact radius ``a`` and indentation ``delta``
+    under a prescribed normal load ``P`` against the Hertz closed form
+    (Johnson 1985 Sec. 4.2, rigid-indenter limit).  The primary pool quantity
+    is the indentation ``delta`` (robustly within 3% at every mesh level); the
+    contact radius ``a`` is recovered from the same load-controlled state and
+    cross-checked in the acceptance test.
+    """
+    return BenchmarkCase(
+        SCHEMA_VERSION, "contact.hertz_ball_plane", "1.0.0",
+        "Hertz rigid sphere on elastic half-space: contact radius and indentation under prescribed load",
+        Citation("K. L. Johnson", "Contact Mechanics",
+                 "Cambridge University Press, Sec. 4.2 (Hertz contact)", 1985, "10.1017/cbo9781139171731"),
+        {"body":"axisymmetric half-space (r>=0, z<=0)","tip":"rigid sphere","radius":10.0,
+         "contact_zone":"r in [0, 3a]","patch_depth":"96 a"},
+        {"young_modulus":1.0e5,"poisson_ratio":0.3},
+        ("bottom fully fixed","outer radius radially fixed","axis node radially fixed by symmetry"),
+        ("prescribed normal load P = 1831.5 (2 pi integrated)",),
+        (40, 60, 80, 100, 120, 160, 200),
+        ReferenceQuantity("indentation depth", 0.024999983333330558, "length", "magnitude"),
+        "absolute_relative", 0.03, "qualified",
+        ("linear small-strain axisymmetric half-space","load-controlled ALM contact",
+         "not finite-slip or rolling contact"),
+        "hertz_ball_plane",
+        (0.024722, 0.024736, 0.024726, 0.024730, 0.024727, 0.024727, 0.024727),
+        (40, 60, 80, 100, 120, 160, 200),
+    )
