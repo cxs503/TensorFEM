@@ -1,0 +1,510 @@
+{
+  "anchor": "fem_cantilever_taper",
+  "mission": "CASE-CANTILEVER-TIP",
+  "title": "CASE-CANTILEVER-TIP taper axis: linearly tapered cantilever vs closed-form flexibility oracle",
+  "generated_at": "2026-11-13T13:11:43+00:00",
+  "tolerance": 0.03,
+  "case": {
+    "length": 0.1,
+    "width": 0.01,
+    "depth_root": 0.01,
+    "young": 200000000000.0,
+    "poisson": 0.3,
+    "load": 5.0,
+    "kappa": 0.8333333333333334,
+    "slenderness": 10.0
+  },
+  "oracle": [
+    {
+      "taper": 0.0,
+      "bending_factor": 0.3333333333333333,
+      "series": 0.3333333333333333,
+      "symbolic": 0.3333333333333333,
+      "series_residual": 0.0,
+      "symbolic_residual": 0.0,
+      "shear_factor": 1.0,
+      "shear_series_residual": 0.0,
+      "delta_bending": 9.999999999999999e-06,
+      "delta_shear": 7.799999999999993e-08,
+      "delta_total": 1.0077999999999999e-05,
+      "delta_quadrature": 1.0078e-05,
+      "quadrature_residual": 1.6809544498001595e-16,
+      "amplification": 1.0,
+      "shear_share": 0.0077396308791426805
+    },
+    {
+      "taper": 0.1,
+      "bending_factor": 0.360515657826299,
+      "series": 0.3605156578263012,
+      "symbolic": 0.36051565782649675,
+      "series_residual": 6.005106438572907e-15,
+      "symbolic_residual": 5.484663880563255e-13,
+      "shear_factor": 1.053605156578263,
+      "shear_series_residual": 0.0,
+      "delta_bending": 1.0815469734788971e-05,
+      "delta_shear": 8.21812022131042e-08,
+      "delta_total": 1.0897650937002075e-05,
+      "delta_quadrature": 1.0897650937002141e-05,
+      "quadrature_residual": 6.062643249244206e-15,
+      "amplification": 1.0813307141299937,
+      "shear_share": 0.007541185039618465
+    },
+    {
+      "taper": 0.25,
+      "bending_factor": 0.4116526369139777,
+      "series": 0.41165263691397935,
+      "symbolic": 0.4116526369139777,
+      "series_residual": 4.045484924916773e-15,
+      "symbolic_residual": 0.0,
+      "shear_factor": 1.1507282898071236,
+      "shear_series_residual": 1.9296006441472708e-16,
+      "delta_bending": 1.2349579107419331e-05,
+      "delta_shear": 8.975680660495579e-08,
+      "delta_total": 1.2439335914024287e-05,
+      "delta_quadrature": 1.243933591402434e-05,
+      "quadrature_residual": 4.221772214588986e-15,
+      "amplification": 1.2343060045668077,
+      "shear_share": 0.007215562569040576
+    },
+    {
+      "taper": 0.5,
+      "bending_factor": 0.5451774444795623,
+      "series": 0.5451774444795627,
+      "symbolic": 0.5451774444795623,
+      "series_residual": 8.145773717289412e-16,
+      "symbolic_residual": 0.0,
+      "shear_factor": 1.3862943611198906,
+      "shear_series_residual": 3.2034265038149176e-16,
+      "delta_bending": 1.6355323334386868e-05,
+      "delta_shear": 1.0813096016735205e-07,
+      "delta_total": 1.646345429455422e-05,
+      "delta_quadrature": 1.6463454294554227e-05,
+      "quadrature_residual": 4.115942776526464e-16,
+      "amplification": 1.6336033235318737,
+      "shear_share": 0.006567938795391171
+    },
+    {
+      "taper": 0.75,
+      "bending_factor": 0.8415866337656666,
+      "series": 0.841586633765666,
+      "symbolic": 0.8415866337656666,
+      "series_residual": 6.596011510172639e-16,
+      "symbolic_residual": 0.0,
+      "shear_factor": 1.8483924814931874,
+      "shear_series_residual": 4.805139755722377e-16,
+      "delta_bending": 2.5247599012969998e-05,
+      "delta_shear": 1.4417461355646714e-07,
+      "delta_total": 2.5391773626526465e-05,
+      "delta_quadrature": 2.5391773626526465e-05,
+      "quadrature_residual": 0.0,
+      "amplification": 2.5195250671290403,
+      "shear_share": 0.005678004840349149
+    },
+    {
+      "taper": 0.9,
+      "bending_factor": 1.3684294828450556,
+      "series": 1.3684294828450538,
+      "symbolic": 1.3684294828451056,
+      "series_residual": 1.2980989241090354e-15,
+      "symbolic_residual": 3.650903224056662e-14,
+      "shear_factor": 2.5584278811044956,
+      "shear_series_residual": 3.471578879591833e-16,
+      "delta_bending": 4.105288448535167e-05,
+      "delta_shear": 1.9955737472614898e-07,
+      "delta_total": 4.125244186007782e-05,
+      "delta_quadrature": 4.125244186007783e-05,
+      "quadrature_residual": 1.6426333260509732e-16,
+      "amplification": 4.093316318721753,
+      "shear_share": 0.004837468177108595
+    }
+  ],
+  "frame_elements": [
+    2,
+    4,
+    8,
+    16,
+    32
+  ],
+  "frame": {
+    "0": {
+      "midpoint": [
+        1.7763568394002505e-15,
+        2.19824158875781e-14,
+        1.0857981180834031e-13,
+        2.1513901771186283e-12,
+        3.8875347385669556e-11
+      ],
+      "gauss": [
+        -6.772360450213455e-15,
+        -2.1649348980190553e-14,
+        2.1338486533295509e-13,
+        1.901589996577968e-12,
+        9.562417524477951e-11
+      ]
+    },
+    "0.5": {
+      "midpoint": [
+        0.11163956334450176,
+        0.02687800310187982,
+        0.0066104560497837195,
+        0.001644736017559545,
+        0.0004106726429975449
+      ],
+      "gauss": [
+        -0.003167538894321087,
+        -0.0002850903568510921,
+        -1.9905281642640382e-05,
+        -1.2814924816861861e-06,
+        -8.067605894446217e-08
+      ]
+    },
+    "0.75": {
+      "midpoint": [
+        0.23735599523326445,
+        0.06562596728373493,
+        0.016114972202517563,
+        0.003952707276825063,
+        0.0009815164316575586
+      ],
+      "gauss": [
+        -0.00682707254001802,
+        -0.00196285918353023,
+        -0.00023699033629898114,
+        -1.856258138410727e-05,
+        -1.237242796769955e-06
+      ]
+    }
+  },
+  "frame_observed_order": {
+    "midpoint": {
+      "0": -4.241977934172971,
+      "0.5": 2.0043445275675302,
+      "0.75": 2.01862273470799
+    },
+    "gauss": {
+      "0": -4.403886867508261,
+      "0.5": 3.973397479824825,
+      "0.75": 3.790777889397144
+    }
+  },
+  "solid": [
+    {
+      "taper": 0.0,
+      "nx": 8,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 261,
+      "n_elements": 32,
+      "n_dof": 783,
+      "tip_deflection": 9.898548644947135e-06,
+      "oracle": 1.0077999999999999e-05,
+      "error": -0.017806246780399215
+    },
+    {
+      "taper": 0.0,
+      "nx": 16,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 501,
+      "n_elements": 64,
+      "n_dof": 1503,
+      "tip_deflection": 9.961911877323734e-06,
+      "oracle": 1.0077999999999999e-05,
+      "error": -0.011518964345729854
+    },
+    {
+      "taper": 0.0,
+      "nx": 32,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 981,
+      "n_elements": 128,
+      "n_dof": 2943,
+      "tip_deflection": 9.986135117947158e-06,
+      "oracle": 1.0077999999999999e-05,
+      "error": -0.009115388177499684
+    },
+    {
+      "taper": 0.0,
+      "nx": 16,
+      "ny": 4,
+      "nz": 4,
+      "n_nodes": 1505,
+      "n_elements": 256,
+      "n_dof": 4515,
+      "tip_deflection": 9.97393314169503e-06,
+      "oracle": 1.0077999999999999e-05,
+      "error": -0.01032614192349357
+    },
+    {
+      "taper": 0.25,
+      "nx": 8,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 261,
+      "n_elements": 32,
+      "n_dof": 783,
+      "tip_deflection": 1.2248041942397662e-05,
+      "oracle": 1.2439335914024287e-05,
+      "error": -0.015378149842465327
+    },
+    {
+      "taper": 0.25,
+      "nx": 16,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 501,
+      "n_elements": 64,
+      "n_dof": 1503,
+      "tip_deflection": 1.2313043058745697e-05,
+      "oracle": 1.2439335914024287e-05,
+      "error": -0.01015270076726571
+    },
+    {
+      "taper": 0.25,
+      "nx": 32,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 981,
+      "n_elements": 128,
+      "n_dof": 2943,
+      "tip_deflection": 1.2337261640448846e-05,
+      "oracle": 1.2439335914024287e-05,
+      "error": -0.008205765507173113
+    },
+    {
+      "taper": 0.25,
+      "nx": 16,
+      "ny": 4,
+      "nz": 4,
+      "n_nodes": 1505,
+      "n_elements": 256,
+      "n_dof": 4515,
+      "tip_deflection": 1.2324387272923451e-05,
+      "oracle": 1.2439335914024287e-05,
+      "error": -0.009240737760867201
+    },
+    {
+      "taper": 0.5,
+      "nx": 8,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 261,
+      "n_elements": 32,
+      "n_dof": 783,
+      "tip_deflection": 1.62551397149872e-05,
+      "oracle": 1.646345429455422e-05,
+      "error": -0.012653151388522854
+    },
+    {
+      "taper": 0.5,
+      "nx": 16,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 501,
+      "n_elements": 64,
+      "n_dof": 1503,
+      "tip_deflection": 1.632654227685507e-05,
+      "oracle": 1.646345429455422e-05,
+      "error": -0.008316117337808016
+    },
+    {
+      "taper": 0.5,
+      "nx": 32,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 981,
+      "n_elements": 128,
+      "n_dof": 2943,
+      "tip_deflection": 1.635123566529314e-05,
+      "oracle": 1.646345429455422e-05,
+      "error": -0.006816226245922152
+    },
+    {
+      "taper": 0.5,
+      "nx": 16,
+      "ny": 4,
+      "nz": 4,
+      "n_nodes": 1505,
+      "n_elements": 256,
+      "n_dof": 4515,
+      "tip_deflection": 1.6337540991722733e-05,
+      "oracle": 1.646345429455422e-05,
+      "error": -0.007648048858928558
+    },
+    {
+      "taper": 0.75,
+      "nx": 8,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 261,
+      "n_elements": 32,
+      "n_dof": 783,
+      "tip_deflection": 2.5125668042902515e-05,
+      "oracle": 2.5391773626526465e-05,
+      "error": -0.010479991966608981
+    },
+    {
+      "taper": 0.75,
+      "nx": 16,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 501,
+      "n_elements": 64,
+      "n_dof": 1503,
+      "tip_deflection": 2.5236050345016374e-05,
+      "oracle": 2.5391773626526465e-05,
+      "error": -0.0061328241106958226
+    },
+    {
+      "taper": 0.75,
+      "nx": 32,
+      "ny": 2,
+      "nz": 2,
+      "n_nodes": 981,
+      "n_elements": 128,
+      "n_dof": 2943,
+      "tip_deflection": 2.5266477563848555e-05,
+      "oracle": 2.5391773626526465e-05,
+      "error": -0.00493451400917555
+    },
+    {
+      "taper": 0.75,
+      "nx": 16,
+      "ny": 4,
+      "nz": 4,
+      "n_nodes": 1505,
+      "n_elements": 256,
+      "n_dof": 4515,
+      "tip_deflection": 2.524869414120572e-05,
+      "oracle": 2.5391773626526465e-05,
+      "error": -0.005634875587078758
+    }
+  ],
+  "root_bc_control": [
+    {
+      "taper": 0.0,
+      "nx": 16,
+      "oracle": 1.0077999999999999e-05,
+      "clamp_all_deflection": 9.961911877323734e-06,
+      "clamp_all_error": -0.011518964345729854,
+      "lateral_free_deflection": 1.0073088062992725e-05,
+      "lateral_free_error": -0.0004873920427936884
+    },
+    {
+      "taper": 0.0,
+      "nx": 32,
+      "oracle": 1.0077999999999999e-05,
+      "clamp_all_deflection": 9.986135117947158e-06,
+      "clamp_all_error": -0.009115388177499684,
+      "lateral_free_deflection": 1.0073731524313235e-05,
+      "lateral_free_error": -0.0004235439260532603
+    },
+    {
+      "taper": 0.5,
+      "nx": 16,
+      "oracle": 1.646345429455422e-05,
+      "clamp_all_deflection": 1.632654227685507e-05,
+      "clamp_all_error": -0.008316117337808016,
+      "lateral_free_deflection": 1.6440254235196987e-05,
+      "lateral_free_error": -0.0014091853958563272
+    },
+    {
+      "taper": 0.5,
+      "nx": 32,
+      "oracle": 1.646345429455422e-05,
+      "clamp_all_deflection": 1.635123566529314e-05,
+      "clamp_all_error": -0.006816226245922152,
+      "lateral_free_deflection": 1.644144764126127e-05,
+      "lateral_free_error": -0.001336697202131587
+    },
+    {
+      "taper": 0.75,
+      "nx": 16,
+      "oracle": 2.5391773626526465e-05,
+      "clamp_all_deflection": 2.5236050345016374e-05,
+      "clamp_all_error": -0.0061328241106958226,
+      "lateral_free_deflection": 2.5351090538441973e-05,
+      "lateral_free_error": -0.0016022152955077473
+    },
+    {
+      "taper": 0.75,
+      "nx": 32,
+      "oracle": 2.5391773626526465e-05,
+      "clamp_all_deflection": 2.5266477563848555e-05,
+      "clamp_all_error": -0.00493451400917555,
+      "lateral_free_deflection": 2.535806783201557e-05,
+      "lateral_free_error": -0.0013274297024955528
+    }
+  ],
+  "wedge": {
+    "rows": [
+      {
+        "taper": 0.9,
+        "bending_factor": 1.3684294828450556,
+        "log_divergence_reference": 2.302585092994046,
+        "identity_residual": 8.113118275681471e-17,
+        "amplification": 4.093316318721753
+      },
+      {
+        "taper": 0.99,
+        "bending_factor": 3.2207805903006084,
+        "log_divergence_reference": 4.60517018598809,
+        "identity_residual": 0.0,
+        "amplification": 9.623561152949934
+      },
+      {
+        "taper": 0.999,
+        "bending_factor": 5.426016556026564,
+        "log_divergence_reference": 6.907755278982136,
+        "identity_residual": 0.0,
+        "amplification": 16.205580565272232
+      },
+      {
+        "taper": 0.9999,
+        "bending_factor": 7.712853991795925,
+        "log_divergence_reference": 9.210340371976294,
+        "identity_residual": 0.0,
+        "amplification": 23.03076981055087
+      }
+    ],
+    "wedge_rejected": true
+  },
+  "geometry": {
+    "surface_deviation": 1.586032892321652e-16,
+    "area_error": 0.0,
+    "max_element_aspect": 2.5007811279678216,
+    "min_edge_length": 0.0025,
+    "n_nodes": 501,
+    "n_elements": 64
+  },
+  "geometry_prismatic": {
+    "surface_deviation": 0.0,
+    "area_error": 0.0,
+    "max_element_aspect": 1.250000000000001,
+    "min_edge_length": 0.005,
+    "n_nodes": 501,
+    "n_elements": 64
+  },
+  "field_contour": {
+    "max_sigma_xx_MPa": 2.2724058752725806,
+    "min_sigma_xx_MPa": -2.2724058752725806,
+    "n_slice_elements": 96,
+    "tip_deflection_um": 16.351356471146904
+  },
+  "limits": {
+    "bending_over_prismatic": 1.00000000075,
+    "shear_over_prismatic": 1.0000000005
+  },
+  "solid_worst": 0.017806246780399215,
+  "solid_fine_worst": 0.009115388177499684,
+  "frame_worst_32": 0.0009815164316575586,
+  "limitations": [
+    "The oracle is beam theory (Euler-Bernoulli + Timoshenko shear). For a taper the exact 3-D elasticity solution is not available in closed form (the Airy cantilever field of the prismatic route needs a constant section), so the solid is graded against the beam oracle: agreement at the cited level certifies the model against beam kinematics, not against elasticity.",
+    "Uniform traction on the tip face (consistent 8-node load) is used instead of the parabolic Saint-Venant shear distribution. The resulting tip-region error is O(h/L)^2 and is not separated here from the root effect; at L/h = 10 it sits below the reported residual.",
+    "The clamped root forbids lateral contraction. The root-BC control measures that cost explicitly: it is a modelling choice, not mesh error, and it does not shrink under refinement -- which is why the solid ladder plateaus instead of vanishing.",
+    "kappa = 5/6 (Timoshenko) is used for the oracle. For a strip in plane stress the equivalent elasticity factor is 2/3 (see benchmarks/verified/fem_cantilever_solid_convergence); at L/h = 10 the difference is ~0.1 % of the tip deflection.",
+    "A taper ratio of 1 (knife edge) is excluded: the bending flexibility diverges logarithmically and no linear beam model is meaningful there.",
+    "No experimental reference is used: this is a code-vs-closed-form verification study, the strongest available reference for this geometry family."
+  ]
+}
