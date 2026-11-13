@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "artifact": "benchmarks/undex_shock",
+  "mission_id": 15095,
+  "checked_by": "tests/test_undex_chain_artifacts.py",
+  "status": "STALE",
+  "findings": [
+    {
+      "id": "numeric_reproduction",
+      "status": "PASS",
+      "detail": "every covered case re-derives from the current library code: reduced range, peak pressure, decay time, bubble period and impulse agree to <=1e-9 relative with tensorfem.undex_chain; each SRS band deviation re-derives from its own peak pair; the discretised 1-D fluid leg (taylor_fsi_fem/taylor_analytic, 120 elements, dt=theta/60) recomputes the stored interface-pressure / velocity / pre-cavitation-impulse columns to 1e-9."
+    },
+    {
+      "id": "coverage_vs_anchor",
+      "status": "FAIL",
+      "detail": "case_matrix.csv and srs_comparison.json cover C1-C4 only, while cole_anchor.json declares 6 cases (C5: W=2 kg R=25 m, C6: W=100 kg R=20 m, added by the chain-3 revision of the anchor). Anyone reading criterion-2 evidence from the chain artifacts sees 4 of 6 cases; the 6-case numbers live only in fem_vs_cole.csv / criteria_verdicts.json (mission 15973).",
+      "remedy": "PYTHONPATH=src python scripts/w23_undex_shock_chain_run.py"
+    },
+    {
+      "id": "anchor_sha256",
+      "status": "FAIL",
+      "detail": "chain_metrics.json records anchor_sha256 = cf8159f22306a6b9b5d6cceb4d50a3b52c6c5102c9ce513c068cccaf6e3b34ce, but the committed cole_anchor.json hashes to 63391daf1c80dbf82d0de609a13d90fd044fca42b249e8f3e69639ad366aa2d8: the anchor was revised after the chain run (schema 1.0.0 -> 1.1.0, cases C5/C6 added, citation ledger rebuilt), so the artifacts' provenance points at an anchor revision that no longer exists in the tree.",
+      "remedy": "PYTHONPATH=src python scripts/w23_undex_shock_chain_run.py"
+    },
+    {
+      "id": "script_sha256",
+      "status": "FAIL",
+      "detail": "chain_metrics.json records script_sha256 = 4f2133984ff9106868f5fa6ca482d3917538a29e3d90417c5e698f6b2f4e0dae, but the committed scripts/w23_undex_shock_chain_run.py hashes to c47a4e085e1adba09ac89064e5171052daeec92e8dc3195314ba5f502fb0687c (a whitespace/reformat pass landed after the run). The recorded provenance therefore does not identify the committed generator, so the artifact-to-code link cannot be walked by a reader."
+    },
+    {
+      "id": "figures",
+      "status": "PASS",
+      "detail": "all six recorded figures exist in docs/assets/w23_undex_shock, are valid PNGs with real IHDR dimensions and are named in the mission report; none is orphaned."
+    }
+  ],
+  "remedy": "one run of scripts/w23_undex_shock_chain_run.py over the 6-case anchor (submitted to the cluster as job cj2046; it was still queued when this branch closed, so the two FAIL entries are recorded rather than cleared)",
+  "how_to_close": "regenerate, flip status to FRESH, and delete the two pytest.xfail reasons in tests/test_undex_chain_artifacts.py -- the assertions beneath them already encode the target state"
+}
