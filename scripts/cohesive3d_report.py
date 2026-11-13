@@ -212,10 +212,40 @@ def write_doc(evidence: dict, ts_path: Path, coupled_path: Path) -> str:
         "`Mixed-Mode cohesive \u975e\u6bd4\u4f8b\u8def\u5f84\u9a8c\u8bc1`, a separate item).\n")
     add("* Prescribed crack path: the interface plane is pre-meshed (standard cohesive practice); "
         "there is no crack-path search or remeshing.\n")
-    add("\n## 7. Reproduce\n")
-    add("```bash\npython benchmarks/cohesive3d_verification.py     # writes benchmarks/cohesive3d_verification.json\n"
-        "python -m pytest tests/test_cohesive3d.py -q     # 26 unit tests\n"
-        "python scripts/cohesive3d_report.py              # doc page + figures + platform report\n```\n")
+    add("\n## 7. Evidence integrity (how the artifact is gated)\n")
+    provenance = evidence["provenance"]
+    add("`benchmarks/cohesive3d_verification.json` is not a claim taken on trust: it declares the "
+        "content of the code that produced it and the two commands that re-derive it.\n")
+    add("| source module | SHA-256 |")
+    add("|---|---|")
+    for path, digest in provenance["source_files"].items():
+        add(f"| `{path}` | `{digest}` |")
+    add(f"\n`git_head` at generation: `{provenance['git_head']}`. "
+        f"`checks_digest` (SHA-256 of the criteria dictionary): `{evidence['checks_digest']}`. "
+        f"Measured generation runtime: {evidence['reproduce']['runtime_s']} s.\n")
+    add("Three gates, none of them a human reading the numbers:\n")
+    add("1. **Tamper gate.** `checks_digest` hashes the stored criteria, so a hand-edited number "
+        "(or a partial regeneration) changes the digest and "
+        "`tests/test_cohesive3d_verification_artifact.py` fails without re-running the benchmark.\n")
+    add("2. **Reproducibility gate.** The same test module recomputes the eight fast closed-form "
+        "checks from the current checkout and compares them leaf by leaf with the committed numbers "
+        "(`atol = 1e-10`, `rtol = 1e-8`); `python benchmarks/cohesive3d_verification.py --check` "
+        "does the same for all eleven, the three coupled specimen solves included (exit codes: "
+        "0 reproducible, 1 numeric mismatch, 2 artifact missing, 3 stale source hash).\n")
+    add("3. **Freshness gate.** The recorded SHA-256 of every source module is compared with the "
+        "checkout, so an artifact cannot outlive the code it describes: editing "
+        "`src/tensorfem/cohesive3d.py` without regenerating fails the test suite, and the failure "
+        "message names the regeneration command.\n")
+    add("Known limit of gate 2 (stated, not hidden): an absolute floor of `atol = 1e-10` means a "
+        "change confined to a machine-precision residual (~1e-16) is invisible to the numeric "
+        "comparison -- those leaves are protected by gate 1 only. The floor is deliberate: "
+        "cross-architecture float64 reduction order moves such leaves by more than any sane "
+        "relative tolerance.\n")
+    add("\n## 8. Reproduce\n")
+    add("```bash\npython benchmarks/cohesive3d_verification.py          # writes benchmarks/cohesive3d_verification.json\n"
+        "python benchmarks/cohesive3d_verification.py --check  # re-derive all 11 and diff vs the artifact\n"
+        "python -m pytest tests/test_cohesive3d.py tests/test_cohesive3d_verification_artifact.py -q\n"
+        "python scripts/cohesive3d_report.py                  # doc page + figures + platform report\n```\n")
     return "\n".join(lines)
 
 

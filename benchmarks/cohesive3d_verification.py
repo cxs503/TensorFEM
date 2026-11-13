@@ -27,13 +27,39 @@ Checks
 The coupled specimen is a genuine assembly: the adherends come from
 ``tensorfem.solid3d.hex8_stiffness`` (the production HEX8), not from a
 special-purpose element written for this script.
+
+Artifact contract
+-----------------
+Besides the numbers, ``cohesive3d_verification.json`` carries
+
+``provenance``      repo-relative paths + SHA-256 of every module whose content
+                    the numbers depend on, and the git HEAD at generation time;
+``checks_digest``   SHA-256 of the criteria dictionary itself, so a hand edit
+                    (or a partial regeneration) is detectable without re-running
+                    anything;
+``reproduce``       the two commands below and the measured runtime.
+
+``python benchmarks/cohesive3d_verification.py --check`` re-runs every check and
+compares the result with the committed artifact, leaf by leaf, within
+``--rtol/--atol`` (default 1e-8 / 1e-10, i.e. loose enough for cross-architecture
+float64 differences, tight enough to expose any real change of a number).  It
+also verifies that the recorded source hashes still match the checkout, so an
+artifact whose code has moved on cannot claim to describe it.  Exit codes:
+``0`` reproducible, ``1`` numeric/flag mismatch, ``2`` artifact missing,
+``3`` stale source hash.  ``tests/test_cohesive3d_verification_artifact.py``
+enforces the cheat-proof subset of this in ``pytest`` (digest, schema, source
+hashes and the fast closed-form checks) without paying the ~30 s full runtime.
 """
 from __future__ import annotations
 
+import argparse
+import hashlib
 import json
 import math
 import platform
+import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -512,8 +538,58 @@ def check_coupled_energy(rounds: int = 120, max_stroke: float = 1.90e-4) -> dict
 # --------------------------------------------------------------------------- #
 
 
-def main() -> int:
-    results = {
+REPO_ROOT = Path(__file__).resolve().parents[1]
+ARTIFACT = REPO_ROOT / "benchmarks" / "cohesive3d_verification.json"
+
+#: Modules whose *content* the numbers depend on (repo-relative, no host paths).
+SOURCE_FILES = (
+    "src/tensorfem/cohesive3d.py",
+    "src/tensorfem/mixed_mode_cohesive.py",
+    "src/tensorfem/solid3d.py",
+)
+
+#: Leaves excluded from an artifact-vs-fresh comparison: identity/wall-clock
+#: fields, and the Newton iteration counters (a converged solve may need one
+#: extra iteration on another architecture without any change of consequence).
+COMPARE_IGNORED_LEAVES = frozenset({
+    "generated_utc", "runtime_s", "git_head", "platform", "machine", "python", "torch",
+    "iterations", "newton_iterations_max",
+})
+
+
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _git_head() -> str | None:
+    try:
+        out = subprocess.run(["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"],
+                             capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.SubprocessError):  # git absent: provenance degrades, not fatal
+        return None
+    if out.returncode != 0:
+        return None
+    return out.stdout.strip() or None
+
+
+def source_provenance() -> dict:
+    """Content identity of the code that produced the numbers."""
+    return {
+        "module": "tensorfem.cohesive3d",
+        "source_files": {rel: sha256_file(REPO_ROOT / rel) for rel in SOURCE_FILES},
+        "git_head": _git_head(),
+    }
+
+
+def criteria_digest(criteria: dict) -> str:
+    """SHA-256 of the numbers themselves: any hand edit changes the digest."""
+    canonical = json.dumps(criteria, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode()).hexdigest()
+
+
+def run_checks() -> dict:
+    """Every criterion, keyed by name.  Pure function of the checked-out code."""
+    return {
         "law_reduces_to_2d_bk": check_law_reduces_to_2d(),
         "law_energy": check_law_energies(),
         "law_initiation": check_law_initiation(),
@@ -533,24 +609,138 @@ def main() -> int:
         "coupled_block_mesh": check_coupled_mesh(),
         "coupled_block_energy": check_coupled_energy(),
     }
-    payload = {
+
+
+def build_payload() -> dict:
+    started = time.perf_counter()
+    results = run_checks()
+    runtime_s = time.perf_counter() - started
+    return {
         "schema": "tensorfem.cohesive3d-verification/1.0",
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "generator": "benchmarks/cohesive3d_verification.py",
+        "reproduce": {"write": "python benchmarks/cohesive3d_verification.py",
+                      "check": "python benchmarks/cohesive3d_verification.py --check",
+                      "runtime_s": round(runtime_s, 2)},
         "host": {"platform": platform.platform(), "machine": platform.machine(),
                  "python": platform.python_version(), "torch": torch.__version__},
+        "provenance": source_provenance(),
         "model": {"normal_stiffness_Pa_per_m": KN, "shear_stiffness_Pa_per_m": KS,
                   "normal_strength_Pa": TN0, "shear_strength_Pa": TS0,
                   "mode_i_energy_J_per_m2": GIC, "mode_ii_energy_J_per_m2": GIIC,
                   "bk_eta": ETA},
         "criteria": results,
+        "checks_digest": criteria_digest(results),
         "all_passed": all(v["passed"] for v in results.values()),
     }
-    out = Path(__file__).resolve().parent / "cohesive3d_verification.json"
-    out.write_text(json.dumps(payload, indent=2))
-    for name, value in results.items():
+
+
+def _flatten(node, prefix: str = ""):
+    """Yield ``(path, leaf)`` for every scalar in a nested JSON structure."""
+    if isinstance(node, dict):
+        for key, value in node.items():
+            yield from _flatten(value, f"{prefix}/{key}")
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            yield from _flatten(value, f"{prefix}/{index}")
+    else:
+        yield prefix, node
+
+
+def compare_payload(on_disk: dict, fresh: dict, *, rtol: float = 1e-8,
+                    atol: float = 1e-10) -> dict:
+    """Leaf-by-leaf comparison of a committed artifact against a fresh payload.
+
+    Numeric leaves must agree to ``atol + rtol * max(|a|, |b|)`` -- loose enough
+    that a different CPU (different reduction order) still reproduces, tight
+    enough that any deliberate change of a physical number is caught.  Booleans
+    and strings (including the SHA-256 leaves) must agree exactly.
+    """
+    diffs: list[dict] = []
+    for section in ("criteria", "model", "provenance"):
+        old = dict(_flatten(on_disk.get(section, {}), f"/{section}"))
+        new = dict(_flatten(fresh.get(section, {}), f"/{section}"))
+        for path in sorted(set(old) | set(new)):
+            if path.rsplit("/", 1)[-1] in COMPARE_IGNORED_LEAVES:
+                continue
+            if path not in old or path not in new:
+                diffs.append({"path": path, "kind": "missing",
+                              "on_disk": old.get(path), "fresh": new.get(path)})
+                continue
+            a, b = old[path], new[path]
+            both_numbers = (isinstance(a, (int, float)) and isinstance(b, (int, float))
+                            and not isinstance(a, bool) and not isinstance(b, bool))
+            if both_numbers:
+                if abs(a - b) > atol + rtol * max(abs(a), abs(b)):
+                    scale = max(abs(a), abs(b), 1e-300)
+                    diffs.append({"path": path, "kind": "numeric", "on_disk": a,
+                                  "fresh": b, "rel_error": abs(a - b) / scale})
+            elif a != b:
+                diffs.append({"path": path, "kind": "value", "on_disk": a, "fresh": b})
+    return {"ok": not diffs, "n_diffs": len(diffs), "diffs": diffs[:20],
+            "rtol": rtol, "atol": atol}
+
+
+def stale_sources(on_disk: dict) -> list[dict]:
+    """Source modules whose recorded hash no longer matches the checkout."""
+    declared = on_disk.get("provenance", {}).get("source_files", {}) or {}
+    current = source_provenance()["source_files"]
+    return [{"file": rel, "declared": sha, "current": current.get(rel)}
+            for rel, sha in declared.items() if current.get(rel) != sha]
+
+
+def check_artifact(path: Path = ARTIFACT, *, fresh: dict | None = None,
+                   rtol: float = 1e-8, atol: float = 1e-10) -> dict:
+    """Is the committed artifact a faithful, current description of this code?"""
+    path = Path(path)
+    if not path.exists():
+        return {"ok": False, "exit_code": 2, "artifact": str(path),
+                "reason": f"artifact missing: {path}",
+                "comparison": None, "stale": []}
+    on_disk = json.loads(path.read_text())
+    fresh = build_payload() if fresh is None else fresh
+    comparison = compare_payload(on_disk, fresh, rtol=rtol, atol=atol)
+    stale = stale_sources(on_disk)
+    digest_ok = on_disk.get("checks_digest") == criteria_digest(on_disk.get("criteria", {}))
+    ok = comparison["ok"] and not stale and digest_ok and bool(on_disk.get("all_passed"))
+    exit_code = 0 if ok else (3 if (stale or not digest_ok) and comparison["ok"] else 1)
+    return {"ok": ok, "exit_code": exit_code,
+            "artifact": path.name, "all_passed": bool(on_disk.get("all_passed")),
+            "digest_ok": digest_ok, "comparison": comparison, "stale": stale}
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="3-D cohesive element verification evidence")
+    parser.add_argument("--check", action="store_true",
+                        help="recompute and compare with the committed artifact instead of writing it")
+    parser.add_argument("--out", type=Path, default=ARTIFACT, help="artifact path")
+    parser.add_argument("--rtol", type=float, default=1e-8, help="relative tolerance for --check")
+    parser.add_argument("--atol", type=float, default=1e-10, help="absolute tolerance for --check")
+    args = parser.parse_args(argv)
+
+    if args.check:
+        report = check_artifact(args.out, rtol=args.rtol, atol=args.atol)
+        comparison = report.get("comparison") or {"n_diffs": 0, "diffs": []}
+        for diff in comparison["diffs"]:
+            print(f"DIFF {diff['path']}: on_disk={diff['on_disk']!r} fresh={diff['fresh']!r}")
+        for row in report["stale"]:
+            print(f"STALE source {row['file']}: declared {row['declared']} current {row['current']}")
+        if not report.get("digest_ok", True):
+            print("DIGEST MISMATCH: checks_digest does not hash the stored criteria")
+        print(f"artifact {report['artifact']}: "
+              f"{'REPRODUCIBLE' if report['ok'] else 'NOT REPRODUCIBLE'} "
+              f"({comparison['n_diffs']} leaf differences, {len(report['stale'])} stale source(s))")
+        if not report["ok"]:
+            print("remedy: python benchmarks/cohesive3d_verification.py   # regenerate")
+        return report["exit_code"]
+
+    payload = build_payload()
+    args.out.write_text(json.dumps(payload, indent=2))
+    for name, value in payload["criteria"].items():
         print(f"{name:28s} {'PASS' if value['passed'] else 'FAIL'}")
-    print("all_passed:", payload["all_passed"], "->", out)
+    print("all_passed:", payload["all_passed"], "->", args.out)
+    print("checks_digest:", payload["checks_digest"],
+          "runtime_s:", payload["reproduce"]["runtime_s"])
     return 0 if payload["all_passed"] else 1
 
 
