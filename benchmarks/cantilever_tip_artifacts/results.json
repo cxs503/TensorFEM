@@ -1,7 +1,7 @@
 {
   "benchmark": "cantilever_tip_deflection",
   "case_key": "CASE-CANTILEVER-TIP",
-  "generated_at": "2026-11-11T22:30:47+00:00",
+  "generated_at": "2026-11-13T00:01:38+00:00",
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
@@ -45,28 +45,28 @@
       "dofs": 15,
       "tip_deflection_m": 0.010000000000000177,
       "relative_error_vs_eb": 1.7867651802561116e-14,
-      "seconds": 0.0037041902542114258
+      "seconds": 0.004972489550709724
     },
     {
       "n_elements": 8,
       "dofs": 27,
       "tip_deflection_m": 0.010000000000001865,
       "relative_error_vs_eb": 1.8665624601510447e-13,
-      "seconds": 0.002854200080037117
+      "seconds": 0.0030095409601926804
     },
     {
       "n_elements": 16,
       "dofs": 51,
       "tip_deflection_m": 0.010000000000012998,
       "relative_error_vs_eb": 1.3000017728970194e-12,
-      "seconds": 0.0027610696852207184
+      "seconds": 0.0027677007019519806
     },
     {
       "n_elements": 32,
       "dofs": 99,
       "tip_deflection_m": 0.01000000000015078,
       "relative_error_vs_eb": 1.507821645319041e-11,
-      "seconds": 0.01883736066520214
+      "seconds": 0.013265131041407585
     }
   ],
   "hex20_results": [
@@ -77,7 +77,7 @@
       "dofs": 312,
       "tip_deflection_m": 0.009748606755302255,
       "relative_error_vs_eb": -0.02513932446977438,
-      "seconds": 2.7546617705374956
+      "seconds": 1.0458321608603
     },
     {
       "axial_elements": 16,
@@ -86,7 +86,7 @@
       "dofs": 600,
       "tip_deflection_m": 0.009883910739521252,
       "relative_error_vs_eb": -0.0116089260478746,
-      "seconds": 6.9139723200351
+      "seconds": 1.679839700460434
     },
     {
       "axial_elements": 16,
@@ -95,7 +95,7 @@
       "dofs": 1503,
       "tip_deflection_m": 0.009913672415396,
       "relative_error_vs_eb": -0.00863275846039978,
-      "seconds": 25.47523207962513
+      "seconds": 5.1482396107167006
     },
     {
       "axial_elements": 32,
@@ -104,7 +104,7 @@
       "dofs": 2943,
       "tip_deflection_m": 0.00995984584188315,
       "relative_error_vs_eb": -0.004015415811684833,
-      "seconds": 53.834629939869046
+      "seconds": 13.05394315905869
     }
   ],
   "verdict": {

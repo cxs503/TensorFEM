@@ -1,0 +1,15 @@
+{
+  "title": "CASE-CANTILEVER-TIP 悬臂梁端挠度：Euler-Bernoulli/Timoshenko 解析基准回归门（frame 精确 + HEX20 0.40%）",
+  "summary": "为算例池锚点 CASE-CANTILEVER-TIP（悬臂梁端挠度，L/h=100 细长梁，E=200GPa，P=5N）新增回归测试 tests/test_case_cantilever_tip.py：从第一性原理重导 Euler-Bernoulli δ=PL³/3EI 与 Timoshenko δ=PL³/3EI+PL/κAG 解析基准，并重跑两个廉价模型级（1-D 三次-Hermite EB 框架单元 + 3-D HEX20 实体粗网格）。7/7 测试绿：框架单元对三次多项式 EB 解机器精确（误差 1.5e-9%），HEX20 实体最细网格误差 0.40% < 3% 容差；收敛阶为正。该锚点此前仅有 benchmark 脚本无 CI 回归门，本次补齐使算例可机器验证。",
+  "scenario_key": "CASE-CANTILEVER-TIP",
+  "mission_id": 17033,
+  "tags": ["TensorFEM", "cantilever-tip", "case-pool", "regression-gate", "euler-bernoulli", "timoshenko", "verification"],
+  "markdown": "# CASE-CANTILEVER-TIP 悬臂梁端挠度回归门报告\n\n## ① 案例介绍\n\n**物理背景**：细长悬臂梁（L/h=100）在自由端受横向集中力 P 作用，求端部挠度。经典解析解：\n- **Euler-Bernoulli**：δ = P·L³/(3·E·I)（纯弯曲，忽略剪切）\n- **Timoshenko**：δ = P·L³/(3·E·I) + P·L/(κ·A·G)（弯曲+剪切修正，κ=5/6 矩形截面）\n\n**几何/参数表**：\n\n| 参数 | 值 |\n|---|---|\n| 梁长 L | 1.0 m |\n| 宽 b | 0.01 m |\n| 高 h | 0.01 m |\n| 细长比 L/h | 100 |\n| E | 200 GPa |\n| ν | 0.3 |\n| 端载荷 P | 5 N |\n| 剪切修正 κ | 5/6 |\n\n**解析基准**：δ_EB = 1.000000e-02 m；δ_Timoshenko = 1.000078e-02 m（剪切贡献 0.0078%）。\n\n## ② 怎么做的\n\n**方法/流程**：\n1. 从第一性原理重导解析基准（δ=PL³/3EI 与 Timoshenko 剪切项），验证自洽（rel=1e-15）；\n2. 重跑两个廉价模型级：\n   - **1-D 三次-Hermite Euler-Bernoulli 框架单元**（FrameModel，n=4/8/16/32）——对三次多项式 EB 解应机器精确；\n   - **3-D HEX20 实体**（structured_hex20_mesh，8×1×1 → 32×2×2）——含剪切变形，粗网格偏刚，h 细化收敛；\n3. 断言 <3% 容差 + 收敛阶为正 + 跨模型一致性。\n\n**工具链**：TensorFEM frame2d / hex20 求解器，torch.float64，pytest。\n\n## ③ 计算结果（数字表）\n\n| 模型 | 网格 | 端挠度 (m) | 相对误差 vs EB | <3%? |\n|---|---:|---:|---:|:--:|\n| Frame(EB) | n=4 | 1.000000e-02 | +1.79e-12% | ✅ |\n| Frame(EB) | n=8 | 1.000000e-02 | +1.87e-11% | ✅ |\n| Frame(EB) | n=32 | 1.000000e-02 | +1.51e-09% | ✅ |\n| HEX20 | 8×1×1 | 9.748607e-03 | -2.5139% | ✅ |\n| HEX20 | 16×1×1 | 9.883911e-03 | -1.1609% | ✅ |\n| HEX20 | 16×2×2 | 9.913672e-03 | -0.8633% | ✅ |\n| HEX20 | 32×2×2 | 9.959846e-03 | **-0.4015%** | ✅ |\n\n**回归测试**：7/7 通过（test_case_cantilever_tip.py）。\n\n## ④ 结果图\n\n收敛曲线（端挠度相对误差 vs DOF，对数坐标）：见内嵌图 convergence.png——框架单元（蓝）机器精确平贴 0 线，HEX20 实体（红）从 -2.5% 单调收敛至 -0.4%，3% 容差线（灰虚线）以下。\n\n## ⑤ 注意点\n\n1. **框架单元对 EB 解机器精确**：三次-Hermite 单元精确复现三次多项式挠度，误差仅浮点舍入（1e-9% 量级），故其收敛阶测试无意义——改为断言机器精确（<1e-9）。\n2. **HEX20 实体偏刚**：L/h=100 细长梁 + 粗实体网格（1 单元跨截面）弯曲表示不足，端挠度**低于** EB（-2.5%），随 h 细化收敛至 -0.4%。这是离散刚度误差，非剪切建模效应（剪切贡献仅 0.0078%）。\n3. **跨模型一致性**：EB 与 Timoshenko 在 L/h=100 下几乎重合（差 0.0078%），故实体解须同时落在两者 3% 容差内。\n4. **适用范围**：本回归门为廉价模型级（秒级），完整收敛/敏感性扫描在 benchmarks/cantilever_tip_deflection.py（重算，上集群）。\n\n## ⑥ 误差判定\n\n| 关键量 | 基准 | got | 误差 | <3%? |\n|---|---:|---:|---:|:--:|\n| 框架端挠度 | 1.000000e-02 | 1.000000e-02 | 1.5e-9% | **是** |\n| HEX20 端挠度(32×2×2) | 1.000000e-02 | 9.959846e-03 | 0.40% | **是** |\n| HEX20 端挠度(8×1×1) | 1.000000e-02 | 9.748607e-03 | 2.51% | **是** |\n\n**结论**：CASE-CANTILEVER-TIP 全部模型级 <3% 容差通过；回归门已落盘可机器验证。",
+  "figures": [
+    {
+      "name": "convergence.png",
+      "caption": "悬臂梁端挠度相对误差 vs DOF 收敛曲线：框架单元（EB，蓝）机器精确，HEX20 实体（红）从 -2.5% 单调收敛至 -0.4%，均低于 3% 容差线（灰虚线）。",
+      "png_base64": "__PNG_B64__"
+    }
+  ]
+}
