@@ -54,6 +54,8 @@ import numpy as np
 import scipy.sparse as sp
 import scipy.sparse.linalg as spla
 
+from .boussinesq_farfield import nodal_force_displacement
+
 __all__ = [
     "HertzLoadReference",
     "hertz_load_reference",
@@ -196,7 +198,6 @@ def two_zone_axis(r_inner, r_outer, n_inner, n_outer, *, growth=1.35):
     if not (0 < r_inner < r_outer) or n_inner < 2 or n_outer < 2:
         raise ValueError("invalid two-zone axis parameters")
     inner = np.linspace(0.0, r_inner, n_inner + 1)
-    ratio = growth ** (1.0 / (n_outer - 1)) if n_outer > 1 else 1.0
     # geometric growth of the element size, normalised to span r_inner..r_outer
     sizes = growth ** np.arange(n_outer)
     sizes /= sizes.sum()
@@ -398,6 +399,7 @@ def _contact_state_fixed_indentation(
     alm_tol=1e-10,
     relaxation=0.5,
     max_iterations=80,
+    prescribed=None,
 ):
     """Augmented-Lagrangian solve of the nodal KKT system (fixed ``delta``).
 
@@ -417,7 +419,13 @@ def _contact_state_fixed_indentation(
     """
     ndof = kmat.shape[0]
     lam = np.zeros(len(radii))
-    u = np.zeros(ndof)
+    if prescribed is None:
+        prescribed = np.zeros(ndof)
+    else:
+        prescribed = np.asarray(prescribed, dtype=float)
+        if prescribed.shape != (ndof,):
+            raise ValueError("prescribed must have one entry per dof")
+    u = prescribed.copy()
     factor = None
     key = None
     # Separation is positive: the body surface must stay below the indenter,
@@ -449,7 +457,13 @@ def _contact_state_fixed_indentation(
         # i.e. the augmented operator with rhs = rho*obstacle - lambda.  At the
         # fixed point (g = 0) this reduces to the exact equilibrium (K u)_i = -lambda_i.
         rhs[cz_all[active]] = rho * obstacle[active] - lam[active]
-        u = np.zeros(ndof)
+        # Non-homogeneous Dirichlet data on the truncated boundary (exact
+        # half-space far field): condense the prescribed block into the rhs.
+        # With ``prescribed == 0`` this is the historical clamped model, so the
+        # default results are unchanged bit for bit.
+        if prescribed.any():
+            rhs = rhs - aug @ prescribed
+        u = prescribed.copy()
         u[free_dofs] = factor.solve(rhs[free_dofs])
         gap = obstacle - u[cz_all]
         lam_new = np.maximum(0.0, lam - rho * gap)
@@ -583,6 +597,51 @@ def _contact_state_fixed_indentation(
 # ---------------------------------------------------------------------------
 
 
+def boussinesq_far_field_dofs(
+    *,
+    ndof,
+    nodes,
+    bottom,
+    outer,
+    radii,
+    areas,
+    pressure,
+    young,
+    poisson,
+    n_theta=32,
+    outer_vertical=True,
+):
+    """Exact half-space displacement at the truncation boundary.
+
+    The nodal contact pressures are converted back into ring resultants
+    (``p_i A_i``, which is the multiplier ``lambda_i`` of the converged ALM
+    state) and superposed with the Boussinesq point-load kernel.  Component
+    order follows the FEM convention: ``u_z^FEM = -u_z^Boussinesq`` (nodes live
+    at ``z <= 0``, the kernel is positive downwards).
+    """
+    ring_forces = np.asarray(pressure, dtype=float) * np.asarray(areas, dtype=float)
+    field_r = np.concatenate([nodes[bottom, 0], nodes[outer, 0]])
+    field_d = np.concatenate([-nodes[bottom, 1], -nodes[outer, 1]])
+    u_r, u_z = nodal_force_displacement(
+        field_r,
+        field_d,
+        radii,
+        ring_forces,
+        young=young,
+        poisson=poisson,
+        n_theta=n_theta,
+    )
+    prescribed = np.zeros(int(ndof))
+    n_bottom = len(bottom)
+    n_outer = len(outer)
+    prescribed[2 * bottom] = u_r[:n_bottom]
+    prescribed[2 * bottom + 1] = -u_z[:n_bottom]
+    prescribed[2 * outer] = u_r[n_bottom : n_bottom + n_outer]
+    if outer_vertical:
+        prescribed[2 * outer + 1] = -u_z[n_bottom : n_bottom + n_outer]
+    return prescribed
+
+
 def solve_axisymmetric_contact_load_control(
     *,
     load,
@@ -603,6 +662,11 @@ def solve_axisymmetric_contact_load_control(
     load_tol=1e-9,
     max_outer=60,
     keep_displacement=False,
+    far_field="zero",
+    far_field_passes=4,
+    far_field_tol=1e-4,
+    far_field_n_theta=32,
+    outer_vertical=None,
 ):
     """Load-controlled Hertz contact: find ``delta`` such that reaction == load.
 
@@ -610,6 +674,19 @@ def solve_axisymmetric_contact_load_control(
     default to ``12 a`` and ``24 a`` of the Hertz estimate.  ``rho_factor``
     scales the ALM parameter (``rho = rho_factor * E / a``); it affects the
     iteration only, not the converged state.
+
+    ``far_field`` selects the data on the truncation boundary:
+
+    * ``"zero"`` (default) -- the historical clamped patch: bottom fixed, outer
+      radius radially fixed.  Stiffer than the half-space by ``O(a/W)``.
+    * ``"boussinesq"`` -- *absorbing* Dirichlet data: the exact homogeneous
+      half-space displacement produced by the current contact traction (closed
+      form, ``tensorfem.boussinesq_farfield``) is imposed on the same
+      boundary, iterated to self-consistency (``far_field_passes`` /
+      ``far_field_tol``).  With this option the outer radius is constrained in
+      both components by default (``outer_vertical``), since the exact
+      settlement there is known and pinning only the radial component leaves a
+      free-sagging truncation error of the same order.
 
     Returns ``(HertzLoadReference, ContactState, diagnostics)``.
     """
@@ -642,11 +719,13 @@ def solve_axisymmetric_contact_load_control(
     # fixed, axis node radially fixed by symmetry.
     bottom = np.arange(nz, len(nodes), nz + 1)
     outer = np.arange(len(nodes) - (nz + 1), len(nodes))
-    fixed = np.unique(
-        np.concatenate(
-            [2 * bottom, 2 * bottom + 1, 2 * outer, 2 * top[np.isclose(radii, 0.0)]]
-        )
-    )
+    if outer_vertical is None:
+        outer_vertical = far_field != "zero"
+    blocks = [2 * bottom, 2 * bottom + 1, 2 * outer]
+    if outer_vertical:
+        blocks.append(2 * outer + 1)
+    blocks.append(2 * top[np.isclose(radii, 0.0)])
+    fixed = np.unique(np.concatenate(blocks))
     free_dofs = np.setdiff1d(np.arange(ndof), fixed)
 
     rho = rho_factor * young / ref.contact_radius
@@ -655,7 +734,7 @@ def solve_axisymmetric_contact_load_control(
     def obstacle_for(delta):
         return radii * radii / (2.0 * radius) - delta
 
-    def response(delta):
+    def response(delta, prescribed):
         return _contact_state_fixed_indentation(
             kmat,
             radii=radii,
@@ -666,39 +745,78 @@ def solve_axisymmetric_contact_load_control(
             rho=rho,
             force_scale=force_scale,
             alm_tol=alm_tol,
+            prescribed=prescribed,
         )
 
-    history = []
-    delta = (
-        float(indentation_guess)
-        if indentation_guess is not None
-        else float(ref.indentation)
-    )
-    d1 = delta
-    s1 = response(d1)
-    history.append((d1, s1.reaction))
-    if s1.reaction <= 0:
-        d1 = max(1e-8, 0.25 * d1)
-        s1 = response(d1)
+    def solve_load_control(prescribed):
+        """Regula falsi on ``P_fe(delta)`` for a fixed boundary data set."""
+        history = []
+        delta = (
+            float(indentation_guess)
+            if indentation_guess is not None
+            else float(ref.indentation)
+        )
+        d1 = delta
+        s1 = response(d1, prescribed)
         history.append((d1, s1.reaction))
-    factor = 1.10 if s1.reaction < load else 0.90
-    d2 = d1 * factor
-    s2 = response(d2)
-    history.append((d2, s2.reaction))
+        if s1.reaction <= 0:
+            d1 = max(1e-8, 0.25 * d1)
+            s1 = response(d1, prescribed)
+            history.append((d1, s1.reaction))
+        factor = 1.10 if s1.reaction < load else 0.90
+        d2 = d1 * factor
+        s2 = response(d2, prescribed)
+        history.append((d2, s2.reaction))
 
-    state = s2
-    outer_iterations = 0
-    for outer_iterations in range(1, max_outer + 1):
-        if abs(s2.reaction - s1.reaction) < 1e-14 * load:
+        state = s2
+        iterations = 0
+        for iterations in range(1, max_outer + 1):
+            if abs(s2.reaction - s1.reaction) < 1e-14 * load:
+                break
+            d3 = d2 - (s2.reaction - load) * (d2 - d1) / (s2.reaction - s1.reaction)
+            d3 = float(min(max(d3, 1e-10), 1.0))
+            s3 = response(d3, prescribed)
+            history.append((d3, s3.reaction))
+            d1, s1 = d2, s2
+            d2, s2 = d3, s3
+            state = s3
+            if abs(s2.reaction - load) <= load_tol * load:
+                break
+        return state, history, iterations
+
+    prescribed = np.zeros(ndof)
+    far_field_history = []
+    n_updates = 0 if far_field == "zero" else int(far_field_passes)
+    for pass_index in range(n_updates + 1):
+        state, history, outer_iterations = solve_load_control(prescribed)
+        if pass_index == n_updates:
             break
-        d3 = d2 - (s2.reaction - load) * (d2 - d1) / (s2.reaction - s1.reaction)
-        d3 = float(min(max(d3, 1e-10), 1.0))
-        s3 = response(d3)
-        history.append((d3, s3.reaction))
-        d1, s1 = d2, s2
-        d2, s2 = d3, s3
-        state = s3
-        if abs(s2.reaction - load) <= load_tol * load:
+        target = boussinesq_far_field_dofs(
+            ndof=ndof,
+            nodes=nodes,
+            bottom=bottom,
+            outer=outer,
+            radii=radii,
+            areas=areas,
+            pressure=state.surface_pressure,
+            young=young,
+            poisson=poisson,
+            n_theta=far_field_n_theta,
+            outer_vertical=bool(outer_vertical),
+        )
+        scale = max(float(np.max(np.abs(target))), 1e-300)
+        update = float(np.max(np.abs(target - prescribed)) / scale)
+        far_field_history.append(
+            {
+                "pass": pass_index + 1,
+                "relative_update": update,
+                "max_abs_displacement": float(np.max(np.abs(target))),
+                "indentation": float(state.prescribed_indentation),
+                "reaction": float(state.reaction),
+            }
+        )
+        prescribed = target
+        if update < far_field_tol:
             break
 
     residual = abs(state.reaction - load) / load
@@ -726,6 +844,18 @@ def solve_axisymmetric_contact_load_control(
             else np.nan
         ),
         "load_history": history,
+        "far_field": {
+            "mode": far_field,
+            "outer_vertical": bool(outer_vertical),
+            "passes": len(far_field_history),
+            "tolerance": far_field_tol,
+            "history": far_field_history,
+            "converged": bool(
+                far_field == "zero"
+                or not far_field_history
+                or far_field_history[-1]["relative_update"] <= far_field_tol
+            ),
+        },
         "maximum_penetration": state.maximum_penetration,
         "penetration_over_indentation": state.maximum_penetration
         / max(state.prescribed_indentation, 1e-30),
