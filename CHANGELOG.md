@@ -1,32 +1,38 @@
 ## Unreleased
 
-### CASE-CANTILEVER-TIP taper axis: the anchor's 3 % criterion on a non-prismatic member
-- **New verification** `benchmarks/verified/fem_cantilever_taper/` + module
-  `src/tensorfem/tapered_cantilever.py` + regression `tests/test_cantilever_taper.py` (21 tests):
-  the case-pool anchor is graded on a *linearly tapered* cantilever `h(x) = h0 (1 - c x/L)`, whose
-  flexibility is an integral of `1/I(x)` rather than an algebraic expression.
-- **Closed-form oracles, three independent routes**: `delta_bend = (PL^3/EI0) B(c)` with
-  `B(c) = [-c - c^2/2 - ln(1-c)]/c^3` and `delta_shear = (PL/(kappa G A0)) S(c)`,
-  `S(c) = -ln(1-c)/c`; checked against a power series, a sympy re-derivation and adaptive
-  quadrature (max residual 6e-15 / 5.5e-13 / 6.1e-15), with the `c -> 0` prismatic limits
-  recovering `PL^3/3EI` and `PL/(kappa G A)` to 1e-9.
-- **Numerical trap fixed while writing it**: the closed form loses all digits for `c < 1e-4`
-  (numerator `~c^3` against terms `~c`), so `bending_factor`/`shear_factor` switch to their
-  convergent series below that threshold; a regression test asserts the naive expression fails and
-  the branch does not.
-- **Measured orders, not assumed**: a lumped midpoint `EI` per element is 2nd order (measured
-  2.00/2.02) while exactly integrating `int B^T EI B dx` is 4th order (3.97/3.79); at `c = 0.5`,
-  `n = 32` the midpoint error is ~5e3x the Gauss error. 3 % is met from 4 (c=0.5) / 8 (c=0.75)
-  elements onward.
-- **HEX20 graded solid**: every rung (nx = 8...32, c = 0...0.75) inside 3 % (worst 1.78 %
-  coarse, 0.91 % fine), geometry exact (`|z| = h(x)/2` to 1.6e-16, tip area exact). The residual
-  that survives refinement is attributed *by measurement*, not prose: freeing the clamped root
-  laterally (`u_x = 0` only) cuts it from -0.68 % to -0.13 % at c = 0.5.
-- **Wedge limit**: `B(c) -> -ln(1-c)`, i.e. a knife-edge taper has logarithmically divergent tip
-  deflection (23x amplification at c = 0.9999); `taper = 1` is rejected.
-- **Artifacts**: `docs/CASE-CANTILEVER-TIP-taper-validity.md`,
-  `benchmarks/verified/fem_cantilever_taper/{result.json,gates_verified.json}` (19/19 gates),
-  `docs/assets/cantilever_taper/*.png`.
+### CASE-CANTILEVER-TIP distributed-load ladder: the load path is now graded
+- **New anchor** `benchmarks/verified/fem_cantilever_distributed/` (driver + `result.json` +
+  `gates_verified.json` + two figures + generated doc `docs/CASE-CANTILEVER-TIP-distributed-load.md`):
+  15/15 gates pass.  Every published rung of this anchor loads the beam with a concentrated tip
+  force, for which the consistent load vector is a single entry and the cubic Hermite frame is
+  nodally exact -- so those frame gates were consistency checks, as the shear-validity doc itself
+  states.  This anchor grades the part of `FrameModel` that was never exercised:
+  `distributed_load_y`, the fixed-end moment `q L^2/12`, and the equivalent-load subtraction in
+  the recovered element end forces.  Uniform load, partially loaded span and tip moment are all
+  nodally exact to 2e-13 against oracles re-derived in-driver by Castigliano's unit-load theorem
+  with sympy (symbolic residual 0); the root reaction/end forces reproduce `qL` and `qL^2/2` to
+  1e-13.
+- **`tensorfem.advanced_beam` gains a distributed-load path**: `timoshenko_fixed_end_forces`,
+  `solve_timoshenko_cantilever(..., distributed_load=...)` (scalar or per element),
+  `exact_distributed_tip_deflection`, `exact_partial_tip_deflection`.  The fixed-end forces are
+  derived symbolically from the exact clamped-clamped Timoshenko element and come out
+  `phi`-independent (`V(0)=qL/2`, `M(0)=M(L)=-qL^2/12`, `dM/dphi=0`), i.e. identical to the
+  Euler-Bernoulli vector -- the shear flexibility lives in the response, not in the load vector.
+  The tip-load signature is unchanged (regression-gated).
+- **Two falsifiable statements gated**: (i) a uniform load has no shear term in the end rotation
+  (`v = dm/dx = 0` for a unit moment) -- measured to 5e-16 at `L/h = 5`, where the shear share of
+  the *deflection* is 4.16 %; (ii) at that slenderness the shear-rigid frame is rejected by 3.99 %
+  while the Timoshenko beam passes (fail-closed gate pair).  A distributed load separates the two
+  beam theories at a larger slenderness than a tip force does: `(E/3 kappa G)(h/L)^2` vs
+  `(E/4 kappa G)(h/L)^2`.
+- **Measured modelling constraint**: a uniform load over part of an element is unrepresentable
+  (the per-element load is full-span).  Spreading a `0.6 L` patch over the containing element
+  costs 27.1 % at `n = 4`, versus 2e-14 % with a node at the patch boundary -- the mesh must break
+  at a load boundary.  Also recorded: mixing the bending-only and shear-inclusive oracles shows up
+  as a mesh-independent 1.53 % offset, so each model is graded against its own oracle.
+- `tests/test_cantilever_distributed_load.py` (21 tests) locks the symbolic derivations, the new
+  load path, the fail-closed pair, a negative control (a flipped fixed-end moment must violate the
+  3 % tolerance) and artifact/evidence consistency.
 
 ### W26 CSR ULS anchor recheck: every transcribed value re-located in the fetched IACS PDFs
 - **New recheck** `benchmarks/hull_girder_uls/recheck_csr_uls_anchor.py`: re-fetches the three

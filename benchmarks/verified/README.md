@@ -111,3 +111,22 @@ figures: `docs/assets/cantilever_shear/`.
 OMP_NUM_THREADS=8 PYTHONPATH=src python benchmarks/verified/fem_cantilever_shear/run.py
 PYTHONPATH=src pytest tests/test_cantilever_shear_anchor.py -q
 ```
+
+## Distributed-load ladder (CASE-CANTILEVER-TIP)
+
+`fem_cantilever_distributed/` closes the load-path gap left by the tip-load rungs above: the
+consistent load vector, the fixed-end moment `q L^2/12` and the recovered element end forces are
+graded under a uniform load, a partially loaded span and a tip moment, on a shear-rigid
+Euler-Bernoulli frame and a Timoshenko beam at `L/h = 100, 20, 10, 5`.
+
+| case | oracle | result |
+|---|---|---|
+| uniform load over `[0, L]` | `qL^4/(8EI) + qL^2/(2 kappa G A)`, `theta = qL^3/(6EI)` | nodally exact, 2.1e-13 |
+| uniform load over `[0, 0.6L]` | `q a^3(4L-a)/(24EI)` (+ shear) | exact with a node at `a`; 27.1 % if not |
+| tip moment `M` | `ML^2/(2EI)`, `theta = ML/(EI)` | exact, 1.3e-14 |
+| `L/h = 5`, uniform load | the two theories differ by 4.16 % | frame rejected (3.99 %), Timoshenko passes |
+
+15/15 gates. Report: `docs/CASE-CANTILEVER-TIP-distributed-load.md`; tests:
+`tests/test_cantilever_distributed_load.py`. Reproduce:
+`PYTHONPATH=src python benchmarks/verified/fem_cantilever_distributed/run.py`.
+
