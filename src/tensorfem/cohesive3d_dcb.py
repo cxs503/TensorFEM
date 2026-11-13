@@ -86,6 +86,34 @@ _AR3 = np.arange(3, dtype=np.int64)
 #: shear correction factor of a rectangular section (Timoshenko beam).
 SHEAR_FACTOR = 5.0 / 6.0
 
+#: backtracking line-search constants of :func:`_newton` (see its docstring).
+_ARMIJO = 1.0e-4
+_MAX_BACKTRACK = 20
+#: achievable *relative* equilibrium residual of the penalty-interface system.
+#: ``k_n = 2.4e14 N/m^3`` against ``E = 70 GPa`` adherends puts the condition
+#: number of ``K_solid + K_coh`` in the 1e10-1e12 range, so a direct sparse
+#: factorisation cannot push ``|r|_inf / |r0|_inf`` below a few 1e-7: measured
+#: floor 4.9e-8 N on a 4.9e-8 ... 1e-6 N window of forces.  Asking for less
+#: (``tol = 1e-8`` absolute) produces *spurious* divergence, which is exactly
+#: how the DCB path follower used to freeze at ``delta = 9e-6 m``.
+_RESIDUAL_REL_FLOOR = 1.0e-6
+
+#: a predictor residual larger than this multiple of the previous converged
+#: load means the trial state is already diverged (the elastic predictor is
+#: ~50x the load), so the step is rejected instead of being "converged" by a
+#: relative criterion that any garbage state can satisfy.
+_DIVERGENCE_FACTOR = 1.0e3
+
+#: nondimensional bound on the accepted state, ``max|u| <= factor * delta_max``.
+#: Every dof of a displacement-controlled DCB is bounded by the imposed opening
+#: plus the local elastic compliance (a few ``P/k_n``), so a state that exceeds
+#: 100x the imposed opening is numerically diverged even if its residual passes
+#: a relative test.  Measured: ``solve_dcb(..., delta_max=1e-3)`` used to
+#: commit such a state and report ``final_strain_energy = -13.5 J`` (negative
+#: for a positive-semidefinite ``K_solid`` -- catastrophic cancellation of an
+#: alternating ~1 m solution) with a 3000x energy imbalance.
+_STATE_LIMIT_FACTOR = 1.0e2
+
 
 # --------------------------------------------------------------------------- #
 # geometry / mesh
@@ -366,9 +394,23 @@ def build_dcb_model(
             )
     iface_arr = np.array(iface, dtype=np.int64)
 
-    # boundary conditions: clamp the whole x = 0 face of both arms
+    # Boundary conditions: clamp the whole x = 0 face of both arms.
+    #
+    # GAP-FEM-3D-COHESIVE root cause (m17614): this used to read
+    # ``(3 * clamp.numpy()[:, None] + _AR3)``, i.e. it multiplied the *boolean
+    # mask* by 3 instead of the node index.  ``3 * True`` is 3 and ``3 * False``
+    # is 0, so the resulting set was ``{0, 1, 2} | {3, 4, 5}`` -- the six dofs of
+    # nodes 0 and 1 -- instead of the 48 dofs of the 16 nodes on the clamp face.
+    # The specimen was therefore held by two nodes only: the assembly had a
+    # spurious near-null mode (smallest |eigenvalue| 4.7e-11 against a largest
+    # 2.3e8, i.e. a condition number of 5e18), Newton drifted along it (measured
+    # |u|_inf growing 1e-4 -> 1.5 m over six steps with a *converged* residual)
+    # and the path follower stalled before the cohesive onset.  ``np.flatnonzero``
+    # of the mask restores the intended fixed face, after which the smallest
+    # eigenvalue is the physical one and the drift is gone.
     clamp = nodes[:, 0] == 0.0
-    fixed = (3 * clamp.numpy()[:, None] + _AR3).reshape(-1)
+    clamped_nodes = np.flatnonzero(clamp.numpy())
+    fixed = (3 * clamped_nodes[:, None] + _AR3).reshape(-1)
     fixed = np.unique(np.concatenate((fixed, np.zeros(0, dtype=np.int64))))
 
     loaded = (nodes[:, 0] == g.length).nonzero().reshape(-1).numpy()
@@ -623,11 +665,29 @@ def solve_dcb(
                 converged_all = False
                 break
             continue
-        # accept
+        # accept -- but only a *physically admissible* state.  A relative
+        # equilibrium tolerance can always be satisfied by a diverged solution
+        # (the residual of a wild state is easy to reduce relatively), so the
+        # committed state is screened here: bounded displacement, non-negative
+        # strain energy.  Rejected states are treated exactly like a failed
+        # Newton step (cut back), which is the honest outcome.
         prev_delta = delta
         if steps_taken >= max_steps_total:  # run-away cutback guard
             converged_all = False
             break
+        state_inf = float(np.max(np.abs(trial))) if trial.size else 0.0
+        strain_energy_trial = 0.5 * float(trial @ (K_solid @ trial))
+        if (
+            not np.isfinite(state_inf)
+            or state_inf > _STATE_LIMIT_FACTOR * max(delta_max, 1e-12)
+            or not np.isfinite(strain_energy_trial)
+            or strain_energy_trial < 0.0
+        ):
+            step *= 0.5
+            if step < min_step_ratio * delta_max / max(n_steps, 1):
+                converged_all = False
+                break
+            continue
         delta = target
         u = trial
         history = history_new
@@ -657,7 +717,7 @@ def solve_dcb(
         sep_prev, tra_prev = sep_now, tra_now
         stuck = committed_damage >= 0.9
         failed_area = float(iface_area[stuck].sum())
-        strain_energy = 0.5 * float(u @ (K_solid @ u))
+        strain_energy = strain_energy_trial
         curve.append(
             {
                 "step": steps_taken,
@@ -723,14 +783,67 @@ def _crack_front(iface_x: np.ndarray, damage: np.ndarray, g: DCBGeometry) -> flo
 
 
 def _newton(model, K_solid, u, history, free, max_iter, tol, scale):
-    """Newton iterations on the free dofs; returns ``(ok, its, hist, diag, fint)``."""
-    n = model.n_dofs
-    for it in range(1, max_iter + 1):
+    """Newton iterations on the free dofs; returns ``(ok, its, hist, diag, fint)``.
+
+    Line search (GAP-FEM-3D-COHESIVE solver robustness repair)
+    ---------------------------------------------------------
+    The plain Newton loop used to take the full step ``du`` unconditionally.
+    That is fine for the linear (undamaged) range, where one or two iterations
+    converge, but it *catastrophically* diverges at the step where cohesive
+    damage first appears in the crack-tip Gauss point: the tangents of the
+    softening Gauss points are indefinite, the full step overshoots the
+    traction-free opening and the next assembly returns separations of order
+    ``1e11 m``.  Measured on the reference specimen (``nx=100, ny=1, nz=3``,
+    ``n_steps=40``, ``delta_max=4e-5``): every step up to ``delta = 9e-6 m``
+    converged in 2 iterations, then the first onset step drove the residual to
+    ``1e7 N`` and ``max|separation|`` to ``2.5e13 m`` and no cut-back could
+    recover, so the path follower stopped at ``9e-6 m`` (6 % of the LEFM peak
+    opening) with ``converged_all = False`` and *zero* failed area.
+
+    The fix is a standard backtracking (Armijo-type) line search on the
+    infinity norm of the equilibrium residual: halve the step until the
+    residual decreases by a small fraction of the step length, and report
+    non-convergence only if no acceptable fraction exists.  It changes the
+    *path* of the iterations, not the equilibrium that is accepted (the
+    converged state still satisfies ``|r|_inf <= tol * scale``), so the physics
+    and the tangent are untouched -- the same damage/energy results are
+    obtained, they are just reachable.
+    """
+    if not free.size:
         f_coh, K_coh, hist_new, diag = model.interface_response(u, history)
-        fint = K_solid @ u + f_coh
-        residual = fint[free]
-        norm = float(np.linalg.norm(residual, np.inf))
-        if norm <= tol * max(scale, 1.0):
+        return True, 0, hist_new, diag, K_solid @ u + f_coh
+
+    def residual_at(state):
+        f_coh, K_coh, hist_new, diag = model.interface_response(state, history)
+        fint = K_solid @ state + f_coh
+        res = fint[free]
+        return fint, res, K_coh, hist_new, diag, float(np.linalg.norm(res, np.inf))
+
+    fint, residual, K_coh, hist_new, diag, norm = residual_at(u)
+    # The tolerance is *relative to a force scale*.  ``scale`` carries the
+    # converged load of the previous step, but on the very first step it is
+    # still the seed 1.0 N, which made ``tol * max(scale, 1.0)`` an absolute
+    # 1e-8 N criterion on a specimen whose reactions are tens of newtons: the
+    # penalty-interface system (k_n = 2.4e14 N/m^3) cannot be solved that
+    # accurately, the residual floor is ~5e-8 N, and Newton reported spurious
+    # divergence at delta = 1.2e-5 m with a residual of 4.9e-8 N (measured).
+    # Seeding the scale with the out-of-balance residual of the predictor keeps
+    # the criterion an 8-order reduction of a meaningful force, well above the
+    # numerical floor (relative equilibrium error ~1e-9).
+    norm0 = norm
+    if not np.isfinite(norm) or norm0 > _DIVERGENCE_FACTOR * max(scale, 1.0):
+        # non-finite or already-diverged trial state: the caller cuts back and a
+        # relative tolerance must not be allowed to "converge" it.
+        return False, 0, history, diag, fint
+    # Floor is relative to the *converged load scale*, never to the (possibly
+    # diverged) predictor residual: a relative-to-r0 floor lets a wild state
+    # satisfy the criterion (measured: a step with a 1 m spurious displacement
+    # was accepted and reported a negative strain energy).
+    target = max(
+        tol * max(scale, norm0, 1.0), _RESIDUAL_REL_FLOOR * max(scale, 1.0)
+    )
+    for it in range(1, max_iter + 1):
+        if norm <= target:
             return True, it, hist_new, diag, fint
         K = (K_solid + K_coh)[free][:, free].tocsc()
         try:
@@ -739,5 +852,16 @@ def _newton(model, K_solid, u, history, free, max_iter, tol, scale):
             return False, it, history, diag, fint
         if not np.all(np.isfinite(du)):
             return False, it, history, diag, fint
-        u[free] += du
-    return False, max_iter, history, diag, fint
+        kept = u[free].copy()
+        alpha = 1.0
+        for _ in range(_MAX_BACKTRACK):
+            u[free] = kept + alpha * du          # in-place: the caller owns ``u``
+            f_t, r_t, K_t, h_t, d_t, n_t = residual_at(u)
+            if np.isfinite(n_t) and n_t <= (1.0 - _ARMIJO * alpha) * norm:
+                break
+            alpha *= 0.5
+        else:  # no descent direction left: report divergence, caller cuts back
+            u[free] = kept
+            return False, it, history, diag, fint
+        fint, residual, K_coh, hist_new, diag, norm = f_t, r_t, K_t, h_t, d_t, n_t
+    return False, max_iter, hist_new, diag, fint
