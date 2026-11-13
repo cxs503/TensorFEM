@@ -9,7 +9,8 @@ Task: `paper-exp-undex-shock-chain-3` (mission 15973), domain: structural respon
 | `cole_anchor.json` | Cole (1948) constants, one citation-ledger entry per constant (chapter/table/page **or** WITHHELD + the deposition needed), unit conventions, implied imperial constants, independent recomputation |
 | `fem_vs_cole.csv` | per case: Cole levels, FEM wall peak, FEM impulse, the relative deviations, PASS/FAIL of every criterion |
 | `grid_convergence.json` | three-level GCI per quantity per case, observed orders, energy-ledger residuals, criterion verdicts |
-| `case_matrix.csv`, `chain_metrics.json`, `srs_comparison.json` | chain-2 artifacts, unchanged |
+| `case_matrix.csv`, `srs_comparison.json` | chain-2 artifacts, extended to the full 6-case ensemble; `gci_*` recomputed with `roache_gci(fine, medium, coarse)` and non-demonstrated quantities marked `n/a` (see `srs_comparison.json` -> `extension`) |
+| `chain_metrics.json` | chain-2 provenance record (mission 15095, cases C1-C4 as generated there; not rewritten) |
 
 ## 2. Anchor status: WITHHELD (criterion 1)
 

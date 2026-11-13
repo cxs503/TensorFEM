@@ -23,6 +23,7 @@ bubble_scaling_exponents ,cole_case_environment ,
 cole_recompute_vs_anchor ,compare_panel_to_taylor ,
 panel_fsi_shock ,pressure_closure ,roache_gci ,
 srs_band_table ,srs_pair )
+from tensorfem .undex_artifacts import NOT_DEMONSTRATED 
 from tensorfem .undex_shock import (compare_to_taylor_analytic ,taylor_analytic ,
 taylor_fsi_fem )
 
@@ -86,7 +87,9 @@ def main ():
         ny =LEVELS [k ][1 ],steps_per_decay =LEVELS [k ][2 ],
         model =models [k ])for k in range (len (LEVELS ))]
         fine =levels [-1 ]
-        gci ={q :roache_gci (*[lv .meta [q ]for lv in levels ],ratio =1.5 )for q in GCIQ }
+        #roache_gci takes (fine ,medium ,coarse );the levels are stored coarse ->fine
+        gci ={q :roache_gci (*reversed ([lv .meta [q ]for lv in levels ]),ratio =1.5 )
+        for q in GCIQ }
         tc =compare_panel_to_taylor (fine )
         ref =taylor_analytic (fine .time ,peak_pressure =env ["peak_pressure_pa"],
         decay_time =env ["decay_time_s"],
@@ -108,7 +111,9 @@ def main ():
         t_fe =fe .cavitation_time_s or float (fe .time [-1 ])
         msk =fe .time <=t_fe 
         fe_imp =float (torch .trapezoid (fe .interface_pressure [msk ],fe .time [msk ]))
-        gv ={q :(gci [q ]["gci_fine"]if gci [q ]["available"]else 0.0 )for q in GCIQ }
+        #a quantity the three levels do not demonstrate is marked ,never scored 0
+        gv ={q :(gci [q ]["gci_fine"]if gci [q ]["available"]else NOT_DEMONSTRATED )
+        for q in GCIQ }
         row ={"case_id":cid ,"weight_kg":case ["weight_kg"],
         "range_m":case ["range_m"],"depth_m":case ["depth_m"],
         "reduced_range":rec ["reduced_range"],
@@ -158,7 +163,8 @@ def main ():
         "srs_bands":len (bands ),
         "srs_band_max_deviation":
         max (b ["relative_deviation"]for b in bands )}
-        row ["gci_pass"]=bool (all (row [k ]<GCI_LIMIT for k in 
+        row ["gci_pass"]=bool (all (
+        isinstance (row [k ],float )and row [k ]<GCI_LIMIT for k in 
         ("gci_deflection","gci_acceleration",
         "gci_impulse_precav","gci_wall_pressure")))
         rows .append (row )
