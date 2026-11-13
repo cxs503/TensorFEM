@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "scenario": "light-ice + ballast head",
+      "sigma_x_over_yield": 0.15,
+      "sigma_x_MPa": 53.25,
+      "ice_patch_MPa": 1.0,
+      "patch_area_m2": 0.12249999999999998,
+      "hydrostatic_MPa": 0.05,
+      "utilisation_plate": 0.3134435185352072,
+      "utilisation_stiffener": 0.16354759693895077,
+      "utilisation_frame": 0.024797068149749656,
+      "ice_pressure_ultimate_MPa": 3.354083299636841,
+      "governing_member": "plate_local_bending",
+      "safety_margin": 3.354083299636841,
+      "force_stiffener_system_kN": 10.009350872211954,
+      "force_frame_system_kN": 149.24064912778826
+    },
+    {
+      "scenario": "design-ice + design head",
+      "sigma_x_over_yield": 0.3,
+      "sigma_x_MPa": 106.5,
+      "ice_patch_MPa": 2.0,
+      "patch_area_m2": 0.24499999999999997,
+      "hydrostatic_MPa": 0.1,
+      "utilisation_plate": 0.8648249894619242,
+      "utilisation_stiffener": 0.3774452093739832,
+      "utilisation_frame": 0.08838663334174694,
+      "ice_pressure_ultimate_MPa": 2.329840064048767,
+      "governing_member": "plate_local_bending",
+      "safety_margin": 1.1649200320243835,
+      "force_stiffener_system_kN": 51.06893087601117,
+      "force_frame_system_kN": 512.4310691239888
+    },
+    {
+      "scenario": "severe-ice + tank head",
+      "sigma_x_over_yield": 0.45,
+      "sigma_x_MPa": 159.75,
+      "ice_patch_MPa": 3.0,
+      "patch_area_m2": 0.3675,
+      "hydrostatic_MPa": 0.15,
+      "utilisation_plate": 1.4858261418628524,
+      "utilisation_stiffener": 0.49083670892706355,
+      "utilisation_frame": 0.20765839707264433,
+      "ice_pressure_ultimate_MPa": 1.968831717967987,
+      "governing_member": "plate_local_bending",
+      "safety_margin": 0.6562772393226624,
+      "force_stiffener_system_kN": 30.028052616635865,
+      "force_frame_system_kN": 1182.7219473833647
+    }
+  ]
+}
