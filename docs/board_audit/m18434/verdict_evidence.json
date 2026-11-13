@@ -1,0 +1,39 @@
+{
+  "impl_files": [
+    "tools/anchor_figure_rebuild.py:1-399 (新增 399 行; main() 在 :355; --write 渲染 PNG+manifest, --check 临时目录比对)",
+    "benchmarks/verified/fem_inverse_identification/run.py (图目标由锚目录改 docs/assets/verified/, 消除证书回滚隐患)",
+    "benchmarks/verified/anchor_certificates.json (611 行变更; 3 锚证书改指 docs/assets/verified/ 路径)",
+    "tests/test_anchor_figure_rebuild.py:1-117 (新增; 含确定性/数据驱动重渲染逐字节比对)"
+  ],
+  "entry": "python3 tools/anchor_figure_rebuild.py --write (tools/anchor_figure_rebuild.py:355 main(); 输入=各锚 committed result.json, 零求解)",
+  "run_artifacts": [
+    "docs/assets/verified/fem_inverse_identification/inverse_identification_recovery.png (53952 B)",
+    "docs/assets/verified/fem_sent_j_integral/{sent_convergence,sent_path_independence,sent_plane_strain_convergence,sent_plane_strain_path_independence,sent_plane_strain_shape_factor,sent_shape_factor}.png (6 图, 30615-40970 B)",
+    "docs/assets/verified/fem_winkler_plate_k_sweep/{winkler_k_sweep_beam,winkler_k_sweep_error,winkler_k_sweep_profile}.png (3 图, 43652-74524 B)",
+    "docs/assets/verified/*/figures_manifest.json (sha256 逐图绑定; 审计方独立重算 ok=10 bad=0)",
+    "docs/VERIFIED-ANCHOR-FIGURE-DEBT-CLOSURE-m18409.md (58 行)"
+  ],
+  "tests": [
+    "tests/test_anchor_figure_rebuild.py (新增 117 行)",
+    "tests/test_anchor_figure_gate_safety.py",
+    "tests/test_certificate_renderables.py",
+    "tests/test_verified_anchor_certificates.py",
+    "tests/test_inverse_anchor_certificate.py",
+    "审计方 2026-11-13 实跑: 44 passed in 17.79s (5 文件全量)"
+  ],
+  "integration_callers": "tools/verified_anchor_audit.py (E_ARTIFACT_MISSING 检查消费新路径; certified 28->31, contradicted 4->1, gate 复算 349/368 不变); tools/certificate_renderables.py --check (violations 1->0); benchmarks/verified/anchor_certificates.json (证书命名新路径); 未接入主求解器 (非 L3 判据)",
+  "benchmark": {
+    "tensor_benchmark_cases": "anchor_slug='XVAL-LBM-SHAN-CHEN-MCMP-BARYCENTRIC-GUO' -> 0 行 (psql 直查 2026-11-13, runuser -u postgres psql -d tensorplatform); 裁判表无该锚任何 case -> L4 基准判据无行可裁, 基准验证=未证明",
+    "ref_vs_got": "N/A — 本单未对锚点产生任何物理量 ref-vs-got 比较; 报告 §6 自述『本单不产生新物理量』; 全部『误差』声明为审计计数 (certified 28->31 / contradicted 4->1 / E_ARTIFACT_MISSING 3->0 / renderables 1->0 / gates 349/368 不变), 审计方复算后态全部吻合",
+    "anchor_repo_mismatch": "锚点属 TensorLBM 域 (lssfau/lbmpy shan-chen-mcmp barycentric), 本单仓=TensorFEM; agent 在报告 §5 诚实申报仓不一致并改做本仓验证欠账; 锚点自身验证欠账未闭合 (建议另派 TensorLBM 单); TensorFEM 树内 grep shan/barycentric 无该锚任何痕迹"
+  },
+  "repro_cmd": "cd /root/tp-agent/work/m18409 && python3 tools/anchor_figure_rebuild.py --write && python3 tools/verified_anchor_audit.py --write && python3 tools/certificate_renderables.py --check && python3 -m pytest tests/test_anchor_figure_rebuild.py tests/test_anchor_figure_gate_safety.py tests/test_certificate_renderables.py tests/test_verified_anchor_certificates.py tests/test_inverse_anchor_certificate.py -q (审计方实跑: 全绿; 唯一漂移=gates_verified.json generated_at 时间戳, gate 数值零变化)",
+  "external_anchor": "无外部物理参考 — 锚点为 TensorLBM 域, 本树无 lssfau/lbmpy shan-chen-mcmp barycentric 运行/日志/SHA; 3 锚图件数据源=各自 committed result.json (零求解重绘, 数据溯源=已提交工件)",
+  "commit": "bf90086d2410f028363409d45320dfb5ab25dd81 (agent/m18409; 25 files, +1305/-94)",
+  "report": "tensor_reports id=17216 (published; 六段齐全: 案例介绍/怎么做/计算结果/结果图/注意点/误差判定)",
+  "overstated_claims": [
+    "mission 锚点为 XVAL-LBM-SHAN-CHEN-MCMP-BARYCENTRIC-GUO, 实际交付与该锚点无关 (FEM 证书图件欠账闭合); 偏差已诚实申报 (报告 §5), 但锚点验证欠账未闭合",
+    "『前』基线数 (certified=28 等) 未独立复算, 仅『后』态经审计方复算验证"
+  ],
+  "maturity_rationale": "L2: 真代码 (输入 result.json -> 确定性重绘 -> 输出 PNG+sha256 manifest) + 44 测试绿 + 可复现; 但裁判表 0 行 (L4 不成立), 未接入主求解器 (L3 不成立); 级别=功能实质, 非报告篇幅"
+}
