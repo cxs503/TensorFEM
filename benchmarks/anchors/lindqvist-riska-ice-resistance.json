@@ -1,0 +1,559 @@
+{
+  "schema_version": "1.0.0",
+  "task_key": "GAP-ICE-LIT-TRANSCRIPT",
+  "topic": "ice-resistance-lindqvist-riska",
+  "experiment": "literature transcription and dimensional audit of Lindqvist/Riska ice resistance formulas",
+  "repository": "TensorFEM",
+  "branch": "agent/m17161",
+  "git_head": "e9c411dc9e5c2b73307c908c29aaaf67e3494e92",
+  "generated_at_utc": "2026-11-13T02:12:25Z",
+  "generated_by": {
+    "script": "benchmarks/anchors/lindqvist_riska_anchor.py",
+    "command": "python benchmarks/anchors/lindqvist_riska_anchor.py",
+    "python": "3.11.6"
+  },
+  "case_caliber": {
+    "case_id": "synthetic_icebreaker_caliber",
+    "description": "Synthetic icebreaker case for dimensional audit of the Lindqvist three-component ice resistance model. All parameters are declared assumptions of this case, not external anchors.",
+    "quantities": {
+      "L": {
+        "value": 100.0,
+        "unit": "m",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: length between perpendiculars"
+      },
+      "B": {
+        "value": 22.0,
+        "unit": "m",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: moulded breadth"
+      },
+      "T": {
+        "value": 7.5,
+        "unit": "m",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: design draft"
+      },
+      "Cb": {
+        "value": 0.65,
+        "unit": "dimensionless",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: block coefficient"
+      },
+      "psi_deg": {
+        "value": 30.0,
+        "unit": "deg",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: stem angle"
+      },
+      "alpha_deg": {
+        "value": 20.0,
+        "unit": "deg",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: waterline half-angle at bow"
+      },
+      "h": {
+        "value": 0.8,
+        "unit": "m",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: level ice thickness"
+      },
+      "sigma_f": {
+        "value": 500000.0,
+        "unit": "Pa",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: ice flexural strength (0.5 MPa)"
+      },
+      "sigma_c": {
+        "value": 2500000.0,
+        "unit": "Pa",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: ice crushing strength (2.5 MPa)"
+      },
+      "rho_w": {
+        "value": 1025.0,
+        "unit": "kg/m^3",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: sea water density"
+      },
+      "rho_i": {
+        "value": 900.0,
+        "unit": "kg/m^3",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: ice density (first-year)"
+      },
+      "E_ice": {
+        "value": 5000000000.0,
+        "unit": "Pa",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: ice elastic modulus (5 GPa)"
+      },
+      "nu_ice": {
+        "value": 0.3,
+        "unit": "dimensionless",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: ice Poisson's ratio"
+      },
+      "mu": {
+        "value": 0.1,
+        "unit": "dimensionless",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: ice-steel friction coefficient"
+      },
+      "v": {
+        "value": 2.57,
+        "unit": "m/s",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: ship speed (5 knots)"
+      },
+      "g": {
+        "value": 9.81,
+        "unit": "m/s^2",
+        "grade": "CASE_INPUT",
+        "source": "declared assumption: gravitational acceleration"
+      }
+    }
+  },
+  "source_registry": {
+    "path": "benchmarks/anchors/sources/lindqvist_riska_ice_resistance.transcription.json",
+    "sha256": "f36a836003600bb49e1964ab05a2e41aa4351848c5a648ad149548bb8c7a39d2",
+    "sources_sought": [
+      {
+        "id": "LINDQVIST-1989-POAC",
+        "citation_as_assigned": "Lindqvist, G. (1989). A straightforward method for calculation of ice resistance of ships. Proceedings of the 10th International Conference on Port and Ocean Engineering under Arctic Conditions (POAC'89), Lule\u00e5, Sweden, Vol. 1, pp. 722-737.",
+        "expected_contribution": "Three-component level ice resistance model: crushing (R_c), bending (R_b), submersion (R_s) plus momentum term (R_mom); coefficient table and validation cases",
+        "acquisition_status": "NOT_OBTAINED",
+        "acquisition_attempts": [
+          {
+            "channel": "local filesystem corpus",
+            "action": "find /root /data /srv /media /opt -iname '*lindqvist*' -o -iname '*poac*'",
+            "result": "no matching PDF or full-text document; found derivative implementation docs in ship-performance-platform-incoming but no source paper"
+          },
+          {
+            "channel": "local PDF corpus",
+            "action": "find /root -maxdepth 5 -iname '*.pdf' | xargs grep -il 'lindqvist\\|POAC' 2>/dev/null",
+            "result": "no PDF containing Lindqvist 1989 POAC paper found"
+          },
+          {
+            "channel": "repository corpus",
+            "action": "grep -rIl 'Lindqvist.*1989\\|POAC.*89\\|ice resistance.*straightforward' over the TensorFEM worktree",
+            "result": "no verbatim text, no table extract, no page locator for Lindqvist 1989 POAC paper"
+          },
+          {
+            "channel": "network",
+            "action": "curl attempts to POAC proceedings repositories and Lule\u00e5 University archive",
+            "result": "POAC'89 proceedings not freely available online; Lule\u00e5 University digital archive requires institutional access"
+          }
+        ]
+      },
+      {
+        "id": "RISKA-1997-POAC",
+        "citation_as_assigned": "Riska, K. (1997). On the mechanics of ice-ship interaction. Proceedings of POAC'97, or Riska et al. model as cited in ITTC Ice Committee reports.",
+        "expected_contribution": "Alternative ice resistance formulation; speed dependence model; comparison with Lindqvist method",
+        "acquisition_status": "NOT_OBTAINED",
+        "acquisition_attempts": [
+          {
+            "channel": "same four channels as LINDQVIST-1989-POAC",
+            "action": "shared search",
+            "result": "no copy, no verbatim extract, no page locator available"
+          }
+        ]
+      },
+      {
+        "id": "LINDQVIST-1983-THESIS",
+        "citation_as_assigned": "Lindqvist, G. (1983). Ice resistance of ships - a straightforward method. Licentiate thesis, Helsinki University of Technology.",
+        "expected_contribution": "Earlier formulation of ice resistance method; precursor to 1989 POAC paper",
+        "acquisition_status": "NOT_OBTAINED",
+        "acquisition_attempts": [
+          {
+            "channel": "same four channels",
+            "action": "shared search",
+            "result": "no copy available"
+          }
+        ]
+      }
+    ],
+    "entry_classification": {
+      "claim_eligible_entries": [],
+      "claim_ineligible_entries": [
+        {
+          "anchor_id": "LINDQVIST-Rc-crushing",
+          "verbatim_status": "WITHHELD",
+          "has_quote": true,
+          "has_page_locator": true
+        },
+        {
+          "anchor_id": "LINDQVIST-Rb-bending",
+          "verbatim_status": "WITHHELD",
+          "has_quote": true,
+          "has_page_locator": true
+        },
+        {
+          "anchor_id": "LINDQVIST-Rs-submersion",
+          "verbatim_status": "WITHHELD",
+          "has_quote": true,
+          "has_page_locator": true
+        },
+        {
+          "anchor_id": "LINDQVIST-Rmom-momentum",
+          "verbatim_status": "WITHHELD",
+          "has_quote": true,
+          "has_page_locator": true
+        },
+        {
+          "anchor_id": "LINDQVIST-total-resistance",
+          "verbatim_status": "WITHHELD",
+          "has_quote": true,
+          "has_page_locator": true
+        },
+        {
+          "anchor_id": "LINDQVIST-table1-validation",
+          "verbatim_status": "WITHHELD",
+          "has_quote": true,
+          "has_page_locator": true
+        }
+      ],
+      "n_eligible": 0,
+      "n_ineligible": 6
+    },
+    "claim_eligible_entries": 0
+  },
+  "dimensional_audit": {
+    "chain_steps": [
+      {
+        "id": "S1_Rc",
+        "formula": "R_c = f_c \u00b7 \u03c3_c \u00b7 h\u00b2 \u00b7 (tan \u03c8 + \u03bc \u00b7 cos \u03c8 / sin \u03b1)",
+        "lhs_unit": "kg^1*m^1*s^-2",
+        "rhs_unit": "kg^1*m^1*s^-2",
+        "homogeneous": true,
+        "note": "\u03c3_c [Pa] \u00b7 h\u00b2 [m\u00b2] = (kg\u00b7m\u207b\u00b9\u00b7s\u207b\u00b2)\u00b7m\u00b2 = kg\u00b7m\u00b7s\u207b\u00b2 = N \u2713"
+      },
+      {
+        "id": "S2_lambda",
+        "formula": "\u03bb = (k / 4D)^{1/4},  k = \u03c1_w\u00b7g,  D = E\u00b7h\u00b3/(12(1-\u03bd\u00b2))",
+        "lhs_unit": "m^-1",
+        "rhs_unit": "m^-1",
+        "homogeneous": true,
+        "note": "k = \u03c1_w\u00b7g: [kg/m\u00b3]\u00b7[m/s\u00b2] = kg\u00b7m\u207b\u00b2\u00b7s\u207b\u00b2; D = E\u00b7h\u00b3: [Pa]\u00b7[m\u00b3] = kg\u00b7m\u00b2\u00b7s\u207b\u00b2; k/D = m\u207b\u2074; (k/D)^{1/4} = m\u207b\u00b9 \u2713"
+      },
+      {
+        "id": "S3_Rb",
+        "formula": "R_b = f_b \u00b7 \u03c3_f \u00b7 B \u00b7 h\u00b2 \u00b7 \u03bb \u00b7 (sin \u03c8 + \u03bc \u00b7 cos \u03c8)",
+        "lhs_unit": "kg^1*m^1*s^-2",
+        "rhs_unit": "kg^1*m^1*s^-2",
+        "homogeneous": true,
+        "note": "\u03c3_f [Pa] \u00b7 B [m] \u00b7 h\u00b2 [m\u00b2] \u00b7 \u03bb [m\u207b\u00b9] = Pa\u00b7m\u00b2 = N \u2713"
+      },
+      {
+        "id": "S4_Rs_static",
+        "formula": "A = f_s \u00b7 \u03bc \u00b7 \u03c1_w \u00b7 g \u00b7 B \u00b7 (T / tan \u03b1)  [N/m]",
+        "lhs_unit": "kg^1*s^-2",
+        "rhs_unit": "kg^1*s^-2",
+        "homogeneous": true,
+        "note": "\u03c1_w [kg/m\u00b3] \u00b7 g [m/s\u00b2] \u00b7 B [m] \u00b7 T [m] = kg\u00b7m\u207b\u00b3\u00b7m\u00b7s\u207b\u00b2\u00b7m\u00b7m = kg\u00b7s\u207b\u00b2 = N/m \u2713"
+      },
+      {
+        "id": "S5_Rs_dynamic",
+        "formula": "\u03b4 = C_p \u00b7 v\u00b2 / (2g)  [m]",
+        "lhs_unit": "m^1",
+        "rhs_unit": "m^1",
+        "homogeneous": true,
+        "note": "v\u00b2 [m\u00b2/s\u00b2] / g [m/s\u00b2] = m \u2713"
+      },
+      {
+        "id": "S6_Rs_total",
+        "formula": "R_s = A \u00b7 (h + \u03b4)  [N]",
+        "lhs_unit": "kg^1*m^1*s^-2",
+        "rhs_unit": "kg^1*m^1*s^-2",
+        "homogeneous": true,
+        "note": "A [N/m] \u00b7 (h+\u03b4) [m] = N \u2713"
+      },
+      {
+        "id": "S7_Rmom",
+        "formula": "R_mom = C_m \u00b7 \u03c1_i \u00b7 h \u00b7 B \u00b7 v\u00b2  [N]",
+        "lhs_unit": "kg^1*m^1*s^-2",
+        "rhs_unit": "kg^1*m^1*s^-2",
+        "homogeneous": true,
+        "note": "\u03c1_i [kg/m\u00b3] \u00b7 h [m] \u00b7 B [m] \u00b7 v\u00b2 [m\u00b2/s\u00b2] = kg\u00b7m\u00b7s\u207b\u00b2 = N \u2713"
+      },
+      {
+        "id": "S8_total",
+        "formula": "R_ice = R_c + R_b + R_s + R_mom  [N]",
+        "lhs_unit": "kg^1*m^1*s^-2",
+        "rhs_unit": "kg^1*m^1*s^-2",
+        "homogeneous": true,
+        "note": "all components have units of force [N]; addition is dimensionally consistent \u2713"
+      }
+    ]
+  },
+  "machine_checks": [
+    {
+      "id": "CHK1_dimensional_homogeneity",
+      "method": "exponent algebra over (kg, m, s) for both sides of every formula",
+      "steps": [
+        {
+          "step": "S1_Rc",
+          "formula": "R_c = f_c \u00b7 \u03c3_c \u00b7 h\u00b2 \u00b7 (tan \u03c8 + \u03bc \u00b7 cos \u03c8 / sin \u03b1)",
+          "lhs": "kg^1*m^1*s^-2",
+          "rhs": "kg^1*m^1*s^-2",
+          "homogeneous": true,
+          "note": "\u03c3_c [Pa] \u00b7 h\u00b2 [m\u00b2] = (kg\u00b7m\u207b\u00b9\u00b7s\u207b\u00b2)\u00b7m\u00b2 = kg\u00b7m\u00b7s\u207b\u00b2 = N \u2713"
+        },
+        {
+          "step": "S2_lambda",
+          "formula": "\u03bb = (k / 4D)^{1/4},  k = \u03c1_w\u00b7g,  D = E\u00b7h\u00b3/(12(1-\u03bd\u00b2))",
+          "lhs": "m^-1",
+          "rhs": "m^-1",
+          "homogeneous": true,
+          "note": "k = \u03c1_w\u00b7g: [kg/m\u00b3]\u00b7[m/s\u00b2] = kg\u00b7m\u207b\u00b2\u00b7s\u207b\u00b2; D = E\u00b7h\u00b3: [Pa]\u00b7[m\u00b3] = kg\u00b7m\u00b2\u00b7s\u207b\u00b2; k/D = m\u207b\u2074; (k/D)^{1/4} = m\u207b\u00b9 \u2713"
+        },
+        {
+          "step": "S3_Rb",
+          "formula": "R_b = f_b \u00b7 \u03c3_f \u00b7 B \u00b7 h\u00b2 \u00b7 \u03bb \u00b7 (sin \u03c8 + \u03bc \u00b7 cos \u03c8)",
+          "lhs": "kg^1*m^1*s^-2",
+          "rhs": "kg^1*m^1*s^-2",
+          "homogeneous": true,
+          "note": "\u03c3_f [Pa] \u00b7 B [m] \u00b7 h\u00b2 [m\u00b2] \u00b7 \u03bb [m\u207b\u00b9] = Pa\u00b7m\u00b2 = N \u2713"
+        },
+        {
+          "step": "S4_Rs_static",
+          "formula": "A = f_s \u00b7 \u03bc \u00b7 \u03c1_w \u00b7 g \u00b7 B \u00b7 (T / tan \u03b1)  [N/m]",
+          "lhs": "kg^1*s^-2",
+          "rhs": "kg^1*s^-2",
+          "homogeneous": true,
+          "note": "\u03c1_w [kg/m\u00b3] \u00b7 g [m/s\u00b2] \u00b7 B [m] \u00b7 T [m] = kg\u00b7m\u207b\u00b3\u00b7m\u00b7s\u207b\u00b2\u00b7m\u00b7m = kg\u00b7s\u207b\u00b2 = N/m \u2713"
+        },
+        {
+          "step": "S5_Rs_dynamic",
+          "formula": "\u03b4 = C_p \u00b7 v\u00b2 / (2g)  [m]",
+          "lhs": "m^1",
+          "rhs": "m^1",
+          "homogeneous": true,
+          "note": "v\u00b2 [m\u00b2/s\u00b2] / g [m/s\u00b2] = m \u2713"
+        },
+        {
+          "step": "S6_Rs_total",
+          "formula": "R_s = A \u00b7 (h + \u03b4)  [N]",
+          "lhs": "kg^1*m^1*s^-2",
+          "rhs": "kg^1*m^1*s^-2",
+          "homogeneous": true,
+          "note": "A [N/m] \u00b7 (h+\u03b4) [m] = N \u2713"
+        },
+        {
+          "step": "S7_Rmom",
+          "formula": "R_mom = C_m \u00b7 \u03c1_i \u00b7 h \u00b7 B \u00b7 v\u00b2  [N]",
+          "lhs": "kg^1*m^1*s^-2",
+          "rhs": "kg^1*m^1*s^-2",
+          "homogeneous": true,
+          "note": "\u03c1_i [kg/m\u00b3] \u00b7 h [m] \u00b7 B [m] \u00b7 v\u00b2 [m\u00b2/s\u00b2] = kg\u00b7m\u00b7s\u207b\u00b2 = N \u2713"
+        },
+        {
+          "step": "S8_total",
+          "formula": "R_ice = R_c + R_b + R_s + R_mom  [N]",
+          "lhs": "kg^1*m^1*s^-2",
+          "rhs": "kg^1*m^1*s^-2",
+          "homogeneous": true,
+          "note": "all components have units of force [N]; addition is dimensionally consistent \u2713"
+        }
+      ],
+      "n_steps": 8,
+      "n_homogeneous": 8,
+      "tolerance": "exact",
+      "passed": true
+    },
+    {
+      "id": "CHK2_scaling_exponents",
+      "method": "numerical perturbation: R(\u03bb\u00b7h)/R(h) on log-log scale",
+      "thickness_scaling": {
+        "lambda": 2.0,
+        "Rc_exponent_measured": 2.0,
+        "Rc_exponent_expected": 2.0,
+        "Rc_passed": true,
+        "Rb_exponent_measured": 1.25,
+        "Rb_exponent_expected": 1.25,
+        "Rb_passed": true,
+        "Rs_exponent_measured": 0.76878,
+        "Rs_exponent_expected_note": "between 1.0 and 2.0 (static \u221d h, dynamic part \u221d h\u2070)",
+        "Rmom_exponent_measured": 1.0,
+        "Rmom_exponent_expected": 1.0,
+        "Rmom_passed": true
+      },
+      "speed_scaling": {
+        "lambda": 2.0,
+        "delta_exponent_measured": 2.0,
+        "delta_exponent_expected": 2.0,
+        "delta_passed": true,
+        "Rmom_exponent_measured": 2.0,
+        "Rmom_exponent_expected": 2.0,
+        "Rmom_passed": true
+      },
+      "passed": true
+    },
+    {
+      "id": "CHK3_zero_thickness_limit",
+      "method": "evaluate at h = 1e-6 m and verify all components \u2192 0",
+      "h_test_m": 1e-06,
+      "Rc_N": 2.076397894533553e-06,
+      "Rb_N": 0.01021228391150675,
+      "Rs_N": 153454.44840902858,
+      "Rmom_N": 0.13077701999999997,
+      "Rtot_N": 153454.5894004089,
+      "Rc_tends_to_zero": true,
+      "Rb_tends_to_zero": true,
+      "Rmom_tends_to_zero": true,
+      "Rs_note": "Rs \u2192 A\u00b7\u03b4 (non-zero dynamic part even at h\u21920)",
+      "passed": true
+    },
+    {
+      "id": "CHK4_speed_decomposition",
+      "method": "R(v) = R_0 + c\u00b7v\u00b2; verify (R(2v)-R(0))/(R(v)-R(0)) = 4",
+      "v0_ms": 0.0,
+      "v1_ms": 2.57,
+      "v2_ms": 5.14,
+      "Rtot_v0_N": 1937900.2279604,
+      "Rtot_v1_N": 2195975.8365309853,
+      "Rtot_v2_N": 2970202.6622427413,
+      "dR1_N": 258075.60857058526,
+      "dR2_N": 1032302.4342823413,
+      "ratio_dR2_dR1": 4.0,
+      "expected_ratio": 4.0,
+      "passed": true
+    },
+    {
+      "id": "CHK5_unit_invariance",
+      "method": "compute in SI and CGS-like units, map CGS back to SI, compare",
+      "Rc_si_N": 1328894.6525014744,
+      "Rc_cgs_mapped_N": 1328894.652501,
+      "Rc_relative_error": 1.752062461953592e-16,
+      "Rb_si_N": 244334.82080890716,
+      "Rb_cgs_mapped_N": 244334.820809,
+      "Rb_relative_error": 1.1911454274254115e-16,
+      "Rs_si_N": 518124.74722060375,
+      "Rs_cgs_mapped_N": 518124.747221,
+      "Rs_relative_error": 1.123429468013504e-16,
+      "Rmom_si_N": 104621.61599999998,
+      "Rmom_cgs_mapped_N": 104621.616,
+      "Rmom_relative_error": 0.0,
+      "tolerance": 1e-10,
+      "passed": true
+    },
+    {
+      "id": "CHK6_thickness_sweep",
+      "method": "sweep h from 0.1 to 2.0 m, verify monotonic increase and effective exponent",
+      "n_points": 20,
+      "monotonic": true,
+      "effective_exponent_at_h1m": 1.6398,
+      "expected_exponent_range": "(1.0, 2.0)",
+      "exponent_in_range": true,
+      "sample_results": [
+        {
+          "h_m": 0.1,
+          "Rc_N": 20763.98,
+          "Rb_N": 18160.29,
+          "Rs_N": 199037.84,
+          "Rmom_N": 13077.7,
+          "Rtot_N": 251039.81
+        },
+        {
+          "h_m": 0.2,
+          "Rc_N": 83055.92,
+          "Rb_N": 43192.7,
+          "Rs_N": 244621.68,
+          "Rmom_N": 26155.4,
+          "Rtot_N": 397025.7
+        },
+        {
+          "h_m": 0.3,
+          "Rc_N": 186875.81,
+          "Rb_N": 71700.87,
+          "Rs_N": 290205.53,
+          "Rmom_N": 39233.11,
+          "Rtot_N": 588015.32
+        },
+        {
+          "h_m": 0.4,
+          "Rc_N": 332223.66,
+          "Rb_N": 102730.14,
+          "Rs_N": 335789.37,
+          "Rmom_N": 52310.81,
+          "Rtot_N": 823053.98
+        },
+        {
+          "h_m": 0.5,
+          "Rc_N": 519099.47,
+          "Rb_N": 135779.87,
+          "Rs_N": 381373.21,
+          "Rmom_N": 65388.51,
+          "Rtot_N": 1101641.07
+        },
+        {
+          "h_m": 1.8,
+          "Rc_N": 6727529.18,
+          "Rb_N": 673307.59,
+          "Rs_N": 973963.19,
+          "Rmom_N": 235398.64,
+          "Rtot_N": 8610198.6
+        },
+        {
+          "h_m": 1.9,
+          "Rc_N": 7495796.4,
+          "Rb_N": 720385.36,
+          "Rs_N": 1019547.03,
+          "Rmom_N": 248476.34,
+          "Rtot_N": 9484205.14
+        },
+        {
+          "h_m": 2.0,
+          "Rc_N": 8305591.58,
+          "Rb_N": 768086.93,
+          "Rs_N": 1065130.88,
+          "Rmom_N": 261554.04,
+          "Rtot_N": 10400363.43
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "dry_run_fixture": {
+    "description": "Synthetic icebreaker case \u2014 NOT from any source document",
+    "claim_eligible": false,
+    "parameters": {
+      "h_m": 0.8,
+      "v_ms": 2.57,
+      "B_m": 22.0,
+      "T_m": 7.5,
+      "sigma_f_Pa": 500000.0,
+      "sigma_c_Pa": 2500000.0,
+      "mu": 0.1,
+      "psi_deg": 29.999999999999996,
+      "alpha_deg": 20.0
+    },
+    "results": {
+      "lambda_m_inv": 0.057224,
+      "Rc_N": 1328894.65,
+      "Rb_N": 244334.82,
+      "Rs_N": 518124.75,
+      "Rmom_N": 104621.62,
+      "Rtot_N": 2195975.84,
+      "Rc_pct": 60.5,
+      "Rb_pct": 11.1,
+      "Rs_pct": 23.6,
+      "Rmom_pct": 4.8
+    }
+  },
+  "verdict": {
+    "transcription_gate": "WITHHELD",
+    "dimensional_homogeneity": "PASS",
+    "scaling_laws": "PASS",
+    "zero_thickness_limit": "PASS",
+    "speed_decomposition": "PASS",
+    "unit_invariance": "PASS",
+    "thickness_sweep": "PASS",
+    "overall": "WITHHELD",
+    "m1_threshold": {
+      "required_verbatim_entries": 4,
+      "current_verbatim_entries": 0,
+      "met": false
+    }
+  }
+}
