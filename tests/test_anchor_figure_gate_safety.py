@@ -34,23 +34,7 @@ VERIFIED = ROOT / "benchmarks" / "verified"
 
 #: Anchors whose certificates still name figures the push gate will drop.
 #: Shrink-only: repairing one means deleting its row, never adding a new one.
-FROZEN_OFFENDERS = {
-    "fem_beam_static": 2,
-    "fem_cantilever": 2,
-    "fem_curved_beam": 1,
-    "fem_hertz_contact": 3,
-    "fem_kirsch_plate": 4,
-    "fem_modal": 3,
-    "fem_panel_buckling": 3,
-    "fem_plate_modal": 2,
-    "fem_plate_postbuckling": 3,
-    "fem_plate_static": 3,
-    "fem_structural_acoustics": 4,
-    "fem_structural_benchmarks": 3,
-    "fem_wave_dispersion": 2,
-    "fem_winkler_plate": 2,
-    "fem_winkler_plate_k_sweep": 3,
-}
+FROZEN_OFFENDERS: dict[str, int] = {}  # emptied 2026-11-13: every row repaired or stale
 
 
 def _declared_names(gates_path: Path) -> list[str]:
@@ -101,12 +85,23 @@ def test_frozen_offender_set_is_shrink_only():
     )
 
 
-def test_repaired_anchor_is_gate_safe():
-    """``fem_shell_modal`` is the worked example; it must stay compliant."""
-    gates = VERIFIED / "fem_shell_modal" / "gates_verified.json"
-    figures = [name for name in _declared_names(gates) if name.endswith(".png")]
-    assert figures, "the repaired anchor must still name its figures"
-    assert all(name.startswith("docs/") for name in figures), figures
-    assert all((ROOT / name).is_file() for name in figures), (
-        "every named figure must exist at its repo-relative path"
-    )
+def test_repaired_anchors_are_gate_safe():
+    """The rebuilt anchors are the worked example; every named figure must ship.
+
+    History: this test used ``fem_shell_modal`` as its example, but that anchor
+    has since moved its figures to ``figures_rendered_on_demand`` (the
+    ``tools/certificate_renderables.py`` policy) and no longer names a ``docs/``
+    PNG at all, so the assertion was vacuous-by-failure on ``main`` before the
+    rebuild.  The anchors below name real, committed ``docs/`` figures that are
+    rendered from their own ``result.json`` by
+    ``tools/anchor_figure_rebuild.py`` -- the property this test exists to keep.
+    """
+    for anchor in ("fem_inverse_identification", "fem_sent_j_integral",
+                   "fem_winkler_plate_k_sweep"):
+        gates = VERIFIED / anchor / "gates_verified.json"
+        figures = [name for name in _declared_names(gates) if name.endswith(".png")]
+        assert figures, f"{anchor}: the repaired anchor must still name its figures"
+        assert all(name.startswith("docs/") for name in figures), (anchor, figures)
+        assert all((ROOT / name).is_file() for name in figures), (
+            f"{anchor}: every named figure must exist at its repo-relative path"
+        )

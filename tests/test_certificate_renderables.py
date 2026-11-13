@@ -77,9 +77,32 @@ def test_migration_never_hides_a_figure_that_exists(tool, tmp_path):
     assert "E_RENDERABLE_BUT_PRESENT" in codes
 
 
-def test_figure_without_producer_stays_declared(tool):
-    """No producer means no renderable claim: the anchor must keep the defect (and stay in debt)."""
+def test_figure_without_producer_stays_declared(tool, tmp_path):
+    """No producer means no renderable claim: the figure stays a hard defect.
+
+    Historically this was asserted on ``fem_winkler_plate_k_sweep`` (which had no
+    producer and sat in the debt registry). It now has one
+    (``tools/anchor_figure_rebuild.py``) and is certified, so the property is
+    asserted on a synthetic anchor where the condition is actually true.
+    """
+    target = tmp_path / "fem_synthetic_no_producer"
+    target.mkdir()
+    payload = {
+        "schema": "tensorfem.verified-gates.v1",
+        "anchor": target.name,
+        "gates": [{"id": "g", "quantity": "synthetic", "value": 0.0,
+                   "threshold": 1.0, "operator": "<=", "passed": True}],
+        "passed": True,
+        "artifacts": {"profile_png": "synthetic_profile.png"},
+    }
+    (target / "gates_verified.json").write_text(json.dumps(payload))
+    record = tool.audit_certificate(target / "gates_verified.json", tool.tracked_files())
+    assert {v["code"] for v in record["violations"]} == {"E_FIGURE_DECLARED_BUT_ABSENT"}
+    assert all(v["anchor"] == target.name for v in record["violations"])
+
+
+def test_rebuilt_anchor_left_the_debt_registry(tool):
     debt = json.loads((tool.VERIFIED_DIR / "anchor_certificate_debt.json").read_text())["anchors"]
-    payload = json.loads((tool.VERIFIED_DIR / "fem_winkler_plate_k_sweep" / "gates_verified.json").read_text())
-    assert any("winkler_k_sweep_profile.png" in str(value) for value in (payload.get("artifacts") or {}).values())
-    assert "fem_winkler_plate_k_sweep" in debt
+    for anchor in ("fem_inverse_identification", "fem_sent_j_integral",
+                   "fem_winkler_plate_k_sweep"):
+        assert anchor not in debt, f"{anchor} is repaired but still listed as debt"
