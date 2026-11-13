@@ -109,6 +109,10 @@ EVIDENCE_CLASSES = {
     "plate.mindlin_thick.center_mx": ("discretized", "Q4 Mindlin FE vs Mindlin-Reissner Navier series"),
     "plate.mindlin_thick.max_mxy": ("discretized", "Q4 Mindlin FE vs Mindlin-Reissner Navier series"),
     "plate.mindlin_thick.center_w": ("discretized", "Q4 Mindlin FE vs Mindlin-Reissner Navier series"),
+    "inverse.axial_bar.modulus": ("discretized", "Levenberg-Marquardt inversion of a TrussModel forward solve vs generating E"),
+    "plate.foundation.winkler_center_w": ("discretized", "Q4 Mindlin FE on Winkler foundation vs exact FSDT Navier series"),
+    "plate.foundation.pasternak_center_w": ("discretized", "Q4 Mindlin FE on Pasternak foundation vs exact FSDT Navier series"),
+    "plate.foundation.pasternak_zero_reduces_to_winkler": ("identity", "G->0 reduction compares two identical centre_deflection calls: consistency identity, cannot detect a defect"),
     # --- numerical trial-space / quadrature references -----------------------
     "cohesive.fracture_energy": ("trial_space", "trapezoid quadrature of the bilinear law vs triangular area"),
     "marine.stiffened_panel.navier": ("trial_space", "one-term Ritz + Gauss quadrature vs closed Navier amplitude"),
