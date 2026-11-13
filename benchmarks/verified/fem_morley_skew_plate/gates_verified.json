@@ -1,6 +1,6 @@
 {
   "schema": "tensorfem.verified-gates.v1",
-  "anchor": "CASE-FEM-MORLEY-SKEW-PLATE",
+  "anchor": "fem_morley_skew_plate",
   "title": "Morley 30 deg simply supported rhombic plate (thin-plate benchmark)",
   "mission": "16138",
   "generated_at": "2026-11-12T10:30:27+00:00",
@@ -106,15 +106,16 @@
   ],
   "undefined_terms": [],
   "artifacts": {
-    "result.json": "all meshes, moments, diagnostics",
-    "summary.md": "generated evidence table",
-    "convergence.png": "mesh convergence vs both references",
-    "deflection_field.png": "normalised deflection field",
-    "artifacts/prefix_mitc_skew_defect.json": "pre-fix MITC parasitic shear (parent commit df250c73)"
+    "result": "benchmarks/verified/fem_morley_skew_plate/result.json",
+    "summary": "benchmarks/verified/fem_morley_skew_plate/summary.md",
+    "driver": "benchmarks/verified/fem_morley_skew_plate/run.py",
+    "prefix_mitc_skew_defect": "benchmarks/verified/fem_morley_skew_plate/artifacts/prefix_mitc_skew_defect.json"
   },
   "limitations": [
     "the FE levels stop at n=80; the published dense-mesh study needed n=1024 because of the obtuse-corner singularity, so the finest FE value still sits ~1-2 % below the converged thin-plate value",
     "the Rayleigh-Ritz sine-basis diagnostic converges very slowly on the 150 deg corner and is reported as a lower bound only, not as an oracle",
-    "the membrane/bending coupling of a real stiffened skew panel is out of scope"
-  ]
+    "the membrane/bending coupling of a real stiffened skew panel is out of scope",
+    "the certificate declares only artifacts that are committed; the convergence/deflection figures are rendered on demand and are not shipped, so they are not declared here"
+  ],
+  "case": "CASE-FEM-MORLEY-SKEW-PLATE"
 }
