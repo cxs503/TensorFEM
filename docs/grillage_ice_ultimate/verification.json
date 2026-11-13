@@ -1,0 +1,224 @@
+{
+  "suite": "grillage_ice_ultimate",
+  "terms": 61,
+  "checks": [
+    {
+      "id": "T1a-w_max",
+      "value": 0.0021534413135850094,
+      "reference": 0.002152194174757281,
+      "rel_error": 0.0005794731917573541,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": "Timoshenko & Woinowsky-Krieger Table 30, alpha = 0.00406"
+    },
+    {
+      "id": "T1b-M_max",
+      "value": 478.8642585357606,
+      "reference": 479.0,
+      "rel_error": 0.00028338510279624616,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": "Timoshenko & Woinowsky-Krieger Table 30, beta = 0.0479"
+    },
+    {
+      "id": "T2-w_convergence",
+      "value": 0.0007967797913490325,
+      "reference": 0.0007967799577039043,
+      "rel_error": 2.0878395624556806e-07,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "Navier patch series, terms 31 vs 121"
+    },
+    {
+      "id": "T2-M_convergence",
+      "value": 225.18731740021497,
+      "reference": 225.20517909502433,
+      "rel_error": 7.931298419132889e-05,
+      "tolerance": 0.02,
+      "passed": true,
+      "note": "Navier patch series, terms 31 vs 121 (moment converges slower)"
+    },
+    {
+      "id": "T3-fx_eq_fy",
+      "value": 0.4170617623638483,
+      "reference": 0.41706176236384834,
+      "rel_error": 1.3310055306108213e-16,
+      "tolerance": 1e-09,
+      "passed": true,
+      "note": "isotropic plate symmetry"
+    },
+    {
+      "id": "T3-share_sum",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "modal partition sums to one"
+    },
+    {
+      "id": "T4-orthotropy_limit",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "load_share_x vs Dx/Dy: 1e+02:0.6946, 1e+04:0.8508, 1e+06:0.9515, 1e+08:0.9976"
+    },
+    {
+      "id": "T5-exact_ge_approx_P/Pe=0.2",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "exact 1.257200 vs 1/(1-r) 1.250000"
+    },
+    {
+      "id": "T5-amplification_P/Pe=0.2",
+      "value": 1.2572003977327058,
+      "reference": 1.25,
+      "rel_error": 0.005760318186164603,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "secant magnification vs the standard approximation (15 % gate)"
+    },
+    {
+      "id": "T5-exact_ge_approx_P/Pe=0.5",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "exact 2.029945 vs 1/(1-r) 2.000000"
+    },
+    {
+      "id": "T5-amplification_P/Pe=0.5",
+      "value": 2.029944629115985,
+      "reference": 2.0,
+      "rel_error": 0.014972314557992528,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "secant magnification vs the standard approximation (15 % gate)"
+    },
+    {
+      "id": "T6a-uniform_16Mp/L",
+      "value": 5714285.714285715,
+      "reference": 5714285.714285715,
+      "rel_error": 0.0,
+      "tolerance": 1e-12,
+      "passed": true,
+      "note": "uniform-load collapse of a fixed-fixed beam"
+    },
+    {
+      "id": "T6b-point_8Mp/L",
+      "value": 2857142.8571428573,
+      "reference": 2857142.8571428573,
+      "rel_error": 0.0,
+      "tolerance": 1e-12,
+      "passed": true,
+      "note": "point-load limit of the patch formula"
+    },
+    {
+      "id": "T6c-monotone_in_patch_length",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "capacities ['2909090.909', '3137254.902', '3478260.870', '4444444.444', '5714285.714']"
+    },
+    {
+      "id": "T7-panel_ultimate[b/t=34.6, beta=1.44]",
+      "value": 314.1077492072838,
+      "reference": 331.3938614916206,
+      "rel_error": 0.052161836089935826,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "Paik-Thayamballi stiffened-panel strength (empirical, 15 % gate)"
+    },
+    {
+      "id": "T7-panel_ultimate[b/t=17.5, beta=0.73]",
+      "value": 329.8887128942232,
+      "reference": 352.156139046995,
+      "rel_error": 0.06323168527753603,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "Paik-Thayamballi stiffened-panel strength (empirical, 15 % gate)"
+    },
+    {
+      "id": "T7-panel_ultimate[b/t=41.7, beta=1.73]",
+      "value": 296.5515176587649,
+      "reference": 311.96946513274474,
+      "rel_error": 0.04942133508937938,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "Paik-Thayamballi stiffened-panel strength (empirical, 15 % gate)"
+    },
+    {
+      "id": "T8a-monotone_in_axial",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "p_ult [MPa] ['2.6243', '2.5939', '2.5007', '2.3374']"
+    },
+    {
+      "id": "T8b-monotone_in_hydrostatic",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "p_ult [MPa] ['2.5585', '2.5007', '2.4429']"
+    },
+    {
+      "id": "T9-load_path_equilibrium",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "max relative residual 0.000e+00 over 6 combined cases"
+    },
+    {
+      "id": "T10-centre_patch_moment",
+      "value": 43750.0,
+      "reference": 43749.124781249135,
+      "rel_error": 2.0005400227810585e-05,
+      "tolerance": 0.0001,
+      "passed": true,
+      "note": "closed form F(2L-c)/8 vs numeric integration of M(x)"
+    }
+  ],
+  "passed": true,
+  "n_checks": 21,
+  "n_failed": 0,
+  "paik_comparison": [
+    {
+      "bay_spacing_m": 0.45,
+      "plate_thickness_mm": 13.0,
+      "beta": 1.436976705064861,
+      "sigma_u_effective_width_MPa": 314.1077492072838,
+      "sigma_u_paik_MPa": 331.3938614916206,
+      "rel_error": 0.052161836089935826
+    },
+    {
+      "bay_spacing_m": 0.35,
+      "plate_thickness_mm": 20.0,
+      "beta": 0.7264715564494574,
+      "sigma_u_effective_width_MPa": 329.8887128942232,
+      "sigma_u_paik_MPa": 352.156139046995,
+      "rel_error": 0.06323168527753603
+    },
+    {
+      "bay_spacing_m": 0.5,
+      "plate_thickness_mm": 12.0,
+      "beta": 1.7296941820225173,
+      "sigma_u_effective_width_MPa": 296.5515176587649,
+      "sigma_u_paik_MPa": 311.96946513274474,
+      "rel_error": 0.04942133508937938
+    }
+  ]
+}
