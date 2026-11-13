@@ -1,0 +1,1331 @@
+{
+  "rows": {
+    "tf_o1_n4": {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "order": 1,
+      "n": 4,
+      "layers": 2,
+      "nodes": 294,
+      "elements": 192,
+      "dofs": 882,
+      "mesh_volume_error": 0.07116181848080852,
+      "shell_volume_m3": 2044.1296199357587,
+      "wall_seconds": 11.19,
+      "solver": {
+        "iterations": 43,
+        "relative_residual": 1.782591068212131e-12
+      },
+      "loads": {
+        "closed_surface_force_resultant": 6.347829565855355e-17,
+        "closed_surface_moment_resultant": 6.868474393061669e-17
+      },
+      "equilibrium": {
+        "free_residual_relative": 1.7816287134898888e-12,
+        "gauge_reaction_relative": 9.495152030044807e-14
+      },
+      "energy": {
+        "fe_strain_energy_j": 24399.28106943081,
+        "lame_strain_energy_j": 26833.370432235366,
+        "relative_error": 0.09071127941052252
+      },
+      "u_inner": 6.472980600599384e-05,
+      "u_outer": 5.1090062071724145e-05,
+      "got": {
+        "radial_displacement_inner": 6.472980600599384e-05,
+        "radial_displacement_outer": 5.1090062071724145e-05,
+        "radial_stress_inner": -616655.3756868864,
+        "hoop_stress_inner": 1892494.0016631044,
+        "von_mises_inner": 2510182.7119911173,
+        "hoop_stress_outer": 1650068.3326515006
+      },
+      "ref_m1": {
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05,
+        "radial_stress_inner": -858640.2433192511,
+        "hoop_stress_inner": 2003090.6134629045,
+        "von_mises_inner": 2861730.8567821556,
+        "hoop_stress_outer": 1732451.9708914808
+      },
+      "probes_m1": {
+        "radial_displacement_inner": 0.029961610977093083,
+        "radial_displacement_outer": 0.026095691757758575,
+        "radial_stress_inner": 0.2818233474556495,
+        "hoop_stress_inner": 0.05521298490266637,
+        "von_mises_inner": 0.12284458685480053,
+        "hoop_stress_outer": 0.04755320183426929
+      },
+      "worst_m1": 0.2818233474556495,
+      "worst_quantity_m1": "radial_stress_inner",
+      "mesh_layer_radii": [
+        8.0,
+        9.0,
+        10.0
+      ],
+      "inner_layer": {
+        "radius": 8.192898262094586,
+        "radial_stress": -616655.3756868866,
+        "hoop_stress": 1892494.0016631046,
+        "von_mises": 2510182.7119911173,
+        "volume": 844.283696017685,
+        "elements": 96
+      },
+      "outer_layer": {
+        "radius": 9.15676864587042,
+        "radial_stress": -145087.1122939065,
+        "hoop_stress": 1650068.3326515001,
+        "von_mises": 1795405.3394297236,
+        "volume": 1054.381942952961,
+        "elements": 96
+      },
+      "retained_passed": false,
+      "probes_m2": {
+        "radial_stress_inner": 0.06459471602299327,
+        "hoop_stress_inner": 0.005724443012384602,
+        "von_mises_inner": 0.020465646223985466,
+        "radial_stress_outer": 0.029446733589745824,
+        "radial_stress_outer_normalisation": "applied_pressure",
+        "hoop_stress_outer": 0.006603753772330351,
+        "von_mises_outer": 0.021881973236645296,
+        "radial_displacement_inner": 0.029961610977093083,
+        "radial_displacement_outer": 0.026095691757758575
+      },
+      "ref_m2": {
+        "radial_stress_inner": -659238.7131544626,
+        "hoop_stress_inner": 1903389.8483805102,
+        "von_mises_inner": 2562628.561534973,
+        "radial_stress_outer": -174533.84588365234,
+        "hoop_stress_outer": 1661037.414745105,
+        "von_mises_outer": 1835571.2606287573,
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05
+      },
+      "band_exact": {
+        "inner": {
+          "radial_stress": -659238.7131544626,
+          "hoop_stress": 1903389.8483805102,
+          "von_mises": 2562628.561534973,
+          "radius": 8.51958525345622
+        },
+        "outer": {
+          "radial_stress": -174533.84588365234,
+          "hoop_stress": 1661037.414745105,
+          "von_mises": 1835571.2606287573,
+          "radius": 9.517527675276753
+        }
+      },
+      "layer_volume_error": {
+        "inner": 0.07116181848080827,
+        "outer": 0.07116181848080871
+      },
+      "got_m2": {
+        "radial_stress_inner": -616655.3756868866,
+        "hoop_stress_inner": 1892494.0016631046,
+        "von_mises_inner": 2510182.7119911173,
+        "radial_stress_outer": -145087.1122939065,
+        "hoop_stress_outer": 1650068.3326515001,
+        "von_mises_outer": 1795405.3394297236,
+        "radial_displacement_inner": 6.472980600599384e-05,
+        "radial_displacement_outer": 5.1090062071724145e-05
+      },
+      "layer_volume_ratio": {
+        "inner": 0.9288381815191917,
+        "outer": 0.9288381815191913
+      },
+      "worst_m2": 0.06459471602299327,
+      "worst_quantity_m2": "radial_stress_inner",
+      "centroid_band_variant": {
+        "inner": {
+          "radius": 8.192898262094586,
+          "radial_stress": -616655.3756868866,
+          "hoop_stress": 1892494.0016631046,
+          "von_mises": 2510182.7119911173,
+          "volume": 844.283696017685,
+          "elements": 96
+        },
+        "outer": {
+          "radius": 9.15676864587042,
+          "radial_stress": -145087.1122939065,
+          "hoop_stress": 1650068.3326515001,
+          "von_mises": 1795405.3394297236,
+          "volume": 1054.381942952961,
+          "elements": 96
+        }
+      }
+    },
+    "tf_o1_n6": {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "order": 1,
+      "n": 6,
+      "layers": 2,
+      "nodes": 654,
+      "elements": 432,
+      "dofs": 1962,
+      "mesh_volume_error": 0.03283533247088073,
+      "shell_volume_m3": 2044.1296199357587,
+      "wall_seconds": 85.59,
+      "solver": {
+        "iterations": 66,
+        "relative_residual": 4.990470918422784e-12
+      },
+      "loads": {
+        "closed_surface_force_resultant": 1.0127184587409722e-16,
+        "closed_surface_moment_resultant": 1.0500634825478474e-16
+      },
+      "equilibrium": {
+        "free_residual_relative": 4.991452882461813e-12,
+        "gauge_reaction_relative": 3.4792634651936085e-14
+      },
+      "energy": {
+        "fe_strain_energy_j": 25580.314674533765,
+        "lame_strain_energy_j": 26833.370432235366,
+        "relative_error": 0.04669766553799311
+      },
+      "u_inner": 6.5361995742414e-05,
+      "u_outer": 5.148653819139214e-05,
+      "got": {
+        "radial_displacement_inner": 6.5361995742414e-05,
+        "radial_displacement_outer": 5.148653819139214e-05,
+        "radial_stress_inner": -632184.1339048913,
+        "hoop_stress_inner": 1900937.3387705726,
+        "von_mises_inner": 2533589.995935077,
+        "hoop_stress_outer": 1656184.5055792707
+      },
+      "ref_m1": {
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05,
+        "radial_stress_inner": -746824.9489969404,
+        "hoop_stress_inner": 1947182.966301749,
+        "von_mises_inner": 2694007.915298689,
+        "hoop_stress_outer": 1692406.2912963706
+      },
+      "probes_m1": {
+        "radial_displacement_inner": 0.020487639845199822,
+        "radial_displacement_outer": 0.018537865726587364,
+        "radial_stress_inner": 0.15350426528468686,
+        "hoop_stress_inner": 0.023750016475857918,
+        "von_mises_inner": 0.05954619452030322,
+        "hoop_stress_outer": 0.021402535492440346
+      },
+      "worst_m1": 0.15350426528468686,
+      "worst_quantity_m1": "radial_stress_inner",
+      "mesh_layer_radii": [
+        8.0,
+        9.0,
+        10.0
+      ],
+      "inner_layer": {
+        "radius": 8.359510634526968,
+        "radial_stress": -632184.1339048914,
+        "hoop_stress": 1900937.3387705728,
+        "von_mises": 2533589.995935077,
+        "volume": 879.121225210237,
+        "elements": 216
+      },
+      "outer_layer": {
+        "radius": 9.342982473883081,
+        "radial_stress": -156704.63341108328,
+        "hoop_stress": 1656184.5055792707,
+        "von_mises": 1812954.8650470255,
+        "volume": 1097.8887190413557,
+        "elements": 216
+      },
+      "retained_passed": false,
+      "probes_m2": {
+        "radial_stress_inner": 0.04103912393147364,
+        "hoop_stress_inner": 0.001288495686800127,
+        "von_mises_inner": 0.011331554652814135,
+        "radial_stress_outer": 0.01782921247256905,
+        "radial_stress_outer_normalisation": "applied_pressure",
+        "hoop_stress_outer": 0.0029216133982021197,
+        "von_mises_outer": 0.01232117546555222,
+        "radial_displacement_inner": 0.020487639845199822,
+        "radial_displacement_outer": 0.018537865726587364
+      },
+      "ref_m2": {
+        "radial_stress_inner": -659238.7131544626,
+        "hoop_stress_inner": 1903389.8483805102,
+        "von_mises_inner": 2562628.561534973,
+        "radial_stress_outer": -174533.84588365234,
+        "hoop_stress_outer": 1661037.414745105,
+        "von_mises_outer": 1835571.2606287573,
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05
+      },
+      "band_exact": {
+        "inner": {
+          "radial_stress": -659238.7131544626,
+          "hoop_stress": 1903389.8483805102,
+          "von_mises": 2562628.561534973,
+          "radius": 8.51958525345622
+        },
+        "outer": {
+          "radial_stress": -174533.84588365234,
+          "hoop_stress": 1661037.414745105,
+          "von_mises": 1835571.2606287573,
+          "radius": 9.517527675276753
+        }
+      },
+      "layer_volume_error": {
+        "inner": 0.032835332470880774,
+        "outer": 0.032835332470880885
+      },
+      "got_m2": {
+        "radial_stress_inner": -632184.1339048914,
+        "hoop_stress_inner": 1900937.3387705728,
+        "von_mises_inner": 2533589.995935077,
+        "radial_stress_outer": -156704.63341108328,
+        "hoop_stress_outer": 1656184.5055792707,
+        "von_mises_outer": 1812954.8650470255,
+        "radial_displacement_inner": 6.5361995742414e-05,
+        "radial_displacement_outer": 5.148653819139214e-05
+      },
+      "layer_volume_ratio": {
+        "inner": 0.9671646675291192,
+        "outer": 0.9671646675291191
+      },
+      "worst_m2": 0.04103912393147364,
+      "worst_quantity_m2": "radial_stress_inner",
+      "centroid_band_variant": {
+        "inner": {
+          "radius": 8.359510634526968,
+          "radial_stress": -632184.1339048914,
+          "hoop_stress": 1900937.3387705728,
+          "von_mises": 2533589.995935077,
+          "volume": 879.121225210237,
+          "elements": 216
+        },
+        "outer": {
+          "radius": 9.342982473883081,
+          "radial_stress": -156704.63341108328,
+          "hoop_stress": 1656184.5055792707,
+          "von_mises": 1812954.8650470255,
+          "volume": 1097.8887190413557,
+          "elements": 216
+        }
+      }
+    },
+    "tf_o2_n4": {
+      "arm": "TensorFEM",
+      "element": "HEX20",
+      "order": 2,
+      "n": 4,
+      "layers": 2,
+      "nodes": 1066,
+      "elements": 192,
+      "dofs": 3198,
+      "mesh_volume_error": 0.0013588480374602352,
+      "shell_volume_m3": 2044.1296199357587,
+      "wall_seconds": 61.4,
+      "solver": {
+        "iterations": 200,
+        "relative_residual": 7.170367929482338e-12
+      },
+      "loads": {
+        "closed_surface_force_resultant": 2.1961461190544122e-16,
+        "closed_surface_moment_resultant": 5.69635202551368e-17
+      },
+      "equilibrium": {
+        "free_residual_relative": 7.168407740296562e-12,
+        "gauge_reaction_relative": 1.7772045063170084e-13
+      },
+      "energy": {
+        "fe_strain_energy_j": 26783.598229448384,
+        "lame_strain_energy_j": 26833.370432235366,
+        "relative_error": 0.0018548621356633632
+      },
+      "u_inner": 6.67085557282591e-05,
+      "u_outer": 5.2293700345383685e-05,
+      "got": {
+        "radial_displacement_inner": 6.67085557282591e-05,
+        "radial_displacement_outer": 5.2293700345383685e-05,
+        "radial_stress_inner": -779125.0084979604,
+        "hoop_stress_inner": 1898259.2469968456,
+        "von_mises_inner": 2677422.704700609,
+        "hoop_stress_outer": 1651736.368967766
+      },
+      "ref_m1": {
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05,
+        "radial_stress_inner": -761361.3650626175,
+        "hoop_stress_inner": 1954451.1743345875,
+        "von_mises_inner": 2715812.539397205,
+        "hoop_stress_outer": 1695179.4929295226
+      },
+      "probes_m1": {
+        "radial_displacement_inner": 0.00030814356691751617,
+        "radial_displacement_outer": 0.003151337166123585,
+        "radial_stress_inner": 0.02333142217412356,
+        "hoop_stress_inner": 0.02875074500485951,
+        "von_mises_inner": 0.014135671788715186,
+        "hoop_stress_outer": 0.02562744779709464
+      },
+      "worst_m1": 0.02875074500485951,
+      "worst_quantity_m1": "hoop_stress_inner",
+      "mesh_layer_radii": [
+        8.0,
+        9.0,
+        10.0
+      ],
+      "inner_layer": {
+        "radius": 8.337077943732133,
+        "radial_stress": -779125.0084979603,
+        "hoop_stress": 1898259.2469968454,
+        "von_mises": 2677422.7047006087,
+        "volume": 694.5800166023427,
+        "elements": 96
+      },
+      "outer_layer": {
+        "radius": 9.329593784740343,
+        "radial_stress": -260478.754568356,
+        "hoop_stress": 1651736.368967766,
+        "von_mises": 1912219.9334514183,
+        "volume": 1346.7719418110519,
+        "elements": 96
+      },
+      "retained_passed": true,
+      "probes_m2": {
+        "radial_stress_inner": 0.18185566616657076,
+        "hoop_stress_inner": 0.002695507380177647,
+        "von_mises_inner": 0.04479546700161496,
+        "radial_stress_outer": 0.08594490868470367,
+        "radial_stress_outer_normalisation": "applied_pressure",
+        "hoop_stress_outer": 0.005599540199861372,
+        "von_mises_outer": 0.041757394260142064,
+        "radial_displacement_inner": 0.00030814356691751617,
+        "radial_displacement_outer": 0.003151337166123585
+      },
+      "ref_m2": {
+        "radial_stress_inner": -659238.7131544626,
+        "hoop_stress_inner": 1903389.8483805102,
+        "von_mises_inner": 2562628.561534973,
+        "radial_stress_outer": -174533.84588365234,
+        "hoop_stress_outer": 1661037.414745105,
+        "von_mises_outer": 1835571.2606287573,
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05
+      },
+      "band_exact": {
+        "inner": {
+          "radial_stress": -659238.7131544626,
+          "hoop_stress": 1903389.8483805102,
+          "von_mises": 2562628.561534973,
+          "radius": 8.51958525345622
+        },
+        "outer": {
+          "radial_stress": -174533.84588365234,
+          "hoop_stress": 1661037.414745105,
+          "von_mises": 1835571.2606287573,
+          "radius": 9.517527675276753
+        }
+      },
+      "layer_volume_error": {
+        "inner": 0.23585822800612732,
+        "outer": 0.186413718210513
+      },
+      "got_m2": {
+        "radial_stress_inner": -779125.0084979603,
+        "hoop_stress_inner": 1898259.2469968454,
+        "von_mises_inner": 2677422.7047006087,
+        "radial_stress_outer": -260478.754568356,
+        "hoop_stress_outer": 1651736.368967766,
+        "von_mises_outer": 1912219.9334514183,
+        "radial_displacement_inner": 6.67085557282591e-05,
+        "radial_displacement_outer": 5.2293700345383685e-05
+      },
+      "layer_volume_ratio": {
+        "inner": 0.7641417719938727,
+        "outer": 1.186413718210513
+      },
+      "worst_m2": 0.18185566616657076,
+      "worst_quantity_m2": "radial_stress_inner",
+      "centroid_band_variant": {
+        "inner": {
+          "radius": 8.337077943732133,
+          "radial_stress": -779125.0084979603,
+          "hoop_stress": 1898259.2469968454,
+          "von_mises": 2677422.7047006087,
+          "volume": 694.5800166023427,
+          "elements": 96
+        },
+        "outer": {
+          "radius": 9.329593784740343,
+          "radial_stress": -260478.754568356,
+          "hoop_stress": 1651736.368967766,
+          "von_mises": 1912219.9334514183,
+          "volume": 1346.7719418110519,
+          "elements": 96
+        }
+      }
+    },
+    "sk_n3_o1_p0": {
+      "arm": "scikit-fem",
+      "element": "TET4",
+      "order": 1,
+      "n": 3,
+      "layers": 2,
+      "curved_projection": false,
+      "nodes": 276,
+      "elements": 1080,
+      "dofs": 828,
+      "mesh_volume_error": 0.05906202191749746,
+      "shell_volume_m3": 2044.1296199357587,
+      "wall_seconds": 0.18,
+      "solver": {
+        "iterations": 276,
+        "cg_info": 0,
+        "relative_residual": 1.0098094088997483e-13,
+        "preconditioner": "jacobi"
+      },
+      "loads": {
+        "load_rigid_mode_relative": 9.832732652443399
+      },
+      "equilibrium": {
+        "free_residual_relative": 1.0098094088997483e-13
+      },
+      "energy": {
+        "fe_strain_energy_j": 24166.752475094014,
+        "lame_strain_energy_j": 26833.370432235366
+      },
+      "mesh_layer_radii": [
+        8.0,
+        9.0,
+        10.0
+      ],
+      "inner_layer": {
+        "radius": 8.305855797080651,
+        "radial_stress": -589364.2293937819,
+        "hoop_stress": 1870905.4180376865,
+        "von_mises": 2480716.978655277,
+        "volume": 855.2820175410593,
+        "elements": 540
+      },
+      "outer_layer": {
+        "radius": 9.27877968291703,
+        "radial_stress": -127883.18831194169,
+        "hoop_stress": 1635748.026536215,
+        "von_mises": 1778670.3262349684,
+        "volume": 1068.117173979848,
+        "elements": 540
+      },
+      "u_inner": 6.258933442534257e-05,
+      "u_outer": 4.9676498694346957e-05,
+      "got": {
+        "radial_displacement_inner": 6.258933442534257e-05,
+        "radial_displacement_outer": 4.9676498694346957e-05,
+        "radial_stress_inner": -589364.2293937819,
+        "hoop_stress_inner": 1870905.4180376865,
+        "von_mises_inner": 2480716.978655277,
+        "hoop_stress_outer": 1635748.026536215
+      },
+      "ref_m1": {
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05,
+        "radial_stress_inner": -781856.0749494811,
+        "hoop_stress_inner": 1964698.5292780194,
+        "von_mises_inner": 2746554.6042275005,
+        "hoop_stress_outer": 1705850.9004858076
+      },
+      "probes_m1": {
+        "radial_displacement_inner": 0.062038635951523056,
+        "radial_displacement_outer": 0.053041743639011214,
+        "radial_stress_inner": 0.2461985673874017,
+        "hoop_stress_inner": 0.047739187383012756,
+        "von_mises_inner": 0.09678949224713976,
+        "hoop_stress_outer": 0.04109554588248477
+      },
+      "worst_m1": 0.2461985673874017,
+      "worst_quantity_m1": "radial_stress_inner",
+      "probes_m2": {
+        "radial_stress_inner": 0.10599268878845236,
+        "hoop_stress_inner": 0.017066619521199478,
+        "von_mises_inner": 0.031963892118111854,
+        "radial_stress_outer": 0.04665065757171065,
+        "radial_stress_outer_normalisation": "applied_pressure",
+        "hoop_stress_outer": 0.015225056331901266,
+        "von_mises_outer": 0.03099903316981442,
+        "radial_displacement_inner": 0.062038635951523056,
+        "radial_displacement_outer": 0.053041743639011214
+      },
+      "ref_m2": {
+        "radial_stress_inner": -659238.7131544626,
+        "hoop_stress_inner": 1903389.8483805102,
+        "von_mises_inner": 2562628.561534973,
+        "radial_stress_outer": -174533.84588365234,
+        "hoop_stress_outer": 1661037.414745105,
+        "von_mises_outer": 1835571.2606287573,
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05
+      },
+      "band_exact": {
+        "inner": {
+          "radial_stress": -659238.7131544626,
+          "hoop_stress": 1903389.8483805102,
+          "von_mises": 2562628.561534973,
+          "radius": 8.51958525345622
+        },
+        "outer": {
+          "radial_stress": -174533.84588365234,
+          "hoop_stress": 1661037.414745105,
+          "von_mises": 1835571.2606287573,
+          "radius": 9.517527675276753
+        }
+      },
+      "layer_volume_error": {
+        "inner": 0.05906202191749721,
+        "outer": 0.05906202191749743
+      },
+      "got_m2": {
+        "radial_stress_inner": -589364.2293937819,
+        "hoop_stress_inner": 1870905.4180376865,
+        "von_mises_inner": 2480716.978655277,
+        "radial_stress_outer": -127883.18831194169,
+        "hoop_stress_outer": 1635748.026536215,
+        "von_mises_outer": 1778670.3262349684,
+        "radial_displacement_inner": 6.258933442534257e-05,
+        "radial_displacement_outer": 4.9676498694346957e-05
+      },
+      "layer_volume_ratio": {
+        "inner": 0.9409379780825028,
+        "outer": 0.9409379780825026
+      },
+      "worst_m2": 0.10599268878845236,
+      "worst_quantity_m2": "radial_stress_inner"
+    },
+    "sk_n3_o2_p1": {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "order": 2,
+      "n": 3,
+      "layers": 2,
+      "curved_projection": true,
+      "nodes": 2050,
+      "elements": 1080,
+      "dofs": 6150,
+      "mesh_volume_error": 0.0004532371115492134,
+      "shell_volume_m3": 2044.1296199357587,
+      "wall_seconds": 2.69,
+      "solver": {
+        "iterations": 928,
+        "cg_info": 0,
+        "relative_residual": 3.01269610980948e-13,
+        "preconditioner": "jacobi"
+      },
+      "loads": {
+        "load_rigid_mode_relative": 7.9913551650607255
+      },
+      "equilibrium": {
+        "free_residual_relative": 3.01269610980948e-13
+      },
+      "energy": {
+        "fe_strain_energy_j": 28751.200411435966,
+        "lame_strain_energy_j": 26833.370432235366
+      },
+      "mesh_layer_radii": [
+        8.0,
+        9.0,
+        10.0
+      ],
+      "inner_layer": {
+        "radius": 8.335670853543965,
+        "radial_stress": -684243.3802914151,
+        "hoop_stress": 1952946.4128312115,
+        "von_mises": 2668171.2061488423,
+        "volume": 729.5860668417498,
+        "elements": 540
+      },
+      "outer_layer": {
+        "radius": 9.306962335327729,
+        "radial_stress": -187840.06335315277,
+        "hoop_stress": 1647110.5150220215,
+        "von_mises": 1881484.7699381632,
+        "volume": 1313.6170776894373,
+        "elements": 540
+      },
+      "u_inner": 7.151997016555289e-05,
+      "u_outer": 5.726562254775624e-05,
+      "got": {
+        "radial_displacement_inner": 7.151997016555289e-05,
+        "radial_displacement_outer": 5.726562254775624e-05,
+        "radial_stress_inner": -684243.3802914151,
+        "hoop_stress_inner": 1952946.4128312115,
+        "von_mises_inner": 2668171.2061488423,
+        "hoop_stress_outer": 1647110.5150220215
+      },
+      "ref_m1": {
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05,
+        "radial_stress_inner": -762278.4952835073,
+        "hoop_stress_inner": 1954909.7394450326,
+        "von_mises_inner": 2717188.23472854,
+        "hoop_stress_outer": 1699903.503131017
+      },
+      "probes_m1": {
+        "radial_displacement_inner": 0.0717955285689428,
+        "radial_displacement_outer": 0.09162592981660324,
+        "radial_stress_inner": 0.10237087294856619,
+        "hoop_stress_inner": 0.0010043055053674478,
+        "von_mises_inner": 0.018039614610871637,
+        "hoop_stress_outer": 0.031056461741361962
+      },
+      "worst_m1": 0.10237087294856619,
+      "worst_quantity_m1": "radial_stress_inner",
+      "probes_m2": {
+        "radial_stress_inner": 0.03792960977261935,
+        "hoop_stress_inner": 0.026035950802651486,
+        "von_mises_inner": 0.04118530722636259,
+        "radial_stress_outer": 0.013306217469500435,
+        "radial_stress_outer_normalisation": "applied_pressure",
+        "hoop_stress_outer": 0.00838445877224303,
+        "von_mises_outer": 0.025013199048278135,
+        "radial_displacement_inner": 0.0717955285689428,
+        "radial_displacement_outer": 0.09162592981660324
+      },
+      "ref_m2": {
+        "radial_stress_inner": -659238.7131544626,
+        "hoop_stress_inner": 1903389.8483805102,
+        "von_mises_inner": 2562628.561534973,
+        "radial_stress_outer": -174533.84588365234,
+        "hoop_stress_outer": 1661037.414745105,
+        "von_mises_outer": 1835571.2606287573,
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05
+      },
+      "band_exact": {
+        "inner": {
+          "radial_stress": -659238.7131544626,
+          "hoop_stress": 1903389.8483805102,
+          "von_mises": 2562628.561534973,
+          "radius": 8.51958525345622
+        },
+        "outer": {
+          "radial_stress": -174533.84588365234,
+          "hoop_stress": 1661037.414745105,
+          "von_mises": 1835571.2606287573,
+          "radius": 9.517527675276753
+        }
+      },
+      "layer_volume_error": {
+        "inner": 0.19734634367162363,
+        "outer": 0.1572065567022376
+      },
+      "got_m2": {
+        "radial_stress_inner": -684243.3802914151,
+        "hoop_stress_inner": 1952946.4128312115,
+        "von_mises_inner": 2668171.2061488423,
+        "radial_stress_outer": -187840.06335315277,
+        "hoop_stress_outer": 1647110.5150220215,
+        "von_mises_outer": 1881484.7699381632,
+        "radial_displacement_inner": 7.151997016555289e-05,
+        "radial_displacement_outer": 5.726562254775624e-05
+      },
+      "layer_volume_ratio": {
+        "inner": 0.8026536563283764,
+        "outer": 1.1572065567022376
+      },
+      "worst_m2": 0.09162592981660324,
+      "worst_quantity_m2": "radial_displacement_outer"
+    },
+    "sk_n3_o2_p0": {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "order": 2,
+      "n": 3,
+      "layers": 2,
+      "curved_projection": false,
+      "nodes": 2050,
+      "elements": 1080,
+      "dofs": 6150,
+      "mesh_volume_error": 0.05906202191749724,
+      "shell_volume_m3": 2044.1296199357587,
+      "wall_seconds": 2.66,
+      "solver": {
+        "iterations": 866,
+        "cg_info": 0,
+        "relative_residual": 2.6638631690312206e-13,
+        "preconditioner": "jacobi"
+      },
+      "loads": {
+        "load_rigid_mode_relative": 8.09659702279429
+      },
+      "equilibrium": {
+        "free_residual_relative": 2.6638631690312206e-13
+      },
+      "energy": {
+        "fe_strain_energy_j": 27056.418658259077,
+        "lame_strain_energy_j": 26833.370432235366
+      },
+      "mesh_layer_radii": [
+        8.0,
+        9.0,
+        10.0
+      ],
+      "inner_layer": {
+        "radius": 8.305855797080651,
+        "radial_stress": -632285.1494843022,
+        "hoop_stress": 1877725.65438007,
+        "von_mises": 2554947.205098418,
+        "volume": 855.2820175410595,
+        "elements": 540
+      },
+      "outer_layer": {
+        "radius": 9.27877968291703,
+        "radial_stress": -153652.86485614174,
+        "hoop_stress": 1660355.8483637546,
+        "von_mises": 1853971.3915752147,
+        "volume": 1068.117173979848,
+        "elements": 540
+      },
+      "u_inner": 7.004334722271425e-05,
+      "u_outer": 5.606961182151538e-05,
+      "got": {
+        "radial_displacement_inner": 7.004334722271425e-05,
+        "radial_displacement_outer": 5.606961182151538e-05,
+        "radial_stress_inner": -632285.1494843022,
+        "hoop_stress_inner": 1877725.65438007,
+        "von_mises_inner": 2554947.205098418,
+        "hoop_stress_outer": 1660355.8483637546
+      },
+      "ref_m1": {
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05,
+        "radial_stress_inner": -781856.0749494811,
+        "hoop_stress_inner": 1964698.5292780194,
+        "von_mises_inner": 2746554.6042275005,
+        "hoop_stress_outer": 1705850.9004858076
+      },
+      "probes_m1": {
+        "radial_displacement_inner": 0.0496669138078724,
+        "radial_displacement_outer": 0.06882697534763686,
+        "radial_stress_inner": 0.1913023768151233,
+        "hoop_stress_inner": 0.04426779661198702,
+        "von_mises_inner": 0.0697628216945551,
+        "hoop_stress_outer": 0.02667000504504614
+      },
+      "worst_m1": 0.1913023768151233,
+      "worst_quantity_m1": "radial_stress_inner",
+      "probes_m2": {
+        "radial_stress_inner": 0.04088589327709148,
+        "hoop_stress_inner": 0.013483414352701542,
+        "von_mises_inner": 0.002997452128588546,
+        "radial_stress_outer": 0.020880981027510598,
+        "radial_stress_outer_normalisation": "applied_pressure",
+        "hoop_stress_outer": 0.00041032572493557133,
+        "von_mises_outer": 0.010024198646559,
+        "radial_displacement_inner": 0.0496669138078724,
+        "radial_displacement_outer": 0.06882697534763686
+      },
+      "ref_m2": {
+        "radial_stress_inner": -659238.7131544626,
+        "hoop_stress_inner": 1903389.8483805102,
+        "von_mises_inner": 2562628.561534973,
+        "radial_stress_outer": -174533.84588365234,
+        "hoop_stress_outer": 1661037.414745105,
+        "von_mises_outer": 1835571.2606287573,
+        "radial_displacement_inner": 6.672911787665888e-05,
+        "radial_displacement_outer": 5.245901639344263e-05
+      },
+      "band_exact": {
+        "inner": {
+          "radial_stress": -659238.7131544626,
+          "hoop_stress": 1903389.8483805102,
+          "von_mises": 2562628.561534973,
+          "radius": 8.51958525345622
+        },
+        "outer": {
+          "radial_stress": -174533.84588365234,
+          "hoop_stress": 1661037.414745105,
+          "von_mises": 1835571.2606287573,
+          "radius": 9.517527675276753
+        }
+      },
+      "layer_volume_error": {
+        "inner": 0.05906202191749699,
+        "outer": 0.05906202191749743
+      },
+      "got_m2": {
+        "radial_stress_inner": -632285.1494843022,
+        "hoop_stress_inner": 1877725.65438007,
+        "von_mises_inner": 2554947.205098418,
+        "radial_stress_outer": -153652.86485614174,
+        "hoop_stress_outer": 1660355.8483637546,
+        "von_mises_outer": 1853971.3915752147,
+        "radial_displacement_inner": 7.004334722271425e-05,
+        "radial_displacement_outer": 5.606961182151538e-05
+      },
+      "layer_volume_ratio": {
+        "inner": 0.940937978082503,
+        "outer": 0.9409379780825026
+      },
+      "worst_m2": 0.06882697534763686,
+      "worst_quantity_m2": "radial_displacement_outer"
+    }
+  },
+  "claims": [
+    {
+      "id": "C1",
+      "text": "HEX20 (n=4) keeps all probes below 3%",
+      "kind": "threshold",
+      "recorded": 0.03,
+      "got": 0.02875074500485951,
+      "deviation": -0.04164183317134964,
+      "reproduced": true,
+      "functional": "M1",
+      "worst_quantity": "hoop_stress_inner",
+      "same_config_m2": {
+        "got": 0.18185566616657076,
+        "worst_quantity": "radial_stress_inner",
+        "reproduced_m2": false
+      }
+    },
+    {
+      "id": "C2a",
+      "text": "HEX8 worst = 15.4% on the *same* 192-element mesh",
+      "kind": "numeric",
+      "recorded": 0.1535,
+      "got": 0.2818233474556495,
+      "deviation": 0.8359827195807786,
+      "reproduced": false,
+      "functional": "M1",
+      "n": 4
+    },
+    {
+      "id": "C2b",
+      "text": "the 15.35% figure belongs to HEX8 n=6, not n=4",
+      "kind": "numeric",
+      "recorded": 0.1535,
+      "got": 0.15350426528468686,
+      "deviation": 2.778687092417404e-05,
+      "reproduced": true,
+      "functional": "M1",
+      "n": 6
+    },
+    {
+      "id": "C3",
+      "text": "HEX8 needs n >= 12 before approaching the 5% line",
+      "kind": "threshold",
+      "recorded": 0.05,
+      "got": 0.15350426528468686,
+      "deviation": 2.070085305693737,
+      "reproduced": false,
+      "functional": "M1",
+      "strict_crossing_n": null,
+      "strict_below_line": false,
+      "ladder_worst_m1": [
+        {
+          "n": 4,
+          "worst": 0.2818233474556495
+        },
+        {
+          "n": 6,
+          "worst": 0.15350426528468686
+        }
+      ]
+    },
+    {
+      "id": "C4a",
+      "text": "mesh volume error (hex8) = 7.10%",
+      "kind": "numeric",
+      "recorded": 0.071,
+      "got": 0.07116181848080852,
+      "deviation": 0.002279133532514451,
+      "reproduced": true
+    },
+    {
+      "id": "C4b",
+      "text": "mesh volume error (hex20) = 0.14%",
+      "kind": "numeric",
+      "recorded": 0.0014,
+      "got": 0.0013588480374602352,
+      "deviation": 0.029394258956974867,
+      "reproduced": true
+    },
+    {
+      "id": "C5",
+      "text": "closed-surface force/moment < 1e-16 (relative)",
+      "kind": "threshold",
+      "recorded": 1e-16,
+      "got": 2.1961461190544122e-16,
+      "deviation": 1.1961461190544123,
+      "reproduced": false
+    }
+  ],
+  "table": [
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 4,
+      "probe": "radial_displacement_inner",
+      "ref": 6.672911787665888e-05,
+      "got": 6.472980600599384e-05,
+      "err_pct": 2.9961610977093085
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 4,
+      "probe": "radial_displacement_outer",
+      "ref": 5.245901639344263e-05,
+      "got": 5.1090062071724145e-05,
+      "err_pct": 2.6095691757758575
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 4,
+      "probe": "radial_stress_inner",
+      "ref": -858640.2433192511,
+      "got": -616655.3756868864,
+      "err_pct": 28.18233474556495
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 4,
+      "probe": "hoop_stress_inner",
+      "ref": 2003090.6134629045,
+      "got": 1892494.0016631044,
+      "err_pct": 5.521298490266637
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 4,
+      "probe": "von_mises_inner",
+      "ref": 2861730.8567821556,
+      "got": 2510182.7119911173,
+      "err_pct": 12.284458685480052
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 4,
+      "probe": "hoop_stress_outer",
+      "ref": 1732451.9708914808,
+      "got": 1650068.3326515006,
+      "err_pct": 4.755320183426929
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 6,
+      "probe": "radial_displacement_inner",
+      "ref": 6.672911787665888e-05,
+      "got": 6.5361995742414e-05,
+      "err_pct": 2.048763984519982
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 6,
+      "probe": "radial_displacement_outer",
+      "ref": 5.245901639344263e-05,
+      "got": 5.148653819139214e-05,
+      "err_pct": 1.8537865726587364
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 6,
+      "probe": "radial_stress_inner",
+      "ref": -746824.9489969404,
+      "got": -632184.1339048913,
+      "err_pct": 15.350426528468686
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 6,
+      "probe": "hoop_stress_inner",
+      "ref": 1947182.966301749,
+      "got": 1900937.3387705726,
+      "err_pct": 2.375001647585792
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 6,
+      "probe": "von_mises_inner",
+      "ref": 2694007.915298689,
+      "got": 2533589.995935077,
+      "err_pct": 5.954619452030322
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX8",
+      "n": 6,
+      "probe": "hoop_stress_outer",
+      "ref": 1692406.2912963706,
+      "got": 1656184.5055792707,
+      "err_pct": 2.1402535492440347
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX20",
+      "n": 4,
+      "probe": "radial_displacement_inner",
+      "ref": 6.672911787665888e-05,
+      "got": 6.67085557282591e-05,
+      "err_pct": 0.030814356691751615
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX20",
+      "n": 4,
+      "probe": "radial_displacement_outer",
+      "ref": 5.245901639344263e-05,
+      "got": 5.2293700345383685e-05,
+      "err_pct": 0.3151337166123585
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX20",
+      "n": 4,
+      "probe": "radial_stress_inner",
+      "ref": -761361.3650626175,
+      "got": -779125.0084979604,
+      "err_pct": 2.333142217412356
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX20",
+      "n": 4,
+      "probe": "hoop_stress_inner",
+      "ref": 1954451.1743345875,
+      "got": 1898259.2469968456,
+      "err_pct": 2.875074500485951
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX20",
+      "n": 4,
+      "probe": "von_mises_inner",
+      "ref": 2715812.539397205,
+      "got": 2677422.704700609,
+      "err_pct": 1.4135671788715185
+    },
+    {
+      "arm": "TensorFEM",
+      "element": "HEX20",
+      "n": 4,
+      "probe": "hoop_stress_outer",
+      "ref": 1695179.4929295226,
+      "got": 1651736.368967766,
+      "err_pct": 2.562744779709464
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET4",
+      "n": 3,
+      "probe": "radial_displacement_inner",
+      "ref": 6.672911787665888e-05,
+      "got": 6.258933442534257e-05,
+      "err_pct": 6.203863595152305
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET4",
+      "n": 3,
+      "probe": "radial_displacement_outer",
+      "ref": 5.245901639344263e-05,
+      "got": 4.9676498694346957e-05,
+      "err_pct": 5.304174363901121
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET4",
+      "n": 3,
+      "probe": "radial_stress_inner",
+      "ref": -781856.0749494811,
+      "got": -589364.2293937819,
+      "err_pct": 24.61985673874017
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET4",
+      "n": 3,
+      "probe": "hoop_stress_inner",
+      "ref": 1964698.5292780194,
+      "got": 1870905.4180376865,
+      "err_pct": 4.773918738301275
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET4",
+      "n": 3,
+      "probe": "von_mises_inner",
+      "ref": 2746554.6042275005,
+      "got": 2480716.978655277,
+      "err_pct": 9.678949224713977
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET4",
+      "n": 3,
+      "probe": "hoop_stress_outer",
+      "ref": 1705850.9004858076,
+      "got": 1635748.026536215,
+      "err_pct": 4.109554588248477
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "radial_displacement_inner",
+      "ref": 6.672911787665888e-05,
+      "got": 7.151997016555289e-05,
+      "err_pct": 7.179552856894281
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "radial_displacement_outer",
+      "ref": 5.245901639344263e-05,
+      "got": 5.726562254775624e-05,
+      "err_pct": 9.162592981660325
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "radial_stress_inner",
+      "ref": -762278.4952835073,
+      "got": -684243.3802914151,
+      "err_pct": 10.237087294856618
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "hoop_stress_inner",
+      "ref": 1954909.7394450326,
+      "got": 1952946.4128312115,
+      "err_pct": 0.10043055053674478
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "von_mises_inner",
+      "ref": 2717188.23472854,
+      "got": 2668171.2061488423,
+      "err_pct": 1.8039614610871637
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "hoop_stress_outer",
+      "ref": 1699903.503131017,
+      "got": 1647110.5150220215,
+      "err_pct": 3.1056461741361963
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "radial_displacement_inner",
+      "ref": 6.672911787665888e-05,
+      "got": 7.004334722271425e-05,
+      "err_pct": 4.96669138078724
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "radial_displacement_outer",
+      "ref": 5.245901639344263e-05,
+      "got": 5.606961182151538e-05,
+      "err_pct": 6.882697534763686
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "radial_stress_inner",
+      "ref": -781856.0749494811,
+      "got": -632285.1494843022,
+      "err_pct": 19.13023768151233
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "hoop_stress_inner",
+      "ref": 1964698.5292780194,
+      "got": 1877725.65438007,
+      "err_pct": 4.426779661198702
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "von_mises_inner",
+      "ref": 2746554.6042275005,
+      "got": 2554947.205098418,
+      "err_pct": 6.9762821694555095
+    },
+    {
+      "arm": "scikit-fem",
+      "element": "TET10",
+      "n": 3,
+      "probe": "hoop_stress_outer",
+      "ref": 1705850.9004858076,
+      "got": 1660355.8483637546,
+      "err_pct": 2.667000504504614
+    }
+  ],
+  "decision": {
+    "entries": [
+      {
+        "arm": "TensorFEM",
+        "element": "HEX8",
+        "n": 4,
+        "dofs": 882,
+        "worst_m1": 0.2818233474556495,
+        "worst_m2": 0.06459471602299327,
+        "worst_quantity_m2": "radial_stress_inner",
+        "passes_case_line_m1": false,
+        "passes_case_line_m2": false,
+        "passes_quadratic_target_m1": false,
+        "passes_quadratic_target_m2": false
+      },
+      {
+        "arm": "TensorFEM",
+        "element": "HEX8",
+        "n": 6,
+        "dofs": 1962,
+        "worst_m1": 0.15350426528468686,
+        "worst_m2": 0.04103912393147364,
+        "worst_quantity_m2": "radial_stress_inner",
+        "passes_case_line_m1": false,
+        "passes_case_line_m2": true,
+        "passes_quadratic_target_m1": false,
+        "passes_quadratic_target_m2": false
+      },
+      {
+        "arm": "TensorFEM",
+        "element": "HEX20",
+        "n": 4,
+        "dofs": 3198,
+        "worst_m1": 0.02875074500485951,
+        "worst_m2": 0.18185566616657076,
+        "worst_quantity_m2": "radial_stress_inner",
+        "passes_case_line_m1": true,
+        "passes_case_line_m2": false,
+        "passes_quadratic_target_m1": true,
+        "passes_quadratic_target_m2": false
+      }
+    ],
+    "verdict": {
+      "ranking_m1_reproduced": true,
+      "ranking_m2_reproduced": false,
+      "quadratic_under_3pct_m1": true,
+      "quadratic_under_3pct_m2": false,
+      "functional_dependence_gap": 0.15310492116171126,
+      "selection_robust": false
+    }
+  }
+}
