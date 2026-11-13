@@ -3,7 +3,7 @@
   "anchor": "fem_sent_j_integral",
   "title": "Single-edge-notched tension plate: J-integral K_I against Tada's handbook factor",
   "mission": "CASE-FEM-JINTEGRAL-EDGE-CRACK",
-  "generated_at": "2026-11-13T00:36:39+00:00",
+  "generated_at": "2026-11-13T08:57:18+00:00",
   "criteria": {
     "k_rel_error_max": 0.03,
     "path_spread_max": 0.01,
