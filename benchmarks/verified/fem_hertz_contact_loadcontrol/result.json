@@ -2,7 +2,7 @@
   "benchmark": "fem_hertz_contact_loadcontrol",
   "case_pool": "FEM-HERTZ-CONTACT (case pool id 104)",
   "mission": "CASE-FEM-HERTZ-CONTACT",
-  "generated_at": "2026-11-12T20:22:19+00:00",
+  "generated_at": "2026-11-13T01:53:53+00:00",
   "environment": {
     "python": "3.11.6",
     "numpy": "2.4.6",
@@ -37,7 +37,7 @@
       "load": 1831.5018315018315,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 7.005585432052612,
+      "wall_s": 8.76815676689148,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 3.4760887501761316e-15,
@@ -47,6 +47,11 @@
         "contact_radius": 0.5,
         "indentation": 0.025,
         "peak_pressure": 3497.910837184513
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.010696944625478117,
+        "contact_radius_linear_interior_rel": 0.05063167674956473
       },
       "numeric": {
         "contact_radius_linear": 0.49575947515124347,
@@ -77,7 +82,7 @@
       "load": 1831.5018315018315,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 16.67220187187195,
+      "wall_s": 22.692927360534668,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 1.8125319911632686e-14,
@@ -87,6 +92,11 @@
         "contact_radius": 0.5,
         "indentation": 0.025,
         "peak_pressure": 3497.910837184513
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.12589555585845041,
+        "contact_radius_linear_interior_rel": 1.3122821128805684
       },
       "numeric": {
         "contact_radius_linear": 0.49734211584660426,
@@ -117,7 +127,7 @@
       "load": 1831.5018315018315,
       "n_elements": 17040,
       "ndof": 35014,
-      "wall_s": 34.29432702064514,
+      "wall_s": 46.79029822349548,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 2.272244728374062e-12,
@@ -127,6 +137,11 @@
         "contact_radius": 0.5,
         "indentation": 0.025,
         "peak_pressure": 3497.910837184513
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.14884459943876754,
+        "contact_radius_linear_interior_rel": 2.7398303379807043
       },
       "numeric": {
         "contact_radius_linear": 0.49777436376742756,
@@ -1875,7 +1890,7 @@
       "load": 14652.014652014652,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 7.4581382274627686,
+      "wall_s": 11.908921480178833,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 1.4897523215040564e-15,
@@ -1885,6 +1900,11 @@
         "contact_radius": 1.0,
         "indentation": 0.1,
         "peak_pressure": 6995.821674369026
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.012757994980309861,
+        "contact_radius_linear_interior_rel": 0.06189187423636013
       },
       "numeric": {
         "contact_radius_linear": 0.9918567562270908,
@@ -1915,7 +1935,7 @@
       "load": 14652.014652014652,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 18.844284296035767,
+      "wall_s": 23.567848205566406,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 3.972672857344151e-15,
@@ -1925,6 +1945,11 @@
         "contact_radius": 1.0,
         "indentation": 0.1,
         "peak_pressure": 6995.821674369026
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.12811140230330667,
+        "contact_radius_linear_interior_rel": 1.4167675690555017
       },
       "numeric": {
         "contact_radius_linear": 0.9962515135358325,
@@ -1955,7 +1980,7 @@
       "load": 14652.014652014652,
       "n_elements": 17040,
       "ndof": 35014,
-      "wall_s": 53.859346866607666,
+      "wall_s": 61.71329307556152,
       "outer_iterations": 4,
       "alm_iterations": 80,
       "load_residual": 2.4829205358400943e-16,
@@ -1966,10 +1991,15 @@
         "indentation": 0.1,
         "peak_pressure": 6995.821674369026
       },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.14697712479928823,
+        "contact_radius_linear_interior_rel": 2.678977677602185
+      },
       "numeric": {
-        "contact_radius_linear": 0.9825000000146723,
-        "contact_radius_outer": 0.9824999999999999,
-        "contact_radius_fit": 0.9995369568838935,
+        "contact_radius_linear": 0.9950923325820162,
+        "contact_radius_outer": 0.975,
+        "contact_radius_fit": 1.0003633564608652,
         "contact_radius_fit_consistent": 1.0150070464720011,
         "indentation": 0.09899022361250956,
         "peak_pressure_lumped": 9224.005466464205,
@@ -1977,9 +2007,9 @@
         "reaction": 14652.014652014655
       },
       "error_pct": {
-        "contact_radius_linear": -1.7499999985327697,
-        "contact_radius_outer": -1.750000000000007,
-        "contact_radius_fit": -0.04630431161064541,
+        "contact_radius_linear": -0.4907667417983763,
+        "contact_radius_outer": -2.500000000000002,
+        "contact_radius_fit": 0.03633564608651607,
         "contact_radius_fit_consistent": 1.5007046472001129,
         "indentation": -1.0097763874904464,
         "peak_pressure_lumped": 31.850208536027978,
@@ -1996,7 +2026,7 @@
     "load": 117.21611721611724,
     "n_elements": 9040,
     "ndof": 18614,
-    "wall_s": 20.324910402297974,
+    "wall_s": 24.10116934776306,
     "outer_iterations": 3,
     "alm_iterations": 58,
     "load_residual": 1.6366907829024053e-14,
@@ -2006,6 +2036,11 @@
       "contact_radius": 0.20000000000000004,
       "indentation": 0.004000000000000002,
       "peak_pressure": 1399.164334873805
+    },
+    "diagnostics": {
+      "membership_pressure_ratio": 1e-06,
+      "edge_pressure_ratio": 0.12586584000442083,
+      "contact_radius_linear_interior_rel": 1.3107571163961464
     },
     "numeric": {
       "contact_radius_linear": 0.19893227134918848,
@@ -2038,7 +2073,7 @@
       "load": 1831.5018315018315,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 19.249616622924805,
+      "wall_s": 22.61534881591797,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 6.84541191731114e-13,
@@ -2048,6 +2083,11 @@
         "contact_radius": 0.5,
         "indentation": 0.025,
         "peak_pressure": 3497.910837184513
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.12573361018105125,
+        "contact_radius_linear_interior_rel": 1.3087916321510875
       },
       "numeric": {
         "contact_radius_linear": 0.49731593724113315,
@@ -2078,7 +2118,7 @@
       "load": 1831.5018315018315,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 20.468820810317993,
+      "wall_s": 26.99896550178528,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 4.9658410716801886e-15,
@@ -2088,6 +2128,11 @@
         "contact_radius": 0.5,
         "indentation": 0.025,
         "peak_pressure": 3497.910837184513
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.12587945354984337,
+        "contact_radius_linear_interior_rel": 1.3119346231159759
       },
       "numeric": {
         "contact_radius_linear": 0.4973395096733698,
@@ -2118,7 +2163,7 @@
       "load": 1831.5018315018315,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 23.58163595199585,
+      "wall_s": 30.94507122039795,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 1.8125319911632686e-14,
@@ -2128,6 +2173,11 @@
         "contact_radius": 0.5,
         "indentation": 0.025,
         "peak_pressure": 3497.910837184513
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.12589555585845041,
+        "contact_radius_linear_interior_rel": 1.3122821128805684
       },
       "numeric": {
         "contact_radius_linear": 0.49734211584660426,
@@ -2167,7 +2217,7 @@
       "load": 1831.5018315018315,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 10.670827627182007,
+      "wall_s": 12.772339105606079,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 2.2346284822560847e-15,
@@ -2177,6 +2227,11 @@
         "contact_radius": 0.5,
         "indentation": 0.025,
         "peak_pressure": 3497.910837184513
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.01183121991758967,
+        "contact_radius_linear_interior_rel": 0.0567861954995844
       },
       "numeric": {
         "contact_radius_linear": 0.49585179293249376,
@@ -2207,7 +2262,7 @@
       "load": 1831.5018315018315,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 9.308201313018799,
+      "wall_s": 12.210751056671143,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 3.4760887501761316e-15,
@@ -2217,6 +2272,11 @@
         "contact_radius": 0.5,
         "indentation": 0.025,
         "peak_pressure": 3497.910837184513
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.010696944625478117,
+        "contact_radius_linear_interior_rel": 0.05063167674956473
       },
       "numeric": {
         "contact_radius_linear": 0.49575947515124347,
@@ -2247,7 +2307,7 @@
       "load": 1831.5018315018315,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 10.193208932876587,
+      "wall_s": 14.482726335525513,
       "outer_iterations": 3,
       "alm_iterations": 67,
       "load_residual": 7.945345714688302e-15,
@@ -2257,6 +2317,11 @@
         "contact_radius": 0.5,
         "indentation": 0.025,
         "peak_pressure": 3497.910837184513
+      },
+      "diagnostics": {
+        "membership_pressure_ratio": 1e-06,
+        "edge_pressure_ratio": 0.01069528809421222,
+        "contact_radius_linear_interior_rel": 0.05062264208217644
       },
       "numeric": {
         "contact_radius_linear": 0.49575933963123264,
@@ -2321,7 +2386,7 @@
     },
     {
       "key": "ratio0.10_h0.0075_d96",
-      "contact_radius_pct": -1.7499999985327697,
+      "contact_radius_pct": -0.4907667417983763,
       "indentation_pct": -1.0097763874904464,
       "pass": true
     }

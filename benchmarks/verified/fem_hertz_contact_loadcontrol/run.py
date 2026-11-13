@@ -152,6 +152,13 @@ def run_case(ratio, h_rel, depth_factor, rho_factor=1.0, n_outer_band=26):
             "indentation": ref.indentation,
             "peak_pressure": ref.peak_pressure,
         },
+        "diagnostics": {
+            "membership_pressure_ratio": float(state.metadata["membership_ratio"]),
+            "edge_pressure_ratio": float(state.metadata["edge_pressure_ratio"]),
+            "contact_radius_linear_interior_rel": float(
+                state.metadata["contact_radius_linear_interior_rel"]
+            ),
+        },
         "numeric": {
             "contact_radius_linear": state.contact_radius_linear,
             "contact_radius_outer": state.contact_radius_outer,
