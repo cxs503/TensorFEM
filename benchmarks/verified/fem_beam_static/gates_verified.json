@@ -82,15 +82,21 @@
   "failed_gates": [],
   "undefined_terms": [],
   "artifacts": {
-    "result": "benchmarks/verified/fem_beam_static/result.json",
-    "figures": [
-      "deflection_profile.png",
-      "convergence.png"
-    ]
+    "result": "benchmarks/verified/fem_beam_static/result.json"
   },
   "limitations": [
     "Nodal displacements of this Hermite element are exact; the graded interior sections measure the interpolation quality, which is why the observed order is 4 rather than 2.",
     "Euler-Bernoulli kinematics (no transverse shear, no warp) -- the cantilever tip load gives w/L = 3.3e-3, i.e. the geometric linearisation holds but shear deformation would matter for a stubby beam.",
     "Both cases are 1-D idealisations of the physical beam; they grade the element, not a 3-D solid discretisation."
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "deflection_profile.png",
+      "rendered_by": "benchmarks/verified/fem_beam_static/run.py"
+    },
+    {
+      "path": "convergence.png",
+      "rendered_by": "benchmarks/verified/fem_beam_static/run.py"
+    }
   ]
 }

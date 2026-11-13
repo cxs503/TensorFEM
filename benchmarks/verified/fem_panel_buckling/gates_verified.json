@@ -80,11 +80,6 @@
   "artifacts": {
     "result": "benchmarks/verified/fem_panel_buckling/result.json",
     "driver": "benchmarks/verified/fem_panel_buckling/run.py",
-    "figures": [
-      "benchmarks/verified/fem_panel_buckling/figures/buckling_convergence.png",
-      "benchmarks/verified/fem_panel_buckling/figures/buckling_modes.png",
-      "benchmarks/verified/fem_panel_buckling/figures/linear_path_evidence.png"
-    ],
     "module": "src/tensorfem/stiffened_panel_buckling.py",
     "test": "tests/test_stiffened_panel_buckling.py"
   },
@@ -125,5 +120,19 @@
       "threshold_percent": 3.0,
       "evidence": "simply supported plate ladder 10x5 / 20x10 / 40x20, r = 2"
     }
-  }
+  },
+  "figures_rendered_on_demand": [
+    {
+      "path": "benchmarks/verified/fem_panel_buckling/figures/buckling_convergence.png",
+      "rendered_by": "benchmarks/verified/fem_panel_buckling/run.py"
+    },
+    {
+      "path": "benchmarks/verified/fem_panel_buckling/figures/buckling_modes.png",
+      "rendered_by": "benchmarks/verified/fem_panel_buckling/run.py"
+    },
+    {
+      "path": "benchmarks/verified/fem_panel_buckling/figures/linear_path_evidence.png",
+      "rendered_by": "benchmarks/verified/fem_panel_buckling/run.py"
+    }
+  ]
 }

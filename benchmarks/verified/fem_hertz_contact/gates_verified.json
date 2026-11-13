@@ -84,17 +84,26 @@
   "undefined_terms": [],
   "artifacts": {
     "result": "result.json",
-    "gates": "gates_verified.json",
-    "figures": [
-      "hertz_pressure.png",
-      "hertz_convergence.png",
-      "hertz_penalty.png"
-    ]
+    "gates": "gates_verified.json"
   },
   "limitations": [
     "the two-deformable-sphere problem is solved in its exact Hertz equivalent form (rigid indenter on a half-space); the reduction is a closed-form theorem, not a numerical approximation, but the run does not exercise a two-body contact algorithm",
     "the contact is frictionless, adhesion-free, small-strain and small-slope; p_0 = 3.45 GPa is far above the yield strength of ordinary steel, so this is a verification of the elastic operator only",
     "penalty contact adds a compliance bias of O(overlap/delta) which shows up in the contact force; the penalty study quantifies it instead of hiding it",
     "the recovered (a, p_0) rest on a least-squares fit of p^2 vs r^2 over the active set, so they inherit the discrete pressure noise (see observed order)"
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "hertz_pressure.png",
+      "rendered_by": "benchmarks/verified/fem_hertz_contact/run.py"
+    },
+    {
+      "path": "hertz_convergence.png",
+      "rendered_by": "benchmarks/verified/fem_hertz_contact/run.py"
+    },
+    {
+      "path": "hertz_penalty.png",
+      "rendered_by": "benchmarks/verified/fem_hertz_contact/run.py"
+    }
   ]
 }

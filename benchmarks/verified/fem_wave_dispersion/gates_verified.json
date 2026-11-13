@@ -112,10 +112,18 @@
   "artifacts": {
     "result": "benchmarks/verified/fem_wave_dispersion/result.json",
     "gates": "benchmarks/verified/fem_wave_dispersion/gates_verified.json",
-    "dispersion_figure": "benchmarks/verified/fem_wave_dispersion/dispersion.png",
-    "convergence_figure": "benchmarks/verified/fem_wave_dispersion/convergence.png",
     "document": "docs/lamb-wave-dispersion-verification.md",
     "solver": "src/tensorfem/wave_dispersion.py",
     "tests": "tests/test_wave_dispersion.py"
-  }
+  },
+  "figures_rendered_on_demand": [
+    {
+      "path": "benchmarks/verified/fem_wave_dispersion/dispersion.png",
+      "rendered_by": "benchmarks/verified/fem_wave_dispersion/run_verification.py"
+    },
+    {
+      "path": "benchmarks/verified/fem_wave_dispersion/convergence.png",
+      "rendered_by": "benchmarks/verified/fem_wave_dispersion/run_verification.py"
+    }
+  ]
 }

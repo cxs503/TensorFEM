@@ -45,14 +45,22 @@
   "failed_gates": [],
   "undefined_terms": [],
   "artifacts": {
-    "result_json": "result.json",
-    "deflection_profile_png": "winkler_deflection_profile.png",
-    "convergence_png": "winkler_convergence.png"
+    "result_json": "result.json"
   },
   "limitations": [
     "Quarter-symmetry model; asymmetric loads not covered",
     "Domain truncation at 20 characteristic lengths",
     "Mindlin Q4 has shear locking in thin-plate limit (h/l < 0.01)",
     "Winkler model neglects shear-layer coupling"
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "winkler_deflection_profile.png",
+      "rendered_by": "benchmarks/verified/fem_winkler_plate/run.py"
+    },
+    {
+      "path": "winkler_convergence.png",
+      "rendered_by": "benchmarks/verified/fem_winkler_plate/run.py"
+    }
   ]
 }
