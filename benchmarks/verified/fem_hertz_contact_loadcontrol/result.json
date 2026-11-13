@@ -2,7 +2,7 @@
   "benchmark": "fem_hertz_contact_loadcontrol",
   "case_pool": "FEM-HERTZ-CONTACT (case pool id 104)",
   "mission": "CASE-FEM-HERTZ-CONTACT",
-  "generated_at": "2026-11-12T20:22:19+00:00",
+  "generated_at": "2026-11-13T00:11:57+00:00",
   "environment": {
     "python": "3.11.6",
     "numpy": "2.4.6",
@@ -26,7 +26,12 @@
     "refinement_stability_pct": 0.5,
     "penetration_over_delta_max": 1e-05,
     "load_residual_max": 1e-09,
-    "equilibrium_residual_rel_max": 0.0001
+    "equilibrium_residual_rel_max": 0.0001,
+    "truncation_law_residual_pp": 0.01,
+    "truncation_law_holdout_pp": 0.05,
+    "extrapolated_indentation_pct": 1.0,
+    "mesh_independence_pp": 0.05,
+    "farfield_refinement_pp": 0.05
   },
   "runs": {
     "ratio0.05_h0.0300_d96": {
@@ -37,7 +42,7 @@
       "load": 1831.5018315018315,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 7.005585432052612,
+      "wall_s": 13.193188190460205,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 3.4760887501761316e-15,
@@ -77,7 +82,7 @@
       "load": 1831.5018315018315,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 16.67220187187195,
+      "wall_s": 22.66398334503174,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 1.8125319911632686e-14,
@@ -117,7 +122,7 @@
       "load": 1831.5018315018315,
       "n_elements": 17040,
       "ndof": 35014,
-      "wall_s": 34.29432702064514,
+      "wall_s": 48.73176169395447,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 2.272244728374062e-12,
@@ -1875,7 +1880,7 @@
       "load": 14652.014652014652,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 7.4581382274627686,
+      "wall_s": 11.270943880081177,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 1.4897523215040564e-15,
@@ -1915,7 +1920,7 @@
       "load": 14652.014652014652,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 18.844284296035767,
+      "wall_s": 24.821778535842896,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 3.972672857344151e-15,
@@ -1955,7 +1960,7 @@
       "load": 14652.014652014652,
       "n_elements": 17040,
       "ndof": 35014,
-      "wall_s": 53.859346866607666,
+      "wall_s": 58.748979806900024,
       "outer_iterations": 4,
       "alm_iterations": 80,
       "load_residual": 2.4829205358400943e-16,
@@ -1996,7 +2001,7 @@
     "load": 117.21611721611724,
     "n_elements": 9040,
     "ndof": 18614,
-    "wall_s": 20.324910402297974,
+    "wall_s": 23.70510220527649,
     "outer_iterations": 3,
     "alm_iterations": 58,
     "load_residual": 1.6366907829024053e-14,
@@ -2038,7 +2043,7 @@
       "load": 1831.5018315018315,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 19.249616622924805,
+      "wall_s": 19.706359386444092,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 6.84541191731114e-13,
@@ -2078,7 +2083,7 @@
       "load": 1831.5018315018315,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 20.468820810317993,
+      "wall_s": 21.257789134979248,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 4.9658410716801886e-15,
@@ -2118,7 +2123,7 @@
       "load": 1831.5018315018315,
       "n_elements": 9040,
       "ndof": 18614,
-      "wall_s": 23.58163595199585,
+      "wall_s": 21.077810049057007,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 1.8125319911632686e-14,
@@ -2149,6 +2154,86 @@
         "peak_pressure_consistent": 0.5880081470316156
       },
       "key": "trunc_d96"
+    },
+    {
+      "a_over_R": 0.05,
+      "h_over_a": 0.015,
+      "domain_depth_over_a": 144.0,
+      "rho_factor": 1.0,
+      "load": 1831.5018315018315,
+      "n_elements": 9040,
+      "ndof": 18614,
+      "wall_s": 20.70402717590332,
+      "outer_iterations": 3,
+      "alm_iterations": 80,
+      "load_residual": 8.317783795064316e-15,
+      "penetration_over_delta": 1.8618061184425368e-07,
+      "equilibrium_residual_rel": 2.52852526744106e-06,
+      "analytic": {
+        "contact_radius": 0.5,
+        "indentation": 0.025,
+        "peak_pressure": 3497.910837184513
+      },
+      "numeric": {
+        "contact_radius_linear": 0.49734205605462445,
+        "contact_radius_outer": 0.4875,
+        "contact_radius_fit": 0.49756800764953135,
+        "contact_radius_fit_consistent": 0.5265961528055715,
+        "indentation": 0.02479940841737556,
+        "peak_pressure_lumped": 4609.231329031473,
+        "peak_pressure_consistent": 3518.4790566072807,
+        "reaction": 1831.5018315018467
+      },
+      "error_pct": {
+        "contact_radius_linear": -0.5315887890751103,
+        "contact_radius_outer": -2.500000000000002,
+        "contact_radius_fit": -0.4863984700937296,
+        "contact_radius_fit_consistent": 5.3192305611142965,
+        "indentation": -0.8023663304977613,
+        "peak_pressure_lumped": 31.77097826602886,
+        "peak_pressure_consistent": 0.5880144000274923
+      },
+      "key": "trunc_d144"
+    },
+    {
+      "a_over_R": 0.05,
+      "h_over_a": 0.015,
+      "domain_depth_over_a": 192.0,
+      "rho_factor": 1.0,
+      "load": 1831.5018315018315,
+      "n_elements": 9040,
+      "ndof": 18614,
+      "wall_s": 22.283820152282715,
+      "outer_iterations": 3,
+      "alm_iterations": 80,
+      "load_residual": 4.22096491092816e-15,
+      "penetration_over_delta": 1.859924955473272e-07,
+      "equilibrium_residual_rel": 2.5286007619080777e-06,
+      "analytic": {
+        "contact_radius": 0.5,
+        "indentation": 0.025,
+        "peak_pressure": 3497.910837184513
+      },
+      "numeric": {
+        "contact_radius_linear": 0.4973417643484888,
+        "contact_radius_outer": 0.4875,
+        "contact_radius_fit": 0.49756792771703406,
+        "contact_radius_fit_consistent": 0.5265961010598544,
+        "indentation": 0.024825274356500202,
+        "peak_pressure_lumped": 4609.232640825729,
+        "peak_pressure_consistent": 3518.4800402575015,
+        "reaction": 1831.5018315018392
+      },
+      "error_pct": {
+        "contact_radius_linear": -0.5316471303022374,
+        "contact_radius_outer": -2.500000000000002,
+        "contact_radius_fit": -0.48641445659318716,
+        "contact_radius_fit_consistent": 5.319220211970888,
+        "indentation": -0.6989025739991939,
+        "peak_pressure_lumped": 31.771015768249946,
+        "peak_pressure_consistent": 0.5880425211050921
+      },
+      "key": "trunc_d192"
     }
   ],
   "truncation_failure_mode": {
@@ -2167,7 +2252,7 @@
       "load": 1831.5018315018315,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 10.670827627182007,
+      "wall_s": 11.204938650131226,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 2.2346284822560847e-15,
@@ -2207,7 +2292,7 @@
       "load": 1831.5018315018315,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 9.308201313018799,
+      "wall_s": 10.329083681106567,
       "outer_iterations": 3,
       "alm_iterations": 80,
       "load_residual": 3.4760887501761316e-15,
@@ -2247,7 +2332,7 @@
       "load": 1831.5018315018315,
       "n_elements": 5040,
       "ndof": 10414,
-      "wall_s": 10.193208932876587,
+      "wall_s": 11.344601392745972,
       "outer_iterations": 3,
       "alm_iterations": 67,
       "load_residual": 7.945345714688302e-15,
@@ -2333,12 +2418,150 @@
     "finest_indentation_error_pct": -1.0099514889584937,
     "finest_contact_radius_error_pct": -0.4451272465144873
   },
+  "truncation_law": {
+    "model": "err_pct(D) = e_inf_pct + c_pct_depth / D",
+    "e_inf_pct": -0.3827483510587029,
+    "c_pct_depth": -60.38717163725862,
+    "max_resid_pp": 0.0017232666771112015,
+    "points": [
+      [
+        24.0,
+        -2.89975705559703
+      ],
+      [
+        48.0,
+        -1.6390911601578129
+      ],
+      [
+        96.0,
+        -1.0107277777946178
+      ],
+      [
+        144.0,
+        -0.8023663304977613
+      ],
+      [
+        192.0,
+        -0.6989025739991939
+      ]
+    ],
+    "predicted_pct": [
+      -2.8988805026111453,
+      -1.640814426834924,
+      -1.0117813889468135,
+      -0.8021037096507766,
+      -0.6972648700027582
+    ],
+    "holdout": {
+      "fit_depths": [
+        24.0,
+        48.0,
+        96.0
+      ],
+      "e_inf_pct_on_fit_subset": -0.38039483007500974,
+      "c_pct_depth_on_fit_subset": -60.45794061702079,
+      "points": [
+        {
+          "depth_over_a": 144.0,
+          "measured_pct": -0.8023663304977613,
+          "predicted_pct": -0.800241639915432
+        },
+        {
+          "depth_over_a": 192.0,
+          "measured_pct": -0.6989025739991939,
+          "predicted_pct": -0.6952799374553263
+        }
+      ],
+      "max_abs_deviation_pp": 0.003622636543867519
+    }
+  },
+  "mesh_probe": {
+    "a_over_R": 0.05,
+    "h_over_a": 0.0075,
+    "domain_depth_over_a": 192.0,
+    "rho_factor": 1.0,
+    "load": 1831.5018315018315,
+    "n_elements": 17040,
+    "ndof": 35014,
+    "wall_s": 50.23528289794922,
+    "outer_iterations": 3,
+    "alm_iterations": 80,
+    "load_residual": 4.7175490180961786e-15,
+    "penetration_over_delta": 1.5532400717995198e-07,
+    "equilibrium_residual_rel": 3.108838136318842e-06,
+    "analytic": {
+      "contact_radius": 0.5,
+      "indentation": 0.025,
+      "peak_pressure": 3497.910837184513
+    },
+    "numeric": {
+      "contact_radius_linear": 0.4977734108696563,
+      "contact_radius_outer": 0.4875,
+      "contact_radius_fit": 0.5001759032163989,
+      "contact_radius_fit_consistent": 0.5075035786107378,
+      "indentation": 0.024825468428163217,
+      "peak_pressure_lumped": 4611.996421990696,
+      "peak_pressure_consistent": 3519.938381533246,
+      "reaction": 1831.5018315018401
+    },
+    "error_pct": {
+      "contact_radius_linear": -0.44531782606873627,
+      "contact_radius_outer": -2.500000000000002,
+      "contact_radius_fit": 0.03518064327978632,
+      "contact_radius_fit_consistent": 1.5007157221475609,
+      "indentation": -0.6981262873471339,
+      "peak_pressure_lumped": 31.85002810714628,
+      "peak_pressure_consistent": 0.6297343006736789
+    },
+    "key": "mesh_probe_h0.0075_d192"
+  },
+  "farfield_probe": {
+    "a_over_R": 0.05,
+    "h_over_a": 0.015,
+    "domain_depth_over_a": 192.0,
+    "rho_factor": 1.0,
+    "load": 1831.5018315018315,
+    "n_elements": 10080,
+    "ndof": 20746,
+    "wall_s": 25.47288942337036,
+    "outer_iterations": 3,
+    "alm_iterations": 80,
+    "load_residual": 1.2414602679200471e-16,
+    "penetration_over_delta": 1.8599805851134746e-07,
+    "equilibrium_residual_rel": 2.5287420367776445e-06,
+    "analytic": {
+      "contact_radius": 0.5,
+      "indentation": 0.025,
+      "peak_pressure": 3497.910837184513
+    },
+    "numeric": {
+      "contact_radius_linear": 0.49734124959977355,
+      "contact_radius_outer": 0.4875,
+      "contact_radius_fit": 0.49756777538014657,
+      "contact_radius_fit_consistent": 0.5265960029129463,
+      "indentation": 0.024825934981115547,
+      "peak_pressure_lumped": 4609.23511766109,
+      "peak_pressure_consistent": 3518.4818977242458,
+      "reaction": 1831.5018315018312
+    },
+    "error_pct": {
+      "contact_radius_linear": -0.5317500800452901,
+      "contact_radius_outer": -2.500000000000002,
+      "contact_radius_fit": -0.48644492397068584,
+      "contact_radius_fit_consistent": 5.319200582589256,
+      "indentation": -0.6962600755378134,
+      "peak_pressure_lumped": 31.771086577240702,
+      "peak_pressure_consistent": 0.5880956232803936
+    },
+    "key": "farfield_probe_band52_d192"
+  },
   "artifacts": {
     "figures": [
       "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_convergence.png",
       "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_pressure.png",
-      "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_truncation_rho.png"
+      "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_truncation_rho.png",
+      "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_truncation_law.png"
     ],
-    "raw_dump": "artifacts/contact_hertz_loadcontrol/results.json"
+    "raw_dump": "benchmarks/verified/fem_hertz_contact_loadcontrol/results_dump.json"
   }
 }
