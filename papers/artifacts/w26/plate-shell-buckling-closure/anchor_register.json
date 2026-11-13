@@ -1,0 +1,692 @@
+{
+  "artifact": "anchor_register",
+  "task": "W26 paper-exp-plate-shell-buckling-closure-1",
+  "mission_id": 17565,
+  "repo": "TensorFEM",
+  "runner": "native",
+  "subject": "plate/shell buckling coefficients and reduction curves",
+  "provenance": {
+    "generated_utc": "2026-11-13T07:25:50Z",
+    "git_commit": "80624f0c52897e56ea897f75427db0442ad221ba",
+    "git_branch": "agent/m17565",
+    "git_status_porcelain": "?? papers/artifacts/\n?? papers/reports/w26_plate_shell_buckling_closure.md\n?? scripts/w26_plate_shell_buckling_closure.py\n?? scripts/w26_report.py\n?? src/tensorfem/plate_buckling_closure.py\n?? tests/test_plate_buckling_closure.py",
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "command": "python scripts/w26_plate_shell_buckling_closure.py",
+    "inputs_sha256": {
+      "src/tensorfem/plate_buckling_closure.py": "77a78912b9fd0e50e7692ea8e18ad9f7dbdc62127d8e57529aada9b6b4f882f8",
+      "scripts/w26_plate_shell_buckling_closure.py": "1d3f2465c1fa281adf3aca03442cd9b43305c87359d081897b9c1bde519a978c",
+      "src/tensorfem/plate_buckling_hermite.py": "65362e077d1e5456ed02f7f5e936d3a2bb77d1eb983f407c76d175bd130a95a8",
+      "src/tensorfem/marine_plate_buckling.py": "03f4d0ab5de0e6495b6974641f493207bb1d6f0254595a6de5abd33ed7d05c8c"
+    },
+    "material": {
+      "young_pa": 210000000000.0,
+      "poisson": 0.3,
+      "thickness_m": 0.012,
+      "yield_pa": 355000000.0
+    },
+    "anchor_source_search": {
+      "command": "find / -xdev -iname *C201* -o -iname *1993-1-6* -o -iname *Timoshenko* -o -iname *elastic_stability* -not -path '*/proc/*'",
+      "result": "no standard or handbook document (DNV-RP-C201, EN 1993-1-6, Timoshenko & Gere) is present; the only name matches are the repository's Timoshenko *beam* modal references, which are a different physical problem and cannot anchor plate buckling",
+      "consequence": "all three anchors registered WITHHELD with no numeric value"
+    }
+  },
+  "anchors": [
+    {
+      "id": "A1",
+      "anchor": "Timoshenko & Gere, Theory of Elastic Stability -- flat plate buckling",
+      "quantity": "plate buckling coefficient k and the closed-form critical stress for simply supported and clamped rectangular plates",
+      "needed_for": "k in sigma_cr = k pi^2 D / (b^2 t) for at least one aspect ratio",
+      "status": "WITHHELD",
+      "verbatim_quote": null,
+      "quote_location": null,
+      "source_name": null,
+      "source_sha256": null,
+      "reason": "anchor source text not present in the execution environment; a value filled from memory or from a secondary transcription is not evidence",
+      "closure_path": "place the standard/handbook text (with page or clause anchors) in the evidence corpus, then rebuild the register with --source for that file",
+      "numeric_value_recorded": false
+    },
+    {
+      "id": "A2",
+      "anchor": "DNV-RP-C201 Buckling strength of plated structures",
+      "quantity": "plate buckling coefficient and the reduction factor expression with its coefficients",
+      "needed_for": "code-path reduction compared with the derived coefficient operator",
+      "status": "WITHHELD",
+      "verbatim_quote": null,
+      "quote_location": null,
+      "source_name": null,
+      "source_sha256": null,
+      "reason": "anchor source text not present in the execution environment; a value filled from memory or from a secondary transcription is not evidence",
+      "closure_path": "place the standard/handbook text (with page or clause anchors) in the evidence corpus, then rebuild the register with --source for that file",
+      "numeric_value_recorded": false
+    },
+    {
+      "id": "A3",
+      "anchor": "EN 1993-1-6 Shell buckling",
+      "quantity": "shell buckling reduction curve chi(lambdabar): plateau end, imperfection factor, plastic branch constants",
+      "needed_for": "shell reduction curve chi(lambdabar) clause checks",
+      "status": "WITHHELD",
+      "verbatim_quote": null,
+      "quote_location": null,
+      "source_name": null,
+      "source_sha256": null,
+      "reason": "anchor source text not present in the execution environment; a value filled from memory or from a secondary transcription is not evidence",
+      "closure_path": "place the standard/handbook text (with page or clause anchors) in the evidence corpus, then rebuild the register with --source for that file",
+      "numeric_value_recorded": false
+    }
+  ],
+  "anchor_summary": {
+    "requested": 3,
+    "verbatim": 0,
+    "withheld": 3,
+    "criterion_1": "HONEST_WITHHELD",
+    "note": "no numeric value is recorded for a withheld anchor; the zero counts are the evidence, not a gap to be filled from memory"
+  },
+  "coefficient_register": {
+    "definition": "k = sigma_cr b^2 t / (pi^2 D), D = E t^3 / (12 (1 - nu^2))",
+    "status": "DERIVED_FROM_GOVERNING_EQUATION_NOT_TRANSCRIBED",
+    "entries": [
+      {
+        "id": "K1",
+        "case": "simply supported, uniaxial, a/b = 1",
+        "value": 4.0,
+        "derivation": "min_m (m/alpha + alpha/m)^2 at alpha = 1, m = 1"
+      },
+      {
+        "id": "K2",
+        "case": "simply supported, uniaxial, a/b = 2",
+        "value": 4.0,
+        "derivation": "mode m = 2 gives k = 4; m = 1 gives 6.25, so the envelope picks m = 2"
+      },
+      {
+        "id": "K3",
+        "case": "simply supported, uniaxial, a/b = sqrt(2)",
+        "value": 4.499999999999999,
+        "derivation": "envelope maximum, m = 1 and m = 2 are degenerate at k = 4.5"
+      },
+      {
+        "id": "K4",
+        "case": "simply supported, biaxial psi = 1, a/b = 1",
+        "value": 2.0,
+        "derivation": "(m^2/alpha^2 + n^2)^2 / (m^2/alpha^2 + psi n^2) at m = n = 1"
+      },
+      {
+        "id": "K5",
+        "case": "clamped on all four edges, uniaxial, a/b = 1",
+        "value": 10.074362615073905,
+        "derivation": "no closed form: bracketed by the BFS FE (below) and the Ritz upper bound",
+        "bracket_lower_bfs": 10.061839169812849,
+        "bracket_relative_width": 0.0012431005056655327
+      }
+    ]
+  },
+  "analytic_recompute": {
+    "threshold": 1e-10,
+    "definition": "relative residual between the closed-form coefficient route and the independent full-series Navier route, both converted to sigma_cr by sigma = k pi^2 D / (b^2 t)",
+    "cases": [
+      {
+        "case": "C1",
+        "load_case": "uniaxial",
+        "length_m": 1.0,
+        "width_m": 1.0,
+        "aspect_ratio": 1.0,
+        "coefficient_route_a": 4.0,
+        "mode_route_a": [
+          1,
+          1
+        ],
+        "coefficient_route_b": 4.0,
+        "mode_route_b": [
+          1,
+          1
+        ],
+        "critical_stress_route_a_pa": 109324848.75052828,
+        "critical_stress_route_b_pa": 109324848.75052828,
+        "relative_residual": 0.0,
+        "tolerance": 1e-10,
+        "pass": true
+      },
+      {
+        "case": "C2",
+        "load_case": "uniaxial",
+        "length_m": 2.0,
+        "width_m": 1.0,
+        "aspect_ratio": 2.0,
+        "coefficient_route_a": 4.0,
+        "mode_route_a": [
+          2,
+          1
+        ],
+        "coefficient_route_b": 4.0,
+        "mode_route_b": [
+          2,
+          1
+        ],
+        "critical_stress_route_a_pa": 109324848.75052828,
+        "critical_stress_route_b_pa": 109324848.75052828,
+        "relative_residual": 0.0,
+        "tolerance": 1e-10,
+        "pass": true
+      },
+      {
+        "case": "C3",
+        "load_case": "uniaxial",
+        "length_m": 1.4142135623730951,
+        "width_m": 1.0,
+        "aspect_ratio": 1.4142135623730951,
+        "coefficient_route_a": 4.499999999999999,
+        "mode_route_a": [
+          2,
+          1
+        ],
+        "coefficient_route_b": 4.500000000000001,
+        "mode_route_b": [
+          1,
+          1
+        ],
+        "critical_stress_route_a_pa": 122990454.8443443,
+        "critical_stress_route_b_pa": 122990454.84434435,
+        "relative_residual": 3.6347116236068327e-16,
+        "tolerance": 1e-10,
+        "pass": true
+      }
+    ],
+    "max_relative_residual": 3.6347116236068327e-16,
+    "pass": true
+  },
+  "dimension_and_identity_checks": {
+    "dimension_checks": [
+      {
+        "check": "geometric scale invariance of k",
+        "detail": "sigma_cr(b, t) scales like E while k = sigma_cr b^2 t / (pi^2 D) stays fixed",
+        "coefficient_recovered": 4.000000000000001,
+        "relative_error": 2.220446049250313e-16,
+        "pass": true
+      },
+      {
+        "check": "linearity in Young's modulus",
+        "detail": "sigma_cr(2E) / sigma_cr(E) must be 2",
+        "ratio": 2.0,
+        "relative_error": 0.0,
+        "pass": true
+      },
+      {
+        "check": "Poisson dependence enters only through D",
+        "detail": "sigma_cr(nu) / sigma_cr(0.3) must equal (1 - 0.3^2)/(1 - nu^2)",
+        "ratio": 0.9706666666666668,
+        "expected": 0.9706666666666668,
+        "relative_error": 0.0,
+        "pass": true
+      },
+      {
+        "check": "coefficient <-> stress round trip",
+        "detail": "k -> sigma_cr -> k",
+        "relative_error": 1.9737298215558337e-16,
+        "pass": true
+      }
+    ],
+    "spectral_identities": [
+      {
+        "identity": "k(alpha = 1) = 4",
+        "value": 4.0,
+        "mode": 1,
+        "absolute_error": 0.0,
+        "pass": true
+      },
+      {
+        "identity": "k(alpha = sqrt(2)) = 4.5 (envelope maximum, two competing modes)",
+        "value": 4.499999999999999,
+        "mode": 2,
+        "absolute_error": 8.881784197001252e-16,
+        "pass": true
+      },
+      {
+        "identity": "k(m alpha) <= k(alpha) for integer m: the competing modes of k(m alpha) contain the modes of k(alpha) as the subset j = m i, so the envelope can only fall; equality at integer alpha (verified)",
+        "worst_violation": 0.0,
+        "equality_at_integer_alpha_worst_error": 0.0,
+        "pass": true
+      },
+      {
+        "identity": "envelope maximum 4.5 at alpha = sqrt(2) and at 1/sqrt(2)",
+        "value": 4.500000000000001,
+        "absolute_error": 8.881784197001252e-16,
+        "pass": true
+      },
+      {
+        "identity": "k(alpha) = 4 exactly at integer alpha with mode m = alpha",
+        "worst_absolute_error": 0.0,
+        "pass": true
+      },
+      {
+        "identity": "psi = 0 reduces the biaxial operator to the uniaxial one",
+        "psi0": 4.0,
+        "absolute_error": 0.0,
+        "pass": true
+      },
+      {
+        "identity": "psi = 1, square plate: k = 2 (m = n = 1)",
+        "value": 2.0,
+        "mode": [
+          1,
+          1
+        ],
+        "absolute_error": 0.0,
+        "pass": true
+      },
+      {
+        "identity": "4 <= k(alpha) <= 4.5 for every aspect ratio >= 1 (single-mode envelope)",
+        "violation": 0.0,
+        "pass": true
+      }
+    ]
+  },
+  "convergence": {
+    "simple_support_ladder": [
+      {
+        "restraint_ratio": 0.0,
+        "clamped": false,
+        "coefficient": 4.001034167044401,
+        "n_x": 4,
+        "n_y": 4
+      },
+      {
+        "restraint_ratio": 0.0,
+        "clamped": false,
+        "coefficient": 4.000206759241964,
+        "n_x": 6,
+        "n_y": 6
+      },
+      {
+        "restraint_ratio": 0.0,
+        "clamped": false,
+        "coefficient": 4.000065698235203,
+        "n_x": 8,
+        "n_y": 8
+      },
+      {
+        "restraint_ratio": 0.0,
+        "clamped": false,
+        "coefficient": 4.000026963099538,
+        "n_x": 10,
+        "n_y": 10
+      },
+      {
+        "restraint_ratio": 0.0,
+        "clamped": false,
+        "coefficient": 4.000013016994466,
+        "n_x": 12,
+        "n_y": 12
+      }
+    ],
+    "clamped_ladder": [
+      {
+        "restraint_ratio": null,
+        "clamped": true,
+        "coefficient": 9.902935458809413,
+        "n_x": 4,
+        "n_y": 4
+      },
+      {
+        "restraint_ratio": null,
+        "clamped": true,
+        "coefficient": 10.005350528886245,
+        "n_x": 6,
+        "n_y": 6
+      },
+      {
+        "restraint_ratio": null,
+        "clamped": true,
+        "coefficient": 10.039515956691696,
+        "n_x": 8,
+        "n_y": 8
+      },
+      {
+        "restraint_ratio": null,
+        "clamped": true,
+        "coefficient": 10.054371503802255,
+        "n_x": 10,
+        "n_y": 10
+      },
+      {
+        "restraint_ratio": null,
+        "clamped": true,
+        "coefficient": 10.061839169812849,
+        "n_x": 12,
+        "n_y": 12
+      }
+    ],
+    "ritz_ladder": [
+      {
+        "degree": 3,
+        "coefficient": 10.107156048255767
+      },
+      {
+        "degree": 4,
+        "coefficient": 10.07454971089503
+      },
+      {
+        "degree": 5,
+        "coefficient": 10.074751127742147
+      },
+      {
+        "degree": 6,
+        "coefficient": 10.07445186456204
+      },
+      {
+        "degree": 7,
+        "coefficient": 10.074362615073905
+      }
+    ]
+  },
+  "boundary_conditions": {
+    "mesh_n": 8,
+    "envelope": [
+      {
+        "aspect_ratio": 1.0,
+        "simple_support_analytic": 4.0,
+        "simple_support_mode": 1,
+        "simple_support_bfs": 4.000065698235203,
+        "clamped_bfs": 10.039515956691696
+      },
+      {
+        "aspect_ratio": 1.5,
+        "simple_support_analytic": 4.340277777777777,
+        "simple_support_mode": 2,
+        "simple_support_bfs": 4.340478935852007,
+        "clamped_bfs": 8.311854195756135
+      },
+      {
+        "aspect_ratio": 2.0,
+        "simple_support_analytic": 4.0,
+        "simple_support_mode": 2,
+        "simple_support_bfs": 4.0000656982388465,
+        "clamped_bfs": 7.828382240152992
+      }
+    ],
+    "restraint_ladder": [
+      {
+        "restraint_ratio": 0.0,
+        "clamped": false,
+        "coefficient": 4.000065698235203,
+        "n_x": 8,
+        "n_y": 8
+      },
+      {
+        "restraint_ratio": 1.0,
+        "clamped": false,
+        "coefficient": 4.7365585151900165,
+        "n_x": 8,
+        "n_y": 8
+      },
+      {
+        "restraint_ratio": 10.0,
+        "clamped": false,
+        "coefficient": 7.698239941765903,
+        "n_x": 8,
+        "n_y": 8
+      },
+      {
+        "restraint_ratio": 100.0,
+        "clamped": false,
+        "coefficient": 9.709117777514237,
+        "n_x": 8,
+        "n_y": 8
+      },
+      {
+        "restraint_ratio": 1000.0,
+        "clamped": false,
+        "coefficient": 10.042264930030566,
+        "n_x": 8,
+        "n_y": 8
+      },
+      {
+        "restraint_ratio": 100000.0,
+        "clamped": false,
+        "coefficient": 10.081958759069328,
+        "n_x": 8,
+        "n_y": 8
+      }
+    ],
+    "restraint_ladder_monotone": true,
+    "clamped_nodal_fe": 10.039515956691696,
+    "clamped_ritz": 10.074751127742147,
+    "clamped_penalty_limit": 10.081958759069328,
+    "clamped_bracket": [
+      10.039515956691696,
+      10.074751127742147
+    ],
+    "clamped_bracket_relative_width": 0.003497373841168713,
+    "penalty_over_ritz_relative": 0.0007154153225020787,
+    "clamped_over_simple": 2.5186464142794067,
+    "ratio_at_restraint_1": 1.1841201801459782,
+    "ratio_at_restraint_10": 1.9245283759120018,
+    "note": "the ladder is evaluated at a fixed mesh, so intermediate restraint values carry mesh error; only the two endpoints are quantified (simple support against the closed-form envelope, clamped against the Ritz upper bound)"
+  },
+  "reduction_curve_operator": {
+    "specimen": "synthetic_reduction_specimen (NOT a code curve, see module docstring)",
+    "specimen_report": {
+      "samples": [
+        {
+          "lambdabar": 0.0,
+          "chi": 1.0
+        },
+        {
+          "lambdabar": 0.2,
+          "chi": 0.9992009587217893
+        },
+        {
+          "lambdabar": 0.4,
+          "chi": 0.9874406319167053
+        },
+        {
+          "lambdabar": 0.6,
+          "chi": 0.9408874118687268
+        },
+        {
+          "lambdabar": 0.8,
+          "chi": 0.8422714006615114
+        },
+        {
+          "lambdabar": 1.0,
+          "chi": 0.7071067811865475
+        },
+        {
+          "lambdabar": 1.5,
+          "chi": 0.40613846605344767
+        },
+        {
+          "lambdabar": 2.0,
+          "chi": 0.24253562503633297
+        },
+        {
+          "lambdabar": 3.0,
+          "chi": 0.11043152607484653
+        },
+        {
+          "lambdabar": 5.0,
+          "chi": 0.039968038348871575
+        }
+      ],
+      "tolerance": 1e-09,
+      "clauses": {
+        "range": {
+          "pass": true,
+          "min_chi": 0.039968038348871575,
+          "max_chi": 1.0
+        },
+        "stocky_limit": {
+          "pass": true,
+          "chi_at_zero": 1.0
+        },
+        "monotone": {
+          "pass": true,
+          "worst_increase": -0.0007990412782107326
+        },
+        "continuity": {
+          "pass": true,
+          "max_jump": 0.00014142135482297924,
+          "threshold": 0.001
+        },
+        "elastic_ceiling": {
+          "pass": true,
+          "violation_count": 0,
+          "sample_violations": []
+        },
+        "stocky_plateau_length": {
+          "status": "SKIPPED_PARAMETER_WITHHELD",
+          "pass": null,
+          "reason": "plateau end and imperfection constants come from the anchor text"
+        }
+      },
+      "pass": true
+    },
+    "mutations": {
+      "amplifying": {
+        "accepted": false,
+        "failed_clauses": [
+          "range",
+          "monotone",
+          "elastic_ceiling"
+        ]
+      },
+      "non_monotone": {
+        "accepted": false,
+        "failed_clauses": [
+          "range",
+          "monotone",
+          "elastic_ceiling"
+        ]
+      },
+      "slow_decay_breaks_ceiling": {
+        "accepted": false,
+        "failed_clauses": [
+          "elastic_ceiling"
+        ]
+      },
+      "above_elastic_ceiling": {
+        "accepted": false,
+        "failed_clauses": [
+          "elastic_ceiling"
+        ]
+      },
+      "discontinuous": {
+        "accepted": false,
+        "failed_clauses": [
+          "continuity",
+          "elastic_ceiling"
+        ]
+      },
+      "overshoot": {
+        "accepted": false,
+        "failed_clauses": [
+          "range",
+          "stocky_limit",
+          "elastic_ceiling"
+        ]
+      }
+    },
+    "checker_has_teeth": true,
+    "code_parameters": {
+      "status": "WITHHELD",
+      "reason": "plateau end / imperfection factor / plastic branch come from the anchor text",
+      "clause_state": "SKIPPED_PARAMETER_WITHHELD"
+    }
+  },
+  "slenderness_bridge": {
+    "definition": "lambdabar = sqrt(fy / sigma_cr), sigma_cr from the derived coefficient",
+    "rows": [
+      {
+        "width_m": 0.6,
+        "coefficient": 4.0,
+        "mode": 1,
+        "critical_stress_pa": 303680135.4181341,
+        "lambdabar": 1.081199868790906,
+        "elastic_ceiling_chi": 0.8554370011778425,
+        "specimen_chi": 0.6500437941935335,
+        "capacity_ratio_vs_yield": 230765546.9387044,
+        "elastic_critical_below_yield": true,
+        "elastic_ceiling_respected": true
+      },
+      {
+        "width_m": 0.9,
+        "coefficient": 4.0,
+        "mode": 1,
+        "critical_stress_pa": 134968949.07472625,
+        "lambdabar": 1.621799803186359,
+        "elastic_ceiling_chi": 0.3801942227457077,
+        "specimen_chi": 0.3553763928056539,
+        "capacity_ratio_vs_yield": 126158619.44600715,
+        "elastic_critical_below_yield": true,
+        "elastic_ceiling_respected": true
+      },
+      {
+        "width_m": 1.2,
+        "coefficient": 4.0,
+        "mode": 1,
+        "critical_stress_pa": 75920033.85453352,
+        "lambdabar": 2.162399737581812,
+        "elastic_ceiling_chi": 0.21385925029446062,
+        "specimen_chi": 0.2091303461937566,
+        "capacity_ratio_vs_yield": 74241272.8987836,
+        "elastic_critical_below_yield": true,
+        "elastic_ceiling_respected": true
+      }
+    ],
+    "note": "the specimen chi is used only to demonstrate the operator chain; its values are not a DNV-RP-C201 or EN 1993-1-6 result"
+  },
+  "checks": {
+    "simple_support_fe_vs_closed_form_abs": 0.0010341670444011797,
+    "clamped_fe_vs_ritz_relative_gap": 0.0012431005056655327,
+    "restraint_ladder_monotone": true
+  },
+  "figures": [
+    {
+      "name": "fig_coefficient_envelope.png",
+      "caption": "k(a/b): derived envelope vs BFS discretisation",
+      "sha256": "bedc0badbcecd373ff8f8665bf5afd18fd975a6a866615c92b43bf002f39f5d9"
+    },
+    {
+      "name": "fig_restraint_ladder.png",
+      "caption": "restraint ladder from simple support to clamped",
+      "sha256": "efdd14626495c290c0656d33f0b3dada616a1260ab111bd4be2cf276d36446ea"
+    },
+    {
+      "name": "fig_reduction_contract.png",
+      "caption": "reduction-curve admissible region and specimen",
+      "sha256": "f378cefe48dfbe07d3dcf044bf860884936d7f924a4f4f926a3d7b3497763914"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "C1",
+      "requirement": "verbatim anchor locations >= 2, or an honest WITHHELD",
+      "verdict": "HONEST_WITHHELD",
+      "evidence": "0 of 3 anchors registered VERBATIM: no standard/handbook text in the environment (see provenance.anchor_source_search); every entry carries verbatim_quote=null, source_sha256=null and numeric_value_recorded=false"
+    },
+    {
+      "id": "C2",
+      "requirement": "analytic recompute residual <= 1e-10",
+      "verdict": "MEET",
+      "evidence": "3 cases, max relative residual 3.635e-16 (C1 and C2 are exact zeros; C3 is at the double-root of the envelope)"
+    },
+    {
+      "id": "C3",
+      "requirement": "quantify the influence of the edge boundary condition on k",
+      "verdict": "MEET",
+      "evidence": "simple support k = 4.0 (derived, exact) vs clamped k in [10.0395, 10.0748] (two independent discretisations, 0.350% wide), ratio 2.519; a/b = 1.5 and 2 also tabulated"
+    },
+    {
+      "id": "C4",
+      "requirement": "no fabricated values; comparison against the anchors is out of scope while withheld",
+      "verdict": "MEET",
+      "evidence": "register contains only derived operator values; every code-specific clause of the reduction-curve contract is SKIPPED_PARAMETER_WITHHELD"
+    }
+  ],
+  "verdict": {
+    "summary": "PASS_WITH_ANCHORS_WITHHELD",
+    "met": true,
+    "honest_fail_if_any": []
+  },
+  "content_sha256": "f9d8a3d1ccb19ed46fade5051d1871db38f297dfe9a2a4450607c4f85d4bd3d8"
+}
