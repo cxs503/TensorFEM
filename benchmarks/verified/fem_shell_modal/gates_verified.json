@@ -45,12 +45,17 @@
     "G4.shell_mechanism_free_low_spectrum"
   ],
   "artifacts": {
-    "result": "result.json",
-    "figure": "shell_modal_audit.png"
+    "result": "result.json"
   },
   "limitations": [
     "the cylinder FE spectrum contains rotation-only mechanisms; the shell element (or its SS constraint set) is not yet certifiable",
     "Donnell theory is a thin-shell approximation: n = 1 is bracketed by the Euler-Bernoulli beam limit, not gated",
     "G2 plate error is 6.84% on a 10x8 mesh: discretisation, not physics"
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "shell_modal_audit.png",
+      "rendered_by": "benchmarks/verified/fem_shell_modal/run_verification.py"
+    }
   ]
 }

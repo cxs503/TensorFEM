@@ -123,12 +123,7 @@
   "failed_gates": [],
   "undefined_terms": [],
   "artifacts": {
-    "result": "benchmarks/verified/fem_plate_static/result.json",
-    "figures": [
-      "fields_ssss.png",
-      "fields_cccc.png",
-      "convergence.png"
-    ]
+    "result": "benchmarks/verified/fem_plate_static/result.json"
   },
   "limitations": [
     "Kirchhoff (thin-plate) theory: a/t = 100 keeps the Mindlin shear correction ~1e-4 relative, but the model carries no transverse shear deformation at all.",
@@ -136,5 +131,19 @@
     "The CCCC centre moment converges from above to 0.02291 q a^2 (0.02322, 0.02298, 0.02292, 0.02291 at N=10,20,40,80), i.e. 0.8 % below the three-significant-digit table value 0.0231; the error against the table is therefore non-monotone (it crosses the table value near N=10) even though the moment itself converges at order 2.",
     "The 11x11 Navier truncation mandated by the campaign is accurate for deflections (~5e-8) but only ~1e-3 for the moments; the moment gates use the 301-harmonic evaluation of the same series.",
     "Hard simple support excludes the corner uplift dof; this is the exact Kirchhoff condition and the same convention as benchmarks/verified/fem_plate, so results are comparable but not identical (that anchor used lumped nodal loads)."
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "fields_ssss.png",
+      "rendered_by": "benchmarks/verified/fem_plate_static/run.py"
+    },
+    {
+      "path": "fields_cccc.png",
+      "rendered_by": "benchmarks/verified/fem_plate_static/run.py"
+    },
+    {
+      "path": "convergence.png",
+      "rendered_by": "benchmarks/verified/fem_plate_static/run.py"
+    }
   ]
 }

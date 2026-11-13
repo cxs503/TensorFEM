@@ -4,8 +4,10 @@ Verdict: **PASS** (gating set; one predeclared
 prediction about the *reference's* validity band is falsified and kept in the record — see
 `gates_verified.json`)
 Driver: `run_verification.py` · Report builder: `build_report.py` · Evidence: `result.json`,
-`gates_verified.json` · Figures: `figures/convergence.png`, `figures/field_meridian.png`,
-`figures/sensitivity.png`
+`gates_verified.json` · Figures: rendered on demand by `build_report.py` (not committed; the
+certificate declares them as `figures_rendered_on_demand`, see
+`docs/certificate-renderable-figures-and-sphere-canonicalisation-m17162.md`) · Certificate
+emitter: `emit_certificate.py` (`--write` / `--check`, derived from `result.json` only)
 
 Repro (13 s, single process, float64, no cluster needed):
 
@@ -35,8 +37,12 @@ Reference (machine-derived, see the report): `σ = pR/(2t) = 125 Pa`,
 | 32 | +2.828e-07 % | +3.643e-07 % | +5.716e-07 % | +3.313e-06 % |
 | 64 | +2.534e-08 % | +2.535e-08 % | +3.479e-08 % | +2.129e-07 % |
 
-Gates: 10/11 pass (every gating gate passes; the
-single ✗ is the falsified *prediction* G8b about the reference's own validity band).
+Gates: 11/11 gating gates pass in the canonical envelope (`tensorfem.verified-gates.v1`, every
+gate a scalar `value` with an explicit `operator`/numeric `threshold`, so
+`tools/verified_anchor_audit.py` recomputes each verdict). The predeclared
+*prediction* about the reference's own validity band is **falsified** and kept in the record
+under `predictions` with `outcome: "falsified"` — it is not a gate, so it cannot be laundered
+into the gating verdict nor hidden by it.
 
 Controls: the same element on the same mesh with straight chords fails at
 +2.079e+02 % (8 facets); the merged

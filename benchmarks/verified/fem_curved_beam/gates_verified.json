@@ -97,11 +97,16 @@
   "undefined_terms": [],
   "artifacts": {
     "result_json": "result.json",
-    "gates_verified_json": "gates_verified.json",
-    "convergence_figure": "curved_beam_convergence.png"
+    "gates_verified_json": "gates_verified.json"
   },
   "limitations": [
     "Closed form is the thin, inextensible-section curved-bar idealisation; axial and transverse-shear terms are retained but small.",
     "Both elements are verified on the same physical configuration; the cylindrical element measures theta with the opposite sense to the flat mesh, so reported components are magnitudes along declared axes."
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "curved_beam_convergence.png",
+      "rendered_by": "benchmarks/verified/fem_curved_beam/run.py"
+    }
   ]
 }

@@ -86,16 +86,22 @@
   "undefined_terms": [],
   "artifacts": {
     "result": "result.json",
-    "gates": "gates_verified.json",
-    "figures": [
-      "cantilever_field.png",
-      "cantilever_convergence.png"
-    ]
+    "gates": "gates_verified.json"
   },
   "limitations": [
     "plane stress is a 2-D idealisation; plane strain or the anticlastic 3-D state shifts the deflection by O(nu (h/L)^2), i.e. far below the gate",
     "the fully clamped root is a boundary layer; Chebyshev clustering is what keeps the ladder inside the asymptotic range",
     "HEX20 full integration is shear-locking limited at L/h = 100, so the 3-D cross-check is graded at 2 % and its observed order is reported but not gated",
     "small strain, isotropic, linear elasticity only: no prestress, no contact, no follower load, no geometric nonlinearity"
+  ],
+  "figures_rendered_on_demand": [
+    {
+      "path": "cantilever_field.png",
+      "rendered_by": "benchmarks/verified/fem_cantilever/run.py"
+    },
+    {
+      "path": "cantilever_convergence.png",
+      "rendered_by": "benchmarks/verified/fem_cantilever/run.py"
+    }
   ]
 }
