@@ -1,0 +1,134 @@
+{
+ "anchor": "XVAL-LBM-SHAN-CHEN-MCMP-BARYCENTRIC-GUO",
+ "oss_reference": {
+  "repo": "lssfau/lbmpy",
+  "path": "tests/shan_chen/test_shan_chen_two_component.py",
+  "origin": "lbm-principles-practice/code/chapter9/shanchen.cpp (nsteps=1000, nfluids=2, gA=0)",
+  "params": {
+   "N": 64,
+   "omega_a": 1.0,
+   "omega_b": 1.0,
+   "g_ab": 6.0,
+   "rho0": 1.0,
+   "steps": 1000,
+   "rho_a_init": [
+    0.1,
+    0.9
+   ],
+   "rho_b_init": [
+    0.9,
+    0.1
+   ]
+  }
+ },
+ "reference_arms": [
+  {
+   "eq_shift": "half",
+   "source_velocity": "forced",
+   "steps": 1000,
+   "diverged_at_step": 30,
+   "rho_min_last_finite": 0.07421504366925617,
+   "rho_max_last_finite": 0.7934453520877677
+  },
+  {
+   "eq_shift": "none",
+   "source_velocity": "bary",
+   "steps": 1000,
+   "diverged_at_step": 26,
+   "rho_min_last_finite": 0.0712859357163199,
+   "rho_max_last_finite": 16231.0346771171
+  },
+  {
+   "eq_shift": "tau",
+   "source_velocity": "bary",
+   "steps": 1000,
+   "diverged_at_step": 14,
+   "rho_min_last_finite": 0.09015404743567589,
+   "rho_max_last_finite": 0.8983253995159188
+  }
+ ],
+ "stability_boundary": [
+  {
+   "g_ab": 0.1,
+   "diverged_at_step": null,
+   "steps_completed": 600
+  },
+  {
+   "g_ab": 0.5,
+   "diverged_at_step": null,
+   "steps_completed": 600
+  },
+  {
+   "g_ab": 1.0,
+   "diverged_at_step": null,
+   "steps_completed": 600
+  },
+  {
+   "g_ab": 2.0,
+   "diverged_at_step": null,
+   "steps_completed": 600
+  },
+  {
+   "g_ab": 3.0,
+   "diverged_at_step": null,
+   "steps_completed": 600
+  },
+  {
+   "g_ab": 4.0,
+   "diverged_at_step": 50,
+   "steps_completed": 49
+  },
+  {
+   "g_ab": 6.0,
+   "diverged_at_step": 30,
+   "steps_completed": 29
+  }
+ ],
+ "laplace": {
+  "points": [
+   {
+    "R": 8.0,
+    "stable": true,
+    "steps_completed": 3000,
+    "rho_tot_inside": 1.0087616079335795,
+    "rho_tot_outside": 0.992557379484455,
+    "dp": 0.005401409483041501,
+    "inv_R": 0.125,
+    "spurious_u": 0.00010627703399175634
+   },
+   {
+    "R": 12.0,
+    "stable": true,
+    "steps_completed": 3000,
+    "rho_tot_inside": 1.008726767079148,
+    "rho_tot_outside": 0.9916965944313808,
+    "dp": 0.005676724215922395,
+    "inv_R": 0.08333333333333333,
+    "spurious_u": 0.001735940749290737
+   },
+   {
+    "R": 16.0,
+    "stable": true,
+    "steps_completed": 3000,
+    "rho_tot_inside": 1.0076625581201457,
+    "rho_tot_outside": 0.9930322739285411,
+    "dp": 0.0048767613972015384,
+    "inv_R": 0.0625,
+    "spurious_u": 0.0007464083102713182
+   }
+  ],
+  "fit": {
+   "sigma": 0.006251237521642164,
+   "intercept": 0.004753950533573561,
+   "r2": 0.2396108024884398,
+   "rel_dev_vs_sigma_over_R": [
+    5.912435452137588,
+    9.89715282057845,
+    11.48203769015116
+   ]
+  },
+  "g_ab": 1.0,
+  "n": 96,
+  "steps": 3000
+ }
+}
