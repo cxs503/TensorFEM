@@ -1,0 +1,41 @@
+{
+  "half_width": 16.0,
+  "box": 144,
+  "target_period": 600.0,
+  "n_steps": 900,
+  "added_mass_ref": 804.247719318987,
+  "mass": 1340.4128655316451,
+  "stiffness": 0.23518835052316306,
+  "cases": [
+    {
+      "relax_mode": "aitken",
+      "period_fft": 682.6666666666666,
+      "frequency": 0.00146484375,
+      "frequency_ref": 0.0016666666666666666,
+      "frequency_ratio": 0.6948363999393412,
+      "frequency_ratio_ref": 0.7905694150420949,
+      "error_pct": -12.109374999999995,
+      "steps": 900,
+      "diverged": false,
+      "diverged_reason": "",
+      "mean_sub_iter": 1.0,
+      "maxit_hits": 0,
+      "added_mass_measured": NaN
+    },
+    {
+      "relax_mode": "fixed",
+      "period_fft": 682.6666666666666,
+      "frequency": 0.00146484375,
+      "frequency_ref": 0.0016666666666666666,
+      "frequency_ratio": 0.6948363999393412,
+      "frequency_ratio_ref": 0.7905694150420949,
+      "error_pct": -12.109374999999995,
+      "steps": 900,
+      "diverged": false,
+      "diverged_reason": "",
+      "mean_sub_iter": 1.0,
+      "maxit_hits": 0,
+      "added_mass_measured": NaN
+    }
+  ]
+}

@@ -81,25 +81,46 @@ def dirac_delta_3pt(dist):
     return out
 
 
+def _dirac_scalar(r):
+    """Scalar twin of :func:`dirac_delta_3pt` (same branch structure, same 3-point kernel).
+
+    Used inside the per-marker stencil loops, where calling numpy on a 1-element
+    array costs ~20 us of interpreter overhead on the loong64 builder and
+    dominated the cost of :meth:`IBMInterface.move`.
+    """
+    a = r if r >= 0.0 else -r
+    if a <= 0.5:
+        return (1.0 + math.sqrt(max(1.0 - 3.0 * a * a, 0.0))) / 3.0
+    if a < STENCIL_WIDTH:
+        return (5.0 - 3.0 * a - math.sqrt(max(1.0 - 3.0 * (1.0 - a) ** 2, 0.0))) / 6.0
+    return 0.0
+
+
 def find_support(position, dx, shape):
-    """Lattice sites ``(i, j)`` and weights ``w`` of one marker stencil."""
+    """Lattice sites ``(i, j)`` and weights ``w`` of one marker stencil.
+
+    Same sites/weights as the scalar loop of LIFE ``IBMNode.cpp:144-204``;
+    entries whose 1-D weight vanishes (or that leave the lattice) are dropped.
+    """
     nx, ny = shape
     px, py = float(position[0]) / dx, float(position[1]) / dx
     inear, jnear = int(round(px)), int(round(py))
+    wx = [(_dirac_scalar(px - (inear + d)) if 0 <= inear + d <= nx - 1 else 0.0)
+          for d in range(-SUPPORT_WINDOW, SUPPORT_WINDOW + 1)]
+    wy = [(_dirac_scalar(py - (jnear + d)) if 0 <= jnear + d <= ny - 1 else 0.0)
+          for d in range(-SUPPORT_WINDOW, SUPPORT_WINDOW + 1)]
     ii, jj, ww = [], [], []
-    for i in range(inear - SUPPORT_WINDOW, inear + SUPPORT_WINDOW + 1):
-        dxd = abs(px - i)
-        if dxd >= STENCIL_WIDTH or i < 0 or i > nx - 1:
+    for a, wxi in enumerate(wx):
+        if wxi == 0.0:
             continue
-        wx = float(dirac_delta_3pt(np.array([dxd]))[0])
-        for j in range(jnear - SUPPORT_WINDOW, jnear + SUPPORT_WINDOW + 1):
-            dyd = abs(py - j)
-            if dyd >= STENCIL_WIDTH or j < 0 or j > ny - 1:
+        for b, wyj in enumerate(wy):
+            if wyj == 0.0:
                 continue
-            ii.append(i)
-            jj.append(j)
-            ww.append(wx * float(dirac_delta_3pt(np.array([dyd]))[0]))
-    return np.asarray(ii, dtype=int), np.asarray(jj, dtype=int), np.asarray(ww)
+            ii.append(inear + a - SUPPORT_WINDOW)
+            jj.append(jnear + b - SUPPORT_WINDOW)
+            ww.append(wxi * wyj)
+    return (np.asarray(ii, dtype=int), np.asarray(jj, dtype=int),
+            np.asarray(ww, dtype=float))
 
 
 def marker_spacing(positions, dx):
@@ -120,16 +141,35 @@ def epsilon_conservation(positions, supports, ds, dx):
     Pinelli et al. (2010) redistribution solved as in LIFE
     ``src/Objects.cpp:235-321``; it makes the transmission of a *uniform*
     marker force to the lattice exact to round-off.
+
+    ``A_ij`` is separable in ``x`` and ``y`` (the 2-D kernel is a product), so
+    it is assembled as ``A = (Wx . Dx) * (Wy . Dy) * ds`` with broadcasting
+    instead of a double Python loop over ``(marker, site)``: same matrix to
+    round-off, ``O(n^2 * 5)`` numpy work.  Entries where marker ``j`` is farther
+    than ``STENCIL_WIDTH + SUPPORT_WINDOW`` cells from marker ``i`` are exact
+    zeros either way.
     """
-    pos = np.asarray(positions, dtype=float)
+    pos = np.asarray(positions, dtype=float) / dx
     n = len(pos)
-    a = np.zeros((n, n))
-    for i in range(n):
-        ii, jj, ww = supports[i]
-        for j in range(n):
-            dj = (dirac_delta_3pt(np.abs(pos[j, 0] / dx - ii))
-                  * dirac_delta_3pt(np.abs(pos[j, 1] / dx - jj)))
-            a[i, j] = float(np.dot(ww, dj)) * ds[j]
+    offs = np.arange(-SUPPORT_WINDOW, SUPPORT_WINDOW + 1)
+    near = np.rint(pos).astype(int)
+    wx = np.zeros((n, len(offs)))
+    wy = np.zeros((n, len(offs)))
+    # 1-D kernel rows; a site outside the lattice is irrelevant here because a
+    # marker whose stencil left the domain is rejected in IBMInterface.move
+    for a, d in enumerate(offs):
+        wx[:, a] = dirac_delta_3pt(np.abs(pos[:, 0] - (near[:, 0] + d)))
+        wy[:, a] = dirac_delta_3pt(np.abs(pos[:, 1] - (near[:, 1] + d)))
+    # site coordinates of every marker's stencil: (n, 5)
+    sites_x = near[:, 0][:, None] + offs[None, :]
+    sites_y = near[:, 1][:, None] + offs[None, :]
+    # delta between marker j and the sites of marker i -> (n_i, n_j, 5)
+    dx_ij = dirac_delta_3pt(np.abs(pos[None, :, 0][:, :, None]
+                                   - sites_x[:, None, :]))
+    dy_ij = dirac_delta_3pt(np.abs(pos[None, :, 1][:, :, None]
+                                   - sites_y[:, None, :]))
+    a = (dx_ij * wx[:, None, :]).sum(axis=2) * (dy_ij * wy[:, None, :]).sum(axis=2)
+    a = a * ds[None, :]
     return np.linalg.solve(a, np.ones(n))
 
 
@@ -163,19 +203,38 @@ class IBMInterface:
         if not all(len(s[0]) for s in self.supports):
             raise ValueError("a marker stencil left the lattice domain")
         self.eps = epsilon_conservation(self.positions, self.supports, self.ds, self.dx)
+        # flat gather/scatter tables for the vectorised interpolate / spread
+        ny = self.shape[1]
+        idx, owner, wts = [], [], []
+        for k, (ii, jj, ww) in enumerate(self.supports):
+            idx.append(ii * ny + jj)
+            owner.append(np.full(len(ii), k, dtype=int))
+            wts.append(ww)
+        self._idx = np.concatenate(idx)
+        self._owner = np.concatenate(owner)
+        self._w = np.concatenate(wts)
+        self._wsum_per_marker = np.bincount(self._owner, weights=self._w,
+                                            minlength=len(self.positions))
 
     def interpolate(self, rho, u):
-        """Euler -> Lagrange: marker density and momentum (LIFE ``:26-48``)."""
+        """Euler -> Lagrange: marker density and momentum (LIFE ``:26-48``).
+
+        Vectorised gather over the flat stencil table built in :meth:`move`;
+        identical to the per-marker ``sum(w * value)`` loops it replaces.
+        """
         rho = np.asarray(rho)
         u = np.asarray(u)
         n = len(self.positions)
-        rho_i = np.zeros(n)
-        mom_i = np.zeros((n, 2))
-        for k, (ii, jj, ww) in enumerate(self.supports):
-            vals = rho[ii, jj]
-            rho_i[k] = float(np.dot(vals, ww))
-            mom_i[k, 0] = float(np.dot(vals * u[ii, jj, 0], ww))
-            mom_i[k, 1] = float(np.dot(vals * u[ii, jj, 1], ww))
+        rho_f = rho.reshape(-1)
+        u_f = u.reshape(-1, 2)
+        idx, owner, w = self._idx, self._owner, self._w
+        vals = rho_f[idx]
+        rho_i = np.bincount(owner, weights=w * vals, minlength=n)
+        mom_i = np.empty((n, 2))
+        for c in range(2):
+            mom_i[:, c] = np.bincount(owner,
+                                      weights=w * vals * u_f[idx, c],
+                                      minlength=n)
         return rho_i, mom_i
 
     def force(self, rho_i, mom_i, u_body, dt=1.0):
@@ -184,13 +243,19 @@ class IBMInterface:
                       - np.asarray(mom_i))
 
     def spread(self, forces):
-        """Lagrange -> Euler: ``f += F_i eps_i ds_i delta`` (LIFE ``:61-94``)."""
-        f = np.zeros(self.shape + (2,))
-        ep = self.eps_used
-        for k, (ii, jj, ww) in enumerate(self.supports):
-            f[ii, jj, 0] += forces[k, 0] * ep[k] * self.ds[k] * ww
-            f[ii, jj, 1] += forces[k, 1] * ep[k] * self.ds[k] * ww
-        return f
+        """Lagrange -> Euler: ``f += F_i eps_i ds_i delta`` (LIFE ``:61-94``).
+
+        Vectorised scatter with ``np.add.at`` over the flat stencil table (the
+        scatter duplicates indices, so a plain ``+=`` would lose contributions).
+        """
+        forces = np.asarray(forces, dtype=float)
+        scale = self.eps_used * self.ds
+        fw = forces * scale[:, None]
+        f_flat = np.zeros((self.shape[0] * self.shape[1], 2))
+        counts = np.bincount(self._owner, minlength=len(self.positions))
+        for c in range(2):
+            np.add.at(f_flat[:, c], self._idx, np.repeat(fw[:, c], counts) * self._w)
+        return f_flat.reshape(self.shape + (2,))
 
     def uniform_force_transmission_error(self):
         """``max_i |interp_i(spread(F = e_x)) - 1|`` -- what epsilon targets."""
@@ -502,24 +567,45 @@ class LBMFluid2D:
         usq = (u ** 2).sum(axis=-1)[..., None]
         return self.W * np.asarray(rho)[..., None] * (1.0 + 3.0 * cu + 4.5 * cu ** 2 - 1.5 * usq)
 
-    def macroscopic(self):
+    def macroscopic(self, include_force=True):
+        """Macroscopic fields; ``include_force=False`` gives the pre-force state.
+
+        The half-split (Guo) velocity is ``u = (sum c f + F/2) / rho``; the
+        ``include_force=False`` branch is what an immersed-boundary coupling
+        needs *before* it decides on the body force for this step, so that the
+        force is applied inside the same collision instead of one step later.
+        """
         f, c = self.f, self.D
         rho = f.sum(axis=-1)
-        mom = (f[..., :, None] * c[None, None, :, :]).sum(axis=-2) + 0.5 * self.force_ibm
+        mom = (f[..., :, None] * c[None, None, :, :]).sum(axis=-2)
+        if include_force:
+            mom = mom + 0.5 * self.force_ibm
         return rho, mom / rho[..., None]
 
-    def step(self):
-        rho, u = self.macroscopic()
+    def step(self, force=None):
+        """One BGK step; ``force`` (default: the stored IBM force) acts inside it.
+
+        Passing the interface force explicitly removes the one-step lag of the
+        FSI loop: the force derived at time level ``k`` is applied in the
+        collision of level ``k`` (Guo half split), as in Uhlmann's direct-forcing
+        scheme, instead of in the collision of level ``k+1``.
+        """
+        f = self.f
+        f_ibm = self.force_ibm if force is None else np.asarray(force, dtype=float)
+        rho = f.sum(axis=-1)
+        mom = (f[..., :, None] * self.D[None, None, :, :]).sum(axis=-2)
+        u = (mom + 0.5 * f_ibm) / rho[..., None]
         self.rho, self.u = rho, u
         f_eq = self.equilibrium(rho, u)
         cu = u[..., 0, None] * self.D[:, 0] + u[..., 1, None] * self.D[:, 1]
-        cf = self.D[:, 0] * self.force_ibm[..., 0, None] + self.D[:, 1] * self.force_ibm[..., 1, None]
+        cf = self.D[:, 0] * f_ibm[..., 0, None] + self.D[:, 1] * f_ibm[..., 1, None]
         src = (1.0 - 0.5 * self.omega) * 3.0 * self.W * (cf + 3.0 * cu * cf)
-        f = self.f - self.omega * (self.f - f_eq) + src
+        f = f - self.omega * (f - f_eq) + src
         self.f = np.empty_like(f)
         for a in range(9):
             self.f[..., a] = np.roll(np.roll(f[..., a], int(self.D[a, 0]), axis=0),
                                      int(self.D[a, 1]), axis=1)
+        self.force_ibm = f_ibm
         return rho, u
 
 
@@ -550,8 +636,9 @@ class ImplicitIBMFSI:
         self.n_maxit_hits = 0
 
     def step(self, t_index):
-        self.fluid.step()                      # fluid advances once per step
-        rho, u = self.fluid.macroscopic()
+        # Pre-force fluid state of this time level: the interface force decided
+        # below is applied inside this step's collision (no one-step lag).
+        rho, u = self.fluid.macroscopic(include_force=False)
         beam = self.beam
         beam.u = beam.predict(t_index)
         u_km1 = beam.u.copy()
@@ -581,7 +668,7 @@ class ImplicitIBMFSI:
         self.ibm.move(beam.markers())
         rho_i, mom_i = self.ibm.interpolate(rho, u)
         f_lag = self.ibm.force(rho_i, mom_i, beam.node_velocities(), dt=self.dt)
-        self.fluid.force_ibm = self.ibm.spread(f_lag)
+        self.fluid.step(force=self.ibm.spread(f_lag))
         beam.advance_history()
         self.sub_iterations.append(it)
         return {"sub_iterations": it, "residual": res, "converged": converged,
