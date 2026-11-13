@@ -1,0 +1,242 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_cantilever_shear",
+  "title": "tensorfem.verified-section-nu.v1",
+  "mission": "CASE-CANTILEVER-TIP",
+  "generated_at": "2026-11-13T09:30:07+00:00",
+  "criteria": {
+    "case_pool_tolerance": 0.03,
+    "equilibrium_max": 1e-05,
+    "mesh_sensitivity_max": 0.01,
+    "section_probe_max": 0.005,
+    "nu_scaling_max": 0.15,
+    "slenderness": 4.0,
+    "nu_ladder": [
+      0.0,
+      0.15,
+      0.3,
+      0.45
+    ],
+    "width_ladder": [
+      1.0,
+      2.0,
+      4.0
+    ],
+    "mesh_levels": [
+      [
+        20,
+        2,
+        2
+      ],
+      [
+        24,
+        2,
+        3
+      ]
+    ]
+  },
+  "gates": [
+    {
+      "id": "exact2d_is_ti_2_3",
+      "quantity": "max |delta_2D/delta_TI(2/3) - 1| over the nu ladder",
+      "reference": "Timoshenko & Goodier Art. 24 closed form == Timoshenko with kappa = 2/3",
+      "value": 2.220446049250313e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "note": "two independently coded closed forms; no handbook digit is copied",
+      "passed": true
+    },
+    {
+      "id": "airy_module_matches_closed_form",
+      "quantity": "max |delta(airy module)/delta_2D(closed form) - 1|",
+      "reference": "tensorfem.airy_cantilever field (independent code path)",
+      "value": 3.302720086306721e-08,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "note": "the module evaluates a difference of large terms in float64; 1e-6 is its evaluation floor, not a model error",
+      "passed": true
+    },
+    {
+      "id": "cowper_value_at_nu_0p3",
+      "quantity": "|kappa_C(0.3) - 0.8496|",
+      "reference": "Cowper, J. Appl. Mech. 33 (1966) 335, solid rectangle; the published 0.8496 is a 4-digit rounding of 10*1.3/(12+3.3) = 0.849673",
+      "value": 7.320261437904207e-05,
+      "threshold": 0.0005,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "cowper_limit_at_nu_0_is_5_6",
+      "quantity": "|kappa_C(0) - 5/6|",
+      "reference": "Cowper (1966) closed form at nu = 0",
+      "value": 0.0,
+      "threshold": 1e-15,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "force_equilibrium_all_solves",
+      "quantity": "max root reaction residual / P",
+      "reference": "sum R_z = P",
+      "value": 8.670753004480502e-12,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "moment_equilibrium_all_solves",
+      "quantity": "max root moment residual / (P L)",
+      "reference": "M_y(root) = -P L",
+      "value": 7.476380625703882e-12,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "mesh_sensitivity_bound",
+      "quantity": "max |delta(level1)-delta(level0)|/delta",
+      "reference": "axial+section refinement pair (20,2,2) -> (24,2,3)",
+      "value": 0.003457124590260461,
+      "threshold": 0.01,
+      "operator": "<=",
+      "note": "a trend under 1 % bounds the discretisation error of the conclusions",
+      "passed": true
+    },
+    {
+      "id": "section_resolution_probe_b_2",
+      "quantity": "|delta(ny=4) - delta(ny=2)| / delta at level 0",
+      "reference": "cross-section mesh doubling isolates the b-direction discretisation",
+      "value": 0.00045837395396930436,
+      "threshold": 0.005,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "section_resolution_probe_b_4",
+      "quantity": "|delta(ny=4) - delta(ny=2)| / delta at level 0",
+      "reference": "cross-section mesh doubling isolates the b-direction discretisation",
+      "value": 0.00019670950994843395,
+      "threshold": 0.005,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "nu_scaling_follows_1_over_G",
+      "quantity": "|slope(de/dnu) / [e(0.3)/(1+0.3)] - 1|",
+      "reference": "shear term P L/(kappa G A), G = E/(2(1+nu)) => de/dnu = e/(1+nu)",
+      "value": 4.145530478189166,
+      "threshold": 0.15,
+      "operator": "<=",
+      "note": "a nu-compensated kappa would drive the slope towards 0 (ratio -> 0)",
+      "passed": false
+    },
+    {
+      "id": "oracle_ranking_stable_in_nu",
+      "quantity": "number of distinct rankings over the nu ladder - 1",
+      "reference": "medium mesh (24,2,3), three Timoshenko oracles",
+      "value": 1.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "note": "rankings observed: [['error_vs_ti_5_6', 'error_vs_ti_cowper', 'error_vs_ti_2_3'], ['error_vs_ti_cowper', 'error_vs_ti_5_6', 'error_vs_ti_2_3']]",
+      "passed": false
+    },
+    {
+      "id": "ti_2_3_beats_ti_5_6_nu_0.00",
+      "quantity": "|e_5/6| - |e_2/3| at the medium mesh",
+      "reference": "exact-elasticity field carries kappa = 2/3 (gate exact2d_is_ti_2_3)",
+      "value": -0.005271395197047331,
+      "threshold": 0.0,
+      "operator": ">=",
+      "note": "pre-registered prediction P5; an honest FAIL is a result, not a bug",
+      "passed": false
+    },
+    {
+      "id": "ti_2_3_beats_ti_5_6_nu_0.15",
+      "quantity": "|e_5/6| - |e_2/3| at the medium mesh",
+      "reference": "exact-elasticity field carries kappa = 2/3 (gate exact2d_is_ti_2_3)",
+      "value": -0.010199178012861953,
+      "threshold": 0.0,
+      "operator": ">=",
+      "note": "pre-registered prediction P5; an honest FAIL is a result, not a bug",
+      "passed": false
+    },
+    {
+      "id": "ti_2_3_beats_ti_5_6_nu_0.30",
+      "quantity": "|e_5/6| - |e_2/3| at the medium mesh",
+      "reference": "exact-elasticity field carries kappa = 2/3 (gate exact2d_is_ti_2_3)",
+      "value": -0.011285389117273201,
+      "threshold": 0.0,
+      "operator": ">=",
+      "note": "pre-registered prediction P5; an honest FAIL is a result, not a bug",
+      "passed": false
+    },
+    {
+      "id": "ti_2_3_beats_ti_5_6_nu_0.45",
+      "quantity": "|e_5/6| - |e_2/3| at the medium mesh",
+      "reference": "exact-elasticity field carries kappa = 2/3 (gate exact2d_is_ti_2_3)",
+      "value": -0.0121445663077284,
+      "threshold": 0.0,
+      "operator": ">=",
+      "note": "pre-registered prediction P5; an honest FAIL is a result, not a bug",
+      "passed": false
+    },
+    {
+      "id": "width_stiffens_monotone",
+      "quantity": "delta decreasing in b/h",
+      "reference": "wider section, same total load",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "note": "deltas = [6.593919752e-07, 3.255155697e-07, 1.58869996e-07]",
+      "passed": true
+    },
+    {
+      "id": "bracket_plane_strain_le_solid",
+      "quantity": "delta_plane_strain_strip / delta_solid - 1 (<= 0 expected)",
+      "reference": "b/h -> infinity limit of the same field, E -> E/(1-nu^2)",
+      "value": -0.022156455386975416,
+      "threshold": 0.0,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "bracket_solid_le_plane_stress",
+      "quantity": "delta_solid / delta_plane_stress_strip - 1 (<= 0 expected)",
+      "reference": "b/h -> 0 limit of the same field",
+      "value": -0.06409427995157357,
+      "threshold": 0.0,
+      "operator": "<=",
+      "note": "",
+      "passed": true
+    },
+    {
+      "id": "case_pool_tolerance_vs_ti_5_6",
+      "quantity": "max |delta/delta_TI(5/6) - 1|",
+      "reference": "case-pool tolerance 3 %",
+      "value": 0.05516597065385608,
+      "threshold": 0.03,
+      "operator": "<=",
+      "note": "",
+      "passed": false
+    },
+    {
+      "id": "solid_vs_exact_plane_stress_2pct",
+      "quantity": "max |delta/delta_2D - 1| over every recorded solve",
+      "reference": "Timoshenko & Goodier Art. 24 plane-stress field",
+      "value": 0.06601973417211805,
+      "threshold": 0.02,
+      "operator": "<=",
+      "note": "the 3-D solid is not plane stress: a bound, not an equality",
+      "passed": false
+    }
+  ],
+  "passed": 12,
+  "total": 20
+}
