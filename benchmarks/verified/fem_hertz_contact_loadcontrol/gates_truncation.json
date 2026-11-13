@@ -1,0 +1,82 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_hertz_contact_truncation",
+  "title": "CASE FEM-HERTZ-CONTACT: truncation vs model bias of the indentation plateau",
+  "mission": "CASE-FEM-HERTZ-CONTACT",
+  "generated_at": "2026-11-12T23:33:04+00:00",
+  "criteria": {
+    "h_over_a": 0.015,
+    "refinement_ratio": 2.0,
+    "truncation_residual_pct": 0.5,
+    "pool_tolerance_pct": 3.0
+  },
+  "gates": [
+    {
+      "id": "truncation_extrapolated_indentation",
+      "quantity": "|e_inf(delta)|: Richardson limit of the indentation error as depth/ a -> inf (a/R = 0.05, h/a = 0.015)",
+      "reference": "delta = a^2/R (Hertz 1882; Johnson 1985 \u00a74.2) at infinite half-space",
+      "value": 0.42780983887758905,
+      "threshold": 3.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "truncation_residual_model_bias",
+      "quantity": "|e_inf(delta)| against the pre-declared 0.5% bound that separates 'unconverged truncation' from 'model bias'",
+      "reference": "H_trunc accepted iff the extrapolated residual is <= 0.5%",
+      "value": 0.42780983887758905,
+      "threshold": 0.5,
+      "operator": "<=",
+      "passed": true,
+      "note": "a FAIL here is a *result*, not an error: it quantifies the irreducible model bias of the Q4 paraboloid model (see verdict in truncation_extrapolation.json)"
+    },
+    {
+      "id": "truncation_ladder_monotone_aR005",
+      "quantity": "number of levels where the indentation error does NOT decay in magnitude towards the infinite-domain limit",
+      "reference": "a truncation error must vanish as the boundary recedes",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "truncation_order_observed",
+      "quantity": "|observed decay order of the indentation-error sequence| (depth doubling)",
+      "reference": "admissible band [0.5, 3]; an order far below the band means the ladder is still in the pre-asymptotic regime",
+      "value": 1.1825496119696763,
+      "threshold": 0.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "truncation_insensitive_contact_radius_aR005",
+      "quantity": "spread (pp) of |contact-radius error| over the depth ladder 96a -> 768a",
+      "reference": "the contact radius is a near-field measure: if the depth ladder moves it, the reported a is contaminated by truncation",
+      "value": 0.001045903297969275,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "truncation_extrapolated_indentation_aR010",
+      "quantity": "|e_inf(delta)| at the second load (a/R = 0.10, h/a = 0.015)",
+      "reference": "delta = a^2/R at infinite half-space; load independence of the plateau is what made it look mesh-independent",
+      "value": 0.4038540392683778,
+      "threshold": 3.0,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_hertz_contact_loadcontrol/truncation_extrapolation.json",
+    "figures": "docs/assets/case-fem-hertz-contact/hertz_truncation_extrapolation.png"
+  },
+  "limitations": [
+    "Depth extrapolation assumes a single power law e(depth) = e_inf + C depth^-p; four levels are available for a/R = 0.05 and three for a/R = 0.10.",
+    "The far field is stretched rather than refined, so the truncation boundary moves while the element count stays fixed: this is a truncation study, not a mesh study.",
+    "The verdict is a statement about this axisymmetric Q4 paraboloid model at h/a = 0.015; it separates truncation from residual bias but does not by itself identify the mechanism of a residual bias."
+  ]
+}
