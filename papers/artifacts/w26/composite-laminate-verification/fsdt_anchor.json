@@ -1,0 +1,129 @@
+{
+  "probe": "first-order shear deformation (Mindlin) Navier closed form vs the Kirchhoff (CLT) series anchor and the two FE paths",
+  "rel_tolerance_for_D16_D26": 1e-09,
+  "note": "navier_fsdt rejects any laminate with D16 != 0 exactly; the balanced laminates here are numerically decoupled (D16/D11 ~ 1e-10), so a relative tolerance is applied by the probe",
+  "rows": [
+    {
+      "case": "cross_ply_0_90_s__t0p01",
+      "t_over_a": 0.01,
+      "D16_over_D11": 5.828848e-19,
+      "numerically_decoupled": true,
+      "w_clt_series": 4.312469120497333e-06,
+      "w_fsdt_navier": 4.329838466264371e-06,
+      "fsdt_over_clt": 1.0040277032209879,
+      "plate_over_clt": 1.0032694448838257,
+      "hex_over_clt": 1.1750930495046854,
+      "plate_vs_fsdt_pct": -0.07552165490349871,
+      "hex_vs_fsdt_pct": 17.037910979438962
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p10",
+      "t_over_a": 0.1,
+      "D16_over_D11": 5.828848e-19,
+      "numerically_decoupled": true,
+      "w_clt_series": 4.312469120497331e-09,
+      "w_fsdt_navier": 6.0494036972231255e-09,
+      "fsdt_over_clt": 1.4027703221038912,
+      "plate_over_clt": 1.4023324843199285,
+      "hex_over_clt": 1.7674380426684648,
+      "plate_vs_fsdt_pct": -0.031212364352417588,
+      "hex_vs_fsdt_pct": 25.996252901732397
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p50",
+      "t_over_a": 0.5,
+      "D16_over_D11": 5.828848e-19,
+      "numerically_decoupled": true,
+      "w_clt_series": 3.449975296397866e-11,
+      "w_fsdt_navier": 3.818866683091367e-10,
+      "fsdt_over_clt": 11.069258052597252,
+      "plate_over_clt": 11.076587986267425,
+      "hex_over_clt": 12.20181092164705,
+      "plate_vs_fsdt_pct": 0.0662188344995096,
+      "hex_vs_fsdt_pct": 10.23151564150282
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p01",
+      "t_over_a": 0.01,
+      "D16_over_D11": 0.6316898,
+      "numerically_decoupled": false,
+      "w_clt_series": 3.0268574063846064e-06,
+      "w_fsdt_navier": null,
+      "fsdt_over_clt": null,
+      "plate_over_clt": 1.0122987185775159,
+      "hex_over_clt": 0.9962670577210632,
+      "plate_vs_fsdt_pct": null,
+      "hex_vs_fsdt_pct": null
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p10",
+      "t_over_a": 0.1,
+      "D16_over_D11": 0.6316898,
+      "numerically_decoupled": false,
+      "w_clt_series": 3.0268574063846043e-09,
+      "w_fsdt_navier": null,
+      "fsdt_over_clt": null,
+      "plate_over_clt": 1.6424598394075465,
+      "hex_over_clt": 1.853318019133408,
+      "plate_vs_fsdt_pct": null,
+      "hex_vs_fsdt_pct": null
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p50",
+      "t_over_a": 0.5,
+      "D16_over_D11": 0.6316898,
+      "numerically_decoupled": false,
+      "w_clt_series": 2.421485925107681e-11,
+      "w_fsdt_navier": null,
+      "fsdt_over_clt": null,
+      "plate_over_clt": 15.550536516261394,
+      "hex_over_clt": 14.979462303249603,
+      "plate_vs_fsdt_pct": null,
+      "hex_vs_fsdt_pct": null
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p01",
+      "t_over_a": 0.01,
+      "D16_over_D11": 0.0647938,
+      "numerically_decoupled": false,
+      "w_clt_series": 3.3003567039333794e-06,
+      "w_fsdt_navier": null,
+      "fsdt_over_clt": null,
+      "plate_over_clt": 1.0059171504532665,
+      "hex_over_clt": 1.0050984046501903,
+      "plate_vs_fsdt_pct": null,
+      "hex_vs_fsdt_pct": null
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p10",
+      "t_over_a": 0.1,
+      "D16_over_D11": 0.0647938,
+      "numerically_decoupled": false,
+      "w_clt_series": 3.3003567039333833e-09,
+      "w_fsdt_navier": null,
+      "fsdt_over_clt": null,
+      "plate_over_clt": 1.5957717168338859,
+      "hex_over_clt": 1.8426771223704532,
+      "plate_vs_fsdt_pct": null,
+      "hex_vs_fsdt_pct": null
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p50",
+      "t_over_a": 0.5,
+      "D16_over_D11": 0.0647938,
+      "numerically_decoupled": false,
+      "w_clt_series": 2.6402853631467056e-11,
+      "w_fsdt_navier": null,
+      "fsdt_over_clt": null,
+      "plate_over_clt": 14.565428167267074,
+      "hex_over_clt": 16.234555036852015,
+      "plate_vs_fsdt_pct": null,
+      "hex_vs_fsdt_pct": null
+    }
+  ],
+  "disputed_regime": [
+    "cross_ply_0_90_s__t0p10"
+  ],
+  "conclusion": "the FSDT anchor absorbs most of the FE-vs-CLT gap for the shear-soft layups at a/h = 10, so the gap is transverse shear deformation and the Kirchhoff anchor is outside its validity domain there",
+  "conclusion_flag": true
+}

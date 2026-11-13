@@ -1,0 +1,999 @@
+{
+  "task": "W23 composite laminate bending, extension (multi-case ensemble)",
+  "provenance": {
+    "module": "src/tensorfem/composite_laminate_bending.py",
+    "module_sha256": "570a71fd502b6f6cacaeced7e1e91ae49599b59cfeb169f3fbf8b232f79bd0b7",
+    "runner_sha256": "c99f7606429663e1c04c9c3b04d136687d671595400f233c22e3aaa190fa126d",
+    "git_commit": "80624f0c52897e56ea897f75427db0442ad221ba",
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "material": {
+      "E1": 25000000000.0,
+      "E2": 1000000000.0,
+      "E3": 1000000000.0,
+      "nu12": 0.25,
+      "nu13": 0.25,
+      "nu23": 0.25,
+      "G12": 500000000.0,
+      "G13": 500000000.0,
+      "G23": 200000000.0
+    },
+    "plate": {
+      "a": 1.0,
+      "b": 1.0,
+      "q0": 1.0
+    },
+    "load": "q = q0 sin(pi x / a) sin(pi y / b), SS1 (shear diaphragm) edges"
+  },
+  "criteria": {
+    "C1_all_cases_reported": "every case reports its deflection deviation (no cherry-picking)",
+    "C2_thin_lt3_thick_lt5_pct": {
+      "thin_t_over_a_le_0.1": 3.0,
+      "thick_t_over_a_0.5": 5.0
+    },
+    "C3_gci_lt5_pct_and_order_vs_theory": {
+      "gci_limit_pct": 5.0,
+      "theoretical_order": 2.0
+    },
+    "C4_interlaminar_shear_lt10_pct": 10.0
+  },
+  "cases": [
+    {
+      "case": "cross_ply_0_90_s__t0p01",
+      "layup": "cross_ply_0_90_s",
+      "t_over_a": 0.01,
+      "primary_reference": "exact3d",
+      "w_reference": 5.0915119455071965e-06,
+      "references": {
+        "clt_series": 4.312469120497333e-06,
+        "clt_series_modes": [
+          21,
+          41,
+          61
+        ],
+        "clt_series_sequence": [
+          4.312469120497333e-06,
+          4.312469120497333e-06,
+          4.312469120497333e-06
+        ],
+        "clt_series_truncation_pct": 0.0,
+        "clt_single_mode": 4.312469120497333e-06,
+        "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
+        "fsdt_navier": null,
+        "exact3d": 5.0915119455071965e-06,
+        "exact3d_verification": {
+          "face_traction_rel": 1.658053609962065e-12,
+          "interface_stress_jump_rel": 0.0001001602873458296,
+          "state_residual": 1.5505492708173627e-14
+        }
+      },
+      "plate_fem": [
+        {
+          "n": 4,
+          "w": 4.111330785370821e-06,
+          "dofs": 75,
+          "residual": 9.86095066095947e-14
+        },
+        {
+          "n": 8,
+          "w": 4.276983372224534e-06,
+          "dofs": 243,
+          "residual": 7.857068151225544e-13
+        },
+        {
+          "n": 16,
+          "w": 4.316731995762117e-06,
+          "dofs": 867,
+          "residual": 2.9140394825961596e-12
+        },
+        {
+          "n": 32,
+          "w": 4.3265685005534825e-06,
+          "dofs": 3267,
+          "residual": 1.4545070448657767e-11
+        }
+      ],
+      "hex20_fem": [
+        {
+          "nx": 4,
+          "nz_per_ply": 2,
+          "w": 4.834843032216234e-06,
+          "dofs": 2355,
+          "residual": 8.115051414162119,
+          "tau_xz_interface": {
+            "-0.002500": -131.12072081425134,
+            "0.000000": -132.6885557581566,
+            "0.002500": -57.52073603632603
+          },
+          "tau_xz_max_interior": 138.97252672166056
+        },
+        {
+          "nx": 6,
+          "nz_per_ply": 3,
+          "w": 5.028655656907544e-06,
+          "dofs": 6951,
+          "residual": 4.130177589547445,
+          "tau_xz_interface": {
+            "-0.002500": -90.34135266198192,
+            "0.000000": -91.64411299430711,
+            "0.002500": -24.870692783953658
+          },
+          "tau_xz_max_interior": 91.64411299430711
+        },
+        {
+          "nx": 8,
+          "nz_per_ply": 4,
+          "w": 5.067552489719583e-06,
+          "dofs": 15363,
+          "residual": 3.255484969845195,
+          "tau_xz_interface": {
+            "-0.002500": -70.5002903457617,
+            "0.000000": -71.62206330087105,
+            "0.002500": -16.31799326492632
+          },
+          "tau_xz_max_interior": 71.62206330087105
+        }
+      ],
+      "err_plate_vs_ref_pct": -15.02389571389905,
+      "err_hex_vs_ref_pct": -0.4705764425978809,
+      "err_plate_vs_clt_series_pct": 0.326944487303904,
+      "err_clt_series_vs_ref_pct": -15.300815029949966,
+      "shear_share_pct": -15.300815029949966,
+      "limit_pct": 3.0,
+      "verdict_plate": "FAIL",
+      "verdict_hex": "PASS"
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p10",
+      "layup": "cross_ply_0_90_s",
+      "t_over_a": 0.1,
+      "primary_reference": "exact3d",
+      "w_reference": 7.623865075766066e-09,
+      "references": {
+        "clt_series": 4.312469120497331e-09,
+        "clt_series_modes": [
+          21,
+          41,
+          61
+        ],
+        "clt_series_sequence": [
+          4.312469120497331e-09,
+          4.312469120497331e-09,
+          4.312469120497331e-09
+        ],
+        "clt_series_truncation_pct": 0.0,
+        "clt_single_mode": 4.312469120497331e-09,
+        "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
+        "fsdt_navier": null,
+        "exact3d": 7.623865075766066e-09,
+        "exact3d_verification": {
+          "face_traction_rel": 1.0734393016882557e-14,
+          "interface_stress_jump_rel": 1.7013673830890141e-07,
+          "state_residual": 2.132394472038094e-17
+        }
+      },
+      "plate_fem": [
+        {
+          "n": 4,
+          "w": 5.92196708121089e-09,
+          "dofs": 75,
+          "residual": 1.0942697731206891e-15
+        },
+        {
+          "n": 8,
+          "w": 6.018816588425193e-09,
+          "dofs": 243,
+          "residual": 8.055248189322389e-15
+        },
+        {
+          "n": 16,
+          "w": 6.041832420527017e-09,
+          "dofs": 867,
+          "residual": 3.1958539999837824e-14
+        },
+        {
+          "n": 32,
+          "w": 6.047515535342251e-09,
+          "dofs": 3267,
+          "residual": 1.6052723206589737e-13
+        }
+      ],
+      "hex20_fem": [
+        {
+          "nx": 4,
+          "nz_per_ply": 2,
+          "w": 7.59052161686256e-09,
+          "dofs": 2355,
+          "residual": 0.48518339301635205,
+          "tau_xz_interface": {
+            "-0.025000": -3.1263225388015417,
+            "0.000000": -3.1938163598009117,
+            "0.025000": -0.8056017231879695
+          },
+          "tau_xz_max_interior": 3.1938163598009117
+        },
+        {
+          "nx": 6,
+          "nz_per_ply": 3,
+          "w": 7.61775750692925e-09,
+          "dofs": 6951,
+          "residual": 0.48001100962746396,
+          "tau_xz_interface": {
+            "-0.025000": -2.846186678243812,
+            "0.000000": -2.9136920786416463,
+            "0.025000": -0.6049194900475781
+          },
+          "tau_xz_max_interior": 2.9136920786416463
+        },
+        {
+          "nx": 8,
+          "nz_per_ply": 4,
+          "w": 7.622021981385989e-09,
+          "dofs": 15363,
+          "residual": 0.48091413713272746,
+          "tau_xz_interface": {
+            "-0.025000": -2.7558352178683627,
+            "0.000000": -2.8231521023460573,
+            "0.025000": -0.5294039883005858
+          },
+          "tau_xz_max_interior": 2.8231521023460573
+        }
+      ],
+      "err_plate_vs_ref_pct": -20.67651414024295,
+      "err_hex_vs_ref_pct": -0.024175327891573506,
+      "err_plate_vs_clt_series_pct": 40.2332484329726,
+      "err_clt_series_vs_ref_pct": -43.43460859236149,
+      "shear_share_pct": -43.43460859236149,
+      "limit_pct": 3.0,
+      "verdict_plate": "FAIL",
+      "verdict_hex": "PASS"
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p50",
+      "layup": "cross_ply_0_90_s",
+      "t_over_a": 0.5,
+      "primary_reference": "exact3d",
+      "w_reference": 4.210582325620275e-10,
+      "references": {
+        "clt_series": 3.449975296397866e-11,
+        "clt_series_modes": [
+          21,
+          41,
+          61
+        ],
+        "clt_series_sequence": [
+          3.449975296397866e-11,
+          3.449975296397866e-11,
+          3.449975296397866e-11
+        ],
+        "clt_series_truncation_pct": 0.0,
+        "clt_single_mode": 3.4499752963978666e-11,
+        "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
+        "fsdt_navier": null,
+        "exact3d": 4.210582325620275e-10,
+        "exact3d_verification": {
+          "face_traction_rel": 4.551194051344529e-13,
+          "interface_stress_jump_rel": 1.0966289071268065e-08,
+          "state_residual": 3.0652682710041895e-18
+        }
+      },
+      "plate_fem": [
+        {
+          "n": 4,
+          "w": 3.9852944250956124e-10,
+          "dofs": 75,
+          "residual": 7.998203991268023e-16
+        },
+        {
+          "n": 8,
+          "w": 3.859606110007435e-10,
+          "dofs": 243,
+          "residual": 2.028793367202553e-15
+        },
+        {
+          "n": 16,
+          "w": 3.8289959022788596e-10,
+          "dofs": 867,
+          "residual": 1.0152519772740514e-14
+        },
+        {
+          "n": 32,
+          "w": 3.82139549213583e-10,
+          "dofs": 3267,
+          "residual": 5.1716938470974436e-14
+        }
+      ],
+      "hex20_fem": [
+        {
+          "nx": 4,
+          "nz_per_ply": 2,
+          "w": 4.19517829819385e-10,
+          "dofs": 2355,
+          "residual": 0.36838084787133096,
+          "tau_xz_interface": {
+            "-0.125000": -0.3710978302368689,
+            "0.000000": -0.36523111497713284,
+            "0.125000": -0.3002087976322062
+          },
+          "tau_xz_max_interior": 0.6019202330993774
+        },
+        {
+          "nx": 6,
+          "nz_per_ply": 3,
+          "w": 4.2074953834349657e-10,
+          "dofs": 6951,
+          "residual": 0.3656685673833621,
+          "tau_xz_interface": {
+            "-0.125000": -0.35078944008971535,
+            "0.000000": -0.34399099922409726,
+            "0.125000": -0.27176962179044434
+          },
+          "tau_xz_max_interior": 0.5312585889482824
+        },
+        {
+          "nx": 8,
+          "nz_per_ply": 4,
+          "w": 4.209594625089586e-10,
+          "dofs": 15363,
+          "residual": 0.365501324599208,
+          "tau_xz_interface": {
+            "-0.125000": -0.3435932068645347,
+            "0.000000": -0.33624075689818844,
+            "0.125000": -0.2613514762365693
+          },
+          "tau_xz_max_interior": 0.5327442551701114
+        }
+      ],
+      "err_plate_vs_ref_pct": -9.243064340918995,
+      "err_hex_vs_ref_pct": -0.02345757556333483,
+      "err_plate_vs_clt_series_pct": 1007.6587986371281,
+      "err_clt_series_vs_ref_pct": -91.80641766483063,
+      "shear_share_pct": -91.80641766483063,
+      "limit_pct": 5.0,
+      "verdict_plate": "FAIL",
+      "verdict_hex": "PASS"
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p01",
+      "layup": "angle_ply_pm45_s",
+      "t_over_a": 0.01,
+      "primary_reference": "clt_series",
+      "w_reference": 3.0268574063846064e-06,
+      "references": {
+        "clt_series": 3.0268574063846064e-06,
+        "clt_series_modes": [
+          21,
+          41,
+          61
+        ],
+        "clt_series_sequence": [
+          2.983682383825905e-06,
+          3.0146430659978304e-06,
+          3.0268574063846064e-06
+        ],
+        "clt_series_truncation_pct": 0.40353207128330715,
+        "clt_single_mode": null,
+        "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
+        "fsdt_navier": null,
+        "exact3d": null,
+        "exact3d_verification": null
+      },
+      "plate_fem": [
+        {
+          "n": 4,
+          "w": 2.8385610266187407e-06,
+          "dofs": 75,
+          "residual": 7.159791560881436e-14
+        },
+        {
+          "n": 8,
+          "w": 2.986491627914915e-06,
+          "dofs": 243,
+          "residual": 3.6458789992814733e-13
+        },
+        {
+          "n": 16,
+          "w": 3.042968625129599e-06,
+          "dofs": 867,
+          "residual": 1.3179010118408605e-12
+        },
+        {
+          "n": 32,
+          "w": 3.064083873788403e-06,
+          "dofs": 3267,
+          "residual": 5.079872455152626e-12
+        }
+      ],
+      "hex20_fem": [
+        {
+          "nx": 4,
+          "nz_per_ply": 2,
+          "w": 2.6808907028132473e-06,
+          "dofs": 2355,
+          "residual": 22.788344716759394,
+          "tau_xz_interface": {
+            "-0.002500": -77.74895359472121,
+            "0.000000": -106.15650599503515,
+            "0.002500": -77.74901049545892
+          },
+          "tau_xz_max_interior": 108.04544863117508
+        },
+        {
+          "nx": 6,
+          "nz_per_ply": 3,
+          "w": 2.951517439093551e-06,
+          "dofs": 6951,
+          "residual": 19.74707092577701,
+          "tau_xz_interface": {
+            "-0.002500": -70.31931640571908,
+            "0.000000": -61.21726372599928,
+            "0.002500": -70.31935322128282
+          },
+          "tau_xz_max_interior": 75.63933475869962
+        },
+        {
+          "nx": 8,
+          "nz_per_ply": 4,
+          "w": 3.0155583224414564e-06,
+          "dofs": 15363,
+          "residual": 18.742402356809915,
+          "tau_xz_interface": {
+            "-0.002500": -74.64223013756481,
+            "0.000000": -41.979042817576385,
+            "0.002500": -74.64227027583527
+          },
+          "tau_xz_max_interior": 74.64227027583527
+        }
+      ],
+      "err_plate_vs_ref_pct": 1.2298718573684475,
+      "err_hex_vs_ref_pct": -0.37329422652406796,
+      "err_plate_vs_clt_series_pct": 1.2298718573684475,
+      "err_clt_series_vs_ref_pct": 0.0,
+      "shear_share_pct": 0.0,
+      "limit_pct": 3.0,
+      "verdict_plate": "PASS",
+      "verdict_hex": "PASS"
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p10",
+      "layup": "angle_ply_pm45_s",
+      "t_over_a": 0.1,
+      "primary_reference": "clt_series",
+      "w_reference": 3.0268574063846043e-09,
+      "references": {
+        "clt_series": 3.0268574063846043e-09,
+        "clt_series_modes": [
+          21,
+          41,
+          61
+        ],
+        "clt_series_sequence": [
+          2.9836823838259056e-09,
+          3.0146430659978294e-09,
+          3.0268574063846043e-09
+        ],
+        "clt_series_truncation_pct": 0.40353207128327373,
+        "clt_single_mode": null,
+        "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
+        "fsdt_navier": null,
+        "exact3d": null,
+        "exact3d_verification": null
+      },
+      "plate_fem": [
+        {
+          "n": 4,
+          "w": 4.832903577883561e-09,
+          "dofs": 75,
+          "residual": 1.1609749424123705e-15
+        },
+        {
+          "n": 8,
+          "w": 4.9207884361612215e-09,
+          "dofs": 243,
+          "residual": 9.388132002861192e-15
+        },
+        {
+          "n": 16,
+          "w": 4.956137520389758e-09,
+          "dofs": 867,
+          "residual": 2.791727712270784e-14
+        },
+        {
+          "n": 32,
+          "w": 4.971491729629606e-09,
+          "dofs": 3267,
+          "residual": 1.2655815219723305e-13
+        }
+      ],
+      "hex20_fem": [
+        {
+          "nx": 4,
+          "nz_per_ply": 2,
+          "w": 5.455563454572434e-09,
+          "dofs": 2355,
+          "residual": 1.4419322543931106,
+          "tau_xz_interface": {
+            "-0.025000": -3.126337623434168,
+            "0.000000": -2.450024916476867,
+            "0.025000": -3.1361023964674186
+          },
+          "tau_xz_max_interior": 3.1361023964674186
+        },
+        {
+          "nx": 6,
+          "nz_per_ply": 3,
+          "w": 5.565039715712589e-09,
+          "dofs": 6951,
+          "residual": 1.3958182388338478,
+          "tau_xz_interface": {
+            "-0.025000": -3.5213249495524757,
+            "0.000000": -2.039388639036819,
+            "0.025000": -3.5325233380748124
+          },
+          "tau_xz_max_interior": 3.5325233380748124
+        },
+        {
+          "nx": 8,
+          "nz_per_ply": 4,
+          "w": 5.609729372622383e-09,
+          "dofs": 15363,
+          "residual": 1.3922766953062746,
+          "tau_xz_interface": {
+            "-0.025000": -3.9166240321297288,
+            "0.000000": -1.8681891863972349,
+            "0.025000": -3.9291120455452444
+          },
+          "tau_xz_max_interior": 3.9291120455452444
+        }
+      ],
+      "err_plate_vs_ref_pct": 64.24598394173277,
+      "err_hex_vs_ref_pct": 85.3318019140803,
+      "err_plate_vs_clt_series_pct": 64.24598394173277,
+      "err_clt_series_vs_ref_pct": 0.0,
+      "shear_share_pct": 0.0,
+      "limit_pct": 3.0,
+      "verdict_plate": "FAIL",
+      "verdict_hex": "FAIL"
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p50",
+      "layup": "angle_ply_pm45_s",
+      "t_over_a": 0.5,
+      "primary_reference": "hex20_richardson",
+      "w_reference": 3.6354271469619555e-10,
+      "references": {
+        "clt_series": 2.421485925107681e-11,
+        "clt_series_modes": [
+          21,
+          41,
+          61
+        ],
+        "clt_series_sequence": [
+          2.3869459070607247e-11,
+          2.4117144527982644e-11,
+          2.421485925107681e-11
+        ],
+        "clt_series_truncation_pct": 0.40353207128313495,
+        "clt_single_mode": null,
+        "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
+        "fsdt_navier": null,
+        "exact3d": null,
+        "exact3d_verification": null
+      },
+      "plate_fem": [
+        {
+          "n": 4,
+          "w": 3.921410619189571e-10,
+          "dofs": 75,
+          "residual": 6.172575972888919e-16
+        },
+        {
+          "n": 8,
+          "w": 3.801139213875236e-10,
+          "dofs": 243,
+          "residual": 2.5805312804462435e-15
+        },
+        {
+          "n": 16,
+          "w": 3.7723578851128324e-10,
+          "dofs": 867,
+          "residual": 1.0052047494393675e-14
+        },
+        {
+          "n": 32,
+          "w": 3.7655405301507044e-10,
+          "dofs": 3267,
+          "residual": 5.1484698606474003e-14
+        }
+      ],
+      "hex20_fem": [
+        {
+          "nx": 4,
+          "nz_per_ply": 2,
+          "w": 3.585043266804818e-10,
+          "dofs": 2355,
+          "residual": 0.48277935257263943,
+          "tau_xz_interface": {
+            "-0.125000": -0.3567183526808999,
+            "0.000000": -0.4041131681644908,
+            "0.125000": -0.4718410959322078
+          },
+          "tau_xz_max_interior": 0.4718410959322078
+        },
+        {
+          "nx": 6,
+          "nz_per_ply": 3,
+          "w": 3.6151365448661705e-10,
+          "dofs": 6951,
+          "residual": 0.48269304454917855,
+          "tau_xz_interface": {
+            "-0.125000": -0.3686081510581208,
+            "0.000000": -0.39466812442566984,
+            "0.125000": -0.48475979095244726
+          },
+          "tau_xz_max_interior": 0.48475979095244726
+        },
+        {
+          "nx": 8,
+          "nz_per_ply": 4,
+          "w": 3.6272557133183886e-10,
+          "dofs": 15363,
+          "residual": 0.4869718475359755,
+          "tau_xz_interface": {
+            "-0.125000": -0.39307755292830804,
+            "0.000000": -0.39122541748021966,
+            "0.125000": -0.516113788944825
+          },
+          "tau_xz_max_interior": 0.516113788944825
+        }
+      ],
+      "err_plate_vs_ref_pct": 3.5790397642126326,
+      "err_hex_vs_ref_pct": -0.22477231184224733,
+      "err_plate_vs_clt_series_pct": 1455.053651605782,
+      "err_clt_series_vs_ref_pct": -93.33919831915416,
+      "shear_share_pct": -93.33919831915416,
+      "limit_pct": 5.0,
+      "verdict_plate": "PASS",
+      "verdict_hex": "PASS"
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p01",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "t_over_a": 0.01,
+      "primary_reference": "clt_series",
+      "w_reference": 3.3003567039333794e-06,
+      "references": {
+        "clt_series": 3.3003567039333794e-06,
+        "clt_series_modes": [
+          21,
+          41,
+          61
+        ],
+        "clt_series_sequence": [
+          3.2973743153006324e-06,
+          3.2995771957065188e-06,
+          3.3003567039333794e-06
+        ],
+        "clt_series_truncation_pct": 0.02361890840258733,
+        "clt_single_mode": null,
+        "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
+        "fsdt_navier": null,
+        "exact3d": null,
+        "exact3d_verification": null
+      },
+      "plate_fem": [
+        {
+          "n": 4,
+          "w": 3.1840283584142585e-06,
+          "dofs": 75,
+          "residual": 6.882076430664204e-14
+        },
+        {
+          "n": 8,
+          "w": 3.2871296715009658e-06,
+          "dofs": 243,
+          "residual": 4.519194254242108e-13
+        },
+        {
+          "n": 16,
+          "w": 3.313269674211635e-06,
+          "dofs": 867,
+          "residual": 1.5094211849910157e-12
+        },
+        {
+          "n": 32,
+          "w": 3.3198854110833174e-06,
+          "dofs": 3267,
+          "residual": 1.017921374428709e-11
+        }
+      ],
+      "hex20_fem": [
+        {
+          "nx": 4,
+          "nz_per_ply": 2,
+          "w": 3.1862500939073065e-06,
+          "dofs": 4515,
+          "residual": 16.62966959952957,
+          "tau_xz_interface": {
+            "-0.003750": -76.99708120997653,
+            "-0.002500": -98.93153730266857,
+            "-0.001250": -104.58599558953875,
+            "0.000000": -95.19290071356411,
+            "0.001250": -104.58511352409445,
+            "0.002500": -98.93101880300146,
+            "0.003750": -76.99693699730787
+          },
+          "tau_xz_max_interior": 113.01131283680398
+        },
+        {
+          "nx": 6,
+          "nz_per_ply": 3,
+          "w": 3.295346268968743e-06,
+          "dofs": 13503,
+          "residual": 13.3155211118098,
+          "tau_xz_interface": {
+            "-0.003750": -48.60358959243885,
+            "-0.002500": -69.35178104010255,
+            "-0.001250": -72.97421954417268,
+            "0.000000": -71.45421212390178,
+            "0.001250": -72.97333097188324,
+            "0.002500": -69.35124947376454,
+            "0.003750": -48.603420311072924
+          },
+          "tau_xz_max_interior": 74.06472700827328
+        },
+        {
+          "nx": 8,
+          "nz_per_ply": 4,
+          "w": 3.317183257914995e-06,
+          "dofs": 30051,
+          "residual": 12.253105566655108,
+          "tau_xz_interface": {
+            "-0.003750": -35.78542557597726,
+            "-0.002500": -58.172098691647975,
+            "-0.001250": -59.150172868266914,
+            "0.000000": -58.52166318352518,
+            "0.001250": -59.14929437239043,
+            "0.002500": -58.17156655454465,
+            "0.003750": -35.785262887736444
+          },
+          "tau_xz_max_interior": 59.5913161158399
+        }
+      ],
+      "err_plate_vs_ref_pct": 0.5917150448211839,
+      "err_hex_vs_ref_pct": 0.5098404654733768,
+      "err_plate_vs_clt_series_pct": 0.5917150448211839,
+      "err_clt_series_vs_ref_pct": 0.0,
+      "shear_share_pct": 0.0,
+      "limit_pct": 3.0,
+      "verdict_plate": "PASS",
+      "verdict_hex": "PASS"
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p10",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "t_over_a": 0.1,
+      "primary_reference": "clt_series",
+      "w_reference": 3.3003567039333833e-09,
+      "references": {
+        "clt_series": 3.3003567039333833e-09,
+        "clt_series_modes": [
+          21,
+          41,
+          61
+        ],
+        "clt_series_sequence": [
+          3.2973743153006285e-09,
+          3.2995771957065197e-09,
+          3.3003567039333833e-09
+        ],
+        "clt_series_truncation_pct": 0.02361890840267783,
+        "clt_single_mode": null,
+        "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
+        "fsdt_navier": null,
+        "exact3d": null,
+        "exact3d_verification": null
+      },
+      "plate_fem": [
+        {
+          "n": 4,
+          "w": 5.228372597167791e-09,
+          "dofs": 75,
+          "residual": 1.6359980856212537e-15
+        },
+        {
+          "n": 8,
+          "w": 5.257022179376467e-09,
+          "dofs": 243,
+          "residual": 6.2771650878380505e-15
+        },
+        {
+          "n": 16,
+          "w": 5.264516482839195e-09,
+          "dofs": 867,
+          "residual": 2.901077054108904e-14
+        },
+        {
+          "n": 32,
+          "w": 5.26661588359539e-09,
+          "dofs": 3267,
+          "residual": 1.4232165049693005e-13
+        }
+      ],
+      "hex20_fem": [
+        {
+          "nx": 4,
+          "nz_per_ply": 2,
+          "w": 6.008106215386782e-09,
+          "dofs": 4515,
+          "residual": 1.0439111405163035,
+          "tau_xz_interface": {
+            "-0.037500": -1.553698113800213,
+            "-0.025000": -3.315765283630483,
+            "-0.012500": -3.3562778782600775,
+            "0.000000": -3.2838629167188973,
+            "0.012500": -3.3478284093357766,
+            "0.025000": -3.3145633845858535,
+            "0.037500": -1.55792931771489
+          },
+          "tau_xz_max_interior": 3.421605800330086
+        },
+        {
+          "nx": 6,
+          "nz_per_ply": 3,
+          "w": 6.060094253026403e-09,
+          "dofs": 13503,
+          "residual": 0.9729513196760822,
+          "tau_xz_interface": {
+            "-0.037500": -1.1279748859890293,
+            "-0.025000": -3.4921942419458443,
+            "-0.012500": -3.1752976494615117,
+            "0.000000": -3.14363413942497,
+            "0.012500": -3.1657162364354003,
+            "0.025000": -3.490879593818037,
+            "0.037500": -1.1322797299175256
+          },
+          "tau_xz_max_interior": 3.5221219819486094
+        },
+        {
+          "nx": 8,
+          "nz_per_ply": 4,
+          "w": 6.081491793997924e-09,
+          "dofs": 30051,
+          "residual": 0.954598381066404,
+          "tau_xz_interface": {
+            "-0.037500": -0.8625452593793499,
+            "-0.025000": -3.782215083549307,
+            "-0.012500": -3.1081938981199633,
+            "0.000000": -3.0870230457911676,
+            "0.012500": -3.097762503643497,
+            "0.025000": -3.780628193460948,
+            "0.037500": -0.8675625022583997
+          },
+          "tau_xz_max_interior": 3.782215083549307
+        }
+      ],
+      "err_plate_vs_ref_pct": 59.5771716832489,
+      "err_hex_vs_ref_pct": 84.26771223698239,
+      "err_plate_vs_clt_series_pct": 59.5771716832489,
+      "err_clt_series_vs_ref_pct": 0.0,
+      "shear_share_pct": 0.0,
+      "limit_pct": 3.0,
+      "verdict_plate": "FAIL",
+      "verdict_hex": "FAIL"
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p50",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "t_over_a": 0.5,
+      "primary_reference": "hex20_richardson",
+      "w_reference": 4.290294483422885e-10,
+      "references": {
+        "clt_series": 2.6402853631467056e-11,
+        "clt_series_modes": [
+          21,
+          41,
+          61
+        ],
+        "clt_series_sequence": [
+          2.6378994522405064e-11,
+          2.639661756565216e-11,
+          2.6402853631467056e-11
+        ],
+        "clt_series_truncation_pct": 0.023618908402631825,
+        "clt_single_mode": null,
+        "clt_single_mode_note": "single-mode Navier is undefined when D16/D26 != 0",
+        "fsdt_navier": null,
+        "exact3d": null,
+        "exact3d_verification": null
+      },
+      "plate_fem": [
+        {
+          "n": 4,
+          "w": 4.008044126477556e-10,
+          "dofs": 75,
+          "residual": 5.415075821414892e-16
+        },
+        {
+          "n": 8,
+          "w": 3.8834087945292613e-10,
+          "dofs": 243,
+          "residual": 2.9830198321310704e-15
+        },
+        {
+          "n": 16,
+          "w": 3.8531668030453597e-10,
+          "dofs": 867,
+          "residual": 1.0487188261481744e-14
+        },
+        {
+          "n": 32,
+          "w": 3.8456886798253753e-10,
+          "dofs": 3267,
+          "residual": 5.234191656057868e-14
+        }
+      ],
+      "hex20_fem": [
+        {
+          "nx": 4,
+          "nz_per_ply": 2,
+          "w": 4.2588038035641503e-10,
+          "dofs": 4515,
+          "residual": 0.3422266084795562,
+          "tau_xz_interface": {
+            "-0.187500": -0.23723400313185583,
+            "-0.125000": -0.4801261993882411,
+            "-0.062500": -0.42115922885164847,
+            "0.000000": -0.39358452484179307,
+            "0.062500": -0.39931140457250985,
+            "0.125000": -0.5820758614637872,
+            "0.187500": -0.3484030278468224
+          },
+          "tau_xz_max_interior": 0.5820758614637872
+        },
+        {
+          "nx": 6,
+          "nz_per_ply": 3,
+          "w": 4.279200026735661e-10,
+          "dofs": 13503,
+          "residual": 0.3345558704941631,
+          "tau_xz_interface": {
+            "-0.187500": -0.21197871253258047,
+            "-0.125000": -0.526122091448286,
+            "-0.062500": -0.4215922709142191,
+            "0.000000": -0.38456867818663787,
+            "0.062500": -0.3912414401916671,
+            "0.125000": -0.6349328671419638,
+            "0.187500": -0.32175666244949064
+          },
+          "tau_xz_max_interior": 0.6349328671419638
+        },
+        {
+          "nx": 8,
+          "nz_per_ply": 4,
+          "w": 4.286385804101357e-10,
+          "dofs": 30051,
+          "residual": 0.33405779834097726,
+          "tau_xz_interface": {
+            "-0.187500": -0.20407089539388754,
+            "-0.125000": -0.5713140844165983,
+            "-0.062500": -0.42469675969412624,
+            "0.000000": -0.3815238535780419,
+            "0.062500": -0.3906933655521206,
+            "0.125000": -0.6882024884940386,
+            "0.187500": -0.3168050263785708
+          },
+          "tau_xz_max_interior": 0.6882024884940386
+        }
+      ],
+      "err_plate_vs_ref_pct": -10.363060282118298,
+      "err_hex_vs_ref_pct": -0.09110515226007365,
+      "err_plate_vs_clt_series_pct": 1356.5428167363182,
+      "err_clt_series_vs_ref_pct": -93.84591110622263,
+      "shear_share_pct": -93.84591110622263,
+      "limit_pct": 5.0,
+      "verdict_plate": "FAIL",
+      "verdict_hex": "PASS"
+    }
+  ]
+}
