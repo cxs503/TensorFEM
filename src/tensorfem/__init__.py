@@ -40,7 +40,8 @@ from .j2_elastoplasticity import (
 )
 from .quadratic_solid import Tet10Model, solve_tet10
 from .hex20 import (
-    Hex20Model, solve_hex20, hex20_mass, hex20_lumped_mass,
+    Hex20Model, solve_hex20, solve_hex20_sparse, assemble_hex20_stiffness_sparse,
+    hex20_mass, hex20_lumped_mass,
     hex20_mass_totals, assemble_hex20_mass, hex_gauss_rule,
 )
 from .finite_sliding_contact import (
@@ -282,7 +283,8 @@ __all__ = [
     "ExplicitResult", "central_difference", "critical_time_step",
     "Tet4J2Model", "PlasticSolidState", "solve_load_steps",
     "Tet10Model", "solve_tet10",
-    "Hex20Model", "solve_hex20",
+    "Hex20Model", "solve_hex20", "solve_hex20_sparse",
+    "assemble_hex20_stiffness_sparse",
     "hex20_mass", "hex20_lumped_mass", "hex20_mass_totals", "assemble_hex20_mass", "hex_gauss_rule",
     "PolylineProjection", "FrictionState", "ContactUpdate",
     "project_point_to_polyline", "update_node_polyline_contact",

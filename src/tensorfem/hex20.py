@@ -292,6 +292,75 @@ def solve_hex20(m: Hex20Model):
     strain=torch.einsum("eij,ej->ei",b,u[ed]); stress=torch.einsum("eij,ej->ei",d,strain)
     return SolidResult(u,K@u-f,strain,stress,.5*u@K@u,K)
 
+def assemble_hex20_stiffness_sparse(m: Hex20Model):
+    """Assemble the global HEX20 stiffness as a ``scipy`` CSC matrix.
+
+    The dense path (:func:`solve_hex20`) allocates an ``n_dofs x n_dofs`` array, which
+    caps a practical model near ~5e3 dof.  Cross-section refinement studies need more,
+    so the element stiffnesses are scattered into COO triplets and the duplicate
+    entries are summed on conversion instead of into a dense buffer.
+    """
+    import numpy as np
+    import scipy.sparse as sp
+
+    ne = len(m.elements)
+    expand = lambda a: a.to(m.nodes).reshape(-1).expand(ne)
+    d = elasticity_matrix_3d(expand(m.young_modulus), expand(m.poisson_ratio))
+    elements = m.elements.long()
+    ke, b = hex20_stiffness(m.nodes[elements], d)
+    ed = torch.stack(tuple(3 * elements + i for i in range(3)), 2).reshape(ne, 60).long()
+    rows = ed[:, :, None].expand(-1, -1, 60).reshape(-1)
+    cols = ed[:, None, :].expand(-1, 60, -1).reshape(-1)
+    k = sp.coo_matrix(
+        (ke.reshape(-1).detach().cpu().numpy().astype(np.float64),
+         (rows.detach().cpu().numpy(), cols.detach().cpu().numpy())),
+        shape=(m.n_dofs, m.n_dofs),
+    ).tocsc()
+    return k, b, ed
+
+
+def solve_hex20_sparse(m: Hex20Model):
+    """Solve the same boundary-value problem as :func:`solve_hex20`, sparsely.
+
+    Identical discretisation, load vector and Dirichlet elimination; only the assembly
+    and the linear solver differ (SuperLU on CSC instead of a dense LAPACK factorisation).
+    Returns the same :class:`SolidResult`, so results are directly comparable with the
+    dense path.
+    """
+    import numpy as np
+    import scipy.sparse as sp
+    import scipy.sparse.linalg as spla
+
+    k, b, ed = assemble_hex20_stiffness_sparse(m)
+    fixed = m.fixed_dofs.to(dtype=torch.long).cpu().numpy()
+    if m.prescribed_values is None:
+        vals = np.zeros(len(fixed), dtype=np.float64)
+    else:
+        vals = m.prescribed_values.detach().cpu().numpy().astype(np.float64)
+    n = m.n_dofs
+    mask = np.ones(n, dtype=bool)
+    mask[fixed] = False
+    free = np.arange(n)[mask]
+    f = m.forces.detach().cpu().numpy().astype(np.float64)
+    u = np.zeros(n, dtype=np.float64)
+    u[fixed] = vals
+    if free.size:
+        kff = k[free][:, free].tocsc()
+        rhs = f[free] - k[free][:, fixed] @ vals
+        u[free] = spla.splu(kff).solve(rhs)
+    u_t = m.nodes.new_tensor(u)
+    strain = torch.einsum("eij,ej->ei", b, u_t[ed])
+    expand = lambda a: a.to(m.nodes).reshape(-1).expand(len(m.elements))
+    d = elasticity_matrix_3d(expand(m.young_modulus), expand(m.poisson_ratio))
+    stress = torch.einsum("eij,ei->ej", d, strain)
+    reaction = m.nodes.new_tensor(k @ u) - m.forces.to(m.nodes)
+    energy = m.nodes.new_tensor(0.5 * float(u @ (k @ u)))
+    # ``stiffness`` is deliberately left as ``None``: materialising the dense operator
+    # is exactly what this path exists to avoid.  Use
+    # :func:`assemble_hex20_stiffness_sparse` when the operator itself is needed.
+    return SolidResult(u_t, reaction, strain, stress, energy, None)
+
+
 def structured_hex20_mesh(l,w,h,nx,ny,nz,*,dtype=torch.float64):
     """Conforming structured HEX20 mesh, sharing all edge nodes."""
     coords={}; nodes=[]
