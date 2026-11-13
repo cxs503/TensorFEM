@@ -16,12 +16,20 @@
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
+    "fem_kirsch_plate": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
+    },
     "fem_modal": {
       "grade": "contradicted",
       "defects": [
-        "E_ANCHOR_NAME_MISMATCH"
+        "E_ANCHOR_NAME_MISMATCH",
+        "E_ARTIFACT_MISSING"
       ],
-      "remedy": "align the anchor field with the directory name"
+      "remedy": "align the anchor field with the directory name; commit the artifact the certificate names, or drop the stale reference"
     },
     "fem_morley_skew_plate": {
       "grade": "contradicted",
@@ -29,6 +37,20 @@
         "E_ANCHOR_NAME_MISMATCH"
       ],
       "remedy": "align the anchor field with the directory name"
+    },
+    "fem_panel_buckling": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_UNTRACKED"
+      ],
+      "remedy": "git add the artifact the certificate names"
+    },
+    "fem_plate_postbuckling": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
     },
     "fem_sent_j_integral": {
       "grade": "uncertified",
@@ -44,12 +66,12 @@
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
-    "fem_shell_scordelis_lo": {
+    "fem_shell_modal": {
       "grade": "contradicted",
       "defects": [
-        "E_PASS_WITHOUT_CRITERION"
+        "E_ARTIFACT_MISSING"
       ],
-      "remedy": "give the gate a numeric threshold, or mark it informational (not a pass)"
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
     },
     "fem_sphere_pressure_membrane": {
       "grade": "contradicted",
@@ -64,9 +86,17 @@
       "defects": [
         "E_SCHEMA",
         "E_PASS_WITHOUT_CRITERION",
-        "E_GATE_VALUE_NOT_FINITE"
+        "E_GATE_VALUE_NOT_FINITE",
+        "E_ARTIFACT_MISSING"
       ],
-      "remedy": "re-emit the file in the canonical envelope (schema/anchor/passed/gates); give the gate a numeric threshold, or mark it informational (not a pass)"
+      "remedy": "re-emit the file in the canonical envelope (schema/anchor/passed/gates); give the gate a numeric threshold, or mark it informational (not a pass); commit the artifact the certificate names, or drop the stale reference"
+    },
+    "fem_structural_benchmarks": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
     },
     "fem_thermal": {
       "grade": "uncertified",
@@ -78,10 +108,9 @@
     "fem_wave_dispersion": {
       "grade": "contradicted",
       "defects": [
-        "E_SCHEMA",
-        "E_OVERALL_ABSENT"
+        "E_ARTIFACT_MISSING"
       ],
-      "remedy": "re-emit the file in the canonical envelope (schema/anchor/passed/gates); add an aggregate passed flag so the anchor's verdict needs no prose"
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
     },
     "fem_winkler_plate_k_sweep": {
       "grade": "contradicted",
