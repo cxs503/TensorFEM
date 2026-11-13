@@ -118,6 +118,9 @@ def test_benchmark_runner_gate_and_artifact(tmp_path, monkeypatch):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     monkeypatch.setattr(module, "OUT", tmp_path / "bench")
+    # the anchor certificate + dump are written into ARTIFACT_DIR; redirect it so
+    # the test never rewrites the committed evidence in the tree
+    monkeypatch.setattr(module, "ARTIFACT_DIR", tmp_path / "anchor")
     assert module.main() == 0
     payload = json.loads((tmp_path / "bench" / "benchmark.json").read_text())
     assert payload["passed"] is True
