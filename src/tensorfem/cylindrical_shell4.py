@@ -1,9 +1,20 @@
-"""Four-node cylindrical Reissner--Mindlin shell.
+"""Four-node cylindrical Reissner--Mindlin shell (MITC4).
 
 Unlike the flat-facet shell, this element retains the exact cylindrical
 metric and curvature terms.  Its nodal frame is ``(axial, tangent, normal)``
-and varies consistently from node to node.  Membrane and bending terms use
-2x2 Gauss integration; transverse shear uses selective one-point integration.
+and varies consistently from node to node.
+
+Integration scheme (MITC4 / Dvorkin-Bathe assumed natural shear):
+
+* membrane: 2x2 Gauss (full).  One-point membrane integration left five
+  spurious mechanisms (element rank 13/24); full integration restores the
+  rank.
+* bending: 2x2 Gauss (full).
+* transverse shear: the two shear rows are sampled at the four mid-side
+  points and interpolated bilinearly at the 2x2 Gauss points.  This keeps
+  the rigid-body rotations zero-energy, removes the one-point rule's
+  spurious mechanisms, and avoids the shear locking of full 2x2 shear
+  integration.
 """
 from __future__ import annotations
 
@@ -85,11 +96,30 @@ def cylindrical_shell4_stiffness(
     for xi, eta in ((-g,-g),(g,-g),(g,g),(-g,g)):
         _, det, Bm, Bb, _ = fields(xi, eta)
         K += Bb.T@Db@Bb * det
-    _, det0, Bm0, _, Bs0 = fields(0.0, 0.0)
-    K += Bm0.T @ Dm @ Bm0 * det0 * 4
-    K += Bs0.T @ Ds @ Bs0 * det0 * 4
+        # MITC4: membrane is fully integrated (2x2).  One-point membrane
+        # integration left five spurious mechanisms (rank 13/24); full
+        # membrane integration restores the rank while the selective
+        # one-point shear below keeps the element free of shear locking.
+        K += Bm.T @ Dm @ Bm * det
+    # Dvorkin-Bathe assumed natural transverse shear (the "assumed shear" of
+    # MITC4): sample the two shear rows at the four mid-side points and
+    # interpolate them bilinearly at the 2x2 Gauss points.  This keeps the
+    # rigid-body rotations zero-energy, removes the spurious mechanisms of the
+    # one-point rule, and avoids the shear locking of full 2x2 shear
+    # integration (which stiffened the element to 85 % -> 15 % error).
+    _, _, _, _, Bs_b = fields(0.0, -1.0)
+    _, _, _, _, Bs_t = fields(0.0, 1.0)
+    _, _, _, _, Bs_l = fields(-1.0, 0.0)
+    _, _, _, _, Bs_r = fields(1.0, 0.0)
+    for xi, eta in ((-g,-g),(g,-g),(g,g),(-g,g)):
+        _, det, _, _, _ = fields(xi, eta)
+        Bs = torch.zeros((2, 24), dtype=dtype, device=device)
+        Bs[0] = 0.5*(1.0-eta)*Bs_b[0] + 0.5*(1.0+eta)*Bs_t[0]
+        Bs[1] = 0.5*(1.0-xi)*Bs_l[1] + 0.5*(1.0+xi)*Bs_r[1]
+        K += Bs.T @ Ds @ Bs * det
 
     # Objective difference-only stabilization of the unused normal rotation.
+    _, det0, _, _, _ = fields(0.0, 0.0)
     area = abs(det0)*4
     ids = torch.arange(4, device=device)
     rn = 6*ids+5

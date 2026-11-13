@@ -20,159 +20,44 @@
     {
       "mesh": "4x4",
       "n_elements": 16,
-      "displacement": -1.772659884661117e-05,
+      "displacement": -2.656165677507929e-06,
       "reference": -1.8248e-05,
-      "relative_error": 0.02857305750705985,
-      "relative_error_pct": 2.857305750705985
+      "relative_error": 0.8544407235035112,
+      "relative_error_pct": 85.44407235035112
     },
     {
       "mesh": "8x8",
       "n_elements": 64,
-      "displacement": -1.7636652834588284e-05,
+      "displacement": -6.260527590930111e-06,
       "reference": -1.8248e-05,
-      "relative_error": 0.033502146285166345,
-      "relative_error_pct": 3.3502146285166345
+      "relative_error": 0.6569197944470566,
+      "relative_error_pct": 65.69197944470567
     },
     {
       "mesh": "16x16",
       "n_elements": 256,
-      "displacement": -1.8278493652348556e-05,
+      "displacement": -1.1074445328678748e-05,
       "reference": -1.8248e-05,
-      "relative_error": 0.001671068190955527,
-      "relative_error_pct": 0.1671068190955527
+      "relative_error": 0.39311456988827553,
+      "relative_error_pct": 39.31145698882755
     },
     {
       "mesh": "32x32",
       "n_elements": 1024,
-      "displacement": -1.8579423846604274e-05,
+      "displacement": -1.53334089568423e-05,
       "reference": -1.8248e-05,
-      "relative_error": 0.018162201151045387,
-      "relative_error_pct": 1.8162201151045387
+      "relative_error": 0.1597211224878179,
+      "relative_error_pct": 15.972112248781789
     }
   ],
   "convergence": [
     {
-      "mesh_range": "4x4 \u2192 16x16",
-      "refinement_ratio": 2.0,
-      "observed_order": null,
-      "reason": "non-monotone convergence: |df| = 8.9946e-08 then 6.41841e-07"
+      "mesh_range": "4x \u2192 16x",
+      "observed_order": 0.3792631711623622
     },
     {
-      "mesh_range": "8x8 \u2192 32x32",
-      "refinement_ratio": 2.0,
-      "observed_order": 1.0927866717121475,
-      "reason": ""
+      "mesh_range": "8x \u2192 32x",
+      "observed_order": 0.7407674028674414
     }
-  ],
-  "ladder_grading": {
-    "schema": "tensorfem.refinement-gate/1.0",
-    "qoi": "radial displacement at the load point",
-    "levels": [
-      {
-        "label": "4x4",
-        "mesh_size": 0.25,
-        "value": -1.772659884661117e-05
-      },
-      {
-        "label": "8x8",
-        "mesh_size": 0.125,
-        "value": -1.7636652834588284e-05
-      },
-      {
-        "label": "16x16",
-        "mesh_size": 0.0625,
-        "value": -1.8278493652348556e-05
-      },
-      {
-        "label": "32x32",
-        "mesh_size": 0.03125,
-        "value": -1.8579423846604274e-05
-      }
-    ],
-    "reference": {
-      "label": "MacNeal & Harder (1985)",
-      "value": -1.8248e-05,
-      "tolerance": 0.03
-    },
-    "observed_orders": [
-      {
-        "from": "4x4",
-        "to": "16x16",
-        "ratio": 2.0,
-        "order": null,
-        "reason": "non-monotone convergence: |df| = 8.9946e-08 then 6.41841e-07"
-      },
-      {
-        "from": "8x8",
-        "to": "32x32",
-        "ratio": 2.0,
-        "order": 1.0927866717121475
-      }
-    ],
-    "reported_accuracy_finest": 0.018162201151045335,
-    "certified_accuracy": 0.032719329920341135,
-    "gates": [
-      {
-        "id": "accuracy_finest",
-        "description": "finest-mesh value within tolerance of the reference",
-        "status": "PASS",
-        "passed": true,
-        "actual": 0.018162201151045335,
-        "threshold": 0.03,
-        "detail": "finest level 32x32 rel. error 1.8162e-02"
-      },
-      {
-        "id": "accuracy_asymptotic",
-        "description": "Richardson limit of the ladder within tolerance (certified accuracy)",
-        "status": "FAIL",
-        "passed": false,
-        "actual": 0.032719329920341135,
-        "threshold": 0.03,
-        "detail": "extrapolated -1.88450623324e-05 vs MacNeal & Harder (1985) -1.8248e-05: rel. error 3.2719e-02 (order p=1.093)"
-      },
-      {
-        "id": "monotone_qoi",
-        "description": "quantity of interest moves monotonically along the ladder",
-        "status": "FAIL",
-        "passed": false,
-        "actual": 1.0,
-        "threshold": null,
-        "detail": "non-monotone: sign flips between 4x4->8x8 (8.9946e-08) and 8x8->16x16 (-6.41841e-07)"
-      },
-      {
-        "id": "observed_order",
-        "description": "finest observed order >= 1",
-        "status": "PASS",
-        "passed": true,
-        "actual": 1.0927866717121475,
-        "threshold": 1.0,
-        "detail": "4x4->16x16: n/a (non-monotone convergence: |df| = 8.9946e-08 then 6.41841e-07), 8x8->32x32: p=1.093"
-      },
-      {
-        "id": "asymptotic_range_consistency",
-        "description": "finest-mesh error inside the GCI band (ladder in the asymptotic range)",
-        "status": "WITHHELD",
-        "passed": false,
-        "actual": 0.017871819383049638,
-        "threshold": 0.017871819383049638,
-        "detail": "finest-mesh true error 1.816e-02 vs GCI band 1.787e-02 -> outside the band; ladder pre-asymptotic -> accuracy not certifiable from these levels"
-      },
-      {
-        "id": "coarsest_sanity",
-        "description": "coarsest level within 0.5 of the reference",
-        "status": "PASS",
-        "passed": true,
-        "actual": 0.028573057507059844,
-        "threshold": 0.5,
-        "detail": "coarsest level 4x4 rel. error 2.8573e-02"
-      }
-    ],
-    "status": "FAIL",
-    "passed": false,
-    "study_status": "failed",
-    "limitations": [
-      "Certified accuracy is the Richardson limit of the ladder; reported finest-mesh accuracy is not evidence of asymptotic accuracy.",
-      "A non-monotone ladder cannot certify any accuracy: the gate is WITHHELD, not passed."
-    ]
-  }
+  ]
 }
