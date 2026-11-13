@@ -1,0 +1,613 @@
+{
+  "anchor": "fem_cantilever_shear",
+  "mission": "CASE-CANTILEVER-TIP",
+  "title": "CASE-CANTILEVER-TIP shear-validity ladder: slenderness domain of the Euler-Bernoulli vs Timoshenko oracle, graded on beam and 3-D solid models",
+  "generated_at": "2026-11-12T23:30:32+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "dtype": "torch.float64"
+  },
+  "problem": {
+    "length_m": "per rung: L = (L/h) * h",
+    "width_m": 0.01,
+    "height_m": 0.01,
+    "young_modulus_Pa": 200000000000.0,
+    "poisson_ratio": 0.3,
+    "shear_modulus_Pa": 76923076923.07692,
+    "tip_force_N": 5.0,
+    "shear_factor_kappa": 0.8333333333333334,
+    "area_m2": 0.0001,
+    "inertia_m4": 8.333333333333335e-10,
+    "tolerance": 0.03,
+    "oracles": {
+      "euler_bernoulli": "delta = P L^3 / (3 E I)",
+      "timoshenko": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "oracle_gap": "E/(4 kappa G) * (h/L)^2"
+    }
+  },
+  "oracle_selfcheck": {
+    "method": "Castigliano unit-load: delta = int M m/(EI) + int V v/(kappa G A)",
+    "eb_residual_symbolic": "0",
+    "ti_residual_symbolic": "0",
+    "max_abs_residual": 0.0
+  },
+  "ladder": [
+    {
+      "slenderness_L_over_h": 100.0,
+      "length_m": 1.0,
+      "oracle_eb_m": 0.009999999999999998,
+      "oracle_timoshenko_m": 0.010000779999999997,
+      "oracle_gap_relative": 7.799999999988373e-05,
+      "shear_fraction_formula": 7.8e-05,
+      "frame_eb": {
+        "elements": 16,
+        "tip_deflection_m": 0.010000000000012998,
+        "error_vs_eb": 1.3000017728970194e-12,
+        "error_vs_timoshenko": -7.799391517449836e-05
+      },
+      "beam_timoshenko": {
+        "elements": 8,
+        "tip_deflection_m": 0.010000779999996606,
+        "error_vs_timoshenko": -3.3911198881833803e-13,
+        "error_vs_eb": 7.799999966074529e-05
+      },
+      "solid_hex20_levels": [
+        {
+          "mesh": {
+            "axial": 24,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 741,
+          "dofs": 2223,
+          "root_nodes": 21,
+          "tip_nodes": 21,
+          "tip_deflection_m": 0.009945137126225781,
+          "reaction_sum_z_N": 4.999996433384183,
+          "reaction_moment_y_Nm": -4.999997170282035,
+          "force_residual": 7.13323163381574e-07,
+          "moment_residual": 5.659435929672441e-07,
+          "seconds": 0.92,
+          "error_vs_eb": -0.005486287377421719,
+          "error_vs_timoshenko": -0.005563853396856649,
+          "shear_recovery": -70.33701765935766
+        },
+        {
+          "mesh": {
+            "axial": 32,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 981,
+          "dofs": 2943,
+          "root_nodes": 21,
+          "tip_nodes": 21,
+          "tip_deflection_m": 0.00995984584188315,
+          "reaction_sum_z_N": 5.000000087168701,
+          "reaction_moment_y_Nm": -5.000000247882191,
+          "force_residual": 1.743374014040455e-08,
+          "moment_residual": 4.9576438243548185e-08,
+          "seconds": 1.386,
+          "error_vs_eb": -0.004015415811684833,
+          "error_vs_timoshenko": -0.0040930965501538045,
+          "shear_recovery": -51.47968989347203
+        }
+      ]
+    },
+    {
+      "slenderness_L_over_h": 20.0,
+      "length_m": 0.2,
+      "oracle_eb_m": 8e-05,
+      "oracle_timoshenko_m": 8.015600000000001e-05,
+      "oracle_gap_relative": 0.0019500000000000405,
+      "shear_fraction_formula": 0.0019500000000000001,
+      "frame_eb": {
+        "elements": 16,
+        "tip_deflection_m": 8.000000000016707e-05,
+        "error_vs_eb": 2.088275028160752e-12,
+        "error_vs_timoshenko": -0.0019462048983599634
+      },
+      "beam_timoshenko": {
+        "elements": 8,
+        "tip_deflection_m": 8.015600000000035e-05,
+        "error_vs_timoshenko": 4.226922237907581e-15,
+        "error_vs_eb": 0.0019500000000042756
+      },
+      "solid_hex20_levels": [
+        {
+          "mesh": {
+            "axial": 20,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 621,
+          "dofs": 1863,
+          "root_nodes": 21,
+          "tip_nodes": 21,
+          "tip_deflection_m": 7.955428329282487e-05,
+          "reaction_sum_z_N": 5.000000002688235,
+          "reaction_moment_y_Nm": -1.0000000003957537,
+          "force_residual": 5.376470824103308e-10,
+          "moment_residual": 3.957536520715621e-10,
+          "seconds": 0.673,
+          "error_vs_eb": -0.005571458839689182,
+          "error_vs_timoshenko": -0.007506820539636931,
+          "shear_recovery": -2.8571583793277266
+        },
+        {
+          "mesh": {
+            "axial": 32,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 981,
+          "dofs": 2943,
+          "root_nodes": 21,
+          "tip_nodes": 21,
+          "tip_deflection_m": 7.969633264989647e-05,
+          "reaction_sum_z_N": 5.000000002859219,
+          "reaction_moment_y_Nm": -1.0000000003187788,
+          "force_residual": 5.71843727925625e-10,
+          "moment_residual": 3.1877878114983105e-10,
+          "seconds": 1.248,
+          "error_vs_eb": -0.003795841876294209,
+          "error_vs_timoshenko": -0.005734659290677428,
+          "shear_recovery": -1.9465855775867333
+        }
+      ]
+    },
+    {
+      "slenderness_L_over_h": 10.0,
+      "length_m": 0.1,
+      "oracle_eb_m": 1e-05,
+      "oracle_timoshenko_m": 1.0078e-05,
+      "oracle_gap_relative": 0.007799999999999993,
+      "shear_fraction_formula": 0.0078000000000000005,
+      "frame_eb": {
+        "elements": 16,
+        "tip_deflection_m": 1.0000000000020884e-05,
+        "error_vs_eb": 2.088275028160752e-12,
+        "error_vs_timoshenko": -0.007739630877070567
+      },
+      "beam_timoshenko": {
+        "elements": 8,
+        "tip_deflection_m": 1.007799999999973e-05,
+        "error_vs_timoshenko": -2.6895271196802548e-14,
+        "error_vs_eb": 0.007799999999972888
+      },
+      "solid_hex20_levels": [
+        {
+          "mesh": {
+            "axial": 16,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 501,
+          "dofs": 1503,
+          "root_nodes": 21,
+          "tip_nodes": 21,
+          "tip_deflection_m": 9.962565777267864e-06,
+          "reaction_sum_z_N": 5.0000000003612275,
+          "reaction_moment_y_Nm": -0.5000000000238186,
+          "force_residual": 7.224549847251182e-11,
+          "moment_residual": 4.763722749601129e-11,
+          "seconds": 0.51,
+          "error_vs_eb": -0.0037434222732136845,
+          "error_vs_timoshenko": -0.011454080445736928,
+          "shear_recovery": -0.47992593246329335
+        },
+        {
+          "mesh": {
+            "axial": 24,
+            "cross_y": 3,
+            "cross_z": 3
+          },
+          "nodes": 1384,
+          "dofs": 4152,
+          "root_nodes": 40,
+          "tip_nodes": 40,
+          "tip_deflection_m": 9.985355972660659e-06,
+          "reaction_sum_z_N": 5.000000000069697,
+          "reaction_moment_y_Nm": -0.5000000000009083,
+          "force_residual": 1.3939427390141645e-11,
+          "moment_residual": 1.8165469128916811e-12,
+          "seconds": 2.312,
+          "error_vs_eb": -0.0014644027339342123,
+          "error_vs_timoshenko": -0.009192699676457835,
+          "shear_recovery": -0.18774394024797614
+        }
+      ]
+    },
+    {
+      "slenderness_L_over_h": 5.0,
+      "length_m": 0.05,
+      "oracle_eb_m": 1.25e-06,
+      "oracle_timoshenko_m": 1.2890000000000003e-06,
+      "oracle_gap_relative": 0.03120000000000014,
+      "shear_fraction_formula": 0.031200000000000002,
+      "frame_eb": {
+        "elements": 16,
+        "tip_deflection_m": 1.2500000000026104e-06,
+        "error_vs_eb": 2.088275028160752e-12,
+        "error_vs_timoshenko": -0.03025601241069808
+      },
+      "beam_timoshenko": {
+        "elements": 8,
+        "tip_deflection_m": 1.2890000000000325e-06,
+        "error_vs_timoshenko": 2.4970715279800936e-14,
+        "error_vs_eb": 0.031200000000025888
+      },
+      "solid_hex20_levels": [
+        {
+          "mesh": {
+            "axial": 20,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 621,
+          "dofs": 1863,
+          "root_nodes": 21,
+          "tip_nodes": 21,
+          "tip_deflection_m": 1.267856118612421e-06,
+          "reaction_sum_z_N": 5.000000000002235,
+          "reaction_moment_y_Nm": -0.2500000000002478,
+          "force_residual": 4.46931380793103e-13,
+          "moment_residual": 9.912071163853398e-13,
+          "seconds": 0.616,
+          "error_vs_eb": 0.014284894889936669,
+          "error_vs_timoshenko": -0.016403321479890872,
+          "shear_recovery": 0.4578491951902758
+        },
+        {
+          "mesh": {
+            "axial": 30,
+            "cross_y": 3,
+            "cross_z": 3
+          },
+          "nodes": 1720,
+          "dofs": 5160,
+          "root_nodes": 40,
+          "tip_nodes": 40,
+          "tip_deflection_m": 1.2698344368774502e-06,
+          "reaction_sum_z_N": 4.9999999999355484,
+          "reaction_moment_y_Nm": -0.2499999999975835,
+          "force_residual": 1.2890311040791858e-11,
+          "moment_residual": 9.666045741596463e-12,
+          "seconds": 3.41,
+          "error_vs_eb": 0.015867549501960076,
+          "error_vs_timoshenko": -0.0148685516854539,
+          "shear_recovery": 0.5085753045500001
+        }
+      ]
+    },
+    {
+      "slenderness_L_over_h": 4.0,
+      "length_m": 0.04,
+      "oracle_eb_m": 6.400000000000001e-07,
+      "oracle_timoshenko_m": 6.712e-07,
+      "oracle_gap_relative": 0.04874999999999985,
+      "shear_fraction_formula": 0.04875,
+      "frame_eb": {
+        "elements": 16,
+        "tip_deflection_m": 6.399999999958809e-07,
+        "error_vs_eb": -6.4362923462751075e-12,
+        "error_vs_timoshenko": -0.046483909422108366
+      },
+      "beam_timoshenko": {
+        "elements": 8,
+        "tip_deflection_m": 6.712000000000165e-07,
+        "error_vs_timoshenko": 2.4608376745320107e-14,
+        "error_vs_eb": 0.048750000000025655
+      },
+      "solid_hex20_levels": [
+        {
+          "mesh": {
+            "axial": 30,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 921,
+          "dofs": 2763,
+          "root_nodes": 21,
+          "tip_nodes": 21,
+          "tip_deflection_m": 6.593854294876601e-07,
+          "reaction_sum_z_N": 5.000000000026802,
+          "reaction_moment_y_Nm": -0.2000000000007238,
+          "force_residual": 5.360334398574196e-12,
+          "moment_residual": 3.618910726643776e-12,
+          "seconds": 1.003,
+          "error_vs_eb": 0.030289733574468757,
+          "error_vs_timoshenko": -0.017602161073212007,
+          "shear_recovery": 0.6213278681942328
+        },
+        {
+          "mesh": {
+            "axial": 40,
+            "cross_y": 2,
+            "cross_z": 2
+          },
+          "nodes": 1221,
+          "dofs": 3663,
+          "root_nodes": 21,
+          "tip_nodes": 21,
+          "tip_deflection_m": 6.597265366449845e-07,
+          "reaction_sum_z_N": 5.000000000006803,
+          "reaction_moment_y_Nm": -0.19999999999998436,
+          "force_residual": 1.3605117032966518e-12,
+          "moment_residual": 7.827072323607354e-14,
+          "seconds": 1.896,
+          "error_vs_eb": 0.03082271350778807,
+          "error_vs_timoshenko": -0.017093956130833643,
+          "shear_recovery": 0.632260789903347
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "thick_rung": 4.0,
+    "thin_rung": 100.0,
+    "thick_rung_gap": 0.04874999999999985,
+    "thin_rung_gap": 7.799999999988373e-05,
+    "solid_thick_error": -0.017093956130833643,
+    "solid_thick_recovery": 0.632260789903347,
+    "frame_thick_error_vs_ti": -0.046483909422108366,
+    "crossover_slenderness": 5.099019513592785,
+    "solid_force_residual": 7.13323163381574e-07,
+    "solid_moment_residual": 5.659435929672441e-07,
+    "worst_solid_error": 0.017093956130833643
+  },
+  "gates": [
+    {
+      "id": "oracle_energy_selfcheck",
+      "quantity": "symbolic residual of the Castigliano re-derivation of (1) and (2)",
+      "reference": "Castigliano unit-load: delta = int M m/(EI) dx + int V v/(kappa G A) dx",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "machine-derived oracle; no handbook digit is copied"
+    },
+    {
+      "id": "slender_rung_cannot_discriminate",
+      "quantity": "(delta_TI - delta_EB)/delta_EB at L/h = 100",
+      "reference": "equations (1) and (2) evaluated in code",
+      "value": 7.799999999988373e-05,
+      "threshold": 0.001,
+      "operator": "<=",
+      "passed": true,
+      "note": "the original CASE-CANTILEVER-TIP rung: the two oracles differ by 7.80e-03 %, so agreeing with Euler-Bernoulli and with Timoshenko is the same statement there"
+    },
+    {
+      "id": "thick_rung_discriminates",
+      "quantity": "(delta_TI - delta_EB)/delta_EB at L/h = 4",
+      "reference": "equations (1) and (2) evaluated in code",
+      "value": 0.04874999999999985,
+      "threshold": 0.03,
+      "operator": ">=",
+      "passed": true,
+      "note": "oracle separation must exceed the case-pool tolerance, otherwise grading against either reference proves nothing about shear"
+    },
+    {
+      "id": "frame_eb_vs_eb_100",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 100",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 1.3000017728970194e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_100",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 100",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 3.3911198881833803e-13,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_100",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 100, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.0040930965501538045,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 32, 'cross_y': 2, 'cross_z': 2}, 2943 dof, fully clamped root"
+    },
+    {
+      "id": "frame_eb_vs_eb_20",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 20",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 2.088275028160752e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_20",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 20",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 4.226922237907581e-15,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_20",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 20, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.005734659290677428,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 32, 'cross_y': 2, 'cross_z': 2}, 2943 dof, fully clamped root"
+    },
+    {
+      "id": "frame_eb_vs_eb_10",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 10",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 2.088275028160752e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_10",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 10",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 2.6895271196802548e-14,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_10",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 10, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.009192699676457835,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 24, 'cross_y': 3, 'cross_z': 3}, 4152 dof, fully clamped root"
+    },
+    {
+      "id": "frame_eb_vs_eb_5",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 5",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 2.088275028160752e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_5",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 5",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 2.4970715279800936e-14,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_5",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 5, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.0148685516854539,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 30, 'cross_y': 3, 'cross_z': 3}, 5160 dof, fully clamped root"
+    },
+    {
+      "id": "frame_eb_vs_eb_4",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 4",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 6.4362923462751075e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_4",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 4",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 2.4608376745320107e-14,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_4",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 4, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.017093956130833643,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 40, 'cross_y': 2, 'cross_z': 2}, 3663 dof, fully clamped root"
+    },
+    {
+      "id": "eb_rejected_by_timoshenko",
+      "quantity": "frame (shear-rigid) error vs oracle (2) at L/h = 4",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 0.046483909422108366,
+      "threshold": 0.03,
+      "operator": ">=",
+      "passed": true,
+      "note": "a gate the shear-rigid model also passes would prove nothing"
+    },
+    {
+      "id": "solid_recovers_shear",
+      "quantity": "shear recovery (delta_solid - delta_EB)/(delta_TI - delta_EB) at L/h = 4",
+      "reference": "0 for any shear-rigid model, 1 for an exact Timoshenko beam",
+      "value": 0.632260789903347,
+      "threshold": 0.5,
+      "operator": ">=",
+      "passed": true,
+      "note": "the 3-D continuum must inherit most of the shear compliance"
+    },
+    {
+      "id": "solid_force_equilibrium",
+      "quantity": "max over all solid levels of |sum R_z - P| / P",
+      "reference": "static force equilibrium of the clamped root reactions",
+      "value": 7.13323163381574e-07,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "independent of deflection: catches load-vector and constraint errors. Threshold is the round-off floor of the dense direct solve (condition number of the slender clamped mesh), not a modelling error."
+    },
+    {
+      "id": "solid_moment_equilibrium",
+      "quantity": "max over all solid levels of |sum z R_x + P L| / (P L)",
+      "reference": "moment equilibrium about the y axis: balancing moment M_y = P L",
+      "value": 5.659435929672441e-07,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "checks that the tip load has zero net moment about its own face centroid"
+    },
+    {
+      "id": "solid_refinement_monotone",
+      "quantity": "worst (|err|_fine - |err|_coarse) over the ladder",
+      "reference": "mesh refinement must not worsen agreement with oracle (2)",
+      "value": -0.0005082049423783645,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "per-rung trend recorded in result.json:ladder[*].solid_hex20_levels"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_cantilever_shear/result.json",
+    "gates": "benchmarks/verified/fem_cantilever_shear/gates_verified.json",
+    "report": "docs/CASE-CANTILEVER-TIP-shear-validity.md",
+    "figures": {
+      "validity_ladder": "docs/assets/cantilever_shear/validity_ladder.png",
+      "normalised_deflection": "docs/assets/cantilever_shear/normalised_deflection.png",
+      "shear_recovery": "docs/assets/cantilever_shear/shear_recovery.png"
+    }
+  },
+  "limitations": [
+    "frame_eb and beam_timoshenko are nodally exact for a tip load, so their gates are consistency checks of stiffness, load vector and boundary conditions, not accuracy or convergence proofs.",
+    "The HEX20 model clamps all three displacement components on the root face; that is stiffer than the idealised built-in of beam theory (no root warping, no Poisson contraction). The measured residual at the rungs where shear is negligible (L/h >= 20) is between -0.40 % and -0.38 % (the solid is stiffer than Euler-Bernoulli there), and it accounts for part of the residual at the thick rung.",
+    "Timoshenko beam theory itself degrades for L/h < 5 (higher-order cross-section deformation, Timoshenko & Goodier, *Theory of Elasticity* 3rd ed. ch. 3); the L/h = 4 rung is at the edge of that validity range and is reported, not claimed as exact.",
+    "kappa = 0.8333 (average-strain, rectangular section). Cowper's refined value 0.8496 for nu = 0.3 changes the shear term by 1.9 %, i.e. the total deflection by 0.09 % at the thick rung - far below the tolerance, so the choice does not move any verdict.",
+    "The 2x2 / 3x3 quadratic cross-section meshes cannot represent the parabolic shear distribution exactly; the refinement trend (shear recovery rising with mesh density) is reported instead of a converged value, and the shear-recovery gate is deliberately loose (>= 0.5) for that reason.",
+    "The tip load is spread uniformly over the end-face nodes (zero net moment), not applied as the exact parabolic shear traction of the Timoshenko solution; the difference is a Saint-Venant local field that decays within ~h of the tip and does not scale with L."
+  ],
+  "seconds": 16.23
+}
