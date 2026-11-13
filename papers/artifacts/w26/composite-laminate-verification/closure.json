@@ -1,0 +1,1738 @@
+{
+  "mission": {
+    "id": 17568,
+    "key": "paper-exp-composite-laminate-verification-2-rework1",
+    "rework_of": "paper-exp-composite-laminate-verification-2",
+    "repo": "TensorFEM",
+    "node": "paper-exp-composite-laminate-verification",
+    "wave": "W26"
+  },
+  "goal": {
+    "statement": "Re-establish the composite-laminate verification of the TensorFEM plate/3-D elasticity/CLT stack on this work tree, score it against external quantitative anchors (Pagano 3-D elasticity, Cook 1974 membrane) and close the open experiment with an artifact ledger plus a paper-grade report.",
+    "anchors": [
+      "Pagano (1970) layered 3-D elasticity (propagator solution, exact for specially orthotropic plies)",
+      "CLT/Fourier series solution (truncated Navier basis, D16/D26 retained)",
+      "Richardson extrapolated 3-D HEX20 sequence (angle-ply cases without a closed-form anchor)",
+      "Cook (1974) membrane tip deflection 23.96"
+    ],
+    "criteria": {
+      "C1_completeness": ">=3 layups x >=3 thickness ratios x >=3 meshes per FE path, every case reported",
+      "C2_deflection_vs_anchor": "|centre deflection deviation| < 3.0% for t/a <= 0.1 and < 5.0% for t/a = 0.5, both FE paths vs the case anchor",
+      "C3_grid_convergence": "Roache GCI at the finest level < 5.0% and observed order within 50% of the theoretical order",
+      "C4_interlaminar_shear": "tau_xz at the ply interfaces within 10.0% of the Pagano 3-D elasticity anchor",
+      "C5_cook_membrane_shear_anchor": "Cook (1974) membrane tip deflection within 3.0% of 23.96 on the finest Q4 mesh",
+      "D1_failure_diagnosis": "diagnostic only (no verdict weight): for every case whose finest mesh misses the deflection band, Richardson-extrapolate each FE path and classify the cause as under_resolved (the extrapolated value passes) or systematic_bias (it does not)",
+      "D2_plate_path_probe": "diagnostic only (no verdict weight): isotropic single-ply controls decide whether the plate-path bias is an element defect or specific to the layered sections",
+      "D3_plate_vs_fsdt_theory": "diagnostic only (no verdict weight): compare the Q4 plate path with the FSDT (Mindlin) Navier closed form, which is the model the plate element implements; agreement here means a deflection deviation against a 3-D anchor is a model limitation, not an implementation defect"
+    }
+  },
+  "status": "PARTIAL",
+  "criteria": {
+    "C1_completeness": {
+      "criterion": ">=3 layups x >=3 thickness ratios x >=3 meshes per FE path, every case reported",
+      "layups": [
+        "angle_ply_pm45_s",
+        "cross_ply_0_90_s",
+        "quasi_iso_0_pm45_90_s"
+      ],
+      "thickness_ratios": [
+        0.01,
+        0.1,
+        0.5
+      ],
+      "n_cases": 9,
+      "meshes": {
+        "cross_ply_0_90_s__t0p01": {
+          "plate_fem": 4,
+          "hex20_fem": 3
+        },
+        "cross_ply_0_90_s__t0p10": {
+          "plate_fem": 4,
+          "hex20_fem": 3
+        },
+        "cross_ply_0_90_s__t0p50": {
+          "plate_fem": 4,
+          "hex20_fem": 3
+        },
+        "angle_ply_pm45_s__t0p01": {
+          "plate_fem": 4,
+          "hex20_fem": 3
+        },
+        "angle_ply_pm45_s__t0p10": {
+          "plate_fem": 4,
+          "hex20_fem": 3
+        },
+        "angle_ply_pm45_s__t0p50": {
+          "plate_fem": 4,
+          "hex20_fem": 3
+        },
+        "quasi_iso_0_pm45_90_s__t0p01": {
+          "plate_fem": 4,
+          "hex20_fem": 3
+        },
+        "quasi_iso_0_pm45_90_s__t0p10": {
+          "plate_fem": 4,
+          "hex20_fem": 3
+        },
+        "quasi_iso_0_pm45_90_s__t0p50": {
+          "plate_fem": 4,
+          "hex20_fem": 3
+        }
+      },
+      "verdict": "PASS"
+    },
+    "C2_deflection_vs_anchor": {
+      "criterion": "|centre deflection deviation| < 3.0% for t/a <= 0.1 and < 5.0% for t/a = 0.5, both FE paths vs the case anchor",
+      "worst_plate_pct": 64.24598394173277,
+      "worst_hex20_pct": 85.3318019140803,
+      "rows": [
+        {
+          "case": "cross_ply_0_90_s__t0p01",
+          "layup": "cross_ply_0_90_s",
+          "t_over_a": 0.01,
+          "anchor": "exact3d",
+          "w_anchor": 5.0915119455071965e-06,
+          "w_plate_fem": 4.3265685005534825e-06,
+          "w_hex20_fem": 5.067552489719583e-06,
+          "err_plate_pct": -15.02389571389905,
+          "err_hex20_pct": -0.4705764425978809,
+          "limit_pct": 3.0,
+          "pass_plate": false,
+          "pass_hex20": true
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p10",
+          "layup": "cross_ply_0_90_s",
+          "t_over_a": 0.1,
+          "anchor": "exact3d",
+          "w_anchor": 7.623865075766066e-09,
+          "w_plate_fem": 6.047515535342251e-09,
+          "w_hex20_fem": 7.622021981385989e-09,
+          "err_plate_pct": -20.67651414024295,
+          "err_hex20_pct": -0.024175327891573506,
+          "limit_pct": 3.0,
+          "pass_plate": false,
+          "pass_hex20": true
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p50",
+          "layup": "cross_ply_0_90_s",
+          "t_over_a": 0.5,
+          "anchor": "exact3d",
+          "w_anchor": 4.210582325620275e-10,
+          "w_plate_fem": 3.82139549213583e-10,
+          "w_hex20_fem": 4.209594625089586e-10,
+          "err_plate_pct": -9.243064340918995,
+          "err_hex20_pct": -0.02345757556333483,
+          "limit_pct": 5.0,
+          "pass_plate": false,
+          "pass_hex20": true
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p01",
+          "layup": "angle_ply_pm45_s",
+          "t_over_a": 0.01,
+          "anchor": "clt_series",
+          "w_anchor": 3.0268574063846064e-06,
+          "w_plate_fem": 3.064083873788403e-06,
+          "w_hex20_fem": 3.0155583224414564e-06,
+          "err_plate_pct": 1.2298718573684475,
+          "err_hex20_pct": -0.37329422652406796,
+          "limit_pct": 3.0,
+          "pass_plate": true,
+          "pass_hex20": true
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p10",
+          "layup": "angle_ply_pm45_s",
+          "t_over_a": 0.1,
+          "anchor": "clt_series",
+          "w_anchor": 3.0268574063846043e-09,
+          "w_plate_fem": 4.971491729629606e-09,
+          "w_hex20_fem": 5.609729372622383e-09,
+          "err_plate_pct": 64.24598394173277,
+          "err_hex20_pct": 85.3318019140803,
+          "limit_pct": 3.0,
+          "pass_plate": false,
+          "pass_hex20": false
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p50",
+          "layup": "angle_ply_pm45_s",
+          "t_over_a": 0.5,
+          "anchor": "hex20_richardson",
+          "w_anchor": 3.6354271469619555e-10,
+          "w_plate_fem": 3.7655405301507044e-10,
+          "w_hex20_fem": 3.6272557133183886e-10,
+          "err_plate_pct": 3.5790397642126326,
+          "err_hex20_pct": -0.22477231184224733,
+          "limit_pct": 5.0,
+          "pass_plate": true,
+          "pass_hex20": true
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p01",
+          "layup": "quasi_iso_0_pm45_90_s",
+          "t_over_a": 0.01,
+          "anchor": "clt_series",
+          "w_anchor": 3.3003567039333794e-06,
+          "w_plate_fem": 3.3198854110833174e-06,
+          "w_hex20_fem": 3.317183257914995e-06,
+          "err_plate_pct": 0.5917150448211839,
+          "err_hex20_pct": 0.5098404654733768,
+          "limit_pct": 3.0,
+          "pass_plate": true,
+          "pass_hex20": true
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p10",
+          "layup": "quasi_iso_0_pm45_90_s",
+          "t_over_a": 0.1,
+          "anchor": "clt_series",
+          "w_anchor": 3.3003567039333833e-09,
+          "w_plate_fem": 5.26661588359539e-09,
+          "w_hex20_fem": 6.081491793997924e-09,
+          "err_plate_pct": 59.5771716832489,
+          "err_hex20_pct": 84.26771223698239,
+          "limit_pct": 3.0,
+          "pass_plate": false,
+          "pass_hex20": false
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p50",
+          "layup": "quasi_iso_0_pm45_90_s",
+          "t_over_a": 0.5,
+          "anchor": "hex20_richardson",
+          "w_anchor": 4.290294483422885e-10,
+          "w_plate_fem": 3.8456886798253753e-10,
+          "w_hex20_fem": 4.286385804101357e-10,
+          "err_plate_pct": -10.363060282118298,
+          "err_hex20_pct": -0.09110515226007365,
+          "limit_pct": 5.0,
+          "pass_plate": false,
+          "pass_hex20": true
+        }
+      ],
+      "verdict": "FAIL"
+    },
+    "C3_grid_convergence": {
+      "criterion": "Roache GCI at the finest level < 5.0% and observed order within 50% of the theoretical order",
+      "gci_all_pass": false,
+      "order_all_pass": false,
+      "worst_gci_pct": 102.20143795692778,
+      "rows": [
+        {
+          "case": "cross_ply_0_90_s__t0p01",
+          "path": "plate_fem",
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            4.111330785370821e-06,
+            4.276983372224534e-06,
+            4.316731995762117e-06,
+            4.3265685005534825e-06
+          ],
+          "rel_err_pct": [
+            0.15997773981487184,
+            0.1521708989465798,
+            0.15023895713899052
+          ],
+          "p_observed": 3.915619196372913,
+          "p_theory": 2.0,
+          "gci_fine_pct": 1.332753679844066,
+          "gci_abs_pct": 1.332753679844066,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p01",
+          "path": "hex20_fem",
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            4.834843032216234e-06,
+            5.028655656907544e-06,
+            5.067552489719583e-06
+          ],
+          "rel_err_pct": [
+            0.05041113838836217,
+            0.012345309069758241,
+            0.004705764425978762
+          ],
+          "p_observed": 1.4587388307622449,
+          "p_theory": 2.0,
+          "gci_fine_pct": 1.1280834585882489,
+          "gci_abs_pct": 1.1280834585882489,
+          "gci_verdict": "PASS",
+          "order_verdict": "PASS"
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p10",
+          "path": "plate_fem",
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            5.92196708121089e-09,
+            6.018816588425193e-09,
+            6.041832420527017e-09,
+            6.047515535342251e-09
+          ],
+          "rel_err_pct": [
+            0.21052949801575457,
+            0.20751057888837074,
+            0.20676514140242952
+          ],
+          "p_observed": 4.013459583803412,
+          "p_theory": 2.0,
+          "gci_fine_pct": 1.7059863881106963,
+          "gci_abs_pct": 1.7059863881106963,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p10",
+          "path": "hex20_fem",
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            7.59052161686256e-09,
+            7.61775750692925e-09,
+            7.622021981385989e-09
+          ],
+          "rel_err_pct": [
+            0.004373563615323532,
+            0.0008011118738485598,
+            0.00024175327891568776
+          ],
+          "p_observed": 1.4167073185404533,
+          "p_theory": 2.0,
+          "gci_fine_pct": 0.06006023074668018,
+          "gci_abs_pct": 0.06006023074668018,
+          "gci_verdict": "PASS",
+          "order_verdict": "PASS"
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p50",
+          "path": "plate_fem",
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            3.9852944250956124e-10,
+            3.859606110007435e-10,
+            3.8289959022788596e-10,
+            3.82139549213583e-10
+          ],
+          "rel_err_pct": [
+            0.08335574238205562,
+            0.09062557001191106,
+            0.09243064340918988
+          ],
+          "p_observed": 4.23984513120114,
+          "p_theory": 2.0,
+          "gci_fine_pct": 0.6456870748322221,
+          "gci_abs_pct": 0.6456870748322221,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p50",
+          "path": "hex20_fem",
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            4.19517829819385e-10,
+            4.2074953834349657e-10,
+            4.209594625089586e-10
+          ],
+          "rel_err_pct": [
+            0.0036584078484099315,
+            0.000733139016550315,
+            0.00023457575563337125
+          ],
+          "p_observed": 1.410590546337783,
+          "p_theory": 2.0,
+          "gci_fine_pct": 0.05858478697372569,
+          "gci_abs_pct": 0.05858478697372569,
+          "gci_verdict": "PASS",
+          "order_verdict": "PASS"
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p01",
+          "path": "plate_fem",
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            2.8385610266187407e-06,
+            2.986491627914915e-06,
+            3.042968625129599e-06,
+            3.064083873788403e-06
+          ],
+          "rel_err_pct": [
+            0.013335870525168167,
+            0.00532275445516821,
+            0.012298718573684387
+          ],
+          "p_observed": -1.096670996318738,
+          "p_theory": 2.0,
+          "gci_fine_pct": -2.887534060086627,
+          "gci_abs_pct": 2.887534060086627,
+          "gci_verdict": "FAIL",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p01",
+          "path": "hex20_fem",
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            2.6808907028132473e-06,
+            2.951517439093551e-06,
+            3.0155583224414564e-06
+          ],
+          "rel_err_pct": [
+            0.11429897650335463,
+            0.02489049108561888,
+            0.0037329422652407087
+          ],
+          "p_observed": 0.8034261935577435,
+          "p_theory": 2.0,
+          "gci_fine_pct": 1.7945134027876433,
+          "gci_abs_pct": 1.7945134027876433,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p10",
+          "path": "plate_fem",
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            4.832903577883561e-09,
+            4.9207884361612215e-09,
+            4.956137520389758e-09,
+            4.971491729629606e-09
+          ],
+          "rel_err_pct": [
+            0.6257087055973349,
+            0.6373871824737064,
+            0.6424598394173276
+          ],
+          "p_observed": 2.3328271185944405,
+          "p_theory": 2.0,
+          "gci_fine_pct": 19.88834744761985,
+          "gci_abs_pct": 19.88834744761985,
+          "gci_verdict": "FAIL",
+          "order_verdict": "PASS"
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p10",
+          "path": "hex20_fem",
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            5.455563454572434e-09,
+            5.565039715712589e-09,
+            5.609729372622383e-09
+          ],
+          "rel_err_pct": [
+            0.8023853528960159,
+            0.8385536444413112,
+            0.8533180191408029
+          ],
+          "p_observed": 2.5260807869608177,
+          "p_theory": 2.0,
+          "gci_fine_pct": 99.84896268267855,
+          "gci_abs_pct": 99.84896268267855,
+          "gci_verdict": "FAIL",
+          "order_verdict": "PASS"
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p50",
+          "path": "plate_fem",
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            3.921410619189571e-10,
+            3.801139213875236e-10,
+            3.7723578851128324e-10,
+            3.7655405301507044e-10
+          ],
+          "rel_err_pct": [
+            0.04558255748619865,
+            0.03766565319987414,
+            0.03579039764212625
+          ],
+          "p_observed": 3.735662576918701,
+          "p_theory": 2.0,
+          "gci_fine_pct": 0.36309488743387563,
+          "gci_abs_pct": 0.36309488743387563,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p50",
+          "path": "hex20_fem",
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            3.585043266804818e-10,
+            3.6151365448661705e-10,
+            3.6272557133183886e-10
+          ],
+          "rel_err_pct": [
+            0.013859136250121806,
+            0.005581352967763759,
+            0.002247723118422424
+          ],
+          "p_observed": 0.9999999999999902,
+          "p_theory": 2.0,
+          "gci_fine_pct": 0.8428961694084187,
+          "gci_abs_pct": 0.8428961694084187,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p01",
+          "path": "plate_fem",
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            3.1840283584142585e-06,
+            3.2871296715009658e-06,
+            3.313269674211635e-06,
+            3.3198854110833174e-06
+          ],
+          "rel_err_pct": [
+            0.004007758439155871,
+            0.003912598375462213,
+            0.005917150448211735
+          ],
+          "p_observed": -0.058093077985601614,
+          "p_theory": 2.0,
+          "gci_fine_pct": -18.740765010278142,
+          "gci_abs_pct": 18.740765010278142,
+          "gci_verdict": "FAIL",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p01",
+          "path": "hex20_fem",
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            3.1862500939073065e-06,
+            3.295346268968743e-06,
+            3.317183257914995e-06
+          ],
+          "rel_err_pct": [
+            0.03457402343512752,
+            0.0015181495256755533,
+            0.005098404654733708
+          ],
+          "p_observed": -2.5800882102198766,
+          "p_theory": 2.0,
+          "gci_fine_pct": -1.2163244733748193,
+          "gci_abs_pct": 1.2163244733748193,
+          "gci_verdict": "FAIL",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p10",
+          "path": "plate_fem",
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            5.228372597167791e-09,
+            5.257022179376467e-09,
+            5.264516482839195e-09,
+            5.26661588359539e-09
+          ],
+          "rel_err_pct": [
+            0.592864847945411,
+            0.5951356035439792,
+            0.595771716832489
+          ],
+          "p_observed": 3.5784732260495473,
+          "p_theory": 2.0,
+          "gci_fine_pct": 6.803442216218098,
+          "gci_abs_pct": 6.803442216218098,
+          "gci_verdict": "FAIL",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p10",
+          "path": "hex20_fem",
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            6.008106215386782e-09,
+            6.060094253026403e-09,
+            6.081491793997924e-09
+          ],
+          "rel_err_pct": [
+            0.8204414717434293,
+            0.8361937198497208,
+            0.8426771223698241
+          ],
+          "p_observed": 2.4622995862070325,
+          "p_theory": 2.0,
+          "gci_fine_pct": 102.20143795692778,
+          "gci_abs_pct": 102.20143795692778,
+          "gci_verdict": "FAIL",
+          "order_verdict": "PASS"
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p50",
+          "path": "plate_fem",
+          "mesh": [
+            4,
+            8,
+            16,
+            32
+          ],
+          "deflection": [
+            4.008044126477556e-10,
+            3.8834087945292613e-10,
+            3.8531668030453597e-10,
+            3.8456886798253753e-10
+          ],
+          "rel_err_pct": [
+            0.0948386388080759,
+            0.10188757020445266,
+            0.103630602821183
+          ],
+          "p_observed": 4.226504418048218,
+          "p_theory": 2.0,
+          "gci_fine_pct": 0.7310307198249592,
+          "gci_abs_pct": 0.7310307198249592,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p50",
+          "path": "hex20_fem",
+          "mesh": [
+            "4x2",
+            "6x3",
+            "8x4"
+          ],
+          "deflection": [
+            4.2588038035641503e-10,
+            4.279200026735661e-10,
+            4.286385804101357e-10
+          ],
+          "rel_err_pct": [
+            0.0073399809687680435,
+            0.0025859429300462825,
+            0.0009110515226006997
+          ],
+          "p_observed": 0.9999999999999901,
+          "p_theory": 2.0,
+          "gci_fine_pct": 0.3416443209752663,
+          "gci_abs_pct": 0.3416443209752663,
+          "gci_verdict": "PASS",
+          "order_verdict": "FAIL"
+        }
+      ],
+      "verdict": "FAIL"
+    },
+    "C4_interlaminar_shear": {
+      "criterion": "tau_xz at the ply interfaces within 10.0% of the Pagano 3-D elasticity anchor",
+      "scored_cases": [
+        "cross_ply_0_90_s__t0p01",
+        "cross_ply_0_90_s__t0p10",
+        "cross_ply_0_90_s__t0p50"
+      ],
+      "withheld_cases": [
+        "angle_ply_pm45_s__t0p01",
+        "angle_ply_pm45_s__t0p10",
+        "angle_ply_pm45_s__t0p50",
+        "quasi_iso_0_pm45_90_s__t0p01",
+        "quasi_iso_0_pm45_90_s__t0p10",
+        "quasi_iso_0_pm45_90_s__t0p50"
+      ],
+      "worst_abs_rel_pct": 344.5102295065357,
+      "rows": [
+        {
+          "case": "cross_ply_0_90_s__t0p01",
+          "layup": "cross_ply_0_90_s",
+          "t_over_a": 0.01,
+          "reference": "exact3d",
+          "worst_abs_rel_pct": 344.5102295065357,
+          "verdict": "FAIL",
+          "note": null
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p10",
+          "layup": "cross_ply_0_90_s",
+          "t_over_a": 0.1,
+          "reference": "exact3d",
+          "worst_abs_rel_pct": 24.41906826115281,
+          "verdict": "FAIL",
+          "note": null
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p50",
+          "layup": "cross_ply_0_90_s",
+          "t_over_a": 0.5,
+          "reference": "exact3d",
+          "worst_abs_rel_pct": 6.085942685567569,
+          "verdict": "PASS",
+          "note": null
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p01",
+          "layup": "angle_ply_pm45_s",
+          "t_over_a": 0.01,
+          "reference": null,
+          "worst_abs_rel_pct": null,
+          "verdict": "WITHHELD",
+          "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion"
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p10",
+          "layup": "angle_ply_pm45_s",
+          "t_over_a": 0.1,
+          "reference": null,
+          "worst_abs_rel_pct": null,
+          "verdict": "WITHHELD",
+          "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion"
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p50",
+          "layup": "angle_ply_pm45_s",
+          "t_over_a": 0.5,
+          "reference": null,
+          "worst_abs_rel_pct": null,
+          "verdict": "WITHHELD",
+          "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion"
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p01",
+          "layup": "quasi_iso_0_pm45_90_s",
+          "t_over_a": 0.01,
+          "reference": null,
+          "worst_abs_rel_pct": null,
+          "verdict": "WITHHELD",
+          "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion"
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p10",
+          "layup": "quasi_iso_0_pm45_90_s",
+          "t_over_a": 0.1,
+          "reference": null,
+          "worst_abs_rel_pct": null,
+          "verdict": "WITHHELD",
+          "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion"
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p50",
+          "layup": "quasi_iso_0_pm45_90_s",
+          "t_over_a": 0.5,
+          "reference": null,
+          "worst_abs_rel_pct": null,
+          "verdict": "WITHHELD",
+          "note": "no closed-form 3-D anchor for angle-ply laminates (the Pagano state space is exact only for specially orthotropic plies); the 3-D FE sequence itself is reported, so this case cannot be scored against the 10% criterion"
+        }
+      ],
+      "verdict": "FAIL"
+    },
+    "C5_cook_membrane_shear_anchor": {
+      "criterion": "Cook (1974) membrane tip deflection within 3.0% of 23.96 on the finest Q4 mesh",
+      "finest": {
+        "nx": 64,
+        "n_dofs": 8450,
+        "n_elements": 4096,
+        "tip_deflection": 23.924516228901034,
+        "rel_err_pct": -0.1480958727001964,
+        "abs_rel_err_pct": 0.1480958727001964
+      },
+      "richardson": {
+        "p": 1.8571409165692088,
+        "extrapolated": 23.965266043800327,
+        "uncertainty": 0.04074981489929286
+      },
+      "verdict": "PASS"
+    },
+    "D1_failure_diagnosis": {
+      "criterion": "diagnostic only (no verdict weight): for every case whose finest mesh misses the deflection band, Richardson-extrapolate each FE path and classify the cause as under_resolved (the extrapolated value passes) or systematic_bias (it does not)",
+      "rows": [
+        {
+          "case": "cross_ply_0_90_s__t0p01",
+          "anchor": "exact3d",
+          "limit_pct": 3.0,
+          "paths": {
+            "plate_fem": {
+              "deflections": [
+                4.111330785370821e-06,
+                4.276983372224534e-06,
+                4.316731995762117e-06,
+                4.3265685005534825e-06
+              ],
+              "ratio": 2.0,
+              "w_richardson": 4.329803203762957e-06,
+              "p_richardson": 2.0146872235022197,
+              "err_finest_pct": -15.02389571389905,
+              "err_richardson_pct": -14.960364424095662,
+              "cause": "systematic_bias"
+            },
+            "hex20_fem": {
+              "deflections": [
+                4.834843032216234e-06,
+                5.028655656907544e-06,
+                5.067552489719583e-06
+              ],
+              "ratio": 1.5,
+              "w_richardson": 5.077318851072767e-06,
+              "p_richardson": 3.960831596874411,
+              "err_finest_pct": -0.4705764425978809,
+              "err_richardson_pct": -0.27875991623574903,
+              "cause": "resolved"
+            }
+          },
+          "two_path_agreement_pct": -14.622127559000441
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p10",
+          "anchor": "exact3d",
+          "limit_pct": 3.0,
+          "paths": {
+            "plate_fem": {
+              "deflections": [
+                5.92196708121089e-09,
+                6.018816588425193e-09,
+                6.041832420527017e-09,
+                6.047515535342251e-09
+              ],
+              "ratio": 2.0,
+              "w_richardson": 6.049378935839075e-09,
+              "p_richardson": 2.0178728345354875,
+              "err_finest_pct": -20.67651414024295,
+              "err_richardson_pct": -20.652072462979444,
+              "cause": "systematic_bias"
+            },
+            "hex20_fem": {
+              "deflections": [
+                7.59052161686256e-09,
+                7.61775750692925e-09,
+                7.622021981385989e-09
+              ],
+              "ratio": 1.5,
+              "w_richardson": 7.622813649722889e-09,
+              "p_richardson": 4.573060919902585,
+              "err_finest_pct": -0.024175327891573506,
+              "err_richardson_pct": -0.013791246732830498,
+              "cause": "resolved"
+            }
+          },
+          "two_path_agreement_pct": -20.657332790287086
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p50",
+          "anchor": "exact3d",
+          "limit_pct": 5.0,
+          "paths": {
+            "plate_fem": {
+              "deflections": [
+                3.9852944250956124e-10,
+                3.859606110007435e-10,
+                3.8289959022788596e-10,
+                3.82139549213583e-10
+              ],
+              "ratio": 2.0,
+              "w_richardson": 3.8188849861599516e-10,
+              "p_richardson": 2.0098636570697748,
+              "err_finest_pct": -9.243064340918995,
+              "err_richardson_pct": -9.302688064711361,
+              "cause": "systematic_bias"
+            },
+            "hex20_fem": {
+              "deflections": [
+                4.19517829819385e-10,
+                4.2074953834349657e-10,
+                4.209594625089586e-10
+              ],
+              "ratio": 1.5,
+              "w_richardson": 4.2100259113475123e-10,
+              "p_richardson": 4.363904919302554,
+              "err_finest_pct": -0.02345757556333483,
+              "err_richardson_pct": -0.013214663192240295,
+              "cause": "resolved"
+            }
+          },
+          "two_path_agreement_pct": -9.221769969014415
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p01",
+          "anchor": "clt_series",
+          "limit_pct": 3.0,
+          "paths": {
+            "plate_fem": {
+              "deflections": [
+                2.8385610266187407e-06,
+                2.986491627914915e-06,
+                3.042968625129599e-06,
+                3.064083873788403e-06
+              ],
+              "ratio": 2.0,
+              "w_richardson": 3.0766922357651465e-06,
+              "p_richardson": 1.419378148220027,
+              "err_finest_pct": 1.2298718573684475,
+              "err_richardson_pct": 1.646421442761814,
+              "cause": "resolved"
+            },
+            "hex20_fem": {
+              "deflections": [
+                2.6808907028132473e-06,
+                2.951517439093551e-06,
+                3.0155583224414564e-06
+              ],
+              "ratio": 1.5,
+              "w_richardson": 3.0354107696529415e-06,
+              "p_richardson": 3.5544829974487437,
+              "err_finest_pct": -0.37329422652406796,
+              "err_richardson_pct": 0.2825822997242433,
+              "cause": "resolved"
+            }
+          },
+          "two_path_agreement_pct": 1.609173033922917
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p10",
+          "anchor": "clt_series",
+          "limit_pct": 3.0,
+          "paths": {
+            "plate_fem": {
+              "deflections": [
+                4.832903577883561e-09,
+                4.9207884361612215e-09,
+                4.956137520389758e-09,
+                4.971491729629606e-09
+              ],
+              "ratio": 2.0,
+              "w_richardson": 4.983282338048734e-09,
+              "p_richardson": 1.203038626617086,
+              "err_finest_pct": 64.24598394173277,
+              "err_richardson_pct": 64.63551694035561,
+              "cause": "systematic_bias"
+            },
+            "hex20_fem": {
+              "deflections": [
+                5.455563454572434e-09,
+                5.565039715712589e-09,
+                5.609729372622383e-09
+              ],
+              "ratio": 1.5,
+              "w_richardson": 5.6405561995326775e-09,
+              "p_richardson": 2.2097231766527083,
+              "err_finest_pct": 85.3318019140803,
+              "err_richardson_pct": 86.35024522909312,
+              "cause": "systematic_bias"
+            }
+          },
+          "two_path_agreement_pct": -11.37733392465633
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p50",
+          "anchor": "hex20_richardson",
+          "limit_pct": 5.0,
+          "paths": {
+            "plate_fem": {
+              "deflections": [
+                3.921410619189571e-10,
+                3.801139213875236e-10,
+                3.7723578851128324e-10,
+                3.7655405301507044e-10
+              ],
+              "ratio": 2.0,
+              "w_richardson": 3.763424504649023e-10,
+              "p_richardson": 2.077849191730151,
+              "err_finest_pct": 3.5790397642126326,
+              "err_richardson_pct": 3.5208340729378174,
+              "cause": "resolved"
+            },
+            "hex20_fem": {
+              "deflections": [
+                3.585043266804818e-10,
+                3.6151365448661705e-10,
+                3.6272557133183886e-10
+              ],
+              "ratio": 1.5,
+              "w_richardson": 3.6354271469619555e-10,
+              "p_richardson": 2.243136190197664,
+              "err_finest_pct": -0.22477231184224733,
+              "err_richardson_pct": 0.0,
+              "cause": "resolved"
+            }
+          },
+          "two_path_agreement_pct": 3.812381253534669
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p01",
+          "anchor": "clt_series",
+          "limit_pct": 3.0,
+          "paths": {
+            "plate_fem": {
+              "deflections": [
+                3.1840283584142585e-06,
+                3.2871296715009658e-06,
+                3.313269674211635e-06,
+                3.3198854110833174e-06
+              ],
+              "ratio": 2.0,
+              "w_richardson": 3.3221271329855026e-06,
+              "p_richardson": 1.982285530419196,
+              "err_finest_pct": 0.5917150448211839,
+              "err_richardson_pct": 0.6596386695467471,
+              "cause": "resolved"
+            },
+            "hex20_fem": {
+              "deflections": [
+                3.1862500939073065e-06,
+                3.295346268968743e-06,
+                3.317183257914995e-06
+              ],
+              "ratio": 1.5,
+              "w_richardson": 3.322648058900066e-06,
+              "p_richardson": 3.9673563234681186,
+              "err_finest_pct": 0.5098404654733768,
+              "err_richardson_pct": 0.6754225972035011,
+              "cause": "resolved"
+            }
+          },
+          "two_path_agreement_pct": 0.08145926704155038
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p10",
+          "anchor": "clt_series",
+          "limit_pct": 3.0,
+          "paths": {
+            "plate_fem": {
+              "deflections": [
+                5.228372597167791e-09,
+                5.257022179376467e-09,
+                5.264516482839195e-09,
+                5.26661588359539e-09
+              ],
+              "ratio": 2.0,
+              "w_richardson": 5.2674328554250714e-09,
+              "p_richardson": 1.83581680704678,
+              "err_finest_pct": 59.5771716832489,
+              "err_richardson_pct": 59.60192572964358,
+              "cause": "systematic_bias"
+            },
+            "hex20_fem": {
+              "deflections": [
+                6.008106215386782e-09,
+                6.060094253026403e-09,
+                6.081491793997924e-09
+              ],
+              "ratio": 1.5,
+              "w_richardson": 6.096459016158308e-09,
+              "p_richardson": 2.1894304131729405,
+              "err_finest_pct": 84.26771223698239,
+              "err_richardson_pct": 84.7212154035506,
+              "cause": "systematic_bias"
+            }
+          },
+          "two_path_agreement_pct": -13.399276657855053
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p50",
+          "anchor": "hex20_richardson",
+          "limit_pct": 5.0,
+          "paths": {
+            "plate_fem": {
+              "deflections": [
+                4.008044126477556e-10,
+                3.8834087945292613e-10,
+                3.8531668030453597e-10,
+                3.8456886798253753e-10
+              ],
+              "ratio": 2.0,
+              "w_richardson": 3.843232053111281e-10,
+              "p_richardson": 2.015804998122352,
+              "err_finest_pct": -10.363060282118298,
+              "err_richardson_pct": -10.420320377517033,
+              "cause": "systematic_bias"
+            },
+            "hex20_fem": {
+              "deflections": [
+                4.2588038035641503e-10,
+                4.279200026735661e-10,
+                4.286385804101357e-10
+              ],
+              "ratio": 1.5,
+              "w_richardson": 4.290294483422885e-10,
+              "p_richardson": 2.572961316913098,
+              "err_finest_pct": -0.09110515226007365,
+              "err_richardson_pct": 0.0,
+              "cause": "resolved"
+            }
+          },
+          "two_path_agreement_pct": -10.281321943869537
+        }
+      ],
+      "failing_cases": [
+        "cross_ply_0_90_s__t0p01",
+        "cross_ply_0_90_s__t0p10",
+        "cross_ply_0_90_s__t0p50",
+        "angle_ply_pm45_s__t0p10",
+        "quasi_iso_0_pm45_90_s__t0p10",
+        "quasi_iso_0_pm45_90_s__t0p50"
+      ],
+      "causes": {
+        "cross_ply_0_90_s__t0p01": {
+          "plate_fem": "systematic_bias",
+          "hex20_fem": "resolved"
+        },
+        "cross_ply_0_90_s__t0p10": {
+          "plate_fem": "systematic_bias",
+          "hex20_fem": "resolved"
+        },
+        "cross_ply_0_90_s__t0p50": {
+          "plate_fem": "systematic_bias",
+          "hex20_fem": "resolved"
+        },
+        "angle_ply_pm45_s__t0p10": {
+          "plate_fem": "systematic_bias",
+          "hex20_fem": "systematic_bias"
+        },
+        "quasi_iso_0_pm45_90_s__t0p10": {
+          "plate_fem": "systematic_bias",
+          "hex20_fem": "systematic_bias"
+        },
+        "quasi_iso_0_pm45_90_s__t0p50": {
+          "plate_fem": "systematic_bias",
+          "hex20_fem": "resolved"
+        }
+      },
+      "verdict": "DIAGNOSTIC"
+    },
+    "D2_plate_path_probe": {
+      "criterion": "diagnostic only (no verdict weight): isotropic single-ply controls decide whether the plate-path bias is an element defect or specific to the layered sections",
+      "probe": "isotropic single-ply plate, E = 70 GPa, nu = 0.3, SS1, q = q0 sin(pi x/a) sin(pi y/a)",
+      "verdict_of_probe": "H2_anchor_or_layup_specific",
+      "controls": {
+        "thin_isotropic_vs_clt_lt_1pct": true,
+        "thick_isotropic_vs_fsdt_lt_5pct": true
+      },
+      "rows": [
+        {
+          "t_over_a": 0.01,
+          "a_over_h": 100.0,
+          "w_clt": 4.00373307932689e-07,
+          "fsdt_theory_ratio": 1.0002819886971739,
+          "plate_finest_err_vs_clt_pct": 0.002182865025779357,
+          "plate_finest_err_vs_fsdt_pct": -0.02600867054050049
+        },
+        {
+          "t_over_a": 0.1,
+          "a_over_h": 10.0,
+          "w_clt": 4.00373307932689e-10,
+          "fsdt_theory_ratio": 1.0281988697173983,
+          "plate_finest_err_vs_clt_pct": 5.590045746386063,
+          "plate_finest_err_vs_fsdt_pct": 2.694185780818459
+        }
+      ],
+      "interpretation": "the Q4 Mindlin plate FE reproduces the isotropic closed form, so the W26 plate-path deviations are specific to the layered cases",
+      "verdict": "DIAGNOSTIC"
+    },
+    "D3_plate_vs_fsdt_theory": {
+      "criterion": "diagnostic only (no verdict weight): compare the Q4 plate path with the FSDT (Mindlin) Navier closed form, which is the model the plate element implements; agreement here means a deflection deviation against a 3-D anchor is a model limitation, not an implementation defect",
+      "rel_tolerance_D16_D26": 1e-09,
+      "rows": [
+        {
+          "case": "cross_ply_0_90_s__t0p01",
+          "t_over_a": 0.01,
+          "D16_over_D11": 5.828848e-19,
+          "numerically_decoupled": true,
+          "w_clt_series": 4.312469120497333e-06,
+          "w_fsdt_navier": 4.329838466264371e-06,
+          "fsdt_over_clt": 1.0040277032209879,
+          "plate_over_clt": 1.0032694448838257,
+          "hex_over_clt": 1.1750930495046854,
+          "plate_vs_fsdt_pct": -0.07552165490349871,
+          "hex_vs_fsdt_pct": 17.037910979438962
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p10",
+          "t_over_a": 0.1,
+          "D16_over_D11": 5.828848e-19,
+          "numerically_decoupled": true,
+          "w_clt_series": 4.312469120497331e-09,
+          "w_fsdt_navier": 6.0494036972231255e-09,
+          "fsdt_over_clt": 1.4027703221038912,
+          "plate_over_clt": 1.4023324843199285,
+          "hex_over_clt": 1.7674380426684648,
+          "plate_vs_fsdt_pct": -0.031212364352417588,
+          "hex_vs_fsdt_pct": 25.996252901732397
+        },
+        {
+          "case": "cross_ply_0_90_s__t0p50",
+          "t_over_a": 0.5,
+          "D16_over_D11": 5.828848e-19,
+          "numerically_decoupled": true,
+          "w_clt_series": 3.449975296397866e-11,
+          "w_fsdt_navier": 3.818866683091367e-10,
+          "fsdt_over_clt": 11.069258052597252,
+          "plate_over_clt": 11.076587986267425,
+          "hex_over_clt": 12.20181092164705,
+          "plate_vs_fsdt_pct": 0.0662188344995096,
+          "hex_vs_fsdt_pct": 10.23151564150282
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p01",
+          "t_over_a": 0.01,
+          "D16_over_D11": 0.6316898,
+          "numerically_decoupled": false,
+          "w_clt_series": 3.0268574063846064e-06,
+          "w_fsdt_navier": null,
+          "fsdt_over_clt": null,
+          "plate_over_clt": 1.0122987185775159,
+          "hex_over_clt": 0.9962670577210632,
+          "plate_vs_fsdt_pct": null,
+          "hex_vs_fsdt_pct": null
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p10",
+          "t_over_a": 0.1,
+          "D16_over_D11": 0.6316898,
+          "numerically_decoupled": false,
+          "w_clt_series": 3.0268574063846043e-09,
+          "w_fsdt_navier": null,
+          "fsdt_over_clt": null,
+          "plate_over_clt": 1.6424598394075465,
+          "hex_over_clt": 1.853318019133408,
+          "plate_vs_fsdt_pct": null,
+          "hex_vs_fsdt_pct": null
+        },
+        {
+          "case": "angle_ply_pm45_s__t0p50",
+          "t_over_a": 0.5,
+          "D16_over_D11": 0.6316898,
+          "numerically_decoupled": false,
+          "w_clt_series": 2.421485925107681e-11,
+          "w_fsdt_navier": null,
+          "fsdt_over_clt": null,
+          "plate_over_clt": 15.550536516261394,
+          "hex_over_clt": 14.979462303249603,
+          "plate_vs_fsdt_pct": null,
+          "hex_vs_fsdt_pct": null
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p01",
+          "t_over_a": 0.01,
+          "D16_over_D11": 0.0647938,
+          "numerically_decoupled": false,
+          "w_clt_series": 3.3003567039333794e-06,
+          "w_fsdt_navier": null,
+          "fsdt_over_clt": null,
+          "plate_over_clt": 1.0059171504532665,
+          "hex_over_clt": 1.0050984046501903,
+          "plate_vs_fsdt_pct": null,
+          "hex_vs_fsdt_pct": null
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p10",
+          "t_over_a": 0.1,
+          "D16_over_D11": 0.0647938,
+          "numerically_decoupled": false,
+          "w_clt_series": 3.3003567039333833e-09,
+          "w_fsdt_navier": null,
+          "fsdt_over_clt": null,
+          "plate_over_clt": 1.5957717168338859,
+          "hex_over_clt": 1.8426771223704532,
+          "plate_vs_fsdt_pct": null,
+          "hex_vs_fsdt_pct": null
+        },
+        {
+          "case": "quasi_iso_0_pm45_90_s__t0p50",
+          "t_over_a": 0.5,
+          "D16_over_D11": 0.0647938,
+          "numerically_decoupled": false,
+          "w_clt_series": 2.6402853631467056e-11,
+          "w_fsdt_navier": null,
+          "fsdt_over_clt": null,
+          "plate_over_clt": 14.565428167267074,
+          "hex_over_clt": 16.234555036852015,
+          "plate_vs_fsdt_pct": null,
+          "hex_vs_fsdt_pct": null
+        }
+      ],
+      "conclusion": "the FSDT anchor absorbs most of the FE-vs-CLT gap for the shear-soft layups at a/h = 10, so the gap is transverse shear deformation and the Kirchhoff anchor is outside its validity domain there",
+      "verdict": "DIAGNOSTIC"
+    }
+  },
+  "case_table": [
+    {
+      "case": "cross_ply_0_90_s__t0p01",
+      "layup": "cross_ply_0_90_s",
+      "angles_deg": "0;90;0;90",
+      "n_plies": "4",
+      "ply_thickness": "2.5000000000e-03",
+      "thickness": "1.0000000000e-02",
+      "t_over_a": "0.01",
+      "a_over_h": "100.0",
+      "D11": "1.0860484545e+03",
+      "D22": "1.0860484545e+03",
+      "D12": "2.0885547201e+01",
+      "D66": "4.1666666667e+01",
+      "D16": "6.3304110858e-16",
+      "D26": "6.0752763360e-14",
+      "D16_over_D11": "5.828848e-19",
+      "special_orthotropic": "True",
+      "A55": "3.5000000000e+06",
+      "A44": "3.5000000000e+06",
+      "w_clt_series": "4.3124691205e-06",
+      "clt_truncation_pct": "0.0000",
+      "w_clt_single": "4.3124691205e-06",
+      "w_fsdt_navier": "",
+      "w_exact3d": "5.0915119455e-06",
+      "primary_reference": "exact3d",
+      "w_reference": "5.0915119455e-06",
+      "w_plate_n32": "4.3265685006e-06",
+      "w_hex_finest": "5.0675524897e-06",
+      "err_plate_pct": "-15.0239",
+      "err_hex_pct": "-0.4706",
+      "err_clt_vs_ref_pct": "-15.3008",
+      "limit_pct": "3.0",
+      "verdict_plate": "FAIL",
+      "verdict_hex": "PASS",
+      "p_plate_observed": "3.916",
+      "gci_plate_pct": "1.333",
+      "p_hex_observed": "1.459",
+      "gci_hex_pct": "1.128"
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p10",
+      "layup": "cross_ply_0_90_s",
+      "angles_deg": "0;90;0;90",
+      "n_plies": "4",
+      "ply_thickness": "2.5000000000e-02",
+      "thickness": "1.0000000000e-01",
+      "t_over_a": "0.1",
+      "a_over_h": "10.0",
+      "D11": "1.0860484545e+06",
+      "D22": "1.0860484545e+06",
+      "D12": "2.0885547201e+04",
+      "D66": "4.1666666667e+04",
+      "D16": "6.3304110858e-13",
+      "D26": "6.0752763360e-11",
+      "D16_over_D11": "5.828848e-19",
+      "special_orthotropic": "True",
+      "A55": "3.5000000000e+07",
+      "A44": "3.5000000000e+07",
+      "w_clt_series": "4.3124691205e-09",
+      "clt_truncation_pct": "0.0000",
+      "w_clt_single": "4.3124691205e-09",
+      "w_fsdt_navier": "",
+      "w_exact3d": "7.6238650758e-09",
+      "primary_reference": "exact3d",
+      "w_reference": "7.6238650758e-09",
+      "w_plate_n32": "6.0475155353e-09",
+      "w_hex_finest": "7.6220219814e-09",
+      "err_plate_pct": "-20.6765",
+      "err_hex_pct": "-0.0242",
+      "err_clt_vs_ref_pct": "-43.4346",
+      "limit_pct": "3.0",
+      "verdict_plate": "FAIL",
+      "verdict_hex": "PASS",
+      "p_plate_observed": "4.013",
+      "gci_plate_pct": "1.706",
+      "p_hex_observed": "1.417",
+      "gci_hex_pct": "0.060"
+    },
+    {
+      "case": "cross_ply_0_90_s__t0p50",
+      "layup": "cross_ply_0_90_s",
+      "angles_deg": "0;90;0;90",
+      "n_plies": "4",
+      "ply_thickness": "1.2500000000e-01",
+      "thickness": "5.0000000000e-01",
+      "t_over_a": "0.5",
+      "a_over_h": "2.0",
+      "D11": "1.3575605681e+08",
+      "D22": "1.3575605681e+08",
+      "D12": "2.6106934002e+06",
+      "D66": "5.2083333333e+06",
+      "D16": "7.9130138573e-11",
+      "D26": "7.5940954200e-09",
+      "D16_over_D11": "5.828848e-19",
+      "special_orthotropic": "True",
+      "A55": "1.7500000000e+08",
+      "A44": "1.7500000000e+08",
+      "w_clt_series": "3.4499752964e-11",
+      "clt_truncation_pct": "0.0000",
+      "w_clt_single": "3.4499752964e-11",
+      "w_fsdt_navier": "",
+      "w_exact3d": "4.2105823256e-10",
+      "primary_reference": "exact3d",
+      "w_reference": "4.2105823256e-10",
+      "w_plate_n32": "3.8213954921e-10",
+      "w_hex_finest": "4.2095946251e-10",
+      "err_plate_pct": "-9.2431",
+      "err_hex_pct": "-0.0235",
+      "err_clt_vs_ref_pct": "-91.8064",
+      "limit_pct": "5.0",
+      "verdict_plate": "FAIL",
+      "verdict_hex": "PASS",
+      "p_plate_observed": "4.240",
+      "gci_plate_pct": "0.646",
+      "p_hex_observed": "1.411",
+      "gci_hex_pct": "0.059"
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p01",
+      "layup": "angle_ply_pm45_s",
+      "angles_deg": "45;-45;-45;45",
+      "n_plies": "4",
+      "ply_thickness": "2.5000000000e-03",
+      "thickness": "1.0000000000e-02",
+      "t_over_a": "0.01",
+      "a_over_h": "100.0",
+      "D11": "5.9513366750e+02",
+      "D22": "5.9513366750e+02",
+      "D12": "5.1180033417e+02",
+      "D66": "5.3258145363e+02",
+      "D16": "3.7593984962e+02",
+      "D26": "3.7593984962e+02",
+      "D16_over_D11": "6.316898e-01",
+      "special_orthotropic": "False",
+      "A55": "3.5000000000e+06",
+      "A44": "3.5000000000e+06",
+      "w_clt_series": "3.0268574064e-06",
+      "clt_truncation_pct": "0.4035",
+      "w_clt_single": "",
+      "w_fsdt_navier": "",
+      "w_exact3d": "",
+      "primary_reference": "clt_series",
+      "w_reference": "3.0268574064e-06",
+      "w_plate_n32": "3.0640838738e-06",
+      "w_hex_finest": "3.0155583224e-06",
+      "err_plate_pct": "+1.2299",
+      "err_hex_pct": "-0.3733",
+      "err_clt_vs_ref_pct": "+0.0000",
+      "limit_pct": "3.0",
+      "verdict_plate": "PASS",
+      "verdict_hex": "PASS",
+      "p_plate_observed": "-1.097",
+      "gci_plate_pct": "-2.888",
+      "p_hex_observed": "0.803",
+      "gci_hex_pct": "1.795"
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p10",
+      "layup": "angle_ply_pm45_s",
+      "angles_deg": "45;-45;-45;45",
+      "n_plies": "4",
+      "ply_thickness": "2.5000000000e-02",
+      "thickness": "1.0000000000e-01",
+      "t_over_a": "0.1",
+      "a_over_h": "10.0",
+      "D11": "5.9513366750e+05",
+      "D22": "5.9513366750e+05",
+      "D12": "5.1180033417e+05",
+      "D66": "5.3258145363e+05",
+      "D16": "3.7593984962e+05",
+      "D26": "3.7593984962e+05",
+      "D16_over_D11": "6.316898e-01",
+      "special_orthotropic": "False",
+      "A55": "3.5000000000e+07",
+      "A44": "3.5000000000e+07",
+      "w_clt_series": "3.0268574064e-09",
+      "clt_truncation_pct": "0.4035",
+      "w_clt_single": "",
+      "w_fsdt_navier": "",
+      "w_exact3d": "",
+      "primary_reference": "clt_series",
+      "w_reference": "3.0268574064e-09",
+      "w_plate_n32": "4.9714917296e-09",
+      "w_hex_finest": "5.6097293726e-09",
+      "err_plate_pct": "+64.2460",
+      "err_hex_pct": "+85.3318",
+      "err_clt_vs_ref_pct": "+0.0000",
+      "limit_pct": "3.0",
+      "verdict_plate": "FAIL",
+      "verdict_hex": "FAIL",
+      "p_plate_observed": "2.333",
+      "gci_plate_pct": "19.888",
+      "p_hex_observed": "2.526",
+      "gci_hex_pct": "99.849"
+    },
+    {
+      "case": "angle_ply_pm45_s__t0p50",
+      "layup": "angle_ply_pm45_s",
+      "angles_deg": "45;-45;-45;45",
+      "n_plies": "4",
+      "ply_thickness": "1.2500000000e-01",
+      "thickness": "5.0000000000e-01",
+      "t_over_a": "0.5",
+      "a_over_h": "2.0",
+      "D11": "7.4391708438e+07",
+      "D22": "7.4391708438e+07",
+      "D12": "6.3975041771e+07",
+      "D66": "6.6572681704e+07",
+      "D16": "4.6992481203e+07",
+      "D26": "4.6992481203e+07",
+      "D16_over_D11": "6.316898e-01",
+      "special_orthotropic": "False",
+      "A55": "1.7500000000e+08",
+      "A44": "1.7500000000e+08",
+      "w_clt_series": "2.4214859251e-11",
+      "clt_truncation_pct": "0.4035",
+      "w_clt_single": "",
+      "w_fsdt_navier": "",
+      "w_exact3d": "",
+      "primary_reference": "hex20_richardson",
+      "w_reference": "3.6354271470e-10",
+      "w_plate_n32": "3.7655405302e-10",
+      "w_hex_finest": "3.6272557133e-10",
+      "err_plate_pct": "+3.5790",
+      "err_hex_pct": "-0.2248",
+      "err_clt_vs_ref_pct": "-93.3392",
+      "limit_pct": "5.0",
+      "verdict_plate": "PASS",
+      "verdict_hex": "PASS",
+      "p_plate_observed": "3.736",
+      "gci_plate_pct": "0.363",
+      "p_hex_observed": "1.000",
+      "gci_hex_pct": "0.843"
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p01",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "angles_deg": "0;45;-45;90;90;-45;45;0",
+      "n_plies": "8",
+      "ply_thickness": "1.2500000000e-03",
+      "thickness": "1.0000000000e-02",
+      "t_over_a": "0.01",
+      "a_over_h": "100.0",
+      "D11": "1.4505240967e+03",
+      "D22": "3.2270454783e+02",
+      "D12": "2.2031967941e+02",
+      "D66": "2.4110079887e+02",
+      "D16": "9.3984962406e+01",
+      "D26": "9.3984962406e+01",
+      "D16_over_D11": "6.479380e-02",
+      "special_orthotropic": "False",
+      "A55": "3.5000000000e+06",
+      "A44": "3.5000000000e+06",
+      "w_clt_series": "3.3003567039e-06",
+      "clt_truncation_pct": "0.0236",
+      "w_clt_single": "",
+      "w_fsdt_navier": "",
+      "w_exact3d": "",
+      "primary_reference": "clt_series",
+      "w_reference": "3.3003567039e-06",
+      "w_plate_n32": "3.3198854111e-06",
+      "w_hex_finest": "3.3171832579e-06",
+      "err_plate_pct": "+0.5917",
+      "err_hex_pct": "+0.5098",
+      "err_clt_vs_ref_pct": "+0.0000",
+      "limit_pct": "3.0",
+      "verdict_plate": "PASS",
+      "verdict_hex": "PASS",
+      "p_plate_observed": "-0.058",
+      "gci_plate_pct": "-18.741",
+      "p_hex_observed": "-2.580",
+      "gci_hex_pct": "-1.216"
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p10",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "angles_deg": "0;45;-45;90;90;-45;45;0",
+      "n_plies": "8",
+      "ply_thickness": "1.2500000000e-02",
+      "thickness": "1.0000000000e-01",
+      "t_over_a": "0.1",
+      "a_over_h": "10.0",
+      "D11": "1.4505240967e+06",
+      "D22": "3.2270454783e+05",
+      "D12": "2.2031967941e+05",
+      "D66": "2.4110079887e+05",
+      "D16": "9.3984962406e+04",
+      "D26": "9.3984962406e+04",
+      "D16_over_D11": "6.479380e-02",
+      "special_orthotropic": "False",
+      "A55": "3.5000000000e+07",
+      "A44": "3.5000000000e+07",
+      "w_clt_series": "3.3003567039e-09",
+      "clt_truncation_pct": "0.0236",
+      "w_clt_single": "",
+      "w_fsdt_navier": "",
+      "w_exact3d": "",
+      "primary_reference": "clt_series",
+      "w_reference": "3.3003567039e-09",
+      "w_plate_n32": "5.2666158836e-09",
+      "w_hex_finest": "6.0814917940e-09",
+      "err_plate_pct": "+59.5772",
+      "err_hex_pct": "+84.2677",
+      "err_clt_vs_ref_pct": "+0.0000",
+      "limit_pct": "3.0",
+      "verdict_plate": "FAIL",
+      "verdict_hex": "FAIL",
+      "p_plate_observed": "3.578",
+      "gci_plate_pct": "6.803",
+      "p_hex_observed": "2.462",
+      "gci_hex_pct": "102.201"
+    },
+    {
+      "case": "quasi_iso_0_pm45_90_s__t0p50",
+      "layup": "quasi_iso_0_pm45_90_s",
+      "angles_deg": "0;45;-45;90;90;-45;45;0",
+      "n_plies": "8",
+      "ply_thickness": "6.2500000000e-02",
+      "thickness": "5.0000000000e-01",
+      "t_over_a": "0.5",
+      "a_over_h": "2.0",
+      "D11": "1.8131551209e+08",
+      "D22": "4.0338068478e+07",
+      "D12": "2.7539959926e+07",
+      "D66": "3.0137599859e+07",
+      "D16": "1.1748120301e+07",
+      "D26": "1.1748120301e+07",
+      "D16_over_D11": "6.479380e-02",
+      "special_orthotropic": "False",
+      "A55": "1.7500000000e+08",
+      "A44": "1.7500000000e+08",
+      "w_clt_series": "2.6402853631e-11",
+      "clt_truncation_pct": "0.0236",
+      "w_clt_single": "",
+      "w_fsdt_navier": "",
+      "w_exact3d": "",
+      "primary_reference": "hex20_richardson",
+      "w_reference": "4.2902944834e-10",
+      "w_plate_n32": "3.8456886798e-10",
+      "w_hex_finest": "4.2863858041e-10",
+      "err_plate_pct": "-10.3631",
+      "err_hex_pct": "-0.0911",
+      "err_clt_vs_ref_pct": "-93.8459",
+      "limit_pct": "5.0",
+      "verdict_plate": "FAIL",
+      "verdict_hex": "PASS",
+      "p_plate_observed": "4.227",
+      "gci_plate_pct": "0.731",
+      "p_hex_observed": "1.000",
+      "gci_hex_pct": "0.342"
+    }
+  ],
+  "artifacts": {
+    "case_matrix.csv": {
+      "sha256": "1ea9818ab38b06b80cdc7482d9b889cd381ff626e225ada2dd8c9d23031f95ac",
+      "bytes": 4234
+    },
+    "deflection_error.json": {
+      "sha256": "361fc348f7ac92d5c04f81709d9a34f5c7db2a27e21d49b04ef8ca2fd8bed29d",
+      "bytes": 29926
+    },
+    "grid_convergence.json": {
+      "sha256": "6acf99cbc7d4e84c46aa79b8e6d9ccfa3c7da8631bd220708f57b4181251d3ad",
+      "bytes": 15613
+    },
+    "interlaminar_shear.json": {
+      "sha256": "8c31278740873c86ce3545b0c9ac0f730c27d82c82b07baaf81731d2c7e9ba4e",
+      "bytes": 10854
+    },
+    "cook_membrane.json": {
+      "sha256": "2bbcc7d988178279294f72216f281d1a8150d30d751853d6a694c45b96cb2f8f",
+      "bytes": 2029
+    },
+    "plate_element_diagnosis.json": {
+      "sha256": "ad434c57e3d90904d844b1c0a87ab0d93c78d02b31d975377d14f5e128601000",
+      "bytes": 2080
+    },
+    "fsdt_anchor.json": {
+      "sha256": "5e4b4ad8a480b05925ffc8b2e756c83c40847ec89a7350ddf229974e97c4fa04",
+      "bytes": 4484
+    }
+  },
+  "provenance": {
+    "git_commit": "80624f0c52897e56ea897f75427db0442ad221ba",
+    "python": "3.11.6",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "modules": {
+      "src/tensorfem/composite_laminate_bending.py": "570a71fd502b6f6cacaeced7e1e91ae49599b59cfeb169f3fbf8b232f79bd0b7",
+      "src/tensorfem/continuum_benchmarks.py": "be28c36b10b7230fda3c92b7f8b154d286bc96334cf8744e8e87917add1e67fe",
+      "benchmarks/composite_laminate_navier/run_case_matrix.py": "c99f7606429663e1c04c9c3b04d136687d671595400f233c22e3aaa190fa126d",
+      "benchmarks/composite_laminate_w26/run_closure.py": "0a959cdcd79f55a29b0bfe467b2c869ef762afc2905a96d55f35388809b0c553"
+    },
+    "generated_utc": "2026-11-13T07:33:16Z",
+    "anchor_material": {
+      "E1": 25000000000.0,
+      "E2": 1000000000.0,
+      "E3": 1000000000.0,
+      "nu12": 0.25,
+      "nu13": 0.25,
+      "nu23": 0.25,
+      "G12": 500000000.0,
+      "G13": 500000000.0,
+      "G23": 200000000.0
+    },
+    "load": "q = q0 sin(pi x / a) sin(pi y / b), SS1 (shear diaphragm) edges"
+  },
+  "honesty": {
+    "zero_hand_copy": "every numeric field is read from an artifact written by a solver call; provenance carries sha256 of each artifact and of the producing modules",
+    "honest_fail_preserved": "criterion verdicts are computed, never overridden; WITHHELD marks cases without a closed-form anchor",
+    "scope_limits": [
+      "the Pagano state-space anchor exists only for specially orthotropic layups, so angle-ply interlaminar shear stays WITHHELD",
+      "all cases are SS1 square plates under a single sine load, h/a from 0.01 to 0.5; first-ply-failure / delamination growth are out of scope"
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "probe": "isotropic single-ply plate, E = 70 GPa, nu = 0.3, SS1, q = q0 sin(pi x/a) sin(pi y/a)",
+  "reference": "navier_clt (Kirchhoff closed form) and the first-order shear ratio 1 + D a^2 / A_s",
+  "rows": [
+    {
+      "t_over_a": 0.01,
+      "a_over_h": 100.0,
+      "w_clt": 4.00373307932689e-07,
+      "w_fsdt_theory_ratio": 1.0002819886971739,
+      "w_fsdt_theory": 4.0048620868017616e-07,
+      "plate_fem": [
+        {
+          "n": 8,
+          "w": 3.970824243015527e-07,
+          "err_vs_clt_pct": -0.8219538030965756,
+          "dofs": 243
+        },
+        {
+          "n": 16,
+          "w": 3.997287009598648e-07,
+          "err_vs_clt_pct": -0.16100148537687708,
+          "dofs": 867
+        },
+        {
+          "n": 32,
+          "w": 4.003820475416004e-07,
+          "err_vs_clt_pct": 0.002182865025779357,
+          "dofs": 3267
+        }
+      ],
+      "err_finest_vs_clt_pct": 0.002182865025779357,
+      "err_finest_vs_fsdt_theory_pct": -0.02600867054050049
+    },
+    {
+      "t_over_a": 0.1,
+      "a_over_h": 10.0,
+      "w_clt": 4.00373307932689e-10,
+      "w_fsdt_theory_ratio": 1.0281988697173983,
+      "w_fsdt_theory": 4.116633826814067e-10,
+      "plate_fem": [
+        {
+          "n": 8,
+          "w": 4.1972625611249234e-10,
+          "err_vs_clt_pct": 4.833725874417416,
+          "dofs": 243
+        },
+        {
+          "n": 16,
+          "w": 4.221550064821938e-10,
+          "err_vs_clt_pct": 5.440347325343375,
+          "dofs": 867
+        },
+        {
+          "n": 32,
+          "w": 4.2275435900244546e-10,
+          "err_vs_clt_pct": 5.590045746386063,
+          "dofs": 3267
+        }
+      ],
+      "err_finest_vs_clt_pct": 5.590045746386063,
+      "err_finest_vs_fsdt_theory_pct": 2.694185780818459
+    }
+  ],
+  "verdict": "H2_anchor_or_layup_specific",
+  "controls": {
+    "thin_isotropic_vs_clt_lt_1pct": true,
+    "thick_isotropic_vs_fsdt_lt_5pct": true
+  },
+  "interpretation": "the Q4 Mindlin plate FE reproduces the isotropic closed form, so the W26 plate-path deviations are specific to the layered cases"
+}
