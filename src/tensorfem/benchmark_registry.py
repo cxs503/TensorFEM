@@ -622,8 +622,10 @@ def run_registered_benchmarks():
     )
 
     from .foundation_plate_registry import plate_foundation_evidence
+    from .lbm_shan_chen_mcmp import shan_chen_mcmp_evidence
 
     out.extend(plate_foundation_evidence())
+    out.extend(shan_chen_mcmp_evidence())
     out.extend(inverse_identification_evidence())
     return tuple(out)
 
