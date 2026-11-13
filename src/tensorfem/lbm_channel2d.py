@@ -86,6 +86,20 @@ def _shift(t: np.ndarray, i: int) -> np.ndarray:
     return out
 
 
+def _shift_periodic_x(t: np.ndarray, i: int) -> np.ndarray:
+    """Stream one population by one cell, periodic in x, zero-fill in y."""
+    cx, cy = int(CX[i]), int(CY[i])
+    out = np.roll(t, cx, axis=1) if cx else t.copy()
+    if cy > 0:
+        out = np.concatenate((np.zeros((cy, t.shape[1]), dtype=t.dtype),
+                              out[:-cy]), axis=0)
+    elif cy < 0:
+        out = np.concatenate((out[-cy:],
+                              np.zeros((-cy, t.shape[1]), dtype=t.dtype)),
+                             axis=0)
+    return out
+
+
 def _shift_mask(mask: np.ndarray, i: int) -> np.ndarray:
     """Cells whose upstream neighbour (direction i) is solid."""
     return _shift(mask.astype(DTYPE), i) > 0.5
@@ -113,6 +127,10 @@ class ChannelConfig:
     cylinder_center: tuple[float, float] | None = None  # lattice index space
     cylinder_radius: float = 0.0
     perturbation: float = 0.0   # amplitude of the symmetry-breaking v-velocity
+    # moving-wall / fully developed (Couette) support, see wall_force()
+    u_wall_bottom: float = 0.0  # x-velocity of the bottom wall face (row 0)
+    u_wall_top: float = 0.0     # x-velocity of the top wall face (row ny-1)
+    periodic_x: bool = False    # periodic in x: no inlet/outlet profile
 
     @property
     def tau(self) -> float:
@@ -145,12 +163,19 @@ class ChannelLBM:
         self.f = self._initial_field()
         self.time = 0
         self._from_solid = None      # cache of upstream-solid masks
+        self._f_post = None          # post-collision populations (for forces)
         self._scratch = None
         self._refresh_cache()
 
     def _refresh_cache(self) -> None:
         """Cache the static streaming masks and the equilibrium scratch."""
-        self._from_solid = [_shift_mask(self.solid, i) for i in range(9)]
+        if self.cfg.periodic_x:
+            # masks must follow the same (periodic) displacement as streaming
+            def _smask(m, i):
+                return _shift_periodic_x(m.astype(DTYPE), i) > 0.5
+        else:
+            _smask = _shift_mask
+        self._from_solid = [_smask(self.solid, i) for i in range(9)]
         # precomputed boundary links for the momentum-exchange force
         self._mem_links = []
         boundary = ~self.solid
@@ -160,6 +185,21 @@ class ChannelLBM:
             idx = np.flatnonzero(from_obstacle[i].ravel())
             if idx.size:
                 self._mem_links.append((OPP[i], idx, CX[OPP[i]], CY[OPP[i]]))
+        # half-way bounce-back links of the two channel walls.  The wall
+        # velocity enters the reflected population (Ladd moving-wall closure)
+        #     f_i(x_f, t+1) = f_opp(i)(x_f, t) + 2 w_i rho (c_i . u_wall)/cs^2
+        # with c_i the velocity of the *returning* population (fluid side).
+        self._wall_links: list[list[tuple[int, np.ndarray, float]]] = [[], []]
+        boundary_rows = (~self.solid).copy()
+        for wall, (row, uw) in enumerate(((0, self.cfg.u_wall_bottom),
+                                          (self.ny - 1, self.cfg.u_wall_top))):
+            mask = np.zeros_like(self.solid)
+            mask[row, :] = self.solid[row, :]
+            for i in range(1, 9):
+                linked = _smask(mask, i) & boundary_rows
+                idx = np.flatnonzero(linked.ravel())
+                if idx.size:
+                    self._wall_links[wall].append((i, idx, float(uw)))
         self._scratch = {
             "cu": np.empty((9, self.ny, self.nx), dtype=DTYPE),
             "tmp": np.empty((9, self.ny, self.nx), dtype=DTYPE),
@@ -183,7 +223,11 @@ class ChannelLBM:
         return np.clip(4.0 * self.cfg.u_max * eta * (1.0 - eta), 0.0, None)
 
     def _initial_field(self) -> np.ndarray:
-        ux = np.repeat(self.inlet_profile()[:, None], self.nx, axis=1)
+        if self.cfg.periodic_x:
+            # fully developed run: start from rest, the moving wall drives it
+            ux = np.zeros((self.ny, self.nx), dtype=DTYPE)
+        else:
+            ux = np.repeat(self.inlet_profile()[:, None], self.nx, axis=1)
         uy = np.zeros_like(ux)
         if self.cfg.perturbation:
             # localised antisymmetric kick downstream of the obstacle
@@ -255,19 +299,31 @@ class ChannelLBM:
         return out
 
     def _stream(self, f_post: np.ndarray) -> None:
-        """Half-way bounce-back streaming + inlet/outlet boundary conditions."""
+        """Half-way bounce-back streaming (+ inlet/outlet or periodic BCs)."""
         solid = self.solid
         from_solid = self._from_solid
+        periodic = self.cfg.periodic_x
         f_new = np.empty_like(self.f)
         for i in range(1, 9):
-            streamed = _shift(f_post[i], i)
+            streamed = (_shift_periodic_x(f_post[i], i) if periodic
+                        else _shift(f_post[i], i))
             f_new[i] = np.where(from_solid[i], f_post[OPP[i]], streamed)
         f_new[0] = f_post[0]
         f_new[:, solid] = 0.0
-        u_in = self.inlet_profile()
-        f_new[:, :, 0] = equilibrium(np.ones((self.ny, 1)),
-                                     u_in[:, None], np.zeros((self.ny, 1)))[:, :, 0]
-        f_new[:, :, -1] = f_new[:, :, -2]
+        if self._wall_links[0] or self._wall_links[1]:
+            rho = f_post.sum(axis=0).ravel()
+            for links in self._wall_links:
+                for i, idx, uw in links:
+                    cu = CX[i] * uw
+                    if cu == 0.0:
+                        continue
+                    f_new[i].reshape(-1)[idx] += 2.0 * W9[i] * rho[idx] * cu / CS2
+        if not periodic:
+            u_in = self.inlet_profile()
+            f_new[:, :, 0] = equilibrium(
+                np.ones((self.ny, 1)), u_in[:, None],
+                np.zeros((self.ny, 1)))[:, :, 0]
+            f_new[:, :, -1] = f_new[:, :, -2]
         self.f = f_new
         self._f_post = f_post
         self.time += 1
@@ -427,6 +483,38 @@ class ChannelLBM:
             F[0] += 2.0 * int_mom * cxj
             F[1] += 2.0 * int_mom * cyj
         return F
+
+
+    def wall_force(self) -> np.ndarray:
+        """Momentum-exchange force on the two channel walls.
+
+        For a boundary link whose population ``k`` travels into the wall the
+        momentum handed to the wall per time step is
+
+            dp = 2 c_k ( f_k^* - w_k rho (c_k . u_wall) / cs^2 )
+
+        which reduces to the standard ``2 c_k f_k^*`` when the wall is at rest.
+
+        Returns
+        -------
+        (2, 2) array ``[[Fx, Fy]bottom, [Fx, Fy]top]`` (lattice force per unit
+        depth, positive along +x), i.e. the force the *fluid* exerts on the
+        wall.  Sign check: a top wall moving in +x is dragged back, ``Fx < 0``.
+        """
+        if self._f_post is None:
+            raise RuntimeError("wall_force() needs at least one time step")
+        f_post = self._f_post
+        rho = f_post.sum(axis=0).ravel()
+        out = np.zeros((2, 2), dtype=DTYPE)
+        for wall, links in enumerate(self._wall_links):
+            for i, idx, uw in links:
+                k = int(OPP[i])
+                cx, cy = float(CX[k]), float(CY[k])
+                fk = f_post[k].reshape(-1)[idx]
+                mom = 2.0 * (fk - W9[k] * rho[idx] * (cx * uw) / CS2)
+                out[wall, 0] += float(mom.sum()) * cx
+                out[wall, 1] += float(mom.sum()) * cy
+        return out
 
 
 # ---------------------------------------------------------------------------
