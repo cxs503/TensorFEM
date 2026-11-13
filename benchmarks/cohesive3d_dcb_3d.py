@@ -27,9 +27,11 @@ Run ``python benchmarks/cohesive3d_dcb_3d.py --quick`` for a fast subset.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import platform
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
@@ -63,6 +65,46 @@ TN0 = 120.0e6
 TS0 = 80.0e6
 KN = 2.4e14
 KS = 1.0e14
+
+
+#: Source modules whose content identity the committed evidence must bind to.
+#: If any of these changes, the committed ``cohesive3d_dcb_3d.json`` is stale
+#: and the freshness gate (tests/test_cohesive3d_dcb_evidence_artifact.py) fails.
+SOURCE_FILES = (
+    "src/tensorfem/cohesive3d.py",
+    "src/tensorfem/cohesive3d_dcb.py",
+    "src/tensorfem/solid3d.py",
+)
+
+
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _git_head() -> str | None:
+    try:
+        out = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
+                             capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.SubprocessError):  # git absent: degrade, not fatal
+        return None
+    if out.returncode != 0:
+        return None
+    return out.stdout.strip() or None
+
+
+def source_provenance() -> dict:
+    """Content identity of the code that produced the numbers."""
+    return {
+        "module": "tensorfem.cohesive3d_dcb",
+        "source_files": {rel: sha256_file(ROOT / rel) for rel in SOURCE_FILES},
+        "git_head": _git_head(),
+    }
+
+
+def criteria_digest(criteria: dict) -> str:
+    """SHA-256 of the numbers themselves: any hand edit changes the digest."""
+    canonical = json.dumps(criteria, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode()).hexdigest()
 
 
 def make_law() -> BKCohesive3DLaw:
@@ -375,6 +417,7 @@ def run(quick: bool = False) -> dict:
             "python": platform.python_version(),
             "torch": torch.__version__,
         },
+        "provenance": source_provenance(),
         "quick_mode": quick,
         "criteria": {},
         "propagation": {},
@@ -470,6 +513,7 @@ def run(quick: bool = False) -> dict:
     }
 
     out["all_passed"] = all(c.get("passed", False) for c in out["criteria"].values())
+    out["checks_digest"] = criteria_digest(out["criteria"])
     out["runtime_s"] = time.time() - t_start
     return out
 
