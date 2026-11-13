@@ -3,7 +3,7 @@
   "anchor": "fem_structural_benchmarks",
   "title": "Beam / plate / axisymmetric elements vs Euler-Bernoulli, Navier and Lame oracles",
   "mission": "IN41-N01",
-  "generated_at": "2026-11-12T18:00:53+00:00",
+  "generated_at": "2026-11-13T00:06:27+00:00",
   "criteria": {
     "case_a_tip_deflection_rel_max": 0.01,
     "case_a_root_stress_rel_max": 0.01,

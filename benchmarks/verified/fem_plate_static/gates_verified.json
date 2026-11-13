@@ -3,7 +3,7 @@
   "anchor": "fem_plate_static",
   "title": "Kirchhoff plate statics vs Navier series and Timoshenko tables (L2 rung)",
   "mission": "5418",
-  "generated_at": "2026-11-12T17:55:37+00:00",
+  "generated_at": "2026-11-13T00:00:09+00:00",
   "criteria": {
     "ssss_centre_vs_navier_11_max": 0.01,
     "all_data_points_max": 0.02,
