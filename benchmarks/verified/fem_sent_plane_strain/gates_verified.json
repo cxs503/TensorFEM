@@ -1,0 +1,138 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_sent_plane_strain",
+  "title": "SENT plate at a/W = 0.3 in plane strain: K_I from the J-integral against two handbook fits",
+  "mission": "CASE-FEM-JINTEGRAL-EDGE-CRACK",
+  "generated_at": "2026-11-12T23:43:08+00:00",
+  "criteria": {
+    "acceptance_5pct": 0.05,
+    "mission_3pct": 0.03,
+    "reference_spread": 0.01,
+    "path_independence": 0.01,
+    "reaction_balance": 1e-09,
+    "gci_fine": 0.05,
+    "material_invariance": 0.005,
+    "energy_vs_j": 0.03,
+    "energy_vs_handbook": 0.05,
+    "clapeyron": 1e-06
+  },
+  "gates": [
+    {
+      "id": "acceptance_5pct",
+      "quantity": "|K_FEM - K_GS| / K_GS at a/W = 0.3, plane strain, finest level",
+      "reference": "K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed. polynomial fit",
+      "value": 0.007375127549096671,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "the tolerance written into the anchor case"
+    },
+    {
+      "id": "mission_3pct",
+      "quantity": "|K_FEM - K_GS| / K_GS at a/W = 0.3, plane strain, finest level",
+      "reference": "mission-wide 3 % accuracy standard",
+      "value": 0.007375127549096671,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "reference_spread",
+      "quantity": "|F_closed_form - F_GS| / F_GS at a/W = 0.3",
+      "reference": "two independent handbook fits for the SENT geometry factor",
+      "value": 0.002895182485611151,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "bounds the reference uncertainty; not a numerical result"
+    },
+    {
+      "id": "path_independence",
+      "quantity": "max-min of F over 8 fan lines, finest level",
+      "reference": "J is path independent for a contour enclosing no singularity other than the tip",
+      "value": 0.001638501021470177,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "reaction_balance",
+      "quantity": "|vertical reaction / applied load - 1| at the finest level",
+      "reference": "global equilibrium of the discrete system",
+      "value": 2.2681856393091948e-13,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "gci_fine",
+      "quantity": "Roache GCI of F over the three levels",
+      "reference": "grid convergence index of the finest value from the three values themselves",
+      "value": 0.19683465170921122,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": false,
+      "note": "undefined (not converging) is reported as a failed gate, never as a pass"
+    },
+    {
+      "id": "material_invariance",
+      "quantity": "|F(nu=0.45) - F(nu=0.30)| / F(nu=0.30) at the medium level",
+      "reference": "LEFM: K_I is independent of E and nu, so a correct E' (and energy density) must cancel nu",
+      "value": 0.00561818999001551,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": false,
+      "note": "finest available level is graded; the coarser spread is reported alongside because a wrong E' pair would sit at +4.83 % on every mesh"
+    },
+    {
+      "id": "energy_vs_j",
+      "quantity": "|K_(dPi/da) - K_J| / K_J at a/W = 0.3, plane strain",
+      "reference": "global energy release rate versus the local contour integral on the same field",
+      "value": 0.006270688107705222,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "energy_vs_handbook",
+      "quantity": "|K_(dPi/da) - K_GS| / K_GS at a/W = 0.3, plane strain",
+      "reference": "K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed.",
+      "value": 0.001150686566006379,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "clapeyron",
+      "quantity": "max |f.u / U - 2| over the two energy-oracle solves",
+      "reference": "f.u = 2U for a linear traction-only problem; audits the potential bookkeeping",
+      "value": 2.509104035652854e-13,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": false,
+  "failed_gates": [
+    "gci_fine",
+    "material_invariance"
+  ],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "sent_plane_strain_convergence.png": "|K_FEM - K_GS| / K_GS per refinement level, with the 5 % case and 3 % mission lines.",
+    "sent_plane_strain_paths.png": "Recovered F(a/W) along eight fan lines for the three levels (path independence).",
+    "sent_plane_strain_handbook.png": "Recovered F against the two independent handbook fits over a/W in [0.2, 0.5].",
+    "sent_plane_strain_nu.png": "F at nu = 0.30 versus nu = 0.45 (LEFM material invariance) with J quoted separately.",
+    "sent_plane_strain_energy.png": "K_J versus the global energy-release oracle and the handbook value.",
+    "sent_plane_strain_ligament.png": "sigma_yy along the ligament ahead of the tip against the r^-1/2 singular form."
+  },
+  "limitations": [
+    "linear elastic, small strain, stationary mode-I, homogeneous isotropic material, no body force",
+    "plane strain is realised by the constitutive matrix and E' = E/(1-nu^2); no 3-D constraint check is attempted",
+    "a/W = 0.3 only: the plane-stress legs at a/W = 0.20/0.35/0.50 live in benchmarks/verified/fem_sent_j_integral",
+    "the energy oracle uses a central difference with h = 0.01 W on the same medium discretisation; its O(h^2) truncation error is not separated from discretisation noise",
+    "one geometry (H/W = 2) and one load level: height sensitivity is covered by the plane-stress anchor"
+  ]
+}

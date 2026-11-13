@@ -1,0 +1,70 @@
+{
+  "rows": [
+    {
+      "level": "medium",
+      "poisson": 0.3,
+      "e_prime_pa": 230769230769.23077,
+      "station_fraction": 0.15243125,
+      "j_j_m2": 10952.256541927194,
+      "k_pa_sqrt_m": 50273689.11635403,
+      "shape_factor": 1.6375900523251379,
+      "reaction_ratio": 1.0000000000003113,
+      "n_elements": 1050
+    },
+    {
+      "level": "medium",
+      "poisson": 0.45,
+      "e_prime_pa": 263322884012.53918,
+      "station_fraction": 0.15243125,
+      "j_j_m2": 9378.668794148318,
+      "k_pa_sqrt_m": 49695252.43998201,
+      "shape_factor": 1.6187483447883282,
+      "reaction_ratio": 0.9999999999997884,
+      "n_elements": 1050
+    },
+    {
+      "level": "fine",
+      "poisson": 0.3,
+      "e_prime_pa": 230769230769.23077,
+      "station_fraction": 0.15869558403072007,
+      "j_j_m2": 11087.59422362234,
+      "k_pa_sqrt_m": 50583352.89466974,
+      "shape_factor": 1.6476768856538315,
+      "reaction_ratio": 0.9999999999997732,
+      "n_elements": 2842,
+      "source": "ladder cache (identical mesh and contour rule)"
+    },
+    {
+      "level": "fine",
+      "poisson": 0.45,
+      "e_prime_pa": 263322884012.53918,
+      "station_fraction": 0.15869558403072007,
+      "j_j_m2": 9607.999360045289,
+      "k_pa_sqrt_m": 50299166.007775486,
+      "shape_factor": 1.6384199238680712,
+      "reaction_ratio": 1.0000000000007354,
+      "n_elements": 2842
+    }
+  ],
+  "spreads": {
+    "medium": 0.011505753537069396,
+    "fine": 0.00561818999001551
+  },
+  "levels": [
+    {
+      "name": "medium",
+      "n_sectors": 48,
+      "first_ring": 0.05,
+      "growth": 1.45
+    },
+    {
+      "name": "fine",
+      "n_sectors": 96,
+      "first_ring": 0.03,
+      "growth": 1.32
+    }
+  ],
+  "plane": "strain",
+  "cg_rtol": 1e-11,
+  "note": "LEFM makes K_I independent of the elastic constants; a mesh-independent E' slip would sit at 1/sqrt(1-nu^2) = +4.83 %, a discretisation artefact shrinks with refinement"
+}
