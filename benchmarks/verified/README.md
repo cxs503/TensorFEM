@@ -83,3 +83,31 @@ Twelve gates (`gates_verified.json`) pass, including the h-refinement orders
 2.03 / 3.84 / 1.90 ≥ 1.5. Report: `docs/fem-structural-benchmarks-in41.md`,
 tests: `tests/test_fem_structural_benchmarks.py`, doc renderer:
 `benchmarks/verified/fem_structural_benchmarks/render_doc.py`.
+
+## CASE-CANTILEVER-TIP shear validity: which beam oracle applies (2026-11)
+
+`fem_cantilever_shear/` repairs a verification debt of the original
+CASE-CANTILEVER-TIP point (`benchmarks/cantilever_tip_deflection.py`). At
+`L/h = 100` the Euler-Bernoulli and Timoshenko oracles differ by 7.8e-05, so
+"agrees with `PL³/(3EI)`" and "agrees with Timoshenko" are the *same* statement
+there and a missing shear degree of freedom is invisible. The anchor turns the
+single point into a slenderness ladder and grades three models of the library
+against the oracle that is valid at each rung.
+
+| model | oracle | behaviour on the ladder |
+|---|---|---|
+| `frame_eb` (cubic Hermite, `frame2d`) | Euler-Bernoulli | exact to round-off; **fails** the Timoshenko oracle at `L/h = 4` (−4.65 %) |
+| `beam_timoshenko` (`advanced_beam`, κ = 5/6) | Timoshenko | exact to round-off on every rung |
+| `solid_hex20` (`hex20`, 3-D continuum) | Timoshenko | −0.41 % … −1.71 % over `L/h = 100…4`; recovers 0.63 of the shear compliance at `L/h = 4` |
+
+The oracles separate by `E/(4κG)(h/L)²`, i.e. 3 % at `L/h = 5.099`: below that
+slenderness Euler-Bernoulli is outside the case-pool tolerance and must not be
+used as the reference. 23 gates, 5 rungs × 2 solid meshes.
+Report: `docs/CASE-CANTILEVER-TIP-shear-validity.md`,
+tests: `tests/test_cantilever_shear_anchor.py`,
+figures: `docs/assets/cantilever_shear/`.
+
+```bash
+OMP_NUM_THREADS=8 PYTHONPATH=src python benchmarks/verified/fem_cantilever_shear/run.py
+PYTHONPATH=src pytest tests/test_cantilever_shear_anchor.py -q
+```

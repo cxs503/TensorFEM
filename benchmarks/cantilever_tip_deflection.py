@@ -6,6 +6,14 @@ Reference: Euler-Bernoulli beam theory (δ = PL³/3EI) and Timoshenko beam theor
 Material: E=200 GPa, ν=0.3.  Load: P=5 N at free end.
 
 Tolerance: <3% relative error vs Euler-Bernoulli analytic.
+
+Slenderness caveat: at ``L/h = 100`` the Euler-Bernoulli and Timoshenko oracles
+differ by only 7.8e-05, so this rung cannot tell the two apart and a missing
+shear degree of freedom passes it.  The thick-section validity domain
+(``L/h = 100 ... 4``, plus a 3-D HEX20 solid and a falsifiable rejection of the
+shear-rigid model at ``L/h = 4``) is graded in
+``benchmarks/verified/fem_cantilever_shear/`` -- see
+``docs/CASE-CANTILEVER-TIP-shear-validity.md``.
 """
 import json
 import math

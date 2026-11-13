@@ -1,0 +1,286 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_cantilever_shear",
+  "title": "CASE-CANTILEVER-TIP shear-validity ladder: slenderness domain of the Euler-Bernoulli vs Timoshenko oracle, graded on beam and 3-D solid models",
+  "mission": "CASE-CANTILEVER-TIP",
+  "generated_at": "2026-11-12T23:30:32+00:00",
+  "criteria": {
+    "case_pool_tolerance": 0.03,
+    "exact_tolerance_nodal": 1e-06,
+    "oracle_separation_min": 0.03,
+    "shear_recovery_min": 0.5,
+    "equilibrium_max": 1e-10
+  },
+  "gates": [
+    {
+      "id": "oracle_energy_selfcheck",
+      "quantity": "symbolic residual of the Castigliano re-derivation of (1) and (2)",
+      "reference": "Castigliano unit-load: delta = int M m/(EI) dx + int V v/(kappa G A) dx",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "machine-derived oracle; no handbook digit is copied"
+    },
+    {
+      "id": "slender_rung_cannot_discriminate",
+      "quantity": "(delta_TI - delta_EB)/delta_EB at L/h = 100",
+      "reference": "equations (1) and (2) evaluated in code",
+      "value": 7.799999999988373e-05,
+      "threshold": 0.001,
+      "operator": "<=",
+      "passed": true,
+      "note": "the original CASE-CANTILEVER-TIP rung: the two oracles differ by 7.80e-03 %, so agreeing with Euler-Bernoulli and with Timoshenko is the same statement there"
+    },
+    {
+      "id": "thick_rung_discriminates",
+      "quantity": "(delta_TI - delta_EB)/delta_EB at L/h = 4",
+      "reference": "equations (1) and (2) evaluated in code",
+      "value": 0.04874999999999985,
+      "threshold": 0.03,
+      "operator": ">=",
+      "passed": true,
+      "note": "oracle separation must exceed the case-pool tolerance, otherwise grading against either reference proves nothing about shear"
+    },
+    {
+      "id": "frame_eb_vs_eb_100",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 100",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 1.3000017728970194e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_100",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 100",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 3.3911198881833803e-13,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_100",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 100, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.0040930965501538045,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 32, 'cross_y': 2, 'cross_z': 2}, 2943 dof, fully clamped root"
+    },
+    {
+      "id": "frame_eb_vs_eb_20",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 20",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 2.088275028160752e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_20",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 20",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 4.226922237907581e-15,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_20",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 20, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.005734659290677428,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 32, 'cross_y': 2, 'cross_z': 2}, 2943 dof, fully clamped root"
+    },
+    {
+      "id": "frame_eb_vs_eb_10",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 10",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 2.088275028160752e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_10",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 10",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 2.6895271196802548e-14,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_10",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 10, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.009192699676457835,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 24, 'cross_y': 3, 'cross_z': 3}, 4152 dof, fully clamped root"
+    },
+    {
+      "id": "frame_eb_vs_eb_5",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 5",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 2.088275028160752e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_5",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 5",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 2.4970715279800936e-14,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_5",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 5, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.0148685516854539,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 30, 'cross_y': 3, 'cross_z': 3}, 5160 dof, fully clamped root"
+    },
+    {
+      "id": "frame_eb_vs_eb_4",
+      "quantity": "frame (Hermite EB) tip deflection vs oracle (1), L/h = 4",
+      "reference": "delta = P L^3/(3 E I)",
+      "value": 6.4362923462751075e-12,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element for a tip load: consistency/BC check, not accuracy"
+    },
+    {
+      "id": "beam_timoshenko_vs_ti_4",
+      "quantity": "Timoshenko element tip deflection vs oracle (2), L/h = 4",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 2.4608376745320107e-14,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodally exact element: consistency check of stiffness, load and BCs"
+    },
+    {
+      "id": "solid_hex20_vs_timoshenko_4",
+      "quantity": "HEX20 solid tip deflection vs oracle (2), L/h = 4, finest mesh",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A), kappa = 5/6",
+      "value": 0.017093956130833643,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "mesh {'axial': 40, 'cross_y': 2, 'cross_z': 2}, 3663 dof, fully clamped root"
+    },
+    {
+      "id": "eb_rejected_by_timoshenko",
+      "quantity": "frame (shear-rigid) error vs oracle (2) at L/h = 4",
+      "reference": "delta = P L^3/(3 E I) + P L/(kappa G A)",
+      "value": 0.046483909422108366,
+      "threshold": 0.03,
+      "operator": ">=",
+      "passed": true,
+      "note": "a gate the shear-rigid model also passes would prove nothing"
+    },
+    {
+      "id": "solid_recovers_shear",
+      "quantity": "shear recovery (delta_solid - delta_EB)/(delta_TI - delta_EB) at L/h = 4",
+      "reference": "0 for any shear-rigid model, 1 for an exact Timoshenko beam",
+      "value": 0.632260789903347,
+      "threshold": 0.5,
+      "operator": ">=",
+      "passed": true,
+      "note": "the 3-D continuum must inherit most of the shear compliance"
+    },
+    {
+      "id": "solid_force_equilibrium",
+      "quantity": "max over all solid levels of |sum R_z - P| / P",
+      "reference": "static force equilibrium of the clamped root reactions",
+      "value": 7.13323163381574e-07,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "independent of deflection: catches load-vector and constraint errors. Threshold is the round-off floor of the dense direct solve (condition number of the slender clamped mesh), not a modelling error."
+    },
+    {
+      "id": "solid_moment_equilibrium",
+      "quantity": "max over all solid levels of |sum z R_x + P L| / (P L)",
+      "reference": "moment equilibrium about the y axis: balancing moment M_y = P L",
+      "value": 5.659435929672441e-07,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "checks that the tip load has zero net moment about its own face centroid"
+    },
+    {
+      "id": "solid_refinement_monotone",
+      "quantity": "worst (|err|_fine - |err|_coarse) over the ladder",
+      "reference": "mesh refinement must not worsen agreement with oracle (2)",
+      "value": -0.0005082049423783645,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "per-rung trend recorded in result.json:ladder[*].solid_hex20_levels"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_cantilever_shear/result.json",
+    "gates": "benchmarks/verified/fem_cantilever_shear/gates_verified.json",
+    "report": "docs/CASE-CANTILEVER-TIP-shear-validity.md",
+    "figures": {
+      "validity_ladder": "docs/assets/cantilever_shear/validity_ladder.png",
+      "normalised_deflection": "docs/assets/cantilever_shear/normalised_deflection.png",
+      "shear_recovery": "docs/assets/cantilever_shear/shear_recovery.png"
+    }
+  },
+  "limitations": [
+    "frame_eb and beam_timoshenko are nodally exact for a tip load, so their gates are consistency checks of stiffness, load vector and boundary conditions, not accuracy or convergence proofs.",
+    "The HEX20 model clamps all three displacement components on the root face; that is stiffer than the idealised built-in of beam theory (no root warping, no Poisson contraction). The measured residual at the rungs where shear is negligible (L/h >= 20) is between -0.40 % and -0.38 % (the solid is stiffer than Euler-Bernoulli there), and it accounts for part of the residual at the thick rung.",
+    "Timoshenko beam theory itself degrades for L/h < 5 (higher-order cross-section deformation, Timoshenko & Goodier, *Theory of Elasticity* 3rd ed. ch. 3); the L/h = 4 rung is at the edge of that validity range and is reported, not claimed as exact.",
+    "kappa = 0.8333 (average-strain, rectangular section). Cowper's refined value 0.8496 for nu = 0.3 changes the shear term by 1.9 %, i.e. the total deflection by 0.09 % at the thick rung - far below the tolerance, so the choice does not move any verdict.",
+    "The 2x2 / 3x3 quadratic cross-section meshes cannot represent the parabolic shear distribution exactly; the refinement trend (shear recovery rising with mesh density) is reported instead of a converged value, and the shear-recovery gate is deliberately loose (>= 0.5) for that reason.",
+    "The tip load is spread uniformly over the end-face nodes (zero net moment), not applied as the exact parabolic shear traction of the Timoshenko solution; the difference is a Saint-Venant local field that decays within ~h of the tip and does not scale with L."
+  ],
+  "summary": {
+    "thick_rung": 4.0,
+    "thin_rung": 100.0,
+    "thick_rung_gap": 0.04874999999999985,
+    "thin_rung_gap": 7.799999999988373e-05,
+    "solid_thick_error": -0.017093956130833643,
+    "solid_thick_recovery": 0.632260789903347,
+    "frame_thick_error_vs_ti": -0.046483909422108366,
+    "crossover_slenderness": 5.099019513592785,
+    "solid_force_residual": 7.13323163381574e-07,
+    "solid_moment_residual": 5.659435929672441e-07,
+    "worst_solid_error": 0.017093956130833643
+  },
+  "oracle_selfcheck": {
+    "method": "Castigliano unit-load: delta = int M m/(EI) + int V v/(kappa G A)",
+    "eb_residual_symbolic": "0",
+    "ti_residual_symbolic": "0",
+    "max_abs_residual": 0.0
+  }
+}
