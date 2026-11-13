@@ -1,0 +1,12 @@
+{
+ "anchor": "fem_inverse_identification",
+ "dpi": 120,
+ "figures": {
+  "inverse_identification_recovery.png": {
+   "bytes": 53952,
+   "sha256": "ad6421a6b2528954a27b4fc29f036ce97a3c18cad5872011e04da3a611f4b2df"
+  }
+ },
+ "renderer": "tools/anchor_figure_rebuild.py",
+ "source": "benchmarks/verified/fem_inverse_identification/result.json"
+}

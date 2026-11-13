@@ -285,9 +285,9 @@
   "failed_gates": [],
   "artifacts": {
     "result_json": "result.json",
-    "profile_png": "winkler_k_sweep_profile.png",
-    "error_png": "winkler_k_sweep_error.png",
-    "beam_png": "winkler_k_sweep_beam.png"
+    "profile_png": "docs/assets/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_profile.png",
+    "error_png": "docs/assets/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_error.png",
+    "beam_png": "docs/assets/verified/fem_winkler_plate_k_sweep/winkler_k_sweep_beam.png"
   },
   "limitations": [
     "Quarter-symmetry plate model: central point load only (no eccentric load).",
