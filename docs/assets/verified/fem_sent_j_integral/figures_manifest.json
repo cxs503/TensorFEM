@@ -1,0 +1,32 @@
+{
+ "anchor": "fem_sent_j_integral",
+ "dpi": 120,
+ "figures": {
+  "sent_convergence.png": {
+   "bytes": 35020,
+   "sha256": "cbcbca4f2d7025bdb95e22f99fde1f0322052c424588a1468fea19dfad11be6d"
+  },
+  "sent_path_independence.png": {
+   "bytes": 30615,
+   "sha256": "751f73d8c909a785f3c2d305e71e6800f1d1d4786b66191d33103d1fef77d456"
+  },
+  "sent_plane_strain_convergence.png": {
+   "bytes": 33892,
+   "sha256": "aec0679c23a9e9625d027948a570eb4b9a56de558c79cb425008285451fb5065"
+  },
+  "sent_plane_strain_path_independence.png": {
+   "bytes": 35888,
+   "sha256": "e635234955ea643a9cc960cf5534e6ed0f39e2cf90fbb4bc6725b3e3332f2aa6"
+  },
+  "sent_plane_strain_shape_factor.png": {
+   "bytes": 38823,
+   "sha256": "c98a32dc19f42cbea8fbff3a5ea96f6d5722776782891cf7abe822102a4a8a35"
+  },
+  "sent_shape_factor.png": {
+   "bytes": 40970,
+   "sha256": "5e06576b20d160c1cbb3919e02e31806971747a66f1e99976497a1964bcec376"
+  }
+ },
+ "renderer": "tools/anchor_figure_rebuild.py",
+ "source": "benchmarks/verified/fem_sent_j_integral/result.json"
+}

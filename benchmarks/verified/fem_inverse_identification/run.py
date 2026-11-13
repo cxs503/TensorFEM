@@ -100,7 +100,11 @@ def artifact_paths() -> dict[str, Path]:
     return {
         "result": _artifact("result.json"),
         "gates": _artifact("gates_verified.json"),
-        "figure": _artifact("inverse_identification_recovery.png"),
+        # The figure must land where the push gate carries binaries (docs/);
+        # a re-run used to rewrite the certificate to name a benchmarks/ path
+        # that tp_pusher.py strips, which re-opened E_ARTIFACT_MISSING.
+        "figure": HERE.parents[2] / "docs" / "assets" / "verified"
+        / "fem_inverse_identification" / "inverse_identification_recovery.png",
     }
 
 #: thresholds declared *before* the run (3 % is the platform standard for a

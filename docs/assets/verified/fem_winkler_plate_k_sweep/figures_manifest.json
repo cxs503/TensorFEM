@@ -1,0 +1,20 @@
+{
+ "anchor": "fem_winkler_plate_k_sweep",
+ "dpi": 120,
+ "figures": {
+  "winkler_k_sweep_beam.png": {
+   "bytes": 74524,
+   "sha256": "0af71a78e89a4649872327a7f9bea3cc3b5f85eba6025625d8315a9ee175d336"
+  },
+  "winkler_k_sweep_error.png": {
+   "bytes": 43652,
+   "sha256": "79d1e72f7987e2465c48e0590d04627e70fb4a1fb25ae89fca1a594479e6a648"
+  },
+  "winkler_k_sweep_profile.png": {
+   "bytes": 49846,
+   "sha256": "0de66f60b8a9707d5e9c90faa3e4d03e0f6195210a80025a4f58c6e1065e2c75"
+  }
+ },
+ "renderer": "tools/anchor_figure_rebuild.py",
+ "source": "benchmarks/verified/fem_winkler_plate_k_sweep/result.json"
+}
