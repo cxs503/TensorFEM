@@ -38,6 +38,11 @@ TRACKED_SOURCES = (
     "tests/test_m14835_cohesive3d_public_api.py",
     "api/public-api-v1.json",
     "src/tensorfem/public_api_manifest.json",
+    "api/public-api-manifest.schema.json",
+    "scripts/audit_public_api.py",
+    "tests/test_public_api_manifest_gate.py",
+    "scripts/m17947_gate_baseline_compare.py",
+    "artifacts/m17947_public_api_gate_baseline.json",
 )
 
 
@@ -79,7 +84,7 @@ def build() -> dict:
 
     payload = {
         "mission": "m14835",
-        "round": "reopen-1 (tracked as m17421)",
+        "round": "reopen-2 (tracked as m17947)",
         "schema": "tensorfem.mission-evidence/1",
         "package_version": tensorfem.__version__,
         "commit": git("rev-parse", "HEAD"),

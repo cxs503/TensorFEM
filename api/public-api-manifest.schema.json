@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tensorfem.dev/schemas/public-api-manifest-1.0.json",
+  "title": "TensorFEM public API manifest",
+  "description": "Machine-readable contract for api/public-api-v1.json and its packaged twin src/tensorfem/public_api_manifest.json. scripts/audit_public_api.py enforces the same rules without requiring a JSON Schema runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "package_version", "policy", "entries"],
+  "properties": {
+    "schema": {
+      "const": "tensorfem.public-api-manifest/1.0"
+    },
+    "package_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stable", "beta", "experimental", "internal_candidate"],
+      "properties": {
+        "stable": {"type": "string", "minLength": 1},
+        "beta": {"type": "string", "minLength": 1},
+        "experimental": {"type": "string", "minLength": 1},
+        "internal_candidate": {"type": "string", "minLength": 1}
+      }
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "module", "object", "stability", "introduced"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"},
+          "module": {"type": "string", "pattern": "^tensorfem(\\.[A-Za-z_][A-Za-z0-9_]*)*$"},
+          "object": {"type": "string", "minLength": 1},
+          "stability": {
+            "enum": ["stable", "beta", "experimental", "internal_candidate"]
+          },
+          "introduced": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$"}
+        }
+      }
+    }
+  }
+}
