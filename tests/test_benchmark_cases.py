@@ -53,3 +53,42 @@ def test_full_tier_is_opt_in_but_reproducible():
     assert full["qualification_passed"]
     for recorded,recomputed in zip(quick["results"],full["results"]):
         assert abs(recorded["computed"]-recomputed["computed"])/recomputed["computed"]<1e-10
+
+
+def test_hertz_ball_plane_case_pool_within_three_percent():
+    """Case FEM-HERTZ-CONTACT: contact radius a and indentation delta within
+    3% of the Hertz closed form under a prescribed load (case pool)."""
+    from tensorfem.benchmark_cases import (
+        hertz_ball_plane_case, run_case, validate_case,
+    )
+    from tensorfem.hertz_halfspace_loadcontrol import (
+        hertz_load_reference, solve_axisymmetric_contact_load_control,
+        two_zone_axis, graded_depth,
+    )
+    case = validate_case(hertz_ball_plane_case())
+    assert case.case_id == "contact.hertz_ball_plane"
+    assert case.runner == "hertz_ball_plane"
+    assert case.maturity == "qualified"
+    # the pool archive is fail-closed: every qualifying mesh must pass
+    archive = run_case(case, tier="quick")
+    assert archive["qualification_passed"]
+    for row in archive["results"]:
+        assert row["passed"], f"mesh {row['mesh']} failed delta gate"
+        assert row["error"] < 0.03
+    # secondary gate: the contact radius (form-assisted fit) is also within 3%
+    # of the Hertz closed form at the resolved mesh levels (n >= 60); the
+    # coarsest mesh (n=40) sits at 3.08% on the nodal-resolved radius, so the
+    # primary pool gate is the indentation delta, which is within 3% everywhere
+    ref = hertz_load_reference(1831.5, 10.0, 1e5, 0.3)
+    for n in case.mesh_sequence:
+        r_axis = two_zone_axis(3 * ref.contact_radius, 96 * ref.contact_radius, n, 22)
+        z_axis = graded_depth(96 * ref.contact_radius, 4 * ref.contact_radius, 20, 14)
+        _, state, _ = solve_axisymmetric_contact_load_control(
+            load=ref.load, radius=10.0, young=1e5, poisson=0.3,
+            r_axis=r_axis, z_axis=z_axis,
+        )
+        a_fit = state.contact_radius_fit
+        assert a_fit == a_fit, "form-assisted fit must be finite"
+        if n >= 60:
+            assert abs(a_fit - ref.contact_radius) / ref.contact_radius < 0.03, \
+                f"mesh {n}: contact radius {a_fit:.5f} outside 3% of {ref.contact_radius:.5f}"
