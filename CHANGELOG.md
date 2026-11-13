@@ -1,5 +1,33 @@
 ## Unreleased
 
+### CASE-CANTILEVER-TIP taper axis: the anchor's 3 % criterion on a non-prismatic member
+- **New verification** `benchmarks/verified/fem_cantilever_taper/` + module
+  `src/tensorfem/tapered_cantilever.py` + regression `tests/test_cantilever_taper.py` (21 tests):
+  the case-pool anchor is graded on a *linearly tapered* cantilever `h(x) = h0 (1 - c x/L)`, whose
+  flexibility is an integral of `1/I(x)` rather than an algebraic expression.
+- **Closed-form oracles, three independent routes**: `delta_bend = (PL^3/EI0) B(c)` with
+  `B(c) = [-c - c^2/2 - ln(1-c)]/c^3` and `delta_shear = (PL/(kappa G A0)) S(c)`,
+  `S(c) = -ln(1-c)/c`; checked against a power series, a sympy re-derivation and adaptive
+  quadrature (max residual 6e-15 / 5.5e-13 / 6.1e-15), with the `c -> 0` prismatic limits
+  recovering `PL^3/3EI` and `PL/(kappa G A)` to 1e-9.
+- **Numerical trap fixed while writing it**: the closed form loses all digits for `c < 1e-4`
+  (numerator `~c^3` against terms `~c`), so `bending_factor`/`shear_factor` switch to their
+  convergent series below that threshold; a regression test asserts the naive expression fails and
+  the branch does not.
+- **Measured orders, not assumed**: a lumped midpoint `EI` per element is 2nd order (measured
+  2.00/2.02) while exactly integrating `int B^T EI B dx` is 4th order (3.97/3.79); at `c = 0.5`,
+  `n = 32` the midpoint error is ~5e3x the Gauss error. 3 % is met from 4 (c=0.5) / 8 (c=0.75)
+  elements onward.
+- **HEX20 graded solid**: every rung (nx = 8...32, c = 0...0.75) inside 3 % (worst 1.78 %
+  coarse, 0.91 % fine), geometry exact (`|z| = h(x)/2` to 1.6e-16, tip area exact). The residual
+  that survives refinement is attributed *by measurement*, not prose: freeing the clamped root
+  laterally (`u_x = 0` only) cuts it from -0.68 % to -0.13 % at c = 0.5.
+- **Wedge limit**: `B(c) -> -ln(1-c)`, i.e. a knife-edge taper has logarithmically divergent tip
+  deflection (23x amplification at c = 0.9999); `taper = 1` is rejected.
+- **Artifacts**: `docs/CASE-CANTILEVER-TIP-taper-validity.md`,
+  `benchmarks/verified/fem_cantilever_taper/{result.json,gates_verified.json}` (19/19 gates),
+  `docs/assets/cantilever_taper/*.png`.
+
 ### W26 CSR ULS anchor recheck: every transcribed value re-located in the fetched IACS PDFs
 - **New recheck** `benchmarks/hull_girder_uls/recheck_csr_uls_anchor.py`: re-fetches the three
   anchor documents, recomputes their sha256 (3/3 reproduce), re-extracts the whole 820-page CSR and

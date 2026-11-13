@@ -1,0 +1,207 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_cantilever_taper",
+  "title": "CASE-CANTILEVER-TIP taper axis: linearly tapered cantilever vs closed-form flexibility oracle",
+  "mission": "CASE-CANTILEVER-TIP",
+  "generated_at": "2026-11-13T13:11:43+00:00",
+  "criteria": {
+    "case_pool_tip_deflection": "< 3 % vs Euler-Bernoulli / Timoshenko",
+    "oracle_self_consistency": "< 1e-10",
+    "geometry": "surface exact at every axial station"
+  },
+  "gates": [
+    {
+      "id": "taper_oracle_quadrature",
+      "quantity": "closed form vs adaptive quadrature (worst taper)",
+      "reference": "int (L-x)^2/I(x) dx by scipy.integrate.quad",
+      "value": 6.062643249244206e-15,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "taper_oracle_series",
+      "quantity": "closed form vs power series (worst taper)",
+      "reference": "sum_k [(k+2)(k+1)/(2(k+3)) - k/2] c^k",
+      "value": 6.005106438572907e-15,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "taper_oracle_sympy",
+      "quantity": "closed form vs sympy re-derivation (worst taper)",
+      "reference": "sympy integrate (1-t)^2/(1-ct)^3",
+      "value": 5.484663880563255e-13,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "taper_prismatic_bending_limit",
+      "quantity": "3B(c->0) - 1",
+      "reference": "delta_EB = PL^3/(3EI)",
+      "value": 7.500000620552782e-10,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "taper_prismatic_shear_limit",
+      "quantity": "S(c->0) - 1",
+      "reference": "delta_shear = PL/(kappa G A)",
+      "value": 5.000000413701855e-10,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "frame_midpoint_order",
+      "quantity": "observed order, midpoint EI, c=0.5",
+      "reference": "Hermite beam with O(h^2) element quadrature",
+      "value": 2.0043445275675302,
+      "threshold": 1.8,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "frame_midpoint_order_upper",
+      "quantity": "observed order, midpoint EI, c=0.5",
+      "reference": "Hermite beam with O(h^2) element quadrature",
+      "value": 2.0043445275675302,
+      "threshold": 2.2,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "frame_gauss_order",
+      "quantity": "observed order, Gauss EI, c=0.5",
+      "reference": "Hermite beam with exact element stiffness",
+      "value": 3.973397479824825,
+      "threshold": 3.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "frame_gate_3pct",
+      "quantity": "midpoint EI, n=16, c=0.75",
+      "reference": "delta_bend closed form",
+      "value": 0.003952707276825063,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "frame_elements_needed",
+      "quantity": "worst taper: fewest midpoint-EI elements inside 3 %",
+      "reference": "delta_bend closed form",
+      "value": 8.0,
+      "threshold": 16.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "solid_gate_3pct_finest",
+      "quantity": "HEX20 nx=32, worst taper",
+      "reference": "delta_TI closed form",
+      "value": 0.009115388177499684,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "solid_gate_3pct_all",
+      "quantity": "HEX20 all rungs, worst taper",
+      "reference": "delta_TI closed form",
+      "value": 0.017806246780399215,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "solid_error_monotone",
+      "quantity": "1 if the HEX20 error falls with nx for every taper",
+      "reference": "refinement ladder",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "root_bc_attribution",
+      "quantity": "1 if lateral_free is closer than clamp_all everywhere",
+      "reference": "root face u_x = 0 only",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "geometry_surface",
+      "quantity": "mesh surface vs z = +-h(x)/2 (relative)",
+      "reference": "h(x) = h0(1 - c x/L)",
+      "value": 1.586032892321652e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "geometry_area",
+      "quantity": "tip section area error",
+      "reference": "b * h_tip",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "geometry_prismatic_surface",
+      "quantity": "prismatic control surface deviation",
+      "reference": "z = +-h0/2",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "wedge_rejected",
+      "quantity": "1 if taper = 1 is rejected (log-divergent deflection)",
+      "reference": "B(c) -> -ln(1-c)",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "wedge_identity",
+      "quantity": "max |B(c)c^3 + c + c^2/2 + ln(1-c)| / B(c)",
+      "reference": "B(c)c^3 = -c - c^2/2 - ln(1-c)",
+      "value": 8.113118275681471e-17,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_cantilever_taper/result.json",
+    "doc": "docs/CASE-CANTILEVER-TIP-taper-validity.md",
+    "figures": [
+      "docs/assets/cantilever_taper/frame_order.png",
+      "docs/assets/cantilever_taper/solid_ladder.png",
+      "docs/assets/cantilever_taper/amplification.png",
+      "docs/assets/cantilever_taper/field_contour.png"
+    ],
+    "test": "tests/test_cantilever_taper.py"
+  },
+  "limitations": [
+    "The oracle is beam theory (Euler-Bernoulli + Timoshenko shear). For a taper the exact 3-D elasticity solution is not available in closed form (the Airy cantilever field of the prismatic route needs a constant section), so the solid is graded against the beam oracle: agreement at the cited level certifies the model against beam kinematics, not against elasticity.",
+    "Uniform traction on the tip face (consistent 8-node load) is used instead of the parabolic Saint-Venant shear distribution. The resulting tip-region error is O(h/L)^2 and is not separated here from the root effect; at L/h = 10 it sits below the reported residual.",
+    "The clamped root forbids lateral contraction. The root-BC control measures that cost explicitly: it is a modelling choice, not mesh error, and it does not shrink under refinement -- which is why the solid ladder plateaus instead of vanishing.",
+    "kappa = 5/6 (Timoshenko) is used for the oracle. For a strip in plane stress the equivalent elasticity factor is 2/3 (see benchmarks/verified/fem_cantilever_solid_convergence); at L/h = 10 the difference is ~0.1 % of the tip deflection.",
+    "A taper ratio of 1 (knife edge) is excluded: the bending flexibility diverges logarithmically and no linear beam model is meaningful there.",
+    "No experimental reference is used: this is a code-vs-closed-form verification study, the strongest available reference for this geometry family."
+  ]
+}
