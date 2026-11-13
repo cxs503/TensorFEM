@@ -13,7 +13,9 @@ repair non-reversible-by-accident:
 * the provenance stamp must match the ``result.json`` on disk (a re-run that
   rewrites the numbers without re-rendering the figures is caught here);
 * re-rendering from the dump must reproduce the committed PNG pixels;
-* the anchor must audit clean, i.e. carry no hard certificate defect.
+* the anchor must audit clean, i.e. carry no hard certificate defect;
+* every figure must live under ``docs/``: the push gate drops ``*.png`` outside
+  ``docs/``, so a certificate naming ``<anchor>/<name>.png`` is unsatisfiable.
 """
 
 from __future__ import annotations
@@ -52,6 +54,12 @@ def _tracked(rel: str) -> bool:
     return done.returncode == 0
 
 
+def _resolve(name: str) -> Path:
+    """Certificates name repo-relative paths for figures, anchor-relative otherwise."""
+    path = Path(name)
+    return path if path.is_absolute() else (ROOT / path if "/" in name else ANCHOR / path)
+
+
 def _named_artifacts() -> list[str]:
     payload = json.loads((ANCHOR / "gates_verified.json").read_text())
     names: list[str] = []
@@ -66,13 +74,27 @@ def _named_artifacts() -> list[str]:
 def test_every_named_artifact_exists_and_is_tracked():
     names = _named_artifacts()
     assert names, "certificate names no artifacts at all"
-    missing = [name for name in names if not (ANCHOR / name).exists()]
+    missing = [name for name in names if not _resolve(name).exists()]
     assert missing == [], f"certificate names artifacts that are not on disk: {missing}"
     untracked = [
         name for name in names
-        if not _tracked(str((ANCHOR / name).relative_to(ROOT)))
+        if not _tracked(str(_resolve(name).relative_to(ROOT)))
     ]
     assert untracked == [], f"certificate names artifacts that no commit contains: {untracked}"
+
+
+def test_every_figure_artifact_lives_under_docs():
+    """Push-gate survivability: tp_pusher drops ``*.png`` outside ``docs/``.
+
+    The original repair committed the PNGs next to the anchor; no push ever carried
+    them (0 tracked PNGs under ``benchmarks/`` on this checkout, 484 under ``docs/``),
+    so the certificate stayed contradicted while every local test that only touched
+    ``result.json`` stayed green.  The figures now render into ``docs/assets/verified/``.
+    """
+    figures = [name for name in _named_artifacts() if name.endswith(".png")]
+    assert figures, "certificate names no figures"
+    outside = [name for name in figures if not _resolve(name).is_relative_to(ROOT / "docs")]
+    assert outside == [], f"figures outside docs/ will be dropped by the push gate: {outside}"
 
 
 def test_provenance_stamp_matches_the_result_json_on_disk():
@@ -90,11 +112,18 @@ def test_provenance_stamp_matches_the_result_json_on_disk():
 def test_provenance_lists_every_rendered_figure_with_its_hash():
     stamp = json.loads((ANCHOR / "figure_provenance.json").read_text())
     for name, digest in stamp["figures"].items():
-        path = ANCHOR / name
+        path = _resolve(name)
         assert path.exists(), f"provenance names a figure that is missing: {name}"
         assert hashlib.sha256(path.read_bytes()).hexdigest() == digest, (
             f"{name} was edited or re-rendered without refreshing figure_provenance.json"
         )
+
+
+def stamp_path(name: str) -> str:
+    stamp = json.loads((ANCHOR / "figure_provenance.json").read_text())
+    matches = [key for key in stamp["figures"] if key.endswith("/" + name) or key == name]
+    assert len(matches) == 1, f"provenance does not name {name} exactly once: {matches}"
+    return matches[0]
 
 
 def test_rerender_from_dump_reproduces_the_committed_pixels(tmp_path):
@@ -105,7 +134,7 @@ def test_rerender_from_dump_reproduces_the_committed_pixels(tmp_path):
     )
     assert {p.name for p in written} == set(driver.FIGURE_CAPTIONS)
     for path in written:
-        committed = mpimg.imread(ANCHOR / path.name)
+        committed = mpimg.imread(_resolve(stamp_path(path.name)))
         rebuilt = mpimg.imread(path)
         assert committed.shape == rebuilt.shape, f"{path.name}: shape changed"
         assert np.array_equal(committed, rebuilt), (
@@ -117,6 +146,9 @@ def test_certificate_figure_is_among_the_rendered_figures():
     driver = _load_driver()
     assert driver.CERTIFICATE_FIGURE == "shell_modal_audit.png"
     assert driver.CERTIFICATE_FIGURE in driver.FIGURE_CAPTIONS
+    assert driver.FIGURE_DIR.is_relative_to(driver.REPO_ROOT / "docs"), (
+        "FIGURE_DIR must stay under docs/ or the push gate drops the figures"
+    )
 
 
 def test_anchor_audits_clean():
