@@ -428,3 +428,9 @@ from .cook_xval import (
     generate_convergence_plot,
     generate_error_plot,
 )
+
+# --- implicit IBM + Aitken relaxation (XVAL-FEM-IMPLICIT-IBM-AITKEN-RELAXATION) ---
+from .ibm_aitken_implicit import (  # noqa: F401,E402
+    IBMInterface, AitkenRelaxation, CorotationalBeam2D, LBMFluid2D,
+    ImplicitIBMFSI, cantilever_free_vibration, solve as solve_ibm_aitken_fsi,
+)
