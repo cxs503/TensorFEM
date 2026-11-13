@@ -79,16 +79,19 @@ correctly and produces physically reasonable results.
 
 ## Artifacts and provenance
 
-The certificate (`gates_verified.json`) names four figures that were missing from
-every commit until the m16923 repair: `tests/test_verified_anchor_certificates.py`
-reported the anchor as unregistered debt and the fail-closed gate was red. They are
-now committed together with `figure_provenance.json`, which stamps each PNG with
-the sha256 of the `result.json` it was rendered from:
+The certificate (`gates_verified.json`) names four figures. They live under
+`docs/assets/verified/fem_shell_modal/`, **not** next to this README: the platform push
+harness strips every `*.png` outside `docs/`, so the m16923 repair — which committed
+them here — never reached GitHub and the anchor stayed contradicted while every local
+test passed (see `docs/fem-anchor-artifact-debt-triage-errata.md`). Repo-relative
+names plus `figure_provenance.json` (sha256 of the `result.json` each PNG renders
+from) make the chain checkable and gate-safe:
 
     PYTHONPATH=src python benchmarks/verified/fem_shell_modal/run_verification.py --from-dump
     PYTHONPATH=src python -m pytest tests/test_shell_modal_anchor_certificate.py -q
 
-`--from-dump` runs **no eigensolve**: it re-renders `beam_convergence.png`,
+`--from-dump` runs **no eigensolve** and writes into `docs/assets/verified/fem_shell_modal/`:
+it re-renders `beam_convergence.png`,
 `plate_convergence.png`, `shell_fem_vs_dmv.png` and `shell_modal_audit.png` from the
 committed `result.json` and refreshes the stamp. The verdict is unchanged and stays
 FAIL (G3 50.36 % vs a 15 % criterion, G4 eight rotation-only mechanisms in the first
