@@ -1,5 +1,33 @@
 ## Unreleased
 
+### W26 CSR ULS anchor recheck: every transcribed value re-located in the fetched IACS PDFs
+- **New recheck** `benchmarks/hull_girder_uls/recheck_csr_uls_anchor.py`: re-fetches the three
+  anchor documents, recomputes their sha256 (3/3 reproduce), re-extracts the whole 820-page CSR and
+  re-localises all 19 transcriptions.  The page offset is derived from the running headers
+  (printed = PDF page - 4, 383/383 votes), so the anchor's page numbers are checked rather than
+  assumed: 0 entries moved, 0 quotes absent.  Result: six ULS criteria 100 % verifiable
+  (4 verbatim, 2 restatements at cell/bullet granularity), 14/14 coefficient groups traced to a
+  printed token.
+- **Table 2 read at coordinate level**: `gamma_S`/`gamma_W` were the only values carried without a
+  verbatim quote (caption-only).  The text-showing operators on the cited page are regrouped into
+  rows by `y` and ordered by `x`, reproducing `1.0/1.2` and `1.0/1.3` at the anchor's own
+  coordinates (x = 352.44 / 396.6, y = 699.32 / 682.82).
+- **Text-layer defects recorded instead of inferred**: UR S7 prints `cn = 10.75 - ...` but the layer
+  yields `75.10`, and UR S11 yields `10190` / `107.0110` for the wave-moment coefficients.  Those
+  two groups are confirmed through the CSR printing of the same constants and marked
+  `PASS_CROSS_DOCUMENT`; no value is filled from memory.
+- **Smith baseline recomputed**: `M_u` for the two worst-utilisation cases re-solved from scratch
+  with the scan's own discretisation (`strips = max(FIBRE_LEVELS)`, `steps = max(STEP_LEVELS)`)
+  reproduces the stored capacity exactly (relative difference 0).
+- **Quantified transcription gap**: the `f_beta` quote condenses four printed load-case bullets
+  (1.05 HSM/FSM, 0.8 BSR/BSP, 1.0 HSA/OST/OSA); applying the alternatives flips 2 verdicts at
+  `f_beta = 1.0` and 6 at `0.8`, so the anchor's uniform 1.05 is now a declared sensitivity.
+- **Artifact** `papers/artifacts/w26/hull-girder-ultimate-strength/`: `csr_uls_recheck.json`
+  (12 self-checks, `verify_artifact`), generated README (six elements, no hand-typed numbers),
+  three figures (`make_recheck_figures.py`).  `tests/test_csr_uls_recheck.py` (15 tests) locks the
+  normalisation ladder, the garbling detector, the table row grouping and rejects a tampered
+  artifact.
+
 ### 3-D cohesive evidence artifact: provenance + reproducibility gate (the artifact a re-run can no longer fake)
 - **Defect fix** `benchmarks/cohesive3d_verification.json` recorded only its numbers: no source
   identity, no way to tell whether the file still described the checked-out code. Re-running
