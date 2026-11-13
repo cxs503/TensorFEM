@@ -123,13 +123,13 @@ def aitken_scalar_study(gains=(1.5, 2.5, 4.0), tol=1e-10, max_it=200):
         omega_star = 1.0 / (1.0 - g)
         for mode in ("aitken", "fixed1", "fixed_opt"):
             ait = AitkenRelaxation(relax_max=5.0, relax0=1.0)
-            u, u_km1, r_km1 = 0.0, 0.0, None
+            u, r_km1 = 0.0, None
             resid = []
             omega = 1.0
             it = 0
             for it in range(1, max_it + 1):
                 u_new = g * u + b
-                r = u_new - u_km1
+                r = u_new - u
                 res = abs(r)
                 resid.append(res)
                 if res < tol:
@@ -147,9 +147,8 @@ def aitken_scalar_study(gains=(1.5, 2.5, 4.0), tol=1e-10, max_it=200):
                     omega = 1.0
                 else:
                     omega = omega_star
+                u = u + omega * (u_new - u)
                 r_km1 = r
-                u_km1 = u_new
-                u = u_km1 + omega * (u_new - u_km1)
             converged = it < max_it and resid[-1] < tol
             rows.append({"gain": g, "mode": mode, "iterations": it,
                          "converged": bool(converged),
@@ -170,7 +169,7 @@ def structure_checks(n_elements=10, dt=5.0e-3, n_steps=800, amplitude=0.02):
     beam = CorotationalBeam2D(n_elements=n_elements, props=props)
     f_eig = beam_natural_frequencies(beam, n_modes=2)
     f_analytic = (1.87510407 ** 2) / (2.0 * math.pi) * math.sqrt(
-        props.E * props.I / (props.rho * props.A * props.length ** 4))
+        props.E * props.I / (props.rho * props.length ** 4))
     vac = cantilever_free_vibration(n_steps=n_steps, n_elements=n_elements, dt=dt,
                                     amplitude=amplitude, fluid_rho=0.0)
     return {
