@@ -121,15 +121,15 @@ def test_aitken_converges_where_unit_relaxation_diverges():
 
     def run(use_aitken):
         ait = AitkenRelaxation(relax_max=1.0e6, relax0=1.0)
-        u, u_km1, r_km1, omega = 0.0, 0.0, None, 1.0
+        u, r_km1, omega = 0.0, None, 1.0
         for it in range(1, 200):
             u_new = g * u + b
-            r = u_new - u_km1
+            r = u_new - u
             if abs(r) < tol:
                 return it, True
             omega = ait.omega_for(r_km1, r) if (use_aitken and it >= 2) else 1.0
-            r_km1, u_km1 = r, u_new
-            u = u_km1 + omega * (u_new - u_km1)
+            u = u + omega * (u_new - u)
+            r_km1 = r
         return 200, False
 
     assert run(False)[1] is False
