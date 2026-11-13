@@ -1,0 +1,211 @@
+{
+  "anchor": "fem_sent_plane_strain",
+  "title": "SENT plate at a/W = 0.3 in plane strain: K_I from the J-integral against two handbook fits",
+  "mission": "CASE-FEM-JINTEGRAL-EDGE-CRACK",
+  "generated_at": "2026-11-12T23:43:11+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64"
+  },
+  "setting": {
+    "width_m": 0.1,
+    "a_over_w": 0.3,
+    "height_over_width": 2.0,
+    "sigma_pa": 100000000.0,
+    "young_pa": 210000000000.0,
+    "poisson": 0.3,
+    "plane": "strain",
+    "e_prime_pa": 230769230769.23077,
+    "thickness_m": 1.0,
+    "contour_fractions": [
+      0.06,
+      0.09,
+      0.12,
+      0.15,
+      0.18,
+      0.22,
+      0.27,
+      0.33
+    ],
+    "canonical_contour_fraction": 0.15,
+    "levels": [
+      {
+        "name": "coarse",
+        "n_sectors": 24,
+        "first_ring": 0.08,
+        "growth": 1.6
+      },
+      {
+        "name": "medium",
+        "n_sectors": 48,
+        "first_ring": 0.05,
+        "growth": 1.45
+      },
+      {
+        "name": "fine",
+        "n_sectors": 96,
+        "first_ring": 0.03,
+        "growth": 1.32
+      }
+    ],
+    "quarter_point": true
+  },
+  "reference": {
+    "a_over_w": 0.3,
+    "crack_length_m": 0.03,
+    "shape_factor_gs": 1.6599190000000006,
+    "shape_factor_closed_form": 1.6551132315836674,
+    "shape_factor_spread": -0.002895182485611151,
+    "k_gs_pa_sqrt_m": 50959183.37183483,
+    "e_prime_pa": 230769230769.23077
+  },
+  "ladder": [
+    {
+      "level": "coarse",
+      "n_elements": 390,
+      "n_nodes": 823,
+      "n_stations": 9,
+      "shape_factor": 1.627111074524969,
+      "rel_error_vs_gs": -0.0197647749528932,
+      "rel_error_vs_closed_form": -0.016918574828807875,
+      "k_pa_sqrt_m": 49951986.5807073,
+      "contour_station_fraction": 0.128,
+      "path_spread": 0.0016961217806149493,
+      "reaction_ratio": 1.0000000000001181
+    },
+    {
+      "level": "medium",
+      "n_elements": 1050,
+      "n_nodes": 2173,
+      "n_stations": 12,
+      "shape_factor": 1.63759005232537,
+      "rel_error_vs_gs": -0.013451829682430633,
+      "rel_error_vs_closed_form": -0.01058729936049796,
+      "k_pa_sqrt_m": 50273689.116361156,
+      "contour_station_fraction": 0.15243125,
+      "path_spread": 0.0019771058918842716,
+      "reaction_ratio": 0.9999999999999756
+    },
+    {
+      "level": "fine",
+      "n_elements": 2842,
+      "n_nodes": 5813,
+      "n_stations": 16,
+      "shape_factor": 1.6476768856538315,
+      "rel_error_vs_gs": -0.007375127549096671,
+      "rel_error_vs_closed_form": -0.004492952982268483,
+      "k_pa_sqrt_m": 50583352.89466974,
+      "contour_station_fraction": 0.15869558403072007,
+      "path_spread": 0.001638501021470177,
+      "reaction_ratio": 0.9999999999997732
+    }
+  ],
+  "gci": {
+    "observed_order": 0.055024667977895944,
+    "gci_fine": 0.19683465170921122,
+    "converging": true,
+    "relative_change": 0.006121851569495647
+  },
+  "contour_spread_fine": 0.001638501021470177,
+  "control_without_quarter_point": {
+    "quarter_point": false,
+    "level": "coarse",
+    "n_elements": 390,
+    "shape_factor": 1.6175868581936197,
+    "rel_error_vs_gs": -0.025502534645594724
+  },
+  "material_invariance": {
+    "rows": [
+      {
+        "level": "medium",
+        "poisson": 0.3,
+        "e_prime_pa": 230769230769.23077,
+        "station_fraction": 0.15243125,
+        "j_j_m2": 10952.256541927194,
+        "k_pa_sqrt_m": 50273689.11635403,
+        "shape_factor": 1.6375900523251379,
+        "reaction_ratio": 1.0000000000003113,
+        "n_elements": 1050
+      },
+      {
+        "level": "medium",
+        "poisson": 0.45,
+        "e_prime_pa": 263322884012.53918,
+        "station_fraction": 0.15243125,
+        "j_j_m2": 9378.668794148318,
+        "k_pa_sqrt_m": 49695252.43998201,
+        "shape_factor": 1.6187483447883282,
+        "reaction_ratio": 0.9999999999997884,
+        "n_elements": 1050
+      },
+      {
+        "level": "fine",
+        "poisson": 0.3,
+        "e_prime_pa": 230769230769.23077,
+        "station_fraction": 0.15869558403072007,
+        "j_j_m2": 11087.59422362234,
+        "k_pa_sqrt_m": 50583352.89466974,
+        "shape_factor": 1.6476768856538315,
+        "reaction_ratio": 0.9999999999997732,
+        "n_elements": 2842,
+        "source": "ladder cache (identical mesh and contour rule)"
+      },
+      {
+        "level": "fine",
+        "poisson": 0.45,
+        "e_prime_pa": 263322884012.53918,
+        "station_fraction": 0.15869558403072007,
+        "j_j_m2": 9607.999360045289,
+        "k_pa_sqrt_m": 50299166.007775486,
+        "shape_factor": 1.6384199238680712,
+        "reaction_ratio": 1.0000000000007354,
+        "n_elements": 2842
+      }
+    ],
+    "spread_fine": 0.00561818999001551,
+    "spread_by_level": {
+      "medium": 0.011505753537069396,
+      "fine": 0.00561818999001551
+    }
+  },
+  "energy_oracle": {
+    "a_over_w": 0.3,
+    "step_m": 0.001,
+    "mirror_factor": 2.0,
+    "potential_low": -488.08960525816326,
+    "potential_high": -499.3166891534295,
+    "energy_release_rate": 11227.083895266218,
+    "k_energy_pa_sqrt_m": 50900545.3241142,
+    "clapeyron_ratio_low": 2.000000000000251,
+    "clapeyron_ratio_high": 1.9999999999999025,
+    "reaction_ratio_low": 0.9999999999999524,
+    "reaction_ratio_high": 1.0000000000000346,
+    "level": {
+      "name": "medium",
+      "n_sectors": 48,
+      "first_ring": 0.05,
+      "growth": 1.45
+    },
+    "plane": "strain"
+  },
+  "energy_rel_error_vs_j": 0.006270688107705222,
+  "energy_rel_error_vs_handbook": -0.001150686566006379,
+  "gates_summary": {
+    "passed": false,
+    "failed_gates": [
+      "gci_fine",
+      "material_invariance"
+    ]
+  },
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "sent_plane_strain_convergence.png": "|K_FEM - K_GS| / K_GS per refinement level, with the 5 % case and 3 % mission lines.",
+    "sent_plane_strain_paths.png": "Recovered F(a/W) along eight fan lines for the three levels (path independence).",
+    "sent_plane_strain_handbook.png": "Recovered F against the two independent handbook fits over a/W in [0.2, 0.5].",
+    "sent_plane_strain_nu.png": "F at nu = 0.30 versus nu = 0.45 (LEFM material invariance) with J quoted separately.",
+    "sent_plane_strain_energy.png": "K_J versus the global energy-release oracle and the handbook value.",
+    "sent_plane_strain_ligament.png": "sigma_yy along the ligament ahead of the tip against the r^-1/2 singular form."
+  }
+}
