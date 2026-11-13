@@ -1,0 +1,12 @@
+{
+  "repo": "TensorFEM",
+  "feature_slug": "CASE-HOLLOW-SPHERE-3D",
+  "tag": "method-selection+first-evidence",
+  "method": "选型: 20 节点 serendipity 单元 (HEX20) + 曲边界投影 + 一致面载荷 + Jacobi-PCG。理由: 同一 cube-sphere 拓扑下 HEX20(n=4,192 单元) 全部探针 <3%, 而 HEX8 同网格 worst 达 15.4% 且需 n>=12 级才能逼近 5%; 二次单元把曲边界几何误差从 O(h^2) 面片化降到投影级 (网格体积误差 7.1% -> 0.14%)。载荷: 8 节点 serendipity 面形函数 3x3 Gauss 一致载荷 (闭合面合力/合力矩 <1e-16 相对)。求解: 六自由度切向 gauge 约束对称消去 + 对角预处理 CG (HEX8 n=8 仅 67 迭代)。",
+  "files": "files: src/tensorfem/hollow_sphere_3d.py (lame_sphere/lame_displacement/strain_energy/_mesh/_pressure_loads/_constrained_pcg/probe_metrics/convergence); benchmarks/case_hollow_sphere_3d.py; tests/test_hollow_sphere_3d.py; docs/case-hollow-sphere-3d.md",
+  "conventions": "conventions: ref=Lamé/Timoshenko&Goodier 1970 §5.6 闭式解 (sigma_r=A-B/r^3, sigma_t=A+B/(2r^3)); 探针与参考在同一位置取值 (表面节点值对解析表面值, 层体积平均对同质心半径解析值); 外表面 sigma_r->0 用 |Δ|/p 归一; radial_layers>=2 才可探两个表面。",
+  "transfer": "transfer: 任意轴对称厚壁/球壳压力容器算例可直搬: 把 _mesh 的 cube-sphere 生成换成目标几何 + 保留 HEX20 投影与一致载荷; 能量范数校核 (U=1/2 u.f vs 闭式) 是独立全局判据, 建议所有压力载荷算例沿用。 xval:XVAL-FEM-METHOD-SELECTION-FIRST-EVIDENCE",
+  "evidence": "evidence: oss_inventory 33 行全为 LBM/SPH (~/oss-cache: pylbm/hschwane/Maarten-vd-Sande_lbm), 无 3D FEM 结构算例可横向对照 -> 方法谱系取自教科书 (Zienkiewicz & Taylor 5th ed. Vol.1 §8.6 曲边界) + 仓内既有 hex20.py/quadratic_solid.py/sphere_pressure_benchmark.py; 实测 HEX20 n=4 worst=2.875% <5% 验收, HEX8 n=6/8 = 15.35%/9.93% (artifacts/case_hollow_sphere_3d/case_hollow_sphere_3d.json)",
+  "captured_at": "2026-11-13T05:31:26Z",
+  "captured_via": "psql -d tensorplatform (SELECT ... FROM oss_solutions WHERE repo='TensorFEM' AND tag='method-selection+first-evidence')"
+}
