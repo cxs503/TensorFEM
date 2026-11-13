@@ -1,0 +1,440 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_cantilever_solid_convergence",
+  "title": "CASE-CANTILEVER-TIP: 3-D solid vs exact plane-stress elasticity, root-BC control",
+  "mission": "CASE-CANTILEVER-TIP",
+  "generated_at": "2026-11-13T08:22:10+00:00",
+  "criteria": {
+    "case_pool_tolerance": 0.03,
+    "solid_vs_exact_elasticity": 0.01,
+    "mesh_insensitivity": 0.005,
+    "EI_identification": 0.005
+  },
+  "gates": [
+    {
+      "id": "oracle_eb_selfcheck",
+      "quantity": "Castigliano residual vs P L^3/(3 E I)",
+      "reference": "Castigliano unit-load theorem",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "oracle_timoshenko_selfcheck",
+      "quantity": "Castigliano residual vs P L^3/(3 E I) + P L/(kappa G A)",
+      "reference": "Castigliano unit-load theorem",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "airy_closed_form_identity",
+      "quantity": "symbolic residual of (1+nu) P c^2 L/(E I) vs the elasticity field",
+      "reference": "Timoshenko & Goodier Art. 24 displacement field",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "airy_module_vs_closed_form",
+      "quantity": "max |delta_module - delta_closed_form| / delta over the ladder",
+      "reference": "closed form delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 2.2333625142864243e-08,
+      "threshold": 1e-07,
+      "operator": "<=",
+      "passed": true,
+      "note": "the elasticity oracle used below is cross-checked, not trusted"
+    },
+    {
+      "id": "shear_ratio_identity",
+      "quantity": "|exact/Timoshenko shear term ratio - 5/4|",
+      "reference": "(1+nu) c^2 kappa G A/(E I) = 5/4 at nu = 0.3, kappa = 5/6",
+      "value": 0.0,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_clamp_all_100",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 1.2863791425843373e-06,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_clamp_all_100",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.006134675849448121,
+      "threshold": 0.025,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_clamp_all_100",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 0.00020268291012692785,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_axial_only_100",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 1.302339828868071e-06,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_axial_only_100",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.0005098425070858436,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_axial_only_100",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 6.4641954680144664e-06,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_clamp_all_50",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 6.00414580276265e-08,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_clamp_all_50",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.005975532415782706,
+      "threshold": 0.025,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_clamp_all_50",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 3.614026488762967e-05,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_axial_only_50",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 4.1957407326265184e-08,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_axial_only_50",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.000386213571637661,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_axial_only_50",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 1.3269879506339066e-06,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_clamp_all_20",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 1.613845412862247e-09,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_clamp_all_20",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.00721591562838127,
+      "threshold": 0.025,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_clamp_all_20",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 4.7853293809740904e-06,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_axial_only_20",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 1.7318344092132065e-09,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_axial_only_20",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.001183266205330364,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_axial_only_20",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 1.4048389811449624e-06,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_clamp_all_10",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 1.988567532862362e-10,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_clamp_all_10",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.011379685816380462,
+      "threshold": 0.025,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_clamp_all_10",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 1.654638545700582e-05,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_axial_only_10",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 2.060065895648222e-10,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_axial_only_10",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.004574919445829765,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_axial_only_10",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 1.2988577349437591e-05,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_clamp_all_5",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 2.700772938624141e-12,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_clamp_all_5",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.0233379551237748,
+      "threshold": 0.025,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_clamp_all_5",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 0.00034460414763270997,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "statics_axial_only_5",
+      "quantity": "root reaction vs applied load and moment",
+      "reference": "sum R_z = P, root moment about y = -P L",
+      "value": 4.723688107333146e-12,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true,
+      "note": "float64 dense solve roundoff; 1e-5 of P and of P L"
+    },
+    {
+      "id": "solid_vs_exact_2d_axial_only_5",
+      "quantity": "root-aligned tip deflection vs exact plane-stress elasticity",
+      "reference": "delta_exact = P L^3/(3EI) + (1+nu) P c^2 L/(EI)",
+      "value": 0.017920507337233233,
+      "threshold": 0.025,
+      "operator": "<=",
+      "passed": true,
+      "note": "1 % for axial_only with L/h >= 10; 2.5 % otherwise, where the clamp or the (h/L)^2 3-D-vs-plane-stress difference lives"
+    },
+    {
+      "id": "EI_identification_axial_only_5",
+      "quantity": "EI from the x^3 coefficient of the interior deflection profile",
+      "reference": "E I = E b h^3/12",
+      "value": 3.168361518790519e-05,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "solid_vs_exact_2d_converged",
+      "quantity": "max |delta_3D - delta_exact| / delta_exact over L/h >= 10 (axial_only)",
+      "reference": "exact plane-stress elasticity",
+      "value": 0.004574919445829765,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "the 2-D oracle is plane stress; the solid is not, see L/h = 5"
+    },
+    {
+      "id": "case_tolerance_vs_timoshenko",
+      "quantity": "max |delta_3D - delta_Timoshenko| / delta_Timoshenko (axial_only)",
+      "reference": "Timoshenko (kappa = 5/6), case-pool criterion < 3 %",
+      "value": 0.010492055007161886,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "threed_vs_planestress_scaling",
+      "quantity": "|err(L/h=5)| / |err(L/h=10)| for the axial_only solid",
+      "reference": "a plane-stress oracle differs from a 3-D solid at order (h/L)^2, i.e. ~4x",
+      "value": 3.9171197546589687,
+      "threshold": 0.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "reported value; band [3.2, 4.8] is asserted in the regression test"
+    },
+    {
+      "id": "clamp_is_worse_everywhere",
+      "quantity": "number of rungs where the clamp_all error exceeds the axial_only error",
+      "reference": "freeing lateral contraction must not increase the error",
+      "value": 5.0,
+      "threshold": 5.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "must equal the number of rungs (5)"
+    },
+    {
+      "id": "mesh_insensitive_cross",
+      "quantity": "4x4 -> 6x6 change at L/h = 10",
+      "reference": "observable converged if < 0.5 %",
+      "value": 8.858799774069913e-06,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "mesh_insensitive_axial",
+      "quantity": "axial 20 -> 40 change at L/h = 10",
+      "reference": "observable converged if < 0.5 %",
+      "value": 1.5411005675894954e-05,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "error_shrinks_with_cross_refinement",
+      "quantity": "|error| decreases 2x2 -> 6x6",
+      "reference": "monotone refinement trend",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "error_shrinks_with_axial_refinement",
+      "quantity": "|error| decreases axial 20 -> 40",
+      "reference": "monotone refinement trend",
+      "value": 1.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_cantilever_solid_convergence/result.json",
+    "docs": "docs/CASE-CANTILEVER-TIP-solid-convergence.md",
+    "readme": "benchmarks/verified/fem_cantilever_solid_convergence/README.md"
+  },
+  "limitations": [
+    "axial_only still forbids axial warping of the root face (plane-section assumption)",
+    "the 3-D solid is neither plane stress nor plane strain; 2-D agreement is expected, not exact",
+    "4x4 cross-section under-resolves parabolic shear locally; the integral deflection is graded",
+    "ladder stops at L/h = 5, below which a single kappa is not a meaningful summary"
+  ]
+}
