@@ -44,6 +44,50 @@ jobs:
           name: coverage-py311
           path: coverage.xml
 
+  api-compat:
+    name: public API compatibility
+    runs-on: ci-loong64
+    # The manifest promises ``stable = "semver compatibility"`` but the snapshot
+    # checks only compare manifest against code *in the same tree*, so a deleted
+    # or demoted stable name is invisible to them (measured: 0/2 such faults
+    # caught by scripts/audit_public_api.py, 2/2 by this gate -- see
+    # artifacts/m18005_public_api_compat_baseline.json).  This job compares the
+    # change against the reviewed manifest of the base commit instead.  It is
+    # stdlib-only, so no dependency install is needed.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The baseline is read out of git history, not out of the working tree.
+          fetch-depth: 0
+      - name: Resolve the baseline manifest
+        id: base
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITHUB_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -eu
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            ref="$GITHUB_BASE_SHA"
+          else
+            ref="$GITHUB_BEFORE_SHA"
+          fi
+          if [ -z "$ref" ] || ! git cat-file -e "$ref:api/public-api-v1.json" 2>/dev/null; then
+            # New branch, force push or shallow tip: there is no reviewed
+            # baseline to compare against, so announce the skip instead of
+            # failing on an artefact of the event payload.
+            echo "No baseline manifest at ${ref:-<empty>}; compatibility gate skipped."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
+      - name: Check release-to-release compatibility
+        if: steps.base.outputs.skip != 'true'
+        run: |
+          python scripts/public_api_compat.py --mode pr \
+            --base "git:${{ steps.base.outputs.ref }}:api/public-api-v1.json" \
+            --head api/public-api-v1.json
+
   lint:
     name: lint (advisory)
     runs-on: ci-loong64
