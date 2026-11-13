@@ -1,0 +1,66 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_hertz_contact_loadcontrol",
+  "title": "Indentation-plateau mechanism: far field vs vertical near field vs model bias",
+  "anchor_case": "FEM-HERTZ-CONTACT (id 104)",
+  "artifacts": {
+    "farfield": "benchmarks/verified/fem_hertz_contact_loadcontrol/farfield_discretisation.json",
+    "vertical": "benchmarks/verified/fem_hertz_contact_loadcontrol/nearfield_resolution.json",
+    "converged": "benchmarks/verified/fem_hertz_contact_loadcontrol/converged_model.json",
+    "report": "docs/CASE-FEM-HERTZ-CONTACT-plateau-mechanism.md"
+  },
+  "gates": [
+    {
+      "id": "plateau_vertical_resolution_significance",
+      "quantity": "|e_delta(dz=a/6) - e_delta(dz=a/24)| (pct points), radial near field bit-identical",
+      "reference": "a genuinely mesh-independent model bias would leave e_delta unchanged (0 pp); a discretisation artefact of the unrefined vertical spacing must move it",
+      "value": 0.17045936093442737,
+      "threshold": 0.1,
+      "operator": ">=",
+      "passed": true,
+      "note": "the h/a ladder refined r only and never dz, so 'mesh independent' was a one-directional statement; this gate makes the dz axis part of the record"
+    },
+    {
+      "id": "plateau_far_field_hypothesis_rejected",
+      "quantity": "shift (pp) of |e_delta| when the stretched far field is refined from 16 to 64 vertical (26 -> 104 radial) layers",
+      "reference": "H_far predicted a collapse of the offset; the pre-declared equivalence band is 0.05 pp",
+      "value": 0.019498049329391698,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "passing this gate means 'the far field is NOT the mechanism', i.e. H_far is rejected; the extrapolated limit only moves -0.4278 -> -0.3878 %"
+    },
+    {
+      "id": "plateau_indentation_dz_a48",
+      "quantity": "|e_delta| at dz=a/48, depth 768a (case-pool metric, vertical-refined near field)",
+      "reference": "delta = a^2/R (Hertz 1882; Johnson 1985 4.2), case-pool band 3%",
+      "value": 0.298765232634679,
+      "threshold": 3.0,
+      "operator": "<=",
+      "passed": true,
+      "note": ""
+    },
+    {
+      "id": "plateau_peak_pressure_dz_a24",
+      "quantity": "|p0_FE/p0_Hertz - 1| (mass-matrix consistent) at dz=a/24, depth 768a",
+      "reference": "p0 = 3P/(2 pi a^2); the 5% band of the case certificate does not apply to this refined model, 0.05% is the pre-declared study bound",
+      "value": 0.022824156398115747,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": ""
+    }
+  ],
+  "recorded_targets": [
+    {
+      "id": "plateau_extrapolated_limit_vertical_refined",
+      "quantity": "Richardson limit of |e_delta| as depth -> inf at dz=a/24",
+      "value": 0.20921473004689123,
+      "target": 0.15,
+      "met": false
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": []
+}
