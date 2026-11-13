@@ -209,6 +209,24 @@ def run_cylindrical_shell():
 
 
 ANCHOR_DIR = Path(__file__).resolve().parent
+REPO_ROOT = ANCHOR_DIR.parents[2]
+
+#: Where the certificate figures live.  **Not** next to the anchor: the push gate
+#: (``tp_pusher.py``, ``_EXCLUDE2 = \.(db|sqlite3?|png|log)$``) drops every ``*.png``
+#: that is not under ``docs/``, so a figure committed at ``benchmarks/.../<name>.png``
+#: never reaches GitHub and any certificate naming it stays ``E_ARTIFACT_MISSING``
+#: forever.  Measured on this checkout: 0 tracked PNGs under ``benchmarks/``,
+#: 484 under ``docs/``.  Figures therefore render into ``docs/assets/verified/<anchor>/``.
+FIGURE_DIR = REPO_ROOT / "docs" / "assets" / "verified" / "fem_shell_modal"
+
+
+def _repo_relative(path: Path) -> str:
+    """Anchors name artifacts repo-relative when the path is outside the anchor dir."""
+    resolved = Path(path).resolve()
+    try:
+        return resolved.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return resolved.as_posix()
 
 # Figures named by ``gates_verified.json`` (``artifacts``) plus the two per-anchor
 # convergence panels the README tables quote.  Every one of them is a pure
@@ -307,20 +325,29 @@ def write_figure_provenance(result_path, out_dir, figures):
         "source_sha256": hashlib.sha256(result_path.read_bytes()).hexdigest(),
         "renderer": "benchmarks/verified/fem_shell_modal/run_verification.py --from-dump",
         "solver_executed": False,
-        "figures": {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in figures},
+        "figure_dir": _repo_relative(Path(figures[0]).parent) if figures else None,
+        "figures": {_repo_relative(p): hashlib.sha256(p.read_bytes()).hexdigest()
+                    for p in figures},
     }
     path = out_dir / "figure_provenance.json"
     path.write_text(json.dumps(payload, indent=2) + "\n")
     return path
 
 
-def rebuild_from_dump(result_path, out_dir):
-    """``--from-dump``: rebuild the figures of the committed result.json, zero solve."""
-    result_path, out_dir = Path(result_path), Path(out_dir)
+def rebuild_from_dump(result_path, out_dir=None, provenance_dir=None):
+    """``--from-dump``: rebuild the figures of the committed result.json, zero solve.
+
+    Figures render into ``FIGURE_DIR`` (``docs/assets/verified/fem_shell_modal``) and
+    the provenance stamp stays next to ``result.json``, so the certificate keeps a
+    single text artifact per anchor while the PNGs survive the push gate.
+    """
+    result_path = Path(result_path)
+    out_dir = Path(out_dir) if out_dir else FIGURE_DIR
+    provenance_dir = Path(provenance_dir) if provenance_dir else result_path.parent
     payload = json.loads(result_path.read_text())
     anchors = payload["anchors"]
     figures = render_figures(anchors["beam"], anchors["plate"], anchors["shell"], out_dir)
-    provenance = write_figure_provenance(result_path, out_dir, figures)
+    provenance = write_figure_provenance(result_path, provenance_dir, figures)
     for path in figures:
         print(f"wrote {path}")
     print(f"wrote {provenance} (source sha256 {json.loads(provenance.read_text())['source_sha256'][:16]}...)")
@@ -332,7 +359,8 @@ def main(argv=None):
     parser.add_argument("--from-dump", action="store_true",
                         help="rebuild the figures from the committed result.json; no solver is run")
     parser.add_argument("--result", default=str(ANCHOR_DIR / "result.json"))
-    parser.add_argument("--out-dir", default=str(ANCHOR_DIR))
+    parser.add_argument("--out-dir", default=str(FIGURE_DIR),
+                        help="figure directory (must stay under docs/ to pass the push gate)")
     args = parser.parse_args(argv)
     if args.from_dump:
         return rebuild_from_dump(args.result, args.out_dir)
@@ -401,7 +429,12 @@ def main(argv=None):
         "passed": all_pass,
         "gates": gates,
         "failed_gates": [gate["id"] for gate in gates if not gate["passed"]],
-        "artifacts": {"result": "result.json", "figure": "shell_modal_audit.png"},
+        "artifacts": {
+            "result": "result.json",
+            "provenance": "figure_provenance.json",
+            "figure": _repo_relative(FIGURE_DIR / CERTIFICATE_FIGURE),
+            "figures": [_repo_relative(FIGURE_DIR / name) for name in FIGURE_CAPTIONS],
+        },
         "limitations": [
             "the cylinder FE spectrum contains rotation-only mechanisms; the shell "
             "element (or its SS constraint set) is not yet certifiable",
@@ -415,7 +448,7 @@ def main(argv=None):
     with open(out / "gates_verified.json", 'w') as f:
         json.dump(envelope, f, indent=2)
 
-    figures = render_figures(beam, plate, shell, out)
+    figures = render_figures(beam, plate, shell, FIGURE_DIR)
     provenance = write_figure_provenance(out / "result.json", out, figures)
     print(f"\nfigures: {', '.join(p.name for p in figures)}")
     print(f"provenance: {provenance.name} (result.json sha256 {json.loads(provenance.read_text())['source_sha256'][:16]}...)")
