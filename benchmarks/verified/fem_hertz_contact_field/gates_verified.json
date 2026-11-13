@@ -1,0 +1,146 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_hertz_contact_field",
+  "title": "Hertz contact: surface deflection field vs the exact half-space solution",
+  "mission": "m18026",
+  "generated_at": "2026-11-13T11:28:45+00:00",
+  "criteria": {
+    "field_shape_over_delta_max": 0.01,
+    "field_shape_local_max": 0.03,
+    "far_field_boussinesq_max": 0.03,
+    "oracle_flatness_max": 1e-06,
+    "oracle_centre_max": 1e-08,
+    "penetration_over_delta_max": 1e-05,
+    "refinement_stability_shape_pp": 0.5,
+    "depth_sensitivity_offset_max": 0.5,
+    "traction_transfer_max": 0.02,
+    "discrimination_min_pct": 1.0,
+    "certificate_consistency_pp": 0.05,
+    "reference": "Hertz 1882 J. reine angew. Math. 92:156; Johnson 1985 Contact Mechanics Sec. 4.2 DOI:10.1017/cbo9781139171731; Boussinesq 1885 (point load kernel)",
+    "case_pool": "FEM-HERTZ-CONTACT (case pool id 104)",
+    "pool_mandate": "<3% on contact radius a and indentation delta, load P prescribed"
+  },
+  "gates": [
+    {
+      "id": "oracle_centre",
+      "quantity": "|w(0)/delta - 1| of the exact half-space oracle (no FEM)",
+      "reference": "Hertz relation w(0) = pi p0 a/(2 E*) = a^2/R = delta",
+      "value": 2.220446049250313e-16,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "oracle_flatness",
+      "quantity": "max |w(r) - (delta - r^2/2R)|/delta of the oracle for r/a < 1",
+      "reference": "the indenter is a paraboloid: the exact solution is flat inside contact",
+      "value": 9.238627640684172e-10,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "oracle_far_field",
+      "quantity": "|w(3a) / (P/(pi E* 3a)) - 1| of the oracle",
+      "reference": "Boussinesq point-load asymptote of the same Hertz pressure",
+      "value": 0.011529706776504112,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "field_shape_over_delta",
+      "quantity": "max |D_fe - D_exact| / delta over r/a in [1.1, 3], h/a=0.015, depth 96a",
+      "reference": "exact half-space deflection under the Hertz pressure; D = w(r)-w(0)",
+      "value": 0.003300006153433774,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true,
+      "note": "offset invariant: the fixed base of the truncated body leaves an arbitrary rigid constant in the raw nodal u_z"
+    },
+    {
+      "id": "field_shape_local",
+      "quantity": "max |D_fe - D_exact| / |D_exact| over the same radii",
+      "reference": "same, normalised by the local deflection",
+      "value": 0.0058182036416854245,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "refinement_stability_shape",
+      "quantity": "|max shape error (h/a=fine) - max shape error (h/a=coarse)| (pct points)",
+      "reference": "a field metric that is real should not move under refinement by 2",
+      "value": 0.015366279059028654,
+      "threshold": 0.5,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "depth_sensitivity_offset",
+      "quantity": "|offset(96a) - offset(192a)| (pct of delta)",
+      "reference": "the raw constant is truncation: it must move when the boundary moves",
+      "value": 0.3118256987686002,
+      "threshold": 0.5,
+      "operator": "<=",
+      "passed": true,
+      "note": "the offset is discarded by the field metric, so the field verdict does not depend on it"
+    },
+    {
+      "id": "contact_constraint_quality",
+      "quantity": "max penetration / delta of the finest mesh",
+      "reference": "ALM complementarity: the indenter must not penetrate",
+      "value": 1.8657146598907233e-07,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "traction_transfer",
+      "quantity": "max |D_fe - D_exact(p_fe)| / delta over the observation radii, where p_fe is the traction the FE solution itself recovered",
+      "reference": "exact half-space response to the FE traction (same Boussinesq kernel)",
+      "value": 0.005990605441702351,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true,
+      "note": "loose consistency bound on the (pressure recovery + elastic operator) pair; see the diagnostics block for what this does NOT show"
+    },
+    {
+      "id": "discrimination_10pct_radius",
+      "quantity": "max shape error (pct of delta) of the same metric evaluated against a wrong competing Hertz state with a 10% larger contact radius",
+      "reference": "same load, a' = 1.1a, p0' = p0/1.21, delta' = 1.21 delta",
+      "value": 17.50122674484441,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "non-vacuity control: a tolerance the metric cannot enforce is worthless"
+    },
+    {
+      "id": "certificate_consistency",
+      "quantity": "|indentation error here - indentation error of the certified load-control anchor| (pct points), same mesh and load",
+      "reference": "benchmarks/verified/fem_hertz_contact_loadcontrol/result.json",
+      "value": 0.0,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "replication check: this driver must reproduce the certified number"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "figures": [
+      "../../../docs/assets/case-fem-hertz-contact/hertz_field_profile.png",
+      "../../../docs/assets/case-fem-hertz-contact/hertz_field_shape_error.png"
+    ]
+  },
+  "limitations": [
+    "frictionless, adhesion-free, small-strain, linear elastic: a verification of the elastic half-space operator only (p0 = 3.5e3 is far above any real yield strength in the dimensionless units used here)",
+    "the model is the exact Hertz equivalent (rigid paraboloid on a half-space with E* = E/(1-nu^2)); a two-deformable-body contact algorithm is not exercised, which is exactly the assumption the reduction rests on",
+    "the deflection profile is compared only for r/a <= 3; the far field of the truncated domain is dominated by the boundary condition",
+    "the graded quantities are offset invariant; the absolute nodal u_z of the truncated body carries a 1% rigid constant that this certificate does not claim to resolve"
+  ]
+}
