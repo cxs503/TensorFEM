@@ -230,6 +230,7 @@ def _abs_pct(row, field):
 
 
 TRUNCATION_GATES = os.path.join(HERE, "gates_truncation.json")
+PLATEAU_GATES = os.path.join(HERE, "gates_plateau.json")
 
 
 def truncation_gates(path=TRUNCATION_GATES):
@@ -259,6 +260,36 @@ def truncation_gates(path=TRUNCATION_GATES):
             note=g.get("note", ""),
         )
         for g in doc.get("gates", [])
+    ]
+
+
+def plateau_gates(path=PLATEAU_GATES):
+    """Gate rows from the indentation-plateau mechanism study (if present).
+
+    ``plateau_gates.py`` owns those numbers (far-field arm, vertical-spacing
+    arm, extrapolated residual).  Merged for the same reason as the truncation
+    rows: the certificate is the one place a reviewer recomputes the anchor's
+    claims from, so the follow-up questions the certificate itself raised
+    (F2 in ``docs/CASE-FEM-HERTZ-CONTACT-verification.md``: *what* is the
+    mesh-independent offset?) must be answerable there too.  Absent file ->
+    no extra gates.
+    """
+    if not os.path.exists(path):
+        return []
+    with open(path) as fh:
+        doc = json.load(fh)
+    return [
+        Gate(
+            id=g["id"],
+            quantity=g["quantity"],
+            reference=g["reference"],
+            value=float(g["value"]),
+            threshold=float(g["threshold"]),
+            operator=g.get("operator", "<="),
+            note=g.get("note", ""),
+        )
+        for g in doc.get("gates", [])
+        if g.get("value") is not None
     ]
 
 
@@ -353,6 +384,7 @@ def build_gates(results):
             threshold=CRITERIA["truncation_sensitivity_pct"],
         ))
     gates.extend(truncation_gates())
+    gates.extend(plateau_gates())
     return gates
 
 
