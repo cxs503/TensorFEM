@@ -3,7 +3,7 @@
   "anchor": "fem_plate_modal",
   "title": "Simply supported rectangular plate: first five natural frequencies vs Navier",
   "mission": "IN36-N01",
-  "generated_at": "2026-11-12T17:56:44+00:00",
+  "generated_at": "2026-11-13T00:01:10+00:00",
   "criteria": {
     "frequency_rel_error_max": 0.01,
     "observed_order_min": 1.8,
@@ -80,7 +80,7 @@
       "id": "library_equivalence",
       "quantity": "max relative frequency difference against solve_plate_vibration",
       "reference": "TensorFEM library entry point on the coarsest level",
-      "value": 9.915601673071706e-11,
+      "value": 6.484146553020764e-11,
       "threshold": 1e-09,
       "operator": "<=",
       "passed": true,
