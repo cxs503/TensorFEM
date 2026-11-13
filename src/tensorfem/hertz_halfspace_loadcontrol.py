@@ -474,12 +474,24 @@ def _contact_state_fixed_indentation(
     # multiplier of a node that has left the contact decays geometrically and
     # stays positive at round-off level for many sweeps, and a single such node
     # outside the patch corrupts every edge-based radius estimator.
-    lam_threshold = 1e-10 * max(float(np.max(lam)), 1e-300)
+    # Contact membership uses a *physical* threshold on the contact pressure,
+    # not on the multiplier: p/p0 = sqrt(1-(r/a)^2) for Hertz, so a node with
+    # p/p0 = 1e-6 sits within 5e-13 a of the true edge and counting it changes
+    # nothing.  The previous threshold (1e-10 * max(lambda)) was loose enough to
+    # keep an edge node whose multiplier had decayed to ~2e-9 of the peak; that
+    # spurious node extended the patch by one surface spacing and made the
+    # primary radius estimator *mesh tied* (measured: a/R = 0.10, h/a = 0.0075,
+    # a_linear = 0.9825 = the node radius exactly, error -1.75%, while the
+    # coarser meshes gave -0.37% -> non-monotone "convergence").
+    # See docs/AUDIT-m17149-hertz-anchor-evidence.md (finding F1).
     internal = kmat @ u
-    pressure = np.where(lam > lam_threshold, lam / areas, 0.0)
+    _p_raw = lam / areas
+    membership_ratio = 1e-6
+    lam_threshold = membership_ratio * max(float(np.max(_p_raw)), 1e-300)
+    pressure = np.where(_p_raw > lam_threshold, _p_raw, 0.0)
     pressure_consistent = consistent_surface_pressure(radii, lam)
     reaction = float(np.sum(lam))
-    active = lam > lam_threshold
+    active = pressure > 0.0
     idx = np.nonzero(active)[0]
     rr = radii[idx]
     pp = pressure[idx]
@@ -554,6 +566,14 @@ def _contact_state_fixed_indentation(
                 np.linalg.norm(resid) / max(np.linalg.norm(f_ext), 1e-30)
             ),
             "last_active_node": int(idx[-1]),
+            "membership_ratio": membership_ratio,
+            "edge_pressure_ratio": float(pp[-1] / max(float(np.max(pp)), 1e-300)),
+            "edge_spacing_over_a": float((radii[idx[-1] + 1] - radii[idx[-1]])
+                                          / max(a_linear, 1e-300))
+            if idx[-1] + 1 < radii.size else float("nan"),
+            "contact_radius_linear_interior_rel": float(
+                (a_linear - rr[-1]) / (radii[idx[-1] + 1] - radii[idx[-1]])
+            ) if idx[-1] + 1 < radii.size else float("nan"),
         },
     )
 
