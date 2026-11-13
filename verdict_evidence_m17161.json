@@ -1,0 +1,92 @@
+{
+  "mission_id": 17161,
+  "anchor": "GAP-ICE-LIT-TRANSCRIPT",
+  "repo": "TensorFEM",
+  "commit": "e9c411dc9e5c2b73307c908c29aaaf67e3494e92",
+  "branch": "agent/m17161",
+  "audit_date": "2026-11-13",
+  "auditor": "board-audit (m17196)",
+
+  "three_piece_check": {
+    "run_artifacts": {
+      "status": "PRESENT",
+      "files": [
+        "benchmarks/anchors/lindqvist-riska-ice-resistance.json",
+        "benchmarks/anchors/sources/lindqvist_riska_ice_resistance.transcription.json",
+        "docs/assets/lindqvist-riska-transcription/fig1_resistance_vs_thickness.png",
+        "docs/assets/lindqvist-riska-transcription/fig2_resistance_vs_speed.png",
+        "docs/assets/lindqvist-riska-transcription/fig3_component_breakdown.png",
+        "docs/assets/lindqvist-riska-transcription/fig4_scaling_exponents.png"
+      ]
+    },
+    "benchmark_ref_vs_got": {
+      "status": "NOT_APPLICABLE",
+      "reason": "Mission is a transcription framework, not a numerical benchmark. No external reference values exist because source documents (Lindqvist 1989 POAC'89, Riska 1997, Lindqvist 1983 thesis) were NOT_OBTAINED. Synthetic dry-run fixture explicitly marked claim_eligible=false.",
+      "synthetic_results": {
+        "Rc_N": 1328894.65,
+        "Rb_N": 244334.82,
+        "Rs_N": 518124.75,
+        "Rmom_N": 104621.62,
+        "Rtot_N": 2195975.84
+      }
+    },
+    "repro_cmd": {
+      "status": "EXECUTABLE",
+      "command": "cd /root/tp-agent/work/m17161 && python3 benchmarks/anchors/lindqvist_riska_anchor.py --check",
+      "exit_code": 0,
+      "verified_by": "m17196 audit run"
+    }
+  },
+
+  "m1_threshold": {
+    "required_verbatim_entries": 4,
+    "actual_verbatim_entries": 0,
+    "met": false,
+    "reason": "All 3 source documents (LINDQVIST-1989-POAC, RISKA-1997-POAC, LINDQVIST-1983-THESIS) have acquisition_status=NOT_OBTAINED. All 6 entries have verbatim_status=WITHHELD.",
+    "honest_fail": true
+  },
+
+  "machine_checks": {
+    "CHK1_dimensional_homogeneity": "PASS (8/8 steps homogeneous)",
+    "CHK2_scaling_exponents": "PASS (Rc:h^2, Rb:h^1.25, Rmom:h^1, delta:v^2)",
+    "CHK3_zero_thickness_limit": "PASS (all components → 0 as h → 0)",
+    "CHK4_speed_decomposition": "PASS (ratio=4.000)",
+    "CHK5_unit_invariance": "PASS (SI↔CGS error < 1e-10)",
+    "CHK6_thickness_sweep": "PASS (monotonic, exponent in (1,2))"
+  },
+
+  "tests": {
+    "file": "tests/test_lindqvist_riska_anchor.py",
+    "total": 29,
+    "passed": 29,
+    "failed": 0,
+    "status": "ALL_GREEN"
+  },
+
+  "report": {
+    "file": "docs/lindqvist_riska_transcription_report.md",
+    "six_sections_present": true,
+    "figures": 4
+  },
+
+  "evidence": {
+    "impl_files": [
+      "benchmarks/anchors/lindqvist_riska_anchor.py:701 lines",
+      "benchmarks/anchors/sources/lindqvist_riska_ice_resistance.transcription.json:291 lines",
+      "benchmarks/gen_lindqvist_riska_figures.py:207 lines"
+    ],
+    "entry": "benchmarks/anchors/lindqvist_riska_anchor.py (main script)",
+    "run_artifacts": "benchmarks/anchors/lindqvist-riska-ice-resistance.json",
+    "tests": "tests/test_lindqvist_riska_anchor.py (29 tests, all pass)",
+    "integration_callers": "none (standalone anchor script, not integrated into main solver)",
+    "benchmark": "N/A (transcription framework, no external benchmark reference)",
+    "repro_cmd": "python3 benchmarks/anchors/lindqvist_riska_anchor.py --check",
+    "external_anchor": "WITHHELD (3 source documents NOT_OBTAINED)"
+  },
+
+  "maturity_level": 2,
+  "level_rationale": "L2 (独立功能实现): Complete input→compute→output pipeline with 6 machine checks and 29 tests. Not L3 because not integrated into main solver. Not L4 because no external benchmark reference (source documents not obtained). M1 threshold FAIL (0/4 verbatim entries) is honest and properly declared.",
+
+  "verdict": "reopened",
+  "verdict_reason": "M1 threshold not met (0/4 verbatim entries). Framework is structurally sound (all 6 machine checks PASS, 29 tests PASS) but cannot claim source-anchored values until original documents are obtained. Honest FAIL properly declared."
+}
