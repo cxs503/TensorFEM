@@ -94,6 +94,7 @@ PLANE = "stress"
 CONTOUR_FRACTIONS = (0.06, 0.09, 0.12, 0.15, 0.18, 0.22, 0.27, 0.33)
 CANONICAL_CONTOUR = 0.15
 HEIGHT_RATIOS = (1.5, 2.0, 3.0)
+PLANE_STRAIN_RATIOS = (0.2, 0.3, 0.5)
 CACHE = HERE / "_cache"
 
 
@@ -213,6 +214,32 @@ def run_field() -> dict:
     }
 
 
+
+def run_plane_strain() -> dict:
+    """Plane-strain ladder at the ledger acceptance point a/W = 0.3 (plus 0.2/0.5).
+
+    The ledger acceptance for CASE-FEM-JINTEGRAL-EDGE-CRACK grades the
+    normalised ``K_I / (sigma sqrt(pi a))`` against Tada's finite-width
+    correction at ``a/W = 0.3`` in **plane strain**; the original anchor run
+    covered plane stress only, so this stage closes that gap on the same
+    solver path (``plane="strain"`` selects ``E' = E / (1 - nu^2)``).
+    """
+    payload = sent_convergence(
+        width_m=WIDTH,
+        crack_ratios=PLANE_STRAIN_RATIOS,
+        height_ratio=HEIGHT_RATIO,
+        sigma_pa=SIGMA,
+        young_pa=YOUNG,
+        poisson=NU,
+        plane="strain",
+        contour_fractions=CONTOUR_FRACTIONS,
+        levels=DEFAULT_SENT_LEVELS,
+        quarter_point=True,
+    )
+    payload["generated_at"] = utc_now()
+    return payload
+
+
 def _edge_mid(edge_index: int) -> tuple[float, float]:
     return edge_parent(edge_index, 0.5)
 
@@ -275,15 +302,17 @@ def build_evidence(ladder: dict, control: dict, height: dict, field: dict) -> di
             }
         )
     height_rows = {}
-    for row in height["rows"]:
-        for case in row["cases"]:
-            height_rows.setdefault(f"{case['a_over_w']:.2f}", {})[
-                f"{row['height_over_width']:.1f}"
-            ] = case["shape_factor"]
+    if height is not None:
+        for row in height["rows"]:
+            for case in row["cases"]:
+                height_rows.setdefault(f"{case['a_over_w']:.2f}", {})[
+                    f"{row['height_over_width']:.1f}"
+                ] = case["shape_factor"]
     height_spread = {}
-    for key, values in height_rows.items():
-        lo, hi = min(values.values()), max(values.values())
-        height_spread[key] = (hi - lo) / hi
+    if height is not None:
+        for key, values in height_rows.items():
+            lo, hi = min(values.values()), max(values.values())
+            height_spread[key] = (hi - lo) / hi
     return {
         "finest_level": finest["level"],
         "cases": cases,
@@ -364,8 +393,10 @@ def make_figures(evidence: dict, outdir: Path) -> dict:
     plt.close(fig)
     figures["sent_path_independence.png"] = "Recovered geometry factor along the J contour station; the plateau is the numerical F."
 
-    # 4) ligament stress and field contour
+    # 4) ligament stress and field contour (only when the field stage ran)
     field = evidence["field"]
+    if field is None:
+        return figures
     fig, axes = plt.subplots(1, 2, figsize=(9.2, 3.8))
     centroidal = field["centroidal"]
     xs = np.array([p["x"] for p in centroidal])
@@ -436,15 +467,16 @@ def build_gates(evidence: dict) -> tuple[list[Gate], dict]:
             threshold=criteria["reaction_balance_max"],
         )
     )
-    gates.append(
-        Gate(
-            id="height_independence",
-            quantity="max relative spread of F over H/W in (1.5, 2, 3), medium mesh",
-            reference="Tada fit is quoted for H/W >= 1",
-            value=max(evidence["height_spread"].values()),
-            threshold=criteria["height_spread_max"],
+    if evidence["height"] is not None:
+        gates.append(
+            Gate(
+                id="height_independence",
+                quantity="max relative spread of F over H/W in (1.5, 2, 3), medium mesh",
+                reference="Tada fit is quoted for H/W >= 1",
+                value=max(evidence["height_spread"].values()),
+                threshold=criteria["height_spread_max"],
+            )
         )
-    )
     gates.append(
         Gate(
             id="gci_fine",
@@ -482,11 +514,265 @@ def build_gates(evidence: dict) -> tuple[list[Gate], dict]:
     return gates, criteria
 
 
+
+# --------------------------------------------------------------------------- #
+# plane-strain grading (ledger acceptance: a/W = 0.3, plane strain)
+# --------------------------------------------------------------------------- #
+def build_plane_strain_evidence(payload: dict, stress_ladder: dict | None) -> dict:
+    """Grade the plane-strain ladder against Tada at the ledger acceptance point."""
+    finest = payload["levels"][-1]
+    cases = []
+    for case in finest["cases"]:
+        best = canonical(case)
+        spread = max(c["shape_factor"] for c in case["contours"]) - min(
+            c["shape_factor"] for c in case["contours"]
+        )
+        cases.append(
+            {
+                "a_over_w": case["a_over_w"],
+                "shape_factor_tada": case["shape_factor_tada"],
+                "shape_factor_fem": best["shape_factor"],
+                "rel_error": best["rel_error_vs_tada"],
+                "k_fem_pa_sqrt_m": best["k_pa_sqrt_m"],
+                "k_reference_pa_sqrt_m": case["k_reference_pa_sqrt_m"],
+                "path_spread": spread / best["shape_factor"],
+                "contour_station_fraction": best["station_fraction"],
+                "n_elements": case["n_elements"],
+                "reaction_ratio": case["reaction_ratio"],
+            }
+        )
+    gci = {
+        f"{alpha:.2f}": sent_gci(
+            payload["levels"], alpha=alpha, contour_fraction=CANONICAL_CONTOUR
+        )
+        for alpha in PLANE_STRAIN_RATIOS
+    }
+    ladder_errors = {
+        f"{alpha:.2f}": [
+            canonical(case)["rel_error_vs_tada"]
+            for level in payload["levels"]
+            for case in level["cases"]
+            if abs(case["a_over_w"] - alpha) < 1e-12
+        ]
+        for alpha in PLANE_STRAIN_RATIOS
+    }
+    stress_points = None
+    if stress_ladder is not None:
+        stress_points = []
+        for case in stress_ladder["levels"][-1]["cases"]:
+            best = canonical(case)
+            stress_points.append(
+                {
+                    "a_over_w": case["a_over_w"],
+                    "shape_factor_fem": best["shape_factor"],
+                    "shape_factor_tada": case["shape_factor_tada"],
+                }
+            )
+    return {
+        "finest_level": finest["level"],
+        "cases": cases,
+        "gci": gci,
+        "ladder_errors": ladder_errors,
+        "plane_stress_finest": stress_points,
+        "ladder": payload,
+    }
+
+
+def make_plane_strain_figures(evidence: dict, outdir: Path) -> dict:
+    plt = pyplot()
+    figures = {}
+
+    fig, ax = plt.subplots(figsize=(5.0, 3.6))
+    for key, errors in evidence["ladder_errors"].items():
+        elements = [
+            case["n_elements"]
+            for level in evidence["ladder"]["levels"]
+            for case in level["cases"]
+            if f"{case['a_over_w']:.2f}" == key
+        ]
+        ax.plot(elements, [abs(e) * 100.0 for e in errors], "o-", label=f"a/W = {key}")
+    ax.set_xscale("log")
+    ax.set_xlabel("number of T6 elements")
+    ax.set_ylabel("|K_FEM - K_Tada| / K_Tada  [%]")
+    ax.set_title("SENT J-integral convergence, plane strain")
+    ax.axhline(5.0, color="r", ls="--", lw=0.8, label="5 % ledger gate")
+    ax.axhline(3.0, color="k", ls="--", lw=0.8, label="3 % platform gate")
+    ax.legend(fontsize=8)
+    path = outdir / "sent_plane_strain_convergence.png"
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+    figures["sent_plane_strain_convergence.png"] = (
+        "Plane-strain |K_FEM - K_Tada|/K_Tada over the three-level ladder; "
+        "dashed lines mark the 5 % ledger and 3 % platform gates."
+    )
+
+    fig, ax = plt.subplots(figsize=(5.0, 3.6))
+    alphas = np.linspace(0.05, 0.6, 60)
+    ax.plot(
+        alphas,
+        [
+            1.12 - 0.231 * x + 10.55 * x**2 - 21.72 * x**3 + 30.39 * x**4
+            for x in alphas
+        ],
+        "k-",
+        lw=1.2,
+        label="Tada F(a/W)",
+    )
+    if evidence["plane_stress_finest"]:
+        ax.plot(
+            [c["a_over_w"] for c in evidence["plane_stress_finest"]],
+            [c["shape_factor_fem"] for c in evidence["plane_stress_finest"]],
+            "s",
+            mfc="none",
+            ms=6,
+            label="FEM, plane stress (finest)",
+        )
+    ax.plot(
+        [c["a_over_w"] for c in evidence["cases"]],
+        [c["shape_factor_fem"] for c in evidence["cases"]],
+        "o",
+        ms=6,
+        label="FEM, plane strain (finest)",
+    )
+    ax.plot(
+        [c["a_over_w"] for c in evidence["cases"]],
+        [c["shape_factor_tada"] for c in evidence["cases"]],
+        "x",
+        ms=6,
+        label="Tada at graded a/W",
+    )
+    ax.set_xlabel("a/W")
+    ax.set_ylabel("F = K_I / (sigma sqrt(pi a))")
+    ax.set_title("Edge-crack geometry factor: plane strain vs handbook")
+    ax.legend(fontsize=8)
+    path = outdir / "sent_plane_strain_shape_factor.png"
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+    figures["sent_plane_strain_shape_factor.png"] = (
+        "Recovered geometry factor in plane strain (circles) against Tada's fit; "
+        "open squares are the plane-stress finest-mesh results of the original anchor run."
+    )
+
+    fig, ax = plt.subplots(figsize=(5.0, 3.6))
+    for case in evidence["ladder"]["levels"][-1]["cases"]:
+        ax.plot(
+            [c["station_fraction"] for c in case["contours"]],
+            [c["shape_factor"] for c in case["contours"]],
+            "o-",
+            ms=3,
+            label=f"a/W = {case['a_over_w']:.2f}",
+        )
+    ax.set_xlabel("contour station fraction r/R(theta)")
+    ax.set_ylabel("F from J")
+    ax.set_title("J path independence, plane strain, finest mesh")
+    ax.legend(fontsize=8)
+    path = outdir / "sent_plane_strain_path_independence.png"
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+    figures["sent_plane_strain_path_independence.png"] = (
+        "Recovered geometry factor along the J contour station in plane strain; "
+        "the plateau is the numerical F."
+    )
+    return figures
+
+
+def build_plane_strain_gates(evidence: dict) -> tuple[list[Gate], dict]:
+    criteria = {
+        "k_rel_error_ledger_max": 0.05,
+        "k_rel_error_platform_max": 0.03,
+        "path_spread_max": 0.01,
+        "reaction_balance_max": 1e-9,
+        "gci_fine_max": 0.05,
+    }
+    gates: list[Gate] = []
+    for case in evidence["cases"]:
+        gates.append(
+            Gate(
+                id=f"ps_k_error_ledger_a_over_w_{case['a_over_w']:.2f}",
+                quantity=(
+                    f"|K_FEM - K_Tada| / K_Tada at a/W = {case['a_over_w']:.2f}, "
+                    "finest mesh, plane strain"
+                ),
+                reference="K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed.",
+                value=abs(case["rel_error"]),
+                threshold=criteria["k_rel_error_ledger_max"],
+                note=f"F_FEM = {case['shape_factor_fem']:.4f} vs F_Tada = {case['shape_factor_tada']:.4f}",
+            )
+        )
+        gates.append(
+            Gate(
+                id=f"ps_k_error_platform_a_over_w_{case['a_over_w']:.2f}",
+                quantity=(
+                    f"|K_FEM - K_Tada| / K_Tada at a/W = {case['a_over_w']:.2f}, "
+                    "finest mesh, plane strain (platform 3 % gate)"
+                ),
+                reference="platform accuracy standard",
+                value=abs(case["rel_error"]),
+                threshold=criteria["k_rel_error_platform_max"],
+            )
+        )
+    gates.append(
+        Gate(
+            id="ps_path_independence",
+            quantity="max spread of F over the eight contour stations, finest mesh, plane strain",
+            reference="J is path independent for a stationary crack in an elastic body",
+            value=max(c["path_spread"] for c in evidence["cases"]),
+            threshold=criteria["path_spread_max"],
+        )
+    )
+    gates.append(
+        Gate(
+            id="ps_reaction_balance",
+            quantity="max |vertical reaction / applied load - 1|, all finest-mesh cases, plane strain",
+            reference="global equilibrium of the discrete system",
+            value=max(abs(c["reaction_ratio"] - 1.0) for c in evidence["cases"]),
+            threshold=criteria["reaction_balance_max"],
+        )
+    )
+    # Roache's GCI is only meaningful in the asymptotic range; when the
+    # observed order collapses toward zero the sequence is flat to within the
+    # constant (H/W = 2) bias and (r^p - 1) in the denominator drives the
+    # index to infinity.  Grade the GCI on the cases with a meaningful order
+    # and report the medium->fine relative change for the rest.
+    gci_values = [
+        g["gci_fine"]
+        for g in evidence["gci"].values()
+        if math.isfinite(g["gci_fine"]) and g["observed_order"] >= 0.25
+    ]
+    excluded = [
+        key for key, g in evidence["gci"].items()
+        if math.isfinite(g["gci_fine"]) and g["observed_order"] < 0.25
+    ]
+    gates.append(
+        Gate(
+            id="ps_gci_fine",
+            quantity="max Roache GCI(F) of the three-level ladder, plane strain (observed order >= 0.25)",
+            reference="grid convergence index, Fs = 1.25, r = 2",
+            value=max(gci_values, default=float("nan")),
+            threshold=criteria["gci_fine_max"],
+            note=(
+                "excluded (observed order < 0.25, GCI not applicable): "
+                + ", ".join(
+                    f"a/W = {key} (p = {evidence['gci'][key]['observed_order']:.3f}, "
+                    f"medium->fine change {evidence['gci'][key]['relative_change'] * 100:.2f} %)"
+                    for key in excluded
+                )
+                if excluded
+                else "all cases graded"
+            ),
+        )
+    )
+    return gates, criteria
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--stage",
-        choices=("ladder", "control", "height", "field", "assemble", "all"),
+        choices=("ladder", "control", "height", "field", "plane_strain", "assemble", "all"),
         default="all",
     )
     args = parser.parse_args()
@@ -504,14 +790,40 @@ def main() -> int:
     if args.stage in ("field", "all"):
         write_json(cache_path("field"), run_field())
         print("field done", flush=True)
+    if args.stage in ("plane_strain", "all"):
+        write_json(cache_path("plane_strain"), run_plane_strain())
+        print("plane_strain done", flush=True)
     if args.stage in ("assemble", "all"):
-        ladder = json.loads(cache_path("ladder").read_text())
-        control = json.loads(cache_path("control").read_text())
-        height = json.loads(cache_path("height").read_text())
-        field = json.loads(cache_path("field").read_text())
+        def _load(name: str):
+            path = cache_path(name)
+            return json.loads(path.read_text()) if path.exists() else None
+
+        ladder = _load("ladder")
+        control = _load("control")
+        height = _load("height")
+        field = _load("field")
+        if ladder is None or control is None:
+            raise SystemExit("assemble requires the ladder and control caches")
+        not_run = [name for name, value in (("height", height), ("field", field))
+                   if value is None]
         evidence = build_evidence(ladder, control, height, field)
         figures = make_figures(evidence, HERE)
         gates, criteria = build_gates(evidence)
+        ps_payload = (
+            json.loads(cache_path("plane_strain").read_text())
+            if cache_path("plane_strain").exists()
+            else None
+        )
+        ps_evidence = (
+            build_plane_strain_evidence(ps_payload, ladder)
+            if ps_payload is not None
+            else None
+        )
+        if ps_evidence is not None:
+            figures.update(make_plane_strain_figures(ps_evidence, HERE))
+            ps_gates, ps_criteria = build_plane_strain_gates(ps_evidence)
+            gates.extend(ps_gates)
+            criteria.update(ps_criteria)
         result = {
             "anchor": ANCHOR,
             "title": TITLE,
@@ -535,12 +847,27 @@ def main() -> int:
                 "levels": [dict(level) for level in DEFAULT_SENT_LEVELS],
             },
             "evidence": {key: value for key, value in evidence.items() if key != "field"},
-            "field_summary": {
-                "a_over_w": field["a_over_w"],
-                "n_nodes": field["n_nodes"],
-                "n_elements": field["n_elements"],
-                "ligament_points": len(field["ligament"]),
-            },
+            "plane_strain": (
+                {
+                    "cases": ps_evidence["cases"],
+                    "gci": ps_evidence["gci"],
+                    "ladder_errors": ps_evidence["ladder_errors"],
+                    "finest_level": ps_evidence["finest_level"],
+                }
+                if ps_evidence is not None
+                else None
+            ),
+            "not_run_stages": not_run,
+            "field_summary": (
+                {
+                    "a_over_w": field["a_over_w"],
+                    "n_nodes": field["n_nodes"],
+                    "n_elements": field["n_elements"],
+                    "ligament_points": len(field["ligament"]),
+                }
+                if field is not None
+                else None
+            ),
             "figures": list(figures),
         }
         write_json(HERE / "result.json", result)
@@ -553,11 +880,14 @@ def main() -> int:
             artifacts={name: name for name in figures}
             | {"result": "result.json", "gates": "gates_verified.json"},
             limitations=[
+                *(f"stage {name} not run in this artifact set (see not_run_stages); its gates are absent, not passed"
+                  for name in not_run),
                 "linear elastic plane stress, small strain, stationary mode-I crack, no plasticity, no crack closure",
                 "Tada's polynomial fit is quoted for a/W <= 0.6 and H/W >= 1; the ladder is restricted to that envelope",
                 "the non-singular (mid-side-node-at-midpoint) control does NOT fail closed at this mesh density: it reaches the same 3 % band, so the J path is shown to be insensitive to the tip enrichment for contours outside the innermost ring; the enrichment is nevertheless required for the near-tip field (see the r^-1/2 figure)",
                 "the strip height truncates the far field; the residual H sensitivity is measured by the height gate rather than assumed",
                 "K is compared at one canonical contour (r = 0.15 R(theta)) with the eight-station path spread reported as its own gate",
+                "the plane-strain section grades the ledger acceptance point a/W = 0.3 with E' = E/(1-nu^2); the plane-stress section above remains the original anchor evidence",
             ],
         )
         write_json(HERE / "gates_verified.json", manifest)

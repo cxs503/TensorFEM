@@ -1,0 +1,204 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_sent_j_integral",
+  "title": "Single-edge-notched tension plate: J-integral K_I against Tada's handbook factor",
+  "mission": "CASE-FEM-JINTEGRAL-EDGE-CRACK",
+  "generated_at": "2026-11-13T00:36:39+00:00",
+  "criteria": {
+    "k_rel_error_max": 0.03,
+    "path_spread_max": 0.01,
+    "reaction_balance_max": 1e-09,
+    "height_spread_max": 0.01,
+    "gci_fine_max": 0.05,
+    "discrimination_min_shape_factor": 1.15,
+    "refinement_levels_min": 3,
+    "k_rel_error_ledger_max": 0.05,
+    "k_rel_error_platform_max": 0.03
+  },
+  "gates": [
+    {
+      "id": "k_error_a_over_w_0.20",
+      "quantity": "|K_FEM - K_Tada| / K_Tada at a/W = 0.20, finest mesh",
+      "reference": "K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed.",
+      "value": 0.00984679381750705,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "F_FEM = 1.3572 vs F_Tada = 1.3707"
+    },
+    {
+      "id": "k_error_a_over_w_0.35",
+      "quantity": "|K_FEM - K_Tada| / K_Tada at a/W = 0.35, finest mesh",
+      "reference": "K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed.",
+      "value": 0.004517942526986041,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "F_FEM = 1.8479 vs F_Tada = 1.8563"
+    },
+    {
+      "id": "k_error_a_over_w_0.50",
+      "quantity": "|K_FEM - K_Tada| / K_Tada at a/W = 0.50, finest mesh",
+      "reference": "K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed.",
+      "value": 0.00860179101223128,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "F_FEM = 2.8021 vs F_Tada = 2.8264"
+    },
+    {
+      "id": "path_independence",
+      "quantity": "max spread of F over the eight contour stations, finest mesh",
+      "reference": "J is path independent for a stationary crack in an elastic body",
+      "value": 0.005807132128759197,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "reaction_balance",
+      "quantity": "max |vertical reaction / applied load - 1|, all finest-mesh cases",
+      "reference": "global equilibrium of the discrete system",
+      "value": 2.473576898864849e-13,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "gci_fine",
+      "quantity": "max Roache GCI(F) of the three-level ladder",
+      "reference": "grid convergence index, Fs = 1.25, r = 2",
+      "value": 0.022166707889037313,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "edge_crack_discrimination",
+      "quantity": "F at a/W = 0.20 (finest mesh)",
+      "reference": "finite-width edge crack must exceed the central-crack factor 1",
+      "value": 1.3571673541989207,
+      "threshold": 1.15,
+      "operator": ">=",
+      "passed": true,
+      "note": "a central-crack model (missing free surface behind the mouth) would land near 1.0 and fail this gate"
+    },
+    {
+      "id": "refinement_levels",
+      "quantity": "number of grid levels in the ladder",
+      "reference": "three systematically refined meshes are required for a GCI",
+      "value": 3.0,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "ps_k_error_ledger_a_over_w_0.20",
+      "quantity": "|K_FEM - K_Tada| / K_Tada at a/W = 0.20, finest mesh, plane strain",
+      "reference": "K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed.",
+      "value": 0.01046265594976061,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "F_FEM = 1.3563 vs F_Tada = 1.3707"
+    },
+    {
+      "id": "ps_k_error_platform_a_over_w_0.20",
+      "quantity": "|K_FEM - K_Tada| / K_Tada at a/W = 0.20, finest mesh, plane strain (platform 3 % gate)",
+      "reference": "platform accuracy standard",
+      "value": 0.01046265594976061,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "ps_k_error_ledger_a_over_w_0.30",
+      "quantity": "|K_FEM - K_Tada| / K_Tada at a/W = 0.30, finest mesh, plane strain",
+      "reference": "K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed.",
+      "value": 0.007375127549096671,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "F_FEM = 1.6477 vs F_Tada = 1.6599"
+    },
+    {
+      "id": "ps_k_error_platform_a_over_w_0.30",
+      "quantity": "|K_FEM - K_Tada| / K_Tada at a/W = 0.30, finest mesh, plane strain (platform 3 % gate)",
+      "reference": "platform accuracy standard",
+      "value": 0.007375127549096671,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "ps_k_error_ledger_a_over_w_0.50",
+      "quantity": "|K_FEM - K_Tada| / K_Tada at a/W = 0.50, finest mesh, plane strain",
+      "reference": "K_I = sigma sqrt(pi a) F(a/W), Tada Paris & Irwin 3rd ed.",
+      "value": 0.008373726127958104,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "F_FEM = 2.8027 vs F_Tada = 2.8264"
+    },
+    {
+      "id": "ps_k_error_platform_a_over_w_0.50",
+      "quantity": "|K_FEM - K_Tada| / K_Tada at a/W = 0.50, finest mesh, plane strain (platform 3 % gate)",
+      "reference": "platform accuracy standard",
+      "value": 0.008373726127958104,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "ps_path_independence",
+      "quantity": "max spread of F over the eight contour stations, finest mesh, plane strain",
+      "reference": "J is path independent for a stationary crack in an elastic body",
+      "value": 0.004252253915956608,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "ps_reaction_balance",
+      "quantity": "max |vertical reaction / applied load - 1|, all finest-mesh cases, plane strain",
+      "reference": "global equilibrium of the discrete system",
+      "value": 2.320366121466577e-13,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "ps_gci_fine",
+      "quantity": "max Roache GCI(F) of the three-level ladder, plane strain (observed order >= 0.25)",
+      "reference": "grid convergence index, Fs = 1.25, r = 2",
+      "value": 0.020094849379764492,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "excluded (observed order < 0.25, GCI not applicable): a/W = 0.30 (p = 0.055, medium->fine change 0.61 %)"
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "undefined_terms": [],
+  "artifacts": {
+    "sent_convergence.png": "sent_convergence.png",
+    "sent_shape_factor.png": "sent_shape_factor.png",
+    "sent_path_independence.png": "sent_path_independence.png",
+    "sent_plane_strain_convergence.png": "sent_plane_strain_convergence.png",
+    "sent_plane_strain_shape_factor.png": "sent_plane_strain_shape_factor.png",
+    "sent_plane_strain_path_independence.png": "sent_plane_strain_path_independence.png",
+    "result": "result.json",
+    "gates": "gates_verified.json"
+  },
+  "limitations": [
+    "stage height not run in this artifact set (see not_run_stages); its gates are absent, not passed",
+    "stage field not run in this artifact set (see not_run_stages); its gates are absent, not passed",
+    "linear elastic plane stress, small strain, stationary mode-I crack, no plasticity, no crack closure",
+    "Tada's polynomial fit is quoted for a/W <= 0.6 and H/W >= 1; the ladder is restricted to that envelope",
+    "the non-singular (mid-side-node-at-midpoint) control does NOT fail closed at this mesh density: it reaches the same 3 % band, so the J path is shown to be insensitive to the tip enrichment for contours outside the innermost ring; the enrichment is nevertheless required for the near-tip field (see the r^-1/2 figure)",
+    "the strip height truncates the far field; the residual H sensitivity is measured by the height gate rather than assumed",
+    "K is compared at one canonical contour (r = 0.15 R(theta)) with the eight-station path spread reported as its own gate",
+    "the plane-strain section grades the ledger acceptance point a/W = 0.3 with E' = E/(1-nu^2); the plane-stress section above remains the original anchor evidence"
+  ]
+}
