@@ -1,0 +1,726 @@
+{
+  "anchor": "fem_cantilever_distributed",
+  "mission": "CASE-CANTILEVER-TIP",
+  "title": "CASE-CANTILEVER-TIP distributed-load ladder: consistent load vector, fixed-end forces and the shear-free end rotation, graded on an Euler-Bernoulli frame and a Timoshenko beam",
+  "generated_at": "2026-11-13T14:06:39+00:00",
+  "parameters": {
+    "E": 200000000000.0,
+    "nu": 0.3,
+    "b": 0.01,
+    "h": 0.01,
+    "kappa": 0.8333333333333334,
+    "G": 76923076923.07692,
+    "A": 0.0001,
+    "I": 8.333333333333335e-10,
+    "q": 5.0,
+    "tip_moment": 5.0,
+    "ladder_L_over_h": [
+      100.0,
+      20.0,
+      10.0,
+      5.0
+    ],
+    "meshes": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "partial_fraction": 0.6,
+    "tolerance": 0.03
+  },
+  "oracles": {
+    "castigliano": {
+      "method": "Castigliano unit-load: delta = int M m/(EI) + int V v/(kappa G A), m = L - x, v = 1; rotation with m = 1, v = dm/dx = 0",
+      "residuals_symbolic": {
+        "udl_deflection": "0",
+        "udl_rotation": "0",
+        "partial_deflection": "0",
+        "partial_rotation": "0",
+        "moment_rotation": "0",
+        "moment_deflection": "0"
+      },
+      "max_abs_residual": 0.0,
+      "rotation_shear_work_symbolic": "0"
+    },
+    "fixed_end_forces": {
+      "shear_at_i": "L*q/2",
+      "moment_at_i": "-L**2*q/12",
+      "moment_at_j": "-L**2*q/12",
+      "phi": "12*EI/(L**2*kGA)",
+      "phi_dependence_residual": "0",
+      "d_moment_d_phi": "0",
+      "phi_free": true,
+      "max_abs_residual": 0.0
+    },
+    "exact_field_symbolic": {
+      "exact_full": {
+        "w": "q*(12*EI*(2*L - Min(L, x)) + kGA*(12*L**2*x - 6*L*(L + 2*x)*Min(L, x) + 4*(2*L + x)*Min(L, x)**2 - 3*Min(L, x)**3))*Min(L, x)/(24*EI*kGA)",
+        "theta": "L**3*q/(6*EI)"
+      },
+      "exact_partial": {
+        "w": "q*(12*EI*(2*a - Min(a, x)) + kGA*(12*a**2*x - 6*a*(a + 2*x)*Min(a, x) + 4*(2*a + x)*Min(a, x)**2 - 3*Min(a, x)**3))*Min(a, x)/(24*EI*kGA)",
+        "theta": "a**3*q/(6*EI)"
+      }
+    }
+  },
+  "cases": [
+    {
+      "name": "uniform_load",
+      "note": "resultant q*L equals the 5 N tip load of the slender rung",
+      "slenderness": 100.0,
+      "length": 1.0,
+      "delta_eb": 0.0037499999999999994,
+      "delta_ti": 0.0037503899999999993,
+      "shear_share": 0.00010400000000000001,
+      "theta_exact": 0.004999999999999999,
+      "frame": {
+        "1": {
+          "tip_deflection": 0.003749999999999998,
+          "tip_rotation": 0.0049999999999999975,
+          "rel_error_vs_eb": 3.4694469519536147e-16,
+          "rel_error_vs_ti": 0.00010398918512505456,
+          "rel_error_rotation": 3.4694469519536147e-16
+        },
+        "2": {
+          "tip_deflection": 0.0037499999999999977,
+          "tip_rotation": 0.004999999999999997,
+          "rel_error_vs_eb": 4.625929269271486e-16,
+          "rel_error_vs_ti": 0.0001039891851251702,
+          "rel_error_rotation": 5.204170427930422e-16
+        },
+        "4": {
+          "tip_deflection": 0.0037500000000000606,
+          "tip_rotation": 0.0050000000000000756,
+          "rel_error_vs_eb": 1.630640067418199e-14,
+          "rel_error_vs_ti": 0.00010398918510840295,
+          "rel_error_rotation": 1.5265566588595906e-14
+        },
+        "8": {
+          "tip_deflection": 0.0037500000000007814,
+          "tip_rotation": 0.005000000000001081,
+          "rel_error_vs_eb": 2.0851376181241224e-13,
+          "rel_error_vs_ti": 0.00010398918491621558,
+          "rel_error_rotation": 2.1632001745430787e-13
+        }
+      },
+      "timoshenko": {
+        "1": {
+          "tip_deflection": 0.0037503899999999993,
+          "tip_rotation": 0.004999999999999998,
+          "rel_error_vs_ti": 0.0,
+          "rel_error_rotation": 1.7347234759768073e-16
+        },
+        "2": {
+          "tip_deflection": 0.003750389999999999,
+          "tip_rotation": 0.004999999999999998,
+          "rel_error_vs_ti": 1.1563620556640825e-16,
+          "rel_error_rotation": 1.7347234759768073e-16
+        },
+        "4": {
+          "tip_deflection": 0.003750389999999933,
+          "tip_rotation": 0.00499999999999992,
+          "rel_error_vs_ti": 1.7692339451660462e-14,
+          "rel_error_rotation": 1.5785983631388948e-14
+        },
+        "8": {
+          "tip_deflection": 0.00375038999999857,
+          "tip_rotation": 0.004999999999998013,
+          "rel_error_vs_ti": 3.811369335468816e-13,
+          "rel_error_rotation": 3.972516759986889e-13
+        }
+      }
+    },
+    {
+      "name": "partial_load",
+      "length": 0.1,
+      "a": 0.06,
+      "fraction": 0.6,
+      "delta_bending_exact": 9.179999999999999e-08,
+      "delta_timoshenko_exact": 9.320399999999999e-08,
+      "theta_exact": 1.0799999999999996e-06,
+      "delta_shear_exact": 1.4039999999999997e-09,
+      "shear_share": 0.015294117647058823,
+      "root_shear_exact": 0.3,
+      "root_moment_exact": 0.009,
+      "conforming": {
+        "tip_deflection": 9.18000000000021e-08,
+        "tip_rotation": 1.0800000000000271e-06,
+        "reaction": [
+          0.0,
+          -0.300000000000002,
+          -0.009000000000000128
+        ],
+        "root_end_forces": [
+          0.0,
+          -0.30000000000000193,
+          -0.009000000000000128,
+          0.0,
+          0.20000000000000195,
+          0.004000000000000092
+        ],
+        "nodes": [
+          0.0,
+          0.02,
+          0.04,
+          0.060000000000000005,
+          0.08,
+          0.1
+        ],
+        "transverse_displacement": [
+          0.0,
+          8.600000000000138e-09,
+          2.7200000000000495e-08,
+          4.8600000000000984e-08,
+          7.020000000000154e-08,
+          9.18000000000021e-08
+        ],
+        "nodal_rotation": [
+          0.0,
+          7.60000000000013e-07,
+          1.0400000000000218e-06,
+          1.0800000000000263e-06,
+          1.0800000000000286e-06,
+          1.0800000000000271e-06
+        ]
+      },
+      "nonconforming_single_element": {
+        "tip_deflection": 1.1669921875000166e-07,
+        "tip_rotation": 1.4843750000000227e-06,
+        "reaction": [
+          0.0,
+          -0.12500000000000178,
+          -0.007812500000000099
+        ],
+        "root_end_forces": [
+          0.0,
+          -0.12500000000000186,
+          -0.007812500000000099,
+          0.0,
+          0.12500000000000186,
+          0.0046875000000000605
+        ],
+        "nodes": [
+          0.0,
+          0.025,
+          0.05,
+          0.07500000000000001,
+          0.1
+        ],
+        "transverse_displacement": [
+          0.0,
+          1.2695312500000163e-08,
+          4.296875000000057e-08,
+          7.958984375000111e-08,
+          1.1669921875000166e-07
+        ],
+        "nodal_rotation": [
+          0.0,
+          9.375000000000119e-07,
+          1.4062500000000194e-06,
+          1.4843750000000219e-06,
+          1.4843750000000227e-06
+        ]
+      },
+      "conforming_timoshenko": {
+        "tip_deflection": 9.320399999999645e-08,
+        "tip_rotation": 1.0799999999999477e-06
+      },
+      "conforming_rel_error": 2.306734605812365e-14,
+      "nonconforming_rel_error": 0.2712333197167938,
+      "conforming_rotation_rel_error": 2.548941739422664e-14,
+      "timoshenko_rel_error": 3.805577514513736e-14,
+      "timoshenko_rotation_rel_error": 4.8037748166042515e-14
+    },
+    {
+      "name": "tip_moment",
+      "length": 0.1,
+      "tip_moment": 5.0,
+      "theta_exact": 0.0029999999999999996,
+      "delta_exact": 0.00015000000000000001,
+      "frame": {
+        "tip_deflection": 0.00015000000000000197,
+        "tip_rotation": 0.0030000000000000296,
+        "reaction": [
+          0.0,
+          -1.3642420526593924e-12,
+          -5.000000000000101
+        ],
+        "root_end_forces": [
+          0.0,
+          -1.3343064431126125e-12,
+          -5.000000000000101,
+          0.0,
+          1.3343064431126125e-12,
+          5.000000000000072
+        ],
+        "nodes": [
+          0.0,
+          0.025,
+          0.05,
+          0.07500000000000001,
+          0.1
+        ],
+        "transverse_displacement": [
+          0.0,
+          9.375000000000172e-06,
+          3.750000000000063e-05,
+          8.437500000000129e-05,
+          0.00015000000000000197
+        ],
+        "nodal_rotation": [
+          0.0,
+          0.0007500000000000129,
+          0.0015000000000000226,
+          0.0022500000000000276,
+          0.0030000000000000296
+        ]
+      },
+      "rel_error_rotation": 9.974659986866642e-15,
+      "rel_error_deflection": 1.3010426069826052e-14
+    },
+    {
+      "name": "end_force_recovery",
+      "length": 0.05,
+      "frame_root_end_forces": [
+        0.0,
+        -0.25000000000001,
+        -0.006250000000000633,
+        0.0,
+        0.21875000000000996,
+        0.004785156250000575
+      ],
+      "exact_root_shear": 0.25,
+      "exact_root_moment": 0.006250000000000001,
+      "shear_rel_error": 3.9968028886505635e-14,
+      "moment_rel_error": 1.0103029524088922e-13,
+      "reaction": [
+        0.0,
+        -0.25000000000000977,
+        -0.006250000000000633
+      ]
+    }
+  ],
+  "ladder": [
+    {
+      "slenderness": 100.0,
+      "length": 1.0,
+      "delta_eb": 0.0037499999999999994,
+      "delta_ti": 0.0037503899999999993,
+      "delta_shear": 3.8999999999999997e-07,
+      "shear_share": 0.00010400000000000001,
+      "shear_share_tip_load": 7.8e-05,
+      "oracle_gap": 0.00010399999999996062,
+      "theta_exact": 0.004999999999999999,
+      "frame": {
+        "1": {
+          "tip_deflection": 0.003749999999999998,
+          "tip_rotation": 0.0049999999999999975,
+          "rel_error_vs_eb": 3.4694469519536147e-16,
+          "rel_error_vs_ti": 0.00010398918512505456,
+          "rel_error_rotation": 3.4694469519536147e-16
+        },
+        "2": {
+          "tip_deflection": 0.0037499999999999977,
+          "tip_rotation": 0.004999999999999997,
+          "rel_error_vs_eb": 4.625929269271486e-16,
+          "rel_error_vs_ti": 0.0001039891851251702,
+          "rel_error_rotation": 5.204170427930422e-16
+        },
+        "4": {
+          "tip_deflection": 0.0037500000000000606,
+          "tip_rotation": 0.0050000000000000756,
+          "rel_error_vs_eb": 1.630640067418199e-14,
+          "rel_error_vs_ti": 0.00010398918510840295,
+          "rel_error_rotation": 1.5265566588595906e-14
+        },
+        "8": {
+          "tip_deflection": 0.0037500000000007814,
+          "tip_rotation": 0.005000000000001081,
+          "rel_error_vs_eb": 2.0851376181241224e-13,
+          "rel_error_vs_ti": 0.00010398918491621558,
+          "rel_error_rotation": 2.1632001745430787e-13
+        }
+      },
+      "timoshenko": {
+        "1": {
+          "tip_deflection": 0.0037503899999999993,
+          "tip_rotation": 0.004999999999999998,
+          "rel_error_vs_ti": 0.0,
+          "rel_error_rotation": 1.7347234759768073e-16
+        },
+        "2": {
+          "tip_deflection": 0.003750389999999999,
+          "tip_rotation": 0.004999999999999998,
+          "rel_error_vs_ti": 1.1563620556640825e-16,
+          "rel_error_rotation": 1.7347234759768073e-16
+        },
+        "4": {
+          "tip_deflection": 0.003750389999999933,
+          "tip_rotation": 0.00499999999999992,
+          "rel_error_vs_ti": 1.7692339451660462e-14,
+          "rel_error_rotation": 1.5785983631388948e-14
+        },
+        "8": {
+          "tip_deflection": 0.00375038999999857,
+          "tip_rotation": 0.004999999999998013,
+          "rel_error_vs_ti": 3.811369335468816e-13,
+          "rel_error_rotation": 3.972516759986889e-13
+        }
+      }
+    },
+    {
+      "slenderness": 20.0,
+      "length": 0.2,
+      "delta_eb": 6.000000000000001e-06,
+      "delta_ti": 6.015600000000001e-06,
+      "delta_shear": 1.56e-08,
+      "shear_share": 0.0026,
+      "shear_share_tip_load": 0.0019500000000000001,
+      "oracle_gap": 0.0026000000000000537,
+      "theta_exact": 4e-05,
+      "frame": {
+        "1": {
+          "tip_deflection": 5.9999999999999985e-06,
+          "tip_rotation": 3.999999999999998e-05,
+          "rel_error_vs_eb": 4.235164736271501e-16,
+          "rel_error_vs_ti": 0.0025932575304213816,
+          "rel_error_rotation": 5.082197683525802e-16
+        },
+        "2": {
+          "tip_deflection": 5.999999999999977e-06,
+          "tip_rotation": 3.999999999999982e-05,
+          "rel_error_vs_eb": 3.952820420520068e-15,
+          "rel_error_vs_ti": 0.0025932575304249018,
+          "rel_error_rotation": 4.573977915173222e-15
+        },
+        "4": {
+          "tip_deflection": 6.000000000000084e-06,
+          "tip_rotation": 4.000000000000058e-05,
+          "rel_error_vs_eb": 1.3834871471820236e-14,
+          "rel_error_vs_ti": 0.00259325753040716,
+          "rel_error_rotation": 1.4399560103323106e-14
+        },
+        "8": {
+          "tip_deflection": 6.000000000000924e-06,
+          "tip_rotation": 4.000000000000756e-05,
+          "rel_error_vs_eb": 1.538776520845312e-13,
+          "rel_error_vs_ti": 0.0025932575302674804,
+          "rel_error_rotation": 1.8888834723770895e-13
+        }
+      },
+      "timoshenko": {
+        "1": {
+          "tip_deflection": 6.015600000000002e-06,
+          "tip_rotation": 4.000000000000002e-05,
+          "rel_error_vs_ti": 1.408060621142197e-16,
+          "rel_error_rotation": 3.388131789017201e-16
+        },
+        "2": {
+          "tip_deflection": 6.015600000000002e-06,
+          "tip_rotation": 4.000000000000002e-05,
+          "rel_error_vs_ti": 1.408060621142197e-16,
+          "rel_error_rotation": 3.388131789017201e-16
+        },
+        "4": {
+          "tip_deflection": 6.015599999999924e-06,
+          "tip_rotation": 3.9999999999999515e-05,
+          "rel_error_vs_ti": 1.2813351652393994e-14,
+          "rel_error_rotation": 1.2197274440461923e-14
+        },
+        "8": {
+          "tip_deflection": 6.015599999999977e-06,
+          "tip_rotation": 4.000000000000002e-05,
+          "rel_error_vs_ti": 4.0833758013123716e-15,
+          "rel_error_rotation": 3.388131789017201e-16
+        }
+      }
+    },
+    {
+      "slenderness": 10.0,
+      "length": 0.1,
+      "delta_eb": 3.7500000000000006e-07,
+      "delta_ti": 3.7890000000000004e-07,
+      "delta_shear": 3.9e-09,
+      "shear_share": 0.0104,
+      "shear_share_tip_load": 0.0078000000000000005,
+      "oracle_gap": 0.010399999999999932,
+      "theta_exact": 5e-06,
+      "frame": {
+        "1": {
+          "tip_deflection": 3.749999999999999e-07,
+          "tip_rotation": 4.999999999999998e-06,
+          "rel_error_vs_eb": 4.235164736271501e-16,
+          "rel_error_vs_ti": 0.010292953285827747,
+          "rel_error_rotation": 5.082197683525802e-16
+        },
+        "2": {
+          "tip_deflection": 3.749999999999986e-07,
+          "tip_rotation": 4.9999999999999775e-06,
+          "rel_error_vs_eb": 3.952820420520068e-15,
+          "rel_error_vs_ti": 0.010292953285831241,
+          "rel_error_rotation": 4.573977915173222e-15
+        },
+        "4": {
+          "tip_deflection": 3.7500000000000525e-07,
+          "tip_rotation": 5.000000000000072e-06,
+          "rel_error_vs_eb": 1.3834871471820236e-14,
+          "rel_error_vs_ti": 0.010292953285813637,
+          "rel_error_rotation": 1.4399560103323106e-14
+        },
+        "8": {
+          "tip_deflection": 3.7500000000005777e-07,
+          "tip_rotation": 5.000000000000945e-06,
+          "rel_error_vs_eb": 1.538776520845312e-13,
+          "rel_error_vs_ti": 0.010292953285675034,
+          "rel_error_rotation": 1.8888834723770895e-13
+        }
+      },
+      "timoshenko": {
+        "1": {
+          "tip_deflection": 3.7889999999999993e-07,
+          "tip_rotation": 4.999999999999999e-06,
+          "rel_error_vs_ti": 2.79438158898885e-16,
+          "rel_error_rotation": 3.388131789017201e-16
+        },
+        "2": {
+          "tip_deflection": 3.789000000000009e-07,
+          "tip_rotation": 5.000000000000013e-06,
+          "rel_error_vs_ti": 2.23550527119108e-15,
+          "rel_error_rotation": 2.5410988417629006e-15
+        },
+        "4": {
+          "tip_deflection": 3.7890000000000247e-07,
+          "tip_rotation": 5.000000000000035e-06,
+          "rel_error_vs_ti": 6.427077654674355e-15,
+          "rel_error_rotation": 6.945670167485262e-15
+        },
+        "8": {
+          "tip_deflection": 3.7889999999999003e-07,
+          "tip_rotation": 4.999999999999843e-06,
+          "rel_error_vs_ti": 2.6406906015944633e-14,
+          "rel_error_rotation": 3.150962563785997e-14
+        }
+      }
+    },
+    {
+      "slenderness": 5.0,
+      "length": 0.05,
+      "delta_eb": 2.3437500000000004e-08,
+      "delta_ti": 2.4412500000000004e-08,
+      "delta_shear": 9.75e-10,
+      "shear_share": 0.0416,
+      "shear_share_tip_load": 0.031200000000000002,
+      "oracle_gap": 0.04160000000000001,
+      "theta_exact": 6.25e-07,
+      "frame": {
+        "1": {
+          "tip_deflection": 2.3437499999999994e-08,
+          "tip_rotation": 6.249999999999997e-07,
+          "rel_error_vs_eb": 4.235164736271501e-16,
+          "rel_error_vs_ti": 0.03993855606758875,
+          "rel_error_rotation": 5.082197683525802e-16
+        },
+        "2": {
+          "tip_deflection": 2.343749999999991e-08,
+          "tip_rotation": 6.249999999999972e-07,
+          "rel_error_vs_eb": 3.952820420520068e-15,
+          "rel_error_vs_ti": 0.03993855606759213,
+          "rel_error_rotation": 4.573977915173222e-15
+        },
+        "4": {
+          "tip_deflection": 2.3437500000000328e-08,
+          "tip_rotation": 6.25000000000009e-07,
+          "rel_error_vs_eb": 1.3834871471820236e-14,
+          "rel_error_vs_ti": 0.03993855606757506,
+          "rel_error_rotation": 1.4399560103323106e-14
+        },
+        "8": {
+          "tip_deflection": 2.343750000000361e-08,
+          "tip_rotation": 6.250000000001181e-07,
+          "rel_error_vs_eb": 1.538776520845312e-13,
+          "rel_error_vs_ti": 0.03993855606744061,
+          "rel_error_rotation": 1.8888834723770895e-13
+        }
+      },
+      "timoshenko": {
+        "1": {
+          "tip_deflection": 2.4412500000000014e-08,
+          "tip_rotation": 6.250000000000004e-07,
+          "rel_error_vs_ti": 4.0660183719964486e-16,
+          "rel_error_rotation": 5.082197683525802e-16
+        },
+        "2": {
+          "tip_deflection": 2.4412500000000054e-08,
+          "tip_rotation": 6.250000000000016e-07,
+          "rel_error_vs_ti": 2.0330091859982242e-15,
+          "rel_error_rotation": 2.5410988417629006e-15
+        },
+        "4": {
+          "tip_deflection": 2.4412500000000028e-08,
+          "tip_rotation": 6.250000000000003e-07,
+          "rel_error_vs_ti": 9.487376201325047e-16,
+          "rel_error_rotation": 3.388131789017201e-16
+        },
+        "8": {
+          "tip_deflection": 2.441250000000069e-08,
+          "tip_rotation": 6.250000000000199e-07,
+          "rel_error_vs_ti": 2.8055526766775495e-14,
+          "rel_error_rotation": 3.167903222731083e-14
+        }
+      }
+    }
+  ],
+  "gates": [
+    {
+      "id": "oracle_castigliano_selfcheck",
+      "quantity": "symbolic residual of the unit-load re-derivation of all six closed forms",
+      "reference": "Castigliano: delta = int M m/(EI) + int V v/(kappa G A); rotation with m = 1, v = 0",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true,
+      "note": "uniform, partial and tip-moment oracles are machine-derived; no handbook digit is copied"
+    },
+    {
+      "id": "rotation_has_no_shear_term",
+      "quantity": "symbolic shear work of the unit-moment rotation under a uniform load",
+      "reference": "v = dm/dx = 0 for a unit end moment, so theta = q L^3/(6 EI) exactly",
+      "value": 0.0,
+      "threshold": 1e-30,
+      "operator": "<=",
+      "passed": true,
+      "note": "falsifiable: a model that adds q L/(kappa G A) to the rotation would be wrong"
+    },
+    {
+      "id": "fixed_end_forces_phi_independent",
+      "quantity": "symbolic residual of V(0)=qL/2, M(0)=M(L)=-qL^2/12 for the clamped-clamped Timoshenko element",
+      "reference": "exact solution of EI theta''=V, V=kappa G A (w'-theta), V'=-q with four zero end displacements",
+      "value": 0.0,
+      "threshold": 1e-24,
+      "operator": "<=",
+      "passed": true,
+      "note": "dM/dphi = 0: the Timoshenko element reuses the Euler-Bernoulli load vector"
+    },
+    {
+      "id": "frame_uniform_load_nodal_exact",
+      "quantity": "max relative error of the frame tip deflection vs q L^4/(8 EI), n = 1..8",
+      "reference": "q L^4/(8 EI) at L/h = 100",
+      "value": 2.0851376181241224e-13,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "consistent load vector + fixed-end moment q L^2/12 at every mesh, including n = 1"
+    },
+    {
+      "id": "frame_partial_load_nodal_exact",
+      "quantity": "relative error of the frame tip deflection vs q a^3 (4L - a)/(24 EI)",
+      "reference": "q a^3 (4L - a)/(24 EI) at a = 0.6 L, conforming mesh (node at a)",
+      "value": 2.306734605812365e-14,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "shear-rigid frame against the bending-only oracle; the load boundary must coincide with a node"
+    },
+    {
+      "id": "partial_load_shear_share_measurable",
+      "quantity": "shear share q a^2/(2 kappa G A) / (q a^3 (4L-a)/(24 EI)) of the partial-load case",
+      "reference": "ratio of the two partial-load oracle terms",
+      "value": 0.015294117647058823,
+      "threshold": 0.01,
+      "operator": ">=",
+      "passed": true,
+      "note": "the frame's mesh-independent offset against the shear-inclusive oracle is exactly this term, so the two oracles must not be mixed"
+    },
+    {
+      "id": "frame_partial_rotation_exact",
+      "quantity": "relative error of the frame tip rotation vs q a^3/(6 EI)",
+      "reference": "partial-load rotation oracle",
+      "value": 2.548941739422664e-14,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "nodal rotation of the cubic Hermite field is exact for the cubic exact slope"
+    },
+    {
+      "id": "frame_tip_moment_exact",
+      "quantity": "max relative error of the frame tip rotation and deflection vs M L/(EI) and M L^2/(2 EI)",
+      "reference": "pure bending oracle at M = 5 N m",
+      "value": 1.3010426069826052e-14,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "constant moment: the Hermite field contains the exact solution"
+    },
+    {
+      "id": "timoshenko_uniform_load_nodal_exact",
+      "quantity": "max relative error of the Timoshenko tip deflection vs qL^4/(8EI)+qL^2/(2 kappa G A), n=1..8",
+      "reference": "shear-flexible oracle at L/h = 100",
+      "value": 3.811369335468816e-13,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "new load path (timoshenko_fixed_end_forces); the shear term is 1.0e-4 of the bending term here"
+    },
+    {
+      "id": "timoshenko_thick_rung_passes",
+      "quantity": "relative error of the Timoshenko tip deflection vs the shear-flexible oracle at L/h = 5",
+      "reference": "q L^4/(8 EI) + q L^2/(2 kappa G A)",
+      "value": 4.0660183719964486e-16,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "the same model is graded where the shear term is 4.2 % of the response"
+    },
+    {
+      "id": "thick_rung_oracle_separation",
+      "quantity": "(delta_TI - delta_EB)/delta_EB for a uniform load at L/h = 5",
+      "reference": "E/(3 kappa G)(h/L)^2",
+      "value": 0.04160000000000001,
+      "threshold": 0.03,
+      "operator": ">=",
+      "passed": true,
+      "note": "a uniform load separates the theories at a lower slenderness than a tip force does (4.16 % vs 3.12 % at the same L/h)"
+    },
+    {
+      "id": "shear_rigid_frame_rejected_at_thick_rung",
+      "quantity": "relative error of the shear-rigid frame vs the shear-flexible oracle at L/h = 5",
+      "reference": "q L^4/(8 EI) + q L^2/(2 kappa G A)",
+      "value": 0.03993855606758875,
+      "threshold": 0.03,
+      "operator": ">=",
+      "passed": true,
+      "note": "fail-closed pair with the gate above: a shear-rigid model must not pass where shear matters"
+    },
+    {
+      "id": "rotation_no_shear_term_numerical",
+      "quantity": "relative error of the tip rotation at L/h = 5, where the shear share of the deflection is 4.2 %",
+      "reference": "q L^3/(6 EI)",
+      "value": 5.082197683525802e-16,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "the shear-flexible model still returns the shear-free rotation: the symbolic gate, measured"
+    },
+    {
+      "id": "end_force_recovery",
+      "quantity": "relative error of the recovered root bending moment (element end forces minus fixed-end forces)",
+      "reference": "q L^2/2",
+      "value": 1.0103029524088922e-13,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true,
+      "note": "exercises the equivalent-load subtraction in solve_frame_static; root shear q L is in the evidence"
+    },
+    {
+      "id": "partial_load_boundary_cost",
+      "quantity": "relative error when the load boundary falls inside an element (n = 4, patch spread over that element)",
+      "reference": "q a^3 (4L - a)/(24 EI) with a = 0.6 L (bending-only oracle)",
+      "value": 0.2712333197167938,
+      "threshold": 0.001,
+      "operator": ">=",
+      "passed": true,
+      "note": "measured modelling constraint, not a bug: a partially loaded element is unrepresentable"
+    }
+  ]
+}
