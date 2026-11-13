@@ -1,0 +1,192 @@
+{
+  "anchor": "CASE-FEM-JINTEGRAL-EDGE-CRACK",
+  "title": "SENT plane-strain J-integral vs Tada finite-width SIF factor",
+  "generated_at": "2026-11-13T02:46:16+00:00",
+  "mission": 17194,
+  "repro_cmd": "PYTHONPATH=src python benchmarks/verified/fem_sent_j_integral/ledger_acceptance.py",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "machine": "loongarch64"
+  },
+  "acceptance": {
+    "a_over_w": 0.3,
+    "plane": "strain",
+    "tolerance_ledger": 0.05,
+    "tolerance_platform": 0.03
+  },
+  "qualification": {
+    "anchor": "CASE-FEM-JINTEGRAL-EDGE-CRACK",
+    "scope": "2-D homogeneous isotropic linear-elastic mode-I stationary edge crack; quarter-point (Barsoum) tip ring; contour J evaluated from the finite element stress and displacement gradient; no plasticity, no crack closure, no cohesive traction, no body force, small strain",
+    "reference": "K_I = sigma sqrt(pi a) F(a/W) with F = 1.12 - 0.231 (a/W) + 10.55 (a/W)^2 - 21.72 (a/W)^3 + 30.39 (a/W)^4, Tada, Paris & Irwin, The Stress Analysis of Cracks Handbook, 3rd ed. (a/W <= 0.6, H/W >= 1, stated accuracy +-0.5 %)",
+    "configuration": {
+      "a_over_w": 0.3,
+      "plane": "strain",
+      "plane_modulus": "E / (1 - nu^2)",
+      "width_m": 0.1,
+      "height_over_width": 2.0,
+      "sigma_pa": 100000000.0,
+      "young_pa": 210000000000.0,
+      "poisson": 0.3,
+      "canonical_contour_fraction": 0.15,
+      "level": {
+        "name": "qualification",
+        "n_sectors": 24,
+        "first_ring": 0.08,
+        "growth": 1.6
+      },
+      "n_elements": 390,
+      "n_nodes": 823
+    },
+    "evidence": [
+      {
+        "id": "mode_i_k",
+        "quantity": "K_I from contour J (K = sqrt(J E'))",
+        "unit": "Pa sqrt(m)",
+        "actual": 49951986.5807073,
+        "oracle": 50959183.37183483,
+        "relative_error": 0.0197647749528932,
+        "tolerance": 0.03,
+        "passed": true
+      },
+      {
+        "id": "shape_factor",
+        "quantity": "normalised K_I / (sigma sqrt(pi a))",
+        "unit": "1",
+        "actual": 1.627111074524969,
+        "oracle": 1.6599190000000006,
+        "relative_error": 0.019764774952893194,
+        "tolerance": 0.03,
+        "passed": true
+      }
+    ],
+    "path_independence": {
+      "contour_fractions": [
+        0.10005,
+        0.15,
+        0.19995
+      ],
+      "shape_factors": [
+        1.6243512959919875,
+        1.627111074524969,
+        1.6245507774383454
+      ],
+      "relative_spread": 0.0016961217806149493,
+      "tolerance": 0.01,
+      "passed": true
+    },
+    "equilibrium": {
+      "reaction_ratio": 1.0000000000001181,
+      "tolerance": 1e-09,
+      "passed": true
+    },
+    "passed": true
+  },
+  "ladder": {
+    "levels": [
+      {
+        "level": "coarse",
+        "n_sectors": 24,
+        "n_elements": 390,
+        "shape_factor_fem": 1.627111074524969,
+        "shape_factor_tada": 1.6599190000000006,
+        "rel_error": -0.0197647749528932,
+        "reaction_ratio": 1.0000000000001181
+      },
+      {
+        "level": "medium",
+        "n_sectors": 48,
+        "n_elements": 1050,
+        "shape_factor_fem": 1.63759005232537,
+        "shape_factor_tada": 1.6599190000000006,
+        "rel_error": -0.013451829682430633,
+        "reaction_ratio": 0.9999999999999756
+      },
+      {
+        "level": "fine",
+        "n_sectors": 96,
+        "n_elements": 2842,
+        "shape_factor_fem": 1.6476768856538315,
+        "shape_factor_tada": 1.6599190000000006,
+        "rel_error": -0.007375127549096671,
+        "reaction_ratio": 0.9999999999997732
+      }
+    ],
+    "plane": "strain",
+    "a_over_w": 0.3
+  },
+  "gci": {
+    "applicable": false,
+    "gci_fine": null,
+    "observed_order": -0.055024667977895944,
+    "medium_to_fine_change": 0.006121851569495647,
+    "refinement": 2.0,
+    "note": "observed order < 0.05, i.e. the three-level sequence is not in the asymptotic range (the residual is a constant H/W = 2 far-field bias, not h^p); a Roache index would be negative/meaningless, so the medium->fine relative change is reported instead"
+  },
+  "control": {
+    "configurations": {
+      "quarter_point": {
+        "quarter_point": true,
+        "n_elements": 390,
+        "shape_factor_fem": 1.627111074524969,
+        "shape_factor_tada": 1.6599190000000006,
+        "rel_error": -0.0197647749528932,
+        "inside_3pct_band": true
+      },
+      "midpoint": {
+        "quarter_point": false,
+        "n_elements": 390,
+        "shape_factor_fem": 1.6175868581936197,
+        "shape_factor_tada": 1.6599190000000006,
+        "rel_error": -0.025502534645594724,
+        "inside_3pct_band": true
+      }
+    },
+    "singular_ring_improves_same_mesh_accuracy": true,
+    "accuracy_gain_pp": 0.5737759692701523,
+    "limitation": "both rings are inside the 3 % band on this mesh, so the band alone does not demonstrate the necessity of the quarter-point ring",
+    "passed": true
+  },
+  "passed": true,
+  "figures": [
+    "ledger_acceptance.png"
+  ],
+  "evidence_chain": {
+    "impl_files": [
+      "src/tensorfem/edge_crack_sent.py",
+      "src/tensorfem/cli.py",
+      "src/tensorfem/marine_benchmark_suite.py",
+      "benchmarks/verified/fem_sent_j_integral/ledger_acceptance.py"
+    ],
+    "entry": {
+      "library": "tensorfem.edge_crack_sent.run_sent_j_qualification",
+      "cli": "PYTHONPATH=src python -m tensorfem.cli sent-j-integral",
+      "script": "PYTHONPATH=src python benchmarks/verified/fem_sent_j_integral/ledger_acceptance.py"
+    },
+    "integration_callers": [
+      "src/tensorfem/marine_benchmark_suite.py::run_marine_benchmarks (marine.fracture.sent_j.* rows of the ship-structure suite)",
+      "src/tensorfem/cli.py::main (command sent-j-integral, exit code carries the verdict)"
+    ],
+    "run_artifacts": [
+      "benchmarks/verified/fem_sent_j_integral/ledger_acceptance.json",
+      "benchmarks/verified/fem_sent_j_integral/ledger_acceptance.md",
+      "benchmarks/verified/fem_sent_j_integral/ledger_acceptance.png"
+    ],
+    "tests": [
+      "tests/test_sent_edge_crack_j_integral_plane_strain.py",
+      "tests/test_sent_edge_crack_j_integral.py"
+    ],
+    "benchmark": {
+      "anchor_slug": "CASE-FEM-JINTEGRAL-EDGE-CRACK",
+      "metric": "K_I / (sigma sqrt(pi a)) vs Tada finite-width F(a/W), a/W = 0.3, plane strain",
+      "ref": 50959183.37183483,
+      "got": 49951986.5807073,
+      "unit": "Pa sqrt(m)",
+      "rel_error_pct": 1.97647749528932,
+      "tolerance_ledger_pct": 5.0,
+      "tolerance_platform_pct": 3.0
+    },
+    "repro_cmd": "PYTHONPATH=src python benchmarks/verified/fem_sent_j_integral/ledger_acceptance.py"
+  }
+}
