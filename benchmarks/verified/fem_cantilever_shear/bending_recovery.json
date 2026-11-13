@@ -1,0 +1,498 @@
+{
+  "anchor": "fem_cantilever_shear",
+  "mission": "CASE-CANTILEVER-TIP",
+  "title": "Pinned bending flexibility from a pure end moment, then a two-parameter shear refit",
+  "generated_at": "2026-11-13T06:44:32Z",
+  "problem": {
+    "E_Pa": 200000000000.0,
+    "nu": 0.3,
+    "width_m": 0.01,
+    "height_m": 0.01,
+    "second_moment_m4": 8.333333333333335e-10,
+    "moment_Nm": 0.2,
+    "kappa_convention": 0.8333333333333334,
+    "elements_per_h": 2.0,
+    "cross_mesh": [
+      2,
+      2
+    ],
+    "fit_slenderness": [
+      4.0,
+      5.0,
+      6.0,
+      8.0,
+      10.0,
+      12.0,
+      16.0,
+      20.0
+    ]
+  },
+  "pure_bending_oracle": {
+    "airy_function": "M*(-h/2 + z)**3/(6*I)",
+    "biharmonic_residual": "0",
+    "sigma_x": "M*(-h + 2*z)/(2*I)",
+    "sigma_z": "0",
+    "tau_xz": "0",
+    "equilibrium_x": "0",
+    "equilibrium_z": "0",
+    "flank_tractions": [
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "net_axial_force": "0",
+    "net_end_moment": "M",
+    "eps_x_identity": "0",
+    "warp_function_forced_linear_by": "Derivative(g(z), (z, 3))",
+    "eps_z_identity_after_solving_m": "0",
+    "measured_slope_expression": "c1 + M*x/(E*I)",
+    "slope_is_kappa_x_plus_rigid_rotation": "0",
+    "curvature_identity": "0",
+    "all_symbolic_checks_zero": true
+  },
+  "sweep": [
+    {
+      "mesh": {
+        "axial": 24,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "nodes": 741,
+      "dofs": 2223,
+      "root_nodes": 21,
+      "tip_nodes": 21,
+      "moment_Nm": 0.2,
+      "slope_measured": 4.7673901176964285e-05,
+      "slope_exact": 4.7999999999999994e-05,
+      "slope_ratio": 0.9932062745200894,
+      "reaction_moment_y_Nm": -0.2000000000003324,
+      "reaction_moment_residual": 1.6620038678638593e-12,
+      "seconds": 1.13,
+      "tip_face_elements": 4,
+      "net_axial_force_N": -1.5987211554602254e-14,
+      "net_axial_force_relative": 6.66133814775094e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 4.0,
+      "length_m": 0.04
+    },
+    {
+      "mesh": {
+        "axial": 24,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "nodes": 741,
+      "dofs": 2223,
+      "root_nodes": 21,
+      "tip_nodes": 21,
+      "moment_Nm": 0.2,
+      "slope_measured": 5.9664591323029926e-05,
+      "slope_exact": 6e-05,
+      "slope_ratio": 0.9944098553838321,
+      "reaction_moment_y_Nm": -0.20000000000011686,
+      "reaction_moment_residual": 5.842548667089886e-13,
+      "seconds": 1.375,
+      "tip_face_elements": 4,
+      "net_axial_force_N": -1.5987211554602254e-14,
+      "net_axial_force_relative": 6.66133814775094e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 5.0,
+      "length_m": 0.05
+    },
+    {
+      "mesh": {
+        "axial": 24,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "nodes": 741,
+      "dofs": 2223,
+      "root_nodes": 21,
+      "tip_nodes": 21,
+      "moment_Nm": 0.2,
+      "slope_measured": 7.16546318333422e-05,
+      "slope_exact": 7.199999999999999e-05,
+      "slope_ratio": 0.9952032199075307,
+      "reaction_moment_y_Nm": -0.19999999999961757,
+      "reaction_moment_residual": 1.912220382038754e-12,
+      "seconds": 1.479,
+      "tip_face_elements": 4,
+      "net_axial_force_N": -1.5987211554602254e-14,
+      "net_axial_force_relative": 6.66133814775094e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 6.0,
+      "length_m": 0.06
+    },
+    {
+      "mesh": {
+        "axial": 24,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "nodes": 741,
+      "dofs": 2223,
+      "root_nodes": 21,
+      "tip_nodes": 21,
+      "moment_Nm": 0.2,
+      "slope_measured": 9.563314841299068e-05,
+      "slope_exact": 9.599999999999999e-05,
+      "slope_ratio": 0.9961786293019863,
+      "reaction_moment_y_Nm": -0.20000000000228751,
+      "reaction_moment_residual": 1.1437517599688363e-11,
+      "seconds": 1.179,
+      "tip_face_elements": 4,
+      "net_axial_force_N": -1.5987211554602254e-14,
+      "net_axial_force_relative": 6.66133814775094e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 8.0,
+      "length_m": 0.08
+    },
+    {
+      "mesh": {
+        "axial": 24,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "nodes": 741,
+      "dofs": 2223,
+      "root_nodes": 21,
+      "tip_nodes": 21,
+      "moment_Nm": 0.2,
+      "slope_measured": 0.00011960978704982,
+      "slope_exact": 0.00012,
+      "slope_ratio": 0.9967482254151666,
+      "reaction_moment_y_Nm": -0.20000000000065227,
+      "reaction_moment_residual": 3.2612801348363973e-12,
+      "seconds": 1.138,
+      "tip_face_elements": 4,
+      "net_axial_force_N": -1.5987211554602254e-14,
+      "net_axial_force_relative": 6.66133814775094e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 10.0,
+      "length_m": 0.1
+    },
+    {
+      "mesh": {
+        "axial": 24,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "nodes": 741,
+      "dofs": 2223,
+      "root_nodes": 21,
+      "tip_nodes": 21,
+      "moment_Nm": 0.2,
+      "slope_measured": 0.0001435846588280183,
+      "slope_exact": 0.00014399999999999998,
+      "slope_ratio": 0.9971156863056828,
+      "reaction_moment_y_Nm": -0.19999999999945622,
+      "reaction_moment_residual": 2.7189361873070084e-12,
+      "seconds": 1.357,
+      "tip_face_elements": 4,
+      "net_axial_force_N": -1.5987211554602254e-14,
+      "net_axial_force_relative": 6.66133814775094e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 12.0,
+      "length_m": 0.12
+    },
+    {
+      "mesh": {
+        "axial": 32,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "nodes": 981,
+      "dofs": 2943,
+      "root_nodes": 21,
+      "tip_nodes": 21,
+      "moment_Nm": 0.2,
+      "slope_measured": 0.00019158465881910486,
+      "slope_exact": 0.00019199999999999998,
+      "slope_ratio": 0.9978367646828379,
+      "reaction_moment_y_Nm": -0.19999999997951273,
+      "reaction_moment_residual": 1.02436392701577e-10,
+      "seconds": 1.628,
+      "tip_face_elements": 4,
+      "net_axial_force_N": -1.5987211554602254e-14,
+      "net_axial_force_relative": 6.66133814775094e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 16.0,
+      "length_m": 0.16
+    },
+    {
+      "mesh": {
+        "axial": 40,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "nodes": 1221,
+      "dofs": 3663,
+      "root_nodes": 21,
+      "tip_nodes": 21,
+      "moment_Nm": 0.2,
+      "slope_measured": 0.00023958465882876245,
+      "slope_exact": 0.00024,
+      "slope_ratio": 0.9982694117865102,
+      "reaction_moment_y_Nm": -0.19999999999163304,
+      "reaction_moment_residual": 4.1834868902412836e-11,
+      "seconds": 2.173,
+      "tip_face_elements": 4,
+      "net_axial_force_N": -1.5987211554602254e-14,
+      "net_axial_force_relative": 6.66133814775094e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 20.0,
+      "length_m": 0.2
+    }
+  ],
+  "mesh_crosscheck": [
+    {
+      "mesh": {
+        "axial": 40,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "nodes": 1221,
+      "dofs": 3663,
+      "root_nodes": 21,
+      "tip_nodes": 21,
+      "moment_Nm": 0.2,
+      "slope_measured": 0.00011965463183346816,
+      "slope_exact": 0.00012,
+      "slope_ratio": 0.997121931945568,
+      "reaction_moment_y_Nm": -0.19999999999967605,
+      "reaction_moment_residual": 1.6198153929281034e-12,
+      "seconds": 2.577,
+      "tip_face_elements": 4,
+      "net_axial_force_N": -1.5987211554602254e-14,
+      "net_axial_force_relative": 6.66133814775094e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 10.0,
+      "length_m": 0.1
+    },
+    {
+      "mesh": {
+        "axial": 40,
+        "cross_y": 3,
+        "cross_z": 3
+      },
+      "nodes": 2280,
+      "dofs": 6840,
+      "root_nodes": 40,
+      "tip_nodes": 40,
+      "moment_Nm": 0.2,
+      "slope_measured": 0.00011966972606053203,
+      "slope_exact": 0.00012,
+      "slope_ratio": 0.9972477171711003,
+      "reaction_moment_y_Nm": -0.1999999999801655,
+      "reaction_moment_residual": 9.91726145649352e-11,
+      "seconds": 9.295,
+      "tip_face_elements": 9,
+      "net_axial_force_N": -5.773159728050814e-15,
+      "net_axial_force_relative": 2.405483220021173e-21,
+      "applied_moment_Nm": 0.19999999999999996,
+      "applied_moment_relative_error": 2.7755575615628914e-16,
+      "slenderness_L_over_h": 10.0,
+      "length_m": 0.1
+    }
+  ],
+  "force_crosscheck": [
+    {
+      "slenderness_L_over_h": 10.0,
+      "mesh": {
+        "axial": 24,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "dofs": 2223,
+      "error_vs_eb_rerun": -0.0020496181803214735,
+      "error_vs_eb_stored": -0.0020496181803214735,
+      "difference": 0.0,
+      "seconds": 1.017
+    },
+    {
+      "slenderness_L_over_h": 20.0,
+      "mesh": {
+        "axial": 40,
+        "cross_y": 2,
+        "cross_z": 2
+      },
+      "dofs": 3663,
+      "error_vs_eb_rerun": -0.0032815528149537235,
+      "error_vs_eb_stored": -0.0032815528149537235,
+      "difference": 0.0,
+      "seconds": 2.33
+    }
+  ],
+  "slope_fit": {
+    "a_moment": 0.9993214991375636,
+    "d_root_layer": -0.024678482695780934,
+    "r2": 0.9963829835485981,
+    "max_abs_residual": 0.00018183678373564984,
+    "sigma_a": 8.829349746888624e-05,
+    "sigma_d": 0.0006070226836235724,
+    "design_condition_number": 15.43966162877768,
+    "slenderness": [
+      4.0,
+      5.0,
+      6.0,
+      8.0,
+      10.0,
+      12.0,
+      16.0,
+      20.0
+    ],
+    "e_theta": [
+      -0.0067937254799106395,
+      -0.005590144616167914,
+      -0.0047967800924693105,
+      -0.003821370698013693,
+      -0.003251774584833389,
+      -0.0028843136943171865,
+      -0.0021632353171621155,
+      -0.0017305882134898143
+    ],
+    "residuals": [
+      5.439605647101185e-05,
+      2.4052785424690665e-05,
+      -5.198780736070073e-06,
+      -5.805949860465849e-05,
+      -0.00010542545281887802,
+      -0.00014927260723235749,
+      5.767071376061063e-05,
+      0.00018183678373564984
+    ]
+  },
+  "force_refit": {
+    "a_pinned": 0.9993214991375636,
+    "sigma_a": 8.829349746888624e-05,
+    "b_shear_ratio": 0.5837017038289025,
+    "C_end_coefficient": 3.324191129183568,
+    "kappa_eff": 1.4276698660752996,
+    "c_end_offset_m": 3.324191129183569e-08,
+    "r2": 0.9735580351877468,
+    "max_abs_residual": 0.002365220424306314,
+    "sigma_b_fit_only": 0.17720631321649669,
+    "db_da": -156.67129641535286,
+    "sigma_b_total": 0.17774541035374705,
+    "sigma_kappa": 0.434745632110776,
+    "design_condition_number": 20.354968142334833,
+    "slenderness": [
+      4.0,
+      5.0,
+      6.0,
+      8.0,
+      10.0,
+      12.0,
+      16.0,
+      20.0
+    ],
+    "residuals": [
+      -0.0012611227723808988,
+      0.0019515599748962387,
+      0.0017059084559806611,
+      -8.365751154092117e-05,
+      -0.0014481817369341105,
+      -0.0023160208372648575,
+      -0.002365220424306314,
+      -0.0022067941661316585
+    ]
+  },
+  "three_parameter_reference": {
+    "a_bending_ratio": 0.9952868545717729,
+    "b_shear_ratio": 1.2158146985265468,
+    "kappa_eff": 0.6854114647102516,
+    "sigma_kappa": 0.05395206443733127,
+    "corr_a_c": 0.773673054695374
+  },
+  "candidates": {
+    "kappa_energy_5_6": 0.8333333333333334,
+    "kappa_cowper": 0.8496,
+    "kappa_section_centre_2_3": 0.6666666666666666
+  },
+  "gates": [
+    {
+      "name": "pure_bending_oracle_symbolic",
+      "value": true,
+      "threshold": true,
+      "pass": true
+    },
+    {
+      "name": "pure_moment_slope_within_case_tolerance",
+      "value": 0.0067937254799106395,
+      "threshold": 0.03,
+      "pass": true,
+      "note": "worst rung of the moment ladder vs theta = M L/(E I)"
+    },
+    {
+      "name": "a_moment_in_physical_band",
+      "value": 0.9993214991375636,
+      "threshold": [
+        0.9,
+        1.1
+      ],
+      "pass": true
+    },
+    {
+      "name": "moment_load_is_a_pure_couple",
+      "value": 6.66133814775094e-21,
+      "threshold": 1e-10,
+      "pass": true
+    },
+    {
+      "name": "root_reaction_balances_the_couple",
+      "value": 1.02436392701577e-10,
+      "threshold": 1e-08,
+      "pass": true
+    },
+    {
+      "name": "force_sweep_reproducible",
+      "value": 0.0,
+      "threshold": 1e-09,
+      "pass": true,
+      "note": "the three-parameter reference is re-solved, not trusted"
+    },
+    {
+      "name": "pinned_fit_residual_below_0p1pct",
+      "value": 0.002365220424306314,
+      "threshold": 0.001,
+      "pass": false,
+      "note": "the (b, C) design must still describe the force sweep"
+    },
+    {
+      "name": "sigma_kappa_shrinks_vs_three_parameter_fit",
+      "value": 0.434745632110776,
+      "threshold": 0.05395206443733127,
+      "pass": false,
+      "note": "the recommendation's own success criterion"
+    },
+    {
+      "name": "kappa_eff_within_10pct_of_energy_5_6",
+      "value": 1.4276698660752996,
+      "threshold": 0.75,
+      "pass": true
+    },
+    {
+      "name": "kappa_eff_within_3pct_of_section_centre_2_3",
+      "value": 1.4276698660752996,
+      "threshold": 0.6666666666666666,
+      "pass": false
+    }
+  ],
+  "all_gates_pass": false,
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "numpy": "2.4.6",
+    "threads": 8
+  }
+}
