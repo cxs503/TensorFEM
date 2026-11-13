@@ -1,5 +1,24 @@
 ## Unreleased
 
+### CASE-FEM-HHT-alpha: absorbed upstream transient scheme (Hilbert-Hughes-Taylor) with closed-form qualification
+- **New capability** `tensorfem.dynamics.hht_alpha`: the alpha-variant of the Newmark family that
+  Abaqus (`*DYNAMIC`), ANSYS (`TINTP`) and Code_Aster (`SCHEMA_THETA`) ship as their default
+  transient scheme.  It is second order accurate and adds *controllable* high-frequency numerical
+  damping `rho_inf = (1+alpha)/(1-alpha)`, which the pre-existing average-acceleration Newmark path
+  (`rho_inf = 1`, no algorithmic damping) could not provide; `alpha=0` reproduces
+  `newmark_linear` bit-for-bit.  Input validation is now shared through `_check_transient_inputs`.
+- **Qualification**: `tests/test_hht_alpha_integration.py` (22 tests) and
+  `benchmarks/hht_alpha_dissipation.py` compare against closed-form SDOF solutions (free, damped,
+  harmonically forced) and against the scheme's own analytical amplification matrix: observed order
+  `1.995/2.000`, closed-form relative error `1.5e-3`, black-box per-step decay vs analytical spectral
+  radius `0.69 %`, and, on a stiff/soft 2-DOF model (`omega_2*dt = 5.66`), the spurious stiff-mode
+  energy falls from `1.0` to `2.8e-33` of its initial value while the physical mode energy drifts by
+  `3.5e-6`.  Report: `docs/CASE-FEM-HHT-alpha-integration.md`, evidence:
+  `benchmarks/hht_alpha_dissipation_evidence.json`.
+- **Documented limitation**: linear, constant `M/C/K`, uniform step only (same constraint as
+  `newmark_linear`); the default `alpha=-1/3` is the most dissipative stable setting, not the
+  upstream default (`alpha ~ -0.05`).
+
 ### CASE-FEM-SCORDELIS-LO-ROOF: the case pool entry that closes the roof benchmark, with the falsified root cause turned into an inverted gate
 - **New case pool entry** `benchmarks/case_scordelis_lo_roof.py` (artefacts in
   `benchmarks/artifacts/CASE-FEM-SCORDELIS-LO-ROOF/`, report rendered from the artefact into
