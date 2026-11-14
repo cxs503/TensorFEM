@@ -300,6 +300,7 @@ class TestH3AnchorConsistency:
     the Navier series reference solution.
     """
 
+    @pytest.mark.timeout(120)
     def test_fem_vs_navier_error_within_anchor_level(self):
         """FEM peak moment vs Navier series error ≤ 0.5 % (same order as H3 anchor).
 
