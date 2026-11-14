@@ -1,8 +1,9 @@
 """Gates for the Rayleigh--Lamb dispersion anchor (docs/lamb-wave-dispersion-verification.md).
 
-The analytic oracle gates are positive verification.  The Bloch--Floquet gates are
-fail-closed documentation of an *open* defect: they assert the defect is still there,
-so fixing it forces this file and the document to be updated together.
+Every gate here is positive verification: the analytic roots must satisfy the
+Rayleigh--Lamb equation (including the higher ones the anchor does not score) and
+the Bloch--Floquet cell must reproduce the analytic branches.  No test asserts that
+a known defect is still present.
 """
 from __future__ import annotations
 
@@ -75,25 +76,47 @@ def test_lowest_roots_satisfy_the_equation():
             assert abs(lamb_residual(omega, k, cL, cT, H, branch)) < 2e-2
 
 
-def test_higher_root_scan_defect_is_open():
-    """FAIL-CLOSED negative gate: the multi-root scan is not trustworthy yet.
+def test_higher_roots_are_genuine():
+    """Positive gate: the multi-root scan returns only genuine roots.
 
-    ``rayleigh_lamb_frequencies(n_roots>=2)`` returns candidates whose normalised
-    residual reaches O(0.1) or worse: at ``q = 0`` (``omega = k c_T``) the
-    ``4 k^2 p q`` term vanishes identically, and the log-grid scan also accepts
-    near-tangential brackets.  Only the lowest root per family -- the one the anchor
-    scores, checked above -- is validated.  When the scanner learns to reject these
-    candidates this test fails, forcing the anchor document section 5 to be updated.
+    The scanner used to accept sign changes across the ``tan``/``tanh`` poles as
+    roots: at ``q = 0`` (``omega = k c_T``) the ``4 k^2 p q`` term vanishes
+    identically, and near-tangential brackets were accepted too, so
+    ``rayleigh_lamb_frequencies(n_roots>=2)`` reported candidates whose normalised
+    residual reached O(0.1)..1 -- e.g. a spurious antisymmetric root at
+    ``omega/k/c_T = 1.0``.  Each bisection result is now re-evaluated and kept only
+    if its residual is below ``1e-6``, so every reported root -- not just the
+    lowest one the anchor scores -- must satisfy the Rayleigh--Lamb equation.
     """
     cL, cT = longitudinal_speed(E, NU, RHO), shear_speed(E, NU, RHO)
-    residuals = []
     for kh in (0.1, 0.5, 2.0):
         k = kh / H
         roots = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=2)
         for branch in ("symmetric", "antisymmetric"):
-            for omega in roots[branch][1:]:
-                residuals.append(abs(lamb_residual(omega, k, cL, cT, H, branch)))
-    assert max(residuals) > 2e-2, "higher roots now validated -- update anchor section 5"
+            assert len(roots[branch]) == 2
+            for omega in roots[branch]:
+                assert abs(lamb_residual(omega, k, cL, cT, H, branch)) < 1e-6
+
+
+def test_scan_reports_no_root_off_the_equation_on_the_anchor_grid():
+    """Sweep the anchor's own ``kh`` grid: no reported root is a pole crossing.
+
+    Same three-branch request the anchor's analytic table makes (``n_roots=3``).
+    Before the fix the antisymmetric list carried a pseudo-root at
+    ``omega/k/c_T = 1.0`` (residual 1.0) and one pole crossing per cut-off
+    (residual ~0.7) at every ``kh``.
+    """
+    cL, cT = longitudinal_speed(E, NU, RHO), shear_speed(E, NU, RHO)
+    worst = 0.0
+    for kh in (0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0):
+        k = kh / H
+        roots = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=3)
+        for branch in ("symmetric", "antisymmetric"):
+            assert roots[branch], f"no root found at kh={kh}, {branch}"
+            assert roots[branch] == sorted(roots[branch])
+            for omega in roots[branch]:
+                worst = max(worst, abs(lamb_residual(omega, k, cL, cT, H, branch)))
+    assert worst < 1e-6
 
 
 def test_consistent_mass_conserves_mass():

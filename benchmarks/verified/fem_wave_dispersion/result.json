@@ -25,7 +25,12 @@
       "s0_omega": 27107.58704375892,
       "flexural_phase": 0.04879500364742666,
       "a0_residual": 0.0,
-      "s0_residual": 3.0741116107808637e-15
+      "s0_residual": 3.0741116107808637e-15,
+      "roots_reported": {
+        "antisymmetric": 3,
+        "symmetric": 3
+      },
+      "max_residual_all": 8.52490213333919e-14
     },
     {
       "kh": 0.1,
@@ -35,7 +40,12 @@
       "s0_omega": 54202.67305661537,
       "flexural_phase": 0.09759000729485331,
       "a0_residual": 0.0,
-      "s0_residual": 1.8024552931393806e-16
+      "s0_residual": 1.8024552931393806e-16,
+      "roots_reported": {
+        "antisymmetric": 3,
+        "symmetric": 3
+      },
+      "max_residual_all": 4.090062161978361e-15
     },
     {
       "kh": 0.2,
@@ -45,7 +55,12 @@
       "s0_omega": 108304.0572033888,
       "flexural_phase": 0.19518001458970663,
       "a0_residual": 0.0,
-      "s0_residual": 2.9648526243393416e-16
+      "s0_residual": 2.9648526243393416e-16,
+      "roots_reported": {
+        "antisymmetric": 3,
+        "symmetric": 3
+      },
+      "max_residual_all": 2.2896379339295113e-15
     },
     {
       "kh": 0.5,
@@ -55,7 +70,12 @@
       "s0_omega": 268833.4662118148,
       "flexural_phase": 0.48795003647426655,
       "a0_residual": 0.0,
-      "s0_residual": 2.2495402048369857e-15
+      "s0_residual": 2.2495402048369857e-15,
+      "roots_reported": {
+        "antisymmetric": 3,
+        "symmetric": 3
+      },
+      "max_residual_all": 1.7713846868743567e-14
     },
     {
       "kh": 1.0,
@@ -65,7 +85,12 @@
       "s0_omega": 518160.8869254269,
       "flexural_phase": 0.9759000729485331,
       "a0_residual": 0.0,
-      "s0_residual": 4.205970774280868e-15
+      "s0_residual": 4.205970774280868e-15,
+      "roots_reported": {
+        "antisymmetric": 3,
+        "symmetric": 3
+      },
+      "max_residual_all": 4.391828275586304e-15
     },
     {
       "kh": 2.0,
@@ -75,7 +100,12 @@
       "s0_omega": 794626.1517144552,
       "flexural_phase": 1.9518001458970662,
       "a0_residual": 8.176696015857694e-17,
-      "s0_residual": 4.860013849625548e-15
+      "s0_residual": 4.860013849625548e-15,
+      "roots_reported": {
+        "antisymmetric": 3,
+        "symmetric": 3
+      },
+      "max_residual_all": 7.051068450988858e-15
     },
     {
       "kh": 5.0,
@@ -85,7 +115,12 @@
       "s0_omega": 1512798.4475013975,
       "flexural_phase": 4.879500364742666,
       "a0_residual": 7.581308538393063e-17,
-      "s0_residual": 3.4921946114419377e-16
+      "s0_residual": 3.4921946114419377e-16,
+      "roots_reported": {
+        "antisymmetric": 3,
+        "symmetric": 3
+      },
+      "max_residual_all": 7.154875568088869e-15
     },
     {
       "kh": 10.0,
@@ -95,7 +130,12 @@
       "s0_omega": 2975805.50482618,
       "flexural_phase": 9.759000729485331,
       "a0_residual": 2.962787900099721e-16,
-      "s0_residual": 2.962854757712013e-16
+      "s0_residual": 2.962854757712013e-16,
+      "roots_reported": {
+        "antisymmetric": 3,
+        "symmetric": 3
+      },
+      "max_residual_all": 4.7840507613152474e-14
     },
     {
       "kh": 20.0,
@@ -105,7 +145,12 @@
       "s0_omega": 5949647.886381314,
       "flexural_phase": 19.518001458970662,
       "a0_residual": 2.2204469903535677e-16,
-      "s0_residual": 7.401489967951404e-17
+      "s0_residual": 7.401489967951404e-17,
+      "roots_reported": {
+        "antisymmetric": 3,
+        "symmetric": 3
+      },
+      "max_residual_all": 5.1821690160901314e-14
     }
   ],
   "fem": [
@@ -304,6 +349,12 @@
     "root_residual": {
       "value": 4.860013849625548e-15,
       "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    "higher_root_residual": {
+      "value": 8.52490213333919e-14,
+      "threshold": 1e-06,
       "operator": "<=",
       "passed": true
     },

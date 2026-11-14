@@ -51,6 +51,10 @@ __all__ = [
 
 _DTYPE = torch.float64
 
+# A reported root must satisfy the Rayleigh--Lamb equation to this normalised
+# residual; the scan's sign changes are only *candidate* brackets.
+_ROOT_RESIDUAL_TOL = 1e-6
+
 
 # ---------------------------------------------------------------------------
 # material wave speeds (exact)
@@ -185,7 +189,16 @@ def rayleigh_lamb_frequencies(wave_number: float, half_thickness: float, young: 
     Returns ``{"symmetric": [...], "antisymmetric": [...]}`` sorted ascending and
     truncated to ``n_roots``.  The scan spans
     ``0 < w <= (n_roots+1) pi cT/(2h)``, which contains at least ``n_roots``
-    roots of each family because the cut-off spacing is ``pi cT/(2h)``.
+    sign changes of each family because the cut-off spacing is ``pi cT/(2h)``.
+
+    A sign change is *not* a root by itself: ``lamb_residual`` changes sign
+    across the ``tan``/``tanh`` poles (where the normalised residual jumps
+    between ``+-1``) and vanishes identically at ``q = 0`` (``w = k cT``) for
+    the antisymmetric family, so a raw scan reports pole crossings as roots.
+    Each bisection result is therefore re-evaluated and accepted only when its
+    normalised residual is below ``_ROOT_RESIDUAL_TOL``; a family yields fewer
+    than ``n_roots`` entries rather than spurious ones when the window holds
+    fewer genuine roots.
     """
     if wave_number <= 0.0:
         raise ValueError("wave_number must be positive")
@@ -213,7 +226,13 @@ def rayleigh_lamb_frequencies(wave_number: float, half_thickness: float, young: 
         for omega in grid[1:]:
             f_cur = func(omega)
             if f_prev * f_cur < 0.0:
-                roots.append(_bisect(func, w_prev, omega, f_prev, f_cur))
+                root = _bisect(func, w_prev, omega, f_prev, f_cur)
+                # Verify instead of trusting the bracket: a sign change across a
+                # tan/tanh pole is not a root (the residual jumps between +-1
+                # there), and q = 0 makes one term vanish identically.  Only a
+                # genuine root drives the normalised residual to zero.
+                if abs(func(root)) < _ROOT_RESIDUAL_TOL:
+                    roots.append(root)
             f_prev, w_prev = f_cur, omega
         out[branch] = roots[:n_roots]
     return out
