@@ -1,0 +1,204 @@
+{
+ "generated_by": "benchmarks/beta_restraint_panel_band.py",
+ "git_sha": "d111cb7b43937f9d3191b8fd1837b97e1d1eea5a",
+ "python": "3.11.6",
+ "torch": "2.7.1",
+ "case": {
+  "description": "ice-belt panel field, local ice patch",
+  "L_m": 0.8,
+  "S_m": 0.7,
+  "t_m": 0.022,
+  "E_Pa": 206000000000.0,
+  "nu": 0.3,
+  "patch_length_m": 0.08000000000000002,
+  "patch_breadth_m": 0.7,
+  "patch_area_m2": 0.05600000000000001,
+  "p_MPa": 1.0,
+  "D_Nm": 200868.86446886443
+ },
+ "baseline_navier_N401_sigma_vm_centre_MPa": 73.37101604723352,
+ "mesh": {
+  "nx": 160,
+  "ny": 140
+ },
+ "diagonal_beta": [
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 0.0,
+   "beta_y": 0.0,
+   "K_rot_x_Nm_per_rad": 0.0,
+   "K_rot_y_Nm_per_rad": 0.0,
+   "sigma_vm_centre_MPa": 73.32334948607426,
+   "sigma_x_centre_MPa": 78.6055959311079,
+   "sigma_vm_max_MPa": 73.32334948607426,
+   "w_centre_mm": 1.047255558268893,
+   "sigma_ratio_to_ssss": 0.9993503352723291,
+   "rel_err_vs_navier_pct": -0.06496647276709178
+  },
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 0.2,
+   "beta_y": 0.2,
+   "K_rot_x_Nm_per_rad": 62771.44168221803,
+   "K_rot_y_Nm_per_rad": 71738.79049396346,
+   "sigma_vm_centre_MPa": 49.19101315611348,
+   "sigma_x_centre_MPa": 53.980560301060315,
+   "sigma_vm_max_MPa": 68.12849685481274,
+   "w_centre_mm": 0.4498600149976276,
+   "sigma_ratio_to_ssss": 0.6704420329200039,
+   "rel_err_vs_navier_pct": -32.95579670799961
+  },
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 0.4,
+   "beta_y": 0.4,
+   "K_rot_x_Nm_per_rad": 167390.44140665137,
+   "K_rot_y_Nm_per_rad": 191303.36160760158,
+   "sigma_vm_centre_MPa": 48.03597176409601,
+   "sigma_x_centre_MPa": 52.7135141987397,
+   "sigma_vm_max_MPa": 74.62138966576588,
+   "w_centre_mm": 0.42325498875964757,
+   "sigma_ratio_to_ssss": 0.6546995578359205,
+   "rel_err_vs_navier_pct": -34.53004421640795
+  },
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 0.6,
+   "beta_y": 0.6,
+   "K_rot_x_Nm_per_rad": 376628.17930867244,
+   "K_rot_y_Nm_per_rad": 430432.20492419717,
+   "sigma_vm_centre_MPa": 47.61846810971506,
+   "sigma_x_centre_MPa": 52.25127206489181,
+   "sigma_vm_max_MPa": 77.27862346871073,
+   "w_centre_mm": 0.41376163949853595,
+   "sigma_ratio_to_ssss": 0.6490092501793905,
+   "rel_err_vs_navier_pct": -35.099074982060955
+  },
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 0.8,
+   "beta_y": 0.8,
+   "K_rot_x_Nm_per_rad": 1004339.3006478192,
+   "K_rot_y_Nm_per_rad": 1147816.3435975078,
+   "sigma_vm_centre_MPa": 47.402731211161594,
+   "sigma_x_centre_MPa": 52.011464217940436,
+   "sigma_vm_max_MPa": 78.73618236445559,
+   "w_centre_mm": 0.4088841656412731,
+   "sigma_ratio_to_ssss": 0.6460688942980629,
+   "rel_err_vs_navier_pct": -35.393110570193706
+  },
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 1.0,
+   "beta_y": 1.0,
+   "K_rot_x_Nm_per_rad": 251086080586.08054,
+   "K_rot_y_Nm_per_rad": 286955520669.80634,
+   "sigma_vm_centre_MPa": 47.27091355038318,
+   "sigma_x_centre_MPa": 51.86460859050564,
+   "sigma_vm_max_MPa": 79.65924043017067,
+   "w_centre_mm": 0.4059137381330451,
+   "sigma_ratio_to_ssss": 0.6442723039292781,
+   "rel_err_vs_navier_pct": -35.57276960707219
+  }
+ ],
+ "beta_x_only_beta_y_0": [
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 0.0,
+   "beta_y": 0.0,
+   "K_rot_x_Nm_per_rad": 0.0,
+   "K_rot_y_Nm_per_rad": 0.0,
+   "sigma_vm_centre_MPa": 73.32334948607426,
+   "sigma_x_centre_MPa": 78.6055959311079,
+   "sigma_vm_max_MPa": 73.32334948607426,
+   "w_centre_mm": 1.047255558268893,
+   "sigma_ratio_to_ssss": 0.9993503352723291,
+   "rel_err_vs_navier_pct": -0.06496647276709178
+  },
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 0.25,
+   "beta_y": 0.0,
+   "K_rot_x_Nm_per_rad": 83695.24860169538,
+   "K_rot_y_Nm_per_rad": 0.0,
+   "sigma_vm_centre_MPa": 62.47935974132726,
+   "sigma_x_centre_MPa": 70.44857838823188,
+   "sigma_vm_max_MPa": 62.47935974132726,
+   "w_centre_mm": 0.7083471657396111,
+   "sigma_ratio_to_ssss": 0.85155369391512,
+   "rel_err_vs_navier_pct": -14.844630608487996
+  },
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 0.5,
+   "beta_y": 0.0,
+   "K_rot_x_Nm_per_rad": 251085.5784149237,
+   "K_rot_y_Nm_per_rad": 0.0,
+   "sigma_vm_centre_MPa": 61.880466166775264,
+   "sigma_x_centre_MPa": 69.94948247483781,
+   "sigma_vm_max_MPa": 61.880466166775264,
+   "w_centre_mm": 0.687638672036504,
+   "sigma_ratio_to_ssss": 0.8433911577146339,
+   "rel_err_vs_navier_pct": -15.66088422853661
+  },
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 0.75,
+   "beta_y": 0.0,
+   "K_rot_x_Nm_per_rad": 753255.2287373267,
+   "K_rot_y_Nm_per_rad": 0.0,
+   "sigma_vm_centre_MPa": 61.66634351421786,
+   "sigma_x_centre_MPa": 69.76922650539856,
+   "sigma_vm_max_MPa": 61.66634351421786,
+   "w_centre_mm": 0.6801620110896447,
+   "sigma_ratio_to_ssss": 0.8404728029733071,
+   "rel_err_vs_navier_pct": -15.952719702669294
+  },
+  {
+   "nx": 160,
+   "ny": 140,
+   "beta_x": 1.0,
+   "beta_y": 0.0,
+   "K_rot_x_Nm_per_rad": 251086080586.08054,
+   "K_rot_y_Nm_per_rad": 0.0,
+   "sigma_vm_centre_MPa": 61.556351405420415,
+   "sigma_x_centre_MPa": 69.676244680635,
+   "sigma_vm_max_MPa": 61.556351405420415,
+   "w_centre_mm": 0.6763059342364568,
+   "sigma_ratio_to_ssss": 0.8389736809122655,
+   "rel_err_vs_navier_pct": -16.102631908773446
+  }
+ ],
+ "band": {
+  "sigma_vm_SSSS_MPa": 73.32334948607426,
+  "sigma_vm_clamped_MPa": 47.27091355038318,
+  "reduction_vs_SSSS_pct": 35.53088629787572
+ },
+ "literature_square": {
+  "nx": 80,
+  "uniform_square_SSSS": {
+   "w_coef": 0.004072338468288748,
+   "M_coef": 0.047882406421392826,
+   "ref_w_coef_Timoshenko": 0.00406,
+   "ref_M_coef_Timoshenko": 0.0479
+  },
+  "uniform_square_CCCC": {
+   "w_coef": 0.0012773847667803828,
+   "M_coef_centre": 0.022926210713800504,
+   "M_coef_edge": 0.04858075412405077,
+   "ref_w_coef_Timoshenko": 0.00126,
+   "ref_M_coef_centre_Timoshenko": 0.0231,
+   "ref_M_coef_edge_Timoshenko": 0.0513
+  }
+ }
+}
