@@ -217,3 +217,27 @@ and re-solves the coarse plate end to end.
 > main without them. Version-controlled mirrors live in `docs/assets/kirsch_plate/`
 > (byte-identical to the `d3db3dbf` blobs; guarded by
 > `tests/test_kirsch_plate_anchor.py::test_figures_tracked_mirror`).
+
+## 7. Field verification beyond the peak (``field_verification.json``)
+
+The fourteen gates above constrain the *peak* ``K_t``, a hole-edge hoop profile
+from the Q4 finite-width model and a set of invariances.  They do not constrain
+the stress field away from the hole, so ``field_verification.py`` adds that axis
+on the same Q8 Dirichlet annulus (discretisation error only): domain-wide
+``L2`` error of the full stress tensor at the Gauss points and in the recovered
+nodal field, five declared interior pointwise probes, the natural (traction-free)
+rim residual, strain energy, displacement, and the observed rates over a
+four-level ladder ``(24,6) -> (48,12) -> (96,24) -> (192,48)``.
+
+```bash
+OMP_NUM_THREADS=4 PYTHONPATH=src python benchmarks/verified/fem_kirsch_plate/field_verification.py
+PYTHONPATH=src python benchmarks/verified/fem_kirsch_plate/make_field_doc.py
+OMP_NUM_THREADS=4 PYTHONPATH=src pytest tests/test_kirsch_plate_field_verification.py -q
+```
+
+Artifacts: ``field_verification.json`` (13/13 gates), figures in
+``docs/assets/kirsch_plate_field/``, report
+``docs/CASE-FEM-KIRSCH-PLATE-field-verification.md``.  The overlapping levels
+reproduce ``result.json``'s ``q8_crosscheck`` ``K_t`` values to 1e-12, and the
+report records the two traps found while building the study (quadrature weight
+double counting in the energy norm, probes placed on an element edge).
