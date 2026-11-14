@@ -1,0 +1,330 @@
+{
+  "benchmark": "macneal_1985_slender_beam_shear_locking",
+  "study": "asymptotic_convergence_rate",
+  "generated_by": "benchmarks/macneal_beam_shear_locking/locking_rate_study.py",
+  "generated_at": "2026-11-14T08:50:05.561053+00:00",
+  "reference": {
+    "model": "Timoshenko closed form PL^3/(48EI) + PL/(4kAG), k=5/6",
+    "value": 257.8,
+    "euler_bernoulli": 250.0,
+    "source": "evaluated in run.beam_analytic (zero hand-copying)"
+  },
+  "environment": {
+    "python": "3.11.6",
+    "machine": "loongarch64",
+    "dtype": "torch.float64",
+    "solver": "dense LU (torch.linalg.solve)",
+    "deterministic": true
+  },
+  "protocol": {
+    "levels": [
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "treatments": [
+      "full",
+      "sri",
+      "mitc"
+    ],
+    "tolerance": 0.05,
+    "pre_registered": {
+      "rate_asymptotic": 2.0,
+      "rate_const_min": 1.8,
+      "rate_const_spread": 0.2,
+      "rate_defect_max": 1.5,
+      "rate_settled": 0.05,
+      "mesh_penalty_min": 2.0,
+      "cost_cap_seconds": 600.0,
+      "precision_floor": 1e-10
+    }
+  },
+  "dofs_by_level": {
+    "2": 18,
+    "4": 30,
+    "8": 54,
+    "16": 102,
+    "32": 198,
+    "64": 390,
+    "128": 774,
+    "256": 1542
+  },
+  "series": {
+    "full": {
+      "deflections": [
+        28.603698435277344,
+        85.84162219850428,
+        171.77490656700914,
+        229.11475876802837,
+        249.97573932884617,
+        255.79837261002524,
+        257.2966621174278,
+        257.6739810048462
+      ],
+      "errors": [
+        -0.8890469416785207,
+        -0.6670224119530478,
+        -0.33368926855310654,
+        -0.11126936086878061,
+        -0.0303501189726681,
+        -0.007764264507272194,
+        -0.001952435541397305,
+        -0.0004888246514887492
+      ],
+      "local_rates": [
+        {
+          "n_from": 2,
+          "n_to": 4,
+          "ratio": 1.3328591749644259,
+          "rate": 0.4145243585866383
+        },
+        {
+          "n_from": 4,
+          "n_to": 8,
+          "ratio": 1.9989327641409942,
+          "rate": 0.9992299465839445
+        },
+        {
+          "n_from": 8,
+          "n_to": 16,
+          "ratio": 2.9989321943407634,
+          "rate": 1.5844489033356293
+        },
+        {
+          "n_from": 16,
+          "n_to": 32,
+          "ratio": 3.6661919173689106,
+          "rate": 1.8742823098792354
+        },
+        {
+          "n_from": 32,
+          "n_to": 64,
+          "ratio": 3.9089496428465904,
+          "rate": 1.966780999187589
+        },
+        {
+          "n_from": 64,
+          "n_to": 128,
+          "ratio": 3.976707216523789,
+          "rate": 1.9915743482084456
+        },
+        {
+          "n_from": 128,
+          "n_to": 256,
+          "ratio": 3.9941429620028934,
+          "rate": 1.9978859719610071
+        }
+      ],
+      "asymptotic_rate": 1.994730160084726,
+      "mesh_for_5pct": 24.51737168793043,
+      "settled": true
+    },
+    "sri": {
+      "deflections": [
+        195.29999999999356,
+        242.17499999999632,
+        253.8937500000039,
+        256.823437500006,
+        257.55585937499427,
+        257.73896484375825,
+        257.78474121056155,
+        257.79618530151384
+      ],
+      "errors": [
+        -0.24243599689684425,
+        -0.06060899922421914,
+        -0.015152249806036099,
+        -0.0037880624514896486,
+        -0.00094701561290047,
+        -0.00023675390318757836,
+        -5.918847726323651e-05,
+        -1.4797123685674513e-05
+      ],
+      "local_rates": [
+        {
+          "n_from": 2,
+          "n_to": 4,
+          "ratio": 3.999999999999467,
+          "rate": 1.9999999999998077
+        },
+        {
+          "n_from": 4,
+          "n_to": 8,
+          "ratio": 4.000000000004933,
+          "rate": 2.000000000001779
+        },
+        {
+          "n_from": 8,
+          "n_to": 16,
+          "ratio": 4.00000000002046,
+          "rate": 2.0000000000073794
+        },
+        {
+          "n_from": 16,
+          "n_to": 32,
+          "ratio": 3.9999999998814895,
+          "rate": 1.9999999999572564
+        },
+        {
+          "n_from": 32,
+          "n_to": 64,
+          "ratio": 4.0000000006342304,
+          "rate": 2.0000000002287504
+        },
+        {
+          "n_from": 64,
+          "n_to": 128,
+          "ratio": 3.999999900903555,
+          "rate": 1.9999999642585122
+        },
+        {
+          "n_from": 128,
+          "n_to": 256,
+          "ratio": 3.9999988187257256,
+          "rate": 1.9999995739453027
+        }
+      ],
+      "asymptotic_rate": 1.9999997691019074,
+      "mesh_for_5pct": 4.403961824510608,
+      "settled": true
+    },
+    "mitc": {
+      "deflections": [
+        195.30000000000325,
+        242.17499999998088,
+        253.89374999999663,
+        256.82343749999905,
+        257.55585937499154,
+        257.7389648436449,
+        257.7847412117568,
+        257.7961853124869
+      ],
+      "errors": [
+        -0.24243599689680667,
+        -0.060608999224279,
+        -0.01515224980606432,
+        -0.003788062451516549,
+        -0.0009470156129110538,
+        -0.00023675390362724391,
+        -5.918847262690382e-05,
+        -1.4797081121463587e-05
+      ],
+      "local_rates": [
+        {
+          "n_from": 2,
+          "n_to": 4,
+          "ratio": 3.999999999994896,
+          "rate": 1.9999999999981593
+        },
+        {
+          "n_from": 4,
+          "n_to": 8,
+          "ratio": 4.0000000000014335,
+          "rate": 2.000000000000517
+        },
+        {
+          "n_from": 8,
+          "n_to": 16,
+          "ratio": 3.999999999999505,
+          "rate": 1.9999999999998215
+        },
+        {
+          "n_from": 16,
+          "n_to": 32,
+          "ratio": 3.999999999865191,
+          "rate": 1.999999999951378
+        },
+        {
+          "n_from": 32,
+          "n_to": 64,
+          "ratio": 3.999999993250705,
+          "rate": 1.9999999975657063
+        },
+        {
+          "n_from": 64,
+          "n_to": 128,
+          "ratio": 4.00000022165851,
+          "rate": 2.000000079946406
+        },
+        {
+          "n_from": 128,
+          "n_to": 256,
+          "ratio": 4.000010011504854,
+          "rate": 2.0000036108825823
+        }
+      ],
+      "asymptotic_rate": 2.000001845414493,
+      "mesh_for_5pct": 4.4039618245130505,
+      "settled": true
+    }
+  },
+  "locking": {
+    "error_constant_ratio_full_over_sri": 33.0351128957578,
+    "predicted_mesh_penalty_sqrt_ratio": 5.74761801929789,
+    "measured_mesh_penalty": 5.567117215112312,
+    "penalty_prediction_error_pct": -3.140445373710263
+  },
+  "decision": {
+    "hypothesis": "H_const",
+    "statement": "equal-order rule shares the asymptotic rate of the locking-free rules; shear locking multiplies the error constant (mesh-cost defect), it does not cap accuracy"
+  },
+  "gates": {
+    "H_const_asymptotic_rate": {
+      "criterion": "p_inf(full) >= 1.8 and |p_inf(full) - p_inf(sri)| <= 0.2",
+      "value": {
+        "p_inf_full": 1.994730160084726,
+        "p_inf_sri": 1.9999997691019074
+      },
+      "pass": true
+    },
+    "H_rate_asymptotic_rate": {
+      "criterion": "p_inf(full) <= 1.5",
+      "value": 1.994730160084726,
+      "pass": false
+    },
+    "mesh_penalty_material": {
+      "criterion": "n_tol(full)/n_tol(sri) >= 2.0",
+      "value": {
+        "n_tol_full": 24.51737168793043,
+        "n_tol_sri": 4.403961824510608,
+        "ratio": 5.567117215112312
+      },
+      "pass": true
+    },
+    "anchor_mesh_is_preasymptotic": {
+      "criterion": "local rate at n=8->16 of the full rule < 1.8",
+      "value": 1.5844489033356293,
+      "pass": true
+    },
+    "precision_floor_clear": {
+      "criterion": "smallest |err| > 1e-10",
+      "value": 1.4797081121463587e-05,
+      "pass": true
+    },
+    "tolerance_reached_on_ladder": {
+      "criterion": "|err| < 0.05 for every treatment by n <= 256",
+      "value": {
+        "full": 0.0004888246514887492,
+        "sri": 1.4797123685674513e-05,
+        "mitc": 1.4797081121463587e-05
+      },
+      "pass": true
+    }
+  },
+  "anchor_levels": [
+    2,
+    4,
+    8,
+    16
+  ],
+  "total_seconds": 16.46038735099137,
+  "figure": {
+    "name": "locking_rate.png",
+    "caption": "|error| vs elements per treatment on a log-log scale; the equal-order 'full' curve is parallel to the locking-free curves (same O(h^2) rate) but shifted by a constant factor."
+  }
+}
