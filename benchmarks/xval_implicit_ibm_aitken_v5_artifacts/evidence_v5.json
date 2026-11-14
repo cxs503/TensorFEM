@@ -1,0 +1,36 @@
+{
+  "anchor": "XVAL-FEM-IMPLICIT-IBM-AITKEN-RELAXATION",
+  "version": "v5",
+  "generated_at_utc": "2026-11-14T17:24:38Z",
+  "tolerance": 0.15,
+  "kernel_epsilon": {
+    "partition_of_unity_error": 2.220446049250313e-16,
+    "force_transmission_error_eps1": 0.6111655919181167,
+    "force_transmission_error_corrected": 2.220446049250313e-16
+  },
+  "structure": {
+    "f1_analytic": 0.14448582932460463,
+    "f1_fem_eigen": 0.14448595267487296,
+    "f1_eigen_rel_error": 8.537187965731706e-07,
+    "vacuum_period": 0.023229813664596276,
+    "vacuum_frequency": 43.04812834224599,
+    "vacuum_freq_rel_error": 296.94014086691675
+  },
+  "plate_added_mass": {
+    "c": 16,
+    "steps_completed": 1200,
+    "m_a_analytic": 804.247719318987,
+    "m_s": 1340.4128655316451,
+    "k": 0.23518835052316306,
+    "f_vac": 0.0021081851067789193,
+    "f_fsi_analytic": 0.0016666666666666666,
+    "f_ratio_measured_zc": 0.7286354055687511,
+    "f_ratio_measured_fft": 0.7237879166034804,
+    "f_ratio_analytic": 0.7905694150420949,
+    "f_ratio_error_zc": 0.07834101382488477,
+    "f_ratio_error_fft": 0.08447265625000001,
+    "period_zc": 651.0,
+    "period_fft": 655.36,
+    "converged_all": true
+  }
+}
