@@ -395,6 +395,18 @@ def evaluate_reference_ladder(
         "levels": [lv.as_dict() for lv in study],
         "reference": {"label": reference_label, "value": reference_value,
                       "tolerance": tolerance},
+        # The thresholds the gates were graded under are part of the artifact,
+        # not of the caller's memory: without them a reader can only recover the
+        # criteria *from the gates*, which is circular and cannot catch a
+        # hand-edited threshold.  See ``regrade_ladder``.
+        "criteria": {
+            "qoi": qoi,
+            "reference_label": reference_label,
+            "reference_value": reference_value,
+            "tolerance": tolerance,
+            "min_order": None if min_order is None else float(min_order),
+            "coarsest_sanity": None if coarsest_sanity is None else float(coarsest_sanity),
+        },
         "observed_orders": orders,
         "reported_accuracy_finest": abs(finest_error),
         "certified_accuracy": None if (not resolvable or asymptotic_error is None)
@@ -409,3 +421,135 @@ def evaluate_reference_ladder(
             "A non-monotone ladder cannot certify any accuracy: the gate is WITHHELD, not passed.",
         ],
     }
+
+# --------------------------------------------------------------------------- #
+# re-grading a *persisted* certificate (no solver, no caller memory)
+# --------------------------------------------------------------------------- #
+class LadderCertificateError(ValueError):
+    """A persisted ladder report cannot be re-graded from its own content."""
+
+
+#: Fields of the ``criteria`` block a persisted report must carry.  They are
+#: everything ``evaluate_reference_ladder`` needs besides ``levels``.
+CRITERIA_FIELDS = ("qoi", "reference_label", "reference_value", "tolerance",
+                   "min_order", "coarsest_sanity")
+
+#: Gate fields compared between the shipped gate and its re-graded twin.
+GATE_FIELDS = ("status", "passed", "operator", "actual", "threshold")
+
+#: Report-level fields compared between a shipped block and its re-grade.
+REPORT_FIELDS = ("status", "passed", "reported_accuracy_finest",
+                 "certified_accuracy", "qoi")
+
+
+def _same(a: object, b: object) -> bool:
+    """Exact agreement, with ``None``/``NaN`` treated as equal to themselves.
+
+    The re-grade re-runs the *same* arithmetic on the *same* stored level
+    values, so bit-for-bit equality is the right test: anything looser would
+    hide a silently rounded or hand-edited number.
+    """
+
+    if a is None or b is None:
+        return a is None and b is None
+    if isinstance(a, bool) or isinstance(b, bool):
+        return bool(a) == bool(b)
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        fa, fb = float(a), float(b)
+        if math.isnan(fa) and math.isnan(fb):
+            return True
+        return fa == fb
+    return a == b
+
+
+def regrade_ladder(report: Mapping[str, object]) -> dict[str, object]:
+    """Recompute a persisted ladder certificate from its own artifact content.
+
+    This is the reader a certificate is written for: it needs the ``levels``,
+    the ``reference`` and the ``criteria`` block -- never the original script,
+    the benchmark module or the solver run.
+
+    Raises :class:`LadderCertificateError` when the artifact is incomplete, so
+    an incomplete certificate fails closed instead of being silently graded
+    against guessed thresholds.
+    """
+
+    if not isinstance(report, Mapping):
+        raise LadderCertificateError(f"ladder report must be a mapping, got {type(report)!r}")
+    schema = report.get("schema")
+    if schema != SCHEMA:
+        raise LadderCertificateError(f"not a {SCHEMA} report (schema={schema!r})")
+
+    criteria = report.get("criteria")
+    if not isinstance(criteria, Mapping):
+        raise LadderCertificateError(
+            "report carries no 'criteria' block: the grading thresholds live only in the "
+            "gates themselves, so re-grading would assume the very numbers it checks "
+            "(circular). Re-run the anchor's verification script to re-emit the block."
+        )
+    missing = [name for name in CRITERIA_FIELDS if name not in criteria]
+    if missing:
+        raise LadderCertificateError(f"'criteria' block is missing {missing}")
+
+    levels = report.get("levels")
+    if not isinstance(levels, (list, tuple)) or len(levels) < 3:
+        raise LadderCertificateError("report must carry at least three graded levels")
+
+    reference = report.get("reference") or {}
+    if isinstance(reference, Mapping) and "value" in reference:
+        if not _same(reference["value"], criteria["reference_value"]):
+            raise LadderCertificateError(
+                "reference.value and criteria.reference_value disagree: "
+                f"{reference['value']!r} vs {criteria['reference_value']!r}"
+            )
+
+    min_order = criteria["min_order"]
+    coarsest_sanity = criteria["coarsest_sanity"]
+    return evaluate_reference_ladder(
+        levels,
+        reference_value=float(criteria["reference_value"]),  # type: ignore[arg-type]
+        tolerance=float(criteria["tolerance"]),  # type: ignore[arg-type]
+        min_order=None if min_order is None else float(min_order),  # type: ignore[arg-type]
+        coarsest_sanity=None if coarsest_sanity is None else float(coarsest_sanity),  # type: ignore[arg-type]
+        qoi=str(criteria["qoi"]),
+        reference_label=str(criteria["reference_label"]),
+    )
+
+
+def certificate_drift(report: Mapping[str, object]) -> list[dict[str, object]]:
+    """Every field where a persisted certificate disagrees with its re-grade.
+
+    An empty list means the block is reproducible from its own content: a third
+    party can re-derive the verdict without running the solver.  A non-empty
+    list is a defect, not a tolerance issue (see :func:`_same`).
+    """
+
+    regraded = regrade_ladder(report)
+
+    drift: list[dict[str, object]] = []
+    for field in REPORT_FIELDS:
+        if not _same(report.get(field), regraded.get(field)):
+            drift.append({"scope": "report", "id": None, "field": field,
+                          "stored": report.get(field), "regraded": regraded.get(field)})
+
+    stored_gates = report.get("gates")
+    fresh_gates = regraded.get("gates") or []
+    if not isinstance(stored_gates, (list, tuple)):
+        raise LadderCertificateError("report carries no 'gates' list to compare")
+
+    stored_ids = [str(g.get("id")) for g in stored_gates if isinstance(g, Mapping)]
+    fresh_ids = [str(g.get("id")) for g in fresh_gates if isinstance(g, Mapping)]
+    if stored_ids != fresh_ids:
+        drift.append({"scope": "report", "id": None, "field": "gate_ids",
+                      "stored": stored_ids, "regraded": fresh_ids})
+        return drift
+
+    by_id = {str(g.get("id")): g for g in stored_gates if isinstance(g, Mapping)}
+    for fresh in fresh_gates:
+        gate_id = str(fresh.get("id"))
+        stored = by_id[gate_id]
+        for field in GATE_FIELDS:
+            if not _same(stored.get(field), fresh.get(field)):
+                drift.append({"scope": "gate", "id": gate_id, "field": field,
+                              "stored": stored.get(field), "regraded": fresh.get(field)})
+    return drift
