@@ -1,0 +1,712 @@
+{
+  "schema": "tensorfem.cantilever_element_family/1",
+  "anchor": "fem_cantilever_hex8",
+  "mission": "CASE-CANTILEVER-TIP",
+  "title": "CASE-CANTILEVER-TIP element-family ladder: HEX20 vs fully integrated HEX8 vs TET4 against the Timoshenko oracle at the anchor's own 3 % criterion",
+  "generated_at": "2026-11-14T10:28:22+00:00",
+  "problem": {
+    "E_Pa": 200000000000.0,
+    "nu": 0.3,
+    "B_m": 0.01,
+    "H_m": 0.01,
+    "P_N": 5.0,
+    "kappa": 0.8333333333333334,
+    "tolerance": 0.03,
+    "rungs": [
+      100.0,
+      20.0,
+      10.0
+    ]
+  },
+  "oracles": [
+    {
+      "L_over_H": 100.0,
+      "quadrature_bending_term": 0.0100000000125,
+      "quadrature_shear_term": 7.800000000000002e-07,
+      "quadrature_total": 0.0100007800125,
+      "closed_form_timoshenko": 0.010000779999999999,
+      "closed_form_euler_bernoulli": 0.009999999999999998,
+      "relative_residual": 1.2499026110218043e-09,
+      "eb_ti_separation": 7.80000000000572e-05
+    },
+    {
+      "L_over_H": 20.0,
+      "quadrature_bending_term": 8.000000010000001e-05,
+      "quadrature_shear_term": 1.5599999999999997e-07,
+      "quadrature_total": 8.015600010000001e-05,
+      "closed_form_timoshenko": 8.015600000000001e-05,
+      "closed_form_euler_bernoulli": 8e-05,
+      "relative_residual": 1.2475673065201679e-09,
+      "eb_ti_separation": 0.0019500000000000405
+    },
+    {
+      "L_over_H": 10.0,
+      "quadrature_bending_term": 1.0000000012500001e-05,
+      "quadrature_shear_term": 7.799999999999998e-08,
+      "quadrature_total": 1.0078000012500001e-05,
+      "closed_form_timoshenko": 1.0078e-05,
+      "closed_form_euler_bernoulli": 1e-05,
+      "relative_residual": 1.2403255236831535e-09,
+      "eb_ti_separation": 0.007799999999999993
+    }
+  ],
+  "records": [
+    {
+      "family": "hex20",
+      "mesh": [
+        16,
+        2,
+        2
+      ],
+      "n_elements": 64,
+      "n_nodes": 501,
+      "n_dofs": 1503,
+      "delta": 0.009913672415396,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.008710079074232047,
+      "relative_error_vs_euler_bernoulli": 0.00863275846039978,
+      "criterion_3pct_met": true
+    },
+    {
+      "family": "hex20",
+      "mesh": [
+        24,
+        2,
+        2
+      ],
+      "n_elements": 96,
+      "n_nodes": 741,
+      "n_dofs": 2223,
+      "delta": 0.009945137126225781,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.005563853396856821,
+      "relative_error_vs_euler_bernoulli": 0.005486287377421719,
+      "criterion_3pct_met": true
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        2
+      ],
+      "n_elements": 64,
+      "n_nodes": 153,
+      "n_dofs": 459,
+      "delta": 0.0006219698509636036,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.9378078658901002,
+      "relative_error_vs_euler_bernoulli": 0.9378030149036396,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        4
+      ],
+      "n_elements": 128,
+      "n_nodes": 255,
+      "n_dofs": 765,
+      "delta": 0.0006228105562474548,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.937723801918705,
+      "relative_error_vs_euler_bernoulli": 0.9377189443752546,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        8
+      ],
+      "n_elements": 256,
+      "n_nodes": 459,
+      "n_dofs": 1377,
+      "delta": 0.0006230366061999075,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.9377011986865116,
+      "relative_error_vs_euler_bernoulli": 0.9376963393800093,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        16
+      ],
+      "n_elements": 512,
+      "n_nodes": 867,
+      "n_dofs": 2601,
+      "delta": 0.0006230948292417733,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.9376953768364293,
+      "relative_error_vs_euler_bernoulli": 0.9376905170758226,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "tet4",
+      "mesh": [
+        16,
+        2,
+        4
+      ],
+      "n_elements": 768,
+      "n_nodes": 255,
+      "n_dofs": 765,
+      "delta": 0.0002229421290404153,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.9777075259089375,
+      "relative_error_vs_euler_bernoulli": 0.9777057870959585,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "tet4",
+      "mesh": [
+        16,
+        2,
+        8
+      ],
+      "n_elements": 1536,
+      "n_nodes": 459,
+      "n_dofs": 1377,
+      "delta": 0.00022394182891022802,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.977607563719007,
+      "relative_error_vs_euler_bernoulli": 0.9776058171089771,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "hex20",
+      "mesh": [
+        12,
+        2,
+        2
+      ],
+      "n_elements": 48,
+      "n_nodes": 381,
+      "n_dofs": 1143,
+      "delta": 7.92521162968918e-05,
+      "L_over_H": 20.0,
+      "delta_timoshenko": 8.015600000000001e-05,
+      "delta_euler_bernoulli": 8e-05,
+      "relative_error_vs_timoshenko": 0.011276557002697352,
+      "relative_error_vs_euler_bernoulli": 0.009348546288852573,
+      "criterion_3pct_met": true
+    },
+    {
+      "family": "hex20",
+      "mesh": [
+        20,
+        2,
+        2
+      ],
+      "n_elements": 80,
+      "n_nodes": 621,
+      "n_dofs": 1863,
+      "delta": 7.955428329282486e-05,
+      "L_over_H": 20.0,
+      "delta_timoshenko": 8.015600000000001e-05,
+      "delta_euler_bernoulli": 8e-05,
+      "relative_error_vs_timoshenko": 0.0075068205396371,
+      "relative_error_vs_euler_bernoulli": 0.0055714588396893515,
+      "criterion_3pct_met": true
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        2
+      ],
+      "n_elements": 64,
+      "n_nodes": 153,
+      "n_dofs": 459,
+      "delta": 4.8405095751918806e-05,
+      "L_over_H": 20.0,
+      "delta_timoshenko": 8.015600000000001e-05,
+      "delta_euler_bernoulli": 8e-05,
+      "relative_error_vs_timoshenko": 0.39611388103300066,
+      "relative_error_vs_euler_bernoulli": 0.39493630310101496,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        4
+      ],
+      "n_elements": 128,
+      "n_nodes": 255,
+      "n_dofs": 765,
+      "delta": 4.906340694557998e-05,
+      "L_over_H": 20.0,
+      "delta_timoshenko": 8.015600000000001e-05,
+      "delta_euler_bernoulli": 8e-05,
+      "relative_error_vs_timoshenko": 0.387901006218125,
+      "relative_error_vs_euler_bernoulli": 0.3867074131802503,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        8
+      ],
+      "n_elements": 256,
+      "n_nodes": 459,
+      "n_dofs": 1377,
+      "delta": 4.924350277748538e-05,
+      "L_over_H": 20.0,
+      "delta_timoshenko": 8.015600000000001e-05,
+      "delta_euler_bernoulli": 8e-05,
+      "relative_error_vs_timoshenko": 0.38565418961169007,
+      "relative_error_vs_euler_bernoulli": 0.3844562152814328,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "tet4",
+      "mesh": [
+        16,
+        2,
+        4
+      ],
+      "n_elements": 768,
+      "n_nodes": 255,
+      "n_dofs": 765,
+      "delta": 2.709881707998055e-05,
+      "L_over_H": 20.0,
+      "delta_timoshenko": 8.015600000000001e-05,
+      "delta_euler_bernoulli": 8e-05,
+      "relative_error_vs_timoshenko": 0.6619240346327094,
+      "relative_error_vs_euler_bernoulli": 0.6612647865002431,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "tet4",
+      "mesh": [
+        16,
+        2,
+        8
+      ],
+      "n_elements": 1536,
+      "n_nodes": 459,
+      "n_dofs": 1377,
+      "delta": 2.8397132008796485e-05,
+      "L_over_H": 20.0,
+      "delta_timoshenko": 8.015600000000001e-05,
+      "delta_euler_bernoulli": 8e-05,
+      "relative_error_vs_timoshenko": 0.64572668285847,
+      "relative_error_vs_euler_bernoulli": 0.6450358498900439,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "hex20",
+      "mesh": [
+        8,
+        2,
+        2
+      ],
+      "n_elements": 32,
+      "n_nodes": 261,
+      "n_dofs": 783,
+      "delta": 9.89896773817336e-06,
+      "L_over_H": 10.0,
+      "delta_timoshenko": 1.0078e-05,
+      "delta_euler_bernoulli": 1e-05,
+      "relative_error_vs_timoshenko": 0.017764661820464475,
+      "relative_error_vs_euler_bernoulli": 0.010103226182664104,
+      "criterion_3pct_met": true
+    },
+    {
+      "family": "hex20",
+      "mesh": [
+        16,
+        2,
+        2
+      ],
+      "n_elements": 64,
+      "n_nodes": 501,
+      "n_dofs": 1503,
+      "delta": 9.962565777267864e-06,
+      "L_over_H": 10.0,
+      "delta_timoshenko": 1.0078e-05,
+      "delta_euler_bernoulli": 1e-05,
+      "relative_error_vs_timoshenko": 0.011454080445736928,
+      "relative_error_vs_euler_bernoulli": 0.0037434222732136845,
+      "criterion_3pct_met": true
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        2
+      ],
+      "n_elements": 64,
+      "n_nodes": 153,
+      "n_dofs": 459,
+      "delta": 8.347394884644586e-06,
+      "L_over_H": 10.0,
+      "delta_timoshenko": 1.0078e-05,
+      "delta_euler_bernoulli": 1e-05,
+      "relative_error_vs_timoshenko": 0.1717210870565008,
+      "relative_error_vs_euler_bernoulli": 0.1652605115355415,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        4
+      ],
+      "n_elements": 128,
+      "n_nodes": 255,
+      "n_dofs": 765,
+      "delta": 8.510097010757586e-06,
+      "L_over_H": 10.0,
+      "delta_timoshenko": 1.0078e-05,
+      "delta_euler_bernoulli": 1e-05,
+      "relative_error_vs_timoshenko": 0.15557679988513737,
+      "relative_error_vs_euler_bernoulli": 0.14899029892424145,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        8
+      ],
+      "n_elements": 256,
+      "n_nodes": 459,
+      "n_dofs": 1377,
+      "delta": 8.555182098466707e-06,
+      "L_over_H": 10.0,
+      "delta_timoshenko": 1.0078e-05,
+      "delta_euler_bernoulli": 1e-05,
+      "relative_error_vs_timoshenko": 0.1511031853079275,
+      "relative_error_vs_euler_bernoulli": 0.14448179015332932,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "tet4",
+      "mesh": [
+        16,
+        2,
+        4
+      ],
+      "n_elements": 768,
+      "n_nodes": 255,
+      "n_dofs": 765,
+      "delta": 6.127506150326116e-06,
+      "L_over_H": 10.0,
+      "delta_timoshenko": 1.0078e-05,
+      "delta_euler_bernoulli": 1e-05,
+      "relative_error_vs_timoshenko": 0.3919918485487085,
+      "relative_error_vs_euler_bernoulli": 0.3872493849673885,
+      "criterion_3pct_met": false
+    },
+    {
+      "family": "tet4",
+      "mesh": [
+        16,
+        2,
+        8
+      ],
+      "n_elements": 1536,
+      "n_nodes": 459,
+      "n_dofs": 1377,
+      "delta": 6.64272673839881e-06,
+      "L_over_H": 10.0,
+      "delta_timoshenko": 1.0078e-05,
+      "delta_euler_bernoulli": 1e-05,
+      "relative_error_vs_timoshenko": 0.34086855145874084,
+      "relative_error_vs_euler_bernoulli": 0.335727326160119,
+      "criterion_3pct_met": false
+    }
+  ],
+  "aspect_sweep": [
+    {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        4
+      ],
+      "n_elements": 128,
+      "n_nodes": 255,
+      "n_dofs": 765,
+      "delta": 0.0006228105562474548,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.937723801918705,
+      "relative_error_vs_euler_bernoulli": 0.9377189443752546,
+      "criterion_3pct_met": false,
+      "element_length_x": 0.0625,
+      "dx_over_H": 6.25,
+      "dz_over_H": 0.25
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        32,
+        2,
+        4
+      ],
+      "n_elements": 256,
+      "n_nodes": 495,
+      "n_dofs": 1485,
+      "delta": 0.002091972294221127,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.7908190866891255,
+      "relative_error_vs_euler_bernoulli": 0.7908027705778872,
+      "criterion_3pct_met": false,
+      "element_length_x": 0.03125,
+      "dx_over_H": 3.125,
+      "dz_over_H": 0.25
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        64,
+        2,
+        4
+      ],
+      "n_elements": 512,
+      "n_nodes": 975,
+      "n_dofs": 2925,
+      "delta": 0.005104771896757777,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.489562624439516,
+      "relative_error_vs_euler_bernoulli": 0.48952281032422224,
+      "criterion_3pct_met": false,
+      "element_length_x": 0.015625,
+      "dx_over_H": 1.5625,
+      "dz_over_H": 0.25
+    },
+    {
+      "family": "hex8",
+      "mesh": [
+        128,
+        2,
+        4
+      ],
+      "n_elements": 1024,
+      "n_nodes": 1935,
+      "n_dofs": 5805,
+      "delta": 0.00798276767989386,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.20178549274218005,
+      "relative_error_vs_euler_bernoulli": 0.20172323201061387,
+      "criterion_3pct_met": false,
+      "element_length_x": 0.0078125,
+      "dx_over_H": 0.78125,
+      "dz_over_H": 0.25
+    }
+  ],
+  "aspect_order": {
+    "observed_order": 0.7387801987021771,
+    "dx_over_H_needed_for_tolerance": 0.05920205287332372,
+    "nx_needed_for_tolerance_per_H": 16.8913061535168,
+    "note": "extrapolation from the measured slope, not a solved mesh"
+  },
+  "falsified_expectations": [
+    {
+      "hypothesis": "8x through-depth (nz 2 -> 16) refinement of the first-order brick halves the tip-deflection error",
+      "observed_ratio": 0.9998800510661486,
+      "verdict": "falsified -- the error is flat in nz at fixed nx; the controlling parameter is the along-member element length"
+    }
+  ],
+  "highlights": {
+    "hex20_best_L100": {
+      "family": "hex20",
+      "mesh": [
+        24,
+        2,
+        2
+      ],
+      "n_elements": 96,
+      "n_nodes": 741,
+      "n_dofs": 2223,
+      "delta": 0.009945137126225781,
+      "L_over_H": 100.0,
+      "delta_timoshenko": 0.010000779999999999,
+      "delta_euler_bernoulli": 0.009999999999999998,
+      "relative_error_vs_timoshenko": 0.005563853396856821,
+      "relative_error_vs_euler_bernoulli": 0.005486287377421719,
+      "criterion_3pct_met": true
+    },
+    "hex8_ladder_L100": [
+      {
+        "family": "hex8",
+        "mesh": [
+          16,
+          2,
+          2
+        ],
+        "n_elements": 64,
+        "n_nodes": 153,
+        "n_dofs": 459,
+        "delta": 0.0006219698509636036,
+        "L_over_H": 100.0,
+        "delta_timoshenko": 0.010000779999999999,
+        "delta_euler_bernoulli": 0.009999999999999998,
+        "relative_error_vs_timoshenko": 0.9378078658901002,
+        "relative_error_vs_euler_bernoulli": 0.9378030149036396,
+        "criterion_3pct_met": false
+      },
+      {
+        "family": "hex8",
+        "mesh": [
+          16,
+          2,
+          4
+        ],
+        "n_elements": 128,
+        "n_nodes": 255,
+        "n_dofs": 765,
+        "delta": 0.0006228105562474548,
+        "L_over_H": 100.0,
+        "delta_timoshenko": 0.010000779999999999,
+        "delta_euler_bernoulli": 0.009999999999999998,
+        "relative_error_vs_timoshenko": 0.937723801918705,
+        "relative_error_vs_euler_bernoulli": 0.9377189443752546,
+        "criterion_3pct_met": false
+      },
+      {
+        "family": "hex8",
+        "mesh": [
+          16,
+          2,
+          8
+        ],
+        "n_elements": 256,
+        "n_nodes": 459,
+        "n_dofs": 1377,
+        "delta": 0.0006230366061999075,
+        "L_over_H": 100.0,
+        "delta_timoshenko": 0.010000779999999999,
+        "delta_euler_bernoulli": 0.009999999999999998,
+        "relative_error_vs_timoshenko": 0.9377011986865116,
+        "relative_error_vs_euler_bernoulli": 0.9376963393800093,
+        "criterion_3pct_met": false
+      },
+      {
+        "family": "hex8",
+        "mesh": [
+          16,
+          2,
+          16
+        ],
+        "n_elements": 512,
+        "n_nodes": 867,
+        "n_dofs": 2601,
+        "delta": 0.0006230948292417733,
+        "L_over_H": 100.0,
+        "delta_timoshenko": 0.010000779999999999,
+        "delta_euler_bernoulli": 0.009999999999999998,
+        "relative_error_vs_timoshenko": 0.9376953768364293,
+        "relative_error_vs_euler_bernoulli": 0.9376905170758226,
+        "criterion_3pct_met": false
+      }
+    ],
+    "hex20_thick_L10": {
+      "family": "hex20",
+      "mesh": [
+        16,
+        2,
+        2
+      ],
+      "n_elements": 64,
+      "n_nodes": 501,
+      "n_dofs": 1503,
+      "delta": 9.962565777267864e-06,
+      "L_over_H": 10.0,
+      "delta_timoshenko": 1.0078e-05,
+      "delta_euler_bernoulli": 1e-05,
+      "relative_error_vs_timoshenko": 0.011454080445736928,
+      "relative_error_vs_euler_bernoulli": 0.0037434222732136845,
+      "criterion_3pct_met": true
+    },
+    "hex8_thick_L10": {
+      "family": "hex8",
+      "mesh": [
+        16,
+        2,
+        8
+      ],
+      "n_elements": 256,
+      "n_nodes": 459,
+      "n_dofs": 1377,
+      "delta": 8.555182098466707e-06,
+      "L_over_H": 10.0,
+      "delta_timoshenko": 1.0078e-05,
+      "delta_euler_bernoulli": 1e-05,
+      "relative_error_vs_timoshenko": 0.1511031853079275,
+      "relative_error_vs_euler_bernoulli": 0.14448179015332932,
+      "criterion_3pct_met": false
+    },
+    "dof_efficiency": {
+      "hex20": {
+        "mesh": [
+          24,
+          2,
+          2
+        ],
+        "n_dofs": 2223,
+        "relative_error_vs_timoshenko": 0.005563853396856821
+      },
+      "hex8": {
+        "mesh": [
+          16,
+          2,
+          16
+        ],
+        "n_dofs": 2601,
+        "relative_error_vs_timoshenko": 0.9376953768364293
+      },
+      "hex8_over_hex20_error_ratio": 168.5334443510248
+    },
+    "hex8_monotone": true
+  },
+  "limitations": [
+    "Linear elasticity, small strain: this ladder says nothing about the geometrically nonlinear rung (`src/tensorfem/elastica_cantilever.py`).",
+    "Fully integrated HEX8 and TET4 only. Reduced integration with hourglass control, incompatible-mode (Wilson) bricks and TET10 are outside this scope, so the numbers are not a ranking of every first-order strategy.",
+    "The mean end-face displacement includes the load-introduction (Saint-Venant) effect; it is the sibling rungs' definition, which keeps the comparison between rungs fair but biases every family slightly.",
+    "Family and density are only partially separated: the HEX8 in-plane mesh is fixed at nx=16, ny=2 in the rung ladder while HEX20 varies, so the dof-efficiency ratio is a matched-cost comparison, not a converged-cost one; the aspect sweep separates the two effects only inside the brick family.",
+    "The dx/H needed for the 3 % band is an extrapolation of the measured slope from meshes that were actually solved; no run at that density exists, and the slope itself is measured between the two extreme meshes only.",
+    "Rigid-body-motion and patch tests are not repeated here: the trilinear brick and the tet pass them by construction of the library (`src/tensorfem/patch_test.py`), so the ladder grades bending behaviour alone.",
+    "No analytic reference exists for locking itself; the reference is the Timoshenko oracle plus the observed refinement ladder, so the *rate* is reported, not asserted."
+  ],
+  "wall_seconds": 5.353943347930908
+}
