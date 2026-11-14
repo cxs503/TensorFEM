@@ -291,17 +291,27 @@ class AitkenRelaxation:
         self.num = self.den = 0.0
         self.history = []
 
-    def omega_for(self, r_km1, r_k):
-        """Return the relaxation factor to use for the *next* correction."""
+    def omega_for(self, r_km1, r_k, omega_prev=None):
+        """Return the relaxation factor to use for the *next* correction.
+
+        ``omega_prev`` must be the factor that actually produced ``r_k`` from
+        ``r_km1``.  The Delta^2 estimate ``omega <- -omega_prev * num / den``
+        equals the analytic optimum ``1/(1-g)`` of a scalar linear fixed point
+        only for that factor; when it is omitted the stored ``self.omega`` is
+        used, which at the first sub-iteration of a new time step is stale
+        (carried over from the previous step) and scales the estimate by
+        ``omega``, costing one extra sub-iteration per step.
+        """
         r_km1 = np.asarray(r_km1, dtype=float)
         r_k = np.asarray(r_k, dtype=float)
+        base = self.omega if omega_prev is None else float(omega_prev)
         dr = r_k - r_km1
         self.num = float(np.dot(r_km1, dr))
         self.den = float(np.dot(dr, dr))
         if self.den > 0.0:
-            omega = -self.omega * self.num / self.den
+            omega = -base * self.num / self.den
         else:
-            omega = self.omega
+            omega = base
         self.omega = math.copysign(min(abs(omega), self.relax_max), omega)
         self.history.append(self.omega)
         return self.omega
@@ -644,6 +654,8 @@ class ImplicitIBMFSI:
         u_km1 = beam.u.copy()
         r_km1 = None
         omega = self.aitken.relax_max if self.relax_mode == "aitken" else self.fixed_omega
+        omega_applied = float("nan")
+        n_relax = 0
         converged, res, it = False, float("inf"), 0
         for it in range(1, self.max_sub_iter + 1):
             self.ibm.move(beam.markers())
@@ -657,9 +669,13 @@ class ImplicitIBMFSI:
                 converged = True
                 break
             if self.relax_mode == "aitken" and it >= 2:
-                omega = self.aitken.omega_for(r_km1, r_k)
+                # omega_applied is the factor that produced r_k from r_km1
+                omega = self.aitken.omega_for(r_km1, r_k,
+                                              omega_prev=omega_applied)
             else:
                 omega = self.aitken.relax_max if self.relax_mode == "aitken" else self.fixed_omega
+            omega_applied = omega
+            n_relax += 1
             r_km1 = r_k.copy()
             beam.u = u_km1 + omega * (u_new - u_km1)
             u_km1 = beam.u.copy()  # update for next sub-iteration
@@ -672,7 +688,8 @@ class ImplicitIBMFSI:
         beam.advance_history()
         self.sub_iterations.append(it)
         return {"sub_iterations": it, "residual": res, "converged": converged,
-                "omega": omega, "tip": beam.tip().tolist()}
+                "omega": omega_applied if n_relax else float("nan"),
+                "tip": beam.tip().tolist()}
 
     def run(self, n_steps, t_start=1):
         """Run ``n_steps`` steps; a diverging interface (marker leaving the
