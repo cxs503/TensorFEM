@@ -525,6 +525,13 @@ def surface_extrapolated_mises(stress: torch.Tensor, thickness: float) -> float:
     event, so the outermost two layers are linearly extrapolated to ``z = +-t/2``
     (otherwise the layered model reports first yield at ``z = 0.8 t/2`` for five
     layers and delays the transition by a factor ``1/(1-1/n)``).
+
+    .. warning::
+       The extrapolation assumes the *elastic* linear stress distribution through
+       the thickness.  It locates **first yield** correctly but over-reports once
+       the section has yielded: with three layers it reaches ``1.5 sigma_y`` when
+       only the outer layer is plastic (measured 533 MPa at ``sigma_y = 355 MPa``).
+       Do not quote this value as a post-yield surface stress.
     """
     layers = int(stress.shape[2])
     if layers < 2:
@@ -565,6 +572,19 @@ class PatchPath:
     collapse_factor: float | None = None
     state: LayeredShell4State | None = None
     displacement: torch.Tensor | None = None
+    # ``collapse_factor`` is only a *limit* load if load control actually ran out
+    # of equilibrium: then the Newton failure is recorded here.  When the ramp is
+    # simply exhausted (no limit point reached) the reported collapse is the last
+    # prescribed factor and ``ramp_completed`` says so, because the two are not
+    # the same physical quantity.
+    limit_point_searched: bool = False
+    ramp_completed: bool = False
+    # Unloading bookkeeping: a residual deflection is only a *permanent set* if
+    # the unload leg actually converged; a failed first step used to be reported
+    # as a permanent set equal to the peak deflection.
+    unload_steps_requested: int = 0
+    unload_converged_steps: int = 0
+    unload_failure: str | None = None
 
     def _interpolate_crossing(self, attribute: str, threshold: float) -> float | None:
         previous: PatchPathPoint | None = None
@@ -601,11 +621,30 @@ class PatchPath:
 
     @property
     def permanent_deflection(self) -> float | None:
-        """Residual centre deflection after the unloading leg (``None`` if the
-        path was not unloaded)."""
+        """Residual centre deflection after the unloading leg.
+
+        ``None`` when no unloading step converged at all: in that case the peak
+        deflection must *not* be passed off as a permanent set.
+        """
         if not self.unloading:
             return None
         return self.unloading[-1].centre_deflection
+
+    @property
+    def permanent_set_valid(self) -> bool:
+        """True when the residual deflection is a real post-unload state.
+
+        Requires at least one converged unloading step *and* no failure on the
+        way to ``unload_to``; a partially unloaded path leaves a residual that is
+        larger than the permanent set and is therefore flagged, not quoted.
+        """
+        return bool(self.unloading) and self.unload_failure is None
+
+    @property
+    def collapse_is_limit_point(self) -> bool:
+        """True when ``collapse_factor`` came from a genuine loss of equilibrium
+        under load control rather than from the end of the prescribed ramp."""
+        return self.collapse_factor is not None and self.limit_point_searched
 
     @property
     def peak_factor(self) -> float | None:
@@ -691,27 +730,32 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
         reached = advance(target, previous, path.loading)
         if reached is None:
             path.collapse_factor = previous
+            path.limit_point_searched = True
             break
         previous = reached
+    else:
+        path.ramp_completed = True
 
     if unload_steps > 0 and path.loading:
         peak = path.loading[-1].load_factor
+        path.unload_steps_requested = unload_steps
         for k in range(1, unload_steps + 1):
             target = peak + (unload_to - peak) * k / unload_steps
             if abs(target - previous) <= 1e-12:
                 continue
-            path.unloading.append(PatchPathPoint(
-                target, float(path.loading[-1].centre_deflection if not path.unloading
-                              else 0.0), 0.0))
             try:
                 step = solve_layered_shell4_increment(
                     model, info["reference_load"], target, info["fixed_dofs"], state, u,
                     tolerance=tolerance, max_iterations=max_iterations)
             except RuntimeError:
-                path.unloading[-1].centre_deflection = float(u[6 * centre + 2])
+                # the committed state is unchanged on failure, so the peak
+                # deflection is still standing: record it and flag the leg.
+                path.unload_failure = f"unloading step to {target:.6g} did not converge"
                 break
             state, u = step.state, step.displacement
-            path.unloading[-1].centre_deflection = float(u[6 * centre + 2])
+            path.unloading.append(PatchPathPoint(
+                target, float(u[6 * centre + 2]), float(torch.max(step.alpha))))
+            path.unload_converged_steps = k
             previous = target
 
     path.state = state
@@ -775,7 +819,14 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
         "fe_surface_mises_per_pa": fe_sigma_per_pa,
         "analytic_surface_mises_per_pa": elastic["sigma_eq_per_pa"],
         "first_yield_factor": path.first_yield_factor,
-        "collapse_factor": path.collapse_factor or path.loading[-1].load_factor,
+        # only a lost equilibrium is a limit load; otherwise this is the last
+        # prescribed factor of the ramp (see ``collapse_is_limit_point``)
+        "collapse_factor": (path.collapse_factor if path.collapse_factor is not None
+                            else path.loading[-1].load_factor),
+        "collapse_is_limit_point": path.collapse_is_limit_point,
+        "ramp_completed": path.ramp_completed,
+        "unload_converged_steps": path.unload_converged_steps,
+        "unload_failure": path.unload_failure,
         "peak_centre_deflection": path.loading[-1].centre_deflection,
         "stiffness_ratio": path.stiffness_ratio(),
         "mesh": {"nx": nx, "ny": ny, "layers": layers},
@@ -791,4 +842,8 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
     fe["collapse_error_vs_upper"] = (fe["collapse_factor"] - upper["pressure"]) / upper["pressure"]
     summary["fe"] = fe
     summary["fe_permanent_deflection"] = path.permanent_deflection
+    summary["fe_permanent_set_valid"] = path.permanent_set_valid
+    if path.permanent_deflection is not None and not path.permanent_set_valid:
+        summary["evidence"] = ("analytic bounds + FE path; permanent set WITHHELD "
+                               f"(unloading did not converge: {path.unload_failure})")
     return summary
