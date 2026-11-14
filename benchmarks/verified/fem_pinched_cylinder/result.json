@@ -52,12 +52,132 @@
   ],
   "convergence": [
     {
-      "mesh_range": "4x \u2192 16x",
-      "observed_order": 0.3792631711623622
+      "mesh_range": "4x4 \u2192 16x16",
+      "refinement_ratio": 2.0,
+      "observed_order": -0.41746760943274347,
+      "reason": ""
     },
     {
-      "mesh_range": "8x \u2192 32x",
-      "observed_order": 0.7407674028674414
+      "mesh_range": "8x8 \u2192 32x32",
+      "refinement_ratio": 2.0,
+      "observed_order": 0.17670907941532768,
+      "reason": ""
     }
-  ]
+  ],
+  "ladder_grading": {
+    "schema": "tensorfem.refinement-gate/1.0",
+    "qoi": "radial displacement at the load point",
+    "levels": [
+      {
+        "label": "4x4",
+        "mesh_size": 0.25,
+        "value": -2.656165677507929e-06
+      },
+      {
+        "label": "8x8",
+        "mesh_size": 0.125,
+        "value": -6.260527590930111e-06
+      },
+      {
+        "label": "16x16",
+        "mesh_size": 0.0625,
+        "value": -1.1074445328678748e-05
+      },
+      {
+        "label": "32x32",
+        "mesh_size": 0.03125,
+        "value": -1.53334089568423e-05
+      }
+    ],
+    "reference": {
+      "label": "MacNeal & Harder (1985)",
+      "value": -1.8248e-05,
+      "tolerance": 0.03
+    },
+    "observed_orders": [
+      {
+        "from": "4x4",
+        "to": "16x16",
+        "ratio": 2.0,
+        "order": -0.41746760943274347
+      },
+      {
+        "from": "8x8",
+        "to": "32x32",
+        "ratio": 2.0,
+        "order": 0.17670907941532768
+      }
+    ],
+    "reported_accuracy_finest": 0.15972112248781786,
+    "certified_accuracy": 1.6314435636759248,
+    "gates": [
+      {
+        "id": "accuracy_finest",
+        "description": "finest-mesh value within tolerance of the reference",
+        "status": "FAIL",
+        "passed": false,
+        "operator": "<=",
+        "actual": 0.15972112248781786,
+        "threshold": 0.03,
+        "detail": "finest level 32x32 rel. error 1.5972e-01"
+      },
+      {
+        "id": "accuracy_asymptotic",
+        "description": "Richardson limit of the ladder within tolerance (certified accuracy)",
+        "status": "FAIL",
+        "passed": false,
+        "operator": "<=",
+        "actual": 1.6314435636759248,
+        "threshold": 0.03,
+        "detail": "extrapolated -4.801858215e-05 vs MacNeal & Harder (1985) -1.8248e-05: rel. error 1.6314e+00 (order p=0.177)"
+      },
+      {
+        "id": "monotone_qoi",
+        "description": "number of non-monotone step transitions along the ladder is zero",
+        "status": "PASS",
+        "passed": true,
+        "operator": "<=",
+        "actual": 0.0,
+        "threshold": 0.0,
+        "detail": "monotone"
+      },
+      {
+        "id": "observed_order",
+        "description": "finest observed order >= 1",
+        "status": "FAIL",
+        "passed": false,
+        "operator": ">=",
+        "actual": 0.17670907941532768,
+        "threshold": 1.0,
+        "detail": "4x4->16x16: p=-0.417, 8x8->32x32: p=0.177"
+      },
+      {
+        "id": "asymptotic_range_consistency",
+        "description": "finest-mesh error inside the GCI band (|e_finest|/GCI <= 1)",
+        "status": "PASS",
+        "passed": true,
+        "operator": "<=",
+        "actual": 0.05994324767824516,
+        "threshold": 1.0,
+        "detail": "finest-mesh true error 1.597e-01 vs GCI band 2.665e+00 -> inside the band"
+      },
+      {
+        "id": "coarsest_sanity",
+        "description": "coarsest level within 0.5 of the reference",
+        "status": "FAIL",
+        "passed": false,
+        "operator": "<=",
+        "actual": 0.8544407235035111,
+        "threshold": 0.5,
+        "detail": "coarsest level 4x4 rel. error 8.5444e-01"
+      }
+    ],
+    "status": "FAIL",
+    "passed": false,
+    "study_status": "failed",
+    "limitations": [
+      "Certified accuracy is the Richardson limit of the ladder; reported finest-mesh accuracy is not evidence of asymptotic accuracy.",
+      "A non-monotone ladder cannot certify any accuracy: the gate is WITHHELD, not passed."
+    ]
+  }
 }

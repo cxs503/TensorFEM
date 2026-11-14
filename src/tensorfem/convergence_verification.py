@@ -225,12 +225,18 @@ def evaluate_convergence_study(
         "levels": [level.as_dict() for level in study],
         "refinement_ratios": ratios,
         "checks": [],
+        "unevaluable_checks": [],
     }
     checks: list[dict[str, object]] = report["checks"]  # type: ignore[assignment]
+    unevaluable: list[dict[str, object]] = report["unevaluable_checks"]  # type: ignore[assignment]
 
     def check(name: str, passed: bool, detail: str) -> bool:
         checks.append({"name": name, "passed": bool(passed), "detail": detail})
         return bool(passed)
+
+    def record_unevaluable(name: str, detail: str) -> None:
+        """A check the ladder cannot answer: neither a pass nor a violation."""
+        unevaluable.append({"name": name, "detail": detail})
 
     # Machine-precision convergence: all levels identical.  No order exists.
     values = [level.value for level in study]
@@ -293,21 +299,49 @@ def evaluate_convergence_study(
               f"{expected_order:.3f} (rel. deviation {deviation:.3f}, band {order_band:.3f})")
         report["expected_order"] = expected_order
 
-    gci = grid_convergence_index(
-        study[-2], study[-1], finest_order, ratio=ratios[-1], safety_factor=safety_factor
-    )
-    report["gci"] = gci
-    report["richardson_value"] = gci["richardson_value"]
+    # A non-positive observed order means the *increments* of the QoI grow (or
+    # stay constant) under refinement: the ladder is not in the asymptotic
+    # range, so ``r**p - 1 <= 0`` and neither a GCI band nor a Richardson limit
+    # is defined.  That is an attribute of the data, not an error in the
+    # caller, so it is reported as ``blocked`` and never raised out of the
+    # estimator (a raising estimator cannot be used to grade a stored anchor
+    # ladder, and callers would have to guess the verdict).
+    extrapolable = math.isfinite(finest_order) and finest_order > 0.0
+    gci: dict[str, float] | None
+    if extrapolable:
+        gci = grid_convergence_index(
+            study[-2], study[-1], finest_order, ratio=ratios[-1], safety_factor=safety_factor
+        )
+        report["gci"] = gci
+        report["richardson_value"] = gci["richardson_value"]
+    else:
+        gci = None
+        report["gci"] = None
+        report["richardson_value"] = None
+        report["blocked_reason"] = (
+            f"non-positive observed order p={finest_order:.4g} on the finest triple: the "
+            f"increments of the QoI do not shrink under refinement, so no GCI band and no "
+            f"Richardson limit exist (pre-asymptotic / non-converging ladder)"
+        )
+        check("asymptotic_order", False, report["blocked_reason"])
 
-    # Roache's band must shrink with refinement: GCI_fine <= GCI_coarse.
-    if len(study) >= 3 and len(orders) >= 2:
+    # Roache's band must shrink with refinement: GCI_fine <= GCI_coarse.  The
+    # contract is only defined for pairs whose *own* order is positive; a
+    # coarser pair with a non-positive order is recorded as unevaluable rather
+    # than compared (``r**p - 1 <= 0`` is degenerate) or silently passed.
+    coarser_gci: dict[str, float] | None = None
+    if not extrapolable:
+        record_unevaluable(
+            "gci_band_contracts", "no GCI band on the finest pair (see blocked_reason)"
+        )
+    elif len(study) >= 3 and len(orders) >= 2 and orders[-2] > 0.0:
         coarser_gci = grid_convergence_index(
             study[-3], study[-2], orders[-2], ratio=ratios[-2], safety_factor=safety_factor
         )
-    else:
-        coarser_gci = None
     if coarser_gci is None:
-        check("gci_band_contracts", True, "single evaluable pair, band contract not applicable")
+        if extrapolable:
+            check("gci_band_contracts", True,
+                  "single evaluable pair, band contract not applicable")
     else:
         report["gci_coarser_pair"] = coarser_gci
         check(
@@ -316,14 +350,21 @@ def evaluate_convergence_study(
             f"absolute GCI {gci['absolute_gci']:.3e} (fine pair) <= "
             f"{coarser_gci['absolute_gci']:.3e} (coarser pair)",
         )
+    if extrapolable and coarser_gci is None and len(study) >= 3 and len(orders) >= 2:
+        record_unevaluable(
+            "gci_band_contracts",
+            f"coarser triple order p={orders[-2]:.4g} is non-positive; band contract "
+            f"not evaluable",
+        )
 
     reference = _reference_block(
         study,
-        gci["richardson_value"],
+        gci["richardson_value"] if gci is not None else study[-1].value,
         reference_value,
         reference_tolerance,
         reference_label,
         gci=gci,
+        extrapolation_available=extrapolable,
     )
     report["reference"] = reference
     if reference is not None:
@@ -334,7 +375,10 @@ def evaluate_convergence_study(
             reference["gci_detail"],
         )
 
-    report["status"] = "failed" if any(not c["passed"] for c in checks) else "passed"
+    if not extrapolable:
+        report["status"] = "blocked"
+    else:
+        report["status"] = "failed" if any(not c["passed"] for c in checks) else "passed"
     report["passed"] = report["status"] == "passed"
     return report
 
@@ -353,8 +397,15 @@ def _reference_block(
     label: str,
     *,
     gci: Mapping[str, float] | None = None,
+    extrapolation_available: bool = True,
 ) -> dict[str, object] | None:
-    """Compare the extrapolated/finest values against an independent reference."""
+    """Compare the extrapolated/finest values against an independent reference.
+
+    ``extrapolation_available=False`` records that no Richardson limit exists
+    for this ladder: the block then carries only the finest-level comparison,
+    and ``extrapolated_value`` / ``extrapolated_relative_error`` stay ``None``
+    so no caller can read a finest-mesh number as a certified limit.
+    """
     if reference_value is None:
         return None
     if not math.isfinite(reference_value):
@@ -363,22 +414,34 @@ def _reference_block(
         raise ValueError("reference_tolerance must be finite and positive")
     finest = study[-1]
     name = label or "reference"
-    extrapolated_error = _relative_difference(extrapolated, reference_value)
     finest_error = _relative_difference(finest.value, reference_value)
     block: dict[str, object] = {
         "label": name,
         "value": reference_value,
-        "extrapolated_value": extrapolated,
-        "extrapolated_relative_error": extrapolated_error,
+        "extrapolated_value": None,
+        "extrapolated_relative_error": None,
         "finest_relative_error": finest_error,
         "tolerance": tolerance,
-        "within_tolerance": extrapolated_error <= tolerance,
-        "detail": (
+        "detail": "",
+    }
+    if not extrapolation_available:
+        block["within_tolerance"] = False
+        block["detail"] = (
+            f"no Richardson limit (ladder pre-asymptotic); finest level "
+            f"{finest.value:.12g} vs {name} {reference_value:.12g}: rel. error "
+            f"{finest_error:.3e} (> {tolerance:.3e} at best)"
+        )
+        block["extrapolated_value"] = None
+    else:
+        extrapolated_error = _relative_difference(extrapolated, reference_value)
+        block["extrapolated_value"] = extrapolated
+        block["extrapolated_relative_error"] = extrapolated_error
+        block["within_tolerance"] = extrapolated_error <= tolerance
+        block["detail"] = (
             f"Richardson {extrapolated:.12g} vs {name} {reference_value:.12g}: "
             f"rel. error {extrapolated_error:.3e} (<= {tolerance:.3e}); "
             f"finest-level error {finest_error:.3e}"
-        ),
-    }
+        )
     if gci is None:
         block["finest_inside_gci"] = True
         block["gci_detail"] = "no GCI band available (machine-precision levels)"

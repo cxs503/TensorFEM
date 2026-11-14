@@ -5,49 +5,101 @@
   "mission": "selfstart-m6585",
   "criteria": {
     "finest_error": "<= 3%",
+    "asymptotic_error": "<= 3% (Richardson limit, certified accuracy)",
     "convergence": "monotone",
     "order": ">= 1.0",
-    "coarsest_sanity": "<= 50%"
+    "coarsest_sanity": "<= 50%",
+    "asymptotic_range": "finest error inside the GCI band"
   },
+  "verdicts": {
+    "accuracy_verdict": "FAIL",
+    "study_verdict": "FAIL",
+    "overall_verdict": "FAIL",
+    "passed": false,
+    "unproven": [
+      "accuracy_finest",
+      "accuracy_asymptotic",
+      "observed_order",
+      "coarsest_sanity"
+    ]
+  },
+  "reported_accuracy_finest": 0.15972112248781786,
+  "certified_accuracy": 1.6314435636759248,
   "gates": [
     {
-      "id": "G1_finest_accuracy",
-      "description": "Finest mesh (32x32) displacement within 3% of reference",
+      "id": "G1_accuracy_finest",
+      "description": "finest-mesh value within tolerance of the reference",
+      "status": "FAIL",
+      "passed": false,
+      "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.1597211224878179,
-      "passed": false
+      "actual": 0.15972112248781786,
+      "detail": "finest level 32x32 rel. error 1.5972e-01"
     },
     {
-      "id": "G2_monotone_convergence",
-      "description": "Monotone convergence of displacement error with mesh refinement",
-      "threshold": "monotone",
-      "actual": "monotone",
-      "passed": true
+      "id": "G2_accuracy_asymptotic",
+      "description": "Richardson limit of the ladder within tolerance (certified accuracy)",
+      "status": "FAIL",
+      "passed": false,
+      "operator": "<=",
+      "threshold": 0.03,
+      "actual": 1.6314435636759248,
+      "detail": "extrapolated -4.801858215e-05 vs MacNeal & Harder (1985) -1.8248e-05: rel. error 1.6314e+00 (order p=0.177)"
     },
     {
-      "id": "G3_convergence_order",
-      "description": "Observed convergence order >= 1.0",
+      "id": "G3_monotone_qoi",
+      "description": "number of non-monotone step transitions along the ladder is zero",
+      "status": "PASS",
+      "passed": true,
+      "operator": "<=",
+      "threshold": 0.0,
+      "actual": 0.0,
+      "detail": "monotone"
+    },
+    {
+      "id": "G4_observed_order",
+      "description": "finest observed order >= 1",
+      "status": "FAIL",
+      "passed": false,
+      "operator": ">=",
       "threshold": 1.0,
-      "actual": 0.7407674028674414,
-      "passed": false
+      "actual": 0.17670907941532768,
+      "detail": "4x4->16x16: p=-0.417, 8x8->32x32: p=0.177"
     },
     {
-      "id": "G4_coarsest_sanity",
-      "description": "Coarsest mesh (4x4) displacement within 50% of reference",
+      "id": "G5_asymptotic_range_consistency",
+      "description": "finest-mesh error inside the GCI band (|e_finest|/GCI <= 1)",
+      "status": "PASS",
+      "passed": true,
+      "operator": "<=",
+      "threshold": 1.0,
+      "actual": 0.05994324767824516,
+      "detail": "finest-mesh true error 1.597e-01 vs GCI band 2.665e+00 -> inside the band"
+    },
+    {
+      "id": "G6_coarsest_sanity",
+      "description": "coarsest level within 0.5 of the reference",
+      "status": "FAIL",
+      "passed": false,
+      "operator": "<=",
       "threshold": 0.5,
-      "actual": 0.8544407235035112,
-      "passed": false
+      "actual": 0.8544407235035111,
+      "detail": "coarsest level 4x4 rel. error 8.5444e-01"
     }
   ],
+  "overall_verdict": "FAIL",
   "passed": false,
   "failed_gates": [
-    "G1_finest_accuracy",
-    "G3_convergence_order",
-    "G4_coarsest_sanity"
+    "G1_accuracy_finest",
+    "G2_accuracy_asymptotic",
+    "G4_observed_order",
+    "G6_coarsest_sanity"
   ],
+  "withheld_gates": [],
   "limitations": [
     "Cylindrical Shell4 is specialised for cylindrical geometry only",
     "General curved shells require either specialised elements or improved flat-facet formulations",
-    "Reference value is from a published benchmark; no independent analytical solution exists for this configuration"
+    "Reference value is from a published benchmark; no independent analytical solution exists for this configuration",
+    "The error ladder is non-monotone (4x -> 8x moves away from the reference), so the finest-mesh reading understates the asymptotic error: certified accuracy is the Richardson limit (G5), not the 32x32 error"
   ]
 }
