@@ -1,9 +1,9 @@
 {
   "benchmark": "fem_heat_conduction_l2",
   "case_key": "CASE-FEM-HEAT-L2",
-  "description": "Steady-state heat conduction: manufactured harmonic solution on unit square, Q4 elements",
-  "generated_at": "2026-11-14T12:29:31.859849+00:00",
-  "elapsed_seconds": 2.29,
+  "description": "Steady-state heat conduction: manufactured harmonic solution on the unit square, Q4 elements",
+  "generated_at": "2026-11-14T21:58:16.076803+00:00",
+  "elapsed_seconds": 16.86,
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
@@ -13,16 +13,27 @@
   "reference": {
     "solution": "T(x,y) = sin(\u03c0x)\u00b7sinh(\u03c0y)/sinh(\u03c0)",
     "equation": "\u2207\u00b2T = 0 on [0,1]\u00b2, Dirichlet BC from exact field",
+    "target_order": 2.0,
+    "target_order_source": "src/tensorfem/adaptive_poisson_2d.py (L2 norm O(h^2), bilinear Q4)",
     "source": "Manufactured harmonic field (Zienkiewicz & Taylor, FEM vol.1, ch.3-4)"
+  },
+  "norm_definition": {
+    "gate_metric": "relative L2 domain integral at 6x6 Gauss (tensorfem.heat_conduction_l2.integral_error_norms)",
+    "diagnostic": "l2_nodal_rms_relative = sqrt(mean_nodal(e^2)/mean_nodal(T^2)) -- sampling pseudo-norm, no gate",
+    "quadrature_orders": [
+      4,
+      6,
+      8
+    ]
   },
   "figures": [
     {
       "path": "docs/assets/verified/fem_heat_conduction_l2/fig_convergence.png",
-      "sha256": "c0189fc052f45729b221edacaaf3d6232a619c8c6f771e7147701d0b2070d2a4"
+      "sha256": "07dd300ce12a5fd817b5dcbe5aa61a7901915a681dad70729392a0858577a456"
     },
     {
       "path": "docs/assets/verified/fem_heat_conduction_l2/fig_field.png",
-      "sha256": "d0e409923ec9782e367ff8e3ea270276506e446a18dab401fcac5cae9aecc10d"
+      "sha256": "805139d1cdc3b4be8f279ffb28a22d3f97acbae2808968cc14a686b37548caf1"
     }
   ],
   "mesh_levels": [
@@ -33,8 +44,15 @@
       "n_nodes": 25,
       "n_dof": 9,
       "h": 0.25,
-      "l2_absolute": 0.007228085084922719,
-      "l2_relative": 0.022854545057535813,
+      "l2_relative": 0.04460089845347196,
+      "l2_by_quadrature": {
+        "4": 0.04460068189834228,
+        "6": 0.04460089845347196,
+        "8": 0.044600898453916155
+      },
+      "h1_relative": 0.22378777740383707,
+      "l2_nodal_rms_relative": 0.022854545057535813,
+      "quadrature_spread": 4.8554083299871425e-06,
       "max_absolute": 0.018741669334449096,
       "max_relative": 0.1043795658480713,
       "heat_balance_residual": 1.5184386243409409e-16
@@ -46,8 +64,15 @@
       "n_nodes": 81,
       "n_dof": 49,
       "h": 0.125,
-      "l2_absolute": 0.0019500322179943452,
-      "l2_relative": 0.006517039762874083,
+      "l2_relative": 0.011210262788066562,
+      "l2_by_quadrature": {
+        "4": 0.011210259210475186,
+        "6": 0.011210262788066562,
+        "8": 0.011210262788066994
+      },
+      "h1_relative": 0.11199540300218111,
+      "l2_nodal_rms_relative": 0.006517039762874083,
+      "quadrature_spread": 3.191354097139978e-07,
       "max_absolute": 0.004458479871902787,
       "max_relative": 0.027249134831472094,
       "heat_balance_residual": 3.3306690738754696e-16
@@ -59,8 +84,15 @@
       "n_nodes": 289,
       "n_dof": 225,
       "h": 0.0625,
-      "l2_absolute": 0.000511324317044807,
-      "l2_relative": 0.0017658990279668127,
+      "l2_relative": 0.002806922187955918,
+      "l2_by_quadrature": {
+        "4": 0.0028069221312820307,
+        "6": 0.002806922187955918,
+        "8": 0.0028069221879559363
+      },
+      "h1_relative": 0.05600869654926048,
+      "l2_nodal_rms_relative": 0.0017658990279668127,
+      "quadrature_spread": 2.0190764756159828e-08,
       "max_absolute": 0.0011169094454134831,
       "max_relative": 0.006891251522687946,
       "heat_balance_residual": 8.881784197001252e-16
@@ -72,17 +104,97 @@
       "n_nodes": 1089,
       "n_dof": 961,
       "h": 0.03125,
-      "l2_absolute": 0.00013137314111040966,
-      "l2_relative": 0.00046179077474673065,
+      "l2_relative": 0.0007020126068247372,
+      "l2_by_quadrature": {
+        "4": 0.0007020126059361437,
+        "6": 0.0007020126068247372,
+        "8": 0.0007020126068247664
+      },
+      "h1_relative": 0.02800566970822067,
+      "l2_nodal_rms_relative": 0.0004617907747467307,
+      "quadrature_spread": 1.265821606494684e-09,
       "max_absolute": 0.0002784659831218672,
       "max_relative": 0.0017278573906382674,
       "heat_balance_residual": 1.3322676295501878e-15
+    },
+    {
+      "nx": 64,
+      "ny": 64,
+      "n_elements": 4096,
+      "n_nodes": 4225,
+      "n_dof": 3969,
+      "h": 0.015625,
+      "l2_relative": 0.00017552093457329218,
+      "l2_by_quadrature": {
+        "4": 0.00017552093455935696,
+        "6": 0.00017552093457329218,
+        "8": 0.00017552093457331603
+      },
+      "h1_relative": 0.014002998378567654,
+      "l2_nodal_rms_relative": 0.00011822295472039997,
+      "quadrature_spread": 7.952940713102045e-11,
+      "max_absolute": 6.965928676327948e-05,
+      "max_relative": 0.0004322813446067831,
+      "heat_balance_residual": 1.2212453270876722e-15
     }
   ],
   "observed_orders_l2": [
+    1.9922526746849485,
+    1.9977591219497117,
+    1.999420226797684,
+    1.9998538262460381
+  ],
+  "observed_orders_h1": [
+    0.9986917267325329,
+    0.9997167572246559,
+    0.9999319255462937,
+    0.9999831523724589
+  ],
+  "nodal_rms_orders": [
     1.8101923984364712,
     1.883813943662095,
-    1.9350915961265123
+    1.9350915961265118,
+    1.9657291693838306
   ],
-  "mean_order": 1.8763659794083596
+  "mean_order": 1.9973214624195958,
+  "mean_nodal_rms_order": 1.8987067769022272,
+  "power_law_residual": 0.0001350863903204857,
+  "independent_cross_check": {
+    "entries": [
+      {
+        "nx": 8,
+        "n_dof": 49,
+        "l2_relative_independent": 0.011210262788066272,
+        "l2_relative_kernel_8pt": 0.011210262788066994,
+        "norm_relative_difference": 6.437359941058373e-14,
+        "field_max_relative_difference": 7.216449660063518e-16
+      },
+      {
+        "nx": 16,
+        "n_dof": 225,
+        "l2_relative_independent": 0.0028069221879552914,
+        "l2_relative_kernel_8pt": 0.0028069221879559363,
+        "norm_relative_difference": 2.297475344922706e-13,
+        "field_max_relative_difference": 8.881784197001252e-16
+      },
+      {
+        "nx": 32,
+        "n_dof": 961,
+        "l2_relative_independent": 0.0007020126068211813,
+        "l2_relative_kernel_8pt": 0.0007020126068247664,
+        "norm_relative_difference": 5.106932965195356e-12,
+        "field_max_relative_difference": 3.497202527569243e-15
+      },
+      {
+        "nx": 64,
+        "n_dof": 3969,
+        "l2_relative_independent": 0.00017552093456555526,
+        "l2_relative_kernel_8pt": 0.00017552093457331603,
+        "norm_relative_difference": 4.4215656553841425e-11,
+        "field_max_relative_difference": 7.216449660063518e-15
+      }
+    ],
+    "worst_norm_relative_difference": 4.4215656553841425e-11,
+    "worst_field_relative_difference": 7.216449660063518e-15
+  }
 }
