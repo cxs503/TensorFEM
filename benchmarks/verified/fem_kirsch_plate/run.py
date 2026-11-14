@@ -68,6 +68,7 @@ import time
 from pathlib import Path
 
 import numpy as np
+import torch
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
@@ -79,6 +80,14 @@ from tensorfem.finite_width_hole import (  # noqa: E402
     FiniteWidthPlate,
     heywood_stress_concentration,
     solve_case,
+)
+from tensorfem.stress_recovery import (  # noqa: E402
+    interpolate_nodal_field,
+    locate_point,
+    plane_stress_matrix,
+    q4_gauss_stresses,
+    q4_strain_matrix,
+    recover_nodal_stress,
 )
 from tensorfem.structural_canonical_face import (  # noqa: E402
     solve_kirsch_q8_concentration,
@@ -110,6 +119,8 @@ CRITERIA = {
     "saint_venant_band_rel_max": 0.01,
     "finite_width_trend_rel_max": 0.03,
     "hoop_profile_rms_over_kt_max": 0.05,
+    "interior_field_rel_error_max": 0.05,        # componentwise, recovered nodal field
+    "interior_field_refinement_factor_min": 2.0,  # coarse/fine max interior error
     "refinement_levels_min": 3,
 }
 
@@ -135,6 +146,22 @@ Q8_LADDER = ((24, 6), (48, 12), (96, 24))   # clean r = 2 sequence
 
 TREND_RATIOS = (0.10, 0.20, 0.30, 0.40, 0.50)
 TREND_LEVEL = 40
+
+#: Field-level (not peak-only) verification of the traction-driven plate: the
+#: recovered nodal stress is compared with the full Kirsch field at interior sample
+#: points on rays that avoid the two symmetry axes (on ``theta = 0, 90 deg`` the shear
+#: component vanishes identically, so a *relative* criterion there measures the
+#: absolute noise floor of the recovery instead of the field error -- see
+#: ``symmetry_axis_shear`` below, which is reported as a diagnostic).
+FIELD_RADII = (1.10, 1.25, 1.50, 2.00)        # r / a (a = hole radius)
+FIELD_RAYS_DEGREES = (22.5, 45.0, 67.5)      # generic rays, off the symmetry axes
+FIELD_ABSOLUTE_FLOOR = 0.10                  # of T: floor of the relative criterion
+FIELD_LEVELS = (LADDER[1], LADDER[-1])
+SYMMETRY_RAYS_DEGREES = (0.0, 90.0)
+
+#: Canonical, publisher-safe home of the figures: ``tp_pusher`` drops ``*.png``
+#: outside ``docs/``, so the version-controlled home must be under ``docs/assets``.
+FIGURE_DIR = ROOT / "docs" / "assets" / "kirsch_plate"
 
 FIGURES: list[str] = []
 
@@ -313,6 +340,190 @@ def finite_width_trend() -> list:
     return rows
 
 
+
+
+# ---------------------------------------------------------------------------
+# Field-level verification: interior pointwise stress vs the full Kirsch field
+# ---------------------------------------------------------------------------
+
+def kartesisch_to_polar(sxx, syy, sxy, theta):
+    """Cartesian -> polar stress components at angle ``theta`` (plane stress)."""
+    c, s = math.cos(theta), math.sin(theta)
+    radial = sxx * c * c + syy * s * s + 2.0 * sxy * c * s
+    hoop = sxx * s * s + syy * c * c - 2.0 * sxy * c * s
+    shear = -(sxx - syy) * s * c + sxy * (c * c - s * s)
+    return radial, hoop, shear
+
+
+def field_error(fe, exact) -> dict:
+    """Componentwise relative error with a ``FIELD_ABSOLUTE_FLOOR * T`` floor.
+
+    The floor is needed because ``tau_rt`` vanishes on the symmetry rays and is small on
+    the whole neighbourhood of the load axis: without a floor the relative criterion
+    measures the absolute noise of the recovery, not the field error.
+    """
+    components = ("radial", "hoop", "shear")
+    out = {}
+    for index, component in enumerate(components):
+        denominator = max(abs(exact[index]), FIELD_ABSOLUTE_FLOOR)
+        out[component] = abs(fe[index] - exact[index]) / denominator
+    out["max"] = max(out[component] for component in components)
+    return out
+
+
+def probe_context(case: dict, board: FiniteWidthPlate) -> dict:
+    """Per-mesh data for pointwise probes (displacement, element map, recovered field)."""
+    nodes = torch.as_tensor(np.asarray(case["_meta"]["nodes"]), dtype=torch.float64)
+    elements = torch.as_tensor(np.asarray(case["_meta"]["elements"]))
+    u = torch.as_tensor(np.asarray(case["_displacement"]), dtype=torch.float64)
+    gauss = q4_gauss_stresses(nodes, elements, u, young=board.young, poisson=board.poisson)
+    return {
+        "board": board,
+        "nodes": nodes,
+        "elements": elements,
+        "coords": nodes[elements],
+        "flat_u": u.reshape(-1, 2),
+        "stiffness": plane_stress_matrix(board.young, board.poisson),
+        "nodal": recover_nodal_stress(nodes, elements, gauss),
+    }
+
+
+def field_probe(context: dict, r_over_a: float, theta: float) -> dict:
+    """FE stress at one interior point: raw element value and recovered nodal field."""
+    board = context["board"]
+    a, tension = board.hole_radius, board.tension
+    point = (r_over_a * a * math.cos(theta), r_over_a * a * math.sin(theta))
+    fits = locate_point(context["nodes"], context["elements"], point)
+    if not fits:
+        raise RuntimeError(f"probe {point} is not covered by the mesh")
+    raw_values = []
+    for fit in fits:
+        element = fit["element"]
+        strain_matrix = q4_strain_matrix(fit["local"][0], fit["local"][1],
+                                         context["coords"][element])
+        element_u = context["flat_u"][context["elements"][element]].reshape(-1)
+        stress = context["stiffness"] @ (strain_matrix @ element_u)
+        raw_values.append([float(value) for value in stress.detach().cpu().numpy()])
+    # a sample sitting on an element interface is bracketed by several elements: take the
+    # one with the smallest stress norm (the other one-sided values are the discontinuity)
+    raw = min(raw_values, key=lambda values: sum(v * v for v in values))
+    recovered = interpolate_nodal_field(context["nodes"], context["elements"],
+                                       context["nodal"], point)["stress"]
+    exact = kirsch_stress(r_over_a, theta)
+    raw_polar = kartesisch_to_polar(raw[0] / tension, raw[1] / tension, raw[2] / tension, theta)
+    rec_polar = kartesisch_to_polar(recovered[0] / tension, recovered[1] / tension,
+                                    recovered[2] / tension, theta)
+    exact_tuple = (float(exact[0]), float(exact[1]), float(exact[2]))
+    return {
+        "r_over_a": r_over_a,
+        "theta_degrees": math.degrees(theta),
+        "containing_elements": len(fits),
+        "exact": exact_tuple,
+        "raw": raw_polar,
+        "recovered": rec_polar,
+        "error_raw": field_error(raw_polar, exact_tuple),
+        "error_recovered": field_error(rec_polar, exact_tuple),
+    }
+
+
+def interior_field_study(ladder_rows: list) -> dict:
+    """Compare the *field*, not only the apex value, with the Kirsch solution.
+
+    Reuses the in-memory cases of the headline ``d/W`` ladder (no extra solves).
+    """
+    board = FiniteWidthPlate(diameter=HEADLINE_RATIO, half_length=HALF_LENGTH_OVER_WIDTH)
+    levels: dict[str, dict] = {}
+    symmetry: list[dict] = []
+    for level in FIELD_LEVELS:
+        case = next(r for r in ladder_rows
+                    if abs(r["ratio"] - HEADLINE_RATIO) < 1e-12 and r["n_boundary"] == level)["_case"]
+        context = probe_context(case, board)
+        rows = [dict(field_probe(context, ratio, math.radians(deg)), level=level)
+                for ratio in FIELD_RADII for deg in FIELD_RAYS_DEGREES]
+        worst = max(rows, key=lambda row: row["error_recovered"]["max"])
+        worst_raw = max(rows, key=lambda row: row["error_raw"]["max"])
+        levels[str(level)] = {
+            "probes": rows,
+            "max_error_recovered": worst["error_recovered"]["max"],
+            "max_error_recovered_at": [worst["r_over_a"], worst["theta_degrees"]],
+            "max_error_raw": worst_raw["error_raw"]["max"],
+            "max_error_raw_at": [worst_raw["r_over_a"], worst_raw["theta_degrees"]],
+        }
+        if level == FIELD_LEVELS[-1]:
+            for ratio in FIELD_RADII:
+                for deg in SYMMETRY_RAYS_DEGREES:
+                    row = field_probe(context, ratio, math.radians(deg))
+                    symmetry.append({
+                        "r_over_a": ratio,
+                        "theta_degrees": deg,
+                        "exact_shear": row["exact"][2],
+                        "recovered_shear": row["recovered"][2],
+                        "raw_shear": row["raw"][2],
+                    })
+    coarse, fine = levels[str(FIELD_LEVELS[0])], levels[str(FIELD_LEVELS[-1])]
+    return {
+        "model": f"traction-driven quarter plate, d/W = {HEADLINE_RATIO:g}, production Q4 path",
+        "levels": list(FIELD_LEVELS),
+        "radii_over_a": list(FIELD_RADII),
+        "rays_degrees": list(FIELD_RAYS_DEGREES),
+        "absolute_floor_over_T": FIELD_ABSOLUTE_FLOOR,
+        "summary": {
+            "max_error_recovered": fine["max_error_recovered"],
+            "max_error_recovered_at": fine["max_error_recovered_at"],
+            "max_error_raw": fine["max_error_raw"],
+            "max_error_raw_at": fine["max_error_raw_at"],
+            "coarse_max_error_recovered": coarse["max_error_recovered"],
+            "refinement_ratio": coarse["max_error_recovered"] / fine["max_error_recovered"],
+            "coarse_max_error_raw": coarse["max_error_raw"],
+        },
+        "probes": levels,
+        "symmetry_axis_shear": symmetry,
+        "symmetry_axis_shear_max_abs": max(abs(row["recovered_shear"]) for row in symmetry),
+    }
+
+
+def figure_interior_field(study: dict, path: Path) -> None:
+    """Interior field error vs Kirsch, and the hoop-stress decay along one ray."""
+    plt = pyplot()
+    fig, (left, right) = plt.subplots(1, 2, figsize=(9.6, 4.0))
+    for level in study["levels"]:
+        rows = study["probes"][str(level)]["probes"]
+        for component, style in (("hoop", "o-"), ("radial", "s--"), ("shear", "d:")):
+            points = sorted({row["r_over_a"] for row in rows})
+            values = []
+            for ratio in points:
+                site = [row for row in rows if abs(row["r_over_a"] - ratio) < 1e-12
+                        and abs(row["theta_degrees"] - 45.0) < 1e-9][0]
+                values.append(site["error_recovered"][component])
+            left.semilogy(points, [max(value, 1e-6) for value in values], style,
+                          label=f"n = {level}, " + r"$\sigma_{" + component + r"}$")
+    left.axhline(0.05, color="crimson", ls=":", label="gate 5 %")
+    left.set_xlabel(r"$r / a$")
+    left.set_ylabel("componentwise relative error (recovered field)")
+    left.set_title(r"Interior field vs Kirsch, $\theta = 45^\circ$, $d/W = 0.02$")
+    left.legend(fontsize=6.5)
+    ratios = np.linspace(1.0, 2.6, 121)
+    exact = [kirsch_stress(value, math.radians(45.0))[1] for value in ratios]
+    right.plot(ratios, exact, "k-", lw=2, label=r"Kirsch exact $\sigma_{\theta\theta}/T$")
+    site_rows = study["probes"][str(study["levels"][-1])]["probes"]
+    for component, marker in (("hoop", "o"), ("radial", "s"), ("shear", "d")):
+        points = sorted({row["r_over_a"] for row in site_rows})
+        right.plot(points,
+                   [row["recovered"][{"hoop": 1, "radial": 0, "shear": 2}[component]]
+                    for ratio in points
+                    for row in site_rows
+                    if abs(row["r_over_a"] - ratio) < 1e-12
+                    and abs(row["theta_degrees"] - 45.0) < 1e-9],
+                   marker, ms=4, label=f"FE recovered, {component} (n = {study['levels'][-1]})")
+    right.set_xlabel(r"$r / a$")
+    right.set_ylabel(r"$\sigma / T$")
+    right.set_title(r"Stress decay along $\theta = 45^\circ$")
+    right.legend(fontsize=6.5)
+    fig.tight_layout()
+    fig.savefig(path)
+    plt.close(fig)
+    FIGURES.append(str(path.relative_to(repo_root())))
+
 # ---------------------------------------------------------------------------
 # Figures
 # ---------------------------------------------------------------------------
@@ -412,7 +623,8 @@ def figure_width_trend(trend_rows: list, path: Path) -> None:
 # Driver
 # ---------------------------------------------------------------------------
 
-def build_gates(oracle, summary, ladder_rows, q8_rows, nu_rows, l_rows, trend_rows) -> list:
+def build_gates(oracle, summary, ladder_rows, q8_rows, nu_rows, l_rows, trend_rows,
+                field_study) -> list:
     fine_anchor = [r for r in ladder_rows
                    if abs(r["ratio"] - HEADLINE_RATIO) < 1e-12 and r["n_boundary"] == LADDER[-1]][0]
     coarse_anchor = [r for r in ladder_rows
@@ -476,6 +688,31 @@ def build_gates(oracle, summary, ladder_rows, q8_rows, nu_rows, l_rows, trend_ro
              CRITERIA["hoop_profile_rms_over_kt_max"]),
         Gate("load_balance", "max |applied - reacted| / applied",
              "statics on the symmetry plane", load_max, CRITERIA["load_balance_rel_max"]),
+        Gate("interior_field_recovered",
+             f"max componentwise error of the recovered field vs Kirsch over "
+             f"{len(FIELD_RADII) * len(FIELD_RAYS_DEGREES)} interior probes (r/a in "
+             f"{FIELD_RADII}, theta in {FIELD_RAYS_DEGREES} deg), d/W={HEADLINE_RATIO:g}, "
+             f"n={LADDER[-1]}",
+             "Kirsch closed form eqs. (a)-(c), away from the hole edge",
+             field_study["summary"]["max_error_recovered"],
+             CRITERIA["interior_field_rel_error_max"],
+             note=f"relative criterion floored at {FIELD_ABSOLUTE_FLOOR:g} T; the raw "
+                  f"(element) stress at the same sites reaches "
+                  f"{100 * field_study['summary']['max_error_raw']:.1f} % -- the gate "
+                  f"grades the production (Barlow nodal) recovery, not raw element values"),
+        Gate("interior_field_refinement",
+             "coarse/fine ratio of the max interior field error (n = "
+             f"{FIELD_LEVELS[0]} vs n = {FIELD_LEVELS[-1]})",
+             "refinement must reduce the interior field error by at least the declared factor",
+             field_study["summary"]["refinement_ratio"],
+             CRITERIA["interior_field_refinement_factor_min"], ">="),
+        Gate("symmetry_axis_shear",
+             "max |tau_rt| / T of the recovered field on theta = 0 deg and 90 deg (exact 0)",
+             "symmetry: the shear stress vanishes on both symmetry axes",
+             field_study["symmetry_axis_shear_max_abs"], 0.05,
+             note="not machine-zero: the Q4 stress on a symmetry edge is recovered from the "
+                  "single (sliver-like) element adjacent to it, so a one-sided value remains; "
+                  "the gate bounds that discretisation artifact, it is not a physics claim"),
     ]
 
 
@@ -506,15 +743,25 @@ def main(argv: list | None = None) -> int:
     l_rows = saint_venant_study(resolution_matched=True)
     l_unmatched = saint_venant_study(resolution_matched=False)
     trend_rows = finite_width_trend()
+    field_study = interior_field_study(ladder_rows)
+    print(f"[field] interior probes d/W={HEADLINE_RATIO:g}: "
+          f"max recovered err = {100 * field_study['summary']['max_error_recovered']:.2f} % "
+          f"at r/a={field_study['summary']['max_error_recovered_at'][0]:g}, "
+          f"theta={field_study['summary']['max_error_recovered_at'][1]:g} deg "
+          f"(raw {100 * field_study['summary']['max_error_raw']:.2f} %, "
+          f"coarse/fine = {field_study['summary']['refinement_ratio']:.2f})")
 
-    gates = build_gates(oracle, summary, ladder_rows, q8_rows, nu_rows, l_rows, trend_rows)
+    gates = build_gates(oracle, summary, ladder_rows, q8_rows, nu_rows, l_rows, trend_rows,
+                        field_study)
 
     headline = [r for r in ladder_rows
                 if abs(r["ratio"] - HEADLINE_RATIO) < 1e-12 and r["n_boundary"] == LADDER[-1]][0]
-    figure_field(headline["_case"], HEADLINE_RATIO, out / "kirsch_field.png")
-    figure_convergence(ladder_rows, summary, q8_rows, out / "kirsch_convergence.png")
-    figure_profile(headline["_case"], HEADLINE_RATIO, out / "kirsch_hoop_profile.png")
-    figure_width_trend(trend_rows, out / "kirsch_width_trend.png")
+    FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+    figure_field(headline["_case"], HEADLINE_RATIO, FIGURE_DIR / "kirsch_field.png")
+    figure_convergence(ladder_rows, summary, q8_rows, FIGURE_DIR / "kirsch_convergence.png")
+    figure_profile(headline["_case"], HEADLINE_RATIO, FIGURE_DIR / "kirsch_hoop_profile.png")
+    figure_width_trend(trend_rows, FIGURE_DIR / "kirsch_width_trend.png")
+    figure_interior_field(field_study, FIGURE_DIR / "kirsch_interior_field.png")
 
     slim = lambda rows: [{k: v for k, v in r.items() if not k.startswith("_")} for r in rows]
     result = {
@@ -560,6 +807,7 @@ def main(argv: list | None = None) -> int:
         "saint_venant": l_rows,
         "saint_venant_fixed_n_confounder": l_unmatched,
         "finite_width_trend": trend_rows,
+        "interior_field": field_study,
         "figures": FIGURES,
         "repro_cmd": "OMP_NUM_THREADS=8 PYTHONPATH=src python benchmarks/verified/fem_kirsch_plate/run.py",
     }
@@ -573,6 +821,8 @@ def main(argv: list | None = None) -> int:
         artifacts={
             "result.json": "every number of the ladder, cross-checks and sensitivity studies",
             "figures": FIGURES,
+            "figures/interior_field": "kirsch_interior_field.png: interior pointwise field "
+                                      "error and the stress decay along theta = 45 deg",
             "run.py": "this driver",
         },
         limitations=[
@@ -589,6 +839,14 @@ def main(argv: list | None = None) -> int:
             "The hole edge is a stress-raiser: the Q4 recovered nodal stress converges at an "
             "observed order near 2 on this mesh family, which is a property of the starburst "
             "mesh plus apex node, not a general O(h^2) claim.",
+            "Pointwise interior stress is certified only for the *recovered* (Barlow nodal) "
+            "field: the raw element value at the same sample points is 20 % off the Kirsch "
+            "field at n = 48, so one-sided element stresses must not be read as pointwise "
+            "field values.",
+            "On the two symmetry axes the shear stress is exactly zero analytically but O(1 %) "
+            "of T numerically, because the stress there is recovered from a single element "
+            "adjacent to the symmetry edge. The interior-field probes are therefore placed on "
+            "generic rays (theta = 22.5/45/67.5 deg) and the axis residual is gated separately.",
         ],
         mission=MISSION,
     )

@@ -103,10 +103,93 @@ def test_headline_within_pool_tolerance():
 
 
 def test_committed_figures_exist():
-    for name in ("kirsch_field.png", "kirsch_convergence.png",
-                 "kirsch_hoop_profile.png", "kirsch_width_trend.png"):
-        path = ANCHOR / name
-        assert path.is_file() and path.stat().st_size > 10_000, name
+    """Every declared figure must exist at a *publisher-safe* (tracked) path.
+
+    The mission publisher drops ``*.png`` outside ``docs/``, so a figure written next to
+    ``run.py`` never reaches the repository: asserting on that copy made this gate
+    permanently red on any clean checkout (finding of this round).  The driver now writes
+    the figures into ``docs/assets/kirsch_plate/`` and ``result.json`` declares those
+    paths, so the assertion is on the file the repository actually ships.
+    """
+    result = _result()
+    declared = result["figures"]
+    assert len(declared) == 5, declared
+    for relative in declared:
+        path = ROOT / relative
+        assert relative.startswith("docs/"), f"figure outside docs/ would be filtered: {relative}"
+        assert path.is_file() and path.stat().st_size > 10_000, relative
+
+
+def test_interior_field_gate_reproduces_kirsch_away_from_the_edge():
+    """The field-level gate: recovered stress vs the full Kirsch field at interior points."""
+    manifest = _gates()
+    result = _result()
+    study = result["interior_field"]
+    summary = study["summary"]
+    gates = {g["id"]: g for g in manifest["gates"]}
+    gate = gates["interior_field_recovered"]
+    assert gate["passed"] is True
+    assert gate["threshold"] == manifest["criteria"]["interior_field_rel_error_max"] == 0.05
+    assert gate["value"] == pytest.approx(summary["max_error_recovered"], rel=1e-12)
+    assert summary["max_error_recovered"] < TOLERANCE
+    # non-vacuous: the coarse level of the same probe set must break the 5 % gate,
+    # otherwise the gate would not be able to discriminate a bad mesh
+    assert summary["coarse_max_error_recovered"] > TOLERANCE
+    refinement = gates["interior_field_refinement"]
+    assert refinement["passed"] is True
+    assert refinement["value"] == pytest.approx(summary["refinement_ratio"], rel=1e-12)
+    assert summary["refinement_ratio"] >= manifest["criteria"]["interior_field_refinement_factor_min"]
+    # probes sit strictly outside the hole and off the two symmetry axes
+    for level in study["levels"]:
+        rows = study["probes"][str(level)]["probes"]
+        assert len(rows) == len(study["radii_over_a"]) * len(study["rays_degrees"])
+        for row in rows:
+            assert row["r_over_a"] > 1.0
+            assert min(abs(row["theta_degrees"] - axis) for axis in (0.0, 90.0, 180.0)) > 1e-6
+            # the stored "exact" column must be the cited closed form, re-derived here
+            exact = _kirsch(row["r_over_a"], math.radians(row["theta_degrees"]))
+            assert row["exact"][0] == pytest.approx(float(exact[0]), rel=1e-12, abs=1e-14)
+            assert row["exact"][1] == pytest.approx(float(exact[1]), rel=1e-12, abs=1e-14)
+            assert row["exact"][2] == pytest.approx(float(exact[2]), rel=1e-12, abs=1e-14)
+            for component, index in (("radial", 0), ("hoop", 1), ("shear", 2)):
+                denominator = max(abs(row["exact"][index]), study["absolute_floor_over_T"])
+                expected = abs(row["recovered"][index] - row["exact"][index]) / denominator
+                assert row["error_recovered"][component] == pytest.approx(expected, rel=1e-12)
+
+
+def test_symmetry_axis_shear_residual_is_bounded():
+    """``tau_rt`` is exactly zero on both symmetry axes; the recovery leaves O(1 %) of T."""
+    manifest = _gates()
+    study = _result()["interior_field"]
+    gate = next(g for g in manifest["gates"] if g["id"] == "symmetry_axis_shear")
+    assert gate["passed"] is True
+    assert gate["value"] == pytest.approx(study["symmetry_axis_shear_max_abs"], rel=1e-12)
+    assert gate["value"] <= 0.05
+    for row in study["symmetry_axis_shear"]:
+        assert row["exact_shear"] == pytest.approx(0.0, abs=1e-12)
+
+
+def test_probe_pipeline_is_live_not_just_json():
+    """Re-run the probe on the coarse plate: the stored level must be reproduced."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "kirsch_plate_driver", ANCHOR / "run.py")
+    driver = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(driver)
+
+    from tensorfem.finite_width_hole import FiniteWidthPlate, solve_case
+
+    level = 24
+    plate = FiniteWidthPlate(diameter=0.02, half_length=1.5)
+    case = solve_case(plate, n_boundary=level, grading=6.0)
+    context = driver.probe_context(case, plate)
+    stored = _result()["interior_field"]["probes"][str(level)]["probes"]
+    row = next(r for r in stored
+               if abs(r["r_over_a"] - 1.25) < 1e-12 and abs(r["theta_degrees"] - 45.0) < 1e-9)
+    fresh = driver.field_probe(context, 1.25, math.radians(45.0))
+    assert fresh["recovered"] == pytest.approx(row["recovered"], rel=1e-9, abs=1e-12)
+    assert fresh["raw"] == pytest.approx(row["raw"], rel=1e-9, abs=1e-12)
 
 
 def test_cheap_plate_rerun_matches_the_ladder():
