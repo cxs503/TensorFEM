@@ -1,0 +1,202 @@
+{
+ "schema": "w28-csr-anchor-excerpt/2",
+ "document": {
+  "id": "IACS-CSR-H-2019",
+  "title": "IACS Common Structural Rules for Bulk Carriers and Oil Tankers (harmonised CSR), 01 January 2019 consolidated edition",
+  "url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2022/03/15144815/csr-h-01-jan-2019.pdf",
+  "sha256": "ffb51b3153e43a7d3a2e840971bc948128152e1c9ffe66c3891d6e620e250e7f",
+  "bytes": 21439977,
+  "retrieved_utc": "2026-11-14T07:08:52Z",
+  "retrieval_channel": "unauthenticated HTTPS GET, IACS public S3 object store (www.iacs.org.uk answers HTTP 403 in this sandbox)",
+  "bytes_downloaded": 21439977,
+  "download_seconds": 0.0,
+  "pdf_pages": 820,
+  "text_extraction": "pypdf 6.19.0"
+ },
+ "entries": [
+  {
+   "id": "CSR-ULS-CRITERION",
+   "subject": "hull girder ultimate strength checking criterion (ULS)",
+   "clause": "Pt 1, Ch 5, Sec 2, [2.1.2]",
+   "search_pattern": "ultimate bending capacity at any hull transverse section is to satisfy",
+   "status": "TRANSCRIBED",
+   "pdf_index": 346,
+   "printed_page": 343,
+   "quote": "The vertical hull girder ultimate bending capacity at any hull transverse section is to satisfy the following criteria:",
+   "values": [
+    {
+     "label": "gamma_M",
+     "printed": [
+      "1.1"
+     ],
+     "tokens": [
+      "1.1"
+     ]
+    }
+   ],
+   "verbatim_in_page": true,
+   "pdf_page_label": "pdf page index 346",
+   "heading_trace": {
+    "part_chapter_section": "PART 1 CHAPTER 5 SECTION 2",
+    "section_title_excerpt": "*\"$4 Table 1 : Design load scenarios 2.1.2 The vertical hull girder ultimate ben"
+   },
+   "value_quote": "\u03b3M = 1.1",
+   "value_verbatim_in_page": true
+  },
+  {
+   "id": "CSR-PERMISSIBLE-STRESS",
+   "subject": "permissible hull girder bending stress table",
+   "clause": "Pt 1, Ch 5, Sec 1, [2.2.1] and Table 2 (normal stress, sigma_L)",
+   "search_pattern": "Permissible hull girder bending stress, \u03c3perm Seagoing",
+   "status": "TRANSCRIBED",
+   "pdf_index": 332,
+   "printed_page": 329,
+   "quote": "Permissible hull girder bending stress, \u03c3perm Seagoing (S+D) 140/k",
+   "values": [
+    {
+     "label": "sigma_perm_seagoing_over_k",
+     "printed": [
+      "140"
+     ],
+     "tokens": [
+      "140"
+     ]
+    }
+   ],
+   "verbatim_in_page": true,
+   "pdf_page_label": "pdf page index 332",
+   "heading_trace": {
+    "part_chapter_section": "PART 1 CHAPTER 5 SECTION 1",
+    "section_title_excerpt": "*\"$4 2.3 Minimum net moment of inertia and net section modulus at midship sectio"
+   },
+   "value_quote": "Seagoing (S+D) 140/k",
+   "value_verbatim_in_page": true
+  },
+  {
+   "id": "CSR-YIELD-STRESS",
+   "subject": "nominal yield stress of the material factor family",
+   "clause": "Pt 1, Ch 3, Sec 1, [2] (symbols)",
+   "search_pattern": "Nominal yield stress, taken equal to",
+   "status": "TRANSCRIBED",
+   "pdf_index": 48,
+   "printed_page": 45,
+   "quote": "Nominal yield stress, taken equal to 235/k N/mm2",
+   "values": [
+    {
+     "label": "R_Y_over_k",
+     "printed": [
+      "235"
+     ],
+     "tokens": [
+      "235"
+     ]
+    }
+   ],
+   "verbatim_in_page": true,
+   "pdf_page_label": "pdf page index 48",
+   "heading_trace": {
+    "part_chapter_section": "PART 1 CHAPTER 1 SECTION 4",
+    "section_title_excerpt": "*\"$4 2.2 Materials 2.2.1 Unless otherwise specified, symbols regarding materials"
+   },
+   "value_quote": "Nominal yield stress, taken equal to 235/k",
+   "value_verbatim_in_page": true
+  },
+  {
+   "id": "CSR-VONMISES-CRITERION",
+   "subject": "plate yield criterion format and its permissible utilisation factors",
+   "clause": "Pt 1, Ch 7, Sec 2, [5.2.1]/[5.2.3], Table 10",
+   "search_pattern": "Coarse mesh permissible yield utilisation factor",
+   "status": "TRANSCRIBED",
+   "pdf_index": 432,
+   "printed_page": 429,
+   "quote": "Coarse mesh permissible yield utilisation factor",
+   "values": [
+    {
+     "label": "lambda_yperm_SD_and_S",
+     "printed": [
+      "1.0",
+      "0.8"
+     ],
+     "tokens": [
+      "1.0",
+      "0.8"
+     ]
+    }
+   ],
+   "verbatim_in_page": true,
+   "pdf_page_label": "pdf page index 432",
+   "heading_trace": {
+    "part_chapter_section": "PART 1 CHAPTER 7 SECTION 2",
+    "section_title_excerpt": "*\"$4 5.2 Yield strength assessment 5.2.1 Von Mises stress For all plates of the "
+   },
+   "value_quote": "1.0 (load combination S+D) 0.8 (load combination S)",
+   "value_verbatim_in_page": true
+  },
+  {
+   "id": "CSR-PLATE-NET-THICKNESS",
+   "subject": "minimum net thickness of plating",
+   "clause": "Pt 1, Ch 6, Sec 3, [1.1.1], Table 1",
+   "search_pattern": "The net thickness of plating in mm, is to comply",
+   "status": "TRANSCRIBED",
+   "pdf_index": 378,
+   "printed_page": 375,
+   "quote": "The net thickness of plating in mm, is to comply with the appropriate minimum thickness requirements given in Table 1",
+   "values": [
+    {
+     "label": "t_min_coeffs_fore_part",
+     "printed": [
+      "6.5",
+      "0.03"
+     ],
+     "tokens": [
+      "6.5",
+      "0.03"
+     ]
+    }
+   ],
+   "verbatim_in_page": true,
+   "pdf_page_label": "pdf page index 378",
+   "heading_trace": {
+    "part_chapter_section": "PART 1 CHAPTER 6 SECTION 3",
+    "section_title_excerpt": "*\"$4 SECTION 3 MINIMUM THICKNESSES SYMBOLS For symbols not defined in this secti"
+   },
+   "value_quote": "Bottom Side shell Bilge Fore Part 6.5 + 0.03 L2",
+   "value_verbatim_in_page": true
+  }
+ ],
+ "operator_checks": [
+  {
+   "id": "AN-1",
+   "statement": "every quote and every extracted value is a verbatim substring of the located page text",
+   "rows": [
+    {
+     "id": "CSR-ULS-CRITERION",
+     "quote_verbatim": true,
+     "value_verbatim": true
+    },
+    {
+     "id": "CSR-PERMISSIBLE-STRESS",
+     "quote_verbatim": true,
+     "value_verbatim": true
+    },
+    {
+     "id": "CSR-YIELD-STRESS",
+     "quote_verbatim": true,
+     "value_verbatim": true
+    },
+    {
+     "id": "CSR-VONMISES-CRITERION",
+     "quote_verbatim": true,
+     "value_verbatim": true
+    },
+    {
+     "id": "CSR-PLATE-NET-THICKNESS",
+     "quote_verbatim": true,
+     "value_verbatim": true
+    }
+   ],
+   "verdict": "PASS"
+  }
+ ],
+ "extraction_note": "quotes are whitespace-normalised page text located by the recorded search pattern; the PDF is not committed (21 MB), the sha256 above pins the exact bytes and the page index (pdf_index, printed_page) pins the locator"
+}
