@@ -62,7 +62,7 @@ permanent set) and `artifacts/fig_patch_plate_flow_stress.png`.
 | transition vs same-mesh elastic field | +0.00 % | < 5 % | met |
 | collapse vs yield-line upper bound (layering-corrected) | -5.63 % | < 10 % | met |
 | collapse vs upper bound (raw, no correction) | +41.55 % | < 10 % | not met — layering over-strengths the plate by 1.50x |
-| 3 mesh levels | `scripts/patch_plate_mesh_sweep.py` (nx = ny = 4, 6, 8): collapse monotone non-decreasing toward the yield-line upper bound, transition vs same-mesh elastic field < 5 % at every level, permanent set bounded | monotone | **met** |
+| 3 mesh levels | see tests (single-mesh certification here; mesh sweep below) | monotone | partial |
 
 ## 5. Notes, limitations, and the defect this case exposed
 
@@ -91,6 +91,5 @@ permanent set) and `artifacts/fig_patch_plate_flow_stress.png`.
 
 ```bash
 PYTHONPATH=src python scripts/patch_plate_plastic_capacity.py
-PYTHONPATH=src python scripts/patch_plate_mesh_sweep.py   # 3-level mesh convergence
 PYTHONPATH=src python -m pytest tests/test_plate_patch_plastic_limit.py -q
 ```

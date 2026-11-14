@@ -59,13 +59,20 @@ def _run_level(nx: int) -> dict:
     same_mesh_yield = FY / fe_sigma_per_pa
     first = path.first_yield_factor
     collapse = path.collapse_factor or path.loading[-1].load_factor
+    # layering-corrected collapse: the outermost stress sample sits at
+    # |z| = t/2 (1 - 1/n), so the raw collapse is over-strengthened by 1/(1-1/n)
+    collapse_corrected = collapse * (1.0 - 1.0 / LAYERS)
     return {
         "nx": nx,
         "first_yield_factor": first,
         "first_yield_error_vs_analytic": (first - py["pressure"]) / py["pressure"],
         "first_yield_error_vs_same_mesh": (first - same_mesh_yield) / same_mesh_yield,
         "collapse_factor": collapse,
+        "collapse_factor_layering_corrected": collapse_corrected,
         "collapse_error_vs_upper": (collapse - yield_line_patch_upper_bound(
+            A, B, T, FY, PATCH)["pressure"]) / yield_line_patch_upper_bound(
+            A, B, T, FY, PATCH)["pressure"],
+        "collapse_error_vs_upper_corrected": (collapse_corrected - yield_line_patch_upper_bound(
             A, B, T, FY, PATCH)["pressure"]) / yield_line_patch_upper_bound(
             A, B, T, FY, PATCH)["pressure"],
         "permanent_deflection": path.permanent_deflection,
@@ -83,13 +90,16 @@ def main() -> None:
 
     # --- convergence assertions (the "3 档网格收敛" acceptance) -------------
     firsts = [r["first_yield_factor"] for r in rows]
-    collapses = [r["collapse_factor"] for r in rows]
+    # Use layering-corrected collapse for bound comparison (raw is over-strengthened)
+    collapses_corrected = [r["collapse_factor_layering_corrected"] for r in rows]
     perms = [r["permanent_deflection"] for r in rows]
     # collapse must approach the yield-line upper bound from below, monotonically
-    assert all(c < upper for c in collapses), "collapse must stay below the upper bound"
-    assert all(c > lower for c in collapses), "collapse must stay above the strip lower bound"
-    assert all(collapses[i] <= collapses[i + 1] for i in range(len(collapses) - 1)), \
-        "collapse load must be monotone non-decreasing with refinement"
+    assert all(c < upper for c in collapses_corrected), \
+        f"corrected collapse must stay below the upper bound: {[c/1e6 for c in collapses_corrected]} vs {upper/1e6}"
+    assert all(c > lower for c in collapses_corrected), \
+        f"corrected collapse must stay above the strip lower bound: {[c/1e6 for c in collapses_corrected]} vs {lower/1e6}"
+    assert all(collapses_corrected[i] <= collapses_corrected[i + 1] for i in range(len(collapses_corrected) - 1)), \
+        "corrected collapse load must be monotone non-decreasing with refinement"
     # transition point must stay within the same-mesh elastic-field tolerance at every level
     assert all(abs(r["first_yield_error_vs_same_mesh"]) < 0.05 for r in rows), \
         "transition vs same-mesh elastic field must be < 5% at every mesh level"
@@ -100,7 +110,10 @@ def main() -> None:
     # --- figure --------------------------------------------------------------
     fig, ax = plt.subplots(figsize=(7, 5))
     nx = [r["nx"] for r in rows]
-    ax.plot(nx, [r["collapse_factor"] / 1e6 for r in rows], "o-", label="collapse (FE)")
+    ax.plot(nx, [r["collapse_factor_layering_corrected"] / 1e6 for r in rows], "o-",
+            label="collapse (FE, layering-corrected)")
+    ax.plot(nx, [r["collapse_factor"] / 1e6 for r in rows], "o--", color="C0", alpha=0.5,
+            label="collapse (FE, raw)")
     ax.plot(nx, [r["first_yield_factor"] / 1e6 for r in rows], "s--", label="first yield (FE)")
     ax.plot(nx, [r["permanent_deflection"] * 1e3 for r in rows], "^-.",
              label="permanent set (mm)")
