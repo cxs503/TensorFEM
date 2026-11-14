@@ -139,8 +139,10 @@ def rotational_stiffness(
 
     Returns
     -------
-    K_rot : float
-        Rotational spring stiffness [N·m/rad].
+    c_r : float
+        Distributed rotational restraint coefficient [N·m/m/rad].  Multiply by
+        a node's tributary edge length to obtain the nodal spring [N·m/rad]
+        (see :func:`edge_tributary_lengths`).
     """
     D = young * thickness**3 / (12.0 * (1.0 - poisson**2))
     zeta = beta_to_zeta(beta, eps)
@@ -170,6 +172,56 @@ def identify_edge_nodes(
     y0 = torch.nonzero(nodes[:, 1] < tol_abs, as_tuple=False).flatten()
     ya = torch.nonzero((nodes[:, 1] - side).abs() < tol_abs, as_tuple=False).flatten()
     return {'x0': x0, 'xa': xa, 'y0': y0, 'ya': ya}
+
+
+def edge_tributary_lengths(
+    nodes: torch.Tensor,
+    edge_nodes: torch.Tensor,
+    along: int,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Tributary length of every node of a straight edge.
+
+    The rotational spring model is a *distributed* restraint: a moment per unit
+    edge length ``c_r`` [N*m/m/rad] times the edge rotation.  A finite-element
+    nodal spring must therefore integrate that coefficient over the node's
+    tributary edge length ``h_i``, exactly as a Winkler foundation coefficient
+    [N/m^3] is integrated over a nodal area.
+
+    ``h_i`` is taken as half the distance to each neighbour, so that
+    ``sum(h_i) = L`` (the full edge length) and a uniform mesh of ``n``
+    elements reproduces ``h = L/n`` for interior nodes and ``h = L/(2n)`` at
+    the two end nodes.
+
+    Parameters
+    ----------
+    nodes : (N, 2) tensor
+        Nodal coordinates.
+    edge_nodes : 1-D tensor
+        Node indices lying on the edge (any order).
+    along : int
+        Axis (0 = x, 1 = y) along which the edge runs.
+
+    Returns
+    -------
+    idx : 1-D tensor
+        Edge node indices sorted by their coordinate along the edge.
+    h : 1-D tensor
+        Tributary length [m] of each node in ``idx`` order.
+    """
+    coords = nodes[edge_nodes, along]
+    order = torch.argsort(coords)
+    idx = edge_nodes[order].to(torch.long)
+    c = coords[order]
+    n = int(c.numel())
+    h = torch.zeros(n, dtype=nodes.dtype, device=nodes.device)
+    if n == 1:
+        h.fill_(0.0)
+        return idx, h
+    h[0] = 0.5 * (c[1] - c[0])
+    h[-1] = 0.5 * (c[-1] - c[-2])
+    if n > 2:
+        h[1:-1] = 0.5 * (c[2:] - c[:-2])
+    return idx, h
 
 
 def assemble_rotational_spring_stiffness(
@@ -220,17 +272,23 @@ def assemble_rotational_spring_stiffness(
     if K_rot == 0.0:
         return K_spring
 
+    # ``K_rot`` is the distributed restraint coefficient c_r [N*m/m/rad]; the
+    # consistent nodal spring is c_r * h_i (h_i = tributary edge length).
+    # Omitting h_i leaves a constant spring on every edge node, so the
+    # restraint per unit edge length scales as 1/h and beta degenerates to a
+    # mesh-dependent knob that silently tends to clamped under refinement.
+
     # Edges x=0 and x=a: spring on theta_x (DOF 3*i+1) — normal rotation
     for edge_key in ('x0', 'xa'):
-        for node_idx in edges[edge_key]:
-            dof = 3 * int(node_idx) + 1
-            K_spring[dof, dof] += K_rot
+        idx, h = edge_tributary_lengths(nodes, edges[edge_key], along=1)
+        dofs = 3 * idx + 1
+        K_spring[dofs, dofs] += K_rot * h
 
     # Edges y=0 and y=b: spring on theta_y (DOF 3*i+2) — normal rotation
     for edge_key in ('y0', 'ya'):
-        for node_idx in edges[edge_key]:
-            dof = 3 * int(node_idx) + 2
-            K_spring[dof, dof] += K_rot
+        idx, h = edge_tributary_lengths(nodes, edges[edge_key], along=0)
+        dofs = 3 * idx + 2
+        K_spring[dofs, dofs] += K_rot * h
 
     return K_spring
 
@@ -854,11 +912,13 @@ def solve_restrained_panel(
         fixed.append(3 * torch.nonzero(ymask, as_tuple=False).flatten() + 1)
         spring = torch.zeros(ndof, dtype=dtype)
         if K_rot_x:
-            spring[3 * edges['x0'] + 1] += K_rot_x
-            spring[3 * edges['xa'] + 1] += K_rot_x
+            for key in ('x0', 'xa'):
+                idx, h = edge_tributary_lengths(nodes, edges[key], along=1)
+                spring[3 * idx + 1] += K_rot_x * h
         if K_rot_y:
-            spring[3 * edges['y0'] + 2] += K_rot_y
-            spring[3 * edges['yb'] + 2] += K_rot_y
+            for key in ('y0', 'yb'):
+                idx, h = edge_tributary_lengths(nodes, edges[key], along=0)
+                spring[3 * idx + 2] += K_rot_y * h
     fixed_dofs = torch.unique(torch.cat(fixed))
     free = torch.ones(ndof, dtype=torch.bool)
     free[fixed_dofs] = False
@@ -912,12 +972,63 @@ def _extrapolation_operator(dtype: torch.dtype = torch.float64) -> torch.Tensor:
     return X
 
 
+def edge_spring_moment(
+    result: "RestrainedPanelResult",
+) -> dict[str, tuple[torch.Tensor, torch.Tensor]]:
+    """Model-consistent edge bending moment ``M_n = c_r * theta_n`` on each edge.
+
+    On a restrained edge the bending moment normal to the edge is carried by the
+    rotational spring, so the *model* value of the edge moment is obtained
+    directly from the converged nodal rotation rather than from a curvature
+    recovery.  This matters: :func:`moments_at_nodes` extrapolates Gauss-point
+    curvatures to the nodes and is only first-order accurate at a restrained
+    edge, where the boundary layer of the moment sits.  Measured on the
+    cylindrical-bending strip of ``docs/CASE-FEM-ELASTIC-RESTRAINT-TRIBUTARY.md``
+    (beta = 0.5, exact edge moment 277.78 N*m/m):
+
+    ==========  ==================  =====================
+    mesh        extrapolated M_n    spring M_n (this fn)
+    ==========  ==================  =====================
+    16 x 64     -53.1 %             -0.39 %
+    32 x 128    -27.3 %             -0.09 %
+    ==========  ==================  =====================
+
+    Returns
+    -------
+    moments : dict
+        ``{'x0'|'xa': (idx, M), 'y0'|'yb': (idx, M)}`` with node indices and the
+        corresponding edge moment per unit length [N*m/m] (positive = the sign
+        of the restrained rotation DOF).
+    """
+    u = result.displacement
+    out: dict[str, tuple[torch.Tensor, torch.Tensor]] = {}
+    nx_x, ny_y = int(result.nx), int(result.ny)
+    for key, c_r, dof_off, along in (
+        ('x0', result.K_rot_x, 1, 1),
+        ('xa', result.K_rot_x, 1, 1),
+        ('y0', result.K_rot_y, 2, 0),
+        ('yb', result.K_rot_y, 2, 0),
+    ):
+        if c_r == 0.0:
+            continue
+        edges = _rect_edges(result.nodes, result.side_x, result.side_y)
+        idx, _ = edge_tributary_lengths(result.nodes, edges[key], along=along)
+        out[key] = (idx, c_r * u[3 * idx + dof_off])
+    return out
+
+
 def moments_at_nodes(result: RestrainedPanelResult) -> torch.Tensor:
     """Bending moments ``[Mx, My, Mxy]`` per node [N] (or N*m/m).
 
     Computed at the four Gauss points of every element, extrapolated to the
     element corners and averaged over the elements sharing a node (the standard
-    ``B * D * B * u`` recovery).  Averages are unweighted, which is exact for a
+    ``B * D * B * u`` recovery).
+
+    Accuracy caveat: on a *restrained* edge this recovery is only first order
+    (it extrapolates the boundary layer of the edge moment outward), giving a
+    ~50 % low edge moment at 16 elements across the span.  Use
+    :func:`edge_spring_moment` for the edge value ``M_n = c_r * theta_n``,
+    which is model-consistent and second order.  Averages are unweighted, which is exact for a
     uniform mesh and slightly biased on graded meshes -- acceptable here because
     only uniform structured meshes are produced by this module.
     """

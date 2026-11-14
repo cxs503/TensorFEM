@@ -1,0 +1,42 @@
+{
+  "provenance": {
+    "anchor": "GAP-PP-4-ICE-STRUCT-ELASTIC-RESTRAINT",
+    "module": "src/tensorfem/plate_elastic_restraint.py",
+    "measured_by": ["scratch/probe_mesh_dep.py", "scratch/probe_strip.py", "scratch/probe_recovery.py", "scratch/probe_invariant.py"],
+    "note": "Numbers transcribed from the recorded run logs of these probes (local, single-node, float64). w_norm = w_center*D/(q*a^4), D=E t^3/(12(1-nu^2)).",
+    "model": "Q4 Mindlin-Reissner, 2x2 bending + 1-point (SRI) shear, SS2 edges, penalty-free diagonal rotational spring"
+  },
+  "kirchhoff_limits": {"ssss_w_coef": 0.00406, "cccc_w_coef": 0.00126, "source": "Timoshenko & Woinowsky-Krieger, Theory of Plates and Shells, 2nd ed., Table 8"},
+  "mesh_study_before_fix": {
+    "beta_0.2": {"nx": [8, 12, 16, 24], "w_norm": [3.016345e-3, 2.763118e-3, 2.570260e-3, 2.301657e-3]},
+    "beta_0.5": {"nx": [8, 12, 16, 24], "w_norm": [2.094613e-3, 1.894247e-3, 1.770584e-3, 1.627732e-3]},
+    "beta_0.0": {"nx": [8, 12, 16, 24], "w_norm": [4.043583e-3, 4.055301e-3, 4.059331e-3, 4.062187e-3]},
+    "beta_1.0": {"nx": [8, 12, 16, 24], "w_norm": [1.253302e-3, 1.261378e-3, 1.264205e-3, 1.266232e-3]}
+  },
+  "mesh_study_after_fix": {
+    "beta_0.2": {"nx": [8, 12, 16, 24], "w_norm": [3.853661e-3, 3.867591e-3, 3.872388e-3, 3.875790e-3]},
+    "beta_0.5": {"nx": [8, 12, 16, 24], "w_norm": [3.413349e-3, 3.431078e-3, 3.437200e-3, 3.441546e-3]}
+  },
+  "response_curve_after_fix_nx16": {
+    "beta": [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 0.9, 1.0],
+    "w_norm": [4.059331e-3, 3.872388e-3, 3.611112e-3, 3.437200e-3, 3.220093e-3, 2.570262e-3, 2.050935e-3, 1.264215e-3],
+    "fixity_fraction": [0.0, 0.067, 0.160, 0.222, 0.300, 0.532, 0.718, 0.998]
+  },
+  "strip_cylindrical_bending": {
+    "geometry": {"a_m": 1.0, "b_m": 6.0, "mesh": [16, 96], "E_Pa": 2.1e11, "nu": 0.3, "t_m": 0.01, "q_Pa": 1.0e4},
+    "closed_form": {"M_end_Nm_per_m": "q a^2/12 / (1 + 2/zeta)", "w_mid_m": "q a^4/D * (5/384 - 1/(96(1+2/zeta)))", "zeta": "beta/(1-beta)"},
+    "rows": [
+      {"beta": 0.2, "zeta": 0.25, "M_exact": 92.592, "M_fem_extrapolated": 54.256, "M_err_pct": -41.40, "w_exact": 6.168982e-3, "w_fem": 6.128112e-3, "w_err_pct": -0.66},
+      {"beta": 0.5, "zeta": 1.0, "M_exact": 277.777, "M_fem_extrapolated": 130.210, "M_err_pct": -53.12, "w_exact": 4.965280e-3, "w_fem": 4.932029e-3, "w_err_pct": -0.67},
+      {"beta": 0.8, "zeta": 4.0, "M_exact": 555.555, "M_fem_extrapolated": 406.925, "M_err_pct": -26.75, "w_exact": 3.159728e-3, "w_fem": 3.133551e-3, "w_err_pct": -0.83}
+    ]
+  },
+  "edge_moment_recovery_convergence": {
+    "case": "strip a=1 m, b=4a, beta=0.5, exact M_end = 277.777 N*m/m",
+    "rows": [
+      {"mesh": [8, 32], "w_err_pct": -2.80, "M_extrapolated": 0.003, "M_extrapolated_err_pct": -100.00, "M_from_deflection": 299.166},
+      {"mesh": [16, 64], "w_err_pct": -0.67, "M_extrapolated": 130.210, "M_extrapolated_err_pct": -53.12, "M_from_deflection": 282.893, "M_spring": 276.701, "M_spring_err_pct": -0.39},
+      {"mesh": [32, 128], "w_err_pct": -0.14, "M_extrapolated": 201.827, "M_extrapolated_err_pct": -27.34, "M_from_deflection": 278.826, "M_spring": 277.514, "M_spring_err_pct": -0.09}
+    ]
+  }
+}
