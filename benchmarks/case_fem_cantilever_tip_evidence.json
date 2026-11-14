@@ -1,20 +1,20 @@
 {
   "schema_version": "1.0.0",
-  "run_id": "CASE-FEM-CANTILEVER-TIP-20261114T075225Z",
+  "run_id": "CASE-FEM-CANTILEVER-TIP-20261114T135125Z",
   "benchmark": {
     "benchmark_id": "CASE-FEM-CANTILEVER-TIP",
     "version": "1.0.0"
   },
   "implementation": {
     "project": "TensorFEM",
-    "revision": "9ad824f70f8356444ac6e7ae90cade14e41dfcfb",
+    "revision": "d51a0247fb3f1cf1c1e18a1c31dcd804b0419295",
     "code": "benchmarks/case_fem_cantilever_tip.py",
     "linear_algebra": "torch.linalg.solve (dense LAPACK) / scipy SuperLU (sparse)"
   },
   "workload": {
     "workload_id": "benchmarks/case_fem_cantilever_tip.py",
     "version": "1.0.0",
-    "mode": "full",
+    "mode": "quick",
     "configuration": {
       "axial_ladder": [
         [
@@ -23,23 +23,7 @@
         ],
         [
           16,
-          1
-        ],
-        [
-          16,
           2
-        ],
-        [
-          32,
-          2
-        ],
-        [
-          32,
-          4
-        ],
-        [
-          64,
-          4
         ]
       ],
       "reference_mesh": [
@@ -48,7 +32,6 @@
       ],
       "slenderness_points": [
         100.0,
-        50.0,
         20.0
       ],
       "tolerance_rel": 0.02
@@ -56,13 +39,13 @@
   },
   "execution": {
     "status": "success",
-    "finished_at": "2026-11-14T07:52:25+00:00",
+    "finished_at": "2026-11-14T13:51:25+00:00",
     "platform": "Linux/loongarch64",
     "python": "3.11.6",
     "torch": "2.7.1",
     "dtype": "torch.float64",
     "device": "cpu",
-    "seconds": 14.125217581167817
+    "seconds": 5.6021860390901566
   },
   "geometry": {
     "length_m": 1.0,
@@ -100,12 +83,12 @@
   "levels": {
     "beam_eb": {
       "model": "beam_eb",
-      "n_elements": 16,
-      "dofs": 51,
-      "tip_deflection_m": 0.010000000000012998,
-      "seconds": 0.0027728211134672165,
-      "relative_error_vs_euler_bernoulli": 1.3000017728970194e-12,
-      "abs_relative_error_vs_euler_bernoulli": 1.3000017728970194e-12,
+      "n_elements": 6,
+      "dofs": 21,
+      "tip_deflection_m": 0.009999999999999903,
+      "seconds": 0.002341950312256813,
+      "relative_error_vs_euler_bernoulli": -9.54097911787244e-15,
+      "abs_relative_error_vs_euler_bernoulli": 9.54097911787244e-15,
       "within_tolerance_vs_anchor": true
     },
     "beam_timoshenko": {
@@ -113,7 +96,7 @@
       "n_elements": 8,
       "dofs": 18,
       "tip_deflection_m": 0.010000779999996606,
-      "seconds": 0.0011673402041196823,
+      "seconds": 0.0009697806090116501,
       "relative_error_vs_euler_bernoulli": 7.799999966074529e-05,
       "abs_relative_error_vs_euler_bernoulli": 7.799999966074529e-05,
       "within_tolerance_vs_anchor": true,
@@ -129,7 +112,7 @@
       "linear_solver": "sparse_superlu",
       "load_application": "statically_equivalent_end_face_transverse_nodal_load",
       "tip_deflection_m": 0.00996404533649923,
-      "seconds": 1.4383111596107483,
+      "seconds": 1.328235700726509,
       "relative_error_vs_euler_bernoulli": -0.003595466350076772,
       "abs_relative_error_vs_euler_bernoulli": 0.003595466350076772,
       "within_tolerance_vs_anchor": true
@@ -144,7 +127,7 @@
       "linear_solver": "dense_lapack",
       "load_application": "statically_equivalent_end_face_transverse_nodal_load",
       "tip_deflection_m": 0.009748606755302255,
-      "seconds": 0.2883521094918251,
+      "seconds": 0.2790841609239578,
       "relative_error_vs_euler_bernoulli": -0.02513932446977438,
       "abs_relative_error_vs_euler_bernoulli": 0.02513932446977438,
       "within_tolerance_vs_anchor": false
@@ -154,42 +137,22 @@
     "beam_eb_sweep": [
       {
         "model": "beam_eb",
-        "n_elements": 2,
-        "dofs": 9,
-        "tip_deflection_m": 0.009999999999999995,
-        "seconds": 0.004027338698506355,
-        "relative_error_vs_euler_bernoulli": -3.4694469519536147e-16,
-        "abs_relative_error_vs_euler_bernoulli": 3.4694469519536147e-16,
+        "n_elements": 3,
+        "dofs": 12,
+        "tip_deflection_m": 0.0100000000000001,
+        "seconds": 0.0033262688666582108,
+        "relative_error_vs_euler_bernoulli": 1.0234868508263163e-14,
+        "abs_relative_error_vs_euler_bernoulli": 1.0234868508263163e-14,
         "within_tolerance_vs_anchor": true
       },
       {
         "model": "beam_eb",
-        "n_elements": 4,
-        "dofs": 15,
-        "tip_deflection_m": 0.010000000000000177,
-        "seconds": 0.002282179892063141,
-        "relative_error_vs_euler_bernoulli": 1.7867651802561116e-14,
-        "abs_relative_error_vs_euler_bernoulli": 1.7867651802561116e-14,
-        "within_tolerance_vs_anchor": true
-      },
-      {
-        "model": "beam_eb",
-        "n_elements": 8,
-        "dofs": 27,
-        "tip_deflection_m": 0.010000000000001865,
-        "seconds": 0.002612961456179619,
-        "relative_error_vs_euler_bernoulli": 1.8665624601510447e-13,
-        "abs_relative_error_vs_euler_bernoulli": 1.8665624601510447e-13,
-        "within_tolerance_vs_anchor": true
-      },
-      {
-        "model": "beam_eb",
-        "n_elements": 16,
-        "dofs": 51,
-        "tip_deflection_m": 0.010000000000012998,
-        "seconds": 0.0027728211134672165,
-        "relative_error_vs_euler_bernoulli": 1.3000017728970194e-12,
-        "abs_relative_error_vs_euler_bernoulli": 1.3000017728970194e-12,
+        "n_elements": 6,
+        "dofs": 21,
+        "tip_deflection_m": 0.009999999999999903,
+        "seconds": 0.002341950312256813,
+        "relative_error_vs_euler_bernoulli": -9.54097911787244e-15,
+        "abs_relative_error_vs_euler_bernoulli": 9.54097911787244e-15,
         "within_tolerance_vs_anchor": true
       }
     ],
@@ -199,7 +162,7 @@
         "n_elements": 8,
         "dofs": 18,
         "tip_deflection_m": 0.010000779999996606,
-        "seconds": 0.0011673402041196823,
+        "seconds": 0.0009697806090116501,
         "relative_error_vs_euler_bernoulli": 7.799999966074529e-05,
         "abs_relative_error_vs_euler_bernoulli": 7.799999966074529e-05,
         "within_tolerance_vs_anchor": true,
@@ -217,25 +180,10 @@
         "linear_solver": "dense_lapack",
         "load_application": "statically_equivalent_end_face_transverse_nodal_load",
         "tip_deflection_m": 0.009748606755302255,
-        "seconds": 0.2883521094918251,
+        "seconds": 0.2790841609239578,
         "relative_error_vs_euler_bernoulli": -0.02513932446977438,
         "abs_relative_error_vs_euler_bernoulli": 0.02513932446977438,
         "within_tolerance_vs_anchor": false
-      },
-      {
-        "model": "solid_hex20",
-        "axial_elements": 16,
-        "cross_elements": 1,
-        "elements": 16,
-        "nodes": 200,
-        "dofs": 600,
-        "linear_solver": "dense_lapack",
-        "load_application": "statically_equivalent_end_face_transverse_nodal_load",
-        "tip_deflection_m": 0.009883910739521252,
-        "seconds": 0.2766905892640352,
-        "relative_error_vs_euler_bernoulli": -0.0116089260478746,
-        "abs_relative_error_vs_euler_bernoulli": 0.0116089260478746,
-        "within_tolerance_vs_anchor": true
       },
       {
         "model": "solid_hex20",
@@ -247,54 +195,9 @@
         "linear_solver": "dense_lapack",
         "load_application": "statically_equivalent_end_face_transverse_nodal_load",
         "tip_deflection_m": 0.009913672415396,
-        "seconds": 0.4792104493826628,
+        "seconds": 0.45845255069434643,
         "relative_error_vs_euler_bernoulli": -0.00863275846039978,
         "abs_relative_error_vs_euler_bernoulli": 0.00863275846039978,
-        "within_tolerance_vs_anchor": true
-      },
-      {
-        "model": "solid_hex20",
-        "axial_elements": 32,
-        "cross_elements": 2,
-        "elements": 128,
-        "nodes": 981,
-        "dofs": 2943,
-        "linear_solver": "dense_lapack",
-        "load_application": "statically_equivalent_end_face_transverse_nodal_load",
-        "tip_deflection_m": 0.00995984584188315,
-        "seconds": 1.3069239296019077,
-        "relative_error_vs_euler_bernoulli": -0.004015415811684833,
-        "abs_relative_error_vs_euler_bernoulli": 0.004015415811684833,
-        "within_tolerance_vs_anchor": true
-      },
-      {
-        "model": "solid_hex20",
-        "axial_elements": 32,
-        "cross_elements": 4,
-        "elements": 512,
-        "nodes": 2945,
-        "dofs": 8835,
-        "linear_solver": "sparse_superlu",
-        "load_application": "statically_equivalent_end_face_transverse_nodal_load",
-        "tip_deflection_m": 0.00996404533649923,
-        "seconds": 1.764847369864583,
-        "relative_error_vs_euler_bernoulli": -0.003595466350076772,
-        "abs_relative_error_vs_euler_bernoulli": 0.003595466350076772,
-        "within_tolerance_vs_anchor": true
-      },
-      {
-        "model": "solid_hex20",
-        "axial_elements": 64,
-        "cross_elements": 4,
-        "elements": 1024,
-        "nodes": 5825,
-        "dofs": 17475,
-        "linear_solver": "sparse_superlu",
-        "load_application": "statically_equivalent_end_face_transverse_nodal_load",
-        "tip_deflection_m": 0.009981895642009474,
-        "seconds": 2.806733211502433,
-        "relative_error_vs_euler_bernoulli": -0.001810435799052407,
-        "abs_relative_error_vs_euler_bernoulli": 0.001810435799052407,
         "within_tolerance_vs_anchor": true
       }
     ],
@@ -309,7 +212,7 @@
         "linear_solver": "dense_lapack",
         "load_application": "statically_equivalent_end_face_transverse_nodal_load",
         "tip_deflection_m": 0.00995984584188315,
-        "seconds": 1.4951648209244013,
+        "seconds": 1.067643590271473,
         "slenderness_L_over_h": 100.0,
         "height_m": 0.01,
         "reference_euler_bernoulli_m": 0.009999999999999998,
@@ -329,29 +232,8 @@
         "dofs": 2943,
         "linear_solver": "dense_lapack",
         "load_application": "statically_equivalent_end_face_transverse_nodal_load",
-        "tip_deflection_m": 0.0012455603612416886,
-        "seconds": 1.277035990729928,
-        "slenderness_L_over_h": 50.0,
-        "height_m": 0.02,
-        "reference_euler_bernoulli_m": 0.0012499999999999998,
-        "reference_timoshenko_m": 0.0012503899999999999,
-        "shear_fraction": 0.00031200000000000005,
-        "relative_error_vs_euler_bernoulli": -0.0035517110066489448,
-        "abs_relative_error_vs_euler_bernoulli": 0.0035517110066489448,
-        "within_tolerance_vs_anchor": true,
-        "relative_error_vs_timoshenko": -0.0038625059048067005
-      },
-      {
-        "model": "solid_hex20",
-        "axial_elements": 32,
-        "cross_elements": 2,
-        "elements": 128,
-        "nodes": 981,
-        "dofs": 2943,
-        "linear_solver": "dense_lapack",
-        "load_application": "statically_equivalent_end_face_transverse_nodal_load",
         "tip_deflection_m": 7.982865638278283e-05,
-        "seconds": 1.4385129902511835,
+        "seconds": 0.9307741299271584,
         "slenderness_L_over_h": 20.0,
         "height_m": 0.05,
         "reference_euler_bernoulli_m": 7.999999999999998e-05,
