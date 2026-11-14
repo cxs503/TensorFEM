@@ -3,7 +3,7 @@
   "anchor": "fem_kirsch_plate",
   "title": "KIRSCH-PLATE: circular hole in a tension plate, K_t = 3 (Kirsch 1898)",
   "mission": "CASE-KIRSCH-PLATE",
-  "generated_at": "2026-11-14T14:09:48+00:00",
+  "generated_at": "2026-11-14T21:59:36+00:00",
   "criteria": {
     "kirsch_limit_rel_error_max": 0.05,
     "kirsch_extrapolated_rel_error_max": 0.01,
@@ -15,6 +15,8 @@
     "saint_venant_band_rel_max": 0.01,
     "finite_width_trend_rel_max": 0.03,
     "hoop_profile_rms_over_kt_max": 0.05,
+    "interior_field_rel_error_max": 0.05,
+    "interior_field_refinement_factor_min": 2.0,
     "refinement_levels_min": 3
   },
   "gates": [
@@ -145,6 +147,35 @@
       "threshold": 1e-10,
       "operator": "<=",
       "passed": true
+    },
+    {
+      "id": "interior_field_recovered",
+      "quantity": "max componentwise error of the recovered field vs Kirsch over 12 interior probes (r/a in (1.1, 1.25, 1.5, 2.0), theta in (22.5, 45.0, 67.5) deg), d/W=0.02, n=48",
+      "reference": "Kirsch closed form eqs. (a)-(c), away from the hole edge",
+      "value": 0.03609775544529015,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "relative criterion floored at 0.1 T; the raw (element) stress at the same sites reaches 19.5 % -- the gate grades the production (Barlow nodal) recovery, not raw element values"
+    },
+    {
+      "id": "interior_field_refinement",
+      "quantity": "coarse/fine ratio of the max interior field error (n = 24 vs n = 48)",
+      "reference": "refinement must reduce the interior field error by at least the declared factor",
+      "value": 3.8876071027790773,
+      "threshold": 2.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "symmetry_axis_shear",
+      "quantity": "max |tau_rt| / T of the recovered field on theta = 0 deg and 90 deg (exact 0)",
+      "reference": "symmetry: the shear stress vanishes on both symmetry axes",
+      "value": 0.03125714328560549,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true,
+      "note": "not machine-zero: the Q4 stress on a symmetry edge is recovered from the single (sliver-like) element adjacent to it, so a one-sided value remains; the gate bounds that discretisation artifact, it is not a physics claim"
     }
   ],
   "passed": true,
@@ -153,11 +184,13 @@
   "artifacts": {
     "result.json": "every number of the ladder, cross-checks and sensitivity studies",
     "figures": [
-      "benchmarks/verified/fem_kirsch_plate/kirsch_field.png",
-      "benchmarks/verified/fem_kirsch_plate/kirsch_convergence.png",
-      "benchmarks/verified/fem_kirsch_plate/kirsch_hoop_profile.png",
-      "benchmarks/verified/fem_kirsch_plate/kirsch_width_trend.png"
+      "docs/assets/kirsch_plate/kirsch_field.png",
+      "docs/assets/kirsch_plate/kirsch_convergence.png",
+      "docs/assets/kirsch_plate/kirsch_hoop_profile.png",
+      "docs/assets/kirsch_plate/kirsch_width_trend.png",
+      "docs/assets/kirsch_plate/kirsch_interior_field.png"
     ],
+    "figures/interior_field": "kirsch_interior_field.png: interior pointwise field error and the stress decay along theta = 45 deg",
     "run.py": "this driver"
   },
   "limitations": [
@@ -165,6 +198,8 @@
     "The Q8 annulus check prescribes the exact Kirsch displacement on r = 2a, so it certifies the discretisation only and cannot see the far-field/finite-width model error.",
     "Plane stress, linear elasticity, isotropic homogeneous material, single hole, no plasticity and no contact: this anchor says nothing about those regimes.",
     "The plate-length study must be resolution-matched (n ~ L): with the ray count held fixed the starburst mesh coarsens near the apex and K_t drifts by percent-level in a way that mimics a load-introduction effect. Both tables are in result.json.",
-    "The hole edge is a stress-raiser: the Q4 recovered nodal stress converges at an observed order near 2 on this mesh family, which is a property of the starburst mesh plus apex node, not a general O(h^2) claim."
+    "The hole edge is a stress-raiser: the Q4 recovered nodal stress converges at an observed order near 2 on this mesh family, which is a property of the starburst mesh plus apex node, not a general O(h^2) claim.",
+    "Pointwise interior stress is certified only for the *recovered* (Barlow nodal) field: the raw element value at the same sample points is 20 % off the Kirsch field at n = 48, so one-sided element stresses must not be read as pointwise field values.",
+    "On the two symmetry axes the shear stress is exactly zero analytically but O(1 %) of T numerically, because the stress there is recovered from a single element adjacent to the symmetry edge. The interior-field probes are therefore placed on generic rays (theta = 22.5/45/67.5 deg) and the axis residual is gated separately."
   ]
 }
