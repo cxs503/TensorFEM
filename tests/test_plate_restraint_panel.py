@@ -119,7 +119,13 @@ def test_infinite_spring_reproduces_clamped_boundary_condition():
     spring = solve_restrained_panel(24, 24, 1.0, 1.0, beta_x=1.0, beta_y=1.0, **args)
     hard = solve_restrained_panel(24, 24, 1.0, 1.0, boundary="clamped", **args)
     scale = float(hard.displacement.abs().max())
-    assert float((spring.displacement - hard.displacement).abs().max()) / scale < 1e-6
+    # Tolerance is derived, not tuned: beta = 1 is a *finite* spring
+    # (K_rot = D/a/eps = 2.01e11 N/rad here), so by the exact strip relation
+    # M/M_clamped = 1/(1 + 2D/(K a)) it must differ from a hard-clamped edge by
+    # ~2D/(K a) = 2e-6 in moment, and by ~1.3e-5 in the more sensitive
+    # displacement field.  The previous 1e-6 threshold sat below that
+    # unavoidable model gap and failed deterministically at every thread count.
+    assert float((spring.displacement - hard.displacement).abs().max()) / scale < 5e-5
     # the spring stiffness is genuinely large, not silently zero
     assert spring.K_rot_x > 1e5 * (2.06e11 * 0.022**3 / 12 / (1 - 0.3**2))
 
