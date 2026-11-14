@@ -1,0 +1,10 @@
+# replay hashes of m20054 artifacts (committed -> after independent re-run of the repro cmd in /tmp/audit20054_wt)
+135172144362e8ef080bf461a3b5a2236d7b5296ac1a5bee8f8a8f7ced28ad35  artifacts/CASE-FEM-HEAT-L2/evidence.json
+c1127c4279620bc1218a8302f7f30a4177aa7893af17131ff7c3e64de73797d9  artifacts/CASE-FEM-HEAT-L2/tables.md
+01e3cac06250bfcacd774acd2f39f3ae606a8934159b61ef89af416fd162147b  docs/assets/case_fem_heat_l2_convergence.png
+cb629361ba4e99334b5c6f2dfc1e31db453e2bea6445c7a81be79e2bdc6efc77  docs/assets/case_fem_heat_l2_field.png
+# post-run
+135172144362e8ef080bf461a3b5a2236d7b5296ac1a5bee8f8a8f7ced28ad35  artifacts/CASE-FEM-HEAT-L2/evidence.json
+c1127c4279620bc1218a8302f7f30a4177aa7893af17131ff7c3e64de73797d9  artifacts/CASE-FEM-HEAT-L2/tables.md
+01e3cac06250bfcacd774acd2f39f3ae606a8934159b61ef89af416fd162147b  docs/assets/case_fem_heat_l2_convergence.png
+cb629361ba4e99334b5c6f2dfc1e31db453e2bea6445c7a81be79e2bdc6efc77  docs/assets/case_fem_heat_l2_field.png
