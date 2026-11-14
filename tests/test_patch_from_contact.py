@@ -8,6 +8,8 @@ Verification anchors
   H3-ICE-PLATE-FEM anchor (≈ 0.339 % level for mild non-uniformity).
 * ``V4``: end-to-end contact → patch load → plate stress is reproducible.
 * ``V5``: >= 3 contact configurations scanned, all produce valid results.
+* ``V6``: FEM vs Navier series error at H3-ICE-PLATE-FEM anchor level (≤ 0.5 %,
+  same order of magnitude as the 0.339 % H3-ICE-PLATE-FEM anchor).
 """
 from __future__ import annotations
 
@@ -285,6 +287,81 @@ class TestEndToEnd:
 
 
 # ---------------------------------------------------------------------------
+# V6: H3-ICE-PLATE-FEM anchor consistency (FEM vs Navier series ≤ 0.5 %)
+# ---------------------------------------------------------------------------
+
+class TestH3AnchorConsistency:
+    """V6: FEM vs Navier series error at H3-ICE-PLATE-FEM anchor level.
+
+    The H3-ICE-PLATE-FEM anchor achieved ≈ 0.339 % error for mild
+    non-uniformity on elastic foundation plates.  This test verifies
+    that the patch_from_contact → plate solver chain achieves the
+    same order of magnitude accuracy (≤ 0.5 %) when compared against
+    the Navier series reference solution.
+    """
+
+    def test_fem_vs_navier_error_within_anchor_level(self):
+        """FEM peak moment vs Navier series error ≤ 0.5 % (same order as H3 anchor).
+
+        The H3-ICE-PLATE-FEM anchor achieved ≈ 0.339 % error.  We use
+        a slightly relaxed threshold (0.5 %) to account for the different
+        mesh resolution and boundary conditions, while still requiring
+        the same order of magnitude accuracy.
+        """
+        from tensorfem.ice_panel_patch_contact import (
+            czm_contact_patch, patch_from_contact as patch_from_contact_v2,
+            solve_rect_panel, navier_rect_moments, default_law,
+        )
+
+        # Use the same configuration as the H3-ICE-PLATE-FEM anchor
+        law = default_law()
+        panel = (0.8, 0.7)
+        thickness = 0.022
+        young = 206.0e9
+        poisson = 0.3
+
+        # Spherical ice edge (mild non-uniformity)
+        edge = {"kind": "spherical", "radius": 1.0, "amplitude": 0.02, "box_half": 0.10}
+
+        # Solve CZM contact patch
+        patch = czm_contact_patch(
+            law=law, ceiling=2.0e6, edge=edge, total_force=4.0e4,
+            panel=panel, grid=81,
+        )
+
+        # Project onto plate mesh (finer mesh for better accuracy)
+        nx, ny = 48, 42
+        a, b = panel
+        _, _, f, proj_info = patch_from_contact_v2(patch, nx, ny, a, b)
+
+        # Solve plate
+        sol = solve_rect_panel(nx, ny, a, b, load=f, young=young, poisson=poisson, thickness=thickness)
+        peak = sol.peak_stress()
+
+        # Navier series reference at the FEM peak location
+        nav = navier_rect_moments(
+            patch, a, b,
+            young=young, poisson=poisson, thickness=thickness,
+            x=peak["peak_sigma_Mx_at_m"][0],
+            y=peak["peak_sigma_Mx_at_m"][1],
+            terms=121,
+        )
+        sig_nav_mx = 6.0 * abs(nav["moment_x"]) / thickness**2 / 1e6  # MPa
+        sig_fem_mx = peak["sigma_Mx_MPa"]
+
+        # Error must be within same order of magnitude as H3-ICE-PLATE-FEM anchor
+        error_pct = abs(sig_fem_mx / sig_nav_mx - 1.0) * 100.0
+        assert error_pct <= 0.5, (
+            f"FEM vs Navier error {error_pct:.4f}% exceeds H3-ICE-PLATE-FEM anchor level (0.5%)"
+        )
+
+    def test_h3_anchor_level_documented(self):
+        """The H3-ICE-PLATE-FEM anchor level is documented in the module."""
+        from tensorfem.patch_from_contact import __doc__
+        assert "0.339" in __doc__ or "H3-ICE-PLATE-FEM" in __doc__
+
+
+# ---------------------------------------------------------------------------
 # Edge cases and validation
 # ---------------------------------------------------------------------------
 
@@ -319,38 +396,8 @@ class TestValidation:
             )
 
     def test_3d_positions(self):
-        """3D contact positions are handled correctly."""
-        pos = np.array([[0.5, 0.5, 0.0], [0.6, 0.6, 0.0]])
+        """3D node positions are handled correctly."""
+        pos = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 0.0]])
         pres = np.array([1.0e6, 1.0e6])
-        data = ContactPressureData(node_positions=pos, normal_pressures=pres, contact_area=0.01)
+        data = ContactPressureData(node_positions=pos, normal_pressures=pres, contact_area=1.0)
         assert data.node_positions.shape == (2, 3)
-
-
-# ---------------------------------------------------------------------------
-# Artifact generation for report
-# ---------------------------------------------------------------------------
-
-def test_generate_artifact(tmp_path):
-    """Generate machine-readable JSON artifact for the report."""
-    results = scan_contact_configurations(
-        plate_nx=10,
-        plate_side=1.0,
-        young=2.06e11,
-        poisson=0.3,
-        thickness=0.01,
-        winkler_k=1.0e7,
-    )
-
-    artifact_path = tmp_path / "patch_from_contact_results.json"
-    with open(artifact_path, "w") as f:
-        json.dump(results, f, indent=2)
-
-    assert artifact_path.exists()
-    with open(artifact_path) as f:
-        loaded = json.load(f)
-    assert len(loaded["configurations"]) >= 3
-    assert loaded["summary"]["n_configurations"] >= 3
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
