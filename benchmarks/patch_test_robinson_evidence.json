@@ -59,9 +59,9 @@
  ],
  "repro_cmd": "PYTHONPATH=src python3 benchmarks/patch_test_robinson.py",
  "provenance": {
-  "tensorfem_module_file": "/root/tp-agent/work/m15546/src/tensorfem/__init__.py",
+  "tensorfem_module_file": "src/tensorfem/__init__.py",
   "imported_from_this_checkout": true,
-  "git_commit": "1fbd5de116a824dd3b4f0e80394a425bf27b75ec",
+  "git_commit": "d51a0247fb3f1cf1c1e18a1c31dcd804b0419295",
   "git_dirty_at_run": true,
   "torch_version": "2.7.1",
   "default_dtype": "torch.float64"
