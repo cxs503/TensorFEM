@@ -1,7 +1,7 @@
 {
   "anchor": "CASE-BENDING-PATCH",
-  "generated_at": "2026-11-14T06:08:30+00:00",
-  "wall_seconds": 66.85,
+  "generated_at": "2026-11-14T18:18:50+00:00",
+  "wall_seconds": 95.27,
   "material": {
     "young": 210000.0,
     "poisson": 0.3,
@@ -50,7 +50,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "cylindrical/affine/sri",
       "state_name": "cylindrical",
-      "wall_seconds": 0.096
+      "wall_seconds": 0.094
     },
     {
       "family": "affine",
@@ -79,7 +79,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "cylindrical/affine/mitc",
       "state_name": "cylindrical",
-      "wall_seconds": 0.16
+      "wall_seconds": 0.158
     },
     {
       "family": "affine",
@@ -108,7 +108,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "cylindrical/affine/full",
       "state_name": "cylindrical",
-      "wall_seconds": 0.099
+      "wall_seconds": 0.096
     },
     {
       "family": "skew",
@@ -137,7 +137,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "cylindrical/skew/sri",
       "state_name": "cylindrical",
-      "wall_seconds": 0.097
+      "wall_seconds": 0.091
     },
     {
       "family": "skew",
@@ -166,7 +166,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "cylindrical/skew/mitc",
       "state_name": "cylindrical",
-      "wall_seconds": 0.156
+      "wall_seconds": 0.157
     },
     {
       "family": "skew",
@@ -224,7 +224,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "cylindrical/distorted/sri",
       "state_name": "cylindrical",
-      "wall_seconds": 0.176
+      "wall_seconds": 0.173
     },
     {
       "family": "distorted",
@@ -253,7 +253,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "cylindrical/distorted/mitc",
       "state_name": "cylindrical",
-      "wall_seconds": 0.286
+      "wall_seconds": 0.288
     },
     {
       "family": "distorted",
@@ -282,7 +282,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "cylindrical/distorted/full",
       "state_name": "cylindrical",
-      "wall_seconds": 0.182
+      "wall_seconds": 0.181
     },
     {
       "family": "affine",
@@ -311,7 +311,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "twist/affine/sri",
       "state_name": "twist",
-      "wall_seconds": 0.094
+      "wall_seconds": 0.093
     },
     {
       "family": "affine",
@@ -340,7 +340,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "twist/affine/mitc",
       "state_name": "twist",
-      "wall_seconds": 0.158
+      "wall_seconds": 0.161
     },
     {
       "family": "affine",
@@ -398,7 +398,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "twist/skew/sri",
       "state_name": "twist",
-      "wall_seconds": 0.094
+      "wall_seconds": 0.093
     },
     {
       "family": "skew",
@@ -427,7 +427,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "twist/skew/mitc",
       "state_name": "twist",
-      "wall_seconds": 0.158
+      "wall_seconds": 0.177
     },
     {
       "family": "skew",
@@ -456,7 +456,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "twist/skew/full",
       "state_name": "twist",
-      "wall_seconds": 0.098
+      "wall_seconds": 0.103
     },
     {
       "family": "distorted",
@@ -485,7 +485,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "twist/distorted/sri",
       "state_name": "twist",
-      "wall_seconds": 0.177
+      "wall_seconds": 0.202
     },
     {
       "family": "distorted",
@@ -514,7 +514,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "twist/distorted/mitc",
       "state_name": "twist",
-      "wall_seconds": 0.285
+      "wall_seconds": 0.29
     },
     {
       "family": "distorted",
@@ -543,7 +543,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "twist/distorted/full",
       "state_name": "twist",
-      "wall_seconds": 0.18
+      "wall_seconds": 0.191
     },
     {
       "family": "affine",
@@ -572,7 +572,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "double/affine/sri",
       "state_name": "double",
-      "wall_seconds": 0.092
+      "wall_seconds": 0.097
     },
     {
       "family": "affine",
@@ -601,7 +601,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "double/affine/mitc",
       "state_name": "double",
-      "wall_seconds": 0.154
+      "wall_seconds": 0.168
     },
     {
       "family": "affine",
@@ -630,7 +630,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "double/affine/full",
       "state_name": "double",
-      "wall_seconds": 0.095
+      "wall_seconds": 0.1
     },
     {
       "family": "skew",
@@ -659,7 +659,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "double/skew/sri",
       "state_name": "double",
-      "wall_seconds": 0.093
+      "wall_seconds": 0.094
     },
     {
       "family": "skew",
@@ -688,7 +688,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "double/skew/mitc",
       "state_name": "double",
-      "wall_seconds": 0.155
+      "wall_seconds": 0.165
     },
     {
       "family": "skew",
@@ -717,7 +717,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "double/skew/full",
       "state_name": "double",
-      "wall_seconds": 0.095
+      "wall_seconds": 0.098
     },
     {
       "family": "distorted",
@@ -746,7 +746,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "double/distorted/sri",
       "state_name": "double",
-      "wall_seconds": 0.172
+      "wall_seconds": 0.184
     },
     {
       "family": "distorted",
@@ -775,7 +775,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "double/distorted/mitc",
       "state_name": "double",
-      "wall_seconds": 0.285
+      "wall_seconds": 0.313
     },
     {
       "family": "distorted",
@@ -804,7 +804,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "double/distorted/full",
       "state_name": "double",
-      "wall_seconds": 0.182
+      "wall_seconds": 0.19
     }
   ],
   "ladder": [
@@ -1495,17 +1495,678 @@
       "case": "strip-locking/free/t=0.1/8"
     }
   ],
+  "strip_free_w_naive": 0.017576443112924615,
   "orders": {
     "w_sri": 1.7173691653735683,
-    "w_mitc": -0.5255573049825766,
+    "w_mitc": NaN,
     "M_sri": 1.1511895023986738,
-    "M_mitc": -1.7911390934473446
+    "M_mitc": NaN
   },
   "strip_ratio": {
-    "measured": 1.0989010989010988,
     "theory": 1.0989010989010988,
-    "rel_error": 0.0
+    "closed_form_ratio": 1.098901098901099,
+    "closed_form_rel_error": 2.0206059048177852e-16,
+    "measured": 1.0857397071675785,
+    "rel_error": 0.011976866477503444,
+    "naive_measured": 1.0938991976545083,
+    "naive_rel_error": 0.0045517301343973565,
+    "naive_n_y": 2,
+    "mesh": {
+      "n_x": 32,
+      "n_y": 16,
+      "shear_treatment": "sri"
+    }
   },
+  "free_surface": [
+    {
+      "family": "affine",
+      "n": 3,
+      "shear_treatment": "sri",
+      "poisson": 0.3,
+      "kappa_x": 0.001,
+      "displacement_rel_error": 5.274497055334885e-16,
+      "rotation_rel_error": 3.252606517456513e-16,
+      "moment_rel_error": 3.3360066845707826e-16,
+      "my_over_mx": 1.4009814065872515e-16,
+      "mx_over_db_kappa": 1.0000000000000002,
+      "db_over_d": 0.91,
+      "plane_stress_identity": 0.91,
+      "equilibrium_residual": 7.105427357601002e-15,
+      "case": "free-surface/nu=0.3/affine/sri"
+    },
+    {
+      "family": "affine",
+      "n": 3,
+      "shear_treatment": "mitc",
+      "poisson": 0.3,
+      "kappa_x": 0.001,
+      "displacement_rel_error": 3.955872791501164e-16,
+      "rotation_rel_error": 2.4394548880923845e-16,
+      "moment_rel_error": 4.0602442043434295e-16,
+      "my_over_mx": 2.0848818398196025e-16,
+      "mx_over_db_kappa": 1.0000000000000002,
+      "db_over_d": 0.91,
+      "plane_stress_identity": 0.91,
+      "equilibrium_residual": 3.552713678800501e-15,
+      "case": "free-surface/nu=0.3/affine/mitc"
+    },
+    {
+      "family": "skew",
+      "n": 3,
+      "shear_treatment": "sri",
+      "poisson": 0.3,
+      "kappa_x": 0.001,
+      "displacement_rel_error": 8.011346102109636e-16,
+      "rotation_rel_error": 1.204669080539449e-16,
+      "moment_rel_error": 8.120488408686859e-16,
+      "my_over_mx": 8.936955571185956e-17,
+      "mx_over_db_kappa": 1.0000000000000009,
+      "db_over_d": 0.91,
+      "plane_stress_identity": 0.91,
+      "equilibrium_residual": 2.1316282072803006e-14,
+      "case": "free-surface/nu=0.3/skew/sri"
+    },
+    {
+      "family": "skew",
+      "n": 3,
+      "shear_treatment": "mitc",
+      "poisson": 0.3,
+      "kappa_x": 0.001,
+      "displacement_rel_error": 1.6022692204219271e-16,
+      "rotation_rel_error": 2.409338161078898e-16,
+      "moment_rel_error": 6.0903663065151445e-16,
+      "my_over_mx": 2.59241236536253e-16,
+      "mx_over_db_kappa": 1.0000000000000007,
+      "db_over_d": 0.91,
+      "plane_stress_identity": 0.91,
+      "equilibrium_residual": 7.105427357601002e-15,
+      "case": "free-surface/nu=0.3/skew/mitc"
+    },
+    {
+      "family": "affine",
+      "n": 3,
+      "shear_treatment": "sri",
+      "poisson": 0.45,
+      "kappa_x": 0.001,
+      "displacement_rel_error": 2.748681564047757e-16,
+      "rotation_rel_error": 3.252606517456513e-16,
+      "moment_rel_error": 6.0903663065151445e-16,
+      "my_over_mx": 2.89591621817626e-16,
+      "mx_over_db_kappa": 1.0000000000000007,
+      "db_over_d": 0.7975000000000001,
+      "plane_stress_identity": 0.7975,
+      "equilibrium_residual": 3.552713678800501e-15,
+      "case": "free-surface/nu=0.45/affine/sri"
+    },
+    {
+      "family": "affine",
+      "n": 3,
+      "shear_treatment": "mitc",
+      "poisson": 0.45,
+      "kappa_x": 0.001,
+      "displacement_rel_error": 2.0615111730358177e-16,
+      "rotation_rel_error": 2.4394548880923845e-16,
+      "moment_rel_error": 4.0602442043434295e-16,
+      "my_over_mx": 2.523829142888804e-16,
+      "mx_over_db_kappa": 1.0,
+      "db_over_d": 0.7975000000000001,
+      "plane_stress_identity": 0.7975,
+      "equilibrium_residual": 7.105427357601002e-15,
+      "case": "free-surface/nu=0.45/affine/mitc"
+    },
+    {
+      "family": "skew",
+      "n": 3,
+      "shear_treatment": "sri",
+      "poisson": 0.45,
+      "kappa_x": 0.001,
+      "displacement_rel_error": 3.554761221263948e-16,
+      "rotation_rel_error": 3.6140072416183473e-16,
+      "moment_rel_error": 8.120488408686859e-16,
+      "my_over_mx": 4.218640772335475e-16,
+      "mx_over_db_kappa": 1.0000000000000009,
+      "db_over_d": 0.7975000000000001,
+      "plane_stress_identity": 0.7975,
+      "equilibrium_residual": 7.105427357601002e-15,
+      "case": "free-surface/nu=0.45/skew/sri"
+    },
+    {
+      "family": "skew",
+      "n": 3,
+      "shear_treatment": "mitc",
+      "poisson": 0.45,
+      "kappa_x": 0.001,
+      "displacement_rel_error": 1.777380610631974e-16,
+      "rotation_rel_error": 2.409338161078898e-16,
+      "moment_rel_error": 8.120488408686859e-16,
+      "my_over_mx": 3.548019826885397e-16,
+      "mx_over_db_kappa": 1.0000000000000009,
+      "db_over_d": 0.7975000000000001,
+      "plane_stress_identity": 0.7975,
+      "equilibrium_residual": 7.105427357601002e-15,
+      "case": "free-surface/nu=0.45/skew/mitc"
+    }
+  ],
+  "free_surface_summary": {
+    "poissons": [
+      0.3,
+      0.45
+    ],
+    "max_my_over_mx": 4.218640772335475e-16,
+    "max_displacement_or_rotation_error": 8.011346102109636e-16,
+    "max_moment_error": 8.120488408686859e-16,
+    "max_rigidity_deviation": 8.881784197001252e-16,
+    "alternative_rigidity_deviation": 0.2024999999999999
+  },
+  "strip_transverse": {
+    "n_x": 32,
+    "free_w_error_by_n_y": {
+      "2": 0.004551727968973993,
+      "4": 0.011438116756220265,
+      "8": 0.011960750895591104,
+      "16": 0.011976866340051514
+    },
+    "transverse_change": 0.001345547658532249
+  },
+  "strip_ny": [
+    {
+      "n_x": 8,
+      "n_y": 2,
+      "lateral": "symmetry",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_cyl",
+      "rigidity": 0.019230769230769235,
+      "w_tip": 26000.00000002293,
+      "theta_tip": -52000.00000001814,
+      "w_exact_kirchhoff": 25999.999999999993,
+      "w_exact_mindlin": 26001.485714285707,
+      "theta_exact": -51999.999999999985,
+      "w_rel_error_kirchhoff": 8.822098607197407e-13,
+      "w_rel_error_mindlin": 5.713959114116151e-05,
+      "theta_rel_error": 3.491060432189933e-13,
+      "free_dofs": 56,
+      "case": "strip-ny/symmetry/nx=8/ny=2"
+    },
+    {
+      "n_x": 8,
+      "n_y": 4,
+      "lateral": "symmetry",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_cyl",
+      "rigidity": 0.019230769230769235,
+      "w_tip": 25999.99999887806,
+      "theta_tip": -51999.99999843243,
+      "w_exact_kirchhoff": 25999.999999999993,
+      "w_exact_mindlin": 26001.485714285707,
+      "theta_exact": -51999.999999999985,
+      "w_rel_error_kirchhoff": 4.315132593127112e-11,
+      "w_rel_error_mindlin": 5.7139635172181246e-05,
+      "theta_rel_error": 3.014527185139462e-11,
+      "free_dofs": 104,
+      "case": "strip-ny/symmetry/nx=8/ny=4"
+    },
+    {
+      "n_x": 8,
+      "n_y": 8,
+      "lateral": "symmetry",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_cyl",
+      "rigidity": 0.019230769230769235,
+      "w_tip": 25999.999999881646,
+      "theta_tip": -51999.999999699976,
+      "w_exact_kirchhoff": 25999.999999999993,
+      "w_exact_mindlin": 26001.485714285707,
+      "theta_exact": -51999.999999999985,
+      "w_rel_error_kirchhoff": 4.55181109898079e-12,
+      "w_rel_error_mindlin": 5.713959657487198e-05,
+      "theta_rel_error": 5.7694146212620245e-12,
+      "free_dofs": 200,
+      "case": "strip-ny/symmetry/nx=8/ny=8"
+    },
+    {
+      "n_x": 8,
+      "n_y": 16,
+      "lateral": "symmetry",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_cyl",
+      "rigidity": 0.019230769230769235,
+      "w_tip": 26000.0000093845,
+      "theta_tip": -52000.00001238996,
+      "w_exact_kirchhoff": 25999.999999999993,
+      "w_exact_mindlin": 26001.485714285707,
+      "theta_exact": -51999.999999999985,
+      "w_rel_error_kirchhoff": 3.609426270346516e-10,
+      "w_rel_error_mindlin": 5.7139231101318044e-05,
+      "theta_rel_error": 2.3826872235916277e-10,
+      "free_dofs": 392,
+      "case": "strip-ny/symmetry/nx=8/ny=16"
+    },
+    {
+      "n_x": 32,
+      "n_y": 2,
+      "lateral": "symmetry",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_cyl",
+      "rigidity": 0.019230769230769235,
+      "w_tip": 26000.000056558438,
+      "theta_tip": -52000.00007116874,
+      "w_exact_kirchhoff": 25999.999999999993,
+      "w_exact_mindlin": 26001.485714285707,
+      "theta_exact": -51999.999999999985,
+      "w_rel_error_kirchhoff": 2.1753248102658505e-09,
+      "w_rel_error_mindlin": 5.713741682280787e-05,
+      "theta_rel_error": 1.3686298748675308e-09,
+      "free_dofs": 224,
+      "case": "strip-ny/symmetry/nx=32/ny=2"
+    },
+    {
+      "n_x": 32,
+      "n_y": 4,
+      "lateral": "symmetry",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_cyl",
+      "rigidity": 0.019230769230769235,
+      "w_tip": 26000.000005168862,
+      "theta_tip": -52000.0000071292,
+      "w_exact_kirchhoff": 25999.999999999993,
+      "w_exact_mindlin": 26001.485714285707,
+      "theta_exact": -51999.999999999985,
+      "w_rel_error_kirchhoff": 1.9880266895947553e-10,
+      "w_rel_error_mindlin": 5.713939323201151e-05,
+      "theta_rel_error": 1.3710030963501109e-10,
+      "free_dofs": 416,
+      "case": "strip-ny/symmetry/nx=32/ny=4"
+    },
+    {
+      "n_x": 32,
+      "n_y": 8,
+      "lateral": "symmetry",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_cyl",
+      "rigidity": 0.019230769230769235,
+      "w_tip": 26000.000005892405,
+      "theta_tip": -52000.00000758373,
+      "w_exact_kirchhoff": 25999.999999999993,
+      "w_exact_mindlin": 26001.485714285707,
+      "theta_exact": -51999.999999999985,
+      "w_rel_error_kirchhoff": 2.266312479220618e-10,
+      "w_rel_error_mindlin": 5.7139365405022656e-05,
+      "theta_rel_error": 1.4584125333035797e-10,
+      "free_dofs": 800,
+      "case": "strip-ny/symmetry/nx=32/ny=8"
+    },
+    {
+      "n_x": 32,
+      "n_y": 16,
+      "lateral": "symmetry",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_cyl",
+      "rigidity": 0.019230769230769235,
+      "w_tip": 26000.000003617068,
+      "theta_tip": -52000.000003753914,
+      "w_exact_kirchhoff": 25999.999999999993,
+      "w_exact_mindlin": 26001.485714285707,
+      "theta_exact": -51999.999999999985,
+      "w_rel_error_kirchhoff": 1.391182684948525e-10,
+      "w_rel_error_mindlin": 5.713945291300163e-05,
+      "theta_rel_error": 7.219093206983348e-11,
+      "free_dofs": 1568,
+      "case": "strip-ny/symmetry/nx=32/ny=16"
+    },
+    {
+      "n_x": 8,
+      "n_y": 2,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28368.410147967214,
+      "theta_tip": -56885.31312874539,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.007105644821147182,
+      "w_rel_error_mindlin": 0.007157272642969755,
+      "theta_rel_error": 0.004507020246955382,
+      "free_dofs": 72,
+      "case": "strip-ny/free/nx=8/ny=2"
+    },
+    {
+      "n_x": 8,
+      "n_y": 4,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28187.537314297384,
+      "theta_tip": -56703.11190599323,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.01343619399959122,
+      "w_rel_error_mindlin": 0.013487492649973428,
+      "theta_rel_error": 0.007695541645118103,
+      "free_dofs": 120,
+      "case": "strip-ny/free/nx=8/ny=4"
+    },
+    {
+      "n_x": 8,
+      "n_y": 8,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28172.75127585756,
+      "theta_tip": -56680.79846652119,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.013953705344985015,
+      "w_rel_error_mindlin": 0.014004977086176542,
+      "theta_rel_error": 0.008086026835878805,
+      "free_dofs": 216,
+      "case": "strip-ny/free/nx=8/ny=8"
+    },
+    {
+      "n_x": 8,
+      "n_y": 16,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28171.512620193702,
+      "theta_tip": -56680.15076179125,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.013997058293220094,
+      "w_rel_error_mindlin": 0.014048327780175531,
+      "theta_rel_error": 0.008097361668652778,
+      "free_dofs": 408,
+      "case": "strip-ny/free/nx=8/ny=16"
+    },
+    {
+      "n_x": 32,
+      "n_y": 2,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28441.379200886448,
+      "theta_tip": -56965.010646812276,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.004551727968973993,
+      "w_rel_error_mindlin": 0.004603488587567447,
+      "theta_rel_error": 0.003112313680784829,
+      "free_dofs": 288,
+      "case": "strip-ny/free/nx=32/ny=2"
+    },
+    {
+      "n_x": 32,
+      "n_y": 4,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28244.625235536554,
+      "theta_tip": -56756.63246145338,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.011438116756220265,
+      "w_rel_error_mindlin": 0.011489519301216609,
+      "theta_rel_error": 0.006758931924565497,
+      "free_dofs": 480,
+      "case": "strip-ny/free/nx=32/ny=4"
+    },
+    {
+      "n_x": 32,
+      "n_y": 8,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28229.69283155453,
+      "theta_tip": -56741.06287349946,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.011960750895591104,
+      "w_rel_error_mindlin": 0.01201212626502533,
+      "theta_rel_error": 0.007031399713759095,
+      "free_dofs": 864,
+      "case": "strip-ny/free/nx=32/ny=8"
+    },
+    {
+      "n_x": 32,
+      "n_y": 16,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28229.232390284233,
+      "theta_tip": -56740.98752664002,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.011976866340051514,
+      "w_rel_error_mindlin": 0.012028240871526203,
+      "theta_rel_error": 0.007032718283799316,
+      "free_dofs": 1632,
+      "case": "strip-ny/free/nx=32/ny=16"
+    }
+  ],
+  "strip_aspect": {
+    "free_w_error_by_L_over_b": {
+      "5": 0.011960750895591104,
+      "10": 0.0065058870523313295,
+      "20": 0.0033843250527946485
+    },
+    "end_effect_decay_ratio": 0.2829525572714801
+  },
+  "strip_aspect_cases": [
+    {
+      "n_x": 32,
+      "n_y": 8,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28229.69283155453,
+      "theta_tip": -56741.06287349946,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.011960750895591104,
+      "w_rel_error_mindlin": 0.01201212626502533,
+      "theta_rel_error": 0.007031399713759095,
+      "free_dofs": 864,
+      "case": "strip-aspect/L=1/nx=32"
+    },
+    {
+      "n_x": 64,
+      "n_y": 8,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 2.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 200.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 113542.18433687638,
+      "theta_tip": -113883.91981446774,
+      "w_exact_kirchhoff": 114285.71428571425,
+      "w_exact_mindlin": 114288.68571428568,
+      "theta_exact": -114285.71428571425,
+      "w_rel_error_kirchhoff": 0.0065058870523313295,
+      "w_rel_error_mindlin": 0.006531717227683413,
+      "theta_rel_error": 0.0035157016234069684,
+      "free_dofs": 1728,
+      "case": "strip-aspect/L=2/nx=64"
+    },
+    {
+      "n_x": 128,
+      "n_y": 8,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 4.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 400.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 455595.7371187223,
+      "theta_tip": -228169.63418689536,
+      "w_exact_kirchhoff": 457142.857142857,
+      "w_exact_mindlin": 457148.7999999998,
+      "theta_exact": -228571.4285714285,
+      "w_rel_error_kirchhoff": 0.0033843250527946485,
+      "w_rel_error_mindlin": 0.0033972808881430412,
+      "theta_rel_error": 0.0017578504323324529,
+      "free_dofs": 3456,
+      "case": "strip-aspect/L=4/nx=128"
+    }
+  ],
+  "strip_root_support": [
+    {
+      "n_x": 32,
+      "n_y": 8,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28229.69283155453,
+      "theta_tip": -56741.06287349946,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.011960750895591104,
+      "w_rel_error_mindlin": 0.01201212626502533,
+      "theta_rel_error": 0.007031399713759095,
+      "free_dofs": 864,
+      "case": "strip-root/clamp_theta_y=True/nx=32/ny=8",
+      "clamp_theta_y": true
+    },
+    {
+      "n_x": 32,
+      "n_y": 8,
+      "lateral": "free",
+      "shear_treatment": "sri",
+      "moment": 1000.0,
+      "length": 1.0,
+      "width": 0.2,
+      "thickness": 0.01,
+      "slenderness": 100.0,
+      "rigidity_used": "D_beam",
+      "rigidity": 0.017500000000000005,
+      "w_tip": 28234.105080282854,
+      "theta_tip": -56745.26323976809,
+      "w_exact_kirchhoff": 28571.42857142856,
+      "w_exact_mindlin": 28572.914285714276,
+      "theta_exact": -57142.85714285712,
+      "w_rel_error_kirchhoff": 0.011806322190099767,
+      "w_rel_error_mindlin": 0.011857705589409125,
+      "theta_rel_error": 0.006957893304058018,
+      "free_dofs": 873,
+      "case": "strip-root/clamp_theta_y=False/nx=32/ny=8",
+      "clamp_theta_y": false
+    }
+  ],
   "criteria": {
     "case_pool_tolerance": 0.02,
     "exact_tolerance": 1e-12
@@ -1612,26 +2273,89 @@
     },
     {
       "id": "strip_free_w",
-      "quantity": "tip deflection error, free edges (load-driven)",
-      "reference": "M L^2/(2 D_b), D_b = E t^3/12",
-      "value": 0.017576443112924615,
+      "quantity": "tip deflection error, free edges, transverse-converged meshes (n_y >= 8, load-driven)",
+      "reference": "M L^2/(2 D_b), D_b = E t^3/12 (clamped-root end effect included; see the end-effect and transverse-convergence gates)",
+      "value": 0.013997058293220094,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
     },
     {
-      "id": "poisson_crosscheck",
-      "quantity": "|ratio - 1/(1-nu^2)| / (1/(1-nu^2))",
-      "reference": "D/D_b = 1/(1-nu^2) exactly",
-      "value": 0.0,
+      "id": "poisson_identity_closed_form",
+      "quantity": "|D/D_b - 1/(1-nu^2)| / (1/(1-nu^2))  [algebra only, no solve]",
+      "reference": "D/D_b = 1/(1-nu^2) exactly (ORACLE identity: insensitive to the element, documented, not element evidence)",
+      "value": 2.0206059048177852e-16,
+      "threshold": 1e-14,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "poisson_coupling_computed",
+      "quantity": "|w_free/w_sym - 1/(1-nu^2)| / (1/(1-nu^2)) from the SOLVED tip deflections, n_y=16",
+      "reference": "1/(1-nu^2) with both responses solved on the same mesh",
+      "value": 0.011976866477503444,
       "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "free_surface_moment_exact",
+      "quantity": "max |M_y| / max |M_x| on the M_y=0 state (affine+skew, nu=0.3 and 0.45)",
+      "reference": "plane-stress free surface: M_y = 0 exactly",
+      "value": 4.218640772335475e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "free_surface_field_exact",
+      "quantity": "max nodal w/rotation error, M_y=0 state (affine+skew, nu=0.3 and 0.45)",
+      "reference": "closed form with kappa_y = -nu kappa_x",
+      "value": 8.011346102109636e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "free_surface_rigidity",
+      "quantity": "max |M_x/(D_b kappa_x) - 1|, D_b = E t^3/12",
+      "reference": "measured beam rigidity equals D (1-nu^2)",
+      "value": 8.881784197001252e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "free_surface_rigidity_separation",
+      "quantity": "|M_x/(D kappa_x) - 1|: grading against the cylindrical rigidity D",
+      "reference": "the check must reject the wrong rigidity (discriminating power)",
+      "value": 0.2024999999999999,
+      "threshold": 0.05,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "strip_free_transverse_convergence",
+      "quantity": "|e(n_y=16) - e(n_y=8)| / e(n_y=16), free lateral, n_x=32",
+      "reference": "the free-edge leg must be transverse-converged before it is graded",
+      "value": 0.001345547658532249,
+      "threshold": 0.1,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "strip_free_end_effect_decay",
+      "quantity": "e(L/b=20) / e(L/b=5), free lateral, n_y=8, fixed element size",
+      "reference": "clamped-root end effect is local: it must decay with L/b",
+      "value": 0.2829525572714801,
+      "threshold": 0.6,
       "operator": "<=",
       "passed": true
     },
     {
       "id": "order_w_min",
       "quantity": "observed order of the distorted patch, w (SRI)",
-      "reference": "second-order consistency of the element",
+      "reference": "second-order consistency of the element (orders below the round-off floor are reported as null, not fitted)",
       "value": 1.7173691653735683,
       "threshold": 1.5,
       "operator": ">=",

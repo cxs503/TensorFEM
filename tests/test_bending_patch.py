@@ -7,8 +7,13 @@ These assert *invariants*, not merely that the code runs:
 * the distorted patch stays inside the 2% case-pool tolerance;
 * the deliberate locking control **fails** -- otherwise the passing gates would
   be vacuous;
-* the load-driven strip matches the closed form for both lateral conditions, and
-  the ratio of the two responses is``1/(1-nu^2)``;
+* the load-driven strip matches the closed form for both lateral conditions;
+* (round 2) the Poisson coupling is graded on quantities that *can* fail: the
+  closed-form ratio `D/D_b` is an algebra identity that cancels any common
+  stiffness factor, so it is tested as such, while the `M_y = 0` (plane-stress)
+  patch and the *solved* strip ratio carry the content;
+* (round 2) the free-edge strip leg is transverse-converged, and its ~1.2%
+  offset is a clamped-root end effect that decays with `L/b`;
 * the analytic oracle itself is verified before any assembly.
 """
 from __future__ import annotations
@@ -21,6 +26,9 @@ from tensorfem.bending_patch import (
     affine_patch_mesh,
     distorted_patch_mesh,
     oracle_selfcheck,
+    free_surface_check,
+    free_surface_state,
+    plate_moment_matrix,
     run_patch_case,
     strip_pure_bending,
 )
@@ -124,13 +132,87 @@ def test_load_driven_strip_free_edges_matches_beam_rigidity():
 
 
 def test_poisson_coupling_crosscheck():
-    sym = strip_pure_bending(8, 2, thickness=0.01, lateral="symmetry",
+    """Solved tip deflections, on a transverse-converged mesh (round 2).
+
+    `n_y = 2` (the round-1 mesh) is not used here: it aliases the transverse
+    direction and lands ~2.6x closer to the identity than the converged answer.
+    """
+    sym = strip_pure_bending(8, 8, thickness=0.01, lateral="symmetry",
                              shear_treatment="sri", young=E, poisson=NU)
-    free = strip_pure_bending(8, 2, thickness=0.01, lateral="free",
+    free = strip_pure_bending(8, 8, thickness=0.01, lateral="free",
                               shear_treatment="sri", young=E, poisson=NU)
     measured = free["w_tip"] / sym["w_tip"]
     theory = 1.0 / (1.0 - NU ** 2)
     assert abs(measured - theory) / theory < 0.02
+
+
+def test_closed_form_poisson_ratio_is_blind_to_the_element():
+    """Round-2 finding: the round-1 gate compared two closed forms.
+
+    `[M L^2/(2D)] / [M L^2/(2D_b)] = D/D_b = 1/(1-nu^2)` because the rigidity
+    enters both operands as a common factor, so the "error" is identically zero
+    for any element, any mesh and any corrupted stiffness.  A check that cannot
+    fail is not evidence; it is kept as an oracle identity and the coupling is
+    graded on solved quantities instead.
+    """
+    for nu in (0.0, 0.3, 0.45):
+        d = float(plate_moment_matrix(E, nu, T)[0, 0])
+        d_b = E * T ** 3 / 12.0
+        for corruption in (1.0, 7.3):            # any common factor cancels
+            ratio = (corruption * d) / (corruption * d_b)
+            assert abs(ratio - 1.0 / (1.0 - nu ** 2)) < 1e-12
+
+
+def test_free_surface_state_is_plane_stress():
+    state = free_surface_state(1.0e-3, NU)
+    m = state.moments(E, NU, T)
+    assert abs(float(m[1])) < 1e-12                    # M_y = 0
+    assert abs(float(m[0]) - E * T ** 3 / 12.0 * 1.0e-3) < 1e-12   # D_b kappa_x
+    assert float(state.kappa[1]) == pytest.approx(-NU * 1.0e-3)
+
+
+@pytest.mark.parametrize("nu", [0.3, 0.45])
+@pytest.mark.parametrize("skew", [0.0, 0.35], ids=["affine", "skew"])
+@pytest.mark.parametrize("treatment", ["sri", "mitc"])
+def test_free_surface_patch_is_exact(nu, skew, treatment):
+    """`M_y = 0` is reproduced by the element's own `Db`, so this can fail."""
+    rep = free_surface_check(affine_patch_mesh(3, skew=skew), 1.0e-3, young=E,
+                             poisson=nu, thickness=T, shear_treatment=treatment)
+    assert rep["my_over_mx"] < 1e-12
+    assert rep["displacement_rel_error"] < 1e-12
+    assert rep["rotation_rel_error"] < 1e-12
+    assert rep["moment_rel_error"] < 1e-12
+    assert rep["mx_over_db_kappa"] == pytest.approx(1.0, abs=1e-12)
+    # grading against the cylindrical rigidity D instead of D_b must be rejected
+    assert abs(rep["mx_over_db_kappa"] * rep["db_over_d"] - 1.0) > 0.05
+
+
+def test_free_strip_is_transverse_converged():
+    errs = {}
+    for n_y in (8, 16):
+        rep = strip_pure_bending(32, n_y, thickness=0.01, lateral="free",
+                                 shear_treatment="sri", young=E, poisson=NU,
+                                 width=0.2)
+        errs[n_y] = rep["w_rel_error_kirchhoff"]
+    assert abs(errs[16] - errs[8]) / errs[16] < 0.02
+    # and the converged offset is still inside the case-pool tolerance
+    assert errs[16] < 0.02
+
+
+def test_free_strip_offset_is_a_clamped_root_end_effect():
+    """The offset must decay with L/b at fixed element size, and must not be
+    explained by the theta_y restraint of the root."""
+    short = strip_pure_bending(32, 8, length=1.0, width=0.2, thickness=0.01,
+                               lateral="free", shear_treatment="sri", young=E,
+                               poisson=NU)
+    long = strip_pure_bending(128, 8, length=4.0, width=0.2, thickness=0.01,
+                              lateral="free", shear_treatment="sri", young=E,
+                              poisson=NU)
+    assert long["w_rel_error_kirchhoff"] < 0.6 * short["w_rel_error_kirchhoff"]
+    loose = strip_pure_bending(32, 8, length=1.0, width=0.2, thickness=0.01,
+                               lateral="free", shear_treatment="sri", young=E,
+                               poisson=NU, clamp_theta_y=False)
+    assert abs(loose["w_rel_error_kirchhoff"] - short["w_rel_error_kirchhoff"]) < 2e-3
 
 
 def test_invalid_arguments_are_rejected():
