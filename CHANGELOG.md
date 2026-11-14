@@ -1,5 +1,33 @@
 ## Unreleased
 
+### Ice-grillage load split: independent discrete beam-grid cross-check (anchor GAP-PP-5, round 4)
+- **New capability**: `tensorfem.grillage_beam_grid` is a discrete orthogonal beam-grid
+  (classical grillage) of the 8.40 m x 2.80 m ice-belt grillage that shares no code and no
+  idealisation with the smeared orthotropic layer: real one-dimensional stiffener/frame
+  members with `EI` and open-section `GJ`, stiffeners as continuous beams over **deflecting**
+  frame lines, work-equivalent (consistent) nodal loads, three DOF per node with the standard
+  slope/twist coupling.  It closes the debt round 3 declared: "the FD gate validates the plate
+  response, **not the smearing**".
+- **18 gates, all pass**: simply supported beam closed forms `5qL^4/384EI`/`qL^2/8` (0.000 %,
+  0.016 %) and `FL^3/48EI`/`FL/4` (0.000 %, 0.000 %), vertical equilibrium to 1e-9, isotropic
+  share symmetry to 1e-9, rigid-family limits, mesh convergence, share band, load-split
+  sensitivity.  14 tests in `tests/test_grillage_beam_grid.py`.
+- **Two load-application defects found in the new module itself** (both now regression-gated):
+  restraining the boundary *rotations* turned the simple supports into clamped ones (uniform
+  load gave 1/5 of the theoretical deflection, caught by the beam gates at -95 %); and the
+  tributary bands were not intersected with the patch extent, so a 0.35 m wide patch was spread
+  over all nine stiffener lines (equilibrium still passed, the peak stiffener moment came out
+  4x too low -- only a distribution-aware check catches that).
+- **Verification verdict on the semi-analytical layer**: stiffener moment from the smeared share
+  is `+6.6 %` above the discrete grid (conservative, inside the 15 % band); the smeared energy
+  share itself is `+15.1 %` above the discrete energy share; the **frame demand is 2.08x low**
+  (`per_frame_ice = f_y * F / n_overlap` spreads the patch over the two frames its x-extent
+  touches, while the patch lies wholly inside one frame tributary), so the frame capacity is
+  overstated `4.16x`.  The anchor's own ultimate is plate-field governed, so the headline
+  pressure is unaffected, but the reported frame margin is `4.2x` optimistic.  Documented, not
+  papered over: `docs/CASE-GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE-round4.md`; follow-up item
+  proposed as `GAP-PP-5-ICE-STRUCT-GRILLAGE-FRAME-DEMAND`.
+
 ### Robinson patch test A/B/C: the promised run artefacts are now in the tree (fresh-checkout gate green)
 - **Defect fixed**: the case documented and CHANGELOG'd `runs/patch_test_robinson/` run
   artefacts, but none of them was committed, so on a clean checkout
