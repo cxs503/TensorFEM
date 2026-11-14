@@ -3,7 +3,7 @@
   "anchor": "fem_bending_patch",
   "title": "BENDING-PATCH: constant-curvature patch test of the Q4 Mindlin plate element",
   "mission": "CASE-BENDING-PATCH",
-  "generated_at": "2026-11-11T23:49:49+00:00",
+  "generated_at": "2026-11-14T06:08:30+00:00",
   "criteria": {
     "case_pool_tolerance": 0.02,
     "exact_tolerance_affine": 1e-12,
@@ -33,7 +33,7 @@
       "id": "affine_exact_rot",
       "quantity": "max rotation error, affine+skew patches",
       "reference": "constant-curvature closed form",
-      "value": 4.196911635427758e-16,
+      "value": 4.818676322157796e-16,
       "threshold": 1e-12,
       "operator": "<=",
       "passed": true
@@ -42,7 +42,7 @@
       "id": "affine_exact_moment",
       "quantity": "max moment error, affine+skew patches",
       "reference": "M = Db kappa",
-      "value": 9.393615828692852e-16,
+      "value": 7.124757133476171e-16,
       "threshold": 1e-12,
       "operator": "<=",
       "passed": true
@@ -60,7 +60,7 @@
       "id": "skew_energy_mitc",
       "quantity": "max strain-energy error, affine+skew patches (mitc)",
       "reference": "1/2 kappa^T Db kappa * Area (documented: MITC shear sampling on a skew element is not exactly shear-free)",
-      "value": 0.003969907407407478,
+      "value": 9.020562075079397e-16,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
@@ -87,7 +87,7 @@
       "id": "distorted_energy",
       "quantity": "max energy error, distorted patch",
       "reference": "1/2 kappa^T Db kappa * Area",
-      "value": 0.0016500842193053616,
+      "value": 0.0015513928219136211,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
@@ -114,7 +114,7 @@
       "id": "strip_free_w",
       "quantity": "tip deflection error, free edges (load-driven)",
       "reference": "M L^2/(2 D_b), D_b = E t^3/12",
-      "value": 0.017576443091359494,
+      "value": 0.017576443112924615,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
@@ -130,7 +130,7 @@
     },
     {
       "id": "order_w_min",
-      "quantity": "observed order of the distorted patch, w",
+      "quantity": "observed order of the distorted patch, w (SRI)",
       "reference": "second-order consistency of the element",
       "value": 1.7173691653735683,
       "threshold": 1.5,
