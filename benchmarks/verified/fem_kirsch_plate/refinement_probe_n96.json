@@ -1,0 +1,72 @@
+{
+  "schema": "tensorfem.kirsch-refinement-probe.v1",
+  "probe": "CASE-FEM-KIRSCH-PLATE refinement probe n=96 (closes m15393 finding F6)",
+  "generated_at": "2026-11-14T07:59:25+00:00",
+  "environment": {
+    "host": "node315",
+    "machine": "loongarch64",
+    "python": "3.11.6",
+    "tensorfem": "0.45.0"
+  },
+  "setup": {
+    "ratio_d_over_W": 0.02,
+    "levels": [
+      24,
+      48,
+      96
+    ],
+    "refinement_ratio": 2.0,
+    "grading": 6.0,
+    "half_length_over_width": 1.5,
+    "reference_kt": 3.0,
+    "reference": "Kirsch (1898) VDI 42, 797; Timoshenko & Goodier 3rd ed. Art. 39 (evaluated in code)"
+  },
+  "predeclared": {
+    "hypotheses": {
+      "H1_point": "error(96) < error(48) and p(24,48,96) >= 1.5 -> point value quotable",
+      "H2_band": "error(96) >= error(48) -> 0.047 % is lucky, quote the GCI band"
+    },
+    "prediction_err96_from_p1.76": 0.00013853040959944317,
+    "prediction_accept_factor": 2.0
+  },
+  "rows": [
+    {
+      "n_boundary": 24,
+      "ktg": 2.977465910377666,
+      "ktn": 2.917916592170113,
+      "rel_error_vs_kirsch": 0.00751136320744461,
+      "load_balance_rel": 2.255546860396862e-14,
+      "wall_seconds": 0.08414459228515625
+    },
+    {
+      "n_boundary": 48,
+      "ktg": 3.001407599699376,
+      "ktn": 2.9413794477053883,
+      "rel_error_vs_kirsch": 0.00046919989979195736,
+      "load_balance_rel": 5.220499588176608e-14,
+      "wall_seconds": 0.9584825038909912
+    },
+    {
+      "n_boundary": 96,
+      "ktg": 3.0045912266696706,
+      "ktn": 2.944499402136277,
+      "rel_error_vs_kirsch": 0.0015304088898902002,
+      "load_balance_rel": 8.918505045585335e-13,
+      "wall_seconds": 37.22324299812317
+    }
+  ],
+  "summary": {
+    "error_n24": 0.00751136320744461,
+    "error_n48": 0.00046919989979195736,
+    "error_n96": 0.0015304088898902002,
+    "error_ratio_successive_24_48": 0.062465345748016446,
+    "error_ratio_successive_48_96": 3.2617417236635844,
+    "observed_order_24_48_96": 2.910781743754739,
+    "richardson_limit": 3.0050794938554226,
+    "gci_fine_band": 0.00020313378298264742,
+    "richardson_limit_rel_error": 0.001693164618474204,
+    "prediction_met": false
+  },
+  "verdict": "H2_point_luck__quote_band",
+  "quoted_accuracy_basis": "band"
+}
