@@ -46,6 +46,8 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.special import ellipe, ellipk
 
+from .elastica_cantilever import newton_converged
+
 try:  # scipy>=1.11 exposes the incomplete integrals in scipy.special
     from scipy.special import ellipeinc, ellipkinc
 except ImportError:  # pragma: no cover - very old scipy
@@ -314,11 +316,24 @@ def solve_corotational_beam(*, n_elements: int = 20, length: float = 1.0,
                                         connectivity, lengths)
             g = f_int - load
             g_free = g[free]
-            scale = max(float(np.linalg.norm(load)), 1.0)
-            residual = float(np.linalg.norm(g_free) / scale)
-            if residual <= tolerance:
+            force_norm = float(np.linalg.norm(load))
+            dof_norm = float(np.linalg.norm(u[free]))
+            g_norm = float(np.linalg.norm(g_free))
+            scale = max(force_norm, 1.0)
+            residual = g_norm / scale
+            # Branch A: relative force residual.  Branch B: the residual sits on
+            # the round-off floor of the internal-force assembly (which scales
+            # with the stiff axial term EA/L) and the Newton increment is below
+            # the resolution of the iterate -- see
+            # ``elastica_cantilever.newton_converged`` for the full argument.
+            if newton_converged(g_norm, 0.0, dof_norm, force_norm,
+                                ftol=tolerance * scale):
                 break
-            u[free] += np.linalg.solve(k_tan[np.ix_(free, free)], -g_free)
+            delta = np.linalg.solve(k_tan[np.ix_(free, free)], -g_free)
+            if newton_converged(g_norm, float(np.linalg.norm(delta)),
+                                dof_norm, force_norm, ftol=tolerance * scale):
+                break
+            u[free] += delta
         else:  # pragma: no cover - Newton failed to reach the tolerance
             converged = False
 
