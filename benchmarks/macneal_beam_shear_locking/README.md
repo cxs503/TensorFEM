@@ -51,10 +51,41 @@ blocks are compared (same 2×2 bending rule in all):
 | sri | 256.8234 | −0.38 % ✅ | +2.73 % ✅ |
 | mitc | 256.8234 | −0.38 % ✅ | +2.73 % ✅ |
 
-The equal-order `full` rule is the least accurate and decays slowly (overall
-factor 0.125 from `n=2` to `n=16`) — the textbook locking signature.  `sri` and
-`mitc` agree to machine precision and converge at a steady 0.25/doubling
-(≈ O(h²), limited by the point-load kink).
+The equal-order `full` rule is the least accurate (overall factor 0.125 from
+`n=2` to `n=16`) — the textbook locking signature.  `sri` and `mitc` agree to
+machine precision and converge at a steady 0.25/doubling (≈ O(h²), limited by
+the point-load kink).  **Caveat, quantified in the next section:** at `n=16`
+the equal-order rule is still *pre-asymptotic* (its local rate is only 1.58), so
+this ladder alone cannot say whether locking costs an order of accuracy or
+"only" a constant — `locking_rate_study.py` settles that.
+
+## Asymptotic rate: locking is an error-constant defect (not a rate defect)
+
+`run.py` stops at `n = 16`, where the equal-order error ratio per doubling is
+still climbing (1.33, 2.00, 3.00).  `locking_rate_study.py` extends the ladder
+to `n = 256` with a **pre-registered** protocol (decision, competing hypotheses
+`H_rate`/`H_const`, thresholds, stopping rule and confounders are written in the
+module docstring *before* the ladder was run).
+
+| Treatment | local rate `n=8→16` | asymptotic `p∞` (`n=64…256`) | `n` for 5 % | error vs Timoshenko at `n=256` |
+|---|---|---|---|---|
+| full | 1.58 | **1.995** | **24.5** | −0.049 % |
+| sri | 2.00 | 2.000 | 4.40 | −0.0015 % |
+| mitc | 2.00 | 2.000 | 4.40 | −0.0015 % |
+
+* `H_const` **accepted** (`p∞(full) = 1.995 ≥ 1.8`, `|p∞(full) − p∞(sri)| = 0.005
+  ≤ 0.2`); `H_rate` **rejected** (`p∞(full) = 1.995 > 1.5`).
+  Shear locking therefore multiplies the error **constant** — the equal-order
+  rule keeps the same `O(h²)` rate and does converge to the Timoshenko answer
+  (−0.049 % at `n = 256`); it never caps accuracy.
+* The measured mesh penalty is `24.5 / 4.40 = 5.57`, and the error-constant
+  ratio at `n = 256` is `|e_full|/|e_sri| = 33.0`; the prediction
+  `√33.0 = 5.75` reproduces the measured penalty to −3.1 %.  That consistency
+  is the quantitative statement of "locking costs mesh, not accuracy".
+* The 5 % anchor tolerance is met by `full` only at `n ≈ 24.5`, i.e. ~5.6× the
+  mesh the locking-free rules need — so the anchor's `n = 16` verdict (`full`
+  FAIL, `sri`/`mitc` PASS) stays valid *as a mesh-cost statement*, and must not
+  be read as "the equal-order element is unusable/wrong".
 
 ## Gates
 
@@ -73,6 +104,8 @@ rule's failure is the expected, documented locking behaviour).
 ```bash
 PYTHONPATH=src python benchmarks/macneal_beam_shear_locking/run.py
 PYTHONPATH=src python benchmarks/macneal_beam_shear_locking/validate.py
+PYTHONPATH=src python benchmarks/macneal_beam_shear_locking/locking_rate_study.py   # 14 s
+python -m pytest tests/test_macneal_beam_shear_locking.py -q                        # 6 s
 ```
 
 ## Files
@@ -84,4 +117,7 @@ PYTHONPATH=src python benchmarks/macneal_beam_shear_locking/validate.py
 | `make_report.py` | Builds `report.json` (numbers injected from `results.json`) |
 | `results.json` | Every number (machine-generated) |
 | `report.json` | Paper-grade report with embedded figures |
-| `docs/assets/macneal_beam/*.png` | Convergence, error-decay and field figures |
+| `locking_rate_study.py` | Pre-registered `n = 2…256` asymptotic-rate study |
+| `locking_rate.json` | That study's numbers, decision and gate block |
+| `../../tests/test_macneal_beam_shear_locking.py` | CI gates: references, locking, rate study |
+| `docs/assets/macneal_beam/*.png` | Convergence, error-decay, rate and field figures |
