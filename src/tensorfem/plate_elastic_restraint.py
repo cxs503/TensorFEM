@@ -87,6 +87,7 @@ edges", pp. 198-202.
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Optional
 
@@ -476,6 +477,81 @@ def solve_plate_elastic_restraint(
     )
 
 
+def _patch_consistent_load_vector(
+    nodes: torch.Tensor,
+    elements: torch.Tensor,
+    bounds: tuple[float, float, float, float],
+    intensity: float,
+    dtype: torch.dtype = torch.float64,
+) -> torch.Tensor:
+    """Consistent Q4 load vector of a rectangular pressure patch (exact).
+
+    The element is an axis-aligned rectangle, so ``element n patch`` is again a
+    rectangle.  ``N`` is bilinear in the element coordinates, hence a 2x2 Gauss
+    rule **on the intersection rectangle** integrates ``integral N q dA``
+    exactly.  This matters for the JOUR-ICE-STRUCT panel case, where the patch
+    (``0.1 * L`` = 80 mm) is narrower than an element at engineering meshes
+    (``L/16`` = 50 mm .. ``L/8`` = 100 mm): a fixed 2x2 rule on the *whole*
+    element then samples the patch only through its Gauss points, and the total
+    applied load -- and every result derived from it -- oscillates with the
+    mesh by tens of percent (measured: ``w_centre`` 0.83/0.58/0.87/0.59 mm for
+    nx = 8/12/16/24 on the manuscript panel).
+
+    Returns
+    -------
+    fe : (ne, 12) tensor
+        Element load vectors with entries only on the transverse (``w``) DOFs.
+    """
+    x1, x2, y1, y2 = bounds
+    xy = nodes[elements]                                    # (ne, 4, 2)
+    xmin = xy[:, :, 0].min(dim=1).values
+    xmax = xy[:, :, 0].max(dim=1).values
+    ymin = xy[:, :, 1].min(dim=1).values
+    ymax = xy[:, :, 1].max(dim=1).values
+
+    ix1, ix2 = torch.clamp(xmin.new_tensor(x1), min=0), None
+    ax1 = torch.maximum(xmin, ix1)
+    ax2 = torch.minimum(xmax, xmax.new_tensor(x2))
+    ay1 = torch.maximum(ymin, ymin.new_tensor(y1))
+    ay2 = torch.minimum(ymax, ymax.new_tensor(y2))
+    inside = (ax2 > ax1) & (ay2 > ay1)
+
+    xc = 0.5 * (xmin + xmax)
+    yc = 0.5 * (ymin + ymax)
+    hx = 0.5 * (xmax - xmin)
+    hy = 0.5 * (ymax - ymin)
+
+    # element-local coordinates of the intersection rectangle
+    xi1 = (ax1 - xc) / hx
+    xi2 = (ax2 - xc) / hx
+    et1 = (ay1 - yc) / hy
+    et2 = (ay2 - yc) / hy
+    detJ = hx * hy
+    area_ok = inside & (hx > 0) & (hy > 0)
+
+    fe = torch.zeros((int(elements.shape[0]), 12), dtype=dtype)
+    if not bool(area_ok.any()):
+        return fe
+    gp = 1.0 / 3.0**0.5
+    for a, b in ((-gp, -gp), (gp, -gp), (gp, gp), (-gp, gp)):
+        xi = 0.5 * (xi1 + xi2) + 0.5 * (xi2 - xi1) * a
+        eta = 0.5 * (et1 + et2) + 0.5 * (et2 - et1) * b
+        # vectorised `_shape` for every element at the same local station
+        N = 0.25 * torch.stack([
+            (1 - xi) * (1 - eta), (1 + xi) * (1 - eta),
+            (1 + xi) * (1 + eta), (1 - xi) * (1 + eta),
+        ], dim=1)                                            # (ne, 4)
+        weight = 1.0                                       # 2x2 Gauss weights
+        # Jacobian of the reference-square -> intersection-rectangle map
+        jac = 0.25 * (xi2 - xi1) * (et2 - et1)
+        contrib = N * (intensity * detJ * jac * weight)[:, None]
+        contrib = torch.where(area_ok[:, None], contrib,
+                              torch.zeros_like(contrib))
+        for i in range(4):
+            fe[:, 3 * i] += contrib[:, i]
+    return fe
+
+
 def _consistent_load_vector(
     xy: torch.Tensor,
     pressure: torch.Tensor | float | callable,
@@ -746,6 +822,14 @@ def rect_patch_pressure(
                 x.new_tensor(0.0),
             )
         return intensity if (x1 <= x <= x2 and y1 <= y <= y2) else 0.0
+
+    # Machine-readable description of the discontinuity.  The load assembly
+    # uses it to integrate the patch *exactly* (see
+    # `_patch_consistent_load_vector`); without it a patch narrower than the
+    # element is under-integrated by the 2x2 Gauss rule and the total applied
+    # load oscillates with the mesh.
+    p.patch_bounds = (float(x1), float(x2), float(y1), float(y2))  # type: ignore[attr-defined]
+    p.intensity = float(intensity)                                  # type: ignore[attr-defined]
     return p
 
 
@@ -866,23 +950,32 @@ def solve_restrained_panel(
         shape=(ndof, ndof),
     ).tocsr()
 
-    # Consistent load vector on the w DOFs (2x2 Gauss).
+    # Consistent load vector on the w DOFs.  A rectangular pressure patch is
+    # integrated exactly (patch/clip intersection + 2x2 Gauss on it); any other
+    # pressure uses one 2x2 Gauss rule per element, which is exact for a smooth
+    # integrand.
     f = torch.zeros(ndof, dtype=dtype)
-    gauss = 1.0 / 3.0**0.5
-    fe = torch.zeros((ne, 12), dtype=dtype)
-    lidx = torch.arange(4)
-    for xi_v, eta_v in ((-gauss, -gauss), (gauss, -gauss),
-                        (gauss, gauss), (-gauss, gauss)):
-        xi, eta = nodes.new_tensor(xi_v), nodes.new_tensor(eta_v)
-        N, dN_nat = _shape(xi, eta)
-        xy = nodes[elements]
-        J = torch.einsum('ai,naj->nij', dN_nat, xy)
-        detJ = torch.linalg.det(J)
-        xq = torch.einsum('i,ni->n', N, xy[:, :, 0])
-        yq = torch.einsum('i,ni->n', N, xy[:, :, 1])
-        q = _eval_pressure(pressure, xq, yq, dtype)
-        fe[:, 3 * lidx] += (N[None, :] * (q * detJ)[:, None])
-    f.index_add_(0, (3 * elements).reshape(-1), fe[:, 3 * lidx].reshape(-1))
+    bounds = getattr(pressure, 'patch_bounds', None)
+    if bounds is not None:
+        fe = _patch_consistent_load_vector(
+            nodes, elements, bounds, float(getattr(pressure, 'intensity')), dtype)
+        f.index_add_(0, (3 * elements).reshape(-1), fe[:, [0, 3, 6, 9]].reshape(-1))
+    else:
+        gauss = 1.0 / 3.0**0.5
+        fe = torch.zeros((ne, 12), dtype=dtype)
+        lidx = torch.arange(4)
+        for xi_v, eta_v in ((-gauss, -gauss), (gauss, -gauss),
+                            (gauss, gauss), (-gauss, gauss)):
+            xi, eta = nodes.new_tensor(xi_v), nodes.new_tensor(eta_v)
+            N, dN_nat = _shape(xi, eta)
+            xy = nodes[elements]
+            J = torch.einsum('ai,naj->nij', dN_nat, xy)
+            detJ = torch.linalg.det(J)
+            xq = torch.einsum('i,ni->n', N, xy[:, :, 0])
+            yq = torch.einsum('i,ni->n', N, xy[:, :, 1])
+            q = _eval_pressure(pressure, xq, yq, dtype)
+            fe[:, 3 * lidx] += (N[None, :] * (q * detJ)[:, None])
+        f.index_add_(0, (3 * elements).reshape(-1), fe[:, 3 * lidx].reshape(-1))
 
     edges = _rect_edges(nodes, side_x, side_y)
     D = young * thickness**3 / (12.0 * (1.0 - poisson**2))
@@ -1017,6 +1110,69 @@ def edge_spring_moment(
     return out
 
 
+def edge_moment_von_mises_factor(poisson: float) -> float:
+    """Ratio ``sigma_vm / (6|M_n|/t^2)`` at a hard-simple supported edge.
+
+    On an edge with the SS2 convention used by this module the tangential
+    rotation and the transverse displacement are both zero along the edge, so
+    the tangential curvature ``w_tt = 0`` and the twist ``w_nt = 0`` there.
+    With ``M_t = -D(w_tt + nu w_nn) = nu M_n`` (since ``M_n = -D w_nn``) the von
+    Mises bending stress reduces to
+
+        sigma_vm = (6/t^2) sqrt(M_n^2 - M_n M_t + M_t^2 + 3 M_nt^2)
+                 = (6 |M_n| / t^2) sqrt(1 - nu + nu^2).
+
+    For ``nu = 0.3`` the factor is 0.889, i.e. the edge von Mises stress is
+    ~11 % below the extreme-fibre stress ``6|M_n|/t^2`` -- ignoring it would
+    inflate the reported peak stress by the same amount.
+    """
+    return math.sqrt(1.0 - poisson + poisson * poisson)
+
+
+def edge_spring_stress(
+    result: "RestrainedPanelResult",
+) -> dict[str, dict]:
+    """Model-consistent bending stress on the elastically restrained edges.
+
+    Companion of :func:`edge_spring_moment`: the edge moment is the spring
+    moment ``M_n = c_r * theta_n`` and the stress follows from the SS2 edge
+    kinematics (``M_t = nu M_n``, ``M_nt = 0``), so no curvature recovery and no
+    Gauss-to-node extrapolation is involved.  This is the quantity to report as
+    the *peak* bending stress of a partially fixed panel: for ``beta > 0`` the
+    peak of a uniformly loaded panel sits at the restrained edge mid-side,
+    exactly where :func:`moments_at_nodes` is only first-order accurate.
+
+    Returns
+    -------
+    dict
+        ``{'x0'|'xa'|'y0'|'yb': {'idx', 'M_n', 'sigma_n', 'von_mises',
+        'component'}}`` for every edge with ``c_r > 0``, in edge-node order.
+    """
+    u = result.displacement
+    t = result.thickness
+    factor = edge_moment_von_mises_factor(result.poisson)
+    edges = _rect_edges(result.nodes, result.side_x, result.side_y)
+    out: dict[str, dict] = {}
+    for key, c_r, dof_off, along, comp in (
+        ('x0', result.K_rot_x, 1, 1, 'x'),
+        ('xa', result.K_rot_x, 1, 1, 'x'),
+        ('y0', result.K_rot_y, 2, 0, 'y'),
+        ('yb', result.K_rot_y, 2, 0, 'y'),
+    ):
+        if c_r == 0.0:
+            continue
+        idx, _ = edge_tributary_lengths(result.nodes, edges[key], along=along)
+        M_n = c_r * u[3 * idx + dof_off]
+        out[key] = {
+            'idx': idx,
+            'M_n': M_n,
+            'sigma_n': 6.0 * M_n / t**2,
+            'von_mises': 6.0 * M_n.abs() / t**2 * factor,
+            'component': comp,
+        }
+    return out
+
+
 def moments_at_nodes(result: RestrainedPanelResult) -> torch.Tensor:
     """Bending moments ``[Mx, My, Mxy]`` per node [N] (or N*m/m).
 
@@ -1087,6 +1243,18 @@ def peak_bending_stress(result: RestrainedPanelResult) -> dict:
     edge carries a moment peak that is mesh-sensitive (the pressure jump is a
     load discontinuity).  Both numbers are reported so callers cannot confuse
     them.
+
+    Two maximum-shear-stress style peaks are reported:
+
+    * ``max_von_mises`` -- maximum of the Gauss-to-node *extrapolated* field.
+      On a restrained edge this is only first-order accurate, so for
+      ``beta > 0`` it *under*-predicts the edge peak badly (see
+      ``docs/CASE-FEM-ELASTIC-RESTRAINT-TWO-WAY-PEAK.md``).  Kept unchanged for
+      backward compatibility with the existing panel references.
+    * ``peak_von_mises_consistent`` -- maximum over interior nodes (extrapolated)
+      and restrained edges (spring-consistent ``M_n = c_r * theta_n``, with the
+      SS2 edge kinematics ``M_t = nu M_n``, ``M_nt = 0``).  **Use this number**
+      as the panel peak stress for any ``beta > 0``.
     """
     nodes = result.nodes
     vm = von_mises_bending_at_nodes(result)
@@ -1095,6 +1263,45 @@ def peak_bending_stress(result: RestrainedPanelResult) -> dict:
            (nodes[:, 1] - result.side_y / 2) ** 2
     c = int(torch.argmin(dist))
     g = int(torch.argmax(vm))
+
+    # --- model-consistent peak -------------------------------------------------
+    # `max_von_mises` above is the maximum of the Gauss-to-node extrapolation,
+    # which is first-order accurate on a restrained edge (see
+    # `moments_at_nodes`).  For beta > 0 the true peak of a uniformly loaded
+    # panel lies *on* that edge, so the extrapolated maximum is not the peak.
+    # Build the consistent peak from
+    #   * interior nodes  -> extrapolated von Mises (second-order there),
+    #   * restrained edges -> `edge_spring_stress` (model-consistent),
+    #   * unreinforced edges -> identically zero edge moment (SS2: M_n = 0).
+    edges = _rect_edges(nodes, result.side_x, result.side_y)
+    edge_mask = torch.zeros(int(nodes.shape[0]), dtype=torch.bool)
+    for key in edges:
+        edge_mask[edges[key]] = True
+    interior = ~edge_mask
+    vm_int = torch.where(interior, vm, torch.zeros_like(vm))
+    gi = int(torch.argmax(vm_int))
+    best = {'von_mises': float(vm_int[gi]), 'source': 'interior',
+            'x': float(nodes[gi, 0]), 'y': float(nodes[gi, 1]),
+            'M_n': float('nan')}
+    spring = edge_spring_stress(result)
+    spring_report: dict[str, dict] = {}
+    for key, data in spring.items():
+        vm_e = data['von_mises']
+        k = int(torch.argmax(vm_e))
+        node = int(data['idx'][k])
+        spring_report[key] = {
+            'max_von_mises': float(vm_e[k]),
+            'max_sigma_n': float(data['sigma_n'][k]),
+            'max_M_n': float(data['M_n'][k]),
+            'node': node,
+            'x': float(nodes[node, 0]),
+            'y': float(nodes[node, 1]),
+        }
+        if float(vm_e[k]) > best['von_mises']:
+            best = {'von_mises': float(vm_e[k]), 'source': f'edge:{key}',
+                    'x': float(nodes[node, 0]), 'y': float(nodes[node, 1]),
+                    'M_n': float(data['M_n'][k])}
+
     return {
         'centre_index': c,
         'centre_von_mises': float(vm[c]),
@@ -1106,4 +1313,15 @@ def peak_bending_stress(result: RestrainedPanelResult) -> dict:
         'max_x': float(nodes[g, 0]),
         'max_y': float(nodes[g, 1]),
         'w_centre': float(result.displacement[3 * c]),
+        # model-consistent peak (see above); `max_von_mises` is kept unchanged
+        # so that pre-existing callers/references stay comparable.
+        'peak_von_mises_consistent': best['von_mises'],
+        'peak_source': best['source'],
+        'peak_x': best['x'],
+        'peak_y': best['y'],
+        'peak_M_n': best['M_n'],
+        'edge_spring': spring_report,
+        'edge_extrapolated_von_mises': {
+            key: float(vm[edges[key]].abs().max()) for key in edges
+        },
     }
