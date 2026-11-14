@@ -1,0 +1,52 @@
+{
+  "schema": "tensorfem.hertz-two-param-cell.v1",
+  "label": "dz_a12_H768",
+  "far_field_layers": [
+    52,
+    32
+  ],
+  "generated_at": "2026-11-14T13:55:27+00:00",
+  "row": {
+    "depth_over_a": 768.0,
+    "n_outer": 52,
+    "n_grow": 32,
+    "n_zfine": 48,
+    "near_field_dz_over_a": 0.08333333333333333,
+    "near_field_dr_over_a": 0.015,
+    "growth": 1.6,
+    "rho_factor": 1.0,
+    "h_over_a": 0.015,
+    "a_over_R": 0.05,
+    "load": 1831.5018315018315,
+    "n_elements": 20160,
+    "ndof": 40986,
+    "wall_s": 50.103962898254395,
+    "load_residual": 5.9590092860162255e-15,
+    "penetration_over_delta": 1.0558128880999521e-08,
+    "equilibrium_residual_rel": 1.5489962171374966e-07,
+    "max_far_radial_element": 99.16668322474095,
+    "max_far_vertical_element": 143.25004209740382,
+    "far_aspect_ratio": 0.6922628557226664,
+    "analytic": {
+      "contact_radius": 0.5,
+      "indentation": 0.025,
+      "peak_pressure": 3497.910837184513
+    },
+    "numeric": {
+      "contact_radius_linear": 0.49884151328971016,
+      "indentation": 0.024919047345131156,
+      "peak_pressure_consistent": 3504.196255680621,
+      "reaction": 1831.5018315018424
+    },
+    "error_pct": {
+      "contact_radius_linear": -0.23169734205796821,
+      "indentation": -0.32381061947538425,
+      "peak_pressure_consistent": 0.1796906436062118
+    },
+    "label": "dz_a12_H768",
+    "far_field_layers": [
+      52,
+      32
+    ]
+  }
+}
