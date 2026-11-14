@@ -1150,9 +1150,23 @@ def solve_arc_length(model: PlateModel, fext, fixed, *, n_steps: int = 80,
             root = math.sqrt(disc)
             roots = ((-b + root) / (2.0 * a), (-b - root) / (2.0 * a))
             target = (-(float(c @ du_f) + kappa * dlam_c) / a if it == 0 else last)
-            dsel = min(roots, key=lambda d: abs(d - target))
+            candidates = roots
+            if du_prev is None:
+                # First step: there is no converged increment to guard against, and on
+                # the symmetric zero-displacement start (du_r == 0) the two roots are
+                # d = 0 and d = -2*dlam_pred, exactly equidistant from ``target``, so
+                # the tie can be broken onto the mirror branch: the path then descends
+                # at negative load, keeps converging (the elastic response is odd in
+                # (u, lam)), and every limit load comes out negative.  Restrict the
+                # choice to roots that keep the load increment in the predicted
+                # direction (Crisfield's sign rule, applied to lam instead of u).
+                forward = [d for d in roots
+                           if float(dlam_c + d) * float(dlam_pred) > 0.0]
+                if forward:
+                    candidates = tuple(forward)
+            dsel = min(candidates, key=lambda d: abs(d - target))
             if du_prev is not None:
-                ahead = [d for d in roots
+                ahead = [d for d in candidates
                          if float((c + du_r + d * du_f) @ du_prev) > 0.0]
                 if ahead:
                     dsel = min(ahead, key=lambda d: abs(d - target))
