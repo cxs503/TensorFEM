@@ -242,6 +242,16 @@ def main():
         "passed": bool(summary["passed"]),
         "failed_gates": [g["id"] for g in gates if g["status"] == "FAIL"],
         "withheld_gates": [g["id"] for g in gates if g["status"] == "WITHHELD"],
+        # Evidence the certificate names, so a reader can check the claim
+        # without re-running the solver: the ladder and the comparison chart are
+        # committed next to the numbers they back (the audit grades an anchor
+        # whose evidence is undeclared or untracked).
+        "artifacts": {
+            "result": "result.json",
+            "gates": "gates_verified.json",
+            "fig_convergence": "convergence.png",
+            "fig_displacement": "displacement_comparison.png",
+        },
         "limitations": [
             "Cylindrical Shell4 is specialised for cylindrical geometry only",
             "General curved shells require either specialised elements or improved flat-facet formulations",

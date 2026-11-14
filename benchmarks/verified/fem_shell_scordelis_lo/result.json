@@ -46,10 +46,10 @@
       "nt": 8,
       "elements": 64,
       "nodes": 81,
-      "probe_displacement": -0.40555657723897504,
+      "probe_displacement": -0.4055565772389791,
       "reference": -0.3024,
-      "relative_error": 0.34112624748338294,
-      "relative_error_pct": 34.11262474833829
+      "relative_error": 0.3411262474833965,
+      "relative_error_pct": 34.11262474833965
     },
     {
       "element": "Shell4 (flat facet)",
@@ -58,10 +58,10 @@
       "nt": 16,
       "elements": 256,
       "nodes": 289,
-      "probe_displacement": -0.4375415612745877,
+      "probe_displacement": -0.4375415612745885,
       "reference": -0.3024,
-      "relative_error": 0.44689669733659954,
-      "relative_error_pct": 44.689669733659954
+      "relative_error": 0.4468966973366022,
+      "relative_error_pct": 44.68966973366022
     },
     {
       "element": "Shell4 (flat facet)",
@@ -70,10 +70,10 @@
       "nt": 32,
       "elements": 1024,
       "nodes": 1089,
-      "probe_displacement": -0.45179094637337974,
+      "probe_displacement": -0.4517909463733819,
       "reference": -0.3024,
-      "relative_error": 0.49401767980614997,
-      "relative_error_pct": 49.401767980615
+      "relative_error": 0.4940176798061571,
+      "relative_error_pct": 49.40176798061571
     }
   ],
   "cylindrical_results": [
@@ -96,10 +96,10 @@
       "nt": 8,
       "elements": 64,
       "nodes": 81,
-      "probe_displacement": -0.03422945365737358,
+      "probe_displacement": -0.034229453657373586,
       "reference": -0.3024,
-      "relative_error": 0.886807362244135,
-      "relative_error_pct": 88.68073622441351
+      "relative_error": 0.8868073622441349,
+      "relative_error_pct": 88.6807362244135
     },
     {
       "element": "Cylindrical shell4",
@@ -108,10 +108,10 @@
       "nt": 16,
       "elements": 256,
       "nodes": 289,
-      "probe_displacement": -0.06587335880180342,
+      "probe_displacement": -0.06587335880180346,
       "reference": -0.3024,
-      "relative_error": 0.7821648187771051,
-      "relative_error_pct": 78.2164818777105
+      "relative_error": 0.782164818777105,
+      "relative_error_pct": 78.21648187771049
     },
     {
       "element": "Cylindrical shell4",
@@ -120,10 +120,10 @@
       "nt": 32,
       "elements": 1024,
       "nodes": 1089,
-      "probe_displacement": -0.13767353041486935,
+      "probe_displacement": -0.13767353041486918,
       "reference": -0.3024,
-      "relative_error": 0.5447303888397177,
-      "relative_error_pct": 54.47303888397177
+      "relative_error": 0.5447303888397184,
+      "relative_error_pct": 54.47303888397184
     }
   ],
   "flat_facet_convergence": [
@@ -138,7 +138,7 @@
       "from_mesh": "8x8",
       "to_mesh": "32x32",
       "refinement_ratio": 2.0,
-      "observed_order": 1.1664950989284393,
+      "observed_order": 1.1664950989281508,
       "reason": ""
     }
   ],
@@ -147,14 +147,14 @@
       "from_mesh": "4x4",
       "to_mesh": "16x16",
       "refinement_ratio": 2.0,
-      "observed_order": -1.0015034479789822,
+      "observed_order": -1.0015034479789833,
       "reason": ""
     },
     {
       "from_mesh": "8x8",
       "to_mesh": "32x32",
       "refinement_ratio": 2.0,
-      "observed_order": -1.1820596398784957,
+      "observed_order": -1.1820596398784902,
       "reason": ""
     }
   ],
@@ -171,17 +171,17 @@
         {
           "label": "8x8",
           "mesh_size": 0.125,
-          "value": -0.40555657723897504
+          "value": -0.4055565772389791
         },
         {
           "label": "16x16",
           "mesh_size": 0.0625,
-          "value": -0.4375415612745877
+          "value": -0.4375415612745885
         },
         {
           "label": "32x32",
           "mesh_size": 0.03125,
-          "value": -0.45179094637337974
+          "value": -0.4517909463733819
         }
       ],
       "reference": {
@@ -201,11 +201,11 @@
           "from": "8x8",
           "to": "32x32",
           "ratio": 2.0,
-          "order": 1.1664950989284393
+          "order": 1.1664950989281508
         }
       ],
-      "reported_accuracy_finest": 0.4940176798061499,
-      "certified_accuracy": 0.5318762842904944,
+      "reported_accuracy_finest": 0.4940176798061571,
+      "certified_accuracy": 0.5318762842905188,
       "gates": [
         {
           "id": "accuracy_finest",
@@ -213,7 +213,7 @@
           "status": "FAIL",
           "passed": false,
           "operator": "<=",
-          "actual": 0.4940176798061499,
+          "actual": 0.4940176798061571,
           "threshold": 0.03,
           "detail": "finest level 32x32 rel. error 4.9402e-01"
         },
@@ -223,7 +223,7 @@
           "status": "FAIL",
           "passed": false,
           "operator": "<=",
-          "actual": 0.5318762842904944,
+          "actual": 0.5318762842905188,
           "threshold": 0.03,
           "detail": "extrapolated -0.463239388369 vs Scordelis & Lo (1960) -0.3024: rel. error 5.3188e-01 (order p=1.166)"
         },
@@ -243,7 +243,7 @@
           "status": "PASS",
           "passed": true,
           "operator": ">=",
-          "actual": 1.1664950989284393,
+          "actual": 1.1664950989281508,
           "threshold": 1.0,
           "detail": "4x4->16x16: n/a (non-monotone convergence: |df| = 0.0872808 then 0.031985), 8x8->32x32: p=1.166"
         },
@@ -253,7 +253,7 @@
           "status": "WITHHELD",
           "passed": false,
           "operator": "<=",
-          "actual": 15.596373037414311,
+          "actual": 15.596373037407465,
           "threshold": 1.0,
           "detail": "finest-mesh true error 4.940e-01 vs GCI band 3.168e-02 -> outside the band; ladder pre-asymptotic -> accuracy not certifiable from these levels"
         },
@@ -288,17 +288,17 @@
         {
           "label": "8x8",
           "mesh_size": 0.125,
-          "value": -0.03422945365737358
+          "value": -0.034229453657373586
         },
         {
           "label": "16x16",
           "mesh_size": 0.0625,
-          "value": -0.06587335880180342
+          "value": -0.06587335880180346
         },
         {
           "label": "32x32",
           "mesh_size": 0.03125,
-          "value": -0.13767353041486935
+          "value": -0.13767353041486918
         }
       ],
       "reference": {
@@ -311,16 +311,16 @@
           "from": "4x4",
           "to": "16x16",
           "ratio": 2.0,
-          "order": -1.0015034479789822
+          "order": -1.0015034479789833
         },
         {
           "from": "8x8",
           "to": "32x32",
           "ratio": 2.0,
-          "order": -1.1820596398784957
+          "order": -1.1820596398784902
         }
       ],
-      "reported_accuracy_finest": 0.5447303888397178,
+      "reported_accuracy_finest": 0.5447303888397184,
       "certified_accuracy": null,
       "gates": [
         {
@@ -329,7 +329,7 @@
           "status": "FAIL",
           "passed": false,
           "operator": "<=",
-          "actual": 0.5447303888397178,
+          "actual": 0.5447303888397184,
           "threshold": 0.03,
           "detail": "finest level 32x32 rel. error 5.4473e-01"
         },
@@ -359,7 +359,7 @@
           "status": "FAIL",
           "passed": false,
           "operator": ">=",
-          "actual": -1.1820596398784957,
+          "actual": -1.1820596398784902,
           "threshold": 1.0,
           "detail": "4x4->16x16: p=-1.002, 8x8->32x32: p=-1.182"
         },
@@ -397,14 +397,14 @@
     "flat_facet": {
       "status": "FAIL",
       "reason": "certified accuracy (Richardson limit of the ladder) 53.1876% outside the 3% tolerance",
-      "reported_accuracy_finest": 0.4940176798061499,
-      "certified_accuracy": 0.5318762842904944,
+      "reported_accuracy_finest": 0.4940176798061571,
+      "certified_accuracy": 0.5318762842905188,
       "best_error": "49.4018%"
     },
     "cylindrical": {
       "status": "FAIL",
       "reason": "ladder cannot certify the claim: finest level 32x32 rel. error 5.4473e-01; cannot certify: non-positive observed order p=-1.182 on the finest triple: the increments of the QoI do not shrink under refinement, so no GCI band and no Richardson limit exist (pre-asymptotic / non-converging ladder); 4x4->16x16: p=-1.002, 8x8->32x32: p=-1.182; no GCI band available: non-positive observed order p=-1.182 on the finest triple: the increments of the QoI do not shrink under refinement, so no GCI band and no Richardson limit exist (pre-asymptotic / non-converging ladder); coarsest level 4x4 rel. error 9.3907e-01",
-      "reported_accuracy_finest": 0.5447303888397178,
+      "reported_accuracy_finest": 0.5447303888397184,
       "certified_accuracy": null,
       "best_error": "54.4730%"
     },
