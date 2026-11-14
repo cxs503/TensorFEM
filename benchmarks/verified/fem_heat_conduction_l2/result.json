@@ -1,0 +1,78 @@
+{
+  "benchmark": "fem_heat_conduction_l2",
+  "case_key": "CASE-FEM-HEAT-L2",
+  "description": "Steady-state heat conduction: manufactured harmonic solution on unit square, Q4 elements",
+  "generated_at": "2026-11-14T09:17:27.156543+00:00",
+  "elapsed_seconds": 2.29,
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64",
+    "dtype": "torch.float64"
+  },
+  "reference": {
+    "solution": "T(x,y) = sin(\u03c0x)\u00b7sinh(\u03c0y)/sinh(\u03c0)",
+    "equation": "\u2207\u00b2T = 0 on [0,1]\u00b2, Dirichlet BC from exact field",
+    "source": "Manufactured harmonic field (Zienkiewicz & Taylor, FEM vol.1, ch.3-4)"
+  },
+  "mesh_levels": [
+    {
+      "nx": 4,
+      "ny": 4,
+      "n_elements": 16,
+      "n_nodes": 25,
+      "n_dof": 9,
+      "h": 0.25,
+      "l2_absolute": 0.007228085084922719,
+      "l2_relative": 0.022854545057535813,
+      "max_absolute": 0.018741669334449096,
+      "max_relative": 0.1043795658480713,
+      "heat_balance_residual": 1.5184386243409409e-16
+    },
+    {
+      "nx": 8,
+      "ny": 8,
+      "n_elements": 64,
+      "n_nodes": 81,
+      "n_dof": 49,
+      "h": 0.125,
+      "l2_absolute": 0.0019500322179943452,
+      "l2_relative": 0.006517039762874083,
+      "max_absolute": 0.004458479871902787,
+      "max_relative": 0.027249134831472094,
+      "heat_balance_residual": 3.3306690738754696e-16
+    },
+    {
+      "nx": 16,
+      "ny": 16,
+      "n_elements": 256,
+      "n_nodes": 289,
+      "n_dof": 225,
+      "h": 0.0625,
+      "l2_absolute": 0.000511324317044807,
+      "l2_relative": 0.0017658990279668127,
+      "max_absolute": 0.0011169094454134831,
+      "max_relative": 0.006891251522687946,
+      "heat_balance_residual": 8.881784197001252e-16
+    },
+    {
+      "nx": 32,
+      "ny": 32,
+      "n_elements": 1024,
+      "n_nodes": 1089,
+      "n_dof": 961,
+      "h": 0.03125,
+      "l2_absolute": 0.00013137314111040966,
+      "l2_relative": 0.00046179077474673065,
+      "max_absolute": 0.0002784659831218672,
+      "max_relative": 0.0017278573906382674,
+      "heat_balance_residual": 1.3322676295501878e-15
+    }
+  ],
+  "observed_orders_l2": [
+    1.8101923984364712,
+    1.883813943662095,
+    1.9350915961265123
+  ],
+  "mean_order": 1.8763659794083596
+}
