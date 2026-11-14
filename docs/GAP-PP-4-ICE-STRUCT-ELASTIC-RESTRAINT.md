@@ -298,3 +298,200 @@ Consequence for the manuscript: the SSSS conclusion can now be stated as the
 upper end of a *quantified* band (`beta = 0` to `beta = 1` removes
 52.8% of the centre deflection in the canonical plate), not as an unquantified
 upper bound.
+
+---
+
+# 11. Increment 2026-11-14 (third): beta from real scantlings, not as a free parameter
+
+## 11.1 What was still missing
+
+Sections 1-10 established that *for a given* `beta` the solver is right: the
+`beta = 0` end reproduces the paper baseline to 0.065 %, the interior is
+verified against an exact Levy solution to <0.08 %, and the two ends bracket a
+37.8 % stress range. But **`beta` itself remained a free parameter**. §9.5 lists
+this as the next step for the manuscript:
+
+> `zeta = beta/(1-beta)` is an engineering mapping; a *physical* `beta` must be
+> calibrated from the actual stiffener/frame rotational stiffness
+> (`K_rot = EI/L` of the attached stiffener plus frame fixity).
+
+Without that, the paper can only say "the answer lies between SSSS and clamped".
+This increment closes it: the distributed rotational stiffness a longitudinal
+stiffener or a transverse frame actually offers is computed from its scantlings
+and converted into exactly the `zeta`/`beta` the existing solver consumes.
+
+## 11.2 Model
+
+The plate edge rotates by `theta` about the edge line; the attached member is
+welded to the plate along its length, so it must **twist** by the same angle.
+The member is torsionally held at its ends by the members perpendicular to it.
+For a uniform distributed torque `m` on a shaft of rigidity `GJ` whose twist is
+fixed at both ends a distance `L` apart:
+
+```
+GJ phi'' = -m , phi(0) = phi(L) = 0
+phi(x) = m x (L - x) / (2 GJ)        mean(phi) = m L^2 / (12 GJ)
+k_theta = m / mean(phi) = 12 GJ / L^2        [N*m/m/rad = N/rad]
+```
+
+then `zeta = k_theta a / D` and `beta = zeta (1 + eps) / (1 + zeta)`, the exact
+algebraic inverse of the solver's `beta_to_zeta` for `zeta < 1/eps`.
+
+`GJ` comes from the section's St Venant constant: `J = b t^3/3 (1 - 0.63 t/b +
+0.052 (t/b)^5)` for a solid rectangle (Timoshenko & Goodier, *Theory of
+Elasticity*, Art. 117) and `J = sum(b_i t_i^3/3)` for a thin-walled open profile
+(bulb/flat-bar), which is the classification-society convention.
+
+**Structural subtlety that must not be got backwards.** The support span of a
+member is the spacing of the members *perpendicular* to it: a longitudinal is
+torsionally fixed by the **frames** (`L = frame spacing`), a frame by the
+**longitudinals** (`L = longitudinal spacing`). The stiffness enters
+quadratically in `L`, so swapping the two changes the answer materially (the
+test suite asserts both the default and the sensitivity to swapping).
+
+## 11.3 Results — paper panel, realistic ice-class scantlings
+
+Panel from §9.2 (`0.7 m x 0.8 m`, `t = 22 mm`, `E = 206 GPa`, `nu = 0.3`),
+FB 150x12 longitudinals at 0.7 m, FB 200x12 transverse frames at 0.8 m:
+
+| edge family | member | `GJ` [N*m^2] | `L` [m] | `k_theta` [N/rad] | `zeta` | **`beta`** | moment fixity |
+|---|---|---|---|---|---|---|---|
+| x-edges (longitudinals) | FB 150x12 | 6.85e+03 | 0.8 | 1.284e+05 | 0.447 | **0.309** | 0.183 |
+| y-edges (frames) | FB 200x12 | 9.13e+03 | 0.7 | 2.235e+05 | 0.890 | **0.471** | 0.308 |
+
+So the real structure sits at roughly *a third* to *a half* of the way from
+simply supported to clamped — neither idealisation is defensible.
+
+## 11.4 Closed loop: calibrated beta reproduces the exact reference
+
+Feeding the calibrated `beta_x` into the Mindlin panel (`beta_y = 0`, so the
+comparison is one-sided like the Levy model) against the exact Kirchhoff Levy
+solution evaluated at the **same physical** `k_theta`:
+
+| nx x ny | `w_c` FE [um] | `w_c` exact [um] | err | `Mx_c` FE [N] | `Mx_c` exact [N] | err |
+|---|---|---|---|---|---|---|
+| 24 x 28 | 5925.899 | 5902.006 | +0.405% | 27737.2 | 27769.4 | -0.116% |
+| 48 x 56 | 5929.131 | 5902.006 | +0.460% | 27759.7 | 27769.4 | -0.035% |
+| 72 x 84 | 5929.728 | 5902.006 | +0.470% | 27763.9 | 27769.4 | -0.020% |
+| 96 x 112 | 5929.937 | 5902.006 | +0.473% | 27765.3 | 27769.4 | -0.015% |
+
+(absolute values in `benchmarks/artifacts/beta_stiffener_calibration.json`,
+section `end_to_end`). The residual +0.47 % deflection offset is the Mindlin
+shear-deformation model difference already documented in §9.4(4), not a
+calibration error: it is grid-independent to 0.07 %.
+
+**The calibration is not self-referential.** The torsion closure is verified
+against an independent finite-difference solution of `GJ phi'' = -m` (not
+against its own derivation): agreement `2e-5` over `L = 0.35 ... 2.0 m`. The
+`solid rectangle` constant is verified against the exact square-section value
+`0.1406 b t^3`.
+
+## 11.5 What this does to the manuscript claim
+
+Uniform 1 MPa pressure on the same panel, centre von Mises bending stress
+(40 x 46 mesh, `beta_y = 0` sweep; exact Levy anchors in brackets):
+
+| state | `beta` | `sigma_c` [MPa] | vs SSSS |
+|---|---|---|---|
+| SSSS | 0 | 355.99 (356.11 exact) | — |
+| **calibrated (both edges)** | 0.309 / 0.471 | **327.07** | **-8.12%** |
+| calibrated (longitudinals only) | 0.309 | 344.04 (347.68 exact) | -3.36% |
+| clamped | 1 | 221.35 (221.44 exact) | -37.82% |
+
+**Honest reading, which partially deflates the earlier narrative.** Full
+clamping would remove 37.8 % of the centre stress, but real ice-belt scantlings
+mobilise only 8.1 %. So for *this* panel under *uniform* pressure the SSSS
+assumption is a mildly conservative upper bound (-8 %), **not** a large error —
+which is a much narrower statement than "the SSSS result may be 38 % off". The
+sensitivity to restraint depends strongly on the load pattern: for the
+*localised patch* load of §9.3 the same range of `beta` produced a -33 % change
+between `beta = 0` and `0.2`, because a patch excites the local
+cylindrical-bending mechanism that edge restraint suppresses. Both statements
+are load-pattern-specific and must be quoted together.
+
+## 11.6 Error judgment (vs the 3 % / 15 % standards)
+
+| quantity | reference | error | <3 %? |
+|---|---|---|---|
+| `k_theta` closure | independent FD solve of the torsion ODE | 2e-5 | yes |
+| `k_theta` closure | strain-energy definition | 1e-12 | yes |
+| `J` solid rectangle | exact square-section value | <0.5% | yes |
+| calibrated `beta` -> `K_rot` | `rotational_stiffness()` round trip | 6e-12 (worst at `zeta`=7e4) | yes |
+| FE `w_c`, `Mx_c` at calibrated `beta` | exact Kirchhoff Levy | 0.47% / 0.02% | yes |
+| FE band ends vs Levy | exact Kirchhoff Levy | 0.03% / 0.04% | yes |
+| FE band interior (linear interpolation in `beta`) | exact Levy at calibrated `K` | 1.05% | yes |
+
+No reference value is unavailable in a way that would hide an error; the only
+unquantified assumption is the *model* itself (St Venant torsion, no warping),
+which is stated in §11.7 rather than tuned away.
+
+## 11.7 Pitfalls found in this increment (worth keeping)
+
+1. **`beta` is not the moment-fixity ratio.** At the design point
+   `beta_x = 0.309` but the mobilised fraction of the clamped edge moment is
+   only `0.183`. Both are reported; conflating them would overstate the
+   restraint by ~70 %. `test_beta_is_not_the_moment_fixity_ratio` pins this.
+2. **The `beta` parameterisation *saturates*.** The solver reconstructs
+   `zeta = beta/(1 - beta + eps)`, which cannot exceed `1/eps = 1e6`. Any
+   physical restraint stiffer than `zeta = 1e6` maps to `beta = 1` and its
+   excess stiffness is unrepresentable. `beta_from_rotational_stiffness` returns
+   exactly `1.0` there and the calibration emits a warning — it does not pretend
+   the inverse still holds. (An earlier docstring claimed exactness "for every
+   zeta"; the round-trip test falsified that and the claim was corrected.)
+3. **Float64 cancellation near `beta -> 1`.** Even below saturation the round
+   trip degrades to ~`1e-12` relative at `zeta = 7e4`, because `1 - beta` is
+   then `~1e-5`. Tolerances in the tests are set from that measurement, not from
+   an aspirational `1e-15`.
+4. **Do not confuse *distributed* with *nodal* spring stiffness.** `12 GJ/L^2`
+   [N/rad] is distributed; `12 GJ/L^3` would be the lumped equivalent of the
+   same energy (`U = 1/2 k mean(phi)^2 L`). The energy cross-check in the tests
+   failed at first precisely because the `1/L` was dropped, i.e. the test was
+   checking a different physical quantity.
+5. **Thread thrashing on the shared box.** With the default torch thread pool
+   (128 cores, load average ~100) a 1.6 s panel solve did not finish in 115 s.
+   The benchmark and the test module pin `torch.set_num_threads(4)`; results are
+   unaffected, runtime becomes predictable.
+
+## 11.8 Limitations (honest)
+
+* **St Venant torsion only.** Warping restraint of the stiffener web is
+  neglected, which *under*-predicts the real restraint — so the calibrated
+  `beta` is a lower bound and `8.1 %` is a conservative estimate of the relief.
+* **One-sided member.** Eccentricity of the stiffener neutral axis and the
+  resulting membrane/bending coupling are ignored.
+* **Linear elastic, no local buckling.** Near the elastic limit the stiffener
+  web or the plate between frames buckles and the rotational restraint softens;
+  not modelled.
+* **Thin-walled `J`** neglects fillets and therefore under-predicts `J` slightly
+  (also conservative).
+* The `12 GJ/L^2` closure assumes the member is torsionally *fixed* at its
+  crossings. A member that is itself torsionally flexible at the crossing
+  (e.g. a frame that is not bracketed) would be softer; a series combination of
+  member and support stiffness is the obvious next extension and is *not*
+  implemented here.
+
+## 11.9 Artifacts and reproduction
+
+```bash
+python -m pytest tests/test_stiffener_rotational_restraint.py -q   # 31 tests, ~20 s
+python benchmarks/beta_stiffener_calibration.py                    # writes the JSON
+python gen_stiffener_calibration_figures.py                        # writes the 3 PNGs
+```
+
+* `src/tensorfem/stiffener_rotational_restraint.py` — calibration module
+* `tests/test_stiffener_rotational_restraint.py` — 31 tests (FD/energy/Levy loop)
+* `benchmarks/beta_stiffener_calibration.py` ->
+  `benchmarks/artifacts/beta_stiffener_calibration.json` (git sha + versions)
+* `benchmarks/artifacts/beta_stiffener_calibration_{band,field,stress_band}.png`
+6. **Pre-existing over-tight assertion found and corrected (not mine, not hidden).**
+   `tests/test_plate_restraint_panel.py::test_infinite_spring_reproduces_clamped_boundary_condition`
+   was failing deterministically at every thread count (1/4/8/16) with a relative
+   displacement difference of `1.30e-5` against a `<1e-6` threshold. The cause is
+   structural, not numerical: `beta = 1` is a **finite** spring
+   (`K_rot = D/a/eps = 2.009e11 N/rad`), so by the exact strip relation
+   `M/M_clamped = 1/(1 + 2D/(K a))` the gap to a hard-clamped edge is
+   `2D/(K a) = 2e-6` in moment and `1.3e-5` in displacement. The old threshold sat
+   *below the unavoidable model gap*. The assertion is now `5e-5` with the
+   derivation in a comment; the physical statement (the spring is within 0.005 %
+   of clamped) is unchanged and still asserted, and the separate check that the
+   spring is genuinely stiff (`K_rot > 1e5 D/a`) is untouched.
