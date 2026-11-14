@@ -1,0 +1,28 @@
+{
+ "omega": 0.04908738521234052,
+ "amplitude": 0.2,
+ "in_phase": 0.08444445027124566,
+ "quadrature": -0.024288457822545156,
+ "apparent_added_mass": 175.2271186638672,
+ "damping": 2.4740019984237276,
+ "offset": -4.7677123686762e-05,
+ "r2": 0.985954551981677,
+ "periods_in_window": 16.65625,
+ "valid": true,
+ "separated": false,
+ "tag": "h064_c04_T128_A020",
+ "box": 64,
+ "lattice": [
+  64,
+  64
+ ],
+ "half_width": 4.0,
+ "drive_period": 128.0,
+ "n_steps": 3200,
+ "omega_lbm": 1.8,
+ "settle_cycles": 8.333333333333334,
+ "cycles_total": 25.0,
+ "viscous_time_steps": 863.9999999999995,
+ "lamb_added_mass": 50.26548245743669,
+ "legacy_added_mass_fit": 0.0010423979321876433
+}
