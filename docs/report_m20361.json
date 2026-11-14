@@ -1,0 +1,9 @@
+{
+  "title": "m20361: TensorFEM fem_heat_conduction_l2 anchor certificate artifact repair",
+  "summary": "Regenerated and git-tracked missing figure artifacts for fem_heat_conduction_l2 anchor, resolving E_ARTIFACT_UNTRACKED defect. All 16 anchor certificate tests now pass.",
+  "scenario_key": "CASE-FEM-HEAT-L2",
+  "mission_id": 20361,
+  "tags": ["tensorfem", "anchor_certificate", "artifact_repair"],
+  "markdown": "# m20361 Progress Report\n\n## Fix Summary\n- **Problem**: fem_heat_conduction_l2 anchor had E_ARTIFACT_UNTRACKED defect\n- **Root cause**: gates_verified.json declared fig_convergence.png and fig_field.png as artifacts, but they were not tracked by git\n- **Fix**: Re-ran benchmark to regenerate figures, added to git tracking\n- **Verification**: All 16 anchor certificate tests pass (was 15/16)\n\n## Gate Results\n| Gate | Value | Threshold | Status |\n|------|-------|-----------|--------|\n| Finest L₂ error | 4.618e-04 | ≤ 0.03 | ✅ PASS |\n| Convergence order | 1.876 | ≥ 1.8 | ✅ PASS |\n| Heat balance | 1.332e-15 | ≤ 1e-10 | ✅ PASS |\n\n## Files Changed (5)\n- benchmarks/verified/fem_heat_conduction_l2/fig_convergence.png (new)\n- benchmarks/verified/fem_heat_conduction_l2/fig_field.png (new)\n- benchmarks/verified/fem_heat_conduction_l2/gates_verified.json (timestamp)\n- benchmarks/verified/fem_heat_conduction_l2/result.json (timestamp)\n- docs/m20361_progress_report.md (new)",
+  "figures": []
+}
