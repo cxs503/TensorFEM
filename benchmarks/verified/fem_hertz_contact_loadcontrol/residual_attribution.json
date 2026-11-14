@@ -1,0 +1,454 @@
+{
+ "anchor": "CASE-FEM-HERTZ-CONTACT",
+ "arms": [
+  {
+   "a_over_R": 0.05,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "domain_depth_over_a": 96.0,
+   "dz_over_a": 0.16666666666666666,
+   "equilibrium_residual_rel": 2.528518151942718e-06,
+   "error_pct": {
+    "contact_radius_fit": -0.4863948978909294,
+    "contact_radius_linear": -0.531576830679148,
+    "indentation": -1.0107277777946178,
+    "peak_pressure_consistent": 0.5880081470316156
+   },
+   "far_field": "zero",
+   "far_field_converged": true,
+   "far_field_passes": 0,
+   "far_field_selfconsistency": 0.0,
+   "h_over_a": 0.015,
+   "label": "clamp_dz_a6",
+   "load_residual": 1.8125319911632686e-14,
+   "n_elements": 9040,
+   "n_zfine": 24,
+   "ndof": 18614,
+   "numeric": {
+    "contact_radius_fit": 0.49756802551054535,
+    "contact_radius_linear": 0.49734211584660426,
+    "indentation": 0.024747318055551346,
+    "peak_pressure_consistent": 3518.47883788306
+   },
+   "penetration_over_delta": 1.8657146598907233e-07,
+   "rho_factor": 1.0,
+   "wall_s": 19.969500064849854
+  },
+  {
+   "a_over_R": 0.05,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "domain_depth_over_a": 96.0,
+   "dz_over_a": 0.08333333333333333,
+   "equilibrium_residual_rel": 1.5476702189364464e-07,
+   "error_pct": {
+    "contact_radius_fit": -0.7130815848248373,
+    "contact_radius_linear": -0.23178959133139942,
+    "indentation": -0.8763969931356863,
+    "peak_pressure_consistent": 0.179792886314889
+   },
+   "far_field": "zero",
+   "far_field_converged": true,
+   "far_field_passes": 0,
+   "far_field_selfconsistency": 0.0,
+   "h_over_a": 0.015,
+   "label": "clamp_dz_a12",
+   "load_residual": 2.2346284822560847e-15,
+   "n_elements": 14464,
+   "n_zfine": 48,
+   "ndof": 29510,
+   "numeric": {
+    "contact_radius_fit": 0.4964345920758758,
+    "contact_radius_linear": 0.498841052043343,
+    "indentation": 0.02478090075171608,
+    "peak_pressure_consistent": 3504.199832039408
+   },
+   "penetration_over_delta": 1.0611722894280945e-08,
+   "rho_factor": 1.0,
+   "wall_s": 23.756588459014893
+  },
+  {
+   "a_over_R": 0.05,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "domain_depth_over_a": 96.0,
+   "dz_over_a": 0.041666666666666664,
+   "equilibrium_residual_rel": 1.1168737502029478e-09,
+   "error_pct": {
+    "contact_radius_fit": -0.7952342192521167,
+    "contact_radius_linear": 0.8920571819006184,
+    "indentation": -0.840267759820823,
+    "peak_pressure_consistent": 0.022317322418663466
+   },
+   "far_field": "zero",
+   "far_field_converged": true,
+   "far_field_passes": 0,
+   "far_field_selfconsistency": 0.0,
+   "h_over_a": 0.015,
+   "label": "clamp_dz_a24",
+   "load_residual": 1.3656062947120518e-14,
+   "n_elements": 25312,
+   "n_zfine": 96,
+   "ndof": 51302,
+   "numeric": {
+    "contact_radius_fit": 0.4960238289037394,
+    "contact_radius_linear": 0.5044602859095031,
+    "indentation": 0.024789933060044796,
+    "peak_pressure_consistent": 3498.691477223965
+   },
+   "penetration_over_delta": 7.894356686151177e-11,
+   "rho_factor": 1.0,
+   "wall_s": 72.4654951095581
+  },
+  {
+   "a_over_R": 0.05,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "domain_depth_over_a": 96.0,
+   "dz_over_a": 0.16666666666666666,
+   "equilibrium_residual_rel": 2.541220856984174e-06,
+   "error_pct": {
+    "contact_radius_fit": -0.4863717968033532,
+    "contact_radius_linear": -0.5314774957814183,
+    "indentation": -0.36261088993421176,
+    "peak_pressure_consistent": 0.5879671154959798
+   },
+   "far_field": "boussinesq",
+   "far_field_converged": true,
+   "far_field_passes": 2,
+   "far_field_selfconsistency": 1.46091389065291e-11,
+   "h_over_a": 0.015,
+   "label": "bouss_dz_a6",
+   "load_residual": 1.9863364286720754e-15,
+   "n_elements": 9040,
+   "n_zfine": 24,
+   "ndof": 18614,
+   "numeric": {
+    "contact_radius_fit": 0.49756814101598323,
+    "contact_radius_linear": 0.4973426125210929,
+    "indentation": 0.02490934727751645,
+    "peak_pressure_consistent": 3518.4774026365285
+   },
+   "penetration_over_delta": 1.863361005676441e-07,
+   "rho_factor": 1.0,
+   "wall_s": 32.31296992301941
+  },
+  {
+   "a_over_R": 0.05,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "domain_depth_over_a": 96.0,
+   "dz_over_a": 0.08333333333333333,
+   "equilibrium_residual_rel": 1.548453335004812e-07,
+   "error_pct": {
+    "contact_radius_fit": -0.7130622881560522,
+    "contact_radius_linear": -0.23175216311746016,
+    "indentation": -0.2282803806736844,
+    "peak_pressure_consistent": 0.17975186676943977
+   },
+   "far_field": "boussinesq",
+   "far_field_converged": true,
+   "far_field_passes": 2,
+   "far_field_selfconsistency": 1.4884538326866862e-11,
+   "h_over_a": 0.015,
+   "label": "bouss_dz_a12",
+   "load_residual": 1.1048996384488418e-14,
+   "n_elements": 14464,
+   "n_zfine": 48,
+   "ndof": 29510,
+   "numeric": {
+    "contact_radius_fit": 0.49643468855921974,
+    "contact_radius_linear": 0.4988412391844127,
+    "indentation": 0.02494292990483158,
+    "peak_pressure_consistent": 3504.198397212283
+   },
+   "penetration_over_delta": 1.05483340229206e-08,
+   "rho_factor": 1.0,
+   "wall_s": 60.81160569190979
+  },
+  {
+   "a_over_R": 0.05,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "domain_depth_over_a": 96.0,
+   "dz_over_a": 0.041666666666666664,
+   "equilibrium_residual_rel": 1.1191757932711965e-09,
+   "error_pct": {
+    "contact_radius_fit": -0.7952134501797103,
+    "contact_radius_linear": 0.8921177259330948,
+    "indentation": -0.19215096432128043,
+    "peak_pressure_consistent": 0.022276555425615463
+   },
+   "far_field": "boussinesq",
+   "far_field_converged": true,
+   "far_field_passes": 2,
+   "far_field_selfconsistency": 1.4476810332024412e-11,
+   "h_over_a": 0.015,
+   "label": "bouss_dz_a24",
+   "load_residual": 1.1918018572032451e-14,
+   "n_elements": 25312,
+   "n_zfine": 96,
+   "ndof": 51302,
+   "numeric": {
+    "contact_radius_fit": 0.49602393274910145,
+    "contact_radius_linear": 0.5044605886296655,
+    "indentation": 0.024951962258919682,
+    "peak_pressure_consistent": 3498.690051230897
+   },
+   "penetration_over_delta": 7.851804704590278e-11,
+   "rho_factor": 1.0,
+   "wall_s": 168.09200501441956
+  },
+  {
+   "a_over_R": 0.05,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "domain_depth_over_a": 96.0,
+   "dz_over_a": 0.041666666666666664,
+   "equilibrium_residual_rel": 1.3599852493181935e-07,
+   "error_pct": {
+    "contact_radius_fit": -0.36693202338449193,
+    "contact_radius_linear": -0.21502518178333485,
+    "indentation": -0.19151479615461264,
+    "peak_pressure_consistent": 0.07889196795762832
+   },
+   "far_field": "boussinesq",
+   "far_field_converged": true,
+   "far_field_passes": 2,
+   "far_field_selfconsistency": 1.5013152691031772e-11,
+   "h_over_a": 0.0075,
+   "label": "bouss_dz_a24_h0075",
+   "load_residual": 1.4400939107872546e-14,
+   "n_elements": 47712,
+   "n_zfine": 96,
+   "ndof": 96502,
+   "numeric": {
+    "contact_radius_fit": 0.49816533988307754,
+    "contact_radius_linear": 0.4989248740910833,
+    "indentation": 0.024952121300961347,
+    "peak_pressure_consistent": 3500.670407881371
+   },
+   "penetration_over_delta": 6.526935218534935e-09,
+   "rho_factor": 1.0,
+   "wall_s": 276.1630094051361
+  }
+ ],
+ "artifacts": {
+  "figure": "docs/assets/case-fem-hertz-contact/hertz_residual_attribution.png",
+  "gates": "gates_residual.json",
+  "rows": "residual_attribution_rows.jsonl"
+ },
+ "benchmark": "fem_hertz_contact_loadcontrol",
+ "case_pool": "FEM-HERTZ-CONTACT (case pool id 104)",
+ "config": {
+  "a_over_R": 0.05,
+  "domain_depth_over_a": 96.0,
+  "fine_band_depth_over_a": 4.0,
+  "h_over_a": 0.015,
+  "n_grow": 16,
+  "n_outer_band": 26,
+  "units": "lengths/R, forces/(E R^2); R = 10, E = 1e5, nu = 0.3 (SI: R = 10 mm, E = 100 GPa)"
+ },
+ "criteria": {
+  "absorbing_dz24_indentation_pct": 0.15,
+  "algo_invariance_pp": 0.02,
+  "case_pool": "FEM-HERTZ-CONTACT (case pool id 104)",
+  "case_pool_pct": 3.0,
+  "depth_invariance_pp": 0.05,
+  "dz_monotone_violations_max": 0,
+  "far_field_selfconsistency": 0.0001,
+  "irreducible_bias_pct": 0.25,
+  "load_residual_max": 1e-09,
+  "penetration_over_delta_max": 1e-05,
+  "radial_mechanism_pp": 0.1,
+  "reference": "Hertz 1882 J. reine angew. Math. 92:156; Johnson 1985 Contact Mechanics 4.2 DOI:10.1017/cbo9781139171731"
+ },
+ "environment": {
+  "machine": "loongarch64",
+  "numpy": "2.4.6",
+  "python": "3.11.6"
+ },
+ "gates": [
+  {
+   "id": "absorbing_dz_a24_indentation",
+   "kind": "gate",
+   "note": "a pass means the '-0.2092 % irreducible model bias' was the un-crossed far-field x dz cell",
+   "operator": "<=",
+   "passed": false,
+   "quantity": "|e_delta| at Boussinesq far field, dz = a/24, h/a = 0.015, depth 96a",
+   "reference": "delta = a^2/R (Hertz 1882; Johnson 1985 4.2); H_ff accepts at <= 0.15 %",
+   "threshold": 0.15,
+   "value": 0.19215096432128043
+  },
+  {
+   "id": "absorbing_dz_a24_above_bias_band",
+   "kind": "gate",
+   "note": "this gate and the H_ff gate cannot both pass; together they are the pre-registered fork between 'discretisation' and 'model bias'",
+   "operator": ">=",
+   "passed": false,
+   "quantity": "|e_delta| of the same arm against the 0.25 % irreducible-bias band",
+   "reference": "H_bias requires |e_delta| >= 0.25 % at absorbing BC and dz = a/24",
+   "threshold": 0.25,
+   "value": 0.19215096432128043
+  },
+  {
+   "id": "far_field_gain_dz_a6",
+   "kind": "gate",
+   "note": "",
+   "operator": ">=",
+   "passed": true,
+   "quantity": "|e_delta| reduction when the clamped far field is replaced by the absorbing one at dz = a/6",
+   "reference": "a truncation boundary error must disappear when the exact half-space data is imposed",
+   "threshold": 0.0,
+   "value": 0.648116887860406
+  },
+  {
+   "id": "far_field_gain_dz_a12",
+   "kind": "gate",
+   "note": "",
+   "operator": ">=",
+   "passed": true,
+   "quantity": "|e_delta| reduction when the clamped far field is replaced by the absorbing one at dz = a/12",
+   "reference": "a truncation boundary error must disappear when the exact half-space data is imposed",
+   "threshold": 0.0,
+   "value": 0.6481166124620019
+  },
+  {
+   "id": "far_field_gain_dz_a24",
+   "kind": "gate",
+   "note": "",
+   "operator": ">=",
+   "passed": true,
+   "quantity": "|e_delta| reduction when the clamped far field is replaced by the absorbing one at dz = a/24",
+   "reference": "a truncation boundary error must disappear when the exact half-space data is imposed",
+   "threshold": 0.0,
+   "value": 0.6481167954995426
+  },
+  {
+   "id": "radial_surface_spacing_mechanism",
+   "kind": "gate",
+   "note": "the previous h/a ladder was run at dz = a/6 only, where the far field dominated the error",
+   "operator": ">=",
+   "passed": false,
+   "quantity": "|e_delta(h/a=0.015) - e_delta(h/a=0.0075)| at absorbing BC, dz = a/24 (pp)",
+   "reference": "H_rad accepts at >= 0.10 pp; a value below means the radial Q4 surface spacing is not the mechanism",
+   "threshold": 0.1,
+   "value": 0.0006361681666677832
+  },
+  {
+   "id": "vertical_refinement_monotone_absorbing",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "number of dz steps where |e_delta| grows under vertical refinement (absorbing BC)",
+   "reference": "a discretisation error must decay with dz -> 0",
+   "threshold": 0.0,
+   "value": 0.0
+  },
+  {
+   "id": "case_pool_indentation_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst |e_delta| over every arm in this study (%)",
+   "reference": "case pool FEM-HERTZ-CONTACT tolerance 3 %",
+   "threshold": 3.0,
+   "value": 1.0107277777946178
+  },
+  {
+   "id": "case_pool_contact_radius_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst |e_a| over every arm in this study (%)",
+   "reference": "case pool FEM-HERTZ-CONTACT tolerance 3 %",
+   "threshold": 3.0,
+   "value": 0.8921177259330948
+  },
+  {
+   "id": "load_residual_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst load-control residual |P_fe - P|/P",
+   "reference": "regula falsi tolerance 1e-10",
+   "threshold": 1e-09,
+   "value": 1.8125319911632686e-14
+  },
+  {
+   "id": "penetration_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst maximum penetration / delta",
+   "reference": "ALM should leave a vanishing complementarity gap",
+   "threshold": 1e-05,
+   "value": 1.8657146598907233e-07
+  },
+  {
+   "id": "far_field_selfconsistency_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst absorbing-BC fixed-point update (relative)",
+   "reference": "far_field_tol = 1e-4",
+   "threshold": 0.0001,
+   "value": 1.5013152691031772e-11
+  }
+ ],
+ "generated_at": "2026-11-14T09:03:01+00:00",
+ "hypotheses": {
+  "H_bias": "irreducible model bias; |e_delta| >= 0.25 % and invariant under rho",
+  "H_depth": "absorbing model not depth independent at saturated dz; > 0.05 pp",
+  "H_ff": "clamped truncation boundary; absorbing BC + dz=a/24 -> |e_delta| <= 0.15 %",
+  "H_rad": "Q4 radial surface spacing; |de_delta| >= 0.10 pp for h/a 0.015 -> 0.0075"
+ },
+ "question": "does the -0.2092 % residual indentation offset survive the exact (absorbing) far field combined with vertical near-field refinement?",
+ "schema": "tensorfem.hertz-residual-attribution.v1",
+ "verdict": {
+  "absorbing_dz_a24_contact_radius_pct": 0.8921177259330948,
+  "absorbing_dz_a24_indentation_pct": -0.19215096432128043,
+  "alm_penalty_excluded": null,
+  "clamped_dz_a24_indentation_pct": -0.840267759820823,
+  "failed_gates": [
+   "absorbing_dz_a24_indentation",
+   "absorbing_dz_a24_above_bias_band",
+   "radial_surface_spacing_mechanism"
+  ],
+  "far_field_gain_dz_a24_pp": 0.6481167954995426,
+  "gate_count": 12,
+  "h_bias_accepted": false,
+  "h_depth_rejected": null,
+  "h_ff_accepted": false,
+  "h_rad_accepted": false,
+  "mechanism": "inconclusive: absorbing BC + dz = a/24 lands between the 0.15 % acceptance band and the 0.25 % irreducible-bias band; the residual is neither explained nor shown to be a bias",
+  "radial_note": "refining the radial surface spacing h/a 0.015 -> 0.0075 does not move e_delta, so the residual is NOT the Q4 radial surface representation"
+ }
+}
