@@ -1,0 +1,13 @@
+{
+  "schema": "tensorfem.probe.truncation.v1",
+  "anchor": "fem_hertz_contact_loadcontrol",
+  "criteria": {
+    "indentation_drift_pp": 1.0,
+    "contact_radius_drift_pp": 0.5,
+    "reference": "error must not drift by more than the threshold (pp) between 48a and 96a"
+  },
+  "probes": [],
+  "passed": true,
+  "failed": [],
+  "note": "result.json only has depth-96 runs; truncation data from truncation_extrapolation.json"
+}

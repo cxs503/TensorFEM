@@ -1,0 +1,110 @@
+{
+  "schema": "tensorfem.probe.estimators.v1",
+  "anchor": "fem_hertz_contact_loadcontrol",
+  "criteria": {
+    "spread_pct_finest": 2.0,
+    "reference": "on the finest mesh (h/a=0.0075) all three estimators must agree within 2% of the mean"
+  },
+  "probes": [
+    {
+      "key": "ratio0.05_h0.0075_d96",
+      "a_over_R": 0.05,
+      "h_over_a": 0.0075,
+      "contact_radius_linear": 0.49777436376742756,
+      "contact_radius_fit": 0.5001760107274458,
+      "contact_radius_fit_consistent": 0.5075036717269857,
+      "mean": 0.5018180154072863,
+      "spread_pct": 1.133011598853185,
+      "is_finest": true,
+      "passed": true
+    },
+    {
+      "key": "ratio0.05_h0.0150_d96",
+      "a_over_R": 0.05,
+      "h_over_a": 0.015,
+      "contact_radius_linear": 0.49734211584660426,
+      "contact_radius_fit": 0.49756802551054535,
+      "contact_radius_fit_consistent": 0.5265961643024037,
+      "mean": 0.5071687685531844,
+      "spread_pct": 3.8305583769758704,
+      "is_finest": false,
+      "passed": true
+    },
+    {
+      "key": "ratio0.05_h0.0300_d96",
+      "a_over_R": 0.05,
+      "h_over_a": 0.03,
+      "contact_radius_linear": 0.49575947515124347,
+      "contact_radius_fit": 0.4942159593258071,
+      "contact_radius_fit_consistent": 0.5857744772203038,
+      "mean": 0.5252499705657848,
+      "spread_pct": 11.522990965487098,
+      "is_finest": false,
+      "passed": true
+    },
+    {
+      "key": "ratio0.10_h0.0075_d96",
+      "a_over_R": 0.1,
+      "h_over_a": 0.0075,
+      "contact_radius_linear": 0.9950923325820162,
+      "contact_radius_fit": 1.0003633564608652,
+      "contact_radius_fit_consistent": 1.0150070464720011,
+      "mean": 1.0034875785049608,
+      "spread_pct": 1.1479432544847727,
+      "is_finest": true,
+      "passed": true
+    },
+    {
+      "key": "ratio0.10_h0.0150_d96",
+      "a_over_R": 0.1,
+      "h_over_a": 0.015,
+      "contact_radius_linear": 0.9962515135358325,
+      "contact_radius_fit": 0.9951112422041805,
+      "contact_radius_fit_consistent": 1.0531788297881348,
+      "mean": 1.0148471951760492,
+      "spread_pct": 3.777084352628687,
+      "is_finest": false,
+      "passed": true
+    },
+    {
+      "key": "ratio0.10_h0.0300_d96",
+      "a_over_R": 0.1,
+      "h_over_a": 0.03,
+      "contact_radius_linear": 0.9918567562270908,
+      "contact_radius_fit": 0.9883372013042512,
+      "contact_radius_fit_consistent": 1.1713919546529887,
+      "mean": 1.0505286373947769,
+      "spread_pct": 11.504999764494071,
+      "is_finest": false,
+      "passed": true
+    }
+  ],
+  "finest_probes": [
+    {
+      "key": "ratio0.05_h0.0075_d96",
+      "a_over_R": 0.05,
+      "h_over_a": 0.0075,
+      "contact_radius_linear": 0.49777436376742756,
+      "contact_radius_fit": 0.5001760107274458,
+      "contact_radius_fit_consistent": 0.5075036717269857,
+      "mean": 0.5018180154072863,
+      "spread_pct": 1.133011598853185,
+      "is_finest": true,
+      "passed": true
+    },
+    {
+      "key": "ratio0.10_h0.0075_d96",
+      "a_over_R": 0.1,
+      "h_over_a": 0.0075,
+      "contact_radius_linear": 0.9950923325820162,
+      "contact_radius_fit": 1.0003633564608652,
+      "contact_radius_fit_consistent": 1.0150070464720011,
+      "mean": 1.0034875785049608,
+      "spread_pct": 1.1479432544847727,
+      "is_finest": true,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed": []
+}
