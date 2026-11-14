@@ -74,6 +74,8 @@ __all__ = [
     "analytic_first_yield_pressure",
     "plastic_moment",
     "yield_line_patch_upper_bound",
+    "ilyushin_sine_upper_bound",
+    "plastic_bound_bracket",
     "strip_lower_bound",
     "patch_plate_mesh",
     "patch_pressure_forces",
@@ -327,6 +329,93 @@ def yield_line_patch_upper_bound(a: float, b: float, t: float, yield_stress: flo
     internal = 4.0 * m_p * (a / b + b / a)
     return {"pressure": internal / volume, "m_p": m_p,
             "mechanism_volume": volume, "internal_work_per_w0": internal}
+
+
+def ilyushin_sine_upper_bound(a: float, b: float, t: float, yield_stress: float,
+                              patch: tuple[float, float], *,
+                              terms: int = 1) -> dict:
+    """Ilyushin (kinematic) upper bound with a *double-sine* mechanism.
+
+    Independent of :func:`yield_line_patch_upper_bound`: the mechanism is the
+    smooth first plate mode ``w = w0 sin(pi x/a) sin(pi y/b)`` (zero on the
+    simple-support boundary, hence kinematically admissible) rather than a
+    straight yield-line pyramid, so agreement between the two bounds is
+    evidence about the collapse load instead of a shared algebra error.
+
+    With the Johansen/Neville "square" moment criterion the dissipation of the
+    mechanism is ``m_p (|kappa_1| + |kappa_2|)``; for the sine mode both
+    curvatures have the same sign, so the integral is closed form::
+
+        W_int / w0 = m_p pi^2 (m^2/a^2 + n^2/b^2) * 4 a b/(pi^2 m n)
+        W_ext / w0 = (a/(m pi))[cos(m pi x1/a) - cos(m pi x2/a)]
+                   * (b/(n pi))[cos(n pi y1/b) - cos(n pi y2/b)]
+        p_u        = W_int / W_ext
+
+    ``terms`` selects odd modes ``m, n <= 2 terms - 1``; only sign-definite
+    modes are admissible as written-down mechanisms, so a mode whose patch
+    integral is negative is skipped (its ``|w|`` form is not smooth and is not
+    used).  The reported pressure is the smallest admissible one, i.e. the
+    tightest bound from this family.
+
+    Checks built into the formulation: for a fully loaded square plate the
+    closed form collapses to ``2 pi^2 m_p/a^2 = 19.74 m_p/a^2`` and for a strip
+    (``b >> a``) to the beam sine-mechanism value ``pi^2 m_p/a^2`` — both above
+    the exact ``8 m_p/a^2`` beam value, as an upper bound must be.
+    """
+    if terms < 1:
+        raise ValueError("terms must be >= 1")
+    if not (0 < a and 0 < b and 0 < t and 0 < yield_stress):
+        raise ValueError("geometry and strength must be positive")
+    m_p = plastic_moment(t, yield_stress)
+    u, v = patch
+    if not (0 < u <= a and 0 < v <= b):
+        raise ValueError("patch must lie inside the plate")
+    x1, x2 = 0.5 * (a - u), 0.5 * (a + u)
+    y1, y2 = 0.5 * (b - v), 0.5 * (b + v)
+    best: float | None = None
+    best_mode = None
+    for m in range(1, 2 * terms, 2):
+        for n in range(1, 2 * terms, 2):
+            am = m * math.pi / a
+            bn = n * math.pi / b
+            internal = 4.0 * m_p * a * b * (m * m / (a * a) + n * n / (b * b)) / (m * n)
+            ext = ((a / (m * math.pi)) * (math.cos(am * x1) - math.cos(am * x2))
+                   * (b / (n * math.pi)) * (math.cos(bn * y1) - math.cos(bn * y2)))
+            if ext <= 0.0:
+                continue
+            pressure = internal / ext
+            if best is None or pressure < best:
+                best, best_mode = pressure, (m, n)
+    if best is None:
+        raise ValueError("no sign-definite mode covers the patch")
+    return {"pressure": best, "mode": best_mode, "m_p": m_p,
+            "mechanism": "double-sine (Ilyushin kinematic)"}
+
+
+def plastic_bound_bracket(a: float, b: float, t: float, yield_stress: float,
+                          patch: tuple[float, float], *, terms: int = 1) -> dict:
+    """Bracket the patch-loaded plate collapse pressure between admissible bounds.
+
+    Returns the two independent upper bounds (yield line and Ilyushin
+    double-sine), the statically admissible strip lower bound, and the tightest
+    upper bound with the relative width of the resulting bracket.  A collapse
+    load claimed from an FE run is only *evidenced* by this bracket when the
+    bracket itself is narrow; the width is therefore reported instead of hidden.
+    """
+    upper_yield_line = yield_line_patch_upper_bound(a, b, t, yield_stress, patch)["pressure"]
+    upper_sine = ilyushin_sine_upper_bound(a, b, t, yield_stress, patch,
+                                           terms=terms)["pressure"]
+    lower = strip_lower_bound(a, b, t, yield_stress, patch)["pressure"]
+    upper = min(upper_yield_line, upper_sine)
+    if lower > upper:
+        raise ValueError("lower bound exceeds upper bound: check the inputs")
+    return {"lower_strip": lower,
+            "upper_yield_line": upper_yield_line,
+            "upper_ilyushin_sine": upper_sine,
+            "tightest_upper": upper,
+            "bracket_width_ratio": upper / lower,
+            "yield_line_minus_sine_ratio": upper_yield_line / upper_sine,
+            "agreement_of_upper_bounds_pct": 100.0 * abs(upper_yield_line / upper_sine - 1.0)}
 
 
 def strip_lower_bound(a: float, b: float, t: float, yield_stress: float,
