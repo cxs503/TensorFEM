@@ -1,0 +1,72 @@
+{
+  "schema": "tensorfem.probe.compliance.v1",
+  "anchor": "fem_hertz_contact_loadcontrol",
+  "criteria": {
+    "compliance_pct": 3.0,
+    "reference": "Hertz 1882; delta = a^2/R, a = (3PR/(4E*))^(1/3) => delta/P = (9/(16 R E*^2))^(1/3) P^(-1/3)"
+  },
+  "probes": [
+    {
+      "key": "ratio0.05_h0.0075_d96",
+      "load": 1831.5018315018315,
+      "delta_fe": 0.024747512127760378,
+      "delta_ref": 0.025,
+      "compliance_fe": 1.3512141621757167e-05,
+      "compliance_hertz": 1.3650000000000001e-05,
+      "error_pct": -1.0099514889584937,
+      "passed": true
+    },
+    {
+      "key": "ratio0.05_h0.0150_d96",
+      "load": 1831.5018315018315,
+      "delta_fe": 0.024747318055551346,
+      "delta_ref": 0.025,
+      "compliance_fe": 1.3512035658331035e-05,
+      "compliance_hertz": 1.3650000000000001e-05,
+      "error_pct": -1.0107277777946289,
+      "passed": true
+    },
+    {
+      "key": "ratio0.05_h0.0300_d96",
+      "load": 1831.5018315018315,
+      "delta_fe": 0.024751079464569708,
+      "delta_ref": 0.025,
+      "compliance_fe": 1.351408938765506e-05,
+      "compliance_hertz": 1.3650000000000001e-05,
+      "error_pct": -0.995682141721177,
+      "passed": true
+    },
+    {
+      "key": "ratio0.10_h0.0075_d96",
+      "load": 14652.014652014652,
+      "delta_fe": 0.09899022361250956,
+      "delta_ref": 0.1,
+      "compliance_fe": 6.7560827615537775e-06,
+      "compliance_hertz": 6.825000000000001e-06,
+      "error_pct": -1.0097763874904464,
+      "passed": true
+    },
+    {
+      "key": "ratio0.10_h0.0150_d96",
+      "load": 14652.014652014652,
+      "delta_fe": 0.0989890677811604,
+      "delta_ref": 0.1,
+      "compliance_fe": 6.756003876064198e-06,
+      "compliance_hertz": 6.825000000000001e-06,
+      "error_pct": -1.0109322188395997,
+      "passed": true
+    },
+    {
+      "key": "ratio0.10_h0.0300_d96",
+      "load": 14652.014652014652,
+      "delta_fe": 0.09900367933018742,
+      "delta_ref": 0.1,
+      "compliance_fe": 6.757001114285291e-06,
+      "compliance_hertz": 6.825000000000001e-06,
+      "error_pct": -0.9963206698125893,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed": []
+}
