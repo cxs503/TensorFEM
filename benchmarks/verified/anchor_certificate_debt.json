@@ -16,6 +16,13 @@
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
+    "fem_pinched_cylinder": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
+    },
     "fem_sent_j_integral": {
       "grade": "contradicted",
       "defects": [
@@ -30,6 +37,13 @@
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
+    "fem_shell_scordelis_lo": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
+    },
     "fem_structural_acoustics": {
       "grade": "contradicted",
       "defects": [
@@ -40,6 +54,13 @@
       "remedy": "re-emit the file in the canonical envelope (schema/anchor/passed/gates); give the gate a numeric threshold, or mark it informational (not a pass)"
     },
     "fem_thermal": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
+    },
+    "fem_wave_dispersion": {
       "grade": "contradicted",
       "defects": [
         "E_ARTIFACT_MISSING"
