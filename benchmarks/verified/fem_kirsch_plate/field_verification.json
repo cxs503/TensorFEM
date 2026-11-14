@@ -1,0 +1,568 @@
+{
+  "schema": "tensorfem.verified-field.v1",
+  "anchor": "fem_kirsch_plate",
+  "study": "kirsch_field_verification",
+  "title": "KIRSCH-PLATE: domain-wide stress-field verification against the Kirsch closed form",
+  "generated_at": "2026-11-14T13:49:11+00:00",
+  "model": {
+    "geometry": "Q8 polar annulus, a=1.0, r_out=2.0 (r_out/a=2.0)",
+    "boundary_conditions": "exact Kirsch displacement on r = r_out; hole rim traction free (natural BC)",
+    "element": "Q8 serendipity plane stress, 3x3 Gauss, production path tensorfem.quadratic_plane.solve_q8_plane",
+    "young": 100000.0,
+    "poisson": 0.3,
+    "thickness": 1.0,
+    "far_field_tension": 1.0,
+    "error_content": "discretisation only: the exact field solves this Dirichlet problem",
+    "n_theta_x_n_radial": [
+      [
+        24,
+        6
+      ],
+      [
+        48,
+        12
+      ],
+      [
+        96,
+        24
+      ],
+      [
+        192,
+        48
+      ]
+    ],
+    "probes": [
+      {
+        "r_over_a": 1.1,
+        "theta_degrees": 5.0
+      },
+      {
+        "r_over_a": 1.3,
+        "theta_degrees": 40.0
+      },
+      {
+        "r_over_a": 1.7,
+        "theta_degrees": 87.0
+      },
+      {
+        "r_over_a": 1.1,
+        "theta_degrees": 130.0
+      },
+      {
+        "r_over_a": 1.3,
+        "theta_degrees": -70.0
+      }
+    ]
+  },
+  "oracle": {
+    "hole_edge_traction_free_max_over_T": 0.0,
+    "hole_edge_hoop_max_over_T": 3.0,
+    "hole_edge_hoop_min_over_T": -1.0,
+    "far_field_sxx_deviation_over_T": 0.0015619140624999472,
+    "far_field_syy_max_over_T": 0.0009369140624999606,
+    "cartesian_vs_polar_oracle_max_over_T": 2.6645352591003757e-15,
+    "kt_exact": 3.0
+  },
+  "criteria": {
+    "kt_rel_error_max": 0.05,
+    "stress_l2_rel_gauss_max": 0.02,
+    "stress_l2_rel_nodal_max": 0.03,
+    "probe_pointwise_rel_max": 0.03,
+    "edge_traction_residual_max": 0.01,
+    "displacement_l2_rel_max": 0.005,
+    "energy_rel_error_max": 0.01,
+    "observed_rate_min": 0.9,
+    "levels_min": 3
+  },
+  "levels": [
+    {
+      "n_theta": 24,
+      "n_radial": 6,
+      "outer_over_inner": 2.0,
+      "elements": 144,
+      "nodes": 480,
+      "dofs": 960,
+      "h_theta": 0.2617993877991494,
+      "kt": 3.0197388292140133,
+      "kt_rel_error": 0.006579609738004422,
+      "edge_traction_residual_over_T": 0.06187892849971473,
+      "edge_hoop_profile_rms_over_T": 0.00878493935893539,
+      "stress_l2_rel_gauss": 0.008319263842108304,
+      "stress_l2_rel_nodal": 0.0158995824398324,
+      "displacement_l2_rel": 9.491268996824222e-05,
+      "energy_fe": 6.638602059196352e-05,
+      "energy_exact": 6.650747794371536e-05,
+      "energy_rel_error": 0.0018262209830694574,
+      "probe_interior_margin_min": 0.3989065963755887,
+      "probe_max_relative_error": 0.020719296657375017,
+      "probes": [
+        {
+          "r_over_a": 1.1,
+          "theta_degrees": 5.0,
+          "parent_xi": 0.20004792171286404,
+          "parent_eta": -0.33417989345096183,
+          "sigma_xx_over_T": -0.022797171171894032,
+          "sigma_yy_over_T": -0.5917751723710414,
+          "sigma_xy_over_T": -0.0011855169930946458,
+          "exact_sigma_xx_over_T": -0.03470747332097818,
+          "exact_sigma_yy_over_T": -0.5930739366165557,
+          "exact_sigma_xy_over_T": -0.0040101809466900964,
+          "relative_error": 0.020719296657375017
+        },
+        {
+          "r_over_a": 1.3,
+          "theta_degrees": 40.0,
+          "parent_xi": 0.6000566347515675,
+          "parent_eta": 0.3341798934509618,
+          "sigma_xx_over_T": 0.9063924360643444,
+          "sigma_yy_over_T": -0.11178104680409745,
+          "sigma_xy_over_T": -0.3125048958645465,
+          "exact_sigma_xx_over_T": 0.908386774820088,
+          "exact_sigma_yy_over_T": -0.11388757679278688,
+          "exact_sigma_xy_over_T": -0.3141158847824632,
+          "relative_error": 0.0034282436232579636
+        },
+        {
+          "r_over_a": 1.7,
+          "theta_degrees": 87.0,
+          "parent_xi": -0.59982772130004,
+          "parent_eta": 0.6010934036244113,
+          "sigma_xx_over_T": 1.352685822720899,
+          "sigma_yy_over_T": 0.33435398486976375,
+          "sigma_xy_over_T": 0.017198911787027933,
+          "exact_sigma_xx_over_T": 1.3533994146863035,
+          "exact_sigma_yy_over_T": 0.334851031935339,
+          "exact_sigma_xy_over_T": 0.016517237678539097,
+          "relative_error": 0.0007924845017391817
+        },
+        {
+          "r_over_a": 1.1,
+          "theta_degrees": 130.0,
+          "parent_xi": 0.20004792171286853,
+          "parent_eta": 0.3341798934509628,
+          "sigma_xx_over_T": 1.011460047634445,
+          "sigma_yy_over_T": 0.2622071652793993,
+          "sigma_xy_over_T": 0.47923877207837795,
+          "exact_sigma_xx_over_T": 1.0291377518185678,
+          "exact_sigma_yy_over_T": 0.25788402944908556,
+          "exact_sigma_xy_over_T": 0.47469061685460673,
+          "relative_error": 0.01613889788912107
+        },
+        {
+          "r_over_a": 1.3,
+          "theta_degrees": -70.0,
+          "parent_xi": 0.6000566347515643,
+          "parent_eta": -0.33417989345095495,
+          "sigma_xx_over_T": 1.6719560530527529,
+          "sigma_yy_over_T": 0.24178801383791043,
+          "sigma_xy_over_T": 0.12690976356711992,
+          "exact_sigma_xx_over_T": 1.6683692831308048,
+          "exact_sigma_yy_over_T": 0.23819218801591435,
+          "exact_sigma_xy_over_T": 0.12466022097013629,
+          "relative_error": 0.0032870502870569313
+        }
+      ],
+      "cg_relative_residual": 8.129255379800256e-13,
+      "wall_seconds": 0.26867127418518066
+    },
+    {
+      "n_theta": 48,
+      "n_radial": 12,
+      "outer_over_inner": 2.0,
+      "elements": 576,
+      "nodes": 1824,
+      "dofs": 3648,
+      "h_theta": 0.1308996938995747,
+      "kt": 3.0057289742825457,
+      "kt_rel_error": 0.0019096580941819024,
+      "edge_traction_residual_over_T": 0.017449099922928958,
+      "edge_hoop_profile_rms_over_T": 0.002860037515272604,
+      "stress_l2_rel_gauss": 0.002102535777407478,
+      "stress_l2_rel_nodal": 0.0041429964654102576,
+      "displacement_l2_rel": 5.891619741740891e-06,
+      "energy_fe": 6.637889942983814e-05,
+      "energy_exact": 6.641171893613121e-05,
+      "energy_rel_error": 0.0004941824548259648,
+      "probe_interior_margin_min": 0.40000598309224145,
+      "probe_max_relative_error": 0.0029985837623636522,
+      "probes": [
+        {
+          "r_over_a": 1.1,
+          "theta_degrees": 5.0,
+          "parent_xi": -0.5999940169077586,
+          "parent_eta": 0.33354489834640844,
+          "sigma_xx_over_T": -0.03557719088985878,
+          "sigma_yy_over_T": -0.5946274786714105,
+          "sigma_xy_over_T": -0.003949218877603369,
+          "exact_sigma_xx_over_T": -0.03470747332097818,
+          "exact_sigma_yy_over_T": -0.5930739366165557,
+          "exact_sigma_xy_over_T": -0.0040101809466900964,
+          "relative_error": 0.0029985837623636522
+        },
+        {
+          "r_over_a": 1.3,
+          "theta_degrees": 40.0,
+          "parent_xi": 0.2000070709271911,
+          "parent_eta": -0.33354489834640966,
+          "sigma_xx_over_T": 0.9063845129218121,
+          "sigma_yy_over_T": -0.11270469880172529,
+          "sigma_xy_over_T": -0.31382965404951063,
+          "exact_sigma_xx_over_T": 0.908386774820088,
+          "exact_sigma_yy_over_T": -0.11388757679278688,
+          "exact_sigma_xy_over_T": -0.3141158847824632,
+          "relative_error": 0.002420853852841876
+        },
+        {
+          "r_over_a": 1.7,
+          "theta_degrees": 87.0,
+          "parent_xi": -0.19999640419249481,
+          "parent_eta": 0.2001371275625844,
+          "sigma_xx_over_T": 1.3557445555713505,
+          "sigma_yy_over_T": 0.33541489226339655,
+          "sigma_xy_over_T": 0.016312015121987898,
+          "exact_sigma_xx_over_T": 1.3533994146863035,
+          "exact_sigma_yy_over_T": 0.334851031935339,
+          "exact_sigma_xy_over_T": 0.016517237678539097,
+          "relative_error": 0.0017361259657042518
+        },
+        {
+          "r_over_a": 1.1,
+          "theta_degrees": 130.0,
+          "parent_xi": -0.5999940169077563,
+          "parent_eta": -0.333544898346408,
+          "sigma_xx_over_T": 1.0293267331624256,
+          "sigma_yy_over_T": 0.2582581019723855,
+          "sigma_xy_over_T": 0.4746203925889066,
+          "exact_sigma_xx_over_T": 1.0291377518185678,
+          "exact_sigma_yy_over_T": 0.25788402944908556,
+          "exact_sigma_xy_over_T": 0.47469061685460673,
+          "relative_error": 0.0003656018358663655
+        },
+        {
+          "r_over_a": 1.3,
+          "theta_degrees": -70.0,
+          "parent_xi": 0.200007070927197,
+          "parent_eta": 0.3335448983464123,
+          "sigma_xx_over_T": 1.668506904420088,
+          "sigma_yy_over_T": 0.23819014864521093,
+          "sigma_xy_over_T": 0.12611171390095363,
+          "exact_sigma_xx_over_T": 1.6683692831308048,
+          "exact_sigma_yy_over_T": 0.23819218801591435,
+          "exact_sigma_xy_over_T": 0.12466022097013629,
+          "relative_error": 0.0008627798506505103
+        }
+      ],
+      "cg_relative_residual": 6.6300790621901e-13,
+      "wall_seconds": 1.1357264518737793
+    },
+    {
+      "n_theta": 96,
+      "n_radial": 24,
+      "outer_over_inner": 2.0,
+      "elements": 2304,
+      "nodes": 7104,
+      "dofs": 14208,
+      "h_theta": 0.06544984694978735,
+      "kt": 3.0014762656230225,
+      "kt_rel_error": 0.0004920885410074997,
+      "edge_traction_residual_over_T": 0.004631265469543294,
+      "edge_hoop_profile_rms_over_T": 0.000811012618224485,
+      "stress_l2_rel_gauss": 0.0005276533129904077,
+      "stress_l2_rel_nodal": 0.001051396377255145,
+      "displacement_l2_rel": 3.6186670187092456e-07,
+      "energy_fe": 6.637844697379819e-05,
+      "energy_exact": 6.638681141026072e-05,
+      "energy_rel_error": 0.0001259954542903687,
+      "probe_interior_margin_min": 0.39993147365629944,
+      "probe_max_relative_error": 0.0010862470259516506,
+      "probes": [
+        {
+          "r_over_a": 1.1,
+          "theta_degrees": 5.0,
+          "parent_xi": -0.199999252335917,
+          "parent_eta": -0.33338621987473943,
+          "sigma_xx_over_T": -0.03409026417575975,
+          "sigma_yy_over_T": -0.5931332055040229,
+          "sigma_xy_over_T": -0.003831278752830125,
+          "exact_sigma_xx_over_T": -0.03470747332097818,
+          "exact_sigma_yy_over_T": -0.5930739366165557,
+          "exact_sigma_xy_over_T": -0.0040101809466900964,
+          "relative_error": 0.0010862470259516506
+        },
+        {
+          "r_over_a": 1.3,
+          "theta_degrees": 40.0,
+          "parent_xi": -0.599999116396975,
+          "parent_eta": 0.3333862198747393,
+          "sigma_xx_over_T": 0.9081975534291473,
+          "sigma_yy_over_T": -0.11380952803040217,
+          "sigma_xy_over_T": -0.314052169443179,
+          "exact_sigma_xx_over_T": 0.908386774820088,
+          "exact_sigma_yy_over_T": -0.11388757679278688,
+          "exact_sigma_xy_over_T": -0.3141158847824632,
+          "relative_error": 0.00022148600698178037
+        },
+        {
+          "r_over_a": 1.7,
+          "theta_degrees": 87.0,
+          "parent_xi": 0.6000026950268507,
+          "parent_eta": -0.6000685263437006,
+          "sigma_xx_over_T": 1.3533430742090933,
+          "sigma_yy_over_T": 0.3348397105959269,
+          "sigma_xy_over_T": 0.016512588759642784,
+          "exact_sigma_xx_over_T": 1.3533994146863035,
+          "exact_sigma_yy_over_T": 0.334851031935339,
+          "exact_sigma_xy_over_T": 0.016517237678539097,
+          "relative_error": 4.1349932368756765e-05
+        },
+        {
+          "r_over_a": 1.1,
+          "theta_degrees": 130.0,
+          "parent_xi": -0.19999925233589852,
+          "parent_eta": 0.33338621987474953,
+          "sigma_xx_over_T": 1.0282621342655556,
+          "sigma_yy_over_T": 0.25831650954294777,
+          "sigma_xy_over_T": 0.4749550609508074,
+          "exact_sigma_xx_over_T": 1.0291377518185678,
+          "exact_sigma_yy_over_T": 0.25788402944908556,
+          "exact_sigma_xy_over_T": 0.47469061685460673,
+          "relative_error": 0.0008704824042734037
+        },
+        {
+          "r_over_a": 1.3,
+          "theta_degrees": -70.0,
+          "parent_xi": -0.5999991163969832,
+          "parent_eta": -0.3333862198747377,
+          "sigma_xx_over_T": 1.6686723942153079,
+          "sigma_yy_over_T": 0.2384359131633404,
+          "sigma_xy_over_T": 0.12480700065279943,
+          "exact_sigma_xx_over_T": 1.6683692831308048,
+          "exact_sigma_yy_over_T": 0.23819218801591435,
+          "exact_sigma_xy_over_T": 0.12466022097013629,
+          "relative_error": 0.00024600362230818064
+        }
+      ],
+      "cg_relative_residual": 9.560067938590796e-13,
+      "wall_seconds": 8.234232664108276
+    },
+    {
+      "n_theta": 192,
+      "n_radial": 48,
+      "outer_over_inner": 2.0,
+      "elements": 9216,
+      "nodes": 28032,
+      "dofs": 56064,
+      "h_theta": 0.032724923474893676,
+      "kt": 3.000370316622725,
+      "kt_rel_error": 0.0001234388742417103,
+      "edge_traction_residual_over_T": 0.001192628441263495,
+      "edge_hoop_profile_rms_over_T": 0.00021662197115387055,
+      "stress_l2_rel_gauss": 0.00013205146206261527,
+      "stress_l2_rel_nodal": 0.00026407230124821926,
+      "displacement_l2_rel": 2.2302864973242624e-08,
+      "energy_fe": 6.637841855084487e-05,
+      "energy_exact": 6.638051974276332e-05,
+      "energy_rel_error": 3.1653743095086525e-05,
+      "probe_interior_margin_min": 0.39999990654892936,
+      "probe_max_relative_error": 0.00014780596773760109,
+      "probes": [
+        {
+          "r_over_a": 1.1,
+          "theta_degrees": 5.0,
+          "parent_xi": 0.6000000934510706,
+          "parent_eta": 0.3333465546738287,
+          "sigma_xx_over_T": -0.03474209394403949,
+          "sigma_yy_over_T": -0.5931452510137154,
+          "sigma_xy_over_T": -0.004005408186705653,
+          "exact_sigma_xx_over_T": -0.03470747332097818,
+          "exact_sigma_yy_over_T": -0.5930739366165557,
+          "exact_sigma_xy_over_T": -0.0040101809466900964,
+          "relative_error": 0.00013367619252973976
+        },
+        {
+          "r_over_a": 1.3,
+          "theta_degrees": 40.0,
+          "parent_xi": -0.1999998895578415,
+          "parent_eta": -0.3333465546738295,
+          "sigma_xx_over_T": 0.9082664981388815,
+          "sigma_yy_over_T": -0.11381270059242798,
+          "sigma_xy_over_T": -0.3140960580867107,
+          "exact_sigma_xx_over_T": 0.908386774820088,
+          "exact_sigma_yy_over_T": -0.11388757679278688,
+          "exact_sigma_xy_over_T": -0.3141158847824632,
+          "relative_error": 0.00014780596773760109
+        },
+        {
+          "r_over_a": 1.7,
+          "theta_degrees": 87.0,
+          "parent_xi": 0.2000000561528899,
+          "parent_eta": -0.20000856755913737,
+          "sigma_xx_over_T": 1.353546336813132,
+          "sigma_yy_over_T": 0.33488592770732506,
+          "sigma_xy_over_T": 0.01650441748927186,
+          "exact_sigma_xx_over_T": 1.3533994146863035,
+          "exact_sigma_yy_over_T": 0.334851031935339,
+          "exact_sigma_xy_over_T": 0.016517237678539097,
+          "relative_error": 0.00010869394809906011
+        },
+        {
+          "r_over_a": 1.1,
+          "theta_degrees": 130.0,
+          "parent_xi": 0.6000000934510655,
+          "parent_eta": -0.3333465546738165,
+          "sigma_xx_over_T": 1.0291402312460736,
+          "sigma_yy_over_T": 0.25791136051787006,
+          "sigma_xy_over_T": 0.47469213345499167,
+          "exact_sigma_xx_over_T": 1.0291377518185678,
+          "exact_sigma_yy_over_T": 0.25788402944908556,
+          "exact_sigma_xy_over_T": 0.47469061685460673,
+          "relative_error": 2.36470688258951e-05
+        },
+        {
+          "r_over_a": 1.3,
+          "theta_degrees": -70.0,
+          "parent_xi": -0.19999988955782028,
+          "parent_eta": 0.33334655467385615,
+          "sigma_xx_over_T": 1.6683856931022878,
+          "sigma_yy_over_T": 0.2382006899996778,
+          "sigma_xy_over_T": 0.12474862758820121,
+          "exact_sigma_xx_over_T": 1.6683692831308048,
+          "exact_sigma_yy_over_T": 0.23819218801591435,
+          "exact_sigma_xy_over_T": 0.12466022097013629,
+          "relative_error": 5.3445917732568705e-05
+        }
+      ],
+      "cg_relative_residual": 8.541440390964357e-13,
+      "wall_seconds": 48.667192697525024
+    }
+  ],
+  "gates": [
+    {
+      "id": "oracle_edge_traction_free",
+      "quantity": "max(|sigma_rr|,|sigma_rt|)/T on r=a of the analytic oracle",
+      "reference": "Kirsch (1898); free circular hole",
+      "value": 0.0,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "oracle_kt_value",
+      "quantity": "analytic sigma_tt(a,pi/2)/T",
+      "reference": "sigma_tt(a,pi/2)/T = 3",
+      "value": 3.0,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "oracle_cartesian_vs_polar",
+      "quantity": "max component mismatch between the polar and Cartesian oracle paths, /T",
+      "reference": "one field, two evaluation routes (self-consistency)",
+      "value": 2.6645352591003757e-15,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "levels_declared",
+      "quantity": "refinement levels with both n_theta and n_radial doubled",
+      "reference": ">= 3 levels for an observed rate",
+      "value": 4,
+      "threshold": 3,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "kt_rel_error_finest",
+      "quantity": "|K_t(n_theta=192) - 3|/3",
+      "reference": "Kirsch limit 3 (pool tolerance 5 %)",
+      "value": 0.0001234388742417103,
+      "threshold": 0.05,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "stress_field_l2_gauss",
+      "quantity": "||sigma_fe - sigma_ex||_L2 / ||sigma_ex||_L2 over all Gauss points (finest)",
+      "reference": "domain-wide closed form, pure discretisation model",
+      "value": 0.00013205146206261527,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "stress_field_l2_nodal",
+      "quantity": "same norm for the recovered nodal field (the field K_t is read from)",
+      "reference": "domain-wide closed form",
+      "value": 0.00026407230124821926,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "stress_field_rate",
+      "quantity": "min observed rate p of the Gauss-point stress L2 error (e ~ h^p)",
+      "reference": "Q8 superconvergent rate, p >= 0.9",
+      "value": 1.9843255222772664,
+      "threshold": 0.9,
+      "operator": ">=",
+      "passed": true,
+      "note": "pairwise rates [1.984, 1.994, 1.998]"
+    },
+    {
+      "id": "displacement_field",
+      "quantity": "||u_fe - u_ex||/||u_ex|| on all nodes (finest)",
+      "reference": "interior Dirichlet problem, exact field known",
+      "value": 2.2302864973242624e-08,
+      "threshold": 0.005,
+      "operator": "<=",
+      "passed": true,
+      "note": "pairwise rates [4.01, 4.025, 4.02]"
+    },
+    {
+      "id": "energy_error",
+      "quantity": "|U_fe - U_ex|/U_ex (finest)",
+      "reference": "closed-form strain energy over the annulus",
+      "value": 3.1653743095086525e-05,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "pointwise_probes",
+      "quantity": "max relative stress error at five declared interior probes (finest)",
+      "reference": "closed form at the same physical points",
+      "value": 0.00014780596773760109,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true,
+      "note": "probes [[1.1, 5.0], [1.3, 40.0], [1.7, 87.0], [1.1, 130.0], [1.3, -70.0]]"
+    },
+    {
+      "id": "edge_traction_residual",
+      "quantity": "natural (free) hole-rim residual max(|sigma_rr|,|sigma_rt|)/T from nodal recovery (finest)",
+      "reference": "traction-free hole: exactly zero",
+      "value": 0.001192628441263495,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "probes_interior",
+      "quantity": "min over levels of the probe distance to its element boundary in parent coords (1 - max|xi|,|eta|)",
+      "reference": "probe must be interior for a single-valued stress",
+      "value": 0.3989065963755887,
+      "threshold": 0.3,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "gates_passed": 13,
+  "gates_total": 13,
+  "wall_seconds": 58.30950427055359,
+  "figures": [
+    "kirsch_field_contours.png",
+    "kirsch_field_convergence.png"
+  ]
+}
