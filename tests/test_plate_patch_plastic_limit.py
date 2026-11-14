@@ -146,9 +146,6 @@ def test_mesh_rejects_patch_that_does_not_follow_element_edges():
         run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
                                hardening=2e9, patch=PATCH, load_factors=[1e5],
                                nx=5, ny=5)
-    # the centred 0.5a patch needs its *edges* on node lines: nx = 6 puts them at
-    # 1.5 elements and silently breaks lumped-load conservation (first-generation
-    # certificate bug), so odd-multiples-of-3 counts must be rejected
     with pytest.raises(ValueError):
         patch_plate_mesh(A, B, T, 6, 6, young=E, poisson=NU, yield_stress=FY,
                          hardening=2e9, patch=PATCH)
@@ -158,7 +155,7 @@ def test_patch_pressure_forces_carry_the_right_total_load():
     model, info = patch_plate_mesh(A, B, T, 8, 8, young=E, poisson=NU,
                                    yield_stress=FY, hardening=2e9, patch=PATCH)
     assert float(info["reference_load"].sum()) == pytest.approx(PATCH[0] * PATCH[1])
-    assert int((info["reference_load"] != 0).sum()) == 5 * 5   # 5x5 nodes of the 0.5a patch
+    assert int((info["reference_load"] != 0).sum()) == 5 * 5
 
 
 # ---------------------------------------------------------------------------
@@ -167,7 +164,6 @@ def test_patch_pressure_forces_carry_the_right_total_load():
 
 @pytest.fixture(scope="module")
 def capacity():
-    """One overloaded-and-unloaded path plus one elastic probe (small mesh)."""
     py = analytic_first_yield_pressure(A, B, T, E, NU, FY, PATCH, grid=11, terms=31)
     steps = [factor * py["pressure"] for factor in (0.3, 0.6, 0.9, 1.2, 1.5, 1.8)]
     path = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
@@ -182,12 +178,9 @@ def capacity():
 
 def test_elastic_branch_scales_linearly_with_the_load(capacity):
     steps = capacity["path"].loading[:3]
-    ratios = []
-    for step in steps:
-        analytic = elastic_patch_plate(A, B, T, E, NU, PATCH, step.load_factor)["deflection"][0]
-        ratios.append(step.centre_deflection / analytic)
-    assert max(ratios) - min(ratios) < 5e-3            # linear elastic, no drift
-    assert all(step.max_alpha == 0.0 for step in steps)
+    ratios = [s.centre_deflection / elastic_patch_plate(A, B, T, E, NU, PATCH, s.load_factor)["deflection"][0] for s in steps]
+    assert max(ratios) - min(ratios) < 5e-3
+    assert all(s.max_alpha == 0.0 for s in steps)
 
 
 def test_same_mesh_elastic_bias_is_quantified_and_bounded(capacity):
@@ -195,8 +188,6 @@ def test_same_mesh_elastic_bias_is_quantified_and_bounded(capacity):
     analytic = capacity["analytic"]["sigma_eq_per_pa"]
     fe = probe.max_surface_mises / probe.load_factor
     bias = fe / analytic - 1.0
-    # with exact through-thickness integration the elastic surface moment of the
-    # 8x8 model is within a few percent of Navier (mid-point rule: +10 %)
     assert abs(bias) < 0.03
 
 
@@ -205,14 +196,12 @@ def test_yield_is_detected_on_the_surface_before_any_layer_yields(capacity):
     first = path.first_yield_factor
     assert first is not None
     surface_yielded = [s for s in path.loading if s.max_surface_mises >= FY]
-    assert surface_yielded, "surface von Mises never reached the flow stress"
+    assert surface_yielded
     assert first <= surface_yielded[0].load_factor
-    # through-thickness layering delays the *layer* plastic strain: with n layers
-    # sampled at mid-layer points the outer layer sits at |z| = t/2 (1 - 1/n)
     layer_yielded = [s for s in path.loading if s.max_alpha > 0.0]
-    assert layer_yielded, "no layer ever became plastic"
+    assert layer_yielded
     ratio = layer_yielded[0].load_factor / first
-    assert 1.0 < ratio < 1.0 / (1.0 - 1.0 / 3) + 0.35   # + one load step (0.3 py) of granularity
+    assert 1.0 < ratio < 1.0 / (1.0 - 1.0 / 3) + 0.35
 
 
 def test_transition_point_matches_same_mesh_elastic_field_within_5pct(capacity):
@@ -225,11 +214,6 @@ def test_transition_point_matches_same_mesh_elastic_field_within_5pct(capacity):
 
 
 def test_transition_point_raw_error_versus_analytic_yield_load(capacity):
-    """Raw comparison against the closed-form yield load (no bias normalisation).
-
-    Reported, not tuned: the layered plate element under-predicts the elastic peak
-    moment, so the raw first-yield load lands several percent low.
-    """
     path = capacity["path"]
     analytic = capacity["analytic"]["pressure"]
     error = (path.first_yield_factor - analytic) / analytic
@@ -241,7 +225,7 @@ def test_permanent_deflection_is_positive_and_unloads_monotonically(capacity):
     assert path.permanent_deflection is not None
     assert path.permanent_deflection > 0.0
     assert path.peak_factor > capacity["analytic"]["pressure"]
-    residuals = [step.centre_deflection for step in path.unloading]
+    residuals = [s.centre_deflection for s in path.unloading]
     assert residuals == sorted(residuals, reverse=True)
     assert residuals[-1] == pytest.approx(path.permanent_deflection)
 
@@ -258,48 +242,33 @@ def test_surface_extrapolation_is_exact_for_linear_stress():
     z = [(-thickness / 2 + (k + 0.5) * dz) for k in range(layers)]
     stress = torch.zeros((1, 4, layers, 3), dtype=torch.float64)
     for k, zk in enumerate(z):
-        stress[0, :, k, 0] = 100e6 * zk / (thickness / 2)     # linear bending stress
+        stress[0, :, k, 0] = 100e6 * zk / (thickness / 2)
     assert surface_extrapolated_mises(stress, thickness) == pytest.approx(100e6, rel=1e-9)
     with pytest.raises(ValueError):
         surface_extrapolated_mises(torch.zeros((1, 4, 1, 3), dtype=torch.float64), thickness)
 
 
 def test_collapse_load_matches_the_yield_line_bound_after_layering_correction():
-    """Near-ideally plastic plate: the collapse load must approach the yield-line
-    upper bound from below and stay above the strip lower bound.
-
-    No layering correction is applied any more: with exact through-thickness
-    integration the bending stiffness carries no layer-count bias, so the raw
-    collapse load (not a rescaled one) is compared.
-    """
     py = analytic_first_yield_pressure(A, B, T, E, NU, FY, PATCH, grid=11, terms=31)
     upper = yield_line_patch_upper_bound(A, B, T, FY, PATCH)["pressure"]
     lower = strip_lower_bound(A, B, T, FY, PATCH)["pressure"]
-    layers = 3
     path = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
                                   hardening=1e6, patch=PATCH,
                                   load_factors=[0.6 * py["pressure"], 1.0 * py["pressure"],
                                                 1.4 * py["pressure"], 1.8 * py["pressure"],
                                                 2.4 * py["pressure"], 3.0 * py["pressure"]],
-                                  nx=8, ny=8, layers=layers)
+                                  nx=8, ny=8, layers=3)
     collapse = path.collapse_factor or path.loading[-1].load_factor
     assert lower < collapse < upper
     assert abs(collapse / upper - 1.0) < 0.20
 
 
 # ---------------------------------------------------------------------------
-# 3-level mesh convergence (anchor acceptance "3 档网格收敛")
+# 3-level mesh convergence
 # ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="module")
 def mesh_sweep():
-    """Run the FE path at three even mesh levels and return the observables.
-
-    The acceptance criterion requires the numerical collapse / first-yield /
-    permanent-set path to converge monotonically with refinement, and the
-    transition point to stay within the same-mesh elastic-field tolerance at
-    every level.  Even element counts keep the plate centre a node.
-    """
     py = analytic_first_yield_pressure(A, B, T, E, NU, FY, PATCH, grid=11, terms=31)
     upper = yield_line_patch_upper_bound(A, B, T, FY, PATCH)["pressure"]
     lower = strip_lower_bound(A, B, T, FY, PATCH)["pressure"]
@@ -316,42 +285,89 @@ def mesh_sweep():
         fe_sigma_per_pa = probe.loading[0].max_surface_mises / probe.loading[0].load_factor
         same_mesh_yield = FY / fe_sigma_per_pa
         rows.append({
-            "nx": nx,
-            "first": path.first_yield_factor,
+            "nx": nx, "first": path.first_yield_factor,
             "first_err_same_mesh": (path.first_yield_factor - same_mesh_yield) / same_mesh_yield,
             "collapse": path.collapse_factor or path.loading[-1].load_factor,
-            "permanent": path.permanent_deflection,
-            "peak": path.loading[-1].centre_deflection,
+            "permanent": path.permanent_deflection, "peak": path.loading[-1].centre_deflection,
         })
     return {"py": py, "upper": upper, "lower": lower, "rows": rows}
 
 
 def test_collapse_load_converges_monotonically_to_the_upper_bound(mesh_sweep):
-    """Collapse must approach the yield-line upper bound from below, monotonically.
-
-    With exact through-thickness integration the collapse load needs no
-    layering correction; it must sit between the strip lower and the yield-line
-    upper bound and be monotone non-decreasing with refinement.
-    """
     upper = mesh_sweep["upper"]
     lower = mesh_sweep["lower"]
     collapses = [r["collapse"] for r in mesh_sweep["rows"]]
-    assert all(c < upper for c in collapses), "collapse must stay below the upper bound"
-    assert all(c > lower for c in collapses), "collapse must stay above the strip lower bound"
-    assert all(collapses[i] <= collapses[i + 1] for i in range(len(collapses) - 1)), \
-        "corrected collapse load must be monotone non-decreasing with refinement"
+    assert all(c < upper for c in collapses)
+    assert all(c > lower for c in collapses)
+    assert all(collapses[i] <= collapses[i + 1] for i in range(len(collapses) - 1))
 
 
 def test_transition_point_stays_within_5pct_at_every_mesh_level(mesh_sweep):
-    """The elastic->plastic transition must match the same-mesh elastic field < 5%."""
     for r in mesh_sweep["rows"]:
-        assert abs(r["first_err_same_mesh"]) < 0.05, f"mesh {r['nx']} transition error {r['first_err_same_mesh']:.3f}"
+        assert abs(r["first_err_same_mesh"]) < 0.05
 
 
 def test_permanent_set_is_bounded_and_converges(mesh_sweep):
-    """Permanent set must be a positive, bounded fraction of the peak deflection."""
     for r in mesh_sweep["rows"]:
-        assert 0.0 < r["permanent"] < r["peak"], f"mesh {r['nx']} permanent set out of range"
+        assert 0.0 < r["permanent"] < r["peak"]
     perms = [r["permanent"] for r in mesh_sweep["rows"]]
-    # permanent set should not grow without bound as the mesh refines
-    assert max(perms) < 1.5 * min(perms), "permanent set must be mesh-converged (spread < 50%)"
+    assert max(perms) < 1.5 * min(perms)
+
+
+# ---------------------------------------------------------------------------
+# Anchor acceptance tests (GAP-PP-3-ICE-STRUCT-PLASTIC-SET)
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def anchor_collapse_fine():
+    """Near-ideally plastic collapse at 8x8 mesh for the <10% criterion."""
+    py = analytic_first_yield_pressure(A, B, T, E, NU, FY, PATCH, grid=11, terms=31)
+    upper = yield_line_patch_upper_bound(A, B, T, FY, PATCH)["pressure"]
+    lower = strip_lower_bound(A, B, T, FY, PATCH)["pressure"]
+    path = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
+                                  hardening=1e6, patch=PATCH,
+                                  load_factors=[0.5 * py["pressure"], 1.0 * py["pressure"],
+                                                1.5 * py["pressure"], 2.0 * py["pressure"],
+                                                2.5 * py["pressure"], 3.0 * py["pressure"]],
+                                  nx=8, ny=8, layers=3)
+    return {"py": py, "upper": upper, "lower": lower, "path": path}
+
+
+def test_anchor_collapse_within_10pct_of_upper_bound(anchor_collapse_fine):
+    """Anchor: plastic limit load vs yield-line upper bound error < 10%."""
+    upper = anchor_collapse_fine["upper"]
+    lower = anchor_collapse_fine["lower"]
+    path = anchor_collapse_fine["path"]
+    collapse = path.collapse_factor or path.loading[-1].load_factor
+    assert lower < collapse < upper, f"collapse {collapse:.0f} not in [{lower:.0f}, {upper:.0f}]"
+    error = abs(collapse / upper - 1.0)
+    assert error < 0.10, f"collapse error vs upper = {error:.3f} (>10%)"
+
+
+def test_anchor_transition_within_5pct_at_fine_mesh(anchor_collapse_fine):
+    """Anchor: elastic->plastic transition vs same-mesh elastic field < 5%."""
+    path = anchor_collapse_fine["path"]
+    py = anchor_collapse_fine["py"]
+    probe = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
+                                   hardening=1e6, patch=PATCH,
+                                   load_factors=[0.25 * py["pressure"]],
+                                   nx=8, ny=8, layers=3)
+    fe_sigma_per_pa = probe.loading[0].max_surface_mises / probe.loading[0].load_factor
+    same_mesh_yield = FY / fe_sigma_per_pa
+    error = abs(path.first_yield_factor - same_mesh_yield) / same_mesh_yield
+    assert error < 0.05, f"transition error at 8x8 = {error:.3f} (>5%)"
+
+
+def test_anchor_permanent_deflection_positive_at_fine_mesh(anchor_collapse_fine):
+    """Anchor: permanent deflection is positive and bounded."""
+    py = anchor_collapse_fine["py"]
+    path_unload = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
+                                         hardening=1e6, patch=PATCH,
+                                         load_factors=[0.5 * py["pressure"], 1.0 * py["pressure"],
+                                                       1.5 * py["pressure"], 2.0 * py["pressure"],
+                                                       2.5 * py["pressure"], 3.0 * py["pressure"]],
+                                         nx=8, ny=8, layers=3, unload_steps=3)
+    assert path_unload.permanent_deflection is not None
+    assert path_unload.permanent_deflection > 0.0
+    peak = path_unload.loading[-1].centre_deflection
+    assert path_unload.permanent_deflection < peak
