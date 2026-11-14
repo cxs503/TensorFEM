@@ -91,6 +91,7 @@ __all__ = [
     "strain_energy",
     "run_patch_case",
     "strip_pure_bending",
+    "strip_rigidity_crosscheck",
     "oracle_selfcheck",
 ]
 
@@ -589,4 +590,61 @@ def strip_pure_bending(n_x: int, n_y: int = 2, *, moment: float = 1.0e3,
         "w_rel_error_mindlin": abs(w_tip - w_mindlin) / w_mindlin,
         "theta_rel_error": abs(theta_tip - theta_exact) / abs(theta_exact),
         "free_dofs": int(free.numel()),
+    }
+
+
+# --------------------------------------------------------------------------- #
+# Poisson-coupling cross-check of the two strip closed forms
+# --------------------------------------------------------------------------- #
+def strip_rigidity_crosscheck(symmetry: dict, free: dict, *,
+                              poisson: float = 0.3) -> dict:
+    """Grade the **computed** deflection ratio of the two strip lateral conditions.
+
+    The cylindrical-bending cell uses the plate rigidity ``D = E t^3/(12(1-nu^2))``
+    and the free-edge strip the beam rigidity ``D_b = E t^3/12``, so a correct
+    implementation reproduces both and their ratio is
+
+        w_free / w_symmetry = D / D_b = 1/(1-nu^2).
+
+    The distinction that matters for evidence is *what is divided*: dividing the
+    two **closed forms** compares a closed form with itself -- the ratio is
+    ``1/(1-nu^2)`` by algebra for any element, so the residual is identically
+    zero and the check can never see a Poisson-coupling defect (this was the
+    defect reported in the m15654 audit of `CASE-BENDING-PATCH`).  This helper
+    divides the **computed** ``w_tip`` values of the two finite-element solves
+    and returns the closed-form ratio alongside, labelled as an identity, so a
+    consumer cannot mistake one for the other.
+
+    Parameters
+    ----------
+    symmetry, free : dict
+        Rows returned by :func:`strip_pure_bending` for the symmetry cell and the
+        free-edge strip solved on the same mesh and with the same treatment.
+    poisson : float
+        Poisson ratio used in both solves; the theory value is ``1/(1-nu^2)``.
+
+    Returns
+    -------
+    dict with ``measured`` (computed ratio), ``theory``, ``rel_error``,
+    ``closed_form_ratio``, ``closed_form_rel_error``, ``operands`` and
+    ``is_identity`` (True would mean the closed forms were divided -- the
+    measurement carries no accuracy evidence in that case).
+    """
+    for name, row in (("symmetry", symmetry), ("free", free)):
+        for key in ("w_tip", "w_exact_kirchhoff"):
+            if key not in row:
+                raise KeyError(f"{name} row is missing {key!r}")
+    if symmetry["w_tip"] == 0.0:
+        raise ValueError("symmetry-cell tip deflection is zero: degenerate reference")
+    theory = 1.0 / (1.0 - poisson ** 2)
+    measured = free["w_tip"] / symmetry["w_tip"]
+    closed_form = free["w_exact_kirchhoff"] / symmetry["w_exact_kirchhoff"]
+    return {
+        "measured": measured,
+        "theory": theory,
+        "rel_error": abs(measured - theory) / theory,
+        "closed_form_ratio": closed_form,
+        "closed_form_rel_error": abs(closed_form - theory) / theory,
+        "operands": "computed w_tip (finite-element solves)",
+        "is_identity": abs(measured - theory) <= 1e-12,
     }
