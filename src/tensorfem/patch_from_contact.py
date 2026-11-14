@@ -68,6 +68,7 @@ import torch
 
 from .plate_mindlin import (
     MindlinPlateResult,
+    compute_face_stresses,
     solve_plate_on_winkler_foundation,
     structured_square_mesh,
 )
@@ -81,6 +82,7 @@ __all__ = [
     "scan_contact_configurations",
     "uniform_patch_total_force",
     "project_pressure_to_nodes",
+    "peak_stresses",
 ]
 
 
@@ -138,6 +140,11 @@ class PatchLoadResult:
         Centroid of the loaded region.
     metadata : dict
         Additional metadata.
+    nodal_pressures : (nn,) array or None
+        The **pressure** field [Pa] on the plate nodes that the load vector was
+        integrated from.  This is what a downstream plate solve must consume;
+        the load vector entries are forces [N] and must never be re-applied as
+        pressures.
     """
     load_vector: np.ndarray
     total_force: float
@@ -146,11 +153,47 @@ class PatchLoadResult:
     pressure_nonuniformity: float
     patch_centre: tuple[float, float]
     metadata: dict = field(default_factory=dict)
+    nodal_pressures: Optional[np.ndarray] = None
 
 
 # ---------------------------------------------------------------------------
 # Core projection
 # ---------------------------------------------------------------------------
+
+def _bilinear_field(xs: np.ndarray, ys: np.ndarray, P: np.ndarray, *,
+                    outside_zero: bool = True) -> Callable:
+    """Bilinear interpolant of a tensor-product pressure grid.
+
+    With ``outside_zero`` the field is zero outside ``[xs[0], xs[-1]] x [ys[0], ys[-1]]``
+    (a contact patch does not load the plate outside its footprint); otherwise it
+    is clamped at the boundary.
+    """
+    def field(x, y):
+        xa, x_scalar = _as_1d(x)
+        ya, y_scalar = _as_1d(y)
+        if outside_zero:
+            outside = (
+                (xa < xs[0]) | (xa > xs[-1]) | (ya < ys[0]) | (ya > ys[-1])
+            )
+        else:
+            outside = np.zeros(xa.shape, dtype=bool)
+        i = np.clip(np.searchsorted(xs, xa) - 1, 0, xs.size - 2)
+        j = np.clip(np.searchsorted(ys, ya) - 1, 0, ys.size - 2)
+        tx = np.clip((xa - xs[i]) / (xs[i + 1] - xs[i]), 0.0, 1.0)
+        ty = np.clip((ya - ys[j]) / (ys[j + 1] - ys[j]), 0.0, 1.0)
+        val = (
+            (1.0 - tx) * (1.0 - ty) * P[j, i]
+            + tx * (1.0 - ty) * P[j, i + 1]
+            + (1.0 - tx) * ty * P[j + 1, i]
+            + tx * ty * P[j + 1, i + 1]
+        )
+        if outside_zero:
+            val = np.where(outside, 0.0, val)
+        if x_scalar and y_scalar:
+            val = float(np.asarray(val).reshape(-1)[0])
+        return val
+    return field
+
 
 def project_pressure_to_nodes(
     contact_data: ContactPressureData,
@@ -158,65 +201,85 @@ def project_pressure_to_nodes(
     plate_elements: np.ndarray,
     *,
     interpolation_radius: Optional[float] = None,
+    method: str = "auto",
 ) -> np.ndarray:
-    """Project contact pressure onto plate mesh nodes.
+    """Project the contact pressure field onto the plate nodes [Pa].
 
-    Uses inverse-distance weighting for interpolation from contact nodes to
-    plate nodes.  Only plate nodes within ``interpolation_radius`` of any
-    contact node receive load; if not specified, radius is set to the maximum
-    inter-contact-node distance.
+    ``method="auto"`` (default) uses a **bilinear interpolant of the contact
+    grid** whenever the contact nodes form a tensor-product grid -- which is how
+    a CZM / contact solve delivers its interface pressures.  The field is zero
+    outside the contact footprint, so the projected total force stays equal to
+    the contact force (trapezoid-level accuracy) instead of smearing the patch
+    over the whole plate.
+
+    Since m20624 the legacy global inverse-distance weighting is only a fallback
+    for genuinely scattered contact nodes, and its averaging radius defaults to
+    the local node spacing rather than the largest inter-node distance (the old
+    default inflated the projected force by 24 %-666 % on Gaussian patches; see
+    ``docs/VERIFY-patch-from-contact-units.md``).
 
     Parameters
     ----------
     contact_data : ContactPressureData
-        Contact pressure data.
     plate_nodes : (nn, 2) array
-        Plate mesh node coordinates.
     plate_elements : (ne, 4) array
-        Plate mesh element connectivity.
     interpolation_radius : float, optional
-        Maximum distance for interpolation.
+        Averaging radius for the scattered-data fallback.
+    method : {"auto", "bilinear", "idw"}
+        Force a projection method (``"bilinear"`` raises for scattered data).
 
     Returns
     -------
     nodal_pressures : (nn,) array
-        Interpolated pressure at each plate node [Pa].
+        Pressure at each plate node [Pa].
     """
     pos = np.asarray(contact_data.node_positions, dtype=np.float64)
     pres = np.asarray(contact_data.normal_pressures, dtype=np.float64)
     nodes = np.asarray(plate_nodes, dtype=np.float64)
-
-    # Use 2D coordinates
     if pos.shape[1] == 3:
         pos = pos[:, :2]
     if nodes.shape[1] == 3:
         nodes = nodes[:, :2]
 
-    if interpolation_radius is None:
-        # Default: max inter-node distance in contact data
-        if len(pos) > 1:
-            dists = np.linalg.norm(pos[:, None, :] - pos[None, :, :], axis=-1)
-            interpolation_radius = float(np.max(dists))
-        else:
-            interpolation_radius = 1.0
+    grid = _structured_grid_index(pos) if pos.shape[0] >= 4 else None
+    if method == "auto":
+        use_bilinear = grid is not None
+    elif method == "bilinear":
+        if grid is None:
+            raise ValueError("contact nodes are not a tensor-product grid")
+        use_bilinear = True
+    elif method == "idw":
+        use_bilinear = False
+    else:
+        raise ValueError("method must be 'auto', 'bilinear' or 'idw'")
+
+    if use_bilinear:
+        xs, ys, index = grid
+        P = pres[index]
+        field = _bilinear_field(xs, ys, P, outside_zero=True)
+        return np.asarray(field(nodes[:, 0], nodes[:, 1]), dtype=np.float64)
+
+    # ---- scattered-data fallback: local inverse-distance weighting ----
+    if pos.shape[0] == 1:
+        nodal = np.full(nodes.shape[0], float(pres[0]))
+        return nodal
+    pair = np.linalg.norm(pos[:, None, :] - pos[None, :, :], axis=-1)
+    np.fill_diagonal(pair, np.inf)
+    spacing = float(np.median(np.min(pair, axis=1)))
+    radius = interpolation_radius if interpolation_radius is not None else 2.0 * spacing
 
     nn = nodes.shape[0]
-    nodal_pressures = np.zeros(nn, dtype=np.float64)
-
+    nodal = np.zeros(nn, dtype=np.float64)
     for i in range(nn):
         dists = np.linalg.norm(nodes[i, :] - pos, axis=1)
-        within = dists < interpolation_radius
+        within = dists <= radius
         if not np.any(within):
             continue
         d = dists[within]
-        p = pres[within]
-        # Inverse-distance weighting (with small epsilon to avoid singularity)
-        eps = 1e-12
-        weights = 1.0 / (d + eps)
+        weights = 1.0 / (d + 1e-12)
         weights /= weights.sum()
-        nodal_pressures[i] = np.sum(weights * p)
-
-    return nodal_pressures
+        nodal[i] = float(np.sum(weights * pres[within]))
+    return nodal
 
 
 def uniform_patch_total_force(
@@ -278,38 +341,196 @@ def gaussian_patch_pressure(
     return peak_pressure * np.exp(-0.5 * (dx**2 + dy**2))
 
 
+def _structured_grid_index(plate_nodes_np: np.ndarray):
+    """Return ``(xs, ys, index)`` for a tensor-product node grid, else ``None``.
+
+    ``index[j, i]`` is the node number sitting at ``(xs[i], ys[j])``.
+    """
+    nodes = np.asarray(plate_nodes_np, dtype=np.float64)
+    xs = np.unique(np.round(nodes[:, 0], 12))
+    ys = np.unique(np.round(nodes[:, 1], 12))
+    if xs.size < 2 or ys.size < 2 or xs.size * ys.size != nodes.shape[0]:
+        return None
+    ix = np.searchsorted(xs, np.round(nodes[:, 0], 12))
+    iy = np.searchsorted(ys, np.round(nodes[:, 1], 12))
+    index = np.full((ys.size, xs.size), -1, dtype=np.int64)
+    index[iy, ix] = np.arange(nodes.shape[0])
+    if np.any(index < 0):
+        return None
+    return xs, ys, index
+
+
+def _as_1d(values) -> tuple[np.ndarray, bool]:
+    """Normalise a scalar/array/tensor argument to ``(1-D float array, was_scalar)``."""
+    is_tensor = torch.is_tensor(values)
+    if is_tensor:
+        arr = values.detach().cpu().numpy()
+    else:
+        arr = np.asarray(values)
+    arr = np.atleast_1d(arr).astype(np.float64)
+    return arr, bool(arr.size == 1 and (is_tensor or np.ndim(values) == 0))
+
+
 def _build_pressure_callable_from_nodes(
     plate_nodes_np: np.ndarray,
     nodal_pressures: np.ndarray,
 ) -> Callable:
-    """Build a pressure callable that works with both numpy and torch inputs.
+    """Rebuild a pressure callable [Pa] from the *nodal pressure field*.
 
-    The plate solver's ``consistent_load_vector`` passes torch tensors to the
-    pressure function, so we need to handle both types.
+    The plate grid is a tensor-product grid, so the field is interpolated
+    bilinearly (clamped to the domain); non tensor-product meshes fall back to
+    nearest-node lookup.
+
+    Notes
+    -----
+    The argument must be a pressure field [Pa].  Passing the consistent nodal
+    *forces* (``load_vector[0::3]``, [N]) re-integrates them as a pressure and
+    scales the applied load by one element area -- that defect (a factor
+    ``element_area`` on the deflection, i.e. ~144x at nx=12) is fixed in
+    mission m20624; see ``docs/VERIFY-patch-from-contact-units.md``.
     """
-    def pressure_fn(x, y):
-        # Handle both torch tensors and numpy arrays
+    nodes_np = np.asarray(plate_nodes_np, dtype=np.float64)
+    p_nodes = np.asarray(nodal_pressures, dtype=np.float64)
+    if p_nodes.shape != (nodes_np.shape[0],):
+        raise ValueError("nodal_pressures must hold one value per plate node")
+    grid = _structured_grid_index(nodes_np)
+
+    if grid is not None:
+        xs, ys, index = grid
+        P = p_nodes[index]  # (ny, nx)
+
+        def pressure_fn(x, y):
+            xa, x_scalar = _as_1d(x)
+            ya, y_scalar = _as_1d(y)
+            i = np.clip(np.searchsorted(xs, xa) - 1, 0, xs.size - 2)
+            j = np.clip(np.searchsorted(ys, ya) - 1, 0, ys.size - 2)
+            tx = np.clip((xa - xs[i]) / (xs[i + 1] - xs[i]), 0.0, 1.0)
+            ty = np.clip((ya - ys[j]) / (ys[j + 1] - ys[j]), 0.0, 1.0)
+            val = (
+                (1.0 - tx) * (1.0 - ty) * P[j, i]
+                + tx * (1.0 - ty) * P[j, i + 1]
+                + (1.0 - tx) * ty * P[j + 1, i]
+                + tx * ty * P[j + 1, i + 1]
+            )
+            if x_scalar and y_scalar:
+                val = float(np.asarray(val).reshape(-1)[0])
+            if torch.is_tensor(x):
+                return torch.as_tensor(val, dtype=x.dtype, device=x.device)
+            return val
+
+        return pressure_fn
+
+    def pressure_fn_nearest(x, y):
+        xa, x_scalar = _as_1d(x)
+        ya, y_scalar = _as_1d(y)
+        d2 = (nodes_np[None, :, 0] - xa[:, None]) ** 2 + (
+            nodes_np[None, :, 1] - ya[:, None]
+        ) ** 2
+        val = p_nodes[np.argmin(d2, axis=1)]
+        if x_scalar and y_scalar:
+            val = float(np.asarray(val).reshape(-1)[0])
         if torch.is_tensor(x):
-            x_np = x.detach().cpu().numpy()
-            y_np = y.detach().cpu().numpy()
-            is_tensor = True
-            dtype = x.dtype
-            device = x.device
-        else:
-            x_np = np.asarray(x, dtype=np.float64)
-            y_np = np.asarray(y, dtype=np.float64)
-            is_tensor = False
+            return torch.as_tensor(val, dtype=x.dtype, device=x.device)
+        return val
 
-        # Find nearest node
-        dists = (plate_nodes_np[:, 0] - x_np)**2 + (plate_nodes_np[:, 1] - y_np)**2
-        idx = int(np.argmin(dists))
-        result = nodal_pressures[idx]
+    return pressure_fn_nearest
 
-        if is_tensor:
-            return torch.tensor(result, dtype=dtype, device=device)
-        return result
 
-    return pressure_fn
+def _integrated_load(
+    plate_nodes_np: np.ndarray,
+    plate_elements: np.ndarray,
+    pressure_fn: Callable,
+) -> float:
+    """Integral of a pressure field over the plate [N], 2x2 Gauss per Q4 element."""
+    nodes = np.asarray(plate_nodes_np, dtype=np.float64)
+    gp = 1.0 / math.sqrt(3.0)
+    total = 0.0
+    for conn in np.asarray(plate_elements, dtype=np.int64):
+        xy = nodes[conn]
+        for xi in (-gp, gp):
+            for eta in (-gp, gp):
+                N = 0.25 * np.array([
+                    (1.0 - xi) * (1.0 - eta),
+                    (1.0 + xi) * (1.0 - eta),
+                    (1.0 + xi) * (1.0 + eta),
+                    (1.0 - xi) * (1.0 + eta),
+                ])
+                dN_nat = 0.25 * np.array([
+                    [-(1.0 - eta), -(1.0 - xi)],
+                    [(1.0 - eta), -(1.0 + xi)],
+                    [(1.0 + eta), (1.0 + xi)],
+                    [-(1.0 + eta), (1.0 - xi)],
+                ])
+                J = dN_nat.T @ xy
+                detJ = abs(J[0, 0] * J[1, 1] - J[0, 1] * J[1, 0])
+                q = pressure_fn(float(N @ xy[:, 0]), float(N @ xy[:, 1]))
+                if torch.is_tensor(q):
+                    q = float(q.detach().cpu())
+                total += float(q) * detJ
+    return total
+
+
+def peak_stresses(result: MindlinPlateResult) -> dict:
+    """Peak plate face stresses of a Mindlin solve [MPa].
+
+    Uses :func:`tensorfem.plate_mindlin.compute_face_stresses` (per-element
+    centroid curvature -> top/bottom face stress) and reports the peak von Mises
+    and peak bending stress magnitudes, so that "peak stress" is a real stress
+    measure and not a deflection proxy.
+    """
+    faces = compute_face_stresses(result)
+    if not faces:
+        raise ValueError("compute_face_stresses returned no faces")
+    vm_best = None
+    mx_best = None
+    for face in faces:
+        s = face["stress"]
+        sx, sy, txy = s["sigma_x"], s["sigma_y"], s["tau_xy"]
+        sigma_vm = math.sqrt(max(sx * sx + sy * sy - sx * sy + 3.0 * txy * txy, 0.0))
+        if vm_best is None or sigma_vm > vm_best["sigma_vm"]:
+            vm_best = {"sigma_vm": sigma_vm, "centroid": face["centroid"]}
+        if mx_best is None or abs(sx) > mx_best["abs_sigma_x"]:
+            mx_best = {"abs_sigma_x": abs(sx), "centroid": face["centroid"]}
+    return {
+        "sigma_vm_MPa": vm_best["sigma_vm"] / 1e6,
+        "sigma_vm_at_m": [vm_best["centroid"][0], vm_best["centroid"][1]],
+        "sigma_x_MPa": mx_best["abs_sigma_x"] / 1e6,
+        "sigma_x_at_m": [mx_best["centroid"][0], mx_best["centroid"][1]],
+    }
+
+
+def _assemble_gauss_load(
+    nodes: np.ndarray,
+    elements: np.ndarray,
+    nodal_pressures: np.ndarray,
+) -> np.ndarray:
+    """Fallback consistent load vector from nodal pressures (2x2 Gauss per element)."""
+    nn = nodes.shape[0]
+    load_vector = np.zeros(3 * nn, dtype=np.float64)
+    gp = 1.0 / math.sqrt(3.0)
+
+    for conn in np.asarray(elements, dtype=np.int64):
+        xy = nodes[conn]
+        for xi in (-gp, gp):
+            for eta in (-gp, gp):
+                N = 0.25 * np.array([
+                    (1.0 - xi) * (1.0 - eta),
+                    (1.0 + xi) * (1.0 - eta),
+                    (1.0 + xi) * (1.0 + eta),
+                    (1.0 - xi) * (1.0 + eta),
+                ])
+                dN_nat = 0.25 * np.array([
+                    [-(1.0 - eta), -(1.0 - xi)],
+                    [(1.0 - eta), -(1.0 + xi)],
+                    [(1.0 + eta), (1.0 + xi)],
+                    [-(1.0 + eta), (1.0 - xi)],
+                ])
+                J = dN_nat.T @ xy
+                detJ = abs(J[0, 0] * J[1, 1] - J[0, 1] * J[1, 0])
+                p_gp = float(N @ nodal_pressures[conn])
+                for i in range(4):
+                    load_vector[3 * conn[i]] += N[i] * p_gp * detJ
+    return load_vector
 
 
 def patch_from_contact(
@@ -354,57 +575,35 @@ def patch_from_contact(
     if nodes.shape[1] == 3:
         nodes = nodes[:, :2]
 
-    # Get nodal pressures
+    # Get the pressure field on the plate nodes [Pa] and, when the contact data
+    # is a tensor-product grid, the field itself (integrating the field directly
+    # avoids a second interpolation of an already interpolated field).
+    field_fn: Optional[Callable] = None
+    contact_grid = _structured_grid_index(pos) if pos.shape[0] >= 4 else None
     if pressure_fn is not None:
         nodal_pressures = pressure_fn(nodes[:, 0], nodes[:, 1])
         if torch.is_tensor(nodal_pressures):
             nodal_pressures = nodal_pressures.detach().cpu().numpy()
+        nodal_pressures = np.asarray(nodal_pressures, dtype=np.float64)
+        field_fn = pressure_fn
     else:
         nodal_pressures = project_pressure_to_nodes(
             contact_data, nodes, elements,
             interpolation_radius=interpolation_radius,
         )
+        if contact_grid is not None:
+            xs_c, ys_c, index_c = contact_grid
+            field_fn = _bilinear_field(xs_c, ys_c, pres[index_c], outside_zero=True)
 
     # Build consistent load vector
     nn = nodes.shape[0]
     ndof = 3 * nn
-    load_vector = np.zeros(ndof, dtype=np.float64)
 
-    for conn in elements:
-        xy = nodes[conn]
-        # 2x2 Gauss quadrature for consistent load
-        gp = 1.0 / math.sqrt(3.0)
-        for xi_f in (-gp, gp):
-            for eta_f in (-gp, gp):
-                xi = xi_f
-                eta = eta_f
-                # Shape functions
-                N = 0.25 * np.array([
-                    (1.0 - xi) * (1.0 - eta),
-                    (1.0 + xi) * (1.0 - eta),
-                    (1.0 + xi) * (1.0 + eta),
-                    (1.0 - xi) * (1.0 + eta),
-                ])
-                # Natural derivatives
-                dN_nat = 0.25 * np.array([
-                    [-(1.0 - eta), -(1.0 - xi)],
-                    [(1.0 - eta), -(1.0 + xi)],
-                    [(1.0 + eta), (1.0 + xi)],
-                    [-(1.0 + eta), (1.0 - xi)],
-                ])
-                J = dN_nat.T @ xy
-                detJ = abs(J[0, 0] * J[1, 1] - J[0, 1] * J[1, 0])
-
-                # Physical coordinates at Gauss point
-                x_gp = float(N @ xy[:, 0])
-                y_gp = float(N @ xy[:, 1])
-
-                # Pressure at Gauss point (interpolate from nodal pressures)
-                p_gp = float(N @ nodal_pressures[conn])
-
-                # Consistent load contribution
-                for i in range(4):
-                    load_vector[3 * conn[i]] += N[i] * p_gp * detJ
+    # The plate solver re-integrates a pressure callable element by element
+    # (2x2 Gauss), so the load vector is built from the same element bilinear
+    # interpolant of the nodal pressures -- otherwise the two disagree at patch
+    # edges, where the contact field is discontinuous.
+    load_vector = _assemble_gauss_load(nodes, elements, nodal_pressures)
 
     # Compute metadata
     total_force = float(np.sum(load_vector[0::3]))
@@ -432,9 +631,16 @@ def patch_from_contact(
             "n_contact_nodes": len(pres),
             "n_plate_nodes": nn,
             "n_plate_elements": len(elements),
+            # the pressure field [Pa] the load vector was integrated from, so a
+            # downstream solve can re-use it instead of re-interpolating
+            "field_fn": field_fn,
+            "projection_method": (
+                "exact_contact_grid_bilinear" if field_fn is not None
+                else "plate_node_interpolation"
+            ),
         },
+        nodal_pressures=np.asarray(nodal_pressures, dtype=np.float64),
     )
-
 
 def contact_pressure_to_plate_load(
     contact_data: ContactPressureData,
@@ -449,61 +655,102 @@ def contact_pressure_to_plate_load(
     pressure_fn: Optional[Callable[[np.ndarray, np.ndarray], np.ndarray]] = None,
     dtype=torch.float64,
 ) -> tuple[MindlinPlateResult, PatchLoadResult]:
-    """End-to-end: contact pressure → plate solve.
+    """End-to-end: contact pressure -> projected plate load -> plate solve.
+
+    The contact pressure is projected onto the plate nodes (:func:`patch_from_contact`),
+    the resulting **nodal pressure field** [Pa] is interpolated bilinearly inside
+    each element, and the plate is solved with the merged Mindlin Q4 solver.
+
+    The total force actually applied by this chain is integrated independently
+    and stored in ``PatchLoadResult.metadata`` as ``applied_force`` together with
+    ``load_balance_rel`` (relative force imbalance against the projected nodal
+    loads), so the unit consistency of the chain is auditable from every result.
 
     Parameters
     ----------
     contact_data : ContactPressureData
-        Contact pressure data.
+        Contact pressure data from a CZM / contact solve.
     plate_nx : int
         Number of elements per side.
     plate_side : float
         Plate side length [m].
-    young : float
-        Young's modulus [Pa].
-    poisson : float
-        Poisson's ratio.
-    thickness : float
-        Plate thickness [m].
+    young, poisson, thickness : float
+        Plate material / thickness.
     winkler_k : float
-        Winkler foundation coefficient [N/m³].
+        Winkler foundation coefficient [N/m^3] (0 for a free plate).
     boundary : str
-        Boundary condition: "simply_supported" or "clamped".
+        "simply_supported" or "clamped".
     pressure_fn : callable, optional
-        Custom pressure function.
+        Custom pressure field [Pa] overriding the contact data (diagnostics).
     dtype : torch.dtype
-        Data type for the solver.
+        Solver dtype.
 
     Returns
     -------
     plate_result : MindlinPlateResult
-        Plate solver result.
     patch_result : PatchLoadResult
-        Patch load projection result.
+        Carries ``nodal_pressures`` [Pa] and the force-balance audit.
     """
     nodes, elements = structured_square_mesh(plate_nx, plate_side, dtype=dtype)
     nodes_np = nodes.numpy()
     elements_np = elements.numpy()
 
-    # Project contact pressure to plate mesh
     patch_result = patch_from_contact(
-        contact_data, nodes_np, elements_np,
-        pressure_fn=pressure_fn,
+        contact_data, nodes_np, elements_np, pressure_fn=pressure_fn,
+    )
+    if patch_result.nodal_pressures is None:  # pragma: no cover - defensive
+        raise RuntimeError("patch_from_contact did not return a nodal pressure field")
+
+    # Solve with the same interpolant the load vector was built from, so the
+    # applied load and the projected nodal loads use identical quadrature.
+    pressure_callable = _build_pressure_callable_from_nodes(
+        nodes_np, patch_result.nodal_pressures,
     )
 
-    # Build pressure function from projected nodal pressures
-    nodal_p = patch_result.load_vector[0::3]  # w DOFs
+    # Independent audit of the applied force (units are Pa * m^2 = N).
+    applied_force = _integrated_load(nodes_np, elements_np, pressure_callable)
+    reference_force = patch_result.total_force
+    patch_result.metadata["applied_force"] = applied_force
+    patch_result.metadata["load_balance_rel"] = (
+        applied_force - reference_force
+    ) / reference_force if reference_force > 0.0 else 0.0
 
-    # Build a callable that works with both numpy and torch inputs
-    pressure_callable = _build_pressure_callable_from_nodes(nodes_np, nodal_p)
-
-    # Solve plate with non-uniform pressure
     plate_result = solve_plate_on_winkler_foundation(
         plate_nx, plate_side, young, poisson, thickness,
         winkler_k, pressure_callable, boundary=boundary, dtype=dtype,
     )
-
     return plate_result, patch_result
+
+
+def _gaussian_contact_grid(
+    centre_x: float,
+    centre_y: float,
+    sigma_x: float,
+    sigma_y: float,
+    peak_pressure: float,
+    plate_side: float,
+    n_per_axis: int,
+):
+    """Deterministic contact-node cloud for a Gaussian pressure patch.
+
+    Sample the analytical field on a ``n_per_axis^2`` grid spanning
+    ``centre +- 3 sigma`` (clipped to the plate), i.e. 99.7 % of the force is
+    inside the sampled window.  The nodal values are the *exact* analytical
+    pressures, so the residual projection error is the discretisation of the
+    contact data itself -- reported per configuration, not hidden.
+    """
+    lo_x = max(0.0, centre_x - 3.0 * sigma_x)
+    hi_x = min(plate_side, centre_x + 3.0 * sigma_x)
+    lo_y = max(0.0, centre_y - 3.0 * sigma_y)
+    hi_y = min(plate_side, centre_y + 3.0 * sigma_y)
+    xs = np.linspace(lo_x, hi_x, n_per_axis)
+    ys = np.linspace(lo_y, hi_y, n_per_axis)
+    xx, yy = np.meshgrid(xs, ys)
+    pos = np.column_stack([xx.ravel(), yy.ravel()])
+    pres = gaussian_patch_pressure(
+        pos[:, 0], pos[:, 1], centre_x, centre_y, peak_pressure, sigma_x, sigma_y,
+    )
+    return pos, pres
 
 
 def scan_contact_configurations(
@@ -517,49 +764,56 @@ def scan_contact_configurations(
     configurations: Optional[Sequence[dict]] = None,
     boundary: str = "simply_supported",
     dtype=torch.float64,
+    n_contact_per_axis: int = 21,
 ) -> dict:
-    """Parametric scan over contact configurations.
+    """Scan >= 3 contact configurations: non-uniform patch vs uniform patch.
 
-    Compares non-uniform (Gaussian) patch loading against uniform patch
-    baseline for multiple contact configurations.  **Total force is matched**
-    between the Gaussian and uniform cases so that the comparison isolates
-    the effect of pressure non-uniformity alone.
+    For every configuration three solves are run on the same plate mesh:
+
+    ``projection``
+        contact data (CZM-style node pressures) -> :func:`patch_from_contact` ->
+        :func:`contact_pressure_to_plate_load`.  **This is the end-to-end chain**
+        (contact -> patch load -> plate stress); no analytical shortcut.
+    ``analytic_field``
+        the same Gaussian pressure evaluated exactly at the quadrature points.
+        Used only to separate the projection error from the plate-solver error.
+    ``uniform``
+        a uniform patch with the *same total force and the same footprint* as the
+        projected patch (the IACS/JOUR-ICE-STRUCT idealisation), so the delta
+        isolates pressure non-uniformity.
+
+    Reported quantities are **peak face stresses** (:func:`peak_stresses`:
+    von Mises and bending stress from the curvature field) as well as peak
+    deflections; the machine-readable summary carries the non-uniform vs uniform
+    stress deltas, the projection error, and the force-balance audit.
 
     Parameters
     ----------
     plate_nx : int
-        Number of elements per side.
+        Elements per side.
     plate_side : float
         Plate side length [m].
-    young : float
-        Young's modulus [Pa].
-    poisson : float
-        Poisson's ratio.
-    thickness : float
-        Plate thickness [m].
+    young, poisson, thickness : float
+        Plate material / thickness.
     winkler_k : float
-        Winkler foundation coefficient [N/m³].
-    configurations : list of dict, optional
-        Each dict has keys:
-        - ``name``: configuration name
-        - ``peak_pressure``: peak pressure [Pa]
-        - ``sigma_x``, ``sigma_y``: Gaussian widths [m]
-        - ``patch_width``, ``patch_length``: uniform patch dimensions [m]
-        The uniform pressure is computed to match the Gaussian total force.
+        Winkler foundation coefficient [N/m^3] (0 for a free plate).
+    configurations : sequence of dict, optional
+        Keys: ``name``, ``peak_pressure`` [Pa], ``sigma_x``, ``sigma_y`` [m],
+        ``patch_width``, ``patch_length`` [m] (uniform reference footprint).
     boundary : str
-        Boundary condition.
+        Plate boundary condition.
     dtype : torch.dtype
-        Data type.
+        Solver dtype.
+    n_contact_per_axis : int
+        Contact-node resolution per axis of the Gaussian sampling window.
 
     Returns
     -------
     results : dict
-        Dictionary with per-configuration results and summary.
+        ``{"configurations": [...], "summary": {...}}``, JSON-serialisable.
     """
     if configurations is None:
-        # Default: 3 configurations with increasing non-uniformity
-        # All have the same total force (matched to Gaussian integral)
-        centre = plate_side / 2
+        # Default: 3 configurations with increasing non-uniformity.
         configurations = [
             {
                 "name": "mild_nonuniform",
@@ -587,123 +841,161 @@ def scan_contact_configurations(
             },
         ]
 
-    results = {"configurations": [], "summary": {}}
+    def gaussian_fn_for(peak, sx, sy, cx, cy):
+        def gaussian_fn(x, y):
+            if torch.is_tensor(x):
+                x = x.detach().cpu().numpy()
+                y = y.detach().cpu().numpy()
+            return gaussian_patch_pressure(x, y, cx, cy, peak, sx, sy)
+        return gaussian_fn
+
+    def uniform_fn_for(pressure, cx, cy, half_w, half_l):
+        def uniform_fn(x, y):
+            if torch.is_tensor(x):
+                x_np = x.detach().cpu().numpy()
+                y_np = y.detach().cpu().numpy()
+            else:
+                x_np = np.asarray(x, dtype=np.float64)
+                y_np = np.asarray(y, dtype=np.float64)
+            inside = (np.abs(x_np - cx) <= half_l) & (np.abs(y_np - cy) <= half_w)
+            values = np.where(inside, pressure, 0.0).astype(np.float64)
+            if np.ndim(values) == 0:
+                values = float(values)
+            if torch.is_tensor(x):
+                return torch.as_tensor(values, dtype=x.dtype, device=x.device)
+            return values
+        return uniform_fn
+
+    centre = plate_side / 2.0
+    rows: list[dict] = []
 
     for cfg in configurations:
-        name = cfg["name"]
-        peak_p = cfg["peak_pressure"]
-        sx = cfg["sigma_x"]
-        sy = cfg["sigma_y"]
-        pw = cfg["patch_width"]
-        pl = cfg["patch_length"]
+        peak_p = float(cfg["peak_pressure"])
+        sx = float(cfg["sigma_x"])
+        sy = float(cfg["sigma_y"])
+        patch_width = float(cfg["patch_width"])
+        patch_length = float(cfg["patch_length"])
 
-        # Gaussian total force = peak * 2*pi*sigma_x*sigma_y
-        gaussian_total_force = peak_p * 2 * math.pi * sx * sy
-        # Uniform pressure to match total force
-        uniform_p = gaussian_total_force / (pw * pl)
+        analytic_total_force = peak_p * 2.0 * math.pi * sx * sy
 
-        # Gaussian pressure function (numpy-compatible)
-        def make_gaussian_fn(_peak, _sx, _sy, _cx, _cy):
-            def gaussian_fn(x, y):
-                if torch.is_tensor(x):
-                    x = x.detach().cpu().numpy()
-                    y = y.detach().cpu().numpy()
-                dx = (x - _cx) / _sx
-                dy = (y - _cy) / _sy
-                return _peak * np.exp(-0.5 * (dx**2 + dy**2))
-            return gaussian_fn
-
-        gaussian_fn = make_gaussian_fn(peak_p, sx, sy, plate_side/2, plate_side/2)
-
-        # Solve with non-uniform (Gaussian) patch
-        nodes, elements = structured_square_mesh(plate_nx, plate_side, dtype=dtype)
-        nodes_np = nodes.numpy()
-        elements_np = elements.numpy()
-
-        # Create contact data from Gaussian
-        np.random.seed(42)
-        n_contact = 100
-        cx, cy = plate_side / 2, plate_side / 2
-        contact_x = np.clip(cx + sx * np.random.randn(n_contact), 0, plate_side)
-        contact_y = np.clip(cy + sy * np.random.randn(n_contact), 0, plate_side)
-        contact_pos = np.column_stack([contact_x, contact_y])
-        contact_pres = gaussian_patch_pressure(contact_x, contact_y, cx, cy, peak_p, sx, sy)
-        contact_area = 2 * math.pi * sx * sy  # Effective area of Gaussian
-
+        # --- contact data as a CZM solve would deliver it ---
+        contact_pos, contact_pres = _gaussian_contact_grid(
+            centre, centre, sx, sy, peak_p, plate_side, n_contact_per_axis,
+        )
         contact_data = ContactPressureData(
             node_positions=contact_pos,
             normal_pressures=contact_pres,
-            contact_area=contact_area,
+            contact_area=2.0 * math.pi * sx * sy,
         )
 
-        # Non-uniform solve
-        plate_result_nonuniform, patch_result = contact_pressure_to_plate_load(
+        # --- (1) end-to-end: contact -> projected patch load -> plate ---
+        plate_proj, patch_proj = contact_pressure_to_plate_load(
             contact_data, plate_nx, plate_side, young, poisson, thickness,
             winkler_k, boundary=boundary, dtype=dtype,
-            pressure_fn=gaussian_fn,
         )
+        stress_proj = peak_stresses(plate_proj)
+        w_proj = float(np.max(np.abs(plate_proj.displacement[0::3].numpy())))
 
-        # Extract peak deflection
-        w_nonuniform = plate_result_nonuniform.displacement[0::3].numpy()
-        max_deflection_nonuniform = float(np.max(np.abs(w_nonuniform)))
+        # --- (2) diagnostic: exact analytic pressure field on the same mesh ---
+        plate_ana, _ = contact_pressure_to_plate_load(
+            contact_data, plate_nx, plate_side, young, poisson, thickness,
+            winkler_k, boundary=boundary, dtype=dtype,
+            pressure_fn=gaussian_fn_for(peak_p, sx, sy, centre, centre),
+        )
+        stress_ana = peak_stresses(plate_ana)
+        w_ana = float(np.max(np.abs(plate_ana.displacement[0::3].numpy())))
 
-        # Uniform patch solve (same total force)
-        def make_uniform_fn(_p, _cx, _cy, _pw, _pl):
-            def uniform_fn(x, y):
-                if torch.is_tensor(x):
-                    x = x.detach().cpu().numpy()
-                    y = y.detach().cpu().numpy()
-                in_patch = (np.abs(x - _cx) <= _pl) & (np.abs(y - _cy) <= _pw)
-                result = np.where(in_patch, _p, 0.0)
-                if torch.is_tensor(x):
-                    return torch.tensor(float(result), dtype=x.dtype, device=x.device)
-                return float(result)
-            return uniform_fn
-
-        uniform_fn = make_uniform_fn(uniform_p, plate_side/2, plate_side/2, pw/2, pl/2)
-
-        plate_result_uniform = solve_plate_on_winkler_foundation(
+        # --- (3) uniform reference: same total force, same footprint ---
+        total_force = patch_proj.total_force
+        uniform_p = total_force / (patch_width * patch_length)
+        uniform_fn = uniform_fn_for(
+            uniform_p, centre, centre, patch_width / 2.0, patch_length / 2.0,
+        )
+        plate_uni = solve_plate_on_winkler_foundation(
             plate_nx, plate_side, young, poisson, thickness,
             winkler_k, uniform_fn, boundary=boundary, dtype=dtype,
         )
+        stress_uni = peak_stresses(plate_uni)
+        w_uni = float(np.max(np.abs(plate_uni.displacement[0::3].numpy())))
 
-        w_uniform = plate_result_uniform.displacement[0::3].numpy()
-        max_deflection_uniform = float(np.max(np.abs(w_uniform)))
+        def pct(a, b):
+            return 100.0 * (a / b - 1.0) if b else float("nan")
 
-        # Peak stress comparison (using deflection as proxy for stress)
-        deflection_diff_pct = (
-            (max_deflection_nonuniform - max_deflection_uniform)
-            / max_deflection_uniform * 100
-            if max_deflection_uniform > 0 else 0.0
-        )
-
-        config_result = {
-            "name": name,
-            "peak_pressure_pa": peak_p,
+        rows.append({
+            "name": cfg["name"],
+            "peak_pressure_MPa": peak_p / 1e6,
             "sigma_x_m": sx,
             "sigma_y_m": sy,
-            "gaussian_total_force_n": gaussian_total_force,
-            "uniform_pressure_pa": uniform_p,
-            "uniform_patch_width_m": pw,
-            "uniform_patch_length_m": pl,
-            "max_deflection_nonuniform_m": max_deflection_nonuniform,
-            "max_deflection_uniform_m": max_deflection_uniform,
-            "deflection_diff_pct": deflection_diff_pct,
-            "pressure_nonuniformity": patch_result.pressure_nonuniformity,
-            "total_force_nonuniform_n": patch_result.total_force,
-            "total_force_uniform_n": uniform_p * pw * pl,
-        }
-        results["configurations"].append(config_result)
+            "contact_grid": [n_contact_per_axis, n_contact_per_axis],
+            "analytic_total_force_N": analytic_total_force,
+            "total_force_nonuniform_N": total_force,
+            "uniform_pressure_MPa": uniform_p / 1e6,
+            "uniform_patch_width_m": patch_width,
+            "uniform_patch_length_m": patch_length,
+            "total_force_uniform_N": uniform_p * patch_width * patch_length,
+            "projection_total_force_error_pct": pct(total_force, analytic_total_force),
+            "load_balance_rel": patch_proj.metadata.get("load_balance_rel", float("nan")),
+            "pressure_nonuniformity": patch_proj.pressure_nonuniformity,
+            # peak deflection (kept for continuity with the earlier artifact)
+            "max_deflection_nonuniform_m": w_proj,
+            "max_deflection_uniform_m": w_uni,
+            "deflection_diff_pct": pct(w_proj, w_uni),
+            # peak stress: the acceptance quantity
+            "peak_stress_projected": stress_proj,
+            "peak_stress_uniform": stress_uni,
+            "peak_stress_analytic_field": stress_ana,
+            "delta_nonuniform_over_uniform_pct": {
+                "sigma_vm": pct(stress_proj["sigma_vm_MPa"], stress_uni["sigma_vm_MPa"]),
+                "sigma_x": pct(stress_proj["sigma_x_MPa"], stress_uni["sigma_x_MPa"]),
+                "deflection": pct(w_proj, w_uni),
+            },
+            "projection_error_pct": {
+                "sigma_vm": pct(stress_proj["sigma_vm_MPa"], stress_ana["sigma_vm_MPa"]),
+                "sigma_x": pct(stress_proj["sigma_x_MPa"], stress_ana["sigma_x_MPa"]),
+                "deflection": pct(w_proj, w_ana),
+            },
+        })
 
-    # Summary statistics
-    diffs = [c["deflection_diff_pct"] for c in results["configurations"]]
-    results["summary"] = {
-        "n_configurations": len(configurations),
-        "max_deflection_diff_pct": max(diffs),
-        "min_deflection_diff_pct": min(diffs),
-        "mean_deflection_diff_pct": float(np.mean(diffs)),
-        "h3_anchor_level_pct": 0.339,  # H3-ICE-PLATE-FEM anchor
-        "h3_consistency": "within_anchor" if max(abs(d) for d in diffs) < 1.0 else "exceeds_anchor",
+    delta_vm = [abs(r["delta_nonuniform_over_uniform_pct"]["sigma_vm"]) for r in rows]
+    delta_mx = [abs(r["delta_nonuniform_over_uniform_pct"]["sigma_x"]) for r in rows]
+    proj_vm = [abs(r["projection_error_pct"]["sigma_vm"]) for r in rows]
+    proj_mx = [abs(r["projection_error_pct"]["sigma_x"]) for r in rows]
+    balance = [abs(r["load_balance_rel"]) for r in rows]
+
+    h3_anchor_pct = 0.339
+    max_proj_mx = max(proj_mx)
+    results = {
+        "configurations": rows,
+        "summary": {
+            "n_configurations": len(rows),
+            "max_abs_sigma_vm_diff_pct": max(delta_vm),
+            "max_abs_sigma_x_diff_pct": max(delta_mx),
+            "min_abs_sigma_x_diff_pct": min(delta_mx),
+            "max_abs_projection_error_sigma_vm_pct": max(proj_vm),
+            "max_abs_projection_error_sigma_x_pct": max_proj_mx,
+            "max_abs_load_balance_rel": max(balance),
+            "max_deflection_diff_pct": max(
+                abs(r["deflection_diff_pct"]) for r in rows
+            ),
+            # The H3-ICE-PLATE-FEM anchor (0.339 % = FEM vs Kelvin series,
+            # benchmarks/artifacts/ice_plate_flexural_limit/evidence.json) is an
+            # *accuracy* scale for the solution chain, NOT a bound on the
+            # non-uniformity effect.  It is compared here against the projection
+            # error (the only error of this module's own chain).
+            "h3_anchor_level_pct": h3_anchor_pct,
+            "h3_anchor_meaning": (
+                "FEM-vs-Kelvin analytical error of the H3-ICE-PLATE-FEM anchor; "
+                "used as the accuracy scale for this chain, not as a tolerance "
+                "on the non-uniformity effect"
+            ),
+            "h3_consistency": "within_anchor" if max_proj_mx <= h3_anchor_pct else "exceeds_anchor",
+            "h3_consistency_basis": (
+                "max |projection-path peak bending stress vs analytic-pressure-field "
+                "peak bending stress| on the same mesh"
+            ),
+            "all_configurations_valid": all(
+                r["peak_stress_projected"]["sigma_x_MPa"] > 0.0 for r in rows
+            ),
+        },
     }
-
     return results
