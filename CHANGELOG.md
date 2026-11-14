@@ -1,5 +1,32 @@
 ## Unreleased
 
+### 3-D cohesive dissipation: reproducible figure/number package (gate included)
+- **New artifact** `artifacts/cohesive3d_dissipation/` (`make_figures.py` + `numbers.json` +
+  three PNGs): the dissipated-energy claims of the 3-D cohesive element now ship with the
+  figures *and* the numbers that produced them, generated from the live module -- nothing in
+  the report is hand-copied.  `python artifacts/cohesive3d_dissipation/make_figures.py`
+  regenerates all of it.
+- **Gate** `--check`: re-derives every scalar (50 numbers, including the per-ray entries) and
+  compares against the committed `numbers.json` at `1e-6` relative, exits 1 on any drift, a
+  missing key, or a missing figure.  The numbers therefore cannot silently rot into fiction
+  while the documentation keeps quoting them.
+- **Tests** `tests/test_cohesive3d_dissipation_artifact.py` (8 tests, ~37 s): committed numbers
+  re-derived from the live module; the three PNGs must exist and be valid PNGs; and a
+  **negative control** -- a tampered `numbers.json` (1 % change in `closed_form_at_failure`)
+  and a missing-figure directory must both make `--check` exit 1.  Without that control a green
+  gate would prove nothing.
+- **Defect fixed while building it**: the first version of the checker flattened only dicts, so
+  the 24 per-ray entries (the path-integral residuals the report quotes) were silently skipped
+  and a 1 % tampering of `closed_form_at_failure` passed the gate.  `flatten_numbers` now walks
+  lists too and the gate covers 50 numbers instead of 22.
+- **Figures**: `fig1` closed-form saturation at `G_c(direction)` with the numerical path
+  integral as open circles (residual `5.0e-6` worst, 90 deg); `fig2` the non-proportional
+  open-then-shear path (`W_path = 1200.249` vs closed form `1199.754 J/m^2`, residual
+  `4.1e-4`, no `G_IIc` overshoot); `fig3` element closure `W_d -> G_Ic A = 500 J` on a
+  1 m x 1 m `COH3D8` patch (relative error `0.0`).
+- **Docs** `docs/cohesive3d-interface-element.md` §6: how to regenerate/verify, the committed
+  per-ray table and the element closure, all read from `numbers.json`.
+
 ### CASE-CANTILEVER-TIP distributed-load ladder: the load path is now graded
 - **New anchor** `benchmarks/verified/fem_cantilever_distributed/` (driver + `result.json` +
   `gates_verified.json` + two figures + generated doc `docs/CASE-CANTILEVER-TIP-distributed-load.md`):

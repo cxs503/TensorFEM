@@ -167,6 +167,10 @@ assuming it away: open to `1.5 a_0(I)` then shear to failure gives
 `W_path = 1200.249 J/m^2` against `W_d = 1199.754 J/m^2` (residual `4.1e-4`,
 0.04%) and does not exceed `G_IIc`.
 
+Figures 1-3 and the committed numbers of this subsection live in
+`artifacts/cohesive3d_dissipation/` and are gated by
+`make_figures.py --check` (see section 6).
+
 ## 4. Pitfalls (measured while building this)
 
 1. **"Rotate coordinates and displacements together" is not an objectivity
@@ -246,3 +250,41 @@ assuming it away: open to `1.5 a_0(I)` then shear to failure gives
 * Prescribed crack path (pre-meshed interface); no crack-path search, no
   remeshing, no adaptive insertion.
 * Rate and temperature dependence are not modelled.
+## 6. Reproduction: the dissipation figure/number package
+
+`artifacts/cohesive3d_dissipation/` is the source of every number in the
+dissipated-energy section above; nothing there is hand-copied.
+
+| file | content |
+|---|---|
+| `make_figures.py` | computes all numbers from the live module and draws the three figures; `--check` re-derives everything and compares against the committed `numbers.json` (relative tolerance `1e-6`, per key) |
+| `numbers.json` | every scalar of the package: law parameters, numerics, per-ray dissipation data, the non-proportional path, the element closure |
+| `fig1_dissipation_envelope.png` | `W_d(a)/G_c(direction)` for 0/30/60/90 deg, with open circles at the numerical path integral |
+| `fig2_nonproportional_path.png` | tractions and measured work along the open-then-shear path |
+| `fig3_element_energy_closure.png` | element `diagnostics["dissipated_energy"]` reaching `G_Ic A` on a 1 m x 1 m `COH3D8` patch |
+
+```
+python artifacts/cohesive3d_dissipation/make_figures.py           # regenerate
+python artifacts/cohesive3d_dissipation/make_figures.py --check   # gate: exit 1 on drift
+```
+
+The gate is itself tested (`tests/test_cohesive3d_dissipation_artifact.py`): the
+committed numbers are re-derived from the live module, the three PNGs must be
+present and valid, and a *tampered* copy of `numbers.json` must be rejected —
+without that negative control a green gate would prove nothing.
+
+Committed values (read from `numbers.json`, path integral over 2001 steps per
+ray):
+
+| mode mix | `G_c` [J/m^2] | `a_0` [m] | `a_f` [m] | `W_path` [J/m^2] | closed form [J/m^2] | residual |
+|---|---|---|---|---|---|---|
+| 0 deg | 500.000 | 5.000e-06 | 2.000e-04 | 500.000 | 500.000 | 1.4e-15 |
+| 30 deg | 522.805 | 5.388e-06 | 2.283e-04 | 522.804 | 522.805 | 1.7e-06 |
+| 60 deg | 765.407 | 6.547e-06 | 4.252e-04 | 765.405 | 765.407 | 2.7e-06 |
+| 90 deg | 1200.000 | 7.500e-06 | 8.000e-04 | 1199.994 | 1200.000 | 5.0e-06 |
+
+Non-proportional path: `W_path = 1200.249 J/m^2` vs closed form
+`1199.754 J/m^2` (residual `4.1e-4`), overshoot above `G_IIc` `2.1e-4`
+relative.  Element closure on the unit patch: `W_d = 500.000 J` vs
+`G_Ic A = 500.0 J` (relative error `0.0e+00`), i.e. the agreement is at
+floating-point round-off, not at a tuned tolerance.
