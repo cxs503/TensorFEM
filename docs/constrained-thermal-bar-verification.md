@@ -36,6 +36,7 @@ No Timoshenko & Goodier / Boley & Weiner page number is quoted: there is no libr
 * **3-D path (reuse):** the hex8 thermo-elastic assembly of `tensorfem.polar_thermal_stress` (`assemble_elasticity` + `assemble_thermal_load` + `solve_dirichlet`, dense reference assembly, `float64`), driven by a new *restraint-set* helper (`constrained_thermal_bar.restraint_dofs`) exposing the uniaxial / biaxial / triaxial / free families on one mesh. The repo's existing thermal gates covered only the two extremes (clamped biaxial and fully free); the uniaxial configuration — the one this case anchors — was untested.
 * **Stress recovery:** `sigma = D (B u - eps_th)` at the 8 Gauss points, averaged per element (the `solve_panel_stress` convention).
 * **Controls / discriminators:** the *free* case must give `sigma ~ 0` (it separates a real thermoelastic solve from one that silently drops the thermal load); the *nu sweep* must leave `sigma_xx` unchanged (uniaxial restraint has no Poisson coupling in the restrained direction); the *restraint family* must reproduce `-E alpha dT`, `-E alpha dT/(1-nu)`, `-E alpha dT/(1-2nu)` and `0`.
+* **Graded rung (new in this revision):** the same two paths driven by a *spatially varying* temperature field `T(x) = T_ref + dT (x/L)^2` — `solve_bar(temperature='quadratic')` in 1-D and `solve_hex(temp_profile='graded')` in 3-D. Until now every element in the hex8 path saw the same `dT`, so the element-temperature sampling was never exercised; on this rung it is, and it is the only rung on which the 3% acceptance gate can fail (see §4.5).
 * **Determinism:** direct dense solves, no sampling, no seed; reruns are bit-identical.
 
 ## 3. Parameters (dimensionless groups included)
@@ -139,12 +140,81 @@ Endpoint slope = -2.472086e+06 Pa/K vs analytic -2.472086e+06 Pa/K (rel. err. 0.
 * FEM sigma_xx = -278.692857 MPa vs reference -278.692857 MPa -> rel. err. 0.00e+00 (✓)
 * for contrast, freezing the properties would give -247.208571 MPa, i.e. 11.3% away: that is a property-evaluation effect, not a discretisation error. It is why the governing case freezes the properties — the 3% gate must be about the FEM, not about the material model.
 
+### 4.5 Graded dT: the rung on which the 3% gate actually bites
+
+Uniform `dT` is nodally exact, so §4.1/§4.2 can only demonstrate round-off: no acceptance tolerance, however tight, can *discriminate* there. This rung makes the tolerance informative. The field `T(x) = T_ref + dT (x/L)^2` is fully restrained at both ends, so compatibility fixes one constant axial force and the continuum answer is constant:
+
+```
+sigma_xx = -E alpha <dT>,   <dT> = dT/3     (both ends fixed, constant E, alpha)
+```
+
+Both FE paths build the thermal load from **one temperature per element** (the average of the nodal values, the convention of `thermal.solve_thermoelastic_bar`). For an equally spaced grid that average is the trapezoid mean of the nodal interpolant, `<dT>_trap = dT (1/3 + 1/(6 n^2))`, so the code must reproduce
+
+```
+sigma_xx = -E alpha <dT>_trap = sigma_exact (1 + 1/(2 n^2))      [both paths, to round-off]
+```
+
+and approach `sigma_exact` at second order. The bias is *interpolation of the temperature field*, not a quadrature defect (trapezoid is exact for the linear interpolant); `1/(2 n^2)` is derived in `constrained_thermal_bar.graded_bias`.
+
+**1-D path** (`solve_thermoelastic_bar`, quadratic `T`):
+
+| n_elem | h [m] | sigma FEM [Pa] | element-average model [Pa] | continuum [Pa] | rel. err vs model | rel. err vs continuum | bias (analytic) | <3% vs continuum? |
+|---|---|---|---|---|---|---|---|---|
+| 2 | 0.5 | -9.270321e+07 | -9.270321e+07 | -8.240286e+07 | -1.607e-16 | 12.5000% | +1.250e-01 | **NO** |
+| 4 | 0.25 | -8.497795e+07 | -8.497795e+07 | -8.240286e+07 | -1.754e-16 | 3.1250% | +3.125e-02 | **NO** |
+| 8 | 0.125 | -8.304663e+07 | -8.304663e+07 | -8.240286e+07 | 0.000e+00 | 0.7812% | +7.812e-03 | YES |
+| 16 | 0.0625 | -8.256380e+07 | -8.256380e+07 | -8.240286e+07 | -1.805e-16 | 0.1953% | +1.953e-03 | YES |
+| 32 | 0.03125 | -8.244309e+07 | -8.244309e+07 | -8.240286e+07 | -1.807e-16 | 0.0488% | +4.883e-04 | YES |
+
+**3-D path** (hex8, uniaxial restraint, graded nodal `T`, lateral 2x2):
+
+| nx | elements | dofs | sigma_xx FEM [Pa] | element-average model [Pa] | continuum [Pa] | rel. err vs model | rel. err vs continuum | element spread | max lateral / axial | <3% vs continuum? |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 2 | 8 | 81 | -9.270321e+07 | -9.270321e+07 | -8.240286e+07 | -1.607e-16 | 12.5000% | 1.74e-14 | 2.96e-01 | **NO** |
+| 4 | 16 | 135 | -8.497795e+07 | -8.497795e+07 | -8.240286e+07 | 1.754e-16 | 3.1250% | 2.56e-14 | 2.23e-01 | **NO** |
+| 8 | 32 | 243 | -8.304663e+07 | -8.304663e+07 | -8.240286e+07 | -3.589e-16 | 0.7813% | 1.14e-13 | 1.33e-01 | YES |
+| 16 | 64 | 459 | -8.256380e+07 | -8.256380e+07 | -8.240286e+07 | 0.000e+00 | 0.1953% | 1.13e-13 | 7.93e-02 | YES |
+
+* element-average model (both paths): max rel. error 3.59e-16 -> gate 1e-08: **PASS**
+* bias identity against `1/(2 n^2)`: max |diff| 0.00e+00
+* observed order: 1-D 2.000, 3-D 2.000 (theory 2, gate ±0.35) -> **PASS**
+* task gate (<3% vs the continuum) fails at n = [2, 4] (1-D) / [2, 4] (3-D) and passes at n = [8, 16, 32] (1-D) / [8, 16] (3-D); predeclared window was fail for n <= 4, pass for n >= 8 -> **PASS**
+
+So the 3% tolerance is *discriminating on this rung and not on the anchor rung*: it is a statement about the mesh, not decoration. That is the honest answer to the round-1 audit remark that the governing rung cannot exercise any tolerance (F3) — it cannot, and this rung is where the pool criterion does work.
+
+Two practical consequences, both visible in the table above:
+
+* a coarse graded mesh **over-predicts the restrained compression by `1/(2 n^2)`** (12.5% at n = 2, 3.1% at n = 4): for a real hull structure with a steep thermal gradient, four elements across the gradient is *outside* the 3% band, and the error is on the safe (over-stressed) side;
+* `sigma_xx` is uniform across the block to round-off (1.7e-14 worst case) while the lateral components near the clamped ends reach 30% of `|sigma_xx|` — a lateral boundary layer that the 1-D model does not represent. The graded rung therefore validates `sigma_xx` only, and says so.
+
+### 4.6 Gate-strength probe: which gate catches which defect
+
+A tolerance is only worth its number if something can fail it. Two physics corruptions are injected into an **in-memory copy** of the module (the working tree is untouched, the mutants are not committed) and the same three quantities are recomputed:
+
+| quantity | baseline (rel.) | A_drop_thermal_strain_in_stress_recovery | B_sample_element_temperature_at_one_node |
+|---|---|---|---|
+| uniform rung, sigma_xx vs closed form | 2.411e-16 | 2.500e+00 **caught** | 2.411e-16 |
+| free control, max abs(sigma) / (E alpha dT) | 9.600e-16 | 2.500e+00 **caught** | 9.600e-16 |
+| graded rung, sigma_xx vs element-average model | 1.754e-16 | 2.500e+00 **caught** | 3.636e-01 **caught** |
+
+| mutation | predeclared expectation | observed |
+|---|---|---|
+| `A_drop_thermal_strain_in_stress_recovery` | caught by a uniform-rung gate | uniform_rel_error, free_control_rel, graded_rel_error_vs_model |
+| `B_sample_element_temperature_at_one_node` | invisible to every uniform-rung gate, caught by the graded rung | graded_rel_error_vs_model |
+
+* mutation A caught on the uniform gates: **PASS**
+* mutation B invisible to every uniform gate (no gate can see it before this revision): **PASS**
+* mutation B caught by the graded rung: **PASS** -> gate-strength verdict: **PASS**
+
+Mutation B is the operational justification of §4.5: sampling the element temperature at a node instead of averaging it is invisible on a uniform field (every node holds the same temperature) and is caught by the graded rung at 36.4% of the axial stress. Without the round-2 rung this case would record that defect as a pass.
+
 ## 5. Notes, limitations, applicability
 
 * The case is **one-dimensional in its physics**: uniform dT, linear elasticity, no gradient, no transient, no plasticity, no contact. It probes the thermal-strain load path, the restraint bookkeeping and the stress recovery — not a temperature field solution. Gradient (bending) and transient entries live elsewhere (`free_plate_gradient_stress`, `thermal_transient_reference`).
 * **Uniaxial restraint is a numerical idealisation.** `u_x = 0` on the two faces with free lateral faces is exact for this anchor, but a heated plate restrained by a colder frame physically sits between the uniaxial and biaxial limits; the restraint-family table exists to make that bracket explicit instead of claiming one boundary condition is 'right'.
 * The `u_y`, `u_z` point constraints that remove the rigid-body modes are outside the load path, so they do not perturb the stress: the free control reaches 9.8e-16, i.e. round-off.
-* Because uniform dT is nodally exact, this case **cannot** detect a first-order error proportional to h. That is what the quadratic-dT variant is for. A solver can pass this case and still be wrong on gradients — stated so the gate is not over-read.
+* Because uniform dT is nodally exact, the governing rung **cannot** detect any discretisation error, of any order: the only thing it can catch is a round-off level defect (wrong thermal load, wrong restraint, wrong stress recovery). That is what §4.3 and §4.5 are for, and §4.5 quantifies the mesh at which the 3% criterion starts to bite (n = 5 and up, from the analytic bias `1/(2 n^2)`). A solver can pass the anchor rung and still be wrong on gradients — stated so the gate is not over-read.
+* **Element-temperature convention is a modelling choice, not an error.** The thermal load uses one temperature per element (the average of its nodes). On a graded field this biases the restrained stress by `+1/(2 n^2)` relative; the bias is second order, so mesh refinement removes it, but a coarse mesh result should be read as the element-average answer, which is why §4.5 reports both references instead of only the continuum one.
 * Material data are the transcribed EH36 anchors of `polar_thermal_stress` (with its ±3% band and its own source caveat), frozen at `T_ref`. The 3% verdict is FEM-vs-closed-form, i.e. a numerical-verification statement, **not** a claim about the accuracy of EH36 steel data.
 
 ## 6. Error verdict
@@ -157,8 +227,11 @@ Endpoint slope = -2.472086e+06 Pa/K vs analytic -2.472086e+06 Pa/K (rel. err. 0.
 | 3-D hex8 sigma_xx (triaxial, 4^3) | -618.021429 MPa | -618.021429 MPa | 0.00e+00 | YES |
 | free-expansion control (sigma must vanish) | 9.79e-16 x (E alpha dT) | 0 | 9.79e-16 | YES (round-off) |
 | nu sweep drift of sigma_xx | 1.93e-15 | 0 | 1.93e-15 | YES |
+| graded T(x), 1-D, n=32 | -82.443093 MPa | -82.402857 MPa | 4.88e-04 | YES |
+| graded T(x), 3-D hex8, nx=16 | -82.563800 MPa | -82.402857 MPa | 1.95e-03 | YES |
+| graded T(x), coarse mesh n=2 (gate must bite) | -92.703214 MPa | -82.402857 MPa | 1.25e-01 | **NO** (by design, see §4.5) |
 
-**Answer to the case question: yes, every governing stress component agrees with the closed form to better than 3% — in fact to at most 7.23e-16 relative, i.e. float64 round-off.** The pool gate (<3%) is met with a margin of about eleven orders of magnitude, so the informational content of the case is not the margin but the fact that *all four restraint families* and the free control land on their own analytic branch: a wrong thermal load, a wrong restraint or a wrong stress-recovery convention would break at least one of them.
+**Answer to the case question: yes, every governing stress component agrees with the closed form to better than 3% — in fact to at most 7.23e-16 relative, i.e. float64 round-off.** The pool gate (<3%) is met with a margin of about eleven orders of magnitude, so the informational content of the case is not the margin but the fact that *all four restraint families* and the free control land on their own analytic branch: a wrong thermal load, a wrong restraint or a wrong stress-recovery convention would break at least one of them. The graded rung is the exception to the round-off margin and deliberately so: on a non-uniform temperature field the answer carries an O(h^2) interpolation bias, the 3% gate is met only from n = 5 upwards, and the coarse-mesh cells of §4.5 are reported as failures.
 
 | gate | value | verdict |
 |---|---|---|
@@ -166,6 +239,10 @@ Endpoint slope = -2.472086e+06 Pa/K vs analytic -2.472086e+06 Pa/K (rel. err. 0.
 | roundoff_gate | True | PASS |
 | convergence_order_gate | True | PASS |
 | derivation_gate | True | PASS |
+| graded_model_gate | True | PASS |
+| graded_order_gate | True | PASS |
+| graded_discrimination_gate | True | PASS |
+| gate_strength_gate | True | PASS |
 | all_pass | True | PASS |
 
 ## 7. Reproduce
