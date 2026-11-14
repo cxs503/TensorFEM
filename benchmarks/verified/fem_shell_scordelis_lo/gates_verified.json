@@ -76,22 +76,22 @@
     {
       "id": "cylindrical.accuracy_finest",
       "description": "Cylindrical shell4: finest-mesh value within tolerance of the reference",
-      "status": "PASS",
-      "passed": true,
+      "status": "FAIL",
+      "passed": false,
       "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.004147013919966423,
-      "detail": "finest level 32x32 rel. error 4.1470e-03"
+      "actual": 0.5447303888397178,
+      "detail": "finest level 32x32 rel. error 5.4473e-01"
     },
     {
       "id": "cylindrical.accuracy_asymptotic",
       "description": "Cylindrical shell4: Richardson limit of the ladder within tolerance (certified accuracy)",
-      "status": "PASS",
-      "passed": true,
+      "status": "WITHHELD",
+      "passed": false,
       "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.005166611021675066,
-      "detail": "extrapolated -0.303962383173 vs Scordelis & Lo (1960) -0.3024: rel. error 5.1666e-03 (order p=2.276)"
+      "actual": null,
+      "detail": "cannot certify: non-positive observed order p=-1.182 on the finest triple: the increments of the QoI do not shrink under refinement, so no GCI band and no Richardson limit exist (pre-asymptotic / non-converging ladder)"
     },
     {
       "id": "cylindrical.monotone_qoi",
@@ -106,32 +106,32 @@
     {
       "id": "cylindrical.observed_order",
       "description": "Cylindrical shell4: finest observed order >= 1",
-      "status": "PASS",
-      "passed": true,
+      "status": "FAIL",
+      "passed": false,
       "operator": ">=",
       "threshold": 1.0,
-      "actual": 2.2760056014972694,
-      "detail": "4x4->16x16: p=3.801, 8x8->32x32: p=2.276"
+      "actual": -1.1820596398784957,
+      "detail": "4x4->16x16: p=-1.002, 8x8->32x32: p=-1.182"
     },
     {
       "id": "cylindrical.asymptotic_range_consistency",
-      "description": "Cylindrical shell4: finest-mesh error inside the GCI band (|e_finest|/GCI <= 1)",
+      "description": "Cylindrical shell4: finest-mesh error inside the GCI band (ladder in the asymptotic range)",
       "status": "WITHHELD",
       "passed": false,
       "operator": "<=",
-      "threshold": 1.0,
-      "actual": 3.267338941972816,
-      "detail": "finest-mesh true error 4.147e-03 vs GCI band 1.269e-03 -> outside the band; ladder pre-asymptotic -> accuracy not certifiable from these levels"
+      "threshold": null,
+      "actual": null,
+      "detail": "no GCI band available: non-positive observed order p=-1.182 on the finest triple: the increments of the QoI do not shrink under refinement, so no GCI band and no Richardson limit exist (pre-asymptotic / non-converging ladder)"
     },
     {
       "id": "cylindrical.coarsest_sanity",
       "description": "Cylindrical shell4: coarsest level within 0.5 of the reference",
-      "status": "PASS",
-      "passed": true,
+      "status": "FAIL",
+      "passed": false,
       "operator": "<=",
       "threshold": 0.5,
-      "actual": 0.28329848422336495,
-      "detail": "coarsest level 4x4 rel. error 2.8330e-01"
+      "actual": 0.9390741378195343,
+      "detail": "coarsest level 4x4 rel. error 9.3907e-01"
     }
   ],
   "verdicts": {
@@ -149,16 +149,20 @@
       ]
     },
     "cylindrical": {
-      "accuracy_verdict": "PASS",
-      "study_verdict": "WITHHELD",
-      "overall_verdict": "WITHHELD",
+      "accuracy_verdict": "FAIL",
+      "study_verdict": "FAIL",
+      "overall_verdict": "FAIL",
       "passed": false,
       "unproven": [
-        "asymptotic_range_consistency"
+        "accuracy_finest",
+        "accuracy_asymptotic",
+        "observed_order",
+        "asymptotic_range_consistency",
+        "coarsest_sanity"
       ]
     }
   },
-  "overall_verdict": "WITHHELD",
+  "overall_verdict": "FAIL",
   "passed": false,
   "reported_vs_certified": {
     "flat_facet": {
@@ -166,8 +170,8 @@
       "certified_error": 0.5318762842904944
     },
     "cylindrical": {
-      "reported_finest_error": 0.004147013919966423,
-      "certified_error": 0.005166611021675066
+      "reported_finest_error": 0.5447303888397178,
+      "certified_error": null
     }
   },
   "limitations": [

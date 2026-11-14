@@ -25,19 +25,32 @@ Symmetry octant discretised with N×N cylindrical Shell4 elements
 and curvature terms, so geometric error vanishes and only discretisation
 error remains.
 
-Gates
+Gates (schema ``tensorfem.verified-gates.v1``, graded by
+``tensorfem.refinement_gate``; every gate carries operator + threshold so the
+certificate audit can recompute it)
 -----
-G1  Finest-mesh displacement within 3 % of reference.
-G2  Quantity of interest monotone along the ladder.
-G3  Observed convergence order ≥ 1.0 (bending-dominated thin shell).
-G4  Coarsest-mesh displacement within 50 % of reference (sanity).
-G5  Richardson limit of the ladder within 3 % — the *certified* accuracy.
-G6  Finest-mesh error inside the GCI band (ladder in the asymptotic range).
+G1  accuracy_finest         finest-mesh displacement within 3 % of reference.
+G2  accuracy_asymptotic     Richardson limit of the ladder within 3 % — the
+                            *certified* accuracy (this, not G1, is the claim).
+G3  monotone_qoi            number of non-monotone step transitions is zero.
+G4  observed_order          observed order on the finest triple ≥ 1.0.
+G5  asymptotic_range_consistency  finest-mesh error inside the GCI band.
+G6  coarsest_sanity         coarsest-mesh displacement within 50 % of
+                            reference.
 
-G5/G6 exist because G1 alone is not evidence of accuracy: the error sequence
-here is 2.86 % → 3.35 % → 0.17 % → 1.82 %, which "passes" a 3 % gate on the
-finest mesh although the ladder converges to 3.27 % from the reference.  A
-gate that cannot be answered is reported as ``WITHHELD``, never as a pass.
+G1 alone is not evidence of accuracy: a ladder can cross the reference on the
+way and "pass" a single-mesh gate.  A gate the ladder cannot answer is
+reported as ``WITHHELD``, never as a pass, and a ladder whose observed order
+is non-positive gets no Richardson limit at all (the estimator is degenerate
+there), so G2 is withheld rather than extrapolated.
+
+Current verdict (do not hand-copy: read ``result.json`` / ``gates_verified.json``)
+---------------------------------------------------------------------------------
+The 4x -> 32x ladder of the present cylindrical Shell4 is pre-asymptotic: the
+error decreases (85 % -> 16 %) while the increments of the QoI do not shrink,
+so the observed order is below 1 (p ≈ 0.18 on the finest triple).  G1, G2, G4
+and G6 therefore FAIL, G3/G5 PASS, and the anchor is an honest FAIL against
+the 3 % accuracy criterion — not a certified result.
 
 Usage
 -----
@@ -197,6 +210,10 @@ def main():
             "description": g["description"],
             "status": g["status"],
             "passed": bool(g["passed"]),
+            # The comparison operator is part of the contract: without it the
+            # certificate audit has to infer the operator from prose and marks
+            # the gate unrecomputable (defect E_PASS_WITHOUT_CRITERION class).
+            "operator": g.get("operator", "<="),
             "threshold": g["threshold"],
             "actual": g["actual"],
             "detail": g["detail"],
