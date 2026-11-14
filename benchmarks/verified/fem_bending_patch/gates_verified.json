@@ -3,7 +3,7 @@
   "anchor": "fem_bending_patch",
   "title": "BENDING-PATCH: constant-curvature patch test of the Q4 Mindlin plate element",
   "mission": "CASE-BENDING-PATCH",
-  "generated_at": "2026-11-14T06:08:30+00:00",
+  "generated_at": "2026-11-14T18:18:50+00:00",
   "criteria": {
     "case_pool_tolerance": 0.02,
     "exact_tolerance_affine": 1e-12,
@@ -112,26 +112,89 @@
     },
     {
       "id": "strip_free_w",
-      "quantity": "tip deflection error, free edges (load-driven)",
-      "reference": "M L^2/(2 D_b), D_b = E t^3/12",
-      "value": 0.017576443112924615,
+      "quantity": "tip deflection error, free edges, transverse-converged meshes (n_y >= 8, load-driven)",
+      "reference": "M L^2/(2 D_b), D_b = E t^3/12 (clamped-root end effect included; see the end-effect and transverse-convergence gates)",
+      "value": 0.013997058293220094,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
     },
     {
-      "id": "poisson_crosscheck",
-      "quantity": "|ratio - 1/(1-nu^2)| / (1/(1-nu^2))",
-      "reference": "D/D_b = 1/(1-nu^2) exactly",
-      "value": 0.0,
+      "id": "poisson_identity_closed_form",
+      "quantity": "|D/D_b - 1/(1-nu^2)| / (1/(1-nu^2))  [algebra only, no solve]",
+      "reference": "D/D_b = 1/(1-nu^2) exactly (ORACLE identity: insensitive to the element, documented, not element evidence)",
+      "value": 2.0206059048177852e-16,
+      "threshold": 1e-14,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "poisson_coupling_computed",
+      "quantity": "|w_free/w_sym - 1/(1-nu^2)| / (1/(1-nu^2)) from the SOLVED tip deflections, n_y=16",
+      "reference": "1/(1-nu^2) with both responses solved on the same mesh",
+      "value": 0.011976866477503444,
       "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "free_surface_moment_exact",
+      "quantity": "max |M_y| / max |M_x| on the M_y=0 state (affine+skew, nu=0.3 and 0.45)",
+      "reference": "plane-stress free surface: M_y = 0 exactly",
+      "value": 4.218640772335475e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "free_surface_field_exact",
+      "quantity": "max nodal w/rotation error, M_y=0 state (affine+skew, nu=0.3 and 0.45)",
+      "reference": "closed form with kappa_y = -nu kappa_x",
+      "value": 8.011346102109636e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "free_surface_rigidity",
+      "quantity": "max |M_x/(D_b kappa_x) - 1|, D_b = E t^3/12",
+      "reference": "measured beam rigidity equals D (1-nu^2)",
+      "value": 8.881784197001252e-16,
+      "threshold": 1e-12,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "free_surface_rigidity_separation",
+      "quantity": "|M_x/(D kappa_x) - 1|: grading against the cylindrical rigidity D",
+      "reference": "the check must reject the wrong rigidity (discriminating power)",
+      "value": 0.2024999999999999,
+      "threshold": 0.05,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "strip_free_transverse_convergence",
+      "quantity": "|e(n_y=16) - e(n_y=8)| / e(n_y=16), free lateral, n_x=32",
+      "reference": "the free-edge leg must be transverse-converged before it is graded",
+      "value": 0.001345547658532249,
+      "threshold": 0.1,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "strip_free_end_effect_decay",
+      "quantity": "e(L/b=20) / e(L/b=5), free lateral, n_y=8, fixed element size",
+      "reference": "clamped-root end effect is local: it must decay with L/b",
+      "value": 0.2829525572714801,
+      "threshold": 0.6,
       "operator": "<=",
       "passed": true
     },
     {
       "id": "order_w_min",
       "quantity": "observed order of the distorted patch, w (SRI)",
-      "reference": "second-order consistency of the element",
+      "reference": "second-order consistency of the element (orders below the round-off floor are reported as null, not fitted)",
       "value": 1.7173691653735683,
       "threshold": 1.5,
       "operator": ">=",
@@ -177,6 +240,8 @@
     "A patch test is a consistency (necessary) condition; it proves constant-curvature reproduction, not coarse-mesh accuracy or pointwise moment accuracy.",
     "The distorted-patch residual is an interpolation limitation of the bilinear w field (quadratic exact field), measured and h-convergent, not a defect.",
     "A Dirichlet-driven patch contains no zero-energy mode, so this test cannot detect the rank deficiency of the one-point (sri) element.",
+    "The free-edge strip leg of the Poisson cross-check is NOT converged at n_y=2: its converged offset is ~1.2% (L/b=5) and it decays with L/b, i.e. it is a clamped-root end effect, not a discretization error. The leg is therefore graded only after transverse convergence, and the coupling itself is graded on the exact M_y=0 state.",
+    "The closed-form Poisson ratio is an algebra identity (insensitive to the element); it is reported as an oracle check, not as element evidence. Round 1 graded it as if it were the cross-check -- that gate could not fail.",
     "Literature criterion cited from the standard statement; the textbooks were not retrievable offline, but every target value is evaluated in code from the closed form, so no table digit enters the evidence chain."
   ]
 }

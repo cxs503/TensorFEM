@@ -90,6 +90,8 @@ __all__ = [
     "moment_error",
     "strain_energy",
     "run_patch_case",
+    "free_surface_state",
+    "free_surface_check",
     "strip_pure_bending",
     "oracle_selfcheck",
 ]
@@ -145,6 +147,24 @@ def plate_moment_matrix(young: float, poisson: float, thickness: float) -> torch
          [0.0, 0.0, (1.0 - poisson) / 2.0]],
         dtype=torch.float64,
     )
+
+
+def free_surface_state(kappa_x: float, poisson: float = 0.3) -> CurvatureState:
+    """Plane-stress bending state: ``M_y = 0`` (free lateral edges / narrow strip).
+
+    A strip whose lateral edges are traction free carries no ``M_y``, so it
+    responds with the *beam* rigidity ``D_b = E t^3/12``.  Inside the exact field
+    of :class:`CurvatureState` that state is ``kappa_y = -nu kappa_x``::
+
+        M_y = D (kappa_y + nu kappa_x) = 0
+        M_x = D kappa_x (1 - nu^2)     = D_b kappa_x
+
+    This is the leg of the Poisson cross-check that reads the coupling out of the
+    *element's own* ``Db`` instead of out of a rigidity the driver inserted, so
+    it can fail (see :func:`free_surface_check`).
+    """
+    return CurvatureState(kappa_x=kappa_x, kappa_y=-poisson * kappa_x,
+                          kappa_twist=0.0)
 
 
 def oracle_selfcheck(state: CurvatureState | None = None,
@@ -420,6 +440,61 @@ def moment_error(patch: Patch, u: torch.Tensor, state: CurvatureState, *, young:
     return worst / scale
 
 
+def free_surface_check(patch: Patch, kappa_x: float, *, young: float,
+                       poisson: float, thickness: float,
+                       shear_treatment: str = "sri") -> dict:
+    """Reproduce the ``M_y = 0`` state and grade the Poisson coupling.
+
+    Graded quantities (all with the *element's* stiffness, no inserted rigidity):
+
+    * ``displacement_rel_error`` / ``rotation_rel_error`` -- nodal error of the
+      free interior against the closed form of :func:`free_surface_state`;
+    * ``my_over_mx = max|M_y| / max|M_x|`` -- must vanish if the element's ``Db``
+      enforces plane stress;
+    * ``mx_over_db_kappa`` -- the computed ``M_x`` divided by ``D_b kappa_x``
+      (exactly 1), i.e. the beam rigidity *measured*, not assumed.
+    """
+    state = free_surface_state(kappa_x, poisson)
+    sol = solve_dirichlet_patch(patch, state, young=young, poisson=poisson,
+                                thickness=thickness,
+                                shear_treatment=shear_treatment)
+    u = sol["u"]
+    db = plate_moment_matrix(young, poisson, thickness)
+    dofs = element_dofs(patch.elements)
+    my_max = mx_max = 0.0
+    for ei in torch.nonzero(patch.interior_elements).reshape(-1).tolist():
+        m = q4_gauss_curvatures(patch.nodes[patch.elements[ei]], u[dofs[ei]]) @ db.T
+        mx_max = max(mx_max, float(m[:, 0].abs().max()))
+        my_max = max(my_max, float(m[:, 1].abs().max()))
+    u_exact = exact_nodal_dofs(patch, state)
+    free = torch.nonzero(patch.interior.unsqueeze(1).expand(-1, 3).reshape(-1)).reshape(-1)
+    w_scale = float(u_exact[free][0::3].abs().max())
+    rot_scale = float(torch.stack((u_exact[free][1::3],
+                                   u_exact[free][2::3])).abs().max())
+    w_err = float((u[free][0::3] - u_exact[free][0::3]).abs().max())
+    rot_err = float(torch.stack((u[free][1::3] - u_exact[free][1::3],
+                                 u[free][2::3] - u_exact[free][2::3])).abs().max())
+    exact_mx = float(state.moments(young, poisson, thickness)[0])
+    db_beam = young * thickness ** 3 / 12.0
+    d_plate = young * thickness ** 3 / (12.0 * (1.0 - poisson ** 2))
+    return {
+        "family": patch.family,
+        "n": patch.n,
+        "shear_treatment": shear_treatment,
+        "poisson": poisson,
+        "kappa_x": kappa_x,
+        "displacement_rel_error": w_err / w_scale,
+        "rotation_rel_error": rot_err / rot_scale,
+        "moment_rel_error": moment_error(patch, u, state, young=young,
+                                         poisson=poisson, thickness=thickness),
+        "my_over_mx": my_max / mx_max,
+        "mx_over_db_kappa": mx_max / exact_mx,
+        "db_over_d": db_beam / d_plate,
+        "plane_stress_identity": 1.0 - poisson ** 2,
+        "equilibrium_residual": sol["residual"],
+    }
+
+
 def strain_energy(u: torch.Tensor, k: torch.Tensor) -> float:
     return 0.5 * float(u @ (k @ u))
 
@@ -481,7 +556,8 @@ def strip_pure_bending(n_x: int, n_y: int = 2, *, moment: float = 1.0e3,
                        thickness: float = 0.01,
                        lateral: str = "symmetry",
                        shear_treatment: str = "sri",
-                       shear_correction: float = 5.0 / 6.0) -> dict:
+                       shear_correction: float = 5.0 / 6.0,
+                       clamp_theta_y: bool = True) -> dict:
     """Cantilever plate strip under a tip bending moment per unit width.
 
     This is a *load-driven* boundary value problem (nothing of the answer is
@@ -507,6 +583,11 @@ def strip_pure_bending(n_x: int, n_y: int = 2, *, moment: float = 1.0e3,
     Their ratio is exactly ``1/(1 - nu^2)``, so running both is a physical
     cross-check: an implementation error in the Poisson coupling cannot satisfy
     both at once.
+
+    ``clamp_theta_y=False`` is a diagnostic variant of the root support (``w``
+    and ``theta_x`` still restrained, ``theta_y`` free); it exists to test whether
+    the ``L/b``-dependent offset of the free-edge case comes from the ``theta_y``
+    restraint or from the ``w = 0`` restraint of the anticlastic field.
 
     The moment enters as the natural boundary condition: a consistent edge load
     conjugate to ``theta_x`` on ``x = length`` (corner nodes carry half the
@@ -551,6 +632,11 @@ def strip_pure_bending(n_x: int, n_y: int = 2, *, moment: float = 1.0e3,
         base = 3 * (j * (n_x + 1))
         clamp += [base, base + 1, base + 2]
     # symmetry on the lateral edges: theta_y = 0 (dy symmetry plane)
+    if not clamp_theta_y:
+        # diagnostic variant: the root still restrains w and theta_x but lets
+        # theta_y float (used to show the clamped-root offset is not caused by
+        # the theta_y restraint).
+        clamp = [d for d in clamp if d % 3 != 2]
     if lateral == "symmetry":
         for i in range(n_x + 1):
             clamp.append(3 * i + 2)                                    # y = 0

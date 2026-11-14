@@ -108,18 +108,20 @@ points, and compared with `Db kappa`.
 | symmetry | 16 | mitc | 25999.999999 | 26000.000000 | 4.772e-09 % | 3.393e-09 % | PASS |
 | symmetry | 32 | sri | 26000.000057 | 26000.000000 | 2.175e-07 % | 1.369e-07 % | PASS |
 | symmetry | 32 | mitc | 26000.000007 | 26000.000000 | 2.633e-08 % | 1.714e-08 % | PASS |
-| free | 4 | sri | 28224.555776 | 28571.428571 | 1.214 % | 0.732 % | PASS |
-| free | 4 | mitc | 28069.244482 | 28571.428571 | 1.758 % | 1.350 % | PASS |
-| free | 8 | sri | 28368.410148 | 28571.428571 | 0.711 % | 0.451 % | PASS |
-| free | 8 | mitc | 28165.685698 | 28571.428571 | 1.420 % | 0.852 % | PASS |
-| free | 16 | sri | 28424.344939 | 28571.428571 | 0.515 % | 0.343 % | PASS |
-| free | 16 | mitc | 28203.097183 | 28571.428571 | 1.289 % | 0.773 % | PASS |
-| free | 32 | sri | 28441.379201 | 28571.428571 | 0.455 % | 0.311 % | PASS |
-| free | 32 | mitc | 28214.113768 | 28571.428571 | 1.251 % | 0.751 % | PASS |
+| free | 4 | sri | 28224.555776 | 28571.428571 | 1.214 % | 0.732 % | not graded (n_y = 2, aliased — §4.5) |
+| free | 4 | mitc | 28069.244482 | 28571.428571 | 1.758 % | 1.350 % | not graded (n_y = 2, aliased — §4.5) |
+| free | 8 | sri | 28368.410148 | 28571.428571 | 0.711 % | 0.451 % | not graded (n_y = 2, aliased — §4.5) |
+| free | 8 | mitc | 28165.685698 | 28571.428571 | 1.420 % | 0.852 % | not graded (n_y = 2, aliased — §4.5) |
+| free | 16 | sri | 28424.344939 | 28571.428571 | 0.515 % | 0.343 % | not graded (n_y = 2, aliased — §4.5) |
+| free | 16 | mitc | 28203.097183 | 28571.428571 | 1.289 % | 0.773 % | not graded (n_y = 2, aliased — §4.5) |
+| free | 32 | sri | 28441.379201 | 28571.428571 | 0.455 % | 0.311 % | not graded (n_y = 2, aliased — §4.5) |
+| free | 32 | mitc | 28214.113768 | 28571.428571 | 1.251 % | 0.751 % | not graded (n_y = 2, aliased — §4.5) |
+
+The `free` rows are kept at the round-1 transverse mesh (`n_y = 2`) only to document that mesh; they are **not graded** because refining `n_y` moves them (§4.5).
 
 Rigidity used: `D = E t^3/(12(1-nu^2))` for the symmetry cell (cylindrical bending),
 `D_b = E t^3/12` for the free-edge strip (plane stress, beam rigidity).
-Measured ratio of the two responses = 1.098901, theory `1/(1-nu^2) = 1.098901` (error 0.000e+00 %) — this is the physical cross-check of the Poisson coupling.
+Ratio of the two **solved** tip deflections = 1.085740, theory `1/(1-nu^2) = 1.098901` (error 1.198 %) at the converged transverse mesh (n_y = 16). At the round-1 mesh (n_y = 2) the same ratio reads 1.093899 (error 0.455 %) — see §4.5: the difference is a clamped-root end effect, not a coupling error.
 
 ### 4.4 Negative control: the locking element must fail
 
@@ -131,6 +133,55 @@ Measured ratio of the two responses = 1.098901, theory `1/(1-nu^2) = 1.098901` (
 | strip-locking/free/t=0.1/8 | w error vs closed form | 34.587 % | FAIL (as required) |
 | distorted patch, `full` shear integration | max energy error | 2.110 % | FAIL (as required) |
 | distorted patch, `full` shear integration | max moment error | 1.816 % | within 2% |
+
+### 4.5 Round-2 cross-check repair (Poisson coupling)
+
+The round-1 Poisson check graded `M L^2/(2 D)` of the free-edge leg against `M L^2/(2 D_b)` of the symmetry leg, i.e. **two closed forms**, and reported a 0.000 % error. Both operands are the same formula with a rigidity the driver inserted, so the ratio is `D/D_b = 1/(1-nu^2)` by construction: the check was insensitive to the element and could not fail. It is now split into an explicit oracle identity and three checks that use solved quantities:
+
+| leg | quantity | value |
+|---|---|---|
+| closed form (oracle only) | ratio `D/D_b` | 1.098901098901 |
+| closed form (oracle only) | error vs `1/(1-nu^2)` | 2.021e-16 |
+| solved, converged mesh (n_y=16) | `w_free/w_sym` | 1.085740 |
+| solved, converged mesh (n_y=16) | error vs `1/(1-nu^2)` | 1.198 % |
+| solved, round-1 mesh (n_y=2) | `w_free/w_sym` | 1.093899 |
+| free-surface state `M_y=0` | max `|M_y|/|M_x|`, nu = 0.3, 0.45 | 4.219e-16 |
+| free-surface state `M_y=0` | max `|M_x/(D_b kappa_x) - 1|` | 8.882e-16 |
+| free-surface state `M_y=0` | same, graded against `D` instead of `D_b` (separation) | 20.250 % |
+
+The free-edge leg is **not** transverse-converged at the round-1 mesh. Refining only the transverse direction, at fixed `n_x`:
+
+| n_y | free-edge `w` error vs `M L^2/(2 D_b)` |
+|---|---|
+| 2 | 0.455 % |
+| 4 | 1.144 % |
+| 8 | 1.196 % |
+| 16 | 1.198 % |
+
+Relative change between the two finest levels: 0.135 %. The converged offset (~1.2 %) is not a discretization error: it decays with the strip aspect ratio at fixed element size, which identifies it as a **clamped-root end effect** (the `w = 0` root restraint is incompatible with the anticlastic curvature `kappa_y = -nu kappa_x` that the free lateral edges require, so a boundary layer adds a small tip rotation).
+
+| L/b | free-edge `w` error vs `M L^2/(2 D_b)` |
+|---|---|
+| 5 | 1.196 % |
+| 10 | 0.651 % |
+| 20 | 0.338 % |
+
+Root-support control at fixed mesh (`n_x = 32`, `n_y = 8`): `theta_y` clamped -> 1.196 %; `theta_y` free -> 1.181 %. The offset survives, so it is the `w = 0` restraint of the anticlastic field, not the rotation restraint.
+
+Decay ratio `e(L/b=20)/e(L/b=5) = 0.283`: the offset is local to the clamped root and vanishes with `L/b`, so the beam closed form is *not* the limit of a hard-clamped strip at engineering aspect ratios. The leg is therefore graded at 2 % only after transverse convergence, and the Poisson coupling itself is graded on the exact `M_y = 0` patch, where `M_y` must vanish to round-off.
+
+| nu | family | treatment | w error | rotation error | moment error | `|M_y|/|M_x|` | `M_x/(D_b kappa_x)` |
+|---|---|---|---|---|---|---|---|
+| 0.3 | affine | sri | 5.27e-16 | 3.25e-16 | 3.34e-16 | 1.40e-16 | 1.000000000 |
+| 0.3 | affine | mitc | 3.96e-16 | 2.44e-16 | 4.06e-16 | 2.08e-16 | 1.000000000 |
+| 0.3 | skew | sri | 8.01e-16 | 1.20e-16 | 8.12e-16 | 8.94e-17 | 1.000000000 |
+| 0.3 | skew | mitc | 1.60e-16 | 2.41e-16 | 6.09e-16 | 2.59e-16 | 1.000000000 |
+| 0.45 | affine | sri | 2.75e-16 | 3.25e-16 | 6.09e-16 | 2.90e-16 | 1.000000000 |
+| 0.45 | affine | mitc | 2.06e-16 | 2.44e-16 | 4.06e-16 | 2.52e-16 | 1.000000000 |
+| 0.45 | skew | sri | 3.55e-16 | 3.61e-16 | 8.12e-16 | 4.22e-16 | 1.000000000 |
+| 0.45 | skew | mitc | 1.78e-16 | 2.41e-16 | 8.12e-16 | 3.55e-16 | 1.000000000 |
+
+The state is run at `nu = 0.3` and `nu = 0.45` so the check cannot be satisfied by a constant tuned to one Poisson ratio.
 
 ## 5. Convergence and sensitivity
 
@@ -146,8 +197,9 @@ Measured ratio of the two responses = 1.098901, theory `1/(1-nu^2) = 1.098901` (
 | 32 | 0.0312 | mitc | 1.135e-15 | 4.268e-14 | 2.526e-15 |
 
 Observed orders (least squares on log-log, distorted family):
-`w` sri 1.72, `w` mitc -0.53,
-`M` sri 1.15, `M` mitc -1.79.
+`w` sri 1.72, `w` mitc n/a (at round-off, not measurable),
+`M` sri 1.15, `M` mitc n/a (at round-off, not measurable).
+A slope fitted to numbers at the round-off floor is noise, not a convergence rate; those entries are reported as `n/a` and are not graded.
 The residual on a non-affine patch is an interpolation limitation of the bilinear
 `w`, not a consistency defect: it vanishes with h and is already below the 2% pool
 tolerance at the coarsest patch used.
@@ -186,7 +238,7 @@ PYTHONPATH=src pytest tests/test_bending_patch.py -q
 * **Artefacts**: `benchmarks/verified/fem_bending_patch/result.json`,
   `benchmarks/verified/fem_bending_patch/gates_verified.json`, figures under
   `docs/assets/bending_patch/`.
-* **Gate summary**: 17/17 passed
+* **Gate summary**: 24/24 passed
 
 ## 7. Gate table (machine verdict)
 
@@ -203,9 +255,16 @@ PYTHONPATH=src pytest tests/test_bending_patch.py -q
 | distorted_energy | max energy error, distorted patch | 1/2 kappa^T Db kappa * Area | 0.001551 | 0.02 | PASS |
 | strip_symmetry_w | tip deflection error, symmetry cell (load-driven) | M L^2/(2D), D = E t^3/(12(1-nu^2)) | 2.175e-09 | 0.02 | PASS |
 | strip_symmetry_theta | tip rotation error, symmetry cell (load-driven) | M L/D | 1.369e-09 | 0.02 | PASS |
-| strip_free_w | tip deflection error, free edges (load-driven) | M L^2/(2 D_b), D_b = E t^3/12 | 0.01758 | 0.02 | PASS |
-| poisson_crosscheck | |ratio - 1/(1-nu^2)| / (1/(1-nu^2)) | D/D_b = 1/(1-nu^2) exactly | 0 | 0.02 | PASS |
-| order_w_min | observed order of the distorted patch, w (SRI) | second-order consistency of the element | 1.717 | 1.5 | PASS |
+| strip_free_w | tip deflection error, free edges, transverse-converged meshes (n_y >= 8, load-driven) | M L^2/(2 D_b), D_b = E t^3/12 (clamped-root end effect included; see the end-effect and transverse-convergence gates) | 0.014 | 0.02 | PASS |
+| poisson_identity_closed_form | |D/D_b - 1/(1-nu^2)| / (1/(1-nu^2))  [algebra only, no solve] | D/D_b = 1/(1-nu^2) exactly (ORACLE identity: insensitive to the element, documented, not element evidence) | 2.021e-16 | 1e-14 | PASS |
+| poisson_coupling_computed | |w_free/w_sym - 1/(1-nu^2)| / (1/(1-nu^2)) from the SOLVED tip deflections, n_y=16 | 1/(1-nu^2) with both responses solved on the same mesh | 0.01198 | 0.02 | PASS |
+| free_surface_moment_exact | max |M_y| / max |M_x| on the M_y=0 state (affine+skew, nu=0.3 and 0.45) | plane-stress free surface: M_y = 0 exactly | 4.219e-16 | 1e-12 | PASS |
+| free_surface_field_exact | max nodal w/rotation error, M_y=0 state (affine+skew, nu=0.3 and 0.45) | closed form with kappa_y = -nu kappa_x | 8.011e-16 | 1e-12 | PASS |
+| free_surface_rigidity | max |M_x/(D_b kappa_x) - 1|, D_b = E t^3/12 | measured beam rigidity equals D (1-nu^2) | 8.882e-16 | 1e-12 | PASS |
+| free_surface_rigidity_separation | |M_x/(D kappa_x) - 1|: grading against the cylindrical rigidity D | the check must reject the wrong rigidity (discriminating power) | 0.2025 | 0.05 | PASS |
+| strip_free_transverse_convergence | |e(n_y=16) - e(n_y=8)| / e(n_y=16), free lateral, n_x=32 | the free-edge leg must be transverse-converged before it is graded | 0.001346 | 0.1 | PASS |
+| strip_free_end_effect_decay | e(L/b=20) / e(L/b=5), free lateral, n_y=8, fixed element size | clamped-root end effect is local: it must decay with L/b | 0.283 | 0.6 | PASS |
+| order_w_min | observed order of the distorted patch, w (SRI) | second-order consistency of the element (orders below the round-off floor are reported as null, not fitted) | 1.717 | 1.5 | PASS |
 | locking_control_strip | min tip-deflection error of the locking element (thin strip, t/L = 0.01) | shear locking must be visible (negative control) | 0.9785 | 0.5 | PASS |
 | locking_control_patch | max energy error of the locking element on the patch | shear locking must be visible (negative control) | 0.0211 | 0.02 | PASS |
 | equilibrium_residual | max |K_ff u_f + K_fc u_c| over all patch cases | discrete equilibrium | 4.263e-14 | 1e-08 | PASS |
