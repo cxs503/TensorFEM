@@ -443,3 +443,22 @@ from .heat_conduction_l2 import (
     HeatConductionL2Result as HeatConductionL2Result,
     run_heat_conduction_l2 as run_heat_conduction_l2,
 )
+
+from .plate_patch_plastic_limit import (
+    STEEL_GRADES,
+    FlowStress,
+    low_temperature_flow_stress,
+    flow_stress_table,
+    elastic_patch_plate,
+    analytic_first_yield_pressure,
+    plastic_moment,
+    yield_line_patch_upper_bound,
+    strip_lower_bound,
+    patch_plate_mesh,
+    patch_pressure_forces,
+    surface_extrapolated_mises,
+    PatchPath,
+    PatchPathPoint,
+    run_patch_plastic_path,
+    plate_capacity_summary,
+)
