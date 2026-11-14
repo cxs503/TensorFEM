@@ -27,13 +27,45 @@ objectivity of an assembled patch.
 Usage::
 
     PYTHONPATH=src python benchmarks/cohesive3d_verification_tables.py
+    PYTHONPATH=src python benchmarks/cohesive3d_verification_tables.py --check
+    PYTHONPATH=src python benchmarks/cohesive3d_verification_tables.py --check --quick
 
-Exit status is 0 when every ``PASS`` row is inside its predeclared tolerance
-(``KNOWN_LIMIT`` rows never fail the run -- they are measurements, not claims).
+The write mode rewrites both artefacts and exits 0 when every ``PASS`` row is
+inside its predeclared tolerance (``KNOWN_LIMIT`` rows never fail the run --
+they are measurements, not claims).
+
+``--check`` does not write: it re-derives the rows from *this* checkout and asks
+whether the committed artefacts are a faithful, current description of the code.
+That makes the tables a *gate* rather than a published claim, on three
+independent axes:
+
+* ``checks_digest`` -- SHA-256 of ``parameters + checks`` stored in the JSON.  A
+  hand-edited number (or a half-merged regeneration) no longer hashes to the
+  stored digest, so the tamper is visible without re-running anything.
+* ``source_files`` -- repo-relative SHA-256 of every module the numbers depend
+  on.  When the code moves and the table does not, ``--check`` reports the stale
+  file and exits 3 (this is how the drift described in
+  ``docs/cohesive3d-interface-element.md`` section 6 was found: the committed
+  ``C_fem`` of the ``a = 40 mm`` specimen was ``4.715234e-05`` while the current
+  code gives ``4.713796e-05``, a 3e-4 relative change nobody noticed).
+* the numbers themselves -- every committed ``value`` and ``status`` is compared
+  against a fresh run within ``atol + rtol * max(|committed|, |fresh|)``.
+
+``--quick`` runs the rows that cost milliseconds and skips the four multi-second
+groups (``corotational_tangent_vs_finite_difference``,
+``corotational_dissipation_*`` / ``small_strain_dissipation_at_rotation``,
+``nonproportional_path_dissipation``, ``corotational_mesh_objectivity``); it is
+the mode the default test suite can afford (see
+``tests/test_cohesive3d_verification_tables_artifact.py``).
+
+Exit status: 0 reproducible, 1 numeric/status drift or a ``FAIL`` row, 2 artefact
+missing, 3 stale source hash or digest mismatch.
 """
 
 from __future__ import annotations
 
+import argparse
+import hashlib
 import json
 import math
 import pathlib
@@ -164,33 +196,181 @@ def ok(value: float, tolerance: float) -> str:
     return "PASS" if value <= tolerance else "FAIL"
 
 
+#: Every file whose content decides a number in the table.  Repo-relative so the
+#: artefact does not leak host paths and can be checked from any checkout.
+SOURCE_FILES = (
+    "src/tensorfem/cohesive3d.py",
+    "src/tensorfem/cohesive3d_dcb.py",
+    "src/tensorfem/mixed_mode_cohesive.py",
+    "benchmarks/cohesive3d_verification_tables.py",
+)
+
+#: Rows produced by the four groups that cost seconds; skipped by ``--quick``.
+SLOW_ROWS = frozenset({
+    "corotational_tangent_vs_finite_difference",
+    "corotational_dissipation_rotation_invariance",
+    "corotational_dissipation_vs_fracture_energy",
+    "small_strain_dissipation_at_rotation",
+    "nonproportional_path_dissipation",
+    "corotational_mesh_objectivity",
+})
+
+
+def sha256_file(path) -> str:
+    return hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+
+
+def _git(*args: str):
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(REPO), *args],
+            capture_output=True, text=True, timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError):  # pragma: no cover - no git
+        return None
+    return out.stdout.strip() if out.returncode == 0 else None
+
+
 def provenance() -> dict:
-    """What code produced these numbers (checkout, commit, cleanliness)."""
+    """What code produced these numbers: repo-relative identity, not a host path."""
     module_file = pathlib.Path(tensorfem.__file__).resolve()
     try:
+        relative = module_file.relative_to(REPO.resolve())
+        inside = True
+    except (OSError, ValueError):  # pragma: no cover - foreign checkout
+        relative = pathlib.Path(module_file.name)
         inside = REPO.resolve() in module_file.parents
-    except OSError:  # pragma: no cover - defensive
-        inside = False
-    info = {
-        "tensorfem_module_file": str(module_file),
+    return {
+        "tensorfem_module_file": relative.as_posix(),
         "imported_from_this_checkout": bool(inside),
-        "repo": str(REPO),
+        "source_files": {
+            rel: sha256_file(REPO / rel)
+            for rel in SOURCE_FILES
+            if (REPO / rel).is_file()
+        },
+        # Advisory only: the table is regenerated from a working tree that holds
+        # the uncommitted regeneration itself, so ``git status`` is dirty by
+        # construction and carries no information.  Content identity -- what the
+        # gate actually enforces -- is ``source_files`` above.  ``git_head``
+        # therefore names the parent of the commit that lands the table.
+        "git_head": _git("rev-parse", "HEAD"),
+        "python": ".".join(str(part) for part in sys.version_info[:3]),
+        "torch": torch.__version__,
     }
-    try:
-        info["git_commit"] = subprocess.run(
-            ["git", "-C", str(REPO), "rev-parse", "HEAD"],
-            capture_output=True, text=True, timeout=10, check=True,
-        ).stdout.strip()
-        info["git_dirty"] = bool(
-            subprocess.run(
-                ["git", "-C", str(REPO), "status", "--porcelain"],
-                capture_output=True, text=True, timeout=10, check=True,
-            ).stdout.strip()
-        )
-    except Exception:  # pragma: no cover - git missing / not a checkout
-        info["git_commit"] = None
-        info["git_dirty"] = None
-    return info
+
+
+def checks_digest(parameters: dict, checks) -> str:
+    """SHA-256 of the numbers themselves: any hand edit changes the digest."""
+    canonical = json.dumps(
+        {"parameters": parameters, "checks": list(checks)},
+        sort_keys=True, separators=(",", ":"),
+    )
+    return hashlib.sha256(canonical.encode()).hexdigest()
+
+
+def stale_sources(payload: dict, *, repo: pathlib.Path | None = None) -> list:
+    """Declared source hashes that no longer match the checkout."""
+    repo = REPO if repo is None else pathlib.Path(repo)
+    declared = (payload.get("provenance") or {}).get("source_files") or {}
+    if not declared:
+        # An artefact written before provenance existed cannot be tied to any code.
+        return [{"file": "<provenance>", "declared": None,
+                 "current": "source_files missing: the artefact describes no checkout"}]
+    stale = []
+    for rel, digest in sorted(declared.items()):
+        target = repo / rel
+        current = sha256_file(target) if target.is_file() else None
+        if current != digest:
+            stale.append({"file": rel, "declared": digest, "current": current})
+    return stale
+
+
+def compare_rows(committed, fresh, *, rtol: float = 1e-8, atol: float = 1e-10) -> dict:
+    """Committed rows vs a fresh run, within ``atol + rtol * max(|a|, |b|)``."""
+    by_name = {row["check"]: row for row in committed}
+    diffs = []
+    for row in fresh:
+        name = row["check"]
+        old = by_name.get(name)
+        if old is None:
+            diffs.append({"check": name, "field": "check", "on_disk": None, "fresh": name})
+            continue
+        if old.get("status") != row["status"]:
+            diffs.append({"check": name, "field": "status",
+                          "on_disk": old.get("status"), "fresh": row["status"]})
+        a, b = float(old.get("value", "nan")), float(row["value"])
+        if not abs(a - b) <= atol + rtol * max(abs(a), abs(b)):
+            diffs.append({"check": name, "field": "value", "on_disk": a, "fresh": b})
+        if float(old.get("tolerance", "nan")) != float(row["tolerance"]):
+            diffs.append({"check": name, "field": "tolerance",
+                          "on_disk": old.get("tolerance"), "fresh": row["tolerance"]})
+    return {"n_diffs": len(diffs), "diffs": diffs}
+
+
+def markdown_rows(text: str) -> list:
+    """``(check, status)`` per table line of the rendered markdown, in order."""
+    rows = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("| `"):
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        rows.append((cells[0].strip("`"), cells[-1].strip("*")))
+    return rows
+
+
+def check_artifact(
+    path=JSON_PATH,
+    *,
+    fresh=None,
+    quick: bool = False,
+    rtol: float = 1e-8,
+    atol: float = 1e-10,
+    md_path=None,
+) -> dict:
+    """Is the committed table a faithful, current description of this checkout?"""
+    path = pathlib.Path(path)
+    md_path = pathlib.Path(MD_PATH if md_path is None else md_path)
+    if not path.is_file():
+        return {"ok": False, "exit_code": 2, "artifact": path.name, "quick": quick,
+                "reason": f"artifact missing: {path.name}", "comparison": None,
+                "stale": [], "digest_ok": None, "markdown_ok": None}
+    on_disk = json.loads(path.read_text())
+    committed = on_disk.get("checks") or []
+    parameters = on_disk.get("parameters") or {}
+    rows = build_tables(quick=quick) if fresh is None else list(fresh)
+    comparison = compare_rows(committed, rows, rtol=rtol, atol=atol)
+    stale = stale_sources(on_disk)
+    digest_ok = on_disk.get("checks_digest") == checks_digest(parameters, committed)
+    markdown_ok: bool | None = None
+    if md_path.is_file():
+        expected = [(row["check"], "KNOWN_LIMIT" if row["status"] == "KNOWN_LIMIT"
+                     else row["status"]) for row in committed]
+        markdown_ok = markdown_rows(md_path.read_text()) == expected
+    failed_rows = [row["check"] for row in rows if row["status"] == "FAIL"]
+    ok = (
+        comparison["n_diffs"] == 0
+        and not stale
+        and bool(digest_ok)
+        and markdown_ok is not False
+        and not failed_rows
+        and int(on_disk.get("failed", 0)) == 0
+    )
+    exit_code = 0
+    if not ok:
+        exit_code = 3 if (stale or not digest_ok) else 1
+    return {
+        "ok": ok,
+        "exit_code": exit_code,
+        "artifact": path.name,
+        "quick": quick,
+        "rows_compared": len(rows),
+        "digest_ok": bool(digest_ok),
+        "markdown_ok": markdown_ok,
+        "comparison": comparison,
+        "stale": stale,
+        "failed_rows": failed_rows,
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -856,7 +1036,8 @@ def check_specimen_compliance():
     return rows
 
 
-def build_tables():
+def build_tables(quick: bool = False):
+    """Every published row, in order.  ``quick`` drops the ``SLOW_ROWS`` groups."""
     rows = []
     rows.append(check_law_reduces_to_2d())
     rows.extend(check_law_energy())
@@ -867,15 +1048,17 @@ def build_tables():
     rows.extend(check_rigid_rotation())
     rows.append(check_rotation_objectivity())
     rows.append(check_tangent_symmetry())
-    rows.append(check_tangent_finite_difference())
-    rows.extend(check_dissipation())
+    if not quick:
+        rows.append(check_tangent_finite_difference())
+        rows.extend(check_dissipation())
     rows.append(check_dissipation_closed_form())
     rows.append(check_dissipation_equals_fracture_energy())
     rows.append(check_dissipation_monotone())
     rows.append(check_element_dissipation())
     rows.append(check_element_dissipation_rotation())
-    rows.append(check_nonproportional_dissipation())
-    rows.append(check_mesh_objectivity())
+    if not quick:
+        rows.append(check_nonproportional_dissipation())
+        rows.append(check_mesh_objectivity())
     rows.append(check_assembly_consistency())
     rows.append(check_compression())
     rows.extend(check_specimen_compliance())
@@ -900,38 +1083,82 @@ def render_markdown(rows):
     return "\n".join(lines)
 
 
-def main() -> int:
-    rows = build_tables()
-    payload = {
+def build_payload(*, quick: bool = False) -> dict:
+    rows = build_tables(quick=quick)
+    parameters = {
+        "normal_stiffness_Pa_per_m": K_N,
+        "shear_stiffness_Pa_per_m": K_S,
+        "normal_strength_Pa": T_N0,
+        "shear_strength_Pa": T_S0,
+        "mode_i_energy_J_per_m2": G_IC,
+        "mode_ii_energy_J_per_m2": G_IIC,
+        "bk_eta": ETA,
+    }
+    return {
         "module": "tensorfem.cohesive3d",
-        "parameters": {
-            "normal_stiffness_Pa_per_m": K_N,
-            "shear_stiffness_Pa_per_m": K_S,
-            "normal_strength_Pa": T_N0,
-            "shear_strength_Pa": T_S0,
-            "mode_i_energy_J_per_m2": G_IC,
-            "mode_ii_energy_J_per_m2": G_IIC,
-            "bk_eta": ETA,
-        },
+        "parameters": parameters,
         "provenance": provenance(),
         "checks": rows,
         "passed": sum(1 for row in rows if row["status"] == "PASS"),
         "failed": sum(1 for row in rows if row["status"] == "FAIL"),
         "known_limits": sum(1 for row in rows if row["status"] == "KNOWN_LIMIT"),
+        "checks_digest": checks_digest(parameters, rows),
     }
-    JSON_PATH.write_text(json.dumps(payload, indent=2) + "\n")
-    MD_PATH.write_text(render_markdown(rows) + "\n")
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--check", action="store_true",
+                        help="recompute and compare with the committed artefacts instead of writing them")
+    parser.add_argument("--quick", action="store_true",
+                        help="skip the multi-second rows (SLOW_ROWS); cheap enough for the test suite")
+    parser.add_argument("--out", type=pathlib.Path, default=JSON_PATH, help="artefact path")
+    parser.add_argument("--rtol", type=float, default=1e-8, help="relative tolerance for --check")
+    parser.add_argument("--atol", type=float, default=1e-10, help="absolute tolerance for --check")
+    args = parser.parse_args(argv)
+
+    if args.check:
+        report = check_artifact(args.out, quick=args.quick, rtol=args.rtol, atol=args.atol)
+        if report.get("comparison") is None:
+            print(report["reason"])
+            print("remedy: python benchmarks/cohesive3d_verification_tables.py   # regenerate")
+            return report["exit_code"]
+        for diff in report["comparison"]["diffs"]:
+            print(f"DIFF {diff['check']}.{diff['field']}: "
+                  f"on_disk={diff['on_disk']!r} fresh={diff['fresh']!r}")
+        for row in report["stale"]:
+            print(f"STALE source {row['file']}: declared {row['declared']} current {row['current']}")
+        if not report["digest_ok"]:
+            print("DIGEST MISMATCH: checks_digest does not hash the stored parameters+checks")
+        if report["markdown_ok"] is False:
+            print("MARKDOWN MISMATCH: the rendered table does not match the JSON rows")
+        for name in report.get("failed_rows") or []:
+            print(f"FAILING ROW: {name}")
+        n = len(report["stale"])
+        print(f"{report['artifact']} ({'quick' if report['quick'] else 'full'}): "
+              f"{'REPRODUCIBLE' if report['ok'] else 'NOT REPRODUCIBLE'} "
+              f"({report['comparison']['n_diffs']} leaf differences, {n} stale source(s), "
+              f"{report['rows_compared']} rows compared)")
+        if not report["ok"]:
+            print("remedy: python benchmarks/cohesive3d_verification_tables.py   # regenerate")
+        return report["exit_code"]
+
+    payload = build_payload()
+    args.out.write_text(json.dumps(payload, indent=2) + "\n")
+    args.out.with_suffix(".md").write_text(render_markdown(payload["checks"]) + "\n")
     prov = payload["provenance"]
     if not prov["imported_from_this_checkout"]:
         print(
             f"WARNING: tensorfem imported from {prov['tensorfem_module_file']}, "
-            f"which is outside {prov['repo']}; the table describes that checkout."
+            "which is outside this checkout; the table describes that checkout."
         )
-    print(render_markdown(rows))
+    print(render_markdown(payload["checks"]))
     print(
         f"\n{payload['passed']} PASS, {payload['failed']} FAIL, "
-        f"{payload['known_limits']} KNOWN_LIMIT -> {JSON_PATH.name}, {MD_PATH.name}"
+        f"{payload['known_limits']} KNOWN_LIMIT -> "
+        f"{args.out.name}, {args.out.with_suffix('.md').name}"
     )
+    print(f"checks_digest: {payload['checks_digest']}")
     return 0 if payload["failed"] == 0 else 1
 
 
