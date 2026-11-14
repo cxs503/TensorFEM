@@ -1,0 +1,406 @@
+{
+ "schema": "w28-composite-laminate-verification/1-partial",
+ "mission": 19905,
+ "repo": "TensorFEM",
+ "generated_utc": "2026-11-14T07:35:25Z",
+ "provenance": {
+  "runner": "benchmarks/composite_laminate_w28/run_verification.py + benchmarks/composite_laminate_w28/fetch_csr_anchor.py",
+  "runner_sha256": "85c3f91cebf6c5e4bcb39350cd465af5b3473ca7a5eda4664abcd05c781071ec",
+  "python": "3.11.6",
+  "numpy": "2.4.6",
+  "torch": "2.7.1",
+  "thresholds": {
+   "strict_rel_dev_max": 1e-06,
+   "cook_anchor_pct_max": 1.0,
+   "gci_pct_max": 5.0,
+   "observed_order_min": 1.5,
+   "fpf_rel_dev_pct_max": 15.0,
+   "anchor_quote_min": 1
+  },
+  "command": "PYTHONPATH=src python benchmarks/composite_laminate_w28/run_verification.py"
+ },
+ "anchor": {
+  "acquisition_status": "ACQUIRED",
+  "grade": "A",
+  "grade_rule": "A = primary document re-acquired here, sha256 computed on the retrieved bytes, every clause located by page and verified verbatim; B = transcript + quote + doc sha256; C = secondary transcript; D = secondary reproduction",
+  "document": {
+   "id": "IACS-CSR-H-2019",
+   "title": "IACS Common Structural Rules for Bulk Carriers and Oil Tankers (harmonised CSR), 01 January 2019 consolidated edition",
+   "url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2022/03/15144815/csr-h-01-jan-2019.pdf",
+   "sha256": "ffb51b3153e43a7d3a2e840971bc948128152e1c9ffe66c3891d6e620e250e7f",
+   "bytes": 21439977,
+   "retrieved_utc": "2026-11-14T07:08:52Z",
+   "retrieval_channel": "unauthenticated HTTPS GET, IACS public S3 object store (www.iacs.org.uk answers HTTP 403 in this sandbox)",
+   "bytes_downloaded": 21439977,
+   "download_seconds": 0.0,
+   "pdf_pages": 820,
+   "text_extraction": "pypdf 6.19.0"
+  },
+  "entries": [
+   {
+    "id": "CSR-ULS-CRITERION",
+    "subject": "hull girder ultimate strength checking criterion (ULS)",
+    "clause": "Pt 1, Ch 5, Sec 2, [2.1.2]",
+    "search_pattern": "ultimate bending capacity at any hull transverse section is to satisfy",
+    "status": "TRANSCRIBED",
+    "pdf_index": 346,
+    "printed_page": 343,
+    "quote": "The vertical hull girder ultimate bending capacity at any hull transverse section is to satisfy the following criteria:",
+    "values": [
+     {
+      "label": "gamma_M",
+      "printed": [
+       "1.1"
+      ],
+      "tokens": [
+       "1.1"
+      ]
+     }
+    ],
+    "verbatim_in_page": true,
+    "pdf_page_label": "pdf page index 346",
+    "heading_trace": {
+     "part_chapter_section": "PART 1 CHAPTER 5 SECTION 2",
+     "section_title_excerpt": "*\"$4 Table 1 : Design load scenarios 2.1.2 The vertical hull girder ultimate ben"
+    },
+    "value_quote": "\u03b3M = 1.1",
+    "value_verbatim_in_page": true
+   },
+   {
+    "id": "CSR-PERMISSIBLE-STRESS",
+    "subject": "permissible hull girder bending stress table",
+    "clause": "Pt 1, Ch 5, Sec 1, [2.2.1] and Table 2 (normal stress, sigma_L)",
+    "search_pattern": "Permissible hull girder bending stress, \u03c3perm Seagoing",
+    "status": "TRANSCRIBED",
+    "pdf_index": 332,
+    "printed_page": 329,
+    "quote": "Permissible hull girder bending stress, \u03c3perm Seagoing (S+D) 140/k",
+    "values": [
+     {
+      "label": "sigma_perm_seagoing_over_k",
+      "printed": [
+       "140"
+      ],
+      "tokens": [
+       "140"
+      ]
+     }
+    ],
+    "verbatim_in_page": true,
+    "pdf_page_label": "pdf page index 332",
+    "heading_trace": {
+     "part_chapter_section": "PART 1 CHAPTER 5 SECTION 1",
+     "section_title_excerpt": "*\"$4 2.3 Minimum net moment of inertia and net section modulus at midship sectio"
+    },
+    "value_quote": "Seagoing (S+D) 140/k",
+    "value_verbatim_in_page": true
+   },
+   {
+    "id": "CSR-YIELD-STRESS",
+    "subject": "nominal yield stress of the material factor family",
+    "clause": "Pt 1, Ch 3, Sec 1, [2] (symbols)",
+    "search_pattern": "Nominal yield stress, taken equal to",
+    "status": "TRANSCRIBED",
+    "pdf_index": 48,
+    "printed_page": 45,
+    "quote": "Nominal yield stress, taken equal to 235/k N/mm2",
+    "values": [
+     {
+      "label": "R_Y_over_k",
+      "printed": [
+       "235"
+      ],
+      "tokens": [
+       "235"
+      ]
+     }
+    ],
+    "verbatim_in_page": true,
+    "pdf_page_label": "pdf page index 48",
+    "heading_trace": {
+     "part_chapter_section": "PART 1 CHAPTER 1 SECTION 4",
+     "section_title_excerpt": "*\"$4 2.2 Materials 2.2.1 Unless otherwise specified, symbols regarding materials"
+    },
+    "value_quote": "Nominal yield stress, taken equal to 235/k",
+    "value_verbatim_in_page": true
+   },
+   {
+    "id": "CSR-VONMISES-CRITERION",
+    "subject": "plate yield criterion format and its permissible utilisation factors",
+    "clause": "Pt 1, Ch 7, Sec 2, [5.2.1]/[5.2.3], Table 10",
+    "search_pattern": "Coarse mesh permissible yield utilisation factor",
+    "status": "TRANSCRIBED",
+    "pdf_index": 432,
+    "printed_page": 429,
+    "quote": "Coarse mesh permissible yield utilisation factor",
+    "values": [
+     {
+      "label": "lambda_yperm_SD_and_S",
+      "printed": [
+       "1.0",
+       "0.8"
+      ],
+      "tokens": [
+       "1.0",
+       "0.8"
+      ]
+     }
+    ],
+    "verbatim_in_page": true,
+    "pdf_page_label": "pdf page index 432",
+    "heading_trace": {
+     "part_chapter_section": "PART 1 CHAPTER 7 SECTION 2",
+     "section_title_excerpt": "*\"$4 5.2 Yield strength assessment 5.2.1 Von Mises stress For all plates of the "
+    },
+    "value_quote": "1.0 (load combination S+D) 0.8 (load combination S)",
+    "value_verbatim_in_page": true
+   },
+   {
+    "id": "CSR-PLATE-NET-THICKNESS",
+    "subject": "minimum net thickness of plating",
+    "clause": "Pt 1, Ch 6, Sec 3, [1.1.1], Table 1",
+    "search_pattern": "The net thickness of plating in mm, is to comply",
+    "status": "TRANSCRIBED",
+    "pdf_index": 378,
+    "printed_page": 375,
+    "quote": "The net thickness of plating in mm, is to comply with the appropriate minimum thickness requirements given in Table 1",
+    "values": [
+     {
+      "label": "t_min_coeffs_fore_part",
+      "printed": [
+       "6.5",
+       "0.03"
+      ],
+      "tokens": [
+       "6.5",
+       "0.03"
+      ]
+     }
+    ],
+    "verbatim_in_page": true,
+    "pdf_page_label": "pdf page index 378",
+    "heading_trace": {
+     "part_chapter_section": "PART 1 CHAPTER 6 SECTION 3",
+     "section_title_excerpt": "*\"$4 SECTION 3 MINIMUM THICKNESSES SYMBOLS For symbols not defined in this secti"
+    },
+    "value_quote": "Bottom Side shell Bilge Fore Part 6.5 + 0.03 L2",
+    "value_verbatim_in_page": true
+   }
+  ],
+  "n_entries": 5,
+  "n_transcribed": 5,
+  "allowable": {
+   "k_assumed": 1.0,
+   "k_basis": "normal-strength steel (k = 1); the CSR prints the allowables over k, so the numeric value needs a declared k",
+   "lambda_yperm_load_combination_SD": 1.0,
+   "lambda_yperm_load_combination_S": 0.8,
+   "R_Y_over_k_N_per_mm2": 235.0,
+   "sigma_allow_MPa": 235.0,
+   "sigma_perm_hull_girder_over_k": 140.0,
+   "gamma_M_uls": 1.1,
+   "t_min_coefficients_fore_part": [
+    "6.5",
+    "0.03"
+   ]
+  },
+  "operator_checks": [
+   {
+    "id": "AN-1",
+    "statement": "every quote and every extracted value is a verbatim substring of the located PDF page text",
+    "rows": [
+     {
+      "id": "CSR-ULS-CRITERION",
+      "quote_verbatim": true,
+      "value_verbatim": true
+     },
+     {
+      "id": "CSR-PERMISSIBLE-STRESS",
+      "quote_verbatim": true,
+      "value_verbatim": true
+     },
+     {
+      "id": "CSR-YIELD-STRESS",
+      "quote_verbatim": true,
+      "value_verbatim": true
+     },
+     {
+      "id": "CSR-VONMISES-CRITERION",
+      "quote_verbatim": true,
+      "value_verbatim": true
+     },
+     {
+      "id": "CSR-PLATE-NET-THICKNESS",
+      "quote_verbatim": true,
+      "value_verbatim": true
+     }
+    ],
+    "verdict": "PASS"
+   },
+   {
+    "id": "AN-2",
+    "statement": "every transcribed relation is dimensionally homogeneous",
+    "rows": [
+     {
+      "relation": "M <= M_U / gamma_R",
+      "unit_lhs": "kNm",
+      "unit_rhs": "kNm / 1",
+      "homogeneous": true
+     },
+     {
+      "relation": "sigma_L <= c_tab / k",
+      "unit_lhs": "N/mm2",
+      "unit_rhs": "N/mm2 / 1",
+      "homogeneous": true
+     },
+     {
+      "relation": "R_Y = 235 / k",
+      "unit_lhs": "N/mm2",
+      "unit_rhs": "N/mm2 / 1",
+      "homogeneous": true
+     },
+     {
+      "relation": "lambda_y = sigma_vm / (R_Y / k) <= lambda_yperm",
+      "unit_lhs": "1",
+      "unit_rhs": "N/mm2 / (N/mm2) = 1",
+      "homogeneous": true
+     },
+     {
+      "relation": "t_net >= a + b * L2 (L2 dimensionless L^2 input)",
+      "unit_lhs": "mm",
+      "unit_rhs": "mm + mm",
+      "homogeneous": true
+     }
+    ],
+    "verdict": "PASS"
+   },
+   {
+    "id": "AN-3",
+    "statement": "derived allowable and cross-clause orderings are algebraically consistent",
+    "rows": [
+     {
+      "relation": "sigma_allow = lambda_yperm(S+D) * R_Y / k",
+      "inputs": {
+       "lambda_yperm": 1.0,
+       "R_Y_over_k": 235.0,
+       "k": 1.0
+      },
+      "value_MPa": 235.0,
+      "residual": 0.0
+     },
+     {
+      "relation": "sigma_perm_table / sigma_allow < 1 (physical ordering)",
+      "ratio": 0.5957446808510638,
+      "ordering_holds": true
+     },
+     {
+      "relation": "lambda_yperm(S) < lambda_yperm(S+D) (harbour case carries the higher utilisation)",
+      "lambda_S": 0.8,
+      "lambda_SD": 1.0,
+      "ordering_holds": true
+     }
+    ],
+    "verdict": "PASS"
+   }
+  ]
+ },
+ "analytic_strict_partial": {
+  "constant_stress_cases": {
+   "uniform_shear": [
+    {
+     "case": "uniform_shear",
+     "n": 4,
+     "n_elements": 16,
+     "n_free_nodes": 9,
+     "max_abs_dev": 1.8189894035458565e-12,
+     "rel_dev": 3.410605131648481e-16,
+     "grid": "boundary from the exact field, interior nodes displaced by up to 0.2h (distortion patch test)"
+    },
+    {
+     "case": "uniform_shear",
+     "n": 8,
+     "n_elements": 64,
+     "n_free_nodes": 49,
+     "max_abs_dev": 2.7284841053187847e-12,
+     "rel_dev": 5.115907697472722e-16,
+     "grid": "boundary from the exact field, interior nodes displaced by up to 0.2h (distortion patch test)"
+    }
+   ],
+   "uniform_biaxial": [
+    {
+     "case": "uniform_biaxial",
+     "n": 4,
+     "n_elements": 16,
+     "n_free_nodes": 9,
+     "max_abs_dev": 1.1368683772161603e-12,
+     "rel_dev": 6.821210263296962e-16,
+     "grid": "boundary from the exact field, interior nodes displaced by up to 0.2h (distortion patch test)"
+    },
+    {
+     "case": "uniform_biaxial",
+     "n": 8,
+     "n_elements": 64,
+     "n_free_nodes": 49,
+     "max_abs_dev": 9.094947017729282e-13,
+     "rel_dev": 5.456968210637569e-16,
+     "grid": "boundary from the exact field, interior nodes displaced by up to 0.2h (distortion patch test)"
+    }
+   ]
+  },
+  "max_rel_dev_all_cases": 6.821210263296962e-16
+ },
+ "membrane_crosscheck_partial": {
+  "layup": "[0/90]s",
+  "load": "in_plane_shear",
+  "n": 8,
+  "eps0_clt": [
+   5.0769937876246435e-25,
+   -2.0234235331835965e-23,
+   3.8684719535783366e-07
+  ],
+  "eps_fem": [
+   -5.841889921029729e-23,
+   -6.206382113153175e-23,
+   3.8684719535783493e-07
+  ],
+  "max_rel_dev": [
+   116.06592612481715,
+   2.0672679305000625,
+   3.2843702529785496e-15
+  ],
+  "A_crosscheck_max_abs": 1.4901161193847656e-08
+ },
+ "criteria": {
+  "C1_anchor": {
+   "statement": "\u22651 verbatim CSR clause + recomputable sha256",
+   "acquisition_status": "ACQUIRED",
+   "grade": "A",
+   "doc_sha256": "ffb51b3153e43a7d3a2e840971bc948128152e1c9ffe66c3891d6e620e250e7f",
+   "n_clauses": 5,
+   "n_clauses_transcribed": 5,
+   "operator_checks": {
+    "AN-1": "PASS",
+    "AN-2": "PASS",
+    "AN-3": "PASS"
+   },
+   "verdict": "PASS"
+  },
+  "C2_analytic_strict": {
+   "statement": "analytic strict solution reproduced to <1e-6",
+   "max_rel_dev": 6.821210263296962e-16,
+   "threshold": 1e-06,
+   "verdict": "PASS",
+   "scope_note": "constant-stress exact solutions only (the class a bilinear conforming element reproduces exactly); the Cook track and the quadratic-order track were not completed inside this mission window"
+  },
+  "C3_grid_convergence": {
+   "statement": "3-level GCI <5% with observed order >=1.5",
+   "verdict": "NOT_RUN",
+   "reason": "the Cook n=64 and the laminate transverse sequences exceeded the local 2-minute short-test budget and the cluster job cj2416 was still queued when the mission window closed"
+  },
+  "C4_first_ply_vs_csr": {
+   "statement": "first-ply failure load per ply per load within 15% of the CSR allowable",
+   "allowable_MPa": 235.0,
+   "verdict": "NOT_RUN",
+   "reason": "ensemble READS the transcribed allowable (235 N/mm2 = lambda_yperm(S+D)*R_Y/k, k=1) but the six-case radiation grid did not complete inside the window; registered as open, not as FAIL"
+  }
+ }
+}
