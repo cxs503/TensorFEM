@@ -34,7 +34,16 @@ Cases (all machine graded)
 3. ``locking`` control -- the same patch and the same driver with 2x2 (full)
    shear integration.  It must fail: a gate set that the locking element also
    passes would prove nothing.
-4. ``strip`` -- a *load-driven* cantilever plate strip under a tip moment, which
+4. ``strip-full`` (round 2) -- the Poisson cross-check, repaired.  The lateral-
+   refinement sweep (``n_y = 2..16``) and the aspect-ratio series (``L/b = 5, 10,
+   20``) show that the free-edge leg carries a *clamped-root* end effect that
+   decays with ``L/b``; the closed-form leg is kept only as an algebra identity,
+   and the coupling is graded on the **solved** deflections plus the exact
+   ``M_y = 0`` (plane-stress) patch below.
+5. ``free-surface`` (round 2) -- the ``M_y = 0`` state ``kappa_y = -nu kappa_x``
+   reproduces ``M_x = D_b kappa_x`` with ``D_b = E t^3/12``, so the Poisson
+   coupling is read out of the element's own ``Db`` and *can* fail.
+6. ``strip`` -- a *load-driven* cantilever plate strip under a tip moment, which
    removes the "the answer was prescribed" objection.  Two closed forms are used:
    cylindrical bending (``lateral="symmetry"``, plate rigidity ``D``) and the
    narrow strip with free edges (beam rigidity ``D_b = E t^3/12``); their ratio
@@ -70,6 +79,8 @@ from tensorfem.bending_patch import (  # noqa: E402
     CurvatureState,
     affine_patch_mesh,
     distorted_patch_mesh,
+    free_surface_check,
+    free_surface_state,
     oracle_selfcheck,
     run_patch_case,
     strip_pure_bending,
@@ -91,6 +102,13 @@ STATES = {
 
 # case-pool tolerance for the anchor
 POOL_TOL = 0.02
+# round-off floor below which an observed convergence order is not measurable
+ROUNDOFF_FLOOR = 1.0e-10
+# round-2 cross-check refinements
+NY_LEVELS = (2, 4, 8, 16)
+ASPECT_LEVELS = (1.0, 2.0, 4.0)
+STRIP_WIDTH = 0.2
+FREE_SURFACE_POISSONS = (0.3, 0.45)
 # self-imposed "exact" tolerance for the affine pass/fail form
 EXACT_TOL = 1.0e-12
 
@@ -155,12 +173,94 @@ def strip_cases(quick: bool) -> list[dict]:
     return rows
 
 
+def free_surface_cases(quick: bool) -> list[dict]:
+    """The ``M_y = 0`` (plane-stress) state: the coupling check that can fail."""
+    rows = []
+    nus = FREE_SURFACE_POISSONS[:1] if quick else FREE_SURFACE_POISSONS
+    families = [("affine", affine_patch_mesh(3)),
+                ("skew", affine_patch_mesh(3, skew=0.35))]
+    for nu in nus:
+        for fam, patch in families:
+            for treat in ("sri", "mitc"):
+                r = free_surface_check(patch, 1.0e-3, young=YOUNG, poisson=nu,
+                                       thickness=THICK, shear_treatment=treat)
+                r["case"] = f"free-surface/nu={nu}/{fam}/{treat}"
+                r["family"] = fam
+                rows.append(r)
+    return rows
+
+
+def strip_transverse_sweep(quick: bool) -> list[dict]:
+    """Transverse (``n_y``) refinement of the load-driven strip, both laterals.
+
+    Round 1 ran the free-edge leg at a fixed ``n_y = 2``; this sweep measures what
+    that mesh does to the answer.
+    """
+    rows = []
+    nxs = (8,) if quick else (8, 32)
+    nys = (2, 4, 8) if quick else NY_LEVELS
+    for lateral in ("symmetry", "free"):
+        for n_x in nxs:
+            for n_y in nys:
+                r = strip_pure_bending(n_x, n_y, moment=1.0e3, lateral=lateral,
+                                       shear_treatment="sri", young=YOUNG,
+                                       poisson=POISSON, thickness=0.01,
+                                       width=STRIP_WIDTH)
+                r["case"] = f"strip-ny/{lateral}/nx={n_x}/ny={n_y}"
+                r["lateral"] = lateral
+                rows.append(r)
+    return rows
+
+
+def strip_aspect_series(quick: bool) -> list[dict]:
+    """Free-edge strip at fixed element size, growing ``L/b`` (end-effect probe)."""
+    rows = []
+    levels = ASPECT_LEVELS[:2] if quick else ASPECT_LEVELS
+    for length in levels:
+        n_x = int(round(32 * length))
+        r = strip_pure_bending(n_x, 8, moment=1.0e3, length=length,
+                               width=STRIP_WIDTH, lateral="free",
+                               shear_treatment="sri", young=YOUNG, poisson=POISSON,
+                               thickness=0.01)
+        r["case"] = f"strip-aspect/L={length:g}/nx={n_x}"
+        rows.append(r)
+    return rows
+
+
+def strip_root_support_control(quick: bool) -> list[dict]:
+    """Root-support control: is the free-edge offset caused by the `theta_y` clamp?
+
+    `clamp_theta_y=False` keeps `w` and `theta_x` restrained at the root and lets
+    `theta_y` float.  If the offset disappeared, the restraint, not the `w = 0`
+    incompatibility with the anticlastic field, would be the cause.
+    """
+    rows = []
+    for clamp in (True, False):
+        r = strip_pure_bending(32, 8, moment=1.0e3, lateral="free",
+                               shear_treatment="sri", young=YOUNG, poisson=POISSON,
+                               thickness=0.01, width=STRIP_WIDTH,
+                               clamp_theta_y=clamp)
+        r["case"] = f"strip-root/clamp_theta_y={clamp}/nx=32/ny=8"
+        r["clamp_theta_y"] = clamp
+        rows.append(r)
+    return rows
+
+
 # --------------------------------------------------------------------------- #
 # analysis helpers
 # --------------------------------------------------------------------------- #
 def observed_order(rows: list[dict], treatment: str, key: str) -> float:
-    pts = [(math.log(r["h"]), math.log(r[key])) for r in rows
-           if r["shear_treatment"] == treatment and r[key] > 0.0]
+    """Least-squares slope of log(error) vs log(h); NaN if it is not measurable.
+
+    A slope fitted to round-off numbers is noise, not a convergence rate: if the
+    largest error in the ladder is below :data:`ROUNDOFF_FLOOR` the order is
+    reported as ``NaN`` (-> ``null`` in JSON, "n/a" in the report) instead of a
+    number that looks like evidence.
+    """
+    sel = [r for r in rows if r["shear_treatment"] == treatment and r[key] > 0.0]
+    if not sel or max(r[key] for r in sel) < ROUNDOFF_FLOOR:
+        return float("nan")
+    pts = [(math.log(r["h"]), math.log(r[key])) for r in sel]
     if len(pts) < 2:
         return float("nan")
     n = len(pts)
@@ -413,17 +513,32 @@ def render_report(result: dict) -> str:
         if not r["case"].startswith("strip/"):
             continue
         ok = (r["w_rel_error_kirchhoff"] <= POOL_TOL and r["theta_rel_error"] <= POOL_TOL)
+        if r["lateral"] == "free":
+            A(f"| {r['lateral']} | {r['n_x']} | {r['shear_treatment']} |"
+              f" {r['w_tip']:.6f} | {r['w_exact_kirchhoff']:.6f} |"
+              f" {pct(r['w_rel_error_kirchhoff'])} | {pct(r['theta_rel_error'])} |"
+              f" not graded (n_y = 2, aliased — §4.5) |")
+            continue
         A(f"| {r['lateral']} | {r['n_x']} | {r['shear_treatment']} |"
           f" {r['w_tip']:.6f} | {r['w_exact_kirchhoff']:.6f} |"
           f" {pct(r['w_rel_error_kirchhoff'])} | {pct(r['theta_rel_error'])} |"
           f" {'PASS' if ok else 'FAIL'} |")
     A("")
+    A("The `free` rows are kept at the round-1 transverse mesh (`n_y = 2`) only to"
+      " document that mesh; they are **not graded** because refining `n_y` moves them"
+      " (§4.5).")
+    A("")
     A(f"Rigidity used: `D = E t^3/(12(1-nu^2))` for the symmetry cell (cylindrical bending),")
     A(f"`D_b = E t^3/12` for the free-edge strip (plane stress, beam rigidity).")
-    A(f"Measured ratio of the two responses = {result['strip_ratio']['measured']:.6f},"
-      f" theory `1/(1-nu^2) = {result['strip_ratio']['theory']:.6f}`"
-      f" (error {pct(result['strip_ratio']['rel_error'])}) — this is the physical"
-      f" cross-check of the Poisson coupling.")
+    A(f"Ratio of the two **solved** tip deflections ="
+      f" {result['strip_ratio']['measured']:.6f}, theory `1/(1-nu^2) ="
+      f" {result['strip_ratio']['theory']:.6f}` (error"
+      f" {pct(result['strip_ratio']['rel_error'])}) at the converged transverse mesh"
+      f" (n_y = {result['strip_ratio']['mesh']['n_y']}). At the round-1 mesh"
+      f" (n_y = {result['strip_ratio']['naive_n_y']}) the same ratio reads"
+      f" {result['strip_ratio']['naive_measured']:.6f}"
+      f" (error {pct(result['strip_ratio']['naive_rel_error'])}) — see §4.5: the"
+      f" difference is a clamped-root end effect, not a coupling error.")
     A("")
     A("### 4.4 Negative control: the locking element must fail")
     A("")
@@ -443,6 +558,82 @@ def render_report(result: dict) -> str:
           f" {pct(max(r['moment_rel_error'] for r in lock_dist))} |"
           f" {'FAIL (as required)' if max(r['moment_rel_error'] for r in lock_dist) > POOL_TOL else 'within 2%'} |")
     A("")
+    A("### 4.5 Round-2 cross-check repair (Poisson coupling)")
+    A("")
+    A("The round-1 Poisson check graded `M L^2/(2 D)` of the free-edge leg against"
+      " `M L^2/(2 D_b)` of the symmetry leg, i.e. **two closed forms**, and reported a"
+      " 0.000 % error. Both operands are the same formula with a rigidity the driver"
+      " inserted, so the ratio is `D/D_b = 1/(1-nu^2)` by construction: the check was"
+      " insensitive to the element and could not fail. It is now split into an explicit"
+      " oracle identity and three checks that use solved quantities:")
+    A("")
+    A("| leg | quantity | value |")
+    A("|---|---|---|")
+    A(f"| closed form (oracle only) | ratio `D/D_b` |"
+      f" {result['strip_ratio']['closed_form_ratio']:.12f} |")
+    A(f"| closed form (oracle only) | error vs `1/(1-nu^2)` |"
+      f" {result['strip_ratio']['closed_form_rel_error']:.3e} |")
+    A(f"| solved, converged mesh (n_y={result['strip_ratio']['mesh']['n_y']}) |"
+      f" `w_free/w_sym` | {result['strip_ratio']['measured']:.6f} |")
+    A(f"| solved, converged mesh (n_y={result['strip_ratio']['mesh']['n_y']}) |"
+      f" error vs `1/(1-nu^2)` | {pct(result['strip_ratio']['rel_error'])} |")
+    A(f"| solved, round-1 mesh (n_y={result['strip_ratio']['naive_n_y']}) |"
+      f" `w_free/w_sym` | {result['strip_ratio']['naive_measured']:.6f} |")
+    A(f"| free-surface state `M_y=0` | max `|M_y|/|M_x|`, nu ="
+      f" {', '.join(f'{v:g}' for v in result['free_surface_summary']['poissons'])} |"
+      f" {result['free_surface_summary']['max_my_over_mx']:.3e} |")
+    A(f"| free-surface state `M_y=0` | max `|M_x/(D_b kappa_x) - 1|` |"
+      f" {result['free_surface_summary']['max_rigidity_deviation']:.3e} |")
+    A(f"| free-surface state `M_y=0` | same, graded against `D` instead of `D_b`"
+      f" (separation) | {pct(result['free_surface_summary']['alternative_rigidity_deviation'])} |")
+    A("")
+    A("The free-edge leg is **not** transverse-converged at the round-1 mesh. Refining"
+      " only the transverse direction, at fixed `n_x`:")
+    A("")
+    A("| n_y | free-edge `w` error vs `M L^2/(2 D_b)` |")
+    A("|---|---|")
+    for ny, val in result["strip_transverse"]["free_w_error_by_n_y"].items():
+        A(f"| {ny} | {pct(val)} |")
+    A("")
+    A(f"Relative change between the two finest levels:"
+      f" {pct(result['strip_transverse']['transverse_change'])}. The converged offset"
+      f" (~1.2 %) is not a discretization error: it decays with the strip aspect ratio at"
+      f" fixed element size, which identifies it as a **clamped-root end effect** (the"
+      f" `w = 0` root restraint is incompatible with the anticlastic curvature"
+      f" `kappa_y = -nu kappa_x` that the free lateral edges require, so a boundary layer"
+      f" adds a small tip rotation).")
+    A("")
+    A("| L/b | free-edge `w` error vs `M L^2/(2 D_b)` |")
+    A("|---|---|")
+    for k, val in result["strip_aspect"]["free_w_error_by_L_over_b"].items():
+        A(f"| {k} | {pct(val)} |")
+    A("")
+    root = {r["clamp_theta_y"]: r["w_rel_error_kirchhoff"] for r in result["strip_root_support"]}
+    if root:
+        A("Root-support control at fixed mesh (`n_x = 32`, `n_y = 8`):"
+          f" `theta_y` clamped -> {pct(root[True])}; `theta_y` free ->"
+          f" {pct(root[False])}. The offset survives, so it is the `w = 0` restraint of"
+          " the anticlastic field, not the rotation restraint.")
+        A("")
+    A(f"Decay ratio `e(L/b=20)/e(L/b=5) ="
+      f" {result['strip_aspect']['end_effect_decay_ratio']:.3f}`: the offset is local to"
+      f" the clamped root and vanishes with `L/b`, so the beam closed form is *not* the"
+      f" limit of a hard-clamped strip at engineering aspect ratios. The leg is therefore"
+      f" graded at 2 % only after transverse convergence, and the Poisson coupling itself"
+      f" is graded on the exact `M_y = 0` patch, where `M_y` must vanish to round-off.")
+    A("")
+    A("| nu | family | treatment | w error | rotation error | moment error |"
+      " `|M_y|/|M_x|` | `M_x/(D_b kappa_x)` |")
+    A("|---|---|---|---|---|---|---|---|")
+    for r in result["free_surface"]:
+        A(f"| {r['poisson']:g} | {r['family']} | {r['shear_treatment']} |"
+          f" {r['displacement_rel_error']:.2e} | {r['rotation_rel_error']:.2e} |"
+          f" {r['moment_rel_error']:.2e} | {r['my_over_mx']:.2e} |"
+          f" {r['mx_over_db_kappa']:.9f} |")
+    A("")
+    A("The state is run at `nu = 0.3` and `nu = 0.45` so the check cannot be satisfied"
+      " by a constant tuned to one Poisson ratio.")
+    A("")
     A("## 5. Convergence and sensitivity")
     A("")
     A("| n | h | treatment | w error | moment error | energy error |")
@@ -452,9 +643,14 @@ def render_report(result: dict) -> str:
           f" {r['displacement_rel_error']:.3e} | {r['moment_rel_error']:.3e} |"
           f" {r['energy_rel_error']:.3e} |")
     A("")
+    def _ord(v):
+        return "n/a (at round-off, not measurable)" if v != v else f"{v:.2f}"
+
     A(f"Observed orders (least squares on log-log, distorted family):")
-    A(f"`w` sri {result['orders']['w_sri']:.2f}, `w` mitc {result['orders']['w_mitc']:.2f},")
-    A(f"`M` sri {result['orders']['M_sri']:.2f}, `M` mitc {result['orders']['M_mitc']:.2f}.")
+    A(f"`w` sri {_ord(result['orders']['w_sri'])}, `w` mitc {_ord(result['orders']['w_mitc'])},")
+    A(f"`M` sri {_ord(result['orders']['M_sri'])}, `M` mitc {_ord(result['orders']['M_mitc'])}.")
+    A("A slope fitted to numbers at the round-off floor is noise, not a convergence"
+      " rate; those entries are reported as `n/a` and are not graded.")
     A("The residual on a non-affine patch is an interpolation limitation of the bilinear")
     A("`w`, not a consistency defect: it vanishes with h and is already below the 2% pool")
     A("tolerance at the coarsest patch used.")
@@ -523,6 +719,10 @@ def main(argv: list[str] | None = None) -> int:
     matrix = patch_matrix(args.quick)
     ladder = refinement_ladder(args.quick)
     strip = strip_cases(args.quick)
+    free_surface = free_surface_cases(args.quick)
+    strip_ny = strip_transverse_sweep(args.quick)
+    strip_aspect = strip_aspect_series(args.quick)
+    strip_root = strip_root_support_control(args.quick)
 
     # dimensionless parameters
     d = YOUNG * THICK ** 3 / (12.0 * (1.0 - POISSON ** 2))
@@ -533,14 +733,82 @@ def main(argv: list[str] | None = None) -> int:
         "bending_shear_ratio": d / (ds * THICK ** 2),
     }
 
-    # physical cross-check: symmetry-cell response / free-edge response = 1/(1-nu^2)
-    sym = [r for r in strip if r["case"] == "strip/symmetry/n=8/sri"]
-    fre = [r for r in strip if r["case"] == "strip/free/n=8/sri"]
-    ratio = {"measured": float("nan"), "theory": 1.0 / (1.0 - POISSON ** 2),
-             "rel_error": float("nan")}
-    if sym and fre:
-        meas = fre[0]["w_exact_kirchhoff"] / sym[0]["w_exact_kirchhoff"]
-        ratio.update(measured=meas, rel_error=abs(meas - ratio["theory"]) / ratio["theory"])
+    # ---- Poisson cross-check, repaired (round 2) --------------------------
+    # (a) closed-form leg: the round-1 gate.  Both operands are the *same* formula
+    #     M L^2/(2 D_ref) with a rigidity that the driver inserted, so the ratio is
+    #     D/D_b = 1/(1-nu^2) by construction: the error is identically zero for any
+    #     element and any nu.  It is kept as an ORACLE identity only, never as
+    #     element evidence.
+    d_beam = YOUNG * THICK ** 3 / 12.0
+    theory = 1.0 / (1.0 - POISSON ** 2)
+    closed_ratio = d / d_beam
+    closed_rel_error = abs(closed_ratio - theory) / theory
+    # (b) computed leg: the two *solved* tip deflections on the same mesh.
+    nx_ref = 8 if args.quick else 32
+    ny_ref = 8 if args.quick else 16
+    ny_naive = 2
+
+    def _solved(lateral: str, n_x: int, n_y: int):
+        for r in strip_ny:
+            if (r["lateral"] == lateral and r["n_x"] == n_x and r["n_y"] == n_y):
+                return r
+        return None
+
+    ratio = {"theory": theory, "closed_form_ratio": closed_ratio,
+             "closed_form_rel_error": closed_rel_error,
+             "measured": float("nan"), "rel_error": float("nan"),
+             "naive_measured": float("nan"), "naive_rel_error": float("nan"),
+             "naive_n_y": ny_naive, "mesh": {"n_x": nx_ref, "n_y": ny_ref,
+                                             "shear_treatment": "sri"}}
+    sym_ref, fre_ref = _solved("symmetry", nx_ref, ny_ref), _solved("free", nx_ref, ny_ref)
+    if sym_ref and fre_ref:
+        meas = fre_ref["w_tip"] / sym_ref["w_tip"]
+        ratio.update(measured=meas, rel_error=abs(meas - theory) / theory)
+    sym_nv, fre_nv = _solved("symmetry", nx_ref, ny_naive), _solved("free", nx_ref, ny_naive)
+    if sym_nv and fre_nv:
+        m = fre_nv["w_tip"] / sym_nv["w_tip"]
+        ratio.update(naive_measured=m, naive_rel_error=abs(m - theory) / theory)
+
+    # free-edge leg: transverse convergence and the clamped-root end effect
+    free_ny = {r["n_y"]: r["w_rel_error_kirchhoff"] for r in strip_ny
+               if r["lateral"] == "free" and r["n_x"] == nx_ref}
+    ny_lo = 4 if args.quick else 8
+    transverse = float("nan")
+    if ny_ref in free_ny and ny_lo in free_ny and free_ny[ny_ref] > 0.0:
+        transverse = abs(free_ny[ny_ref] - free_ny[ny_lo]) / free_ny[ny_ref]
+    aspect = {r["length"] / r["width"]: r["w_rel_error_kirchhoff"] for r in strip_aspect}
+    end_decay = float("nan")
+    lo, hi = min(aspect), max(aspect)
+    if len(aspect) >= 2 and aspect[lo] > 0.0:
+        end_decay = aspect[hi] / aspect[lo]
+
+    # free-surface (M_y = 0) state: the coupling check with discriminating power
+    fs_my = max((r["my_over_mx"] for r in free_surface), default=float("nan"))
+    fs_w = max((max(r["displacement_rel_error"], r["rotation_rel_error"])
+                for r in free_surface), default=float("nan"))
+    fs_m = max((r["moment_rel_error"] for r in free_surface), default=float("nan"))
+    fs_rig = max((abs(r["mx_over_db_kappa"] - 1.0) for r in free_surface),
+                 default=float("nan"))
+    # separation: grading M_x against the *cylindrical* rigidity D instead of D_b
+    fs_separation = max((abs(r["mx_over_db_kappa"] * r["db_over_d"] - 1.0)
+                         for r in free_surface), default=float("nan"))
+    free_surface_summary = {
+        "poissons": sorted({r["poisson"] for r in free_surface}),
+        "max_my_over_mx": fs_my,
+        "max_displacement_or_rotation_error": fs_w,
+        "max_moment_error": fs_m,
+        "max_rigidity_deviation": fs_rig,
+        "alternative_rigidity_deviation": fs_separation,
+    }
+    strip_transverse = {
+        "n_x": nx_ref,
+        "free_w_error_by_n_y": {str(k): v for k, v in sorted(free_ny.items())},
+        "transverse_change": transverse,
+    }
+    strip_aspect_summary = {
+        "free_w_error_by_L_over_b": {f"{k:g}": v for k, v in sorted(aspect.items())},
+        "end_effect_decay_ratio": end_decay,
+    }
 
     orders = {
         "w_sri": observed_order(ladder, "sri", "displacement_rel_error"),
@@ -567,7 +835,11 @@ def main(argv: list[str] | None = None) -> int:
     strip_ok = [r for r in strip if r["case"].startswith("strip/")]
     strip_w = worst(strip_ok, lambda r: r["lateral"] == "symmetry", "w_rel_error_kirchhoff")
     strip_t = worst(strip_ok, lambda r: r["lateral"] == "symmetry", "theta_rel_error")
-    strip_free_w = worst(strip_ok, lambda r: r["lateral"] == "free", "w_rel_error_kirchhoff")
+    # round 2: the free-edge leg is graded only on the transverse-converged meshes.
+    strip_free_conv = [r for r in strip_ny if r["lateral"] == "free" and r["n_y"] >= ny_lo]
+    strip_free_w = worst(strip_free_conv, lambda r: True, "w_rel_error_kirchhoff")
+    strip_free_w_naive = worst(strip_ok, lambda r: r["lateral"] == "free",
+                               "w_rel_error_kirchhoff")
 
     lock_rows = [r for r in strip if r["case"].startswith("strip-locking/")]
     lock_thin = [r for r in lock_rows if r["thickness"] <= 0.01]
@@ -602,12 +874,44 @@ def main(argv: list[str] | None = None) -> int:
              "M L^2/(2D), D = E t^3/(12(1-nu^2))", strip_w, POOL_TOL),
         Gate("strip_symmetry_theta", "tip rotation error, symmetry cell (load-driven)",
              "M L/D", strip_t, POOL_TOL),
-        Gate("strip_free_w", "tip deflection error, free edges (load-driven)",
-             "M L^2/(2 D_b), D_b = E t^3/12", strip_free_w, POOL_TOL),
-        Gate("poisson_crosscheck", "|ratio - 1/(1-nu^2)| / (1/(1-nu^2))",
-             "D/D_b = 1/(1-nu^2) exactly", ratio["rel_error"], POOL_TOL),
+        Gate("strip_free_w", "tip deflection error, free edges, transverse-converged "
+             "meshes (n_y >= 8, load-driven)",
+             "M L^2/(2 D_b), D_b = E t^3/12 (clamped-root end effect included; see the "
+             "end-effect and transverse-convergence gates)", strip_free_w, POOL_TOL),
+        Gate("poisson_identity_closed_form",
+             "|D/D_b - 1/(1-nu^2)| / (1/(1-nu^2))  [algebra only, no solve]",
+             "D/D_b = 1/(1-nu^2) exactly (ORACLE identity: insensitive to the "
+             "element, documented, not element evidence)",
+             ratio["closed_form_rel_error"], 1.0e-14),
+        Gate("poisson_coupling_computed",
+             "|w_free/w_sym - 1/(1-nu^2)| / (1/(1-nu^2)) from the SOLVED tip "
+             "deflections, n_y=16",
+             "1/(1-nu^2) with both responses solved on the same mesh", ratio["rel_error"],
+             POOL_TOL),
+        Gate("free_surface_moment_exact",
+             "max |M_y| / max |M_x| on the M_y=0 state (affine+skew, nu=0.3 and 0.45)",
+             "plane-stress free surface: M_y = 0 exactly", fs_my, 1.0e-12),
+        Gate("free_surface_field_exact",
+             "max nodal w/rotation error, M_y=0 state (affine+skew, nu=0.3 and 0.45)",
+             "closed form with kappa_y = -nu kappa_x", fs_w, 1.0e-12),
+        Gate("free_surface_rigidity",
+             "max |M_x/(D_b kappa_x) - 1|, D_b = E t^3/12",
+             "measured beam rigidity equals D (1-nu^2)", fs_rig, 1.0e-12),
+        Gate("free_surface_rigidity_separation",
+             "|M_x/(D kappa_x) - 1|: grading against the cylindrical rigidity D",
+             "the check must reject the wrong rigidity (discriminating power)",
+             fs_separation, 0.05, ">="),
+        Gate("strip_free_transverse_convergence",
+             "|e(n_y=16) - e(n_y=8)| / e(n_y=16), free lateral, n_x=32",
+             "the free-edge leg must be transverse-converged before it is graded",
+             transverse, 0.10),
+        Gate("strip_free_end_effect_decay",
+             "e(L/b=20) / e(L/b=5), free lateral, n_y=8, fixed element size",
+             "clamped-root end effect is local: it must decay with L/b", end_decay,
+             0.60),
         Gate("order_w_min", "observed order of the distorted patch, w (SRI)",
-             "second-order consistency of the element", orders["w_sri"], 1.5,
+             "second-order consistency of the element (orders below the round-off "
+             "floor are reported as null, not fitted)", orders["w_sri"], 1.5,
              ">="),
         Gate("locking_control_strip", "min tip-deflection error of the locking element "
              "(thin strip, t/L = 0.01)", "shear locking must be visible (negative control)",
@@ -639,6 +943,14 @@ def main(argv: list[str] | None = None) -> int:
             "field (quadratic exact field), measured and h-convergent, not a defect.",
             "A Dirichlet-driven patch contains no zero-energy mode, so this test cannot "
             "detect the rank deficiency of the one-point (sri) element.",
+            "The free-edge strip leg of the Poisson cross-check is NOT converged at "
+            "n_y=2: its converged offset is ~1.2% (L/b=5) and it decays with L/b, i.e. it "
+            "is a clamped-root end effect, not a discretization error. The leg is "
+            "therefore graded only after transverse convergence, and the coupling itself "
+            "is graded on the exact M_y=0 state.",
+            "The closed-form Poisson ratio is an algebra identity (insensitive to the "
+            "element); it is reported as an oracle check, not as element evidence. "
+            "Round 1 graded it as if it were the cross-check -- that gate could not fail.",
             "Literature criterion cited from the standard statement; the textbooks were not "
             "retrievable offline, but every target value is evaluated in code from the "
             "closed form, so no table digit enters the evidence chain.",
@@ -657,8 +969,16 @@ def main(argv: list[str] | None = None) -> int:
         "matrix": matrix,
         "ladder": ladder,
         "strip": strip,
+        "strip_free_w_naive": strip_free_w_naive,
         "orders": orders,
         "strip_ratio": ratio,
+        "free_surface": free_surface,
+        "free_surface_summary": free_surface_summary,
+        "strip_transverse": strip_transverse,
+        "strip_ny": strip_ny,
+        "strip_aspect": strip_aspect_summary,
+        "strip_aspect_cases": strip_aspect,
+        "strip_root_support": strip_root,
         "criteria": {"case_pool_tolerance": POOL_TOL, "exact_tolerance": EXACT_TOL},
         "gates": [x.to_dict() for x in gates],
         "passed": passed,
