@@ -1,0 +1,193 @@
+{
+  "schema": "tensorfem.hertz-two-param-extrapolation.v1",
+  "anchor": "fem_hertz_contact_loadcontrol",
+  "case_pool": "FEM-HERTZ-CONTACT (id 104)",
+  "generated_at": "2026-11-14T14:24:45+00:00",
+  "question": "does the residual indentation offset of the Hertz anchor survive the joint (dz, 1/H) limit, i.e. is it a model bias?",
+  "criteria": {
+    "disc_abs_pct": 0.05,
+    "bias_abs_pct": 0.15,
+    "case_pool_pct": 3.0,
+    "reference": "Hertz 1882 J. reine angew. Math. 92:156; Johnson 1985 Contact Mechanics 4.2 DOI:10.1017/cbo9781139171731"
+  },
+  "far_field_layers": [
+    52,
+    32
+  ],
+  "n_points": 6,
+  "cells_expected": 9,
+  "cells_missing": [
+    "dz_a48_H96",
+    "dz_a48_H192",
+    "dz_a48_H384",
+    "dz_a48_H768",
+    "dz_a12_H96",
+    "dz_a12_H192",
+    "dz_a12_H384"
+  ],
+  "points": [
+    {
+      "label": "dz_a6_H768",
+      "depth_over_a": 768.0,
+      "dz_over_a": 0.16666666666666666,
+      "e_delta_pct": -0.4581409618826915,
+      "e_a_linear_pct": -0.5313500931707904,
+      "e_a_fit_pct": null,
+      "e_p_pct": 0.5879059769389627,
+      "n_elements": 14112,
+      "wall_s": 32.21357560157776,
+      "source": "cell"
+    },
+    {
+      "label": "dz_a12_H768",
+      "depth_over_a": 768.0,
+      "dz_over_a": 0.08333333333333333,
+      "e_delta_pct": -0.32381061947538425,
+      "e_a_linear_pct": -0.23169734205796821,
+      "e_a_fit_pct": null,
+      "e_p_pct": 0.1796906436062118,
+      "n_elements": 20160,
+      "wall_s": 50.103962898254395,
+      "source": "cell"
+    },
+    {
+      "label": "depth_96a_dz_a24",
+      "depth_over_a": 96.0,
+      "dz_over_a": 0.041666666666666664,
+      "e_delta_pct": -0.8377979516724587,
+      "e_a_linear_pct": 0.8921485671512297,
+      "e_a_fit_pct": null,
+      "e_p_pct": 0.02225466961960354,
+      "n_elements": 32256,
+      "wall_s": 131.35350584983826,
+      "source": "reuse:converged_model_rows.jsonl"
+    },
+    {
+      "label": "depth_192a_dz_a24",
+      "depth_over_a": 192.0,
+      "dz_over_a": 0.041666666666666664,
+      "e_delta_pct": -0.5233344573056686,
+      "e_a_linear_pct": 0.8921996426514811,
+      "e_a_fit_pct": null,
+      "e_p_pct": 0.022220280347617916,
+      "n_elements": 32256,
+      "wall_s": 152.31517267227173,
+      "source": "reuse:converged_model_rows.jsonl"
+    },
+    {
+      "label": "depth_384a_dz_a24",
+      "depth_over_a": 384.0,
+      "dz_over_a": 0.041666666666666664,
+      "e_delta_pct": -0.36621079031678994,
+      "e_a_linear_pct": 0.8922059069309984,
+      "e_a_fit_pct": null,
+      "e_p_pct": 0.022216064308611116,
+      "n_elements": 32256,
+      "wall_s": 114.11523151397705,
+      "source": "reuse:converged_model_rows.jsonl"
+    },
+    {
+      "label": "depth_768a_dz_a24",
+      "depth_over_a": 768.0,
+      "dz_over_a": 0.041666666666666664,
+      "e_delta_pct": -0.28768087146170407,
+      "e_a_linear_pct": 0.8922064811613728,
+      "e_a_fit_pct": null,
+      "e_p_pct": 0.022215681467230297,
+      "n_elements": 32256,
+      "wall_s": 92.05681300163269,
+      "source": "reuse:converged_model_rows.jsonl"
+    }
+  ],
+  "nested": {
+    "window": "upper",
+    "window_depths": [
+      192.0,
+      384.0,
+      768.0
+    ],
+    "depth_limits": {
+      "dz_a12": null,
+      "dz_a24": {
+        "observed_order": 1.0005861936336167,
+        "gci_fine": 0.34094264338869246,
+        "richardson_limit": -0.20921473004689123,
+        "safety_factor": 1.25,
+        "refinement_ratio": 2.0,
+        "depths_over_a": [
+          192.0,
+          384.0,
+          768.0
+        ],
+        "e_delta_pct": [
+          -0.5233344573056686,
+          -0.36621079031678994,
+          -0.28768087146170407
+        ]
+      },
+      "dz_a48": null
+    },
+    "status": "incomplete grid"
+  },
+  "nested_alt_window": {
+    "window": "lower",
+    "window_depths": [
+      96.0,
+      192.0,
+      384.0
+    ],
+    "depth_limits": {
+      "dz_a12": null,
+      "dz_a24": {
+        "observed_order": 1.0009920412358835,
+        "gci_fine": 0.5355788514409354,
+        "richardson_limit": -0.20930298674627504,
+        "safety_factor": 1.25,
+        "refinement_ratio": 2.0,
+        "depths_over_a": [
+          96.0,
+          192.0,
+          384.0
+        ],
+        "e_delta_pct": [
+          -0.8377979516724587,
+          -0.5233344573056686,
+          -0.36621079031678994
+        ]
+      },
+      "dz_a48": null
+    },
+    "status": "incomplete grid"
+  },
+  "global_fit": {
+    "sse": 2.4156743037750306e-08,
+    "e0_pct": -0.1959057298650062,
+    "A": -5.527621681785426,
+    "B": -60.351445790131876,
+    "p": 1.9000000000000012,
+    "q": 1.0000000000000004,
+    "rms_pct": 6.34517441811102e-05,
+    "n_points": 6,
+    "status": "ok"
+  },
+  "interim_estimate": {
+    "status": "interim (corner linearisation)",
+    "depth_limit_pct": -0.20921473004689123,
+    "dz_limit_pct": -0.2743880935554968,
+    "corner_e_delta_pct": -0.28768087146170407,
+    "corner_correction_pp": 0.013292777906207254,
+    "e0_interim_pct": -0.19592195214068397,
+    "dz_order": 1.894526118264195,
+    "depth_order": 1.0005861936336167
+  },
+  "e0_pct": null,
+  "band_pct": null,
+  "verdict": "inconclusive (grid incomplete)",
+  "pool": {
+    "accepted_model": "h/a=0.0075, dz=a/6, H=96a (case-pool certificate)",
+    "e_delta_pct": -1.0099514889584937,
+    "e_a_linear_pct": -0.4451272465144873,
+    "e_a_fit_pct": 0.0352021454891549,
+    "within_3pct": true
+  }
+}
