@@ -3,7 +3,7 @@
   "anchor": "fem_kirsch_plate",
   "title": "KIRSCH-PLATE: circular hole in a tension plate, K_t = 3 (Kirsch 1898)",
   "mission": "CASE-KIRSCH-PLATE",
-  "generated_at": "2026-11-12T21:50:15+00:00",
+  "generated_at": "2026-11-14T14:09:48+00:00",
   "criteria": {
     "kirsch_limit_rel_error_max": 0.05,
     "kirsch_extrapolated_rel_error_max": 0.01,
@@ -152,6 +152,12 @@
   "undefined_terms": [],
   "artifacts": {
     "result.json": "every number of the ladder, cross-checks and sensitivity studies",
+    "figures": [
+      "benchmarks/verified/fem_kirsch_plate/kirsch_field.png",
+      "benchmarks/verified/fem_kirsch_plate/kirsch_convergence.png",
+      "benchmarks/verified/fem_kirsch_plate/kirsch_hoop_profile.png",
+      "benchmarks/verified/fem_kirsch_plate/kirsch_width_trend.png"
+    ],
     "run.py": "this driver"
   },
   "limitations": [
@@ -160,23 +166,5 @@
     "Plane stress, linear elasticity, isotropic homogeneous material, single hole, no plasticity and no contact: this anchor says nothing about those regimes.",
     "The plate-length study must be resolution-matched (n ~ L): with the ray count held fixed the starburst mesh coarsens near the apex and K_t drifts by percent-level in a way that mimics a load-introduction effect. Both tables are in result.json.",
     "The hole edge is a stress-raiser: the Q4 recovered nodal stress converges at an observed order near 2 on this mesh family, which is a property of the starburst mesh plus apex node, not a general O(h^2) claim."
-  ],
-  "figures_rendered_on_demand": [
-    {
-      "path": "benchmarks/verified/fem_kirsch_plate/kirsch_field.png",
-      "rendered_by": "benchmarks/verified/fem_kirsch_plate/make_report.py"
-    },
-    {
-      "path": "benchmarks/verified/fem_kirsch_plate/kirsch_convergence.png",
-      "rendered_by": "benchmarks/verified/fem_kirsch_plate/make_report.py"
-    },
-    {
-      "path": "benchmarks/verified/fem_kirsch_plate/kirsch_hoop_profile.png",
-      "rendered_by": "benchmarks/verified/fem_kirsch_plate/make_report.py"
-    },
-    {
-      "path": "benchmarks/verified/fem_kirsch_plate/kirsch_width_trend.png",
-      "rendered_by": "benchmarks/verified/fem_kirsch_plate/make_report.py"
-    }
   ]
 }
