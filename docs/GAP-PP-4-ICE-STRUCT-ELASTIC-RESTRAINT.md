@@ -276,3 +276,25 @@ Literature re-check (`nu=0.3`, uniform load, square, nx=80):
 python -m pytest tests/test_plate_restraint_panel.py -v   # 12 tests, ~45 s
 python benchmarks/beta_restraint_panel_band.py --nx 160    # writes the JSON band
 ```
+
+---
+
+# 10. Increment 2026-11-14 (second): exact reference for the interior of the band
+
+§9 pinned the two ends of the `beta` band but left its **interior** unverified.
+`src/tensorfem/plate_levy_restraint.py` now supplies an *exact* Kirchhoff Levý
+solution (springs on two opposite edges), a beam closed form for the
+cylindrical-bending limit, and a four-edge Rayleigh-Ritz solution; the Mindlin
+panel reproduces the exact reference to **<0.08%** (deflection) and **<0.05%**
+(centre moment) at `beta = 0 ... 1`, with the cylindrical-bending limit agreeing
+to 3e-6%.
+
+* evidence: `benchmarks/artifacts/beta_levy_band_verification.json` (cluster job `cj2989`)
+* tests: `tests/test_plate_levy_restraint.py` (14)
+* case file: `docs/CASE-FEM-ELASTIC-RESTRAINT-LEVY-VERIFICATION.md`
+* figures: `benchmarks/artifacts/beta_levy_band.png`, `beta_levy_field.png`
+
+Consequence for the manuscript: the SSSS conclusion can now be stated as the
+upper end of a *quantified* band (`beta = 0` to `beta = 1` removes
+52.8% of the centre deflection in the canonical plate), not as an unquantified
+upper bound.
