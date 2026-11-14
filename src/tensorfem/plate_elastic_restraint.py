@@ -87,7 +87,6 @@ edges", pp. 198-202.
 """
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 from typing import Optional
 
@@ -501,3 +500,499 @@ def beta_sweep(
         })
 
     return out
+
+
+# ===========================================================================
+# Rectangular panels with per-edge elastic restraint, sparse assembly and
+# bending-moment / stress recovery.
+#
+# Why this exists: the paper anchor (JOUR-ICE-STRUCT Sec. 4.2) states its SSSS
+# result as *an upper bound only*, because a real ice-belt plate field is
+# bounded by longitudinals on two sides and transverse frames on the other two
+# -- i.e. two different finite rotational restraints on orthogonal edges, on a
+# rectangular (0.8 m x 0.7 m) plate field.  The square/single-beta solver above
+# cannot express that, and it returns displacement only, so the quantity the
+# paper reports (peak bending stress) cannot be cross-checked at all.
+#
+# Everything below is additive: `solve_plate_elastic_restraint` and
+# `beta_sweep` keep their behaviour bit-for-bit (the vectorised assembly here is
+# asserted against the historical loop assembly by
+# tests/test_plate_restraint_panel.py::test_sparse_path_matches_dense_path).
+# ---------------------------------------------------------------------------
+
+def structured_rect_mesh(
+    nx: int,
+    ny: int,
+    side_x: float,
+    side_y: float,
+    *,
+    dtype: torch.dtype = torch.float64,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Structured Q4 mesh over ``[0, side_x] x [0, side_y]``.
+
+    Node ``j*(nx+1)+i`` sits at ``(i*side_x/nx, j*side_y/ny)``; element
+    ``(i,j)`` is ``(n0, n0+1, n0+nx+2, n0+nx+1)`` i.e. counter-clockwise in
+    natural coordinates ``(-1,-1), (1,-1), (1,1), (-1,1)``.  With
+    ``nx == ny`` and ``side_x == side_y`` the connectivity is the same as
+    :func:`tensorfem.plate.structured_square_mesh`.
+    """
+    if nx < 1 or ny < 1:
+        raise ValueError("nx and ny must be positive")
+    x = torch.linspace(0.0, side_x, nx + 1, dtype=dtype)
+    y = torch.linspace(0.0, side_y, ny + 1, dtype=dtype)
+    yy, xx = torch.meshgrid(y, x, indexing="ij")
+    nodes = torch.stack((xx.reshape(-1), yy.reshape(-1)), dim=1)
+    jj, ii = torch.meshgrid(torch.arange(ny), torch.arange(nx), indexing="ij")
+    n0 = (jj * (nx + 1) + ii).reshape(-1)
+    elements = torch.stack((n0, n0 + 1, n0 + nx + 2, n0 + nx + 1), dim=1)
+    return nodes, elements.long()
+
+
+def _rect_edges(
+    nodes: torch.Tensor,
+    side_x: float,
+    side_y: float,
+    tol: float = 1e-9,
+) -> dict[str, torch.Tensor]:
+    """Edge node indices of a rectangular panel (``x0, xa, y0, yb``)."""
+    tx, ty = side_x * tol, side_y * tol
+    return {
+        'x0': torch.nonzero(nodes[:, 0].abs() < tx, as_tuple=False).flatten(),
+        'xa': torch.nonzero((nodes[:, 0] - side_x).abs() < tx, as_tuple=False).flatten(),
+        'y0': torch.nonzero(nodes[:, 1].abs() < ty, as_tuple=False).flatten(),
+        'yb': torch.nonzero((nodes[:, 1] - side_y).abs() < ty, as_tuple=False).flatten(),
+    }
+
+
+def _rigidities(young: float, poisson: float, thickness: float, dtype):
+    """Bending ``Db`` (3x3) and transverse-shear ``Ds`` (2x2) matrices."""
+    E = torch.as_tensor(young, dtype=dtype)
+    nu = torch.as_tensor(poisson, dtype=dtype)
+    t = torch.as_tensor(thickness, dtype=dtype)
+    one, zero = torch.ones_like(nu), torch.zeros_like(nu)
+    Db = E * t**3 / (12 * (1 - nu**2)) * torch.stack((
+        torch.stack((one, nu, zero)),
+        torch.stack((nu, one, zero)),
+        torch.stack((zero, zero, (1 - nu) / 2)),
+    ))
+    Ds = (5.0 / 6.0) * E / (2 * (1 + nu)) * t * torch.eye(2, dtype=dtype)
+    return Db, Ds
+
+
+def _batched_mindlin_stiffness(
+    nodes: torch.Tensor,
+    elements: torch.Tensor,
+    young: float,
+    poisson: float,
+    thickness: float,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    """Vectorised Q4 Mindlin stiffness for every element at once.
+
+    Bending block: 2x2 Gauss.  Shear block: one-point (SRI), the same
+    ``shear_treatment="sri"`` rule :func:`tensorfem.plate.q4_mindlin_stiffness`
+    uses by default, so the two paths describe the same discrete operator.
+
+    Returns
+    -------
+    ke : (ne, 12, 12)
+    Bb : (ne, 4, 3, 12)  bending strain-displacement at the four Gauss points,
+                          ordered ``(-g,-g), (g,-g), (g,g), (-g,g)``
+    detJ : (ne, 4)
+    """
+    dtype = nodes.dtype
+    xy = nodes[elements]                                    # (ne, 4, 2)
+    Db, Ds = _rigidities(young, poisson, thickness, dtype)
+    ne = xy.shape[0]
+    gauss = 1.0 / 3.0**0.5
+    knots = ((-gauss, -gauss), (gauss, -gauss), (gauss, gauss), (-gauss, gauss))
+    lidx = torch.arange(4)
+
+    Bb_all, detJ_all = [], []
+    for xi_v, eta_v in knots:
+        xi, eta = xy.new_tensor(xi_v), xy.new_tensor(eta_v)
+        _, dN_nat = _shape(xi, eta)                         # (4, 2)
+        J = torch.einsum('ai,naj->nij', dN_nat, xy)          # (ne, 2, 2)
+        detJ = torch.linalg.det(J)
+        if bool((detJ <= 0).any().item()):
+            raise ValueError("element with non-positive Jacobian")
+        dN = torch.einsum('ja,nca->njc', dN_nat,
+                          torch.linalg.inv(J).transpose(1, 2))
+        Bb = torch.zeros((ne, 3, 12), dtype=dtype)
+        Bb[:, 0, 3 * lidx + 1] = dN[:, :, 0]
+        Bb[:, 1, 3 * lidx + 2] = dN[:, :, 1]
+        Bb[:, 2, 3 * lidx + 1] = dN[:, :, 1]
+        Bb[:, 2, 3 * lidx + 2] = dN[:, :, 0]
+        Bb_all.append(Bb)
+        detJ_all.append(detJ)
+
+    ke = torch.zeros((ne, 12, 12), dtype=dtype)
+    for Bb, detJ in zip(Bb_all, detJ_all):
+        ke += torch.einsum('nka,kj,njb,n->nab', Bb, Db, Bb, detJ)
+
+    N0, dN_nat0 = _shape(xy.new_tensor(0.0), xy.new_tensor(0.0))
+    J0 = torch.einsum('ai,naj->nij', dN_nat0, xy)
+    detJ0 = torch.linalg.det(J0)
+    dN0 = torch.einsum('ja,nca->njc', dN_nat0,
+                       torch.linalg.inv(J0).transpose(1, 2))
+    Bs = torch.zeros((ne, 2, 12), dtype=dtype)
+    Bs[:, 0, 3 * lidx] = dN0[:, :, 0]
+    Bs[:, 0, 3 * lidx + 1] = N0
+    Bs[:, 1, 3 * lidx] = dN0[:, :, 1]
+    Bs[:, 1, 3 * lidx + 2] = N0
+    ke += torch.einsum('nka,kj,njb,n->nab', Bs, Ds, Bs, detJ0 * 4.0)
+
+    return ke, torch.stack(Bb_all, dim=1), torch.stack(detJ_all, dim=1)
+
+
+
+def _eval_pressure(
+    pressure,
+    xq: torch.Tensor,
+    yq: torch.Tensor,
+    dtype: torch.dtype,
+) -> torch.Tensor:
+    """Evaluate the transverse pressure at a batch of quadrature points.
+
+    A callable is first offered the (vectorised) coordinate tensors -- pressure
+    patches are then evaluated element-wise in one shot, which keeps fine-mesh
+    patch-load runs cheap.  Scalar-only callables raise on tensor input, so we
+    fall back to evaluating them point by point.
+    """
+    if not callable(pressure):
+        return xq.new_tensor(float(pressure)).expand(xq.shape[0])
+    try:
+        q = torch.as_tensor(pressure(xq, yq), dtype=dtype)
+        return q.expand(xq.shape[0])
+    except Exception:
+        vals = [float(pressure(float(a), float(b))) for a, b in zip(xq, yq)]
+        return torch.tensor(vals, dtype=dtype)
+
+
+def rect_patch_pressure(
+    intensity: float,
+    x1: float,
+    x2: float,
+    y1: float,
+    y2: float,
+):
+    """Vectorised uniform pressure over the rectangle ``[x1,x2] x [y1,y2]``.
+
+    Returns a callable ``p(x, y)`` that accepts both scalars and 1-D tensors,
+    so a pressure patch can be applied without a per-element Python loop.
+    """
+    def p(x, y):
+        if torch.is_tensor(x):
+            return torch.where(
+                (x >= x1) & (x <= x2) & (y >= y1) & (y <= y2),
+                x.new_tensor(float(intensity)),
+                x.new_tensor(0.0),
+            )
+        return intensity if (x1 <= x <= x2 and y1 <= y <= y2) else 0.0
+    return p
+
+
+@dataclass(frozen=True)
+class RestrainedPanelResult:
+    """Solution of a rectangular panel with per-edge elastic restraint."""
+    displacement: torch.Tensor
+    nodes: torch.Tensor
+    elements: torch.Tensor
+    young: float
+    poisson: float
+    thickness: float
+    winkler_k: float
+    beta_x: float
+    beta_y: float
+    K_rot_x: float
+    K_rot_y: float
+    side_x: float
+    side_y: float
+    nx: int
+    ny: int
+
+    @property
+    def ndof(self) -> int:
+        return 3 * int(self.nodes.shape[0])
+
+    def w(self) -> torch.Tensor:
+        """Transverse displacement at every node."""
+        return self.displacement[0::3]
+
+
+def solve_restrained_panel(
+    nx: int,
+    ny: int,
+    side_x: float,
+    side_y: float,
+    young: float,
+    poisson: float,
+    thickness: float,
+    pressure: float | callable,
+    beta_x: float = 0.0,
+    beta_y: Optional[float] = None,
+    winkler_k: float = 0.0,
+    eps: float = 1e-6,
+    dtype: torch.dtype = torch.float64,
+    *,
+    boundary: str = "ss2",
+) -> RestrainedPanelResult:
+    """Solve a rectangular Mindlin panel with elastic rotational restraint.
+
+    The panel lies on ``[0, side_x] x [0, side_y]``.  Edges ``x = 0, side_x``
+    carry a rotational spring of stiffness ``K_rot_x = zeta(beta_x) D / side_x``
+    acting on the *normal* rotation ``theta_x``; edges ``y = 0, side_y`` carry
+    ``K_rot_y = zeta(beta_y) D / side_y`` acting on ``theta_y``.  Because the
+    two spans are restrained by different structural members in a hull (the
+    longitudinals restrain one pair of edges, the transverse frames the other),
+    ``beta_x`` and ``beta_y`` are independent.  Transverse displacement and the
+    tangential rotation stay hard-fixed (the SS2 convention of this module), so
+    ``beta_x = beta_y = 0`` is exactly the SSSS plate and
+    ``beta_x = beta_y = 1`` is clamped.
+
+    Parameters
+    ----------
+    boundary : {"ss2", "clamped"}
+        ``"ss2"`` uses the rotational springs; ``"clamped"`` fixes both
+        rotations and ignores the springs (kept as an independent check).
+
+    Raises
+    ------
+    RuntimeError
+        If scipy is unavailable (sparse direct solve is required here).
+
+    Returns
+    -------
+    RestrainedPanelResult
+    """
+    for name, value in (("beta_x", beta_x), ("beta_y", beta_y)):
+        if value is not None and not 0.0 <= value <= 1.0:
+            raise ValueError(f"{name} must be in [0, 1], got {value}")
+    if boundary not in ("ss2", "clamped"):
+        raise ValueError("boundary must be 'ss2' or 'clamped'")
+    if beta_y is None:
+        beta_y = beta_x
+    if side_x <= 0 or side_y <= 0 or nx < 1 or ny < 1:
+        raise ValueError("need positive spans and mesh sizes")
+
+    try:
+        import scipy.sparse as sp
+        import scipy.sparse.linalg as spla
+    except ImportError as exc:  # pragma: no cover - scipy is a dev dependency
+        raise RuntimeError(
+            "solve_restrained_panel needs scipy for the sparse direct solve"
+        ) from exc
+
+    nodes, elements = structured_rect_mesh(nx, ny, side_x, side_y, dtype=dtype)
+    n_nodes = int(nodes.shape[0])
+    ndof = 3 * n_nodes
+    ne = int(elements.shape[0])
+
+    ke, _, _ = _batched_mindlin_stiffness(nodes, elements, young, poisson, thickness)
+
+    # Winkler foundation: consistent diagonal/consistent matrix per element.
+    if winkler_k:
+        from .winkler_foundation import q4_winkler_foundation_stiffness
+        xy = nodes[elements]
+        kw = torch.stack([
+            q4_winkler_foundation_stiffness(xy[e], winkler_k) for e in range(ne)
+        ])
+        ke = ke + kw
+
+    dofs = torch.stack((3 * elements, 3 * elements + 1, 3 * elements + 2), dim=2)
+    dofs = dofs.reshape(ne, 12)
+    rows = torch.repeat_interleave(dofs, 12, dim=1).reshape(-1)
+    cols = dofs.repeat(1, 12).reshape(-1)
+    vals = ke.reshape(-1)
+    K = sp.coo_matrix(
+        (vals.detach().numpy(), (rows.numpy(), cols.numpy())),
+        shape=(ndof, ndof),
+    ).tocsr()
+
+    # Consistent load vector on the w DOFs (2x2 Gauss).
+    f = torch.zeros(ndof, dtype=dtype)
+    gauss = 1.0 / 3.0**0.5
+    fe = torch.zeros((ne, 12), dtype=dtype)
+    lidx = torch.arange(4)
+    for xi_v, eta_v in ((-gauss, -gauss), (gauss, -gauss),
+                        (gauss, gauss), (-gauss, gauss)):
+        xi, eta = nodes.new_tensor(xi_v), nodes.new_tensor(eta_v)
+        N, dN_nat = _shape(xi, eta)
+        xy = nodes[elements]
+        J = torch.einsum('ai,naj->nij', dN_nat, xy)
+        detJ = torch.linalg.det(J)
+        xq = torch.einsum('i,ni->n', N, xy[:, :, 0])
+        yq = torch.einsum('i,ni->n', N, xy[:, :, 1])
+        q = _eval_pressure(pressure, xq, yq, dtype)
+        fe[:, 3 * lidx] += (N[None, :] * (q * detJ)[:, None])
+    f.index_add_(0, (3 * elements).reshape(-1), fe[:, 3 * lidx].reshape(-1))
+
+    edges = _rect_edges(nodes, side_x, side_y)
+    D = young * thickness**3 / (12.0 * (1.0 - poisson**2))
+    K_rot_x = (0.0 if boundary == "clamped" else
+               beta_to_zeta(beta_x, eps) * D / side_x)
+    K_rot_y = (0.0 if boundary == "clamped" else
+               beta_to_zeta(beta_y, eps) * D / side_y)
+
+    # SS2 hard constraints: w everywhere on the edge, tangential rotation.
+    edge_mask = torch.zeros(n_nodes, dtype=torch.bool)
+    for key in edges:
+        edge_mask[edges[key]] = True
+    xmask = torch.zeros(n_nodes, dtype=torch.bool)
+    xmask[edges['x0']] = True
+    xmask[edges['xa']] = True
+    ymask = torch.zeros(n_nodes, dtype=torch.bool)
+    ymask[edges['y0']] = True
+    ymask[edges['yb']] = True
+
+    fixed = [3 * torch.nonzero(edge_mask, as_tuple=False).flatten()]
+    if boundary == "clamped":
+        fixed.append(3 * torch.nonzero(edge_mask, as_tuple=False).flatten() + 1)
+        fixed.append(3 * torch.nonzero(edge_mask, as_tuple=False).flatten() + 2)
+        spring = torch.zeros(ndof, dtype=dtype)
+    else:
+        fixed.append(3 * torch.nonzero(xmask, as_tuple=False).flatten() + 2)
+        fixed.append(3 * torch.nonzero(ymask, as_tuple=False).flatten() + 1)
+        spring = torch.zeros(ndof, dtype=dtype)
+        if K_rot_x:
+            spring[3 * edges['x0'] + 1] += K_rot_x
+            spring[3 * edges['xa'] + 1] += K_rot_x
+        if K_rot_y:
+            spring[3 * edges['y0'] + 2] += K_rot_y
+            spring[3 * edges['yb'] + 2] += K_rot_y
+    fixed_dofs = torch.unique(torch.cat(fixed))
+    free = torch.ones(ndof, dtype=torch.bool)
+    free[fixed_dofs] = False
+    free_idx = torch.nonzero(free, as_tuple=False).flatten().numpy()
+
+    Kff = K[free_idx][:, free_idx].tocsc()
+    if bool(spring.any().item()):
+        Kff = Kff + sp.diags(spring.numpy()[free_idx])
+    u = torch.zeros(ndof, dtype=dtype)
+    u[torch.as_tensor(free_idx)] = torch.as_tensor(
+        spla.spsolve(Kff, f.numpy()[free_idx]), dtype=dtype
+    )
+
+    return RestrainedPanelResult(
+        displacement=u,
+        nodes=nodes,
+        elements=elements,
+        young=young,
+        poisson=poisson,
+        thickness=thickness,
+        winkler_k=winkler_k,
+        beta_x=beta_x,
+        beta_y=beta_y,
+        K_rot_x=K_rot_x,
+        K_rot_y=K_rot_y,
+        side_x=side_x,
+        side_y=side_y,
+        nx=nx,
+        ny=ny,
+    )
+
+
+# Gauss-point -> corner-node extrapolation for the bilinear Q4 element:
+# nodes sit at +/-1, Gauss points at +/-1/sqrt(3), so each corner value is
+# 1.36603 * (nearest Gauss) - 0.36603 * (far Gauss).  Row l corresponds to
+# local node l (natural (-1,-1), (1,-1), (1,1), (-1,1)); column g to Gauss
+# point g in the same ordering.
+_EXTRAP_Q4 = torch.tensor([
+    [1.3660254037844386, -0.3660254037844386],
+    [-0.3660254037844386, 1.3660254037844386],
+], dtype=torch.float64)
+
+
+def _extrapolation_operator(dtype: torch.dtype = torch.float64) -> torch.Tensor:
+    W = _EXTRAP_Q4.to(dtype)
+    X = torch.zeros((4, 4), dtype=dtype)
+    for corner, (ix, iy) in enumerate(((0, 0), (1, 0), (1, 1), (0, 1))):
+        for gx in (0, 1):
+            for gy in (0, 1):
+                X[corner, 2 * gy + gx] = W[iy, gy] * W[ix, gx]
+    return X
+
+
+def moments_at_nodes(result: RestrainedPanelResult) -> torch.Tensor:
+    """Bending moments ``[Mx, My, Mxy]`` per node [N] (or N*m/m).
+
+    Computed at the four Gauss points of every element, extrapolated to the
+    element corners and averaged over the elements sharing a node (the standard
+    ``B * D * B * u`` recovery).  Averages are unweighted, which is exact for a
+    uniform mesh and slightly biased on graded meshes -- acceptable here because
+    only uniform structured meshes are produced by this module.
+    """
+    nodes, elements = result.nodes, result.elements
+    dtype = nodes.dtype
+    ne = int(elements.shape[0])
+    ke, Bb, _ = _batched_mindlin_stiffness(
+        nodes, elements, result.young, result.poisson, result.thickness)
+    del ke
+    Db, _ = _rigidities(result.young, result.poisson, result.thickness, dtype)
+
+    dofs = torch.stack((3 * elements, 3 * elements + 1, 3 * elements + 2), dim=2)
+    ue = result.displacement[dofs.reshape(ne, 12)]           # (ne, 12)
+    kappa = torch.einsum('ngki,ni->ngk', Bb, ue)             # (ne, 4, 3)
+    M_gauss = torch.einsum('kj,ngj->ngk', Db, kappa)         # (ne, 4, 3)
+
+    X = _extrapolation_operator(dtype)
+    M_nodes_el = torch.einsum('lg,ngk->nlk', X, M_gauss)     # (ne, 4, 3)
+
+    n_nodes = int(nodes.shape[0])
+    acc = torch.zeros((n_nodes, 3), dtype=dtype)
+    cnt = torch.zeros(n_nodes, dtype=dtype)
+    acc.index_add_(0, elements.reshape(-1), M_nodes_el.reshape(-1, 3))
+    cnt.index_add_(0, elements.reshape(-1), torch.ones(ne * 4, dtype=dtype))
+    return acc / cnt[:, None]
+
+
+def bending_stress_at_nodes(result: RestrainedPanelResult) -> torch.Tensor:
+    """Extreme-fibre bending stress ``[sigma_x, sigma_y, tau_xy]`` [Pa] at z=+t/2.
+
+    ``sigma = 6 M / t^2`` (Kirchhoff/Mindlin linear stress distribution); the
+    sign follows the moment sign convention ``M = Db * kappa`` of
+    :func:`tensorfem.plate.q4_mindlin_stiffness`.
+    """
+    M = moments_at_nodes(result)
+    return 6.0 * M / result.thickness**2
+
+
+def von_mises_bending_at_nodes(result: RestrainedPanelResult) -> torch.Tensor:
+    """Von Mises bending stress [Pa] built from the plate moments.
+
+    ``sigma_vm = 6/t^2 * sqrt(Mx^2 - Mx My + My^2 + 3 Mxy^2)``, the same
+    definition the JOUR-ICE-STRUCT panel benchmark uses.
+    """
+    M = moments_at_nodes(result)
+    Mx, My, Mxy = M[:, 0], M[:, 1], M[:, 2]
+    return 6.0 / result.thickness**2 * torch.sqrt(
+        Mx**2 - Mx * My + My**2 + 3.0 * Mxy**2)
+
+
+def peak_bending_stress(result: RestrainedPanelResult) -> dict:
+    """Centre value and global maximum of the von Mises bending stress.
+
+    The paper's ``sigma_plate`` is the *centre* of the panel, which is not the
+    same as the global maximum when the load is a pressure patch: the patch
+    edge carries a moment peak that is mesh-sensitive (the pressure jump is a
+    load discontinuity).  Both numbers are reported so callers cannot confuse
+    them.
+    """
+    nodes = result.nodes
+    vm = von_mises_bending_at_nodes(result)
+    M = moments_at_nodes(result)
+    dist = (nodes[:, 0] - result.side_x / 2) ** 2 + \
+           (nodes[:, 1] - result.side_y / 2) ** 2
+    c = int(torch.argmin(dist))
+    g = int(torch.argmax(vm))
+    return {
+        'centre_index': c,
+        'centre_von_mises': float(vm[c]),
+        'centre_Mx': float(M[c, 0]),
+        'centre_My': float(M[c, 1]),
+        'centre_sigma_x': float(6.0 * M[c, 0] / result.thickness**2),
+        'max_von_mises': float(vm[g]),
+        'max_index': g,
+        'max_x': float(nodes[g, 0]),
+        'max_y': float(nodes[g, 1]),
+        'w_centre': float(result.displacement[3 * c]),
+    }
