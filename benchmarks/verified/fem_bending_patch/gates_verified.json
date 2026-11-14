@@ -3,7 +3,7 @@
   "anchor": "fem_bending_patch",
   "title": "BENDING-PATCH: constant-curvature patch test of the Q4 Mindlin plate element",
   "mission": "CASE-BENDING-PATCH",
-  "generated_at": "2026-11-11T23:49:49+00:00",
+  "generated_at": "2026-11-14T06:23:34+00:00",
   "criteria": {
     "case_pool_tolerance": 0.02,
     "exact_tolerance_affine": 1e-12,
@@ -33,7 +33,7 @@
       "id": "affine_exact_rot",
       "quantity": "max rotation error, affine+skew patches",
       "reference": "constant-curvature closed form",
-      "value": 4.196911635427758e-16,
+      "value": 4.818676322157796e-16,
       "threshold": 1e-12,
       "operator": "<=",
       "passed": true
@@ -42,7 +42,7 @@
       "id": "affine_exact_moment",
       "quantity": "max moment error, affine+skew patches",
       "reference": "M = Db kappa",
-      "value": 9.393615828692852e-16,
+      "value": 7.124757133476171e-16,
       "threshold": 1e-12,
       "operator": "<=",
       "passed": true
@@ -60,7 +60,7 @@
       "id": "skew_energy_mitc",
       "quantity": "max strain-energy error, affine+skew patches (mitc)",
       "reference": "1/2 kappa^T Db kappa * Area (documented: MITC shear sampling on a skew element is not exactly shear-free)",
-      "value": 0.003969907407407478,
+      "value": 9.020562075079397e-16,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
@@ -87,7 +87,7 @@
       "id": "distorted_energy",
       "quantity": "max energy error, distorted patch",
       "reference": "1/2 kappa^T Db kappa * Area",
-      "value": 0.0016500842193053616,
+      "value": 0.0015513928219136211,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
@@ -114,23 +114,23 @@
       "id": "strip_free_w",
       "quantity": "tip deflection error, free edges (load-driven)",
       "reference": "M L^2/(2 D_b), D_b = E t^3/12",
-      "value": 0.017576443091359494,
+      "value": 0.017576443112924615,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
     },
     {
       "id": "poisson_crosscheck",
-      "quantity": "|ratio - 1/(1-nu^2)| / (1/(1-nu^2))",
-      "reference": "D/D_b = 1/(1-nu^2) exactly",
-      "value": 0.0,
+      "quantity": "worst |w_free/w_symmetry - 1/(1-nu^2)| / (1/(1-nu^2)) over the strip mesh set, w taken from the two computed solutions",
+      "reference": "ratio of the two rigidities, D/D_b = 1/(1-nu^2)",
+      "value": 0.017576443052572294,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
     },
     {
       "id": "order_w_min",
-      "quantity": "observed order of the distorted patch, w",
+      "quantity": "observed order of the distorted patch, w (round-off-limited treatments excluded; n/a -> fail)",
       "reference": "second-order consistency of the element",
       "value": 1.7173691653735683,
       "threshold": 1.5,
@@ -175,8 +175,11 @@
   },
   "limitations": [
     "A patch test is a consistency (necessary) condition; it proves constant-curvature reproduction, not coarse-mesh accuracy or pointwise moment accuracy.",
-    "The distorted-patch residual is an interpolation limitation of the bilinear w field (quadratic exact field), measured and h-convergent, not a defect.",
+    "On non-affine (distorted) patches the sri element leaves a bilinear-w interpolation residual against the quadratic exact field; it is measured, h-convergent and inside the case-pool tolerance, not a consistency defect. The mitc element reproduces the same state to round-off, so an observed order is not defined for it and the order gate excludes round-off-limited treatments.",
+    "The observed-order gate is defined only above a declared round-off floor (1e-10 relative); a treatment whose error is at machine precision is reported as 'order not defined' and excluded rather than fitted.",
     "A Dirichlet-driven patch contains no zero-energy mode, so this test cannot detect the rank deficiency of the one-point (sri) element.",
-    "Literature criterion cited from the standard statement; the textbooks were not retrievable offline, but every target value is evaluated in code from the closed form, so no table digit enters the evidence chain."
+    "Literature criterion cited from the standard statement; the textbooks were not retrievable offline, but every target value is evaluated in code from the closed form, so no table digit enters the evidence chain.",
+    "The Poisson cross-check grades the ratio of the two *computed* tip deflections. The ratio of the two closed-form rigidities is an algebraic identity (1/(1-nu^2) for any element) and is reported only as a reference value, never as accuracy evidence.",
+    "The free-edge strip is compared with the 1-D beam closed form, which is not the exact solution of a width/thickness = 20 Mindlin plate: the residual converges to a plateau under through-width refinement (~1.3% for sri, ~1.3% for mitc) instead of vanishing. The gate therefore compares models, not just meshes, and its margin is the thinnest of the anchor."
   ]
 }
