@@ -278,3 +278,75 @@ def test_collapse_load_matches_the_yield_line_bound_after_layering_correction():
     corrected = collapse * (1.0 - 1.0 / layers)
     assert lower < corrected < upper
     assert abs(corrected / upper - 1.0) < 0.15
+
+
+# ---------------------------------------------------------------------------
+# 3-level mesh convergence (anchor acceptance "3 档网格收敛")
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="module")
+def mesh_sweep():
+    """Run the FE path at three even mesh levels and return the observables.
+
+    The acceptance criterion requires the numerical collapse / first-yield /
+    permanent-set path to converge monotonically with refinement, and the
+    transition point to stay within the same-mesh elastic-field tolerance at
+    every level.  Even element counts keep the plate centre a node.
+    """
+    py = analytic_first_yield_pressure(A, B, T, E, NU, FY, PATCH, grid=11, terms=31)
+    upper = yield_line_patch_upper_bound(A, B, T, FY, PATCH)["pressure"]
+    lower = strip_lower_bound(A, B, T, FY, PATCH)["pressure"]
+    rows = []
+    for nx in (4, 6, 8):
+        steps = [f * py["pressure"] for f in (0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.4, 3.0)]
+        path = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
+                                      hardening=2e10, patch=PATCH, load_factors=steps,
+                                      nx=nx, ny=nx, layers=3, unload_steps=3)
+        probe = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
+                                       hardening=2e10, patch=PATCH,
+                                       load_factors=[0.5 * py["pressure"]],
+                                       nx=nx, ny=nx, layers=3)
+        fe_sigma_per_pa = probe.loading[0].max_surface_mises / probe.loading[0].load_factor
+        same_mesh_yield = FY / fe_sigma_per_pa
+        rows.append({
+            "nx": nx,
+            "first": path.first_yield_factor,
+            "first_err_same_mesh": (path.first_yield_factor - same_mesh_yield) / same_mesh_yield,
+            "collapse": path.collapse_factor or path.loading[-1].load_factor,
+            "permanent": path.permanent_deflection,
+            "peak": path.loading[-1].centre_deflection,
+        })
+    return {"py": py, "upper": upper, "lower": lower, "rows": rows}
+
+
+def test_collapse_load_converges_monotonically_to_the_upper_bound(mesh_sweep):
+    """Collapse must approach the yield-line upper bound from below, monotonically.
+
+    The raw collapse is over-strengthened by the through-thickness layering
+    (outer stress sample at |z| = t/2 (1-1/n)), so it is reported *layering-
+    corrected* by (1 - 1/n) — the same convention as the single-mesh collapse
+    test — and must then sit between the strip lower and yield-line upper bounds
+    and be monotone non-decreasing with refinement.
+    """
+    upper = mesh_sweep["upper"]
+    lower = mesh_sweep["lower"]
+    collapses = [r["collapse"] * (1.0 - 1.0 / 3) for r in mesh_sweep["rows"]]
+    assert all(c < upper for c in collapses), "corrected collapse must stay below the upper bound"
+    assert all(c > lower for c in collapses), "corrected collapse must stay above the strip lower bound"
+    assert all(collapses[i] <= collapses[i + 1] for i in range(len(collapses) - 1)), \
+        "corrected collapse load must be monotone non-decreasing with refinement"
+
+
+def test_transition_point_stays_within_5pct_at_every_mesh_level(mesh_sweep):
+    """The elastic->plastic transition must match the same-mesh elastic field < 5%."""
+    for r in mesh_sweep["rows"]:
+        assert abs(r["first_err_same_mesh"]) < 0.05, f"mesh {r['nx']} transition error {r['first_err_same_mesh']:.3f}"
+
+
+def test_permanent_set_is_bounded_and_converges(mesh_sweep):
+    """Permanent set must be a positive, bounded fraction of the peak deflection."""
+    for r in mesh_sweep["rows"]:
+        assert 0.0 < r["permanent"] < r["peak"], f"mesh {r['nx']} permanent set out of range"
+    perms = [r["permanent"] for r in mesh_sweep["rows"]]
+    # permanent set should not grow without bound as the mesh refines
+    assert max(perms) < 1.5 * min(perms), "permanent set must be mesh-converged (spread < 50%)"
