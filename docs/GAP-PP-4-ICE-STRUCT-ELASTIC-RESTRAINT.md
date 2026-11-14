@@ -160,3 +160,119 @@ python -m pytest tests/test_plate_elastic_restraint.py -v
 # Run benchmark
 python benchmarks/beta_sweep_elastic_restraint.py
 ```
+
+---
+
+# 9. Increment 2026-11-14: peak-stress recovery, rectangular panels, per-edge beta
+
+## 9.1 What was missing after the first pass
+
+The first pass (sections 1-8) delivered the rotational spring in a *square*
+solver and validated it on **deflections only**, against its own clamped solve.
+Against the anchor's acceptance criteria that left three real gaps:
+
+| Acceptance criterion | State before | Why it was not met |
+|---|---|---|
+| `beta=0` peak **stress** matches `panel_patch_load_results.json` (`<0.1%`) | not met | the solver returned displacement only — there was no moment/stress recovery at all, and `panel_patch_load_results.json` was nowhere in this repo |
+| `beta=1` vs clamped *analytic/literature* `<5%` | not met | only compared against the module's own CCCC solve; §4.3's "SSSS vs literature 1.5%" also mixed a Winkler-foundation result with a foundation-free book coefficient |
+| `>=5` beta scan as machine-readable JSON | partial | `benchmarks/artifacts/beta_sweep_results.json` holds deflections only (no stress), square plate only |
+
+The paper case is a **0.8 m x 0.7 m rectangular panel** restrained by
+longitudinals on one pair of edges and transverse frames on the other, so a
+square solver with a single `beta` cannot represent it either.
+
+## 9.2 What was added
+
+All additive — `solve_plate_elastic_restraint` and `beta_sweep` are untouched,
+and the new assembly is asserted equivalent to the historical one.
+
+* `structured_rect_mesh(nx, ny, side_x, side_y)` — structured Q4 mesh.
+* `solve_restrained_panel(...)` — rectangular Mindlin panel, **independent
+  `beta_x` (longitudinals) and `beta_y` (transverse frames)**, optional Winkler
+  foundation, vectorised element assembly + sparse direct solve (scipy;
+  `RuntimeError` if scipy is absent, matching the library's existing optional
+  sparse precedent). 68043 DOF (`nx=160`) solves in a few seconds.
+* `moments_at_nodes` / `bending_stress_at_nodes` / `von_mises_bending_at_nodes`
+  / `peak_bending_stress` — Gauss-point curvature, extrapolated to nodes and
+  averaged, `M = Db * kappa`, `sigma = 6M/t^2`,
+  `sigma_vm = 6/t^2 sqrt(Mx^2 - Mx My + My^2 + 3 Mxy^2)` — the same definition
+  the paper's `panel_patch_load.py` uses.
+* `rect_patch_pressure(...)` — vectorised pressure patch (no per-element Python
+  loop).
+* `tests/data/panel_patch_load_reference.json` — the baseline excerpt **with
+  the source file's SHA-256** (`b234cdf8...`), so the regression is traceable
+  back to `papers/jour-ice-struct/data/panel_patch_load_results.json`.
+* `benchmarks/beta_restraint_panel_band.py` →
+  `benchmarks/artifacts/beta_restraint_panel_band.json` (11 beta points,
+  machine readable, git sha + versions recorded).
+
+## 9.3 Results
+
+`beta = 0` (SSSS), paper case (1 MPa, 8 cm x 70 cm patch), centre von Mises
+bending stress vs the Navier N=401 baseline of 73.3710 MPa:
+
+| nx x ny | sigma_vM centre [MPa] | error vs baseline |
+|---|---|---|
+| 20 x 18 | 70.3286 | -4.147% |
+| 40 x 35 | 72.5658 | -1.097% |
+| 80 x 70 | 73.1803 | -0.260% |
+| 160 x 140 | **73.3233** | **-0.065%** |
+
+Observed order p = 2.02 (40/80/160), Richardson extrapolation -0.03%. The
+`<0.1%` acceptance criterion is met at `nx=160` and is a *converged* result,
+not a mesh coincidence.
+
+`beta` band (diagonal family, nx=160): 73.32 MPa (SSSS) → 47.27 MPa (clamped),
+i.e. **-35.5%**. Most of the redistribution happens between beta = 0 and 0.2
+(-33%); beyond that the centre stress saturates. Physically this is
+cylindrical-bending-like behaviour of a full-breadth patch (a strip with simply
+supported ends carries `pL^2/8`, with clamped ends `pL^2/24`; two-way action
+puts the ratio below 3).
+
+Literature re-check (`nu=0.3`, uniform load, square, nx=80):
+
+| case | computed | Timoshenko Table 8 | error |
+|---|---|---|---|
+| SSSS `M/(qa^2)` | 0.047886 | 0.0479 | -0.03% |
+| CCCC `w D/(qa^4)` | 0.001277 | 0.00126 | +1.35% |
+| CCCC `M_centre/(qa^2)` | 0.022921 | 0.0231 | -0.78% |
+| CCCC `M_edge/(qa^2)` | 0.048585 | 0.0513 | -5.3% raw, **-0.4% after Richardson** |
+
+## 9.4 Pitfalls found (worth keeping)
+
+1. **"Peak stress" is ambiguous.** The paper's `sigma_plate` is the **centre**
+   value. A pressure patch has a load discontinuity, so the *global* maximum
+   sits on the patch edge and oscillates with the mesh (misaligned meshes give
+   a spurious +8.6% at nx=36). `peak_bending_stress` returns both; the
+   regression only uses the centre.
+2. **Patch/mesh alignment.** Patch edges must fall on element faces (nx a
+   multiple of 20 here) or the patch area is discretised inconsistently and
+   convergence is non-monotonic.
+3. **The clamped-edge moment converges at O(h), not O(h^2)** (moment boundary
+   layer): 0.0414 / 0.0461 / 0.0486 for nx=20/40/80. Taking the finest grid
+   alone gives 5.3%, just outside the 5% criterion; the test extrapolates.
+4. **Mindlin vs Kirchhoff model error**: at t/s = 0.031 the shear deformation
+   makes the FEM systematically ~0.2% softer than the thin-plate series. This
+   is a model difference, not a mesh error, and it is why the criterion is met
+   at 0.065% rather than at machine precision.
+5. The earlier §4.3 line "SSSS vs literature 1.5%" compared a
+   Winkler-foundation SSSS result with a foundation-free coefficient; the
+   foundation-free comparison is the 0.03% row in §9.3 above. Treat §4.3's
+   literature line as superseded.
+
+## 9.5 Limitations
+
+* Linear elastic, small deflection; no plasticity, buckling or contact.
+* `zeta = beta/(1-beta)` is an engineering mapping; a *physical* `beta` must be
+  calibrated from the actual stiffener/frame rotational stiffness
+  (`K_rot = EI/L` of the attached stiffener plus frame fixity), which is the
+  next step for the manuscript.
+* Only uniform structured meshes; nodal averaging is unweighted (exact on
+  uniform meshes, mildly biased on graded ones).
+
+## 9.6 Reproduction
+
+```bash
+python -m pytest tests/test_plate_restraint_panel.py -v   # 12 tests, ~45 s
+python benchmarks/beta_restraint_panel_band.py --nx 160    # writes the JSON band
+```

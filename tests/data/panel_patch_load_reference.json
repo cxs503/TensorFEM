@@ -1,0 +1,177 @@
+{
+ "provenance": {
+  "description": "Excerpt of the JOUR-ICE-STRUCT panel patch-load benchmark used as the beta=0 regression baseline for the elastic-restraint plate solver.",
+  "source_repository_file": "papers/jour-ice-struct/data/panel_patch_load_results.json",
+  "source_generator": "papers/jour-ice-struct/code/panel_patch_load.py",
+  "source_sha256": "b234cdf8b6cd66749669f026e3eea5f2e3bce07d3fbbdd6e3f5629885058f99f",
+  "extraction": "design_point; D_Nm; verification_timoshenko (Navier N=401 row); plate_vs_strip rows for lambda_c_over_l in [0.1, 1.0], both patch modes",
+  "method_of_baseline": "Kirchhoff thin-plate Navier double series (exact for SSSS) with N=401 terms, centre of plate; sigma = 6*M_vm/t^2",
+  "nu": 0.3
+ },
+ "design_point": {
+  "l": 0.8,
+  "s": 0.7,
+  "t": 0.022,
+  "E": 206000000000.0,
+  "nu": 0.3,
+  "ReH": 355000000.0,
+  "p_ref": 1000000.0,
+  "A_ref": 1.0
+ },
+ "D_Nm": 200868.86446886443,
+ "verification_timoshenko_N401": {
+  "N_terms": 401,
+  "w_coef_got": 0.0040623526606762975,
+  "w_coef_ref": 0.00406,
+  "w_err_pct": 0.057947307297956385,
+  "M_coef_got": 0.04788638092420726,
+  "M_coef_ref": 0.0479,
+  "M_err_pct": -0.028432308544346085
+ },
+ "plate_vs_strip": [
+  {
+   "lambda_c_over_l": 0.1,
+   "patch_mode": "full_breadth",
+   "patch_area_m2": 0.056,
+   "sigma_plate_MPa": 73.37101604723352,
+   "sigma_plate_Mx_MPa": 78.66760309419584,
+   "sigma_strip_MPa": 188.4297520661158,
+   "strip_over_plate": 2.568176948030974,
+   "strip_over_plate_Mx": 2.3952649458569595,
+   "kappa_plate": 0.05548683088572034,
+   "p_yield_MPa": 4.838422842222387
+  },
+  {
+   "lambda_c_over_l": 0.1,
+   "patch_mode": "square",
+   "patch_area_m2": 0.0056,
+   "sigma_plate_MPa": 19.675437739487137,
+   "sigma_plate_Mx_MPa": 19.021557910407225,
+   "sigma_strip_MPa": 188.4297520661158,
+   "strip_over_plate": 9.576902662142622,
+   "strip_over_plate_Mx": 9.906115626997124,
+   "kappa_plate": 0.014879549790487143,
+   "p_yield_MPa": 18.042800607558604
+  },
+  {
+   "lambda_c_over_l": 0.2,
+   "patch_mode": "full_breadth",
+   "patch_area_m2": 0.112,
+   "sigma_plate_MPa": 134.1728887482266,
+   "sigma_plate_Mx_MPa": 140.4910742499956,
+   "sigma_strip_MPa": 357.02479338842994,
+   "strip_over_plate": 2.660930957955162,
+   "strip_over_plate_Mx": 2.5412631748628054,
+   "kappa_plate": 0.10146824711584633,
+   "p_yield_MPa": 2.645840030068609
+  },
+  {
+   "lambda_c_over_l": 0.2,
+   "patch_mode": "square",
+   "patch_area_m2": 0.0224,
+   "sigma_plate_MPa": 58.83103802547146,
+   "sigma_plate_Mx_MPa": 56.23297605963804,
+   "sigma_strip_MPa": 357.02479338842994,
+   "strip_over_plate": 6.06864684648013,
+   "strip_over_plate_Mx": 6.349028957844705,
+   "kappa_plate": 0.044490972506762774,
+   "p_yield_MPa": 6.034229752096153
+  },
+  {
+   "lambda_c_over_l": 0.4,
+   "patch_mode": "full_breadth",
+   "patch_area_m2": 0.224,
+   "sigma_plate_MPa": 225.85945368125863,
+   "sigma_plate_Mx_MPa": 224.71519441397663,
+   "sigma_strip_MPa": 634.710743801653,
+   "strip_over_plate": 2.810202245053602,
+   "strip_over_plate_Mx": 2.8245119136553405,
+   "kappa_plate": 0.17080621184645178,
+   "p_yield_MPa": 1.5717739249515292
+  },
+  {
+   "lambda_c_over_l": 0.4,
+   "patch_mode": "square",
+   "patch_area_m2": 0.0896,
+   "sigma_plate_MPa": 155.99712351240686,
+   "sigma_plate_Mx_MPa": 146.2431735417922,
+   "sigma_strip_MPa": 634.710743801653,
+   "strip_over_plate": 4.068733637586419,
+   "strip_over_plate_Mx": 4.340105103232531,
+   "kappa_plate": 0.11797282465625765,
+   "p_yield_MPa": 2.275682987012039
+  },
+  {
+   "lambda_c_over_l": 0.6,
+   "patch_mode": "full_breadth",
+   "patch_area_m2": 0.336,
+   "sigma_plate_MPa": 286.2681503462613,
+   "sigma_plate_Mx_MPa": 271.7995403474392,
+   "sigma_strip_MPa": 833.0578512396696,
+   "strip_over_plate": 2.910061249328743,
+   "strip_over_plate_Mx": 3.0649715234057364,
+   "kappa_plate": 0.21649028869936002,
+   "p_yield_MPa": 1.2400960413186126
+  },
+  {
+   "lambda_c_over_l": 0.6,
+   "patch_mode": "square",
+   "patch_area_m2": 0.2016,
+   "sigma_plate_MPa": 247.12963065855752,
+   "sigma_plate_Mx_MPa": 227.97410707594614,
+   "sigma_strip_MPa": 833.0578512396696,
+   "strip_over_plate": 3.370934715597297,
+   "strip_over_plate_Mx": 3.654177493771909,
+   "kappa_plate": 0.18689178318553407,
+   "p_yield_MPa": 1.4364930625841454
+  },
+  {
+   "lambda_c_over_l": 0.8,
+   "patch_mode": "full_breadth",
+   "patch_area_m2": 0.448,
+   "sigma_plate_MPa": 320.99933397974877,
+   "sigma_plate_Mx_MPa": 295.04976262709044,
+   "sigma_strip_MPa": 952.0661157024795,
+   "strip_over_plate": 2.9659442089762824,
+   "strip_over_plate_Mx": 3.226798446558262,
+   "kappa_plate": 0.24275574632218494,
+   "p_yield_MPa": 1.105921297713335
+  },
+  {
+   "lambda_c_over_l": 0.8,
+   "patch_mode": "square",
+   "patch_area_m2": 0.3584,
+   "sigma_plate_MPa": 310.03818990605856,
+   "sigma_plate_Mx_MPa": 282.8398396727245,
+   "sigma_strip_MPa": 952.0661157024795,
+   "strip_over_plate": 3.070802716242651,
+   "strip_over_plate_Mx": 3.366096221819813,
+   "kappa_plate": 0.2344663811164567,
+   "p_yield_MPa": 1.1450202315642626
+  },
+  {
+   "lambda_c_over_l": 1.0,
+   "patch_mode": "full_breadth",
+   "patch_area_m2": 0.56,
+   "sigma_plate_MPa": 332.3735121244239,
+   "sigma_plate_Mx_MPa": 301.99740401816774,
+   "sigma_strip_MPa": 991.7355371900826,
+   "strip_over_plate": 2.983798350389687,
+   "strip_over_plate_Mx": 3.2839207357240103,
+   "kappa_plate": 0.25135746854409546,
+   "p_yield_MPa": 1.0680754845082419
+  },
+  {
+   "lambda_c_over_l": 1.0,
+   "patch_mode": "square",
+   "patch_area_m2": 0.56,
+   "sigma_plate_MPa": 332.3735121244239,
+   "sigma_plate_Mx_MPa": 301.99740401816774,
+   "sigma_strip_MPa": 991.7355371900826,
+   "strip_over_plate": 2.983798350389687,
+   "strip_over_plate_Mx": 3.2839207357240103,
+   "kappa_plate": 0.25135746854409546,
+   "p_yield_MPa": 1.0680754845082419
+  }
+ ]
+}
