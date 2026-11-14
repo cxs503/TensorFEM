@@ -1,6 +1,6 @@
 # XVAL — implicit IBM + Aitken relaxation (TensorFEM vs LIFE recipe) — v4
 
-Generated: 2026-11-14T08:26:36Z  |  tolerance: 15%
+Generated: 2026-11-14T17:05:45Z  |  tolerance: 15%
 
 ## Reference side
 joconnor22/LIFE (GPLv3): implicit IBM direct forcing (`src/IBMNode.cpp:51-58`), epsilon conservation (`src/Objects.cpp:235-321`),
