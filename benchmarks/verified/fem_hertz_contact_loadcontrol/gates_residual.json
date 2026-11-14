@@ -1,0 +1,173 @@
+{
+ "anchor": "fem_hertz_contact_residual_attribution",
+ "criteria": {
+  "absorbing_dz24_indentation_pct": 0.15,
+  "algo_invariance_pp": 0.02,
+  "case_pool": "FEM-HERTZ-CONTACT (case pool id 104)",
+  "case_pool_pct": 3.0,
+  "depth_invariance_pp": 0.05,
+  "dz_monotone_violations_max": 0,
+  "far_field_selfconsistency": 0.0001,
+  "irreducible_bias_pct": 0.25,
+  "load_residual_max": 1e-09,
+  "penetration_over_delta_max": 1e-05,
+  "radial_mechanism_pp": 0.1,
+  "reference": "Hertz 1882 J. reine angew. Math. 92:156; Johnson 1985 Contact Mechanics 4.2 DOI:10.1017/cbo9781139171731"
+ },
+ "gates": [
+  {
+   "id": "absorbing_dz_a24_indentation",
+   "kind": "gate",
+   "note": "a pass means the '-0.2092 % irreducible model bias' was the un-crossed far-field x dz cell",
+   "operator": "<=",
+   "passed": false,
+   "quantity": "|e_delta| at Boussinesq far field, dz = a/24, h/a = 0.015, depth 96a",
+   "reference": "delta = a^2/R (Hertz 1882; Johnson 1985 4.2); H_ff accepts at <= 0.15 %",
+   "threshold": 0.15,
+   "value": 0.19215096432128043
+  },
+  {
+   "id": "absorbing_dz_a24_above_bias_band",
+   "kind": "gate",
+   "note": "this gate and the H_ff gate cannot both pass; together they are the pre-registered fork between 'discretisation' and 'model bias'",
+   "operator": ">=",
+   "passed": false,
+   "quantity": "|e_delta| of the same arm against the 0.25 % irreducible-bias band",
+   "reference": "H_bias requires |e_delta| >= 0.25 % at absorbing BC and dz = a/24",
+   "threshold": 0.25,
+   "value": 0.19215096432128043
+  },
+  {
+   "id": "far_field_gain_dz_a6",
+   "kind": "gate",
+   "note": "",
+   "operator": ">=",
+   "passed": true,
+   "quantity": "|e_delta| reduction when the clamped far field is replaced by the absorbing one at dz = a/6",
+   "reference": "a truncation boundary error must disappear when the exact half-space data is imposed",
+   "threshold": 0.0,
+   "value": 0.648116887860406
+  },
+  {
+   "id": "far_field_gain_dz_a12",
+   "kind": "gate",
+   "note": "",
+   "operator": ">=",
+   "passed": true,
+   "quantity": "|e_delta| reduction when the clamped far field is replaced by the absorbing one at dz = a/12",
+   "reference": "a truncation boundary error must disappear when the exact half-space data is imposed",
+   "threshold": 0.0,
+   "value": 0.6481166124620019
+  },
+  {
+   "id": "far_field_gain_dz_a24",
+   "kind": "gate",
+   "note": "",
+   "operator": ">=",
+   "passed": true,
+   "quantity": "|e_delta| reduction when the clamped far field is replaced by the absorbing one at dz = a/24",
+   "reference": "a truncation boundary error must disappear when the exact half-space data is imposed",
+   "threshold": 0.0,
+   "value": 0.6481167954995426
+  },
+  {
+   "id": "radial_surface_spacing_mechanism",
+   "kind": "gate",
+   "note": "the previous h/a ladder was run at dz = a/6 only, where the far field dominated the error",
+   "operator": ">=",
+   "passed": false,
+   "quantity": "|e_delta(h/a=0.015) - e_delta(h/a=0.0075)| at absorbing BC, dz = a/24 (pp)",
+   "reference": "H_rad accepts at >= 0.10 pp; a value below means the radial Q4 surface spacing is not the mechanism",
+   "threshold": 0.1,
+   "value": 0.0006361681666677832
+  },
+  {
+   "id": "vertical_refinement_monotone_absorbing",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "number of dz steps where |e_delta| grows under vertical refinement (absorbing BC)",
+   "reference": "a discretisation error must decay with dz -> 0",
+   "threshold": 0.0,
+   "value": 0.0
+  },
+  {
+   "id": "case_pool_indentation_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst |e_delta| over every arm in this study (%)",
+   "reference": "case pool FEM-HERTZ-CONTACT tolerance 3 %",
+   "threshold": 3.0,
+   "value": 1.0107277777946178
+  },
+  {
+   "id": "case_pool_contact_radius_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst |e_a| over every arm in this study (%)",
+   "reference": "case pool FEM-HERTZ-CONTACT tolerance 3 %",
+   "threshold": 3.0,
+   "value": 0.8921177259330948
+  },
+  {
+   "id": "load_residual_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst load-control residual |P_fe - P|/P",
+   "reference": "regula falsi tolerance 1e-10",
+   "threshold": 1e-09,
+   "value": 1.8125319911632686e-14
+  },
+  {
+   "id": "penetration_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst maximum penetration / delta",
+   "reference": "ALM should leave a vanishing complementarity gap",
+   "threshold": 1e-05,
+   "value": 1.8657146598907233e-07
+  },
+  {
+   "id": "far_field_selfconsistency_all_arms",
+   "kind": "gate",
+   "note": "",
+   "operator": "<=",
+   "passed": true,
+   "quantity": "worst absorbing-BC fixed-point update (relative)",
+   "reference": "far_field_tol = 1e-4",
+   "threshold": 0.0001,
+   "value": 1.5013152691031772e-11
+  }
+ ],
+ "mission": "CASE-FEM-HERTZ-CONTACT",
+ "schema": "tensorfem.verified-gates.v1",
+ "title": "CASE FEM-HERTZ-CONTACT: what is left of the indentation offset",
+ "verdict": {
+  "absorbing_dz_a24_contact_radius_pct": 0.8921177259330948,
+  "absorbing_dz_a24_indentation_pct": -0.19215096432128043,
+  "alm_penalty_excluded": null,
+  "clamped_dz_a24_indentation_pct": -0.840267759820823,
+  "failed_gates": [
+   "absorbing_dz_a24_indentation",
+   "absorbing_dz_a24_above_bias_band",
+   "radial_surface_spacing_mechanism"
+  ],
+  "far_field_gain_dz_a24_pp": 0.6481167954995426,
+  "gate_count": 12,
+  "h_bias_accepted": false,
+  "h_depth_rejected": null,
+  "h_ff_accepted": false,
+  "h_rad_accepted": false,
+  "mechanism": "inconclusive: absorbing BC + dz = a/24 lands between the 0.15 % acceptance band and the 0.25 % irreducible-bias band; the residual is neither explained nor shown to be a bias",
+  "radial_note": "refining the radial surface spacing h/a 0.015 -> 0.0075 does not move e_delta, so the residual is NOT the Q4 radial surface representation"
+ }
+}
