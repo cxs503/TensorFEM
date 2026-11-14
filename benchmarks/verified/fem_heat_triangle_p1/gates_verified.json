@@ -1,0 +1,149 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_heat_triangle_p1",
+  "title": "Steady heat conduction, P1 triangles: manufactured-solution L2 rate 2 (mixed BC, distorted meshes)",
+  "mission": "CASE-FEM-HEAT-L2",
+  "generated_at": "2026-11-14T17:08:30Z",
+  "criteria": {
+    "l2_pair_order": 1.9,
+    "l2_finest_window": [
+      1.95,
+      2.1
+    ],
+    "h1_pair_order": 0.9,
+    "power_law_residual": 0.01,
+    "control_exact": 1e-10,
+    "field_relative": 0.03,
+    "flux_balance": 1e-10,
+    "quadrature": 1e-08,
+    "xval": 1e-10,
+    "diagonal": 0.05
+  },
+  "gates": [
+    {
+      "id": "l2_pair_order_min",
+      "quantity": "minimum post-asymptotic L2 pair order over structured ladders (worst: distorted/exp_trig_harmonic)",
+      "reference": "theory 2.0 (GATE_L2_PAIR=1.9)",
+      "value": 1.9324912869490707,
+      "threshold": 1.9,
+      "operator": ">=",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "l2_finest_order_window",
+      "quantity": "smallest finest-pair L2 order over every ladder (worst: distorted/quadratic_harmonic)",
+      "reference": "window (1.95, 2.1), theory 2.0",
+      "value": 1.9801732509645062,
+      "threshold": [
+        1.95,
+        2.1
+      ],
+      "operator": "in",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "h1_pair_order_min",
+      "quantity": "minimum H1-seminorm pair order (worst: distorted/exp_trig_harmonic)",
+      "reference": "theory 1.0 (GATE_H1_PAIR=0.9)",
+      "value": 0.984034773956089,
+      "threshold": 0.9,
+      "operator": ">=",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "power_law_residual",
+      "quantity": "largest Roache extrapolation residual |e0|/e_f (worst: sine_aspect2)",
+      "reference": "error sequence follows the theoretical power law (GATE_POWER_LAW)",
+      "value": 0.003939479470085962,
+      "threshold": 0.01,
+      "operator": "<=",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "control_exact",
+      "quantity": "worst absolute error of the P1-representable linear control (all meshes)",
+      "reference": "exactly representable field => machine precision (GATE_CONTROL_ABS)",
+      "value": 1.0658141036401503e-14,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "field_relative_3pct",
+      "quantity": "finest-mesh max|e|/max|T| (worst: cosh_cos_neumann)",
+      "reference": "3% acceptance band (GATE_FIELD_REL)",
+      "value": 0.008325860942252841,
+      "threshold": 0.03,
+      "operator": "<=",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "flux_balance",
+      "quantity": "max |Dirichlet reaction + imposed Neumann flux| and max free-dof residual (cosh_cos_neumann)",
+      "reference": "discrete conservation (GATE_FLUX_BALANCE)",
+      "value": 1.2101430968414206e-13,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "quadrature_independence",
+      "quantity": "relative change of the L2 norm when the 7-point rule is refined by 4-way subdivision (sine_generation, level 32)",
+      "reference": "measured order is a property of the discretisation, not of the rule",
+      "value": 3.2185202714161357e-10,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "skfem_nodal_xval",
+      "quantity": "max nodal |u_tensorfem - u_skfem| / max|u| (sine_generation, level 16)",
+      "reference": "independent P1 Poisson implementation (GATE_XVAL=1e-10)",
+      "value": 1.6778792272717337e-15,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "skfem_matrix_xval",
+      "quantity": "relative difference of the assembled conductivity matrices",
+      "reference": "independent assembly (GATE_XVAL)",
+      "value": 0.0,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "status": "run",
+      "passed": true
+    },
+    {
+      "id": "diagonal_symmetry",
+      "quantity": "largest relative L2 difference between the two diagonal splits at the finest mesh",
+      "reference": "the rate must not depend on the split direction (GATE_DIAGONAL)",
+      "value": 1.3217655233188537e-11,
+      "threshold": 0.05,
+      "operator": "<=",
+      "status": "run",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "not_run_gates": [],
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "figures": [
+      "docs/assets/verified/fem_heat_triangle_p1/fig_convergence.png",
+      "docs/assets/verified/fem_heat_triangle_p1/fig_field.png",
+      "docs/assets/verified/fem_heat_triangle_p1/fig_distortion.png"
+    ]
+  }
+}

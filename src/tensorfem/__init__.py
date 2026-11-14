@@ -438,6 +438,11 @@ from .ibm_aitken_implicit import (  # noqa: F401,E402
 )
 
 # --- CASE-FEM-HEAT-L2: steady heat conduction convergence ---
+from .heat_l2_triangle import (
+    run_all as run_heat_l2_triangle,
+    study_case as study_heat_l2_triangle,
+    triangle_field_cases as heat_l2_triangle_cases,
+)
 from .heat_conduction_l2 import (
     HeatConductionLevel as HeatConductionLevel,
     HeatConductionL2Result as HeatConductionL2Result,
