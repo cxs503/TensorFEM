@@ -9,34 +9,76 @@ Steady heat conduction on the unit square with a manufactured solution:
 
     T(x,y) = sin(πx) · sinh(πy) / sinh(π)
 
-This field is exactly harmonic (∇²T = 0), so it satisfies the steady
-heat equation with zero source.  Dirichlet boundary conditions are applied
-from the exact field on all four edges.  The Q4 element with 2×2 Gauss
-quadrature is expected to converge at O(h²) in the L₂ norm.
+This field is exactly harmonic (∇²T = 0), so it satisfies the steady heat
+equation with zero source.  Dirichlet boundary conditions are applied from the
+exact field on all four edges, so the FE error is pure discretisation error --
+a code-verification configuration, not a validation one.  The Q4 element with
+2×2 Gauss quadrature is expected to converge at O(h²) in the L2 norm.
 
 Reference
 ---------
-The manufactured solution is the classical harmonic field used in FEM
-verification (e.g. Zienkiewicz & Taylor, *The Finite Element Method*,
-vol. 1, 5th ed., Butterworth-Heinemann, 2000, ch. 3-4).  The exact
-expression is evaluated here — no hand-copied numbers.
+The manufactured harmonic field is the classical FEM verification construction
+(e.g. Zienkiewicz & Taylor, *The Finite Element Method*, vol. 1, 5th ed.,
+Butterworth-Heinemann, 2000, ch. 3-4).  The exact expression is evaluated here;
+no reference number is hand-copied.  The target order 2 is the formal order of
+the bilinear element, stated in this repository's own versioned a-priori table
+``src/tensorfem/adaptive_poisson_2d.py`` (``L2 norm  O(h^2)``).
 
-Acceptance gates (predeclared)
-------------------------------
-* Gate 1: finest-mesh relative L₂ error < 3 %
-* Gate 2: observed h-refinement order ≥ 1.8 (target 2.0, tolerance 0.2)
-* Gate 3: heat-balance residual < 1e-10 (global conservation)
+Measured norm (m20995 correction -- read before trusting an order)
+-------------------------------------------------------------------
+The acceptance criterion is a *rate*, so it is carried by the norm the rate
+theory is stated in: the domain integral
+
+    ||e||_0 = sqrt( ∫(T_h - T)²dΩ / ∫T²dΩ ),   |e|_1 = sqrt( ∫|∇T_h-∇T|²/∫|∇T|² )
+
+evaluated at 6×6 Gauss points by ``tensorfem.heat_conduction_l2.integral_error_norms``
+(a post-processor that owns its shape functions and never touches the assembly
+kernel), with the 4-point and 8-point values also reported so the quadrature
+independence of the order is checkable.
+
+Up to m20372 this file reported ``sqrt(mean(e²))`` over the *nodes* -- a
+nodal-RMS sampling pseudo-norm -- and shipped the observed orders 1.810 / 1.884 /
+1.935 as "approaching 2".  Those numbers measure the *metric*, not the solver:
+the Dirichlet nodes contribute exactly zero error, so the sample mixes an
+interior error with an exactly-zero boundary layer and the ratio
+pseudo-norm/true-norm drifts as O(h^-0.05); the measured order is biased low by
+0.03-0.19.  Under the true integral norm the *unchanged* kernel gives
+1.99225 / 1.99776 / 1.99942 / 1.99985, and an independently written numpy/scipy
+Q4 solver (``independent_sparse.py``, no ``tensorfem`` import) reproduces every
+L2 value to 10 significant digits.  The pseudo-norm is kept as a diagnostic
+(``l2_nodal_rms_relative``, ``nodal_rms_orders``) with no gate attached; the
+evidence and the review are in
+``docs/CASE-FEM-HEAT-L2-norm-measurement-defect-m20995.md``.
+
+Acceptance gates (predeclared, see the table of the same name in ``README.md``)
+------------------------------------------------------------------------------
+``finest_l2_below_3pct``            integral L2 at the finest mesh (64×64) ≤ 3 %
+``l2_pair_order_ge_1p95``           every consecutive pair whose coarse mesh has
+                                    nx ≥ 8: observed L2 order ≥ 1.95 (theory 2.0,
+                                    a 2.5 % band)
+``l2_finest_order_in_band``         finest pair order inside [1.95, 2.10] (no
+                                    runaway super-convergence either)
+``power_law_residual_le_1pct``      Roache extrapolation of the two finest levels
+                                    with p_ref = 2 leaves |e0|/e_f ≤ 1 %: the
+                                    ladder really is the theoretical power law
+``h1_pair_order_ge_0p9``            H1 seminorm order ≥ 0.9 (theory 1.0)
+``quadrature_spread_le_1e-6``       reported norms move ≤ 1e-6 (relative) from
+                                    4-point to 8-point post-processing on every
+                                    mesh with nx ≥ 8
+``independent_code_l2_agreement``   ``independent_sparse.py`` reproduces the L2
+                                    norm of every shared level to ≤ 1e-9 relative
+                                    and the nodal field to round-off
+``heat_balance_residual``           max |K·T − f| over the free nodes ≤ 1e-10
 
 Outputs
 -------
 * ``result.json``        — raw numbers at every mesh level
-* ``gates_verified.json`` — pass/fail verdicts
-* ``result.json``        — raw numbers + the sha256 of every figure it produced
+* ``gates_verified.json`` — pass/fail verdicts (schema ``tensorfem.verified-gates.v1``)
 * ``docs/assets/verified/fem_heat_conduction_l2/fig_convergence.png``
-                          — log-log error vs element size
+                          — log-log error vs element size (integral norm, the
+                            pseudo-norm, and the p = 2 / p = 1 slopes)
 * ``docs/assets/verified/fem_heat_conduction_l2/fig_field.png``
-                          — FEM temperature field + error map
-* ``README.md``           — this document
+                          — FEM temperature field, exact field, pointwise error
 
 The figures render under ``docs/`` on purpose: the platform push gate carries
 ``docs/**`` binaries and strips every other ``*.png``
@@ -62,7 +104,10 @@ import torch
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[2] / "src"))
 
-from tensorfem.thermal import ThermalModel, assemble_thermal, solve_steady_thermal
+from tensorfem.heat_conduction_l2 import (  # noqa: E402
+    integral_error_norms,
+    run_heat_conduction_l2,
+)
 
 FLOAT = torch.float64
 DEV = torch.device("cpu")
@@ -70,6 +115,20 @@ DEV = torch.device("cpu")
 REPO_ROOT = HERE.parents[2]
 #: Certificate figures live under ``docs/`` so the push gate carries them.
 FIGURE_DIR = REPO_ROOT / "docs" / "assets" / "verified" / "fem_heat_conduction_l2"
+
+#: Predeclared gate thresholds.
+L2_GATE = 0.03
+ORDER_GATE = 1.95
+ORDER_BAND = (1.95, 2.10)
+POWER_LAW_GATE = 1.0e-2
+H1_ORDER_GATE = 0.90
+QUADRATURE_GATE = 1.0e-6
+CROSS_CHECK_GATE = 1.0e-9
+HEAT_BALANCE_GATE = 1.0e-10
+P_REF = 2.0
+#: Levels shared with the independent solver for the cross-check.
+CROSS_CHECK_LEVELS = (8, 16, 32, 64)
+
 
 # ---------------------------------------------------------------------------
 # manufactured solution
@@ -118,16 +177,23 @@ def edge_nodes(nx: int, ny: int) -> list[int]:
         boundary.add(i * (ny + 1))          # bottom
         boundary.add(i * (ny + 1) + ny)     # top
     for j in range(ny + 1):
-        boundary.add(j)                      # left
+        boundary.add(j)                     # left
         boundary.add(nx * (ny + 1) + j)     # right
     return sorted(boundary)
 
 
 # ---------------------------------------------------------------------------
-# solver
+# one mesh level
 # ---------------------------------------------------------------------------
 def solve_heat_conduction(nx: int, ny: int) -> dict:
-    """Run one mesh level and return errors."""
+    """Solve one level and return every error metric.
+
+    ``l2_relative`` / ``h1_relative`` are the domain-integral norms (gate
+    metrics).  ``l2_nodal_rms_relative`` is the former sampling pseudo-norm,
+    kept as a diagnostic only.
+    """
+    from tensorfem.thermal import ThermalModel, assemble_thermal, solve_steady_thermal
+
     nodes, elems = structured_quad_mesh(nx, ny)
     n_nodes = len(nodes)
 
@@ -150,45 +216,52 @@ def solve_heat_conduction(nx: int, ny: int) -> dict:
 
     T_fem = solve_steady_thermal(model)
     T_exact = exact_temperature(nodes)
-
-    # L2 relative error (area-weighted)
     err = T_fem - T_exact
-    l2_err = float(torch.sqrt(torch.mean(err ** 2)))
-    l2_rel = float(l2_err / torch.sqrt(torch.mean(T_exact ** 2)))
+
+    norms = {q: integral_error_norms(nodes, elems, T_fem, q) for q in (4, 6, 8)}
+    l2_by_quad = {str(q): norms[q]["l2_relative"] for q in (4, 6, 8)}
+    quadrature_spread = max(
+        abs(norms[4]["l2_relative"] - norms[8]["l2_relative"]) / norms[6]["l2_relative"],
+        abs(norms[4]["h1_relative"] - norms[8]["h1_relative"]) / norms[6]["h1_relative"],
+    )
+
+    # legacy sampling pseudo-norm -- NOT the L2 norm, diagnostic only
+    nodal_rms = float(torch.sqrt(torch.mean(err ** 2)) / torch.sqrt(torch.mean(T_exact ** 2)))
 
     # Max pointwise relative error
     max_abs = float(torch.max(torch.abs(err)))
     max_rel = float(torch.max(torch.abs(err / torch.where(T_exact != 0, T_exact, torch.ones_like(T_exact)))))
 
-    # Heat balance: residual at free nodes should be ~0 (machine precision)
+    # Heat balance: residual at free nodes should be ~machine precision
     matrices = assemble_thermal(model)
     free_mask = torch.ones(n_nodes, dtype=torch.bool, device=DEV)
     free_mask[fixed_nodes] = False
     residual_free = matrices.conductivity[free_mask] @ T_fem - matrices.heat[free_mask]
     heat_balance = float(torch.max(torch.abs(residual_free)))
 
-    n_elem = nx * ny
-    h = 1.0 / max(nx, ny)
-
     return {
         "nx": nx,
         "ny": ny,
-        "n_elements": n_elem,
+        "n_elements": nx * ny,
         "n_nodes": n_nodes,
         "n_dof": n_nodes - len(bdry),
-        "h": h,
-        "l2_absolute": l2_err,
-        "l2_relative": l2_rel,
+        "h": 1.0 / max(nx, ny),
+        "l2_relative": norms[6]["l2_relative"],
+        "l2_by_quadrature": l2_by_quad,
+        "h1_relative": norms[6]["h1_relative"],
+        "l2_nodal_rms_relative": nodal_rms,
+        "quadrature_spread": quadrature_spread,
         "max_absolute": max_abs,
         "max_relative": max_rel,
         "heat_balance_residual": heat_balance,
+        "_temperature": T_fem,
     }
 
 
 # ---------------------------------------------------------------------------
 # convergence study
 # ---------------------------------------------------------------------------
-MESH_LEVELS = [(4, 4), (8, 8), (16, 16), (32, 32)]
+MESH_LEVELS = [(4, 4), (8, 8), (16, 16), (32, 32), (64, 64)]
 
 
 def convergence_study() -> list[dict]:
@@ -196,49 +269,95 @@ def convergence_study() -> list[dict]:
     for nx, ny in MESH_LEVELS:
         r = solve_heat_conduction(nx, ny)
         results.append(r)
-        print(f"  {nx}x{ny}: n_elem={r['n_elements']}, L2_rel={r['l2_relative']:.6e}, max_rel={r['max_relative']:.6e}")
+        print(f"  {nx}x{ny}: n_elem={r['n_elements']}, "
+              f"L2_int={r['l2_relative']:.6e}, L2_nodal={r['l2_nodal_rms_relative']:.6e}")
     return results
 
 
-def observed_orders(results: list[dict]) -> list[float]:
-    """Compute observed convergence order between successive mesh levels."""
+def observed_orders(results: list[dict], key: str = "l2_relative") -> list[float]:
+    """Observed h-refinement order between successive levels for ``key``."""
     orders = []
     for i in range(1, len(results)):
         h_ratio = results[i - 1]["h"] / results[i]["h"]
-        err_ratio = results[i - 1]["l2_relative"] / results[i]["l2_relative"]
+        err_ratio = results[i - 1][key] / results[i][key]
         if err_ratio > 0 and h_ratio > 1:
-            order = math.log(err_ratio) / math.log(h_ratio)
+            orders.append(math.log(err_ratio) / math.log(h_ratio))
         else:
-            order = 0.0
-        orders.append(order)
+            orders.append(float("nan"))
     return orders
+
+
+def power_law_residual(results: list[dict], p_ref: float = P_REF) -> float:
+    """Roache extrapolation residual of the two finest levels at the target order.
+
+    ``e0 = e_f + (e_f - e_c) / (r**p_ref - 1)`` vanishes when the ladder is
+    exactly the theoretical power law; the returned value is ``|e0| / e_f``.
+    """
+    e_c = results[-2]["l2_relative"]
+    e_f = results[-1]["l2_relative"]
+    r = results[-2]["h"] / results[-1]["h"]          # refinement ratio h_coarse/h_fine
+    e0 = e_f + (e_f - e_c) / (r ** p_ref - 1.0)
+    return abs(e0) / e_f
+
+
+def independent_cross_check(results: list[dict]) -> dict:
+    """Reproduce the ladder with the from-scratch numpy/scipy Q4 solver."""
+    import independent_sparse as isp  # same directory, no tensorfem import
+
+    entries = []
+    worst_norm = 0.0
+    worst_field = 0.0
+    for level in results:
+        nx, ny = level["nx"], level["ny"]
+        if nx not in CROSS_CHECK_LEVELS:
+            continue
+        ref = isp.solve_level(nx, ny)
+        norm_diff = abs(ref["l2_relative"] - level["l2_by_quadrature"]["8"]) / ref["l2_relative"]
+        field_diff = float(np.max(np.abs(
+            ref["temperature"] - level["_temperature"].numpy()))) / float(np.max(np.abs(ref["temperature"])))
+        worst_norm = max(worst_norm, norm_diff)
+        worst_field = max(worst_field, field_diff)
+        entries.append({"nx": nx, "n_dof": ref["n_dof"],
+                        "l2_relative_independent": ref["l2_relative"],
+                        "l2_relative_kernel_8pt": level["l2_by_quadrature"]["8"],
+                        "norm_relative_difference": norm_diff,
+                        "field_max_relative_difference": field_diff})
+    return {"entries": entries,
+            "worst_norm_relative_difference": worst_norm,
+            "worst_field_relative_difference": worst_field}
 
 
 # ---------------------------------------------------------------------------
 # figures
 # ---------------------------------------------------------------------------
-def make_convergence_figure(results: list[dict], orders: list[float], outpath: Path):
+def make_convergence_figure(results: list[dict], orders: list[float],
+                            nodal_orders: list[float], outpath: Path):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(7.4, 5.2))
     hs = [r["h"] for r in results]
     errs = [r["l2_relative"] for r in results]
+    nodal = [r["l2_nodal_rms_relative"] for r in results]
 
-    ax.loglog(hs, errs, "o-", label="Q4 L₂ relative error", linewidth=2, markersize=8)
+    ax.loglog(hs, errs, "o-", color="C0", linewidth=2, markersize=8,
+              label="Q4 L₂ (domain integral, gate metric)")
+    ax.loglog(hs, nodal, "s--", color="C3", linewidth=1.4, markersize=6,
+              label="nodal-RMS pseudo-norm (biased order, diagnostic)")
 
-    # Reference slope lines
-    h_ref = np.array([hs[0], hs[0] / 4])
+    # Reference slope lines anchored at the coarsest mesh
+    h_ref = np.array([hs[0], hs[-1]])
     for slope, label in [(1.0, "O(h¹)"), (2.0, "O(h²)")]:
         e_ref = errs[0] * (h_ref / hs[0]) ** slope
-        ax.loglog(h_ref, e_ref, "--", alpha=0.5, label=label)
+        ax.loglog(h_ref, e_ref, ":", color="0.45", alpha=0.8, label=label)
 
     ax.set_xlabel("Element size h")
-    ax.set_ylabel("Relative L₂ error")
-    ax.set_title("CASE-FEM-HEAT-L2: Convergence of Q4 heat conduction\n"
-                 f"Observed orders: {', '.join(f'{o:.3f}' for o in orders)}")
-    ax.legend()
+    ax.set_ylabel("Relative error")
+    ax.set_title("CASE-FEM-HEAT-L2: Q4 steady conduction, harmonic MMS\n"
+                 f"integral-norm orders: {', '.join(f'{o:.4f}' for o in orders)}"
+                 f"  |  pseudo-norm: {', '.join(f'{o:.3f}' for o in nodal_orders)}")
+    ax.legend(fontsize=8, loc="lower right")
     ax.grid(True, which="both", alpha=0.3)
     fig.tight_layout()
     fig.savefig(outpath, dpi=150)
@@ -250,45 +369,29 @@ def make_field_figure(nx: int, ny: int, outpath: Path):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    nodes, elems = structured_quad_mesh(nx, ny)
-    bdry = edge_nodes(nx, ny)
-    fixed_nodes = torch.tensor(bdry, dtype=torch.long, device=DEV)
-    fixed_temps = exact_temperature(nodes[fixed_nodes])
-
-    model = ThermalModel(
-        nodes=nodes, elements=elems,
-        conductivity=torch.tensor(1.0, dtype=FLOAT),
-        density=torch.tensor(1.0, dtype=FLOAT),
-        specific_heat=torch.tensor(1.0, dtype=FLOAT),
-        thickness=torch.tensor(1.0, dtype=FLOAT),
-        fixed_nodes=fixed_nodes,
-        fixed_temperatures=fixed_temps,
-        element_type="q4",
-    )
-    T_fem = solve_steady_thermal(model)
+    level = solve_heat_conduction(nx, ny)
+    nodes, _ = structured_quad_mesh(nx, ny)
+    T_fem = level["_temperature"]
     T_exact = exact_temperature(nodes)
     err = (T_fem - T_exact).numpy()
 
     fig, axes = plt.subplots(1, 3, figsize=(14, 4))
 
-    # FEM field
     im0 = axes[0].tricontourf(nodes[:, 0].numpy(), nodes[:, 1].numpy(), T_fem.numpy(),
                                levels=30, cmap="viridis")
-    axes[0].set_title("FEM Temperature")
+    axes[0].set_title("FEM temperature")
     axes[0].set_aspect("equal")
     fig.colorbar(im0, ax=axes[0], fraction=0.046)
 
-    # Exact field
     im1 = axes[1].tricontourf(nodes[:, 0].numpy(), nodes[:, 1].numpy(), T_exact.numpy(),
                                levels=30, cmap="viridis")
-    axes[1].set_title("Exact Temperature")
+    axes[1].set_title("Exact temperature")
     axes[1].set_aspect("equal")
     fig.colorbar(im1, ax=axes[1], fraction=0.046)
 
-    # Error
     im2 = axes[2].tricontourf(nodes[:, 0].numpy(), nodes[:, 1].numpy(), err,
                                levels=30, cmap="RdBu_r")
-    axes[2].set_title("Error (FEM − Exact)")
+    axes[2].set_title("Error (FEM − exact)")
     axes[2].set_aspect("equal")
     fig.colorbar(im2, ax=axes[2], fraction=0.046)
 
@@ -296,15 +399,12 @@ def make_field_figure(nx: int, ny: int, outpath: Path):
         ax.set_xlabel("x")
         ax.set_ylabel("y")
 
-    fig.suptitle(f"CASE-FEM-HEAT-L2: Temperature field ({nx}×{ny} mesh, {nx*ny} elements)")
+    fig.suptitle(f"CASE-FEM-HEAT-L2: temperature field ({nx}×{ny} mesh, {nx*ny} elements)")
     fig.tight_layout()
     fig.savefig(outpath, dpi=150)
     plt.close(fig)
 
 
-# ---------------------------------------------------------------------------
-# main
-# ---------------------------------------------------------------------------
 def utc_now() -> str:
     from datetime import datetime, timezone
     return datetime.now(timezone.utc).isoformat()
@@ -318,6 +418,10 @@ def main():
 
     results = convergence_study()
     orders = observed_orders(results)
+    h1_orders = observed_orders(results, "h1_relative")
+    nodal_orders = observed_orders(results, "l2_nodal_rms_relative")
+    residual = power_law_residual(results)
+    cross = independent_cross_check(results)
 
     # Finest mesh field figure
     nx_f, ny_f = MESH_LEVELS[-1]
@@ -325,15 +429,17 @@ def main():
     fig_field = FIGURE_DIR / "fig_field.png"
     fig_convergence = FIGURE_DIR / "fig_convergence.png"
     make_field_figure(nx_f, ny_f, fig_field)
-    make_convergence_figure(results, orders, fig_convergence)
+    make_convergence_figure(results, orders, nodal_orders, fig_convergence)
 
     elapsed = time.time() - t0
 
-    # Build result.json
+    # separable diagnostics: the temperature fields are not JSON material
+    levels = [{k: v for k, v in r.items() if not k.startswith("_")} for r in results]
+
     result = {
         "benchmark": "fem_heat_conduction_l2",
         "case_key": "CASE-FEM-HEAT-L2",
-        "description": "Steady-state heat conduction: manufactured harmonic solution on unit square, Q4 elements",
+        "description": "Steady-state heat conduction: manufactured harmonic solution on the unit square, Q4 elements",
         "generated_at": utc_now(),
         "elapsed_seconds": round(elapsed, 2),
         "environment": {
@@ -345,47 +451,105 @@ def main():
         "reference": {
             "solution": "T(x,y) = sin(πx)·sinh(πy)/sinh(π)",
             "equation": "∇²T = 0 on [0,1]², Dirichlet BC from exact field",
+            "target_order": P_REF,
+            "target_order_source": "src/tensorfem/adaptive_poisson_2d.py (L2 norm O(h^2), bilinear Q4)",
             "source": "Manufactured harmonic field (Zienkiewicz & Taylor, FEM vol.1, ch.3-4)",
+        },
+        "norm_definition": {
+            "gate_metric": "relative L2 domain integral at 6x6 Gauss (tensorfem.heat_conduction_l2.integral_error_norms)",
+            "diagnostic": "l2_nodal_rms_relative = sqrt(mean_nodal(e^2)/mean_nodal(T^2)) -- sampling pseudo-norm, no gate",
+            "quadrature_orders": [4, 6, 8],
         },
         "figures": [
             {"path": _repo_relative(path), "sha256": _file_sha256(path)}
             for path in (fig_convergence, fig_field)
         ],
-        "mesh_levels": results,
+        "mesh_levels": levels,
         "observed_orders_l2": orders,
+        "observed_orders_h1": h1_orders,
+        "nodal_rms_orders": nodal_orders,
         "mean_order": float(np.mean(orders)) if orders else 0.0,
+        "mean_nodal_rms_order": float(np.mean(nodal_orders)) if nodal_orders else 0.0,
+        "power_law_residual": residual,
+        "independent_cross_check": cross,
     }
 
     write_json(result, HERE / "result.json")
 
     # Gates
+    asymptotic_pairs = [p for p, lv in zip(orders, levels[:-1]) if lv["nx"] >= 8]
     gates = [
         Gate(
             id="finest_l2_below_3pct",
-            quantity="Relative L₂ error at finest mesh (32×32)",
+            quantity="Relative L₂ error at the finest mesh (64×64), domain integral",
             reference="T(x,y) = sin(πx)·sinh(πy)/sinh(π)",
-            value=results[-1]["l2_relative"],
-            threshold=0.03,
+            value=levels[-1]["l2_relative"],
+            threshold=L2_GATE,
             operator="<=",
-            passed=results[-1]["l2_relative"] <= 0.03,
+            passed=levels[-1]["l2_relative"] <= L2_GATE,
         ),
         Gate(
-            id="convergence_order_ge_1p8",
-            quantity="Mean observed h-refinement order (L₂ norm)",
+            id="l2_pair_order_ge_1p95",
+            quantity="Worst observed h-refinement order over all pairs with coarse nx ≥ 8",
             reference="Q4 element: theoretical order 2.0 in L₂",
-            value=float(np.mean(orders)) if orders else 0.0,
-            threshold=1.8,
+            value=min(asymptotic_pairs) if asymptotic_pairs else float("nan"),
+            threshold=ORDER_GATE,
             operator=">=",
-            passed=(float(np.mean(orders)) >= 1.8) if orders else False,
+            passed=bool(asymptotic_pairs) and min(asymptotic_pairs) >= ORDER_GATE,
+        ),
+        Gate(
+            id="l2_finest_order_in_band",
+            quantity="Observed L₂ order of the finest pair (32×32 → 64×64)",
+            reference="theoretical order 2.0 (band [1.95, 2.10])",
+            value=orders[-1],
+            threshold=ORDER_BAND[1],
+            operator="<= and >= 1.95",
+            passed=ORDER_BAND[0] <= orders[-1] <= ORDER_BAND[1],
+        ),
+        Gate(
+            id="power_law_residual_le_1pct",
+            quantity="Roache extrapolation residual |e0|/e_f at p_ref = 2 (two finest levels)",
+            reference="0 for an exact O(h²) power law",
+            value=residual,
+            threshold=POWER_LAW_GATE,
+            operator="<=",
+            passed=residual <= POWER_LAW_GATE,
+        ),
+        Gate(
+            id="h1_pair_order_ge_0p9",
+            quantity="Worst observed H1-seminorm order over all pairs with coarse nx ≥ 8",
+            reference="Q4 element: theoretical order 1.0 in H1",
+            value=min([p for p, lv in zip(h1_orders, levels[:-1]) if lv["nx"] >= 8] or [float("nan")]),
+            threshold=H1_ORDER_GATE,
+            operator=">=",
+            passed=all(p >= H1_ORDER_GATE for p, lv in zip(h1_orders, levels[:-1]) if lv["nx"] >= 8),
+        ),
+        Gate(
+            id="quadrature_spread_le_1e-6",
+            quantity="Worst relative norm spread between 4-point and 8-point post-processing (nx ≥ 8)",
+            reference="the reported norms must not depend on the quadrature rule",
+            value=max(lv["quadrature_spread"] for lv in levels if lv["nx"] >= 8),
+            threshold=QUADRATURE_GATE,
+            operator="<=",
+            passed=all(lv["quadrature_spread"] <= QUADRATURE_GATE for lv in levels if lv["nx"] >= 8),
+        ),
+        Gate(
+            id="independent_code_l2_agreement",
+            quantity="Worst relative L₂ difference: from-scratch numpy/scipy solver vs kernel",
+            reference="same discrete problem -> same norms to round-off",
+            value=cross["worst_norm_relative_difference"],
+            threshold=CROSS_CHECK_GATE,
+            operator="<=",
+            passed=cross["worst_norm_relative_difference"] <= CROSS_CHECK_GATE,
         ),
         Gate(
             id="heat_balance_residual",
-            quantity="Max |K·T − f| (global conservation)",
+            quantity="Max |K·T − f| (global conservation), finest mesh",
             reference="0 (harmonic field, no source)",
-            value=results[-1]["heat_balance_residual"],
-            threshold=1e-10,
+            value=levels[-1]["heat_balance_residual"],
+            threshold=HEAT_BALANCE_GATE,
             operator="<=",
-            passed=results[-1]["heat_balance_residual"] <= 1e-10,
+            passed=levels[-1]["heat_balance_residual"] <= HEAT_BALANCE_GATE,
         ),
     ]
 
@@ -396,13 +560,15 @@ def main():
     all_pass = all(g.passed for g in gates)
     print(f"\n{'=' * 60}")
     print(f"Elapsed: {elapsed:.1f}s")
+    print(f"Observed L2 orders (integral): {[round(o, 5) for o in orders]}")
+    print(f"Observed L2 orders (nodal pseudo-norm, diagnostic): {[round(o, 4) for o in nodal_orders]}")
     print(f"Gates: {sum(g.passed for g in gates)}/{len(gates)} passed")
     for g in gates:
-        status = "✅ PASS" if g.passed else "❌ FAIL"
-        print(f"  {status}  {g.id}: {g.value:.6e} (threshold {g.operator} {g.threshold})")
+        status = "PASS" if g.passed else "FAIL"
+        print(f"  [{status}] {g.id}: {g.value:.6e} (threshold {g.operator} {g.threshold})")
     print(f"Figures: {fig_field.name}, {fig_convergence.name} -> {FIGURE_DIR}")
-    print(f"Overall: {'✅ ALL PASS' if all_pass else '❌ SOME FAIL'}")
-    print(f"{'=' * 60}")
+    print(f"Overall: {'ALL PASS' if all_pass else 'SOME FAIL'}")
+    print("=" * 60)
 
     return 0 if all_pass else 1
 
@@ -440,9 +606,14 @@ def gate_manifest(gates: list[Gate]) -> dict:
         "mission": "CASE-FEM-HEAT-L2",
         "generated_at": utc_now(),
         "criteria": {
-            "finest_l2_below_3pct": 0.03,
-            "convergence_order_ge_1p8": 1.8,
-            "heat_balance_residual": 1e-10,
+            "finest_l2_below_3pct": L2_GATE,
+            "l2_pair_order_ge_1p95": ORDER_GATE,
+            "l2_finest_order_in_band": list(ORDER_BAND),
+            "power_law_residual_le_1pct": POWER_LAW_GATE,
+            "h1_pair_order_ge_0p9": H1_ORDER_GATE,
+            "quadrature_spread_le_1e-6": QUADRATURE_GATE,
+            "independent_code_l2_agreement": CROSS_CHECK_GATE,
+            "heat_balance_residual": HEAT_BALANCE_GATE,
         },
         "gates": [g.to_dict() for g in gates],
         "passed": all(g.passed for g in gates),
