@@ -23,8 +23,8 @@
       "coarsest_sanity"
     ]
   },
-  "reported_accuracy_finest": 0.15972112248781786,
-  "certified_accuracy": 1.6314435636759248,
+  "reported_accuracy_finest": 0.1597211224878175,
+  "certified_accuracy": 1.6314435636759426,
   "gates": [
     {
       "id": "G1_accuracy_finest",
@@ -33,7 +33,7 @@
       "passed": false,
       "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.15972112248781786,
+      "actual": 0.1597211224878175,
       "detail": "finest level 32x32 rel. error 1.5972e-01"
     },
     {
@@ -43,7 +43,7 @@
       "passed": false,
       "operator": "<=",
       "threshold": 0.03,
-      "actual": 1.6314435636759248,
+      "actual": 1.6314435636759426,
       "detail": "extrapolated -4.801858215e-05 vs MacNeal & Harder (1985) -1.8248e-05: rel. error 1.6314e+00 (order p=0.177)"
     },
     {
@@ -63,7 +63,7 @@
       "passed": false,
       "operator": ">=",
       "threshold": 1.0,
-      "actual": 0.17670907941532768,
+      "actual": 0.17670907941532626,
       "detail": "4x4->16x16: p=-0.417, 8x8->32x32: p=0.177"
     },
     {
@@ -73,7 +73,7 @@
       "passed": true,
       "operator": "<=",
       "threshold": 1.0,
-      "actual": 0.05994324767824516,
+      "actual": 0.05994324767824447,
       "detail": "finest-mesh true error 1.597e-01 vs GCI band 2.665e+00 -> inside the band"
     },
     {
@@ -96,6 +96,12 @@
     "G6_coarsest_sanity"
   ],
   "withheld_gates": [],
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "fig_convergence": "convergence.png",
+    "fig_displacement": "displacement_comparison.png"
+  },
   "limitations": [
     "Cylindrical Shell4 is specialised for cylindrical geometry only",
     "General curved shells require either specialised elements or improved flat-facet formulations",
