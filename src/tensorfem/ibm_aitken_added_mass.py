@@ -99,6 +99,8 @@ __all__ = [
     "IBMImplicitFSI",
     "estimate_period",
     "estimate_period_fft",
+    "estimate_period_damped",
+    "period_window_ok",
     "structural_probe",
     "forced_oscillation",
     "coupled_free_vibration",
@@ -342,6 +344,106 @@ def estimate_period_fft(series, dt=1.0, oversample=8):
         return float("nan")
     k = int(np.argmax(spec[1:])) + 1
     return 1.0 / float(freqs[k]) if freqs[k] > 0.0 else float("nan")
+
+
+def period_window_ok(n_steps, dt, period, min_cycles=2.0):
+    """Is the record long enough to hold ``min_cycles`` periods?
+
+    A time-window shorter than one period makes **every** period estimator
+    degenerate to the window length: the zero-crossing branch has fewer than two
+    up-crossings and the Hann-windowed FFT (``estimate_period_fft``) bottoms out
+    at the fundamental bin ``1 / (n_steps * dt)``.  Feeding that number into a
+    validation table produced the bogus "100 % added-mass error, unit-handling
+    bug" verdict of ``docs/xval_implicit_ibm_aitken_v4.md`` section 3.4 (see
+    ``docs/xval_implicit_ibm_aitken_v5.md`` section 5); the guard keeps the
+    failure visible instead of silent.
+    """
+    if not np.isfinite(period) or period <= 0.0:
+        return False
+    return float(n_steps) * float(dt) >= float(min_cycles) * float(period)
+
+
+def _damped_sinusoid_residual(t, y, period, tau):
+    """Rms residual of the best ``c0 + exp(-t/tau) (a cos + b sin)`` fit."""
+    w = 2.0 * math.pi / period
+    env = np.exp(-t / tau)
+    basis = np.column_stack((np.ones_like(t), env * np.cos(w * t),
+                             env * np.sin(w * t)))
+    coef, *_ = np.linalg.lstsq(basis, y, rcond=None)
+    res = y - basis @ coef
+    amp = math.hypot(coef[1], coef[2])
+    return float(np.sqrt(np.mean(res ** 2))), float(amp), coef
+
+
+def _pattern_search(t, y, period0, tau0, rounds=4, shrink=1.7):
+    """Coordinate descent on ``(log period, log tau)`` minimising the fit rms."""
+    best = (_damped_sinusoid_residual(t, y, period0, tau0)[0],
+            float(period0), float(tau0))
+    step = 0.25
+    for _ in range(rounds):
+        improved = True
+        while improved:
+            improved = False
+            for sT, st in ((math.exp(step), 1.0), (math.exp(-step), 1.0),
+                           (1.0, math.exp(step)), (1.0, math.exp(-step))):
+                p, q = best[1] * sT, best[2] * st
+                if not (p > 0.0 and q > 0.0):
+                    continue
+                r = _damped_sinusoid_residual(t, y, p, q)[0]
+                if r < best[0] * (1.0 - 1e-12):
+                    best = (r, p, q)
+                    improved = True
+        step /= shrink
+    return best
+
+
+def estimate_period_damped(series, dt=1.0, min_cycles=1.5):
+    """Period and damping time of a decaying oscillation (window-safe).
+
+    Fits ``y(t) = c0 + A exp(-t/tau) cos(2 pi t / T + phi)`` by separable least
+    squares (linear in ``c0, a, b``; coordinate descent on ``(T, tau)``), so a
+    DC offset and the viscous decay of the record do not bias ``T`` -- the two
+    failure modes of the mean-removed zero-crossing estimate.  Several seeds
+    (FFT peak, and ``span / k``) are tried and the best fit is kept, so the
+    estimator still returns a *sentinel* answer when the record holds less than
+    one period; ``valid`` is then ``False`` and the caller must not use it.
+
+    Returns a dict with ``period``, ``tau``, ``amplitude``, ``offset``,
+    ``rms``, ``rms_over_amplitude``, ``cycles`` (record length in periods),
+    ``window_length`` and ``valid`` (``min_cycles`` reached *and* fit quality).
+    """
+    y = np.asarray(series, dtype=float)
+    n = int(y.size)
+    span = float(n - 1) * float(dt) if n > 1 else 0.0
+    out = {"period": float("nan"), "tau": float("nan"),
+           "amplitude": float("nan"), "offset": float("nan"),
+           "rms": float("nan"), "rms_over_amplitude": float("nan"),
+           "cycles": float("nan"), "window_length": span,
+           "min_cycles": float(min_cycles), "valid": False,
+           "method": "damped_sinusoid_ls"}
+    if n < 8 or not np.all(np.isfinite(y)) or span <= 0.0:
+        return out
+    t = np.arange(n, dtype=float) * float(dt)
+    guess = estimate_period_fft(y, dt)
+    seeds = []
+    if np.isfinite(guess) and guess > 0.0:
+        seeds.append(float(guess))
+    seeds += [span / k for k in (1.0, 2.0, 3.0, 5.0, 8.0)]
+    best = None
+    for s in seeds:
+        cand = _pattern_search(t, y, s, max(span / 3.0, s))
+        if best is None or cand[0] < best[0]:
+            best = cand
+    rms, amp, coef = _damped_sinusoid_residual(t, y, best[1], best[2])
+    out.update({"period": float(best[1]), "tau": float(best[2]),
+                "amplitude": float(amp), "offset": float(coef[0]),
+                "rms": float(rms),
+                "rms_over_amplitude": float(rms / amp) if amp > 0.0 else float("inf"),
+                "cycles": float(span / best[1])})
+    out["valid"] = bool(out["cycles"] >= float(min_cycles)
+                        and np.isfinite(out["rms_over_amplitude"])
+                        and out["rms_over_amplitude"] < 0.25)
+    return out
 
 
 def _pct(got, ref):
