@@ -41,6 +41,12 @@ cross-validated against this:
    of (1), which separates "is the IBM operator physically right" from "is the
    staggered implicit coupling right".
 
+Item (1) cannot be answered at a single drive frequency: the ``{y'', y', y, 1}``
+basis is rank deficient (``y'' = -w^2 y``), which is why this module reports the
+*single-frequency apparent mass* plus an explicit identifiability flag, and
+:mod:`tensorfem.ibm_added_mass_harmonic` owns the frequency sweep that does
+separate ``m_a`` from the added stiffness.
+
 A thin plate is chosen over a closed body on purpose: a closed marker ring
 traps the *interior* fluid, which is dragged only through the interface and
 adds ~1.5 ``m_a`` of non-analytic inertia (measured in this work), and a
@@ -89,6 +95,7 @@ import sys
 import numpy as np
 
 from .ibm_aitken_implicit import AitkenRelaxation, IBMInterface, LBMFluid2D
+from .ibm_added_mass_harmonic import harmonic_projection
 
 __all__ = [
     "analytic_added_mass",
@@ -478,15 +485,26 @@ def forced_oscillation(n_steps=1200, dt=1.0, half_width=20.0,
                        amplitude=0.25, rho_f=1.0, drive_period=160.0,
                        omega_lbm=1.8, dx=1.0, sub_tol=1e-10,
                        max_sub_iter=40):
-    """Prescribe ``y(t) = A sin(2 pi t / T_d)``; fit the interface force.
+    """Prescribe ``y(t) = A sin(2 pi t / T_d)``; measure the interface force.
 
-    The total force on the body is fitted onto ``{y'', y', y, 1}``::
+    The force on the body obeys ``F_y = -m_a y'' - c_a y' - k_a y``.  With a
+    *single* prescribed drive frequency ``y'' = -w^2 y`` exactly, so the naive
+    basis ``{y'', y', y, 1}`` is rank deficient (condition ~1e19) and the
+    ``{y'', y}`` split is arbitrary: the historical version of this function
+    returned ``0.0`` (and ``R^2 = 1.0``) for *any* added mass.  What one
+    frequency can measure is the **apparent** mass
 
-        F_y = -m_a y'' - c y' + O(y, 1)
+        m_app = (m_a - k_a/w^2) = K / (A w^2),
 
-    so ``m_a`` is recovered independently of the structural dynamics and of the
-    relaxation scheme; ``y''`` and ``y'`` are the prescribed analytic
-    derivatives, not finite differences of the record.
+    with ``K`` the force component in phase with ``sin(wt)`` (harmonic
+    projection, :func:`tensorfem.ibm_added_mass_harmonic.harmonic_projection`),
+    and the damping ``c_a = -C/(A w)``.  ``m_a`` and ``k_a`` separate only across
+    frequencies -- use
+    :func:`tensorfem.ibm_added_mass_harmonic.measure_added_mass_sweep`.
+
+    ``added_mass_identifiable`` is ``False`` here by construction; the legacy
+    basis fit is still reported (``legacy_added_mass_fit``) so the defect stays
+    auditable in the archive.
     """
     body = SpringMountedBody(plate_markers(center, half_width), mass=1.0e9,
                              stiffness=0.0)
@@ -515,25 +533,35 @@ def forced_oscillation(n_steps=1200, dt=1.0, half_width=20.0,
         vels.append(v)
     ys = np.asarray(ys)
     fs = np.asarray(fs)
-    accs = np.asarray(accs)
-    vels = np.asarray(vels)
-    skip = int(2 * drive_period / dt)          # drop the start-up transient
-    basis = np.stack([accs[skip:], vels[skip:], ys[skip:],
-                      np.ones_like(ys[skip:])], axis=1)
+    ts = dt * np.arange(1, int(n_steps) + 1, dtype=float)
+    omega = 2.0 * math.pi / float(drive_period)
+    proj = harmonic_projection(ts, fs, omega, skip_cycles=2.0)
+    w2 = omega ** 2
+    m_app = proj["in_phase"] / (float(amplitude) * w2)
+    damping = -proj["quadrature"] / (float(amplitude) * omega)
+    # legacy rank-deficient fit, kept for audit only
+    skip = int(2 * drive_period / dt)
+    basis = np.stack([np.asarray(accs)[skip:], np.asarray(vels)[skip:],
+                      ys[skip:], np.ones_like(ys[skip:])], axis=1)
     coef, *_ = np.linalg.lstsq(basis, fs[skip:], rcond=None)
-    resid = fs[skip:] - basis @ coef
-    denom = float(np.sum((fs[skip:] - fs[skip:].mean()) ** 2)) or 1.0
-    m_a = -float(coef[0])
     m_a_ref = analytic_added_mass(half_width, rho_f)
     return {
         "mode": "forced_oscillation", "dt": dt, "n_steps": int(n_steps),
         "half_width": half_width, "amplitude": amplitude,
         "drive_period": drive_period, "lattice": list(lattice),
         "markers": int(len(body.positions0)),
-        "added_mass_fit": m_a, "added_mass_ref": m_a_ref,
-        "added_mass_error_pct": _pct(m_a, m_a_ref),
-        "damping_fit": -float(coef[1]), "fit_r2":
-            float(1.0 - np.sum(resid ** 2) / denom),
+        "added_mass_fit": m_app, "added_mass_ref": m_a_ref,
+        "added_mass_definition": "apparent (m_a - k_a/omega^2)",
+        "added_mass_identifiable": False,
+        "identifiability_note": "single drive frequency: y''=-omega^2 y, "
+                                "use a frequency sweep to separate m_a, k_a",
+        "added_mass_error_pct": _pct(m_app, m_a_ref),
+        "in_phase_force": proj["in_phase"],
+        "quadrature_force": proj["quadrature"],
+        "damping_fit": damping,
+        "fit_r2": proj["r2"],
+        "legacy_added_mass_fit": -float(coef[0]),
+        "legacy_basis_condition": float(np.linalg.cond(basis)),
         "y_history": ys.tolist(), "force_history": fs.tolist(),
     }
 
