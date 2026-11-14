@@ -536,7 +536,7 @@ def figures(conv: dict, thick: dict, pois: dict, ref: dict, case: dict = CASE,
     a2.set_ylabel("radial displacement w [µm]")
     a2.set_title("uniform radial expansion")
     a2.grid(alpha=0.3); a2.legend(fontsize=7)
-    p = os.path.join(FIG, "field_meridian.png")
+    p = os.path.join(out_dir, "field_meridian.png")  # panel 2 must follow fig_dir too
     fig.tight_layout(); fig.savefig(p); plt.close(fig); made.append(p)
 
     # --- 3. sensitivity in t/R and nu ---------------------------------------
