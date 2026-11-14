@@ -1,5 +1,42 @@
 ## Unreleased
 
+### CASE-FEM-HEAT-L2: steady conduction L2 convergence rate >= 2 (MMS, gate included)
+- **New capability** `tensorfem.heat_l2_convergence`: six manufactured solutions of
+  `-div(k grad T) = q` (source-driven sin*sin, exponential harmonic, harmonic cubic,
+  2:1 aspect domain, harmonic quadratic, and `T = x*y` as the exactly-representable
+  control) solved with the shipped `Q4` conduction kernel, plus an **independent**
+  Gauss post-processor that integrates the true `L2`/`H1` error norms (it rebuilds the
+  bilinear field from the nodal values with its own shape functions, so an assembly bug
+  cannot hide in the norm).  The target order is **parsed at run time** from the a-priori
+  table in `adaptive_poisson_2d.py:34` (`O(h^2)`) instead of being typed, so the target
+  moves with the manual and the study fails closed if the row disappears.
+- **Result** (`nx = 4..64`, `r = 2`): finest-pair `p_L2 = 1.999` (sin*sin), `2.000`
+  (exponential / cubic / quadratic harmonic), `1.998` (2:1 domain); `p_H1 = 1.000`;
+  Richardson residual at the theoretical order `<= 2.0e-3` of `e_fine`; finest-mesh field
+  error `max|e|/max|T| <= 0.219%` (all < 3%).  31 predeclared gates, all green.
+- **Two controls that would otherwise let a green gate prove nothing**: `T = x*y` must be
+  exact to `1e-10` at every level (no convergence signal -- the trap already registered as
+  negative knowledge for a point-load FD ladder), and the error norms must be invariant to
+  the post-processing rule (`4 -> 6 -> 8` Gauss points, worst change `1.1e-11`), which is
+  what separates a real order from the quadrature artefact recorded in
+  `docs/audit_m15434_thermal_bar.md`.
+- **Specification defect found and recorded**: the first version used `T = x^2 - y^2` as
+  the "representable" control and failed at `6.6e-3`; the bilinear space is
+  `span{1, x, y, x*y}`, so the *specification*, not the solver, was wrong.  The case was
+  reclassified as `quadratic_harmonic` (nodally exact, pure interpolation error,
+  `e_FE/e_interp = 1.000000`) and `T = x*y` took over as the control.
+- **Known limit (friction)**: `tensorfem.thermal` assembles dense matrices, so the ladder
+  stops at `nx = 64` (4225 unknowns, 143 MB matrix, ~1 GB RSS); `nx = 128` is not feasible
+  on a workstation.  The kernel source term is element-constant, so the MMS load is
+  integrated over each element (8x8 Gauss) before it is handed to the kernel.
+- **Artifacts**: `artifacts/CASE-FEM-HEAT-L2/evidence.json` + `tables.md`,
+  `docs/CASE-FEM-HEAT-L2-steady-conduction.md` (six-section report, every number
+  formatted from the evidence), `docs/assets/case_fem_heat_l2_convergence.png` (log-log
+  ladders with the theoretical slopes) and `case_fem_heat_l2_field.png` (field, exact
+  field, pointwise error).  `PYTHONPATH=src python3 benchmarks/heat_l2_convergence.py`
+  regenerates all of it; `tests/test_heat_l2_convergence.py` (17 tests, ~23 s) re-derives
+  the gates on a shortened ladder.
+
 ### 3-D cohesive dissipation: reproducible figure/number package (gate included)
 - **New artifact** `artifacts/cohesive3d_dissipation/` (`make_figures.py` + `numbers.json` +
   three PNGs): the dissipated-energy claims of the 3-D cohesive element now ship with the
