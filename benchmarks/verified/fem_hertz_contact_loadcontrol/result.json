@@ -2,7 +2,7 @@
   "benchmark": "fem_hertz_contact_loadcontrol",
   "case_pool": "FEM-HERTZ-CONTACT (case pool id 104)",
   "mission": "CASE-FEM-HERTZ-CONTACT",
-  "generated_at": "2026-11-13T17:25:58+00:00",
+  "generated_at": "2026-11-14T12:56:00+00:00",
   "environment": {
     "python": "3.11.6",
     "numpy": "2.4.6",
@@ -2404,6 +2404,16 @@
       "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_pressure.png",
       "docs/assets/case-fem-hertz-contact/hertz_loadcontrol_truncation_rho.png"
     ],
-    "raw_dump": "artifacts/contact_hertz_loadcontrol/results.json"
+    "raw_dump": "artifacts/contact_hertz_loadcontrol/results.json",
+    "probes": [
+      "benchmarks/verified/fem_hertz_contact_loadcontrol/probes/compliance_probe.json",
+      "benchmarks/verified/fem_hertz_contact_loadcontrol/probes/estimators_probe.json",
+      "benchmarks/verified/fem_hertz_contact_loadcontrol/probes/truncation_probe.json"
+    ]
+  },
+  "probes": {
+    "compliance": "probes/compliance_probe.json",
+    "estimators": "probes/estimators_probe.json",
+    "truncation": "probes/truncation_probe.json"
   }
 }
