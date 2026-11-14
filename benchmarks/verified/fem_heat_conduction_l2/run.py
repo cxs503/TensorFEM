@@ -31,9 +31,17 @@ Outputs
 -------
 * ``result.json``        — raw numbers at every mesh level
 * ``gates_verified.json`` — pass/fail verdicts
-* ``fig_convergence.png`` — log-log error vs element size
-* ``fig_field.png``       — FEM temperature field + error map
+* ``result.json``        — raw numbers + the sha256 of every figure it produced
+* ``docs/assets/verified/fem_heat_conduction_l2/fig_convergence.png``
+                          — log-log error vs element size
+* ``docs/assets/verified/fem_heat_conduction_l2/fig_field.png``
+                          — FEM temperature field + error map
 * ``README.md``           — this document
+
+The figures render under ``docs/`` on purpose: the platform push gate carries
+``docs/**`` binaries and strips every other ``*.png``
+(``tests/test_anchor_figure_gate_safety.py``), so a certificate that names a
+figure next to its anchor names evidence that never reaches GitHub.
 
 Usage::
 
@@ -58,6 +66,10 @@ from tensorfem.thermal import ThermalModel, assemble_thermal, solve_steady_therm
 
 FLOAT = torch.float64
 DEV = torch.device("cpu")
+
+REPO_ROOT = HERE.parents[2]
+#: Certificate figures live under ``docs/`` so the push gate carries them.
+FIGURE_DIR = REPO_ROOT / "docs" / "assets" / "verified" / "fem_heat_conduction_l2"
 
 # ---------------------------------------------------------------------------
 # manufactured solution
@@ -309,9 +321,11 @@ def main():
 
     # Finest mesh field figure
     nx_f, ny_f = MESH_LEVELS[-1]
-    fig_dir = HERE
-    make_field_figure(nx_f, ny_f, fig_dir / "fig_field.png")
-    make_convergence_figure(results, orders, fig_dir / "fig_convergence.png")
+    FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+    fig_field = FIGURE_DIR / "fig_field.png"
+    fig_convergence = FIGURE_DIR / "fig_convergence.png"
+    make_field_figure(nx_f, ny_f, fig_field)
+    make_convergence_figure(results, orders, fig_convergence)
 
     elapsed = time.time() - t0
 
@@ -333,6 +347,10 @@ def main():
             "equation": "∇²T = 0 on [0,1]², Dirichlet BC from exact field",
             "source": "Manufactured harmonic field (Zienkiewicz & Taylor, FEM vol.1, ch.3-4)",
         },
+        "figures": [
+            {"path": _repo_relative(path), "sha256": _file_sha256(path)}
+            for path in (fig_convergence, fig_field)
+        ],
         "mesh_levels": results,
         "observed_orders_l2": orders,
         "mean_order": float(np.mean(orders)) if orders else 0.0,
@@ -382,6 +400,7 @@ def main():
     for g in gates:
         status = "✅ PASS" if g.passed else "❌ FAIL"
         print(f"  {status}  {g.id}: {g.value:.6e} (threshold {g.operator} {g.threshold})")
+    print(f"Figures: {fig_field.name}, {fig_convergence.name} -> {FIGURE_DIR}")
     print(f"Overall: {'✅ ALL PASS' if all_pass else '❌ SOME FAIL'}")
     print(f"{'=' * 60}")
 
@@ -431,10 +450,26 @@ def gate_manifest(gates: list[Gate]) -> dict:
         "artifacts": {
             "result": "result.json",
             "gates": "gates_verified.json",
-            "fig_convergence": "fig_convergence.png",
-            "fig_field": "fig_field.png",
+            "figures": [
+                _repo_relative(FIGURE_DIR / "fig_convergence.png"),
+                _repo_relative(FIGURE_DIR / "fig_field.png"),
+            ],
         },
     }
+
+
+def _repo_relative(path: Path) -> str:
+    """How the certificate names a path: repo-relative POSIX, resolvable by the auditor."""
+    try:
+        return path.resolve().relative_to(REPO_ROOT).as_posix()
+    except ValueError:  # rendered outside the checkout (ad-hoc ``--out-dir``)
+        return path.as_posix()
+
+
+def _file_sha256(path: Path) -> str:
+    import hashlib
+
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def write_json(data: dict, path: Path):
