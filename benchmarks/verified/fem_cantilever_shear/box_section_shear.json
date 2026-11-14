@@ -1,0 +1,489 @@
+{
+  "case": {
+    "anchor": "CASE-CANTILEVER-TIP",
+    "section": "thin-walled closed box (square outer)",
+    "outer_depth_m": 0.01,
+    "outer_width_m": 0.01,
+    "young_modulus_pa": 200000000000.0,
+    "poisson_ratio": 0.3,
+    "tip_load_n": 5.0,
+    "tolerance": 0.03,
+    "naive_shear_coefficient": 0.8333333333333334,
+    "element": "HEX20, conforming hollow-box grid",
+    "root_bc": "fully clamped face",
+    "load_bc": "uniform over the tip ring nodes",
+    "random_seed": null
+  },
+  "spec": {
+    "slender": [
+      4.0,
+      10.0,
+      20.0
+    ],
+    "thickness": [
+      0.2,
+      0.1,
+      0.05
+    ],
+    "wall_cells": [
+      1
+    ]
+  },
+  "oracle": {
+    "shear_flow_pieces": 5,
+    "checks": [
+      {
+        "t_over_h": 0.2,
+        "numeric_shear_deflection": 1.7273362024203147e-08,
+        "analytic_shear_deflection": 1.727335640138408e-08,
+        "relative_difference": 3.2551977365701094e-07,
+        "q0_over_V": 66.17647058823529
+      },
+      {
+        "t_over_h": 0.1,
+        "numeric_shear_deflection": 3.382630488384777e-08,
+        "analytic_shear_deflection": 3.382629387269484e-08,
+        "relative_difference": 3.2552052467754273e-07,
+        "q0_over_V": 61.7378048780488
+      },
+      {
+        "t_over_h": 0.05,
+        "numeric_shear_deflection": 6.532183683691455e-08,
+        "analytic_shear_deflection": 6.532181557339525e-08,
+        "relative_difference": 3.2551941673093874e-07,
+        "q0_over_V": 59.04696132596688
+      }
+    ]
+  },
+  "ladder": [
+    {
+      "slenderness_L_over_h": 4.0,
+      "length_m": 0.04,
+      "t_over_h": 0.1,
+      "shear_area_m2": 1.5372656607224502e-05,
+      "shear_area_over_gross": 0.42701823908956943,
+      "web_only_shear_area_over_gross": 0.5,
+      "kappa_effective": 2.34182034503272,
+      "q0_over_V": 61.7378048780488,
+      "delta_eb_m": 1.0840108401084012e-06,
+      "delta_shear_m": 1.6913146936347421e-07,
+      "delta_tw_m": 1.2531423094718755e-06,
+      "delta_naive_m": 1.170677506775068e-06,
+      "shear_fraction_of_tw": 0.13496589181060611,
+      "naive_vs_tw": -0.06580641486086403,
+      "eb_vs_tw": -0.13496589181060611,
+      "levels": [
+        {
+          "tip_deflection_m": 1.2567180423948308e-06,
+          "nodes": 5220,
+          "dofs": 15660,
+          "cells": 720,
+          "mesh_area": 3.6e-05,
+          "mesh_inertia_y": 4.920000000000002e-10,
+          "removed_cells": 1280,
+          "force_residual": 1.0668976813121845e-11,
+          "moment_residual": 6.191991364090654e-12,
+          "seconds": 3.554,
+          "wall_cells": 1,
+          "mesh": {
+            "axial_cells": 20,
+            "wall_cells": 1,
+            "inner_cells": 8
+          },
+          "error_vs_eb": 0.1593223941092313,
+          "error_vs_tw": 0.0028534132922719197,
+          "error_vs_naive": 0.07349636011781215,
+          "shear_recovery": 1.021141736286054
+        }
+      ],
+      "finest_error_vs_eb": 0.1593223941092313,
+      "finest_error_vs_tw": 0.0028534132922719197,
+      "finest_error_vs_naive": 0.07349636011781215,
+      "finest_shear_recovery": 1.021141736286054,
+      "wall_refinement_delta": 0.0
+    },
+    {
+      "slenderness_L_over_h": 10.0,
+      "length_m": 0.1,
+      "t_over_h": 0.1,
+      "shear_area_m2": 1.5372656607224502e-05,
+      "shear_area_over_gross": 0.42701823908956943,
+      "web_only_shear_area_over_gross": 0.5,
+      "kappa_effective": 2.34182034503272,
+      "q0_over_V": 61.7378048780488,
+      "delta_eb_m": 1.6937669376693767e-05,
+      "delta_shear_m": 4.228286734086855e-07,
+      "delta_tw_m": 1.736049805010245e-05,
+      "delta_naive_m": 1.7154336043360434e-05,
+      "shear_fraction_of_tw": 0.024355791647705072,
+      "naive_vs_tw": -0.011875350934462424,
+      "eb_vs_tw": -0.024355791647705023,
+      "levels": [
+        {
+          "tip_deflection_m": 1.7264180095809186e-05,
+          "nodes": 12780,
+          "dofs": 38340,
+          "cells": 1800,
+          "mesh_area": 3.5999999999999994e-05,
+          "mesh_inertia_y": 4.920000000000002e-10,
+          "removed_cells": 3200,
+          "force_residual": 6.263030982722739e-10,
+          "moment_residual": 4.742777282018551e-10,
+          "seconds": 10.72,
+          "wall_cells": 1,
+          "mesh": {
+            "axial_cells": 50,
+            "wall_cells": 1,
+            "inner_cells": 8
+          },
+          "error_vs_eb": 0.01927719285657434,
+          "error_vs_tw": -0.005548110083898037,
+          "error_vs_naive": 0.0064032820723053645,
+          "shear_recovery": 0.7722057174675815
+        }
+      ],
+      "finest_error_vs_eb": 0.01927719285657434,
+      "finest_error_vs_tw": -0.005548110083898037,
+      "finest_error_vs_naive": 0.0064032820723053645,
+      "finest_shear_recovery": 0.7722057174675815,
+      "wall_refinement_delta": 0.0
+    },
+    {
+      "slenderness_L_over_h": 20.0,
+      "length_m": 0.2,
+      "t_over_h": 0.1,
+      "shear_area_m2": 1.5372656607224502e-05,
+      "shear_area_over_gross": 0.42701823908956943,
+      "web_only_shear_area_over_gross": 0.5,
+      "kappa_effective": 2.34182034503272,
+      "q0_over_V": 61.7378048780488,
+      "delta_eb_m": 0.00013550135501355014,
+      "delta_shear_m": 8.45657346817371e-07,
+      "delta_tw_m": 0.00013634701236036752,
+      "delta_naive_m": 0.00013593468834688347,
+      "shear_fraction_of_tw": 0.006202243321491226,
+      "naive_vs_tw": -0.0030240780956334304,
+      "eb_vs_tw": -0.006202243321491312,
+      "levels": [
+        {
+          "tip_deflection_m": 0.00013592601735216666,
+          "nodes": 25380,
+          "dofs": 76140,
+          "cells": 3600,
+          "mesh_area": 3.6e-05,
+          "mesh_inertia_y": 4.920000000000002e-10,
+          "removed_cells": 6400,
+          "force_residual": 5.475710196378713e-09,
+          "moment_residual": 3.5399451148165895e-09,
+          "seconds": 22.675,
+          "wall_cells": 1,
+          "mesh": {
+            "axial_cells": 100,
+            "wall_cells": 1,
+            "inner_cells": 8
+          },
+          "error_vs_eb": 0.003134008058989946,
+          "error_vs_tw": -0.003087673143054737,
+          "error_vs_naive": -6.378794715506323e-05,
+          "shear_recovery": 0.5021683311978941
+        }
+      ],
+      "finest_error_vs_eb": 0.003134008058989946,
+      "finest_error_vs_tw": -0.003087673143054737,
+      "finest_error_vs_naive": -6.378794715506323e-05,
+      "finest_shear_recovery": 0.5021683311978941,
+      "wall_refinement_delta": 0.0
+    }
+  ],
+  "thickness_study": [
+    {
+      "slenderness_L_over_h": 4.0,
+      "length_m": 0.04,
+      "t_over_h": 0.2,
+      "shear_area_m2": 3.0104166666666672e-05,
+      "shear_area_over_gross": 0.4703776041666667,
+      "web_only_shear_area_over_gross": 0.4999999999999999,
+      "kappa_effective": 2.1259515570934258,
+      "q0_over_V": 66.17647058823529,
+      "delta_eb_m": 7.35294117647059e-07,
+      "delta_shear_m": 8.636678200692042e-08,
+      "delta_tw_m": 8.216608996539794e-07,
+      "delta_naive_m": 7.840441176470589e-07,
+      "shear_fraction_of_tw": 0.10511243998989302,
+      "naive_vs_tw": -0.045781394761222956,
+      "eb_vs_tw": -0.10511243998989299,
+      "levels": [
+        {
+          "tip_deflection_m": 8.040569093567386e-07,
+          "nodes": 4060,
+          "dofs": 12180,
+          "cells": 560,
+          "mesh_area": 6.399999999999998e-05,
+          "mesh_inertia_y": 7.253333333333332e-10,
+          "removed_cells": 720,
+          "force_residual": 1.3560708111981512e-12,
+          "moment_residual": 1.2015388684005757e-12,
+          "seconds": 2.921,
+          "wall_cells": 1,
+          "mesh": {
+            "axial_cells": 20,
+            "wall_cells": 1,
+            "inner_cells": 6
+          },
+          "error_vs_eb": 0.09351739672516433,
+          "error_vs_tw": -0.0214248850160135,
+          "error_vs_naive": 0.025525083677355728,
+          "shear_recovery": 0.7961717469590317
+        }
+      ],
+      "finest_error_vs_eb": 0.09351739672516433,
+      "finest_error_vs_tw": -0.0214248850160135,
+      "finest_error_vs_naive": 0.025525083677355728,
+      "finest_shear_recovery": 0.7961717469590317
+    },
+    {
+      "slenderness_L_over_h": 4.0,
+      "length_m": 0.04,
+      "t_over_h": 0.1,
+      "shear_area_m2": 1.5372656607224502e-05,
+      "shear_area_over_gross": 0.42701823908956943,
+      "web_only_shear_area_over_gross": 0.5,
+      "kappa_effective": 2.34182034503272,
+      "q0_over_V": 61.7378048780488,
+      "delta_eb_m": 1.0840108401084012e-06,
+      "delta_shear_m": 1.6913146936347421e-07,
+      "delta_tw_m": 1.2531423094718755e-06,
+      "delta_naive_m": 1.170677506775068e-06,
+      "shear_fraction_of_tw": 0.13496589181060611,
+      "naive_vs_tw": -0.06580641486086403,
+      "eb_vs_tw": -0.13496589181060611,
+      "levels": [
+        {
+          "tip_deflection_m": 1.2567180423948308e-06,
+          "nodes": 5220,
+          "dofs": 15660,
+          "cells": 720,
+          "mesh_area": 3.6e-05,
+          "mesh_inertia_y": 4.920000000000002e-10,
+          "removed_cells": 1280,
+          "force_residual": 1.0668976813121845e-11,
+          "moment_residual": 6.191991364090654e-12,
+          "seconds": 4.891,
+          "wall_cells": 1,
+          "mesh": {
+            "axial_cells": 20,
+            "wall_cells": 1,
+            "inner_cells": 8
+          },
+          "error_vs_eb": 0.1593223941092313,
+          "error_vs_tw": 0.0028534132922719197,
+          "error_vs_naive": 0.07349636011781215,
+          "shear_recovery": 1.021141736286054
+        }
+      ],
+      "finest_error_vs_eb": 0.1593223941092313,
+      "finest_error_vs_tw": 0.0028534132922719197,
+      "finest_error_vs_naive": 0.07349636011781215,
+      "finest_shear_recovery": 1.021141736286054
+    },
+    {
+      "slenderness_L_over_h": 4.0,
+      "length_m": 0.04,
+      "t_over_h": 0.05,
+      "shear_area_m2": 7.960587063225926e-06,
+      "shear_area_over_gross": 0.41897826648557535,
+      "web_only_shear_area_over_gross": 0.5000000000000003,
+      "kappa_effective": 2.3867586459509784,
+      "q0_over_V": 59.04696132596688,
+      "delta_eb_m": 1.861006106426288e-06,
+      "delta_shear_m": 3.266090778669762e-07,
+      "delta_tw_m": 2.187615184293264e-06,
+      "delta_naive_m": 2.0252166327420774e-06,
+      "shear_fraction_of_tw": 0.14929914557732935,
+      "naive_vs_tw": -0.07423542893520896,
+      "eb_vs_tw": -0.1492991455773293,
+      "levels": [
+        {
+          "tip_deflection_m": 2.3955294717219444e-06,
+          "nodes": 5800,
+          "dofs": 17400,
+          "cells": 800,
+          "mesh_area": 1.9000000000000004e-05,
+          "mesh_inertia_y": 2.865833333333335e-10,
+          "removed_cells": 1620,
+          "force_residual": 9.552714175242727e-12,
+          "moment_residual": 4.848621504294215e-12,
+          "seconds": 5.336,
+          "wall_cells": 1,
+          "mesh": {
+            "axial_cells": 20,
+            "wall_cells": 1,
+            "inner_cells": 9
+          },
+          "error_vs_eb": 0.2872227895705877,
+          "error_vs_tw": 0.09504152692003263,
+          "error_vs_naive": 0.18285097652910123,
+          "shear_recovery": 1.6365845333709965
+        }
+      ],
+      "finest_error_vs_eb": 0.2872227895705877,
+      "finest_error_vs_tw": 0.09504152692003263,
+      "finest_error_vs_naive": 0.18285097652910123,
+      "finest_shear_recovery": 1.6365845333709965
+    }
+  ],
+  "axial_refinement": {
+    "levels": [
+      {
+        "tip_deflection_m": 1.7245906198472362e-05,
+        "nodes": 13520,
+        "dofs": 40560,
+        "cells": 2400,
+        "mesh_area": 3.6e-05,
+        "mesh_inertia_y": 4.920000000000002e-10,
+        "removed_cells": 1920,
+        "force_residual": 1.3137029242216158e-09,
+        "moment_residual": 9.364471420525433e-10,
+        "seconds": 26.253,
+        "axial_density": 3.0
+      },
+      {
+        "tip_deflection_m": 1.7262982297113555e-05,
+        "nodes": 22320,
+        "dofs": 66960,
+        "cells": 4000,
+        "mesh_area": 3.600000000000001e-05,
+        "mesh_inertia_y": 4.920000000000002e-10,
+        "removed_cells": 3200,
+        "force_residual": 5.800472990813432e-10,
+        "moment_residual": 3.962628003506552e-10,
+        "seconds": 45.373,
+        "axial_density": 5.0
+      }
+    ],
+    "relative_delta": 0.0009891743122535574
+  },
+  "seconds": 27.2,
+  "torch_threads": 6,
+  "gates": [
+    {
+      "gate": "oracle_energy_selfcheck_t0.20",
+      "value": 3.2551977365701094e-07,
+      "threshold": 0.0001,
+      "verdict": "PASS",
+      "note": "analytic A_s vs dU/dV of the same flow"
+    },
+    {
+      "gate": "oracle_energy_selfcheck_t0.10",
+      "value": 3.2552052467754273e-07,
+      "threshold": 0.0001,
+      "verdict": "PASS",
+      "note": "analytic A_s vs dU/dV of the same flow"
+    },
+    {
+      "gate": "oracle_energy_selfcheck_t0.05",
+      "value": 3.2551941673093874e-07,
+      "threshold": 0.0001,
+      "verdict": "PASS",
+      "note": "analytic A_s vs dU/dV of the same flow"
+    },
+    {
+      "gate": "mesh_geometry_matches_closed_form",
+      "value": 1.1102230246251565e-15,
+      "threshold": 1e-09,
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "gate": "force_equilibrium",
+      "value": 5.475710196378713e-09,
+      "threshold": 1e-06,
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "gate": "moment_equilibrium",
+      "value": 3.5399451148165895e-09,
+      "threshold": 1e-06,
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "gate": "anchor_rung_fem_vs_thin_wall_within_tolerance",
+      "value": 0.0028534132922719197,
+      "threshold": 0.03,
+      "verdict": "PASS",
+      "note": "L/H = 4, t/H = 0.1, case-pool tolerance"
+    },
+    {
+      "gate": "anchor_rung_naive_kappa_outside_tolerance",
+      "value": 0.07349636011781215,
+      "threshold": 0.03,
+      "verdict": "PASS",
+      "note": "the kappa*A shortcut must FAIL the tolerance here (predicted)"
+    },
+    {
+      "gate": "slender_rungs_within_tolerance",
+      "value": 0.005548110083898037,
+      "threshold": 0.03,
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "gate": "fem_not_softer_than_thin_wall_by_more_than_6pct",
+      "value": -0.005548110083898037,
+      "threshold": -0.06,
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "gate": "axial_refinement_stability",
+      "value": 0.0009891743122535574,
+      "threshold": 0.01,
+      "verdict": "PASS",
+      "note": ""
+    },
+    {
+      "gate": "shear_recovery_in_band",
+      "value": 0.7961717469590317,
+      "threshold": 0.5,
+      "verdict": "FAIL",
+      "note": "band [0.5, 1.5] on the 4 rungs whose shear share >= 5 %; min 0.796 max 1.637"
+    },
+    {
+      "gate": "thin_wall_residual_shrinks_with_thickness",
+      "value": 0.09504152692003263,
+      "threshold": -0.0214248850160135,
+      "verdict": "FAIL",
+      "note": "t/H residuals ['-0.0214', '0.0029', '0.0950'] (P6, fragile)"
+    },
+    {
+      "gate": "effective_shear_area_below_web_only",
+      "value": 0.05924479166666641,
+      "threshold": 0.0,
+      "verdict": "PASS",
+      "note": "shear lag: flange flows add energy without carrying net shear"
+    },
+    {
+      "gate": "effective_shear_area_ratio_trend",
+      "value": 0.41897826648557535,
+      "threshold": 0.0,
+      "verdict": "PASS",
+      "note": "A_s/A over t/H = ['0.4704', '0.4270', '0.4190']"
+    }
+  ],
+  "figures": [
+    {
+      "name": "slenderness_error.png",
+      "caption": "HEX20 tip deflection vs the three oracles over the slenderness ladder"
+    },
+    {
+      "name": "shear_area_ratio.png",
+      "caption": "effective shear area of the closed ring as a fraction of the gross area"
+    },
+    {
+      "name": "thickness_errors.png",
+      "caption": "thick-rung error of the solid against both shear models vs wall thickness"
+    }
+  ]
+}
