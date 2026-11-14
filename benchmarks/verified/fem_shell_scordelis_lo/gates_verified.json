@@ -20,7 +20,7 @@
       "passed": false,
       "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.4940176798061499,
+      "actual": 0.4940176798061571,
       "detail": "finest level 32x32 rel. error 4.9402e-01"
     },
     {
@@ -30,7 +30,7 @@
       "passed": false,
       "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.5318762842904944,
+      "actual": 0.5318762842905188,
       "detail": "extrapolated -0.463239388369 vs Scordelis & Lo (1960) -0.3024: rel. error 5.3188e-01 (order p=1.166)"
     },
     {
@@ -50,7 +50,7 @@
       "passed": true,
       "operator": ">=",
       "threshold": 1.0,
-      "actual": 1.1664950989284393,
+      "actual": 1.1664950989281508,
       "detail": "4x4->16x16: n/a (non-monotone convergence: |df| = 0.0872808 then 0.031985), 8x8->32x32: p=1.166"
     },
     {
@@ -60,7 +60,7 @@
       "passed": false,
       "operator": "<=",
       "threshold": 1.0,
-      "actual": 15.596373037414311,
+      "actual": 15.596373037407465,
       "detail": "finest-mesh true error 4.940e-01 vs GCI band 3.168e-02 -> outside the band; ladder pre-asymptotic -> accuracy not certifiable from these levels"
     },
     {
@@ -80,7 +80,7 @@
       "passed": false,
       "operator": "<=",
       "threshold": 0.03,
-      "actual": 0.5447303888397178,
+      "actual": 0.5447303888397184,
       "detail": "finest level 32x32 rel. error 5.4473e-01"
     },
     {
@@ -110,7 +110,7 @@
       "passed": false,
       "operator": ">=",
       "threshold": 1.0,
-      "actual": -1.1820596398784957,
+      "actual": -1.1820596398784902,
       "detail": "4x4->16x16: p=-1.002, 8x8->32x32: p=-1.182"
     },
     {
@@ -166,13 +166,20 @@
   "passed": false,
   "reported_vs_certified": {
     "flat_facet": {
-      "reported_finest_error": 0.4940176798061499,
-      "certified_error": 0.5318762842904944
+      "reported_finest_error": 0.4940176798061571,
+      "certified_error": 0.5318762842905188
     },
     "cylindrical": {
-      "reported_finest_error": 0.5447303888397178,
+      "reported_finest_error": 0.5447303888397184,
       "certified_error": null
     }
+  },
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "fig_convergence": "scordelis_lo_convergence.png",
+    "shear_treatment_study": "shear_treatment_study.json",
+    "reaction_residual_study": "reaction_residual_study.json"
   },
   "limitations": [
     "Flat facet Shell4 with the default one-point transverse-shear rule is rank deficient (3 spurious zero-energy modes per element) and its ladder plateaus ~50% above the reference; with assumed natural shear the same facets reach 2.35% at 16x16",
