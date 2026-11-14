@@ -129,4 +129,4 @@ Euler-Bernoulli frame and a Timoshenko beam at `L/h = 100, 20, 10, 5`.
 15/15 gates. Report: `docs/CASE-CANTILEVER-TIP-distributed-load.md`; tests:
 `tests/test_cantilever_distributed_load.py`. Reproduce:
 `PYTHONPATH=src python benchmarks/verified/fem_cantilever_distributed/run.py`.
-
+| `fem_shell4_formulation_matrix/` | flat-facet Shell4 formulation matrix: rank census, Scordelis-Lo roof, pressurised cylinder | rigid/zero-energy census (7 modes incl. drilling gauge), Scordelis & Lo `w_c = -0.3024 m`, exact thin-cylinder `pR^2/(Et)`; 17 gates incl. 4 negative controls |

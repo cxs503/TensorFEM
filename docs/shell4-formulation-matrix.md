@@ -3,7 +3,7 @@
 Status: **rank accounting corrected, membrane consequence measured, one open
 item dissolved** · anchor proposal `GAP-FEM-SHELL4-INPLANE-RANK` ·
 study `benchmarks/verified/fem_shell4_formulation_matrix/study.py` ·
-data `benchmarks/verified/fem_shell4_formulation_matrix/results.json`
+data `benchmarks/verified/fem_shell4_formulation_matrix/result.json`
 (schema `fem-shell4-formulation-matrix/1`) ·
 figure `benchmarks/verified/fem_shell4_formulation_matrix/formulation_matrix.png` ·
 library `src/tensorfem/shell4_rank.py` (`facet_rank_accounting`,
@@ -109,7 +109,7 @@ transverse-shear block is rank sufficient.
 | 16 | −0.437542 (**+44.69 %**) | −0.295310 (**−2.34 %**) | −0.457580 (+51.32 %) | −0.305232 (**+0.94 %**) |
 | 24 | −0.447801 (+48.08 %) | −0.300713 (−0.56 %) | — | — |
 
-(8×8 and 16×16 rows are produced by `study.py` into `results.json`; the 24×24
+(8×8 and 16×16 rows are produced by `study.py` into `result.json`; the 24×24
 rows are the same ladder re-run during this study and reproduce the merged
 report to the printed digits.)
 
