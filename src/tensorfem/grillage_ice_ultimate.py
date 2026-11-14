@@ -93,6 +93,7 @@ __all__ = [
     "frame_plastic_collapse_force",
     "johnson_ostenfeld",
     "stiffener_axial_capacity",
+    "system_load_shares",
     "grillage_utilisations",
     "ultimate_ice_pressure",
     "panel_stress_ultimate_map",
@@ -446,9 +447,11 @@ def plate_patch_response(*, span_x: float, span_y: float, d1: float, d2: float,
 
     ``patch = (fx1, fx2, fy1, fy2)`` are fractional extents of the plate spans.
     Returns sampled peak deflection/moments plus the **modal load share**:
-    ``load_share_x`` is the fraction of the applied load resisted by the
-    ``Dx m^4/a^4`` bending stiffness, ``load_share_y`` by ``Dy n^4/b^4`` and
-    ``load_share_torsion`` by the coupling/torsion term.  The three sum to 1 by
+    ``load_share_x`` is the fraction of the patch work stored in the
+    ``Dx m^4/a^4`` bending term, ``load_share_y`` in ``Dy n^4/b^4`` and
+    ``load_share_torsion`` in the coupling/torsion term.  The shares are
+    positive and sum to one for any patch; they are converged with ``terms`` for
+    the centred patches used here (see ``grillage_plastic_verification``).  The three sum to 1 by
     construction; for the isotropic square plate under a uniform load
     ``load_share_x == load_share_y`` (T3) and ``Dx >> Dy`` drives it to 1 (T4).
     """
@@ -491,14 +494,19 @@ def plate_patch_response(*, span_x: float, span_y: float, d1: float, d2: float,
     k_sum = kx + ky + kt
     amp = q_mn / (math.pi ** 4 * k_sum)
 
-    # generalised force of each mode, normalised so that sum(weight) = total force
-    weight = pressure * load_area * cx * cy / (m * n * math.pi ** 2)
-    total_weight = float(np.sum(weight))
-    if abs(total_weight) < 1e-30:
-        total_weight = pressure * load_area
-    f_x = float(np.sum(weight * (kx / k_sum))) / total_weight
-    f_y = float(np.sum(weight * (ky / k_sum))) / total_weight
-    f_t = float(np.sum(weight * (kt / k_sum))) / total_weight
+    # Load share = share of the patch work stored in the Dx, Dy and D3 terms of
+    # the orthotropic plate strain energy.  The modal weight q_mn^2 / k_sum is
+    # positive by construction and the three shares sum to one exactly.  (A
+    # generalised-force weighting was tried first and is not usable: for a small
+    # patch it returns negative, mode-count dependent values -- see the
+    # verification note in ``grillage_plastic_collapse``.)
+    w_modal = q_mn ** 2 / k_sum
+    w_total = float(np.sum(w_modal))
+    if w_total <= 0.0:  # pragma: no cover - defensive
+        w_total = 1.0
+    f_x = float(np.sum(w_modal * (kx / k_sum))) / w_total
+    f_y = float(np.sum(w_modal * (ky / k_sum))) / w_total
+    f_t = float(np.sum(w_modal * (kt / k_sum))) / w_total
 
     xs = np.linspace(0.0, span_x, sample)
     ys = np.linspace(0.0, span_y, sample)
@@ -627,7 +635,7 @@ def stiffener_axial_capacity(geom: "GrillageGeometry") -> dict[str, float]:
     }
 
 
-def _system_shares(resp: Mapping[str, float]) -> tuple[float, float]:
+def system_load_shares(resp: Mapping[str, float]) -> tuple[float, float]:
     """Renormalise the modal partition onto the two member systems.
 
     The torsion term of the orthotropic-plate partition is not a member system,
@@ -641,6 +649,9 @@ def _system_shares(resp: Mapping[str, float]) -> tuple[float, float]:
     if total <= 1e-12:
         return 0.5, 0.5
     return fx / total, fy / total
+
+
+_system_shares = system_load_shares  # backwards-compatible private alias
 
 
 def grillage_utilisations(geom: "GrillageGeometry", case: "CombinedLoadCase",
@@ -692,7 +703,7 @@ def grillage_utilisations(geom: "GrillageGeometry", case: "CombinedLoadCase",
         patch_resp = plate_patch_response(
             span_x=span_x, span_y=span_y, d1=dx, d2=dy, d3=d3, pressure=p_ice,
             patch=patch, terms=terms, poisson=geom.poisson)
-        f_x_ice, f_y_ice = _system_shares(patch_resp)
+        f_x_ice, f_y_ice = system_load_shares(patch_resp)
         force_ice = patch_resp["total_force"]
     else:
         patch_resp = None
@@ -703,7 +714,7 @@ def grillage_utilisations(geom: "GrillageGeometry", case: "CombinedLoadCase",
             span_x=span_x, span_y=span_y, d1=dx, d2=dy, d3=d3,
             pressure=case.hydrostatic_pressure, patch=(0.0, 1.0, 0.0, 1.0),
             terms=terms, poisson=geom.poisson)
-        f_x_h, f_y_h = _system_shares(hydro_resp)
+        f_x_h, f_y_h = system_load_shares(hydro_resp)
         force_h = case.hydrostatic_pressure * geom.panel_area
     else:
         hydro_resp = None
