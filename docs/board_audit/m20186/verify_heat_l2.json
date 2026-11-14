@@ -1,0 +1,127 @@
+{
+  "reproduced_levels": [
+    {
+      "mesh": "4x4",
+      "n_dof": 9,
+      "h": 0.25,
+      "l2_relative_all_nodes": 0.022854545057535813,
+      "l2_relative_free_dofs": 0.05108048343275051,
+      "max_relative": 0.1043795658480713,
+      "solve_residual": 1.5184386243409409e-16
+    },
+    {
+      "mesh": "8x8",
+      "n_dof": 49,
+      "h": 0.125,
+      "l2_relative_all_nodes": 0.006517039762874083,
+      "l2_relative_free_dofs": 0.009731903998010178,
+      "max_relative": 0.027249134831472094,
+      "solve_residual": 3.3306690738754696e-16
+    },
+    {
+      "mesh": "16x16",
+      "n_dof": 225,
+      "h": 0.0625,
+      "l2_relative_all_nodes": 0.0017658990279668127,
+      "l2_relative_free_dofs": 0.002157654669901095,
+      "max_relative": 0.006891251522687946,
+      "solve_residual": 8.881784197001252e-16
+    },
+    {
+      "mesh": "32x32",
+      "n_dof": 961,
+      "h": 0.03125,
+      "l2_relative_all_nodes": 0.0004617907747467307,
+      "l2_relative_free_dofs": 0.0005104417659096389,
+      "max_relative": 0.0017278573906382674,
+      "solve_residual": 1.3322676295501878e-15
+    },
+    {
+      "mesh": "64x64",
+      "n_dof": 3969,
+      "h": 0.015625,
+      "l2_relative_all_nodes": 0.00011822295472039997,
+      "l2_relative_free_dofs": 0.0001242943542379866,
+      "max_relative": 0.0004322813446067831,
+      "solve_residual": 1.2212453270876722e-15
+    }
+  ],
+  "declared_vs_reproduced": [
+    {
+      "mesh": "4x4",
+      "declared_l2_relative": 0.022854545057535813,
+      "reproduced_l2_relative": 0.022854545057535813,
+      "abs_diff": 0.0,
+      "rel_diff": 0.0,
+      "declared_n_dof": 9,
+      "reproduced_n_dof": 9
+    },
+    {
+      "mesh": "8x8",
+      "declared_l2_relative": 0.006517039762874083,
+      "reproduced_l2_relative": 0.006517039762874083,
+      "abs_diff": 0.0,
+      "rel_diff": 0.0,
+      "declared_n_dof": 49,
+      "reproduced_n_dof": 49
+    },
+    {
+      "mesh": "16x16",
+      "declared_l2_relative": 0.0017658990279668127,
+      "reproduced_l2_relative": 0.0017658990279668127,
+      "abs_diff": 0.0,
+      "rel_diff": 0.0,
+      "declared_n_dof": 225,
+      "reproduced_n_dof": 225
+    },
+    {
+      "mesh": "32x32",
+      "declared_l2_relative": 0.00046179077474673065,
+      "reproduced_l2_relative": 0.0004617907747467307,
+      "abs_diff": 5.421010862427522e-20,
+      "rel_diff": 1.173910601700668e-16,
+      "declared_n_dof": 961,
+      "reproduced_n_dof": 961
+    }
+  ],
+  "extended_ladder": [],
+  "free_dof_l2": [],
+  "orders": {
+    "ladder": [
+      "4x4",
+      "8x8",
+      "16x16",
+      "32x32",
+      "64x64"
+    ],
+    "observed_order_all_nodes": [
+      1.8101923984364712,
+      1.883813943662095,
+      1.9350915961265118,
+      1.9657291693838306
+    ],
+    "observed_order_free_dofs": [
+      2.391978185217013,
+      2.173258106987961,
+      2.0796456968779786,
+      2.037985612618834
+    ],
+    "declared_orders_all_nodes": [
+      1.8101923984364712,
+      1.883813943662095,
+      1.9350915961265123
+    ],
+    "declared_mean_order": 1.8763659794083596,
+    "reproduced_mean_order_first_three": 1.8763659794083594,
+    "asymptotic_order_finest_pair_64_128": 1.9657291693838306,
+    "count_pairs_below_2": 4,
+    "count_pairs_free_dofs_below_2": 0
+  },
+  "claim_check": {
+    "anchor_claim": "L2 convergence rate >= 2nd order",
+    "declared_gate_threshold": 1.8,
+    "mean_order_1p876_lt_2": true,
+    "all_pairs_below_2_in_declared_ladder": true,
+    "asymptotic_recovery_to_2_on_finer_ladder": true
+  }
+}
