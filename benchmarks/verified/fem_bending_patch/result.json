@@ -1,7 +1,7 @@
 {
   "anchor": "CASE-BENDING-PATCH",
-  "generated_at": "2026-11-11T23:49:49+00:00",
-  "wall_seconds": 74.35,
+  "generated_at": "2026-11-14T06:08:30+00:00",
+  "wall_seconds": 66.85,
   "material": {
     "young": 210000.0,
     "poisson": 0.3,
@@ -50,7 +50,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "cylindrical/affine/sri",
       "state_name": "cylindrical",
-      "wall_seconds": 0.128
+      "wall_seconds": 0.096
     },
     {
       "family": "affine",
@@ -69,17 +69,17 @@
         5.769230769230769,
         0.0
       ],
-      "displacement_rel_error": 2.4394548880923845e-16,
-      "rotation_rel_error": 2.4394548880923845e-16,
+      "displacement_rel_error": 4.878909776184769e-16,
+      "rotation_rel_error": 1.6263032587282564e-16,
       "moment_rel_error": 3.6948222259525213e-16,
-      "energy_rel_error": 1.8041124150158794e-16,
-      "strain_energy": 0.009615384615384618,
+      "energy_rel_error": 5.412337245047638e-16,
+      "strain_energy": 0.009615384615384621,
       "strain_energy_exact": 0.009615384615384616,
-      "equilibrium_residual": 7.105427357601002e-15,
+      "equilibrium_residual": 1.0658141036401503e-14,
       "min_jacobian": 0.027777777777777755,
       "case": "cylindrical/affine/mitc",
       "state_name": "cylindrical",
-      "wall_seconds": 0.179
+      "wall_seconds": 0.16
     },
     {
       "family": "affine",
@@ -108,7 +108,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "cylindrical/affine/full",
       "state_name": "cylindrical",
-      "wall_seconds": 0.139
+      "wall_seconds": 0.099
     },
     {
       "family": "skew",
@@ -137,7 +137,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "cylindrical/skew/sri",
       "state_name": "cylindrical",
-      "wall_seconds": 0.112
+      "wall_seconds": 0.097
     },
     {
       "family": "skew",
@@ -156,17 +156,17 @@
         5.769230769230769,
         0.0
       ],
-      "displacement_rel_error": 1.3385212005993877e-16,
-      "rotation_rel_error": 3.6140072416183473e-16,
-      "moment_rel_error": 7.389644451905043e-16,
-      "energy_rel_error": 0.003969907407407478,
-      "strain_energy": 0.009653556801994301,
+      "displacement_rel_error": 2.0077818008990817e-16,
+      "rotation_rel_error": 2.409338161078898e-16,
+      "moment_rel_error": 3.6948222259525213e-16,
+      "energy_rel_error": 7.2164496600635185e-16,
+      "strain_energy": 0.009615384615384607,
       "strain_energy_exact": 0.009615384615384614,
       "equilibrium_residual": 7.105427357601002e-15,
       "min_jacobian": 0.027777777777777762,
       "case": "cylindrical/skew/mitc",
       "state_name": "cylindrical",
-      "wall_seconds": 0.148
+      "wall_seconds": 0.156
     },
     {
       "family": "skew",
@@ -195,7 +195,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "cylindrical/skew/full",
       "state_name": "cylindrical",
-      "wall_seconds": 0.104
+      "wall_seconds": 0.097
     },
     {
       "family": "distorted",
@@ -224,7 +224,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "cylindrical/distorted/sri",
       "state_name": "cylindrical",
-      "wall_seconds": 0.219
+      "wall_seconds": 0.176
     },
     {
       "family": "distorted",
@@ -243,17 +243,17 @@
         5.769230769230769,
         0.0
       ],
-      "displacement_rel_error": 0.009117594170790715,
-      "rotation_rel_error": 0.0006505043625942617,
-      "moment_rel_error": 0.0025042154283376095,
-      "energy_rel_error": 0.0016500842193053616,
-      "strain_energy": 0.009631250809801014,
+      "displacement_rel_error": 3.6343970173563194e-16,
+      "rotation_rel_error": 2.807283791102196e-16,
+      "moment_rel_error": 9.237055564881303e-16,
+      "energy_rel_error": 1.8041124150158794e-16,
+      "strain_energy": 0.009615384615384618,
       "strain_energy_exact": 0.009615384615384616,
-      "equilibrium_residual": 1.7763568394002505e-14,
+      "equilibrium_residual": 1.4973666921027255e-14,
       "min_jacobian": 0.008988241118852087,
       "case": "cylindrical/distorted/mitc",
       "state_name": "cylindrical",
-      "wall_seconds": 0.306
+      "wall_seconds": 0.286
     },
     {
       "family": "distorted",
@@ -282,7 +282,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "cylindrical/distorted/full",
       "state_name": "cylindrical",
-      "wall_seconds": 0.221
+      "wall_seconds": 0.182
     },
     {
       "family": "affine",
@@ -311,7 +311,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "twist/affine/sri",
       "state_name": "twist",
-      "wall_seconds": 0.104
+      "wall_seconds": 0.094
     },
     {
       "family": "affine",
@@ -330,17 +330,17 @@
         0.0,
         6.730769230769231
       ],
-      "displacement_rel_error": 9.147955830346441e-17,
+      "displacement_rel_error": 4.878909776184769e-16,
       "rotation_rel_error": 1.6263032587282564e-16,
-      "moment_rel_error": 9.29316147844718e-16,
-      "energy_rel_error": 2.5773034500226845e-16,
-      "strain_energy": 0.0033653846153846147,
+      "moment_rel_error": 7.124757133476171e-16,
+      "energy_rel_error": 9.020562075079397e-16,
+      "strain_energy": 0.0033653846153846186,
       "strain_energy_exact": 0.0033653846153846156,
-      "equilibrium_residual": 4.440892098500626e-15,
+      "equilibrium_residual": 7.105427357601002e-15,
       "min_jacobian": 0.027777777777777755,
       "case": "twist/affine/mitc",
       "state_name": "twist",
-      "wall_seconds": 0.147
+      "wall_seconds": 0.158
     },
     {
       "family": "affine",
@@ -369,7 +369,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "twist/affine/full",
       "state_name": "twist",
-      "wall_seconds": 0.109
+      "wall_seconds": 0.097
     },
     {
       "family": "skew",
@@ -398,7 +398,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "twist/skew/sri",
       "state_name": "twist",
-      "wall_seconds": 0.099
+      "wall_seconds": 0.094
     },
     {
       "family": "skew",
@@ -417,17 +417,17 @@
         0.0,
         6.730769230769231
       ],
-      "displacement_rel_error": 1.8070036208091736e-16,
-      "rotation_rel_error": 2.409338161078898e-16,
-      "moment_rel_error": 6.427770022592633e-16,
-      "energy_rel_error": 6.443258625056712e-16,
-      "strain_energy": 0.003365384615384613,
+      "displacement_rel_error": 9.035018104045868e-17,
+      "rotation_rel_error": 4.818676322157796e-16,
+      "moment_rel_error": 6.195440985631453e-16,
+      "energy_rel_error": 3.8659551750340273e-16,
+      "strain_energy": 0.003365384615384614,
       "strain_energy_exact": 0.003365384615384615,
-      "equilibrium_residual": 2.1316282072803006e-14,
+      "equilibrium_residual": 7.105427357601002e-15,
       "min_jacobian": 0.027777777777777762,
       "case": "twist/skew/mitc",
       "state_name": "twist",
-      "wall_seconds": 0.143
+      "wall_seconds": 0.158
     },
     {
       "family": "skew",
@@ -485,7 +485,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "twist/distorted/sri",
       "state_name": "twist",
-      "wall_seconds": 0.225
+      "wall_seconds": 0.177
     },
     {
       "family": "distorted",
@@ -504,17 +504,17 @@
         0.0,
         6.730769230769231
       ],
-      "displacement_rel_error": 0.0036895976483017276,
-      "rotation_rel_error": 0.001141510914602261,
-      "moment_rel_error": 0.00258611175771969,
-      "energy_rel_error": 8.919161952257249e-05,
-      "strain_energy": 0.003365684779488778,
+      "displacement_rel_error": 3.8220416051331393e-16,
+      "rotation_rel_error": 5.283624661043213e-16,
+      "moment_rel_error": 1.8412076179173475e-15,
+      "energy_rel_error": 5.154606900045369e-16,
+      "strain_energy": 0.0033653846153846173,
       "strain_energy_exact": 0.0033653846153846156,
-      "equilibrium_residual": 8.881784197001252e-15,
+      "equilibrium_residual": 1.2760298661334551e-14,
       "min_jacobian": 0.008988241118852087,
       "case": "twist/distorted/mitc",
       "state_name": "twist",
-      "wall_seconds": 0.272
+      "wall_seconds": 0.285
     },
     {
       "family": "distorted",
@@ -543,7 +543,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "twist/distorted/full",
       "state_name": "twist",
-      "wall_seconds": 0.194
+      "wall_seconds": 0.18
     },
     {
       "family": "affine",
@@ -572,7 +572,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "double/affine/sri",
       "state_name": "double",
-      "wall_seconds": 0.115
+      "wall_seconds": 0.092
     },
     {
       "family": "affine",
@@ -591,17 +591,17 @@
         17.307692307692307,
         2.6923076923076925
       ],
-      "displacement_rel_error": 2.4394548880923845e-16,
-      "rotation_rel_error": 2.7105054312137606e-16,
-      "moment_rel_error": 3.1312052762309504e-16,
-      "energy_rel_error": 2.0316581250178822e-16,
-      "strain_energy": 0.017076923076923073,
+      "displacement_rel_error": 4.878909776184769e-16,
+      "rotation_rel_error": 2.0328790734103203e-16,
+      "moment_rel_error": 1.5656026381154752e-16,
+      "energy_rel_error": 4.0633162500357644e-16,
+      "strain_energy": 0.017076923076923083,
       "strain_energy_exact": 0.017076923076923076,
-      "equilibrium_residual": 7.105427357601002e-15,
+      "equilibrium_residual": 1.4210854715202004e-14,
       "min_jacobian": 0.027777777777777755,
       "case": "double/affine/mitc",
       "state_name": "double",
-      "wall_seconds": 0.205
+      "wall_seconds": 0.154
     },
     {
       "family": "affine",
@@ -630,7 +630,7 @@
       "min_jacobian": 0.027777777777777755,
       "case": "double/affine/full",
       "state_name": "double",
-      "wall_seconds": 0.104
+      "wall_seconds": 0.095
     },
     {
       "family": "skew",
@@ -659,7 +659,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "double/skew/sri",
       "state_name": "double",
-      "wall_seconds": 0.098
+      "wall_seconds": 0.093
     },
     {
       "family": "skew",
@@ -678,17 +678,17 @@
         17.307692307692307,
         2.6923076923076925
       ],
-      "displacement_rel_error": 2.470334063891022e-16,
-      "rotation_rel_error": 4.196911635427758e-16,
-      "moment_rel_error": 9.393615828692852e-16,
-      "energy_rel_error": 0.0022353082248912936,
-      "strain_energy": 0.017115095263532755,
+      "displacement_rel_error": 1.6468893759273478e-16,
+      "rotation_rel_error": 1.0492279088569395e-16,
+      "moment_rel_error": 2.1527036274087784e-16,
+      "energy_rel_error": 6.094974375053648e-16,
+      "strain_energy": 0.017076923076923062,
       "strain_energy_exact": 0.017076923076923073,
       "equilibrium_residual": 1.4210854715202004e-14,
       "min_jacobian": 0.027777777777777762,
       "case": "double/skew/mitc",
       "state_name": "double",
-      "wall_seconds": 0.145
+      "wall_seconds": 0.155
     },
     {
       "family": "skew",
@@ -717,7 +717,7 @@
       "min_jacobian": 0.027777777777777762,
       "case": "double/skew/full",
       "state_name": "double",
-      "wall_seconds": 0.101
+      "wall_seconds": 0.095
     },
     {
       "family": "distorted",
@@ -746,7 +746,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "double/distorted/sri",
       "state_name": "double",
-      "wall_seconds": 0.185
+      "wall_seconds": 0.172
     },
     {
       "family": "distorted",
@@ -765,17 +765,17 @@
         17.307692307692307,
         2.6923076923076925
       ],
-      "displacement_rel_error": 0.00608612669253207,
-      "rotation_rel_error": 0.000922968612444514,
-      "moment_rel_error": 0.003415769904779982,
-      "energy_rel_error": 0.0014396554777154219,
-      "strain_energy": 0.017101507962773294,
+      "displacement_rel_error": 3.910805510305846e-16,
+      "rotation_rel_error": 4.4363613725668996e-16,
+      "moment_rel_error": 9.393615828692852e-16,
+      "energy_rel_error": 6.094974375053647e-16,
+      "strain_energy": 0.017076923076923087,
       "strain_energy_exact": 0.017076923076923076,
-      "equilibrium_residual": 2.1316282072803006e-14,
+      "equilibrium_residual": 2.976290894297335e-14,
       "min_jacobian": 0.008988241118852087,
       "case": "double/distorted/mitc",
       "state_name": "double",
-      "wall_seconds": 0.3
+      "wall_seconds": 0.285
     },
     {
       "family": "distorted",
@@ -804,7 +804,7 @@
       "min_jacobian": 0.008988241118852087,
       "case": "double/distorted/full",
       "state_name": "double",
-      "wall_seconds": 0.195
+      "wall_seconds": 0.182
     }
   ],
   "ladder": [
@@ -853,13 +853,13 @@
         5.769230769230769,
         0.0
       ],
-      "displacement_rel_error": 0.009117594170790715,
-      "rotation_rel_error": 0.0006505043625942617,
-      "moment_rel_error": 0.0025042154283376095,
-      "energy_rel_error": 0.0016500842193053616,
-      "strain_energy": 0.009631250809801014,
+      "displacement_rel_error": 3.6343970173563194e-16,
+      "rotation_rel_error": 2.807283791102196e-16,
+      "moment_rel_error": 9.237055564881303e-16,
+      "energy_rel_error": 1.8041124150158794e-16,
+      "strain_energy": 0.009615384615384618,
       "strain_energy_exact": 0.009615384615384616,
-      "equilibrium_residual": 1.7763568394002505e-14,
+      "equilibrium_residual": 1.4973666921027255e-14,
       "min_jacobian": 0.008988241118852087,
       "h": 0.25,
       "case": "ladder/n=4/mitc"
@@ -909,13 +909,13 @@
         5.769230769230769,
         0.0
       ],
-      "displacement_rel_error": 0.0021087351549573963,
-      "rotation_rel_error": 0.00037831983216073643,
-      "moment_rel_error": 0.003548973983135369,
-      "energy_rel_error": 0.0006272493361109828,
-      "strain_energy": 0.009621415859001066,
+      "displacement_rel_error": 6.6429238540222475e-16,
+      "rotation_rel_error": 8.401325505361024e-16,
+      "moment_rel_error": 5.172751116333529e-15,
+      "energy_rel_error": 9.020562075079399e-16,
+      "strain_energy": 0.009615384615384606,
       "strain_energy_exact": 0.009615384615384614,
-      "equilibrium_residual": 1.5987211554602254e-14,
+      "equilibrium_residual": 3.552713678800501e-14,
       "min_jacobian": 0.0012277926000460434,
       "h": 0.125,
       "case": "ladder/n=8/mitc"
@@ -965,13 +965,13 @@
         5.769230769230769,
         0.0
       ],
-      "displacement_rel_error": 0.0006133136449427823,
-      "rotation_rel_error": 6.315916183790145e-05,
-      "moment_rel_error": 0.0005267782234113092,
-      "energy_rel_error": 0.0001210569163786618,
-      "strain_energy": 0.009616548624195947,
+      "displacement_rel_error": 8.328144434967171e-16,
+      "rotation_rel_error": 1.817189519963689e-15,
+      "moment_rel_error": 1.2931877790833824e-14,
+      "energy_rel_error": 1.0824674490095278e-15,
+      "strain_energy": 0.009615384615384604,
       "strain_energy_exact": 0.009615384615384614,
-      "equilibrium_residual": 4.973799150320701e-14,
+      "equilibrium_residual": 3.552713678800501e-14,
       "min_jacobian": 0.00036424225652045557,
       "h": 0.0625,
       "case": "ladder/n=16/mitc"
@@ -1021,13 +1021,13 @@
         5.769230769230769,
         0.0
       ],
-      "displacement_rel_error": 0.0001792074550546721,
-      "rotation_rel_error": 1.03602355396665e-05,
-      "moment_rel_error": 0.00018490243511512717,
-      "energy_rel_error": 3.281507212349319e-05,
-      "strain_energy": 0.009615700144924272,
+      "displacement_rel_error": 1.1351791874674717e-15,
+      "rotation_rel_error": 2.9953743795124477e-15,
+      "moment_rel_error": 4.267519670975162e-14,
+      "energy_rel_error": 2.525757381022229e-15,
+      "strain_energy": 0.009615384615384599,
       "strain_energy_exact": 0.009615384615384623,
-      "equilibrium_residual": 5.684341886080802e-14,
+      "equilibrium_residual": 3.907985046680551e-14,
       "min_jacobian": 6.50916543576307e-05,
       "h": 0.03125,
       "case": "ladder/n=32/mitc"
@@ -1069,14 +1069,14 @@
       "slenderness": 100.0,
       "rigidity_used": "D_cyl",
       "rigidity": 0.019230769230769235,
-      "w_tip": 25999.999999019954,
-      "theta_tip": -51999.99999868024,
+      "w_tip": 25999.99999840276,
+      "theta_tip": -51999.99999774466,
       "w_exact_kirchhoff": 25999.999999999993,
       "w_exact_mindlin": 26001.485714285707,
       "theta_exact": -51999.999999999985,
-      "w_rel_error_kirchhoff": 3.76937980315863e-11,
-      "w_rel_error_mindlin": 5.7139629714965186e-05,
-      "theta_rel_error": 2.5379659536366286e-11,
+      "w_rel_error_kirchhoff": 6.143202951464517e-11,
+      "w_rel_error_mindlin": 5.7139653451840275e-05,
+      "theta_rel_error": 4.3371703493623794e-11,
       "free_dofs": 28,
       "case": "strip/symmetry/n=4/mitc"
     },
@@ -1115,14 +1115,14 @@
       "slenderness": 100.0,
       "rigidity_used": "D_cyl",
       "rigidity": 0.019230769230769235,
-      "w_tip": 25999.999999791595,
-      "theta_tip": -51999.99999972057,
+      "w_tip": 26000.000000214848,
+      "theta_tip": -52000.0000002875,
       "w_exact_kirchhoff": 25999.999999999993,
       "w_exact_mindlin": 26001.485714285707,
       "theta_exact": -51999.999999999985,
-      "w_rel_error_kirchhoff": 8.015306845593913e-12,
-      "w_rel_error_mindlin": 5.7139600038169816e-05,
-      "theta_rel_error": 5.373434620336273e-12,
+      "w_rel_error_kirchhoff": 8.263668860308828e-12,
+      "w_rel_error_mindlin": 5.713958376012429e-05,
+      "theta_rel_error": 5.5291680977321604e-12,
       "free_dofs": 56,
       "case": "strip/symmetry/n=8/mitc"
     },
@@ -1161,14 +1161,14 @@
       "slenderness": 100.0,
       "rigidity_used": "D_cyl",
       "rigidity": 0.019230769230769235,
-      "w_tip": 25999.999996215556,
-      "theta_tip": -51999.99999465084,
+      "w_tip": 25999.999998759304,
+      "theta_tip": -51999.99999823553,
       "w_exact_kirchhoff": 25999.999999999993,
       "w_exact_mindlin": 26001.485714285707,
       "theta_exact": -51999.999999999985,
-      "w_rel_error_kirchhoff": 1.4555525222721585e-10,
-      "w_rel_error_mindlin": 5.713973757025622e-05,
-      "theta_rel_error": 1.0286818836063436e-10,
+      "w_rel_error_kirchhoff": 4.771880832357477e-11,
+      "w_rel_error_mindlin": 5.713963973940266e-05,
+      "theta_rel_error": 3.393184810052985e-11,
       "free_dofs": 112,
       "case": "strip/symmetry/n=16/mitc"
     },
@@ -1207,14 +1207,14 @@
       "slenderness": 100.0,
       "rigidity_used": "D_cyl",
       "rigidity": 0.019230769230769235,
-      "w_tip": 26000.00001115579,
-      "theta_tip": -52000.000015440426,
+      "w_tip": 26000.000006846425,
+      "theta_tip": -52000.000008911404,
       "w_exact_kirchhoff": 25999.999999999993,
       "w_exact_mindlin": 26001.485714285707,
       "theta_exact": -51999.999999999985,
-      "w_rel_error_kirchhoff": 4.290690972433928e-10,
-      "w_rel_error_mindlin": 5.713916297874055e-05,
-      "theta_rel_error": 2.969315503903021e-10,
+      "w_rel_error_kirchhoff": 2.6332432193717426e-10,
+      "w_rel_error_mindlin": 5.713932871404527e-05,
+      "theta_rel_error": 1.713734281320985e-10,
       "free_dofs": 224,
       "case": "strip/symmetry/n=32/mitc"
     },
@@ -1253,14 +1253,14 @@
       "slenderness": 100.0,
       "rigidity_used": "D_beam",
       "rigidity": 0.017500000000000005,
-      "w_tip": 28069.244483104005,
-      "theta_tip": -56371.481877586215,
+      "w_tip": 28069.24448248786,
+      "theta_tip": -56371.48187673469,
       "w_exact_kirchhoff": 28571.42857142856,
       "w_exact_mindlin": 28572.914285714276,
       "theta_exact": -57142.85714285712,
-      "w_rel_error_kirchhoff": 0.017576443091359494,
-      "w_rel_error_mindlin": 0.017627526459983583,
-      "theta_rel_error": 0.013499067142240896,
+      "w_rel_error_kirchhoff": 0.017576443112924615,
+      "w_rel_error_mindlin": 0.01762752648154758,
+      "theta_rel_error": 0.013499067157142622,
       "free_dofs": 36,
       "case": "strip/free/n=4/mitc"
     },
@@ -1299,14 +1299,14 @@
       "slenderness": 100.0,
       "rigidity_used": "D_beam",
       "rigidity": 0.017500000000000005,
-      "w_tip": 28165.68569911892,
-      "theta_tip": -56655.98970227423,
+      "w_tip": 28165.6856976107,
+      "theta_tip": -56655.98969998167,
       "w_exact_kirchhoff": 28571.42857142856,
       "w_exact_mindlin": 28572.914285714276,
       "theta_exact": -57142.85714285712,
-      "w_rel_error_kirchhoff": 0.01420100053083747,
-      "w_rel_error_mindlin": 0.014252259413347982,
-      "theta_rel_error": 0.008520180210200637,
+      "w_rel_error_kirchhoff": 0.014201000583625124,
+      "w_rel_error_mindlin": 0.014252259466132892,
+      "theta_rel_error": 0.00852018025032043,
       "free_dofs": 72,
       "case": "strip/free/n=8/mitc"
     },
@@ -1345,14 +1345,14 @@
       "slenderness": 100.0,
       "rigidity_used": "D_beam",
       "rigidity": 0.017500000000000005,
-      "w_tip": 28203.097178872486,
-      "theta_tip": -56701.01626408544,
+      "w_tip": 28203.09718311218,
+      "theta_tip": -56701.0162700973,
       "w_exact_kirchhoff": 28571.42857142856,
       "w_exact_mindlin": 28572.914285714276,
       "theta_exact": -57142.85714285712,
-      "w_rel_error_kirchhoff": 0.012891598739462665,
-      "w_rel_error_mindlin": 0.012942925707325892,
-      "theta_rel_error": 0.007732215378504464,
+      "w_rel_error_kirchhoff": 0.012891598591073403,
+      "w_rel_error_mindlin": 0.012942925558944345,
+      "theta_rel_error": 0.007732215273296881,
       "free_dofs": 144,
       "case": "strip/free/n=16/mitc"
     },
@@ -1391,14 +1391,14 @@
       "slenderness": 100.0,
       "rigidity_used": "D_beam",
       "rigidity": 0.017500000000000005,
-      "w_tip": 28214.11377639973,
-      "theta_tip": -56713.782486203534,
+      "w_tip": 28214.113767748368,
+      "theta_tip": -56713.782474303895,
       "w_exact_kirchhoff": 28571.42857142856,
       "w_exact_mindlin": 28572.914285714276,
       "theta_exact": -57142.85714285712,
-      "w_rel_error_kirchhoff": 0.01250601782600916,
-      "w_rel_error_mindlin": 0.012557364843037329,
-      "theta_rel_error": 0.007508806491437811,
+      "w_rel_error_kirchhoff": 0.012506018128806796,
+      "w_rel_error_mindlin": 0.012557365145819219,
+      "theta_rel_error": 0.007508806699681502,
       "free_dofs": 288,
       "case": "strip/free/n=32/mitc"
     },
@@ -1497,9 +1497,9 @@
   ],
   "orders": {
     "w_sri": 1.7173691653735683,
-    "w_mitc": 1.8788532865102572,
+    "w_mitc": -0.5255573049825766,
     "M_sri": 1.1511895023986738,
-    "M_mitc": 1.4030702028463193
+    "M_mitc": -1.7911390934473446
   },
   "strip_ratio": {
     "measured": 1.0989010989010988,
@@ -1533,7 +1533,7 @@
       "id": "affine_exact_rot",
       "quantity": "max rotation error, affine+skew patches",
       "reference": "constant-curvature closed form",
-      "value": 4.196911635427758e-16,
+      "value": 4.818676322157796e-16,
       "threshold": 1e-12,
       "operator": "<=",
       "passed": true
@@ -1542,7 +1542,7 @@
       "id": "affine_exact_moment",
       "quantity": "max moment error, affine+skew patches",
       "reference": "M = Db kappa",
-      "value": 9.393615828692852e-16,
+      "value": 7.124757133476171e-16,
       "threshold": 1e-12,
       "operator": "<=",
       "passed": true
@@ -1560,7 +1560,7 @@
       "id": "skew_energy_mitc",
       "quantity": "max strain-energy error, affine+skew patches (mitc)",
       "reference": "1/2 kappa^T Db kappa * Area (documented: MITC shear sampling on a skew element is not exactly shear-free)",
-      "value": 0.003969907407407478,
+      "value": 9.020562075079397e-16,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
@@ -1587,7 +1587,7 @@
       "id": "distorted_energy",
       "quantity": "max energy error, distorted patch",
       "reference": "1/2 kappa^T Db kappa * Area",
-      "value": 0.0016500842193053616,
+      "value": 0.0015513928219136211,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
@@ -1614,7 +1614,7 @@
       "id": "strip_free_w",
       "quantity": "tip deflection error, free edges (load-driven)",
       "reference": "M L^2/(2 D_b), D_b = E t^3/12",
-      "value": 0.017576443091359494,
+      "value": 0.017576443112924615,
       "threshold": 0.02,
       "operator": "<=",
       "passed": true
@@ -1630,7 +1630,7 @@
     },
     {
       "id": "order_w_min",
-      "quantity": "observed order of the distorted patch, w",
+      "quantity": "observed order of the distorted patch, w (SRI)",
       "reference": "second-order consistency of the element",
       "value": 1.7173691653735683,
       "threshold": 1.5,
