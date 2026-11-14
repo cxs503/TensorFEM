@@ -1,0 +1,803 @@
+{
+  "schema": "tensorfem.hertz-independent-audit.v1",
+  "anchor": "CASE-FEM-HERTZ-CONTACT",
+  "generated_at": "2026-11-14T18:14:40+00:00",
+  "artifact": "benchmarks/verified/fem_hertz_contact_loadcontrol/result.json",
+  "graded_radius_estimator": "contact_radius_linear",
+  "oracle_source": "Hertz 1882 J. reine angew. Math. 92:156; Johnson 1985 Contact Mechanics 4.2 DOI:10.1017/cbo9781139171731 (formulas re-derived in this tool)",
+  "tolerance_pct": 3.0,
+  "params": {
+    "R": 10.0,
+    "E": 100000.0,
+    "nu": 0.3,
+    "units": "dimensionless: lengths/R, forces/(E R^2); SI equivalent R = 10 mm, E = 100 GPa"
+  },
+  "rows": [
+    {
+      "key": "ratio0.05_h0.0300_d96",
+      "a_over_R": 0.05,
+      "h_over_a": 0.03,
+      "n_elements": 5040,
+      "load": 1831.5018315018315,
+      "oracle": {
+        "equivalent_modulus": 109890.10989010989,
+        "contact_radius": 0.5,
+        "indentation": 0.025,
+        "peak_pressure": 3497.910837184513
+      },
+      "fe": {
+        "contact_radius_linear": 0.49575947515124347,
+        "indentation": 0.024751079464569708,
+        "peak_pressure_lumped": 4601.761582418708,
+        "peak_pressure_consistent": 3515.144854480887
+      },
+      "error_pct": {
+        "contact_radius": -0.8481049697513066,
+        "indentation": -0.995682141721177,
+        "peak_pressure_lumped": 31.557429466175012,
+        "peak_pressure_consistent": 0.4926945853841458
+      },
+      "wall_s": 8.76815676689148,
+      "penetration_over_delta": 3.6084649202672114e-08,
+      "load_residual": 3.4760887501761316e-15,
+      "equilibrium_residual_rel": 3.6781492887423646e-07
+    },
+    {
+      "key": "ratio0.05_h0.0150_d96",
+      "a_over_R": 0.05,
+      "h_over_a": 0.015,
+      "n_elements": 9040,
+      "load": 1831.5018315018315,
+      "oracle": {
+        "equivalent_modulus": 109890.10989010989,
+        "contact_radius": 0.5,
+        "indentation": 0.025,
+        "peak_pressure": 3497.910837184513
+      },
+      "fe": {
+        "contact_radius_linear": 0.49734211584660426,
+        "indentation": 0.024747318055551346,
+        "peak_pressure_lumped": 4609.231037331416,
+        "peak_pressure_consistent": 3518.47883788306
+      },
+      "error_pct": {
+        "contact_radius": -0.531576830679148,
+        "indentation": -1.0107277777946178,
+        "peak_pressure_lumped": 31.770969926763783,
+        "peak_pressure_consistent": 0.5880081470316156
+      },
+      "wall_s": 22.692927360534668,
+      "penetration_over_delta": 1.8657146598907233e-07,
+      "load_residual": 1.8125319911632686e-14,
+      "equilibrium_residual_rel": 2.528518151942718e-06
+    },
+    {
+      "key": "ratio0.05_h0.0075_d96",
+      "a_over_R": 0.05,
+      "h_over_a": 0.0075,
+      "n_elements": 17040,
+      "load": 1831.5018315018315,
+      "oracle": {
+        "equivalent_modulus": 109890.10989010989,
+        "contact_radius": 0.5,
+        "indentation": 0.025,
+        "peak_pressure": 3497.910837184513
+      },
+      "fe": {
+        "contact_radius_linear": 0.49777436376742756,
+        "indentation": 0.024747512127760378,
+        "peak_pressure_lumped": 4611.99481892831,
+        "peak_pressure_consistent": 3519.93717919907
+      },
+      "error_pct": {
+        "contact_radius": -0.4451272465144873,
+        "indentation": -1.0099514889584937,
+        "peak_pressure_lumped": 31.849982278008238,
+        "peak_pressure_consistent": 0.629699927751326
+      },
+      "wall_s": 46.79029822349548,
+      "penetration_over_delta": 1.5573684749678542e-07,
+      "load_residual": 2.272244728374062e-12,
+      "equilibrium_residual_rel": 3.107669907263974e-06
+    },
+    {
+      "key": "ratio0.10_h0.0300_d96",
+      "a_over_R": 0.1,
+      "h_over_a": 0.03,
+      "n_elements": 5040,
+      "load": 14652.014652014652,
+      "oracle": {
+        "equivalent_modulus": 109890.10989010989,
+        "contact_radius": 1.0,
+        "indentation": 0.1,
+        "peak_pressure": 6995.821674369026
+      },
+      "fe": {
+        "contact_radius_linear": 0.9918567562270908,
+        "indentation": 0.09900367933018742,
+        "peak_pressure_lumped": 9203.46757788568,
+        "peak_pressure_consistent": 7030.247605854348
+      },
+      "error_pct": {
+        "contact_radius": -0.8143243772909203,
+        "indentation": -0.9963206698125893,
+        "peak_pressure_lumped": 31.556634892580604,
+        "peak_pressure_consistent": 0.4920927531850916
+      },
+      "wall_s": 11.908921480178833,
+      "penetration_over_delta": 3.990050459259813e-05,
+      "load_residual": 1.4897523215040564e-15,
+      "equilibrium_residual_rel": 9.146505544502781e-05
+    },
+    {
+      "key": "ratio0.10_h0.0150_d96",
+      "a_over_R": 0.1,
+      "h_over_a": 0.015,
+      "n_elements": 9040,
+      "load": 14652.014652014652,
+      "oracle": {
+        "equivalent_modulus": 109890.10989010989,
+        "contact_radius": 1.0,
+        "indentation": 0.1,
+        "peak_pressure": 6995.821674369026
+      },
+      "fe": {
+        "contact_radius_linear": 0.9962515135358325,
+        "indentation": 0.0989890677811604,
+        "peak_pressure_lumped": 9218.4434931713,
+        "peak_pressure_consistent": 7036.943665476495
+      },
+      "error_pct": {
+        "contact_radius": -0.37484864641674775,
+        "indentation": -1.0109322188395997,
+        "peak_pressure_lumped": 31.770704318342126,
+        "peak_pressure_consistent": 0.5878078804971487
+      },
+      "wall_s": 23.567848205566406,
+      "penetration_over_delta": 1.2411112072186574e-05,
+      "load_residual": 3.972672857344151e-15,
+      "equilibrium_residual_rel": 4.01714481660946e-05
+    },
+    {
+      "key": "ratio0.10_h0.0075_d96",
+      "a_over_R": 0.1,
+      "h_over_a": 0.0075,
+      "n_elements": 17040,
+      "load": 14652.014652014652,
+      "oracle": {
+        "equivalent_modulus": 109890.10989010989,
+        "contact_radius": 1.0,
+        "indentation": 0.1,
+        "peak_pressure": 6995.821674369026
+      },
+      "fe": {
+        "contact_radius_linear": 0.9950923325820162,
+        "indentation": 0.09899022361250956,
+        "peak_pressure_lumped": 9224.005466464205,
+        "peak_pressure_consistent": 7039.886353457972
+      },
+      "error_pct": {
+        "contact_radius": -0.4907667417983763,
+        "indentation": -1.0097763874904464,
+        "peak_pressure_lumped": 31.850208536027978,
+        "peak_pressure_consistent": 0.6298713880942497
+      },
+      "wall_s": 61.71329307556152,
+      "penetration_over_delta": 7.485268074577141e-06,
+      "load_residual": 2.4829205358400943e-16,
+      "equilibrium_residual_rel": 3.913010839612778e-05
+    }
+  ],
+  "gates": [
+    {
+      "id": "contact_radius_aR005",
+      "value": 0.4451272465144873,
+      "threshold": 3.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "indentation_aR005",
+      "value": 1.0099514889584937,
+      "threshold": 3.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "refinement_stability_indentation_aR005",
+      "value": 0.014269347237316765,
+      "threshold": 0.5,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "contact_radius_aR010",
+      "value": 0.4907667417983763,
+      "threshold": 3.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "indentation_aR010",
+      "value": 1.0097763874904464,
+      "threshold": 3.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "refinement_stability_indentation_aR010",
+      "value": 0.013455717677857137,
+      "threshold": 0.5,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "peak_pressure_aR005",
+      "value": 0.629699927751326,
+      "threshold": 5.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "penetration_aR005",
+      "value": 1.5573684749678542e-07,
+      "threshold": 1e-05,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "load_residual_aR005",
+      "value": 2.272244728374062e-12,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "equilibrium_residual_aR005",
+      "value": 3.107669907263974e-06,
+      "threshold": 0.0001,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "rho_spread_contact_radius",
+      "value": 0.01864766604534853,
+      "threshold": 0.1,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "rho_spread_indentation",
+      "value": 0.0003405569791886205,
+      "threshold": 0.1,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "truncation_indentation_d48_to_96",
+      "value": 0.6283633823631951,
+      "threshold": 1.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "truncation_contact_radius_d48_to_96",
+      "value": 0.0005212346468885798,
+      "threshold": 1.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "truncation_extrapolated_indentation",
+      "value": 0.42780983887758905,
+      "threshold": 3.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "truncation_residual_model_bias",
+      "value": 0.42780983887758905,
+      "threshold": 0.5,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "truncation_ladder_monotone_aR005",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "truncation_order_observed",
+      "value": 1.1825496119696763,
+      "threshold": 0.5,
+      "operator": ">=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "truncation_insensitive_contact_radius_aR005",
+      "value": 0.001045903297969275,
+      "threshold": 0.05,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "truncation_extrapolated_indentation_aR010",
+      "value": 0.4038540392683778,
+      "threshold": 3.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "plateau_vertical_resolution_significance",
+      "value": 0.17045936093442737,
+      "threshold": 0.1,
+      "operator": ">=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "plateau_far_field_hypothesis_rejected",
+      "value": 0.019498049329391698,
+      "threshold": 0.05,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "plateau_indentation_dz_a48",
+      "value": 0.298765232634679,
+      "threshold": 3.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "plateau_peak_pressure_dz_a24",
+      "value": 0.022824156398115747,
+      "threshold": 0.05,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "probe_compliance_aR005",
+      "value": 1.0099514889584937,
+      "threshold": 3.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "probe_compliance_aR010",
+      "value": 1.0097763874904464,
+      "threshold": 3.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "probe_estimator_spread_aR005",
+      "value": 1.133011598853185,
+      "threshold": 2.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    },
+    {
+      "id": "probe_estimator_spread_aR010",
+      "value": 1.1479432544847727,
+      "threshold": 2.0,
+      "operator": "<=",
+      "declared": true,
+      "recomputed": true
+    }
+  ],
+  "doc_claims": [
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 33,
+      "quantity": "contact_radius@0.05/0.0075",
+      "claimed_pct": -0.445,
+      "artifact_pct": -0.4451272465144873,
+      "delta_pp": 0.0001272465144873114,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 33,
+      "quantity": "indentation@0.05/0.0075",
+      "claimed_pct": -1.01,
+      "artifact_pct": -1.0099514889584937,
+      "delta_pp": -4.8511041506271724e-05,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 33,
+      "quantity": "peak_pressure@0.05/0.0075",
+      "claimed_pct": 0.63,
+      "artifact_pct": 0.629699927751326,
+      "delta_pp": 0.0003000722486740104,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 34,
+      "quantity": "contact_radius@0.05/0.015",
+      "claimed_pct": -0.532,
+      "artifact_pct": -0.531576830679148,
+      "delta_pp": -0.00042316932085206815,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 34,
+      "quantity": "indentation@0.05/0.015",
+      "claimed_pct": -1.011,
+      "artifact_pct": -1.0107277777946178,
+      "delta_pp": -0.00027222220538214437,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 34,
+      "quantity": "peak_pressure@0.05/0.015",
+      "claimed_pct": 0.588,
+      "artifact_pct": 0.5880081470316156,
+      "delta_pp": -8.147031615668432e-06,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 35,
+      "quantity": "contact_radius@0.05/0.03",
+      "claimed_pct": -0.848,
+      "artifact_pct": -0.8481049697513066,
+      "delta_pp": 0.00010496975130658281,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 35,
+      "quantity": "indentation@0.05/0.03",
+      "claimed_pct": -0.996,
+      "artifact_pct": -0.995682141721177,
+      "delta_pp": -0.0003178582788230244,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 35,
+      "quantity": "peak_pressure@0.05/0.03",
+      "claimed_pct": 0.493,
+      "artifact_pct": 0.4926945853841458,
+      "delta_pp": 0.0003054146158542048,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 36,
+      "quantity": "contact_radius@0.1/0.0075",
+      "claimed_pct": -0.491,
+      "artifact_pct": -0.4907667417983763,
+      "delta_pp": -0.00023325820162367616,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 36,
+      "quantity": "indentation@0.1/0.0075",
+      "claimed_pct": -1.01,
+      "artifact_pct": -1.0097763874904464,
+      "delta_pp": -0.00022361250955360568,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 36,
+      "quantity": "peak_pressure@0.1/0.0075",
+      "claimed_pct": 0.63,
+      "artifact_pct": 0.6298713880942497,
+      "delta_pp": 0.00012861190575030879,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 37,
+      "quantity": "contact_radius@0.1/0.015",
+      "claimed_pct": -0.375,
+      "artifact_pct": -0.37484864641674775,
+      "delta_pp": -0.00015135358325224502,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 37,
+      "quantity": "indentation@0.1/0.015",
+      "claimed_pct": -1.011,
+      "artifact_pct": -1.0109322188395997,
+      "delta_pp": -6.778116040018212e-05,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 37,
+      "quantity": "peak_pressure@0.1/0.015",
+      "claimed_pct": 0.588,
+      "artifact_pct": 0.5878078804971487,
+      "delta_pp": 0.00019211950285125123,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 38,
+      "quantity": "contact_radius@0.1/0.03",
+      "claimed_pct": -0.814,
+      "artifact_pct": -0.8143243772909203,
+      "delta_pp": 0.0003243772909203857,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 38,
+      "quantity": "indentation@0.1/0.03",
+      "claimed_pct": -0.996,
+      "artifact_pct": -0.9963206698125893,
+      "delta_pp": 0.0003206698125892693,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 38,
+      "quantity": "peak_pressure@0.1/0.03",
+      "claimed_pct": 0.492,
+      "artifact_pct": 0.4920927531850916,
+      "delta_pp": -9.275318509160968e-05,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 35,
+      "quantity": "contact_radius@0.05/0.03",
+      "claimed_pct": -0.848,
+      "artifact_pct": -0.8481049697513066,
+      "delta_pp": 0.00010496975130658281,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 35,
+      "quantity": "indentation@0.05/0.03",
+      "claimed_pct": -0.996,
+      "artifact_pct": -0.995682141721177,
+      "delta_pp": -0.0003178582788230244,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 36,
+      "quantity": "contact_radius@0.05/0.015",
+      "claimed_pct": -0.532,
+      "artifact_pct": -0.531576830679148,
+      "delta_pp": -0.00042316932085206815,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 36,
+      "quantity": "indentation@0.05/0.015",
+      "claimed_pct": -1.011,
+      "artifact_pct": -1.0107277777946178,
+      "delta_pp": -0.00027222220538214437,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 37,
+      "quantity": "contact_radius@0.05/0.0075",
+      "claimed_pct": -0.445,
+      "artifact_pct": -0.4451272465144873,
+      "delta_pp": 0.0001272465144873114,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 37,
+      "quantity": "indentation@0.05/0.0075",
+      "claimed_pct": -1.01,
+      "artifact_pct": -1.0099514889584937,
+      "delta_pp": -4.8511041506271724e-05,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 38,
+      "quantity": "contact_radius@0.1/0.03",
+      "claimed_pct": -0.814,
+      "artifact_pct": -0.8143243772909203,
+      "delta_pp": 0.0003243772909203857,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 38,
+      "quantity": "indentation@0.1/0.03",
+      "claimed_pct": -0.996,
+      "artifact_pct": -0.9963206698125893,
+      "delta_pp": 0.0003206698125892693,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 39,
+      "quantity": "contact_radius@0.1/0.015",
+      "claimed_pct": -0.375,
+      "artifact_pct": -0.37484864641674775,
+      "delta_pp": -0.00015135358325224502,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 39,
+      "quantity": "indentation@0.1/0.015",
+      "claimed_pct": -1.011,
+      "artifact_pct": -1.0109322188395997,
+      "delta_pp": -6.778116040018212e-05,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 40,
+      "quantity": "contact_radius@0.1/0.0075",
+      "claimed_pct": -0.491,
+      "artifact_pct": -0.4907667417983763,
+      "delta_pp": -0.00023325820162367616,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 40,
+      "quantity": "indentation@0.1/0.0075",
+      "claimed_pct": -1.01,
+      "artifact_pct": -1.0097763874904464,
+      "delta_pp": -0.00022361250955360568,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 66,
+      "quantity": "contact_radius@summary/0.05/0.0075",
+      "claimed_pct": -0.445,
+      "artifact_pct": -0.4451272465144873,
+      "delta_pp": 0.0001272465144873114,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 68,
+      "quantity": "contact_radius@summary/0.1/0.0075",
+      "claimed_pct": -0.491,
+      "artifact_pct": -0.4907667417983763,
+      "delta_pp": -0.00023325820162367616,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "line": 70,
+      "quantity": "peak_pressure@summary/0.05/0.0075",
+      "claimed_pct": 0.63,
+      "artifact_pct": 0.629699927751326,
+      "delta_pp": 0.0003000722486740104,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 83,
+      "quantity": "contact_radius@summary/0.05/0.0075",
+      "claimed_pct": -0.445,
+      "artifact_pct": -0.4451272465144873,
+      "delta_pp": 0.0001272465144873114,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 85,
+      "quantity": "contact_radius@summary/0.1/0.0075",
+      "claimed_pct": -0.491,
+      "artifact_pct": -0.4907667417983763,
+      "delta_pp": -0.00023325820162367616,
+      "status": "match"
+    },
+    {
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "line": 87,
+      "quantity": "peak_pressure@summary/0.05/0.0075",
+      "claimed_pct": 0.63,
+      "artifact_pct": 0.629699927751326,
+      "delta_pp": 0.0003000722486740104,
+      "status": "match"
+    }
+  ],
+  "fixed_defects": [
+    {
+      "id": "D1",
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "quantity": "contact_radius@0.10/0.0075",
+      "before_pct": -1.75,
+      "after_quantity": "contact_radius",
+      "after_key": "ratio0.10_h0.0075_d96",
+      "note": "表内 a 误差是 m17149 估计量修复前的历史值，被当作现役结果发布；工件为 -0.4908%",
+      "after_pct": -0.4907667417983763,
+      "delta_pp": -1.2592332582016237,
+      "status": "repaired"
+    },
+    {
+      "id": "D2",
+      "doc": "CASE-FEM-HERTZ-CONTACT-verification.md",
+      "quantity": "contact_radius@summary/0.10/0.0075",
+      "before_pct": -1.75,
+      "after_quantity": "contact_radius",
+      "after_key": "ratio0.10_h0.0075_d96",
+      "note": "§4 误差判定表同样引用了过期的 -1.750%，并把 F3 写成「未修」",
+      "after_pct": -0.4907667417983763,
+      "delta_pp": -1.2592332582016237,
+      "status": "repaired"
+    },
+    {
+      "id": "D3",
+      "doc": "CASE-FEM-HERTZ-CONTACT.md",
+      "quantity": "peak_pressure@summary/0.05/0.0075",
+      "before_pct": 0.493,
+      "after_quantity": "peak_pressure",
+      "after_key": "ratio0.05_h0.0075_d96",
+      "note": "§4 的 p0 行标 h/a=0.0075，却引用了 h/a=0.03 的值（+0.4927%）；h/a=0.0075 应为 +0.6297%",
+      "after_pct": 0.629699927751326,
+      "delta_pp": -0.136699927751326,
+      "status": "repaired"
+    }
+  ],
+  "worst_pct": {
+    "contact_radius": 0.8481049697513066,
+    "indentation": 1.0109322188395997,
+    "peak_pressure_consistent": 0.6298713880942497
+  },
+  "findings": [
+    {
+      "code": "W_PEAK_ESTIMATOR_SPREAD",
+      "severity": "W",
+      "note": "peak pressure passes the 5 % gate only under the L2-consistent field; the raw lumped nodal peak is far outside it -- the p0 claim is estimator-conditional",
+      "lumped_max_abs_pct": 31.850208536027978,
+      "consistent_max_abs_pct": 0.6298713880942497
+    }
+  ],
+  "physics_verdict": {
+    "passed": true,
+    "hard_defects": []
+  },
+  "docs_verdict": {
+    "passed": true,
+    "hard_defects": []
+  }
+}
