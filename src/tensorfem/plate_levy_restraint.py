@@ -42,6 +42,7 @@ FEM therefore carries a plate-theory model error, quantified in
 from __future__ import annotations
 
 import math
+from typing import Optional
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -353,6 +354,12 @@ class RitzRestrainedSolution:
         return self.moments(self.a / 2.0, self.b / 2.0)
 
 
+def _modal_integral(n: int, lo: float, hi: float, span: float) -> float:
+    """``integral_lo^hi sin(n pi s / span) ds`` for a positive integer ``n``."""
+    k = n * math.pi / span
+    return (math.cos(k * lo) - math.cos(k * hi)) / k
+
+
 def ritz_restrained_plate(
     a: float,
     b: float,
@@ -363,6 +370,7 @@ def ritz_restrained_plate(
     q: float,
     m_modes: int = 40,
     n_modes: int = 40,
+    patch: Optional[tuple[float, float, float, float]] = None,
 ) -> RitzRestrainedSolution:
     """Rayleigh-Ritz solution of a plate with springs on all four edges.
 
@@ -376,6 +384,12 @@ def ritz_restrained_plate(
     but for finite ``Kx``/``Ky`` the exact solution is smooth and convergence is
     rapid; it is used here to cross-check the FEM at ``Kx = Ky`` and to
     cross-check :func:`levy_restrained_plate` at ``Ky = 0``.
+
+    ``patch = (x1, x2, y1, y2)`` applies ``q`` only on that rectangle instead of
+    the whole plate (the JOUR-ICE-STRUCT panel load case).  The modal load then
+    is the exact double integral of ``sin(m pi x / a) sin(n pi y / b)`` over the
+    patch, so a load discontinuity inside the domain only slows the series; it
+    does not introduce an approximation of the load.
     """
     if Kx < 0.0 or Ky < 0.0:
         raise ValueError("spring stiffnesses must be non-negative")
@@ -403,8 +417,15 @@ def ritz_restrained_plate(
                 / 4.0
                 * ((m_arr[i] / a) ** 2 + (n_arr[j] / b) ** 2) ** 2
             )
-            if m_arr[i] % 2 == 1 and n_arr[j] % 2 == 1:
-                load_vec[k] += 4.0 * a * b * q / (math.pi**2 * m_arr[i] * n_arr[j])
+            if patch is None:
+                if m_arr[i] % 2 == 1 and n_arr[j] % 2 == 1:
+                    load_vec[k] += (
+                        4.0 * a * b * q / (math.pi**2 * m_arr[i] * n_arr[j])
+                    )
+            else:
+                x1, x2, y1, y2 = patch
+                load_vec[k] += q * _modal_integral(
+                    m_arr[i], x1, x2, a) * _modal_integral(n_arr[j], y1, y2, b)
 
     # Spring energy at x = 0 and x = a: (Kx*b/4) * sum_n [ (sum_m A_mn km)^2
     #   + (sum_m (-1)^m A_mn km)^2 ]
