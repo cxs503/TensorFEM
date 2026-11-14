@@ -43,6 +43,7 @@ C_P = plate_speed(E, NU, RHO)
 C_R = rayleigh_speed(E, NU, RHO)
 
 KH_ANALYTIC = (0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0)
+N_ROOTS_SCAN = 3          # roots requested per family: lowest branch + two higher
 KH_FEM = (0.2, 0.5, 1.0)
 MESHES = ((8, 4), (16, 8), (32, 16))
 
@@ -51,9 +52,14 @@ def analytic_table() -> list[dict]:
     rows = []
     for kh in KH_ANALYTIC:
         k = kh / H
-        roots = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=3)
+        roots = rayleigh_lamb_frequencies(k, H, E, NU, RHO, n_roots=N_ROOTS_SCAN)
         a0 = roots["antisymmetric"][0]
         s0 = roots["symmetric"][0]
+        # Residual of *every* root the scanner reports (higher branches included):
+        # a pole crossing accepted as a root shows up here, not in the A0/S0 rows.
+        residuals_all = [abs(lamb_residual(w, k, C_L, C_T, H, branch))
+                         for branch in ("antisymmetric", "symmetric")
+                         for w in roots[branch]]
         rows.append(dict(
             kh=kh,
             a0_phase=a0 / k / C_T,
@@ -63,6 +69,8 @@ def analytic_table() -> list[dict]:
             flexural_phase=flexural_phase_velocity(k, E, NU, RHO, H) / C_T,
             a0_residual=abs(lamb_residual(a0, k, C_L, C_T, H, "antisymmetric")),
             s0_residual=abs(lamb_residual(s0, k, C_L, C_T, H, "symmetric")),
+            roots_reported={b: len(roots[b]) for b in ("antisymmetric", "symmetric")},
+            max_residual_all=max(residuals_all),
         ))
     return rows
 
@@ -254,6 +262,13 @@ def build_gates(analytic, fem, assembly, cp_fit, flex_ratio, orders) -> list[dic
              reference="0 (the root is a root)",
              value=max(max(r["a0_residual"], r["s0_residual"]) for r in analytic),
              threshold=1e-9, operator="<="),
+        dict(id="higher_root_residual",
+             quantity="max normalised Rayleigh--Lamb residual over *every* root the scanner "
+                      "reports on the anchor kh grid (n_roots=%d per family, higher branches included)" % N_ROOTS_SCAN,
+             reference="0 (a reported root solves the Rayleigh--Lamb equation; pole crossings "
+                       "of tan/tanh do not, they leave the normalised residual at O(0.1)..1)",
+             value=max(r["max_residual_all"] for r in analytic),
+             threshold=1e-6, operator="<="),
         dict(id="fem_phase_error_fine",
              quantity="max relative phase-velocity error of the %dx%d Floquet cell, A0 and S0, kh=0.2..1 (branches picked by mid-plane parity, not by index)" % MESHES[-1],
              reference="exact Rayleigh--Lamb roots",
@@ -315,12 +330,19 @@ def main() -> dict:
     artifacts = {
         "result": "benchmarks/verified/fem_wave_dispersion/result.json",
         "gates": "benchmarks/verified/fem_wave_dispersion/gates_verified.json",
-        "dispersion_figure": "benchmarks/verified/fem_wave_dispersion/dispersion.png",
-        "convergence_figure": "benchmarks/verified/fem_wave_dispersion/convergence.png",
         "document": "docs/lamb-wave-dispersion-verification.md",
         "solver": "src/tensorfem/wave_dispersion.py",
         "tests": "tests/test_wave_dispersion.py",
     }
+    # Binary figures cannot be committed under benchmarks/verified/** (the merge
+    # gate strips them), so they are declared as renderables with a committed
+    # producer -- tools/certificate_renderables.py, invariant 2.
+    renderables = [
+        {"path": "dispersion.png",
+         "rendered_by": "benchmarks/verified/fem_wave_dispersion/run_verification.py"},
+        {"path": "convergence.png",
+         "rendered_by": "benchmarks/verified/fem_wave_dispersion/run_verification.py"},
+    ]
     payload = dict(
         schema="tensorfem.verified-gates.v1",
         anchor="fem_wave_dispersion",
@@ -331,6 +353,7 @@ def main() -> dict:
         gates=gates,
         passed=all(g["passed"] for g in gates),
         artifacts=artifacts,
+        figures_rendered_on_demand=renderables,
     )
     (HERE / "gates_verified.json").write_text(json.dumps(payload, indent=2))
     figures = draw_figures(analytic, fem)
@@ -386,7 +409,9 @@ def render_markdown(result: dict, figures: dict[str, Path]) -> str:
 
     add("## 2 怎么做的\n")
     add("1. **解析侧**：`tensorfem.wave_dispersion.lamb_residual` 在三段频率区间用纯实数算术求值，"
-        "对数网格扫描 + 二分求根，残差按自身两项幅度归一化。`c_L`/`c_T`/`c_p`/`c_R` 全部闭式。")
+        "对数网格扫描 + 二分求根，残差按自身两项幅度归一化；每个二分结果**复核归一化残差**"
+        "（< 1e-6 才收录），因此 `tan`/`tanh` 极点处的符号跳变不会被当成根（见 §9）。"
+        "`c_L`/`c_T`/`c_p`/`c_R` 全部闭式。")
     add("2. **FEM 侧**：单个周期单胞（长 `L=2π/(4k)`、厚 `2h`），刚度用生产单元 "
         "`continuum.q4_stiffness`（平面应变、2×2 Gauss），质量用一致质量阵 `q4_consistent_mass`；"
         "施加 Floquet 条件 `u(x+L)=e^{ikL}u(x)`，以复归约矩阵 `T^H K T`、`T^H M T` 解 Hermitian 广义特征值问题。"
@@ -401,11 +426,14 @@ def render_markdown(result: dict, figures: dict[str, Path]) -> str:
 
     add("## 3 计算结果\n")
     add("### 3.1 解析 Rayleigh--Lamb 两族最低支（无量纲相位速度 c_ph/c_T）\n")
-    add("| kh | A0 c/c_T | S0 c/c_T | A0 薄板极限 kh·c_p/(√3 c_T) | A0 残差 | S0 残差 |")
-    add("|---|---|---|---|---|---|")
+    add("| kh | A0 c/c_T | S0 c/c_T | A0 薄板极限 kh·c_p/(√3 c_T) | A0 残差 | S0 残差 "
+        "| 报告根数 A/S | 全部报告根最大残差 |")
+    add("|---|---|---|---|---|---|---|---|")
     for r in a:
         add(f"| {r['kh']:g} | {_fmt(r['a0_phase'])} | {_fmt(r['s0_phase'])} | "
-            f"{_fmt(r['flexural_phase'])} | {_fmt(r['a0_residual'], 3)} | {_fmt(r['s0_residual'], 3)} |")
+            f"{_fmt(r['flexural_phase'])} | {_fmt(r['a0_residual'], 3)} | {_fmt(r['s0_residual'], 3)} | "
+            f"{r['roots_reported']['antisymmetric']}/{r['roots_reported']['symmetric']} | "
+            f"{_fmt(r['max_residual_all'], 3)} |")
     add("")
     add("### 3.2 Bloch--Floquet 单元 vs 解析（相位速度相对误差）\n")
     add("| kh | 网格 nx×ny | A0 FEM（序号/奇偶分数） | A0 解析 | A0 误差 | S0 FEM（序号/奇偶分数） | S0 解析 | S0 误差 |")
@@ -442,9 +470,11 @@ def render_markdown(result: dict, figures: dict[str, Path]) -> str:
         "结果看起来「有收敛阶」却是收敛到错误的算子。")
     add("4. **适用域**：均匀各向同性板、平面应变、线性弹性、无衰减；不含流固耦合加载、层合板、"
         "粘弹阻尼、有限变形。")
-    add("5. **解析扫描的退化根**：`ω = k c_T`（`q=0`）使 A 族残差的一项恒为零，"
-        "`rayleigh_lamb_frequencies(n_roots>=2)` 的 A 族列表里会出现 `ω/k/c_T = 1.0` 的伪根"
-        "（见 `result.json` 的 `analytic` 表只用最低根，不受影响）。这是已知局限，未在本单修复。\n")
+    add("5. **解析扫描的极点伪根（已修复，见 §9）**：`ω = k c_T`（`q=0`）使 A 族残差的一项恒为零，"
+        "而 `tan`/`tanh` 极点的符号跳变也会被当成变号区间，修复前 `rayleigh_lamb_frequencies(n_roots>=2)` "
+        "的列表里会混入 `ω/k/c_T = 1.0` 的伪根与每个截止频率处的一个极点穿越（归一化残差 0.6–1.0）。"
+        "现每个二分结果须 `|残差| < 1e-6` 才收录，`analytic` 表（只用最低根）数字不变，"
+        "门禁 `higher_root_residual` 覆盖全部报告根。\n")
 
     add("## 6 误差判定（是否 <3%）\n")
     add("| 关键量 | 基准（独立来源） | 本实现误差/指标 | 门限 | 是否 PASS | 是否 <3% |")
@@ -455,7 +485,8 @@ def render_markdown(result: dict, figures: dict[str, Path]) -> str:
         ("a0_rayleigh_limit", "A0 相位速度 kh=20", f"Rayleigh 波速 {C_R:.2f} m/s", True),
         ("s0_rayleigh_limit", "S0 相位速度 kh=20", f"Rayleigh 波速 {C_R:.2f} m/s", True),
         ("fem_phase_error_fine", f"FEM A0/S0 相位速度（kh=0.2–1，{MESHES[-1][0]}×{MESHES[-1][1]}）", "解析 Rayleigh--Lamb", True),
-        ("root_residual", "解析根归一化残差", "0（根应满足方程）", True),
+        ("root_residual", "解析根归一化残差（A0/S0）", "0（根应满足方程）", True),
+        ("higher_root_residual", "全部报告根归一化残差（含高阶支）", "0（极点穿越不是根）", True),
         ("mass_conservation", "一致质量阵质量守恒", "ρ·L·2h", False),
         ("fem_convergence_order", "网格收敛阶（min of A0/S0）", "理论 ≥1.5（Q4 一致质量）", False),
         ("gamma_zero_mode_count", "Γ 点零模态数", "2（两个刚体平移）", False),
@@ -488,6 +519,21 @@ def render_markdown(result: dict, figures: dict[str, Path]) -> str:
         "（列号 `2·node+d`），并在 `bloch_cell_modes` 中把模态还原到未归约自由度空间以便做中面奇偶分类。"
         "修复前后数字见 git 历史（`benchmarks/verified/fem_wave_dispersion/gates_verified.json` 的上一个版本），"
         "本文件与门禁文件由同一脚本重生成。\n")
+
+    n_reported = sum(r['roots_reported']['antisymmetric'] + r['roots_reported']['symmetric'] for r in a)
+    add("## 9 已修复的缺陷：多根扫描收录 tan 极点伪根（m16849 / 重开 847）\n")
+    add("原 PR#847（m16849）交付的扫描器修复在 2026-11-05 随 PR 关闭而丢失，本单从当前 main 补回。"
+        "缺陷：`lamb_residual` 在 `tan(qh)`/`tan(ph)` 极点两侧符号相反，对数网格扫描把极点穿越误判为"
+        "变号区间，二分后得到一个归一化残差 O(0.1)..1 的「根」；`q=0`（`ω = k c_T`）处 `4k²pq` 项恒为零，"
+        "A 族在 `ω/k/c_T = 1.0` 处必现伪根。锚点只打最低根的分，故 10 道门禁当时全部 PASS，"
+        "缺陷由 fail-closed 测试 `test_higher_root_scan_defect_is_open` 锁死。"
+        "修复：`rayleigh_lamb_frequencies` 对每个二分结果复核归一化残差，`< 1e-6` 才收录"
+        "（窗口内真根不足时宁可少给，不给伪根）。验证：`kh ∈ {0.1, 0.5, 2.0}` 两族各 2 根、"
+        "全部残差 < 1e-6（`tests/test_wave_dispersion.py::test_higher_roots_are_genuine`，"
+        "由原 fail-closed 门翻转为正向回归门）；本锚点自己的 `kh` 网格、每族 3 根、"
+        f"共 {n_reported} 个报告根的最大归一化残差 "
+        f"{_fmt(g['higher_root_residual']['value'], 3)}（门禁 `higher_root_residual`，修复前该值为 1.0）。"
+        "A0/S0 最低根数字与全部既有门禁不变。\n")
     return "\n".join(lines) + "\n"
 
 
