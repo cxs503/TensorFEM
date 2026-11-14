@@ -227,7 +227,7 @@ def test_two_independent_fem_paths_agree_for_the_same_patch():
         x=torch.as_tensor(xg, dtype=torch.float64),
         y=torch.as_tensor(yg, dtype=torch.float64),
         pressure=torch.as_tensor(pres.reshape(yg.size, xg.size).T, dtype=torch.float64),
-        total_force=float(np.trapz(np.trapz(pres.reshape(yg.size, xg.size).T, yg, axis=1), xg)),
+        total_force=float(np.trapezoid(np.trapezoid(pres.reshape(yg.size, xg.size).T, yg, axis=1), xg)),
         contact_area=float((xg[-1] - xg[0]) * (yg[-1] - yg[0])),
         peak_pressure=peak,
         centroid=(0.5, 0.5),
