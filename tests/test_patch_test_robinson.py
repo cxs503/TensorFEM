@@ -7,6 +7,7 @@ case are asserted to be non-exact, with the measured magnitude pinned.
 
 import json
 import math
+from pathlib import Path
 
 import pytest
 import torch
@@ -159,10 +160,11 @@ def test_registry_gate_is_reachable_from_the_documented_entry():
     assert "patch_benchmark_evidence()" in src
 
 
+RUNS = Path(__file__).resolve().parents[1] / "runs" / "patch_test_robinson"
+
+
 def test_committed_run_artifacts_are_current():
     """The committed run artefacts must be reproducible, not hand-written."""
-    from pathlib import Path
-
     root = Path(__file__).resolve().parents[1]
     result = json.loads((root / "runs/patch_test_robinson/result.json").read_text())
     evidence = json.loads((root / "benchmarks/patch_test_robinson_evidence.json").read_text())
@@ -182,6 +184,74 @@ def test_committed_run_artifacts_are_current():
     assert cli_rep["passed"] is True and cli_rep["summary"]["total"] == 8
     # result.json and the CLI solve the same cases: identical tolerances
     assert result["exact_tolerance"] == cli_rep["tolerance"] == EXACT_TOL
+
+
+def test_committed_artifacts_cover_every_documented_entry_point():
+    """Every artefact the CHANGELOG/doc promise is actually in the tree.
+
+    The predecessor of this case shipped ``runs/patch_test_robinson/*`` in its docs
+    and CHANGELOG but not in git, so the reproducibility gate could not run on a
+    fresh checkout.  Pinning the file set here makes that gap a test failure.
+    """
+    promised = {
+        "result.json",  # benchmark driver
+        "cli_qualification.json",  # tensorfem patch-test
+        "cli_qualification.log",  # ... its stdout
+        "verify_gate.log",  # tensorfem verify (the registered gate)
+    }
+    present = {p.name for p in RUNS.glob("*") if p.is_file()}
+    assert promised <= present, sorted(promised - present)
+
+
+def test_committed_verify_gate_log_carries_the_patch_rows():
+    """``tensorfem verify`` output is committed, and it agrees with the registry."""
+    gate = json.loads((RUNS / "verify_gate.log").read_text())
+    assert gate["passed"] is True and gate["summary"]["passed"] == gate["summary"]["total"]
+    rows = {r["id"]: r for r in gate["results"] if r["id"].startswith("patch.robinson")}
+    assert set(rows) == {"patch.robinson_A", "patch.robinson_B", "patch.robinson_C"}
+    for r in rows.values():
+        assert r["passed"] and r["error"] <= r["tolerance"] == EXACT_TOL
+
+
+def test_committed_cli_qualification_reproduces_case_by_case():
+    """The committed CLI report is the live report, not a stale or hand-edited file.
+
+    Case-C/Q8-distorted is round-off-sensitive to the reduction order, so only the
+    columns that carry a decision (mesh size, free DOFs, expectation, exactness,
+    verdict, tolerance) are compared exactly; the error magnitudes are compared to
+    the tolerance band the report itself declares.
+    """
+    from tensorfem.patch_test import qualification_report
+
+    committed = json.loads((RUNS / "cli_qualification.json").read_text())
+    live = qualification_report()
+    assert committed["schema"] == live["schema"]
+    assert committed["tolerance"] == live["tolerance"] == EXACT_TOL
+    assert committed["summary"] == live["summary"] == {"total": 8, "passed": 8}
+    keys = ("id", "case", "family", "mesh", "cells", "nodes", "free_dofs", "expectation")
+    assert [{k: c[k] for k in keys} for c in committed["cases"]] == [
+        {k: c[k] for k in keys} for c in live["cases"]
+    ]
+    for c_live, c_old in zip(live["cases"], committed["cases"]):
+        assert c_old["exact"] == c_live["exact"]
+        assert c_old["passed"] == c_live["passed"]
+        for col in ("disp_error", "stress_error", "energy_error"):
+            # same verdict band (round-off vs discretisation error), no decision flip
+            assert (c_old[col] <= EXACT_TOL) == (c_live[col] <= EXACT_TOL)
+            assert c_old[col] == pytest.approx(c_live[col], rel=1e-6, abs=1e-15)
+
+
+def test_evidence_provenance_is_checkout_portable():
+    """Evidence is committed, so it must not leak the absolute path of one machine."""
+    evidence = json.loads(
+        (Path(__file__).resolve().parents[1] / "benchmarks/patch_test_robinson_evidence.json")
+        .read_text()
+    )
+    prov = evidence["provenance"]
+    assert prov["tensorfem_module_file"] == "src/tensorfem/__init__.py"
+    assert not Path(prov["tensorfem_module_file"]).is_absolute()
+    assert prov["imported_from_this_checkout"] is True
+    assert prov["default_dtype"] == "torch.float64"
 
 
 def test_free_dof_count_is_reported_positive_for_q8():
