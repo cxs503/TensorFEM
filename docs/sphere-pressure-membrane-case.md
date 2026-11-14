@@ -157,9 +157,10 @@ eps*p/12 - p/2 + p/(2*eps)
 8.94e-06%（同一壳理论内部一致）——
 **注意：这只证明实现与理论一致，不证明理论相对三维弹性正确**，后者由 ref vs Lamé 那一列承载。
 
-> 预登记预测 **G8b 已被证伪**：「ref 在 `t/R ≤ 0.05` 内保持 3%」不成立（实测带止于
-> `t/R ≈ 0.02`）。该条留在 `gates_verified.json` 的
-> `falsified_predictions` 里，不删除、不改判据。
+> 预登记预测 **`P1.reference_band_reaches_t_over_R_0.05` 已被证伪**：「ref 在 `t/R ≤ 0.05` 内保持 3%」不成立
+> （实测带止于 `t/R ≈ 0.02`）。该条留在
+> `gates_verified.json` 的 `predictions`（`outcome: "falsified"`）里，不删除、不改判据，
+> 也**不计入** gating 判定（11/11 条 gating gate 全通过）。
 
 **敏感性 B（泊松比 `ν`，8 单元）**：
 
@@ -204,30 +205,39 @@ eps*p/12 - p/2 + p/(2*eps)
 
 * `benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py` — 驱动器（ref 推导 + 收敛 + 3 条敏感性 + 2 个对照 + 3 图 + gates）
 * `benchmarks/verified/fem_sphere_pressure_membrane/result.json` — 全部数字（含 env、provenance、repro_cmd）
-* `benchmarks/verified/fem_sphere_pressure_membrane/gates_verified.json` — 11 条 gate 判定 + 被证伪预测
-* `benchmarks/verified/fem_sphere_pressure_membrane/figures/{convergence.png,field_meridian.png,sensitivity.png}`
+* `benchmarks/verified/fem_sphere_pressure_membrane/gates_verified.json` — 11 条 gating gate 判定 +
+  1 条预登记预测（其中 1 条被证伪，`outcome: "falsified"`）
+* `artifacts/CASE-SPHERE-PRESSURE/figures/{convergence.png,field_meridian.png,sensitivity.png}` — 由
+  `build_report.py --figures`（或 CLI）现场渲染，**不随仓提交**（证书因此不声明图工件）；
+  `run_verification.py` 复跑时也会在算例目录下生成同名 `figures/`，同样不提交
 * `benchmarks/verified/fem_sphere_pressure_membrane/build_report.py` — 本报告生成器（零手抄）
 * `tests/test_sphere_pressure_membrane_case.py` — 锁定本算例的 pytest 门
 
-**Gate 汇总（程序判读）**
+**Gate 汇总（程序判读，取自 `gates_verified.json` 的 gating 集）**
 
-| gate | 值 | 判据 | 结果 |
-|---|---|---|---|
-| `G10_flat_facet_shell4_control` | 1.3317e+02 | > 3% (recorded 13317% at 24 facets) | ✓ |
-| `G1_sigma_theta_vs_pr_2t` | 7.3091e-07 | rel err < 3% at facets=8 | ✓ |
-| `G2_sigma_phi_vs_pr_2t` | 1.2039e-06 | rel err < 3% at facets=8 | ✓ |
-| `G3_isotropy` | 1.5248e-06 | < 3% at facets=8 | ✓ |
-| `G4_radial_displacement` | 6.2617e-06 | < 3% at facets=8 | ✓ |
-| `G5_monotone_refinement` | [1.1280e-05, 7.3091e-07, 2.8282e-09] | e(4) > e(8) > e(32) | ✓ |
-| `G6_observed_order` | [3.4560e+00, 3.9480e+00, 3.9890e+00, 4.0250e+00, 3.4800e+00] | min observed order >= 1.5 | ✓ |
-| `G7_poisson_invariance` | 8.5723e-07 | < 3% for every nu in 0..0.49 | ✓ |
-| `G8a_reference_valid_at_case_point` | 4.0134e-03 | /sigma_thin - sigma_Lame//sigma_Lame < 3% at t/R of the case | ✓ |
-| `G8b_reference_band_reaches_t_over_R_0.05` | [1.0000e-03, 2.0000e-02] | predicted: band reaches t/R = 0.05 | ✗ |
-| `G9_chord_control_fails` | 2.0787e+00 | > 3% (control must fail: geometry representation matters) | ✓ |
+| gate | 值 | 判据 | 类别 | 结果 |
+|---|---|---|---|---|
+| `G1.sigma_theta_vs_pR_2t` | 7.3091e-07 | `<= 0.03` | accuracy | ✓ |
+| `G2.sigma_phi_vs_pR_2t` | 1.2039e-06 | `<= 0.03` | accuracy | ✓ |
+| `G3.isotropy` | 1.5248e-06 | `<= 0.03` | invariant | ✓ |
+| `G4.radial_displacement_vs_closed_form` | 6.2617e-06 | `<= 0.03` | accuracy | ✓ |
+| `G5a.contraction_4_to_8` | 6.4798e-02 | `< 1` | convergence | ✓ |
+| `G5b.contraction_8_to_32` | 3.8694e-03 | `< 1` | convergence | ✓ |
+| `G6.min_observed_order` | 3.4560e+00 | `>= 1.5` | convergence | ✓ |
+| `G7.poisson_invariance` | 8.5723e-07 | `<= 0.03` | invariant | ✓ |
+| `G8a.reference_valid_at_case_point` | 4.0134e-03 | `<= 0.03` | reference-validity | ✓ |
+| `G9.chord_control_fails` | 2.0787e+00 | `>= 0.03` | control-negative | ✓ |
+| `G10.flat_facet_shell4_control_fails` | 1.3317e+02 | `>= 0.03` | control-negative | ✓ |
 
-* gating 全通过：**True**；含预测的整体判定：
-  False；被证伪预测：
-  ['G8b_reference_band_reaches_t_over_R_0.05']。
+**预登记预测（`predictions`，不属于 gating 集）**
+
+| 预测 | 陈述 | 预期 | 实测 | 结果 |
+|---|---|---|---|---|
+| `P1.reference_band_reaches_t_over_R_0.05` | the thin-shell reference stays within tolerance up to t/R = 0.05 | `>= 0.05` | t/R = 0.02 | falsified |
+
+* gating 判定（证书）：11/11 通过，`passed = True`；预登记预测
+  1 条，被证伪 1 条（`P1.reference_band_reaches_t_over_R_0.05`，见上表）——预测不参与
+  gating 判定，因此「有预测被证伪」与「gating 全通过」同时成立且互不掩盖。
 
 ## 生产模块、入口与集成调用者（m15703 返修轮补齐）
 
@@ -268,7 +278,8 @@ PYTHONPATH=src python3 -m tensorfem.sphere_pressure_case --out artifacts/CASE-SP
 
 ```
 python3 benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py   # 13 s
-python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py
+python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --write --check
+python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --figures
 pytest tests/test_sphere_pressure_membrane_case.py -q
 ```
 

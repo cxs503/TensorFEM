@@ -1,19 +1,19 @@
 # fem_sphere_pressure_membrane — CASE-SPHERE-PRESSURE, uniform-pressure sphere membrane stress
 
-Verdict: **PASS** (gating set; one predeclared
-prediction about the *reference's* validity band is falsified and kept in the record — see
-`gates_verified.json`)
-Driver: `run_verification.py` · Report builder: `build_report.py` · Evidence: `result.json`,
-`gates_verified.json` · Figures: rendered on demand by `build_report.py` (not committed; the
-certificate declares them as `figures_rendered_on_demand`, see
-`docs/certificate-renderable-figures-and-sphere-canonicalisation-m17162.md`) · Certificate
-emitter: `emit_certificate.py` (`--write` / `--check`, derived from `result.json` only)
+Verdict: **PASS** (11/11 gating gates in `gates_verified.json`). The
+predeclared prediction about the *reference's* validity band is **not** a gate: it is kept
+under `predictions` with `outcome: "falsified"` (`P1.reference_band_reaches_t_over_R_0.05`) and is graded separately.
+Driver: `run_verification.py` · Report builder: `build_report.py` (`--write` / `--check`) ·
+Evidence: `result.json`, `gates_verified.json` · Figures: rendered on demand by
+`build_report.py --figures` into `artifacts/CASE-SPHERE-PRESSURE/figures/` and **not committed** (the certificate
+declares no figure artifact, so a committed figure path here would be an `E_ARTIFACT_MISSING` defect)
 
 Repro (13 s, single process, float64, no cluster needed):
 
 ```
 python3 benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py
-python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py
+python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --write --check
+python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --figures   # optional PNGs
 ```
 
 Model: `tensorfem.axisym_shell.AxisymShell` (2-node Reissner–Mindlin ring element,
@@ -37,12 +37,11 @@ Reference (machine-derived, see the report): `σ = pR/(2t) = 125 Pa`,
 | 32 | +2.828e-07 % | +3.643e-07 % | +5.716e-07 % | +3.313e-06 % |
 | 64 | +2.534e-08 % | +2.535e-08 % | +3.479e-08 % | +2.129e-07 % |
 
-Gates: 11/11 gating gates pass in the canonical envelope (`tensorfem.verified-gates.v1`, every
-gate a scalar `value` with an explicit `operator`/numeric `threshold`, so
-`tools/verified_anchor_audit.py` recomputes each verdict). The predeclared
-*prediction* about the reference's own validity band is **falsified** and kept in the record
-under `predictions` with `outcome: "falsified"` — it is not a gate, so it cannot be laundered
-into the gating verdict nor hidden by it.
+Gates: 11/11 gating gates pass (every gate carries a numeric `threshold` and an
+explicit `operator`, so `tools/verified_anchor_audit.py` recomputes each verdict). The
+predeclared prediction(s) live outside the gating set (`P1.reference_band_reaches_t_over_R_0.05` with
+`outcome: "falsified"`); being a prediction it can neither launder nor hide the gating
+verdict, and it is never counted as a gate here.
 
 Controls: the same element on the same mesh with straight chords fails at
 +2.079e+02 % (8 facets); the merged

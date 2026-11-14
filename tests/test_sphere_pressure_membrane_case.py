@@ -169,3 +169,83 @@ def test_committed_evidence_matches_a_fresh_solve():
     gates = stored["gates"]
     assert gates["all_gating_pass"] is True
     assert gates["falsified_predictions"] == ["G8b_reference_band_reaches_t_over_R_0.05"]
+
+# --------------------------------------------- report ↔ certificate consistency
+def _builder():
+    """Import the case's report builder (CASE_DIR is on sys.path above)."""
+    import importlib
+
+    import build_report
+
+    return importlib.reload(build_report)
+
+
+def test_report_verdict_comes_from_the_certificate_not_the_solve_record():
+    """The prose must grade the *certificate*, and never re-merge a prediction into the gates.
+
+    ``result.json`` keeps one flat per-solve gate dict in which the predeclared
+    prediction still sits next to the gates; the certificate (m17162) splits the
+    gating set from ``predictions``.  Before this guard the builder counted the
+    prediction as a gate and printed "10/11 pass, one ✗", contradicting the
+    certificate's "11/11 gating gates pass".
+    """
+    br = _builder()
+    with open(os.path.join(CASE_DIR, "gates_verified.json")) as fh:
+        cert = json.load(fh)
+    assert br.N_GATES == len(cert["gates"]) == 11
+    assert br.N_PASS == 11 and br.CERT["passed"] is True
+    falsified = [p["id"] for p in cert["predictions"] if p["outcome"] == "falsified"]
+    assert falsified == ["P1.reference_band_reaches_t_over_R_0.05"]
+
+    card = br.render()[os.path.join(CASE_DIR, "README.md")]
+    assert f"{br.N_PASS}/{br.N_GATES} gating gates" in card
+    assert "P1.reference_band_reaches_t_over_R_0.05" in card
+    # the pre-canonicalisation wording must not come back
+    assert "10/11" not in card and "G8b" not in card
+    # every gate of the certificate is listed with its numeric criterion
+    report = br.render()[os.path.join(ROOT, "docs", "sphere-pressure-membrane-case.md")]
+    for gate in cert["gates"]:
+        assert f"`{gate['id']}`" in report
+        assert f"`{gate['operator']} {gate['threshold']:g}`" in report
+    for pred in cert["predictions"]:
+        assert f"`{pred['id']}`" in report
+
+
+def test_report_does_not_claim_committed_figures_it_does_not_ship():
+    """The certificate declares no figure artifact, so the prose must not point at one."""
+    br = _builder()
+    card = br.render()[os.path.join(CASE_DIR, "README.md")]
+    assert not os.path.isdir(os.path.join(CASE_DIR, "figures"))
+    assert os.path.join("artifacts", "CASE-SPHERE-PRESSURE", "figures") in card
+    assert "not committed" in card
+    for stale in ("fem_sphere_pressure_membrane/figures/convergence.png",
+                  "fem_sphere_pressure_membrane/figures/field_meridian.png"):
+        assert stale not in card
+
+
+def test_committed_report_is_what_the_builder_renders_today():
+    """``build_report.py --check`` is the drift gate: no stale hand edit survives."""
+    br = _builder()
+    assert br.drift() == []
+    assert br.main(["--check"]) == 0
+
+
+def test_report_figures_all_honour_the_requested_directory(tmp_path):
+    """``--figures`` must put every panel in the same directory (panel 2 regression).
+
+    ``sphere_pressure_case.figures`` wrote the meridian panel to the module-global
+    ``FIG`` instead of the requested ``fig_dir``, so ``--fig-dir``/CLI output was
+    split across two directories.
+    """
+    import importlib.util
+
+    if importlib.util.find_spec("matplotlib") is None:
+        pytest.skip("matplotlib not installed")
+    br = _builder()
+    target = os.path.join(str(tmp_path), "figs")
+    made = br.figures(target)
+    assert sorted(os.path.basename(p) for p in made) == [
+        "convergence.png", "field_meridian.png", "sensitivity.png"]
+    for p in made:
+        assert os.path.dirname(p) == target
+        assert os.path.getsize(p) > 5_000
