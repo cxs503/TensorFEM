@@ -1,0 +1,144 @@
+{
+ "schema": "m20108-independent-heat-l2-crosscheck-v1",
+ "reference": "MMS T = sin(pi x) sin(pi y), q = 2 pi^2 T",
+ "levels": [
+  8,
+  16,
+  32,
+  64
+ ],
+ "variants": {
+  "own_element_mean_source": {
+   "h": [
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625
+   ],
+   "l2_relative": [
+    0.038916444365549245,
+    0.009819780276880356,
+    0.0024606361378285905,
+    0.0006155151069887883
+   ],
+   "h1_relative": [
+    0.1160433938681079,
+    0.057024451112186056,
+    0.028383777422258637,
+    0.014175710996818915
+   ],
+   "l2_orders": [
+    1.9866172541666487,
+    1.996659406169287,
+    1.9991651663545547
+   ],
+   "h1_orders": [
+    1.0250118350260282,
+    1.0065140533894323,
+    1.0016455047997754
+   ],
+   "l2_finest_order": 1.9991651663545547,
+   "l2_min_order_coarse_ge_8": 1.996659406169287,
+   "runtime_s": 31.64
+  },
+  "own_exact_load": {
+   "h": [
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625
+   ],
+   "l2_relative": [
+    0.015201991567425157,
+    0.0038011483778038393,
+    0.0009503322958032787,
+    0.00023758597078633013
+   ],
+   "h1_relative": [
+    0.11322097522817384,
+    0.05666315069946922,
+    0.028338342863279596,
+    0.014170023124424858
+   ],
+   "l2_orders": [
+    1.9997530922066884,
+    1.9999313784051889,
+    1.9999824094171474
+   ],
+   "h1_orders": [
+    0.9986585267547818,
+    0.9996554271266032,
+    0.9999132838475486
+   ],
+   "l2_finest_order": 1.9999824094171474,
+   "l2_min_order_coarse_ge_8": 1.9999313784051889,
+   "runtime_s": 35.58
+  },
+  "shipped_kernel": {
+   "h": [
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625
+   ],
+   "l2_relative": [
+    0.03891644436554988,
+    0.009819780276881329,
+    0.0024606361378315704,
+    0.0006155151070027241
+   ],
+   "h1_relative": [
+    0.11604339386810807,
+    0.05702445111218616,
+    0.028383777422258744,
+    0.01417571099681933
+   ],
+   "l2_orders": [
+    1.9866172541665292,
+    1.9966594061676832,
+    1.9991651663236378
+   ],
+   "h1_orders": [
+    1.0250118350260276,
+    1.0065140533894297,
+    1.0016455047997386
+   ],
+   "l2_finest_order": 1.9991651663236378,
+   "l2_min_order_coarse_ge_8": 1.9966594061676832,
+   "runtime_s": 28.1
+  }
+ },
+ "checks": [
+  {
+   "name": "own_element_mean_source:l2_finest_in_band",
+   "passed": true,
+   "detail": "finest-pair L2 order 1.9992 in (1.95, 2.1)"
+  },
+  {
+   "name": "own_element_mean_source:l2_pair_ge_1.90",
+   "passed": true,
+   "detail": "min L2 order for coarse nx>=8 is 1.9967 (gate >=1.90)"
+  },
+  {
+   "name": "own_exact_load:l2_finest_in_band",
+   "passed": true,
+   "detail": "finest-pair L2 order 2.0000 in (1.95, 2.1)"
+  },
+  {
+   "name": "own_exact_load:l2_pair_ge_1.90",
+   "passed": true,
+   "detail": "min L2 order for coarse nx>=8 is 1.9999 (gate >=1.90)"
+  },
+  {
+   "name": "shipped_kernel:l2_finest_in_band",
+   "passed": true,
+   "detail": "finest-pair L2 order 1.9992 in (1.95, 2.1)"
+  },
+  {
+   "name": "shipped_kernel:l2_pair_ge_1.90",
+   "passed": true,
+   "detail": "min L2 order for coarse nx>=8 is 1.9967 (gate >=1.90)"
+  }
+ ],
+ "passed": true
+}
