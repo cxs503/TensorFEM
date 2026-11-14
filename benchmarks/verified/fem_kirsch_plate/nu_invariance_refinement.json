@@ -1,0 +1,89 @@
+{
+  "schema": "tensorfem.kirsch-nu-invariance-refinement.v1",
+  "generated_at": "2026-11-14T07:48:43+00:00",
+  "tensorfem": "0.45.0",
+  "setup": {
+    "ratio_d_over_W": 0.02,
+    "levels": [
+      24,
+      48
+    ],
+    "poissons": [
+      0.0,
+      0.3,
+      0.45
+    ],
+    "young_ref": 200000000000.0,
+    "young_alt": 2000000000.0,
+    "grading": 6.0,
+    "physics_claim": "plane stress, traction-only: sigma independent of E and nu"
+  },
+  "predeclared": {
+    "pass_if_ratio_le": 0.5,
+    "fail_if_ratio_ge": 1.0,
+    "predicted_ratio_p2": 0.25,
+    "observed_order": 0.8178880493832213
+  },
+  "rows": [
+    {
+      "n_boundary": 24,
+      "poisson": 0.0,
+      "young_pa": 200000000000.0,
+      "ktg": 2.956456541383295
+    },
+    {
+      "n_boundary": 24,
+      "poisson": 0.3,
+      "young_pa": 200000000000.0,
+      "ktg": 2.9774659103776897
+    },
+    {
+      "n_boundary": 24,
+      "poisson": 0.45,
+      "young_pa": 200000000000.0,
+      "ktg": 2.9969831113194996
+    },
+    {
+      "n_boundary": 24,
+      "poisson": 0.3,
+      "young_pa": 2000000000.0,
+      "ktg": 2.9774659103776773
+    },
+    {
+      "n_boundary": 48,
+      "poisson": 0.0,
+      "young_pa": 200000000000.0,
+      "ktg": 2.989798690953137
+    },
+    {
+      "n_boundary": 48,
+      "poisson": 0.3,
+      "young_pa": 200000000000.0,
+      "ktg": 3.0014075996993137
+    },
+    {
+      "n_boundary": 48,
+      "poisson": 0.45,
+      "young_pa": 200000000000.0,
+      "ktg": 3.012978790714739
+    },
+    {
+      "n_boundary": 48,
+      "poisson": 0.3,
+      "young_pa": 2000000000.0,
+      "ktg": 3.0014075996990446
+    }
+  ],
+  "summary": {
+    "24": {
+      "nu_spread_ktg": 0.013614506000008292,
+      "young_rel_change_ktg": 4.176201592254148e-15
+    },
+    "48": {
+      "nu_spread_ktg": 0.007723124780951055,
+      "young_rel_change_ktg": 8.966395007332515e-14
+    }
+  },
+  "spread_ratio_48_over_24": 0.5672717600584517,
+  "verdict": "INCONCLUSIVE_decays_slower_than_p1"
+}
