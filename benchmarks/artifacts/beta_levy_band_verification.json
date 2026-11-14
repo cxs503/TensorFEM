@@ -1,0 +1,540 @@
+{
+  "generated_by": "benchmarks/beta_levy_band_verification.py",
+  "generated_utc": "2026-11-14T19:28:55.016842+00:00",
+  "git_sha": "unknown",
+  "python": "3.11.6",
+  "torch": "2.13.0",
+  "numpy": "2.0.1",
+  "canonical_levy": {
+    "case": {
+      "description": "square Kirchhoff plate, x-edges rotationally sprung, y-edges simple",
+      "a_m": 1.0,
+      "b_m": 1.0,
+      "t_m": 0.01,
+      "E_Pa": 200000000000.0,
+      "nu": 0.3,
+      "q_Pa": 1000.0,
+      "D_Nm": 18315.01831501832,
+      "beta_y": 0.0,
+      "reference": "exact Levy series (no discretisation)"
+    },
+    "betas": [
+      0.0,
+      0.2,
+      0.4,
+      0.5,
+      0.6,
+      0.8,
+      1.0
+    ],
+    "rows": [
+      {
+        "beta": 0.0,
+        "K_rot_Nm_per_m_per_rad": 0.0,
+        "exact_levy": {
+          "w_centre_m": 0.0002218044552728582,
+          "Mx_centre_Nm_per_m": 47.88637963539561,
+          "w_normalised_wD_over_qa4": 0.004062352660675059,
+          "edge_moment_Nm_per_m": 5.3988444112538226e-15,
+          "edge_slope_dw_dx": 0.0007361069789480201
+        },
+        "fem": [
+          {
+            "nx": 10,
+            "ny": 10,
+            "w_centre_m": 0.00022119606647768894,
+            "Mx_centre_Nm_per_m": 47.633420965407296,
+            "err_w_pct": -0.2742906108088916,
+            "err_Mx_pct": -0.5282476393378088
+          },
+          {
+            "nx": 20,
+            "ny": 20,
+            "w_centre_m": 0.00022174062516948476,
+            "Mx_centre_Nm_per_m": 47.82283521360509,
+            "err_w_pct": -0.028777647092315117,
+            "err_Mx_pct": -0.1326983210556909
+          },
+          {
+            "nx": 40,
+            "ny": 40,
+            "w_centre_m": 0.00022187482290883,
+            "Mx_centre_Nm_per_m": 47.870487845691855,
+            "err_w_pct": 0.03172507778765876,
+            "err_Mx_pct": -0.03318645056226144
+          }
+        ]
+      },
+      {
+        "beta": 0.2,
+        "K_rot_Nm_per_m_per_rad": 4578.74885531851,
+        "exact_levy": {
+          "w_centre_m": 0.00021660476720640836,
+          "Mx_centre_Nm_per_m": 47.23856793840922,
+          "w_normalised_wD_over_qa4": 0.003967120278505648,
+          "edge_moment_Nm_per_m": -3.219196862360122,
+          "edge_slope_dw_dx": 0.0007030734735801945
+        },
+        "fem": [
+          {
+            "nx": 10,
+            "ny": 10,
+            "w_centre_m": 0.00021592246704060116,
+            "Mx_centre_Nm_per_m": 46.980036366338155,
+            "err_w_pct": -0.31499776048651285,
+            "err_Mx_pct": -0.5472891820263115
+          },
+          {
+            "nx": 20,
+            "ny": 20,
+            "w_centre_m": 0.00021652265596954756,
+            "Mx_centre_Nm_per_m": 47.17345328115198,
+            "err_w_pct": -0.03790832395786925,
+            "err_Mx_pct": -0.13784214911455317
+          },
+          {
+            "nx": 40,
+            "ny": 40,
+            "w_centre_m": 0.00021667064788538775,
+            "Mx_centre_Nm_per_m": 47.22210231056688,
+            "err_w_pct": 0.030415156521734765,
+            "err_Mx_pct": -0.03485632304477404
+          }
+        ]
+      },
+      {
+        "beta": 0.4,
+        "K_rot_Nm_per_m_per_rad": 12209.99186002578,
+        "exact_levy": {
+          "w_centre_m": 0.0002088934043780179,
+          "Mx_centre_Nm_per_m": 46.27771906087559,
+          "w_normalised_wD_over_qa4": 0.0038258865270699256,
+          "edge_moment_Nm_per_m": -7.986594659300059,
+          "edge_slope_dw_dx": 0.0006541031927668464
+        },
+        "fem": [
+          {
+            "nx": 10,
+            "ny": 10,
+            "w_centre_m": 0.00020810955093650036,
+            "Mx_centre_Nm_per_m": 46.011913271128805,
+            "err_w_pct": -0.3752408764898352,
+            "err_Mx_pct": -0.5743709827122911
+          },
+          {
+            "nx": 20,
+            "ny": 20,
+            "w_centre_m": 0.00020878646514360804,
+            "Mx_centre_Nm_per_m": 46.210556507338964,
+            "err_w_pct": -0.051193207716759837,
+            "err_Mx_pct": -0.14512935144508354
+          },
+          {
+            "nx": 40,
+            "ny": 40,
+            "w_centre_m": 0.00020895348010980372,
+            "Mx_centre_Nm_per_m": 46.260507618115824,
+            "err_w_pct": 0.028759037158065937,
+            "err_Mx_pct": -0.037191640186773345
+          }
+        ]
+      },
+      {
+        "beta": 0.5,
+        "K_rot_Nm_per_m_per_rad": 18314.981685054947,
+        "exact_levy": {
+          "w_centre_m": 0.00020344904297182052,
+          "Mx_centre_Nm_per_m": 45.599248432706595,
+          "w_normalised_wD_over_qa4": 0.0037261729482018415,
+          "edge_moment_Nm_per_m": -11.346961428127985,
+          "edge_slope_dw_dx": 0.0006195453330639773
+        },
+        "fem": [
+          {
+            "nx": 10,
+            "ny": 10,
+            "w_centre_m": 0.00020259927356419823,
+            "Mx_centre_Nm_per_m": 45.329017353186075,
+            "err_w_pct": -0.41768169326802385,
+            "err_Mx_pct": -0.5926217839298697
+          },
+          {
+            "nx": 20,
+            "ny": 20,
+            "w_centre_m": 0.00020332621490366923,
+            "Mx_centre_Nm_per_m": 45.53084155491722,
+            "err_w_pct": -0.060372890605486784,
+            "err_Mx_pct": -0.1500175554216221
+          },
+          {
+            "nx": 40,
+            "ny": 40,
+            "w_centre_m": 0.0002035056307093436,
+            "Mx_centre_Nm_per_m": 45.58158604110196,
+            "err_w_pct": 0.027814206789322782,
+            "err_Mx_pct": -0.0387339533253539
+          }
+        ]
+      },
+      {
+        "beta": 0.6,
+        "K_rot_Nm_per_m_per_rad": 27472.458791380497,
+        "exact_levy": {
+          "w_centre_m": 0.0001962710918963218,
+          "Mx_centre_Nm_per_m": 44.70460340818396,
+          "w_normalised_wD_over_qa4": 0.0035947086427897774,
+          "edge_moment_Nm_per_m": -15.769378351101519,
+          "edge_slope_dw_dx": 0.0005740068069935259
+        },
+        "fem": [
+          {
+            "nx": 10,
+            "ny": 10,
+            "w_centre_m": 0.0001953417074798414,
+            "Mx_centre_Nm_per_m": 44.42943329485161,
+            "err_w_pct": -0.4735207857157864,
+            "err_Mx_pct": -0.6155297046701258
+          },
+          {
+            "nx": 20,
+            "ny": 20,
+            "w_centre_m": 0.00019612938607652174,
+            "Mx_centre_Nm_per_m": 44.63481012714909,
+            "err_w_pct": -0.07219902759542096,
+            "err_Mx_pct": -0.15612101598935224
+          },
+          {
+            "nx": 40,
+            "ny": 40,
+            "w_centre_m": 0.00019632385207824898,
+            "Mx_centre_Nm_per_m": 44.68644201382191,
+            "err_w_pct": 0.026881280079216197,
+            "err_Mx_pct": -0.04062533380784217
+          }
+        ]
+      },
+      {
+        "beta": 0.8,
+        "K_rot_Nm_per_m_per_rad": 73259.70696153848,
+        "exact_levy": {
+          "w_centre_m": 0.00017185571828516456,
+          "Mx_centre_Nm_per_m": 41.659986334541266,
+          "w_normalised_wD_over_qa4": 0.0031475406279334174,
+          "edge_moment_Nm_per_m": -30.722976709946675,
+          "edge_slope_dw_dx": 0.0004193707289339308
+        },
+        "fem": [
+          {
+            "nx": 10,
+            "ny": 10,
+            "w_centre_m": 0.0001707171275165956,
+            "Mx_centre_Nm_per_m": 41.37558049065875,
+            "err_w_pct": -0.6625271360942819,
+            "err_Mx_pct": -0.682683478575008
+          },
+          {
+            "nx": 20,
+            "ny": 20,
+            "w_centre_m": 0.00017166733709612352,
+            "Mx_centre_Nm_per_m": 41.58762570444965,
+            "err_w_pct": -0.10961589810380978,
+            "err_Mx_pct": -0.17369336012388326
+          },
+          {
+            "nx": 40,
+            "ny": 40,
+            "w_centre_m": 0.00017190200068833088,
+            "Mx_centre_Nm_per_m": 41.640938830177326,
+            "err_w_pct": 0.026930964897853293,
+            "err_Mx_pct": -0.04572134088327573
+          }
+        ]
+      },
+      {
+        "beta": 1.0,
+        "K_rot_Nm_per_m_per_rad": 18315018315.01832,
+        "exact_levy": {
+          "w_centre_m": 0.00010467636347941054,
+          "Mx_centre_Nm_per_m": 33.24496573209113,
+          "w_normalised_wD_over_qa4": 0.0019171495142749186,
+          "edge_moment_Nm_per_m": -69.83710497565637,
+          "edge_slope_dw_dx": 3.813105931744855e-09
+        },
+        "fem": [
+          {
+            "nx": 10,
+            "ny": 10,
+            "w_centre_m": 0.00010342887504777496,
+            "Mx_centre_Nm_per_m": 32.99396737824968,
+            "err_w_pct": -1.191757518287262,
+            "err_Mx_pct": -0.7549965786223245
+          },
+          {
+            "nx": 20,
+            "ny": 20,
+            "w_centre_m": 0.00010449314301608208,
+            "Mx_centre_Nm_per_m": 33.18208448865476,
+            "err_w_pct": -0.17503518200122636,
+            "err_Mx_pct": -0.18914515942988208
+          },
+          {
+            "nx": 40,
+            "ny": 40,
+            "w_centre_m": 0.00010475513120741609,
+            "Mx_centre_Nm_per_m": 33.229974027176425,
+            "err_w_pct": 0.07524881968319352,
+            "err_Mx_pct": -0.04509466195730116
+          }
+        ]
+      }
+    ]
+  },
+  "panel_ritz": {
+    "case": {
+      "description": "manuscript ice-belt panel, uniform pressure 1 MPa over full breadth",
+      "a": 0.8,
+      "b": 0.7,
+      "t": 0.022,
+      "E": 206000000000.0,
+      "nu": 0.3,
+      "q": 1000000.0,
+      "D_Nm": 200868.86446886443,
+      "reference": "double-sine Rayleigh-Ritz (variational, upper bound in stiffness)"
+    },
+    "ritz_modes": [
+      30,
+      40,
+      50
+    ],
+    "rows": [
+      {
+        "beta": 0.0,
+        "K_rot_x_Nm_per_m_per_rad": 0.0,
+        "K_rot_y_Nm_per_m_per_rad": 0.0,
+        "ritz": {
+          "30": {
+            "w_centre_m": 0.00622515657314908,
+            "Mx_centre_Nm_per_m": 24362.999364492178
+          },
+          "40": {
+            "w_centre_m": 0.006225155511072418,
+            "Mx_centre_Nm_per_m": 24360.335585636658
+          },
+          "50": {
+            "w_centre_m": 0.006225155782555318,
+            "Mx_centre_Nm_per_m": 24361.529382093562
+          }
+        },
+        "fem": {
+          "nx": 80,
+          "ny": 70,
+          "w_centre_m": 0.00625285689473358,
+          "Mx_centre_Nm_per_m": 24358.571687160686
+        },
+        "err_w_pct": 0.44498665006726945,
+        "err_Mx_pct": -0.012140842582120115,
+        "ritz_truncation_spread_w_pct": 1.2699983575892304e-05
+      },
+      {
+        "beta": 0.2,
+        "K_rot_x_Nm_per_m_per_rad": 62771.44168221803,
+        "K_rot_y_Nm_per_m_per_rad": 71738.79049396346,
+        "ritz": {
+          "30": {
+            "w_centre_m": 0.005934392290537212,
+            "Mx_centre_Nm_per_m": 23430.21749746497
+          },
+          "40": {
+            "w_centre_m": 0.005934534309872079,
+            "Mx_centre_Nm_per_m": 23506.742719693746
+          },
+          "50": {
+            "w_centre_m": 0.005934587119863885,
+            "Mx_centre_Nm_per_m": 23447.283385102135
+          }
+        },
+        "fem": {
+          "nx": 80,
+          "ny": 70,
+          "w_centre_m": 0.005962510846607108,
+          "Mx_centre_Nm_per_m": 23472.600594461008
+        },
+        "err_w_pct": 0.47052518025656465,
+        "err_Mx_pct": 0.10797502185246888,
+        "ritz_truncation_spread_w_pct": -0.003282946610072557
+      },
+      {
+        "beta": 0.4,
+        "K_rot_x_Nm_per_m_per_rad": 167390.44140665137,
+        "K_rot_y_Nm_per_m_per_rad": 191303.36160760158,
+        "ritz": {
+          "30": {
+            "w_centre_m": 0.0055269927781310246,
+            "Mx_centre_Nm_per_m": 22123.365572723542
+          },
+          "40": {
+            "w_centre_m": 0.00552771960480454,
+            "Mx_centre_Nm_per_m": 22312.68468471056
+          },
+          "50": {
+            "w_centre_m": 0.0055280761614489166,
+            "Mx_centre_Nm_per_m": 22168.496264708978
+          }
+        },
+        "fem": {
+          "nx": 80,
+          "ny": 70,
+          "w_centre_m": 0.005557296569250961,
+          "Mx_centre_Nm_per_m": 22236.647158958767
+        },
+        "err_w_pct": 0.5285818601020509,
+        "err_Mx_pct": 0.30742226913371695,
+        "ritz_truncation_spread_w_pct": -0.019597836322282625
+      },
+      {
+        "beta": 0.5,
+        "K_rot_x_Nm_per_m_per_rad": 251085.5784149237,
+        "K_rot_y_Nm_per_m_per_rad": 286954.9467599128,
+        "ritz": {
+          "30": {
+            "w_centre_m": 0.005255158474281503,
+            "Mx_centre_Nm_per_m": 21251.450948022295
+          },
+          "40": {
+            "w_centre_m": 0.0052565247676922625,
+            "Mx_centre_Nm_per_m": 21517.318477750643
+          },
+          "50": {
+            "w_centre_m": 0.0052572329047122675,
+            "Mx_centre_Nm_per_m": 21316.685215626643
+          }
+        },
+        "fem": {
+          "nx": 80,
+          "ny": 70,
+          "w_centre_m": 0.005287954366088861,
+          "Mx_centre_Nm_per_m": 21415.526344598322
+        },
+        "err_w_pct": 0.5843656146383935,
+        "err_Mx_pct": 0.46367963861106976,
+        "ritz_truncation_spread_w_pct": -0.039458598627140073
+      },
+      {
+        "beta": 0.6,
+        "K_rot_x_Nm_per_m_per_rad": 376628.17930867244,
+        "K_rot_y_Nm_per_m_per_rad": 430432.20492419717,
+        "ritz": {
+          "30": {
+            "w_centre_m": 0.004915068872201289,
+            "Mx_centre_Nm_per_m": 20160.69807380919
+          },
+          "40": {
+            "w_centre_m": 0.004917515975301314,
+            "Mx_centre_Nm_per_m": 20523.92999100078
+          },
+          "50": {
+            "w_centre_m": 0.004918831289760826,
+            "Mx_centre_Nm_per_m": 20252.666114681997
+          }
+        },
+        "fem": {
+          "nx": 80,
+          "ny": 70,
+          "w_centre_m": 0.004952144101380692,
+          "Mx_centre_Nm_per_m": 20392.319881849126
+        },
+        "err_w_pct": 0.6772505430143738,
+        "err_Mx_pct": 0.689557445801614,
+        "ritz_truncation_spread_w_pct": -0.07649007127705776
+      },
+      {
+        "beta": 0.8,
+        "K_rot_x_Nm_per_m_per_rad": 1004339.3006478192,
+        "K_rot_y_Nm_per_m_per_rad": 1147816.3435975078,
+        "ritz": {
+          "30": {
+            "w_centre_m": 0.0038922430995123204,
+            "Mx_centre_Nm_per_m": 16880.973381367807
+          },
+          "40": {
+            "w_centre_m": 0.0038998241428660476,
+            "Mx_centre_Nm_per_m": 17550.213144306646
+          },
+          "50": {
+            "w_centre_m": 0.0039040830450887383,
+            "Mx_centre_Nm_per_m": 17064.489069617608
+          }
+        },
+        "fem": {
+          "nx": 80,
+          "ny": 70,
+          "w_centre_m": 0.003949957258351006,
+          "Mx_centre_Nm_per_m": 17343.84670180003
+        },
+        "err_w_pct": 1.1750316971350427,
+        "err_Mx_pct": 1.637070005686847,
+        "ritz_truncation_spread_w_pct": -0.3032708433626241
+      }
+    ],
+    "excluded": {
+      "beta": 1.0,
+      "reason": "the Rayleigh-Ritz reference itself is not numerically resolvable at the fully closed limit in the 50-mode sine basis (its truncation spread diverges); beta=1 is covered exactly by the Levy section and by Timoshenko CCCC"
+    }
+  },
+  "strip_limit": {
+    "case": {
+      "description": "cylindrical bending limit (b = 100 a) vs beam closed form",
+      "L_m": 1.0,
+      "D_Nm": 1.0,
+      "nu": 0.3,
+      "q_Pa": 1.0
+    },
+    "rows": [
+      {
+        "K": 0.0,
+        "w_centre_levy": 0.013020833368728783,
+        "w_centre_beam": 0.013020833333333334,
+        "err_w_pct": 2.7183704176536594e-07,
+        "edge_moment_levy": -5.832710984638263e-15,
+        "edge_moment_beam": -0.0,
+        "err_M_pct": NaN
+      },
+      {
+        "K": 5.0,
+        "w_centre_levy": 0.005580357225565559,
+        "w_centre_beam": 0.005580357142857143,
+        "err_w_pct": 1.4821348148785773e-06,
+        "edge_moment_levy": -0.059523809569620646,
+        "edge_moment_beam": -0.05952380952380953,
+        "err_M_pct": 7.696268067292067e-08
+      },
+      {
+        "K": 50.0,
+        "w_centre_levy": 0.003004807739382247,
+        "w_centre_beam": 0.0030048076923076938,
+        "err_w_pct": 1.5666411279369186e-06,
+        "edge_moment_levy": -0.08012820542715739,
+        "edge_moment_beam": -0.08012820512820512,
+        "err_M_pct": 3.730924236222677e-07
+      },
+      {
+        "K": 1000000.0,
+        "w_centre_levy": 0.0026041874059847827,
+        "w_centre_beam": 0.002604187499958336,
+        "err_w_pct": -3.608555576573025e-06,
+        "edge_moment_levy": -0.08333316916749373,
+        "edge_moment_beam": -0.08333316666699998,
+        "err_M_pct": 3.0005985030001625e-06
+      }
+    ]
+  },
+  "summary": {
+    "max_abs_err_w_pct_finest_mesh": 0.07524881968319352,
+    "max_abs_err_Mx_pct_finest_mesh": 0.04572134088327573,
+    "max_abs_err_w_pct_panel_vs_ritz": 1.1750316971350427,
+    "max_abs_err_Mx_pct_panel_vs_ritz": 1.637070005686847,
+    "strip_max_abs_err_w_pct": 3.608555576573025e-06,
+    "strip_max_abs_err_M_pct": 3.0005985030001625e-06,
+    "deflection_range_ssss_to_clamped_pct": 52.806915735466035
+  }
+}
