@@ -389,6 +389,16 @@ def generate_gates(flat_results, cyl_results, flat_ladder=None, cyl_ladder=None)
                 "certified_error": cyl_ladder["certified_accuracy"],
             },
         },
+        # Evidence the certificate names, so a reader can check the claim
+        # without re-running the solver: the convergence chart and the two
+        # diagnostic studies are committed next to the numbers they back.
+        "artifacts": {
+            "result": "result.json",
+            "gates": "gates_verified.json",
+            "fig_convergence": "scordelis_lo_convergence.png",
+            "shear_treatment_study": "shear_treatment_study.json",
+            "reaction_residual_study": "reaction_residual_study.json",
+        },
         "limitations": [
             # Corrected in m16449: the ~50% plateau is a rank deficiency of the
             # one-point transverse-shear block (3 spurious zero-energy modes per
