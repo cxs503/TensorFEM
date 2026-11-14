@@ -125,6 +125,7 @@ __all__ = [
     "grillage_plastic_collapse",
     "elastic_reference_beam",
     "two_span_collapse_upper_bound",
+    "eccentric_patch_collapse_force",
     "write_plastic_collapse_report",
     "case_study_load_case",
 ]
@@ -585,7 +586,9 @@ def _overlap_members(extent: float, spacing: float, n_members: int) -> int:
 def grillage_plastic_collapse(geom: GrillageGeometry,
                              case: CombinedLoadCase,
                              *, elements_per_span: int = 4,
-                             terms: int = 61) -> dict[str, object]:
+                             terms: int = 61,
+                             patch_centre: tuple[float, float] = (0.5, 0.5)
+                             ) -> dict[str, object]:
     """Grillage ultimate ice pressure from the two limiting mechanisms.
 
     The ice patch force is split between the longitudinal-stiffener system and
@@ -595,6 +598,12 @@ def grillage_plastic_collapse(geom: GrillageGeometry,
     smaller of the two; the combined result also carries the plate-field /
     beam-column limit from ``ultimate_ice_pressure`` so the reported ultimate is
     the governing one over all three limit states.
+
+    ``patch_centre`` is the patch centre as a fraction of each system span
+    (``(0.5, 0.5)`` = centred, the default and the value used by round 2).  An
+    eccentric patch changes both the orthotropic load share *and* the member
+    line moment field; ``eccentric_patch_collapse_force`` is its independent
+    closed-form limit for the statically determinate line.
     """
     geom.validate()
     case.validate(geom)
@@ -604,8 +613,18 @@ def grillage_plastic_collapse(geom: GrillageGeometry,
     span_x = geom.n_spans * geom.frame_spacing
     span_y = geom.frame_span
     dx, dy, d3 = geom.plate_rigidities()
-    patch = (0.5 - 0.5 * lx / span_x, 0.5 + 0.5 * lx / span_x,
-             0.5 - 0.5 * ly / span_y, 0.5 + 0.5 * ly / span_y)
+    cx, cy = (float(v) for v in patch_centre)
+    for name, frac, extent, span in (("patch_centre[0]", cx, lx, span_x),
+                                     ("patch_centre[1]", cy, ly, span_y)):
+        if not (0.0 < frac < 1.0):
+            raise ValueError(f"{name} must be a fraction strictly inside (0, 1)")
+        half = 0.5 * extent / span
+        if frac - half < -1e-12 or frac + half > 1.0 + 1e-12:
+            raise ValueError(
+                f"{name}={frac!r} with a patch of {extent:g} m on a {span:g} m "
+                "span puts part of the patch outside the plate")
+    patch = (cx - 0.5 * lx / span_x, cx + 0.5 * lx / span_x,
+             cy - 0.5 * ly / span_y, cy + 0.5 * ly / span_y)
 
     ice_share = plate_patch_response(span_x=span_x, span_y=span_y, d1=dx, d2=dy,
                                      d3=d3, pressure=1.0, patch=patch,
@@ -643,8 +662,8 @@ def grillage_plastic_collapse(geom: GrillageGeometry,
         elements_per_span=max(4, int(elements_per_span)),
     )
 
-    x_patch = (0.5 * (span_x - lx), 0.5 * (span_x + lx))
-    y_patch = (0.5 * (span_y - ly), 0.5 * (span_y + ly))
+    x_patch = (cx * span_x - 0.5 * lx, cx * span_x + 0.5 * lx)
+    y_patch = (cy * span_y - 0.5 * ly, cy * span_y + 0.5 * ly)
 
     x_res = member_collapse_pressure(
         x_member,
@@ -688,7 +707,10 @@ def grillage_plastic_collapse(geom: GrillageGeometry,
         "overlap_members": {"x_system": n_over_x, "y_system": n_over_y},
         "patch": {"length": lx, "width": ly,
                   "area": lx * ly,
-                  "x_fraction": lx / span_x, "y_fraction": ly / span_y},
+                  "x_fraction": lx / span_x, "y_fraction": ly / span_y,
+                  "centre_x_fraction": cx, "centre_y_fraction": cy,
+                  "x_interval": [x_patch[0], x_patch[1]],
+                  "y_interval": [y_patch[0], y_patch[1]]},
         "dimensionless": {
             "plate_slenderness_beta": beta,
             "stiffener_column_slenderness": x_member.column_slenderness,
@@ -777,6 +799,68 @@ def two_span_collapse_upper_bound(*, span: float, plastic_moment: float,
         "collapse_load_exact": exact,
         "collapse_load_scan": float(np.min(w)),
         "hinge_position_ratio": u,
+    }
+
+
+def eccentric_patch_collapse_force(*, plastic_moment: float, span: float,
+                                  patch_length: float,
+                                  patch_centre: float = 0.5) -> dict[str, float]:
+    """Exact rigid-plastic collapse force of a simply supported span under an
+    eccentric uniform patch load (independent closed form).
+
+    The patch of length ``c`` carries a total force ``F`` (line load
+    ``q = F / c``) and its centroid sits at ``a = patch_centre * span`` from the
+    left support.  The static bending moment is
+
+    ``M(x) = R_A x`` for ``x <= x_a``, ``R_A x - q (x - x_a)^2 / 2`` inside the
+    patch, with ``x_a = a - c/2`` and ``R_A = q c (L - a) / L``.  The shear
+    vanishes at ``x_s = x_a + R_A / q``; if ``x_s`` is inside the patch
+
+    ``M_max = q (x_s^2 - x_a^2) / 2``
+
+    (which reproduces the central-patch value ``F (2L - c) / 8`` at
+    ``a = L/2``), otherwise the maximum sits at the patch's right edge,
+    ``M_max = q [R_A/q * x_b - c^2 / 2]`` with ``x_b = a + c/2``.  First yield at
+    ``M_max = M_p`` gives ``F_u = c M_p / (M_max / q)``; the mechanism needs one
+    hinge only, so for the statically determinate line ``F_u`` *is* the collapse
+    force -- and, being a limit-analysis result, it is independent of the elastic
+    properties of the span.
+
+    Returns the collapse force plus the diagnostic quantities used above.
+    """
+    _positive("plastic_moment", plastic_moment)
+    _positive("span", span)
+    _non_negative("patch_length", patch_length)
+    a = float(patch_centre) * span
+    c = min(patch_length, span)
+    if not (0.0 < float(patch_centre) < 1.0):
+        raise ValueError("patch_centre must be a fraction strictly inside (0, 1)")
+    if a - 0.5 * c < -1e-12 or a + 0.5 * c > span + 1e-12:
+        raise ValueError("the patch must lie inside the span")
+    xa = a - 0.5 * c
+    xb = a + 0.5 * c
+    r_bar = c * (span - a) / span          # R_A / q
+    xs = xa + r_bar                        # shear-free section
+    if xs <= xb:
+        # factored form of (x_s^2 - x_a^2)/2: the un-factored difference of
+        # squares loses ~6 digits when c -> 0 (point-load limit)
+        g = 0.5 * (xs - xa) * (xs + xa)    # M_max / q
+        max_at = "inside_patch"
+    else:
+        g = r_bar * xb - 0.5 * c * c       # M_max / q, maximum at the right edge
+        max_at = "patch_right_edge"
+    if g <= 0.0:  # pragma: no cover - guarded by the geometry checks above
+        raise ValueError("degenerate patch produced a non-positive moment")
+    force = plastic_moment * c / g
+    return {
+        "force_ultimate": force,
+        "line_load_ultimate": force / c,
+        "moment_per_unit_line_load": g,
+        "shear_free_x": xs,
+        "patch_left_x": xa,
+        "patch_right_x": xb,
+        "maximum_at": max_at,
+        "centroid_x": a,
     }
 
 
