@@ -3,36 +3,89 @@
   "anchor": "fem_heat_conduction_l2",
   "title": "Steady heat conduction: manufactured harmonic solution, Q4 convergence \u2265 2nd order",
   "mission": "CASE-FEM-HEAT-L2",
-  "generated_at": "2026-11-14T12:29:31.864611+00:00",
+  "generated_at": "2026-11-14T21:58:16.080427+00:00",
   "criteria": {
     "finest_l2_below_3pct": 0.03,
-    "convergence_order_ge_1p8": 1.8,
+    "l2_pair_order_ge_1p95": 1.95,
+    "l2_finest_order_in_band": [
+      1.95,
+      2.1
+    ],
+    "power_law_residual_le_1pct": 0.01,
+    "h1_pair_order_ge_0p9": 0.9,
+    "quadrature_spread_le_1e-6": 1e-06,
+    "independent_code_l2_agreement": 1e-09,
     "heat_balance_residual": 1e-10
   },
   "gates": [
     {
       "id": "finest_l2_below_3pct",
-      "quantity": "Relative L\u2082 error at finest mesh (32\u00d732)",
+      "quantity": "Relative L\u2082 error at the finest mesh (64\u00d764), domain integral",
       "reference": "T(x,y) = sin(\u03c0x)\u00b7sinh(\u03c0y)/sinh(\u03c0)",
-      "value": 0.00046179077474673065,
+      "value": 0.00017552093457329218,
       "threshold": 0.03,
       "operator": "<=",
       "passed": true
     },
     {
-      "id": "convergence_order_ge_1p8",
-      "quantity": "Mean observed h-refinement order (L\u2082 norm)",
+      "id": "l2_pair_order_ge_1p95",
+      "quantity": "Worst observed h-refinement order over all pairs with coarse nx \u2265 8",
       "reference": "Q4 element: theoretical order 2.0 in L\u2082",
-      "value": 1.8763659794083596,
-      "threshold": 1.8,
+      "value": 1.9977591219497117,
+      "threshold": 1.95,
       "operator": ">=",
       "passed": true
     },
     {
+      "id": "l2_finest_order_in_band",
+      "quantity": "Observed L\u2082 order of the finest pair (32\u00d732 \u2192 64\u00d764)",
+      "reference": "theoretical order 2.0 (band [1.95, 2.10])",
+      "value": 1.9998538262460381,
+      "threshold": 2.1,
+      "operator": "<= and >= 1.95",
+      "passed": true
+    },
+    {
+      "id": "power_law_residual_le_1pct",
+      "quantity": "Roache extrapolation residual |e0|/e_f at p_ref = 2 (two finest levels)",
+      "reference": "0 for an exact O(h\u00b2) power law",
+      "value": 0.0001350863903204857,
+      "threshold": 0.01,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "h1_pair_order_ge_0p9",
+      "quantity": "Worst observed H1-seminorm order over all pairs with coarse nx \u2265 8",
+      "reference": "Q4 element: theoretical order 1.0 in H1",
+      "value": 0.9997167572246559,
+      "threshold": 0.9,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "quadrature_spread_le_1e-6",
+      "quantity": "Worst relative norm spread between 4-point and 8-point post-processing (nx \u2265 8)",
+      "reference": "the reported norms must not depend on the quadrature rule",
+      "value": 3.191354097139978e-07,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "independent_code_l2_agreement",
+      "quantity": "Worst relative L\u2082 difference: from-scratch numpy/scipy solver vs kernel",
+      "reference": "same discrete problem -> same norms to round-off",
+      "value": 4.4215656553841425e-11,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    {
       "id": "heat_balance_residual",
-      "quantity": "Max |K\u00b7T \u2212 f| (global conservation)",
+      "quantity": "Max |K\u00b7T \u2212 f| (global conservation), finest mesh",
       "reference": "0 (harmonic field, no source)",
-      "value": 1.3322676295501878e-15,
+      "value": 1.2212453270876722e-15,
       "threshold": 1e-10,
       "operator": "<=",
       "passed": true

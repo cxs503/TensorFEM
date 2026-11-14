@@ -88,13 +88,30 @@ def test_certificate_declares_figure_evidence(anchor: str) -> None:
     assert payload.get("schema") == "tensorfem.verified-gates.v1", anchor
 
 
+def _resolve_declared(directory: Path, name: str) -> Path:
+    """Resolve a declared artifact the way ``tools/verified_anchor_audit.py`` does.
+
+    A certificate may name its evidence either anchor-relative (``fig.png``,
+    the older convention) or repo-relative (``docs/assets/verified/<anchor>/...``,
+    required for figures because the push gate drops ``*.png`` outside ``docs/``).
+    Resolving repo-root first and falling back to the anchor directory keeps this
+    test in step with the auditor; resolving anchor-first reports a repo-relative
+    figure as ``E_ARTIFACT_MISSING`` although it is on disk and committed.
+    """
+    candidate = REPO / name
+    if candidate.is_file():
+        return candidate
+    return directory / name
+
+
 @pytest.mark.parametrize("anchor", FIGURE_ANCHORS)
 def test_declared_evidence_exists_and_is_committed(anchor: str) -> None:
     tracked = _tracked_files()
     directory = VERIFIED / anchor
     for name in _declared_artifacts(anchor):
-        rel = (directory / name).relative_to(REPO).as_posix()
-        assert (directory / name).is_file(), f"{anchor}: declared artifact {name} is not on disk"
+        path = _resolve_declared(directory, name)
+        rel = path.relative_to(REPO).as_posix()
+        assert path.is_file(), f"{anchor}: declared artifact {name} is not on disk"
         assert rel in tracked, f"{anchor}: declared artifact {name} is not committed (git add it)"
 
 
@@ -104,7 +121,7 @@ def test_declared_figure_is_a_non_trivial_png(anchor: str) -> None:
     for name in _declared_artifacts(anchor):
         if not name.endswith(".png"):
             continue
-        blob = (directory / name).read_bytes()
+        blob = _resolve_declared(directory, name).read_bytes()
         assert blob.startswith(PNG_MAGIC), f"{anchor}: {name} is not a PNG"
         assert len(blob) > MIN_FIGURE_BYTES, (
             f"{anchor}: {name} is {len(blob)} B -- a placeholder, not a chart"
