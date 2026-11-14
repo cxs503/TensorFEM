@@ -441,7 +441,7 @@ class CombinedLoadCase:
 def plate_patch_response(*, span_x: float, span_y: float, d1: float, d2: float,
                          d3: float, pressure: float,
                          patch: tuple[float, float, float, float] = (0.0, 1.0, 0.0, 1.0),
-                         terms: int = 61, sample: int = 11,
+                         terms: int = 61, sample: int = 21,
                          poisson: float = 0.3) -> dict[str, float]:
     """Navier solution of an SSSS orthotropic plate under a rectangular patch load.
 
@@ -451,7 +451,14 @@ def plate_patch_response(*, span_x: float, span_y: float, d1: float, d2: float,
     ``Dx m^4/a^4`` bending term, ``load_share_y`` in ``Dy n^4/b^4`` and
     ``load_share_torsion`` in the coupling/torsion term.  The shares are
     positive and sum to one for any patch; they are converged with ``terms`` for
-    the centred patches used here (see ``grillage_plastic_verification``).  The three sum to 1 by
+    the centred patches used here (see ``grillage_plastic_verification``).  The
+    patch may sit anywhere on the plate: the mode set is ``1 .. 2 terms`` so the
+    even modes an off-centre patch excites are carried (they are exactly zero
+    for a patch centred on the mid-lines).  Peaks are sampled on a
+    ``sample x sample`` grid placed on ``linspace(0, span, sample)``; the
+    deflection field of a rectangular patch is broad enough that 21 samples
+    resolve the peak to well under 1 %, and the grid always contains the plate
+    centre.  Pass a larger ``sample`` for a sharper patch.  The three sum to 1 by
     construction; for the isotropic square plate under a uniform load
     ``load_share_x == load_share_y`` (T3) and ``Dx >> Dy`` drives it to 1 (T4).
     """
@@ -480,8 +487,14 @@ def plate_patch_response(*, span_x: float, span_y: float, d1: float, d2: float,
     y1, y2 = fy1 * span_y, fy2 * span_y
     load_area = (x2 - x1) * (y2 - y1)
 
-    m_vec = np.arange(1, terms + 1, 2, dtype=float)
-    n_vec = np.arange(1, terms + 1, 2, dtype=float)
+    # Mode set = the odd modes 1 .. 2*terms-1 (the historical symmetric
+    # half-basis, so every centred/flat patch keeps its old truncation) *plus*
+    # the even modes.  The odd-only basis forces a field symmetric about the
+    # plate mid-lines and therefore cannot represent an eccentric patch; the
+    # even modes are what an off-centre patch excites (they vanish identically
+    # for a patch centred on the mid-lines, so symmetric cases are unchanged).
+    m_vec = np.arange(1.0, 2.0 * terms + 1.0, 1.0)
+    n_vec = np.arange(1.0, 2.0 * terms + 1.0, 1.0)
     m = m_vec[:, None]
     n = n_vec[None, :]
     cx = np.cos(m * math.pi * x1 / span_x) - np.cos(m * math.pi * x2 / span_x)
