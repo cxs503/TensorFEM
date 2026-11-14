@@ -1,0 +1,128 @@
+{
+ "source": "TensorFEM mission m20861 local runs (see docs/xval_implicit_ibm_aitken_v7.md \u00a73); cluster job cj3019 was still running (gain family only)",
+ "operator": {
+  "plate_c4": {
+   "n": 9,
+   "sum_ds": 9.0,
+   "sum_eps_ds": 19.690642,
+   "amp": 2.187849,
+   "roundtrip_err": 2.2e-16
+  },
+  "plate_c10": {
+   "n": 21,
+   "sum_ds": 21.0,
+   "sum_eps_ds": 43.690642,
+   "amp": 2.080507
+  },
+  "plate_c20": {
+   "n": 41,
+   "sum_ds": 41.0,
+   "sum_eps_ds": 83.690642,
+   "amp": 2.041235
+  },
+  "ring_a8": {
+   "n": 50,
+   "amp": 1.9837
+  }
+ },
+ "one_step_budget": {
+  "site_force_sum": 2.56,
+  "population_delta": 2.56,
+  "guo_delta": 1.28
+ },
+ "constraint": {
+  "scalar_g2_res_guo": 0.12305,
+  "scalar_g2_res_raw": 1.09359,
+  "scalar_g2_m": 176.78,
+  "operator_g2_res_guo": 0.0,
+  "operator_g2_m": 176.09,
+  "scalar_g1_m": 125.63,
+  "n_steps": 200,
+  "A": 0.2,
+  "T": 64.0
+ },
+ "gain_sweep_320": {
+  "scalar_eps_on": [
+   [
+    2.0,
+    201.28,
+    206.5
+   ],
+   [
+    1.0,
+    120.2,
+    126.21
+   ],
+   [
+    0.6667,
+    72.77,
+    78.08
+   ],
+   [
+    0.5,
+    46.66,
+    51.14
+   ],
+   [
+    0.25,
+    13.01,
+    15.51
+   ]
+  ],
+  "operator_eps_on": [
+   [
+    1.0,
+    118.97,
+    125.02
+   ],
+   [
+    0.6667,
+    71.99,
+    77.29
+   ],
+   [
+    0.5,
+    46.22,
+    50.69
+   ]
+  ]
+ },
+ "epsilon_ab_1600": {
+  "plate_c4_operator_g2": [
+   193.63,
+   193.63
+  ],
+  "plate_c8_operator_g2": [
+   719.43,
+   719.43
+  ],
+  "ring_a5_g2": [
+   238.97,
+   239.03
+  ]
+ },
+ "settled_1600": {
+  "plate_c4_scalar_g2": [
+   195.0,
+   197.56
+  ],
+  "plate_c4_operator_g2": [
+   193.63,
+   195.9
+  ],
+  "plate_c8_operator_g2": [
+   719.43,
+   739.04
+  ],
+  "ring_a5_scalar_g2": [
+   238.97,
+   239.77
+  ]
+ },
+ "reference": {
+  "plate_c4_lamb": 50.26548245743669,
+  "plate_c4_smeared": 95.03317777109125,
+  "plate_c8_lamb": 201.06192982974676,
+  "ring_a5_lamb": 78.53981633974483
+ }
+}
