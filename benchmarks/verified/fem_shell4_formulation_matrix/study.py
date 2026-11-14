@@ -171,7 +171,14 @@ def block_d_membrane(sizes=(8, 16, 24, 32, 48)) -> list[dict]:
 
 
 def observed_order(errors: list[float], sizes: list[float]) -> float | None:
-    """Least-squares slope of log|error| vs log(size) when it is monotone."""
+    """Convergence order ``p`` in ``|error| ~ h**p`` (least-squares fit of log|error| vs log(size)).
+
+    The return value is ``-d log|error| / d log(size)``: a positive number means
+    the error *shrinks* as the mesh is refined, a negative number means the
+    discretisation diverges (the SRI configurations below do exactly that).  An
+    earlier revision returned the raw slope, which reports every convergent
+    ladder as a negative "order".
+    """
     pairs = [(math.log(s), math.log(abs(e))) for s, e in zip(sizes, errors) if abs(e) > 0]
     if len(pairs) < 2:
         return None
@@ -181,7 +188,8 @@ def observed_order(errors: list[float], sizes: list[float]) -> float | None:
     denom = sum((p[0] - mx) ** 2 for p in pairs)
     if denom == 0.0:
         return None
-    return sum((p[0] - mx) * (p[1] - my) for p in pairs) / denom
+    slope = sum((p[0] - mx) * (p[1] - my) for p in pairs) / denom
+    return -slope
 
 
 def make_figure(results: dict, path: Path) -> None:
@@ -275,7 +283,7 @@ def main() -> int:
         "membrane_max_reaction_residual": max(r["reaction_residual"] for r in results["membrane"]),
         "mesh_census_max_spurious": max(r["spurious"] for r in results["mesh_census"]),
     }
-    (outdir / "results.json").write_text(json.dumps(results, indent=2) + "\n")
+    (outdir / "result.json").write_text(json.dumps(results, indent=2) + "\n")
     make_figure(results, outdir / "formulation_matrix.png")
     print(json.dumps(results["gates"], indent=2))
     for row in results["rank_accounting"]:

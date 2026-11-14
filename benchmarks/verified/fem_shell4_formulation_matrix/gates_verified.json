@@ -1,0 +1,224 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_shell4_formulation_matrix",
+  "title": "Flat-facet Shell4 formulation matrix: rank census + Scordelis-Lo + pressurised cylinder",
+  "mission": "20935",
+  "generated_at": "2026-11-14T21:02:54+00:00",
+  "criteria": {
+    "rigid_zero_energy_rel_max": 1e-10,
+    "gauge_overlap_rel_max": 1e-09,
+    "mitc_spurious_per_facet_max": 0,
+    "sri_spurious_per_facet_min": 1,
+    "assembled_sri_spurious_min": 0,
+    "assembled_null_dim_abs_error_max": 0,
+    "scordelis_lo_finest_rel_error_max": 0.03,
+    "scordelis_lo_order_min": 1.0,
+    "sri_scordelis_lo_finest_rel_error_min": 0.1,
+    "membrane_finest_rel_error_max": 0.03,
+    "membrane_poisson_ratio_rel_max": 1e-08,
+    "membrane_ripple_max": 1e-08,
+    "membrane_reaction_residual_max": 1e-08,
+    "membrane_order_min": 1.5,
+    "refinement_levels_min": 3
+  },
+  "element": {
+    "young": 200000000000.0,
+    "poisson": 0.3,
+    "thickness": 0.01
+  },
+  "gates": [
+    {
+      "id": "A.rigid_body_zero_energy",
+      "kind": "invariant",
+      "quantity": "max over the 4 (formulation, plate-shear) configurations of ||K phi_rigid|| / (||K|| ||phi||)",
+      "reference": "rigid-body modes must carry exactly zero strain energy in exact arithmetic",
+      "value": 3.9803588461649533e-16,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A.drilling_gauge_identified",
+      "kind": "invariant",
+      "quantity": "|gauge_overlap - 1|: overlap between the legacy 6-mode mechanism and the identified drilling gauge mode",
+      "reference": "the extra zero mode of a flat facet is the nodal drilling rotation (7 zero modes expected, not 6)",
+      "value": 2.220446049250313e-16,
+      "threshold": 1e-09,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A.mitc_spurious_free",
+      "kind": "defect_absence",
+      "quantity": "max spurious zero-energy modes per facet over the MITC transverse-shear configurations",
+      "reference": "MITC shear interpolation must leave no spurious mechanism",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "A.sri_spurious_present [negative control]",
+      "kind": "negative_control",
+      "quantity": "min spurious zero-energy modes per facet over the SRI transverse-shear configurations",
+      "reference": "SRI shear integration is known to leave spurious mechanisms; the census must still see them",
+      "value": 2.0,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "This gate PASSES on a defect. It exists so that an accidental 'repair' of the census, or a genuine future fix of SRI, cannot pass unnoticed: it forces re-baselining."
+    },
+    {
+      "id": "B.assembled_null_dim",
+      "kind": "invariant",
+      "quantity": "max |null(K_assembled) - 7| over the flat meshes with MITC transverse shear (n = 2, 3, 4)",
+      "reference": "7 = 6 rigid-body modes + 1 nodal drilling gauge per connected flat mesh",
+      "value": 0.0,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "B.assembled_sri_spurious [negative control]",
+      "kind": "negative_control",
+      "quantity": "min spurious null modes over the assembled flat meshes with SRI transverse shear",
+      "reference": "the per-facet SRI mechanism survives assembly (it is not integrated away)",
+      "value": 1.0,
+      "threshold": 0.0,
+      "operator": ">=",
+      "passed": true,
+      "note": "integer count: >= 0 means 'at least one spurious null mode survives assembly'"
+    },
+    {
+      "id": "C.scordelis_lo.shell4+mitc",
+      "kind": "accuracy",
+      "quantity": "|w_c - (-0.3024)| / 0.3024 at n = 24, shell4 + MITC shear",
+      "reference": "Scordelis & Lo (1964) cylindrical-roof benchmark, w_c = -0.3024 m (NAFEMS LE11 / MacNeal-Harder suite)",
+      "value": 0.00557793318253752,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "C.scordelis_lo.shell4_mitc+mitc",
+      "kind": "accuracy",
+      "quantity": "|w_c - (-0.3024)| / 0.3024 at n = 24, shell4_mitc + MITC shear",
+      "reference": "Scordelis & Lo (1964) cylindrical-roof benchmark, w_c = -0.3024 m (NAFEMS LE11 / MacNeal-Harder suite)",
+      "value": 0.009858273326553535,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "C.scordelis_lo.order_mitc",
+      "kind": "accuracy",
+      "quantity": "observed order p of the shell4 + MITC shear ladder (n = 8, 16, 24), |error| ~ h^p",
+      "reference": "a accepted shell formulation must converge, p >= 1",
+      "value": 2.041907231661895,
+      "threshold": 1.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "C.scordelis_lo.order_sri [negative control]",
+      "kind": "negative_control",
+      "quantity": "observed order p of the shell4 + SRI shear ladder: negative = the discretisation diverges",
+      "reference": "SRI on a bending-dominated shell must be reported as non-converging, not as 'small error'",
+      "value": -0.3207514822456454,
+      "threshold": 0.0,
+      "operator": "<=",
+      "passed": true,
+      "note": "PASSES only while SRI diverges; a genuine fix turns this gate red and the baseline is re-derived."
+    },
+    {
+      "id": "C.scordelis_lo.sri_degradation [negative control]",
+      "kind": "negative_control",
+      "quantity": "min |relative error| over the SRI configurations at the finest level",
+      "reference": "SRI must remain materially wrong (>10 %) on a bending-dominated shell",
+      "value": 0.48082419596912507,
+      "threshold": 0.1,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "D.membrane_finest_error",
+      "kind": "accuracy",
+      "quantity": "max |w_r - w_exact| / w_exact over the four configurations at the finest ring (nt = 48)",
+      "reference": "thin-cylinder membrane state w_r = p R^2 / (E t), exact",
+      "value": 0.0005354132417763058,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "D.poisson_coupling",
+      "kind": "invariant",
+      "quantity": "max | |u_axial / w_r| - nu/2 | over the finest ring of every configuration",
+      "reference": "closed-cylinder membrane state requires u_axial = -(nu/2) w_r (Poisson coupling), exact",
+      "value": 1.0777895242952695e-10,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "D.membrane_ripple",
+      "kind": "invariant",
+      "quantity": "max relative ripple of the hoop displacement around the ring (all configurations, all nt)",
+      "reference": "an axisymmetric membrane state must be circumferentially uniform",
+      "value": 6.138247424538388e-10,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "D.membrane_reaction_residual",
+      "kind": "invariant",
+      "quantity": "max |sum of nodal reactions| / (p R) over all configurations and rings",
+      "reference": "static equilibrium of the closed cylinder under internal pressure",
+      "value": 1.012355449478303e-12,
+      "threshold": 1e-08,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "D.membrane_order",
+      "kind": "accuracy",
+      "quantity": "min observed order p over the four membrane ladders",
+      "reference": "a faceted cylinder is a quadratic geometry approximation: p must be >= 1.5",
+      "value": 1.9982712433223324,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "E.refinement_levels",
+      "kind": "evidence_depth",
+      "quantity": "number of distinct Scordelis-Lo mesh levels (n = [8, 16, 24])",
+      "reference": "the anchor must carry at least a three-level ladder",
+      "value": 3.0,
+      "threshold": 3.0,
+      "operator": ">=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "artifacts": {
+    "result": "benchmarks/verified/fem_shell4_formulation_matrix/result.json",
+    "driver": "benchmarks/verified/fem_shell4_formulation_matrix/study.py",
+    "gate_emitter": "benchmarks/verified/fem_shell4_formulation_matrix/make_gates.py",
+    "figure": "docs/assets/shell4_formulation_matrix/formulation_matrix.png",
+    "figure_sha256": "0196aa0941f8c6c1ade7374f9795923c1151ac85420cfd0fcb34e82a2b29675a",
+    "divergence_figure": "docs/assets/shell4_formulation_matrix/scordelis_lo_divergence.png",
+    "divergence_figure_sha256": "c9774d6df2ee9d01cfa48401c0d033ef108854ba35cb7759829e03262ee9e248"
+  },
+  "limitations": [
+    "The Scordelis-Lo target -0.3024 m is the published converged FE value of the benchmark (four significant digits), not a closed form; the accepted configurations converge to -0.3054 m, i.e. a ~1 % offset that mesh refinement cannot remove. The 3 % gate therefore measures 'inside the published reference band', not 'analytic exactness'.",
+    "shell4_mitc + MITC stalls at 0.94 -> 0.99 % between n = 16 and 24 (order 1.49 by fit); the slight uptick is that model-vs-reference offset, so the ladder is graded by the smallest error reached, not by monotonicity.",
+    "The negative-control gates (A.sri_spurious_present, B.assembled_sri_spurious, C.scordelis_lo.order_sri, C.scordelis_lo.sri_degradation) pass while SRI is defective. They are intentional: they make the known deficiency a checkable claim instead of prose. If SRI is ever fixed they turn red and this file must be re-baselined.",
+    "The rank census is a linear-algebra statement about the element matrices at one facet (Y = 200 GPa, nu = 0.3, t = 10 mm). It does not by itself prove mesh-level stability for non-flat (warped) facets or for nonlinear kinematics.",
+    "Flat-facet Shell4 cannot represent a curved shell exactly: the membrane block's error is O(h^2) purely from chord-vs-arc geometry, which is why its order is 2 and not better.",
+    "Every number is float64 torch on CPU; the machine-precision invariant gates are set at 1e-8..1e-10, four to seven decades above the observed 1e-12..1e-16 noise, so they detect a formulation error rather than a compiler difference."
+  ],
+  "repro_cmd": "PYTHONPATH=src python benchmarks/verified/fem_shell4_formulation_matrix/make_gates.py --fresh"
+}

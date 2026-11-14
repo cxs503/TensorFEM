@@ -16,6 +16,20 @@
       ],
       "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
+    "fem_hertz_contact_outofsample": {
+      "grade": "uncertified",
+      "defects": [
+        "E_NO_GATES"
+      ],
+      "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
+    },
+    "fem_kirsch_plate": {
+      "grade": "contradicted",
+      "defects": [
+        "E_ARTIFACT_MISSING"
+      ],
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
+    },
     "fem_pinched_cylinder": {
       "grade": "contradicted",
       "defects": [
@@ -29,13 +43,6 @@
         "E_ARTIFACT_MISSING"
       ],
       "remedy": "commit the artifact the certificate names, or drop the stale reference"
-    },
-    "fem_shell4_formulation_matrix": {
-      "grade": "uncertified",
-      "defects": [
-        "E_NO_GATES"
-      ],
-      "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
     "fem_shell_scordelis_lo": {
       "grade": "contradicted",
