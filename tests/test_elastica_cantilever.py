@@ -112,7 +112,54 @@ def test_beam_path_reproduces_elastica_at_one_load_level():
     case = corotational_beam_cantilever(1.0, 4, increment=0.1, max_iterations=20,
                                   tolerance=1e-10)
     assert case.converged and case.load_factor == pytest.approx(1.0)
-    assert case.load == pytest.approx(0.1)
+    # E I = E b t^3 / 12 = 1.2e6 * 0.1^3 / 12 = 100, so P = alpha E I / L^2 = 1.0
+    assert case.load == pytest.approx(1.0)
     assert case.deflection_error < 0.03
     assert case.shortening_error < 0.03
     assert case.exact.tip_rotation < math.pi / 2
+
+# ---------------------------------------------------------------------------
+# Round-off aware convergence test (CASE-CANTILEVER-TIP, round 2)
+# ---------------------------------------------------------------------------
+
+
+def test_newton_converged_branches():
+    """Branch A is the force test; branch B needs BOTH the floor and a dead step."""
+    from tensorfem.elastica_cantilever import newton_converged
+
+    # branch A: residual tiny relative to the load
+    assert newton_converged(1e-12, 1e-3, 1.0, 0.1) is True
+    # branch B: residual at the round-off floor and a Newton step at round-off
+    assert newton_converged(5e-10, 1e-15, 1.0, 0.1) is True
+    # branch B must NOT accept a large step: that is a stalled/diverging iteration
+    assert newton_converged(5e-10, 1e-2, 1.0, 0.1) is False
+    # nor a residual above the floor
+    assert newton_converged(1e-6, 1e-15, 1.0, 0.1) is False
+
+
+def test_mesh_refinement_converges_and_gate_qualifies():
+    """The rung must not lose load-factor progress as the mesh is refined.
+
+    Regression test for the pre-fix absolute tolerance: on a fine mesh the
+    residual floor exceeded it, the load step halved to zero and the run aborted
+    with ``converged=False`` even though the Newton loop was at a fixed point.
+    """
+    cases = tuple(corotational_beam_cantilever(1.0, n, increment=0.1)
+                  for n in (4, 8))
+    bench = ElasticaBenchmark(cases)
+    assert all(c.converged for c in cases)
+    assert all(c.load_factor == pytest.approx(1.0) for c in cases)
+    assert bench.all_converged is True
+    assert bench.qualified is True
+    assert bench.monotone() is True
+    assert cases[-1].deflection_error < cases[0].deflection_error < 0.03
+
+
+def test_beam_large_deflection_convergence_is_mesh_independent():
+    """The dedicated corotational beam must flag convergence on every mesh."""
+    from tensorfem.beam_large_deflection import solve_corotational_beam
+
+    sols = [solve_corotational_beam(n_elements=n, ea=1e6, ei=1.0, tip_force=1.0)
+            for n in (4, 8)]
+    assert all(s.converged for s in sols)
+    assert sols[1].tip_y == pytest.approx(sols[0].tip_y, rel=2e-3)

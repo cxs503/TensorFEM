@@ -35,6 +35,11 @@ def main() -> int:
     ap.add_argument("--tolerance", type=float, default=1e-10)
     args = ap.parse_args()
     torch.set_num_threads(1)
+    # the case geometry -- the reported rigidities are derived from these, so a
+    # change here can never leave a stale constant in the evidence
+    length, width, thickness, young = 10.0, 1.0, 0.1, 1.2e6
+    flexural = young * width * thickness ** 3 / 12.0
+    alpha_unit = 1.0
     alphas = [float(a) for a in args.alphas.split(",") if a.strip()]
     meshes = [int(m) for m in args.meshes.split(",") if m.strip()]
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
@@ -54,9 +59,14 @@ def main() -> int:
                                  increment=args.increment, tolerance=args.tolerance)
     payload = {
         "schema": "tensorfem.elastica-cantilever.v1",
-        "model": {"length": 10.0, "width": 1.0, "thickness": 0.1, "young": 1.2e6,
-                  "poisson": 0.0, "flexural_rigidity": 10.0,
-                  "alpha_definition": "P L^2 / (E I)", "load": "P = 0.1 * alpha"},
+        "model": {"length": length, "width": width, "thickness": thickness,
+                  "young": young, "poisson": 0.0,
+                  # derived, not typed: E I = E b t^3 / 12 and P = alpha E I / L^2
+                  "flexural_rigidity": flexural,
+                  "axial_rigidity": young * width * thickness,
+                  "tip_load": alpha_unit * flexural / length ** 2,
+                  "alpha_definition": "P L^2 / (E I)",
+                  "load": f"P = {alpha_unit * flexural / length ** 2:g} * alpha"},
         "solver": {"element": "corotational 2-node Euler-Bernoulli beam, 3 DOF/node",
                    "increment": args.increment, "tolerance": args.tolerance,
                    "threads": 1},
