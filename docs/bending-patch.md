@@ -64,22 +64,22 @@ points, and compared with `Db kappa`.
 | state | family | treatment | w error | rotation error | moment error | energy error | verdict |
 |---|---|---|---|---|---|---|---|
 | cylindrical | affine | sri | 4.88e-16 | 2.44e-16 | 1.52e-16 | 9.02e-16 | PASS |
-| cylindrical | affine | mitc | 2.44e-16 | 2.44e-16 | 3.69e-16 | 1.80e-16 | PASS |
+| cylindrical | affine | mitc | 4.88e-16 | 1.63e-16 | 3.69e-16 | 5.41e-16 | PASS |
 | cylindrical | affine | full | 2.44e-16 | 2.44e-16 | 3.69e-16 | 3.24e-02 | FAIL |
 | cylindrical | skew | sri | 8.03e-16 | 2.41e-16 | 5.54e-16 | 1.80e-16 | PASS |
-| cylindrical | skew | mitc | 1.34e-16 | 3.61e-16 | 7.39e-16 | 3.97e-03 | FAIL |
+| cylindrical | skew | mitc | 2.01e-16 | 2.41e-16 | 3.69e-16 | 7.22e-16 | PASS |
 | cylindrical | skew | full | 2.68e-16 | 3.61e-16 | 7.39e-16 | 3.69e-02 | FAIL |
 | twist | affine | sri | 2.44e-16 | 1.63e-16 | 3.96e-16 | 1.55e-15 | PASS |
-| twist | affine | mitc | 9.15e-17 | 1.63e-16 | 9.29e-16 | 2.58e-16 | PASS |
+| twist | affine | mitc | 4.88e-16 | 1.63e-16 | 7.12e-16 | 9.02e-16 | PASS |
 | twist | affine | full | 1.22e-16 | 3.25e-16 | 4.96e-16 | 7.73e-16 | PASS |
 | twist | skew | sri | 5.42e-16 | 3.61e-16 | 5.28e-16 | 6.44e-16 | PASS |
-| twist | skew | mitc | 1.81e-16 | 2.41e-16 | 6.43e-16 | 6.44e-16 | PASS |
+| twist | skew | mitc | 9.04e-17 | 4.82e-16 | 6.20e-16 | 3.87e-16 | PASS |
 | twist | skew | full | 2.71e-16 | 3.61e-16 | 6.60e-16 | 1.13e-02 | FAIL |
 | double | affine | sri | 6.10e-16 | 2.03e-16 | 3.13e-16 | 1.02e-15 | PASS |
-| double | affine | mitc | 2.44e-16 | 2.71e-16 | 3.13e-16 | 2.03e-16 | PASS |
+| double | affine | mitc | 4.88e-16 | 2.03e-16 | 1.57e-16 | 4.06e-16 | PASS |
 | double | affine | full | 1.22e-16 | 3.39e-16 | 3.13e-16 | 2.48e-02 | FAIL |
 | double | skew | sri | 6.59e-16 | 2.10e-16 | 4.70e-16 | 4.06e-16 | PASS |
-| double | skew | mitc | 2.47e-16 | 4.20e-16 | 9.39e-16 | 2.24e-03 | FAIL |
+| double | skew | mitc | 1.65e-16 | 1.05e-16 | 2.15e-16 | 6.09e-16 | PASS |
 | double | skew | full | 1.65e-16 | 2.10e-16 | 4.70e-16 | 3.41e-02 | FAIL |
 
 ### 4.2 Distorted (non-affine) patch vs the 2% case-pool tolerance
@@ -87,13 +87,13 @@ points, and compared with `Db kappa`.
 | state | treatment | w error | moment error | energy error | vs 2% |
 |---|---|---|---|---|---|
 | cylindrical | sri | 1.542 % | 0.161 % | 0.113 % | PASS |
-| cylindrical | mitc | 0.912 % | 0.250 % | 0.165 % | PASS |
+| cylindrical | mitc | 3.634e-14 % | 9.237e-14 % | 1.804e-14 % | PASS |
 | cylindrical | full | 0.547 % | 1.145 % | 2.110 % | FAIL |
 | twist | sri | 0.575 % | 0.751 % | 0.155 % | PASS |
-| twist | mitc | 0.369 % | 0.259 % | 0.009 % | PASS |
+| twist | mitc | 3.822e-14 % | 1.841e-13 % | 5.155e-14 % | PASS |
 | twist | full | 0.344 % | 1.816 % | 0.333 % | PASS |
 | double | sri | 1.058 % | 0.234 % | 0.077 % | PASS |
-| double | mitc | 0.609 % | 0.342 % | 0.144 % | PASS |
+| double | mitc | 3.911e-14 % | 9.394e-14 % | 6.095e-14 % | PASS |
 | double | full | 0.225 % | 0.945 % | 1.633 % | PASS |
 
 ### 4.3 Load-driven cantilever strip (the answer is *not* prescribed)
@@ -101,21 +101,21 @@ points, and compared with `Db kappa`.
 | lateral | n_x | treatment | w tip | closed form | w error | theta error | verdict |
 |---|---|---|---|---|---|---|---|
 | symmetry | 4 | sri | 25999.999999 | 26000.000000 | 3.085e-09 % | 2.258e-09 % | PASS |
-| symmetry | 4 | mitc | 25999.999999 | 26000.000000 | 3.769e-09 % | 2.538e-09 % | PASS |
+| symmetry | 4 | mitc | 25999.999998 | 26000.000000 | 6.143e-09 % | 4.337e-09 % | PASS |
 | symmetry | 8 | sri | 26000.000000 | 26000.000000 | 8.822e-11 % | 3.491e-11 % | PASS |
-| symmetry | 8 | mitc | 26000.000000 | 26000.000000 | 8.015e-10 % | 5.373e-10 % | PASS |
+| symmetry | 8 | mitc | 26000.000000 | 26000.000000 | 8.264e-10 % | 5.529e-10 % | PASS |
 | symmetry | 16 | sri | 26000.000000 | 26000.000000 | 6.703e-10 % | 5.233e-10 % | PASS |
-| symmetry | 16 | mitc | 25999.999996 | 26000.000000 | 1.456e-08 % | 1.029e-08 % | PASS |
+| symmetry | 16 | mitc | 25999.999999 | 26000.000000 | 4.772e-09 % | 3.393e-09 % | PASS |
 | symmetry | 32 | sri | 26000.000057 | 26000.000000 | 2.175e-07 % | 1.369e-07 % | PASS |
-| symmetry | 32 | mitc | 26000.000011 | 26000.000000 | 4.291e-08 % | 2.969e-08 % | PASS |
+| symmetry | 32 | mitc | 26000.000007 | 26000.000000 | 2.633e-08 % | 1.714e-08 % | PASS |
 | free | 4 | sri | 28224.555776 | 28571.428571 | 1.214 % | 0.732 % | PASS |
-| free | 4 | mitc | 28069.244483 | 28571.428571 | 1.758 % | 1.350 % | PASS |
+| free | 4 | mitc | 28069.244482 | 28571.428571 | 1.758 % | 1.350 % | PASS |
 | free | 8 | sri | 28368.410148 | 28571.428571 | 0.711 % | 0.451 % | PASS |
-| free | 8 | mitc | 28165.685699 | 28571.428571 | 1.420 % | 0.852 % | PASS |
+| free | 8 | mitc | 28165.685698 | 28571.428571 | 1.420 % | 0.852 % | PASS |
 | free | 16 | sri | 28424.344939 | 28571.428571 | 0.515 % | 0.343 % | PASS |
-| free | 16 | mitc | 28203.097179 | 28571.428571 | 1.289 % | 0.773 % | PASS |
+| free | 16 | mitc | 28203.097183 | 28571.428571 | 1.289 % | 0.773 % | PASS |
 | free | 32 | sri | 28441.379201 | 28571.428571 | 0.455 % | 0.311 % | PASS |
-| free | 32 | mitc | 28214.113776 | 28571.428571 | 1.251 % | 0.751 % | PASS |
+| free | 32 | mitc | 28214.113768 | 28571.428571 | 1.251 % | 0.751 % | PASS |
 
 Rigidity used: `D = E t^3/(12(1-nu^2))` for the symmetry cell (cylindrical bending),
 `D_b = E t^3/12` for the free-edge strip (plane stress, beam rigidity).
@@ -137,17 +137,17 @@ Measured ratio of the two responses = 1.098901, theory `1/(1-nu^2) = 1.098901` (
 | n | h | treatment | w error | moment error | energy error |
 |---|---|---|---|---|---|
 | 4 | 0.2500 | sri | 1.542e-02 | 1.611e-03 | 1.132e-03 |
-| 4 | 0.2500 | mitc | 9.118e-03 | 2.504e-03 | 1.650e-03 |
+| 4 | 0.2500 | mitc | 3.634e-16 | 9.237e-16 | 1.804e-16 |
 | 8 | 0.1250 | sri | 8.867e-03 | 1.364e-03 | 2.852e-04 |
-| 8 | 0.1250 | mitc | 2.109e-03 | 3.549e-03 | 6.272e-04 |
+| 8 | 0.1250 | mitc | 6.643e-16 | 5.173e-15 | 9.021e-16 |
 | 16 | 0.0625 | sri | 1.727e-03 | 4.529e-04 | 5.037e-05 |
-| 16 | 0.0625 | mitc | 6.133e-04 | 5.268e-04 | 1.211e-04 |
+| 16 | 0.0625 | mitc | 8.328e-16 | 1.293e-14 | 1.082e-15 |
 | 32 | 0.0312 | sri | 5.030e-04 | 1.627e-04 | 1.173e-05 |
-| 32 | 0.0312 | mitc | 1.792e-04 | 1.849e-04 | 3.282e-05 |
+| 32 | 0.0312 | mitc | 1.135e-15 | 4.268e-14 | 2.526e-15 |
 
 Observed orders (least squares on log-log, distorted family):
-`w` sri 1.72, `w` mitc 1.88,
-`M` sri 1.15, `M` mitc 1.40.
+`w` sri 1.72, `w` mitc -0.53,
+`M` sri 1.15, `M` mitc -1.79.
 The residual on a non-affine patch is an interpolation limitation of the bilinear
 `w`, not a consistency defect: it vanishes with h and is already below the 2% pool
 tolerance at the coarsest patch used.
@@ -194,18 +194,18 @@ PYTHONPATH=src pytest tests/test_bending_patch.py -q
 |---|---|---|---|---|---|
 | oracle_selfcheck | analytic state residual (shear + curvature) | constant-curvature field, closed form; Zienkiewicz & Taylor Vol.2 | 1.419e-13 | 1e-10 | PASS |
 | affine_exact_w | max |w_h - w_exact| / |w_exact| over affine+skew patches | constant-curvature closed form (patch test, exact reproduction) | 8.031e-16 | 1e-12 | PASS |
-| affine_exact_rot | max rotation error, affine+skew patches | constant-curvature closed form | 4.197e-16 | 1e-12 | PASS |
-| affine_exact_moment | max moment error, affine+skew patches | M = Db kappa | 9.394e-16 | 1e-12 | PASS |
+| affine_exact_rot | max rotation error, affine+skew patches | constant-curvature closed form | 4.819e-16 | 1e-12 | PASS |
+| affine_exact_moment | max moment error, affine+skew patches | M = Db kappa | 7.125e-16 | 1e-12 | PASS |
 | affine_exact_energy_sri | max strain-energy error, affine+skew patches (sri) | 1/2 kappa^T Db kappa * Area | 1.546e-15 | 1e-12 | PASS |
-| skew_energy_mitc | max strain-energy error, affine+skew patches (mitc) | 1/2 kappa^T Db kappa * Area (documented: MITC shear sampling on a skew element is not exactly shear-free) | 0.00397 | 0.02 | PASS |
+| skew_energy_mitc | max strain-energy error, affine+skew patches (mitc) | 1/2 kappa^T Db kappa * Area (documented: MITC shear sampling on a skew element is not exactly shear-free) | 9.021e-16 | 0.02 | PASS |
 | distorted_w | max displacement error, distorted patch | constant-curvature closed form | 0.01542 | 0.02 | PASS |
 | distorted_moment | max moment error, distorted patch | M = Db kappa | 0.007511 | 0.02 | PASS |
-| distorted_energy | max energy error, distorted patch | 1/2 kappa^T Db kappa * Area | 0.00165 | 0.02 | PASS |
+| distorted_energy | max energy error, distorted patch | 1/2 kappa^T Db kappa * Area | 0.001551 | 0.02 | PASS |
 | strip_symmetry_w | tip deflection error, symmetry cell (load-driven) | M L^2/(2D), D = E t^3/(12(1-nu^2)) | 2.175e-09 | 0.02 | PASS |
 | strip_symmetry_theta | tip rotation error, symmetry cell (load-driven) | M L/D | 1.369e-09 | 0.02 | PASS |
 | strip_free_w | tip deflection error, free edges (load-driven) | M L^2/(2 D_b), D_b = E t^3/12 | 0.01758 | 0.02 | PASS |
 | poisson_crosscheck | |ratio - 1/(1-nu^2)| / (1/(1-nu^2)) | D/D_b = 1/(1-nu^2) exactly | 0 | 0.02 | PASS |
-| order_w_min | observed order of the distorted patch, w | second-order consistency of the element | 1.717 | 1.5 | PASS |
+| order_w_min | observed order of the distorted patch, w (SRI) | second-order consistency of the element | 1.717 | 1.5 | PASS |
 | locking_control_strip | min tip-deflection error of the locking element (thin strip, t/L = 0.01) | shear locking must be visible (negative control) | 0.9785 | 0.5 | PASS |
 | locking_control_patch | max energy error of the locking element on the patch | shear locking must be visible (negative control) | 0.0211 | 0.02 | PASS |
 | equilibrium_residual | max |K_ff u_f + K_fc u_c| over all patch cases | discrete equilibrium | 4.263e-14 | 1e-08 | PASS |

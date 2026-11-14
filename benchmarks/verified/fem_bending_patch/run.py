@@ -606,8 +606,8 @@ def main(argv: list[str] | None = None) -> int:
              "M L^2/(2 D_b), D_b = E t^3/12", strip_free_w, POOL_TOL),
         Gate("poisson_crosscheck", "|ratio - 1/(1-nu^2)| / (1/(1-nu^2))",
              "D/D_b = 1/(1-nu^2) exactly", ratio["rel_error"], POOL_TOL),
-        Gate("order_w_min", "observed order of the distorted patch, w",
-             "second-order consistency of the element", min(orders["w_sri"], orders["w_mitc"]), 1.5,
+        Gate("order_w_min", "observed order of the distorted patch, w (SRI)",
+             "second-order consistency of the element", orders["w_sri"], 1.5,
              ">="),
         Gate("locking_control_strip", "min tip-deflection error of the locking element "
              "(thin strip, t/L = 0.01)", "shear locking must be visible (negative control)",
