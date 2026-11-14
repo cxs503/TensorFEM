@@ -39,6 +39,8 @@ from tensorfem.ibm_aitken_added_mass import (  # noqa: E402
     SpringMountedBody,
     IBMImplicitFSI,
     LBMFluid2D,
+    estimate_period_damped,
+    period_window_ok,
     plate_markers,
 )
 
@@ -261,7 +263,13 @@ def plate_added_mass_study(c=16, lattice=(144, 144), n_steps=900, dt=1.0,
             break
 
     tips = [h["y"] for h in hist]
-    period = estimate_period(tips, dt)
+    # Window guard: a record shorter than one period makes every estimator below
+    # collapse onto the window length (see docs/xval_implicit_ibm_aitken_v5.md).
+    # The window-safe damped-sinusoid fit is the primary estimate; the legacy
+    # zero-crossing / FFT path is kept only for the record.
+    fit = estimate_period_damped(tips, dt)
+    period_legacy = estimate_period(tips, dt)
+    period = fit["period"] if fit["valid"] else period_legacy
     freq = 1.0 / period if period == period else float("nan")
     f_vac = math.sqrt(k / m_s) / (2.0 * math.pi)
     f_fsi_analytic = math.sqrt(k / (m_s + m_a_analytic)) / (2.0 * math.pi)
@@ -272,6 +280,14 @@ def plate_added_mass_study(c=16, lattice=(144, 144), n_steps=900, dt=1.0,
         "m_a_analytic": m_a_analytic, "m_s": m_s, "k": k,
         "f_vac": f_vac, "f_fsi_analytic": f_fsi_analytic,
         "f_measured": freq,
+        "f_measured_legacy": 1.0 / period_legacy if period_legacy == period_legacy
+        else float("nan"),
+        "period_fit": fit["period"], "period_fit_valid": fit["valid"],
+        "period_legacy": period_legacy,
+        "window_cycles": fit["cycles"],
+        "period_reference": 1.0 / f_fsi_analytic,
+        "window_ok_2cyc": period_window_ok(len(tips), dt,
+                                          1.0 / f_fsi_analytic, 2.0),
         "f_ratio_measured": freq / f_vac if freq == freq else float("nan"),
         "f_ratio_analytic": f_fsi_analytic / f_vac,
         "f_ratio_error": abs(freq / f_vac - f_fsi_analytic / f_vac) / (f_fsi_analytic / f_vac)
@@ -347,10 +363,14 @@ def main(argv=None):
 
     pm = ev.get("plate_added_mass", {})
     if "error" not in pm:
+        window_ok = pm.get("window_ok_2cyc", True) and pm.get("period_fit_valid", True)
         table.append({"item": "plate f_fsi/f_vac vs analytic added-mass",
                       "ref": pm["f_ratio_analytic"], "got": pm["f_ratio_measured"],
                       "kind": "relative",
-                      "pass": pm["f_ratio_error"] <= TOL})
+                      "window_ok": bool(window_ok),
+                      "verdict": "PASS" if (window_ok and pm["f_ratio_error"] <= TOL)
+                      else ("INVALID_WINDOW" if not window_ok else "FAIL"),
+                      "pass": bool(window_ok and pm["f_ratio_error"] <= TOL)})
     else:
         table.append({"item": "plate f_fsi/f_vac vs analytic added-mass",
                       "ref": "N/A", "got": pm["error"], "kind": "error",
