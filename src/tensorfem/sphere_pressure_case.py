@@ -121,6 +121,28 @@ POISSON_RATIOS = (0.0, 0.2, 0.3, 0.4, 0.49)
 PRESSURES = (1.0, 1.0e3, 1.0e6)
 FLAT_FACET_CONTROL = 2          # facets per cube face (24 facets) - cheap reproduction
 
+# --------------------------------------------------------------------------
+# Determinism boundary (declared, not discovered later)
+# --------------------------------------------------------------------------
+# A verified record must say which of its numbers a re-run can reproduce.  Two
+# leaves of this record cannot be reproduced bit-for-bit, and both are declared
+# here so ``repro_check.py`` / the tests can separate "value drifted" from
+# "value was never deterministic":
+#
+# * ``flat_facet_control/wall_clock_s`` and the ``flat_facet_control/timing``
+#   block -- wall clock, host-load dependent by construction.  Recorded as the
+#   median of ``TIMING_REPEATS`` samples so a single outlier cannot be frozen
+#   into the certificate (the record carried 13.23 s for this leaf while three
+#   independent runs measured 0.44-1.64 s).
+# * the flat-facet Shell4 control's least-squares reduction carries a 1 ulp
+#   wobble in its last bit (measured: 5 in-process reruns, ``nonradial_residual_rel``
+#   alternating in the final bit), which is why the leaf comparison is run at
+#   ``LSB_TOL`` and not at bit equality.
+TIMING_REPEATS = 3                 # samples per timed solve; the record keeps the median
+TIMING_PLAUSIBILITY_FACTOR = 8.0   # re-run/record ratio above which the record is stale or typed
+TIMING_LEAVES = ("flat_facet_control/wall_clock_s", "flat_facet_control/timing")
+LSB_TOL = 1e-12                    # 4 decades above 1 ulp, 13 decades below the 3 % tolerance
+
 OUT = os.path.abspath(DEFAULT_OUT)
 FIG = os.path.join(OUT, "figures")
 
@@ -275,14 +297,44 @@ def flat_facet_shell4_control(case: dict = CASE) -> dict:
     problem.update(radius_m=case["radius_m"], thickness_m=case["thickness_m"],
                    young_modulus_pa=case["young_modulus_pa"],
                    poisson_ratio=case["poisson_ratio"])
-    t0 = time.time()
-    res = solve_sphere_membrane(FLAT_FACET_CONTROL, problem)
+    samples = []
+    for _ in range(TIMING_REPEATS):
+        t0 = time.perf_counter()
+        res = solve_sphere_membrane(FLAT_FACET_CONTROL, problem)
+        samples.append(time.perf_counter() - t0)
+    # publish the samples at 3 dp first and derive every statistic from the
+    # *published* list, so the record is internally consistent by construction
+    # (a statistic that only matches the unrounded samples cannot be re-checked)
+    samples = [round(x, 3) for x in samples]
+    samples_sorted = sorted(samples)
+    median_s = samples_sorted[len(samples_sorted) // 2]
     rr = res.radius_ratios
     out = {
         "path": "tensorfem.sphere_membrane_benchmark (projected_shell4_stiffness, flat facets)",
         "facets_per_cube_face": FLAT_FACET_CONTROL,
         "facet_count": rr["facet_count"],
-        "wall_clock_s": round(time.time() - t0, 2),
+        # legacy scalar leaf: kept for the readers of earlier records, but it is
+        # now the *median* of the samples in ``timing`` and must stay equal to
+        # ``timing/median_s`` -- editing it alone is inconsistent, which is what
+        # the hand-typed value in the closed PR #860 would have been.
+        "wall_clock_s": round(median_s, 2),
+        "timing": {
+            "clock": "time.perf_counter",
+            "repeats": TIMING_REPEATS,
+            "samples_s": samples,
+            "median_s": round(median_s, 3),
+            "min_s": round(samples_sorted[0], 3),
+            "max_s": round(samples_sorted[-1], 3),
+            "spread_ratio": round(samples_sorted[-1] / samples_sorted[0], 2)
+            if samples_sorted[0] > 0 else None,
+            "gated": False,
+            "plausibility_factor": TIMING_PLAUSIBILITY_FACTOR,
+            "note": ("wall clock is host-load dependent provenance, not evidence: it is the only "
+                     "part of this record a re-run cannot reproduce, so it is excluded from the "
+                     "determinism comparison (repro_check.py). A re-run must stay within "
+                     f"{TIMING_PLAUSIBILITY_FACTOR:g}x of median_s; that bound detects a frozen "
+                     "outlier or a hand-typed number, it is not a performance criterion."),
+        },
         "N_mean_n_per_m": rr["resultant_mean_n_per_m"],
         "N_mean_exact_n_per_m": rr["resultant_reference_exact_n_per_m"],
         "N_mean_rel_error": rr["resultant_error_vs_exact"],
@@ -644,6 +696,17 @@ def run_case(case: dict = CASE, *, out_dir: str | None = None,
         "repro_cmd": ("tensorfem-sphere-pressure --out artifacts/CASE-SPHERE-PRESSURE  "
                       "# equivalent: PYTHONPATH=src python3 -m "
                       "tensorfem.sphere_pressure_case --out artifacts/CASE-SPHERE-PRESSURE"),
+        # which of these numbers a re-run must reproduce, and which it cannot
+        "determinism": {
+            "checker": "benchmarks/verified/fem_sphere_pressure_membrane/repro_check.py",
+            "lsb_tolerance_rel": LSB_TOL,
+            "declared_nondeterministic_leaves": list(TIMING_LEAVES),
+            "out_dir_dependent_leaves": "figures[*] (compared by panel basename, not by directory)",
+            "timing_plausibility_factor": TIMING_PLAUSIBILITY_FACTOR,
+            "note": ("every other leaf is deterministic and is compared against a fresh solve; "
+                     "the timing leaves are provenance only and are checked for internal "
+                     "consistency plus an order-of-magnitude plausibility bound"),
+        },
     }
     with open(os.path.join(OUT, "result.json"), "w") as fh:
         json.dump(result, fh, indent=1, sort_keys=True)
