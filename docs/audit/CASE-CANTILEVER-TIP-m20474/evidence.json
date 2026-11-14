@@ -1,0 +1,414 @@
+{
+  "schema": "tensorfem.independent-cantilever-audit/1",
+  "anchor": "CASE-CANTILEVER-TIP",
+  "mission": 20474,
+  "git_revision": "d51a0247fb3f1cf1c1e18a1c31dcd804b0419295",
+  "problem": {
+    "L_m": 1.0,
+    "b_m": 0.01,
+    "h_m": 0.01,
+    "E_Pa": 200000000000.0,
+    "nu": 0.3,
+    "P_N": 5.0,
+    "slenderness_L_over_h": 100.0,
+    "section": {
+      "I": 8.333333333333335e-10,
+      "A": 0.0001,
+      "EI": 166.66666666666669,
+      "G": 76923076923.07692
+    }
+  },
+  "oracle": {
+    "castigliano_integral": 0.009999999999999998,
+    "closed_form": 0.009999999999999998,
+    "symbolic_residual": "0",
+    "delta_euler_bernoulli": 0.009999999999999998,
+    "kappas": {
+      "five_sixths": 0.8333333333333334,
+      "cowper_rect": 0.8496732026143791
+    },
+    "shear_term_m": {
+      "five_sixths": 7.799999999999999e-07,
+      "cowper_rect": 7.650000000000001e-07
+    },
+    "delta_timoshenko_five_sixths": 0.010000779999999999,
+    "delta_timoshenko_cowper": 0.010000764999999998,
+    "shear_fraction_five_sixths": 7.800000000000001e-05,
+    "shear_fraction_cowper": 7.650000000000002e-05,
+    "kappa_choice_effect_on_tip": 1.4999999999999859e-06,
+    "quadrature_integral": 0.01000000000000002,
+    "quadrature_vs_closed_form_rel": 2.081668171172169e-15
+  },
+  "beam_fe": [
+    {
+      "tip_deflection_m": 0.009999999999999995,
+      "slope_rad": 0.01499999999999999,
+      "n_elements": 1,
+      "abs_relative_error_vs_euler_bernoulli": 3.4694469519536147e-16
+    },
+    {
+      "tip_deflection_m": 0.009999999999999993,
+      "slope_rad": 0.014999999999999993,
+      "n_elements": 2,
+      "abs_relative_error_vs_euler_bernoulli": 5.204170427930422e-16
+    },
+    {
+      "tip_deflection_m": 0.01000000000000014,
+      "slope_rad": 0.015000000000000242,
+      "n_elements": 4,
+      "abs_relative_error_vs_euler_bernoulli": 1.422473250300982e-14
+    },
+    {
+      "tip_deflection_m": 0.010000000000001865,
+      "slope_rad": 0.01500000000000211,
+      "n_elements": 8,
+      "abs_relative_error_vs_euler_bernoulli": 1.8665624601510447e-13
+    },
+    {
+      "tip_deflection_m": 0.010000000000012998,
+      "slope_rad": 0.01500000000001617,
+      "n_elements": 16,
+      "abs_relative_error_vs_euler_bernoulli": 1.3000017728970194e-12
+    }
+  ],
+  "q8_plane_stress": [
+    {
+      "model": "q8_plane_stress",
+      "n_axial": 8,
+      "n_cross": 1,
+      "elements": 8,
+      "nodes": 43,
+      "dofs": 86,
+      "load_mode": "parabolic",
+      "tip_deflection_m": 0.009903221197060016,
+      "tip_deflection_midnode_m": 0.009903221229913262,
+      "abs_relative_error_vs_euler_bernoulli": 0.009677880293998409,
+      "rel_relative_error_vs_euler_bernoulli": -0.009677880293998409,
+      "abs_relative_error_vs_timoshenko": 0.00975511939468568
+    },
+    {
+      "model": "q8_plane_stress",
+      "n_axial": 16,
+      "n_cross": 2,
+      "elements": 32,
+      "nodes": 133,
+      "dofs": 266,
+      "load_mode": "parabolic",
+      "tip_deflection_m": 0.009985955041717804,
+      "tip_deflection_midnode_m": 0.009985965781078104,
+      "abs_relative_error_vs_euler_bernoulli": 0.0014044958282196165,
+      "rel_relative_error_vs_euler_bernoulli": -0.0014044958282196165,
+      "abs_relative_error_vs_timoshenko": 0.0014823802025638736
+    },
+    {
+      "model": "q8_plane_stress",
+      "n_axial": 32,
+      "n_cross": 2,
+      "elements": 64,
+      "nodes": 261,
+      "dofs": 522,
+      "load_mode": "parabolic",
+      "tip_deflection_m": 0.009992466311508904,
+      "tip_deflection_midnode_m": 0.009992468053783413,
+      "abs_relative_error_vs_euler_bernoulli": 0.0007533688491096271,
+      "rel_relative_error_vs_euler_bernoulli": -0.0007533688491096271,
+      "abs_relative_error_vs_timoshenko": 0.0008313040073971073
+    },
+    {
+      "model": "q8_plane_stress",
+      "n_axial": 32,
+      "n_cross": 4,
+      "elements": 128,
+      "nodes": 457,
+      "dofs": 914,
+      "load_mode": "parabolic",
+      "tip_deflection_m": 0.009997180982926743,
+      "tip_deflection_midnode_m": 0.009997183542163834,
+      "abs_relative_error_vs_euler_bernoulli": 0.00028190170732571296,
+      "rel_relative_error_vs_euler_bernoulli": -0.00028190170732571296,
+      "abs_relative_error_vs_timoshenko": 0.00035987363718206994
+    },
+    {
+      "model": "q8_plane_stress",
+      "n_axial": 64,
+      "n_cross": 4,
+      "elements": 256,
+      "nodes": 905,
+      "dofs": 1810,
+      "load_mode": "parabolic",
+      "tip_deflection_m": 0.009998003419417652,
+      "tip_deflection_midnode_m": 0.009998006194455308,
+      "abs_relative_error_vs_euler_bernoulli": 0.0001996580582348459,
+      "rel_relative_error_vs_euler_bernoulli": -0.0001996580582348459,
+      "abs_relative_error_vs_timoshenko": 0.0002776364025955006
+    }
+  ],
+  "end_load_idealisation": {
+    "parabolic": {
+      "model": "q8_plane_stress",
+      "n_axial": 32,
+      "n_cross": 4,
+      "elements": 128,
+      "nodes": 457,
+      "dofs": 914,
+      "load_mode": "parabolic",
+      "tip_deflection_m": 0.009997180982926743,
+      "tip_deflection_midnode_m": 0.009997183542163834,
+      "abs_relative_error_vs_euler_bernoulli": 0.00028190170732571296,
+      "rel_relative_error_vs_euler_bernoulli": -0.00028190170732571296,
+      "abs_relative_error_vs_timoshenko": 0.00035987363718206994
+    },
+    "uniform": {
+      "model": "q8_plane_stress",
+      "n_axial": 32,
+      "n_cross": 4,
+      "elements": 128,
+      "nodes": 457,
+      "dofs": 914,
+      "load_mode": "uniform",
+      "tip_deflection_m": 0.009997181531560581,
+      "tip_deflection_midnode_m": 0.009997182423317458,
+      "abs_relative_error_vs_euler_bernoulli": 0.0002818468439419117,
+      "rel_relative_error_vs_euler_bernoulli": -0.0002818468439419117,
+      "abs_relative_error_vs_timoshenko": 0.0003598187780772788
+    },
+    "point": {
+      "model": "q8_plane_stress",
+      "n_axial": 32,
+      "n_cross": 4,
+      "elements": 128,
+      "nodes": 457,
+      "dofs": 914,
+      "load_mode": "point",
+      "tip_deflection_m": 0.009997180982926743,
+      "tip_deflection_midnode_m": 0.009997183542163834,
+      "abs_relative_error_vs_euler_bernoulli": 0.00028190170732571296,
+      "rel_relative_error_vs_euler_bernoulli": -0.00028190170732571296,
+      "abs_relative_error_vs_timoshenko": 0.00035987363718206994
+    }
+  },
+  "checks": {
+    "oracle_symbolic_residual_zero": true,
+    "oracle_quadrature_agrees": true,
+    "beam_fe_machine_exact": true,
+    "q8_monotone_convergence": true,
+    "q8_finest_within_3pct_of_timoshenko": true,
+    "q8_finest_mesh": [
+      64,
+      4
+    ]
+  },
+  "repo_parameter_crosscheck": {
+    "parameters": {
+      "length": 10.0,
+      "height": 0.1,
+      "width": 1.0,
+      "e": 210000000000.0,
+      "nu": 0.3,
+      "load": 10000.0
+    },
+    "reference_euler_bernoulli_m": 0.1904761904761904,
+    "levels": [
+      {
+        "model": "q8_plane_stress",
+        "n_axial": 20,
+        "n_cross": 2,
+        "elements": 40,
+        "nodes": 165,
+        "dofs": 330,
+        "load_mode": "parabolic",
+        "tip_deflection_m": 0.19025805929465628,
+        "tip_deflection_midnode_m": 0.1902581293449385,
+        "abs_relative_error_vs_euler_bernoulli": 0.00114518870305419,
+        "rel_relative_error_vs_euler_bernoulli": -0.00114518870305419,
+        "abs_relative_error_vs_timoshenko": 0.0012230933017766878,
+        "repo_expected_deflection_m": 0.1875413493611581,
+        "cross_implementation_rel_diff": 0.014485925065338365
+      },
+      {
+        "model": "q8_plane_stress",
+        "n_axial": 40,
+        "n_cross": 4,
+        "elements": 160,
+        "nodes": 569,
+        "dofs": 1138,
+        "load_mode": "parabolic",
+        "tip_deflection_m": 0.19042864887086144,
+        "tip_deflection_midnode_m": 0.1904287003944114,
+        "abs_relative_error_vs_euler_bernoulli": 0.0002495934279770699,
+        "rel_relative_error_vs_euler_bernoulli": -0.0002495934279770699,
+        "abs_relative_error_vs_timoshenko": 0.000327567877682647,
+        "repo_expected_deflection_m": 0.1901781945913535,
+        "cross_implementation_rel_diff": 0.001316945299886355
+      },
+      {
+        "model": "q8_plane_stress",
+        "n_axial": 80,
+        "n_cross": 8,
+        "elements": 640,
+        "nodes": 2097,
+        "dofs": 4194,
+        "load_mode": "parabolic",
+        "tip_deflection_m": 0.19045296409191378,
+        "tip_deflection_midnode_m": 0.1904530360893243,
+        "abs_relative_error_vs_euler_bernoulli": 0.00012193851745228444,
+        "rel_relative_error_vs_euler_bernoulli": -0.00012193851745228444,
+        "abs_relative_error_vs_timoshenko": 0.00019992292346429063,
+        "repo_expected_deflection_m": 0.19043739024113418,
+        "cross_implementation_rel_diff": 8.177937515256105e-05
+      }
+    ],
+    "worst_cross_implementation_rel_diff": 0.014485925065338365
+  },
+  "repo_evidence": {
+    "files": [
+      "benchmarks/verified/fem_cantilever/result.json",
+      "benchmarks/case_fem_cantilever_tip_evidence.json"
+    ],
+    "verified_fem_cantilever": {
+      "geometry": {
+        "young_modulus": 210000000000.0,
+        "poisson_ratio": 0.3,
+        "length": 10.0,
+        "width": 1.0,
+        "depth": 0.1,
+        "tip_load": 10000.0,
+        "load_direction": "-z"
+      },
+      "analytic": {
+        "formula_deflection": "w = F L^3 / (3 E I),  I = b h^3 / 12",
+        "formula_rotation": "theta = F L^2 / (2 E I)",
+        "formula_stress": "sigma_xx(x,z) = M(x)(z - h/2)/I,  M(x) = F (L - x); at z = h: 6 F (L - x)/(b h^2)",
+        "inertia": 8.333333333333336e-05,
+        "slenderness_L_over_h": 100.0,
+        "slenderness_L_over_b": 10.0,
+        "tip_deflection": 0.1904761904761904,
+        "tip_rotation": 0.028571428571428567,
+        "root_bending_stress": 59999999.999999985,
+        "shear_deflection": 1.4857142857142855e-05,
+        "shear_deflection_over_bending": 7.800000000000001e-05
+      },
+      "q8_levels": [
+        {
+          "axial_elements": 20,
+          "depth_elements": 2,
+          "nodes": 165,
+          "dofs": 330,
+          "tip_deflection": 0.1875413493611581,
+          "relative_error": 0.015407915853919651,
+          "support_reaction_z": 10000.000085894324,
+          "reaction_equilibrium_error": 8.589432498595784e-09,
+          "stress_probe_x": 5.392295478639223,
+          "stress_probe_z": 0.09436491673103709,
+          "stress_probe_sigma_xx": 24508806.203045856,
+          "stress_probe_reference": 24530451.289367262,
+          "stress_relative_error": 0.0008823761970815358,
+          "solve_seconds": 0.01541915163397789
+        },
+        {
+          "axial_elements": 40,
+          "depth_elements": 4,
+          "nodes": 569,
+          "dofs": 1138,
+          "tip_deflection": 0.1901781945913535,
+          "relative_error": 0.0015644783953938646,
+          "support_reaction_z": 10000.004885941813,
+          "reaction_equilibrium_error": 4.885941813359551e-07,
+          "stress_probe_x": 5.196299078795343,
+          "stress_probe_z": 0.09718245836551853,
+          "stress_probe_sigma_xx": 27196833.971770864,
+          "stress_probe_reference": 27198050.245816994,
+          "stress_relative_error": 4.471916314363611e-05,
+          "solve_seconds": 0.007401289418339729
+        },
+        {
+          "axial_elements": 80,
+          "depth_elements": 8,
+          "nodes": 2097,
+          "dofs": 4194,
+          "tip_deflection": 0.19043739024113418,
+          "relative_error": 0.00020370123404522822,
+          "support_reaction_z": 10000.000132823705,
+          "reaction_equilibrium_error": 1.3282370536771282e-08,
+          "stress_probe_x": 4.901831537696858,
+          "stress_probe_z": 0.09859122918275927,
+          "stress_probe_sigma_xx": 29727786.621177364,
+          "stress_probe_reference": 29727152.659690477,
+          "stress_relative_error": 2.1326007712429984e-05,
+          "solve_seconds": 0.03608245961368084
+        },
+        {
+          "axial_elements": 160,
+          "depth_elements": 16,
+          "nodes": 8033,
+          "dofs": 16066,
+          "tip_deflection": 0.1904575511726333,
+          "relative_error": 9.785634367487361e-05,
+          "support_reaction_z": 9999.975821790027,
+          "reaction_equilibrium_error": 2.417820997302478e-06,
+          "stress_probe_x": 5.049086596685747,
+          "stress_probe_z": 0.09929561459137963,
+          "stress_probe_sigma_xx": 29287181.534131754,
+          "stress_probe_reference": 29286998.280608997,
+          "stress_relative_error": 6.257163025047419e-06,
+          "solve_seconds": 0.3316857684403658
+        }
+      ],
+      "hex20_levels": [
+        {
+          "axial_elements": 16,
+          "width_elements": 2,
+          "depth_elements": 2,
+          "nodes": 501,
+          "dofs": 1503,
+          "tip_deflection": 0.18695006219043622,
+          "relative_error": 0.018512173500209506,
+          "solve_seconds": 3.9041521698236465
+        },
+        {
+          "axial_elements": 32,
+          "width_elements": 4,
+          "depth_elements": 4,
+          "nodes": 2945,
+          "dofs": 8835,
+          "tip_deflection": 0.18815113055697025,
+          "relative_error": 0.012206564575905854,
+          "solve_seconds": 31.767323890700936
+        },
+        {
+          "axial_elements": 64,
+          "width_elements": 4,
+          "depth_elements": 4,
+          "nodes": 5825,
+          "dofs": 17475,
+          "tip_deflection": 0.18845534043080545,
+          "relative_error": 0.010609462738271014,
+          "solve_seconds": 57.83348895981908
+        }
+      ]
+    },
+    "case_fem_cantilever_tip": {
+      "implementation_revision": "d51a0247fb3f1cf1c1e18a1c31dcd804b0419295",
+      "verdict": {
+        "tolerance_rel": 0.02,
+        "reference_mesh": [
+          32,
+          4
+        ],
+        "reference_value_m": 0.009999999999999998,
+        "tip_deflection_m": 0.00996404533649923,
+        "relative_error": -0.003595466350076772,
+        "abs_relative_error": 0.003595466350076772,
+        "passed": true,
+        "checks": {
+          "reference_formula_rederived": true,
+          "solid_reference_within_tolerance": true,
+          "beam_eb_machine_exact": true,
+          "timoshenko_beam_matches_theory": true,
+          "load_linearity": true,
+          "solid_h_convergence_monotone": true
+        }
+      }
+    }
+  }
+}
