@@ -63,6 +63,9 @@ from .layered_shell4_plasticity import (
 )
 
 __all__ = [
+    "surface_extrapolated_mises",
+    "_patch_mechanism_volume_ratio",
+    "_patch_mechanism_volume_ratio_quadrature",
     "STEEL_GRADES",
     "FlowStress",
     "low_temperature_flow_stress",
