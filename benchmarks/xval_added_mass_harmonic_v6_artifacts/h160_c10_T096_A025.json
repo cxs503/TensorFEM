@@ -1,0 +1,28 @@
+{
+ "omega": 0.06544984694978735,
+ "amplitude": 0.25,
+ "in_phase": 0.1572607283521801,
+ "quadrature": -0.601353076572451,
+ "apparent_added_mass": 146.84629835150474,
+ "damping": 36.75199283712946,
+ "offset": 0.01884554412200816,
+ "r2": 0.9383615811339607,
+ "periods_in_window": 2.989583333333333,
+ "valid": true,
+ "separated": false,
+ "tag": "h160_c10_T096_A025",
+ "box": 160,
+ "lattice": [
+  160,
+  160
+ ],
+ "half_width": 10.0,
+ "drive_period": 96.0,
+ "n_steps": 480,
+ "omega_lbm": 1.8,
+ "settle_cycles": 2.0,
+ "cycles_total": 5.0,
+ "viscous_time_steps": 5399.999999999997,
+ "lamb_added_mass": 314.1592653589793,
+ "legacy_added_mass_fit": 0.0026945706531760053
+}
