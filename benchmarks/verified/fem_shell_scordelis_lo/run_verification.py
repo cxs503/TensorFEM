@@ -217,6 +217,28 @@ def _pct(x):
     return "n/a" if x is None else f"{100.0 * x:.4f}%"
 
 
+def _ladder_claim(ladder):
+    """One-sentence verdict for one ladder, derived from its own gates.
+
+    The conclusion used to be a hand-written sentence, which stayed in the
+    artifact after the underlying numbers changed (the m18206 element repair
+    turned the cylindrical claim from a pass into a ~54 % miss while the
+    sentence still read "reproduces the Scordelis-Lo free-edge deflection").
+    Composing it from the graded ladder keeps the two in step by construction.
+    """
+    status = ladder.get("status")
+    finest = _pct(ladder.get("reported_accuracy_finest"))
+    certified = ladder.get("certified_accuracy")
+    if status == "PASS":
+        return (f"certifies the free-edge deflection within the 3% tolerance "
+                f"(finest-mesh {finest}, Richardson limit {_pct(certified)})")
+    if status == "WITHHELD":
+        return (f"cannot certify the claim: the mesh ladder is not in the asymptotic "
+                f"range (finest-mesh {finest}, Richardson limit {_pct(certified)})")
+    return (f"does not certify the claim: finest-mesh error {finest}, certified "
+            f"accuracy {_pct(certified)}, outside the 3% tolerance")
+
+
 def generate_report(flat_results, cyl_results, flat_orders, cyl_orders,
                     flat_ladder=None, cyl_ladder=None):
     """Generate verification report."""
@@ -291,10 +313,9 @@ def generate_report(flat_results, cyl_results, flat_orders, cyl_orders,
                 "best_error": _pct(cyl_ladder["reported_accuracy_finest"]),
             },
             "conclusion": (
-                "Cylindrical shell4 reproduces the Scordelis-Lo free-edge deflection at the "
-                "Richardson limit; the flat-facet formulation does not (its ladder oscillates "
-                "around a value ~50% above the reference). Finest-mesh error alone is not "
-                "evidence: see ladder_grading for the certified numbers."
+                f"Cylindrical shell4 {_ladder_claim(cyl_ladder)}; the flat-facet "
+                f"formulation {_ladder_claim(flat_ladder)}. Finest-mesh error alone is "
+                f"not evidence: see ladder_grading for the certified numbers."
             ),
         },
     }
