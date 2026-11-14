@@ -4,7 +4,7 @@
   "repo": "TensorFEM",
   "tolerance": 0.15,
   "version": "v4",
-  "generated_at_utc": "2026-11-14T08:26:36Z",
+  "generated_at_utc": "2026-11-14T17:05:45Z",
   "kernel_epsilon": {
     "partition_of_unity_error": 2.220446049250313e-16,
     "partition_ref": 2.2e-16,
@@ -1684,7 +1684,7 @@
       120
     ],
     "beam_scale": 72.0,
-    "wall_seconds": 1.486485242843628,
+    "wall_seconds": 1.1984479427337646,
     "period_fft": 0.05,
     "frequency_fft": 20.0
   },
@@ -1740,7 +1740,7 @@
       120
     ],
     "beam_scale": 72.0,
-    "wall_seconds": 1.4553532600402832,
+    "wall_seconds": 1.1888580322265625,
     "period_fft": 0.05,
     "frequency_fft": 20.0
   },
