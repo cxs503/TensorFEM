@@ -3,7 +3,7 @@
   "anchor": "fem_heat_conduction_l2",
   "title": "Steady heat conduction: manufactured harmonic solution, Q4 convergence \u2265 2nd order",
   "mission": "CASE-FEM-HEAT-L2",
-  "generated_at": "2026-11-14T09:17:27.157656+00:00",
+  "generated_at": "2026-11-14T12:29:31.864611+00:00",
   "criteria": {
     "finest_l2_below_3pct": 0.03,
     "convergence_order_ge_1p8": 1.8,
@@ -43,7 +43,9 @@
   "artifacts": {
     "result": "result.json",
     "gates": "gates_verified.json",
-    "fig_convergence": "fig_convergence.png",
-    "fig_field": "fig_field.png"
+    "figures": [
+      "docs/assets/verified/fem_heat_conduction_l2/fig_convergence.png",
+      "docs/assets/verified/fem_heat_conduction_l2/fig_field.png"
+    ]
   }
 }

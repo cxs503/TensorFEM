@@ -2,7 +2,7 @@
   "benchmark": "fem_heat_conduction_l2",
   "case_key": "CASE-FEM-HEAT-L2",
   "description": "Steady-state heat conduction: manufactured harmonic solution on unit square, Q4 elements",
-  "generated_at": "2026-11-14T09:17:27.156543+00:00",
+  "generated_at": "2026-11-14T12:29:31.859849+00:00",
   "elapsed_seconds": 2.29,
   "environment": {
     "python": "3.11.6",
@@ -15,6 +15,16 @@
     "equation": "\u2207\u00b2T = 0 on [0,1]\u00b2, Dirichlet BC from exact field",
     "source": "Manufactured harmonic field (Zienkiewicz & Taylor, FEM vol.1, ch.3-4)"
   },
+  "figures": [
+    {
+      "path": "docs/assets/verified/fem_heat_conduction_l2/fig_convergence.png",
+      "sha256": "c0189fc052f45729b221edacaaf3d6232a619c8c6f771e7147701d0b2070d2a4"
+    },
+    {
+      "path": "docs/assets/verified/fem_heat_conduction_l2/fig_field.png",
+      "sha256": "d0e409923ec9782e367ff8e3ea270276506e446a18dab401fcac5cae9aecc10d"
+    }
+  ],
   "mesh_levels": [
     {
       "nx": 4,
