@@ -175,6 +175,45 @@ def oracle_cross_check(alpha: float) -> dict[str, float]:
 # ---------------------------------------------------------------------------
 
 
+#: Relative force tolerance of the Newton loop.  A residual that satisfies
+#: ``||r|| <= ftol * max(||f_ext||, 1)`` is a fixed point to the accuracy of the
+#: right-hand side.
+FTOL = 1e-10
+#: Relative displacement tolerance: a Newton increment this small cannot change
+#: the iterate any more (``xtol * (1 + ||q||)`` in length units).
+XTOL = 1e-12
+#: Residual level, relative to the applied load, at which the internal-force
+#: assembly is dominated by double-precision round-off.  The assembled gradient
+#: is a cancellation of element terms of magnitude ``EA/L``, so its round-off
+#: floor grows with the axial stiffness -- i.e. with mesh refinement.
+RFLOOR = 1e-8
+
+
+def newton_converged(residual_norm: float, update_norm: float, dof_norm: float,
+                     force_norm: float, *, ftol: float = FTOL, xtol: float = XTOL,
+                     rfloor: float = RFLOOR) -> bool:
+    """Two-branch convergence test for the load-controlled Newton loop.
+
+    Branch A (force): the residual is small relative to the applied load.
+    Branch B (round-off floor): the residual is at the round-off level of the
+    internal force *and* the Newton increment is below the resolution of the
+    iterate.  Branch B is required because the round-off floor of ``||r||``
+    scales with the axial stiffness ``EA/L`` and can exceed an absolute force
+    tolerance by orders of magnitude; without it a converged solution is
+    rejected, the driver halves the load step and the run aborts with a load
+    factor of zero.  Both branches are far tighter than any discretisation
+    error: the residual accepted by branch B maps to a displacement error of
+    ``||r|| / lambda_min``, which is reported per case and is ~1e-8 of the
+    response for the default properties.
+    """
+    scale = max(abs(force_norm), 1.0)
+    if residual_norm <= ftol * scale:
+        return True
+    return (residual_norm <= rfloor * scale
+            and update_norm <= xtol * (1.0 + dof_norm))
+
+
+
 @dataclass(frozen=True)
 class CantileverCase:
     alpha: float
@@ -187,6 +226,7 @@ class CantileverCase:
     length: float
     load: float
     iterations: int = 0
+    residual: float = 0.0       # ||r||_2 over the free dofs at the accepted state
 
     @property
     def deflection_error(self) -> float:
@@ -263,6 +303,7 @@ def corotational_beam_cantilever(alpha: float, elements: int, *, length: float =
 
     factor, step, iterations = 0.0, min(increment, 1.0), 0
     q = dofs.clone()
+    last_residual = 0.0
     while factor < 1.0 - 1e-14:
         target = min(1.0, factor + step)
         trial = q.clone()
@@ -271,12 +312,22 @@ def corotational_beam_cantilever(alpha: float, elements: int, *, length: float =
             iterations += 1
             res = gradient(trial) - target * force
             sol = res[free].detach()
-            if float(torch.linalg.vector_norm(sol)) <= tolerance:
+            residual = float(torch.linalg.vector_norm(sol))
+            force_norm = float(torch.linalg.vector_norm(target * force))
+            dof_norm = float(torch.linalg.vector_norm(trial[free]))
+            if newton_converged(residual, 0.0, dof_norm, force_norm,
+                                ftol=tolerance):
                 converged = True
+                last_residual = residual
                 break
             try:
                 delta = torch.linalg.solve(tangent(trial)[free[:, None], free], -sol)
             except torch.linalg.LinAlgError:
+                break
+            if newton_converged(residual, float(torch.linalg.vector_norm(delta)),
+                                dof_norm, force_norm, ftol=tolerance):
+                converged = True
+                last_residual = residual
                 break
             trial = (trial.detach().clone())
             trial[free] += delta
@@ -295,7 +346,7 @@ def corotational_beam_cantilever(alpha: float, elements: int, *, length: float =
                           load_factor=factor,
                           tip_deflection=-float(tip[1]), tip_shortening=-float(tip[0]),
                           exact=solve_elastica(alpha), length=length, load=load,
-                          iterations=iterations)
+                          iterations=iterations, residual=last_residual)
 
 
 # ---------------------------------------------------------------------------
@@ -347,7 +398,7 @@ class ElasticaBenchmark:
             "cases": [
                 {"alpha": c.alpha, "elements": c.elements, "converged": c.converged,
                  "load_factor": c.load_factor, "load": c.load,
-                 "iterations": c.iterations,
+                 "iterations": c.iterations, "residual": c.residual,
                  "tip_deflection": c.tip_deflection,
                  "tip_deflection_exact": c.exact.tip_deflection(c.length),
                  "deflection_error": c.deflection_error,

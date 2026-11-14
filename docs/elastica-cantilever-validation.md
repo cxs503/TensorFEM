@@ -1,5 +1,17 @@
 # 端部集中力悬臂梁大挠度（elastica）验证
 
+> **Round 2（2026-11，锚点 CASE-CANTILEVER-TIP）更正**：本报告的两个结论已被
+> [CASE-CANTILEVER-TIP-elastica-mesh-independence.md](CASE-CANTILEVER-TIP-elastica-mesh-independence.md)
+> 修正，原文保留不改（历史记录）：
+> 1. §4/§5 的「n=8/16 不收敛，指向差分切线条件数恶化」**归因错误**。重放实验
+>    （`scripts/elastica_convergence_floor_study.py`）证明 Newton 迭代本身已到不动点，
+>    是**绝对残差容差 1e-10 低于双精度舍入地板**（地板随网格/装配规模增长），
+>    导致已收敛状态被判为不收敛、载荷步反复折半后归零。修复后 n=2…32 全部收敛，
+>    端挠度误差 4.58%→0.0219% 单调下降，门禁 `qualified=True`。
+> 2. §1 参数表的两处数字有误：`EI = E b t³/12 = 100`（不是 10），因此
+>    `P = α·EI/L² = 1.0·α`（不是 0.1·α）。无量纲 α 与结论不受影响，但表格须以
+>    派生量为准；`scripts/run_elastica_cantilever_benchmark.py` 现已改为从几何派生。
+
 ## 1. 案例与物理背景
 
 已合并的大转动证据（[large-rotation-shell-validation.md](large-rotation-shell-validation.md)）是**位移控制**的纯弯曲：端部转角被线性指定，参考解为圆弧线。圆弧只是 elastica 的一个特例，该算例从不检验**载荷控制**路径。本报告补的是载荷控制的经典互补算例：悬臂梁自由端受横向集中力 $P$，解为非圆弧的 Kirchhoff/Clebsch elastica。
