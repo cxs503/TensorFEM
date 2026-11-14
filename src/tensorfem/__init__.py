@@ -436,3 +436,10 @@ from .ibm_aitken_implicit import (  # noqa: F401,E402
     IBMInterface, AitkenRelaxation, CorotationalBeam2D, LBMFluid2D,
     ImplicitIBMFSI, cantilever_free_vibration, solve as solve_ibm_aitken_fsi,
 )
+
+# --- CASE-FEM-HEAT-L2: steady heat conduction convergence ---
+from .heat_conduction_l2 import (
+    HeatConductionLevel as HeatConductionLevel,
+    HeatConductionL2Result as HeatConductionL2Result,
+    run_heat_conduction_l2 as run_heat_conduction_l2,
+)
