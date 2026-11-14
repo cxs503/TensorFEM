@@ -84,10 +84,10 @@
       "nt": 4,
       "elements": 16,
       "nodes": 25,
-      "probe_displacement": -0.21673053837085443,
+      "probe_displacement": -0.01842398072337283,
       "reference": -0.3024,
-      "relative_error": 0.283298484223365,
-      "relative_error_pct": 28.3298484223365
+      "relative_error": 0.9390741378195343,
+      "relative_error_pct": 93.90741378195344
     },
     {
       "element": "Cylindrical shell4",
@@ -96,10 +96,10 @@
       "nt": 8,
       "elements": 64,
       "nodes": 81,
-      "probe_displacement": -0.29672965252755035,
+      "probe_displacement": -0.03422945365737358,
       "reference": -0.3024,
-      "relative_error": 0.01875114904910602,
-      "relative_error_pct": 1.875114904910602
+      "relative_error": 0.886807362244135,
+      "relative_error_pct": 88.68073622441351
     },
     {
       "element": "Cylindrical shell4",
@@ -108,10 +108,10 @@
       "nt": 16,
       "elements": 256,
       "nodes": 289,
-      "probe_displacement": -0.3024690512969349,
+      "probe_displacement": -0.06587335880180342,
       "reference": -0.3024,
-      "relative_error": 0.00022834423589590536,
-      "relative_error_pct": 0.022834423589590536
+      "relative_error": 0.7821648187771051,
+      "relative_error_pct": 78.2164818777105
     },
     {
       "element": "Cylindrical shell4",
@@ -120,10 +120,10 @@
       "nt": 32,
       "elements": 1024,
       "nodes": 1089,
-      "probe_displacement": -0.30365405700939785,
+      "probe_displacement": -0.13767353041486935,
       "reference": -0.3024,
-      "relative_error": 0.0041470139199664136,
-      "relative_error_pct": 0.41470139199664136
+      "relative_error": 0.5447303888397177,
+      "relative_error_pct": 54.47303888397177
     }
   ],
   "flat_facet_convergence": [
@@ -147,14 +147,14 @@
       "from_mesh": "4x4",
       "to_mesh": "16x16",
       "refinement_ratio": 2.0,
-      "observed_order": 3.801012504454155,
+      "observed_order": -1.0015034479789822,
       "reason": ""
     },
     {
       "from_mesh": "8x8",
       "to_mesh": "32x32",
       "refinement_ratio": 2.0,
-      "observed_order": 2.2760056014972694,
+      "observed_order": -1.1820596398784957,
       "reason": ""
     }
   ],
@@ -283,22 +283,22 @@
         {
           "label": "4x4",
           "mesh_size": 0.25,
-          "value": -0.21673053837085443
+          "value": -0.01842398072337283
         },
         {
           "label": "8x8",
           "mesh_size": 0.125,
-          "value": -0.29672965252755035
+          "value": -0.03422945365737358
         },
         {
           "label": "16x16",
           "mesh_size": 0.0625,
-          "value": -0.3024690512969349
+          "value": -0.06587335880180342
         },
         {
           "label": "32x32",
           "mesh_size": 0.03125,
-          "value": -0.30365405700939785
+          "value": -0.13767353041486935
         }
       ],
       "reference": {
@@ -311,37 +311,37 @@
           "from": "4x4",
           "to": "16x16",
           "ratio": 2.0,
-          "order": 3.801012504454155
+          "order": -1.0015034479789822
         },
         {
           "from": "8x8",
           "to": "32x32",
           "ratio": 2.0,
-          "order": 2.2760056014972694
+          "order": -1.1820596398784957
         }
       ],
-      "reported_accuracy_finest": 0.004147013919966423,
-      "certified_accuracy": 0.005166611021675066,
+      "reported_accuracy_finest": 0.5447303888397178,
+      "certified_accuracy": null,
       "gates": [
         {
           "id": "accuracy_finest",
           "description": "finest-mesh value within tolerance of the reference",
-          "status": "PASS",
-          "passed": true,
+          "status": "FAIL",
+          "passed": false,
           "operator": "<=",
-          "actual": 0.004147013919966423,
+          "actual": 0.5447303888397178,
           "threshold": 0.03,
-          "detail": "finest level 32x32 rel. error 4.1470e-03"
+          "detail": "finest level 32x32 rel. error 5.4473e-01"
         },
         {
           "id": "accuracy_asymptotic",
           "description": "Richardson limit of the ladder within tolerance (certified accuracy)",
-          "status": "PASS",
-          "passed": true,
+          "status": "WITHHELD",
+          "passed": false,
           "operator": "<=",
-          "actual": 0.005166611021675066,
+          "actual": null,
           "threshold": 0.03,
-          "detail": "extrapolated -0.303962383173 vs Scordelis & Lo (1960) -0.3024: rel. error 5.1666e-03 (order p=2.276)"
+          "detail": "cannot certify: non-positive observed order p=-1.182 on the finest triple: the increments of the QoI do not shrink under refinement, so no GCI band and no Richardson limit exist (pre-asymptotic / non-converging ladder)"
         },
         {
           "id": "monotone_qoi",
@@ -356,37 +356,37 @@
         {
           "id": "observed_order",
           "description": "finest observed order >= 1",
-          "status": "PASS",
-          "passed": true,
+          "status": "FAIL",
+          "passed": false,
           "operator": ">=",
-          "actual": 2.2760056014972694,
+          "actual": -1.1820596398784957,
           "threshold": 1.0,
-          "detail": "4x4->16x16: p=3.801, 8x8->32x32: p=2.276"
+          "detail": "4x4->16x16: p=-1.002, 8x8->32x32: p=-1.182"
         },
         {
           "id": "asymptotic_range_consistency",
-          "description": "finest-mesh error inside the GCI band (|e_finest|/GCI <= 1)",
+          "description": "finest-mesh error inside the GCI band (ladder in the asymptotic range)",
           "status": "WITHHELD",
           "passed": false,
           "operator": "<=",
-          "actual": 3.267338941972816,
-          "threshold": 1.0,
-          "detail": "finest-mesh true error 4.147e-03 vs GCI band 1.269e-03 -> outside the band; ladder pre-asymptotic -> accuracy not certifiable from these levels"
+          "actual": null,
+          "threshold": null,
+          "detail": "no GCI band available: non-positive observed order p=-1.182 on the finest triple: the increments of the QoI do not shrink under refinement, so no GCI band and no Richardson limit exist (pre-asymptotic / non-converging ladder)"
         },
         {
           "id": "coarsest_sanity",
           "description": "coarsest level within 0.5 of the reference",
-          "status": "PASS",
-          "passed": true,
+          "status": "FAIL",
+          "passed": false,
           "operator": "<=",
-          "actual": 0.28329848422336495,
+          "actual": 0.9390741378195343,
           "threshold": 0.5,
-          "detail": "coarsest level 4x4 rel. error 2.8330e-01"
+          "detail": "coarsest level 4x4 rel. error 9.3907e-01"
         }
       ],
-      "status": "WITHHELD",
+      "status": "FAIL",
       "passed": false,
-      "study_status": "failed",
+      "study_status": "blocked",
       "limitations": [
         "Certified accuracy is the Richardson limit of the ladder; reported finest-mesh accuracy is not evidence of asymptotic accuracy.",
         "A non-monotone ladder cannot certify any accuracy: the gate is WITHHELD, not passed."
@@ -402,12 +402,12 @@
       "best_error": "49.4018%"
     },
     "cylindrical": {
-      "status": "WITHHELD",
-      "reason": "ladder cannot certify the claim: finest-mesh true error 4.147e-03 vs GCI band 1.269e-03 -> outside the band; ladder pre-asymptotic -> accuracy not certifiable from these levels",
-      "reported_accuracy_finest": 0.004147013919966423,
-      "certified_accuracy": 0.005166611021675066,
-      "best_error": "0.4147%"
+      "status": "FAIL",
+      "reason": "ladder cannot certify the claim: finest level 32x32 rel. error 5.4473e-01; cannot certify: non-positive observed order p=-1.182 on the finest triple: the increments of the QoI do not shrink under refinement, so no GCI band and no Richardson limit exist (pre-asymptotic / non-converging ladder); 4x4->16x16: p=-1.002, 8x8->32x32: p=-1.182; no GCI band available: non-positive observed order p=-1.182 on the finest triple: the increments of the QoI do not shrink under refinement, so no GCI band and no Richardson limit exist (pre-asymptotic / non-converging ladder); coarsest level 4x4 rel. error 9.3907e-01",
+      "reported_accuracy_finest": 0.5447303888397178,
+      "certified_accuracy": null,
+      "best_error": "54.4730%"
     },
-    "conclusion": "Cylindrical shell4 reproduces the Scordelis-Lo free-edge deflection at the Richardson limit; the flat-facet formulation does not (its ladder oscillates around a value ~50% above the reference). Finest-mesh error alone is not evidence: see ladder_grading for the certified numbers."
+    "conclusion": "Cylindrical shell4 does not certify the claim: finest-mesh error 54.4730%, certified accuracy n/a, outside the 3% tolerance; the flat-facet formulation does not certify the claim: finest-mesh error 49.4018%, certified accuracy 53.1876%, outside the 3% tolerance. Finest-mesh error alone is not evidence: see ladder_grading for the certified numbers."
   }
 }
