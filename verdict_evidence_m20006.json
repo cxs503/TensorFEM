@@ -1,0 +1,72 @@
+{
+  "mission_id": 20006,
+  "anchor": "CASE-FEM-KIRSCH-PLATE",
+  "repo": "TensorFEM",
+  "maturity_level": 4,
+  "evidence": {
+    "impl_files": [
+      "src/tensorfem/finite_width_hole.py:398 lines (Q4 starburst mesh, production path)",
+      "src/tensorfem/structural_canonical_face.py:1248 lines (Q8 polar annulus, cross-check path)",
+      "src/tensorfem/kirsch_hole.py (Kirsch closed-form oracle)"
+    ],
+    "entry": "benchmarks/verified/fem_kirsch_plate/run.py (driver, generates result.json + gates_verified.json + 4 PNGs)",
+    "run_artifacts": [
+      "runs/m20006_kirsch_plate/result.json (61606 bytes, sha256=df2e0ccd...)",
+      "runs/m20006_kirsch_plate/gates_verified.json (6341 bytes, sha256=7da0f418...)",
+      "runs/m20006_kirsch_plate/run_stdout.log (1363 bytes)",
+      "runs/m20006_kirsch_plate/manifest.json (3793 bytes)",
+      "benchmarks/verified/fem_kirsch_plate/result.json (61607 bytes)",
+      "benchmarks/verified/fem_kirsch_plate/gates_verified.json (6341 bytes)"
+    ],
+    "tests": [
+      "tests/test_kirsch_plate_anchor.py (7 tests: oracle, gates, tolerance, figures, cheap rerun)",
+      "6/7 pass; test_committed_figures_exist FAILS (see defect D1)"
+    ],
+    "integration_callers": [
+      "benchmarks/verified/fem_kirsch_plate/refinement_probe_n96.py (n=96 cluster probe, cj2429)",
+      "benchmarks/verified/fem_kirsch_plate/nu_invariance_refinement.py (ν/E convergence, cj2432)"
+    ],
+    "benchmark": {
+      "anchor": "CASE-FEM-KIRSCH-PLATE",
+      "reference": "K_t = 3 (Kirsch 1898 closed form, zero hand-copy)",
+      "tolerance_source": "tensor_case_pool id=186, <5%",
+      "best_got": "K_t = 3.001408 (d/W=0.02, n=48, Q4)",
+      "best_error_pct": 0.0469,
+      "gates_passed": 14,
+      "gates_failed": 0,
+      "q8_crosscheck": "K_t = 3.001476 (96x24), error 0.0492%",
+      "richardson_limit": "3.009196, error 0.3065%",
+      "convergence_order": 1.763,
+      "load_balance": "1.01e-12 (threshold 1e-10)"
+    },
+    "repro_cmd": "OMP_NUM_THREADS=6 PYTHONPATH=src python benchmarks/verified/fem_kirsch_plate/run.py",
+    "external_anchor": "Kirsch (1898) VDI 42:797; Timoshenko & Goodier Theory of Elasticity 3rd ed. Art. 39 eqs (a)-(c)",
+    "report_six_sections": {
+      "case_intro": "docs/CASE-FEM-KIRSCH-PLATE-pool-m20006.md §①",
+      "method": "§②",
+      "results": "§③ parameter table + §④ comparison table",
+      "figures": "§④ (4 PNGs in docs/assets/kirsch_plate/)",
+      "notes_limitations": "§⑤ convergence + sensitivity + limitations in gates_verified.json",
+      "error_analysis": "§④ ref vs got table + §⑤ predeclared criteria"
+    }
+  },
+  "defects": [
+    {
+      "id": "D1",
+      "severity": "medium",
+      "description": "test_committed_figures_exist FAILS: 4 PNG figures exist in docs/assets/kirsch_plate/ but NOT in benchmarks/verified/fem_kirsch_plate/ where the test expects them. The manifest claims both locations with matching sha256, but only docs/ has the files. This is a packaging defect — figures were likely generated with --out pointing to docs/ or moved after generation.",
+      "impact": "Test suite fails (1/7); CI would block. Science is unaffected — figures exist and are valid.",
+      "remediation": "Either (a) copy/symlink the 4 PNGs to benchmarks/verified/fem_kirsch_plate/, or (b) update test to look in docs/assets/kirsch_plate/."
+    },
+    {
+      "id": "D2",
+      "severity": "low",
+      "description": "tensor_benchmark_cases table has no row for anchor_slug='CASE-FEM-KIRSCH-PLATE'. Tolerance only exists in tensor_case_pool id=186. This is a TensorPlatform-side mechanism gap, not a TensorFEM defect.",
+      "impact": "Automated benchmark registry cannot machine-read tolerance for this anchor.",
+      "remediation": "Platform-side: sync case_pool dispatched→succeeded entries to benchmark_cases table."
+    }
+  ],
+  "level_rationale": "L4: Complete benchmark verification with error analysis and reproducibility. Has real implementation code (finite_width_hole.py 398 lines, structural_canonical_face.py 1248 lines), 14/14 gates pass, K_t error 0.047% << 5% tolerance, independent Q8 cross-check, Richardson extrapolation, ν/E invariance study, n=96 refinement probe. Defect D1 (figure location) is a packaging issue, not a science defect — does not demote below L4. Not L5 because this is a classical elasticity benchmark (not novel research contribution).",
+  "verdict_by": "board-audit",
+  "audit_date": "2026-11-14"
+}
