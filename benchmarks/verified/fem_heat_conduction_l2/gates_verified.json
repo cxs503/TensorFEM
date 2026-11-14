@@ -1,0 +1,49 @@
+{
+  "schema": "tensorfem.verified-gates.v1",
+  "anchor": "fem_heat_conduction_l2",
+  "title": "Steady heat conduction: manufactured harmonic solution, Q4 convergence \u2265 2nd order",
+  "mission": "CASE-FEM-HEAT-L2",
+  "generated_at": "2026-11-14T09:17:27.157656+00:00",
+  "criteria": {
+    "finest_l2_below_3pct": 0.03,
+    "convergence_order_ge_1p8": 1.8,
+    "heat_balance_residual": 1e-10
+  },
+  "gates": [
+    {
+      "id": "finest_l2_below_3pct",
+      "quantity": "Relative L\u2082 error at finest mesh (32\u00d732)",
+      "reference": "T(x,y) = sin(\u03c0x)\u00b7sinh(\u03c0y)/sinh(\u03c0)",
+      "value": 0.00046179077474673065,
+      "threshold": 0.03,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "convergence_order_ge_1p8",
+      "quantity": "Mean observed h-refinement order (L\u2082 norm)",
+      "reference": "Q4 element: theoretical order 2.0 in L\u2082",
+      "value": 1.8763659794083596,
+      "threshold": 1.8,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "heat_balance_residual",
+      "quantity": "Max |K\u00b7T \u2212 f| (global conservation)",
+      "reference": "0 (harmonic field, no source)",
+      "value": 1.3322676295501878e-15,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "failed_gates": [],
+  "artifacts": {
+    "result": "result.json",
+    "gates": "gates_verified.json",
+    "fig_convergence": "fig_convergence.png",
+    "fig_field": "fig_field.png"
+  }
+}
