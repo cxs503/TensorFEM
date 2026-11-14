@@ -255,6 +255,8 @@ class IBMImplicitFSI:
         r_km1 = None
         omega = self.aitken.relax_max if self.relax_mode == "aitken" \
             else self.fixed_omega
+        omega_applied = float("nan")
+        n_relax = 0
         converged, res, it = False, float("inf"), 0
         for it in range(1, self.max_sub_iter + 1):
             force_on_body, _ = self.interface_force(rho, u, y_k)
@@ -267,9 +269,13 @@ class IBMImplicitFSI:
             if self.relax_mode != "aitken":
                 omega = self.fixed_omega
             elif it >= 2:
-                omega = self.aitken.omega_for(r_km1, r_k)
+                # omega_applied is the factor that produced r_k from r_km1
+                omega = self.aitken.omega_for(r_km1, r_k,
+                                              omega_prev=omega_applied)
             else:
                 omega = self.aitken.relax_max
+            omega_applied = omega
+            n_relax += 1
             r_km1 = r_k.copy()
             y_k = y_k + omega * (y_new - y_k)
         if not converged:
@@ -280,7 +286,10 @@ class IBMImplicitFSI:
         self.fluid.step(force=self.ibm.spread(f_lag))
         self.sub_iterations.append(it)
         self.residuals.append(res)
-        self.relaxes.append(float(omega))
+        # the factor actually applied; NaN when the step converged before any
+        # relaxation was performed (otherwise "omega" would report relax_max
+        # for steps where no relaxation happened, biasing any mean)
+        self.relaxes.append(float(omega_applied) if n_relax else float("nan"))
         return {"y": float(body.y), "v": float(body.v), "a": float(body.a),
                 "sub_iterations": it, "residual": res,
                 "converged": bool(converged), "omega": float(omega),
