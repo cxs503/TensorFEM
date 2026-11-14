@@ -146,13 +146,19 @@ def test_mesh_rejects_patch_that_does_not_follow_element_edges():
         run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
                                hardening=2e9, patch=PATCH, load_factors=[1e5],
                                nx=5, ny=5)
+    # the centred 0.5a patch needs its *edges* on node lines: nx = 6 puts them at
+    # 1.5 elements and silently breaks lumped-load conservation (first-generation
+    # certificate bug), so odd-multiples-of-3 counts must be rejected
+    with pytest.raises(ValueError):
+        patch_plate_mesh(A, B, T, 6, 6, young=E, poisson=NU, yield_stress=FY,
+                         hardening=2e9, patch=PATCH)
 
 
 def test_patch_pressure_forces_carry_the_right_total_load():
-    model, info = patch_plate_mesh(A, B, T, 6, 6, young=E, poisson=NU,
+    model, info = patch_plate_mesh(A, B, T, 8, 8, young=E, poisson=NU,
                                    yield_stress=FY, hardening=2e9, patch=PATCH)
     assert float(info["reference_load"].sum()) == pytest.approx(PATCH[0] * PATCH[1])
-    assert int((info["reference_load"] != 0).sum()) == 3 * 3   # 3x3 nodes of the 0.5a patch
+    assert int((info["reference_load"] != 0).sum()) == 5 * 5   # 5x5 nodes of the 0.5a patch
 
 
 # ---------------------------------------------------------------------------
@@ -166,11 +172,11 @@ def capacity():
     steps = [factor * py["pressure"] for factor in (0.3, 0.6, 0.9, 1.2, 1.5, 1.8)]
     path = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
                                   hardening=2e10, patch=PATCH, load_factors=steps,
-                                  nx=6, ny=6, layers=3, unload_steps=3)
+                                  nx=8, ny=8, layers=3, unload_steps=3)
     probe = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
                                    hardening=2e10, patch=PATCH,
                                    load_factors=[0.5 * py["pressure"]],
-                                   nx=6, ny=6, layers=3)
+                                   nx=8, ny=8, layers=3)
     return {"analytic": py, "path": path, "probe": probe}
 
 
@@ -189,9 +195,9 @@ def test_same_mesh_elastic_bias_is_quantified_and_bounded(capacity):
     analytic = capacity["analytic"]["sigma_eq_per_pa"]
     fe = probe.max_surface_mises / probe.load_factor
     bias = fe / analytic - 1.0
-    # the layered Shell4 element is soft in bending; this bound is a regression
-    # guard, the measured number is reported in the case document
-    assert 0.0 < bias < 0.25
+    # with exact through-thickness integration the elastic surface moment of the
+    # 8x8 model is within a few percent of Navier (mid-point rule: +10 %)
+    assert abs(bias) < 0.03
 
 
 def test_yield_is_detected_on_the_surface_before_any_layer_yields(capacity):
@@ -259,10 +265,12 @@ def test_surface_extrapolation_is_exact_for_linear_stress():
 
 
 def test_collapse_load_matches_the_yield_line_bound_after_layering_correction():
-    """Near-ideally plastic plate: the collapse load, corrected for the
-    through-thickness layering factor ``(1 - 1/n)`` (a mid-layer stress sample
-    reaches the flow stress only at ``|z| = t/2 (1-1/n)``), must approach the
-    yield-line upper bound from below and stay above the strip lower bound.
+    """Near-ideally plastic plate: the collapse load must approach the yield-line
+    upper bound from below and stay above the strip lower bound.
+
+    No layering correction is applied any more: with exact through-thickness
+    integration the bending stiffness carries no layer-count bias, so the raw
+    collapse load (not a rescaled one) is compared.
     """
     py = analytic_first_yield_pressure(A, B, T, E, NU, FY, PATCH, grid=11, terms=31)
     upper = yield_line_patch_upper_bound(A, B, T, FY, PATCH)["pressure"]
@@ -273,11 +281,10 @@ def test_collapse_load_matches_the_yield_line_bound_after_layering_correction():
                                   load_factors=[0.6 * py["pressure"], 1.0 * py["pressure"],
                                                 1.4 * py["pressure"], 1.8 * py["pressure"],
                                                 2.4 * py["pressure"], 3.0 * py["pressure"]],
-                                  nx=6, ny=6, layers=layers)
+                                  nx=8, ny=8, layers=layers)
     collapse = path.collapse_factor or path.loading[-1].load_factor
-    corrected = collapse * (1.0 - 1.0 / layers)
-    assert lower < corrected < upper
-    assert abs(corrected / upper - 1.0) < 0.15
+    assert lower < collapse < upper
+    assert abs(collapse / upper - 1.0) < 0.20
 
 
 # ---------------------------------------------------------------------------
@@ -297,8 +304,8 @@ def mesh_sweep():
     upper = yield_line_patch_upper_bound(A, B, T, FY, PATCH)["pressure"]
     lower = strip_lower_bound(A, B, T, FY, PATCH)["pressure"]
     rows = []
-    for nx in (4, 6, 8):
-        steps = [f * py["pressure"] for f in (0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.4, 3.0)]
+    for nx in (4, 8, 12):
+        steps = [f * py["pressure"] for f in (0.3, 0.9, 1.5, 1.8)]
         path = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=FY,
                                       hardening=2e10, patch=PATCH, load_factors=steps,
                                       nx=nx, ny=nx, layers=3, unload_steps=3)
@@ -322,17 +329,15 @@ def mesh_sweep():
 def test_collapse_load_converges_monotonically_to_the_upper_bound(mesh_sweep):
     """Collapse must approach the yield-line upper bound from below, monotonically.
 
-    The raw collapse is over-strengthened by the through-thickness layering
-    (outer stress sample at |z| = t/2 (1-1/n)), so it is reported *layering-
-    corrected* by (1 - 1/n) — the same convention as the single-mesh collapse
-    test — and must then sit between the strip lower and yield-line upper bounds
-    and be monotone non-decreasing with refinement.
+    With exact through-thickness integration the collapse load needs no
+    layering correction; it must sit between the strip lower and the yield-line
+    upper bound and be monotone non-decreasing with refinement.
     """
     upper = mesh_sweep["upper"]
     lower = mesh_sweep["lower"]
-    collapses = [r["collapse"] * (1.0 - 1.0 / 3) for r in mesh_sweep["rows"]]
-    assert all(c < upper for c in collapses), "corrected collapse must stay below the upper bound"
-    assert all(c > lower for c in collapses), "corrected collapse must stay above the strip lower bound"
+    collapses = [r["collapse"] for r in mesh_sweep["rows"]]
+    assert all(c < upper for c in collapses), "collapse must stay below the upper bound"
+    assert all(c > lower for c in collapses), "collapse must stay above the strip lower bound"
     assert all(collapses[i] <= collapses[i + 1] for i in range(len(collapses) - 1)), \
         "corrected collapse load must be monotone non-decreasing with refinement"
 

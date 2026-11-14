@@ -76,6 +76,7 @@ class LayeredShell4Model:
     shear_correction: float = 5.0 / 6.0
     drilling_factor: float = 1e-6
     residual_stress: torch.Tensor | None = None
+    exact_thickness: bool = False
 
     def validate(self) -> None:
         if self.nodes.ndim != 2 or self.nodes.shape[1] != 3:
@@ -288,8 +289,18 @@ def element_response(model: LayeredShell4Model, element: int, local_global: torc
             )
             bz = b[:3] + z*b[3:]
             force += bz.T @ stress * det*dz
+            if model.exact_thickness:
+                # Mid-point rule in z is exact only for integrands linear in z:
+                # Int_layer z^2 dz = z_c^2 dz + dz^3/12.  Restoring the missing
+                # dz^3/12 term makes both the bending internal force and the
+                # bending stiffness independent of the layer count (exact in the
+                # elastic limit), instead of the (1 - 1/n^2) deficit of the
+                # mid-point rule.
+                force += b[3:].T @ (material @ generalized[3:]) * (det*dz**3/12.0)
             if compute_tangent:
                 tangent += bz.T @ material @ bz * det*dz
+                if model.exact_thickness:
+                    tangent += b[3:].T @ material @ b[3:] * (det*dz**3/12.0)
             qstresses.append(stress); qtrials.append(trial)
         stresses.append(torch.stack(qstresses)); trial_points.append(tuple(qtrials))
     if geometric and compute_tangent:

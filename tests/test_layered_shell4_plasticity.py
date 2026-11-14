@@ -10,10 +10,11 @@ from tensorfem.layered_shell4_plasticity import (
 D = torch.float64
 
 
-def one_element(*, layers=5, residual=None, hardening=1200.):
+def one_element(*, layers=5, residual=None, hardening=1200., exact=False):
     nodes = torch.tensor([[0.,0.,0.], [1.,0.,0.], [1.,1.,0.], [0.,1.,0.]], dtype=D)
     return LayeredShell4Model(nodes, torch.tensor([[0,1,2,3]]), 200000., .3,
-                              .1, 250., hardening, layers, residual_stress=residual)
+                              .1, 250., hardening, layers, residual_stress=residual,
+                              exact_thickness=exact)
 
 
 def test_plane_stress_material_point_matches_uniaxial_j2_oracle_and_tangent():
@@ -134,3 +135,36 @@ def test_layer_count_convergence_for_elastic_bending_resultant():
     errors = [abs(v-exact) for v in values]
     assert errors[1] < errors[0] and errors[2] < errors[1]
     assert abs(values[-1]-exact)/abs(exact) < .001
+
+
+def test_exact_thickness_bending_is_independent_of_the_layer_count():
+    """``exact_thickness`` integrates Int z^2 dz = z_c^2 dz + dz^3/12 analytically.
+
+    The mid-point rule alone is short by 1/n^2 of the bending stiffness, so the
+    elastic bending resultant of the same section drifts with the layer count.
+    With the correction the resultants (and the tangents) of 1, 2, 3, 5 and 9
+    layers must be identical to round-off.
+    """
+    forces, tangents = [], []
+    for layers in (1, 2, 3, 5, 9):
+        model = one_element(layers=layers, exact=True)
+        u = torch.zeros(model.n_dofs, dtype=D); u[10] = u[16] = .002
+        internal, tangent, _, _ = assemble_layered_shell4(
+            model, u, LayeredShell4State.virgin(model))
+        forces.append(internal)
+        tangents.append(tangent)
+    for force, tangent in zip(forces[1:], tangents[1:]):
+        assert torch.allclose(force, forces[0], rtol=1e-10, atol=1e-10)
+        assert torch.allclose(tangent, tangents[0], rtol=1e-9, atol=1e-9)
+    # the correction itself is the missing energy fraction 1/n^2 of the section:
+    # its size must shrink by exactly 1/n^2 between layer counts.
+    deltas = {}
+    for layers in (3, 9):
+        model_exact = one_element(layers=layers, exact=True)
+        model_mid = one_element(layers=layers)
+        u = torch.zeros(model_exact.n_dofs, dtype=D); u[10] = u[16] = .002
+        f_exact = assemble_layered_shell4(model_exact, u, LayeredShell4State.virgin(model_exact))[0]
+        f_mid = assemble_layered_shell4(model_mid, u, LayeredShell4State.virgin(model_mid))[0]
+        deltas[layers] = float((f_exact - f_mid).abs().sum())
+    assert deltas[3] > 0.0
+    assert deltas[3] / deltas[9] == pytest.approx(9.0, rel=0.05)   # (1/3^2)/(1/9^2) = 9

@@ -368,7 +368,8 @@ def patch_pressure_forces(nodes: torch.Tensor, a: float, b: float, nx: int, ny: 
 def patch_plate_mesh(a: float, b: float, t: float, nx: int, ny: int, *,
                      young: float, poisson: float, yield_stress: float,
                      hardening: float, layers: int = 5,
-                     patch: tuple[float, float] | None = None
+                     patch: tuple[float, float] | None = None,
+                     exact_thickness: bool = True,
                      ) -> tuple[LayeredShell4Model, dict]:
     """Simply supported plate mesh with a unit patch-pressure reference load.
 
@@ -379,10 +380,15 @@ def patch_plate_mesh(a: float, b: float, t: float, nx: int, ny: int, *,
     u, v = patch
     if not (0 < u <= a and 0 < v <= b):
         raise ValueError("patch must lie inside the plate")
-    for size, step in ((u, a / nx), (v, b / ny)):
-        ratio = size / step
-        if abs(ratio - round(ratio)) > 1e-9:
-            raise ValueError("patch edge must coincide with an element edge")
+    # Both patch *edges* (not only its width) must fall on node lines: otherwise
+    # the lumped patch loads do not conserve the patch resultant and the mesh is
+    # silently biased (measured 9.6 % deflection error at nx = 6 vs nx = 8).
+    for off, size, length, n in ((0.5 * (a - u), u, a, nx), (0.5 * (b - v), v, b, ny)):
+        step = length / n
+        for point in (off, off + size):
+            ratio = point / step
+            if abs(ratio - round(ratio)) > 1e-9:
+                raise ValueError("patch edge must coincide with an element edge")
     dtype = torch.float64
     x = torch.linspace(0.0, a, nx + 1, dtype=dtype)
     y = torch.linspace(0.0, b, ny + 1, dtype=dtype)
@@ -397,7 +403,7 @@ def patch_plate_mesh(a: float, b: float, t: float, nx: int, ny: int, *,
     model = LayeredShell4Model(nodes=nodes, elements=elements, young=young,
                                poisson=poisson, thickness=t,
                                yield_stress=yield_stress, hardening=hardening,
-                               layers=layers)
+                               layers=layers, exact_thickness=exact_thickness)
     fixed = []
     for i in range(nx + 1):
         for j in range(ny + 1):
@@ -541,7 +547,8 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
                            nx: int, ny: int, layers: int = 5,
                            tolerance: float = 1e-8, max_iterations: int = 25,
                            unload_steps: int = 0,
-                           unload_to: float = 0.0) -> PatchPath:
+                           unload_to: float = 0.0,
+                           exact_thickness: bool = True) -> PatchPath:
     """Integrate the elastoplastic patch-loading path (adaptive load control).
 
     On a Newton failure the increment is bisected down to 1e-3 of the original
@@ -554,7 +561,8 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
         raise ValueError("even element counts keep the plate centre a node")
     model, info = patch_plate_mesh(a, b, t, nx, ny, young=young, poisson=poisson,
                                    yield_stress=yield_stress, hardening=hardening,
-                                   layers=layers, patch=patch)
+                                   layers=layers, patch=patch,
+                                   exact_thickness=exact_thickness)
     path = PatchPath(model=model, info=info)
     state = LayeredShell4State.virgin(model)
     u = torch.zeros(model.n_dofs, dtype=model.nodes.dtype)
@@ -623,7 +631,8 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
                            poisson: float, grade: str, temperature_c: float,
                            patch: tuple[float, float], hardening: float,
                            load_factors: Sequence[float], nx: int, ny: int,
-                           layers: int = 5, unload_steps: int = 0) -> dict:
+                           layers: int = 5, unload_steps: int = 0,
+                           exact_thickness: bool = True) -> dict:
     """Patch-pressure capacity of a plate panel at a service temperature.
 
     Returns the analytic elastic/yield-line bounds and the finite element path
@@ -655,7 +664,8 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
                                   yield_stress=flow.yield_stress,
                                   hardening=hardening, patch=patch,
                                   load_factors=load_factors, nx=nx, ny=ny,
-                                  layers=layers, unload_steps=unload_steps)
+                                  layers=layers, unload_steps=unload_steps,
+                                  exact_thickness=exact_thickness)
     # Same-mesh elastic bias: the layered Shell4 element is not an exact thin-plate
     # element, so the transition point is reported both raw and normalised by the
     # element's own elastic surface-stress response (the "consistency regression
@@ -664,7 +674,8 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
                                    yield_stress=flow.yield_stress, hardening=hardening,
                                    patch=patch,
                                    load_factors=[0.25 * elastic["pressure"]],
-                                   nx=nx, ny=ny, layers=layers)
+                                   nx=nx, ny=ny, layers=layers,
+                                   exact_thickness=exact_thickness)
     fe_sigma_per_pa = probe.loading[0].max_surface_mises / probe.loading[0].load_factor
     bias = fe_sigma_per_pa / elastic["sigma_eq_per_pa"] - 1.0
     fe = {
