@@ -207,4 +207,134 @@ def test_evidence_artifacts_agree_when_present():
     ref = ctb.restrained_uniaxial_stress(steel.E(T_REF), steel.alpha(T_REF), DT)
     assert data["reference"]["value_Pa"] == pytest.approx(ref, rel=1e-15)
     assert data["verdict"]["task_gate_3pct"] is True
+    # round-2 gates must be present and green in the published evidence
+    for key in ("graded_model_gate", "graded_order_gate",
+                "graded_discrimination_gate", "gate_strength_gate"):
+        assert data["verdict"][key] is True, key
+    assert data["gates"]["graded_model_roundoff_max"] < ctb.ROUNDOFF_REL_TOL
+    assert data["gates"]["graded_task_gate_fail_levels_3d"], \
+        "the graded rung must contain at least one cell that fails the 3% gate"
     assert math.isclose(data["gates"]["task_rel_tol"], ctb.TASK_REL_TOL)
+
+
+def test_gate_strength_probe_catches_the_node_sampling_mutation():
+    """Mutation B must pass every uniform gate and be caught by the graded rung."""
+    import importlib.util
+    import sys
+    from pathlib import Path
+
+    bench = Path(__file__).resolve().parents[1] / "benchmarks" / \
+        "constrained_thermal_bar.py"
+    if not bench.exists():  # pragma: no cover
+        pytest.skip("benchmark driver not present")
+    spec = importlib.util.spec_from_file_location("ctb_bench_probe", bench)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules["ctb_bench_probe"] = mod
+    try:
+        spec.loader.exec_module(mod)
+        probe = mod.gate_strength_probe(ctb.constant_steel("EH36", T_ref=T_REF))
+    finally:
+        sys.modules.pop("ctb_bench_probe", None)
+    assert probe["A_caught_on_uniform"] is True
+    assert probe["B_invisible_on_uniform"] is True, probe
+    assert probe["B_caught_on_graded"] is True, probe
+    assert probe["gate"] is True
+
+
+
+# ---------------------------------------------------------------------------
+# graded dT: the rung on which the 3% criterion discriminates
+# ---------------------------------------------------------------------------
+GRADED_LEVELS = (2, 4, 8, 16)
+
+
+def test_graded_bias_identity(steel):
+    """``graded_field_stress`` must reproduce the analytic trapezoid bias 1/(2 n^2)."""
+    E, alpha = steel.E(T_REF), steel.alpha(T_REF)
+    for n in GRADED_LEVELS:
+        refs = ctb.graded_field_stress(E, alpha, DT, n, 1.0)
+        assert refs["predicted_bias_rel"] == pytest.approx(ctb.graded_bias(n), rel=1e-15)
+        assert refs["bias_rel"] == pytest.approx(ctb.graded_bias(n), rel=1e-14)
+        assert refs["continuum_Pa"] == pytest.approx(-E * alpha * DT / 3.0, rel=1e-15)
+    # the bias is a temperature-interpolation effect: second order, so 1/(2n^2)
+    assert ctb.graded_bias(4) == pytest.approx(1.0 / 32.0, rel=1e-15)
+
+
+def test_graded_bar_and_hex_match_element_average_model(steel):
+    """Both paths must reproduce ``-E alpha <dT>_trap`` to round-off.
+
+    This is the gate that catches an assembly / thermal-load / restraint bug on a
+    *graded* field; the uniform rung cannot distinguish those from round-off.
+    """
+    E, alpha = steel.E(T_REF), steel.alpha(T_REF)
+    for n in GRADED_LEVELS:
+        bar = ctb.solve_bar(n, E, alpha, DT, T_ref=T_REF, length=1.0,
+                            temperature="quadratic")
+        model = ctb.graded_field_stress(E, alpha, DT, n, 1.0)["element_average_Pa"]
+        assert abs(ctb.rel_error(float(bar.sigma.mean()), model)) < 1e-12
+    for nx in (2, 4, 8):
+        hexr = ctb.solve_hex(ctb.graded_mesh(nx, 1.0, 0.10), steel, DT, T_ref=T_REF,
+                             restraint="uniaxial", temp_profile="graded")
+        # the model is rebuilt from the nodal geometry, not from the solver's own
+        # element temperatures, so a wrong element sampling cannot agree with it
+        model = ctb.graded_field_stress(E, alpha, DT, nx, 1.0)["element_average_Pa"]
+        assert abs(ctb.rel_error(float(hexr.sigma.mean(dim=0)[0]), model)) < 1e-12
+        assert hexr.model_sigma == pytest.approx(model, rel=1e-14)
+        # axial stress is uniform over the graded block, and equals the 1-D answer
+        bar = ctb.solve_bar(nx, E, alpha, DT, T_ref=T_REF, length=1.0,
+                            temperature="quadratic")
+        assert abs(ctb.rel_error(float(hexr.sigma.mean(dim=0)[0]),
+                                 float(bar.sigma.mean()))) < 1e-12
+
+
+def test_graded_task_gate_discriminates_on_the_predeclared_mesh_window(steel):
+    """The 3% criterion must fail on coarse graded meshes and pass on fine ones.
+
+    Predeclared from the analytic bias ``1/(2 n**2)`` (see the module docstring):
+    3% is exceeded exactly for ``n <= GRADED_COARSE_MAX`` and met for
+    ``n >= GRADED_FINE_MIN``.  This is what gives the acceptance tolerance its
+    meaning -- on the uniform rung the discrete answer is exact, so no tolerance
+    can bite.
+    """
+    E, alpha = steel.E(T_REF), steel.alpha(T_REF)
+    for n in GRADED_LEVELS:
+        res = ctb.solve_bar(n, E, alpha, DT, T_ref=T_REF, length=1.0,
+                            temperature="quadratic")
+        err = abs(ctb.rel_error(float(res.sigma.mean()),
+                                ctb.graded_field_stress(E, alpha, DT, n, 1.0)["continuum_Pa"]))
+        if n <= ctb.GRADED_COARSE_MAX:
+            assert err > ctb.TASK_REL_TOL, (n, err)
+        elif n >= ctb.GRADED_FINE_MIN:
+            assert err < ctb.TASK_REL_TOL, (n, err)
+
+
+def test_graded_error_is_second_order(steel):
+    """The graded stress error must fall at order 2 on both paths."""
+    E, alpha = steel.E(T_REF), steel.alpha(T_REF)
+    errors, hs = [], []
+    for n in (4, 8, 16):
+        res = ctb.solve_bar(n, E, alpha, DT, T_ref=T_REF, length=1.0,
+                            temperature="quadratic")
+        ref = ctb.graded_field_stress(E, alpha, DT, n, 1.0)["continuum_Pa"]
+        errors.append(abs(ctb.rel_error(float(res.sigma.mean()), ref)))
+        hs.append(1.0 / n)
+    assert abs(ctb.observed_order(errors, hs) - 2.0) < ctb.ORDER_TOL
+
+    errors3, hs3 = [], []
+    for nx in (2, 4, 8):
+        res = ctb.solve_hex(ctb.graded_mesh(nx, 1.0, 0.10), steel, DT, T_ref=T_REF,
+                            restraint="uniaxial", temp_profile="graded")
+        sxx = float(res.sigma.mean(dim=0)[0])
+        errors3.append(abs(ctb.rel_error(sxx, res.exact_sigma)))
+        hs3.append(1.0 / nx)
+    assert abs(ctb.observed_order(errors3, hs3) - 2.0) < ctb.ORDER_TOL
+
+
+def test_graded_profile_requires_uniaxial_restraint(steel):
+    """A graded field has no closed-form lateral stress, so it is not claimed."""
+    mesh = ctb.graded_mesh(2, 1.0, 0.10)
+    with pytest.raises(ValueError):
+        ctb.solve_hex(mesh, steel, DT, T_ref=T_REF, restraint="biaxial",
+                      temp_profile="graded")
+    with pytest.raises(ValueError):
+        ctb.solve_hex(mesh, steel, DT, T_ref=T_REF, temp_profile="linear-ish")

@@ -52,6 +52,9 @@ BAR_LEVELS = (1, 2, 4, 8, 16)
 HEX_LEVELS = (1, 2, 3, 4)
 NU_LEVELS = (0.0, 0.2, 0.3, 0.45)
 DT_LEVELS = (25.0, 50.0, 100.0, 150.0)
+GRADED_BAR_LEVELS = (2, 4, 8, 16, 32)     # axial elements, 1-D path
+GRADED_HEX_LEVELS = (2, 4, 8, 16)         # axial elements, 3-D path
+GRADED_SIDE = 0.10                        # lateral extent of the graded block [m]
 
 
 def _git_sha() -> str:
@@ -230,6 +233,224 @@ def dt_sensitivity(steel) -> dict:
             "slope_rel_error": ctb.rel_error(slope, -E * alpha)}
 
 
+def graded_study(steel) -> dict:
+    """Spatially varying ``dT`` -- the rung on which the 3% gate actually bites.
+
+    Physics: ``T(x) = T_ref + dT (x/L)**2`` on a fully restrained bar with constant
+    ``E``, ``alpha``.  Compatibility fixes the axial force, so the continuum answer
+    is *constant*:
+
+        sigma_xx = -E alpha <dT>,      <dT> = dT/3.
+
+    Both FE paths build the thermal load from one temperature per element, which
+    for an equally spaced grid is the trapezoid mean of the nodal field:
+    ``<dT>_trap = dT (1/3 + 1/(6 n**2))``.  The code therefore has to reproduce
+
+        sigma_xx = -E alpha <dT>_trap  =  sigma_exact (1 + 1/(2 n**2))
+
+    to round-off (a bug in the thermal load or in the restraint set would break
+    this), and it approaches ``sigma_exact`` at second order (a temperature
+    interpolation error, nothing else).  Relative bias ``1/(2 n**2)`` exceeds the
+    3% acceptance gate for ``n <= 4`` and is below it for ``n >= 5``: these two
+    statements are predeclared in :mod:`tensorfem.constrained_thermal_bar`
+    (``GRADED_COARSE_MAX`` / ``GRADED_FINE_MIN``) and the observed pattern is
+    reported against them, not fitted to them.
+
+    The 3-D rung is the first configuration in this case in which the hex8
+    thermo-elastic path is driven by a *non-uniform* temperature field (before
+    this, every element saw the same ``dT``, so the element-temperature sampling
+    was never exercised).
+    """
+    E, alpha = steel.E(T_REF), steel.alpha(T_REF)
+
+    bar_rows = []
+    for n in GRADED_BAR_LEVELS:
+        res = ctb.solve_bar(n, E, alpha, DT, T_ref=T_REF, length=LENGTH,
+                            temperature="quadratic")
+        sigma = float(res.sigma.mean())
+        refs = ctb.graded_field_stress(E, alpha, DT, n, LENGTH)
+        bar_rows.append({
+            "n_elem_axial": n,
+            "h_m": LENGTH / n,
+            "sigma_Pa": sigma,
+            "model_Pa": refs["element_average_Pa"],
+            "continuum_Pa": refs["continuum_Pa"],
+            "model_rel_error": ctb.rel_error(sigma, refs["element_average_Pa"]),
+            "continuum_rel_error": ctb.rel_error(sigma, refs["continuum_Pa"]),
+            "bias_rel": refs["bias_rel"],
+            "predicted_bias_rel": refs["predicted_bias_rel"],
+            "pass_task_tol": abs(ctb.rel_error(sigma, refs["continuum_Pa"]))
+                             < ctb.TASK_REL_TOL,
+        })
+
+    hex_rows = []
+    for nx in GRADED_HEX_LEVELS:
+        mesh = ctb.graded_mesh(nx, LENGTH, GRADED_SIDE)
+        res = ctb.solve_hex(mesh, steel, DT, T_ref=T_REF, restraint="uniaxial",
+                            temp_profile="graded")
+        sxx = float(res.sigma.mean(dim=0)[0])
+        refs = ctb.graded_field_stress(E, alpha, DT, nx, LENGTH)
+        hex_rows.append({
+            "n_elem_axial": nx,
+            "n_elem": mesh.n_elements,
+            "n_dof": 3 * mesh.n_nodes,
+            "h_m": LENGTH / nx,
+            "sigma_Pa": sxx,
+            # independent analytic model (derived from the nodal geometry, not from
+            # the solver's own element temperatures) + the solver's own copy of it
+            "model_Pa": refs["element_average_Pa"],
+            "code_model_Pa": res.model_sigma,
+            "continuum_Pa": refs["continuum_Pa"],
+            "model_rel_error": ctb.rel_error(sxx, refs["element_average_Pa"]),
+            "code_model_rel_error": ctb.rel_error(sxx, res.model_sigma),
+            "continuum_rel_error": ctb.rel_error(sxx, refs["continuum_Pa"]),
+            "element_spread_rel": float(res.sigma[:, 0].max() - res.sigma[:, 0].min())
+                                  / abs(sxx),
+            "lateral_max_over_axial": float(res.sigma[:, 1:].abs().max()) / abs(sxx),
+            "bias_rel": refs["bias_rel"],
+            "predicted_bias_rel": refs["predicted_bias_rel"],
+            "pass_task_tol": abs(ctb.rel_error(sxx, res.exact_sigma)) < ctb.TASK_REL_TOL,
+        })
+
+    def _orders(rows):
+        return ctb.observed_order([abs(r["continuum_rel_error"]) for r in rows],
+                                  [r["h_m"] for r in rows])
+
+    def _bite(rows):
+        return ([r["n_elem_axial"] for r in rows if not r["pass_task_tol"]],
+                [r["n_elem_axial"] for r in rows if r["pass_task_tol"]])
+
+    bar_fail, bar_pass = _bite(bar_rows)
+    hex_fail, hex_pass = _bite(hex_rows)
+    bias_id = max(abs(r["bias_rel"] - r["predicted_bias_rel"])
+                  for r in bar_rows + hex_rows)
+    model_roundoff = max(abs(r["model_rel_error"]) for r in bar_rows + hex_rows)
+    o1, o3 = _orders(bar_rows), _orders(hex_rows)
+    coarse_ok = all(n <= ctb.GRADED_COARSE_MAX for n in bar_fail + hex_fail)
+    fine_ok = all(n >= ctb.GRADED_FINE_MIN for n in bar_pass + hex_pass)
+    return {
+        "bar_1d": bar_rows,
+        "hex_3d": hex_rows,
+        "bias_identity_max_rel": bias_id,
+        "model_roundoff_max": model_roundoff,
+        "observed_order_1d": o1,
+        "observed_order_3d": o3,
+        "task_gate_fail_levels_1d": bar_fail,
+        "task_gate_pass_levels_1d": bar_pass,
+        "task_gate_fail_levels_3d": hex_fail,
+        "task_gate_pass_levels_3d": hex_pass,
+        "predeclared_coarse_max": ctb.GRADED_COARSE_MAX,
+        "predeclared_fine_min": ctb.GRADED_FINE_MIN,
+        "model_gate": model_roundoff < ctb.ROUNDOFF_REL_TOL and bias_id < 1e-12,
+        "order_gate": (abs(o1 - 2.0) < ctb.ORDER_TOL
+                       and abs(o3 - 2.0) < ctb.ORDER_TOL),
+        "discrimination_gate": coarse_ok and fine_ok,
+        "note": ("the 3% gate is informative only here: on the uniform rung the "
+                 "discrete answer is exact, so no tolerance below round-off can bite"),
+    }
+
+
+def gate_strength_probe(steel) -> dict:
+    """Do the gates actually catch a defect, and which gate catches which?
+
+    The round-1 audit of this case observed that the governing rung cannot exercise
+    any tolerance (the discrete answer is exact).  This probe turns that remark into
+    a measurement: two *predeclared* physics corruptions are injected into an
+    in-memory copy of the module (never into the working tree) and the same
+    quantities are recomputed:
+
+    ``A`` drop the thermal strain from the stress recovery (``sigma = D eps``);
+    ``B`` sample the element temperature at one node instead of averaging it.
+
+    ``A`` must trip the uniform-rung gates.  ``B`` is *invisible* to every uniform
+    gate -- the uniform field makes any sampling equal -- and is caught only by the
+    graded rung added in this revision.  That is the operational content of "the
+    graded rung is the one where the tolerance bites": it catches a defect the
+    pre-existing gates pass.
+    """
+    import importlib.util
+    import sys
+    import tempfile
+
+    src_text = Path(ctb.__file__).read_text()
+    mutants = {
+        "A_drop_thermal_strain_in_stress_recovery": (
+            'sigma = torch.einsum("ekl,egl->egk", D, eps - eps_th).mean(dim=1)',
+            'sigma = torch.einsum("ekl,egl->egk", D, eps).mean(dim=1)'),
+        "B_sample_element_temperature_at_one_node": (
+            "T_elem = T_node[mesh.elements].mean(dim=1)",
+            "T_elem = T_node[mesh.elements][:, 0]"),
+    }
+    E, alpha = steel.E(T_REF), steel.alpha(T_REF)
+    ref = ctb.restrained_uniaxial_stress(E, alpha, DT)
+    graded_model = ctb.graded_field_stress(E, alpha, DT, 4, LENGTH)["element_average_Pa"]
+
+    def _measure(module):
+        uni = module.solve_hex(module.hex_mesh(2, (SIDE, SIDE, SIDE)), steel, DT,
+                              T_ref=T_REF, restraint="uniaxial")
+        free = module.solve_hex(module.hex_mesh(2, (SIDE, SIDE, SIDE)), steel, DT,
+                                T_ref=T_REF, restraint="free")
+        gr = module.solve_hex(module.graded_mesh(4, LENGTH, GRADED_SIDE), steel, DT,
+                              T_ref=T_REF, restraint="uniaxial", temp_profile="graded")
+        return {
+            "uniform_rel_error": abs(ctb.rel_error(float(uni.sigma.mean(dim=0)[0]), ref)),
+            "free_control_rel": float(free.sigma.abs().max()) / abs(ref),
+            "graded_rel_error_vs_model": abs(ctb.rel_error(
+                float(gr.sigma.mean(dim=0)[0]), graded_model)),
+        }
+
+    with tempfile.TemporaryDirectory() as tmp:
+        def _load(name: str, text: str):
+            path = Path(tmp) / f"{name}.py"
+            path.write_text(text)
+            spec = importlib.util.spec_from_file_location(name, path)
+            mod = importlib.util.module_from_spec(spec)
+            # ``@dataclass`` resolves annotations through ``sys.modules``, so the
+            # mutant has to be registered before it is executed.
+            sys.modules[name] = mod
+            try:
+                spec.loader.exec_module(mod)
+            finally:
+                sys.modules.pop(name, None)
+            return mod
+
+        baseline = _measure(ctb)
+        rows = []
+        for name, (old, new) in mutants.items():
+            if old not in src_text:  # pragma: no cover - mutation target vanished
+                raise RuntimeError(f"mutation target not found for {name}")
+            mod = _load(name, src_text.replace(old, new, 1))
+            got = _measure(mod)
+            caught = [k for k, v in got.items() if v > ctb.ROUNDOFF_REL_TOL]
+            rows.append({
+                "mutation": name,
+                "metrics": got,
+                "caught_by": caught,
+                "caught": bool(caught),
+            })
+
+    by_name = {r["mutation"]: r for r in rows}
+    a = by_name["A_drop_thermal_strain_in_stress_recovery"]
+    b = by_name["B_sample_element_temperature_at_one_node"]
+    uniform_gates = ("uniform_rel_error", "free_control_rel")
+    a_caught = any(k in a["caught_by"] for k in uniform_gates)
+    b_invisible_on_uniform = all(b["metrics"][k] < ctb.ROUNDOFF_REL_TOL
+                                 for k in uniform_gates)
+    b_caught_on_graded = "graded_rel_error_vs_model" in b["caught_by"]
+    return {
+        "baseline": baseline,
+        "mutants": rows,
+        "predeclared_expectation": {
+            "A": "caught by a uniform-rung gate",
+            "B": "invisible to every uniform-rung gate, caught by the graded rung",
+        },
+        "A_caught_on_uniform": a_caught,
+        "B_invisible_on_uniform": b_invisible_on_uniform,
+        "B_caught_on_graded": b_caught_on_graded,
+        "gate": a_caught and b_invisible_on_uniform and b_caught_on_graded,
+    }
+
+
 def temperature_dependent_case(tdep_steel) -> dict:
     """EH36 with its real ``dE/dT`` / ``dalpha/dT``: reference at the element temperature."""
     res = ctb.solve_hex(ctb.hex_mesh(2, (SIDE, SIDE, SIDE)), tdep_steel, DT,
@@ -292,7 +513,7 @@ def fig_profile(steel, path: Path) -> None:
                          temperature="quadratic")
     x = np.linspace(0.0, LENGTH, n + 1)
     xc = 0.5 * (x[:-1] + x[1:])
-    fig, ax = plt.subplots(1, 2, figsize=(10.5, 4.0))
+    fig, ax = plt.subplots(1, 3, figsize=(15.0, 4.0))
     for res, lab in ((uni, "uniform $\\Delta T$"), (quad, "quadratic $T(x)$")):
         ax[0].step(xc, res.sigma.numpy() / 1e6, where="mid", label=f"FEM, {lab}")
         ax[0].axhline(res.exact_sigma / 1e6, ls="--", lw=1.0,
@@ -311,19 +532,42 @@ def fig_profile(steel, path: Path) -> None:
     ax[1].set_ylabel("axial displacement [mm]")
     ax[1].set_title("displacement field (end restraints)")
     ax[1].legend(fontsize=8)
+    # panel 3: why the graded rung is the one that can bite the 3% gate
+    ns = np.array(sorted(GRADED_BAR_LEVELS))
+    ax[2].loglog(ns, 1.0 / (2.0 * ns ** 2), "o-", label=r"trapezoid bias $1/(2n^2)$")
+    ax[2].axhline(ctb.TASK_REL_TOL, color="C3", ls=":", lw=1.2,
+                  label="task gate 3%")
+    bite = ns[1.0 / (2.0 * ns ** 2) > ctb.TASK_REL_TOL]
+    ax[2].plot(bite, 1.0 / (2.0 * bite ** 2), "rx", ms=9,
+               label="gate bites (n = " + ", ".join(str(int(v)) for v in bite) + ")")
+    ax[2].set_xlabel("axial elements n")
+    ax[2].set_ylabel("relative bias of $\\sigma_{xx}$")
+    ax[2].set_title("quadratic $T(x)$: element-average bias vs 3% gate")
+    ax[2].legend(fontsize=8)
     fig.tight_layout()
     fig.savefig(path, dpi=140)
     plt.close(fig)
 
 
-def fig_convergence(quad: dict, bar_rows, path: Path) -> None:
-    fig, ax = plt.subplots(figsize=(6.6, 4.4))
+def fig_convergence(quad: dict, bar_rows, graded: dict, path: Path) -> None:
+    fig, ax = plt.subplots(figsize=(7.2, 4.6))
     hs = [r["h_m"] for r in quad["rows"]]
     es = [r["abs_rel_error"] for r in quad["rows"]]
     ax.loglog(hs, es, "o-", label=f"quadratic $T(x)$ (order $\\approx$ {quad['observed_order']:.2f})")
     ax.loglog([r["h_m"] for r in bar_rows],
               [max(abs(r["rel_error"]), 1e-18) for r in bar_rows], "s--",
               label="uniform $\\Delta T$ (round-off level)")
+    g1 = graded["bar_1d"]
+    g3 = graded["hex_3d"]
+    ax.loglog([r["h_m"] for r in g1],
+              [abs(r["continuum_rel_error"]) for r in g1], "d-", color="C2",
+              label=f"graded $T(x)$, 1-D (order $\\approx$ {graded['observed_order_1d']:.2f})")
+    ax.loglog([r["h_m"] for r in g3],
+              [abs(r["continuum_rel_error"]) for r in g3], "^-.", color="C4",
+              label=f"graded $T(x)$, 3-D hex8 (order $\\approx$ {graded['observed_order_3d']:.2f})")
+    ax.loglog([r["h_m"] for r in g1],
+              [max(abs(r["model_rel_error"]), 1e-18) for r in g1], ":", color="0.4",
+              label="graded vs element-average model (round-off)")
     ax.axhline(ctb.ROUNDOFF_REL_TOL, color="0.4", lw=1.0, label="round-off gate 1e-8")
     ax.axhline(ctb.TASK_REL_TOL, color="C3", ls=":", lw=1.2, label="task gate 3%")
     ax.loglog(hs, es[0] * (np.array(hs) / hs[0]) ** 2.0, "k--", lw=0.9, alpha=0.6,
@@ -331,6 +575,12 @@ def fig_convergence(quad: dict, bar_rows, path: Path) -> None:
     ax.set_xlabel("h = L / n_elem [m]")
     ax.set_ylabel("relative error of the axial stress")
     ax.set_title("h-convergence of the restrained-bar stress")
+    ax.annotate("3% gate bites for n <= "
+                f"{int(ctb.GRADED_COARSE_MAX)}",
+                xy=(LENGTH / ctb.GRADED_COARSE_MAX, ctb.TASK_REL_TOL),
+                xytext=(0.03, 0.06), textcoords="axes fraction",
+                fontsize=8, color="C3",
+                arrowprops=dict(arrowstyle="->", color="C3", lw=0.8))
     ax.legend(fontsize=8)
     fig.tight_layout()
     fig.savefig(path, dpi=140)
@@ -390,6 +640,8 @@ def build_evidence() -> dict:
     nu_rows = nu_sensitivity(steel)
     dt_rows = dt_sensitivity(steel)
     tdep_case = temperature_dependent_case(tdep)
+    graded = graded_study(steel)
+    probe = gate_strength_probe(steel)
 
     ref = ctb.restrained_uniaxial_stress(E, alpha, DT)
     derivation = {r: ctb.derivation_residual(E, alpha, DT, nu, r)
@@ -408,6 +660,19 @@ def build_evidence() -> dict:
         "hex_lateral_measure_max": max(max(r["lateral_measure"]) for r in hex_rows),
         "nu_max_drift_rel": nu_rows["max_drift_rel"],
         "dT_slope_rel_error": abs(dt_rows["slope_rel_error"]),
+        "graded_model_roundoff_max": graded["model_roundoff_max"],
+        "graded_bias_identity_max_rel": graded["bias_identity_max_rel"],
+        "graded_observed_order_1d": graded["observed_order_1d"],
+        "graded_observed_order_3d": graded["observed_order_3d"],
+        "graded_task_gate_fail_levels_1d": graded["task_gate_fail_levels_1d"],
+        "graded_task_gate_pass_levels_1d": graded["task_gate_pass_levels_1d"],
+        "graded_task_gate_fail_levels_3d": graded["task_gate_fail_levels_3d"],
+        "graded_task_gate_pass_levels_3d": graded["task_gate_pass_levels_3d"],
+        "graded_predeclared_coarse_max": graded["predeclared_coarse_max"],
+        "graded_predeclared_fine_min": graded["predeclared_fine_min"],
+        "gate_strength_A_caught_on_uniform": probe["A_caught_on_uniform"],
+        "gate_strength_B_invisible_on_uniform": probe["B_invisible_on_uniform"],
+        "gate_strength_B_caught_on_graded": probe["B_caught_on_graded"],
     }
     verdict = {
         "task_gate_3pct": (gates["bar_uniform_max_abs_rel_error"] < ctb.TASK_REL_TOL
@@ -419,6 +684,10 @@ def build_evidence() -> dict:
                           and nu_rows["invariance_gate"]),
         "convergence_order_gate": quad["order_gate"],
         "derivation_gate": max(abs(v) for v in derivation.values()) < 1e-15,
+        "graded_model_gate": graded["model_gate"],
+        "graded_order_gate": graded["order_gate"],
+        "graded_discrimination_gate": graded["discrimination_gate"],
+        "gate_strength_gate": probe["gate"],
     }
     verdict["all_pass"] = all(verdict.values())
 
@@ -473,6 +742,8 @@ def build_evidence() -> dict:
             "nu_sensitivity": nu_rows,
             "dt_sensitivity": dt_rows,
             "temperature_dependent_EH36": tdep_case,
+            "graded_temperature": graded,
+            "gate_strength": probe,
         },
         "gates": gates,
         "verdict": verdict,
@@ -550,6 +821,13 @@ def render_report(ev: dict) -> str:
       "load); the *nu sweep* must leave `sigma_xx` unchanged (uniaxial restraint has no "
       "Poisson coupling in the restrained direction); the *restraint family* must "
       "reproduce `-E alpha dT`, `-E alpha dT/(1-nu)`, `-E alpha dT/(1-2nu)` and `0`.")
+    a("* **Graded rung (new in this revision):** the same two paths driven by a "
+      "*spatially varying* temperature field `T(x) = T_ref + dT (x/L)^2` — "
+      "`solve_bar(temperature='quadratic')` in 1-D and "
+      "`solve_hex(temp_profile='graded')` in 3-D. Until now every element in the hex8 "
+      "path saw the same `dT`, so the element-temperature sampling was never "
+      "exercised; on this rung it is, and it is the only rung on which the 3% "
+      "acceptance gate can fail (see §4.5).")
     a("* **Determinism:** direct dense solves, no sampling, no seed; reruns are "
       "bit-identical.")
     a("")
@@ -675,6 +953,135 @@ def render_report(ev: dict) -> str:
       "case freezes the properties — the 3% gate must be about the FEM, not about the "
       "material model.")
     a("")
+    gr = st["graded_temperature"]
+    gs = st["gate_strength"]
+    a("### 4.5 Graded dT: the rung on which the 3% gate actually bites")
+    a("")
+    a("Uniform `dT` is nodally exact, so §4.1/§4.2 can only demonstrate round-off: no "
+      "acceptance tolerance, however tight, can *discriminate* there. This rung makes "
+      "the tolerance informative. The field `T(x) = T_ref + dT (x/L)^2` is fully "
+      "restrained at both ends, so compatibility fixes one constant axial force and the "
+      "continuum answer is constant:")
+    a("")
+    a("```")
+    a("sigma_xx = -E alpha <dT>,   <dT> = dT/3     (both ends fixed, constant E, alpha)")
+    a("```")
+    a("")
+    a("Both FE paths build the thermal load from **one temperature per element** (the "
+      "average of the nodal values, the convention of "
+      "`thermal.solve_thermoelastic_bar`). For an equally spaced grid that average is "
+      "the trapezoid mean of the nodal interpolant, `<dT>_trap = dT (1/3 + 1/(6 n^2))`, "
+      "so the code must reproduce")
+    a("")
+    a("```")
+    a(f"sigma_xx = -E alpha <dT>_trap = sigma_exact (1 + 1/(2 n^2))"
+      f"      [both paths, to round-off]")
+    a("```")
+    a("")
+    a("and approach `sigma_exact` at second order. The bias is *interpolation of the "
+      "temperature field*, not a quadrature defect (trapezoid is exact for the linear "
+      "interpolant); `1/(2 n^2)` is derived in "
+      "`constrained_thermal_bar.graded_bias`.")
+    a("")
+    a("**1-D path** (`solve_thermoelastic_bar`, quadratic `T`):")
+    a("")
+    a("| n_elem | h [m] | sigma FEM [Pa] | element-average model [Pa] | continuum [Pa] | rel. err vs model | rel. err vs continuum | bias (analytic) | <3% vs continuum? |")
+    a("|---|---|---|---|---|---|---|---|---|")
+    for row in gr["bar_1d"]:
+        a(f"| {row['n_elem_axial']} | {row['h_m']:.4g} | {row['sigma_Pa']:.6e} | "
+          f"{row['model_Pa']:.6e} | {row['continuum_Pa']:.6e} | "
+          f"{row['model_rel_error']:.3e} | {abs(row['continuum_rel_error']):.4%} | "
+          f"{row['bias_rel']:+.3e} | {'YES' if row['pass_task_tol'] else '**NO**'} |")
+    a("")
+    a("**3-D path** (hex8, uniaxial restraint, graded nodal `T`, lateral 2x2):")
+    a("")
+    a("| nx | elements | dofs | sigma_xx FEM [Pa] | element-average model [Pa] | continuum [Pa] | rel. err vs model | rel. err vs continuum | element spread | max lateral / axial | <3% vs continuum? |")
+    a("|---|---|---|---|---|---|---|---|---|---|---|")
+    for row in gr["hex_3d"]:
+        a(f"| {row['n_elem_axial']} | {row['n_elem']} | {row['n_dof']} | "
+          f"{row['sigma_Pa']:.6e} | {row['model_Pa']:.6e} | "
+          f"{row['continuum_Pa']:.6e} | {row['model_rel_error']:.3e} | "
+          f"{abs(row['continuum_rel_error']):.4%} | {row['element_spread_rel']:.2e} | "
+          f"{row['lateral_max_over_axial']:.2e} | "
+          f"{'YES' if row['pass_task_tol'] else '**NO**'} |")
+    a("")
+    a(f"* element-average model (both paths): max rel. error "
+      f"{g['graded_model_roundoff_max']:.2e} -> gate "
+      f"{ctb.ROUNDOFF_REL_TOL:.0e}: "
+      f"**{'PASS' if v['graded_model_gate'] else 'FAIL'}**")
+    a(f"* bias identity against `1/(2 n^2)`: max |diff| "
+      f"{g['graded_bias_identity_max_rel']:.2e}")
+    a(f"* observed order: 1-D {g['graded_observed_order_1d']:.3f}, 3-D "
+      f"{g['graded_observed_order_3d']:.3f} (theory 2, gate ±{g['order_tol']}) -> "
+      f"**{'PASS' if v['graded_order_gate'] else 'FAIL'}**")
+    a(f"* task gate (<3% vs the continuum) fails at n = "
+      f"{g['graded_task_gate_fail_levels_1d']} (1-D) / "
+      f"{g['graded_task_gate_fail_levels_3d']} (3-D) and passes at n = "
+      f"{g['graded_task_gate_pass_levels_1d']} (1-D) / "
+      f"{g['graded_task_gate_pass_levels_3d']} (3-D); predeclared window was "
+      f"fail for n <= {g['graded_predeclared_coarse_max']}, pass for n >= "
+      f"{g['graded_predeclared_fine_min']} -> "
+      f"**{'PASS' if v['graded_discrimination_gate'] else 'FAIL'}**")
+    a("")
+    a("So the 3% tolerance is *discriminating on this rung and not on the anchor rung*: "
+      "it is a statement about the mesh, not decoration. That is the honest answer to "
+      "the round-1 audit remark that the governing rung cannot exercise any tolerance "
+      "(F3) — it cannot, and this rung is where the pool criterion does work.")
+    a("")
+    a("Two practical consequences, both visible in the table above:")
+    a("")
+    a("* a coarse graded mesh **over-predicts the restrained compression by "
+      "`1/(2 n^2)`** (12.5% at n = 2, 3.1% at n = 4): for a real hull structure with a "
+      "steep thermal gradient, four elements across the gradient is *outside* the 3% "
+      "band, and the error is on the safe (over-stressed) side;")
+    a("* `sigma_xx` is uniform across the block to round-off "
+      f"({min(r['element_spread_rel'] for r in gr['hex_3d']):.1e} worst case) while the "
+      "lateral components near the clamped ends reach "
+      f"{max(r['lateral_max_over_axial'] for r in gr['hex_3d']):.0%} of `|sigma_xx|` — "
+      "a lateral boundary layer that the 1-D model does not represent. The graded rung "
+      "therefore validates `sigma_xx` only, and says so.")
+    a("")
+    a("### 4.6 Gate-strength probe: which gate catches which defect")
+    a("")
+    a("A tolerance is only worth its number if something can fail it. Two physics "
+      "corruptions are injected into an **in-memory copy** of the module (the working "
+      "tree is untouched, the mutants are not committed) and the same three quantities "
+      "are recomputed:")
+    a("")
+    a("| quantity | baseline (rel.) | " + " | ".join(m["mutation"] for m in gs["mutants"]) + " |")
+    a("|---|---|" + "---|" * len(gs["mutants"]))
+    for key, label in (("uniform_rel_error", "uniform rung, sigma_xx vs closed form"),
+                       ("free_control_rel", "free control, max abs(sigma) / (E alpha dT)"),
+                       ("graded_rel_error_vs_model", "graded rung, sigma_xx vs element-average model")):
+        cells = []
+        for m in gs["mutants"]:
+            val = m["metrics"][key]
+            cells.append(f"{val:.3e}" + (" **caught**" if key in m["caught_by"] else ""))
+        a(f"| {label} | {gs['baseline'][key]:.3e} | " + " | ".join(cells) + " |")
+    a("")
+    a("| mutation | predeclared expectation | observed |")
+    a("|---|---|---|")
+    for m in gs["mutants"]:
+        pre = gs["predeclared_expectation"][m["mutation"][0]]
+        obs = ", ".join(m["caught_by"]) if m["caught_by"] else "not caught"
+        a(f"| `{m['mutation']}` | {pre} | {obs} |")
+    a("")
+    a(f"* mutation A caught on the uniform gates: "
+      f"**{'PASS' if gs['A_caught_on_uniform'] else 'FAIL'}**")
+    a(f"* mutation B invisible to every uniform gate (no gate can see it before this "
+      f"revision): **{'PASS' if gs['B_invisible_on_uniform'] else 'FAIL'}**")
+    a(f"* mutation B caught by the graded rung: "
+      f"**{'PASS' if gs['B_caught_on_graded'] else 'FAIL'}** "
+      f"-> gate-strength verdict: "
+      f"**{'PASS' if v['gate_strength_gate'] else 'FAIL'}**")
+    a("")
+    a("Mutation B is the operational justification of §4.5: sampling the element "
+      "temperature at a node instead of averaging it is invisible on a uniform field "
+      "(every node holds the same temperature) and is caught by the graded rung at "
+      f"{[m['metrics']['graded_rel_error_vs_model'] for m in gs['mutants'] if m['mutation'].startswith('B')][0]:.1%} "
+      "of the axial stress. Without the round-2 rung this case would record that "
+      "defect as a pass.")
+    a("")
     a("## 5. Notes, limitations, applicability")
     a("")
     a("* The case is **one-dimensional in its physics**: uniform dT, linear elasticity, "
@@ -690,10 +1097,19 @@ def render_report(ev: dict) -> str:
     a("* The `u_y`, `u_z` point constraints that remove the rigid-body modes are outside "
       "the load path, so they do not perturb the stress: the free control reaches "
       f"{g['hex_free_control_measure_max']:.1e}, i.e. round-off.")
-    a("* Because uniform dT is nodally exact, this case **cannot** detect a first-order "
-      "error proportional to h. That is what the quadratic-dT variant is for. A solver "
-      "can pass this case and still be wrong on gradients — stated so the gate is not "
-      "over-read.")
+    a("* Because uniform dT is nodally exact, the governing rung **cannot** detect any "
+      "discretisation error, of any order: the only thing it can catch is a round-off "
+      "level defect (wrong thermal load, wrong restraint, wrong stress recovery). That "
+      "is what §4.3 and §4.5 are for, and §4.5 quantifies the mesh at which the 3% "
+      "criterion starts to bite (n = 5 and up, from the analytic bias `1/(2 n^2)`). A "
+      "solver can pass the anchor rung and still be wrong on gradients — stated so the "
+      "gate is not over-read.")
+    a("* **Element-temperature convention is a modelling choice, not an error.** The "
+      "thermal load uses one temperature per element (the average of its nodes). On a "
+      "graded field this biases the restrained stress by `+1/(2 n^2)` relative; the "
+      "bias is second order, so mesh refinement removes it, but a coarse mesh result "
+      "should be read as the element-average answer, which is why §4.5 reports both "
+      "references instead of only the continuum one.")
     a("* Material data are the transcribed EH36 anchors of `polar_thermal_stress` (with "
       "its ±3% band and its own source caveat), frozen at `T_ref`. The 3% verdict is "
       "FEM-vs-closed-form, i.e. a numerical-verification statement, **not** a claim about "
@@ -716,6 +1132,19 @@ def render_report(ev: dict) -> str:
       f"{g['hex_free_control_measure_max']:.2e} | YES (round-off) |")
     a(f"| nu sweep drift of sigma_xx | {g['nu_max_drift_rel']:.2e} | 0 | "
       f"{g['nu_max_drift_rel']:.2e} | YES |")
+    g1 = st["graded_temperature"]["bar_1d"][-1]
+    g3 = st["graded_temperature"]["hex_3d"][-1]
+    a(f"| graded T(x), 1-D, n={g1['n_elem_axial']} | {g1['sigma_Pa']/1e6:.6f} MPa | "
+      f"{g1['continuum_Pa']/1e6:.6f} MPa | {abs(g1['continuum_rel_error']):.2e} | "
+      f"{'YES' if g1['pass_task_tol'] else 'NO'} |")
+    a(f"| graded T(x), 3-D hex8, nx={g3['n_elem_axial']} | {g3['sigma_Pa']/1e6:.6f} MPa | "
+      f"{g3['continuum_Pa']/1e6:.6f} MPa | {abs(g3['continuum_rel_error']):.2e} | "
+      f"{'YES' if g3['pass_task_tol'] else 'NO'} |")
+    a(f"| graded T(x), coarse mesh n={st['graded_temperature']['bar_1d'][0]['n_elem_axial']} "
+      f"(gate must bite) | {st['graded_temperature']['bar_1d'][0]['sigma_Pa']/1e6:.6f} MPa | "
+      f"{st['graded_temperature']['bar_1d'][0]['continuum_Pa']/1e6:.6f} MPa | "
+      f"{abs(st['graded_temperature']['bar_1d'][0]['continuum_rel_error']):.2e} | "
+      f"**NO** (by design, see §4.5) |")
     a("")
     a("**Answer to the case question: yes, every governing stress component agrees with "
       f"the closed form to better than 3% — in fact to at most "
@@ -724,7 +1153,11 @@ def render_report(ev: dict) -> str:
       "about eleven orders of magnitude, so the informational content of the case is not "
       "the margin but the fact that *all four restraint families* and the free control "
       "land on their own analytic branch: a wrong thermal load, a wrong restraint or a "
-      "wrong stress-recovery convention would break at least one of them.")
+      "wrong stress-recovery convention would break at least one of them. The graded "
+      "rung is the exception to the round-off margin and deliberately so: on a "
+      "non-uniform temperature field the answer carries an O(h^2) interpolation bias, "
+      "the 3% gate is met only from n = 5 upwards, and the coarse-mesh cells of §4.5 "
+      "are reported as failures.")
     a("")
     a("| gate | value | verdict |")
     a("|---|---|---|")
@@ -754,6 +1187,7 @@ def main() -> dict:
     fig_profile(steel, ASSETS / "constrained_thermal_profile.png")
     fig_convergence(ev["studies"]["bar_quadratic_convergence"],
                     ev["studies"]["bar_uniform"],
+                    ev["studies"]["graded_temperature"],
                     ASSETS / "constrained_thermal_convergence.png")
     fig_sensitivity(ev["studies"]["hex_restraint_family"],
                     ev["studies"]["nu_sensitivity"],

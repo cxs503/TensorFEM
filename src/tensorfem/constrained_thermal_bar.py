@@ -92,6 +92,19 @@ from tensorfem.thermal import solve_thermoelastic_bar
 TASK_REL_TOL = 3.0e-2
 ROUNDOFF_REL_TOL = 1.0e-8
 ORDER_TOL = 0.35
+#: Shape of the graded temperature field exercised by the ``graded`` rung:
+#: ``T(x) = T_ref + dT ((x - x0)/L)**2``.  With a uniform ``dT`` the discrete answer
+#: is exact, so that rung can only measure round-off; this one carries a genuine
+#: discretisation error and therefore gives the 3% gate something to bite on.
+GRADED_PROFILE = "quadratic"
+
+#: Predeclared mesh window of the graded rung (fixed by the analytic bias below,
+#: before any number was seen): the element-average-temperature convention biases
+#: the restrained stress by ``+1/(2 n**2)`` relative, so the 3% acceptance gate
+#: **must** fail for ``n <= 4`` and **must** pass for ``n >= 8``.  If the observed
+#: pattern disagrees, the gate is reported as an honest FAIL rather than relaxed.
+GRADED_COARSE_MAX = 4
+GRADED_FINE_MIN = 8
 
 
 # ---------------------------------------------------------------------------
@@ -123,6 +136,53 @@ ANALYTIC_STRESS = {
     "triaxial": lambda E, alpha, dT, nu: restrained_triaxial_stress(E, alpha, dT, nu),
     "free": lambda E, alpha, dT, nu: 0.0,
 }
+
+
+def graded_bias(n_elem: int) -> float:
+    """Relative bias of the element-average-temperature convention on ``T ~ x**2``.
+
+    The thermal load of a two-node bar (and of a hex8 block) is built from one
+    temperature per element.  For an equally spaced grid that is the average of the
+    nodal values, i.e. the trapezoid mean of the nodal interpolant of ``T``.  For
+    ``T(x) = T_ref + dT (x/L)**2`` the trapezoid mean is ``dT (1/3 + 1/(6 n**2))``,
+    while the continuum mean is ``dT/3``, so the fully restrained axial stress
+    ``sigma = -E alpha <dT>`` is biased by ``+1/(2 n**2)`` in relative terms
+    (negative: the computed compression is too large).  This is *interpolation* of
+    the temperature field, not a quadrature defect -- trapezoid is exact for the
+    linear interpolant -- and it vanishes at second order.
+    """
+    return 1.0 / (2.0 * float(n_elem) ** 2)
+
+
+def graded_field_stress(E: float, alpha: float, dT: float, n_elem: int,
+                        length: float = 1.0) -> dict:
+    """Axial stress of the graded field: continuum-exact vs discrete-consistent.
+
+    Returns the two references a graded rung can be judged against:
+
+    * ``continuum_Pa`` -- ``-E alpha dT / 3``, the continuum exact answer
+      (1-D compatibility: the axial force is ``-E A alpha <dT>`` and
+      ``<dT> = dT/3``);
+    * ``element_average_Pa`` -- ``-E alpha <dT>_trap``, the answer the
+      element-average-temperature convention of the FE code must reproduce to
+      round-off.  Comparing the code against *this* number separates an assembly /
+      thermal-load bug (round-off, ``ROUNDOFF_REL_TOL``) from a discretisation
+      error (``O(h**2)``, ``TASK_REL_TOL``) -- without that separation the two
+      would be indistinguishable.
+    """
+    x = torch.linspace(0.0, float(length), int(n_elem) + 1, dtype=DTYPE)
+    f = float(dT) * (x / float(length)) ** 2
+    trap = float(((f[:-1] + f[1:]) / 2.0).mean())
+    exact_mean = float(dT) / 3.0
+    scale = -float(E) * float(alpha)
+    return {
+        "continuum_Pa": scale * exact_mean,
+        "element_average_Pa": scale * trap,
+        "continuum_mean_dT_K": exact_mean,
+        "element_average_mean_dT_K": trap,
+        "bias_rel": trap / exact_mean - 1.0,
+        "predicted_bias_rel": graded_bias(n_elem),
+    }
 
 
 def derivation_residual(E: float, alpha: float, dT: float, nu: float,
@@ -295,15 +355,49 @@ class HexResult:
     displacement: torch.Tensor  # (n_nodes, 3)
     exact_sigma: float
     exact_lateral: tuple[float, ...]
+    profile: str = "uniform"
+    #: Axial stress the element-average-temperature convention must reproduce to
+    #: round-off.  Equal to ``exact_sigma`` for a uniform ``dT``; for the graded
+    #: field it is ``-E alpha <dT>_trap``, i.e. ``exact_sigma`` plus the
+    #: interpolation bias :func:`graded_bias`.
+    model_sigma: float = 0.0
 
 
 def solve_hex(mesh: HexMesh, steel: PolarSteel, dT: float, T_ref: float = 20.0,
-              restraint: str = "uniaxial", uniform: bool = True) -> HexResult:
-    """Uniform-``dT`` hex8 solve with the requested restraint set."""
+              restraint: str = "uniaxial", temp_profile: str = "uniform") -> HexResult:
+    """Hex8 thermo-elastic solve with the requested restraint set and ``dT`` field.
+
+    ``temp_profile="uniform"``: every element sees ``T_ref + dT``.  The exact
+    solution is representable by trilinear hex8, so the FEM stress must hit the
+    closed form to round-off (patch test).
+
+    ``temp_profile="graded"``: nodal ``T(x) = T_ref + dT ((x - x0)/L)**2`` with
+    one element temperature per element (the average of the nodal values, the
+    convention of :func:`tensorfem.thermal.solve_thermoelastic_bar`).  This is the
+    configuration in which the discretisation error is real: the temperature
+    interpolation adds an ``O(h**2)`` bias to the restrained stress, so the 3%
+    acceptance gate is meaningful here (it is not, on the uniform rung).  Only the
+    uniaxial restraint is claimed for a graded field -- the lateral reference
+    ``sigma_yy = sigma_zz = 0`` does not hold once the field varies along the
+    restrained axis (clamped ends carry a lateral boundary layer).
+    """
     if restraint not in ANALYTIC_STRESS:
         raise ValueError(f"unknown restraint {restraint!r}")
+    if temp_profile not in ("uniform", "graded"):
+        raise ValueError("temp_profile must be 'uniform' or 'graded'")
+    if temp_profile == "graded" and restraint != "uniaxial":
+        raise ValueError("the graded dT field is only verified with uniaxial restraint")
     ne = mesh.n_elements
-    T_elem = torch.full((ne,), float(T_ref) + float(dT), dtype=DTYPE)
+    if temp_profile == "uniform":
+        T_elem = torch.full((ne,), float(T_ref) + float(dT), dtype=DTYPE)
+    else:
+        x = mesh.nodes[:, 0]
+        x0 = float(x.min())
+        span = float(x.max() - x0)
+        if span <= 0.0:  # pragma: no cover - degenerate mesh
+            raise ValueError("graded dT needs a mesh with extent along x")
+        T_node = float(T_ref) + float(dT) * ((x - x0) / span) ** 2
+        T_elem = T_node[mesh.elements].mean(dim=1)
     E_e = steel.E(T_elem)
     alpha_e = torch.clamp(steel.alpha(T_elem), min=0.0)
     K = assemble_elasticity(mesh, E_e, steel.nu)
@@ -330,19 +424,48 @@ def solve_hex(mesh: HexMesh, steel: PolarSteel, dT: float, T_ref: float = 20.0,
 
     # the solver evaluates E and alpha at the element temperature, so the
     # reference has to as well; with constant_steel() this is E(T_ref), alpha(T_ref)
-    E0 = float(steel.E(float(T_ref) + float(dT)))
-    a0 = float(steel.alpha(float(T_ref) + float(dT)))
-    s = ANALYTIC_STRESS[restraint](E0, a0, dT, steel.nu)
+    if temp_profile == "uniform":
+        E0 = float(steel.E(float(T_ref) + float(dT)))
+        a0 = float(steel.alpha(float(T_ref) + float(dT)))
+        s = ANALYTIC_STRESS[restraint](E0, a0, dT, steel.nu)
+        model = s
+    else:
+        # constant-property convention (documented): the graded rung freezes
+        # E, alpha at T_ref so that the only error left is the temperature
+        # interpolation, not the material model.
+        E0 = float(steel.E(float(T_ref)))
+        a0 = float(steel.alpha(float(T_ref)))
+        # Both references are derived from the *nodal geometry* and the analytic
+        # field, never from ``T_elem``: if the element sampling itself were wrong,
+        # a model built from it would agree with the bug.
+        x_centres = mesh.nodes[mesh.elements][:, :, 0].mean(dim=1)
+        n_axial = int(torch.unique(torch.round(x_centres, decimals=12)).numel())
+        refs = graded_field_stress(E0, a0, dT, n_axial, span)
+        s = refs["continuum_Pa"]
+        model = refs["element_average_Pa"]
     lateral = {"uniaxial": (0.0, 0.0), "biaxial": (s, 0.0),
                "triaxial": (s, s), "free": (0.0, 0.0)}[restraint]
     return HexResult(restraint=restraint, n_elem=ne, dT=float(dT), sigma=sigma,
                      displacement=u.reshape(mesh.n_nodes, 3), exact_sigma=s,
-                     exact_lateral=tuple(float(v) for v in lateral))
+                     exact_lateral=tuple(float(v) for v in lateral),
+                     profile=temp_profile, model_sigma=float(model))
 
 
 def hex_mesh(n: int, length=(0.20, 0.20, 0.20)) -> HexMesh:
     """Cube ``n^3`` element mesh (the benchmark specimen, SI metres)."""
     return structured_hex_mesh(n, n, n, *length)
+
+
+def graded_mesh(nx: int, length: float = 1.0, side: float = 0.10,
+                lateral: int = 2) -> HexMesh:
+    """Slender block for the graded rung: ``nx x lateral x lateral`` elements.
+
+    The axial extent carries the ``T(x)`` field, so the refinement is axial only;
+    two elements across each lateral direction are enough to represent the free
+    Poisson contraction.
+    """
+    return structured_hex_mesh(int(nx), int(lateral), int(lateral),
+                               float(length), float(side), float(side))
 
 
 # ---------------------------------------------------------------------------
@@ -395,6 +518,8 @@ def material_digest(steel: PolarSteel) -> dict:
 
 __all__ = [
     "TASK_REL_TOL", "ROUNDOFF_REL_TOL", "ORDER_TOL",
+    "GRADED_PROFILE", "GRADED_COARSE_MAX", "GRADED_FINE_MIN",
+    "graded_bias", "graded_field_stress", "graded_mesh",
     "restrained_uniaxial_stress", "restrained_biaxial_stress",
     "restrained_triaxial_stress", "free_expansion_strain", "ANALYTIC_STRESS",
     "derivation_residual", "default_steel", "constant_steel", "BarResult", "HexResult",
