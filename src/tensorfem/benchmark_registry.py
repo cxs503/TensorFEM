@@ -627,6 +627,40 @@ def run_registered_benchmarks():
     out.extend(plate_foundation_evidence())
     out.extend(shan_chen_mcmp_evidence())
     out.extend(inverse_identification_evidence())
+    # CASE-FEM-KIRSCH-PLATE (case pool): circular hole in a tension plate,
+    # gross-section stress-concentration factor vs the infinite-plate Kirsch
+    # (1898) limit K_t = 3.  The coarse mesh (n=12) is the same code path as the
+    # committed ladder and is fast enough for the default qualification gate.
+    from .finite_width_hole import FiniteWidthPlate, solve_case
+
+    _kp = FiniteWidthPlate(width=1.0, diameter=0.02, half_length=1.5)
+    _krow = solve_case(_kp, n_boundary=24, n_radial=24, grading=6.0)
+    out.append(
+        _evidence(
+            "kirsch.plate.ktg",
+            "Q4 plane-stress plate",
+            "gross stress-concentration factor",
+            "dimensionless",
+            "Kirsch (1898) infinite-plate limit K_t = 3 (Timoshenko & Goodier "
+            "3rd ed. Art. 39); d/W=0.02 finite-width quarter plate on the "
+            "production plane-stress path",
+            _krow["ktg_fe"],
+            3.0,
+            0.03,
+        )
+    )
+    out.append(
+        _evidence(
+            "kirsch.plate.ktn",
+            "Q4 plane-stress plate",
+            "net stress-concentration factor",
+            "dimensionless",
+            "Heywood (1952) finite-width fit K_tn = 2 + (1 - d/W)**3",
+            _krow["ktn_fe"],
+            _kp.heywood_ktn,
+            0.03,
+        )
+    )
     return tuple(out)
 
 
