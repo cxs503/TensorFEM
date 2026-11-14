@@ -5,22 +5,36 @@ Writes
 * ``benchmarks/verified/fem_sphere_pressure_membrane/README.md`` — case card
 * ``docs/sphere-pressure-membrane-case.md`` — full six-section report
 
-Every number in those files is formatted from ``result.json``, which is produced
-by ``run_verification.py``; the prose is static.  Run::
+Every number in those files is formatted from ``result.json`` (the solve record) and
+``gates_verified.json`` (the certificate: the gating set *and* the predeclared
+predictions, which are never mixed); the prose is static.  Run::
 
     python3 benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py
-    python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py
+    python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --write
+    python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --check   # drift gate
+    python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --figures # render PNGs
+
+``--check`` re-renders both documents in memory and diffs them against the committed
+files, so a stale hand edit (or a certificate that moved) fails instead of passing
+silently.  Figures are rendered on demand into ``artifacts/CASE-SPHERE-PRESSURE/figures``
+and are not committed; the certificate declares exactly that (``no figure artifact``).
 """
 from __future__ import annotations
 
 import json
 import os
+import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
 
 with open(os.path.join(HERE, "result.json")) as fh:
     R = json.load(fh)
+# The certificate, not the solve record, owns the verdict: result.json keeps the raw
+# per-gate record (including the predeclared prediction), gates_verified.json splits
+# the gating set from the predictions.  Prose must not re-merge them.
+with open(os.path.join(HERE, "gates_verified.json")) as fh:
+    CERT = json.load(fh)
 
 P = R["parameters"]
 REF = R["reference"]
@@ -35,6 +49,16 @@ FLAT = R["flat_facet_control"]
 TOL = R["tolerance"]
 lame_series = REF["derivation"]["lame_mid_surface_series_t_over_R"]
 
+# --- certificate-derived facts (single source for every verdict in the prose) ---
+GCERT = CERT["gates"]
+PRED = CERT.get("predictions", [])
+N_GATES = len(GCERT)
+N_PASS = sum(1 for g in GCERT if g["passed"])
+VERDICT = "PASS" if CERT["passed"] else "FAIL"
+FAILED_PRED = [p["id"] for p in PRED if p.get("outcome") == "falsified"]
+FAILED_PRED_TXT = ", ".join(f"`{i}`" for i in FAILED_PRED) if FAILED_PRED else "none"
+FIGS_DIR = os.path.join("artifacts", "CASE-SPHERE-PRESSURE", "figures")
+
 
 def pct(x: float) -> str:
     return f"{100.0 * x:+.3e} %"
@@ -47,18 +71,20 @@ def mark(ok: bool) -> str:
 # ---------------------------------------------------------------- case card ---
 card = f"""# fem_sphere_pressure_membrane — CASE-SPHERE-PRESSURE, uniform-pressure sphere membrane stress
 
-Verdict: **{"PASS" if R["gates"]["all_gating_pass"] else "FAIL"}** (gating set; one predeclared
-prediction about the *reference's* validity band is falsified and kept in the record — see
-`gates_verified.json`)
-Driver: `run_verification.py` · Report builder: `build_report.py` · Evidence: `result.json`,
-`gates_verified.json` · Figures: `figures/convergence.png`, `figures/field_meridian.png`,
-`figures/sensitivity.png`
+Verdict: **{VERDICT}** ({N_PASS}/{N_GATES} gating gates in `gates_verified.json`). The
+predeclared prediction about the *reference's* validity band is **not** a gate: it is kept
+under `predictions` with `outcome: "falsified"` ({FAILED_PRED_TXT}) and is graded separately.
+Driver: `run_verification.py` · Report builder: `build_report.py` (`--write` / `--check`) ·
+Evidence: `result.json`, `gates_verified.json` · Figures: rendered on demand by
+`build_report.py --figures` into `{FIGS_DIR}/` and **not committed** (the certificate
+declares no figure artifact, so a committed figure path here would be an `E_ARTIFACT_MISSING` defect)
 
 Repro (13 s, single process, float64, no cluster needed):
 
 ```
 python3 benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py
-python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py
+python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --write --check
+python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --figures   # optional PNGs
 ```
 
 Model: `tensorfem.axisym_shell.AxisymShell` (2-node Reissner–Mindlin ring element,
@@ -81,8 +107,11 @@ Reference (machine-derived, see the report): `σ = pR/(2t) = {V["sigma_pa"]:.6g}
     for r in CONV["exact_meridian"]
 ) + f"""
 
-Gates: {sum(1 for v in G.values() if v["pass"])}/{len(G)} pass (every gating gate passes; the
-single ✗ is the falsified *prediction* G8b about the reference's own validity band).
+Gates: {N_PASS}/{N_GATES} gating gates pass (every gate carries a numeric `threshold` and an
+explicit `operator`, so `tools/verified_anchor_audit.py` recomputes each verdict). The
+predeclared prediction(s) live outside the gating set ({FAILED_PRED_TXT} with
+`outcome: "falsified"`); being a prediction it can neither launder nor hide the gating
+verdict, and it is never counted as a gate here.
 
 Controls: the same element on the same mesh with straight chords fails at
 {pct(CONV["chord_control"][2]["sigma_theta_max_rel_error"])} (8 facets); the merged
@@ -134,8 +163,15 @@ def _fmt(value) -> str:
 
 
 gate_rows = "\n".join(
-    f"| `{k}` | {_fmt(v['value'])} | {v['criterion'].replace('|', '/')} | {mark(v['pass'])} |"
-    for k, v in G.items()
+    f"| `{g['id']}` | {_fmt(g['value'])} | `{g['operator']} {g['threshold']:g}` | "
+    f"{g['kind']} | {mark(g['passed'])} |"
+    for g in GCERT
+)
+pred_rows = "\n".join(
+    f"| `{p['id']}` | {p['statement']} | "
+    f"`{p.get('predicted_operator', '')} {p.get('predicted_threshold', '')}` | "
+    f"t/R = {p['measured_band_upper_t_over_R']:.3g} | {p['outcome']} |"
+    for p in PRED
 )
 
 report = f"""# CASE-SPHERE-PRESSURE — 均压球壳薄膜应力（TensorFEM · 算例池锚点）
@@ -280,9 +316,10 @@ report = f"""# CASE-SPHERE-PRESSURE — 均压球壳薄膜应力（TensorFEM · 
 {max(r["fem_vs_thin_rel"] for r in THICK["rows"]) * 100:.2e}%（同一壳理论内部一致）——
 **注意：这只证明实现与理论一致，不证明理论相对三维弹性正确**，后者由 ref vs Lamé 那一列承载。
 
-> 预登记预测 **G8b 已被证伪**：「ref 在 `t/R ≤ 0.05` 内保持 3%」不成立（实测带止于
-> `t/R ≈ {THICK["t_over_R_band_within_tol"][1]:.2g}`）。该条留在 `gates_verified.json` 的
-> `falsified_predictions` 里，不删除、不改判据。
+> 预登记预测 **{FAILED_PRED_TXT} 已被证伪**：「ref 在 `t/R ≤ 0.05` 内保持 3%」不成立
+> （实测带止于 `t/R ≈ {THICK["t_over_R_band_within_tol"][1]:.2g}`）。该条留在
+> `gates_verified.json` 的 `predictions`（`outcome: "falsified"`）里，不删除、不改判据，
+> 也**不计入** gating 判定（{N_PASS}/{N_GATES} 条 gating gate 全通过）。
 
 **敏感性 B（泊松比 `ν`，8 单元）**：
 
@@ -321,20 +358,29 @@ report = f"""# CASE-SPHERE-PRESSURE — 均压球壳薄膜应力（TensorFEM · 
 
 * `benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py` — 驱动器（ref 推导 + 收敛 + 3 条敏感性 + 2 个对照 + 3 图 + gates）
 * `benchmarks/verified/fem_sphere_pressure_membrane/result.json` — 全部数字（含 env、provenance、repro_cmd）
-* `benchmarks/verified/fem_sphere_pressure_membrane/gates_verified.json` — {len(G)} 条 gate 判定 + 被证伪预测
-* `benchmarks/verified/fem_sphere_pressure_membrane/figures/{{convergence.png,field_meridian.png,sensitivity.png}}`
+* `benchmarks/verified/fem_sphere_pressure_membrane/gates_verified.json` — {N_GATES} 条 gating gate 判定 +
+  {len(PRED)} 条预登记预测（其中 {len(FAILED_PRED)} 条被证伪，`outcome: "falsified"`）
+* `{FIGS_DIR}/{{convergence.png,field_meridian.png,sensitivity.png}}` — 由
+  `build_report.py --figures`（或 CLI）现场渲染，**不随仓提交**（证书因此不声明图工件）；
+  `run_verification.py` 复跑时也会在算例目录下生成同名 `figures/`，同样不提交
 * `benchmarks/verified/fem_sphere_pressure_membrane/build_report.py` — 本报告生成器（零手抄）
 * `tests/test_sphere_pressure_membrane_case.py` — 锁定本算例的 pytest 门
 
-**Gate 汇总（程序判读）**
+**Gate 汇总（程序判读，取自 `gates_verified.json` 的 gating 集）**
 
-| gate | 值 | 判据 | 结果 |
-|---|---|---|---|
+| gate | 值 | 判据 | 类别 | 结果 |
+|---|---|---|---|---|
 {gate_rows}
 
-* gating 全通过：**{R["gates"]["all_gating_pass"]}**；含预测的整体判定：
-  {R["gates"]["all_pass_including_prediction"]}；被证伪预测：
-  {R["gates"]["falsified_predictions"]}。
+**预登记预测（`predictions`，不属于 gating 集）**
+
+| 预测 | 陈述 | 预期 | 实测 | 结果 |
+|---|---|---|---|---|
+{pred_rows}
+
+* gating 判定（证书）：{N_PASS}/{N_GATES} 通过，`passed = {CERT["passed"]}`；预登记预测
+  {len(PRED)} 条，被证伪 {len(FAILED_PRED)} 条（{FAILED_PRED_TXT}，见上表）——预测不参与
+  gating 判定，因此「有预测被证伪」与「gating 全通过」同时成立且互不掩盖。
 
 ## 生产模块、入口与集成调用者（m15703 返修轮补齐）
 
@@ -375,7 +421,8 @@ PYTHONPATH=src python3 -m tensorfem.sphere_pressure_case --out artifacts/CASE-SP
 
 ```
 python3 benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py   # 13 s
-python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py
+python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --write --check
+python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --figures
 pytest tests/test_sphere_pressure_membrane_case.py -q
 ```
 
@@ -392,9 +439,88 @@ dtype float64，单进程，未用集群（运行 13 s < 10 min 阈值）。
 * 仓内证据：`docs/sphere-membrane-validation.md`（平面面元 13317% 失败记录）、
   `docs/benchmark-qualification-status.md`、`benchmarks/verified/fem_axisym_shell/`。
 """
-os.makedirs(os.path.join(ROOT, "docs"), exist_ok=True)
-with open(os.path.join(ROOT, "docs", "sphere-pressure-membrane-case.md"), "w") as fh:
-    fh.write(report)
+DOCS = {
+    os.path.join(HERE, "README.md"): card,
+    os.path.join(ROOT, "docs", "sphere-pressure-membrane-case.md"): report,
+}
 
-print("wrote:", os.path.join(HERE, "README.md"))
-print("wrote:", os.path.join(ROOT, "docs", "sphere-pressure-membrane-case.md"))
+
+def render() -> dict:
+    """The two documents as text, keyed by absolute path (writes nothing)."""
+    return dict(DOCS)
+
+
+def drift() -> list:
+    """Committed files whose content differs from a fresh render (empty = in sync)."""
+    out = []
+    for path, text in render().items():
+        try:
+            with open(path, encoding="utf-8") as fh:
+                on_disk = fh.read()
+        except FileNotFoundError:
+            out.append(path)
+            continue
+        if on_disk != text:
+            out.append(path)
+    return out
+
+
+def figures(fig_dir: str | None = None) -> list:
+    """Render the three PNG panels from ``result.json`` (one small re-solve, < 1 s).
+
+    Nothing here re-runs the study: the ladder and sensitivity panels are drawn from
+    the committed numbers, and only the meridian field panel solves the 16-facet mesh
+    (O(50) dof).  Output is a derived artefact, never committed.
+    """
+    sys.path.insert(0, os.path.join(ROOT, "src"))
+    from tensorfem.sphere_pressure_case import CASE, figures as render_figures
+
+    case = {
+        "radius_m": P["radius_m"],
+        "thickness_m": P["thickness_m"],
+        "young_modulus_pa": P["young_modulus_pa"],
+        "poisson_ratio": P["poisson_ratio"],
+        "pressure_pa": P["pressure_pa"],
+    }
+    if case != dict(CASE):
+        raise SystemExit(
+            f"result.json parameters disagree with the production CASE: {case} vs {dict(CASE)}")
+    target = fig_dir or os.path.join(ROOT, FIGS_DIR)
+    return render_figures({"ladder": CONV}, THICK, {"rows": POIS}, REF, case=case, fig_dir=target)
+
+
+def main(argv=None) -> int:
+    import argparse
+
+    ap = argparse.ArgumentParser(description="render (or check) the CASE-SPHERE-PRESSURE report")
+    ap.add_argument("--write", action="store_true", help="write README.md and docs/ report")
+    ap.add_argument("--check", action="store_true", help="exit 1 if the committed files are stale")
+    ap.add_argument("--figures", action="store_true", help=f"render PNGs into {FIGS_DIR}/")
+    ap.add_argument("--fig-dir", default=None, help="override the figure output directory")
+    args = ap.parse_args(argv)
+
+    if not (args.write or args.check or args.figures):  # default: the historical behaviour
+        args.write = True
+    if args.write:
+        for path, text in render().items():
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as fh:
+                fh.write(text)
+            print("wrote:", path)
+    if args.figures:
+        for path in figures(args.fig_dir):
+            print("figure:", path)
+    if args.check:
+        stale = drift()
+        for path in stale:
+            print("STALE:", path)
+        if stale:
+            print("re-run with --write to regenerate")
+            return 1
+        print(f"OK: {len(render())} documents match the certificate "
+              f"({N_PASS}/{N_GATES} gating gates, {len(PRED)} prediction(s))")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
