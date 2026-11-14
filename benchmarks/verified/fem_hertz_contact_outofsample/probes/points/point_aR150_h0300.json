@@ -1,0 +1,34 @@
+{
+ "a_over_R": 0.15,
+ "h_over_a": 0.03,
+ "domain_depth_over_a": 96.0,
+ "load": 49450.54945054945,
+ "n_elements": 5040,
+ "ndof": 10414,
+ "wall_s": 8.37,
+ "alm_iterations": 80,
+ "outer_iterations": 3,
+ "load_residual": 5.885441270139482e-16,
+ "penetration_over_delta": 0.00019790250696673028,
+ "analytic": {
+  "contact_radius": 1.5,
+  "indentation": 0.225,
+  "peak_pressure": 10493.732511553539
+ },
+ "numeric": {
+  "contact_radius_linear": 1.4911394125971094,
+  "contact_radius_fit": 1.4816728168263715,
+  "indentation": 0.22274711464502453,
+  "peak_pressure_consistent": 10544.885629234379,
+  "peak_pressure_lumped": 13804.562125170472,
+  "reaction": 49450.54945054948
+ },
+ "error_pct": {
+  "contact_radius_linear": -0.5907058268593723,
+  "contact_radius_fit": -1.221812211575235,
+  "indentation": -1.001282379989099,
+  "peak_pressure_consistent": 0.48746351810016186,
+  "peak_pressure_lumped": 31.550543240660357
+ },
+ "hertz_kinematic_consistency_pct": 0.17874542221500977
+}

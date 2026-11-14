@@ -1,0 +1,1041 @@
+{
+ "schema": "tensorfem.verified-gates.v1",
+ "anchor": "fem_hertz_contact_outofsample",
+ "title": "Out-of-sample verification of the load-controlled Hertz face (case pool FEM-HERTZ-CONTACT id 104)",
+ "criteria": {
+  "contact_radius_pct": 3.0,
+  "indentation_pct": 3.0,
+  "refinement_stability_pct": 0.5,
+  "replication_tol_pp": 0.02,
+  "penetration_over_delta_max": 1e-05,
+  "load_residual_max": 1e-09,
+  "hertz_kinematic_consistency_pct": 1.0,
+  "reference": "Hertz 1882 J. reine angew. Math. 92:156; Johnson 1985 Contact Mechanics 4.2 DOI:10.1017/cbo9781139171731",
+  "case_pool": "FEM-HERTZ-CONTACT (id 104)"
+ },
+ "provenance": {
+  "replication_source": "../fem_hertz_contact_loadcontrol/gates_verified.json",
+  "solver": "tensorfem.hertz_halfspace_loadcontrol.solve_axisymmetric_contact_load_control",
+  "estimator": "ContactState.contact_radius_linear (certificate primary)",
+  "mesh_recipe": "two_zone_axis(3a, 96a, 3a/h, 26) + graded_depth(96a, 4a, 24, 16)"
+ },
+ "gates": [
+  {
+   "id": "replication_contact_radius_linear_aR005",
+   "quantity": "|this harness - certificate| for |err| of contact_radius_linear, a/R=0.05, h/a=0.0075 (pp)",
+   "reference": "certificate gate contact_radius_aR005 = 0.445127",
+   "value": 0.0,
+   "threshold": 0.02,
+   "operator": "<=",
+   "passed": true,
+   "note": "pipeline reproducibility only; same public solver entry point"
+  },
+  {
+   "id": "replication_indentation_aR005",
+   "quantity": "|this harness - certificate| for |err| of indentation, a/R=0.05, h/a=0.0075 (pp)",
+   "reference": "certificate gate indentation_aR005 = 1.009951",
+   "value": 0.0,
+   "threshold": 0.02,
+   "operator": "<=",
+   "passed": true,
+   "note": "pipeline reproducibility only; same public solver entry point"
+  },
+  {
+   "id": "replication_contact_radius_linear_aR010",
+   "quantity": "|this harness - certificate| for |err| of contact_radius_linear, a/R=0.1, h/a=0.0075 (pp)",
+   "reference": "certificate gate contact_radius_aR010 = 0.490767",
+   "value": 0.0,
+   "threshold": 0.02,
+   "operator": "<=",
+   "passed": true,
+   "note": "pipeline reproducibility only; same public solver entry point"
+  },
+  {
+   "id": "replication_indentation_aR010",
+   "quantity": "|this harness - certificate| for |err| of indentation, a/R=0.1, h/a=0.0075 (pp)",
+   "reference": "certificate gate indentation_aR010 = 1.009776",
+   "value": 0.0,
+   "threshold": 0.02,
+   "operator": "<=",
+   "passed": true,
+   "note": "pipeline reproducibility only; same public solver entry point"
+  },
+  {
+   "id": "oos_contact_radius_aR030",
+   "quantity": "|a_FE/a_Hertz - 1|, a/R=0.03, h/a=0.0075 (pre-declared point)",
+   "reference": "a = (3 P R/(4 E*))^(1/3)",
+   "value": 0.4562982820683903,
+   "threshold": 3.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_indentation_aR030",
+   "quantity": "|delta_FE/delta_Hertz - 1|, a/R=0.03, h/a=0.0075 (pre-declared point)",
+   "reference": "delta = a^2/R",
+   "value": 1.009950094948353,
+   "threshold": 3.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_contact_radius_aR075",
+   "quantity": "|a_FE/a_Hertz - 1|, a/R=0.075, h/a=0.0075 (pre-declared point)",
+   "reference": "a = (3 P R/(4 E*))^(1/3)",
+   "value": 0.4305097173068373,
+   "threshold": 3.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_indentation_aR075",
+   "quantity": "|delta_FE/delta_Hertz - 1|, a/R=0.075, h/a=0.0075 (pre-declared point)",
+   "reference": "delta = a^2/R",
+   "value": 1.0099362611298845,
+   "threshold": 3.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_contact_radius_aR150",
+   "quantity": "|a_FE/a_Hertz - 1|, a/R=0.15, h/a=0.0075 (pre-declared point)",
+   "reference": "a = (3 P R/(4 E*))^(1/3)",
+   "value": 1.6204647993680155,
+   "threshold": 3.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_indentation_aR150",
+   "quantity": "|delta_FE/delta_Hertz - 1|, a/R=0.15, h/a=0.0075 (pre-declared point)",
+   "reference": "delta = a^2/R",
+   "value": 1.010069753828069,
+   "threshold": 3.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_refinement_stability_contact_radius_aR030",
+   "quantity": "|err(h/a=0.0075) - err(h/a=0.03)| for contact_radius, a/R=0.03 (pp)",
+   "reference": "refinement must not move the error by more than 0.5 pp",
+   "value": 0.3918337882031553,
+   "threshold": 0.5,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_refinement_stability_indentation_aR030",
+   "quantity": "|err(h/a=0.0075) - err(h/a=0.03)| for indentation, a/R=0.03 (pp)",
+   "reference": "refinement must not move the error by more than 0.5 pp",
+   "value": 0.01426836290804312,
+   "threshold": 0.5,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_refinement_stability_contact_radius_aR075",
+   "quantity": "|err(h/a=0.0075) - err(h/a=0.03)| for contact_radius, a/R=0.075 (pp)",
+   "reference": "refinement must not move the error by more than 0.5 pp",
+   "value": 0.4138438236883202,
+   "threshold": 0.5,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_refinement_stability_indentation_aR075",
+   "quantity": "|err(h/a=0.0075) - err(h/a=0.03)| for indentation, a/R=0.075 (pp)",
+   "reference": "refinement must not move the error by more than 0.5 pp",
+   "value": 0.014190582346973457,
+   "threshold": 0.5,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "oos_refinement_stability_contact_radius_aR150",
+   "quantity": "|err(h/a=0.0075) - err(h/a=0.03)| for contact_radius, a/R=0.15 (pp)",
+   "reference": "refinement must not move the error by more than 0.5 pp",
+   "value": 1.0297589725086431,
+   "threshold": 0.5,
+   "operator": "<=",
+   "passed": false,
+   "note": ""
+  },
+  {
+   "id": "oos_refinement_stability_indentation_aR150",
+   "quantity": "|err(h/a=0.0075) - err(h/a=0.03)| for indentation, a/R=0.15 (pp)",
+   "reference": "refinement must not move the error by more than 0.5 pp",
+   "value": 0.00878737383896988,
+   "threshold": 0.5,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR050_h0075",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 2.272293464500308e-12,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR050_h0075",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 1.5573684749678542e-07,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR050_h0075",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.12276890172734367,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR050_h0300",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 3.552713678800501e-15,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR050_h0300",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 3.6084649202672114e-08,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR050_h0300",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.705246715134833,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR100_h0075",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 2.220446049250313e-16,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR100_h0075",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 7.485268074577141e-06,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR100_h0075",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.03095450714911685,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR100_h0300",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 1.4432899320127035e-15,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR100_h0300",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 3.990050459259813e-05,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": false,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR100_h0300",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.636013086500653,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR030_h0075",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 6.431521981653532e-13,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR030_h0075",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 3.1007784375188562e-09,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR030_h0075",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.1003493070075745,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR030_h0300",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 4.884981308350689e-15,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR030_h0300",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 2.4186266484749978e-11,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR030_h0300",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.7053021820517591,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR075_h0075",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 1.0325074129013956e-14,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR075_h0075",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 6.576021857661816e-07,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR075_h0075",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.15207680495892273,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR075_h0300",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 1.1102230246251565e-15,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR075_h0300",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 4.964724097160117e-06,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR075_h0300",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.69756212367027,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR150_h0075",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 2.220446049250313e-15,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR150_h0075",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 4.829765859801939e-05,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": false,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR150_h0075",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 2.2778253641142943,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": false,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR150_h0300",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 6.661338147750939e-16,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR150_h0300",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 0.00019790250696673028,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": false,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR150_h0300",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.17874542221500977,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR020_h0075",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 7.494005416219807e-14,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR020_h0075",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 9.824844773648092e-12,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR020_h0075",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 0.09985185463804447,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "load_residual_aR020_h0300",
+   "quantity": "|reaction/P - 1|",
+   "reference": "load-control closure",
+   "value": 5.595524044110789e-14,
+   "threshold": 1e-09,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "penetration_aR020_h0300",
+   "quantity": "max penetration / delta",
+   "reference": "unilateral constraint quality",
+   "value": 0.0,
+   "threshold": 1e-05,
+   "operator": "<=",
+   "passed": true,
+   "note": ""
+  },
+  {
+   "id": "kinematic_consistency_aR020_h0300",
+   "quantity": "|delta_FE*R/a_FE^2 - 1| (%)",
+   "reference": "Hertz kinematic identity evaluated with the FE radius; non-circular because delta_FE is the load-control unknown",
+   "value": 32.00792985287217,
+   "threshold": 1.0,
+   "operator": "<=",
+   "passed": false,
+   "note": ""
+  }
+ ],
+ "controls": [
+  {
+   "a_over_R": 0.02,
+   "h_over_a": 0.0075,
+   "a_err_pct": -0.45654610411662855,
+   "delta_err_pct": -1.009950061170617,
+   "inside_3pct": true,
+   "note": "reproduction of the documented low-load failure probe; not gated (a negative control is *expected* to miss)"
+  },
+  {
+   "a_over_R": 0.02,
+   "h_over_a": 0.03,
+   "a_err_pct": 20.580355353931633,
+   "delta_err_pct": -1.142099444897915,
+   "inside_3pct": false,
+   "note": "reproduction of the documented low-load failure probe; not gated (a negative control is *expected* to miss)"
+  }
+ ],
+ "envelope": {
+  "certified_band": [
+   0.05,
+   0.1
+  ],
+  "out_of_sample_pass": {
+   "0.03": true,
+   "0.075": true,
+   "0.15": true
+  },
+  "control_inside_3pct": {
+   "0.02": false
+  },
+  "statement": "beyond the certified band 0.05..0.10 the load-controlled Hertz face passes at a/R 0.03, 0.075, 0.15; documented failure control (a/R=0.02: outside 3%)"
+ },
+ "passed": 46,
+ "failed_gates": [
+  "oos_refinement_stability_contact_radius_aR150",
+  "penetration_aR100_h0300",
+  "penetration_aR150_h0075",
+  "kinematic_consistency_aR150_h0075",
+  "penetration_aR150_h0300",
+  "kinematic_consistency_aR020_h0300"
+ ],
+ "pool_gates_all_passed": true,
+ "auxiliary_failures": {
+  "oos_refinement_stability_contact_radius_aR150": {
+   "value": 1.0297589725086431,
+   "threshold": 0.5,
+   "scope": "mesh-refinement stability of the contact-radius estimator (certificate threshold 0.5 pp) does not transfer to this working point; the pool tolerance itself still holds"
+  },
+  "penetration_aR100_h0300": {
+   "value": 3.990050459259813e-05,
+   "threshold": 1e-05,
+   "scope": "ALM constraint quality (certificate threshold 1e-5 delta) degrades at this working point; the pool metrics are unaffected because delta is a load-control unknown, not a penetration-derived quantity"
+  },
+  "penetration_aR150_h0075": {
+   "value": 4.829765859801939e-05,
+   "threshold": 1e-05,
+   "scope": "ALM constraint quality (certificate threshold 1e-5 delta) degrades at this working point; the pool metrics are unaffected because delta is a load-control unknown, not a penetration-derived quantity"
+  },
+  "kinematic_consistency_aR150_h0075": {
+   "value": 2.2778253641142943,
+   "threshold": 1.0,
+   "scope": "Hertz kinematic identity delta=a^2/R is not satisfied by the recovered FE radius here, i.e. the radius estimator (not the displacement solution) is the weak link at this point"
+  },
+  "penetration_aR150_h0300": {
+   "value": 0.00019790250696673028,
+   "threshold": 1e-05,
+   "scope": "ALM constraint quality (certificate threshold 1e-5 delta) degrades at this working point; the pool metrics are unaffected because delta is a load-control unknown, not a penetration-derived quantity"
+  },
+  "kinematic_consistency_aR020_h0300": {
+   "value": 32.00792985287217,
+   "threshold": 1.0,
+   "scope": "Hertz kinematic identity delta=a^2/R is not satisfied by the recovered FE radius here, i.e. the radius estimator (not the displacement solution) is the weak link at this point"
+  }
+ },
+ "limitations": [
+  "Pipeline-replication only: the out-of-sample solves reuse the shipped solver (same FE kernel and same contact-radius estimator), so this harness tests generality of the *working point*, not independence of the discretisation.",
+  "a/R=0.02 control is a negative control and is deliberately not gated: a passing control would invalidate the documented failure mode, not the anchor.",
+  "The 96a truncation depth is inherited from the certificate; the residual ~-1% indentation offset is the documented model bias and is not addressed here.",
+  "Only the axisymmetric paraboloid-indenter face is covered; a spherical (non-paraboloid) indenter at large a/R is a different model whose Hertz error is O(a/R) by construction."
+ ],
+ "environment": {
+  "python": "3.11.6",
+  "numpy": "2.4.6",
+  "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38"
+ },
+ "generated_at": "2026-11-14T16:59:54+0000",
+ "rows": [
+  {
+   "a_over_R": 0.05,
+   "h_over_a": 0.0075,
+   "domain_depth_over_a": 96.0,
+   "load": 1831.5018315018315,
+   "n_elements": 17040,
+   "ndof": 35014,
+   "wall_s": 34.12,
+   "alm_iterations": 80,
+   "outer_iterations": 3,
+   "load_residual": 2.272244728374062e-12,
+   "penetration_over_delta": 1.5573684749678542e-07,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "numeric": {
+    "contact_radius_linear": 0.49777436376742756,
+    "contact_radius_fit": 0.5001760107274458,
+    "indentation": 0.024747512127760378,
+    "peak_pressure_consistent": 3519.93717919907,
+    "peak_pressure_lumped": 4611.99481892831,
+    "reaction": 1831.5018314976699
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.4451272465144873,
+    "contact_radius_fit": 0.0352021454891549,
+    "indentation": -1.0099514889584937,
+    "peak_pressure_consistent": 0.629699927751326,
+    "peak_pressure_lumped": 31.849982278008238
+   },
+   "hertz_kinematic_consistency_pct": -0.12276890172734367
+  },
+  {
+   "a_over_R": 0.05,
+   "h_over_a": 0.03,
+   "domain_depth_over_a": 96.0,
+   "load": 1831.5018315018315,
+   "n_elements": 5040,
+   "ndof": 10414,
+   "wall_s": 6.38,
+   "alm_iterations": 80,
+   "outer_iterations": 3,
+   "load_residual": 3.4760887501761316e-15,
+   "penetration_over_delta": 3.6084649202672114e-08,
+   "analytic": {
+    "contact_radius": 0.5,
+    "indentation": 0.025,
+    "peak_pressure": 3497.910837184513
+   },
+   "numeric": {
+    "contact_radius_linear": 0.49575947515124347,
+    "contact_radius_fit": 0.4942159593258071,
+    "indentation": 0.024751079464569708,
+    "peak_pressure_consistent": 3515.144854480887,
+    "peak_pressure_lumped": 4601.761582418708,
+    "reaction": 1831.5018315018378
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.8481049697513066,
+    "contact_radius_fit": -1.1568081348385828,
+    "indentation": -0.995682141721177,
+    "peak_pressure_consistent": 0.4926945853841458,
+    "peak_pressure_lumped": 31.557429466175012
+   },
+   "hertz_kinematic_consistency_pct": 0.705246715134833
+  },
+  {
+   "a_over_R": 0.1,
+   "h_over_a": 0.0075,
+   "domain_depth_over_a": 96.0,
+   "load": 14652.014652014652,
+   "n_elements": 17040,
+   "ndof": 35014,
+   "wall_s": 49.73,
+   "alm_iterations": 80,
+   "outer_iterations": 4,
+   "load_residual": 2.4829205358400943e-16,
+   "penetration_over_delta": 7.485268074577141e-06,
+   "analytic": {
+    "contact_radius": 1.0,
+    "indentation": 0.1,
+    "peak_pressure": 6995.821674369026
+   },
+   "numeric": {
+    "contact_radius_linear": 0.9950923325820162,
+    "contact_radius_fit": 1.0003633564608652,
+    "indentation": 0.09899022361250956,
+    "peak_pressure_consistent": 7039.886353457972,
+    "peak_pressure_lumped": 9224.005466464205,
+    "reaction": 14652.014652014655
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.4907667417983763,
+    "contact_radius_fit": 0.03633564608651607,
+    "indentation": -1.0097763874904464,
+    "peak_pressure_consistent": 0.6298713880942497,
+    "peak_pressure_lumped": 31.850208536027978
+   },
+   "hertz_kinematic_consistency_pct": -0.03095450714911685
+  },
+  {
+   "a_over_R": 0.1,
+   "h_over_a": 0.03,
+   "domain_depth_over_a": 96.0,
+   "load": 14652.014652014652,
+   "n_elements": 5040,
+   "ndof": 10414,
+   "wall_s": 7.29,
+   "alm_iterations": 80,
+   "outer_iterations": 3,
+   "load_residual": 1.4897523215040564e-15,
+   "penetration_over_delta": 3.990050459259813e-05,
+   "analytic": {
+    "contact_radius": 1.0,
+    "indentation": 0.1,
+    "peak_pressure": 6995.821674369026
+   },
+   "numeric": {
+    "contact_radius_linear": 0.9918567562270908,
+    "contact_radius_fit": 0.9883372013042512,
+    "indentation": 0.09900367933018742,
+    "peak_pressure_consistent": 7030.247605854348,
+    "peak_pressure_lumped": 9203.46757788568,
+    "reaction": 14652.01465201463
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.8143243772909203,
+    "contact_radius_fit": -1.1662798695748822,
+    "indentation": -0.9963206698125893,
+    "peak_pressure_consistent": 0.4920927531850916,
+    "peak_pressure_lumped": 31.556634892580604
+   },
+   "hertz_kinematic_consistency_pct": 0.636013086500653
+  },
+  {
+   "a_over_R": 0.03,
+   "h_over_a": 0.0075,
+   "domain_depth_over_a": 96.0,
+   "load": 395.60439560439556,
+   "n_elements": 17040,
+   "ndof": 35014,
+   "wall_s": 51.21,
+   "alm_iterations": 80,
+   "outer_iterations": 3,
+   "load_residual": 6.431453887974688e-13,
+   "penetration_over_delta": 3.1007784375188562e-09,
+   "analytic": {
+    "contact_radius": 0.30000000000000004,
+    "indentation": 0.009000000000000003,
+    "peak_pressure": 2098.7465023107075
+   },
+   "numeric": {
+    "contact_radius_linear": 0.2986311051537949,
+    "contact_radius_fit": 0.30010568756482,
+    "indentation": 0.00890910449145465,
+    "peak_pressure_consistent": 2111.9623364974127,
+    "peak_pressure_lumped": 2767.196930174935,
+    "reaction": 395.60439560414113
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.4562982820683903,
+    "contact_radius_fit": 0.03522918827330024,
+    "indentation": -1.009950094948353,
+    "peak_pressure_consistent": 0.6297013084788805,
+    "peak_pressure_lumped": 31.84998412758604
+   },
+   "hertz_kinematic_consistency_pct": -0.1003493070075745
+  },
+  {
+   "a_over_R": 0.03,
+   "h_over_a": 0.03,
+   "domain_depth_over_a": 96.0,
+   "load": 395.60439560439556,
+   "n_elements": 5040,
+   "ndof": 10414,
+   "wall_s": 8.91,
+   "alm_iterations": 68,
+   "outer_iterations": 3,
+   "load_residual": 4.885376054315e-15,
+   "penetration_over_delta": 2.4186266484749978e-11,
+   "analytic": {
+    "contact_radius": 0.30000000000000004,
+    "indentation": 0.009000000000000003,
+    "peak_pressure": 2098.7465023107075
+   },
+   "numeric": {
+    "contact_radius_linear": 0.2974556037891854,
+    "contact_radius_fit": 0.2965295976450145,
+    "indentation": 0.008910388644116375,
+    "peak_pressure_consistent": 2109.0869208375966,
+    "peak_pressure_lumped": 2761.0569602425,
+    "reaction": 395.6043956043975
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.8481320702715456,
+    "contact_radius_fit": -1.1568007849951711,
+    "indentation": -0.99568173204031,
+    "peak_pressure_consistent": 0.49269497366664083,
+    "peak_pressure_lumped": 31.557429980352204
+   },
+   "hertz_kinematic_consistency_pct": 0.7053021820517591
+  },
+  {
+   "a_over_R": 0.075,
+   "h_over_a": 0.0075,
+   "domain_depth_over_a": 96.0,
+   "load": 6181.318681318681,
+   "n_elements": 17040,
+   "ndof": 35014,
+   "wall_s": 54.04,
+   "alm_iterations": 80,
+   "outer_iterations": 4,
+   "load_residual": 1.0299522222744094e-14,
+   "penetration_over_delta": 6.576021857661816e-07,
+   "analytic": {
+    "contact_radius": 0.75,
+    "indentation": 0.05625,
+    "peak_pressure": 5246.866255776769
+   },
+   "numeric": {
+    "contact_radius_linear": 0.7467711771201987,
+    "contact_radius_fit": 0.7502646323623197,
+    "indentation": 0.05568191085311444,
+    "peak_pressure_consistent": 5279.906554348015,
+    "peak_pressure_lumped": 6917.99326779425,
+    "reaction": 6181.318681318618
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.4305097173068373,
+    "contact_radius_fit": 0.03528431497594742,
+    "indentation": -1.0099362611298845,
+    "peak_pressure_consistent": 0.6297148995339397,
+    "peak_pressure_lumped": 31.850002087962114
+   },
+   "hertz_kinematic_consistency_pct": -0.15207680495892273
+  },
+  {
+   "a_over_R": 0.075,
+   "h_over_a": 0.03,
+   "domain_depth_over_a": 96.0,
+   "load": 6181.318681318681,
+   "n_elements": 5040,
+   "ndof": 10414,
+   "wall_s": 8.38,
+   "alm_iterations": 80,
+   "outer_iterations": 3,
+   "load_residual": 1.1770882540278965e-15,
+   "penetration_over_delta": 4.964724097160117e-06,
+   "analytic": {
+    "contact_radius": 0.75,
+    "indentation": 0.05625,
+    "peak_pressure": 5246.866255776769
+   },
+   "numeric": {
+    "contact_radius_linear": 0.7436673484425363,
+    "contact_radius_fit": 0.7413160738721509,
+    "indentation": 0.055689893055684614,
+    "peak_pressure_consistent": 5272.714129031007,
+    "peak_pressure_lumped": 6902.638206465711,
+    "reaction": 6181.3186813186885
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.8443535409951575,
+    "contact_radius_fit": -1.157856817046543,
+    "indentation": -0.9957456787829111,
+    "peak_pressure_consistent": 0.492634498273703,
+    "peak_pressure_lumped": 31.557350044246824
+   },
+   "hertz_kinematic_consistency_pct": 0.69756212367027
+  },
+  {
+   "a_over_R": 0.15,
+   "h_over_a": 0.0075,
+   "domain_depth_over_a": 96.0,
+   "load": 49450.54945054945,
+   "n_elements": 17040,
+   "ndof": 35014,
+   "wall_s": 41.48,
+   "alm_iterations": 80,
+   "outer_iterations": 3,
+   "load_residual": 2.207040476302306e-15,
+   "penetration_over_delta": 4.829765859801939e-05,
+   "analytic": {
+    "contact_radius": 1.5,
+    "indentation": 0.225,
+    "peak_pressure": 10493.732511553539
+   },
+   "numeric": {
+    "contact_radius_linear": 1.4756930280094798,
+    "contact_radius_fit": 1.4989919183120015,
+    "indentation": 0.22272734305388686,
+    "peak_pressure_consistent": 10559.802974740396,
+    "peak_pressure_lumped": 13835.97499172063,
+    "reaction": 49450.54945054934
+   },
+   "error_pct": {
+    "contact_radius_linear": -1.6204647993680155,
+    "contact_radius_fit": -0.0672054458665694,
+    "indentation": -1.010069753828069,
+    "peak_pressure_consistent": 0.6296183280268819,
+    "peak_pressure_lumped": 31.849892080699615
+   },
+   "hertz_kinematic_consistency_pct": 2.2778253641142943
+  },
+  {
+   "a_over_R": 0.15,
+   "h_over_a": 0.03,
+   "domain_depth_over_a": 96.0,
+   "load": 49450.54945054945,
+   "n_elements": 5040,
+   "ndof": 10414,
+   "wall_s": 8.37,
+   "alm_iterations": 80,
+   "outer_iterations": 3,
+   "load_residual": 5.885441270139482e-16,
+   "penetration_over_delta": 0.00019790250696673028,
+   "analytic": {
+    "contact_radius": 1.5,
+    "indentation": 0.225,
+    "peak_pressure": 10493.732511553539
+   },
+   "numeric": {
+    "contact_radius_linear": 1.4911394125971094,
+    "contact_radius_fit": 1.4816728168263715,
+    "indentation": 0.22274711464502453,
+    "peak_pressure_consistent": 10544.885629234379,
+    "peak_pressure_lumped": 13804.562125170472,
+    "reaction": 49450.54945054948
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.5907058268593723,
+    "contact_radius_fit": -1.221812211575235,
+    "indentation": -1.001282379989099,
+    "peak_pressure_consistent": 0.48746351810016186,
+    "peak_pressure_lumped": 31.550543240660357
+   },
+   "hertz_kinematic_consistency_pct": 0.17874542221500977
+  },
+  {
+   "a_over_R": 0.02,
+   "h_over_a": 0.0075,
+   "domain_depth_over_a": 96.0,
+   "load": 117.21611721611724,
+   "n_elements": 17040,
+   "ndof": 35014,
+   "wall_s": 42.79,
+   "alm_iterations": 78,
+   "outer_iterations": 3,
+   "load_residual": 7.492406695064345e-14,
+   "penetration_over_delta": 9.824844773648092e-12,
+   "analytic": {
+    "contact_radius": 0.20000000000000004,
+    "indentation": 0.004000000000000002,
+    "peak_pressure": 1399.164334873805
+   },
+   "numeric": {
+    "contact_radius_linear": 0.19908690779176677,
+    "contact_radius_fit": 0.20007045962396303,
+    "indentation": 0.003959601997553177,
+    "peak_pressure_consistent": 1407.9748914281902,
+    "peak_pressure_lumped": 1844.7979539544165,
+    "reaction": 117.21611721610846
+   },
+   "error_pct": {
+    "contact_radius_linear": -0.45654610411662855,
+    "contact_radius_fit": 0.03522981198149644,
+    "indentation": -1.009950061170617,
+    "peak_pressure_consistent": 0.6297013392054351,
+    "peak_pressure_lumped": 31.8499841636404
+   },
+   "hertz_kinematic_consistency_pct": -0.09985185463804447
+  },
+  {
+   "a_over_R": 0.02,
+   "h_over_a": 0.03,
+   "domain_depth_over_a": 96.0,
+   "load": 117.21611721611724,
+   "n_elements": 5040,
+   "ndof": 10414,
+   "wall_s": 55.09,
+   "alm_iterations": 80,
+   "outer_iterations": 4,
+   "load_residual": 5.588995932725992e-14,
+   "penetration_over_delta": 0.0,
+   "analytic": {
+    "contact_radius": 0.20000000000000004,
+    "indentation": 0.004000000000000002,
+    "peak_pressure": 1399.164334873805
+   },
+   "numeric": {
+    "contact_radius_linear": 0.24116071070786332,
+    "contact_radius_fit": 0.20758244124680392,
+    "indentation": 0.003954316022204085,
+    "peak_pressure_consistent": 1405.011597673664,
+    "peak_pressure_lumped": 1839.3115454292715,
+    "reaction": 117.21611721612379
+   },
+   "error_pct": {
+    "contact_radius_linear": 20.580355353931633,
+    "contact_radius_fit": 3.7912206234019363,
+    "indentation": -1.142099444897915,
+    "peak_pressure_consistent": 0.4179110812159381,
+    "peak_pressure_lumped": 31.45786378232438
+   },
+   "hertz_kinematic_consistency_pct": -32.00792985287217
+  }
+ ]
+}
