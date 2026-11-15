@@ -1,0 +1,141 @@
+{
+  "schema": "tensorfem.cross-path-audit/1",
+  "case": "CASE-FEM-PINCHED-CYLINDER",
+  "question": "do the anchor path (A) and the main-solver path (B) solve the same model?",
+  "reference": {
+    "value_in": -1.8248e-05,
+    "source": "MacNeal & Harder (1985)"
+  },
+  "path_a": {
+    "modules": [
+      "tensorfem.pinched_cylinder.pinched_cylinder_model",
+      "tensorfem.cylindrical_shell4.cylindrical_shell4_stiffness"
+    ],
+    "drivers": [
+      "benchmarks/verified/fem_pinched_cylinder/run_verification.py",
+      "benchmarks/verified/fem_pinched_cylinder/run.py"
+    ]
+  },
+  "path_b": {
+    "modules": [
+      "tensorfem.shell_benchmark_suite.pinched_cylinder_case",
+      "tensorfem.benchmark_cases.run_case"
+    ],
+    "drivers": [
+      "platform case registry (run_case)"
+    ]
+  },
+  "rows": [
+    {
+      "mesh": "3x3",
+      "n": 3,
+      "path_a_anchor_in": -1.6898788942380595e-06,
+      "path_a_error_pct": 90.73937475757312,
+      "path_b_suite_in": -1.798886022029942e-05,
+      "path_b_error_pct": 1.4200996257155873,
+      "ratio_b_over_a": 10.645058815537382,
+      "relative_disagreement": 0.9060597017519139
+    },
+    {
+      "mesh": "4x4",
+      "n": 4,
+      "path_a_anchor_in": -2.656165677507882e-06,
+      "path_a_error_pct": 85.44407235035136,
+      "path_b_suite_in": -1.7726598846606177e-05,
+      "path_b_error_pct": 2.857305750733352,
+      "ratio_b_over_a": 6.673754953131523,
+      "relative_disagreement": 0.850159317052723
+    },
+    {
+      "mesh": "6x6",
+      "n": 6,
+      "path_a_anchor_in": -4.5967612505136615e-06,
+      "path_a_error_pct": 74.8095065184477,
+      "path_b_suite_in": -1.7267332546022934e-05,
+      "path_b_error_pct": 5.374109239243008,
+      "ratio_b_over_a": 3.756412744754453,
+      "relative_disagreement": 0.7337885722498347
+    },
+    {
+      "mesh": "8x8",
+      "n": 8,
+      "path_a_anchor_in": -6.26052759093047e-06,
+      "path_a_error_pct": 65.69197944470369,
+      "path_b_suite_in": -1.7636652834589215e-05,
+      "path_b_error_pct": 3.3502146285115275,
+      "ratio_b_over_a": 2.8171192568720826,
+      "relative_disagreement": 0.6450274522242538
+    },
+    {
+      "mesh": "12x12",
+      "n": 12,
+      "path_a_anchor_in": -9.001623163120929e-06,
+      "path_a_error_pct": 50.67063150415974,
+      "path_b_suite_in": -1.8068243904498985e-05,
+      "path_b_error_pct": 0.9850728600450109,
+      "ratio_b_over_a": 2.0072206508847668,
+      "relative_disagreement": 0.5017986689409517
+    }
+  ],
+  "committed_case_evidence_alignment": {
+    "4": {
+      "committed_in": -1.772659884661532e-05,
+      "vs_path_a_rel": 5.673754953134966,
+      "vs_path_b_rel": 5.158096172408477e-13
+    },
+    "8": {
+      "committed_in": -1.7636652834588067e-05,
+      "vs_path_a_rel": 1.8171192568718992,
+      "vs_path_b_rel": 6.517009154549669e-14
+    },
+    "12": {
+      "committed_in": -1.8068243904495505e-05,
+      "vs_path_a_rel": 1.0072206508843804,
+      "vs_path_b_rel": 1.9262369477246466e-13
+    },
+    "16": {
+      "committed_in": -1.8278493652346197e-05,
+      "vs_path_a_rel": 0.650510983607647,
+      "vs_path_b_rel": null
+    },
+    "24": {
+      "committed_in": -1.8480668026974638e-05,
+      "vs_path_a_rel": null,
+      "vs_path_b_rel": null
+    },
+    "32": {
+      "committed_in": -1.857942384660752e-05,
+      "vs_path_a_rel": null,
+      "vs_path_b_rel": null
+    },
+    "48": {
+      "committed_in": -1.86801928080683e-05,
+      "vs_path_a_rel": null,
+      "vs_path_b_rel": null
+    },
+    "64": {
+      "committed_in": -1.8734687640867493e-05,
+      "vs_path_a_rel": null,
+      "vs_path_b_rel": null
+    }
+  },
+  "verdict": {
+    "agreement": false,
+    "max_disagreement": 0.9060597017519139,
+    "committed_evidence_matches": "path_b",
+    "statement": "The two paths do not solve the same discrete model: the anchor path is quantitatively stiff on every rung that both paths share, and the case evidence already committed in this directory reproduces the main-solver path, not the anchor path."
+  },
+  "falsified_hypothesis": {
+    "claim": "the theta=pi/2 octant constraint set (w instead of v) explains the gap",
+    "test": "constrain {v, r_x} on the theta=pi/2 plane and re-read 4x4",
+    "result_before_in": -2.656165677507929e-06,
+    "result_after_in": -2.580198386e-06,
+    "change_pct": 2.9,
+    "verdict": "falsified - the constraint fix moves the reading 2.9%, not 670%"
+  },
+  "open_questions": [
+    "which of the two models carries the correct diaphragm/symmetry semantics (the published reference separates them by ~0.4% at 12x12: path B 0.99%)",
+    "why path A converges so slowly (16% at 32x32) while path B is at 1.4% by 3x3",
+    "the anchor certificate and the case evidence must be re-emitted from one path once the disagreement is resolved"
+  ]
+}
