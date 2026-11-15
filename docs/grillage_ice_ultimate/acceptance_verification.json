@@ -1,0 +1,531 @@
+{
+  "suite": "grillage_ice_ultimate",
+  "terms": 61,
+  "fd_nx": 120,
+  "checks": [
+    {
+      "id": "T1a-w_max",
+      "value": 0.0021534413133370615,
+      "reference": 0.002152194174757281,
+      "rel_error": 0.0005794730765503098,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": "Timoshenko & Woinowsky-Krieger Table 30, alpha = 0.00406"
+    },
+    {
+      "id": "T1b-M_max",
+      "value": 478.8638555294249,
+      "reference": 479.0,
+      "rel_error": 0.0002842264521401216,
+      "tolerance": 0.03,
+      "passed": true,
+      "note": "Timoshenko & Woinowsky-Krieger Table 30, beta = 0.0479"
+    },
+    {
+      "id": "T2-w_convergence",
+      "value": 0.0007967799526409129,
+      "reference": 0.0007967799578564423,
+      "rel_error": 6.545758770441878e-09,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "Navier patch series, terms 31 vs 121"
+    },
+    {
+      "id": "T2-M_convergence",
+      "value": 225.20323953811715,
+      "reference": 225.20541370161945,
+      "rel_error": 9.654135158509016e-06,
+      "tolerance": 0.02,
+      "passed": true,
+      "note": "Navier patch series, terms 31 vs 121 (moment converges slower)"
+    },
+    {
+      "id": "T3-fx_eq_fy",
+      "value": 0.2515314621248395,
+      "reference": 0.25153146212483946,
+      "rel_error": 2.2069267503286198e-16,
+      "tolerance": 1e-09,
+      "passed": true,
+      "note": "isotropic plate symmetry"
+    },
+    {
+      "id": "T3-share_sum",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "modal partition sums to one"
+    },
+    {
+      "id": "T4-orthotropy_limit",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "load_share_x vs Dx/Dy: 1e+02:0.9405, 1e+04:0.9877, 1e+06:0.9964, 1e+08:0.9991"
+    },
+    {
+      "id": "T5-exact_ge_approx_P/Pe=0.2",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "exact 1.257200 vs 1/(1-r) 1.250000"
+    },
+    {
+      "id": "T5-amplification_P/Pe=0.2",
+      "value": 1.2572003977327058,
+      "reference": 1.25,
+      "rel_error": 0.005760318186164603,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "secant magnification vs the standard approximation (15 % gate)"
+    },
+    {
+      "id": "T5-exact_ge_approx_P/Pe=0.5",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "exact 2.029945 vs 1/(1-r) 2.000000"
+    },
+    {
+      "id": "T5-amplification_P/Pe=0.5",
+      "value": 2.029944629115985,
+      "reference": 2.0,
+      "rel_error": 0.014972314557992528,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "secant magnification vs the standard approximation (15 % gate)"
+    },
+    {
+      "id": "T6a-uniform_16Mp/L",
+      "value": 5714285.714285715,
+      "reference": 5714285.714285715,
+      "rel_error": 0.0,
+      "tolerance": 1e-12,
+      "passed": true,
+      "note": "uniform-load collapse of a fixed-fixed beam"
+    },
+    {
+      "id": "T6b-point_8Mp/L",
+      "value": 2857142.8571428573,
+      "reference": 2857142.8571428573,
+      "rel_error": 0.0,
+      "tolerance": 1e-12,
+      "passed": true,
+      "note": "point-load limit of the patch formula"
+    },
+    {
+      "id": "T6c-monotone_in_patch_length",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "capacities ['2909090.909', '3137254.902', '3478260.870', '4444444.444', '5714285.714']"
+    },
+    {
+      "id": "T7-panel_ultimate[b/t=34.6, beta=1.44]",
+      "value": 314.83735467126917,
+      "reference": 331.3938614916206,
+      "rel_error": 0.04996020972093377,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "Paik-Thayamballi stiffened-panel strength (empirical, 15 % gate)"
+    },
+    {
+      "id": "T7-panel_ultimate[b/t=17.5, beta=0.73]",
+      "value": 331.2834767823527,
+      "reference": 352.156139046995,
+      "rel_error": 0.059271044716493984,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "Paik-Thayamballi stiffened-panel strength (empirical, 15 % gate)"
+    },
+    {
+      "id": "T7-panel_ultimate[b/t=41.7, beta=1.73]",
+      "value": 297.15984793014405,
+      "reference": 311.96946513274474,
+      "rel_error": 0.04747136773882379,
+      "tolerance": 0.15,
+      "passed": true,
+      "note": "Paik-Thayamballi stiffened-panel strength (empirical, 15 % gate)"
+    },
+    {
+      "id": "T8a-monotone_in_axial",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "p_ult [MPa] ['2.6244', '2.5941', '2.5009', '2.3375']"
+    },
+    {
+      "id": "T8b-monotone_in_hydrostatic",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "p_ult [MPa] ['2.5587', '2.5009', '2.4431']"
+    },
+    {
+      "id": "T9-load_path_equilibrium",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "max relative residual 0.000e+00 over 6 combined cases"
+    },
+    {
+      "id": "T10-centre_patch_moment",
+      "value": 43750.0,
+      "reference": 43749.124781249135,
+      "rel_error": 2.0005400227810585e-05,
+      "tolerance": 0.0001,
+      "passed": true,
+      "note": "closed form F(2L-c)/8 vs numeric integration of M(x)"
+    },
+    {
+      "id": "T11-peak_moment_FD[light-ice + ballast head]",
+      "value": 0.010226793273268857,
+      "reference": 0.010234795451519481,
+      "rel_error": 0.0007818601054148393,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "Navier series vs independent FD (13-point biharmonic stencil), grid [120, 20]"
+    },
+    {
+      "id": "T11-p_ult_FD[light-ice + ballast head]",
+      "value": 3.3571896995952564,
+      "reference": 3.354564905166626,
+      "rel_error": 0.0007824545068684601,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "module bisection vs closed-form solve on the FD moments"
+    },
+    {
+      "id": "T11-plate_binds[light-ice + ballast head]",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "the case study is plate-field governed: U_plate = 1.000000, U_stiff = 0.3026, U_frame = 0.0607"
+    },
+    {
+      "id": "T11-peak_moment_FD[design-ice + design head]",
+      "value": 0.013872717388770496,
+      "reference": 0.013878810824967074,
+      "rel_error": 0.00043904598696711437,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "Navier series vs independent FD (13-point biharmonic stencil), grid [120, 20]"
+    },
+    {
+      "id": "T11-p_ult_FD[design-ice + design head]",
+      "value": 2.330812706321656,
+      "reference": 2.3297876119613647,
+      "rel_error": 0.0004399947682048244,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "module bisection vs closed-form solve on the FD moments"
+    },
+    {
+      "id": "T11-plate_binds[design-ice + design head]",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "the case study is plate-field governed: U_plate = 1.000000, U_stiff = 0.4871, U_frame = 0.0883"
+    },
+    {
+      "id": "T11-peak_moment_FD[severe-ice + tank head]",
+      "value": 0.014933636488329434,
+      "reference": 0.014936323544314494,
+      "rel_error": 0.00017990076186336,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "Navier series vs independent FD (13-point biharmonic stencil), grid [120, 20]"
+    },
+    {
+      "id": "T11-p_ult_FD[severe-ice + tank head]",
+      "value": 1.9691995443012604,
+      "reference": 1.9688424468040466,
+      "rel_error": 0.00018137433891343745,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "module bisection vs closed-form solve on the FD moments"
+    },
+    {
+      "id": "T11-plate_binds[severe-ice + tank head]",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "the case study is plate-field governed: U_plate = 1.000000, U_stiff = 0.6519, U_frame = 0.1162"
+    },
+    {
+      "id": "T12-stiffener_governs[light ice + ballast head]",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "governing member longitudinal_stiffener; U_stiff = 1.000000, U_plate = 0.8379, U_frame = 0.0660"
+    },
+    {
+      "id": "T12-p_ult_hand[light ice + ballast head]",
+      "value": 1.9149034143029011,
+      "reference": 1.9149035215377808,
+      "rel_error": 5.600014749389967e-08,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "closed-form stiffener limit (own section algebra, own Perry-Robertson/JO, bisection removed) vs module"
+    },
+    {
+      "id": "T12-plate_below_member[light ice + ballast head]",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "U_plate = 0.8379 < 1 at the member-limited ultimate"
+    },
+    {
+      "id": "T12-stiffener_governs[design ice + design head]",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "governing member longitudinal_stiffener; U_stiff = 1.000000, U_plate = 0.7590, U_frame = 0.0927"
+    },
+    {
+      "id": "T12-p_ult_hand[design ice + design head]",
+      "value": 1.2042184123259267,
+      "reference": 1.2042184174060822,
+      "rel_error": 4.218632877578894e-09,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "closed-form stiffener limit (own section algebra, own Perry-Robertson/JO, bisection removed) vs module"
+    },
+    {
+      "id": "T12-plate_below_member[design ice + design head]",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "U_plate = 0.7590 < 1 at the member-limited ultimate"
+    },
+    {
+      "id": "T12-stiffener_governs[severe ice + tank head]",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "governing member longitudinal_stiffener; U_stiff = 1.000000, U_plate = 0.7185, U_frame = 0.1189"
+    },
+    {
+      "id": "T12-p_ult_hand[severe ice + tank head]",
+      "value": 0.962743957045921,
+      "reference": 0.9627440571784973,
+      "rel_error": 1.0400747280136839e-07,
+      "tolerance": 0.005,
+      "passed": true,
+      "note": "closed-form stiffener limit (own section algebra, own Perry-Robertson/JO, bisection removed) vs module"
+    },
+    {
+      "id": "T12-plate_below_member[severe ice + tank head]",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "U_plate = 0.7185 < 1 at the member-limited ultimate"
+    },
+    {
+      "id": "T13-plastic_ge_elastic",
+      "value": 1.0,
+      "reference": 1.0,
+      "rel_error": 0.0,
+      "tolerance": 0.0,
+      "passed": true,
+      "note": "rigid-plastic 5.7211 MPa vs elastic member limit 1.2042 MPa (ratio 4.751)"
+    }
+  ],
+  "passed": true,
+  "n_checks": 40,
+  "n_failed": 0,
+  "paik_comparison": [
+    {
+      "bay_spacing_m": 0.45,
+      "plate_thickness_mm": 13.0,
+      "beta": 1.436976705064861,
+      "sigma_u_effective_width_MPa": 314.83735467126917,
+      "sigma_u_paik_MPa": 331.3938614916206,
+      "rel_error": 0.04996020972093377
+    },
+    {
+      "bay_spacing_m": 0.35,
+      "plate_thickness_mm": 20.0,
+      "beta": 0.7264715564494574,
+      "sigma_u_effective_width_MPa": 331.2834767823527,
+      "sigma_u_paik_MPa": 352.156139046995,
+      "rel_error": 0.059271044716493984
+    },
+    {
+      "bay_spacing_m": 0.5,
+      "plate_thickness_mm": 12.0,
+      "beta": 1.7296941820225173,
+      "sigma_u_effective_width_MPa": 297.15984793014405,
+      "sigma_u_paik_MPa": 311.96946513274474,
+      "rel_error": 0.04747136773882379
+    }
+  ],
+  "plate_field_fd": [
+    {
+      "scenario": "light-ice + ballast head",
+      "sigma_x_over_yield": 0.15,
+      "patch_length_m": 0.35,
+      "patch_width_m": 0.35,
+      "hydrostatic_MPa": 0.05,
+      "peak_moment_series_per_Pa": 0.010234795451519481,
+      "peak_moment_fd_per_Pa": 0.010226793273268857,
+      "peak_moment_rel_error": -0.0007818601054148111,
+      "p_ult_module_MPa": 3.354564905166626,
+      "p_ult_fd_MPa": 3.3571896995952564,
+      "p_ult_rel_error": 0.0007824545068684241,
+      "governing_member": "plate_local_bending",
+      "utilisation_plate_at_limit": 1.0000003448320522,
+      "utilisation_stiffener_at_limit": 0.30258569817408126,
+      "utilisation_frame_at_limit": 0.06072742295127406,
+      "fd_grid": [
+        120,
+        20
+      ]
+    },
+    {
+      "scenario": "design-ice + design head",
+      "sigma_x_over_yield": 0.3,
+      "patch_length_m": 0.7,
+      "patch_width_m": 0.35,
+      "hydrostatic_MPa": 0.1,
+      "peak_moment_series_per_Pa": 0.013878810824967074,
+      "peak_moment_fd_per_Pa": 0.013872717388770496,
+      "peak_moment_rel_error": -0.0004390459869670904,
+      "p_ult_module_MPa": 2.3297876119613647,
+      "p_ult_fd_MPa": 2.330812706321656,
+      "p_ult_rel_error": 0.0004399947682047767,
+      "governing_member": "plate_local_bending",
+      "utilisation_plate_at_limit": 0.9999999581054027,
+      "utilisation_stiffener_at_limit": 0.4871331173076599,
+      "utilisation_frame_at_limit": 0.08826204455916896,
+      "fd_grid": [
+        120,
+        20
+      ]
+    },
+    {
+      "scenario": "severe-ice + tank head",
+      "sigma_x_over_yield": 0.45,
+      "patch_length_m": 1.05,
+      "patch_width_m": 0.35,
+      "hydrostatic_MPa": 0.15,
+      "peak_moment_series_per_Pa": 0.014936323544314494,
+      "peak_moment_fd_per_Pa": 0.014933636488329434,
+      "peak_moment_rel_error": -0.0001799007618633608,
+      "p_ult_module_MPa": 1.9688424468040466,
+      "p_ult_fd_MPa": 1.9691995443012604,
+      "p_ult_rel_error": 0.00018137433891340926,
+      "governing_member": "plate_local_bending",
+      "utilisation_plate_at_limit": 0.9999997522538231,
+      "utilisation_stiffener_at_limit": 0.6519400408142892,
+      "utilisation_frame_at_limit": 0.11623655079357197,
+      "fd_grid": [
+        120,
+        20
+      ]
+    }
+  ],
+  "member_governed_cases": [
+    {
+      "scenario": "light ice + ballast head",
+      "sigma_x_over_yield": 0.0,
+      "sigma_x_MPa": 0.0,
+      "ice_patch_MPa": 1.0,
+      "patch_length_m": 0.55,
+      "patch_width_m": 0.55,
+      "hydrostatic_MPa": 0.05,
+      "utilisation_plate_at_limit": 0.837932554473971,
+      "utilisation_stiffener_at_limit": 1.0000000559058104,
+      "utilisation_frame_at_limit": 0.06599704578395883,
+      "ice_pressure_ultimate_MPa": 1.9149035215377808,
+      "governing_member": "longitudinal_stiffener",
+      "safety_margin": 1.9149035215377808,
+      "p_ult_hand_closed_form_MPa": 1.9149034143029011,
+      "rel_error_hand_vs_module": -5.6000147519164045e-08,
+      "stiffener_limiting_stress_MPa": 205.82200186680532,
+      "moment_amplification": 1.0,
+      "stiffeners_touched": 2.0
+    },
+    {
+      "scenario": "design ice + design head",
+      "sigma_x_over_yield": 0.15,
+      "sigma_x_MPa": 53.25,
+      "ice_patch_MPa": 1.5,
+      "patch_length_m": 1.1,
+      "patch_width_m": 0.55,
+      "hydrostatic_MPa": 0.1,
+      "utilisation_plate_at_limit": 0.7589638217463563,
+      "utilisation_stiffener_at_limit": 1.0000000031110923,
+      "utilisation_frame_at_limit": 0.09266825125900134,
+      "ice_pressure_ultimate_MPa": 1.2042184174060822,
+      "governing_member": "longitudinal_stiffener",
+      "safety_margin": 0.8028122782707214,
+      "p_ult_hand_closed_form_MPa": 1.2042184123259267,
+      "rel_error_hand_vs_module": -4.218632776442632e-09,
+      "stiffener_limiting_stress_MPa": 205.82200186680532,
+      "moment_amplification": 1.1327523579756447,
+      "stiffeners_touched": 2.0
+    },
+    {
+      "scenario": "severe ice + tank head",
+      "sigma_x_over_yield": 0.3,
+      "sigma_x_MPa": 106.5,
+      "ice_patch_MPa": 2.0,
+      "patch_length_m": 1.65,
+      "patch_width_m": 0.55,
+      "hydrostatic_MPa": 0.15,
+      "utilisation_plate_at_limit": 0.7184870446370029,
+      "utilisation_stiffener_at_limit": 1.0000000495041732,
+      "utilisation_frame_at_limit": 0.11887625804477485,
+      "ice_pressure_ultimate_MPa": 0.9627440571784973,
+      "governing_member": "longitudinal_stiffener",
+      "safety_margin": 0.48137202858924866,
+      "p_ult_hand_closed_form_MPa": 0.962743957045921,
+      "rel_error_hand_vs_module": -1.0400747274541544e-07,
+      "stiffener_limiting_stress_MPa": 205.82200186680532,
+      "moment_amplification": 1.3049773874713275,
+      "stiffeners_touched": 2.0
+    }
+  ],
+  "cross_method": {
+    "scenario": "design ice + design head",
+    "elastic_member_limit_MPa": 1.2042184174060822,
+    "rigid_plastic_grillage_MPa": 5.721112520951848,
+    "plastic_over_elastic": 4.7508927269816,
+    "plastic_governing_system": "transverse_frame",
+    "note": "the plastic limit is a redistribution upper bound on the elastic member limit; it must not be smaller"
+  }
+}

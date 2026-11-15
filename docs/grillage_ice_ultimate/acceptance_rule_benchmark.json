@@ -1,0 +1,304 @@
+{
+  "passed": true,
+  "n_checks": 39,
+  "n_passed": 39,
+  "checks": [
+    {
+      "name": "T14a-t_ratio[eta=0.00,p_h=0.000]",
+      "value": 0.8677316124638219,
+      "reference": 1.0,
+      "rel_error": 0.1322683875361781,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.00,p_h=0.050]",
+      "value": 0.8596846572391151,
+      "reference": 1.0,
+      "rel_error": 0.14031534276088486,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.00,p_h=0.100]",
+      "value": 0.8515482288306847,
+      "reference": 1.0,
+      "rel_error": 0.1484517711693153,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.15,p_h=0.000]",
+      "value": 0.8635180764584867,
+      "reference": 1.0,
+      "rel_error": 0.13648192354151334,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.15,p_h=0.050]",
+      "value": 0.8554247029539669,
+      "reference": 1.0,
+      "rel_error": 0.1445752970460331,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.15,p_h=0.100]",
+      "value": 0.8472402854451135,
+      "reference": 1.0,
+      "rel_error": 0.15275971455488646,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.30,p_h=0.000]",
+      "value": 0.8504245571286926,
+      "reference": 1.0,
+      "rel_error": 0.14957544287130742,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.30,p_h=0.050]",
+      "value": 0.8421834392362998,
+      "reference": 1.0,
+      "rel_error": 0.1578165607637002,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.30,p_h=0.100]",
+      "value": 0.8338462437637695,
+      "reference": 1.0,
+      "rel_error": 0.16615375623623052,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.45,p_h=0.000]",
+      "value": 0.8268828669662097,
+      "reference": 1.0,
+      "rel_error": 0.17311713303379028,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.45,p_h=0.050]",
+      "value": 0.8183618097881177,
+      "reference": 1.0,
+      "rel_error": 0.18163819021188232,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14a-t_ratio[eta=0.45,p_h=0.100]",
+      "value": 0.8097347220673142,
+      "reference": 1.0,
+      "rel_error": 0.19026527793268577,
+      "gate": 0.25,
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.00,p_h=0.000]",
+      "value": 0.7205227730979379,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.00,p_h=0.050]",
+      "value": 0.7049946717812978,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.00,p_h=0.100]",
+      "value": 0.6894658988630266,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.15,p_h=0.000]",
+      "value": 0.7123708724975583,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.15,p_h=0.050]",
+      "value": 0.6968427711809182,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.15,p_h=0.100]",
+      "value": 0.6813139982626469,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.30,p_h=0.000]",
+      "value": 0.6873349068870005,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.30,p_h=0.050]",
+      "value": 0.6718068055703603,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.30,p_h=0.100]",
+      "value": 0.6562782005524969,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.45,p_h=0.000]",
+      "value": 0.6434475871878608,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.45,p_h=0.050]",
+      "value": 0.6279191500704051,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14b-margin[eta=0.45,p_h=0.100]",
+      "value": 0.6123907129529494,
+      "reference": "[0.5, 2.0]",
+      "gate": "0.5 <= margin <= 2.0",
+      "passed": true
+    },
+    {
+      "name": "T14c-monotone[p_h=0.000]",
+      "value": [
+        0.7205227730979379,
+        0.7123708724975583,
+        0.6873349068870005,
+        0.6434475871878608
+      ],
+      "gate": "monotone decreasing",
+      "passed": true
+    },
+    {
+      "name": "T14c-monotone[p_h=0.100]",
+      "value": [
+        0.6894658988630266,
+        0.6813139982626469,
+        0.6562782005524969,
+        0.6123907129529494
+      ],
+      "gate": "monotone decreasing",
+      "passed": true
+    },
+    {
+      "name": "T14c-monotone[p_h=0.050]",
+      "value": [
+        0.7049946717812978,
+        0.6968427711809182,
+        0.6718068055703603,
+        0.6279191500704051
+      ],
+      "gate": "monotone decreasing",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.00,p_h=0.000]",
+      "value": 1.9957848642875764,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.00,p_h=0.050]",
+      "value": 1.952773386044318,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.00,p_h=0.100]",
+      "value": 1.9097600475234657,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.15,p_h=0.000]",
+      "value": 1.9732048148556023,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.15,p_h=0.050]",
+      "value": 1.9301933366123438,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.15,p_h=0.100]",
+      "value": 1.8871799980914918,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.30,p_h=0.000]",
+      "value": 1.903857386718749,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.30,p_h=0.050]",
+      "value": 1.8608459084754905,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.30,p_h=0.100]",
+      "value": 1.8178330350240366,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.45,p_h=0.000]",
+      "value": 1.7822933617357564,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.45,p_h=0.050]",
+      "value": 1.7392809533537008,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    },
+    {
+      "name": "T14d-z_ratio[eta=0.45,p_h=0.100]",
+      "value": 1.6962685449716457,
+      "reference": "0 < z_ratio < 5",
+      "gate": "finite and positive",
+      "passed": true
+    }
+  ]
+}
