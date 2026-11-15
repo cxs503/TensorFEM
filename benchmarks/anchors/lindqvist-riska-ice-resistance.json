@@ -5,8 +5,8 @@
   "experiment": "literature transcription and dimensional audit of Lindqvist/Riska ice resistance formulas",
   "repository": "TensorFEM",
   "branch": "agent/m17161",
-  "git_head": "e9c411dc9e5c2b73307c908c29aaaf67e3494e92",
-  "generated_at_utc": "2026-11-13T02:12:25Z",
+  "git_head": "d15e5666b767acc1baccd9aeab91330a68e2d44b",
+  "generated_at_utc": "2026-11-15T09:48:24Z",
   "generated_by": {
     "script": "benchmarks/anchors/lindqvist_riska_anchor.py",
     "command": "python benchmarks/anchors/lindqvist_riska_anchor.py",
