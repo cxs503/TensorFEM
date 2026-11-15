@@ -3,12 +3,15 @@
   "anchor": "fem_bending_patch",
   "title": "BENDING-PATCH: constant-curvature patch test of the Q4 Mindlin plate element",
   "mission": "CASE-BENDING-PATCH",
-  "generated_at": "2026-11-14T18:18:50+00:00",
+  "generated_at": "2026-11-15T13:54:32+00:00",
   "criteria": {
     "case_pool_tolerance": 0.02,
     "exact_tolerance_affine": 1e-12,
     "observed_order_min": 1.5,
-    "locking_control_min": 0.5
+    "locking_control_min": 0.5,
+    "locking_scaling_slope_min": 1.5,
+    "locking_amplification_min": 100.0,
+    "locking_law_tolerance": 0.5
   },
   "gates": [
     {
@@ -219,6 +222,51 @@
       "passed": true
     },
     {
+      "id": "locking_scaling_slope_full",
+      "quantity": "observed slope of log(strain-energy error) vs log(h/t), distorted patch, fully integrated 2x2 shear, n=4, t/L = 1 .. 0.05",
+      "reference": "the spurious transverse-shear energy of the bilinear interpolant scales as (h/t)^2, so a locking element must show slope 2 (a negative control on the law, not on one marginal number); threshold 1.5 = the observed-order floor",
+      "value": 1.986646967764833,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "locking_amplification_full",
+      "quantity": "e(h/t=5) / e(h/t=0.25) of the energy error, distorted patch, fully integrated shear, n=4",
+      "reference": "the (h/t)^2 law predicts 20^2 = 400 over this ladder; a factor 4 slack (>= 100) is required. The round-2 single-point control read 2.1 % against a 2 % threshold (a 5 % margin) at h/t = 0.25, i.e. in the thick-plate regime where locking is weakest by construction",
+      "value": 385.1513710329028,
+      "threshold": 100.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "thin_limit_mitc",
+      "quantity": "max strain-energy error of MITC4 over both mesh families and both meshes at t/L = 0.05 (h/t = 5)",
+      "reference": "assumed transverse-shear strain: the element must stay shear-free in the thin limit, where the locking element is ~558 % off",
+      "value": 5.890618137869228e-13,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "thin_limit_sri_affine",
+      "quantity": "max strain-energy error of SRI on the AFFINE patch at t/L = 0.05, both meshes",
+      "reference": "on an affine mesh the SRI element passes the patch test at every thickness, so distortion -- not thickness -- is the trigger of the degradation measured on the distorted family",
+      "value": 1.011860980233515e-14,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "sri_locking_law_slope_dev",
+      "quantity": "|observed slope - 2| of the SRI energy error vs h/t, distorted patch, n=4",
+      "reference": "mechanism identification: the SRI degradation must follow the same (h/t)^2 locking law (an implementation error would not reproduce the exponent). SRI reduces the constant ~21x but does not remove the thin-plate limitation on distorted meshes",
+      "value": 0.052362236952326446,
+      "threshold": 0.5,
+      "operator": "<=",
+      "passed": true
+    },
+    {
       "id": "equilibrium_residual",
       "quantity": "max |K_ff u_f + K_fc u_c| over all patch cases",
       "reference": "discrete equilibrium",
@@ -242,6 +290,8 @@
     "A Dirichlet-driven patch contains no zero-energy mode, so this test cannot detect the rank deficiency of the one-point (sri) element.",
     "The free-edge strip leg of the Poisson cross-check is NOT converged at n_y=2: its converged offset is ~1.2% (L/b=5) and it decays with L/b, i.e. it is a clamped-root end effect, not a discretization error. The leg is therefore graded only after transverse convergence, and the coupling itself is graded on the exact M_y=0 state.",
     "The closed-form Poisson ratio is an algebra identity (insensitive to the element); it is reported as an oracle check, not as element evidence. Round 1 graded it as if it were the cross-check -- that gate could not fail.",
-    "Literature criterion cited from the standard statement; the textbooks were not retrievable offline, but every target value is evaluated in code from the closed form, so no table digit enters the evidence chain."
+    "Literature criterion cited from the standard statement; the textbooks were not retrievable offline, but every target value is evaluated in code from the closed form, so no table digit enters the evidence chain.",
+    "THIN-PLATE SCOPE: every graded patch case of rounds 1-2 runs at t/L = 1 (h/t = 0.25), a thick plate. Round 3 thins the plate at a fixed mesh: the relative strain-energy error of the SRI variant follows the (h/t)^2 locking law on DISTORTED meshes (26 % at h/t = 5, n = 4; slope 1.95), while MITC4 and the affine SRI path stay at round-off. The 2 % claims above are therefore certified for h/t <= 0.25; on a general distorted thin-plate mesh MITC4 is the element to use, not SRI.",
+    "The thin-limit quantity is the relative error of the discrete strain energy U_h = 1/2 u^T K u, which contains the spurious transverse-shear energy: it is the locking indicator, not a bound on the displacement error (the same SRI cases keep a field-displacement error of a few percent)."
   ]
 }

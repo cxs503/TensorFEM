@@ -14,7 +14,11 @@ These assert *invariants*, not merely that the code runs:
   patch and the *solved* strip ratio carry the content;
 * (round 2) the free-edge strip leg is transverse-converged, and its ~1.2%
   offset is a clamped-root end effect that decays with `L/b`;
-* the analytic oracle itself is verified before any assembly.
+* the analytic oracle itself is verified before any assembly;
+* (round 3) the thin limit: the locking error of the bilinear patch follows the
+  `(h/t)^2` law on distorted meshes, MITC4 and the affine SRI path stay at
+  round-off at every thickness, and the SRI limitation is recorded rather than
+  hidden.
 """
 from __future__ import annotations
 
@@ -213,6 +217,76 @@ def test_free_strip_offset_is_a_clamped_root_end_effect():
                                lateral="free", shear_treatment="sri", young=E,
                                poisson=NU, clamp_theta_y=False)
     assert abs(loose["w_rel_error_kirchhoff"] - short["w_rel_error_kirchhoff"]) < 2e-3
+
+
+def _loglog_slope(xs, ys):
+    import math
+    pts = [(math.log(x), math.log(y)) for x, y in zip(xs, ys)]
+    n = len(pts)
+    mx = sum(q[0] for q in pts) / n
+    my = sum(q[1] for q in pts) / n
+    return sum((q[0] - mx) * (q[1] - my) for q in pts) / sum(
+        (q[0] - mx) ** 2 for q in pts)
+
+
+THIN_LADDER = (1.0, 0.5, 0.2, 0.1, 0.05)
+
+
+def _energy_ladder(patch, treatments, n=4):
+    out = {}
+    for treat in treatments:
+        out[treat] = [
+            run_patch_case(patch, STATES[2], young=E, poisson=NU, thickness=tau,
+                           shear_treatment=treat)["energy_rel_error"]
+            for tau in THIN_LADDER
+        ]
+    return out
+
+
+def test_thin_limit_mitc_stays_shear_free():
+    """MITC4 must reproduce the state at every thickness, on both mesh families.
+
+    The locking element is 558 % off at the same t/L, so this is a separating
+    test, not a round-off curiosity.
+    """
+    for patch in (affine_patch_mesh(4), distorted_patch_mesh(4)):
+        for tau in (1.0, 0.05):
+            rep = run_patch_case(patch, STATES[2], young=E, poisson=NU,
+                                 thickness=tau, shear_treatment="mitc")
+            assert rep["energy_rel_error"] < 1e-10
+            assert rep["displacement_rel_error"] < 1e-10
+
+
+def test_thin_limit_sri_is_exact_on_affine_meshes():
+    """On an affine mesh thickness is *not* the trigger: SRI passes at t/L = 0.05."""
+    patch = affine_patch_mesh(4)
+    for tau in (1.0, 0.05):
+        rep = run_patch_case(patch, STATES[2], young=E, poisson=NU, thickness=tau,
+                             shear_treatment="sri")
+        assert rep["energy_rel_error"] < 1e-10
+
+
+def test_sri_distorted_thin_limit_follows_the_ht_squared_locking_law():
+    """The recorded SRI limitation: on a distorted mesh the spurious shear energy
+    grows as (h/t)^2.  Pinning the exponent identifies the mechanism (locking, not
+    an implementation defect) and is what makes the thin-limit claim falsifiable.
+    """
+    e = _energy_ladder(distorted_patch_mesh(4), ("sri",))["sri"]
+    assert max(e) > 1e-10                      # measurable, not round-off
+    slope = _loglog_slope([1.0 / (4 * tau) for tau in THIN_LADDER], e)
+    assert abs(slope - 2.0) < 0.5
+    assert e[-1] / e[0] > 100.0                # amplification over h/t = 0.25 -> 5
+    assert e[-1] > 0.02                        # honest: SRI is NOT 2 % at h/t = 5
+
+
+def test_full_integration_locking_amplification_matches_the_pure_law():
+    """Negative control, affine mesh: thinning 1 -> 0.05 must inflate the energy
+    error by 20^2 = 400 (the law carries no fitted constant)."""
+    e = _energy_ladder(affine_patch_mesh(4), ("full",))["full"]
+    assert e[0] > 1e-3                         # locking is already visible when thick
+    assert e[-1] / e[0] == pytest.approx(400.0, rel=0.02)
+    slope = _loglog_slope([1.0 / (4 * tau) for tau in THIN_LADDER], e)
+    assert abs(slope - 2.0) < 0.1
 
 
 def test_invalid_arguments_are_rejected():
