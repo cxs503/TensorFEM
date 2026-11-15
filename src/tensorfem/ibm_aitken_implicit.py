@@ -47,6 +47,7 @@ __all__ = [
     "find_support",
     "marker_spacing",
     "epsilon_conservation",
+    "dof_scale_vector",
     "IBMInterface",
     "AitkenRelaxation",
     "BeamProperties",
@@ -266,6 +267,30 @@ class IBMInterface:
         return err
 
 
+def dof_scale_vector(body, ref_length, ref_angle=1.0, dofs=None):
+    """Dimensionless weights ``length -> /ref_length``, ``angle -> /ref_angle``.
+
+    ``body.dof_kind`` (0 = length, 1 = angle) declares the DOF layout; bodies
+    without it are treated as all-length (the conservative fallback: no DOF is
+    given a *looser* weight than the dimensional analysis would give it).
+    ``dofs`` selects a subset (e.g. the free DOFs of a clamped body).
+    """
+    kind = getattr(body, "dof_kind", None)
+    if dofs is not None:
+        dofs = np.asarray(dofs, dtype=int)
+        n = int(dofs.max()) + 1 if dofs.size else 0
+        n = max(n, getattr(body, "n_dof", n))
+    else:
+        n = int(getattr(body, "n_dof", len(np.asarray(kind)) if kind is not None else 0))
+    if kind is None:
+        kind = np.zeros(n, dtype=int)
+    kind = np.asarray(kind, dtype=int)
+    if kind.size < n:
+        kind = np.concatenate([kind, np.zeros(n - kind.size, dtype=int)])
+    w = np.where(kind[:n] == 1, 1.0 / float(ref_angle), 1.0 / float(ref_length))
+    return w if dofs is None else w[dofs]
+
+
 class AitkenRelaxation:
     """Aitken Delta^2 (Irons-Tuck) dynamic under-relaxation.
 
@@ -291,7 +316,7 @@ class AitkenRelaxation:
         self.num = self.den = 0.0
         self.history = []
 
-    def omega_for(self, r_km1, r_k, omega_prev=None):
+    def omega_for(self, r_km1, r_k, omega_prev=None, scale=None):
         """Return the relaxation factor to use for the *next* correction.
 
         ``omega_prev`` must be the factor that actually produced ``r_k`` from
@@ -301,9 +326,24 @@ class AitkenRelaxation:
         used, which at the first sub-iteration of a new time step is stale
         (carried over from the previous step) and scales the estimate by
         ``omega``, costing one extra sub-iteration per step.
+
+        ``scale`` (optional, one weight per residual component) makes the
+        estimate well defined for an interface whose DOFs are **not**
+        commensurable.  The Delta^2 quotient ``(r.dr)/|dr|^2`` sums products of
+        residual components; if some components are lengths and others angles
+        the sum adds ``length^2`` to ``rad^2``, so ``omega`` -- and hence the
+        whole iteration -- depends on the arbitrary choice of length unit
+        (a beam modelled in mm instead of m gets a different history).  Passing
+        the dimensionless DOF weights of :func:`dof_scale_vector` puts the
+        estimate in a fixed normed space; a uniform scale leaves the quotient
+        unchanged, so the scalar (single-unit) case is unaffected.
         """
         r_km1 = np.asarray(r_km1, dtype=float)
         r_k = np.asarray(r_k, dtype=float)
+        if scale is not None:
+            w = np.asarray(scale, dtype=float)
+            r_km1 = r_km1 * w
+            r_k = r_k * w
         base = self.omega if omega_prev is None else float(omega_prev)
         dr = r_k - r_km1
         self.num = float(np.dot(r_km1, dr))
@@ -360,6 +400,10 @@ class CorotationalBeam2D:
         self.v_n = self.v.copy()
         self.a_n = self.a.copy()
         self.free = np.arange(3, self.n_dof)      # node 0 clamped (u, w, theta)
+        # DOF kind for dimensionless interface measures: 0 = length, 1 = angle
+        # (rad).  Mixing the two in one Euclidean norm is a dimensional error --
+        # see :func:`dof_scale_vector`.
+        self.dof_kind = np.tile([0, 0, 1], self.n_nodes)
         self._assemble_constant_matrices()
 
     # -- matrices -----------------------------------------------------------
@@ -635,12 +679,21 @@ class ImplicitIBMFSI:
 
     def __init__(self, beam, fluid, ibm=None, dt=1.0, dx=1.0, ref_length=None,
                  sub_tol=1e-8, max_sub_iter=20, relax_max=1.0,
-                 relax_mode="aitken", fixed_omega=1.0, correct_epsilon=True):
+                 relax_mode="aitken", fixed_omega=1.0, correct_epsilon=True,
+                 ref_angle=1.0, residual_measure="dof_scaled"):
         self.beam = beam
         self.fluid = fluid
         self.dt = float(dt)
         self.dx = float(dx)
         self.ref_length = float(ref_length if ref_length is not None else beam.props.length)
+        self.ref_angle = float(ref_angle)
+        if residual_measure not in ("dof_scaled", "legacy_isotropic"):
+            raise ValueError("residual_measure must be 'dof_scaled' or "
+                             f"'legacy_isotropic', got {residual_measure!r}")
+        self.residual_measure = residual_measure
+        # One weight per DOF (full vector, so it can multiply the residual as
+        # returned by the beam solve): lengths / ref_length, angles / ref_angle.
+        self.dof_scale = dof_scale_vector(beam, self.ref_length, self.ref_angle)
         self.sub_tol = float(sub_tol)
         self.max_sub_iter = int(max_sub_iter)
         self.relax_mode = relax_mode
@@ -650,6 +703,38 @@ class ImplicitIBMFSI:
         self.aitken = AitkenRelaxation(relax_max=relax_max, relax0=relax_max)
         self.sub_iterations = []
         self.n_maxit_hits = 0
+
+    def interface_residual(self, r_k):
+        """Dimensionless interface residual and its (translation, rotation) split.
+
+        ``dof_scaled`` (default) measures every DOF in its own unit -- lengths
+        in ``ref_length``, angles in ``ref_angle`` -- and takes the RMS over the
+        free DOFs.  The historical ``legacy_isotropic`` form divides the whole
+        mixed-unit vector norm by ``ref_length`` once, i.e. it compares a
+        rotation residual in **radians against a length**; a 32 m beam then
+        tolerates a 32x larger angular error than a 1 m one for the same
+        ``sub_tol``, and the criterion is not invariant under a change of
+        length unit.  Both forms coincide for an all-translational body.
+        """
+        r_k = np.asarray(r_k, dtype=float)
+        free = np.asarray(self.beam.free, dtype=int)
+        if free.size == 0:
+            return float("inf"), (float("nan"), float("nan"))
+        kind = np.asarray(getattr(self.beam, "dof_kind",
+                                  np.zeros(self.beam.n_dof)), dtype=int)[free]
+        tr, rot = kind == 0, kind != 0
+        res_split = (
+            float(np.linalg.norm(r_k[free][tr]) / math.sqrt(tr.sum())
+                  / self.ref_length) if tr.any() else 0.0,
+            float(np.linalg.norm(r_k[free][rot]) / math.sqrt(rot.sum())
+                  / self.ref_angle) if rot.any() else 0.0,
+        )
+        if self.residual_measure == "dof_scaled":
+            rf = r_k[free]
+            return (float(np.linalg.norm(rf * self.dof_scale[free])
+                          / math.sqrt(free.size)), res_split)
+        return (float(np.linalg.norm(r_k) / (self.ref_length * math.sqrt(free.size))),
+                res_split)
 
     def step(self, t_index):
         # Pre-force fluid state of this time level: the interface force decided
@@ -670,14 +755,15 @@ class ImplicitIBMFSI:
             load = beam.apply_marker_loads(-f_lag)          # reaction on the body
             u_new, _ok, _nit, _nres = beam.newmark_solve(load, self.dt)
             r_k = u_new - u_km1
-            res = float(np.linalg.norm(r_k)) / (self.ref_length * math.sqrt(len(beam.free)))
+            res, res_split = self.interface_residual(r_k)
             if res <= self.sub_tol:
                 converged = True
                 break
             if self.relax_mode == "aitken" and it >= 2:
                 # omega_applied is the factor that produced r_k from r_km1
                 omega = self.aitken.omega_for(r_km1, r_k,
-                                              omega_prev=omega_applied)
+                                              omega_prev=omega_applied,
+                                              scale=self.dof_scale)
             else:
                 omega = self.aitken.relax_max if self.relax_mode == "aitken" else self.fixed_omega
             omega_applied = omega
@@ -694,6 +780,8 @@ class ImplicitIBMFSI:
         beam.advance_history()
         self.sub_iterations.append(it)
         return {"sub_iterations": it, "residual": res, "converged": converged,
+                "residual_translation": res_split[0],
+                "residual_rotation": res_split[1],
                 "omega": omega_applied if n_relax else float("nan"),
                 "tip": beam.tip().tolist()}
 

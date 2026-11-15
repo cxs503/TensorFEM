@@ -1,0 +1,18 @@
+[
+ {
+  "file": "certificate_residual_split.png",
+  "caption": "Reported legacy residual against the achieved translational and rotational residuals of the submerged-beam sub-iteration."
+ },
+ {
+  "file": "certificate_tolerance_sweep.png",
+  "caption": "Accepted angular residual vs sub_tol: the legacy measure sits a factor ref_length above the diagonal."
+ },
+ {
+  "file": "aitken_unit_invariance.png",
+  "caption": "Aitken Delta^2 factor for the same physics in three length units: unweighted (left) is not invariant, DOF-scaled (right) is."
+ },
+ {
+  "file": "certificate_solution_impact.png",
+  "caption": "Deviation of the tip record from a sub_tol = 1e-12 reference: the certificate defect does not move the solution in this regime."
+ }
+]
