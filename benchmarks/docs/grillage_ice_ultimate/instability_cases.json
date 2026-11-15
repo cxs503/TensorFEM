@@ -1,0 +1,76 @@
+{
+  "schema": "tensorfem.grillage_ice_instability.benchmark/v1",
+  "case_study_comparison": [
+    {
+      "scenario": "light-ice + ballast head",
+      "sigma_x_MPa": 53.0,
+      "ice_pressure_MPa": 1.0,
+      "U_plate": 0.31336767049150466,
+      "U_stiff_beamcol": 0.20241557137083718,
+      "U_frame": 0.020458904281087594,
+      "U_stiff_instability": 0.3012486803800624,
+      "tripping_sigma_MPa": 222.59660740759688,
+      "beamcol_sigma_L_MPa": 331.2834767823527,
+      "instability_governing": "tripping"
+    },
+    {
+      "scenario": "design-ice + design head",
+      "sigma_x_MPa": 106.0,
+      "ice_pressure_MPa": 2.0,
+      "U_plate": 0.8644429218421652,
+      "U_stiff_beamcol": 0.46221765484349187,
+      "U_frame": 0.07671858545973036,
+      "U_stiff_instability": 0.6879038881592205,
+      "tripping_sigma_MPa": 222.59660740759688,
+      "beamcol_sigma_L_MPa": 331.2834767823527,
+      "instability_governing": "tripping"
+    },
+    {
+      "scenario": "severe-ice + tank head",
+      "sigma_x_MPa": 160.0,
+      "ice_pressure_MPa": 3.0,
+      "U_plate": 1.4864105947218211,
+      "U_stiff_beamcol": 0.7412585614316128,
+      "U_frame": 0.17184013186829686,
+      "U_stiff_instability": 1.103191626708364,
+      "tripping_sigma_MPa": 222.59660740759688,
+      "beamcol_sigma_L_MPa": 331.2834767823527,
+      "instability_governing": "tripping"
+    }
+  ],
+  "tripping_governed_comparison": [
+    {
+      "scenario": "light-ice + ballast head",
+      "sigma_x_MPa": 50.0,
+      "p_ult_without_instability_MPa": 1.2883645296096802,
+      "p_ult_with_instability_MPa": 1.2883645296096802,
+      "governing_without": "plate_local_bending",
+      "governing_with": "plate_local_bending",
+      "reduction_pct": 0.0,
+      "U_stiff_beamcol": 0.22138577146933405,
+      "U_stiff_instability": 0.8178546524566188
+    },
+    {
+      "scenario": "design-ice + design head",
+      "sigma_x_MPa": 100.0,
+      "p_ult_without_instability_MPa": 0.8641192317008972,
+      "p_ult_with_instability_MPa": 0.0,
+      "governing_without": "plate_local_bending",
+      "governing_with": "stiffener_instability",
+      "reduction_pct": 100.0,
+      "U_stiff_beamcol": 0.5115715315797391,
+      "U_stiff_instability": 1.8898737456792813
+    },
+    {
+      "scenario": "severe-ice + tank head",
+      "sigma_x_MPa": 150.0,
+      "p_ult_without_instability_MPa": 0.7017281651496887,
+      "p_ult_with_instability_MPa": 0.0,
+      "governing_without": "plate_local_bending",
+      "governing_with": "stiffener_instability",
+      "reduction_pct": 100.0,
+      "U_stiff_beamcol": 0.8498034423540862,
+      "U_stiff_instability": 3.13938738876546
+    }
+  ]
+}
