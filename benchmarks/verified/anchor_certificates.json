@@ -2,22 +2,19 @@
   "schema": "tensorfem.anchor-certificates/1",
   "gate_schema": "tensorfem.verified-gates.v1",
   "git_tracking_checked": true,
-  "anchors": 44,
-  "certified": 37,
-  "contradicted": 3,
-  "uncertified": 4,
-  "gates_total": 499,
-  "gates_recomputed": 482,
+  "anchors": 45,
+  "certified": 38,
+  "contradicted": 2,
+  "uncertified": 5,
+  "gates_total": 503,
+  "gates_recomputed": 500,
   "gates_contradicted": 0,
-  "gates_contradicted_inferred": 2,
-  "gates_without_numeric_criterion": 4,
-  "gates_unrecomputable": 17,
+  "gates_contradicted_inferred": 0,
+  "gates_without_numeric_criterion": 1,
+  "gates_unrecomputable": 3,
   "defect_counts": {
-    "E_ARTIFACT_MISSING": 2,
-    "E_GATE_VALUE_NOT_FINITE": 1,
-    "E_NO_GATES": 4,
-    "E_PASS_WITHOUT_CRITERION": 1,
-    "E_SCHEMA": 1
+    "E_ARTIFACT_UNTRACKED": 2,
+    "E_NO_GATES": 5
   },
   "records": [
     {
@@ -215,8 +212,8 @@
       "has_gates": true,
       "declared_overall": true,
       "recomputed_overall": true,
-      "gates": 24,
-      "gates_passed": 24,
+      "gates": 29,
+      "gates_passed": 29,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
@@ -517,6 +514,71 @@
           "operator_source": "declared",
           "value": 0.021096612867004566,
           "threshold": 0.02,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "locking_scaling_slope_full",
+          "quantity": "observed slope of log(strain-energy error) vs log(h/t), distorted patch, fully integrated 2x2 shear, n=4, t/L = 1 .. 0.05",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 1.986646967764833,
+          "threshold": 1.5,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "locking_amplification_full",
+          "quantity": "e(h/t=5) / e(h/t=0.25) of the energy error, distorted patch, fully integrated shear, n=4",
+          "operator": ">=",
+          "operator_source": "declared",
+          "value": 385.1513710329028,
+          "threshold": 100.0,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "thin_limit_mitc",
+          "quantity": "max strain-energy error of MITC4 over both mesh families and both meshes at t/L = 0.05 (h/t = 5)",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 5.890618137869228e-13,
+          "threshold": 0.02,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "thin_limit_sri_affine",
+          "quantity": "max strain-energy error of SRI on the AFFINE patch at t/L = 0.05, both meshes",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 1.011860980233515e-14,
+          "threshold": 1e-10,
+          "declared_passed": true,
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
+          "warnings": []
+        },
+        {
+          "id": "sri_locking_law_slope_dev",
+          "quantity": "|observed slope - 2| of the SRI energy error vs h/t, distorted patch, n=4",
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.052362236952326446,
+          "threshold": 0.5,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
@@ -5312,11 +5374,9 @@
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
       "defects": [
-        "E_ARTIFACT_MISSING"
+        "E_ARTIFACT_UNTRACKED"
       ],
-      "warnings": [
-        "W_ARTIFACT_AMBIGUOUS"
-      ],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "k_error_a_over_w_0.20",
@@ -6363,287 +6423,229 @@
     {
       "anchor": "fem_structural_acoustics",
       "directory": "benchmarks/verified/fem_structural_acoustics",
-      "grade": "contradicted",
-      "certified": false,
+      "grade": "certified",
+      "certified": true,
       "has_runner": true,
       "has_result": true,
       "has_gates": true,
       "declared_overall": false,
-      "recomputed_overall": null,
-      "gates": 17,
-      "gates_passed": 1,
+      "recomputed_overall": false,
+      "gates": 16,
+      "gates_passed": 14,
       "gates_failed": 2,
       "gates_contradicted": 0,
-      "gates_contradicted_inferred": 2,
-      "gates_unrecomputable": 14,
-      "defects": [
-        "E_SCHEMA",
-        "E_PASS_WITHOUT_CRITERION",
-        "E_GATE_VALUE_NOT_FINITE"
-      ],
-      "warnings": [
-        "W_OPERATOR_ABSENT",
-        "W_OPERATOR_INFERRED",
-        "W_CONTRADICTION_INFERRED",
-        "W_FAILED_GATES_LIST_UNCHECKED"
-      ],
+      "gates_contradicted_inferred": 0,
+      "gates_unrecomputable": 0,
+      "defects": [],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "F1_pytest",
           "quantity": "pytest tests/test_cylinder_radiation.py tests/test_fem_structural_acoustics.py: 24 passed, 0 failed",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": ">=",
+          "operator_source": "declared",
           "value": 24.0,
           "threshold": 12.0,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "A1_plate_modal_first6",
           "quantity": "max |f_fem - f_kirchhoff|/f over the first six modes, 24x24 Q4",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.0234305728030315,
           "threshold": 0.03,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
-        },
-        {
-          "id": "A2_plate_mesh_convergence",
-          "quantity": "A2_plate_mesh_convergence",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 0.059338089289970926,
-          "threshold": null,
-          "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
-          "defects": [
-            "E_PASS_WITHOUT_CRITERION"
-          ],
           "warnings": []
         },
         {
           "id": "B1_plate_sigma_low_ka",
           "quantity": "ka < 1, FEM mode velocity + Rayleigh vs analytic sine + spectrum",
-          "operator": "<",
-          "operator_source": "inferred",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.0035156404965401844,
           "threshold": 0.1,
           "declared_passed": true,
           "recomputed_passed": true,
           "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_INFERRED"
-          ]
+          "warnings": []
         },
         {
           "id": "B2_plate_sigma_high_ka",
           "quantity": "B2_plate_sigma_high_ka",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.004023510404220887,
           "threshold": 0.05,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "B3_plate_low_ka_exponent",
           "quantity": "fitted sigma ~ (ka)^p for sine(1,1), ka in [0.2, 0.7]",
-          "operator": null,
-          "operator_source": "absent",
-          "value": 1.9931930837729965,
-          "threshold": null,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.006806916227003468,
+          "threshold": 0.05,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
-          "defects": [
-            "E_PASS_WITHOUT_CRITERION"
-          ],
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
           "warnings": []
         },
         {
           "id": "B4_plate_high_ka_plateau",
           "quantity": "sigma -> 1.0 with the modal-RMS normalisation (i.e. 0.5 with the space-averaged <v^2>), mean over ka in {20, 30, 50}",
-          "operator": "<",
-          "operator_source": "inferred",
-          "value": 1.0339867863895016,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.03398678638950159,
           "threshold": 0.05,
           "declared_passed": true,
-          "recomputed_passed": false,
-          "status": "contradicted",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_INFERRED",
-            "W_CONTRADICTION_INFERRED"
-          ]
+          "warnings": []
         },
         {
           "id": "B5_plate_monopole_law",
           "quantity": "Maidanik monopole law vs 2 x the exact angular-spectrum sigma, ka in {0.3, 0.5, 1.0} (the factor 2 is the normalisation difference between the two conventions)",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.019878214397076377,
           "threshold": 0.03,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "C1_esm_sphere",
           "quantity": "C1_esm_sphere",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.672835284582952e-05,
           "threshold": 0.02,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "C2_esm_resolution_convergence",
           "quantity": "matching grid 21x40 -> 29x56 with a fixed source surface: 2.09 % worst case; the coarse pair 13x24 -> 21x40 moves by 7.82 %, i.e. the coarse grid is not adequate and is not used for any reported number",
-          "operator": ">",
-          "operator_source": "inferred",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.020909342942096343,
           "threshold": 0.05,
           "declared_passed": true,
-          "recomputed_passed": false,
-          "status": "contradicted",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_INFERRED",
-            "W_CONTRADICTION_INFERRED"
-          ]
+          "warnings": []
         },
         {
           "id": "C3_cylinder_sigma_vs_jf_L2",
           "quantity": "R = 0.5 m, L = 2 m, ka in [0.5, 3], four modes",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.41045906291645917,
           "threshold": 0.15,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "C4_cylinder_sigma_vs_jf_L8",
           "quantity": "length-converged configuration L = 8 m, ka in [0.5, 3]",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.3031401810717105,
           "threshold": 0.15,
           "declared_passed": false,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": false,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "C5_cylinder_gap_trend",
           "quantity": "establishes that the L = 2 discrepancy is a low-frequency finite-length effect, not a numerical artefact",
-          "operator": null,
-          "operator_source": "absent",
-          "value": null,
-          "threshold": null,
+          "operator": "<=",
+          "operator_source": "declared",
+          "value": 0.7385393781240704,
+          "threshold": 1.0,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
-          "defects": [
-            "E_GATE_VALUE_NOT_FINITE"
-          ],
+          "recomputed_passed": true,
+          "status": "agrees",
+          "defects": [],
           "warnings": []
         },
         {
           "id": "D1_plate_three_way",
           "quantity": "D1_plate_three_way",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.004023510404220887,
           "threshold": 0.1,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "D2_physical_bound",
           "quantity": "D2_physical_bound",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.622099254652718,
           "threshold": 1.02,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "E1_negative_control",
           "quantity": "E1_negative_control",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.0,
           "threshold": 1e-30,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "E2_esm_regularization_sensitivity",
           "quantity": "E2_esm_regularization_sensitivity",
-          "operator": null,
-          "operator_source": "absent",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 0.006989606003553028,
           "threshold": 0.05,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         }
       ]
     },
@@ -6841,7 +6843,7 @@
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
       "defects": [
-        "E_ARTIFACT_MISSING"
+        "E_ARTIFACT_UNTRACKED"
       ],
       "warnings": [],
       "gate_detail": [
@@ -7496,6 +7498,28 @@
           "warnings": []
         }
       ]
+    },
+    {
+      "anchor": "lbm_table_selfcheck",
+      "directory": "benchmarks/verified/lbm_table_selfcheck",
+      "grade": "uncertified",
+      "certified": false,
+      "has_runner": true,
+      "has_result": true,
+      "has_gates": false,
+      "declared_overall": null,
+      "recomputed_overall": null,
+      "gates": 0,
+      "gates_passed": 0,
+      "gates_failed": 0,
+      "gates_contradicted": 0,
+      "gates_contradicted_inferred": 0,
+      "gates_unrecomputable": 0,
+      "defects": [
+        "E_NO_GATES"
+      ],
+      "warnings": [],
+      "gate_detail": []
     },
     {
       "anchor": "rainflow_fix_spec",

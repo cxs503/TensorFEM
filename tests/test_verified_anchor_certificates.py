@@ -115,7 +115,18 @@ def test_no_non_finite_gate_value_is_unregistered(audit, tool):
             if "E_GATE_VALUE_NOT_FINITE" in gate["defects"]:
                 seen += 1
                 assert record["anchor"] in registered
-    assert seen >= 1, "the registry is expected to still carry at least one non-finite gate"
+    # The population guard used to assert ``seen >= 1`` (the registry happened to
+    # carry one non-finite gate, fem_structural_acoustics/C5).  C5 was restated as
+    # a numeric gap ratio, so the count can legitimately be zero; what must never
+    # happen is a *certified* anchor grading a NaN/inf value, or a non-finite gate
+    # that the debt registry does not book.
+    certified_with_nan = [
+        record["anchor"]
+        for record in audit["records"]
+        if record["certified"]
+        and any("E_GATE_VALUE_NOT_FINITE" in g["defects"] for g in record["gate_detail"])
+    ]
+    assert certified_with_nan == [], f"certified anchors with non-finite gates: {certified_with_nan}"
 
 
 def test_certified_anchors_carry_tracked_evidence(audit):
