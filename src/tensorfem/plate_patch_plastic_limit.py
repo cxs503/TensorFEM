@@ -77,6 +77,9 @@ __all__ = [
     "ilyushin_sine_upper_bound",
     "plastic_bound_bracket",
     "strip_lower_bound",
+    "section_moment_capacity",
+    "max_section_moment_ratio",
+    "limit_load_from_path",
     "patch_plate_mesh",
     "patch_pressure_forces",
     "PatchPath",
@@ -276,6 +279,60 @@ def plastic_moment(thickness: float, yield_stress: float) -> float:
     return yield_stress * thickness ** 2 / 4.0
 
 
+def section_moment_capacity(thickness: float, yield_stress: float,
+                            layers: int) -> dict:
+    """Fully-plastic moment that an ``layers``-deep *layered* section can reach.
+
+    The layered Shell4 model samples the through-thickness stress at the layer
+    mid-planes ``z_k = -t/2 + (k+1/2) t/n`` and integrates with the mid-point
+    rule, so its fully-plastic moment is::
+
+        m_p,n = sum_k sigma_y |z_k| (t/n) = m_p * rho(n),
+        rho(n) = 1 - 1/n^2   (n odd),   rho(n) = 1   (n even)
+
+    (``n = 3`` gives the 8/9 = 0.889 that shows up as a saturation plateau in
+    :func:`max_section_moment_ratio`).  Every limit load computed on a layered
+    section is therefore multiplied by ``rho``; even layer counts remove the
+    deficit exactly, which is why the certification ladders use ``n = 4`` / 8.
+    """
+    if layers < 1:
+        raise ValueError("layers must be >= 1")
+    m_p = plastic_moment(thickness, yield_stress)
+    dz = thickness / layers
+    z = [-0.5 * thickness + (k + 0.5) * dz for k in range(layers)]
+    discrete = yield_stress * sum(abs(z_k) for z_k in z) * dz
+    ratio = discrete / m_p
+    closed = 1.0 if layers % 2 == 0 else 1.0 - 1.0 / layers ** 2
+    return {"m_p": m_p, "m_p_layers": discrete, "ratio": ratio,
+            "ratio_closed_form": closed,
+            "note": ("even layer count: mid-point rule integrates |z| exactly"
+                     if layers % 2 == 0 else
+                     "odd layer count: m_p deficit (n^2-1)/n^2")}
+
+
+def max_section_moment_ratio(stress: torch.Tensor, thickness: float,
+                             yield_stress: float, layers: int) -> float:
+    """Peak quadratic sectional-moment invariant over all Gauss points.
+
+    ``stress`` is the layered Gauss-point history ``[element, 4, layer, 3]``.
+    The section moments are the through-thickness integrals
+    ``M = sum_k sigma_k z_k (t/n)`` and the invariant is
+
+        ``sqrt(Mx^2 - Mx My + My^2 + 3 Mxy^2) / m_p``
+
+    i.e. the von Mises form of the moment tensor normalised by the *exact*
+    ``m_p = sigma_y t^2/4``.  A value of ``1`` means a fully plastic section.
+    """
+    dz = thickness / layers
+    z = torch.tensor([-0.5 * thickness + (k + 0.5) * dz for k in range(layers)],
+                     dtype=stress.dtype, device=stress.device)
+    moment = (stress * z.view(1, 1, layers, 1)).sum(dim=2) * dz
+    mx, my, mxy = moment[..., 0], moment[..., 1], moment[..., 2]
+    invariant = torch.sqrt(torch.clamp(mx ** 2 - mx * my + my ** 2 + 3.0 * mxy ** 2,
+                                       min=0.0))
+    return float(invariant.max()) / plastic_moment(thickness, yield_stress)
+
+
 def _patch_mechanism_volume_ratio(a: float, b: float, patch: tuple[float, float]) -> float:
     """``Int_patch w_hat dA`` for the yield-line surface ``w_hat = 1-2max(|x|/a,|y|/b)``.
 
@@ -462,6 +519,7 @@ def patch_plate_mesh(a: float, b: float, t: float, nx: int, ny: int, *,
                      hardening: float, layers: int = 5,
                      patch: tuple[float, float] | None = None,
                      exact_thickness: bool = True,
+                     shear_correction: float = 5.0 / 6.0,
                      ) -> tuple[LayeredShell4Model, dict]:
     """Simply supported plate mesh with a unit patch-pressure reference load.
 
@@ -495,7 +553,8 @@ def patch_plate_mesh(a: float, b: float, t: float, nx: int, ny: int, *,
     model = LayeredShell4Model(nodes=nodes, elements=elements, young=young,
                                poisson=poisson, thickness=t,
                                yield_stress=yield_stress, hardening=hardening,
-                               layers=layers, exact_thickness=exact_thickness)
+                               layers=layers, exact_thickness=exact_thickness,
+                               shear_correction=shear_correction)
     fixed = []
     for i in range(nx + 1):
         for j in range(ny + 1):
@@ -561,6 +620,8 @@ class PatchPathPoint:
     centre_deflection: float
     max_alpha: float
     max_surface_mises: float = 0.0
+    #: peak section-moment invariant ``|M|/m_p`` (1.0 = fully plastic section)
+    max_moment_ratio: float = 0.0
 
 
 @dataclass
@@ -579,6 +640,8 @@ class PatchPath:
     # the same physical quantity.
     limit_point_searched: bool = False
     ramp_completed: bool = False
+    #: ramp stopped early by ``max_deflection_factor`` (flat post-saturation path)
+    ramp_truncated: bool = False
     # Unloading bookkeeping: a residual deflection is only a *permanent set* if
     # the unload leg actually converged; a failed first step used to be reported
     # as a permanent set equal to the peak deflection.
@@ -667,6 +730,117 @@ class PatchPath:
         return (dp / dw) / k0
 
 
+def limit_load_from_path(path: "PatchPath", *,
+                         criteria: Sequence[float] = (0.02, 0.05, 0.10),
+                         minimum_points: int = 3) -> dict:
+    """Extract the plastic *limit load* from a load-deflection path.
+
+    Why this function exists
+    ------------------------
+    The end of a load ramp is **not** a collapse load.  On a Mindlin plate the
+    elastic transverse-shear stiffness keeps the tangent positive definite, so
+    load control keeps converging long after the bending moment field has
+    saturated: the deflection then runs away at almost constant load and the
+    last prescribed factor is an arbitrary number that depends only on how far
+    the ramp was pushed.  Three independent, standard limit-load definitions are
+    therefore evaluated on the same path and reported together:
+
+    ``intersection_of_tangents``
+        intersection of the initial elastic line ``w = p/k0`` with the final
+        (fully plastic) tangent line -- the classical double-slope rule;
+    ``double_deflection``
+        load at which the centre deflection is twice the elastic prediction
+        (``w = 2 p/k0``), a conventional 2x-deflection offset yield;
+    ``stiffness_criterion_<c>``
+        load at which the incremental stiffness ``dp/dw`` has fallen to ``c``
+        times the initial elastic stiffness.
+
+    The spread of the three is returned as ``spread``: only a path whose
+    measurements agree is a credible limit load.
+    """
+    points = [q for q in path.loading if q.load_factor > 0.0 and q.centre_deflection > 0.0]
+    if len(points) < minimum_points:
+        raise ValueError("need at least three loading points with positive deflection")
+    k0 = points[0].centre_deflection / points[0].load_factor
+    if k0 <= 0.0:
+        raise ValueError("degenerate elastic stiffness")
+
+    def _interp(target: float, attribute: str) -> float | None:
+        previous = None
+        for q in points:
+            value = getattr(q, attribute)
+            if value >= target:
+                if previous is None:
+                    return q.load_factor
+                v0 = getattr(previous, attribute)
+                if value == v0:
+                    return q.load_factor
+                frac = (target - v0) / (value - v0)
+                return previous.load_factor + frac * (q.load_factor - previous.load_factor)
+            previous = q
+        return None
+
+    last, before = points[-1], points[-2]
+    dp = last.load_factor - before.load_factor
+    dw = last.centre_deflection - before.centre_deflection
+    k1 = dw / dp if dp > 0.0 else float("inf")
+
+    out: dict = {"elastic_slope": k0, "final_slope": k1,
+                 "peak_factor": last.load_factor,
+                 "peak_deflection": last.centre_deflection,
+                 "points": len(points), "measurements": {}}
+    measurements = out["measurements"]
+
+    # 1. two-line intersection (k is deflection per unit load, so the plastic
+    #    branch has k1 > k0; p_c = (k1 p_peak - w_peak)/(k1 - k0))
+    if math.isfinite(k1) and k1 > k0:
+        p_c = (k1 * last.load_factor - last.centre_deflection) / (k1 - k0)
+        measurements["intersection_of_tangents"] = float(p_c)
+    # 2. twice the elastic deflection: linear interpolation of the first crossing
+    previous = None
+    for q in points:
+        excess = q.centre_deflection - 2.0 * q.load_factor * k0
+        if excess >= 0.0:
+            if previous is None:
+                measurements["double_deflection"] = q.load_factor
+            else:
+                e0 = previous.centre_deflection - 2.0 * previous.load_factor * k0
+                frac = -e0 / (excess - e0)
+                measurements["double_deflection"] = float(
+                    previous.load_factor + frac * (q.load_factor - previous.load_factor))
+            break
+        previous = q
+    # 3. incremental-stiffness criteria, interpolated inside the first interval
+    #    whose mean slope ratio drops below the criterion
+    ratios = [1.0]
+    for first, second in zip(points, points[1:]):
+        span = second.load_factor - first.load_factor
+        slope = ((second.centre_deflection - first.centre_deflection) / span
+                 if span > 0.0 else float("inf"))
+        # incremental (tangent) stiffness dp/dw normalised by the elastic one
+        ratios.append(k0 / slope if slope > 0.0 else float("inf"))
+    for criterion in criteria:
+        key = f"stiffness_criterion_{criterion:g}"
+        for index in range(1, len(ratios)):
+            if ratios[index] <= criterion:
+                r1, r0 = ratios[index], ratios[index - 1]
+                p1 = points[index - 1].load_factor
+                dp_i = points[index].load_factor - p1
+                frac = 0.0 if (r0 <= criterion or r1 == r0) else (r0 - criterion) / (r0 - r1)
+                measurements[key] = float(p1 + frac * dp_i)
+                break
+    values = list(measurements.values())
+    out["limit_load"] = measurements.get("intersection_of_tangents") or (
+        min(values) if values else None)
+    if len(values) >= 2:
+        lo, hi = min(values), max(values)
+        out["spread"] = (hi - lo) / lo
+        out["minimum"], out["maximum"] = lo, hi
+    else:
+        out["spread"] = None
+    return out
+
+
 def _centre_node(info: dict) -> int:
     nx, ny = info["nx"], info["ny"]
     return (nx // 2) * (ny + 1) + ny // 2
@@ -679,12 +853,18 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
                            tolerance: float = 1e-8, max_iterations: int = 25,
                            unload_steps: int = 0,
                            unload_to: float = 0.0,
-                           exact_thickness: bool = True) -> PatchPath:
+                           exact_thickness: bool = True,
+                           shear_correction: float = 5.0 / 6.0,
+                           max_deflection_factor: float | None = None,
+                           bisection_tolerance: float = 1e-3) -> PatchPath:
     """Integrate the elastoplastic patch-loading path (adaptive load control).
 
-    On a Newton failure the increment is bisected down to 1e-3 of the original
-    step; the last converged factor is then the numerical collapse load (the
-    equilibrium path has no point beyond it under load control).  Optionally the
+    On a Newton failure the increment is bisected down to ``bisection_tolerance``
+    of the original step.  Bisection is expensive precisely where the bending
+    moments have saturated, so the ramp optionally stops as soon as the centre
+    deflection exceeds ``max_deflection_factor`` times the elastic prediction
+    ``p/k0`` -- beyond that point the path is flat and adds nothing but Newton
+    failures (see :func:`limit_load_from_path`).  Optionally the
     path is then unloaded to ``unload_to`` times the reference pressure and the
     residual centre deflection is read off (:attr:`PatchPath.permanent_deflection`).
     """
@@ -693,7 +873,8 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
     model, info = patch_plate_mesh(a, b, t, nx, ny, young=young, poisson=poisson,
                                    yield_stress=yield_stress, hardening=hardening,
                                    layers=layers, patch=patch,
-                                   exact_thickness=exact_thickness)
+                                   exact_thickness=exact_thickness,
+                                   shear_correction=shear_correction)
     path = PatchPath(model=model, info=info)
     state = LayeredShell4State.virgin(model)
     u = torch.zeros(model.n_dofs, dtype=model.nodes.dtype)
@@ -709,7 +890,7 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
                     model, info["reference_load"], end, info["fixed_dofs"], state, u,
                     tolerance=tolerance, max_iterations=max_iterations)
             except RuntimeError:
-                if (end - start) < 1e-3 * max(abs(end), 1e-12):
+                if (end - start) < bisection_tolerance * max(abs(end), 1e-12):
                     return None
                 mid = 0.5 * (start + end)
                 stack.append((mid, end))
@@ -718,7 +899,9 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
             state, u = step.state, step.displacement
             history.append(PatchPathPoint(
                 end, float(u[6 * centre + 2]), float(torch.max(step.alpha)),
-                surface_extrapolated_mises(step.stress, model.thickness)))
+                surface_extrapolated_mises(step.stress, model.thickness),
+                max_section_moment_ratio(step.stress, model.thickness,
+                                         model.yield_stress, model.layers)))
             current = end
         return current
 
@@ -733,6 +916,12 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
             path.limit_point_searched = True
             break
         previous = reached
+        if max_deflection_factor is not None and len(path.loading) > 1:
+            first = path.loading[0]
+            elastic = previous * first.centre_deflection / first.load_factor
+            if path.loading[-1].centre_deflection > max_deflection_factor * elastic:
+                path.ramp_truncated = True
+                break
     else:
         path.ramp_completed = True
 
@@ -754,7 +943,9 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
                 break
             state, u = step.state, step.displacement
             path.unloading.append(PatchPathPoint(
-                target, float(u[6 * centre + 2]), float(torch.max(step.alpha))))
+                target, float(u[6 * centre + 2]), float(torch.max(step.alpha)),
+                max_section_moment_ratio(step.stress, model.thickness,
+                                         model.yield_stress, model.layers)))
             path.unload_converged_steps = k
             previous = target
 
