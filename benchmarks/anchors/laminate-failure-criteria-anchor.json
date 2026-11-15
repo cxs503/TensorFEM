@@ -1,0 +1,164 @@
+{
+ "schema": "w30-laminate-failure-criteria-anchor/1",
+ "mission": {"id": "21513", "key": "composite-laminate-verification", "repo": "TensorFEM"},
+ "generated_utc": "2026-11-16T00:00:00Z",
+ "purpose": "Register of the anchors used by papers/artifacts/w30/composite-laminate-verification/laminate_anchor_closure.json. Every entry is graded here, including the ones that could not be acquired. No numeric value in this file is transcribed from memory: values are either (a) derived by benchmarks/composite_laminate_w30/symbolic_anchor.py, or (b) quoted verbatim from a document whose bytes were retrieved and hashed in this session.",
+ "grade_legend": {
+  "DERIVED-EXACT": "computed here at 60-digit mpmath precision from the classical CLT formulation and the declared inputs; reproducible by re-running the generator (self-hashed)",
+  "CALIBRATION-IDENTITY": "an exact algebraic consequence of the criterion definition (a uni-axially loaded lamina has index exactly 1); no numbers involved",
+  "SECONDARY-QUALITATIVE": "public document retrieved and hashed in this session that attests the *usage* of the criterion; it contains no numeric constants usable as a value anchor",
+  "WITHHELD": "the document could not be retrieved from this sandbox; the attempted channels and their HTTP outcomes are recorded and no value is claimed",
+  "NOT_SUPPORTED": "the source does not contain the required clause at all (verified against the in-repo transcript)"
+ },
+ "entries": [
+  {
+   "id": "LAM-CLASS-ABD",
+   "subject": "classical lamination theory ABD and transverse-shear stiffness of the four layups",
+   "kind": "classic solution",
+   "grade": "DERIVED-EXACT",
+   "provenance": {
+    "generator": "benchmarks/composite_laminate_w30/symbolic_anchor.py",
+    "output": "benchmarks/composite_laminate_w30/anchor_values.json",
+    "output_sha256": "595762deb4cd257a6e91439cea8a9b1a88caa35edae715bf947946e15abf60db",
+    "method": "Q = S^-1 (compliance inversion), Qbar = T^-1 Q R (transformation matrices), exact thickness integration, 60-digit mpmath; precision stability 3.44e-62 relative between 60 and 90 digits",
+    "independence_check": "agrees with the classical power-formula route (clt_independent.transformed_reduced) to 3e-16 relative and with TensorFEM's rotated-3-D condensation to 4e-14 relative"
+   },
+   "values_ref": "anchor_values.json -> layups.<id>.{A,B,D,As_uncorrected,As_k_5_6}",
+   "material_note": "elastic constants are TensorFEM's in-repo IM7/8552 Ply3D (src/tensorfem/composite_laminate_bending.py); no strength data required for this entry"
+  },
+  {
+   "id": "LAM-CLASS-CLT-RESPONSE",
+   "subject": "mid-surface strains, ply stresses and Tsai-Wu / Tsai-Hill / maximum-stress indices per ply",
+   "kind": "classic solution",
+   "grade": "DERIVED-EXACT",
+   "provenance": {
+    "generator": "benchmarks/composite_laminate_w30/symbolic_anchor.py",
+    "criterion_formulation": "Tsai & Wu (1971) quadratic form with F1=1/Xt-1/Xc, F2=1/Yt-1/Yc, F11=1/(Xt Xc), F22=1/(Yt Yc), F66=1/S^2, F12=F12*/sqrt(F11 F22), F12*=-1/2; Tsai-Hill with X, Y switched on the sign of the stress; maximum stress as the max of the three component ratios",
+    "layups": ["[0/90/+-45]s", "[+-30/0]s", "[0/45/-45/90]", "[0/45]"],
+    "load_cases": "uniaxial tension 1e6 N/m, biaxial 5e5/5e5 N/m, pure shear 5e5 N/m, uniaxial compression -1e6 N/m"
+   },
+   "values_ref": "anchor_values.json -> layups.<id>.load_cases.<lc>.plies[].index / .sigma*",
+   "honesty_note": "the *formulation* is standard; the coefficient values inside these indices depend on the declared strength allowables (entry LAM-STRENGTH-INPUTS, WITHHELD). All cross-path comparisons in the closure are exactly homogeneous in those allowables, so the comparison conclusion does not inherit this gap."
+  },
+  {
+   "id": "LAM-CALIB-IDENTITIES",
+   "subject": "criterion calibration identities: index = 1 under each allowable state",
+   "kind": "calibration identity",
+   "grade": "CALIBRATION-IDENTITY",
+   "provenance": {
+    "generator": "benchmarks/composite_laminate_w30/symbolic_anchor.py -> calibration",
+    "states": ["sigma1=+Xt", "sigma1=-Xc", "sigma2=+Yt", "sigma2=-Yc", "tau12=+S"],
+    "criteria": ["tsai_wu", "tsai_hill", "max_stress"],
+    "algebra": "Tsai-Wu: (1/Xt - 1/Xc)Xt + Xt^2/(Xt Xc) = 1 identically, and likewise for the other three states"
+   },
+   "result": "15 identities, worst |index - 1| = 4.44e-16 (double precision) / 1e-59 (anchor precision)"
+  },
+  {
+   "id": "LAM-STRENGTH-INPUTS",
+   "subject": "ply strength allowables Xt, Xc, Yt, Yc, S",
+   "kind": "material input",
+   "grade": "WITHHELD",
+   "declared_values_Pa": {"Xt": 2326200000.0, "Xc": 1200100000.0, "Yt": 62300000.0, "Yc": 199800000.0, "S": 92300000.0},
+   "status": "These five numbers are a DECLARED INPUT. They were not retrieved from a document in this sandbox: no open copy of a composite material handbook could be fetched (see retrieval_log). They are declared here so that the artifact is reproducible, and every compared quantity in the closure is either independent of them (A, B, D, strains, stresses) or exactly homogeneous in them (failure index, FPF load factor) -- scaling all five by a factor s scales every index by s or s^2 and every load factor by 1/s, identically on the anchor and on both solver paths.",
+   "risk_if_wrong": "the absolute magnitudes of the reported indices are material-specific and would change with a different allowables set; the PASS/FAIL of the closure criteria would not"
+  },
+  {
+   "id": "LAM-EXT-MIT-UAV",
+   "subject": "secondary attestation: CLPT + Tsai-Wu used as the first-ply-failure criterion for a composite cylinder",
+   "kind": "external document (secondary)",
+   "grade": "SECONDARY-QUALITATIVE",
+   "document": {
+    "title": "Design and manufacture of a high-G unmanned aerial vehicle structure",
+    "repository": "DSpace@MIT",
+    "item_uuid": "85f21b14-c2ba-41a4-8f47-5ba02e7c380a",
+    "url": "https://dspace.mit.edu/server/api/core/bitstreams/3000460b-884e-470a-853c-bbeabb4bf707/content",
+    "sha256": "e2ce89e00fe6de190a7042334175f59196bf4d2c6e68f347d5f71cb10d13d6af",
+    "bytes": 15874703,
+    "pages": 294,
+    "retrieval_channel": "unauthenticated HTTPS GET, DSpace@MIT REST bitstream endpoint",
+    "retrieved_utc": "2026-11-16T00:00:00Z",
+    "text_extraction": "pypdf 6.19.0"
+   },
+   "quotes": [
+    {"pdf_page_index": 57, "verbatim": "First ply failure can then be determined using the Tsai-Wul 4 failure criteria."},
+    {"pdf_page_index": 74, "verbatim": "above, the margin of safety against first ply failure can be determined, using CLPT and a Tsai-Wu failure criterion."}
+   ],
+   "usable_as_value_anchor": false,
+   "why_not": "the PDF text layer is OCR quality: the equations and the material property tables are not reliably extractable, so no numeric constant from this document is used as an anchor value. It is registered only as evidence that 'CLPT + Tsai-Wu first-ply failure' is the standard industrial formulation this artifact implements."
+  },
+  {
+   "id": "LAM-EXT-MIT-PROB",
+   "subject": "secondary attestation: the set of laminate failure theories in use",
+   "kind": "external document (secondary)",
+   "grade": "SECONDARY-QUALITATIVE",
+   "document": {
+    "title": "Probabilistic aspects of progressive damage in composite structures",
+    "repository": "DSpace@MIT",
+    "item_uuid": "6cc27d48-818b-4360-849c-185a6ede94ea",
+    "url": "https://dspace.mit.edu/server/api/core/bitstreams/90e1efc2-da99-4ee2-833a-22e97ec1ed86/content",
+    "sha256": "03f1384811b3500b76e1b71b8020efb301e492bea654d9f69b46a942940aa688",
+    "bytes": 29367810,
+    "pages": 285,
+    "retrieval_channel": "unauthenticated HTTPS GET, DSpace@MIT REST bitstream endpoint",
+    "retrieved_utc": "2026-11-16T00:00:00Z",
+    "text_extraction": "pypdf 6.19.0"
+   },
+   "quotes": [
+    {"pdf_page_index": 31, "verbatim": "The maximum stress, maximum strain, Tsai-Wu, and Hashin failure theories are"}
+   ],
+   "usable_as_value_anchor": false,
+   "why_not": "same OCR limitation; registered as attestation only"
+  },
+  {
+   "id": "LAM-NORM-DNV-C501",
+   "subject": "DNV composite-components standard: ply-level laminate failure criterion clause values",
+   "kind": "normative clause",
+   "grade": "WITHHELD",
+   "status": "NOT ACQUIRED -- no value is claimed",
+   "attempts": [
+    {"url": "https://rules.dnv.com/docs/pdf/DNV/ST/C501/2021-09/DNV-ST-C501.pdf", "http_status": 301, "location": "https://rules.dnv.com", "outcome": "legacy PDF path retired, redirects to a JavaScript landing application"},
+    {"url": "https://rules.dnv.com/docs/pdf/DNVGL/ST/2013-11/DNVGL-ST-C501.pdf", "http_status": 507, "outcome": "no object at this path"},
+    {"url": "https://www.dnv.com/energy/standards-guidelines/dnv-st-c501-composite-components/", "http_status": 200, "outcome": "HTML landing page only (250 kB); no PDF link in the served markup"},
+    {"url": "https://rules.dnv.com/", "http_status": 200, "outcome": "React single-page application shell (739 bytes); the document API is not reachable without a browser session"}
+   ],
+   "consequence": "the mission's 'external anchor DNV/CSR laminate criterion' cannot be closed in this sandbox. The closure artifact therefore rests on the DERIVED-EXACT and CALIBRATION-IDENTITY anchors, and this gap is stated in the artifact's honest_limitations list, not papered over."
+  },
+  {
+   "id": "LAM-NORM-CSR-LAMINATE",
+   "subject": "IACS CSR (harmonised): ply-level laminate failure criterion",
+   "kind": "normative clause",
+   "grade": "NOT_SUPPORTED",
+   "status": "the harmonised CSR for bulk carriers and oil tankers is a steel-structure code; it has no ply-level composite failure criterion",
+   "evidence": {
+    "in_repo_transcript": "benchmarks/composite_laminate_w28/csr_anchor_excerpt.json",
+    "sha256": "4c6a6761051712d46007ea7ab2b4a766999c2b47afc5f025dc48cdaf1ffaaf8c",
+    "source_pdf": {"id": "IACS-CSR-H-2019", "sha256": "ffb51b3153e43a7d3a2e840971bc948128152e1c9ffe66c3891d6e620e250e7f", "bytes": 21439977, "pages": 820},
+    "clauses_in_transcript": ["hull girder ULS criterion gamma_M = 1.1", "permissible hull girder bending stress 140/k", "nominal yield stress 235/k"],
+    "note": "those clauses are hull-girder / steel allowable values, i.e. a different object; reusing them as a laminate criterion anchor would be a category error"
+   }
+  },
+  {
+   "id": "LAM-EXT-RETRIEVAL-LOG",
+   "subject": "full retrieval attempt log (all channels tried in this session)",
+   "kind": "provenance",
+   "grade": "WITHHELD",
+   "attempts": [
+    {"url": "https://ntrs.nasa.gov/api/citations/19930016821/downloads/19930016821.pdf", "http_status": 403, "outcome": "proxy denies NTRS"},
+    {"url": "https://www.everyspec.com/MIL-HDBK/MIL-HDBK-0001-0099/MIL-HDBK-17-3F_14097/", "http_status": 403, "outcome": "MIL-HDBK-17 (CMH-17 vol 3, the handbook that carries the Tsai-Wu/Tsai-Hill/max-stress set) not reachable"},
+    {"url": "https://www.osti.gov/servlets/purl/2311301", "http_status": 429, "outcome": "OSTI rate-limited the request"},
+    {"url": "https://inria.hal.science/hal-01021047/document", "http_status": 200, "outcome": "anti-bot interstitial (HTML 'Making sure you're not a bot!', 12 kB) instead of the PDF"},
+    {"url": "https://www.cmh17.org/", "http_status": 200, "outcome": "HTML index without direct volume PDF links"},
+    {"url": "https://www.mdpi.com/", "http_status": 403, "outcome": "blocked"},
+    {"url": "https://linkinghub.elsevier.com/", "http_status": 403, "outcome": "blocked (the WWFE / Soden-Hinton-Kaddour benchmark lives behind this wall)"},
+    {"url": "https://dspace.mit.edu/server/api/discover/search/objects?query=Tsai-Wu%20laminate", "http_status": 200, "outcome": "SUCCESS -- two theses retrieved and hashed, see LAM-EXT-MIT-UAV / LAM-EXT-MIT-PROB"}
+   ]
+  }
+ ],
+ "summary": {
+  "n_entries": 9,
+  "by_grade": {"DERIVED-EXACT": 2, "CALIBRATION-IDENTITY": 1, "SECONDARY-QUALITATIVE": 2, "WITHHELD": 3, "NOT_SUPPORTED": 1},
+  "value_anchors_used_by_the_closure": ["LAM-CLASS-ABD", "LAM-CLASS-CLT-RESPONSE", "LAM-CALIB-IDENTITIES"],
+  "external_normative_anchor": "WITHHELD (DNV) / NOT_SUPPORTED (CSR-H is a steel code)",
+  "consequence_for_the_report": "criterion (1) ABD closure and criterion (2) failure-index closure are anchored on derived-exact classic solutions and exact criterion identities, not on code-clause transcriptions. The report must say so, and does."
+ }
+}
