@@ -151,7 +151,7 @@ Three findings, none of them assumed in advance:
 ## 5. Verification (33 gates, 0 failed)
 
 ```
-PYTHONPATH=src python -m tensorfem.grillage_plastic_verification artifacts/grillage_plastic_collapse
+PYTHONPATH=src python -m tensorfem.grillage_plastic_verification docs/grillage_plastic_collapse
 PYTHONPATH=src python -m pytest tests/test_grillage_patch_eccentricity.py \
       tests/test_grillage_plastic_collapse.py tests/test_grillage_ice_ultimate.py -q
 ```
@@ -220,11 +220,11 @@ the FD gate validates the plate response, not the smearing.
 
 ```
 PYTHONPATH=src python -m tensorfem.orthotropic_plate_fd                     # FD self-check
-PYTHONPATH=src python -m tensorfem.grillage_plastic_verification artifacts/grillage_plastic_collapse
+PYTHONPATH=src python -m tensorfem.grillage_plastic_verification docs/grillage_plastic_collapse
 PYTHONPATH=src python -m pytest tests/test_grillage_patch_eccentricity.py -q
 ```
 
-Artifacts: `artifacts/grillage_plastic_collapse/grillage_plastic_verification.json`,
+Artifacts: `docs/grillage_plastic_collapse/grillage_plastic_verification.json`,
 `patch_position_map.json`, `fig_grillage_eccentric_patch.png`,
 `fig_grillage_patch_position_map.png`, `fig_grillage_odd_only_witness.png`,
 `fig_grillage_plastic_collapse.png`, `fig_grillage_plastic_sensitivity.png`.
