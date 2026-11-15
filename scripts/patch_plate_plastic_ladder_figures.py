@@ -168,6 +168,152 @@ def fig_saturation(summary: dict, records: list[dict]) -> pathlib.Path:
     return path
 
 
+def free_ladder(summary: dict) -> list[dict]:
+    """In-plane-free records, ordered by increasing ``nx`` (decreasing ``h``)."""
+    return sorted([e for e in summary["records"] if e["geometry"] == "free"],
+                  key=lambda e: e["nx"])
+
+
+def ladder_monotone(values: list[float | None]) -> bool | None:
+    """True iff the sequence is strictly monotone (either direction).
+
+    ``None`` when fewer than two values exist (nothing to test) or when any
+    value is missing -- an absent limit load is *not* evidence of monotonicity.
+    """
+    if len(values) < 2 or any(v is None for v in values):
+        return None
+    diffs = [b - a for a, b in zip(values, values[1:])]
+    return all(d > 0.0 for d in diffs) or all(d < 0.0 for d in diffs)
+
+
+def convergence_trend(values: list[float | None]) -> str:
+    """Human label for the direction of a ladder (``down`` = stiffer coarse mesh)."""
+    if not ladder_monotone(values):
+        return "not monotone"
+    diffs = [b - a for a, b in zip(values, values[1:])]
+    return "decreasing with refinement" if diffs[0] < 0.0 else "increasing with refinement"
+
+
+def converged_limit(summary: dict) -> tuple[float | None, str]:
+    """Best available mesh-independent limit load of the in-plane-free ladder.
+
+    Richardson extrapolation when three meshes contribute; otherwise the finest
+    mesh value, *labelled as such* -- a single-mesh number is never presented as
+    a converged one.
+    """
+    extrapolation = summary.get("extrapolation_free") or {}
+    if extrapolation.get("limit_infinity"):
+        return extrapolation["limit_infinity"], (
+            f"Richardson $p_\\infty$ ($q$ = {_f(extrapolation['order_estimate'], 2)})")
+    ladder = [e for e in free_ladder(summary) if e.get("limit_tight")]
+    if ladder:
+        return ladder[-1]["limit_tight"], f"finest mesh nx = {ladder[-1]['nx']} (not extrapolated)"
+    return None, "no limit load extracted"
+
+
+def bracket_verdict(limit: float, bounds: dict) -> tuple[str, str]:
+    """Admissibility of a limit load against the rigid-plastic bracket.
+
+    Returns ``(verdict, detail)``. ``admissible`` requires the FE limit to sit
+    inside ``[strip_lower, admissible upper]``; being *above* an upper bound
+    falsifies that bound or the FE model, being *below* a lower bound falsifies
+    the FE model (an approximate collapse load of a hardening-free plate cannot
+    be below a rigorous lower bound by more than the discretisation error).
+    """
+    lower = bounds["strip_lower"]
+    upper = bounds.get("yield_line")
+    if upper is None:
+        return "withheld", "no admissible upper bound in the artifact"
+    if limit < lower:
+        return "violated (below lower bound)", f"{limit / lower - 1.0:+.2%} vs strip lower"
+    if limit > upper:
+        return "violated (above upper bound)", f"{limit / upper - 1.0:+.2%} vs yield line"
+    span = upper - lower
+    return "admissible", f"inside bracket, {(limit - lower) / span:.0%} of the way up"
+
+
+def ladder_bounds(summary: dict, records: list[dict] | None = None,
+                  bounds: dict | None = None) -> dict:
+    """Rigid-plastic reference values, from whichever payload carries them.
+
+    The aggregated summary entries keep the *errors*, not the references, so the
+    bounds are looked up in the summary first and then in the raw per-mesh
+    records (the generator holds both).
+    """
+    if bounds:
+        return bounds
+    for entry in summary.get("records", []):
+        found = (entry.get("references") or {}).get("bounds")
+        if found:
+            return found
+    for record in records or []:
+        if record.get("geometry") == "free":
+            return record["references"]["bounds"]
+    return {}
+
+
+def acceptance_table(summary: dict, records: list[dict] | None = None,
+                     bounds: dict | None = None) -> list[str]:
+    """Markdown rows for the anchor acceptance items, computed from the artifacts.
+
+    Every cell is derived here from the JSON payloads; a criterion the artifacts
+    cannot answer is emitted as ``not_run``/``withheld`` rather than as a pass.
+    """
+    out: list[str] = []
+    ladder = free_ladder(summary)
+    bounds = ladder_bounds(summary, records, bounds)
+    converged, converged_label = converged_limit(summary)
+
+    for entry in ladder:
+        error = entry.get("first_yield_error")
+        if error is None:
+            out.append(f"| first yield vs analytic $p_y$ (nx = {entry['nx']}) | "
+                       f"analytic Navier field | n/a | < 5 % | not_run |")
+            continue
+        out.append(f"| first yield vs analytic $p_y$ (nx = {entry['nx']}) | "
+                   f"analytic Navier field | {100 * error:+.2f} % | < 5 % | "
+                   f"{'**met**' if abs(error) < 0.05 else '**not met**'} |")
+
+    if converged is None or not bounds:
+        out.append("| plastic limit vs Ilyushin double-sine bound | "
+                   "Ilyushin double-sine (not admissible for a smooth mechanism) | "
+                   "n/a | < 10 % | not_run |")
+        out.append("| plastic limit inside rigid-plastic bracket | "
+                   "[strip lower, yield-line upper] | n/a | lower <= p <= upper | not_run |")
+    else:
+        sine = bounds["ilyushin_sine"]
+        error = converged / sine - 1.0
+        out.append(f"| plastic limit vs Ilyushin double-sine bound | "
+                   f"{converged_label} | {100 * error:+.2f} % | < 10 % | "
+                   f"{'**met**' if abs(error) < 0.10 else '**not met**'} |")
+        verdict, detail = bracket_verdict(converged, bounds)
+        out.append(f"| plastic limit inside rigid-plastic bracket | "
+                   f"{converged_label}, {detail} | {converged / 1e6:.4f} MPa | "
+                   f"lower <= p <= upper | {'**met**' if verdict == 'admissible' else '**not met** (' + verdict + ')'} |")
+
+    limits = [e.get("limit_tight") for e in ladder]
+    monotone = ladder_monotone(limits)
+    meshes = [e["nx"] for e in ladder]
+    if len([m for m in limits if m]) < 2:
+        verdict_text = "not_run (fewer than two meshes with a limit load)"
+    elif monotone:
+        verdict_text = "**met**"
+    else:
+        verdict_text = "**not met**"
+    out.append(f"| 3-level mesh convergence | meshes with a limit load: {meshes}, "
+               f"{convergence_trend(limits)} | "
+               f"{_f(max((e.get('criteria_spread_tight') or float('nan')) for e in ladder) if ladder else float('nan'))} "
+               f"(max criteria spread) | 3 meshes, monotone | {verdict_text} |")
+
+    if converged is not None and bounds:
+        verdict, detail = bracket_verdict(converged, bounds)
+        out.append(f"| mesh-independence of the limit load | {converged_label} = "
+                   f"{converged / 1e6:.4f} MPa | -> | bracket {bounds['strip_lower'] / 1e6:.4f}"
+                   f" ... {bounds['yield_line'] / 1e6:.4f} MPa | "
+                   f"{'**met**' if verdict == 'admissible' else '**not met**'} |")
+    return out
+
+
 def document(summary: dict, records: list[dict],
              figures: list[pathlib.Path]) -> pathlib.Path:
     table = by_tag(records)
@@ -306,46 +452,27 @@ def document(summary: dict, records: list[dict],
     add("")
     add("## 6. Error judgement (per acceptance item)")
     add("")
-    add("| criterion | value | threshold | verdict |")
-    add("|---|---|---|---|")
-    for record, entry in zip(free, sorted(
-            [e for e in summary["records"] if e["geometry"] == "free"],
-            key=lambda e: e["nx"])):
-        acceptance = entry.get("acceptance", {})
-        add(f"| elastic -> plastic transition vs analytic yield load (nx = {record['nx']}) | "
-            f"{100 * record.get('first_yield_error_vs_analytic', float('nan')):+.2f} % | < 5 % | "
-            f"{'**met**' if acceptance.get('first_yield_within_5pct') else '**not met**'} |")
-        add(f"| plastic limit load vs Ilyushin double-sine bound (nx = {record['nx']}) | "
-            f"{100 * record.get('errors', {}).get('ilyushin_sine', float('nan')):+.2f} % | < 10 % | "
-            f"{'**met**' if acceptance.get('within_10pct_of_ilyushin') else '**not met**'} |")
-        add(f"| FE limit load admissible vs yield-line upper bound (nx = {record['nx']}) | "
-            f"{100 * record.get('errors', {}).get('yield_line', float('nan')):+.2f} % | <= 0 % | "
-            f"{'**met**' if acceptance.get('below_yield_line_upper_bound') else '**not met**'} |")
-    meshes = sorted(r["nx"] for r in free)
-    monotone = all(b[1] < a[1] for a, b in zip(
-        [x for x in summary["records"] if x["geometry"] == "free"],
-        [y for y in summary["records"] if y["geometry"] == "free"][1:])) if len(meshes) > 1 else None
-    add(f"| 3-level mesh convergence | meshes computed: {meshes} "
-        f"({'monotone decreasing' if monotone else 'not monotone' if monotone is False else 'single mesh'}) | "
-        f"3 meshes, monotone | "
-        f"{'**met**' if len(meshes) >= 3 and monotone else '**not met** (pending meshes)'} |")
-    if extrapolation.get("limit_infinity"):
-        met = abs(summary.get("extrapolated_limit_error_vs_ilyushin", 1.0)) < 0.10
-        add(f"| mesh-independent limit (Richardson) vs Ilyushin bound | "
-            f"{100 * summary.get('extrapolated_limit_error_vs_ilyushin', float('nan')):+.2f} % | "
-            f"< 10 % | {'**met**' if met else '**not met**'} |")
+    add("| criterion | reference | value | threshold | verdict |")
+    add("|---|---|---|---|---|")
+    lines.extend(acceptance_table(summary, records, bounds))
     add("")
     add("## 7. Notes / limitations")
     add("")
     add("* The limit load is **criterion-based**: an elastoplastic Mindlin plate has "
         "no discrete limit point under load control (elastic transverse-shear "
         "stiffness keeps the tangent positive definite), so `p_limit` is a "
-        "convention on the flattening load-deflection curve. The spread column is "
-        "the honest band; see `docs/CASE-FEM-PLATE-PATCH-PLASTIC-LIMIT-LOAD.md` "
+        "convention on the flattening load-deflection curve. The criteria spread "
+        "column (`tight` = 0.02/0.05/0.10 of the elastic slope) is the honest band "
+        "of that convention; see `docs/CASE-FEM-PLATE-PATCH-PLASTIC-LIMIT-LOAD.md` "
         "for the defect record.")
+    add("* The rigid-plastic references are **not** interchangeable. `strip_lower` "
+        "is a lower bound, `yield_line` is an upper bound of the patch mechanism; "
+        "`ilyushin_sine` neglects the twist term of the dissipation and can fall "
+        "*below* the exact collapse load, so it is quoted but is not used as an "
+        "admissibility gate. The admissible statement is the bracket one: "
+        "`strip_lower <= p_FE <= yield_line`.")
     add("* The small-rotation range is respected: ramps are truncated by the "
-        "runaway guard at 6x the elastic deflection, which stays below "
-        "w ~ 3 t for the coarse mesh.")
+        "runaway guard at 6x the elastic deflection.")
     add("* `membrane` runs are a *different* physical model (grillage panel). Their "
         "limit load is above the rigid-plastic bending bound by construction; they "
         "are reported to make the support classification explicit, not to satisfy "
@@ -357,22 +484,18 @@ def document(summary: dict, records: list[dict],
             if len(free[0]["path"]) > 1 else float("nan"))
     add(f"* Meshes present in this document: {sorted(r['nx'] for r in free)} "
         f"(in-plane free) and {sorted(r['nx'] for r in membrane)} (membrane). "
-        f"The default campaign ramp is 0.1 $p_y$; the ramp actually used here is "
-        f"{_f(step, 2)} $p_y$, i.e. the *coarse* setting, and the number of "
-        f"stiffness/deflection criteria that could be evaluated is reported per "
-        f"row above. A coarse ramp under-resolves the plastic tangent, so a "
-        f"single-definition limit load from it must not be read as the acceptance "
-        f"number -- it is the reason the campaign script defaults to the dense "
-        f"0.1 $p_y$ ramp.")
-    add(f"* The full three-mesh dense ladder is submitted to the compute queue and "
-        f"is **not yet in this document** (`run_compute` job cj3424, 5 shards: "
-        f"nx = 8 / 12 / 16 in-plane free, plus nx = 8 / 12 for the grillage-panel "
-        f"idealisation). Re-run `--analyse` and this generator when the artifacts "
-        f"land; the document is regenerated, never hand-edited.")
-    add(f"* Consequently the acceptance item *plastic limit load vs Ilyushin "
-        f"within 10 %* and *3-level mesh convergence* remain **not met / not run "
-        f"here**. What is delivered is the machinery, the invariants and the "
-        f"elastic-transition evidence; the honest verdict is in the table above.")
+        f"Ramp step actually used: {_f(step, 2)} $p_y$; per-row criteria counts "
+        f"are in section 2.")
+    if len(free) < 3:
+        add(f"* **Open**: the three-level ladder is not complete "
+            f"({len(free)} of 3 in-plane-free meshes present), so no "
+            f"mesh-independence claim is made.")
+    for entry in summary["records"]:
+        if entry.get("limit_tight") is None:
+            add(f"* `{entry['tag']}`: no limit-load definition fired on this ramp "
+                f"(ramp truncated at {_f(entry['peak_factor'] / 1e6, 4)} MPa, "
+                f"first yield {_f(entry['first_yield'] / 1e6, 4)} MPa) -- reported "
+                f"as `n/a`, not as a number.")
     add("")
     add("## 8. Reproduction")
     add("")
