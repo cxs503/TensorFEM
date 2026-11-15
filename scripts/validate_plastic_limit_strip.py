@@ -8,15 +8,19 @@ within 10 % of the upper bound does not by itself show that the FE collapse load
 is right.  This script supplies the missing exact anchor:
 
 a **narrow uniformly loaded strip** (``b/a = 0.2``) whose collapse is governed by
-the one-way (beam) mechanism.  The cylindrical field ``w = w(x)`` is kinematically
-admissible for the simply supported plate and dissipates ``2 m_p`` per unit width
-at the mid-span hinge, so
+the one-way (beam) mechanism across the **short** direction ``b``.  The cylindrical
+field ``w = w(y)`` is kinematically admissible for the simply supported plate and
+dissipates ``4 m_p w0 / b`` per unit width at the mid-span hinge, so
 
-    p_exact = 8 m_p / a^2        (beam mechanism, no empirical constant)
+    p_exact = 8 m_p / b^2        (beam mechanism, no empirical constant)
 
 is an *exact* rigid-plastic limit for the strip and the FE result must approach it
 **from above** (a displacement-based element is stiffer than the continuum, so its
-limit load is an upper estimate that decreases under mesh refinement).
+limit load is an upper estimate that decreases under mesh refinement).  The path is
+run with the updated geometric stiffness and in-plane restrained edges
+(``geometric=True, inplane_restrained=True``): that is the boundary condition the
+beam mechanism assumes, and it is what makes the load-deflection curve turn over
+so that a limit point exists at all.
 
 Run one span mesh per process::
 
@@ -42,9 +46,18 @@ NU = 0.3
 SY = 355.0e6
 
 
-def exact_strip_limit(a: float = A, t: float = T, sy: float = SY) -> float:
-    """``p = 8 m_p / a^2`` -- simply supported beam mechanism, m_p = sy t^2/4."""
-    return 8.0 * (sy * t * t / 4.0) / (a * a)
+def exact_strip_limit(b: float = B, t: float = T, sy: float = SY) -> float:
+    """``p = 8 m_p / b^2`` -- simply supported beam mechanism, m_p = sy t^2/4.
+
+    The strip spans across its **short** direction ``b`` (a/b = 5, one-way
+    action): the mid-span moment per unit width is ``p b^2 / 8`` and the
+    plastic limit is reached when it equals the full plastic moment
+    ``m_p = sy t^2 / 4``.  (An earlier revision of this script used the long
+    direction ``a`` as the span, which is off by ``(a/b)^2 = 25`` and left
+    the ramp far below the true limit -- the plate was still elastic at the
+    end of the ramp, so no limit load was measured at all.)
+    """
+    return 8.0 * (sy * t * t / 4.0) / (b * b)
 
 
 def _interp_crossing(steps: list[dict], target: float) -> float | None:
@@ -60,18 +73,20 @@ def _interp_crossing(steps: list[dict], target: float) -> float | None:
 
 
 def run(nx: int, ny: int, *, hardening: float = 1.0e6, layers: int = 3,
-        fractions=(0.3, 0.6, 0.8, 0.9, 1.0, 1.1, 1.2, 1.35, 1.5, 1.75)) -> dict:
+        fractions=(0.3, 0.6, 0.8, 0.9, 1.0, 1.05, 1.1, 1.15, 1.2, 1.3, 1.4, 1.5)) -> dict:
     pex = exact_strip_limit()
     patch = (A, B)                     # uniform load over the whole strip
     probe = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=SY,
                                    hardening=hardening, patch=patch,
                                    load_factors=[0.05 * pex], nx=nx, ny=ny,
-                                   layers=layers)
+                                   layers=layers,
+                                   geometric=True, inplane_restrained=True)
     p0 = probe.loading[0]
     path = run_patch_plastic_path(A, B, T, young=E, poisson=NU, yield_stress=SY,
                                   hardening=hardening, patch=patch,
                                   load_factors=[f * pex for f in fractions],
-                                  nx=nx, ny=ny, layers=layers)
+                                  nx=nx, ny=ny, layers=layers,
+                                  geometric=True, inplane_restrained=True)
     loading = [{"factor": s.load_factor, "w": s.centre_deflection,
                 "w_over_t": s.centre_deflection / T,
                 "sigma": s.max_surface_mises, "alpha": s.max_alpha}
@@ -100,10 +115,14 @@ def run(nx: int, ny: int, *, hardening: float = 1.0e6, layers: int = 3,
         "ramp_max": fractions[-1] * pex,
         "collapse_last_converged": last,
         "ramp_completed": bool(last is not None and last >= fractions[-1] * pex - 1e-9),
+        "limit_point_searched": bool(path.limit_point_searched),
+        "measured_limit_load": path.measured_limit_load,
         "collapse_knee": next((t["factor"] for t in tangent if t["k"] < 0.05), None),
         "first_yield_fe": _interp_crossing(loading, SY),
         "error_last_converged_vs_exact_pct": (None if last is None
                                               else 100.0 * (last / pex - 1.0)),
+        "error_limit_vs_exact_pct": (None if path.measured_limit_load is None
+                                      else 100.0 * (path.measured_limit_load / pex - 1.0)),
         "w_over_t_at_last": loading[-1]["w_over_t"] if loading else None,
     }
 
@@ -114,9 +133,12 @@ def main(argv=None) -> int:
     ap.add_argument("--ny", type=int, default=2)
     ap.add_argument("--layers", type=int, default=3)
     ap.add_argument("--hardening", type=float, default=1.0e6)
+    ap.add_argument("--fractions", type=str, default="0.3,0.6,0.8,0.9,1.0,1.05,1.1,1.15,1.2,1.3,1.4,1.5")
     ap.add_argument("--out", default=None)
     args = ap.parse_args(argv)
-    out = run(args.nx, args.ny, hardening=args.hardening, layers=args.layers)
+    fractions = tuple(float(x) for x in args.fractions.split(","))
+    out = run(args.nx, args.ny, hardening=args.hardening, layers=args.layers,
+              fractions=fractions)
     text = json.dumps(out, indent=2)
     if args.out:
         os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
