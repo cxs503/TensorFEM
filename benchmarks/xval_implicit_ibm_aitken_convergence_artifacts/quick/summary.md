@@ -1,6 +1,6 @@
 # XVAL convergence study — implicit IBM + Aitken added mass
 
-Generated: 2026-11-15T08:09:47Z  |  wall 67 s  |  acceptance 15 %
+Generated: 2026-11-15T16:15:42Z  |  wall 56 s  |  acceptance 15 %
 
 Reference: Lamb 1932 art. 71, `m_a = rho_f pi c^2` per unit length; coupled frequency `f/f_vac = sqrt(m_s/(m_s+m_a))`.  Coupling: implicit direct forcing IBM with Aitken `Delta^2` sub-iterations (`tensorfem.ibm_aitken_added_mass`).
 

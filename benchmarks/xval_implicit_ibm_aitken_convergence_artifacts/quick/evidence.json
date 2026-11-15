@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-15T08:09:47Z",
+ "generated": "2026-11-15T16:15:42Z",
  "acceptance_tol": 0.15,
  "tight_tol": 0.03,
  "mass_ratio_struct": 0.6,
@@ -29,8 +29,10 @@
    "cycles": 2.0740134769794794,
    "mass_ratio_measured_zc": 2.2054,
    "mass_ratio_measured_ls": 2.2079219784237702,
+   "mass_ratio_measured_damp": 2.2926519105219874,
    "mass_ratio_measured": 2.2079219784237702,
    "mass_ratio_source": "multiharmonic_ls",
+   "period_spread": 0.025958161498645632,
    "f_vac": 0.0021081851067789193,
    "f_ref": 0.0016666666666666666,
    "f_measured": 0.001382675651319653,
@@ -544,7 +546,7 @@
     0.07542667504988135,
     0.07437510182436201
    ],
-   "wall_seconds": 32.95606255531311
+   "wall_seconds": 26.830246686935425
   },
   {
    "name": "quick_c6_L27",
@@ -570,8 +572,10 @@
    "cycles": 2.1616749646714104,
    "mass_ratio_measured_zc": 1.9112962962962967,
    "mass_ratio_measured_ls": 1.9000446847661618,
+   "mass_ratio_measured_damp": 1.833365633395239,
    "mass_ratio_measured": 1.9000446847661618,
    "mass_ratio_source": "multiharmonic_ls",
+   "period_spread": 0.01788111742819861,
    "f_vac": 0.0021081851067789193,
    "f_ref": 0.0016666666666666666,
    "f_measured": 0.0014411166431142737,
@@ -1085,7 +1089,7 @@
     0.057623919386819905,
     0.05537581293238337
    ],
-   "wall_seconds": 7.090647459030151
+   "wall_seconds": 6.086825847625732
   },
   {
    "name": "quick_c6_L36",
@@ -1111,8 +1115,10 @@
    "cycles": 2.1229685899575754,
    "mass_ratio_measured_zc": 2.0359185185185176,
    "mass_ratio_measured_ls": 2.031288250603321,
+   "mass_ratio_measured_damp": 2.047212540619865,
    "mass_ratio_measured": 2.031288250603321,
    "mass_ratio_source": "multiharmonic_ls",
+   "period_spread": 0.008172291282930119,
    "f_vac": 0.0021081851067789193,
    "f_ref": 0.0016666666666666666,
    "f_measured": 0.0014153123933050504,
@@ -1626,7 +1632,7 @@
     0.06808315700849198,
     0.06637736954736971
    ],
-   "wall_seconds": 8.489248752593994
+   "wall_seconds": 7.081939697265625
   },
   {
    "name": "quick_c6_L72",
@@ -1652,8 +1658,10 @@
    "cycles": 2.0845241950965137,
    "mass_ratio_measured_zc": 2.173333333333333,
    "mass_ratio_measured_ls": 2.1689471017324933,
+   "mass_ratio_measured_damp": 2.092143891339355,
    "mass_ratio_measured": 2.1689471017324933,
    "mass_ratio_source": "multiharmonic_ls",
+   "period_spread": 0.0106863328406363,
    "f_vac": 0.0021081851067789193,
    "f_ref": 0.0016666666666666666,
    "f_measured": 0.001389682796731009,
@@ -2167,7 +2175,7 @@
     0.07425941752894198,
     0.07315801628036561
    ],
-   "wall_seconds": 15.587018013000488
+   "wall_seconds": 13.200114727020264
   }
  ],
  "analysis": {
@@ -2251,5 +2259,5 @@
    "B"
   ]
  },
- "wall_seconds": 67.00215315818787
+ "wall_seconds": 56.073349714279175
 }
