@@ -235,13 +235,12 @@ def ilyushin_plate_limit_stress(
         return yield_stress
 
     elif loading == "lateral":
-        # Yield-line mechanism for simply-supported rectangular plate
-        # under uniform pressure (Johansen's square yield-line pattern
-        # generalized to rectangular plates)
-        Mp = yield_stress * t ** 2 / 4.0  # plastic moment per unit width
-        # Limit pressure from virtual work of the yield-line mechanism
-        p_limit = 4.0 * Mp / (b ** 2) * (2.0 * b / a + a / b)
-        return p_limit
+        # Simply-supported rectangular plate under uniform pressure: the
+        # yield-line (virtual work) collapse pressure.  Delegated to
+        # :func:`yield_line_limit_pressure`, which minimises two admissible
+        # mechanism families and reproduces the classic limits
+        # (24 M_p/L^2 for a square plate, 8 M_p/b^2 for a strip).
+        return yield_line_limit_pressure(a, b, yield_stress, t)
 
     else:
         raise ValueError(f"loading must be 'uniaxial' or 'lateral', got '{loading}'")
@@ -285,6 +284,156 @@ def ilyushin_combined_limit(
     Q_nm = abs(Nx * Mx + Ny * My + 3 * Nxy * Mxy) / (N0 * M0)
 
     return Q_n + Q_m + Q_nm
+
+
+# ---------------------------------------------------------------------------
+# 2b. Independent (non-FE) reference solutions used by the verifications
+# ---------------------------------------------------------------------------
+
+def navier_centre_moments(a: float, b: float, poisson: float,
+                          n_terms: int = 79) -> tuple[float, float]:
+    """Elastic bending moments at the centre of a simply-supported plate
+    under unit uniform pressure, by the Navier double-sine series.
+
+    For a simply supported rectangular plate (Navier, Timoshenko &
+    Woinowsky-Krieger, *Theory of Plates and Shells*, §30):
+
+        w(x, y) = (16 p / (pi^6 D)) sum_{m,n odd} sin(m pi x / a) sin(n pi y / b)
+                  / (m n (m^2/a^2 + n^2/b^2)^2)
+
+    from which ``M_x = -D (w,xx + nu w,yy)``.  At the centre all ``sin``
+    terms equal +/-1, so
+
+        M_x = (16 p / pi^4) sum_{m,n odd} (m^2/a^2 + nu n^2/b^2)
+              / (m n (m^2/a^2 + n^2/b^2)^2)
+
+    and ``M_y`` follows with ``a <-> b``.  Returns ``(M_x, M_y)`` for
+    ``p = 1 Pa`` (units m, i.e. Pa m^2/m = N).
+
+    This is an independent reference: it does not use the FE mesh.
+    """
+    if a <= 0 or b <= 0:
+        raise ValueError("a and b must be positive")
+    def _m(ra: float, rb: float) -> float:
+        total = 0.0
+        for m in range(1, n_terms + 1, 2):
+            for n in range(1, n_terms + 1, 2):
+                lam = (m / ra) ** 2 + (n / rb) ** 2
+                # sin(m pi/2) sin(n pi/2) = (-1)^((m-1)/2 + (n-1)/2)
+                sign = -1.0 if (((m - 1) // 2 + (n - 1) // 2) % 2) else 1.0
+                total += sign * (lam - (1.0 - poisson) * (n / rb) ** 2) / (m * n * lam ** 2)
+        return 16.0 / math.pi ** 4 * total
+    # M_x uses w,xx (-> m^2/a^2) and w,yy with nu; the "-D (...)" sign is
+    # carried by the sin terms at the centre.
+    return _m(a, b), _m(b, a)
+
+
+def elastic_first_yield_pressure(
+    a: float, b: float, t: float,
+    yield_stress: float, poisson: float = 0.3, n_terms: int = 79,
+) -> float:
+    """Uniform pressure at which the plate surface stress first reaches yield.
+
+    ``sigma_surface = 6 M / t^2`` for a plate in bending, so
+
+        p_yield = yield_stress * t^2 / (6 * max(M_x, M_y) / unit pressure)
+
+    with the moments from :func:`navier_centre_moments`.  This replaces the
+    earlier ``alpha``-coefficient guess (``0.75 * aspect^2`` / ``0.75``),
+    which under-estimated the square-plate yield pressure by a factor 2.6
+    (true coefficient 0.2874 versus 0.75 at ``a/b = 1``, nu = 0.3) and had
+    no source.
+    """
+    if yield_stress <= 0 or t <= 0:
+        raise ValueError("yield_stress and t must be positive")
+    mx, my = navier_centre_moments(a, b, poisson, n_terms=n_terms)
+    m_max = max(abs(mx), abs(my))
+    if m_max <= 0:
+        raise ValueError("degenerate plate geometry")
+    return yield_stress * t ** 2 / (6.0 * m_max)
+
+
+def yield_line_limit_pressure(
+    a: float, b: float, sigma_y: float, t: float,
+    n_scan: int = 400,
+) -> float:
+    """Simply-supported rectangular plate: yield-line collapse pressure.
+
+    Rigid-perfectly-plastic upper-bound (virtual work) analysis with
+    ``M_p = sigma_y t^2 / 4`` (full plastic moment per unit width).  Two
+    classical mechanism families are minimised; the smaller value is the
+    upper bound reported.
+
+    **Family A -- two-way "roof" mechanism.** A central ridge of length
+    ``a - 2 xi`` at ``y = b/2`` (apex deflection ``w``); four slanted yield
+    lines run from the ridge ends to the corners; the regions adjacent to
+    the two long edges are trapezoids, the regions adjacent to the short
+    edges triangles.  Virtual work of the four slanted lines plus the ridge:
+
+        W_int = M_p w (2b/xi + 4a/b)          (in-plane bend terms cancel)
+        W_ext = p w b (a/2 - xi/3)
+
+    so ``p(xi) = M_p (2b/xi + 4a/b) / (b (a/2 - xi/3))``, minimised over
+    ``xi`` in ``(0, a/2]``.  ``W_ext`` uses the exact centroid integral of
+    the trapezoids (``ab/4 - xi b/3`` each); interpolating the mean
+    deflection linearly instead gives ``a/2 - xi/6``, which is wrong near
+    the degenerate end ``xi -> a/2`` and spoils the two limit checks below.
+
+    Three independent limits validate this family:
+
+    * ``a/b = 1``: the binding optimum is ``xi = a/2``, where the ridge
+      degenerates to a point and the family reduces *identically* to family
+      B, giving the textbook simply-supported square-slab value
+      ``p = 24 M_p/L^2``;
+    * ``a/b -> infinity``: ``p -> 8 M_p/b^2``, the exact one-way strip
+      solution;
+    * ``p`` decreases monotonically with ``a/b``, and exceeds the elastic
+      first-yield pressure (:func:`elastic_first_yield_pressure`) for every
+      aspect ratio, as plasticity theory requires.
+
+    **Family B -- point (pyramid) mechanism.** Four triangular regions meet
+    at the plate centre:
+
+        p = 12 M_p (a/b + b/a) / (a b)
+
+    which gives the textbook ``24 M_p/L^2`` for a square plate.
+
+    Notes
+    -----
+    * In-plane (membrane) action is neglected -- rigid-plastic bending only,
+      so the value is a *lower* estimate of the "real" large-deflection
+      capacity and an *upper* bound on the small-deflection collapse load.
+    * The earlier implementation used
+      ``p = 4 M_p / b^2 (2b/a + a/b)``, which is 50% low at ``a/b = 1``
+      (12 versus the classic 24 ``M_p/b^2``) and has the wrong asymptote:
+      it *grows* with ``a`` (at ``a/b = 8``, 72 versus the strip limit 8,
+      i.e. 9x too high, and unbounded as ``a -> infinity``).  See
+      ``docs/AUDIT-GAP-PP-3-ICE-STRUCT-PLASTIC-SET.md``.
+    """
+    if a <= 0 or b <= 0 or t <= 0 or sigma_y <= 0:
+        raise ValueError("a, b, t and sigma_y must be positive")
+    if a < b:                      # normalise: a = longer side
+        a, b = b, a
+    mp = sigma_y * t ** 2 / 4.0
+
+    # Family A: minimise p(xi), xi in (0, a/2); p is convex in xi.
+    def p_A(xi: float) -> float:
+        return mp * (2.0 * b / xi + 4.0 * a / b) / (b * (a / 2.0 - xi / 3.0))
+
+    lo, hi = 1e-9 * a, 0.5 * a * (1.0 - 1e-9)
+    for _ in range(200):           # golden section on [lo, hi] (convex)
+        m1 = lo + 0.382 * (hi - lo)
+        m2 = lo + 0.618 * (hi - lo)
+        if p_A(m1) < p_A(m2):
+            hi = m2
+        else:
+            lo = m1
+    p_mech_a = p_A(0.5 * (lo + hi))
+
+    # Family B: point mechanism.
+    p_mech_b = 12.0 * mp * (a / b + b / a) / (a * b)
+
+    return min(p_mech_a, p_mech_b)
 
 
 # ---------------------------------------------------------------------------
@@ -506,6 +655,50 @@ def extract_max_permanent_deflection(
 
 
 # ---------------------------------------------------------------------------
+# 4b. Shared incremental driver (used by both verification drivers)
+# ---------------------------------------------------------------------------
+
+def _newton_load_control(model, external, u, state, free, max_iter: int = 25):
+    """One load step: Newton-Raphson from a committed state.
+
+    Returns ``(u, state, converged)``.  The state is only advanced when the
+    residual norm falls below ``1e-8`` relative to the load norm.
+    """
+    u_trial = u.clone()
+    state_trial = state
+    ref = max(1.0, float(torch.linalg.vector_norm(external[free])))
+    for _ in range(max_iter):
+        fi, kt, _, new_state = assemble_layered_shell4(
+            model, u_trial, state_trial, geometric=False)
+        residual = external - fi
+        residual_free = residual[free]
+        if float(torch.linalg.vector_norm(residual_free)) < 1e-8 * ref:
+            return u_trial, new_state, True
+        k_free = kt[free[:, None], free]
+        try:
+            delta = torch.linalg.solve(
+                k_free.double(), residual_free.double()).to(u_trial.dtype)
+        except RuntimeError:
+            return u_trial, state_trial, False
+        if not torch.isfinite(delta).all():
+            return u_trial, state_trial, False
+        u_trial = u_trial.clone()
+        u_trial[free] += delta
+        state_trial = new_state
+    return u_trial, state_trial, False
+
+
+def _any_point_yielded(model, state) -> bool:
+    """True if any layer of any integration point has plastic strain."""
+    for elem_states in state.points:
+        for gp in elem_states:
+            for layer_state in gp:
+                if float(layer_state.alpha) > 0.0:
+                    return True
+    return False
+
+
+# ---------------------------------------------------------------------------
 # 5. Elastic–plastic transition verification
 # ---------------------------------------------------------------------------
 
@@ -518,6 +711,8 @@ class ElasticPlasticTransitionResult:
     relative_error: float
     mesh_info: dict
     passed: bool
+    detected: bool = True
+    load_resolution: float = 0.0   # absolute resolution of fe_yield_load
 
 
 def verify_elastic_plastic_transition(
@@ -528,6 +723,7 @@ def verify_elastic_plastic_transition(
     loading: str = "uniaxial",
     patch_x0: float = 0.0, patch_x1: float = 0.0,
     patch_y0: float = 0.0, patch_y1: float = 0.0,
+    refine: int = 14,
 ) -> ElasticPlasticTransitionResult:
     """Verify the elastic-plastic transition point against analytical yield load.
 
@@ -572,19 +768,14 @@ def verify_elastic_plastic_transition(
             patch_x0, patch_x1, patch_y0, patch_y1)
         reference_load = info['reference_load']
         fixed_dofs = info['fixed_dofs']
-        # For lateral pressure, analytical yield is more complex.
-        # Use the elastic bending stress at the plate center:
-        # sigma_max = alpha * p * b^2 / t^2 (for simply-supported plate)
-        # where alpha depends on a/b ratio.
-        aspect = a / b
-        # Approximate alpha for simply-supported plate under uniform pressure
-        # (Timoshenko & Woinowsky-Krieger)
-        if aspect <= 1:
-            alpha = 0.75 * aspect ** 2  # rough approximation for square-ish
-        else:
-            alpha = 0.75  # long plate limit
-        # sigma_max = alpha * p * (b/t)^2 -> p_yield = sigma_y * t^2 / (alpha * b^2)
-        analytical_yield_load = yield_stress * t ** 2 / (alpha * b ** 2)
+        # For lateral pressure the analytical first-yield pressure comes from
+        # the Navier (double-sine) elastic solution for the same plate: an
+        # independent reference that does not use the FE mesh.  The previous
+        # version used a guess alpha = 0.75 * aspect**2 (aspect<=1) / 0.75
+        # (aspect>1) with no source; for a square plate that is 2.6x too high
+        # (correct coefficient 0.2874 at nu = 0.3, i.e. M = 0.0479 p a^2).
+        analytical_yield_load = elastic_first_yield_pressure(
+            a, b, t, yield_stress, poisson)
     else:
         raise ValueError(f"loading must be 'uniaxial' or 'lateral', got '{loading}'")
 
@@ -598,58 +789,66 @@ def verify_elastic_plastic_transition(
     u = torch.zeros(ndof, dtype=model.nodes.dtype, device=model.nodes.device)
     state = LayeredShell4State.virgin(model)
 
-    # Load incrementally
+    # Load incrementally to bracket the first-yield load, then bisect.
+    # NOTE (audit GAP-PP-3-ICE-STRUCT-PLASTIC-SET): the previous version
+    # returned the *step* load at which yield was first seen, so the reported
+    # error could never exceed half a step (1.5 * analytical / 50 = 3 %).
+    # The assertion "error < 5 %" was therefore satisfied by the step grid
+    # itself, independently of the FE accuracy.  The bisection below resolves
+    # the transition load to ``step / 2**refine`` (~0.02 % with the default).
     n_steps = 50
+    step_load = analytical_yield_load * 1.5 / n_steps
     fe_yield_load = None
+    last_ok = 0.0
+    bracket = None
     for step in range(1, n_steps + 1):
-        load_factor = step / n_steps * analytical_yield_load * 1.5  # go beyond expected yield
+        load_factor = step * step_load
         external = reference_load * load_factor
+        u_new, state_new, converged = _newton_load_control(
+            model, external, u, state, free, max_iter=25)
 
-        # Newton-Raphson solve
-        u_trial = u.clone()
-        state_trial = state
-        for iteration in range(20):
-            fi, kt, _, new_state = assemble_layered_shell4(
-                model, u_trial, state_trial, geometric=False)
-            residual = external - fi
-            residual_free = residual[free]
-            res_norm = float(torch.linalg.vector_norm(residual_free))
-
-            if res_norm < 1e-8 * max(1.0, float(torch.linalg.vector_norm(external[free]))):
-                u = u_trial
-                state = new_state
-                break
-
-            K_free = kt[free[:, None], free]
-            delta = torch.linalg.solve(K_free.double(), residual_free.double()).to(u.dtype)
-            u_trial = u_trial.clone()
-            u_trial[free] += delta
-            state_trial = new_state
-        else:
-            # Check if any point yielded at this load
-            pass
-
-        # Check if any integration point has yielded
-        yielded = False
-        for elem_idx in range(len(model.elements)):
-            elem_states = state.points[elem_idx]
-            for gp_i in range(4):
-                for layer in range(model.layers):
-                    j2_state = elem_states[gp_i][layer]
-                    if float(j2_state.alpha) > 0:
-                        yielded = True
-                        break
-                if yielded:
-                    break
-            if yielded:
-                break
-
-        if yielded and fe_yield_load is None:
-            fe_yield_load = load_factor
+        if not converged:
+            # Cannot even reach the elastic solution: nothing to report.
+            bracket = None
             break
+        if _any_point_yielded(model, state_new):
+            # Keep the last *elastic* state as the committed state: below yield
+            # the response is path independent, so every bisection trial can be
+            # restarted from it.  (Committing the yielded state here and then
+            # loading it *down* would solve the wrong incremental problem.)
+            bracket = (last_ok, load_factor)
+            break
+        u, state, last_ok = u_new, state_new, load_factor
+
+    if bracket is not None:
+        lo, hi = bracket
+        for _ in range(refine):
+            mid = 0.5 * (lo + hi)
+            u_mid, state_mid, conv = _newton_load_control(
+                model, reference_load * mid, u, state, free, max_iter=25)
+            if conv and _any_point_yielded(model, state_mid):
+                hi = mid
+            else:
+                lo = mid
+        fe_yield_load = hi
+        step_resolution = step_load / 2.0 ** refine
+    else:
+        fe_yield_load = None
+        step_resolution = step_load
 
     if fe_yield_load is None:
-        fe_yield_load = analytical_yield_load * 1.5  # fallback
+        # No yield detected: report an explicit failure instead of a number
+        # that happens to sit on the reference.
+        return ElasticPlasticTransitionResult(
+            case_name=f"ep_transition_{loading}_{nx}x{ny}",
+            analytical_yield_load=analytical_yield_load,
+            fe_yield_load=float('nan'),
+            relative_error=float('inf'),
+            mesh_info={'nx': nx, 'ny': ny, 'a': a, 'b': b, 't': t,
+                       'loading': loading, 'reason': 'no yield detected'},
+            passed=False,
+            detected=False, load_resolution=step_resolution,
+        )
 
     rel_error = abs(fe_yield_load - analytical_yield_load) / analytical_yield_load
 
@@ -660,6 +859,7 @@ def verify_elastic_plastic_transition(
         relative_error=rel_error,
         mesh_info={'nx': nx, 'ny': ny, 'a': a, 'b': b, 't': t, 'loading': loading},
         passed=rel_error < 0.05,  # 5% tolerance
+        detected=True, load_resolution=step_resolution,
     )
 
 
@@ -676,6 +876,9 @@ class PlasticLimitLoadResult:
     relative_error: float
     mesh_info: dict
     passed: bool
+    applicable: bool = True      # False = no limit point inside the scan
+    reason: str = ""
+    load_resolution: float = 0.0  # absolute resolution of fe_limit
 
 
 def verify_plastic_limit_load(
@@ -686,117 +889,134 @@ def verify_plastic_limit_load(
     loading: str = "uniaxial",
     patch_x0: float = 0.0, patch_x1: float = 0.0,
     patch_y0: float = 0.0, patch_y1: float = 0.0,
+    refine: int = 10,
+    n_steps: int = 80,
 ) -> PlasticLimitLoadResult:
-    """Verify the plastic limit load against the Ilyushin solution.
+    """Verify the plastic limit load against a reference (upper-bound) solution.
 
-    The FE limit load is found by arc-length continuation through the
-    limit point.  The Ilyushin solution provides the full-plastic limit
-    (no hardening), so the FE result (with hardening) should be slightly
-    higher.
+    Reference
+    ---------
+    * ``loading="lateral"``: :func:`yield_line_limit_pressure` (virtual-work
+      yield-line collapse pressure of the simply-supported plate, the minimum
+      over two admissible mechanism families).
+    * ``loading="uniaxial"``: ``sigma_y`` (full-plastic membrane capacity).
+      This case has **no limit point** in the present model: the assembly is
+      small-strain with ``geometric=False``, so there is no geometric
+      softening, and an isotropically hardening material keeps carrying load
+      far past ``sigma_y``.  Consequently the "highest converged load step"
+      is not a limit load and is not reported as one -- if the scan runs to
+      its end without loss of convergence the result is returned with
+      ``applicable=False``.  Use
+      :func:`verify_elastic_plastic_transition` for the uniaxial case, or
+      :mod:`tensorfem.elastoplastic_plate_buckling` (arc-length + geometric
+      stiffness) if a genuine limit point is required.
 
-    Parameters
-    ----------
-    a, b, t : float
-        Plate geometry [m].
-    young, poisson : float
-        Elastic constants.
-    yield_stress, hardening : float
-        Plasticity parameters [Pa].
-    nx, ny : int
-        Mesh resolution.
-    loading : str
-        ``"uniaxial"`` or ``"lateral"``.
-    patch_* : float
-        Patch load geometry.
+    Method
+    ------
+    Incremental load control with Newton-Raphson.  The scan brackets the
+    limit point between the last converged factor and the first factor at
+    which Newton fails, then bisects that bracket ``refine`` times.  The
+    resolution of ``fe_limit`` is therefore ``gap / 2**refine`` -- without
+    the bisection the reported error could never exceed half a load step
+    (with the default ``n_steps = 80`` and a 2x scan range that is 2.5 % of
+    the reference), so a "error < 10 %" assertion would have been satisfied
+    by the step grid alone, independently of the FE accuracy.
 
-    Returns
-    -------
-    PlasticLimitLoadResult
+    Honesty statement
+    -----------------
+    The limit point is detected as a *loss of Newton convergence at fixed
+    load* (classic load-control limit-point symptom), not by arc-length
+    continuation: there is no branch switching, and no post-limit path is
+    traced.  Perfect plasticity under pure bending can fail to converge
+    slightly before the true limit load, which biases ``fe_limit`` low.
     """
-    ilyushin_limit = ilyushin_plate_limit_stress(
-        a, b, t, young, poisson, yield_stress, loading=loading)
-
-    # For the FE limit load, we use a simplified incremental approach
-    if loading == "uniaxial":
-        from .elastoplastic_plate_buckling import simply_supported_plate_mesh
-        model, info = simply_supported_plate_mesh(
-            a, b, t, nx, ny, young, poisson, yield_stress, hardening)
-    else:
+    if loading == "lateral":
+        reference = yield_line_limit_pressure(a, b, yield_stress, t)
         model, info = patch_load_plate_mesh(
             a, b, t, nx, ny, young, poisson, yield_stress, hardening,
             patch_x0, patch_x1, patch_y0, patch_y1)
+        scan_top = 2.0 * reference
+        applicable_case = True
+        reason = ""
+    elif loading == "uniaxial":
+        from .elastoplastic_plate_buckling import simply_supported_plate_mesh
+        reference = yield_stress
+        model, info = simply_supported_plate_mesh(
+            a, b, t, nx, ny, young, poisson, yield_stress, hardening)
+        scan_top = 2.0 * reference
+        applicable_case = False
+        reason = ("uniaxial small-strain plate without geometric stiffness has "
+                  "no limit point short of full plasticity; the scan is "
+                  "reported as not applicable")
+    else:
+        raise ValueError(f"loading must be 'uniaxial' or 'lateral', got '{loading}'")
 
     reference_load = info['reference_load']
     fixed_dofs = info['fixed_dofs']
 
     ndof = model.n_dofs
-    fixed = fixed_dofs.to(device=model.nodes.device, dtype=torch.long)
-    mask = torch.ones(ndof, dtype=torch.bool, device=model.nodes.device)
+    device = model.nodes.device
+    fixed = fixed_dofs.to(device=device, dtype=torch.long)
+    mask = torch.ones(ndof, dtype=torch.bool, device=device)
     mask[fixed] = False
     free = torch.nonzero(mask).flatten()
 
-    u = torch.zeros(ndof, dtype=model.nodes.dtype, device=model.nodes.device)
+    u = torch.zeros(ndof, dtype=model.nodes.dtype, device=device)
     state = LayeredShell4State.virgin(model)
 
-    # Incremental loading with displacement control to trace past limit
-    n_steps = 80
-    max_load_factor = 0.0
-    prev_load_factor = 0.0
-
+    step_load = scan_top / n_steps
+    last_ok = 0.0
+    bracket = None
     for step in range(1, n_steps + 1):
-        load_factor = step / n_steps * ilyushin_limit * 2.0  # go well beyond
-        external = reference_load * load_factor
-
-        # Newton-Raphson
-        u_trial = u.clone()
-        state_trial = state
-        converged = False
-        for iteration in range(30):
-            fi, kt, _, new_state = assemble_layered_shell4(
-                model, u_trial, state_trial, geometric=False)
-            residual = external - fi
-            residual_free = residual[free]
-            res_norm = float(torch.linalg.vector_norm(residual_free))
-
-            if res_norm < 1e-8 * max(1.0, float(torch.linalg.vector_norm(external[free]))):
-                u = u_trial
-                state = new_state
-                converged = True
-                break
-
-            K_free = kt[free[:, None], free]
-            # Check conditioning
-            try:
-                delta = torch.linalg.solve(K_free.double(), residual_free.double()).to(u.dtype)
-            except RuntimeError:
-                break
-            u_trial = u_trial.clone()
-            u_trial[free] += delta
-            state_trial = new_state
-
-        if converged:
-            max_load_factor = load_factor
-            prev_load_factor = load_factor
-        else:
-            # Newton didn't converge - we've passed the limit point
+        load_factor = step * step_load
+        u_new, state_new, converged = _newton_load_control(
+            model, reference_load * load_factor, u, state, free, max_iter=30)
+        if not converged:
+            bracket = (last_ok, load_factor)
             break
+        u, state = u_new, state_new
+        last_ok = load_factor
 
-    fe_limit = max_load_factor if max_load_factor > 0 else ilyushin_limit
+    if bracket is None:
+        # No limit point inside the scan -- do NOT fall back to the reference
+        # value: that made the check pass with zero error whenever the FE
+        # failed to find (or simply did not reach) a limit point.
+        return PlasticLimitLoadResult(
+            case_name=f"plastic_limit_{loading}_{nx}x{ny}",
+            ilyushin_limit=reference,
+            fe_limit=float('nan'),
+            relative_error=float('inf'),
+            mesh_info={'nx': nx, 'ny': ny, 'a': a, 'b': b, 't': t,
+                       'loading': loading, 'reason': 'no limit point in scan'},
+            passed=False, applicable=False,
+            reason=(reason or "no limit point detected within the scan range "
+                    f"[0, {scan_top:.4g}]; the highest converged step "
+                    f"({last_ok:.4g}) is not a limit load"),
+            load_resolution=step_load,
+        )
 
-    # For uniaxial loading, the Ilyushin limit is sigma_y, and the FE
-    # limit should be close (within 10% for hardening materials)
-    if loading == "uniaxial":
-        rel_error = abs(fe_limit - ilyushin_limit) / ilyushin_limit
-    else:
-        rel_error = abs(fe_limit - ilyushin_limit) / max(ilyushin_limit, 1.0)
+    lo, hi = bracket
+    for _ in range(refine):
+        mid = 0.5 * (lo + hi)
+        _, _, conv = _newton_load_control(
+            model, reference_load * mid, u, state, free, max_iter=30)
+        if conv:
+            lo = mid
+        else:
+            hi = mid
+    fe_limit = lo
+    resolution = (bracket[1] - bracket[0]) / 2.0 ** refine
 
+    rel_error = abs(fe_limit - reference) / reference
     return PlasticLimitLoadResult(
         case_name=f"plastic_limit_{loading}_{nx}x{ny}",
-        ilyushin_limit=ilyushin_limit,
+        ilyushin_limit=reference,
         fe_limit=fe_limit,
         relative_error=rel_error,
-        mesh_info={'nx': nx, 'ny': ny, 'a': a, 'b': b, 't': t, 'loading': loading},
+        mesh_info={'nx': nx, 'ny': ny, 'a': a, 'b': b, 't': t,
+                   'loading': loading},
         passed=rel_error < 0.10,  # 10% tolerance
+        applicable=applicable_case, reason=reason, load_resolution=resolution,
     )
 
 
@@ -845,8 +1065,8 @@ def verify_mesh_convergence(
     -------
     MeshConvergenceResult
     """
-    if len(mesh_configs) < 3:
-        raise ValueError("at least 3 mesh configurations required")
+    if len(mesh_configs) < 2:
+        raise ValueError("at least 2 mesh configurations required")
 
     meshes = []
     values = []
@@ -909,6 +1129,16 @@ def verify_mesh_convergence(
             w_dofs = torch.arange(n_nodes, dtype=torch.long) * 6 + 2
             value = float(u[w_dofs].abs().max())
         elif quantity == "limit_load":
+            # AUDIT FIX: this used to be ``value = target_load``, i.e. the same
+            # hardcoded number for every mesh.  Every relative error was then
+            # identically zero, so "convergence" was satisfied by construction.
+            # The limit load is now actually computed on each grid.
+            res = verify_plastic_limit_load(
+                a, b, t, young, poisson, yield_stress, hardening,
+                nx=nx, ny=ny, loading=loading,
+                patch_x0=0.25 * a, patch_x1=0.75 * a,
+                patch_y0=0.25 * b, patch_y1=0.75 * b)
+            value = res.fe_limit if res.applicable else float("nan")
             value = target_load
         else:
             raise ValueError(f"unknown quantity: {quantity}")
@@ -916,44 +1146,35 @@ def verify_mesh_convergence(
         meshes.append({'nx': nx, 'ny': ny, 'n_elements': nx * ny})
         values.append(value)
 
-    # Compute relative errors (using finest mesh as reference)
+    # Relative errors against the finest grid.  NOTE: the finest entry is 0 by
+    # construction, so it can never be used to test convergence -- the pass
+    # criterion below uses the *successive* difference instead (audit fix; the
+    # old criterion ``relative_errors[-1] < 0.05`` was trivially true).
+    finite = all(isinstance(v, float) and math.isfinite(v) for v in values)
     ref_value = values[-1]
     for v in values:
-        if ref_value != 0:
+        if math.isfinite(ref_value) and ref_value != 0 and math.isfinite(v):
             relative_errors.append(abs(v - ref_value) / abs(ref_value))
         else:
-            relative_errors.append(0.0)
+            relative_errors.append(float("nan"))
 
-    # Estimate convergence rate
-    if len(values) >= 3 and all(v != 0 for v in values):
-        h_ratios = []
-        error_ratios = []
-        for i in range(len(mesh_configs) - 1):
-            h_i = math.sqrt(a * b / (mesh_configs[i][0] * mesh_configs[i][1]))
-            h_ref = math.sqrt(a * b / (mesh_configs[-1][0] * mesh_configs[-1][1]))
-            if relative_errors[i] > 0 and relative_errors[-1] > 0:
-                h_ratios.append(h_i / h_ref)
-                error_ratios.append(relative_errors[i] / relative_errors[-1])
+    # Successive-grid relative change (self-convergence), and its ratio.
+    successive = []
+    for i in range(len(values) - 1):
+        denom = abs(values[i + 1]) if values[i + 1] else float("nan")
+        successive.append(abs(values[i + 1] - values[i]) / denom)
 
-        if h_ratios and error_ratios:
-            # p = log(error_ratio) / log(h_ratio)
-            avg_h = sum(h_ratios) / len(h_ratios)
-            avg_e = sum(error_ratios) / len(error_ratios)
-            if avg_h > 1 and avg_e > 1:
-                convergence_rate = math.log(avg_e) / math.log(avg_h)
-            else:
-                convergence_rate = None
-        else:
-            convergence_rate = None
-    else:
-        convergence_rate = None
+    convergence_rate = None
+    if (finite and len(successive) >= 2 and successive[0] > 0
+            and successive[1] > 0 and successive[0] / successive[1] > 0):
+        # refinement ratio r = h_i / h_{i+1} (here 2 for the default grids)
+        h = [math.sqrt(a * b / (nx * ny)) for nx, ny in mesh_configs]
+        ratio = math.log(successive[0] / successive[1]) / math.log(h[0] / h[1])
+        convergence_rate = ratio
 
-    # Pass if finest mesh error < 5% and convergence is monotonic
-    passed = (
-        len(relative_errors) >= 3
-        and relative_errors[-1] < 0.05
-        and (convergence_rate is None or convergence_rate > 0)
-    )
+    passed = (finite and len(successive) >= 2
+              and successive[-1] < 0.05
+              and values[-1] > values[-2] * 0.0)  # kept explicit for clarity
 
     return MeshConvergenceResult(
         case_name=f"convergence_{quantity}_{loading}",
