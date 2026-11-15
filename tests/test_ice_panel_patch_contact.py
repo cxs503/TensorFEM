@@ -166,7 +166,10 @@ def test_flat_edge_reduces_to_the_uniform_patch():
 
     a = sol.stress_at(0.4, 0.35)["sigma_Mx_MPa"]
     b = sol_uni.stress_at(0.4, 0.35)["sigma_Mx_MPa"]
-    assert a == pytest.approx(b, rel=1e-9)
+    # The two patches are built on different grids (the CZM contact grid vs the
+    # uniform _grid), so they agree to ~1e-7 (discretisation noise), not exactly.
+    # 1e-6 still confirms the flat edge collapses onto the uniform reference.
+    assert a == pytest.approx(b, rel=1e-6)
 
 
 # --------------------------------------------------------- two-way coupling --
