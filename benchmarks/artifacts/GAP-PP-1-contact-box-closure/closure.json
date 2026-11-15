@@ -1,0 +1,262 @@
+{
+  "case": "GAP-PP-1: contact-box closure audit of the CZM patch load",
+  "provenance": {
+    "script": "verify_gap_pp1_contact_box_closure.py",
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64"
+  },
+  "setting": {
+    "panel_m": [
+      0.8,
+      0.7
+    ],
+    "thickness_m": 0.022,
+    "total_force_N": 40000.0,
+    "ceiling_MPa": 2.0,
+    "interface_stiffness_Pa_per_m": 4000000000.0,
+    "ice_edge": {
+      "kind": "spherical",
+      "radius": 1.0,
+      "amplitude": 0.02
+    },
+    "closure_tol": 0.001
+  },
+  "analytic_reference_at_operating_force": {
+    "delta0_m": 0.00035682482323055425,
+    "peak_pressure_Pa": 1427299.292922217,
+    "contact_radius_m": 0.13357110900762825,
+    "contact_area_m2": 0.056049912163979275,
+    "mean_pressure_Pa": 713649.6464611085,
+    "peak_over_mean": 2.0
+  },
+  "A_solver_vs_closed_form": {
+    "rows": [
+      {
+        "grid": 61,
+        "contact_box_m": [
+          0.265,
+          0.535,
+          0.21499999999999997,
+          0.485
+        ],
+        "peak_pressure_MPa": 1.4272793630772849,
+        "approach_m": 0.0003568198407693212,
+        "contact_area_m2": 0.05599125000000009,
+        "mean_pressure_MPa": 0.714397337760829,
+        "boundary_pressure_ratio": 0.0,
+        "contact_closed": true,
+        "forces_N": 39999.999937901084,
+        "err": {
+          "peak_pressure_pct": -0.0013963325723564957,
+          "approach_pct": -0.0013963325723564957,
+          "contact_area_pct": -0.10466058146096913,
+          "peak_over_mean_pct": -0.10605529754091902
+        }
+      },
+      {
+        "grid": 97,
+        "contact_box_m": [
+          0.265,
+          0.535,
+          0.21499999999999997,
+          0.485
+        ],
+        "peak_pressure_MPa": 1.4273008719246045,
+        "approach_m": 0.00035682521798115115,
+        "contact_area_m2": 0.05607509765624981,
+        "mean_pressure_MPa": 0.7133291199144481,
+        "boundary_pressure_ratio": 0.0,
+        "contact_closed": true,
+        "forces_N": 40000.00006024941,
+        "err": {
+          "peak_pressure_pct": 0.00011062868141564763,
+          "approach_pct": 0.00011062868141564763,
+          "contact_area_pct": 0.044934044137034945,
+          "peak_over_mean_pct": 0.045044571837005165
+        }
+      }
+    ],
+    "max_abs_peak_err_pct": 0.0013963325723564957,
+    "max_abs_area_err_pct": 0.10466058146096913,
+    "all_closed": true
+  },
+  "B_truncating_box": {
+    "rows": [
+      {
+        "box_half_m": 0.1,
+        "peak_pressure_MPa": 1.5334264502867885,
+        "approach_m": 0.0003833566125716971,
+        "contact_area_m2": 0.03994357638888914,
+        "mean_pressure_MPa": 1.0014125840354455,
+        "boundary_pressure_ratio": 0.4782925520487924,
+        "contact_closed": false,
+        "err": {
+          "peak_pressure_pct": 7.435522310621301,
+          "contact_area_pct": -28.73570207919246
+        }
+      },
+      {
+        "box_half_m": 0.2,
+        "peak_pressure_MPa": 1.427329279127298,
+        "approach_m": 0.00035683231978182446,
+        "contact_area_m2": 0.05612847222222257,
+        "mean_pressure_MPa": 0.7126507899359721,
+        "boundary_pressure_ratio": 0.0,
+        "contact_closed": true,
+        "err": {
+          "peak_pressure_pct": 0.0021009052011411455,
+          "contact_area_pct": 0.1401608944782362
+        }
+      }
+    ],
+    "truncation_detected": true,
+    "closed_detected": true,
+    "peak_pressure_inflation_pct": 7.433265239564113,
+    "contact_area_loss_pct": 28.835446953294152
+  },
+  "C_shipped_configurations": {
+    "rows": [
+      {
+        "name": "C1-flat-edge-oneway",
+        "edge": {
+          "kind": "flat",
+          "amplitude": 0.0,
+          "box_half": 0.1
+        },
+        "coupled": false,
+        "contact_box_m": [
+          0.30000000000000004,
+          0.5,
+          0.24999999999999997,
+          0.44999999999999996
+        ],
+        "boundary_pressure_ratio": 0.0,
+        "contact_closed": null,
+        "peak_pressure_MPa": 0.9999999983847374,
+        "contact_area_m2": 0.040000000000000174,
+        "sweeps": 1,
+        "coupling_converged": true
+      },
+      {
+        "name": "C2-spherical-oneway",
+        "edge": {
+          "kind": "spherical",
+          "radius": 1.0,
+          "amplitude": 0.02,
+          "box_half": 0.2
+        },
+        "coupled": false,
+        "contact_box_m": [
+          0.2,
+          0.6000000000000001,
+          0.14999999999999997,
+          0.55
+        ],
+        "boundary_pressure_ratio": 0.0,
+        "contact_closed": true,
+        "peak_pressure_MPa": 1.4274079924856777,
+        "contact_area_m2": 0.05622222222222201,
+        "sweeps": 1,
+        "coupling_converged": true
+      },
+      {
+        "name": "C3-spherical-twoway",
+        "edge": {
+          "kind": "spherical",
+          "radius": 1.0,
+          "amplitude": 0.02,
+          "box_half": 0.2
+        },
+        "coupled": true,
+        "contact_box_m": [
+          0.2,
+          0.6000000000000001,
+          0.14999999999999997,
+          0.55
+        ],
+        "boundary_pressure_ratio": 0.0,
+        "contact_closed": true,
+        "peak_pressure_MPa": 0.91965060127191,
+        "contact_area_m2": 0.08253333333333301,
+        "sweeps": 13,
+        "coupling_converged": true
+      },
+      {
+        "name": "C4-cylindrical-twoway-eccentric",
+        "edge": {
+          "kind": "cylindrical",
+          "radius": 0.6,
+          "amplitude": 0.03,
+          "box_half": 0.12
+        },
+        "coupled": true,
+        "contact_box_m": [
+          0.4,
+          0.64,
+          0.22999999999999998,
+          0.47
+        ],
+        "boundary_pressure_ratio": 0.0,
+        "contact_closed": true,
+        "peak_pressure_MPa": 2.0,
+        "contact_area_m2": 0.036368000000000074,
+        "sweeps": 13,
+        "coupling_converged": true
+      }
+    ],
+    "all_closed": true,
+    "all_converged": true,
+    "max_boundary_pressure_ratio": 0.0
+  },
+  "D_headline_number": {
+    "rows": {
+      "truncated_box_half_0.10": {
+        "footprint_m": [
+          0.19999999999999996,
+          0.19999999999999998
+        ],
+        "contact_area_m2": 0.039944444444444616,
+        "peak_pressure_MPa": 1.5335956730494218,
+        "nonuniform_sigma_Mx_MPa": 91.92114050405144,
+        "uniform_sigma_Mx_MPa": 85.31788120397414,
+        "sigma_Mx_ratio": 1.0773959597553826,
+        "sigma_Mx_pct": 7.73959597553826,
+        "w_over_t_nonuniform": null,
+        "contact_closed": false,
+        "boundary_pressure_ratio": 0.47835011922714343
+      },
+      "closed_box_half_0.20": {
+        "footprint_m": [
+          0.4000000000000001,
+          0.4000000000000001
+        ],
+        "contact_area_m2": 0.05622222222222201,
+        "peak_pressure_MPa": 1.4274079924856777,
+        "nonuniform_sigma_Mx_MPa": 89.26408623317437,
+        "uniform_sigma_Mx_MPa": 51.27439424212171,
+        "sigma_Mx_ratio": 1.7409096207292545,
+        "sigma_Mx_pct": 74.09096207292545,
+        "w_over_t_nonuniform": null,
+        "contact_closed": true,
+        "boundary_pressure_ratio": 0.0
+      }
+    },
+    "mesh": [
+      24,
+      21
+    ],
+    "contact_grid": 61,
+    "ratio_change_rel_pct": -38.1130446447835,
+    "same_side_of_unity": true
+  },
+  "E_verdict": {
+    "solver_matches_closed_form_at_operating_force": true,
+    "truncation_is_detected_by_the_diagnostic": true,
+    "truncation_biases_peak_pressure": true,
+    "shipped_configurations_close": true,
+    "shipped_configurations_converge": true,
+    "headline_ratio_is_box_sensitive": true
+  },
+  "wall_s": 14.271241426467896
+}
