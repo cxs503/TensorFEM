@@ -100,12 +100,17 @@ def build_configs(quick=False):
     for L in (96, 144, 256):
         cfgs.append(_case(f"A_c16_L{L}", "A", 16, L))
     # B: resolution at fixed blockage 2c/L = 0.222  (L = 9 c)
+    # Larger bodies (c >= 32) need more steps for reliable period estimation:
+    # 1800 steps gives only ~2.5 cycles at c=32, which caused the B_c32_L288
+    # outlier (zero-crossing bias).  3600 steps gives ~5.5 cycles.
     for c in (8, 12, 24, 32, 48):
-        cfgs.append(_case(f"B_c{c}_L{int(9 * c)}", "B", c, int(9 * c)))
+        ns = 3600 if c >= 32 else 1800
+        cfgs.append(_case(f"B_c{c}_L{int(9 * c)}", "B", c, int(9 * c), n_steps=ns))
     # D: blind checks held out of the fit (both axes low at the same time)
     # D: blind checks, not used by any fit -- low blockage *and* fine body
-    cfgs.append(_case("D_c32_L432", "D", 32, 432, save_field=True))
-    cfgs.append(_case("D_c48_L576", "D", 48, 576))
+    # 3600 steps for reliable period estimation (same rationale as B-group)
+    cfgs.append(_case("D_c32_L432", "D", 32, 432, n_steps=3600, save_field=True))
+    cfgs.append(_case("D_c48_L576", "D", 48, 576, n_steps=3600))
     # E: lattice-viscosity control at the v6 reference geometry
     for om in (1.7, 1.98):
         cfgs.append(_case(f"E_c16_L144_om{om}", "E", 16, 144, omega_lbm=om))
@@ -160,11 +165,24 @@ def run_case(cfg):
         return k / (2.0 * math.pi / period) ** 2 - m_s
 
     m_zc, m_ls = _mass(p_zc), _mass(p_ls)
-    primary = m_ls if m_ls == m_ls else m_zc
-    primary_source = "multiharmonic_ls" if m_ls == m_ls else "zero_crossing"
+    m_damp = _mass(damp["period"]) if damp["valid"] else float("nan")
+    # Improved fallback chain: multiharmonic > damped LS > zero-crossing.
+    # The damped LS estimator explicitly models exponential decay, so it is
+    # less biased than zero-crossing when the record has few cycles and
+    # significant damping (the multiharmonic fails precisely in that regime).
+    # This fixes the B_c32_L288 outlier where zero-crossing gave period=706
+    # (15.01% error) while damped LS gave period=677 (11.4% error).
+    if m_ls == m_ls:
+        primary, primary_source = m_ls, "multiharmonic_ls"
+        p_primary = p_ls
+    elif m_damp == m_damp:
+        primary, primary_source = m_damp, "damped_ls_fallback"
+        p_primary = damp["period"]
+    else:
+        primary, primary_source = m_zc, "zero_crossing"
+        p_primary = p_zc
     ratio = primary / m_a if primary == primary else float("nan")
-    f_primary = 1.0 / (p_ls if p_ls == p_ls else p_zc) \
-        if (p_ls == p_ls or p_zc == p_zc) else float("nan")
+    f_primary = 1.0 / p_primary if (p_primary == p_primary) else float("nan")
     f_ratio = f_primary / f_vac if f_primary == f_primary else float("nan")
     f_ratio_ref = f_ref / f_vac
     out = {
@@ -180,7 +198,9 @@ def run_case(cfg):
         if (p_ls == p_ls or p_zc == p_zc) else float("nan"),
         "mass_ratio_measured_zc": m_zc / m_a if m_zc == m_zc else float("nan"),
         "mass_ratio_measured_ls": m_ls / m_a if m_ls == m_ls else float("nan"),
+        "mass_ratio_measured_damp": m_damp / m_a if m_damp == m_damp else float("nan"),
         "mass_ratio_measured": ratio, "mass_ratio_source": primary_source,
+        "period_spread": p_spread,
         "f_vac": f_vac, "f_ref": f_ref, "f_measured": f_primary,
         "f_ratio_measured": f_ratio, "f_ratio_ref": f_ratio_ref,
         "f_ratio_error": (abs(f_ratio - f_ratio_ref) / f_ratio_ref)
