@@ -56,6 +56,13 @@ from .contact3d import (
     project_point_to_facets, update_node_facet_contact, update_contact_nodes,
 )
 from .mesh_pipeline import MeshReport, diagnose_model, read_gmsh, convert_model
+from .mesh_quality import (
+    ElementQuality, MeshQualityReport,
+    compute_aspect_ratio, compute_skew, compute_non_orthogonality,
+    compute_jacobian, compute_volume,
+    check_watertight_and_manifold, check_orientation,
+    evaluate_mesh_quality, evaluate_modeldb_quality,
+)
 from .corotational_shell import (
     CorotationalState, axis_angle, corotational_cylindrical_shell4,
     cylindrical_nodes,
