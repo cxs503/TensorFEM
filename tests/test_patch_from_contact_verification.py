@@ -97,7 +97,10 @@ def test_projection_conserves_the_contact_force(name, peak, sigma):
     nodes, elements = P.structured_square_mesh(nx, SIDE, dtype=torch.float64)
     res = P.patch_from_contact(data, nodes.numpy(), elements.numpy())
     analytic = peak * 2.0 * math.pi * sigma * sigma
-    assert res.metadata["projection_method"] == "exact_contact_grid_bilinear"
+    assert res.metadata["projection_method"] == "exact_subcell_splitting"
+    # exact sub-cell splitting: the projected force equals the trapezoid
+    # integral of the bilinear contact field (the contact force itself)
+    assert res.metadata["force_error_rel"] < 1e-10
     assert res.total_force == pytest.approx(analytic, rel=2e-2)
 
 
@@ -121,9 +124,12 @@ def test_projection_conserves_force_for_coarse_and_fine_contact_data():
 
 
 def test_scan_reports_peak_stress_and_force_balance():
+    # plate_nx=16: on an nx=8 mesh the peak stress is a coarse-grid quantity
+    # and the projected-vs-analytic-field comparison is dominated by the plate
+    # discretisation, not by the contact-data discretisation.
     scan = P.scan_contact_configurations(
-        plate_nx=8, plate_side=SIDE, young=E, poisson=NU,
-        thickness=T, winkler_k=1.0e7, n_contact_per_axis=21,
+        plate_nx=16, plate_side=SIDE, young=E, poisson=NU,
+        thickness=T, winkler_k=1.0e7, n_contact_per_axis=41,
     )
     cfgs = scan["configurations"]
     assert len(cfgs) >= 3
@@ -167,7 +173,7 @@ def test_uniform_patch_peak_stress_matches_navier_series():
         normal_pressures=np.full(XX.size, p0),
         contact_area=4.0 * half * half,
     )
-    sol, _ = P.contact_pressure_to_plate_load(data, nx, SIDE, E, NU, T, 0.0)
+    sol, patch_res = P.contact_pressure_to_plate_load(data, nx, SIDE, E, NU, T, 0.0)
     stress = P.peak_stresses(sol)
 
     patch = IC.uniform_patch_pressure(
@@ -175,12 +181,72 @@ def test_uniform_patch_peak_stress_matches_navier_series():
         panel=(SIDE, SIDE), grid=33,
     )
     ref = _navier_sigma(patch, *stress["sigma_x_at_m"])
-    # A uniform patch has a *discontinuous* edge pressure; the projected field is
-    # the plate-mesh bilinear interpolant, so the edge is smeared over one element
-    # -> O(h) error (about +7 % at nx=16, see the convergence table in
-    # docs/VERIFY-patch-from-contact-units.md).  Smooth fields are not affected
-    # (Gaussian patch: <1 %, next test).
+    # The uniform patch has a *discontinuous* edge pressure.  Since the exact
+    # sub-cell splitting projection (m21619) the applied force is the contact
+    # force to machine precision, so the residual is pure FEM discretisation
+    # error of the Mindlin Q4 SRI plate at nx=16 (a few percent, converging
+    # with the mesh -- see test_step_patch_fem_converges_to_navier).
     assert stress["sigma_x_MPa"] == pytest.approx(ref, rel=1.0e-1)
+    # and the chain is force-conserving for the step patch (the old bilinear
+    # nodal reconstruction inflated the force by ~20 % at this mesh)
+    assert patch_res.metadata["load_balance_rel"] < 1e-10
+    assert patch_res.total_force == pytest.approx(force, rel=1e-10)
+
+
+def test_step_patch_projection_is_force_conserving():
+    """A discontinuous (step) patch must project to the contact force exactly.
+
+    Regression guard for the m21619 fix: the legacy chain re-integrated the
+    bilinear reconstruction of the nodal pressures, which smears the step edge
+    over one element and inflated the applied force by ~20 % at nx=16
+    (peak stress +12.8 % vs the Navier series, failing the 10 % gate).
+    """
+    half, force, nx = 0.2, 4.0e4, 16
+    p0 = force / (4.0 * half * half)
+    xs = np.linspace(0.5 - half, 0.5 + half, 9)
+    ys = np.linspace(0.5 - half, 0.5 + half, 9)
+    XX, YY = np.meshgrid(xs, ys)
+    data = P.ContactPressureData(
+        node_positions=np.column_stack([XX.ravel(), YY.ravel()]),
+        normal_pressures=np.full(XX.size, p0),
+        contact_area=4.0 * half * half,
+    )
+    nodes, elements = P.structured_square_mesh(nx, SIDE, dtype=torch.float64)
+    res = P.patch_from_contact(data, nodes.numpy(), elements.numpy())
+    assert res.metadata["projection_method"] == "exact_subcell_splitting"
+    assert res.total_force == pytest.approx(force, rel=1e-10)
+    assert res.metadata["force_error_rel"] < 1e-10
+
+
+def test_step_patch_fem_converges_to_navier():
+    """With the force-conserving projection the FEM error is discretisation only.
+
+    The FEM-vs-Navier peak-stress error must shrink as the mesh is refined
+    (O(h) for the step load) and be well below the legacy +12.8 % at nx=16.
+    """
+    half, force = 0.2, 4.0e4
+    p0 = force / (4.0 * half * half)
+    xs = np.linspace(0.5 - half, 0.5 + half, 9)
+    ys = np.linspace(0.5 - half, 0.5 + half, 9)
+    XX, YY = np.meshgrid(xs, ys)
+    data = P.ContactPressureData(
+        node_positions=np.column_stack([XX.ravel(), YY.ravel()]),
+        normal_pressures=np.full(XX.size, p0),
+        contact_area=4.0 * half * half,
+    )
+    patch = IC.uniform_patch_pressure(
+        total_force=force, centre=(0.5, 0.5), half_x=half, half_y=half,
+        panel=(SIDE, SIDE), grid=33,
+    )
+    errors = []
+    for nx in (16, 24, 32):
+        sol, _ = P.contact_pressure_to_plate_load(data, nx, SIDE, E, NU, T, 0.0)
+        stress = P.peak_stresses(sol)
+        ref = _navier_sigma(patch, *stress["sigma_x_at_m"])
+        errors.append(abs(stress["sigma_x_MPa"] / ref - 1.0))
+    assert errors[0] < 5.0e-2          # nx=16: a few percent, not +12.8 %
+    assert errors[2] < errors[0]        # converging
+    assert errors[-1] < 2.0e-2          # nx=32: under 2 %
 
 
 def test_gaussian_patch_peak_stress_matches_navier_series():
