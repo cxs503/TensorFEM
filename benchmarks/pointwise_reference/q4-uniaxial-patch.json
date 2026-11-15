@@ -1,0 +1,372 @@
+{
+  "case_id": "q4-uniaxial-patch",
+  "meta": {
+    "case_key": "q4-uniaxial-patch",
+    "created_utc": "2026-11-15T22:18:32+00:00",
+    "discretisation": {
+      "dofs": 50,
+      "elements": 16,
+      "nodes": 25,
+      "nx": 4,
+      "ny": 4
+    },
+    "environment": {
+      "dtype": "float64",
+      "tensorfem_version": "0.45.0",
+      "torch_threads": 128,
+      "torch_version": "2.7.1"
+    },
+    "has_analytic_reference": true,
+    "mesh_signature": "9da1208799a192a3327d5392434a1c3b655cd565353fb25cb70f554ea6e30097",
+    "parameters": {
+      "height": 1.0,
+      "length": 2.0,
+      "plane": "stress",
+      "poisson_ratio": 0.3,
+      "thickness": 0.01,
+      "traction": 1000000.0,
+      "young_modulus": 210000000000.0
+    },
+    "quantity_scales": {
+      "sigma_xx": 1000000.0,
+      "sigma_yy": 1000000.0,
+      "tau_xy": 1000000.0,
+      "ux": 0.0,
+      "uy": 0.0
+    },
+    "quantity_units": {
+      "sigma_xx": "Pa",
+      "sigma_yy": "Pa",
+      "tau_xy": "Pa",
+      "ux": "m",
+      "uy": "m"
+    },
+    "solver": "tensorfem.continuum.solve_continuum (dense direct)"
+  },
+  "probes": [
+    {
+      "coordinates": [
+        0.25,
+        0.125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00000",
+      "values": {
+        "sigma_xx": 1000000.000000001,
+        "sigma_yy": 1.6847618327543495e-09,
+        "tau_xy": 1.0817995309524272e-09
+      }
+    },
+    {
+      "coordinates": [
+        0.75,
+        0.125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00001",
+      "values": {
+        "sigma_xx": 999999.9999999997,
+        "sigma_yy": -3.07291085966144e-10,
+        "tau_xy": 1.3255251169772822e-10
+      }
+    },
+    {
+      "coordinates": [
+        1.25,
+        0.125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00002",
+      "values": {
+        "sigma_xx": 999999.9999999994,
+        "sigma_yy": -1.7002960520554208e-10,
+        "tau_xy": 1.7103549896481063e-10
+      }
+    },
+    {
+      "coordinates": [
+        1.75,
+        0.125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00003",
+      "values": {
+        "sigma_xx": 1000000.0000000001,
+        "sigma_yy": -9.314119330217452e-11,
+        "tau_xy": 1.8386316138717143e-10
+      }
+    },
+    {
+      "coordinates": [
+        0.25,
+        0.375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00004",
+      "values": {
+        "sigma_xx": 1000000.0000000002,
+        "sigma_yy": 1.5496657599375146e-09,
+        "tau_xy": 8.038668451346099e-10
+      }
+    },
+    {
+      "coordinates": [
+        0.75,
+        0.375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00005",
+      "values": {
+        "sigma_xx": 1000000.0,
+        "sigma_yy": 2.395894291324967e-10,
+        "tau_xy": 5.47313596687394e-10
+      }
+    },
+    {
+      "coordinates": [
+        1.25,
+        0.375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00006",
+      "values": {
+        "sigma_xx": 999999.9999999991,
+        "sigma_yy": -5.1448875434840335e-11,
+        "tau_xy": 6.841419958592425e-11
+      }
+    },
+    {
+      "coordinates": [
+        1.75,
+        0.375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00007",
+      "values": {
+        "sigma_xx": 1000000.0000000002,
+        "sigma_yy": 1.023279483718948e-10,
+        "tau_xy": 4.617958472049887e-10
+      }
+    },
+    {
+      "coordinates": [
+        0.25,
+        0.625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00008",
+      "values": {
+        "sigma_xx": 999999.9999999994,
+        "sigma_yy": 9.258968329355062e-10,
+        "tau_xy": 5.986242463768372e-10
+      }
+    },
+    {
+      "coordinates": [
+        0.75,
+        0.625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00009",
+      "values": {
+        "sigma_xx": 999999.9999999999,
+        "sigma_yy": 6.700546224042026e-10,
+        "tau_xy": 1.368283991718485e-10
+      }
+    },
+    {
+      "coordinates": [
+        1.25,
+        0.625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00010",
+      "values": {
+        "sigma_xx": 999999.9999999988,
+        "sigma_yy": -1.0965653634830774e-10,
+        "tau_xy": -3.249674480331402e-10
+      }
+    },
+    {
+      "coordinates": [
+        1.75,
+        0.625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00011",
+      "values": {
+        "sigma_xx": 1000000.0000000003,
+        "sigma_yy": -2.3040267406277642e-10,
+        "tau_xy": -6.841419958592425e-11
+      }
+    },
+    {
+      "coordinates": [
+        0.25,
+        0.875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00012",
+      "values": {
+        "sigma_xx": 999999.9999999987,
+        "sigma_yy": 2.2307408608636348e-10,
+        "tau_xy": 4.4469229730850763e-10
+      }
+    },
+    {
+      "coordinates": [
+        0.75,
+        0.875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00013",
+      "values": {
+        "sigma_xx": 999999.9999999995,
+        "sigma_yy": -1.3050269528197483e-10,
+        "tau_xy": 1.368283991718485e-10
+      }
+    },
+    {
+      "coordinates": [
+        1.25,
+        0.875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00014",
+      "values": {
+        "sigma_xx": 999999.9999999994,
+        "sigma_yy": 2.0222792715269639e-10,
+        "tau_xy": 4.788993971014698e-10
+      }
+    },
+    {
+      "coordinates": [
+        1.75,
+        0.875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00015",
+      "values": {
+        "sigma_xx": 1000000.0000000006,
+        "sigma_yy": 2.3274128524760297e-11,
+        "tau_xy": 8.893845946170153e-10
+      }
+    },
+    {
+      "coordinates": [
+        0.5,
+        0.25
+      ],
+      "kind": "node",
+      "probe_id": "n00006",
+      "values": {
+        "ux": 2.3809523809523808e-06,
+        "uy": -3.5714285714284556e-07
+      }
+    },
+    {
+      "coordinates": [
+        1.0,
+        0.25
+      ],
+      "kind": "node",
+      "probe_id": "n00007",
+      "values": {
+        "ux": 4.7619047619047615e-06,
+        "uy": -3.571428571428401e-07
+      }
+    },
+    {
+      "coordinates": [
+        1.5,
+        0.25
+      ],
+      "kind": "node",
+      "probe_id": "n00008",
+      "values": {
+        "ux": 7.142857142857141e-06,
+        "uy": -3.571428571428369e-07
+      }
+    },
+    {
+      "coordinates": [
+        0.5,
+        0.5
+      ],
+      "kind": "node",
+      "probe_id": "n00011",
+      "values": {
+        "ux": 2.3809523809523795e-06,
+        "uy": -7.142857142857022e-07
+      }
+    },
+    {
+      "coordinates": [
+        1.0,
+        0.5
+      ],
+      "kind": "node",
+      "probe_id": "n00012",
+      "values": {
+        "ux": 4.761904761904761e-06,
+        "uy": -7.142857142856972e-07
+      }
+    },
+    {
+      "coordinates": [
+        1.5,
+        0.5
+      ],
+      "kind": "node",
+      "probe_id": "n00013",
+      "values": {
+        "ux": 7.142857142857139e-06,
+        "uy": -7.142857142856936e-07
+      }
+    },
+    {
+      "coordinates": [
+        0.5,
+        0.75
+      ],
+      "kind": "node",
+      "probe_id": "n00016",
+      "values": {
+        "ux": 2.3809523809523782e-06,
+        "uy": -1.071428571428558e-06
+      }
+    },
+    {
+      "coordinates": [
+        1.0,
+        0.75
+      ],
+      "kind": "node",
+      "probe_id": "n00017",
+      "values": {
+        "ux": 4.761904761904758e-06,
+        "uy": -1.071428571428554e-06
+      }
+    },
+    {
+      "coordinates": [
+        1.5,
+        0.75
+      ],
+      "kind": "node",
+      "probe_id": "n00018",
+      "values": {
+        "ux": 7.142857142857137e-06,
+        "uy": -1.0714285714285504e-06
+      }
+    }
+  ],
+  "quantities": [
+    "ux",
+    "uy",
+    "sigma_xx",
+    "sigma_yy",
+    "tau_xy"
+  ],
+  "schema_version": "1.0"
+}
