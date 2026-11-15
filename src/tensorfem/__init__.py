@@ -494,3 +494,28 @@ from .ice_gate_power import (
     meta_gate,
     gate_verdict,
 )
+
+# -- compute queue (FEAT-COMPUTE-QUEUE-UNIFIED) -------------------------------
+from .compute_queue import (
+    JobSpec as JobSpec,
+    JobStatus as JobStatus,
+    JobRecord as JobRecord,
+    Placement as Placement,
+    CapacityProbe as CapacityProbe,
+    PlacementDecision as PlacementDecision,
+    Scheduler as Scheduler,
+    LocalRunner as LocalRunner,
+    SSHRunner as SSHRunner,
+    JobLedger as JobLedger,
+    ComputeQueue as ComputeQueue,
+    JobSubmissionError as JobSubmissionError,
+    ExecutionResult as ExecutionResult,
+    submit_job as submit_job,
+    submit_cli as submit_cli,
+    cluster_exec as cluster_exec,
+    deterministic_job_id as deterministic_job_id,
+    serialize_spec as serialize_spec,
+    deserialize_spec as deserialize_spec,
+    LOCAL_CORE_CAP as LOCAL_CORE_CAP,
+    SCHEMA as SCHEMA,
+)
