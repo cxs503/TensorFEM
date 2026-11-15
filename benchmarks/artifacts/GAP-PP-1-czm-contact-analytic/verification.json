@@ -1,0 +1,138 @@
+{
+  "case": "GAP-PP-1-ICE-STRUCT-CONTACT-PATCH: CZM contact solve vs analytic paraboloid",
+  "reference": "paraboloid indenter on a Winkler (linear penalty) foundation: p(r) = p0*(1 - r^2/a^2), F = pi*k*R^2*delta0^2/(2*amp), mean = p0/2",
+  "parameters": {
+    "stiffness_Pa_per_m": 4000000000.0,
+    "ceiling_Pa": 2000000.0,
+    "edge": {
+      "kind": "spherical",
+      "radius": 1.0,
+      "amplitude": 0.02,
+      "box_half": 0.1
+    },
+    "delta0_m": 0.00015,
+    "panel_m": [
+      0.8,
+      0.7
+    ],
+    "centre_m": [
+      0.4,
+      0.35
+    ]
+  },
+  "grid_convergence": [
+    {
+      "grid": 49,
+      "analytic": {
+        "delta0_m": 0.00015,
+        "peak_pressure_Pa": 600000.0,
+        "contact_radius_m": 0.08660254037844385,
+        "contact_area_m2": 0.023561944901923444,
+        "total_force_N": 7068.583470577033,
+        "mean_pressure_Pa": 300000.0,
+        "peak_over_mean": 2.0
+      },
+      "solved": {
+        "total_force_N": 7068.583457239947,
+        "peak_pressure_Pa": 599963.3459992765,
+        "contact_area_m2": 0.023489583333333328,
+        "mean_pressure_Pa": 300924.17378937255,
+        "peak_over_mean": 1.9937359582790182,
+        "approach_m": 0.0001499908364998191,
+        "residual": 1.886811683037346e-09
+      },
+      "errors": {
+        "peak_pressure_rel": -6.10900012057991e-05,
+        "contact_area_rel": -0.0030711203549333987,
+        "force_rel": -1.88681170687488e-09,
+        "peak_over_mean_minus_2": -0.006264041720981828,
+        "profile_max_rel_error_interior": 0.0011995854782219102,
+        "profile_l2_rel_error": 0.00010564821953463307
+      },
+      "n_interior_points": 1305
+    },
+    {
+      "grid": 97,
+      "analytic": {
+        "delta0_m": 0.00015,
+        "peak_pressure_Pa": 600000.0,
+        "contact_radius_m": 0.08660254037844385,
+        "contact_area_m2": 0.023561944901923444,
+        "total_force_N": 7068.583470577033,
+        "mean_pressure_Pa": 300000.0,
+        "peak_over_mean": 2.0
+      },
+      "solved": {
+        "total_force_N": 7068.583463159648,
+        "peak_pressure_Pa": 599992.865448439,
+        "contact_area_m2": 0.023511284722222373,
+        "mean_pressure_Pa": 300646.4149735966,
+        "peak_over_mean": 1.9956761017793334,
+        "approach_m": 0.00014999821636210977,
+        "residual": 1.049345315179296e-09
+      },
+      "errors": {
+        "peak_pressure_rel": -1.1890919268231492e-05,
+        "contact_area_rel": -0.0021500848046264176,
+        "force_rel": -1.0493452773374656e-09,
+        "peak_over_mean_minus_2": -0.004323898220666589,
+        "profile_max_rel_error_interior": 0.0002334944147174786,
+        "profile_l2_rel_error": 2.0573523001231865e-05
+      },
+      "n_interior_points": 5169
+    },
+    {
+      "grid": 193,
+      "analytic": {
+        "delta0_m": 0.00015,
+        "peak_pressure_Pa": 600000.0,
+        "contact_radius_m": 0.08660254037844385,
+        "contact_area_m2": 0.023561944901923444,
+        "total_force_N": 7068.583470577033,
+        "mean_pressure_Pa": 300000.0,
+        "peak_over_mean": 2.0
+      },
+      "solved": {
+        "total_force_N": 7068.583428192979,
+        "peak_pressure_Pa": 600000.6829526682,
+        "contact_area_m2": 0.023547092013889343,
+        "mean_pressure_Pa": 300189.23033143743,
+        "peak_over_mean": 1.9987415347652893,
+        "approach_m": 0.00015000017073816705,
+        "residual": 5.996117042363174e-09
+      },
+      "errors": {
+        "peak_pressure_rel": 1.1382544469196176e-06,
+        "contact_area_rel": -0.0006303761466179836,
+        "force_rel": -5.99611704732439e-09,
+        "peak_over_mean_minus_2": -0.0012584652347107372,
+        "profile_max_rel_error_interior": 2.267324132499962e-05,
+        "profile_l2_rel_error": 1.970893041941204e-06
+      },
+      "n_interior_points": 20641
+    }
+  ],
+  "capped_case": {
+    "grid": 97,
+    "analytic": {
+      "delta0_m": 0.001,
+      "peak_pressure_Pa": 2000000.0,
+      "contact_radius_m": 0.08944271909999159,
+      "capped_radius_m": 0.0632455532033676,
+      "capped_area_m2": 0.012566370614359175,
+      "total_force_N": 37699.11184307753
+    },
+    "solved": {
+      "total_force_N": 37699.111835651114,
+      "peak_pressure_Pa": 2000000.0,
+      "contact_area_m2": 0.025004340277777932,
+      "residual": 1.9699183292698167e-10
+    },
+    "errors": {
+      "peak_pressure_rel": 0.0,
+      "force_rel": -1.9699186726285234e-10,
+      "capped_flat_top_max_dev": 0.0
+    }
+  },
+  "pass": true
+}
