@@ -45,6 +45,7 @@ import time
 from tensorfem.plate_patch_plastic_limit import (
     analytic_first_yield_pressure,
     ilyushin_sine_upper_bound,
+    johansen_twist_upper_bound,
     limit_load_from_path,
     low_temperature_flow_stress,
     plastic_bound_bracket,
@@ -97,6 +98,12 @@ def references(flow_stress: float) -> dict:
                 A, B, T, flow_stress, PATCH)["pressure"],
             "strip_lower": strip_lower_bound(
                 A, B, T, flow_stress, PATCH)["pressure"],
+            # admissible upper bound (twist retained inside the dissipation):
+            # the twist-neglecting ``ilyushin_sine`` value is *below* the exact
+            # full-plate collapse and is therefore reported, but not used as a
+            # pass/fail yardstick.
+            "johansen_twist": johansen_twist_upper_bound(
+                A, B, T, flow_stress, PATCH, terms=1)["pressure"],
         },
         "bracket": bracket,
     }
@@ -266,6 +273,12 @@ def analyse() -> int:
                 entry["acceptance"] = {
                     "within_10pct_of_ilyushin": bool(
                         abs(entry["errors"]["ilyushin_sine"]) < 0.10),
+                    # the sine bound is inadmissible for a smooth mechanism (it
+                    # is below the exact full-plate collapse load), so the
+                    # acceptance is also judged against the admissible bound
+                    "within_10pct_of_admissible_upper": bool(
+                        entry["errors"].get("johansen_twist") is not None
+                        and abs(entry["errors"]["johansen_twist"]) < 0.10),
                     "below_yield_line_upper_bound": bool(
                         entry["errors"]["yield_line"] < 0.0),
                     "above_strip_lower_bound": bool(
@@ -286,6 +299,11 @@ def analyse() -> int:
         json.dumps(summary, indent=2))
     for entry in summary["records"]:
         limit = entry["limit_tight"]
+        if limit is None:
+            # no limit-load definition fired: report it, never format ``None``
+            print(f"[{entry['tag']}] limit n/a (no criterion fired) "
+                  f"| first yield {entry['first_yield'] / 1e6:.4f} MPa")
+            continue
         print(f"[{entry['tag']}] limit {limit / 1e6:.4f} MPa "
               f"({100 * (entry.get('errors') or {}).get('ilyushin_sine', float('nan')):+.2f} % vs Ilyushin, "
               f"{100 * (entry.get('errors') or {}).get('yield_line', float('nan')):+.2f} % vs yield line) "
@@ -297,6 +315,40 @@ def analyse() -> int:
 
 
 #: the campaign actually submitted to the queue: ``(nx, geometry)``
+def describe(record: dict) -> str:
+    """One machine-generated report line for a ladder record.
+
+    ``limit_load_from_path`` legitimately returns ``None`` when no limit-load
+    definition fires on a ramp (a ramp that never softened, or too short a
+    ramp): that is a *result*, not an error, so the report says ``n/a`` instead
+    of formatting ``None`` as a number.
+    """
+    tight = record["limit_estimates"]["tight"]
+    limit = tight.get("limit_load")
+    errors = record.get("errors") or {}
+    spread = tight.get("spread")
+    if limit is None:
+        limit_text = "limit n/a (no criterion fired)"
+        error_text = "vs bounds n/a"
+    else:
+        limit_text = f"limit {limit / 1e6:.4f} MPa"
+        error_text = (f"({100 * errors.get('ilyushin_sine', float('nan')):+.2f} % "
+                      f"vs Ilyushin, "
+                      f"{100 * errors.get('yield_line', float('nan')):+.2f} % "
+                      "vs yield line)")
+    first = record.get("first_yield")
+    first_text = f"{first / 1e6:.4f} MPa" if first else "n/a"
+    permanent = record.get("permanent_deflection")
+    if permanent is not None and record.get("permanent_set_valid"):
+        permanent_text = f"{permanent * 1e3:.2f} mm"
+    else:
+        permanent_text = "withheld"
+    spread_text = f"{spread:.3f}" if spread is not None else "n/a"
+    return (f"[{tag(record)}] {limit_text} {error_text} spread {spread_text} | "
+            f"first yield {first_text} | perm. set {permanent_text} | "
+            f"{record.get('elapsed_s', float('nan')):.0f} s")
+
+
 PLAN = ((8, "free"), (12, "free"), (16, "free"), (8, "membrane"), (12, "membrane"))
 
 
@@ -322,16 +374,7 @@ def main(argv: list[str] | None = None) -> int:
                      unload_steps=args.unload_steps, top=args.top, step=args.step)
     out = ART / f"patch_plate_plastic_ladder_{tag(record)}.json"
     out.write_text(json.dumps(record, indent=2))
-    tight = record["limit_estimates"]["tight"]
-    limit = tight["limit_load"]
-    err = record.get("errors", {})
-    print(f"[{tag(record)}] limit {limit / 1e6:.4f} MPa "
-          f"({100 * err.get('ilyushin_sine', float('nan')):+.2f} % vs Ilyushin, "
-          f"{100 * err.get('yield_line', float('nan')):+.2f} % vs yield line) "
-          f"spread {tight['spread']:.3f} | first yield "
-          f"{record['first_yield'] / 1e6:.4f} MPa | perm. set "
-          f"{(record['permanent_deflection'] or 0.0) * 1e3:.2f} mm | "
-          f"{record['elapsed_s']:.0f} s -> {out.name}", flush=True)
+    print(describe(record) + f" -> {out.name}", flush=True)
     return 0
 
 
