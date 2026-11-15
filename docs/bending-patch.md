@@ -183,6 +183,46 @@ Decay ratio `e(L/b=20)/e(L/b=5) = 0.283`: the offset is local to the clamped roo
 
 The state is run at `nu = 0.3` and `nu = 0.45` so the check cannot be satisfied by a constant tuned to one Poisson ratio.
 
+### 4.6 Round-3 thin-limit control: the (h/t)^2 locking law
+
+Every case graded above runs at `t/L = 1`, i.e. `h/t = 0.25` — a **thick** plate,
+which is exactly where shear locking is weakest. That is why the round-2 patch
+negative control read only 2.1 % against a 2 % threshold (a 5 % margin): a control
+that thin cannot separate *the element locks* from *the element has a small
+interpolation error*. Round 3 instead **thins the plate at a fixed mesh**, so `h/t`
+grows by a factor 20 while `h` is unchanged, and grades the *law*, not one value.
+
+The spurious transverse-shear energy of a bilinear `w` scales as `(h/t)^2`, so a
+locking element must show log-log slope 2 and an amplification of `20^2 = 400` over
+this ladder; a shear-robust one must stay at round-off. Both thresholds were fixed
+from that law before the numbers were read (slope floor 1.5 = the observed-order
+floor used elsewhere; amplification floor 100 = a factor 4 slack).
+
+| family | treatment | slope vs `h/t` | amplification | error at `h/t = 5` |
+|---|---|---|---|---|
+| affine | sri | n/a (at round-off) | 16.6 | 1.012e-14 |
+| affine | mitc | n/a (at round-off) | 255.4 | 1.038e-13 |
+| affine | full | 2.00 | 400.0 | 5.584e+00 |
+| distorted | sri | 1.95 | 340.9 | 2.614e-01 |
+| distorted | mitc | n/a (at round-off) | 9.8 | 5.952e-15 |
+| distorted | full | 1.99 | 385.2 | 6.288e+00 |
+
+`n = 4` (16 elements) is the graded mesh; `n = 8` reproduces every slope and
+is exported in `result.json` under `locking_scaling_summary.series`.
+
+* **2x2 (full) shear integration locks exactly as predicted.** On the affine patch
+  the slope is 2.00 and the amplification 400.0 = 20^2 — the pure `(h/t)^2` law with no fitted constant. A stronger negative control than round 2: it pins the mechanism, not just the sign of the error.
+* **MITC4 is shear-free in the thin limit**: 5.89e-13 at `h/t = 5`, versus 6.3 for the locking element on the same mesh.
+* **SRI is distortion-limited — a limitation of the element, recorded not hidden.**
+  Exact on affine meshes at every thickness (1.0e-14 at `h/t = 5`), but on the distorted family its error follows the same law (slope 1.95) and reaches 26.144 % at `h/t = 5`. SRI cuts the constant by 24x relative to full integration; it does not remove the thin-plate limit on a
+  general mesh.
+* The same SRI cases keep a much smaller *displacement* error (1.058 % at the thickest plate -> 1.423 % at the thinnest, `n = 4`), so the quantity that grows like `(h/t)^2` is the spurious shear **energy** — the locking indicator — not a displacement-error bound.
+
+**Scope consequence (stated, not hidden):** the 2 % claims of this anchor are
+certified for `h/t <= 0.25`. For a thin plate on a distorted mesh SRI is *not*
+certified here and MITC4 is the element to use; this is a `limitations` entry in
+`gates_verified.json`.
+
 ## 5. Convergence and sensitivity
 
 | n | h | treatment | w error | moment error | energy error |
@@ -238,7 +278,7 @@ PYTHONPATH=src pytest tests/test_bending_patch.py -q
 * **Artefacts**: `benchmarks/verified/fem_bending_patch/result.json`,
   `benchmarks/verified/fem_bending_patch/gates_verified.json`, figures under
   `docs/assets/bending_patch/`.
-* **Gate summary**: 24/24 passed
+* **Gate summary**: 29/29 passed
 
 ## 7. Gate table (machine verdict)
 
@@ -267,5 +307,10 @@ PYTHONPATH=src pytest tests/test_bending_patch.py -q
 | order_w_min | observed order of the distorted patch, w (SRI) | second-order consistency of the element (orders below the round-off floor are reported as null, not fitted) | 1.717 | 1.5 | PASS |
 | locking_control_strip | min tip-deflection error of the locking element (thin strip, t/L = 0.01) | shear locking must be visible (negative control) | 0.9785 | 0.5 | PASS |
 | locking_control_patch | max energy error of the locking element on the patch | shear locking must be visible (negative control) | 0.0211 | 0.02 | PASS |
+| locking_scaling_slope_full | observed slope of log(strain-energy error) vs log(h/t), distorted patch, fully integrated 2x2 shear, n=4, t/L = 1 .. 0.05 | the spurious transverse-shear energy of the bilinear interpolant scales as (h/t)^2, so a locking element must show slope 2 (a negative control on the law, not on one marginal number); threshold 1.5 = the observed-order floor | 1.987 | 1.5 | PASS |
+| locking_amplification_full | e(h/t=5) / e(h/t=0.25) of the energy error, distorted patch, fully integrated shear, n=4 | the (h/t)^2 law predicts 20^2 = 400 over this ladder; a factor 4 slack (>= 100) is required. The round-2 single-point control read 2.1 % against a 2 % threshold (a 5 % margin) at h/t = 0.25, i.e. in the thick-plate regime where locking is weakest by construction | 385.2 | 100 | PASS |
+| thin_limit_mitc | max strain-energy error of MITC4 over both mesh families and both meshes at t/L = 0.05 (h/t = 5) | assumed transverse-shear strain: the element must stay shear-free in the thin limit, where the locking element is ~558 % off | 5.891e-13 | 0.02 | PASS |
+| thin_limit_sri_affine | max strain-energy error of SRI on the AFFINE patch at t/L = 0.05, both meshes | on an affine mesh the SRI element passes the patch test at every thickness, so distortion -- not thickness -- is the trigger of the degradation measured on the distorted family | 1.012e-14 | 1e-10 | PASS |
+| sri_locking_law_slope_dev | |observed slope - 2| of the SRI energy error vs h/t, distorted patch, n=4 | mechanism identification: the SRI degradation must follow the same (h/t)^2 locking law (an implementation error would not reproduce the exponent). SRI reduces the constant ~21x but does not remove the thin-plate limitation on distorted meshes | 0.05236 | 0.5 | PASS |
 | equilibrium_residual | max |K_ff u_f + K_fc u_c| over all patch cases | discrete equilibrium | 4.263e-14 | 1e-08 | PASS |
 

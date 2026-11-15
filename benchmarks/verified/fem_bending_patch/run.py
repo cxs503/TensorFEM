@@ -111,6 +111,18 @@ STRIP_WIDTH = 0.2
 FREE_SURFACE_POISSONS = (0.3, 0.45)
 # self-imposed "exact" tolerance for the affine pass/fail form
 EXACT_TOL = 1.0e-12
+# round-3: thin-limit (shear-locking) ladder.  ``h/t`` is the locking parameter of a
+# Mindlin element; the plate is thinned at a *fixed* mesh so h/t sweeps 0.25..5 (a
+# factor 20, i.e. h/t up to 12.5 at the finest mesh) while h is unchanged.
+LOCK_THICKNESSES = (1.0, 0.5, 0.2, 0.1, 0.05)
+LOCK_MESHES = (4, 8)
+LOCK_GRADED_MESH = 4
+# predeclared from the pure (h/t)^2 law, NOT from the measured value: the slope floor
+# is the same 1.5 used for observed orders, the amplification floor is a factor 4
+# below the 20^2 = 400 that the law predicts over this ladder.
+LOCK_SLOPE_MIN = 1.5
+LOCK_AMPLIFICATION_MIN = 100.0
+LOCK_LAW_TOL = 0.5
 
 
 # --------------------------------------------------------------------------- #
@@ -246,6 +258,43 @@ def strip_root_support_control(quick: bool) -> list[dict]:
     return rows
 
 
+def locking_scaling_cases(quick: bool) -> list[dict]:
+    """Round 3: thin the plate at a fixed mesh and sweep the locking parameter h/t.
+
+    Every graded patch case of rounds 1-2 runs at ``t/L = 1``, i.e. ``h/t = 0.25`` --
+    a *thick* plate, which is exactly where shear locking is weakest.  The round-2
+    negative control therefore read only 2.1 % against a 2 % threshold (a 5 % margin):
+    a control that thin cannot separate "the element locks" from "the element has a
+    small interpolation error".
+
+    Here the plate is thinned instead of the mesh refined, so ``h/t`` grows at constant
+    ``h``.  The spurious transverse-shear energy of the bilinear interpolant scales as
+    ``(h/t)^2``, so a locking element must show a log-log slope of 2 and an
+    amplification of ``20^2 = 400``; a shear-robust one must stay at round-off.  The
+    distorted family is graded (its interpolant is genuinely not shear-free) and the
+    affine family is the control.
+    """
+    # the full thickness ladder is kept in --quick: it is 60 small patch solves and the
+    # graded thresholds must not change between the smoke test and the full run.
+    taus = LOCK_THICKNESSES
+    meshes = (LOCK_GRADED_MESH,) if quick else LOCK_MESHES
+    rows = []
+    for n in meshes:
+        for fam, patch in (("affine", affine_patch_mesh(n)),
+                           ("distorted", distorted_patch_mesh(n))):
+            for tau in taus:
+                for treat in ("sri", "mitc", "full"):
+                    r = run_patch_case(patch, STATES["double"], young=YOUNG,
+                                       poisson=POISSON, thickness=tau,
+                                       shear_treatment=treat)
+                    r["case"] = f"lock-scaling/{fam}/n={n}/t={tau:g}/{treat}"
+                    r["family"] = fam
+                    r["thickness_ratio"] = tau
+                    r["h_over_t"] = 1.0 / (n * tau)
+                    rows.append(r)
+    return rows
+
+
 # --------------------------------------------------------------------------- #
 # analysis helpers
 # --------------------------------------------------------------------------- #
@@ -274,6 +323,105 @@ def observed_order(rows: list[dict], treatment: str, key: str) -> float:
 def worst(rows: list[dict], pred, key: str) -> float:
     vals = [r[key] for r in rows if pred(r)]
     return max(vals) if vals else float("nan")
+
+
+def loglog_slope(xs: list[float], ys: list[float],
+                 floor: float = ROUNDOFF_FLOOR) -> float:
+    """Least-squares slope of log(y) vs log(x); NaN when y is at the round-off floor.
+
+    Same discipline as :func:`observed_order`: a slope fitted to round-off noise is not
+    a rate, so a series whose largest value is below ``floor`` is reported as ``NaN``
+    (``null`` in JSON, "n/a" in the report) instead of a fake exponent.
+    """
+    pts = [(math.log(x), math.log(y)) for x, y in zip(xs, ys) if y > 0.0]
+    if len(pts) < 2 or max(ys) < floor:
+        return float("nan")
+    n = len(pts)
+    mx = sum(q[0] for q in pts) / n
+    my = sum(q[1] for q in pts) / n
+    num = sum((q[0] - mx) * (q[1] - my) for q in pts)
+    den = sum((q[0] - mx) ** 2 for q in pts)
+    return num / den
+
+
+def locking_scaling_summary(rows: list[dict]) -> dict:
+    """Slope / amplification / thin-limit value of every (family, treatment, mesh)."""
+    out = {"graded_mesh_n": LOCK_GRADED_MESH,
+           "thickness_ratios": sorted({r["thickness_ratio"] for r in rows}),
+           "series": {}, "slope": {}, "amplification": {}, "thin_limit": {}}
+    for fam in ("affine", "distorted"):
+        for treat in ("sri", "mitc", "full"):
+            for n in sorted({r["n"] for r in rows}):
+                sel = sorted([r for r in rows if r["family"] == fam
+                              and r["shear_treatment"] == treat and r["n"] == n],
+                             key=lambda r: r["h_over_t"])
+                if not sel:
+                    continue
+                key = f"{fam}/{treat}/n={n}"
+                xs = [r["h_over_t"] for r in sel]
+                ys = [r["energy_rel_error"] for r in sel]
+                out["series"][key] = [
+                    {"h_over_t": x, "energy_rel_error": y,
+                     "displacement_rel_error": r["displacement_rel_error"]}
+                    for x, y, r in zip(xs, ys, sel)]
+                out["slope"][key] = loglog_slope(xs, ys)
+                out["amplification"][key] = (ys[-1] / ys[0]) if ys[0] > 0.0 else float("nan")
+                out["thin_limit"][key] = ys[-1]
+    ns = sorted({r["n"] for r in rows})
+    g = LOCK_GRADED_MESH
+    out["slope_full"] = out["slope"].get(f"distorted/full/n={g}", float("nan"))
+    out["amplification_full"] = out["amplification"].get(f"distorted/full/n={g}",
+                                                         float("nan"))
+    slope_sri = out["slope"].get(f"distorted/sri/n={g}", float("nan"))
+    out["slope_sri_dev"] = (abs(slope_sri - 2.0) if slope_sri == slope_sri
+                            else float("nan"))
+    out["thin_mitc"] = max(out["thin_limit"][k] for k in out["thin_limit"]
+                           if "/mitc/" in k)
+    out["thin_sri_affine"] = max(out["thin_limit"][f"affine/sri/n={n}"] for n in ns)
+    out["thin_sri_distorted"] = max(out["thin_limit"][f"distorted/sri/n={n}"]
+                                    for n in ns)
+    return out
+
+
+def round3_gates(lock_sum: dict) -> list[Gate]:
+    """Round-3 thin-limit gates (one place, so a merge step cannot fork them)."""
+    return [
+        Gate("locking_scaling_slope_full",
+             "observed slope of log(strain-energy error) vs log(h/t), distorted patch, "
+             "fully integrated 2x2 shear, n=4, t/L = 1 .. 0.05",
+             "the spurious transverse-shear energy of the bilinear interpolant scales as "
+             "(h/t)^2, so a locking element must show slope 2 (a negative control on the "
+             "law, not on one marginal number); threshold 1.5 = the observed-order floor",
+             lock_sum["slope_full"], LOCK_SLOPE_MIN, ">="),
+        Gate("locking_amplification_full",
+             "e(h/t=5) / e(h/t=0.25) of the energy error, distorted patch, fully "
+             "integrated shear, n=4",
+             "the (h/t)^2 law predicts 20^2 = 400 over this ladder; a factor 4 slack "
+             "(>= 100) is required. The round-2 single-point control read 2.1 % against "
+             "a 2 % threshold (a 5 % margin) at h/t = 0.25, i.e. in the thick-plate "
+             "regime where locking is weakest by construction",
+             lock_sum["amplification_full"], LOCK_AMPLIFICATION_MIN, ">="),
+        Gate("thin_limit_mitc",
+             "max strain-energy error of MITC4 over both mesh families and both meshes "
+             "at t/L = 0.05 (h/t = 5)",
+             "assumed transverse-shear strain: the element must stay shear-free in the "
+             "thin limit, where the locking element is ~558 % off",
+             lock_sum["thin_mitc"], POOL_TOL),
+        Gate("thin_limit_sri_affine",
+             "max strain-energy error of SRI on the AFFINE patch at t/L = 0.05, both "
+             "meshes",
+             "on an affine mesh the SRI element passes the patch test at every "
+             "thickness, so distortion -- not thickness -- is the trigger of the "
+             "degradation measured on the distorted family",
+             lock_sum["thin_sri_affine"], ROUNDOFF_FLOOR),
+        Gate("sri_locking_law_slope_dev",
+             "|observed slope - 2| of the SRI energy error vs h/t, distorted patch, n=4",
+             "mechanism identification: the SRI degradation must follow the same (h/t)^2 "
+             "locking law (an implementation error would not reproduce the exponent). "
+             "SRI reduces the constant ~21x but does not remove the thin-plate "
+             "limitation on distorted meshes",
+             lock_sum["slope_sri_dev"], LOCK_LAW_TOL),
+    ]
 
 
 # --------------------------------------------------------------------------- #
@@ -398,6 +546,52 @@ def make_figures(result: dict) -> list[dict]:
     made.append({"file": str(p.relative_to(REPO)),
                  "caption": "Load-driven cantilever strip: tip deflection and rotation "
                             "errors against the closed form, both lateral conditions."})
+
+    # 5. thin-limit (h/t) locking ladder ---------------------------------------
+    summ = result["locking_scaling_summary"]
+    fig, ax = plt.subplots(figsize=(6.8, 4.6))
+    styles = (("distorted", "full", "C3", "o-", "distorted, 2x2 shear (locking)"),
+              ("distorted", "sri", "C0", "s-", "distorted, sri"),
+              ("distorted", "mitc", "C2", "^-", "distorted, mitc"),
+              ("affine", "full", "C3", "o--", "affine, 2x2 shear (locking)"),
+              ("affine", "sri", "C0", "s--", "affine, sri"))
+    for fam, treat, colour, style, label in styles:
+        pts = summ["series"].get(f"{fam}/{treat}/n={LOCK_GRADED_MESH}") or []
+        if not pts:
+            continue
+        ax.loglog([q["h_over_t"] for q in pts],
+                  [max(q["energy_rel_error"], 1e-18) for q in pts],
+                  style, color=colour, label=label, ms=4)
+    guide = summ["series"][f"distorted/full/n={LOCK_GRADED_MESH}"]
+    x0, y0 = guide[0]["h_over_t"], guide[0]["energy_rel_error"]
+    ax.loglog([x0, 20.0 * x0], [y0, 400.0 * y0], "k:", lw=1.0,
+              label="pure (h/t)^2 law: slope 2, amplification 400")
+    ax.axhline(POOL_TOL, color="C3", ls="--", lw=1.2, label="2% case-pool tolerance")
+    ax.axhline(ROUNDOFF_FLOOR, color="0.5", ls="-.", lw=1.0,
+               label="declared round-off floor")
+    txt = []
+    for k in (f"distorted/full/n={LOCK_GRADED_MESH}", f"affine/full/n={LOCK_GRADED_MESH}",
+              f"distorted/sri/n={LOCK_GRADED_MESH}"):
+        sl = summ["slope"].get(k, float("nan"))
+        am = summ["amplification"].get(k, float("nan"))
+        txt.append(f"{k.split('/n=')[0]}: slope {'n/a' if sl != sl else format(sl, '.2f')},"
+                   f" amplification {'n/a' if am != am else format(am, '.0f')}")
+    ax.set_xlabel("h/t   (h = 1/n at fixed t; the plate is thinned)")
+    ax.set_ylabel("relative strain-energy error")
+    ax.set_title("Thin-limit locking ladder, n = %d\n%s" % (LOCK_GRADED_MESH,
+                                                           "; ".join(txt)), fontsize=9)
+    ax.grid(alpha=0.3, which="both")
+    ax.legend(fontsize=7, loc="lower right")
+    fig.tight_layout()
+    p = FIGS / "locking_scaling.png"
+    fig.savefig(p, dpi=140)
+    plt.close(fig)
+    made.append({"file": str(p.relative_to(REPO)),
+                 "caption": "Thin-limit ladder: the bilinear patch at constant h with "
+                            "the plate thinned (h/t = 0.25..5). Fully integrated and "
+                            "distorted-SRI energies follow the (h/t)^2 law (slope 2, "
+                            "amplification 400 = 20^2); affine SRI and MITC4 stay on the "
+                            "round-off floor at every thickness."})
     return made
 
 
@@ -634,6 +828,73 @@ def render_report(result: dict) -> str:
     A("The state is run at `nu = 0.3` and `nu = 0.45` so the check cannot be satisfied"
       " by a constant tuned to one Poisson ratio.")
     A("")
+    summ = result["locking_scaling_summary"]
+    g_n = summ["graded_mesh_n"]
+    h_over_t_thin = 1.0 / (g_n * min(summ["thickness_ratios"]))
+
+    def _s(key, spec=".2f"):
+        v = summ["slope"].get(key, float("nan"))
+        return "n/a (at round-off)" if v != v else format(v, spec)
+
+    A("### 4.6 Round-3 thin-limit control: the (h/t)^2 locking law")
+    A("")
+    A("Every case graded above runs at `t/L = 1`, i.e. `h/t = 0.25` — a **thick** plate,")
+    A("which is exactly where shear locking is weakest. That is why the round-2 patch")
+    A("negative control read only 2.1 % against a 2 % threshold (a 5 % margin): a control")
+    A("that thin cannot separate *the element locks* from *the element has a small")
+    A("interpolation error*. Round 3 instead **thins the plate at a fixed mesh**, so `h/t`")
+    A("grows by a factor 20 while `h` is unchanged, and grades the *law*, not one value.")
+    A("")
+    A("The spurious transverse-shear energy of a bilinear `w` scales as `(h/t)^2`, so a")
+    A("locking element must show log-log slope 2 and an amplification of `20^2 = 400` over")
+    A("this ladder; a shear-robust one must stay at round-off. Both thresholds were fixed")
+    A("from that law before the numbers were read (slope floor 1.5 = the observed-order")
+    A("floor used elsewhere; amplification floor 100 = a factor 4 slack).")
+    A("")
+    A(f"| family | treatment | slope vs `h/t` | amplification | error at `h/t ="
+      f" {h_over_t_thin:g}` |")
+    A("|---|---|---|---|---|")
+    for fam in ("affine", "distorted"):
+        for treat in ("sri", "mitc", "full"):
+            key = f"{fam}/{treat}/n={g_n}"
+            amp = summ["amplification"].get(key, float("nan"))
+            A(f"| {fam} | {treat} | {_s(key)} |"
+              f" {'n/a' if amp != amp else format(amp, '.1f')} |"
+              f" {summ['thin_limit'].get(key, float('nan')):.3e} |")
+    A("")
+    A(f"`n = {g_n}` (16 elements) is the graded mesh; `n = 8` reproduces every slope and")
+    A("is exported in `result.json` under `locking_scaling_summary.series`.")
+    A("")
+    A("* **2x2 (full) shear integration locks exactly as predicted.** On the affine patch")
+    A(f"  the slope is {_s(f'affine/full/n={g_n}')} and the amplification"
+      f" {summ['amplification'][f'affine/full/n={g_n}']:.1f} = 20^2 — the pure `(h/t)^2`"
+      " law with no fitted constant. A stronger negative control than round 2: it pins"
+      " the mechanism, not just the sign of the error.")
+    A(f"* **MITC4 is shear-free in the thin limit**: {summ['thin_mitc']:.2e} at"
+      f" `h/t = {h_over_t_thin:g}`, versus"
+      f" {summ['thin_limit'][f'distorted/full/n={g_n}']:.1f} for the locking element on"
+      " the same mesh.")
+    A("* **SRI is distortion-limited — a limitation of the element, recorded not hidden.**")
+    A(f"  Exact on affine meshes at every thickness ({summ['thin_sri_affine']:.1e} at"
+      f" `h/t = {h_over_t_thin:g}`), but on the distorted family its error follows the"
+      f" same law (slope {_s(f'distorted/sri/n={g_n}')}) and reaches"
+      f" {pct(summ['thin_sri_distorted'])} at `h/t = {h_over_t_thin:g}`. SRI cuts the"
+      f" constant by"
+      f" {summ['thin_limit'][f'distorted/full/n={g_n}'] / summ['thin_sri_distorted']:.0f}x"
+      " relative to full integration; it does not remove the thin-plate limit on a")
+    A("  general mesh.")
+    sri_series = summ["series"][f"distorted/sri/n={g_n}"]
+    A(f"* The same SRI cases keep a much smaller *displacement* error"
+      f" ({pct(sri_series[0]['displacement_rel_error'])} at the thickest plate ->"
+      f" {pct(sri_series[-1]['displacement_rel_error'])} at the thinnest, `n = {g_n}`),"
+      " so the quantity that grows like `(h/t)^2` is the spurious shear **energy** — the"
+      " locking indicator — not a displacement-error bound.")
+    A("")
+    A("**Scope consequence (stated, not hidden):** the 2 % claims of this anchor are")
+    A("certified for `h/t <= 0.25`. For a thin plate on a distorted mesh SRI is *not*")
+    A("certified here and MITC4 is the element to use; this is a `limitations` entry in")
+    A("`gates_verified.json`.")
+    A("")
     A("## 5. Convergence and sensitivity")
     A("")
     A("| n | h | treatment | w error | moment error | energy error |")
@@ -723,6 +984,8 @@ def main(argv: list[str] | None = None) -> int:
     strip_ny = strip_transverse_sweep(args.quick)
     strip_aspect = strip_aspect_series(args.quick)
     strip_root = strip_root_support_control(args.quick)
+    lock_scaling = locking_scaling_cases(args.quick)
+    lock_sum = locking_scaling_summary(lock_scaling)
 
     # dimensionless parameters
     d = YOUNG * THICK ** 3 / (12.0 * (1.0 - POISSON ** 2))
@@ -920,7 +1183,7 @@ def main(argv: list[str] | None = None) -> int:
              "shear locking must be visible (negative control)", lock_dist_e, POOL_TOL, ">="),
         Gate("equilibrium_residual", "max |K_ff u_f + K_fc u_c| over all patch cases",
              "discrete equilibrium", max(r["equilibrium_residual"] for r in matrix), 1e-8),
-    ]
+    ] + round3_gates(lock_sum)
     manifest = gate_manifest(
         anchor="fem_bending_patch",
         title="BENDING-PATCH: constant-curvature patch test of the Q4 Mindlin plate element",
@@ -929,6 +1192,9 @@ def main(argv: list[str] | None = None) -> int:
             "exact_tolerance_affine": EXACT_TOL,
             "observed_order_min": 1.5,
             "locking_control_min": 0.5,
+            "locking_scaling_slope_min": LOCK_SLOPE_MIN,
+            "locking_amplification_min": LOCK_AMPLIFICATION_MIN,
+            "locking_law_tolerance": LOCK_LAW_TOL,
         },
         gates=gates,
         artifacts={
@@ -951,6 +1217,17 @@ def main(argv: list[str] | None = None) -> int:
             "The closed-form Poisson ratio is an algebra identity (insensitive to the "
             "element); it is reported as an oracle check, not as element evidence. "
             "Round 1 graded it as if it were the cross-check -- that gate could not fail.",
+            "THIN-PLATE SCOPE: every graded patch case of rounds 1-2 runs at "
+            "t/L = 1 (h/t = 0.25), a thick plate. Round 3 thins the plate at a fixed "
+            "mesh: the relative strain-energy error of the SRI variant follows the "
+            "(h/t)^2 locking law on DISTORTED meshes (26 % at h/t = 5, n = 4; slope "
+            "1.95), while MITC4 and the affine SRI path stay at round-off. The 2 % "
+            "claims above are therefore certified for h/t <= 0.25; on a general "
+            "distorted thin-plate mesh MITC4 is the element to use, not SRI.",
+            "The thin-limit quantity is the relative error of the discrete strain energy "
+            "U_h = 1/2 u^T K u, which contains the spurious transverse-shear energy: it "
+            "is the locking indicator, not a bound on the displacement error (the same "
+            "SRI cases keep a field-displacement error of a few percent).",
             "Literature criterion cited from the standard statement; the textbooks were not "
             "retrievable offline, but every target value is evaluated in code from the "
             "closed form, so no table digit enters the evidence chain.",
@@ -979,6 +1256,8 @@ def main(argv: list[str] | None = None) -> int:
         "strip_aspect": strip_aspect_summary,
         "strip_aspect_cases": strip_aspect,
         "strip_root_support": strip_root,
+        "locking_scaling": lock_scaling,
+        "locking_scaling_summary": lock_sum,
         "criteria": {"case_pool_tolerance": POOL_TOL, "exact_tolerance": EXACT_TOL},
         "gates": [x.to_dict() for x in gates],
         "passed": passed,
@@ -1000,6 +1279,10 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[bending-patch] strip: symmetry w {strip_w:.3e}, free w {strip_free_w:.3e}, "
           f"locking min {lock_min:.3f}")
     print(f"[bending-patch] orders: {orders}")
+    print(f"[bending-patch] thin limit: full slope {lock_sum['slope_full']:.3f}, "
+          f"amplification {lock_sum['amplification_full']:.1f}, mitc thin "
+          f"{lock_sum['thin_mitc']:.2e}, sri(distorted) thin "
+          f"{lock_sum['thin_sri_distorted']:.3e}")
     print(f"[bending-patch] gates passed={passed} "
           f"failed={[x.id for x in gates if not x.passed]}")
     return 0 if passed else 1

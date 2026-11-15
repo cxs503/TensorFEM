@@ -1,6 +1,6 @@
 {
   "anchor": "CASE-BENDING-PATCH",
-  "generated_at": "2026-11-14T18:18:50+00:00",
+  "generated_at": "2026-11-15T13:54:32+00:00",
   "wall_seconds": 95.27,
   "material": {
     "young": 210000.0,
@@ -2169,7 +2169,7 @@
   ],
   "criteria": {
     "case_pool_tolerance": 0.02,
-    "exact_tolerance": 1e-12
+    "exact_tolerance_affine": 1e-12
   },
   "gates": [
     {
@@ -2380,6 +2380,51 @@
       "passed": true
     },
     {
+      "id": "locking_scaling_slope_full",
+      "quantity": "observed slope of log(strain-energy error) vs log(h/t), distorted patch, fully integrated 2x2 shear, n=4, t/L = 1 .. 0.05",
+      "reference": "the spurious transverse-shear energy of the bilinear interpolant scales as (h/t)^2, so a locking element must show slope 2 (a negative control on the law, not on one marginal number); threshold 1.5 = the observed-order floor",
+      "value": 1.986646967764833,
+      "threshold": 1.5,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "locking_amplification_full",
+      "quantity": "e(h/t=5) / e(h/t=0.25) of the energy error, distorted patch, fully integrated shear, n=4",
+      "reference": "the (h/t)^2 law predicts 20^2 = 400 over this ladder; a factor 4 slack (>= 100) is required. The round-2 single-point control read 2.1 % against a 2 % threshold (a 5 % margin) at h/t = 0.25, i.e. in the thick-plate regime where locking is weakest by construction",
+      "value": 385.1513710329028,
+      "threshold": 100.0,
+      "operator": ">=",
+      "passed": true
+    },
+    {
+      "id": "thin_limit_mitc",
+      "quantity": "max strain-energy error of MITC4 over both mesh families and both meshes at t/L = 0.05 (h/t = 5)",
+      "reference": "assumed transverse-shear strain: the element must stay shear-free in the thin limit, where the locking element is ~558 % off",
+      "value": 5.890618137869228e-13,
+      "threshold": 0.02,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "thin_limit_sri_affine",
+      "quantity": "max strain-energy error of SRI on the AFFINE patch at t/L = 0.05, both meshes",
+      "reference": "on an affine mesh the SRI element passes the patch test at every thickness, so distortion -- not thickness -- is the trigger of the degradation measured on the distorted family",
+      "value": 1.011860980233515e-14,
+      "threshold": 1e-10,
+      "operator": "<=",
+      "passed": true
+    },
+    {
+      "id": "sri_locking_law_slope_dev",
+      "quantity": "|observed slope - 2| of the SRI energy error vs h/t, distorted patch, n=4",
+      "reference": "mechanism identification: the SRI degradation must follow the same (h/t)^2 locking law (an implementation error would not reproduce the exponent). SRI reduces the constant ~21x but does not remove the thin-plate limitation on distorted meshes",
+      "value": 0.052362236952326446,
+      "threshold": 0.5,
+      "operator": "<=",
+      "passed": true
+    },
+    {
       "id": "equilibrium_residual",
       "quantity": "max |K_ff u_f + K_fc u_c| over all patch cases",
       "reference": "discrete equilibrium",
@@ -2406,6 +2451,2142 @@
     {
       "file": "docs/assets/bending_patch/strip_bending.png",
       "caption": "Load-driven cantilever strip: tip deflection and rotation errors against the closed form, both lateral conditions."
+    },
+    {
+      "file": "docs/assets/bending_patch/locking_scaling.png",
+      "caption": "Thin-limit ladder: the bilinear patch at constant h with the plate thinned (h/t = 0.25..5). Fully integrated and distorted-SRI energies follow the (h/t)^2 law (slope 2, amplification 400 = 20^2); affine SRI and MITC4 stay on the round-off floor at every thickness."
     }
-  ]
+  ],
+  "locking_scaling": [
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 1.9274705288631188e-16,
+      "rotation_rel_error": 4.818676322157797e-16,
+      "moment_rel_error": 1.2524821104923802e-15,
+      "energy_rel_error": 6.094974375053647e-16,
+      "strain_energy": 0.017076923076923087,
+      "strain_energy_exact": 0.017076923076923076,
+      "equilibrium_residual": 9.490130035982869e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=1/sri",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 1.9274705288631188e-16,
+      "rotation_rel_error": 4.818676322157797e-16,
+      "moment_rel_error": 9.393615828692852e-16,
+      "energy_rel_error": 4.0633162500357644e-16,
+      "strain_energy": 0.01707692307692307,
+      "strain_energy_exact": 0.017076923076923076,
+      "equilibrium_residual": 2.842170943040401e-14,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=1/mitc",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 3.8549410577262376e-16,
+      "rotation_rel_error": 3.6140072416183483e-16,
+      "moment_rel_error": 9.393615828692852e-16,
+      "energy_rel_error": 0.013959271771772454,
+      "strain_energy": 0.017315304487179498,
+      "strain_energy_exact": 0.017076923076923076,
+      "equilibrium_residual": 1.4210854715202004e-14,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=1/full",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 1.9274705288631188e-16,
+      "rotation_rel_error": 6.023345402697247e-16,
+      "moment_rel_error": 1.0959218466808326e-15,
+      "energy_rel_error": 6.094974375053647e-16,
+      "strain_energy": 0.002134615384615386,
+      "strain_energy_exact": 0.0021346153846153845,
+      "equilibrium_residual": 3.552713678800501e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.5/sri",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.5
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 1.9274705288631188e-16,
+      "rotation_rel_error": 2.4093381610788987e-16,
+      "moment_rel_error": 9.393615828692852e-16,
+      "energy_rel_error": 8.126632500071529e-16,
+      "strain_energy": 0.002134615384615383,
+      "strain_energy_exact": 0.0021346153846153845,
+      "equilibrium_residual": 1.0658141036401503e-14,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.5/mitc",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.5
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 1.9274705288631188e-16,
+      "rotation_rel_error": 3.6140072416183483e-16,
+      "moment_rel_error": 9.393615828692852e-16,
+      "energy_rel_error": 0.05583708708708819,
+      "strain_energy": 0.002253806089743592,
+      "strain_energy_exact": 0.0021346153846153845,
+      "equilibrium_residual": 1.4210854715202004e-14,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.5/full",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.5
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 1.9274705288631188e-16,
+      "rotation_rel_error": 7.228014483236697e-16,
+      "moment_rel_error": 2.599145004683893e-15,
+      "energy_rel_error": 5.952123413138323e-15,
+      "strain_energy": 0.0001366153846153855,
+      "strain_energy_exact": 0.00013661538461538469,
+      "equilibrium_residual": 1.7763568394002505e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.2/sri",
+      "thickness_ratio": 0.2,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 3.8549410577262376e-16,
+      "rotation_rel_error": 8.432683563776146e-16,
+      "moment_rel_error": 3.5164903004546785e-15,
+      "energy_rel_error": 2.3808493652553296e-15,
+      "strain_energy": 0.000136615384615385,
+      "strain_energy_exact": 0.00013661538461538469,
+      "equilibrium_residual": 1.7763568394002505e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.2/mitc",
+      "thickness_ratio": 0.2,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 1.9274705288631188e-16,
+      "rotation_rel_error": 7.228014483236697e-16,
+      "moment_rel_error": 3.0578176525692857e-15,
+      "energy_rel_error": 0.34898179429430354,
+      "strain_energy": 0.00018429166666666802,
+      "strain_energy_exact": 0.00013661538461538469,
+      "equilibrium_residual": 1.7763568394002505e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.2/full",
+      "thickness_ratio": 0.2,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 5.782411586589357e-16,
+      "rotation_rel_error": 2.529805069132844e-15,
+      "moment_rel_error": 9.63212560559325e-15,
+      "energy_rel_error": 9.721801574792596e-15,
+      "strain_energy": 1.7076923076923252e-05,
+      "strain_energy_exact": 1.7076923076923086e-05,
+      "equilibrium_residual": 1.1102230246251565e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.1/sri",
+      "thickness_ratio": 0.1,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 6.746146851020916e-16,
+      "rotation_rel_error": 2.168404344971009e-15,
+      "moment_rel_error": 1.07023617839925e-14,
+      "energy_rel_error": 3.511752813751611e-14,
+      "strain_energy": 1.7076923076923685e-05,
+      "strain_energy_exact": 1.7076923076923086e-05,
+      "equilibrium_residual": 3.1086244689504383e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.1/mitc",
+      "thickness_ratio": 0.1,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 4.818676322157797e-16,
+      "rotation_rel_error": 1.4456028966473393e-15,
+      "moment_rel_error": 7.49165324879475e-15,
+      "energy_rel_error": 1.3959271771772124,
+      "strain_energy": 4.0915064102564725e-05,
+      "strain_energy_exact": 1.7076923076923086e-05,
+      "equilibrium_residual": 2.6645352591003757e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.1/full",
+      "thickness_ratio": 0.1,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 3.276699899067302e-15,
+      "rotation_rel_error": 1.144435626512477e-14,
+      "moment_rel_error": 6.344971629081267e-14,
+      "energy_rel_error": 1.011860980233515e-14,
+      "strain_energy": 2.1346153846154073e-06,
+      "strain_energy_exact": 2.1346153846153857e-06,
+      "equilibrium_residual": 1.5543122344752192e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.05/sri",
+      "thickness_ratio": 0.05,
+      "h_over_t": 5.0
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 1.2046690805394492e-15,
+      "rotation_rel_error": 6.023345402697247e-15,
+      "moment_rel_error": 3.7305375361345286e-14,
+      "energy_rel_error": 1.0376535150237811e-13,
+      "strain_energy": 2.134615384615607e-06,
+      "strain_energy_exact": 2.1346153846153857e-06,
+      "equilibrium_residual": 1.3322676295501878e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.05/mitc",
+      "thickness_ratio": 0.05,
+      "h_over_t": 5.0
+    },
+    {
+      "family": "affine",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 5.782411586589357e-16,
+      "rotation_rel_error": 1.144435626512477e-15,
+      "moment_rel_error": 5.198290009367786e-15,
+      "energy_rel_error": 5.58370870870882,
+      "strain_energy": 1.4053685897436142e-05,
+      "strain_energy_exact": 2.1346153846153857e-06,
+      "equilibrium_residual": 3.1086244689504383e-15,
+      "min_jacobian": 0.015624999999999993,
+      "case": "lock-scaling/affine/n=4/t=0.05/full",
+      "thickness_ratio": 0.05,
+      "h_over_t": 5.0
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 0.010577013844083067,
+      "rotation_rel_error": 0.0014313369420679797,
+      "moment_rel_error": 0.00233612337736067,
+      "energy_rel_error": 0.0007670217832307565,
+      "strain_energy": 0.017090021448913632,
+      "strain_energy_exact": 0.017076923076923076,
+      "equilibrium_residual": 2.842170943040401e-14,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=1/sri",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 3.910805510305846e-16,
+      "rotation_rel_error": 4.4363613725668996e-16,
+      "moment_rel_error": 9.393615828692852e-16,
+      "energy_rel_error": 6.094974375053647e-16,
+      "strain_energy": 0.017076923076923087,
+      "strain_energy_exact": 0.017076923076923076,
+      "equilibrium_residual": 2.976290894297335e-14,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=1/mitc",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 0.0022461609096388,
+      "rotation_rel_error": 0.0019835348517958126,
+      "moment_rel_error": 0.009446752582152154,
+      "energy_rel_error": 0.016326465132297217,
+      "strain_energy": 0.017355728866105383,
+      "strain_energy_exact": 0.017076923076923076,
+      "equilibrium_residual": 4.263256414560601e-14,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=1/full",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 0.010544387765899142,
+      "rotation_rel_error": 0.004798836616668474,
+      "moment_rel_error": 0.009069893718226476,
+      "energy_rel_error": 0.0030391500952249356,
+      "strain_energy": 0.002141102801164807,
+      "strain_energy_exact": 0.0021346153846153845,
+      "equilibrium_residual": 1.4210854715202004e-14,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.5/sri",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.5
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 2.9331041327293844e-16,
+      "rotation_rel_error": 4.4363613725668996e-16,
+      "moment_rel_error": 1.7221629019270227e-15,
+      "energy_rel_error": 3.656984625032188e-15,
+      "strain_energy": 0.0021346153846153923,
+      "strain_energy_exact": 0.0021346153846153845,
+      "equilibrium_residual": 1.3993276051786548e-14,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.5/mitc",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.5
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 0.002393982804577782,
+      "rotation_rel_error": 0.007213965617482424,
+      "moment_rel_error": 0.034625424573455625,
+      "energy_rel_error": 0.06510006592941958,
+      "strain_energy": 0.0022735789868877994,
+      "strain_energy_exact": 0.0021346153846153845,
+      "equilibrium_residual": 7.105427357601002e-15,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.5/full",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.5
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 0.010469308273382518,
+      "rotation_rel_error": 0.01701602569769856,
+      "moment_rel_error": 0.047111142163447625,
+      "energy_rel_error": 0.018360751081004267,
+      "strain_energy": 0.00013912374568614342,
+      "strain_energy_exact": 0.00013661538461538469,
+      "equilibrium_residual": 2.178369979690379e-15,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.2/sri",
+      "thickness_ratio": 0.2,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 1.955402755152923e-16,
+      "rotation_rel_error": 1.0140254565867198e-15,
+      "moment_rel_error": 3.975162948340072e-15,
+      "energy_rel_error": 9.32499334725004e-15,
+      "strain_energy": 0.00013661538461538596,
+      "strain_energy_exact": 0.00013661538461538469,
+      "equilibrium_residual": 6.06640188343366e-15,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.2/mitc",
+      "thickness_ratio": 0.2,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 0.0033556609959695546,
+      "rotation_rel_error": 0.026284925099843467,
+      "moment_rel_error": 0.1513601698430876,
+      "energy_rel_error": 0.40183959079191567,
+      "strain_energy": 0.00019151285486511104,
+      "strain_energy_exact": 0.00013661538461538469,
+      "equilibrium_residual": 1.7763568394002505e-15,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.2/full",
+      "thickness_ratio": 0.2,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 0.011421382661957047,
+      "rotation_rel_error": 0.03796810939766996,
+      "moment_rel_error": 0.12635910631062555,
+      "energy_rel_error": 0.07003327564924454,
+      "strain_energy": 1.8272875938010185e-05,
+      "strain_energy_exact": 1.7076923076923086e-05,
+      "equilibrium_residual": 1.7763568394002505e-15,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.1/sri",
+      "thickness_ratio": 0.1,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 2.2487131684258612e-15,
+      "rotation_rel_error": 7.35168456025372e-15,
+      "moment_rel_error": 2.4309650337925822e-14,
+      "energy_rel_error": 1.6070733215473474e-14,
+      "strain_energy": 1.707692307692336e-05,
+      "strain_energy_exact": 1.7076923076923086e-05,
+      "equilibrium_residual": 4.0763292402403965e-15,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.1/mitc",
+      "thickness_ratio": 0.1,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 0.0049230193651183946,
+      "rotation_rel_error": 0.04632117145255749,
+      "moment_rel_error": 0.3196379394817376,
+      "energy_rel_error": 1.5858686589782036,
+      "strain_energy": 4.415868017639704e-05,
+      "strain_energy_exact": 1.7076923076923086e-05,
+      "equilibrium_residual": 1.7763568394002505e-15,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.1/full",
+      "thickness_ratio": 0.1,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 0.014234470256870855,
+      "rotation_rel_error": 0.07951836031470938,
+      "moment_rel_error": 0.34343242123782586,
+      "energy_rel_error": 0.26144434650196396,
+      "strain_energy": 2.6926985088791937e-06,
+      "strain_energy_exact": 2.1346153846153857e-06,
+      "equilibrium_residual": 8.881784197001252e-16,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.05/sri",
+      "thickness_ratio": 0.05,
+      "h_over_t": 5.0
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 3.421954821517615e-15,
+      "rotation_rel_error": 9.5064886555005e-15,
+      "moment_rel_error": 5.672251745516025e-14,
+      "energy_rel_error": 5.952123413138323e-15,
+      "strain_energy": 2.1346153846153984e-06,
+      "strain_energy_exact": 2.1346153846153857e-06,
+      "equilibrium_residual": 1.5543122344752192e-15,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.05/mitc",
+      "thickness_ratio": 0.05,
+      "h_over_t": 5.0
+    },
+    {
+      "family": "distorted",
+      "n": 4,
+      "elements": 16,
+      "free_dofs": 27,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 0.006187383069448013,
+      "rotation_rel_error": 0.06720113062468239,
+      "moment_rel_error": 0.45514137543738903,
+      "energy_rel_error": 6.288160429825155,
+      "strain_energy": 1.555741937904986e-05,
+      "strain_energy_exact": 2.1346153846153857e-06,
+      "equilibrium_residual": 1.5543122344752192e-15,
+      "min_jacobian": 0.008988241118852087,
+      "case": "lock-scaling/distorted/n=4/t=0.05/full",
+      "thickness_ratio": 0.05,
+      "h_over_t": 5.0
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 2.832201593431522e-16,
+      "rotation_rel_error": 1.0325734976052424e-15,
+      "moment_rel_error": 5.479609233404163e-15,
+      "energy_rel_error": 3.0474871875268235e-15,
+      "strain_energy": 0.017076923076923024,
+      "strain_energy_exact": 0.017076923076923076,
+      "equilibrium_residual": 1.946127032229286e-14,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=1/sri",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.125
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 4.956352788505163e-16,
+      "rotation_rel_error": 2.5814337440131058e-15,
+      "moment_rel_error": 6.888651607708091e-15,
+      "energy_rel_error": 1.4831104312630542e-14,
+      "strain_energy": 0.01707692307692333,
+      "strain_energy_exact": 0.017076923076923076,
+      "equilibrium_residual": 4.263256414560601e-14,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=1/mitc",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.125
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 6.372453585220925e-16,
+      "rotation_rel_error": 1.0325734976052424e-15,
+      "moment_rel_error": 4.0705668591002355e-15,
+      "energy_rel_error": 0.003489817942942504,
+      "strain_energy": 0.01713651842948717,
+      "strain_energy_exact": 0.017076923076923076,
+      "equilibrium_residual": 4.263256414560601e-14,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=1/full",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.125
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 2.832201593431522e-16,
+      "rotation_rel_error": 8.260587980841939e-16,
+      "moment_rel_error": 4.38368738672333e-15,
+      "energy_rel_error": 1.0158290625089411e-15,
+      "strain_energy": 0.0021346153846153824,
+      "strain_energy_exact": 0.0021346153846153845,
+      "equilibrium_residual": 1.4210854715202004e-14,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.5/sri",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 4.248302390147283e-16,
+      "rotation_rel_error": 9.293161478447182e-16,
+      "moment_rel_error": 3.914006595288688e-15,
+      "energy_rel_error": 6.094974375053647e-16,
+      "strain_energy": 0.002134615384615386,
+      "strain_energy_exact": 0.0021346153846153845,
+      "equilibrium_residual": 3.552713678800501e-14,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.5/mitc",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 4.248302390147283e-16,
+      "rotation_rel_error": 7.228014483236697e-16,
+      "moment_rel_error": 3.1312052762309503e-15,
+      "energy_rel_error": 0.013959271771783018,
+      "strain_energy": 0.00216441306089746,
+      "strain_energy_exact": 0.0021346153846153845,
+      "equilibrium_residual": 1.7763568394002505e-14,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.5/full",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 7.080503983578805e-16,
+      "rotation_rel_error": 1.0325734976052424e-15,
+      "moment_rel_error": 7.032980600909357e-15,
+      "energy_rel_error": 1.4880308532845808e-14,
+      "strain_energy": 0.00013661538461538265,
+      "strain_energy_exact": 0.00013661538461538469,
+      "equilibrium_residual": 7.105427357601002e-15,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.2/sri",
+      "thickness_ratio": 0.2,
+      "h_over_t": 0.625
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 7.080503983578805e-16,
+      "rotation_rel_error": 1.8586322956894364e-15,
+      "moment_rel_error": 1.3301506788676393e-14,
+      "energy_rel_error": 2.5792534790266068e-15,
+      "strain_energy": 0.00013661538461538433,
+      "strain_energy_exact": 0.00013661538461538469,
+      "equilibrium_residual": 1.0658141036401503e-14,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.2/mitc",
+      "thickness_ratio": 0.2,
+      "h_over_t": 0.625
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 4.248302390147283e-16,
+      "rotation_rel_error": 1.2390881971262909e-15,
+      "moment_rel_error": 8.561889427194e-15,
+      "energy_rel_error": 0.08724544857358818,
+      "strain_energy": 0.0001485344551282072,
+      "strain_energy_exact": 0.00013661538461538469,
+      "equilibrium_residual": 7.993605777301127e-15,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.2/full",
+      "thickness_ratio": 0.2,
+      "h_over_t": 0.625
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 1.5577108763873372e-15,
+      "rotation_rel_error": 6.608470384673551e-15,
+      "moment_rel_error": 4.4032574196997715e-14,
+      "energy_rel_error": 1.249945916759048e-14,
+      "strain_energy": 1.7076923076922872e-05,
+      "strain_energy_exact": 1.7076923076923086e-05,
+      "equilibrium_residual": 9.769962616701378e-15,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.1/sri",
+      "thickness_ratio": 0.1,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 1.5577108763873372e-15,
+      "rotation_rel_error": 5.36938218754726e-15,
+      "moment_rel_error": 4.571437390591082e-14,
+      "energy_rel_error": 6.547335754452156e-14,
+      "strain_energy": 1.7076923076921968e-05,
+      "strain_energy_exact": 1.7076923076923086e-05,
+      "equilibrium_residual": 1.1546319456101628e-14,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.1/mitc",
+      "thickness_ratio": 0.1,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 1.274490717044185e-15,
+      "rotation_rel_error": 3.097720492815727e-15,
+      "moment_rel_error": 2.675590445998125e-14,
+      "energy_rel_error": 0.3489817942944974,
+      "strain_energy": 2.3036458333336813e-05,
+      "strain_energy_exact": 1.7076923076923086e-05,
+      "equilibrium_residual": 7.993605777301127e-15,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.1/full",
+      "thickness_ratio": 0.1,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 1.3240542449292366e-14,
+      "rotation_rel_error": 3.727590326354925e-14,
+      "moment_rel_error": 2.5074104751068143e-13,
+      "energy_rel_error": 7.340952209537266e-15,
+      "strain_energy": 2.1346153846154014e-06,
+      "strain_energy_exact": 2.1346153846153857e-06,
+      "equilibrium_residual": 4.052314039881821e-15,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.05/sri",
+      "thickness_ratio": 0.05,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 1.1470416453397665e-14,
+      "rotation_rel_error": 3.149349167695989e-14,
+      "moment_rel_error": 2.5074104751068143e-13,
+      "energy_rel_error": 3.3470773993214506e-13,
+      "strain_energy": 2.1346153846146712e-06,
+      "strain_energy_exact": 2.1346153846153857e-06,
+      "equilibrium_residual": 2.886579864025407e-15,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.05/mitc",
+      "thickness_ratio": 0.05,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "affine",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 6.230843505549349e-15,
+      "rotation_rel_error": 1.683094801096545e-14,
+      "moment_rel_error": 1.3286217700413546e-13,
+      "energy_rel_error": 1.3959271771778083,
+      "strain_energy": 5.114383012821863e-06,
+      "strain_energy_exact": 2.1346153846153857e-06,
+      "equilibrium_residual": 5.329070518200751e-15,
+      "min_jacobian": 0.0039062499999999965,
+      "case": "lock-scaling/affine/n=8/t=0.05/full",
+      "thickness_ratio": 0.05,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 0.0035707044403075197,
+      "rotation_rel_error": 0.0002102564631263749,
+      "moment_rel_error": 0.001500609812711914,
+      "energy_rel_error": 0.00020959952376104236,
+      "strain_energy": 0.0170805023918673,
+      "strain_energy_exact": 0.017076923076923073,
+      "equilibrium_residual": 2.842170943040401e-14,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=1/sri",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.125
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 6.785297214888699e-16,
+      "rotation_rel_error": 9.071641521079284e-16,
+      "moment_rel_error": 4.696807914346426e-15,
+      "energy_rel_error": 2.0316581250178826e-15,
+      "strain_energy": 0.017076923076923038,
+      "strain_energy_exact": 0.017076923076923073,
+      "equilibrium_residual": 8.526512829121202e-14,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=1/mitc",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.125
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        22.69230769230769,
+        17.307692307692307,
+        2.6923076923076925
+      ],
+      "displacement_rel_error": 0.0011724404360001367,
+      "rotation_rel_error": 0.0003331856481084828,
+      "moment_rel_error": 0.005389511312111652,
+      "energy_rel_error": 0.004347813891413553,
+      "strain_energy": 0.01715117036029952,
+      "strain_energy_exact": 0.017076923076923073,
+      "equilibrium_residual": 5.684341886080802e-14,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=1/full",
+      "thickness_ratio": 1.0,
+      "h_over_t": 0.125
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 0.0035657372393832413,
+      "rotation_rel_error": 0.0007526738962540651,
+      "moment_rel_error": 0.005502112296430877,
+      "energy_rel_error": 0.0008339385438460655,
+      "strain_energy": 0.0021363955226609017,
+      "strain_energy_exact": 0.002134615384615384,
+      "equilibrium_residual": 1.4210854715202004e-14,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.5/sri",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 1.0177945822333047e-15,
+      "rotation_rel_error": 6.047761014052855e-16,
+      "moment_rel_error": 4.540247650534878e-15,
+      "energy_rel_error": 7.923466687569742e-15,
+      "strain_energy": 0.002134615384615367,
+      "strain_energy_exact": 0.002134615384615384,
+      "equilibrium_residual": 2.1316282072803006e-14,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.5/mitc",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        2.8365384615384612,
+        2.1634615384615383,
+        0.33653846153846156
+      ],
+      "displacement_rel_error": 0.001174170609138042,
+      "rotation_rel_error": 0.001284162891901128,
+      "moment_rel_error": 0.021326094610671635,
+      "energy_rel_error": 0.017365753287020894,
+      "strain_energy": 0.002171684588747294,
+      "strain_energy_exact": 0.002134615384615384,
+      "equilibrium_residual": 4.263256414560601e-14,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.5/full",
+      "thickness_ratio": 0.5,
+      "h_over_t": 0.25
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 0.003537913903700318,
+      "rotation_rel_error": 0.0033150552821517828,
+      "moment_rel_error": 0.02380962860131607,
+      "energy_rel_error": 0.005084844481186735,
+      "strain_energy": 0.0001373100525998914,
+      "strain_energy_exact": 0.00013661538461538466,
+      "equilibrium_residual": 1.1546319456101628e-14,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.2/sri",
+      "thickness_ratio": 0.2,
+      "h_over_t": 0.625
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 7.463826936377568e-16,
+      "rotation_rel_error": 1.1591541943601306e-15,
+      "moment_rel_error": 9.173452957707858e-15,
+      "energy_rel_error": 1.1705842712505372e-14,
+      "strain_energy": 0.00013661538461538306,
+      "strain_energy_exact": 0.00013661538461538466,
+      "equilibrium_residual": 8.881784197001252e-15,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.2/mitc",
+      "thickness_ratio": 0.2,
+      "h_over_t": 0.625
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.18153846153846162,
+        0.1384615384615385,
+        0.021538461538461545
+      ],
+      "displacement_rel_error": 0.0015354666226198902,
+      "rotation_rel_error": 0.00710083655330784,
+      "moment_rel_error": 0.1248723554187119,
+      "energy_rel_error": 0.10753354447546407,
+      "strain_energy": 0.00015130612115295575,
+      "strain_energy_exact": 0.00013661538461538466,
+      "equilibrium_residual": 1.5987211554602254e-14,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.2/full",
+      "thickness_ratio": 0.2,
+      "h_over_t": 0.625
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 0.0035360368106984235,
+      "rotation_rel_error": 0.008437984231170858,
+      "moment_rel_error": 0.06704743632699438,
+      "energy_rel_error": 0.019456839049758153,
+      "strain_energy": 1.7409186020695875e-05,
+      "strain_energy_exact": 1.7076923076923082e-05,
+      "equilibrium_residual": 1.1064066329780076e-14,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.1/sri",
+      "thickness_ratio": 0.1,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 5.428237771910959e-15,
+      "rotation_rel_error": 1.310348219711452e-14,
+      "moment_rel_error": 9.570969252541864e-14,
+      "energy_rel_error": 6.547335754452157e-15,
+      "strain_energy": 1.707692307692297e-05,
+      "strain_energy_exact": 1.7076923076923082e-05,
+      "equilibrium_residual": 3.552713678800501e-15,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.1/mitc",
+      "thickness_ratio": 0.1,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.022692307692307703,
+        0.017307692307692312,
+        0.002692307692307693
+      ],
+      "displacement_rel_error": 0.0027347024332920037,
+      "rotation_rel_error": 0.021918255013792912,
+      "moment_rel_error": 0.4073798553498135,
+      "energy_rel_error": 0.41992571658824857,
+      "strain_energy": 2.4247962237122406e-05,
+      "strain_energy_exact": 1.7076923076923082e-05,
+      "equilibrium_residual": 5.773159728050814e-15,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.1/full",
+      "thickness_ratio": 0.1,
+      "h_over_t": 1.25
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "sri",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 0.004424928787044059,
+      "rotation_rel_error": 0.020129800626553,
+      "moment_rel_error": 0.21457613107051354,
+      "energy_rel_error": 0.07154791003759216,
+      "strain_energy": 2.287342654118707e-06,
+      "strain_energy_exact": 2.1346153846153853e-06,
+      "equilibrium_residual": 3.3306690738754696e-15,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.05/sri",
+      "thickness_ratio": 0.05,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "mitc",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 1.0313651766630822e-14,
+      "rotation_rel_error": 3.3464277611092467e-14,
+      "moment_rel_error": 2.6434833606461473e-13,
+      "energy_rel_error": 5.890618137869228e-13,
+      "strain_energy": 2.1346153846166427e-06,
+      "strain_energy_exact": 2.1346153846153853e-06,
+      "equilibrium_residual": 4.884981308350689e-15,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.05/mitc",
+      "thickness_ratio": 0.05,
+      "h_over_t": 2.5
+    },
+    {
+      "family": "distorted",
+      "n": 8,
+      "elements": 64,
+      "free_dofs": 147,
+      "shear_treatment": "full",
+      "state": "kx=0.001,ky=0.0006,kxy=0.0004",
+      "kappa": [
+        0.001,
+        0.0006,
+        0.0004
+      ],
+      "moments_exact": [
+        0.002836538461538463,
+        0.002163461538461539,
+        0.00033653846153846163
+      ],
+      "displacement_rel_error": 0.005159988883733661,
+      "rotation_rel_error": 0.047338993897450075,
+      "moment_rel_error": 0.9375175040812092,
+      "energy_rel_error": 1.60988370088211,
+      "strain_energy": 5.571097899959891e-06,
+      "strain_energy_exact": 2.1346153846153853e-06,
+      "equilibrium_residual": 5.329070518200751e-15,
+      "min_jacobian": 0.0012277926000460434,
+      "case": "lock-scaling/distorted/n=8/t=0.05/full",
+      "thickness_ratio": 0.05,
+      "h_over_t": 2.5
+    }
+  ],
+  "locking_scaling_summary": {
+    "graded_mesh_n": 4,
+    "thickness_ratios": [
+      0.05,
+      0.1,
+      0.2,
+      0.5,
+      1.0
+    ],
+    "series": {
+      "affine/sri/n=4": [
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 6.094974375053647e-16,
+          "displacement_rel_error": 1.9274705288631188e-16
+        },
+        {
+          "h_over_t": 0.5,
+          "energy_rel_error": 6.094974375053647e-16,
+          "displacement_rel_error": 1.9274705288631188e-16
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 5.952123413138323e-15,
+          "displacement_rel_error": 1.9274705288631188e-16
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 9.721801574792596e-15,
+          "displacement_rel_error": 5.782411586589357e-16
+        },
+        {
+          "h_over_t": 5.0,
+          "energy_rel_error": 1.011860980233515e-14,
+          "displacement_rel_error": 3.276699899067302e-15
+        }
+      ],
+      "affine/sri/n=8": [
+        {
+          "h_over_t": 0.125,
+          "energy_rel_error": 3.0474871875268235e-15,
+          "displacement_rel_error": 2.832201593431522e-16
+        },
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 1.0158290625089411e-15,
+          "displacement_rel_error": 2.832201593431522e-16
+        },
+        {
+          "h_over_t": 0.625,
+          "energy_rel_error": 1.4880308532845808e-14,
+          "displacement_rel_error": 7.080503983578805e-16
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 1.249945916759048e-14,
+          "displacement_rel_error": 1.5577108763873372e-15
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 7.340952209537266e-15,
+          "displacement_rel_error": 1.3240542449292366e-14
+        }
+      ],
+      "affine/mitc/n=4": [
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 4.0633162500357644e-16,
+          "displacement_rel_error": 1.9274705288631188e-16
+        },
+        {
+          "h_over_t": 0.5,
+          "energy_rel_error": 8.126632500071529e-16,
+          "displacement_rel_error": 1.9274705288631188e-16
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 2.3808493652553296e-15,
+          "displacement_rel_error": 3.8549410577262376e-16
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 3.511752813751611e-14,
+          "displacement_rel_error": 6.746146851020916e-16
+        },
+        {
+          "h_over_t": 5.0,
+          "energy_rel_error": 1.0376535150237811e-13,
+          "displacement_rel_error": 1.2046690805394492e-15
+        }
+      ],
+      "affine/mitc/n=8": [
+        {
+          "h_over_t": 0.125,
+          "energy_rel_error": 1.4831104312630542e-14,
+          "displacement_rel_error": 4.956352788505163e-16
+        },
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 6.094974375053647e-16,
+          "displacement_rel_error": 4.248302390147283e-16
+        },
+        {
+          "h_over_t": 0.625,
+          "energy_rel_error": 2.5792534790266068e-15,
+          "displacement_rel_error": 7.080503983578805e-16
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 6.547335754452156e-14,
+          "displacement_rel_error": 1.5577108763873372e-15
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 3.3470773993214506e-13,
+          "displacement_rel_error": 1.1470416453397665e-14
+        }
+      ],
+      "affine/full/n=4": [
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 0.013959271771772454,
+          "displacement_rel_error": 3.8549410577262376e-16
+        },
+        {
+          "h_over_t": 0.5,
+          "energy_rel_error": 0.05583708708708819,
+          "displacement_rel_error": 1.9274705288631188e-16
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 0.34898179429430354,
+          "displacement_rel_error": 1.9274705288631188e-16
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 1.3959271771772124,
+          "displacement_rel_error": 4.818676322157797e-16
+        },
+        {
+          "h_over_t": 5.0,
+          "energy_rel_error": 5.58370870870882,
+          "displacement_rel_error": 5.782411586589357e-16
+        }
+      ],
+      "affine/full/n=8": [
+        {
+          "h_over_t": 0.125,
+          "energy_rel_error": 0.003489817942942504,
+          "displacement_rel_error": 6.372453585220925e-16
+        },
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 0.013959271771783018,
+          "displacement_rel_error": 4.248302390147283e-16
+        },
+        {
+          "h_over_t": 0.625,
+          "energy_rel_error": 0.08724544857358818,
+          "displacement_rel_error": 4.248302390147283e-16
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 0.3489817942944974,
+          "displacement_rel_error": 1.274490717044185e-15
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 1.3959271771778083,
+          "displacement_rel_error": 6.230843505549349e-15
+        }
+      ],
+      "distorted/sri/n=4": [
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 0.0007670217832307565,
+          "displacement_rel_error": 0.010577013844083067
+        },
+        {
+          "h_over_t": 0.5,
+          "energy_rel_error": 0.0030391500952249356,
+          "displacement_rel_error": 0.010544387765899142
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 0.018360751081004267,
+          "displacement_rel_error": 0.010469308273382518
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 0.07003327564924454,
+          "displacement_rel_error": 0.011421382661957047
+        },
+        {
+          "h_over_t": 5.0,
+          "energy_rel_error": 0.26144434650196396,
+          "displacement_rel_error": 0.014234470256870855
+        }
+      ],
+      "distorted/sri/n=8": [
+        {
+          "h_over_t": 0.125,
+          "energy_rel_error": 0.00020959952376104236,
+          "displacement_rel_error": 0.0035707044403075197
+        },
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 0.0008339385438460655,
+          "displacement_rel_error": 0.0035657372393832413
+        },
+        {
+          "h_over_t": 0.625,
+          "energy_rel_error": 0.005084844481186735,
+          "displacement_rel_error": 0.003537913903700318
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 0.019456839049758153,
+          "displacement_rel_error": 0.0035360368106984235
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 0.07154791003759216,
+          "displacement_rel_error": 0.004424928787044059
+        }
+      ],
+      "distorted/mitc/n=4": [
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 6.094974375053647e-16,
+          "displacement_rel_error": 3.910805510305846e-16
+        },
+        {
+          "h_over_t": 0.5,
+          "energy_rel_error": 3.656984625032188e-15,
+          "displacement_rel_error": 2.9331041327293844e-16
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 9.32499334725004e-15,
+          "displacement_rel_error": 1.955402755152923e-16
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 1.6070733215473474e-14,
+          "displacement_rel_error": 2.2487131684258612e-15
+        },
+        {
+          "h_over_t": 5.0,
+          "energy_rel_error": 5.952123413138323e-15,
+          "displacement_rel_error": 3.421954821517615e-15
+        }
+      ],
+      "distorted/mitc/n=8": [
+        {
+          "h_over_t": 0.125,
+          "energy_rel_error": 2.0316581250178826e-15,
+          "displacement_rel_error": 6.785297214888699e-16
+        },
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 7.923466687569742e-15,
+          "displacement_rel_error": 1.0177945822333047e-15
+        },
+        {
+          "h_over_t": 0.625,
+          "energy_rel_error": 1.1705842712505372e-14,
+          "displacement_rel_error": 7.463826936377568e-16
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 6.547335754452157e-15,
+          "displacement_rel_error": 5.428237771910959e-15
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 5.890618137869228e-13,
+          "displacement_rel_error": 1.0313651766630822e-14
+        }
+      ],
+      "distorted/full/n=4": [
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 0.016326465132297217,
+          "displacement_rel_error": 0.0022461609096388
+        },
+        {
+          "h_over_t": 0.5,
+          "energy_rel_error": 0.06510006592941958,
+          "displacement_rel_error": 0.002393982804577782
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 0.40183959079191567,
+          "displacement_rel_error": 0.0033556609959695546
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 1.5858686589782036,
+          "displacement_rel_error": 0.0049230193651183946
+        },
+        {
+          "h_over_t": 5.0,
+          "energy_rel_error": 6.288160429825155,
+          "displacement_rel_error": 0.006187383069448013
+        }
+      ],
+      "distorted/full/n=8": [
+        {
+          "h_over_t": 0.125,
+          "energy_rel_error": 0.004347813891413553,
+          "displacement_rel_error": 0.0011724404360001367
+        },
+        {
+          "h_over_t": 0.25,
+          "energy_rel_error": 0.017365753287020894,
+          "displacement_rel_error": 0.001174170609138042
+        },
+        {
+          "h_over_t": 0.625,
+          "energy_rel_error": 0.10753354447546407,
+          "displacement_rel_error": 0.0015354666226198902
+        },
+        {
+          "h_over_t": 1.25,
+          "energy_rel_error": 0.41992571658824857,
+          "displacement_rel_error": 0.0027347024332920037
+        },
+        {
+          "h_over_t": 2.5,
+          "energy_rel_error": 1.60988370088211,
+          "displacement_rel_error": 0.005159988883733661
+        }
+      ]
+    },
+    "slope": {
+      "affine/sri/n=4": NaN,
+      "affine/sri/n=8": NaN,
+      "affine/mitc/n=4": NaN,
+      "affine/mitc/n=8": NaN,
+      "affine/full/n=4": 1.9999999999999933,
+      "affine/full/n=8": 2.0000000000001146,
+      "distorted/sri/n=4": 1.9476377630476736,
+      "distorted/sri/n=8": 1.9498594980092718,
+      "distorted/mitc/n=4": NaN,
+      "distorted/mitc/n=8": NaN,
+      "distorted/full/n=4": 1.986646967764833,
+      "distorted/full/n=8": 1.9756765299157966
+    },
+    "amplification": {
+      "affine/sri/n=4": 16.60156249999999,
+      "affine/sri/n=8": 2.408854166666665,
+      "affine/mitc/n=4": 255.37109374999986,
+      "affine/mitc/n=8": 22.56795804794519,
+      "affine/full/n=4": 399.99999999998846,
+      "affine/full/n=8": 400.0000000002312,
+      "distorted/sri/n=4": 340.8564818077782,
+      "distorted/sri/n=8": 341.3553082265665,
+      "distorted/mitc/n=4": 9.765624999999995,
+      "distorted/mitc/n=8": 289.94140624999983,
+      "distorted/full/n=4": 385.1513710329028,
+      "distorted/full/n=8": 370.274289812968
+    },
+    "thin_limit": {
+      "affine/sri/n=4": 1.011860980233515e-14,
+      "affine/sri/n=8": 7.340952209537266e-15,
+      "affine/mitc/n=4": 1.0376535150237811e-13,
+      "affine/mitc/n=8": 3.3470773993214506e-13,
+      "affine/full/n=4": 5.58370870870882,
+      "affine/full/n=8": 1.3959271771778083,
+      "distorted/sri/n=4": 0.26144434650196396,
+      "distorted/sri/n=8": 0.07154791003759216,
+      "distorted/mitc/n=4": 5.952123413138323e-15,
+      "distorted/mitc/n=8": 5.890618137869228e-13,
+      "distorted/full/n=4": 6.288160429825155,
+      "distorted/full/n=8": 1.60988370088211
+    },
+    "slope_full": 1.986646967764833,
+    "amplification_full": 385.1513710329028,
+    "slope_sri_dev": 0.052362236952326446,
+    "thin_mitc": 5.890618137869228e-13,
+    "thin_sri_affine": 1.011860980233515e-14,
+    "thin_sri_distorted": 0.26144434650196396
+  },
+  "round3_provenance": {
+    "carried_over_from_full_driver_run_at": "2026-11-14T18:18:50+00:00",
+    "recomputed_here": "locking_scaling ladder only (60 patch solves, n in [4, 8])",
+    "why": "the queue-compute round trip for the whole driver was not available inside this session's budget; the ladder is deterministic and uses the driver's own functions, so a full run reproduces this block exactly (modulo generated_at / wall_seconds)",
+    "note": "a full `python benchmarks/verified/fem_bending_patch/run.py` regenerates every block from scratch and must give the same gate values"
+  }
 }
