@@ -1,0 +1,146 @@
+{
+  "audited_commit": "7b947ff3da0b5461651d4c156eb5c6db83841791",
+  "audited_repo": "TensorFEM",
+  "piston": {
+    "analytic_kg": 2733.333333333333,
+    "levels": [
+      {
+        "n_cells": 16,
+        "panels": 208,
+        "matrix_dof": 208,
+        "dense_bytes": 346112,
+        "seconds": 0.004,
+        "sum_kg": 2859.1576448161813,
+        "rel_error": 0.04603328468884695
+      },
+      {
+        "n_cells": 64,
+        "panels": 3228,
+        "matrix_dof": 3228,
+        "dense_bytes": 83359872,
+        "seconds": 0.114,
+        "sum_kg": 2741.983333347954,
+        "rel_error": 0.003164634151690657,
+        "observed_order": 0.976385556626682
+      },
+      {
+        "n_cells": 256,
+        "panels": 51468,
+        "matrix_dof": 51468,
+        "dense_bytes": 21191640192,
+        "seconds": 36.238,
+        "sum_kg": 2731.6237274582245,
+        "rel_error": 0.0006254655640640988,
+        "observed_order": 0.5854963424724489
+      }
+    ],
+    "n_cells_512_projection": {
+      "panels_est": 205887,
+      "dense_bytes_est": 339115654152,
+      "dense_GiB_est": 315.8,
+      "panel_growth_sanity": 1.0,
+      "note": "dense (N,N) float64 operator: 512 cells needs ~3.4e11 B >> node RAM headroom; the doc's '~2 s at N=512' is impossible"
+    },
+    "gate_3pct_already_met_at": [
+      64,
+      256
+    ]
+  },
+  "barge": {
+    "mission_geometry_L100_B20_T8": {
+      "C_a": 1.1488462107291646,
+      "f_3d": 0.8620689655172414,
+      "A33_2D_kg_per_m": 471026.94639895746,
+      "A33_3D_kg": 40605771.24128944,
+      "A33_over_displaced": 2.475961661054234,
+      "method_label": "strip_theory_newman_1977"
+    },
+    "chain_geometry_L100_B20_T6": {
+      "C_a": 1.0734239263879974,
+      "f_3d": 0.8928571428571428,
+      "A33_2D_kg_per_m": 440103.80981907895,
+      "A33_3D_kg": 39294983.01956062,
+      "A33_over_displaced": 3.1947140666309446,
+      "method_label": "strip_theory_newman_1977"
+    },
+    "wide_limit_BT10": {
+      "C_a": 0.7853981633974483,
+      "f_3d": 0.9615384615384615,
+      "A33_2D_kg_per_m": 322013.2469929538,
+      "A33_3D_kg": 30962812.21086094,
+      "A33_over_displaced": 7.551905417283156,
+      "method_label": "strip_theory_newman_1977"
+    },
+    "narrow_limit_BT0p5": {
+      "C_a": 1.5707963267948966,
+      "f_3d": 0.8620689655172414,
+      "A33_2D_kg_per_m": 25761.059759436303,
+      "A33_3D_kg": 2220781.013744509,
+      "A33_over_displaced": 0.6770673822391795,
+      "method_label": "strip_theory_newman_1977"
+    },
+    "vs_verified_bem_2d": {
+      "mission_ref_2d_kg_per_m": 440103.80981907895,
+      "verified_bem_2d_kg_per_m": 228600.0,
+      "rel_error_vs_bem": 0.9252135162689368,
+      "declared_chain_kg_per_m": 86100.0,
+      "declared_vs_bem_rel_error": -0.6233595800524935,
+      "tolerance": 0.15,
+      "verdict": "mission reference itself misses the 15% band against the verified BEM anchor"
+    }
+  },
+  "tautology_probe": {
+    "synthetic_declared_scan": {
+      "declared_ref_times_0.0": {
+        "rel_error": 1.0,
+        "passes_15pct_gate": false
+      },
+      "declared_ref_times_1.1": {
+        "rel_error": 0.10000000000000003,
+        "passes_15pct_gate": true
+      },
+      "declared_ref_times_1.5": {
+        "rel_error": 0.5,
+        "passes_15pct_gate": false
+      },
+      "declared_ref_times_2.65": {
+        "rel_error": 1.6499999999999997,
+        "passes_15pct_gate": false
+      },
+      "declared_ref_times_100.0": {
+        "rel_error": 98.99999999999999,
+        "passes_15pct_gate": false
+      }
+    },
+    "real_chain_declaration_basis": {
+      "declared_A_inf_kg": 8610000.0,
+      "mission_reference_kg": 40605771.24128944,
+      "rel_error": -0.7879611755472573,
+      "sign": "declared is BELOW the mission reference",
+      "report_19234_direction": "declared 86.1 t/m vs independent 228.6 t/m -> declared also BELOW (+165.5% deviation) but the mission doc asserts the opposite sign (declared 9.5e6 > ref 3.6e6)"
+    }
+  },
+  "doc_vs_code": {
+    "doc": {
+      "C_a": 1.047,
+      "f_3d": 0.833,
+      "A33_3D_kg": 3600000.0,
+      "declared_kg": 9500000.0
+    },
+    "code": {
+      "C_a": 1.1488462107291646,
+      "f_3d": 0.8620689655172414,
+      "A33_3D_kg": 40605771.24128944
+    },
+    "rel_diff": {
+      "C_a": -0.08865086534473887,
+      "f_3d": -0.03372000000000011,
+      "A33_3D_kg": -0.9113426517967627
+    },
+    "declared_in_doc_vs_chain": {
+      "doc_declared_kg": 9500000.0,
+      "chain_declared_kg": 8610000.0,
+      "rel_diff": 0.10336817653890824
+    }
+  }
+}
