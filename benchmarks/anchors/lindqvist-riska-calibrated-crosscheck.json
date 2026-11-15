@@ -1,0 +1,172 @@
+{
+  "schema_version": "1.0.0",
+  "task_key": "GAP-ICE-LIT-TRANSCRIPT",
+  "topic": "ice-resistance-lindqvist-riska",
+  "repository": "TensorFEM",
+  "branch": "agent/m21661",
+  "generated_at_utc": "2026-11-15T09:25:45.294260+00:00",
+  "generated_by": {
+    "script": "lindqvist_riska_calibrated_crosscheck.py",
+    "python": "3.11.6"
+  },
+  "platform_available": true,
+  "platform_import_error": null,
+  "structural_signature": {
+    "original_four_component": {
+      "components": [
+        "R_c(crushing)",
+        "R_b(bending)",
+        "R_s(submersion)",
+        "R_mom(momentum)"
+      ],
+      "Rc_N": 1328894.6525014744,
+      "Rb_N": 244334.82080890716,
+      "Rs_N": 518124.74722060375,
+      "Rmom_N": 104621.61599999998,
+      "Rtot_N": 2195975.8365309853,
+      "Rc_pct": 60.51499430889679,
+      "Rb_pct": 11.126480389460314,
+      "Rs_pct": 23.594282714835916,
+      "Rmom_pct": 4.7642425868069775
+    },
+    "platform_calibrated_variant": {
+      "components": [
+        "R_submersion",
+        "R_bending",
+        "R_clearing"
+      ],
+      "R_submersion_N": 16970.0,
+      "R_bending_N": 361018.0,
+      "R_clearing_N": 10003.0,
+      "Rtot_N": 387990.99999999994,
+      "has_Fn_ice_dependence": true,
+      "method_label": "Lindqvist (1989)"
+    },
+    "structural_discrepancy": {
+      "component_count_original": 4,
+      "component_count_platform": 3,
+      "decomposition_mismatch": true,
+      "note": "The platform's calibrated calc_lindqvist uses a 3-component decomposition (submersion + bending + clearing) with Fn_ice dependence, whereas the original Lindqvist (1989) four-component model is crushing + bending + submersion + momentum. The platform model is therefore a *calibrated variant*, not the original verbatim — the GAP-ICE-LIT-TRANSCRIPT M1 threshold (>=4 verbatim triples) is NOT met by it."
+    }
+  },
+  "readiness_artifact": {
+    "task_key": "GAP-ICE-LIT-TRANSCRIPT",
+    "purpose": "Source-acquisition readiness for GAP-ICE-LIT-TRANSCRIPT. Lists, for each transcription entry, the exact source document, the page/table locator that must be transcribed, and the verification procedure. A future agent WITH an authorised copy of the source can use this to close the M1 gap.",
+    "m1_threshold": {
+      "required_verbatim_entries": 4,
+      "current_verbatim_entries": 0,
+      "definition": ">=4 (formula, quote, page/table) triples, each with verbatim_status == 'VERBATIM', character-exact quote, and page/table locator."
+    },
+    "primary_source": {
+      "id": "LINDQVIST-1989-POAC",
+      "citation": "Lindqvist, G. (1989). A straightforward method for calculation of ice resistance of ships. Proceedings of the 10th International Conference on Port and Ocean Engineering under Arctic Conditions (POAC'89), Lulea, Sweden, Vol. 1, pp. 722-737.",
+      "acquisition_status": "NOT_OBTAINED",
+      "acquisition_blocker": "No network egress in this sandbox; POAC'89 proceedings not freely available; Lulea University digital archive requires institutional access. An authorised copy must be supplied by the operator."
+    },
+    "entries_ready": [
+      {
+        "anchor_id": "LINDQVIST-Rc-crushing",
+        "needed_locator": "Eq. for crushing component; page within 722-737",
+        "needed_quote": "character-exact sentence containing R_c formula and its nondimensionalisation",
+        "needed_values": [
+          "f_c",
+          "sigma_c",
+          "psi",
+          "mu",
+          "alpha"
+        ],
+        "verification": "transcribe characters from authorised copy; no re-rounding"
+      },
+      {
+        "anchor_id": "LINDQVIST-Rb-bending",
+        "needed_locator": "Eq. for bending component; page within 722-737",
+        "needed_quote": "character-exact sentence containing R_b formula",
+        "needed_values": [
+          "f_b",
+          "sigma_f",
+          "B",
+          "h",
+          "lambda",
+          "psi",
+          "mu"
+        ],
+        "verification": "transcribe characters from authorised copy; no re-rounding"
+      },
+      {
+        "anchor_id": "LINDQVIST-Rs-submersion",
+        "needed_locator": "Eq. for submersion component; page within 722-737",
+        "needed_quote": "character-exact sentence containing R_s formula",
+        "needed_values": [
+          "f_s",
+          "mu",
+          "rho_w",
+          "g",
+          "B",
+          "T",
+          "alpha",
+          "C_p"
+        ],
+        "verification": "transcribe characters from authorised copy; no re-rounding"
+      },
+      {
+        "anchor_id": "LINDQVIST-Rmom-momentum",
+        "needed_locator": "Eq. for momentum component; page within 722-737",
+        "needed_quote": "character-exact sentence containing R_mom formula",
+        "needed_values": [
+          "C_m",
+          "rho_i",
+          "h",
+          "B",
+          "v"
+        ],
+        "verification": "transcribe characters from authorised copy; no re-rounding"
+      },
+      {
+        "anchor_id": "LINDQVIST-total-resistance",
+        "needed_locator": "Total resistance equation; page within 722-737",
+        "needed_quote": "character-exact sentence stating R_ice = R_c + R_b + R_s + R_mom",
+        "needed_values": [],
+        "verification": "transcribe characters from authorised copy; no re-rounding"
+      },
+      {
+        "anchor_id": "LINDQVIST-table1-validation",
+        "needed_locator": "Table 1 (validation cases vs model tests); page within 722-737",
+        "needed_quote": "character-exact table header + row values",
+        "needed_values": [
+          "case",
+          "calculated",
+          "measured",
+          "deviation"
+        ],
+        "verification": "transcribe table cells exactly as printed; no re-rounding"
+      }
+    ]
+  },
+  "honest_boundary_checks": [
+    {
+      "id": "CHK-A_platform_is_variant_not_original",
+      "method": "compare component decomposition + method label",
+      "result": "PASS",
+      "note": "The platform's calc_lindqvist is a 3-component calibrated variant (submersion+bending+clearing, Fn_ice dependent), structurally distinct from the original 4-component Lindqvist model. It must not be cited as the original verbatim source."
+    },
+    {
+      "id": "CHK-B_m1_still_unmet",
+      "method": "count current verbatim entries in readiness artifact",
+      "result": "PASS",
+      "note": "No verbatim entry has been fabricated. M1 remains unmet (0/4). Coefficient grade stays WITHHELD, not upgraded to REAL."
+    },
+    {
+      "id": "CHK-C_readiness_complete",
+      "method": "verify every entry has needed_locator, needed_quote, needed_values, verification",
+      "result": "PASS",
+      "note": "All 6 entries carry a precise closure spec."
+    }
+  ],
+  "verdict": {
+    "transcription_gate": "WITHHELD",
+    "m1_threshold_met": false,
+    "coefficient_grade": "WITHHELD",
+    "overall": "WITHHELD",
+    "honest_fail": "No verbatim source obtained; M1 threshold (>=4 verbatim triples) not met. The platform's calibrated Lindqvist is documented as a *variant*, not the original. Coefficient grade is NOT upgraded to REAL."
+  }
+}
