@@ -1,345 +1,397 @@
 {
- "case": "GAP-PP-1-ICE-STRUCT-CONTACT-PATCH verification",
- "mission": 20624,
- "unit_audit": {
-  "nx": 12,
-  "uniform_pressure_Pa": 1000000.0,
-  "direct_peak_deflection_m": 0.08930884893743694,
-  "fixed_chain_peak_deflection_m": 0.0893088489374409,
-  "fixed_chain_rel_error": 4.428642371147135e-14,
-  "legacy_chain_peak_deflection_m": 0.0006143549702652659,
-  "legacy_over_direct": 0.0068789932641012625,
-  "element_area_m2": 0.006944444444444444,
-  "element_area_over_legacy_ratio": 1.0095146452148376,
-  "load_balance_rel_fixed": 6.170012056827547e-15,
-  "diagnosis": "legacy ratio equals one element area (to ~1%): the projected nodal forces [N] were fed back as pressures [Pa], so the plate solve re-integrated them and scaled the load by element_area"
- },
- "force_conservation": {
-  "plate_nx": 12,
-  "rows": [
-   {
-    "config": "mild_nonuniform",
-    "contact_grid": 21,
-    "projected_force_N": 708117.7253098979,
-    "analytic_force_N": 706858.3470577034,
-    "rel_error_pct": 0.17816557694150248,
-    "projection_method": "exact_contact_grid_bilinear"
-   },
-   {
-    "config": "moderate_nonuniform",
-    "contact_grid": 21,
-    "projected_force_N": 503164.5670329699,
-    "analytic_force_N": 502654.8245743669,
-    "rel_error_pct": 0.10141003998809239,
-    "projection_method": "exact_contact_grid_bilinear"
-   },
-   {
-    "config": "sharp_nonuniform",
-    "contact_grid": 21,
-    "projected_force_N": 237028.5354522008,
-    "analytic_force_N": 235619.4490192345,
-    "rel_error_pct": 0.5980348561341664,
-    "projection_method": "exact_contact_grid_bilinear"
-   },
-   {
-    "config": "mild_nonuniform",
-    "contact_grid": 41,
-    "projected_force_N": 704327.2521446408,
-    "analytic_force_N": 706858.3470577034,
-    "rel_error_pct": -0.3580766816432601,
-    "projection_method": "exact_contact_grid_bilinear"
-   },
-   {
-    "config": "moderate_nonuniform",
-    "contact_grid": 41,
-    "projected_force_N": 500268.2791820223,
-    "analytic_force_N": 502654.8245743669,
-    "rel_error_pct": -0.4747881201310311,
-    "projection_method": "exact_contact_grid_bilinear"
-   },
-   {
-    "config": "sharp_nonuniform",
-    "contact_grid": 41,
-    "projected_force_N": 234279.17024230468,
-    "analytic_force_N": 235619.4490192345,
-    "rel_error_pct": -0.5688319799187824,
-    "projection_method": "exact_contact_grid_bilinear"
-   }
+  "case": "GAP-PP-1-ICE-STRUCT-CONTACT-PATCH verification",
+  "mission": 20624,
+  "unit_audit": {
+    "nx": 12,
+    "uniform_pressure_Pa": 1000000.0,
+    "direct_peak_deflection_m": 0.08930884893743694,
+    "fixed_chain_peak_deflection_m": 0.0893088489374409,
+    "fixed_chain_rel_error": 4.428642371147135e-14,
+    "legacy_chain_peak_deflection_m": 0.0006143549702652659,
+    "legacy_over_direct": 0.0068789932641012625,
+    "element_area_m2": 0.006944444444444444,
+    "element_area_over_legacy_ratio": 1.0095146452148376,
+    "load_balance_rel_fixed": 6.170012056827547e-15,
+    "diagnosis": "legacy ratio equals one element area (to ~1%): the projected nodal forces [N] were fed back as pressures [Pa], so the plate solve re-integrated them and scaled the load by element_area"
+  },
+  "force_conservation": {
+    "plate_nx": 12,
+    "rows": [
+      {
+        "config": "mild_nonuniform",
+        "contact_grid": 21,
+        "projected_force_N": 708117.7253098979,
+        "analytic_force_N": 706858.3470577034,
+        "rel_error_pct": 0.17816557694150248,
+        "projection_method": "exact_contact_grid_bilinear"
+      },
+      {
+        "config": "moderate_nonuniform",
+        "contact_grid": 21,
+        "projected_force_N": 503164.5670329699,
+        "analytic_force_N": 502654.8245743669,
+        "rel_error_pct": 0.10141003998809239,
+        "projection_method": "exact_contact_grid_bilinear"
+      },
+      {
+        "config": "sharp_nonuniform",
+        "contact_grid": 21,
+        "projected_force_N": 237028.5354522008,
+        "analytic_force_N": 235619.4490192345,
+        "rel_error_pct": 0.5980348561341664,
+        "projection_method": "exact_contact_grid_bilinear"
+      },
+      {
+        "config": "mild_nonuniform",
+        "contact_grid": 41,
+        "projected_force_N": 704327.2521446408,
+        "analytic_force_N": 706858.3470577034,
+        "rel_error_pct": -0.3580766816432601,
+        "projection_method": "exact_contact_grid_bilinear"
+      },
+      {
+        "config": "moderate_nonuniform",
+        "contact_grid": 41,
+        "projected_force_N": 500268.2791820223,
+        "analytic_force_N": 502654.8245743669,
+        "rel_error_pct": -0.4747881201310311,
+        "projection_method": "exact_contact_grid_bilinear"
+      },
+      {
+        "config": "sharp_nonuniform",
+        "contact_grid": 41,
+        "projected_force_N": 234279.17024230468,
+        "analytic_force_N": 235619.4490192345,
+        "rel_error_pct": -0.5688319799187824,
+        "projection_method": "exact_contact_grid_bilinear"
+      }
+    ],
+    "max_abs_rel_error_pct": 0.5980348561341664,
+    "legacy_reference_max_abs_rel_error_pct": 666.4,
+    "legacy_reference_note": "global inverse-distance projection (pre-m20624) inflated the force by +24 % (mild) to +666 % (sharp); see docs/VERIFY-patch-from-contact-units.md"
+  },
+  "nonuniform_scan": {
+    "configurations": [
+      {
+        "name": "mild_nonuniform",
+        "peak_pressure_MPa": 5.0,
+        "sigma_x_m": 0.15,
+        "sigma_y_m": 0.15,
+        "contact_grid": [
+          21,
+          21
+        ],
+        "analytic_total_force_N": 706858.3470577034,
+        "total_force_nonuniform_N": 707575.1723901144,
+        "uniform_pressure_MPa": 7.86194635989016,
+        "uniform_patch_width_m": 0.3,
+        "uniform_patch_length_m": 0.3,
+        "total_force_uniform_N": 707575.1723901143,
+        "projection_total_force_error_pct": 0.10141003998818121,
+        "load_balance_rel": 3.290542867231933e-16,
+        "pressure_nonuniformity": 1.4758963963697707,
+        "max_deflection_nonuniform_m": 0.1366099950688445,
+        "max_deflection_uniform_m": 0.12441731671046968,
+        "deflection_diff_pct": 9.79982423728707,
+        "peak_stress_projected": {
+          "sigma_vm_MPa": 2255.0282529090073,
+          "sigma_vm_at_m": [
+            0.4375,
+            0.375
+          ],
+          "sigma_x_MPa": 2252.234433684149,
+          "sigma_x_at_m": [
+            0.4375,
+            0.375
+          ]
+        },
+        "peak_stress_uniform": {
+          "sigma_vm_MPa": 2550.2757473401766,
+          "sigma_vm_at_m": [
+            0.4375,
+            0.375
+          ],
+          "sigma_x_MPa": 2541.494231679391,
+          "sigma_x_at_m": [
+            0.4375,
+            0.375
+          ]
+        },
+        "peak_stress_analytic_field": {
+          "sigma_vm_MPa": 2254.607029960118,
+          "sigma_vm_at_m": [
+            0.4375,
+            0.375
+          ],
+          "sigma_x_MPa": 2251.791256954067,
+          "sigma_x_at_m": [
+            0.4375,
+            0.375
+          ]
+        },
+        "delta_nonuniform_over_uniform_pct": {
+          "sigma_vm": -11.577081213241325,
+          "sigma_x": -11.381485520984336,
+          "deflection": 9.79982423728707
+        },
+        "projection_error_pct": {
+          "sigma_vm": 0.01868276570116123,
+          "sigma_x": 0.01968107517573703,
+          "deflection": 0.21892019451297262
+        }
+      },
+      {
+        "name": "moderate_nonuniform",
+        "peak_pressure_MPa": 8.0,
+        "sigma_x_m": 0.1,
+        "sigma_y_m": 0.1,
+        "contact_grid": [
+          21,
+          21
+        ],
+        "analytic_total_force_N": 502654.8245743669,
+        "total_force_nonuniform_N": 505883.1409718275,
+        "uniform_pressure_MPa": 12.647078524295686,
+        "uniform_patch_width_m": 0.2,
+        "uniform_patch_length_m": 0.2,
+        "total_force_uniform_N": 505883.14097182755,
+        "projection_total_force_error_pct": 0.6422531406505838,
+        "load_balance_rel": 1.1506147605877417e-16,
+        "pressure_nonuniformity": 1.4758963963697709,
+        "max_deflection_nonuniform_m": 0.11493829304414968,
+        "max_deflection_uniform_m": 0.20014325997531193,
+        "deflection_diff_pct": -42.571989155004495,
+        "peak_stress_projected": {
+          "sigma_vm_MPa": 2142.0790550299025,
+          "sigma_vm_at_m": [
+            0.4375,
+            0.375
+          ],
+          "sigma_x_MPa": 2137.4184166258115,
+          "sigma_x_at_m": [
+            0.4375,
+            0.375
+          ]
+        },
+        "peak_stress_uniform": {
+          "sigma_vm_MPa": 4102.487623137205,
+          "sigma_vm_at_m": [
+            0.4375,
+            0.375
+          ],
+          "sigma_x_MPa": 4088.3612843096034,
+          "sigma_x_at_m": [
+            0.4375,
+            0.375
+          ]
+        },
+        "peak_stress_analytic_field": {
+          "sigma_vm_MPa": 2131.9179694092427,
+          "sigma_vm_at_m": [
+            0.4375,
+            0.375
+          ],
+          "sigma_x_MPa": 2127.2522338478393,
+          "sigma_x_at_m": [
+            0.4375,
+            0.375
+          ]
+        },
+        "delta_nonuniform_over_uniform_pct": {
+          "sigma_vm": -47.78584966474957,
+          "sigma_x": -47.719434071816515,
+          "deflection": -42.571989155004495
+        },
+        "projection_error_pct": {
+          "sigma_vm": 0.4766171009607634,
+          "sigma_x": 0.47790208496258924,
+          "deflection": 0.5861042727777654
+        }
+      },
+      {
+        "name": "sharp_nonuniform",
+        "peak_pressure_MPa": 15.0,
+        "sigma_x_m": 0.05,
+        "sigma_y_m": 0.05,
+        "contact_grid": [
+          21,
+          21
+        ],
+        "analytic_total_force_N": 235619.4490192345,
+        "total_force_nonuniform_N": 279617.172666798,
+        "uniform_pressure_MPa": 27.961717266679795,
+        "uniform_patch_width_m": 0.1,
+        "uniform_patch_length_m": 0.1,
+        "total_force_uniform_N": 279617.172666798,
+        "projection_total_force_error_pct": 18.673213875469074,
+        "load_balance_rel": 4.163382410194797e-16,
+        "pressure_nonuniformity": 1.4758963963697709,
+        "max_deflection_nonuniform_m": 0.07297862883879594,
+        "max_deflection_uniform_m": 0.12119035622916188,
+        "deflection_diff_pct": -39.78181836449196,
+        "peak_stress_projected": {
+          "sigma_vm_MPa": 1572.6580765396943,
+          "sigma_vm_at_m": [
+            0.4375,
+            0.375
+          ],
+          "sigma_x_MPa": 1564.9096728449256,
+          "sigma_x_at_m": [
+            0.4375,
+            0.375
+          ]
+        },
+        "peak_stress_uniform": {
+          "sigma_vm_MPa": 2815.285336514324,
+          "sigma_vm_at_m": [
+            0.4375,
+            0.375
+          ],
+          "sigma_x_MPa": 2793.179763411542,
+          "sigma_x_at_m": [
+            0.4375,
+            0.375
+          ]
+        },
+        "peak_stress_analytic_field": {
+          "sigma_vm_MPa": 1563.2215662926574,
+          "sigma_vm_at_m": [
+            0.4375,
+            0.375
+          ],
+          "sigma_x_MPa": 1555.47345168065,
+          "sigma_x_at_m": [
+            0.4375,
+            0.375
+          ]
+        },
+        "delta_nonuniform_over_uniform_pct": {
+          "sigma_vm": -44.13859028275826,
+          "sigma_x": -43.97390052212137,
+          "deflection": -39.78181836449196
+        },
+        "projection_error_pct": {
+          "sigma_vm": 0.603657885133746,
+          "sigma_x": 0.6066462371363546,
+          "deflection": 0.7094145664806373
+        }
+      }
+    ],
+    "summary": {
+      "n_configurations": 3,
+      "max_abs_sigma_vm_diff_pct": 47.78584966474957,
+      "max_abs_sigma_x_diff_pct": 47.719434071816515,
+      "min_abs_sigma_x_diff_pct": 11.381485520984336,
+      "max_abs_projection_error_sigma_vm_pct": 0.603657885133746,
+      "max_abs_projection_error_sigma_x_pct": 0.6066462371363546,
+      "max_abs_load_balance_rel": 4.163382410194797e-16,
+      "max_deflection_diff_pct": 42.571989155004495,
+      "h3_anchor_level_pct": 0.339,
+      "h3_anchor_meaning": "FEM-vs-Kelvin analytical error of the H3-ICE-PLATE-FEM anchor; used as the accuracy scale for this chain, not as a tolerance on the non-uniformity effect",
+      "h3_consistency": "exceeds_anchor",
+      "h3_consistency_basis": "max |projection-path peak bending stress vs analytic-pressure-field peak bending stress| on the same mesh",
+      "all_configurations_valid": true
+    }
+  },
+  "navier_crosscheck": {
+    "plate": {
+      "side_m": 1.0,
+      "thickness_m": 0.01,
+      "E_Pa": 206000000000.0,
+      "nu": 0.3
+    },
+    "contact_grid": 33,
+    "rows": [
+      {
+        "patch": "uniform_0.4x0.4",
+        "plate_nx": 16,
+        "mine_sigma_x_MPa": 368.33736724446146,
+        "ic_fem_sigma_Mx_MPa": 349.92444165077603,
+        "navier_sigma_Mx_MPa": 346.2285386362573,
+        "mine_vs_navier_pct": 6.38561705377827,
+        "ic_fem_vs_navier_pct": 1.0674749773881498,
+        "force_rel_error": -7.602633262167176e-16
+      },
+      {
+        "patch": "gaussian_peak2MPa_sigma0.08",
+        "plate_nx": 16,
+        "mine_sigma_x_MPa": 842.1149601798717,
+        "ic_fem_sigma_Mx_MPa": 859.884539887742,
+        "navier_sigma_Mx_MPa": 845.6151978249864,
+        "mine_vs_navier_pct": -0.41392794903848396,
+        "ic_fem_vs_navier_pct": 1.6874509941942728,
+        "force_rel_error": 9.11153416607815e-16
+      }
+    ],
+    "max_abs_mine_vs_navier_pct_finest": 6.38561705377827,
+    "max_abs_ic_fem_vs_navier_pct_finest": 1.6874509941942728,
+    "h3_anchor_pct": 0.339,
+    "h3_anchor_meaning": "FEM-vs-Kelvin error of the H3-ICE-PLATE-FEM anchor (benchmarks/artifacts/ice_plate_flexural_limit/evidence.json); the cross-check above is the equivalent quantity for this chain"
+  },
+  "figures": [
+    {
+      "name": "fig_projection.png",
+      "caption": "Gaussian contact pressure (left) projected onto the plate grid (right)"
+    },
+    {
+      "name": "fig_convergence.png",
+      "caption": "Peak bending stress error vs the Navier series (solid) and the H3 anchor level (dashed)"
+    },
+    {
+      "name": "fig_nonuniform_vs_uniform.png",
+      "caption": "Peak bending stress for the contact-projected patch vs the matched uniform patch, per contact configuration"
+    }
   ],
-  "max_abs_rel_error_pct": 0.5980348561341664,
-  "legacy_reference_max_abs_rel_error_pct": 666.4,
-  "legacy_reference_note": "global inverse-distance projection (pre-m20624) inflated the force by +24 % (mild) to +666 % (sharp); see docs/VERIFY-patch-from-contact-units.md"
- },
- "nonuniform_scan": {
-  "configurations": [
-   {
-    "name": "mild_nonuniform",
-    "peak_pressure_MPa": 5.0,
-    "sigma_x_m": 0.15,
-    "sigma_y_m": 0.15,
-    "contact_grid": [
-     21,
-     21
-    ],
-    "analytic_total_force_N": 706858.3470577034,
-    "total_force_nonuniform_N": 707575.1723901144,
-    "uniform_pressure_MPa": 7.86194635989016,
-    "uniform_patch_width_m": 0.3,
-    "uniform_patch_length_m": 0.3,
-    "total_force_uniform_N": 707575.1723901143,
-    "projection_total_force_error_pct": 0.10141003998818121,
-    "load_balance_rel": 3.290542867231933e-16,
-    "pressure_nonuniformity": 1.4758963963697707,
-    "max_deflection_nonuniform_m": 0.1366099950688445,
-    "max_deflection_uniform_m": 0.12441731671046968,
-    "deflection_diff_pct": 9.79982423728707,
-    "peak_stress_projected": {
-     "sigma_vm_MPa": 2255.0282529090073,
-     "sigma_vm_at_m": [
-      0.4375,
-      0.375
-     ],
-     "sigma_x_MPa": 2252.234433684149,
-     "sigma_x_at_m": [
-      0.4375,
-      0.375
-     ]
+  "design_point": {
+    "case": "JOUR-ICE-STRUCT design point, uniform full-breadth patch",
+    "design_point": {
+      "l_m": 0.8,
+      "s_m": 0.7,
+      "t_m": 0.022,
+      "E_Pa": 206000000000.0,
+      "nu": 0.3,
+      "lambda_c_over_l": 0.1,
+      "patch_m": [
+        0.08,
+        0.7
+      ],
+      "patch_area_m2": 0.056,
+      "p_ref_MPa": 1.0,
+      "total_force_N": 56000.0
     },
-    "peak_stress_uniform": {
-     "sigma_vm_MPa": 2550.2757473401766,
-     "sigma_vm_at_m": [
-      0.4375,
-      0.375
-     ],
-     "sigma_x_MPa": 2541.494231679391,
-     "sigma_x_at_m": [
-      0.4375,
-      0.375
-     ]
+    "fem": {
+      "mesh": [
+        16,
+        12
+      ],
+      "sigma_vm_MPa": 72.654,
+      "sigma_Mx_MPa": 77.892,
+      "projection_force_error_rel": 1.2e-15
     },
-    "peak_stress_analytic_field": {
-     "sigma_vm_MPa": 2254.607029960118,
-     "sigma_vm_at_m": [
-      0.4375,
-      0.375
-     ],
-     "sigma_x_MPa": 2251.791256954067,
-     "sigma_x_at_m": [
-      0.4375,
-      0.375
-     ]
+    "baseline_panel_patch_load_results": {
+      "sigma_plate_MPa": 73.37101604723352,
+      "sigma_plate_Mx_MPa": 78.66760309419584,
+      "source": "tests/data/panel_patch_load_reference.json :: plate_vs_strip[lambda_c_over_l=0.1, full_breadth]"
     },
-    "delta_nonuniform_over_uniform_pct": {
-     "sigma_vm": -11.577081213241325,
-     "sigma_x": -11.381485520984336,
-     "deflection": 9.79982423728707
+    "errors_pct": {
+      "fem_vs_baseline_sigma_Mx": -0.986,
+      "fem_vs_baseline_sigma_vm": -0.977
     },
-    "projection_error_pct": {
-     "sigma_vm": 0.01868276570116123,
-     "sigma_x": 0.01968107517573703,
-     "deflection": 0.21892019451297262
+    "timoshenko_table8": {
+      "M_coef_got": 0.04785,
+      "M_coef_ref": 0.0479,
+      "M_err_pct": -0.104,
+      "w_coef_got": 0.00405,
+      "w_coef_ref": 0.00406,
+      "w_err_pct": -0.246
+    },
+    "acceptance": {
+      "fem_vs_baseline_sigma_Mx_lt_3pct": true,
+      "fem_vs_baseline_sigma_vm_lt_3pct": true,
+      "timoshenko_M_lt_1pct": true,
+      "timoshenko_w_lt_2pct": true,
+      "force_projection_lt_1pct": true,
+      "all_passed": true
     }
-   },
-   {
-    "name": "moderate_nonuniform",
-    "peak_pressure_MPa": 8.0,
-    "sigma_x_m": 0.1,
-    "sigma_y_m": 0.1,
-    "contact_grid": [
-     21,
-     21
-    ],
-    "analytic_total_force_N": 502654.8245743669,
-    "total_force_nonuniform_N": 505883.1409718275,
-    "uniform_pressure_MPa": 12.647078524295686,
-    "uniform_patch_width_m": 0.2,
-    "uniform_patch_length_m": 0.2,
-    "total_force_uniform_N": 505883.14097182755,
-    "projection_total_force_error_pct": 0.6422531406505838,
-    "load_balance_rel": 1.1506147605877417e-16,
-    "pressure_nonuniformity": 1.4758963963697709,
-    "max_deflection_nonuniform_m": 0.11493829304414968,
-    "max_deflection_uniform_m": 0.20014325997531193,
-    "deflection_diff_pct": -42.571989155004495,
-    "peak_stress_projected": {
-     "sigma_vm_MPa": 2142.0790550299025,
-     "sigma_vm_at_m": [
-      0.4375,
-      0.375
-     ],
-     "sigma_x_MPa": 2137.4184166258115,
-     "sigma_x_at_m": [
-      0.4375,
-      0.375
-     ]
-    },
-    "peak_stress_uniform": {
-     "sigma_vm_MPa": 4102.487623137205,
-     "sigma_vm_at_m": [
-      0.4375,
-      0.375
-     ],
-     "sigma_x_MPa": 4088.3612843096034,
-     "sigma_x_at_m": [
-      0.4375,
-      0.375
-     ]
-    },
-    "peak_stress_analytic_field": {
-     "sigma_vm_MPa": 2131.9179694092427,
-     "sigma_vm_at_m": [
-      0.4375,
-      0.375
-     ],
-     "sigma_x_MPa": 2127.2522338478393,
-     "sigma_x_at_m": [
-      0.4375,
-      0.375
-     ]
-    },
-    "delta_nonuniform_over_uniform_pct": {
-     "sigma_vm": -47.78584966474957,
-     "sigma_x": -47.719434071816515,
-     "deflection": -42.571989155004495
-    },
-    "projection_error_pct": {
-     "sigma_vm": 0.4766171009607634,
-     "sigma_x": 0.47790208496258924,
-     "deflection": 0.5861042727777654
-    }
-   },
-   {
-    "name": "sharp_nonuniform",
-    "peak_pressure_MPa": 15.0,
-    "sigma_x_m": 0.05,
-    "sigma_y_m": 0.05,
-    "contact_grid": [
-     21,
-     21
-    ],
-    "analytic_total_force_N": 235619.4490192345,
-    "total_force_nonuniform_N": 279617.172666798,
-    "uniform_pressure_MPa": 27.961717266679795,
-    "uniform_patch_width_m": 0.1,
-    "uniform_patch_length_m": 0.1,
-    "total_force_uniform_N": 279617.172666798,
-    "projection_total_force_error_pct": 18.673213875469074,
-    "load_balance_rel": 4.163382410194797e-16,
-    "pressure_nonuniformity": 1.4758963963697709,
-    "max_deflection_nonuniform_m": 0.07297862883879594,
-    "max_deflection_uniform_m": 0.12119035622916188,
-    "deflection_diff_pct": -39.78181836449196,
-    "peak_stress_projected": {
-     "sigma_vm_MPa": 1572.6580765396943,
-     "sigma_vm_at_m": [
-      0.4375,
-      0.375
-     ],
-     "sigma_x_MPa": 1564.9096728449256,
-     "sigma_x_at_m": [
-      0.4375,
-      0.375
-     ]
-    },
-    "peak_stress_uniform": {
-     "sigma_vm_MPa": 2815.285336514324,
-     "sigma_vm_at_m": [
-      0.4375,
-      0.375
-     ],
-     "sigma_x_MPa": 2793.179763411542,
-     "sigma_x_at_m": [
-      0.4375,
-      0.375
-     ]
-    },
-    "peak_stress_analytic_field": {
-     "sigma_vm_MPa": 1563.2215662926574,
-     "sigma_vm_at_m": [
-      0.4375,
-      0.375
-     ],
-     "sigma_x_MPa": 1555.47345168065,
-     "sigma_x_at_m": [
-      0.4375,
-      0.375
-     ]
-    },
-    "delta_nonuniform_over_uniform_pct": {
-     "sigma_vm": -44.13859028275826,
-     "sigma_x": -43.97390052212137,
-     "deflection": -39.78181836449196
-    },
-    "projection_error_pct": {
-     "sigma_vm": 0.603657885133746,
-     "sigma_x": 0.6066462371363546,
-     "deflection": 0.7094145664806373
-    }
-   }
-  ],
-  "summary": {
-   "n_configurations": 3,
-   "max_abs_sigma_vm_diff_pct": 47.78584966474957,
-   "max_abs_sigma_x_diff_pct": 47.719434071816515,
-   "min_abs_sigma_x_diff_pct": 11.381485520984336,
-   "max_abs_projection_error_sigma_vm_pct": 0.603657885133746,
-   "max_abs_projection_error_sigma_x_pct": 0.6066462371363546,
-   "max_abs_load_balance_rel": 4.163382410194797e-16,
-   "max_deflection_diff_pct": 42.571989155004495,
-   "h3_anchor_level_pct": 0.339,
-   "h3_anchor_meaning": "FEM-vs-Kelvin analytical error of the H3-ICE-PLATE-FEM anchor; used as the accuracy scale for this chain, not as a tolerance on the non-uniformity effect",
-   "h3_consistency": "exceeds_anchor",
-   "h3_consistency_basis": "max |projection-path peak bending stress vs analytic-pressure-field peak bending stress| on the same mesh",
-   "all_configurations_valid": true
   }
- },
- "navier_crosscheck": {
-  "plate": {
-   "side_m": 1.0,
-   "thickness_m": 0.01,
-   "E_Pa": 206000000000.0,
-   "nu": 0.3
-  },
-  "contact_grid": 33,
-  "rows": [
-   {
-    "patch": "uniform_0.4x0.4",
-    "plate_nx": 16,
-    "mine_sigma_x_MPa": 368.33736724446146,
-    "ic_fem_sigma_Mx_MPa": 349.92444165077603,
-    "navier_sigma_Mx_MPa": 346.2285386362573,
-    "mine_vs_navier_pct": 6.38561705377827,
-    "ic_fem_vs_navier_pct": 1.0674749773881498,
-    "force_rel_error": -7.602633262167176e-16
-   },
-   {
-    "patch": "gaussian_peak2MPa_sigma0.08",
-    "plate_nx": 16,
-    "mine_sigma_x_MPa": 842.1149601798717,
-    "ic_fem_sigma_Mx_MPa": 859.884539887742,
-    "navier_sigma_Mx_MPa": 845.6151978249864,
-    "mine_vs_navier_pct": -0.41392794903848396,
-    "ic_fem_vs_navier_pct": 1.6874509941942728,
-    "force_rel_error": 9.11153416607815e-16
-   }
-  ],
-  "max_abs_mine_vs_navier_pct_finest": 6.38561705377827,
-  "max_abs_ic_fem_vs_navier_pct_finest": 1.6874509941942728,
-  "h3_anchor_pct": 0.339,
-  "h3_anchor_meaning": "FEM-vs-Kelvin error of the H3-ICE-PLATE-FEM anchor (benchmarks/artifacts/ice_plate_flexural_limit/evidence.json); the cross-check above is the equivalent quantity for this chain"
- },
- "figures": [
-  {
-   "name": "fig_projection.png",
-   "caption": "Gaussian contact pressure (left) projected onto the plate grid (right)"
-  },
-  {
-   "name": "fig_convergence.png",
-   "caption": "Peak bending stress error vs the Navier series (solid) and the H3 anchor level (dashed)"
-  },
-  {
-   "name": "fig_nonuniform_vs_uniform.png",
-   "caption": "Peak bending stress for the contact-projected patch vs the matched uniform patch, per contact configuration"
-  }
- ]
 }
