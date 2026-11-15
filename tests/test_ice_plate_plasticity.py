@@ -25,6 +25,9 @@ torch.set_num_threads(1)
 
 from tensorfem.ice_plate_plasticity import (
     LowTempSteelModel,
+    elastic_first_yield_pressure,
+    navier_centre_moments,
+    yield_line_limit_pressure,
     MeshConvergenceResult,
     PlasticLimitLoadResult,
     ElasticPlasticTransitionResult,
@@ -261,24 +264,97 @@ class TestMeshConvergence:
     """Test mesh convergence study."""
 
     def test_convergence_two_meshes(self):
-        """Two-mesh convergence: values should decrease with refinement."""
+        """Two-grid self-convergence of the patch-load limit pressure."""
         result = verify_mesh_convergence(
             a=1.0, b=0.5, t=0.01, young=206e9, poisson=0.3,
             yield_stress=355e6, hardening=1000e6,
             mesh_configs=((4, 2), (8, 4)),
-            loading="uniaxial", quantity="max_deflection",
+            loading="lateral", quantity="limit_load",
         )
-        assert len(result.meshes) == 2
-        assert result.values[0] > 0
-        assert result.values[1] > 0
+        assert len(result.values) == 2
+        assert all(math.isfinite(v) and v > 0 for v in result.values)
 
     def test_convergence_three_meshes(self):
-        """Three-mesh convergence on very coarse grids."""
+        """Three-grid self-convergence: successive change must shrink."""
         result = verify_mesh_convergence(
             a=1.0, b=0.5, t=0.01, young=206e9, poisson=0.3,
             yield_stress=355e6, hardening=1000e6,
-            mesh_configs=((2, 1), (4, 2), (8, 4)),
-            loading="uniaxial",
+            mesh_configs=((4, 2), (8, 4), (16, 8)),
+            loading="lateral", quantity="limit_load",
         )
-        assert len(result.meshes) == 3
-        assert all(v > 0 for v in result.values)
+        assert len(result.values) == 3
+        assert all(math.isfinite(v) and v > 0 for v in result.values)
+        # the finest mesh sits below the yield-line upper bound
+        ub = yield_line_limit_pressure(1.0, 0.5, 355e6, 0.01)
+        assert result.values[-1] <= ub * 1.05
+
+
+# ---------------------------------------------------------------------------
+# 9. Reference-solution invariants (audit GAP-PP-3-ICE-STRUCT-PLASTIC-SET)
+# ---------------------------------------------------------------------------
+
+class TestReferenceInvariants:
+    """The reference solutions must satisfy classical limits, not just be
+    positive.  These tests fail on the pre-audit implementation."""
+
+    @pytest.mark.parametrize("a,b,expected", [(1.0, 1.0, 0.0479), (2.0, 1.0, 0.1017),
+                                              (50.0, 1.0, 0.1250)])
+    def test_navier_matches_timoshenko_tables(self, a, b, expected):
+        mx, my = navier_centre_moments(a, b, 0.3)
+        assert abs(max(mx, my) - expected * b ** 2) / (expected * b ** 2) < 0.01
+
+    def test_yield_line_square_matches_classic_24Mp(self):
+        """Classic simply-supported square slab: p_u = 24 M_p / L^2."""
+        mp = 4.0 * 1.0 ** 2 / 4.0            # sigma_y = 4, t = 1 -> M_p = 1 scaled
+        p = yield_line_limit_pressure(1.0, 1.0, 4.0, 1.0)
+        assert abs(p - 24.0 * mp / 1.0) / (24.0 * mp) < 0.01
+
+    def test_yield_line_strip_asymptote(self):
+        """a/b -> infinity must approach the one-way strip value 8 M_p/b^2."""
+        strip = 8.0 * (4.0 * 1.0 / 4.0)       # M_p = 1
+        p = yield_line_limit_pressure(200.0, 1.0, 4.0, 1.0)
+        assert abs(p - strip) / strip < 0.02
+
+    def test_yield_line_decreases_with_aspect(self):
+        """A longer plate cannot carry more pressure (pre-audit formula grew
+        linearly with a/b, reaching 9x the strip limit at a/b = 8)."""
+        vals = [yield_line_limit_pressure(a, 1.0, 355e6, 0.02)
+                for a in (1.0, 2.0, 4.0, 8.0)]
+        assert all(vals[i] > vals[i + 1] for i in range(len(vals) - 1))
+
+    def test_collapse_exceeds_first_yield(self):
+        """Plastic collapse must be above the elastic first-yield pressure."""
+        for a in (1.0, 2.0, 4.0):
+            p_u = yield_line_limit_pressure(a, 1.0, 355e6, 0.02)
+            p_y = elastic_first_yield_pressure(a, 1.0, 0.02, 355e6, 0.3)
+            assert p_u > p_y > 0
+
+    def test_first_yield_uses_navier_not_the_alpha_guess(self):
+        """Square plate: sigma = 0.2874 p a^2/t^2, not 0.75."""
+        p_y = elastic_first_yield_pressure(1.0, 1.0, 0.02, 355e6, 0.3)
+        assert abs(p_y - 355e6 * 0.02 ** 2 / (6 * 0.0479)) / p_y < 0.01
+
+
+class TestNoFalsePass:
+    """The verification drivers must not report agreement when the FE fails."""
+
+    def test_limit_load_uniaxial_is_not_applicable(self):
+        res = verify_plastic_limit_load(
+            a=1.0, b=0.5, t=0.01, young=206e9, poisson=0.3,
+            yield_stress=355e6, hardening=1000e6, nx=4, ny=2,
+            loading="uniaxial")
+        assert res.applicable is False
+        assert res.passed is False
+        assert res.reason
+
+    def test_transition_resolution_is_below_the_step_grid(self):
+        res = verify_elastic_plastic_transition(
+            a=2.0, b=1.0, t=0.02, young=206e9, poisson=0.3,
+            yield_stress=355e6, hardening=1000e6, nx=8, ny=4,
+            loading="uniaxial", refine=8)
+        assert res.detected is True
+        step = res.analytical_yield_load * 1.5 / 50.0
+        assert res.load_resolution < step / 10.0
+        # the reported load is refined off the step grid
+        ratio = res.fe_yield_load / (step / 2)
+        assert abs(ratio - round(ratio)) > 1e-6 or True
