@@ -1,0 +1,14 @@
+{
+  "title": "FEAT-COMPUTE-QUEUE-UNIFIED: 统一计算调度系统 v1 实现",
+  "summary": "实现 TensorFEM 统一计算调度系统，包含提交/裁决/执行三层分离架构。52 项测试全部通过，覆盖提交面验证、调度器容量感知放置、本地/远程执行器、持久化账本、红队测试（32核作业必须落节点、本地帽满必须排队）。",
+  "scenario_key": "compute-queue-unified",
+  "mission_id": 22397,
+  "tags": [
+    "compute-queue",
+    "scheduler",
+    "FEAT-COMPUTE-QUEUE-UNIFIED",
+    "TensorFEM"
+  ],
+  "markdown": "# FEAT-COMPUTE-QUEUE-UNIFIED: 统一计算调度系统 v1\n\n## 案例介绍\n\n**物理背景**：TensorFEM 求解器生态需要统一的计算调度系统，支持从单核测试到多核参数扫描的作业提交、容量感知调度和资源隔离执行。\n\n**实现目标**：将原有的  升级为 ，实现提交/裁决/执行三层分离。\n\n**参数表**：\n| 组件 | 行数 | 测试数 | 覆盖率 |\n|------|------|--------|--------|\n| compute_queue.py | 790 | - | - |\n| test_compute_queue.py | 665 | 52 | 52 passed |\n\n## 怎么做的\n\n### 架构设计\n\n三层分离：\n1. **提交面**： 数据类 +  /  — 作业规格定义，无节点参数（HPC 语义）\n2. **裁决面**： 类 — 容量感知放置，本地帽 ≤24 核，红队规则强制执行\n3. **执行面**：（nice/cgroup 限流）+ （远程节点）\n\n### 关键设置\n\n- ：本地代理计算总帽\n-  使用 frozen dataclass +  保证不可变性\n- 账本持久化：JSON 原子写入（tmp + replace）\n- 向后兼容： 接受但忽略  参数\n\n### 工具链\n\n- Python 3.11 + dataclasses + subprocess\n- pytest 测试框架（52 项测试）\n- 无外部依赖\n\n## 计算结果\n\n### 测试执行结果\n\n\n\n### 功能覆盖\n\n| 测试类 | 测试数 | 状态 |\n|--------|--------|------|\n| TestJobSpec | 6 | ✅ |\n| TestSubmitJob | 3 | ✅ |\n| TestSubmitCLI | 4 | ✅ |\n| TestDeterministicJobId | 3 | ✅ |\n| TestSerialization | 2 | ✅ |\n| TestScheduler | 7 | ✅ |\n| TestRedTeam | 2 | ✅ |\n| TestLocalRunner | 4 | ✅ |\n| TestSSHRunner | 2 | ✅ |\n| TestJobLedger | 5 | ✅ |\n| TestClusterExec | 2 | ✅ |\n| TestComputeQueue | 4 | ✅ |\n| TestJobRecord | 1 | ✅ |\n| TestEdgeCases | 7 | ✅ |\n\n## 结果图\n\n（本任务为后端基础设施开发，无场量云图或比较曲线。产物为代码模块、测试套件和文档。）\n\n## 注意点\n\n1. **frozen dataclass 陷阱**： 使用 ，状态更新必须用  创建新实例\n2. **红队规则**：32 核作业即使本地有充足资源也必须调度到远程节点\n3. **本地帽保护**：当本地已用核数达到 24 时，新作业必须排队而非挤占控制面\n4. **向后兼容**： 的  参数被接受但忽略，确保旧代码不破坏\n\n## 误差判定\n\n本任务为基础设施开发，无数值计算误差。功能正确性通过 52 项自动化测试验证：\n- 提交面验证：JobSpec 约束、CLI 解析、序列化往返 ✅\n- 裁决面验证：容量感知放置、优先级队列、节点健康检查 ✅\n- 执行面验证：命令执行、超时终止、pytest 目标 ✅\n- 红队验证：32 核不落本地、本地帽满排队 ✅\n- 账本验证：持久化、状态查询、统计 ✅\n- 兼容性验证：cluster_exec 向后兼容 ✅\n\n**结论：所有验收条件满足，无误差项。**\n",
+  "figures": []
+}
