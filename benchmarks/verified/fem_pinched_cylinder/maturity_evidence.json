@@ -2,15 +2,15 @@
   "schema": "tensorfem.maturity-evidence.v1",
   "case": "CASE-FEM-PINCHED-CYLINDER",
   "mission": "m16190 (repair of m16076)",
-  "generated_at": "2026-11-12T10:55:00+00:00",
+  "generated_at": "2026-11-15T10:11:48+00:00",
   "L2": {
     "impl_files": [
       {
         "path": "src/tensorfem/cylindrical_shell4.py",
-        "lines": 108,
-        "sha256": "727df10e11dd960ae2428d428a6189123d2ff7f560a6ff93eb7f593cd387bedf",
+        "lines": 138,
+        "sha256": "6b3d26391e982a8e56875578283347f8fba8242817ad3630a9e9a1dfb17d137f",
         "role": "Reissner-Mindlin cylindrical Shell4 element: exact cylindrical metric, 2x2 membrane+bending, 1-point selective transverse shear, drilling stabilisation",
-        "docstring": "Four-node cylindrical Reissner--Mindlin shell.",
+        "docstring": "Four-node cylindrical Reissner--Mindlin shell (MITC4).",
         "non_placeholder": true
       },
       {
@@ -37,18 +37,21 @@
       },
       {
         "path": "benchmarks/verified/fem_pinched_cylinder/case_convergence.png",
-        "bytes": 79635,
-        "sha256": "6662623aaf6db898ced6c7e1bf8293431a5687f4c08a03c746f952a34cd35d8d"
+        "bytes": 0,
+        "sha256": null,
+        "missing": true
       },
       {
         "path": "benchmarks/verified/fem_pinched_cylinder/case_field.png",
-        "bytes": 60098,
-        "sha256": "e4c964425b746ad5a6b4a8e5da304cf524b0102313dfd800e5898e79eb529424"
+        "bytes": 0,
+        "sha256": null,
+        "missing": true
       },
       {
         "path": "benchmarks/verified/fem_pinched_cylinder/case_sensitivity.png",
-        "bytes": 109523,
-        "sha256": "dff08daacf2a2fa59cb7be3e63ab5d14766fe110ef7a0a9a5e9a4a60d01d061c"
+        "bytes": 0,
+        "sha256": null,
+        "missing": true
       }
     ]
   },
@@ -58,8 +61,8 @@
         "path": "src/tensorfem/benchmark_cases.py",
         "call": "solve_pinched_cylinder_linear",
         "call_lines": [
-          108,
-          109
+          338,
+          339
         ],
         "role": "benchmark-case registry runner (case.runner=='pinched_cylinder')",
         "present": true
@@ -108,7 +111,7 @@
     "repro_cmd": "PYTHONPATH=src python benchmarks/verified/fem_pinched_cylinder/run.py"
   },
   "verdicts": {
-    "L2": true,
+    "L2": false,
     "L3": true,
     "L4": true
   }
