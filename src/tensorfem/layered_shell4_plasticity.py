@@ -338,15 +338,24 @@ def assemble_layered_shell4(model: LayeredShell4Model, displacement: torch.Tenso
 def solve_layered_shell4_increment(model: LayeredShell4Model, external_force: torch.Tensor,
                                    load_factor: float, fixed_dofs: torch.Tensor,
                                    committed: LayeredShell4State, displacement: torch.Tensor,
-                                   *, tolerance=1e-8, max_iterations=25):
-    """Full Newton load increment; committed history is immutable on failure."""
+                                   *, tolerance=1e-8, max_iterations=25,
+                                   geometric: bool = False):
+    """Full Newton load increment; committed history is immutable on failure.
+
+    ``geometric=True`` adds the updated (initial-stress) geometric stiffness so
+    that in-plane resultants stiffen the transverse response: without it a
+    plate whose bending moments have saturated keeps a positive transverse
+    tangent and load control never sees the limit point (the deflection runs
+    away at almost constant load).
+    """
     fixed = fixed_dofs.to(device=model.nodes.device, dtype=torch.long)
     mask = torch.ones(model.n_dofs, dtype=torch.bool, device=model.nodes.device); mask[fixed] = False
     free = torch.arange(model.n_dofs, device=model.nodes.device)[mask]
     load = external_force.to(model.nodes)*load_factor; u = displacement.clone()
     scale = max(float(torch.linalg.vector_norm(load[free])), 1.)
     for iteration in range(1, max_iterations+1):
-        internal, tangent, stress, trial = assemble_layered_shell4(model, u, committed)
+        internal, tangent, stress, trial = assemble_layered_shell4(
+            model, u, committed, geometric=geometric)
         residual = load-internal; norm = float(torch.linalg.vector_norm(residual[free]))
         if norm <= tolerance*scale:
             alpha = torch.stack([torch.stack([torch.stack([p.alpha for p in q]) for q in e]) for e in trial.points])
