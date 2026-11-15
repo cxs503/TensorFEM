@@ -1,0 +1,18 @@
+{
+ "epsilon": [
+  {
+   "C_force": 2.7832133645001935,
+   "C_momentum": 2.7924742942280516,
+   "constraint_rel_max": 7.067899292141149e-16,
+   "correct_epsilon": true,
+   "eps_amplification": 2.1878490606130363
+  },
+  {
+   "C_force": 2.783213364500189,
+   "C_momentum": 2.7924742942280396,
+   "constraint_rel_max": 7.067899292141149e-16,
+   "correct_epsilon": false,
+   "eps_amplification": 1.0
+  }
+ ]
+}
