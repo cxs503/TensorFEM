@@ -519,3 +519,34 @@ from .compute_queue import (
     LOCAL_CORE_CAP as LOCAL_CORE_CAP,
     SCHEMA as SCHEMA,
 )
+
+# -- ice-grillage ultimate strength chain (GAP-PP-5) -------------------------
+from .grillage_ice_ultimate import (
+    MemberSection as MemberSection,
+    GrillageGeometry as GrillageGeometry,
+    CombinedLoadCase as CombinedLoadCase,
+    plate_patch_response as plate_patch_response,
+    beam_column_amplification_exact as beam_column_amplification_exact,
+    beam_column_amplification_approx as beam_column_amplification_approx,
+    beam_moment_centre_patch as beam_moment_centre_patch,
+    frame_plastic_collapse_force as frame_plastic_collapse_force,
+    johnson_ostenfeld as johnson_ostenfeld,
+    stiffener_axial_capacity as stiffener_axial_capacity,
+    system_load_shares as system_load_shares,
+    grillage_utilisations as grillage_utilisations,
+    ultimate_ice_pressure as ultimate_ice_pressure,
+    panel_stress_ultimate_map as panel_stress_ultimate_map,
+    write_ultimate_map as write_ultimate_map,
+    ice_pressure_area_rule as ice_pressure_area_rule,
+    case_study_geometry as case_study_geometry,
+)
+from .grillage_ice_rule_benchmark import (
+    IACSPolarClassRule as IACSPolarClassRule,
+    rule_plate_thickness as rule_plate_thickness,
+    rule_stiffener_modulus as rule_stiffener_modulus,
+    rule_frame_modulus as rule_frame_modulus,
+    rule_design_pressure as rule_design_pressure,
+    rule_benchmark_table as rule_benchmark_table,
+    run_rule_benchmark as run_rule_benchmark,
+    write_rule_benchmark as write_rule_benchmark,
+)
