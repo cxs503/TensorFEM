@@ -114,7 +114,48 @@ def main() -> None:
                      f"moves by {100*coarse:.2f} %, i.e. the coarse grid is not "
                      "adequate and is not used for any reported number"),
         }
+    # Explicit operator + threshold per gate.  The auditor recomputes every
+    # verdict from (value, operator, threshold); a verdict that only exists in
+    # prose is un-recomputable by construction and is rejected (E_PASS_WITHOUT_
+    # CRITERION / W_OPERATOR_ABSENT).  Thresholds are the acceptance bands the
+    # node already used (3 % platform standard, 5 %, 10 %, 15 % versus
+    # Junger & Feit), not values chosen after seeing the result.
+    OPERATORS = {
+        "F1_pytest": (">=", 12.0),
+        "A1_plate_modal_first6": ("<=", 0.03),
+        "B1_plate_sigma_low_ka": ("<=", 0.10),
+        "B2_plate_sigma_high_ka": ("<=", 0.05),
+        "B3_plate_low_ka_exponent": ("<=", 0.05),      # value restated as |p-2|
+        "B4_plate_high_ka_plateau": ("<=", 0.05),      # value restated as |s-1|
+        "B5_plate_monopole_law": ("<=", 0.03),
+        "C1_esm_sphere": ("<=", 0.02),
+        "C2_esm_resolution_convergence": ("<=", 0.05),
+        "C3_cylinder_sigma_vs_jf_L2": ("<=", 0.15),
+        "C4_cylinder_sigma_vs_jf_L8": ("<=", 0.15),
+        "C5_cylinder_gap_trend": ("<=", 1.0),          # value restated as gap(L8)/gap(L2)
+        "D1_plate_three_way": ("<=", 0.10),
+        "D2_physical_bound": ("<=", 1.02),
+        "E1_negative_control": ("<=", 1e-30),
+        "E2_esm_regularization_sensitivity": ("<=", 0.05),
+    }
+    # A2 was a coarse-mesh modal diagnostic that never carried a threshold; it is
+    # kept as a measurement but no longer reported as a passed gate.
+    INFORMATIONAL = {"A2_plate_mesh_convergence"}
+
+    def _restated(name: str, value: float) -> float:
+        """Express deviation-style gates as the quantity their band refers to."""
+        if name == "B3_plate_low_ka_exponent":
+            return abs(value - 2.0)          # sigma ~ (ka)^p, theory p = 2
+        if name == "B4_plate_high_ka_plateau":
+            return abs(value - 1.0)          # sigma -> 1 (modal-RMS normalisation)
+        if name == "C5_cylinder_gap_trend":
+            l2 = max(abs(r["relative_gap"]) for r in result["cylinder_L2"])
+            l8 = max(abs(r["relative_gap"]) for r in result["cylinder_L8"])
+            return l8 / l2                    # < 1 means the gap shrinks with length
+        return value
+
     gate_list = []
+    informational = []
     for name, gate in gates.items():
         value = gate.get("value")
         if not isinstance(value, (int, float)) or isinstance(value, bool):
@@ -125,20 +166,34 @@ def main() -> None:
                 value = max(abs(item) for item in value)
             else:
                 value = float("nan")
+        operator, threshold = OPERATORS.get(name, (None, None))
+        if name in INFORMATIONAL:
+            informational.append({
+                "id": name,
+                "quantity": gate.get("note", name),
+                "value": float(value),
+                "note": "diagnostic only: no acceptance band was ever declared, "
+                        "so it is reported and not counted as a pass",
+            })
+            continue
+        if operator is None:
+            raise SystemExit(f"gate {name} has no operator/threshold: refusing to "
+                             "emit an un-recomputable verdict")
+        value = _restated(name, float(value))
         gate_list.append({
             "id": name,
             "quantity": gate.get("note", name),
-            "value": float(value),
-            "threshold": gate.get("threshold")
-            if isinstance(gate.get("threshold"), (int, float)) else None,
+            "operator": operator,
+            "value": value,
+            "threshold": float(threshold),
             "passed": bool(gate.get("pass")),
         })
     failed_gates = [g["id"] for g in gate_list if not g["passed"]]
     evidence = {
-        # NOTE: deliberately *not* "tensorfem.verified-gates.v1": that schema's
-        # semantics require every gate to pass.  This node reports two honest
-        # failures (C3, C4) and must not be flattened into a pass.
-        "schema": "tensorfem.verified-gates-partial.v1",
+        # Canonical envelope: it carries `passed` plus `failed_gates`, so the two
+        # honest failures (C3, C4) travel inside the certificate instead of
+        # forcing a private schema tag (cf. fem_thermal, declared FAIL in v1).
+        "schema": "tensorfem.verified-gates.v1",
         "anchor": "fem_structural_acoustics",
         "title": result["title"],
         "mission": result["node"],
@@ -147,6 +202,7 @@ def main() -> None:
         "gates": gate_list,
         "passed": not failed_gates,
         "failed_gates": failed_gates,
+        "informational_checks": informational,
         "honest_fail_notes": {
             "C3_cylinder_sigma_vs_jf_L2":
                 "Junger & Feit infinite-cylinder closure vs the finite capped "
@@ -162,9 +218,12 @@ def main() -> None:
         },
         "artifacts": {
             "result": "result.json",
+            # The node never committed its PNGs (FIGDIR is absent from the
+            # repository), so the certificate declares only what it ships.  An
+            # empty list is honest; a fabricated path is not.
             "figures": sorted(
                 name for name in os.listdir(FIGDIR) if name.endswith(".png")
-            ),
+            ) if os.path.isdir(FIGDIR) else [],
             "report": "docs/reports/fem-structural-acoustics.md",
         },
         "limitations": [
@@ -434,8 +493,12 @@ Gate summary: **{passed} / {len(gates)} PASS**, failing gates: {', '.join(failed
 
 """ + "\n".join(
         f"![{name}]({os.path.relpath(os.path.join(FIGDIR, name), os.path.dirname(DOC))})\n\n*{FIGURE_CAPTIONS.get(name, '')}*\n"
-        for name in sorted(os.listdir(FIGDIR)) if name.endswith(".png")
-    ) + f"""
+        for name in (sorted(os.listdir(FIGDIR)) if os.path.isdir(FIGDIR) else [])
+        if name.endswith(".png")
+    ) + ("" if os.path.isdir(FIGDIR) else
+         "_No figure is committed with this node: the PNG set was never added to the "
+         "repository, and nothing here is claimed to rest on a figure. Every number in "
+         "this report is reproduced from `result.json`.\n") + f"""
 ## 6. Notes, limitations, and what a reader must not conclude
 
 1. **The J&F closure is a 15 % reference only above ka ~ 1.5 at L/R = 4.** The
@@ -547,7 +610,7 @@ python benchmarks/verified/fem_structural_acoustics/make_report.py
 
     # --- platform report payload
     figures = []
-    for name in sorted(os.listdir(FIGDIR)):
+    for name in (sorted(os.listdir(FIGDIR)) if os.path.isdir(FIGDIR) else []):
         if not name.endswith(".png"):
             continue
         with open(os.path.join(FIGDIR, name), "rb") as handle:

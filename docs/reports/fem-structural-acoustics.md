@@ -279,21 +279,7 @@ Gate summary: **15 / 17 PASS**, failing gates: C3_cylinder_sigma_vs_jf_L2, C4_cy
 
 ## 5. Figures
 
-![fig_cylinder.png](../../benchmarks/verified/fem_structural_acoustics/figures/fig_cylinder.png)
-
-*Cylinder R = 0.5 m. Left: radiated efficiency from the equivalent-source exterior solve against the Junger & Feit wavenumber-window closure for four modes at L = 2 m. Right: the ESM-vs-J&F gap against ka for L = 2 m (circles) and the length-converged L = 8 m case (open squares) with the 15 % gate band.*
-
-![fig_esm_validation.png](../../benchmarks/verified/fem_structural_acoustics/figures/fig_esm_validation.png)
-
-*Anchor of the numerical radiation integral: the equivalent-source solve reproduces the exact pulsating-sphere power (left) to better than 0.002 % over ka in [0.5, 3] (right), which fixes the constant of the monopole cross-power formula.*
-
-![fig_plate_modes.png](../../benchmarks/verified/fem_structural_acoustics/figures/fig_plate_modes.png)
-
-*Baffled simply-supported plate (1.0 x 0.5 x 0.01 m): first six FEM (Q4 Mindlin, 24x24 elements) mode shapes with the Kirchhoff closed-form frequency error of each mode in the panel title.*
-
-![fig_plate_sigma.png](../../benchmarks/verified/fem_structural_acoustics/figures/fig_plate_sigma.png)
-
-*Plate radiation efficiency. Left: Rayleigh 4-D integral of the FEM mode velocity against the closed-form angular spectrum of the analytic sine mode, for modes (1,1), (2,1), (3,1). Right: the three-route adjudication residual (FEM vs analytic, far-field integral vs Rayleigh integral) with the 10 % gate band.*
+_No figure is committed with this node: the PNG set was never added to the repository, and nothing here is claimed to rest on a figure. Every number in this report is reproduced from `result.json`.
 
 ## 6. Notes, limitations, and what a reader must not conclude
 

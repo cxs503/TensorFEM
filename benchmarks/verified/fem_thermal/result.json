@@ -1,7 +1,7 @@
 {
   "benchmark": "fem_thermal",
   "description": "Thermal conduction verification: steady 1D + transient 2D Q4",
-  "generated_at": "2026-11-15T14:08:09Z",
+  "generated_at": "2026-11-15T23:38:47Z",
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
@@ -1137,5 +1137,5 @@
       0.0
     ]
   },
-  "elapsed_seconds": 34.87
+  "elapsed_seconds": 42.31
 }
