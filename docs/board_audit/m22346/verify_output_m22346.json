@@ -1,0 +1,400 @@
+{
+  "audited_repo": "TensorFEM",
+  "audited_branch": "agent/m22319",
+  "audited_commit": "ee385cf336b96c7cb9f64f9d7186455fdd327750",
+  "verified_copy_sha256": {
+    "fig1_power_curve.png": "234b1de2dababc52c316ed03379563e5d244bef168c8aef7e0bcd24fb8d3e3f7",
+    "fig2_convergence.png": "0ae0bcd139e145696112a2afc559414d6c81abefb5a2199cdb6f4fbf89baed25",
+    "fig3_band_vs_controls.png": "47b5e356fbbc94328de80f81d18822c1daead481e57bda131eaeb20f63b78e23",
+    "gate_evidence.json": "b1b413b5df5bb55c911b651733f7e92f95184d3e12b0463b042e23d1cb2de38c",
+    "ice_gate_power.py": "987798b3f02a4aedceb4fcebf1f7a7774dcd9a16e26d129e9a3dc6daa60473e6",
+    "round2_report.md": "ce0d947f702be8550515a133ff3f2c8c51e041babe68818e6c1e247c314bd8f6",
+    "run_gate_evidence.py": "8d1a87480e7494874dfd9a039347cc7f3778bddaa294e25ec7e0579d88a0340c",
+    "tests_snapshot__test_ice_gate_power.py": "e116b2089aef48aed925a9c9ce86e57e3b5f248ef78548ff53bedf9d6eef3f07"
+  },
+  "chain_read_by_auditor": {
+    "source": "/srv/tensor/agent/work/m22346/benchmarks/ice_coupled_6dof/cummins_ice_6dof.py",
+    "length_m": 100.0,
+    "breadth_m": 20.0,
+    "draught_m": 6.0,
+    "block_coefficient": 0.7,
+    "water_density": 1025.0,
+    "mass_kg": 8610000.0,
+    "heave_added_mass_inf_kg": 8610000.0,
+    "heave_per_length_t_per_m": 86.1,
+    "surge_per_length_t_per_m": 8.61,
+    "mass_check_rho_cb_lbt_kg": 8610000.0
+  },
+  "published": {
+    "pass": true,
+    "decision": {
+      "heave": "reject",
+      "surge": "reject"
+    },
+    "verdict_text": "REJECT-DECLARATION (chain heave added mass is outside the acceptance band with power ~1)",
+    "declared_t_per_m": 86.1,
+    "reference_t_per_m": 229.619569379078,
+    "routes_t_per_m": {
+      "omega0": 225.19745140795888,
+      "infinity": 234.04168735019712
+    },
+    "band_half_width_rel": 0.019258454247071014,
+    "anchor_deviation": -0.004440254730182812,
+    "rule": {
+      "tol": 0.15,
+      "u_rel": 0.029,
+      "u_used": 0.029,
+      "k": 2.0,
+      "acceptance_limit": 0.092,
+      "rejection_limit": 0.208,
+      "u_contributions": {
+        "route_residual_19234": 0.029,
+        "free_surface_band_half_width": 0.019258454247071014,
+        "independent_anchor_deviation": 0.004440254730182812
+      }
+    },
+    "power": {
+      "u_used": 0.029,
+      "at_audited_deviation": 1.0,
+      "mc_at_audited_deviation": 1.0,
+      "at_tolerance": 0.02275013194817921,
+      "at_rejection_limit": 0.5,
+      "critical_deviation_95": 0.255700755181806,
+      "false_accept_at_tolerance": 0.022750131948179264,
+      "naive_power_at_tolerance": 0.5,
+      "naive_false_accept_at_tolerance": 0.5,
+      "naive_false_reject_at_zero": 0.0
+    },
+    "controls": [
+      {
+        "name": "P1_independent_anchor_19234",
+        "t_per_m": 228.6,
+        "dev": -0.004440254730182812,
+        "expected": "accept",
+        "got": "accept",
+        "passed": true,
+        "provenance": "tensor_reports#19234 (mission 21257) section Q5: BEM mirror Green single-layer + finite-difference five-point Laplace, mutual disagreement 3.8%, deep-submerged-cylinder self-check -0.32%..+2.90%"
+      },
+      {
+        "name": "P2_repo_route_odd_mirror",
+        "t_per_m": 234.04168735019712,
+        "dev": 0.019258454247071014,
+        "expected": "accept",
+        "got": "accept",
+        "passed": true,
+        "provenance": "tensorfem.ice_gate_power.section_added_mass_2d(free_surface='infinity')"
+      },
+      {
+        "name": "P3_repo_route_even_mirror",
+        "t_per_m": 225.19745140795888,
+        "dev": -0.019258454247071014,
+        "expected": "accept",
+        "got": "accept",
+        "passed": true,
+        "provenance": "tensorfem.ice_gate_power.section_added_mass_2d(free_surface='omega0')"
+      },
+      {
+        "name": "N1_chain_heave_declared",
+        "t_per_m": 86.1,
+        "dev": -0.6250319594587433,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "benchmarks/ice_coupled_6dof/cummins_ice_6dof.py ShipModel.radiation['heave']"
+      },
+      {
+        "name": "N2_chain_surge_channel",
+        "t_per_m": 8.61,
+        "dev": -0.9625031959458743,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "benchmarks/ice_coupled_6dof/cummins_ice_6dof.py ShipModel.radiation['surge']"
+      },
+      {
+        "name": "N3_sign_flipped_heave",
+        "t_per_m": -86.1,
+        "dev": -1.3749680405412565,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "sign-flipped chain declaration (a physical impossibility probe)"
+      },
+      {
+        "name": "N4_lock_dead_zero",
+        "t_per_m": 0.0,
+        "dev": -1.0,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "zero added mass (lock-dead probe)"
+      },
+      {
+        "name": "N5_rejected_m22156_reference",
+        "t_per_m": 440.1,
+        "dev": 0.9166484859722072,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "m22156 tests/test_hydro_ice_anchor.py heave_added_mass_rectangular_barge (strip_theory_newman_1977 label); audit m22176 finding F2: +92.5% against the verified BEM anchor"
+      }
+    ],
+    "meta_gate": {
+      "tol": 0.15,
+      "power_at_audited_deviation": 1.0,
+      "false_reject_at_zero": 0.0,
+      "informative": true,
+      "reason": "has power and can also pass"
+    },
+    "degenerate_gates_rejected": [
+      {
+        "tol": 2.0,
+        "power_at_audited_deviation": 0.0,
+        "false_reject_at_zero": 0.0,
+        "informative": false,
+        "reason": "cannot reject the audited failure"
+      },
+      {
+        "tol": 0.0,
+        "power_at_audited_deviation": 1.0,
+        "false_reject_at_zero": 1.0,
+        "informative": false,
+        "reason": "cannot accept a conforming value"
+      }
+    ],
+    "convergence": {
+      "omega0": {
+        "free_surface": "omega0",
+        "per_edges": [
+          40,
+          80,
+          160,
+          320,
+          640
+        ],
+        "values_kg_per_m": [
+          225033.19547957974,
+          225118.43437352453,
+          225197.45140795887,
+          225255.18493987888,
+          225294.18427872445
+        ],
+        "orders": [
+          0.10934817095289025,
+          0.4527542152640717,
+          0.5659598204697988
+        ],
+        "observed_order": 0.5659598204697988,
+        "richardson_kg_per_m": 225375.36997080894
+      },
+      "infinity": {
+        "free_surface": "infinity",
+        "per_edges": [
+          40,
+          80,
+          160,
+          320,
+          640
+        ],
+        "values_kg_per_m": [
+          233448.16202948554,
+          233815.5637087811,
+          234041.6873501971,
+          234183.94693624062,
+          234273.9929433053
+        ],
+        "orders": [
+          0.7002463856910941,
+          0.6685859643403346,
+          0.6597916617770628
+        ],
+        "observed_order": 0.6597916617770628,
+        "richardson_kg_per_m": 234429.28364635355
+      }
+    },
+    "discretisation_shift_160_to_640": {
+      "omega0": 0.00042954691609864426,
+      "infinity": 0.0009925821153415892
+    },
+    "deep_cylinder": [
+      {
+        "a": 1.0,
+        "depth_over_a": 2.0,
+        "exact_kg_per_m": 3.141592653589793,
+        "even_mirror": 2.7800093556250975,
+        "odd_mirror": 3.5705250879780976,
+        "err_even": -0.11509553842110187,
+        "err_odd": 0.13653343437067744
+      },
+      {
+        "a": 1.0,
+        "depth_over_a": 4.0,
+        "exact_kg_per_m": 3.141592653589793,
+        "even_mirror": 3.0507229024015685,
+        "odd_mirror": 3.2475981113176227,
+        "err_even": -0.028924740158273177,
+        "err_odd": 0.03374258518420614
+      },
+      {
+        "a": 1.0,
+        "depth_over_a": 8.0,
+        "exact_kg_per_m": 3.141592653589793,
+        "even_mirror": 3.123092667161462,
+        "odd_mirror": 3.172242815794908,
+        "err_even": -0.005888728574403812,
+        "err_odd": 0.009756249643024795
+      }
+    ],
+    "sensitivity_B_over_T": [
+      {
+        "draught_m": 4.0,
+        "B_over_T": 5.0,
+        "roll_coupling_changed_mass_kg": 5740000.0,
+        "declared_t_per_m": 57.4,
+        "route_omega0_t_per_m": 212.73061072883712,
+        "route_infinity_t_per_m": 224.36641867947012,
+        "deviation_heave": -0.737358086932315,
+        "decision": "reject",
+        "control_band_half_width_rel": 0.026620652092704093
+      },
+      {
+        "draught_m": 6.0,
+        "B_over_T": 3.3333333333333335,
+        "roll_coupling_changed_mass_kg": 8610000.0,
+        "declared_t_per_m": 86.1,
+        "route_omega0_t_per_m": 225.19745140795888,
+        "route_infinity_t_per_m": 234.04168735019712,
+        "deviation_heave": -0.6250319594587433,
+        "decision": "reject",
+        "control_band_half_width_rel": 0.019258454247071014
+      },
+      {
+        "draught_m": 8.0,
+        "B_over_T": 2.5,
+        "roll_coupling_changed_mass_kg": 11480000.0,
+        "declared_t_per_m": 114.8,
+        "route_omega0_t_per_m": 235.21030769679146,
+        "route_infinity_t_per_m": 242.22031102814202,
+        "deviation_heave": -0.5190924272657896,
+        "decision": "reject",
+        "control_band_half_width_rel": 0.014682768671335066
+      }
+    ]
+  },
+  "P1_ellipse_bracket": {
+    "rule": "ellipse added mass m_yy = rho*pi*a^2 (Lamb art.71/73) + monotonicity of added mass under set inclusion; doubled section 20 m x 12 m",
+    "a_omega0_lower_t_per_m": 161.0066234964769,
+    "a_omega0_upper_t_per_m": 322.01324699295384,
+    "declared_t_per_m": 86.1,
+    "declared_vs_lower_bound_rel": -0.4652393912112316
+  },
+  "P2_fv_route": {
+    "rows": [
+      {
+        "h": 1.0,
+        "box": 60.0,
+        "cells_fluid": 14160,
+        "A_half_force_t_per_m": 210.28480713479408,
+        "A_half_energy_t_per_m": 217.850729043297
+      },
+      {
+        "h": 0.5,
+        "box": 60.0,
+        "cells_fluid": 56640,
+        "A_half_force_t_per_m": 213.03872323150196,
+        "A_half_energy_t_per_m": 217.10792343923575
+      },
+      {
+        "h": 0.25,
+        "box": 60.0,
+        "cells_fluid": 226560,
+        "A_half_force_t_per_m": 214.66079909669236,
+        "A_half_energy_t_per_m": 216.80706938195152
+      },
+      {
+        "h": 1.0,
+        "box": 120.0,
+        "cells_fluid": 57360,
+        "A_half_force_t_per_m": 216.96421995504247,
+        "A_half_energy_t_per_m": 224.4220975935087
+      },
+      {
+        "h": 0.5,
+        "box": 120.0,
+        "cells_fluid": 229440,
+        "A_half_force_t_per_m": 219.6245182661522,
+        "A_half_energy_t_per_m": 223.6518668293791
+      },
+      {
+        "h": 0.25,
+        "box": 120.0,
+        "cells_fluid": 917760,
+        "A_half_force_t_per_m": 221.20973918943835,
+        "A_half_energy_t_per_m": 223.33964159734342
+      },
+      {
+        "h": 1.0,
+        "box": 240.0,
+        "cells_fluid": 230160,
+        "A_half_force_t_per_m": 218.6768029846183,
+        "A_half_energy_t_per_m": 226.10713242973094
+      }
+    ],
+    "h_extrapolation": {
+      "60.0": {
+        "observed_order_h": 0.7636433090891117,
+        "limit_t_per_m": 216.9854470807153
+      },
+      "120.0": {
+        "observed_order_h": 0.7469041159889334,
+        "limit_t_per_m": 223.5471759210503
+      }
+    },
+    "R_series_h1": {
+      "box": [
+        60.0,
+        120.0,
+        240.0
+      ],
+      "values": [
+        210.28480713479408,
+        216.96421995504247,
+        218.6768029846183
+      ],
+      "increment_ratio": 3.9001979494697867,
+      "limit_1_over_R2": 219.2476639944769
+    },
+    "force_vs_energy_rel_at_finest": -0.009536607082700765,
+    "combined_estimate_t_per_m": 225.83061996048474,
+    "inconclusive_attempt": "MFS (point sources, zero net flux) on the corner-singular rectangle: BC residual ~2, cond ~1e18 up to 240 nodes/edge -> not_run, no evidence either way"
+  },
+  "P3_rule_reprobe": {
+    "tol": 0.15,
+    "u": 0.029,
+    "k": 2.0,
+    "acceptance_limit": 0.092,
+    "rejection_limit": 0.208,
+    "deviation": -0.6250319594587435,
+    "decision": "reject",
+    "power_at_deviation": 1.0,
+    "power_at_tolerance": 0.02275013194817921,
+    "naive_power_at_tolerance": 0.5,
+    "false_accept_at_tolerance": 0.022750131948179153,
+    "critical_deviation_95": 0.2557100000001057,
+    "u_max_still_rejecting": 0.23751597972937172,
+    "deviation_over_rejection_limit": 3.0049613435516513
+  },
+  "cross_checks": {
+    "audited_reference_t_per_m": 229.619569379078,
+    "audited_omega0_route_t_per_m": 225.19745140795888,
+    "fv_independent_omega0_t_per_m": 225.83061996048474,
+    "fv_vs_audited_omega0_rel": 0.002811615089634456,
+    "audited_reference_inside_bracket": true,
+    "declared_vs_fv_independent_rel": -0.6187408066494015
+  },
+  "independent_limitations": [
+    "the FV route depends on the same free-surface mirror formulation as the audited route (omega0 variant only); it is independent in discretisation, not in model",
+    "FV truncation at R is the dominant residual (R-series increment ratio 3.90); the combined estimate is quoted at ~+/-1.5%",
+    "no literature table value (Vugts 1968) was available in this sandbox, so no external experimental anchor was used"
+  ]
+}
