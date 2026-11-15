@@ -371,3 +371,165 @@ def test_anchor_permanent_deflection_positive_at_fine_mesh(anchor_collapse_fine)
     assert path_unload.permanent_deflection > 0.0
     peak = path_unload.loading[-1].centre_deflection
     assert path_unload.permanent_deflection < peak
+
+
+# ---------------------------------------------------------------------------
+# Mesh-sweep tooling (scripts/patch_plate_mesh_sweep.py)
+#
+# The convergence verdicts and every published number are derived from the
+# computed rows.  These tests pin that derivation on synthetic rows so that a
+# regression back to hard-coded ``True`` flags or a hand-typed table is caught
+# without paying for a three-mesh finite-element sweep.
+# ---------------------------------------------------------------------------
+
+import importlib.util
+import json
+import sys
+from pathlib import Path
+
+
+def _mesh_sweep_module():
+    root = Path(__file__).resolve().parents[1]
+    if str(root / "scripts") not in sys.path:
+        sys.path.insert(0, str(root / "scripts"))
+    spec = importlib.util.spec_from_file_location(
+        "patch_plate_mesh_sweep", root / "scripts" / "patch_plate_mesh_sweep.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _synthetic_rows(collapse_mpa=(1.55, 1.62, 1.66), permanent_mm=(9.0, 12.0, 13.5)):
+    """Rows shaped like the sweep output; values chosen to be hand-checkable."""
+    upper = 1.70e6
+    lower = 0.76e6
+    py = 0.804e6
+    rows = []
+    for i, (c, d) in enumerate(zip(collapse_mpa, permanent_mm)):
+        rows.append({
+            "nx": (4, 6, 8)[i],
+            "first_yield_factor": 1.02 * py,
+            "first_yield_error_vs_analytic": 0.02,
+            "first_yield_error_vs_same_mesh": 0.004,
+            "collapse_factor": c * 1e6,
+            "collapse_measurements": {"intersection_of_tangents": c * 1e6,
+                                      "double_deflection": 1.05 * c * 1e6},
+            "collapse_spread": 0.05,
+            "collapse_is_limit_point": False,
+            "ramp_end_factor": 2.4123e6,
+            "collapse_factor_layering_corrected": c * 1e6 * (2.0 / 3.0),
+            "collapse_error_vs_upper": c * 1e6 / upper - 1.0,
+            "collapse_error_vs_upper_corrected": c * 1e6 / upper - 1.0,
+            "permanent_deflection": d * 1e-3,
+            "permanent_set_valid": True,
+            "peak_centre_deflection": 40.0e-3,
+            "elastic_bias": 0.104,
+        })
+    bounds = {"analytic_first_yield_Pa": py,
+              "yield_line_upper_Pa": upper, "strip_lower_Pa": lower}
+    return rows, bounds
+
+
+def test_convergence_summary_is_derived_from_the_rows():
+    sweep = _mesh_sweep_module()
+    rows, bounds = _synthetic_rows()
+    sweep.convergence_summary(rows, bounds)     # sanity: fresh rows are consistent
+    rows, bounds = _synthetic_rows()
+    rows, bounds = _synthetic_rows()
+    ok = sweep.convergence_summary(rows, bounds)
+    assert ok["collapse_monotone"] is True
+    assert ok["collapse_below_upper"] is True
+    assert ok["collapse_above_lower"] is True
+    assert ok["permanent_set_bounded"] is True
+    assert abs(ok["transition_vs_same_mesh_max_abs_pct"] - 0.4) < 1e-9
+    assert ok["collapse_is_measured_limit_load"] is True
+    # worst row is the coarsest: 1.55 MPa against the 1.70 MPa upper bound
+    assert abs(ok["collapse_vs_upper_max_abs_pct"] - abs(100 * (1.55 / 1.70 - 1.0))) < 1e-6
+    assert ok["acceptance"]["collapse_vs_upper_lt_10pct"] is True
+    # a sweep whose "collapse" is the ramp end must be flagged, not accepted
+    for row in rows:
+        row["collapse_factor"] = row["ramp_end_factor"]
+    flagged = sweep.convergence_summary(rows, bounds)
+    assert flagged["collapse_is_measured_limit_load"] is False
+    # ... and a non-monotone / out-of-bound sweep must flip those flags, i.e.
+    # they are computed, not constants.
+    bad_rows, bad_bounds = _synthetic_rows(collapse_mpa=(1.66, 1.60, 1.72))
+    bad = sweep.convergence_summary(bad_rows, bad_bounds)
+    assert bad["collapse_monotone"] is False
+    assert bad["collapse_below_upper"] is False
+    # a permanent set above the peak deflection is not "bounded"
+    over_rows, _ = _synthetic_rows(permanent_mm=(45.0, 46.0, 47.0))
+    assert sweep.convergence_summary(over_rows, bounds)["permanent_set_bounded"] is False
+
+
+def test_markdown_table_lists_every_mesh_level_with_its_own_numbers():
+    sweep = _mesh_sweep_module()
+    rows, bounds = _synthetic_rows()
+    table = sweep.markdown_table(rows, bounds)
+    lines = [ln for ln in table.splitlines() if ln.startswith("|")]
+    assert len(lines) == 2 + len(rows)          # header + separator + one row per level
+    for row in rows:
+        line = next(ln for ln in lines if ln.startswith(f"| {row['nx']} |"))
+        assert f"{row['first_yield_factor'] / 1e6:.4f}" in line
+        assert f"{row['collapse_factor'] / 1e6:.4f}" in line
+        assert f"{row['ramp_end_factor'] / 1e6:.4f}" in line
+        assert f"{1000 * row['permanent_deflection']:.4f}" in line
+    for placeholder in ("_（", "| _ |", "TBD", "TODO"):
+        assert placeholder not in table
+    # the bounds are injected verbatim, not typed
+    assert f"{bounds['yield_line_upper_Pa'] / 1e6:.4f}" in table
+    assert f"{bounds['strip_lower_Pa'] / 1e6:.4f}" in table
+
+
+def test_case_doc_reports_unmet_criteria_as_unmet():
+    sweep = _mesh_sweep_module()
+    rows, bounds = _synthetic_rows()
+    summary = sweep.convergence_summary(rows, bounds)
+    doc = sweep.case_doc(rows, bounds, summary)
+    assert "met" in doc and "NOT met" not in doc
+    # inflate the transition error past the 5 % band -> the doc must say NOT met
+    for row in rows:
+        row["first_yield_error_vs_same_mesh"] = 0.08
+    strict = sweep.convergence_summary(rows, bounds)
+    doc = sweep.case_doc(rows, bounds, strict)
+    assert "NOT met" in doc
+    assert f"{strict['transition_vs_same_mesh_max_abs_pct']:.2f} %" in doc
+
+
+def test_report_payload_embeds_the_figure_and_the_computed_numbers(tmp_path):
+    sweep = _mesh_sweep_module()
+    rows, bounds = _synthetic_rows()
+    summary = sweep.convergence_summary(rows, bounds)
+    fig = tmp_path / "fig.png"
+    fig.write_bytes(b"\x89PNG\r\n\x1a\nsynthetic")
+    payload = sweep.report_payload(rows, bounds, summary, fig, mission_id=22133)
+
+    assert payload["mission_id"] == 22133
+    assert payload["scenario_key"] == "GAP-PP-3-ICE-STRUCT-PLASTIC-SET"
+    assert payload["figures"][0]["name"] == sweep.FIG_NAME
+    assert payload["figures"][0]["png_base64"]
+    md = payload["markdown"]
+    for row in rows:
+        assert f"{row['collapse_factor'] / 1e6:.4f}" in md
+    assert f"{summary['permanent_set_spread_pct']:.2f}%" in md
+    assert "_（既有测试已验）" not in md          # the blank-cell defect stays gone
+    # honest error judgement section must be present with an explicit yes/no
+    assert "是否 <3%" in md
+    json.dumps(payload)                           # serialisable as posted
+
+
+def test_mesh_levels_must_place_the_patch_edge_on_an_element_edge():
+    """Regression: nx=6 leaves the patch edge at 1.5 element widths.
+
+    The original 4/6/8 sweep could never produce an nx=6 row - the element
+    routine rejects the mesh - so the levels are now validated up front and the
+    admissible set is 4/8/12 (nx a multiple of 4).
+    """
+    sweep = _mesh_sweep_module()
+    assert sweep.MESH_LEVELS == (4, 8, 12)
+    sweep.assert_patch_compatible(sweep.MESH_LEVELS)          # admissible levels pass
+    with pytest.raises(ValueError, match="off the element grid"):
+        sweep.assert_patch_compatible((4, 6, 8))
+    with pytest.raises(ValueError):
+        patch_plate_mesh(A, B, T, 6, 6, young=E, poisson=NU,  # the underlying guard
+                         yield_stress=FY, hardening=2e10, patch=PATCH)
