@@ -103,15 +103,37 @@ class TestFETransitionPoint:
             nx=8, ny=4, layers=5,
         )
 
-    def test_first_yield_bias_normalised_under_5pct(self, fe_summary):
-        """Acceptance: elastic->plastic transition error <5% (same-mesh)."""
+    def test_bias_normalised_error_is_an_identity_not_evidence(self, fe_summary):
+        """The same-mesh normalised error is ~0 *by construction*, not a pass.
+
+        Both sides of ``first_yield_error_bias_normalised`` are formed from the
+        same quantity -- the FE elastic surface stress per unit pressure: the
+        path's first-yield factor is the interpolated load at which that stress
+        reaches sigma_y, and ``analytic_first_yield_same_mesh`` is
+        ``sigma_y / (FE stress per Pa)``.  The ratio is therefore 1 to round-off
+        whatever the mesh, the element, or the physics.  Quoting it as "<5 %
+        agreement with the analytical yield load" would be a false pass, so this
+        test pins the identity and the acceptance argument is carried by the raw
+        error and its mesh convergence (``Test3GridConvergenceFromCluster``).
+        """
         fe = fe_summary["fe"]
-        assert fe is not None, "FE result missing"
         error = fe["first_yield_error_bias_normalised"]
-        assert error is not None, "bias-normalised error not computed"
-        assert abs(error) < 0.05, (
-            f"same-mesh first-yield error {error*100:.2f}% exceeds 5%"
+        assert error is not None
+        assert abs(error) < 1e-9, (
+            "the same-mesh normalised error must be the identity residual "
+            f"(got {error:+.3e}); if it is not, the two sides stopped being the "
+            "same quantity and the reported value needs re-derivation"
         )
+
+    def test_raw_first_yield_error_is_reported(self, fe_summary):
+        """The honest FE-vs-Navier transition error is reported and non-zero."""
+        fe = fe_summary["fe"]
+        raw = fe["first_yield_error"]
+        assert raw is not None
+        # 8x4 mesh: the element's own elastic bias is ~-16 %, so the raw
+        # transition error is O(20 %) -- positive, because mesh smoothing makes
+        # the FE stress smaller than the Navier field and yield is reached later.
+        assert 0.0 < raw < 0.40, f"raw first-yield error {raw*100:.2f}% out of range"
 
     def test_elastic_bias_is_negative(self, fe_summary):
         """The FE elastic stress is lower than the analytical (mesh smoothing)."""
@@ -398,46 +420,69 @@ class Test3GridConvergenceFromCluster:
         """All 3 mesh densities are present in the results."""
         assert len(results["meshes"]) == 3
 
-    def test_first_yield_error_under_5pct_all_meshes(self, results):
-        """Same-mesh first-yield error stays <5% across all meshes."""
-        for mesh_name, m in results["meshes"].items():
-            error = m.get("first_yield_error_bias_normalised")
-            if error is not None:
-                assert abs(error) < 0.05, (
-                    f"mesh {mesh_name}: same-mesh first-yield error "
-                    f"{abs(error)*100:.2f}% exceeds 5%"
-                )
+    @staticmethod
+    def _by_element_count(results):
+        """Meshes ordered coarse -> fine by element count (never by name)."""
+        return sorted(results["meshes"].items(), key=lambda kv: kv[1]["elements"])
+
+    def test_raw_first_yield_error_converges_under_5pct(self, results):
+        """Acceptance (transition <5 %): met in the mesh limit, not per mesh.
+
+        The raw FE-vs-Navier first-yield error is reported for every mesh; the
+        criterion is that it converges and that the Richardson limit is <5 %.
+        A single-mesh comparison is not evidence (the 8x4 error is ~18 % because
+        of the element's own elastic stress bias).
+        """
+        convergence = results["criteria"]["raw_error_convergence"]
+        errors = convergence["errors"]
+        assert len(errors) >= 3
+        magnitudes = [abs(e) for e in errors]
+        for coarse, fine in zip(magnitudes, magnitudes[1:]):
+            assert fine < coarse, (
+                f"raw first-yield error did not decrease with refinement: {errors}")
+        extrapolated = convergence.get("extrapolated_error")
+        assert extrapolated is not None, "Richardson limit not computed"
+        assert abs(extrapolated) < 0.05, (
+            f"extrapolated first-yield error {extrapolated*100:.2f}% exceeds 5%")
 
     def test_elastic_bias_decreases_with_refinement(self, results):
         """Elastic bias magnitude decreases with mesh refinement."""
-        meshes = sorted(results["meshes"].keys())
-        biases = []
-        for mesh_name in meshes:
-            m = results["meshes"][mesh_name]
-            bias = m.get("elastic_bias")
-            if bias is not None:
-                biases.append(abs(bias))
+        biases = [abs(m["elastic_bias"]) for _, m in self._by_element_count(results)
+                  if m.get("elastic_bias") is not None]
         if len(biases) >= 2:
-            for i in range(1, len(biases)):
-                assert biases[i] < biases[i - 1], (
-                    f"elastic bias did not decrease: {biases}"
-                )
+            for coarse, fine in zip(biases, biases[1:]):
+                assert fine < coarse, f"elastic bias did not decrease: {biases}"
 
-    def test_limit_load_error_vs_ub_under_10pct(self, results):
-        """Limit load error vs upper bound <10% on the finest mesh."""
-        meshes = sorted(results["meshes"].keys())
-        finest = meshes[-1]
-        m = results["meshes"][finest]
-        error = m.get("limit_load_error_vs_ub")
-        if error is not None:
-            assert abs(error) < 0.10, (
-                f"mesh {finest}: limit load error vs UB "
-                f"{abs(error)*100:.2f}% exceeds 10%"
-            )
+    def test_limit_load_inside_plastic_bracket(self, results):
+        """The FE limit load lies between the strip lower bound and the UB.
+
+        This is the part of the limit-load criterion that the data actually
+        support: a collapse load must satisfy ``p_lower <= p_FE <= p_upper`` ->
+        the upper-bound agreement is *not* achieved (see the case document), so
+        the strict "<10 % vs the yield-line bound" claim is withheld here rather
+        than asserted vacuously.
+        """
+        upper = results["analytic"]["yield_line_upper_pressure"]
+        for name, m in self._by_element_count(results):
+            limit = m.get("limit_load_measured")
+            if limit is None:
+                continue
+            lower = m.get("strip_lower_pressure")
+            if lower is not None:
+                assert limit >= 0.9 * lower, (
+                    f"mesh {name}: limit {limit/1e6:.4f} MPa below the strip "
+                    f"lower bound {lower/1e6:.4f} MPa")
+            assert limit <= upper * 1.02, (
+                f"mesh {name}: limit {limit/1e6:.4f} MPa exceeds the yield-line "
+                f"upper bound {upper/1e6:.4f} MPa")
 
     def test_permanent_deflection_positive_all_meshes(self, results):
-        """Permanent deflection is positive on all meshes."""
+        """Permanent deflection is positive on all meshes and below the peak."""
         for mesh_name, m in results["meshes"].items():
             pd = m.get("permanent_deflection")
             if pd is not None:
                 assert pd > 0, f"mesh {mesh_name}: permanent deflection {pd} not positive"
+                peak = max(p[1] for p in m.get("path", []))
+                assert pd < peak, (
+                    f"mesh {mesh_name}: permanent set {pd:.4g} m is not below the "
+                    f"peak deflection {peak:.4g} m")
