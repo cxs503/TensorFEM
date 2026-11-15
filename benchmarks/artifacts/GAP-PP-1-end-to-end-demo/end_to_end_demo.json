@@ -1,0 +1,80 @@
+{
+  "case": "GAP-PP-1-ICE-STRUCT-CONTACT-PATCH end-to-end demo",
+  "plate": {
+    "nx": 12,
+    "side_m": 1.0,
+    "thickness_m": 0.01,
+    "E_Pa": 206000000000.0,
+    "nu": 0.3,
+    "winkler_k": 10000000.0,
+    "boundary": "simply_supported"
+  },
+  "contact": {
+    "kind": "gaussian",
+    "centre_m": [
+      0.5,
+      0.5
+    ],
+    "sigma_m": [
+      0.15,
+      0.15
+    ],
+    "peak_pressure_MPa": 5.0,
+    "contact_area_m2": 0.1413716694115407,
+    "n_contact_nodes": 441
+  },
+  "projected_patch": {
+    "total_force_N": 702768.1242288372,
+    "peak_pressure_MPa": 5.0,
+    "mean_pressure_MPa": 0.7890524241927664,
+    "pressure_nonuniformity": 1.4758963963697707,
+    "load_balance_rel": 0.0,
+    "projection_method": "exact_subcell_splitting"
+  },
+  "peak_stress_nonuniform": {
+    "sigma_vm_MPa": 2544.3009979943217,
+    "sigma_vm_at_m": [
+      0.4583333432674408,
+      0.5
+    ],
+    "sigma_x_MPa": 2543.579446379992,
+    "sigma_x_at_m": [
+      0.4583333432674408,
+      0.5
+    ]
+  },
+  "peak_stress_uniform": {
+    "sigma_vm_MPa": 1262.3477627563693,
+    "sigma_vm_at_m": [
+      0.0416666679084301,
+      0.0
+    ],
+    "sigma_x_MPa": 914.6122281437465,
+    "sigma_x_at_m": [
+      0.375,
+      0.5
+    ]
+  },
+  "peak_deflection_nonuniform_m": 0.14034518103992996,
+  "peak_deflection_uniform_m": 0.07656035861572567,
+  "delta_nonuniform_over_uniform_pct": {
+    "sigma_vm": 101.55309598987002,
+    "sigma_x": 178.10468394264967,
+    "deflection": 83.31311866543783
+  },
+  "h3_anchor_check": {
+    "h3_anchor_level_pct": 0.339,
+    "h3_anchor_meaning": "FEM-vs-Kelvin error of the H3-ICE-PLATE-FEM anchor",
+    "gaussian_patch_fem_vs_navier_pct": -0.41392794903848396,
+    "same_order_of_magnitude": true,
+    "source": "benchmarks/artifacts/GAP-PP-1-patch-from-contact-verify/verification.json",
+    "single_mesh_caveat": "archived value is one mesh (nx=16) taken from the archived artifact; the mesh-converged error is reported by tools/verify_gap_pp1_adversarial.py",
+    "plate_nx": 16
+  },
+  "small_deflection_validity": {
+    "peak_deflection_over_thickness": 14.034518103992996,
+    "limit": 0.5,
+    "valid": false,
+    "note": "the demo load puts the plate at w/t >> 1: the absolute peak stresses are outside small-deflection theory, while the non-uniform/uniform ratio is a load-invariant property of the linear model (exact in linear theory)"
+  }
+}

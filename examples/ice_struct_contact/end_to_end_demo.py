@@ -35,6 +35,53 @@ from tensorfem.patch_from_contact import (
 )
 
 
+ARCHIVE = (
+    Path(__file__).resolve().parents[2]
+    / "benchmarks" / "artifacts" / "GAP-PP-1-patch-from-contact-verify" / "verification.json"
+)
+W_OVER_T_LIMIT = 0.5   # small-deflection validity bound for a Mindlin plate
+
+
+def h3_anchor_check() -> dict:
+    """Derive the H3-ICE-PLATE-FEM consistency check from the archived cross-check.
+
+    The previous version of this demo carried the numbers as literals
+    (``gaussian_patch_fem_vs_navier_pct = -0.41`` and
+    ``same_order_of_magnitude = True``), i.e. the acceptance "check" was a
+    constant that could never fail.  It is now read from the archived
+    verification artifact and the boolean is computed from it; the single-mesh
+    nature of the archived number is recorded explicitly (see
+    ``tools/verify_gap_pp1_adversarial.py`` section A for the mesh ladder).
+    """
+    out = {
+        "h3_anchor_level_pct": None,
+        "h3_anchor_meaning": "FEM-vs-Kelvin error of the H3-ICE-PLATE-FEM anchor",
+        "gaussian_patch_fem_vs_navier_pct": None,
+        "same_order_of_magnitude": None,
+        "source": str(ARCHIVE.relative_to(ARCHIVE.parents[3])) if ARCHIVE.exists() else None,
+        "single_mesh_caveat": (
+            "archived value is one mesh (nx=16) taken from the archived artifact; the "
+            "mesh-converged error is reported by tools/verify_gap_pp1_adversarial.py"
+        ),
+    }
+    if not ARCHIVE.exists():  # pragma: no cover - defensive
+        out["note"] = "archive missing: consistency check NOT performed"
+        return out
+    data = json.loads(ARCHIVE.read_text())
+    cross = data["navier_crosscheck"]
+    anchor = float(cross["h3_anchor_pct"])
+    row = next(r for r in cross["rows"] if r["patch"].startswith("gaussian"))
+    value = float(row["mine_vs_navier_pct"])
+    out.update({
+        "h3_anchor_level_pct": anchor,
+        "gaussian_patch_fem_vs_navier_pct": value,
+        "plate_nx": row["plate_nx"],
+        # "same order of magnitude" = within a factor of 3 of the anchor
+        "same_order_of_magnitude": bool(abs(value) <= 3.0 * anchor),
+    })
+    return out
+
+
 def build_gaussian_contact(
     centre_x: float, centre_y: float,
     sigma_x: float, sigma_y: float,
@@ -145,12 +192,16 @@ def run_demo(plate_nx: int = 12, plate_side: float = 1.0, out: Path | None = Non
             "sigma_x": pct(stress["sigma_x_MPa"], stress_uni["sigma_x_MPa"]),
             "deflection": pct(w_proj, w_uni),
         },
-        "h3_anchor_check": {
-            "h3_anchor_level_pct": 0.339,
-            "h3_anchor_meaning": "FEM-vs-Kelvin analytical error of the H3-ICE-PLATE-FEM anchor",
-            "gaussian_patch_fem_vs_navier_pct": -0.41,  # from verification.json navier_crosscheck
-            "same_order_of_magnitude": True,
-            "note": "Gaussian patch FEM vs Navier error (0.41%) is at the same order of magnitude as the H3 anchor (0.339%)",
+        "h3_anchor_check": h3_anchor_check(),
+        "small_deflection_validity": {
+            "peak_deflection_over_thickness": w_proj / t,
+            "limit": W_OVER_T_LIMIT,
+            "valid": bool(w_proj / t <= W_OVER_T_LIMIT),
+            "note": (
+                "the demo load puts the plate at w/t >> 1: the absolute peak stresses are "
+                "outside small-deflection theory, while the non-uniform/uniform ratio is a "
+                "load-invariant property of the linear model (exact in linear theory)"
+            ),
         },
     }
 
@@ -163,7 +214,12 @@ def run_demo(plate_nx: int = 12, plate_side: float = 1.0, out: Path | None = Non
 
 def main():
     parser = argparse.ArgumentParser(description="End-to-end ice-structure contact demo")
-    parser.add_argument("--out", type=str, default=None, help="Output directory")
+    parser.add_argument(
+        "--out", type=str,
+        default=str(Path(__file__).resolve().parents[2] / "benchmarks" / "artifacts"
+                    / "GAP-PP-1-end-to-end-demo"),
+        help="Output directory (committed artifact path; 'outputs/' is gitignored)",
+    )
     parser.add_argument("--nx", type=int, default=12, help="Plate mesh resolution")
     args = parser.parse_args()
 
@@ -178,8 +234,12 @@ def main():
     print(f"Peak stress (non-uniform): σ_x={result['peak_stress_nonuniform']['sigma_x_MPa']:.2f} MPa")
     print(f"Peak stress (uniform):     σ_x={result['peak_stress_uniform']['sigma_x_MPa']:.2f} MPa")
     print(f"Delta σ_x: {result['delta_nonuniform_over_uniform_pct']['sigma_x']:.2f}%")
-    print(f"H3 anchor check: {'PASS' if result['h3_anchor_check']['same_order_of_magnitude'] else 'FAIL'}")
-    print(f"  (Gaussian FEM vs Navier: {result['h3_anchor_check']['gaussian_patch_fem_vs_navier_pct']:.2f}% vs H3 anchor {result['h3_anchor_check']['h3_anchor_level_pct']}%)")
+    h3 = result["h3_anchor_check"]
+    print(f"H3 anchor check: {'PASS' if h3['same_order_of_magnitude'] else 'FAIL'}")
+    print(f"  small-deflection valid: {result['small_deflection_validity']['valid']} "
+          f"(w/t = {result['small_deflection_validity']['peak_deflection_over_thickness']:.1f})")
+    print(f"  (Gaussian FEM vs Navier: {h3['gaussian_patch_fem_vs_navier_pct']:.2f}% at nx={h3.get('plate_nx')} "
+          f"vs H3 anchor {h3['h3_anchor_level_pct']}%)")
 
     if out is not None:
         print(f"\nResults written to {out / 'end_to_end_demo.json'}")

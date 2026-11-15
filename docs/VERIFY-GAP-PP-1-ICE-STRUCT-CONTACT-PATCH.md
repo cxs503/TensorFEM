@@ -129,3 +129,26 @@ CZM 接触求解 → 接触压力场 → patch_from_contact() 投影 → 板格�
 | pytest ≥ 5 绿 | ✅ | 26/26 测试通过 |
 | 非均匀斑相对均匀斑峰值应力差异机读 JSON | ✅ | `outputs/ice_struct_demo/end_to_end_demo.json` |
 | H3-ICE-PLATE-FEM 锚一致性 (≈0.339%) | ✅ | FEM vs Navier 误差 0.41% |
+
+---
+
+## 8. 勘误与裁决（verifier 席独立复核，2026-11-15）
+
+对抗性独立复核见 `docs/AUDIT-GAP-PP-1-adversarial-verification.md`（工具
+`tools/verify_gap_pp1_adversarial.py`，测试 `tests/test_gap_pp1_adversarial_audit.py`）。
+本文件上方正文保留原样以留痕，以下三处数字/主张按下表更正：
+
+| 原文 | 更正后（HEAD 实测） |
+|------|--------------------|
+| "FEM vs Navier 误差 0.41 %" | **单网格择优值**。实测：均匀斑 nx=16 → 1.090 %、nx=24 → 0.496 %；高斯斑 nx=16 → 1.687 %、nx=24 → 0.735 %（单调收敛）。诚实表述：**收敛后 < 1 %**，全部网格 < 3 %，判据仍 PASS |
+| "双独立 FEM 路径一致性 < 10 %（独立实现交叉验证）" | 两条链共用 `tensorfem.foundation_plate_bending` 装配，同点差 1.6e-12 ⇒ 是**代码路径同一性**，不是独立校验；独立证据由 Navier 级数承担 |
+| "投影总力 vs 解析总力 < 0.001 %" | 投影 vs **离散接触场**：机器精度（成立）；离散场 vs **解析** 2πσ² 力：0.18–0.60 %（高斯斑，网格 + 3σ 截断，仍 < 3 %） |
+| "端到端算例产物 `outputs/ice_struct_demo/`" | `outputs/` 被 `.gitignore` 排除、仓库内不存在；已改到提交型路径 `benchmarks/artifacts/GAP-PP-1-end-to-end-demo/`（json + 4 图） |
+| demo 中 `gaussian_patch_fem_vs_navier_pct = -0.41`、`same_order_of_magnitude = True` | 硬编码常量（判据永不 FAIL）；现由归档工件派生，归档缺失时输出 `NOT performed` |
+
+另需声明的适用域（原报告未写）：头号结论 "+170.6 %（σ_x）" 对应峰值挠度 139.1 mm / 板厚 10 mm，
+即 **w/t = 14.0**，远超小挠度理论（w/t ≲ 0.5）。该**比例**是线性理论载荷无关量
+（载荷降 1e-2 比例变化 < 1e-13），方向性结论成立；但 2493 MPa 等**绝对应力不可作为设计值**，
+大挠度/膜力区间需另行分析。
+
+锚点判据 1/2/3/5/6（接口、≥3 档扫描、机读 JSON、端到端可复现、pytest 绿）经复核成立。
