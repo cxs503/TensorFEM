@@ -921,6 +921,8 @@ def scan_contact_configurations(
     dtype=torch.float64,
     n_contact_per_axis: int = 41,
     stiffness_cache: Optional[dict] = None,
+    w_over_t_limit: float = 0.5,
+    target_w_over_t: Optional[float] = 0.2,
 ) -> dict:
     """Scan >= 3 contact configurations: non-uniform patch vs uniform patch.
 
@@ -966,6 +968,22 @@ def scan_contact_configurations(
         Stiffness cache shared by every plate solve of the scan (the plate
         is identical across configurations; only the load changes).  A fresh
         cache is created when not supplied.
+    w_over_t_limit : float
+        Small-deflection validity bound on the peak deflection / thickness
+        ratio (``0.5`` for a Mindlin plate).  Reported per configuration as
+        ``in_small_deflection_envelope``; it does **not** silently drop a
+        configuration -- an out-of-envelope row is returned with its flag
+        ``False`` so the caller can see it.
+    target_w_over_t : float or None
+        When given, the peak pressure of every configuration is scaled so the
+        end-to-end non-uniform peak deflection lands exactly on this
+        ``w/t`` value (linear elastic plate: ``w`` is exactly proportional to
+        the load, so the scaling is a one-line re-solve, not a search).
+        ``0.2`` keeps the whole sweep inside the small-deflection envelope,
+        which is the regime in which the non-uniformity effect is a
+        *physically* meaningful design statement.  ``None`` reproduces the
+        historical nominal-pressure sweep (which put the default plate at
+        ``w/t = 5..17``, i.e. outside the theory's validity).
 
     Returns
     -------
@@ -1012,7 +1030,10 @@ def scan_contact_configurations(
             return gaussian_patch_pressure(x, y, cx, cy, peak, sx, sy)
         return gaussian_fn
 
-    def uniform_fn_for(pressure, cx, cy, half_w, half_l):
+
+    centre = plate_side / 2.0
+
+    def _uniform_fn_for(pressure, cx, cy, half_w, half_l):
         def uniform_fn(x, y):
             if torch.is_tensor(x):
                 x_np = x.detach().cpu().numpy()
@@ -1029,11 +1050,8 @@ def scan_contact_configurations(
             return values
         return uniform_fn
 
-    centre = plate_side / 2.0
-    rows: list[dict] = []
-
-    for cfg in configurations:
-        peak_p = float(cfg["peak_pressure"])
+    def evaluate(cfg: dict, peak_p: float) -> dict:
+        """Full chain for one configuration at one peak pressure."""
         sx = float(cfg["sigma_x"])
         sy = float(cfg["sigma_y"])
         patch_width = float(cfg["patch_width"])
@@ -1073,7 +1091,7 @@ def scan_contact_configurations(
         # --- (3) uniform reference: same total force, same footprint ---
         total_force = patch_proj.total_force
         uniform_p = total_force / (patch_width * patch_length)
-        uniform_fn = uniform_fn_for(
+        uniform_fn = _uniform_fn_for(
             uniform_p, centre, centre, patch_width / 2.0, patch_length / 2.0,
         )
         plate_uni = solve_plate_on_winkler_foundation(
@@ -1087,7 +1105,7 @@ def scan_contact_configurations(
         def pct(a, b):
             return 100.0 * (a / b - 1.0) if b else float("nan")
 
-        rows.append({
+        return {
             "name": cfg["name"],
             "peak_pressure_MPa": peak_p / 1e6,
             "sigma_x_m": sx,
@@ -1106,6 +1124,8 @@ def scan_contact_configurations(
             "max_deflection_nonuniform_m": w_proj,
             "max_deflection_uniform_m": w_uni,
             "deflection_diff_pct": pct(w_proj, w_uni),
+            "w_over_t_nonuniform": w_proj / thickness,
+            "w_over_t_uniform": w_uni / thickness,
             # peak stress: the acceptance quantity
             "peak_stress_projected": stress_proj,
             "peak_stress_uniform": stress_uni,
@@ -1120,7 +1140,29 @@ def scan_contact_configurations(
                 "sigma_x": pct(stress_proj["sigma_x_MPa"], stress_ana["sigma_x_MPa"]),
                 "deflection": pct(w_proj, w_ana),
             },
-        })
+        }
+
+    rows: list[dict] = []
+    for cfg in configurations:
+        nominal_peak = float(cfg["peak_pressure"])
+        row = evaluate(cfg, nominal_peak)
+        scale = 1.0
+        if target_w_over_t is not None:
+            w_t_nominal = row["w_over_t_nonuniform"]
+            if w_t_nominal > 0.0:
+                scale = float(target_w_over_t) / w_t_nominal
+                if abs(scale - 1.0) > 1e-12:
+                    # linear elastic plate: w is exactly proportional to the load,
+                    # so one re-solve lands on target_w_over_t (checked by the
+                    # returned w_over_t_nonuniform, not assumed)
+                    row = evaluate(cfg, nominal_peak * scale)
+        row["nominal_peak_pressure_MPa"] = nominal_peak / 1e6
+        row["pressure_scale_factor"] = scale
+        row["w_over_t_limit"] = w_over_t_limit
+        row["in_small_deflection_envelope"] = bool(
+            row["w_over_t_nonuniform"] <= w_over_t_limit
+        )
+        rows.append(row)
 
     delta_vm = [abs(r["delta_nonuniform_over_uniform_pct"]["sigma_vm"]) for r in rows]
     delta_mx = [abs(r["delta_nonuniform_over_uniform_pct"]["sigma_x"]) for r in rows]
@@ -1137,11 +1179,33 @@ def scan_contact_configurations(
             "max_abs_sigma_vm_diff_pct": max(delta_vm),
             "max_abs_sigma_x_diff_pct": max(delta_mx),
             "min_abs_sigma_x_diff_pct": min(delta_mx),
+            "signed_sigma_x_diff_pct": [
+                r["delta_nonuniform_over_uniform_pct"]["sigma_x"] for r in rows
+            ],
             "max_abs_projection_error_sigma_vm_pct": max(proj_vm),
             "max_abs_projection_error_sigma_x_pct": max_proj_mx,
             "max_abs_load_balance_rel": max(balance),
             "max_deflection_diff_pct": max(
                 abs(r["deflection_diff_pct"]) for r in rows
+            ),
+            # --- small-deflection envelope bookkeeping -------------------
+            "w_over_t_limit": w_over_t_limit,
+            "target_w_over_t": target_w_over_t,
+            "max_w_over_t": max(r["w_over_t_nonuniform"] for r in rows),
+            "n_in_envelope": sum(
+                1 for r in rows if r["in_small_deflection_envelope"]
+            ),
+            "all_in_small_deflection_envelope": all(
+                r["in_small_deflection_envelope"] for r in rows
+            ),
+            "delta_definition": (
+                "delta = non-uniform(contact-projected) peak / uniform-reference "
+                "peak - 1, the uniform reference carrying the SAME total force "
+                "over the configuration's rectangular patch_width x patch_length "
+                "footprint.  The number is a property of the (contact field, "
+                "reference-footprint) pair, not of the contact field alone -- see "
+                "tools/verify_gap_pp1_delta_caliber.py for the footprint-caliber "
+                "sensitivity."
             ),
             # The H3-ICE-PLATE-FEM anchor (0.339 % = FEM vs Kelvin series,
             # benchmarks/artifacts/ice_plate_flexural_limit/evidence.json) is an
