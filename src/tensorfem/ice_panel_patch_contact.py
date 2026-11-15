@@ -255,6 +255,14 @@ def patch_from_contact(
 
     Returns ``(nodes, elements, f, info)`` with ``f`` of length ``3*n_nodes``
     (only ``w`` dofs nonzero) and ``info`` carrying the force-balance audit.
+
+    ``info["loaded_area"]`` (kept for backwards compatibility) is the contact-grid
+    **footprint** clipped to the panel -- it is *not* the area that carries
+    pressure.  ``info["pressurised_area"]`` is the area of the sub-cells on which
+    the bilinear pressure field is strictly positive, so ``F / pressurised_area``
+    is the mean contact pressure; the two coincide for the fully-pressurised
+    patches of this module but differ by 2x for a one-sided (partially open)
+    contact patch (see ``tools/verify_gap_pp1_adversarial.py``, section E).
     """
     nodes, elements = structured_panel_mesh(nx, ny, a, b, dtype=dtype)
     ndof = 3 * nodes.shape[0]
@@ -266,6 +274,7 @@ def patch_from_contact(
     y_lo = max(0.0, min(float(yg[0]), b))
     y_hi = min(b, max(float(yg[-1]), 0.0))
     loaded_area = 0.0
+    pressurised_area = 0.0
 
     if x_hi <= x_lo or y_hi <= y_lo:
         return nodes, elements, f, {
@@ -273,6 +282,8 @@ def patch_from_contact(
             "contact_force": patch.total_force,
             "force_error_rel": 1.0 if patch.total_force > 0.0 else 0.0,
             "loaded_area": 0.0,
+            "footprint_area": 0.0,
+            "pressurised_area": 0.0,
         }
 
     xs_mesh = torch.linspace(0.0, a, nx + 1, dtype=dtype)
@@ -291,6 +302,7 @@ def patch_from_contact(
                 _axis_breaks(ya, yb, yg)[:-1], _axis_breaks(ya, yb, yg)[1:]
             ):
                 hx, hy = sx1 - sx0, sy1 - sy0
+                sub_pressures = []
                 for gx, wx in _GAUSS2:
                     xp = 0.5 * (sx0 + sx1) + 0.5 * hx * gx
                     xi = 2.0 * (xp - exa) / (exb - exa) - 1.0
@@ -307,10 +319,13 @@ def patch_from_contact(
                                 torch.tensor([yp], dtype=dtype),
                             )[0]
                         )
+                        sub_pressures.append(pq)
                         w = wx * wy * 0.25 * hx * hy
                         for i in range(4):
                             fe[3 * i] += N[i] * pq * w
                 loaded_area += hx * hy
+                if sub_pressures and min(sub_pressures) > 0.0:
+                    pressurised_area += hx * hy
         dofs = torch.stack((3 * conn, 3 * conn + 1, 3 * conn + 2), dim=1).reshape(-1)
         f[dofs] += fe
 
@@ -321,6 +336,8 @@ def patch_from_contact(
         "contact_force": patch.total_force,
         "force_error_rel": err,
         "loaded_area": loaded_area,
+        "footprint_area": loaded_area,
+        "pressurised_area": pressurised_area,
     }
 
 
