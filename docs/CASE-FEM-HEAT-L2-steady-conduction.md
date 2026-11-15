@@ -265,7 +265,7 @@ L2 阶次的最小二乘 log-log 斜率（整条阶梯）：sine_generation = 1.
   已用于本单的算例设计（第 1 条坑）；`oss_solutions` 无公开端点，仓内既有能力
   （`tensorfem.thermal` + `convergence_verification`）足够，故不另起炉灶。
 * 全流程（6 个算例 x 5 层阶梯 + 积分敏感性 + 2 张图）本机 4 线程耗时
-  37.4 s，远低于 10 min 门槛，无需上集群。
+  28.6 s，远低于 10 min 门槛，无需上集群。
 
 **适用范围/局限**
 
