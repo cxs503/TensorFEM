@@ -75,6 +75,7 @@ __all__ = [
     "plastic_moment",
     "yield_line_patch_upper_bound",
     "ilyushin_sine_upper_bound",
+    "johansen_twist_upper_bound",
     "plastic_bound_bracket",
     "strip_lower_bound",
     "section_moment_capacity",
@@ -418,6 +419,18 @@ def ilyushin_sine_upper_bound(a: float, b: float, t: float, yield_stress: float,
     closed form collapses to ``2 pi^2 m_p/a^2 = 19.74 m_p/a^2`` and for a strip
     (``b >> a``) to the beam sine-mechanism value ``pi^2 m_p/a^2`` — both above
     the exact ``8 m_p/a^2`` beam value, as an upper bound must be.
+
+    Validity caveat (admissibility)
+    -------------------------------
+    The dissipation used here is the *hinge-line* form ``m_p (|k1| + |k2|)``,
+    which is the exact Johansen dissipation only when the twisting curvature is
+    negligible.  The double-sine mode carries a large twisting curvature and
+    dropping it **under-counts** the internal work: for a fully loaded square
+    plate this function returns ``19.74 m_p/a^2`` while the exact
+    Johansen/Neville collapse load of that plate is ``24 m_p/a^2``.  A number
+    below the true collapse load of a known case is *not* an upper bound, so it
+    must not be used as the acceptance yardstick for a smooth mechanism;
+    :func:`johansen_twist_upper_bound` keeps the twist term and is admissible.
     """
     if terms < 1:
         raise ValueError("terms must be >= 1")
@@ -449,6 +462,82 @@ def ilyushin_sine_upper_bound(a: float, b: float, t: float, yield_stress: float,
             "mechanism": "double-sine (Ilyushin kinematic)"}
 
 
+def johansen_twist_upper_bound(a: float, b: float, t: float, yield_stress: float,
+                               patch: tuple[float, float], *,
+                               terms: int = 1, quadrature: int = 256) -> dict:
+    """Admissible kinematic (upper bound) limit load with the twist term kept.
+
+    Same mechanism family as :func:`ilyushin_sine_upper_bound` -- the smooth
+    plate mode ``w = w0 sin(m pi x/a) sin(n pi y/b)``, zero on a simple-support
+    boundary and therefore kinematically admissible -- but the dissipation is
+    the *frame-invariant* Johansen/Neville dissipation of that field::
+
+        D(kappa)   = m_p (|kappa_I| + |kappa_II|)
+        kappa_I,II = (k1+k2)/2 +/- sqrt(((k1-k2)/2)^2 + kxy^2)
+
+    so the moment tensor is bounded by ``m_p`` in *every* direction and the
+    twisting curvature enters through the principal curvatures instead of being
+    dropped.  ``p_u = int_A D dA / int_patch w dA``.
+
+    Only modes that keep one sign over the whole patch are accepted (a
+    unilateral patch pressure cannot do negative work), and the reported value
+    is the smallest over the accepted modes: every returned number is a valid
+    upper bound by itself and the minimum is the tightest of this family.
+
+    Regression anchors (``tests/test_plate_patch_plastic_bounds.py``): fully
+    loaded square plate ``>= 24 m_p/a^2`` (exact Johansen collapse); long strip
+    ``>= 8 m_p/a^2`` (exact beam collapse); ``p_u`` scales as ``sigma_y t^2``;
+    ``p_u >=`` the twist-neglecting sine value.
+    """
+    if terms < 1:
+        raise ValueError("terms must be >= 1")
+    if quadrature < 16:
+        raise ValueError("quadrature must be >= 16")
+    if not (0 < a and 0 < b and 0 < t and 0 < yield_stress):
+        raise ValueError("geometry and strength must be positive")
+    m_p = plastic_moment(t, yield_stress)
+    u, v = patch
+    if not (0 < u <= a and 0 < v <= b):
+        raise ValueError("patch must lie inside the plate")
+    # midpoint rule: the integrand is piecewise smooth with |.| kinks, so the
+    # rule order is *verified* by doubling ``quadrature`` in the tests.
+    step_x, step_y = a / quadrature, b / quadrature
+    xs = (torch.arange(quadrature, dtype=torch.float64) + 0.5) * step_x
+    ys = (torch.arange(quadrature, dtype=torch.float64) + 0.5) * step_y
+    xx, yy = torch.meshgrid(xs, ys, indexing="ij")
+    cell_area = step_x * step_y
+    x1, x2 = 0.5 * (a - u), 0.5 * (a + u)
+    y1, y2 = 0.5 * (b - v), 0.5 * (b + v)
+    inside = ((xx >= x1) & (xx <= x2) & (yy >= y1) & (yy <= y2)).to(torch.float64)
+    best: float | None = None
+    best_mode = None
+    for m in range(1, 2 * terms, 2):
+        for n in range(1, 2 * terms, 2):
+            am, bn = m * math.pi / a, n * math.pi / b
+            w = torch.sin(am * xx) * torch.sin(bn * yy)
+            patch_w = w[inside > 0]
+            if patch_w.numel() == 0 or float(patch_w.min()) <= 0.0:
+                continue
+            k1 = am * am * w
+            k2 = bn * bn * w
+            kxy = am * bn * torch.cos(am * xx) * torch.cos(bn * yy)
+            mean = 0.5 * (k1 + k2)
+            radius = torch.sqrt(0.25 * (k1 - k2) ** 2 + kxy * kxy)
+            dissipation = m_p * (torch.abs(mean + radius) + torch.abs(mean - radius))
+            internal = float(dissipation.sum()) * cell_area
+            external = float((w * inside).sum()) * cell_area
+            if external <= 0.0:
+                continue
+            pressure = internal / external
+            if best is None or pressure < best:
+                best, best_mode = pressure, (m, n)
+    if best is None:
+        raise ValueError("no single-sign mode covers the patch")
+    return {"pressure": best, "mode": best_mode, "m_p": m_p,
+            "mechanism": "double-sine (Johansen dissipation, twist retained)",
+            "quadrature": quadrature}
+
+
 def plastic_bound_bracket(a: float, b: float, t: float, yield_stress: float,
                           patch: tuple[float, float], *, terms: int = 1) -> dict:
     """Bracket the patch-loaded plate collapse pressure between admissible bounds.
@@ -462,14 +551,23 @@ def plastic_bound_bracket(a: float, b: float, t: float, yield_stress: float,
     upper_yield_line = yield_line_patch_upper_bound(a, b, t, yield_stress, patch)["pressure"]
     upper_sine = ilyushin_sine_upper_bound(a, b, t, yield_stress, patch,
                                            terms=terms)["pressure"]
+    upper_twist = johansen_twist_upper_bound(a, b, t, yield_stress, patch,
+                                             terms=terms)["pressure"]
     lower = strip_lower_bound(a, b, t, yield_stress, patch)["pressure"]
     upper = min(upper_yield_line, upper_sine)
     if lower > upper:
         raise ValueError("lower bound exceeds upper bound: check the inputs")
+    admissible = min(upper_yield_line, upper_twist)
     return {"lower_strip": lower,
             "upper_yield_line": upper_yield_line,
             "upper_ilyushin_sine": upper_sine,
+            "upper_johansen_twist": upper_twist,
+            # ``tightest_upper`` keeps its historical (twist-neglecting)
+            # meaning; it is NOT admissible for a smooth mechanism, see the
+            # caveat on ``ilyushin_sine_upper_bound``.
             "tightest_upper": upper,
+            "tightest_admissible_upper": admissible,
+            "admissible_bracket_width_ratio": admissible / lower,
             "bracket_width_ratio": upper / lower,
             "yield_line_minus_sine_ratio": upper_yield_line / upper_sine,
             "agreement_of_upper_bounds_pct": 100.0 * abs(upper_yield_line / upper_sine - 1.0)}

@@ -18,6 +18,7 @@ import torch
 from tensorfem.plate_patch_plastic_limit import (
     analytic_first_yield_pressure,
     ilyushin_sine_upper_bound,
+    johansen_twist_upper_bound,
     plastic_bound_bracket,
     plastic_moment,
     strip_lower_bound,
@@ -151,3 +152,62 @@ def test_degenerate_inputs_are_rejected(bad):
 def test_terms_must_be_positive():
     with pytest.raises(ValueError):
         ilyushin_sine_upper_bound(A, B, T, SY, PATCH, terms=0)
+
+# ---------------------------------------------------------------------------
+# Admissibility audit of the twist-neglecting sine bound (anchor GAP-PP-3)
+# ---------------------------------------------------------------------------
+
+def test_the_sine_bound_is_below_the_exact_full_plate_collapse_load():
+    """Counterexample that the twist-neglecting sine value is NOT an upper bound.
+
+    For a fully loaded simply supported square plate the exact Johansen/Neville
+    collapse load is ``24 m_p/a^2``.  A kinematic upper bound must be >= that
+    value; ``ilyushin_sine_upper_bound`` returns ``2 pi^2 = 19.74 m_p/a^2``,
+    i.e. it *under-counts* the internal work by 17.8 % because the twisting
+    curvature of the mode is dropped from the dissipation.
+    """
+    mp = plastic_moment(T, SY)
+    sine = ilyushin_sine_upper_bound(A, B, T, SY, (A, B))["pressure"]
+    assert sine < 24.0 * mp / A ** 2
+
+
+def test_twist_bound_is_admissible_on_the_two_cases_with_known_collapse_loads():
+    """The twist-retaining bound must sit above the exact full-plate and beam loads."""
+    mp = plastic_moment(T, SY)
+    full = johansen_twist_upper_bound(A, B, T, SY, (A, B))["pressure"]
+    assert full >= 24.0 * mp / A ** 2
+    for b in (10.0, 40.0):
+        strip = johansen_twist_upper_bound(A, b, T, SY, (A, b))["pressure"]
+        assert strip >= 8.0 * mp / A ** 2
+
+
+def test_twist_bound_is_never_below_the_twist_neglecting_bound():
+    """Dropping ``kxy`` can only remove internal work, so the sine value is a floor."""
+    for patch in ((A, B), (0.8, 0.8), (0.5, 0.5), (0.5, 0.8), (0.3, 0.3)):
+        sine = ilyushin_sine_upper_bound(A, B, T, SY, patch)["pressure"]
+        twist = johansen_twist_upper_bound(A, B, T, SY, patch)["pressure"]
+        assert twist >= sine, patch
+
+
+def test_twist_bound_scales_quadratically_with_thickness():
+    mp = plastic_moment(T, SY)
+    base = johansen_twist_upper_bound(2.0, 1.0, T, SY, (0.6, 0.5))["pressure"]
+    double = johansen_twist_upper_bound(2.0, 1.0, 2 * T, SY, (0.6, 0.5))["pressure"]
+    assert double / base == pytest.approx(4.0, rel=1e-9)
+    assert base > 0.0 and mp > 0.0
+
+
+def test_twist_bound_quadrature_is_converged():
+    coarse = johansen_twist_upper_bound(A, B, T, SY, PATCH, quadrature=192)["pressure"]
+    fine = johansen_twist_upper_bound(A, B, T, SY, PATCH, quadrature=384)["pressure"]
+    assert abs(fine / coarse - 1.0) < 2e-3
+
+
+def test_bracket_reports_an_admissible_tightest_upper_separately():
+    bracket = plastic_bound_bracket(A, B, T, SY, PATCH)
+    assert bracket["upper_johansen_twist"] >= bracket["upper_ilyushin_sine"]
+    assert bracket["tightest_admissible_upper"] == pytest.approx(
+        min(bracket["upper_yield_line"], bracket["upper_johansen_twist"]))
+    assert bracket["tightest_admissible_upper"] > bracket["lower_strip"]
+    assert bracket["admissible_bracket_width_ratio"] == pytest.approx(
+        bracket["tightest_admissible_upper"] / bracket["lower_strip"])
