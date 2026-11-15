@@ -1,0 +1,39 @@
+{
+  "case": {
+    "a": 2.0,
+    "b": 1.0,
+    "t": 0.02,
+    "grade": "DH36",
+    "temperature": -40.0,
+    "young": 206000000000.0,
+    "poisson": 0.3,
+    "hardening": 1000000000.0,
+    "patch": [
+      0.5,
+      0.5
+    ]
+  },
+  "yield_stress_MPa": 400.0,
+  "reference_solutions": {
+    "first_yield_pressure_MPa": 0.2622534420535281,
+    "yield_line_upper_bound_MPa": 0.5656294013580794,
+    "sine_upper_bound_MPa": 1.8236651000299549,
+    "strip_lower_bound_MPa": 0.6095238095238096,
+    "yield_line_patch_ub_MPa": 2.1942857142857144,
+    "navier_mx": 0.04634975565341415,
+    "navier_my": 0.10168280903334638
+  },
+  "fe_status": {
+    "note": "FE computations (transition, limit load, convergence) require HPC due to high system load.",
+    "audit_fixes_applied": [
+      "F1: Bisection for elastic-plastic transition (was step-quantised)",
+      "F2: Removed false-pass fallback on FE failure",
+      "F3: Fixed yield-line formula (was 50% low for square plate)",
+      "F4: Fixed first-yield pressure (was using wrong alpha guess)",
+      "F5: Fixed mesh convergence (was using hardcoded target_load)",
+      "F6: Corrected docstring (no arc-length continuation)"
+    ],
+    "remaining_bug_fixed": "Removed 'value = target_load' line that overwrote computed limit load in verify_mesh_convergence",
+    "pending_hpc_job": "cj3469 (3-grid lateral matrix, submitted by audit)"
+  }
+}

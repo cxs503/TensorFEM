@@ -1139,7 +1139,6 @@ def verify_mesh_convergence(
                 patch_x0=0.25 * a, patch_x1=0.75 * a,
                 patch_y0=0.25 * b, patch_y1=0.75 * b)
             value = res.fe_limit if res.applicable else float("nan")
-            value = target_load
         else:
             raise ValueError(f"unknown quantity: {quantity}")
 
