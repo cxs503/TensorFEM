@@ -520,11 +520,19 @@ def patch_plate_mesh(a: float, b: float, t: float, nx: int, ny: int, *,
                      patch: tuple[float, float] | None = None,
                      exact_thickness: bool = True,
                      shear_correction: float = 5.0 / 6.0,
+                     inplane_restrained: bool = False,
                      ) -> tuple[LayeredShell4Model, dict]:
     """Simply supported plate mesh with a unit patch-pressure reference load.
 
     The patch boundary is required to fall on element edges, so that the patch
     size is a mesh-independent control variable (``ValueError`` otherwise).
+
+    ``inplane_restrained=True`` fixes the in-plane displacements on **all**
+    boundary nodes (a panel embedded in a grillage).  That is the boundary
+    condition the yield-line / Ilyushin limit-load solutions assume: without
+    it the mid-surface can stretch freely, no membrane tension develops after
+    the bending moments saturate, and the load-deflection path has no limit
+    point at all (load control keeps converging at almost constant load).
     """
     patch = (0.5 * a, 0.5 * b) if patch is None else patch
     u, v = patch
@@ -561,6 +569,8 @@ def patch_plate_mesh(a: float, b: float, t: float, nx: int, ny: int, *,
             node = i * (ny + 1) + j
             if i == 0 or i == nx or j == 0 or j == ny:
                 fixed.append(6 * node + 2)              # w = 0 (simple support)
+                if inplane_restrained:
+                    fixed.extend((6 * node, 6 * node + 1))
             if i == 0 and j == 0:
                 fixed.extend((6 * node, 6 * node + 1))
             elif i == 0:
@@ -570,6 +580,7 @@ def patch_plate_mesh(a: float, b: float, t: float, nx: int, ny: int, *,
             fixed.append(6 * node + 5)                  # drilling
     fixed_dofs = torch.tensor(sorted(set(fixed)), dtype=torch.long)
     info = {"nx": nx, "ny": ny, "a": a, "b": b, "t": t, "patch": patch,
+            "inplane_restrained": inplane_restrained,
             "fixed_dofs": fixed_dofs,
             "reference_load": patch_pressure_forces(nodes, a, b, nx, ny, patch, 1.0)}
     return model, info
@@ -712,6 +723,21 @@ class PatchPath:
     @property
     def peak_factor(self) -> float | None:
         return self.loading[-1].load_factor if self.loading else None
+
+    @property
+    def measured_limit_load(self) -> float | None:
+        """The limit load as actually measured by the path, or ``None``.
+
+        Under load control the path can only stop at a limit point when the
+        Newton iteration runs out of equilibrium (``limit_point_searched``);
+        the last converged factor then is the peak of the load-deflection
+        curve to within the bisection tolerance.  A completed ramp has no
+        measured limit load -- its end is a prescribed number, not a physical
+        one -- and this property says exactly that by returning ``None``.
+        """
+        if self.collapse_is_limit_point:
+            return self.collapse_factor
+        return None
 
     def stiffness_ratio(self) -> float | None:
         """Secant stiffness of the last step relative to the first (elastic) step;
@@ -856,7 +882,9 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
                            exact_thickness: bool = True,
                            shear_correction: float = 5.0 / 6.0,
                            max_deflection_factor: float | None = None,
-                           bisection_tolerance: float = 1e-3) -> PatchPath:
+                           bisection_tolerance: float = 1e-3,
+                           geometric: bool = False,
+                           inplane_restrained: bool = False) -> PatchPath:
     """Integrate the elastoplastic patch-loading path (adaptive load control).
 
     On a Newton failure the increment is bisected down to ``bisection_tolerance``
@@ -867,6 +895,13 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
     failures (see :func:`limit_load_from_path`).  Optionally the
     path is then unloaded to ``unload_to`` times the reference pressure and the
     residual centre deflection is read off (:attr:`PatchPath.permanent_deflection`).
+
+    ``geometric=True`` switches on the updated geometric stiffness and
+    ``inplane_restrained=True`` fixes the in-plane boundary DOFs; together they
+    are what makes the post-yield path turn over, so that
+    :attr:`PatchPath.measured_limit_load` is a real peak instead of the end of
+    the ramp (see the module docstring of
+    :mod:`tensorfem.layered_shell4_plasticity`).
     """
     if nx % 2 or ny % 2:
         raise ValueError("even element counts keep the plate centre a node")
@@ -874,7 +909,8 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
                                    yield_stress=yield_stress, hardening=hardening,
                                    layers=layers, patch=patch,
                                    exact_thickness=exact_thickness,
-                                   shear_correction=shear_correction)
+                                   shear_correction=shear_correction,
+                                   inplane_restrained=inplane_restrained)
     path = PatchPath(model=model, info=info)
     state = LayeredShell4State.virgin(model)
     u = torch.zeros(model.n_dofs, dtype=model.nodes.dtype)
@@ -888,7 +924,8 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
             try:
                 step = solve_layered_shell4_increment(
                     model, info["reference_load"], end, info["fixed_dofs"], state, u,
-                    tolerance=tolerance, max_iterations=max_iterations)
+                    tolerance=tolerance, max_iterations=max_iterations,
+                    geometric=geometric)
             except RuntimeError:
                 if (end - start) < bisection_tolerance * max(abs(end), 1e-12):
                     return None
@@ -935,7 +972,8 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
             try:
                 step = solve_layered_shell4_increment(
                     model, info["reference_load"], target, info["fixed_dofs"], state, u,
-                    tolerance=tolerance, max_iterations=max_iterations)
+                    tolerance=tolerance, max_iterations=max_iterations,
+                    geometric=geometric)
             except RuntimeError:
                 # the committed state is unchanged on failure, so the peak
                 # deflection is still standing: record it and flag the leg.
