@@ -1,0 +1,41 @@
+{
+  "impl_files": [
+    "src/tensorfem/lbm_lattice_tables.py 899L - table-driven LB lattices (D1Q3/D2Q9/D3Q15/D3Q19/D3Q27) with exact rational-arithmetic selfcheck, lattice-agnostic kernels, and physical cross-check runners"
+  ],
+  "entry": "benchmarks/verified/lbm_table_selfcheck/run.py [--fast] -> result.json + make_report.py -> docs/reports/lbm-table-driven-lattice-selfcheck.md + 3 figures",
+  "run_artifacts": [
+    "benchmarks/verified/lbm_table_selfcheck/result.json 47607B",
+    "benchmarks/verified/lbm_table_selfcheck/figures/fig_selfcheck.png 90095B",
+    "benchmarks/verified/lbm_table_selfcheck/figures/fig_poiseuille.png 121768B",
+    "benchmarks/verified/lbm_table_selfcheck/figures/fig_taylorgreen.png 89753B",
+    "benchmarks/verified/lbm_table_selfcheck/README.md 854B"
+  ],
+  "tests": "tests/test_lbm_lattice_tables.py 42 tests all pass (pytest 34.39s)",
+  "integration_callers": [
+    "benchmarks/verified/lbm_table_selfcheck/run.py:45 from tensorfem.lbm_lattice_tables import get_table, run_channel_poiseuille, run_taylor_green",
+    "benchmarks/verified/lbm_table_selfcheck/make_report.py reads result.json to produce markdown report"
+  ],
+  "benchmark": {
+    "anchor_slug": "XVAL-LBM-TABLE-DRIVEN-LATTICE-SELFCHECK",
+    "gates": {
+      "A1_tables_pass_exact": "PASS",
+      "A2_mutation_reject_rate": "PASS",
+      "A3_equilibrium_moments_exact": "PASS",
+      "A4_channel_curvature": "PASS",
+      "A5_wall_offset_and_profile": "PASS",
+      "A6_taylorgreen": "PASS",
+      "A7_3d_channel_same_kernels": "PASS",
+      "L1_literature_table_identity": "PASS"
+    },
+    "all_gates_passed": true,
+    "key_numerical_results": {
+      "channel_curvature_rel_err_D2Q9_ny16": 3.14e-13,
+      "channel_curvature_rel_err_D2Q9_ny32": 3.37e-13,
+      "channel_profile_fitted_err_ny32": 8.59e-14,
+      "taylorgreen_nu_rel_err": 7.16e-05,
+      "taylorgreen_field_rel_err": 0.001585
+    }
+  },
+  "repro_cmd": "cd /root/tp-agent/work/m22232 && PYTHONPATH=src python3 benchmarks/verified/lbm_table_selfcheck/run.py --fast",
+  "external_anchor": "Qian et al. (1992) Europhys. Lett. 17, 479; Kruger et al. (2017) Springer ch.3; Guo et al. (2002) Phys. Fluids 14, 2007"
+}
