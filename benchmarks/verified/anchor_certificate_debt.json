@@ -60,13 +60,6 @@
       ],
       "remedy": "commit the artifact the certificate names, or drop the stale reference"
     },
-    "fem_wave_dispersion": {
-      "grade": "contradicted",
-      "defects": [
-        "E_ARTIFACT_MISSING"
-      ],
-      "remedy": "commit the artifact the certificate names, or drop the stale reference"
-    },
     "rainflow_fix_spec": {
       "grade": "uncertified",
       "defects": [
