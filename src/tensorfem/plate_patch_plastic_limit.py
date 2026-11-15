@@ -1181,9 +1181,22 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
             rejection = _step_rejection(w_new, moment_ratio, end, history,
                                         capacity_ratio, max_deflection_factor)
             if rejection is not None:
-                path.ramp_truncated = True
-                path.truncation_reason = rejection
-                return current
+                # A rejected *state* is not a rejected *load level*: the
+                # increment was too large for the layer model to stay inside the
+                # section, exactly like a Newton failure, and the remedy is the
+                # same bisection.  Truncating the ramp here (the previous
+                # behaviour) ended the path 7 % below the section capacity while
+                # the physical limit point was still ahead of it, so no limit
+                # load was ever measured and ``collapse_factor`` degenerated to
+                # "last prescribed factor".
+                if (end - start) < bisection_tolerance * max(abs(end), 1e-12):
+                    path.ramp_truncated = True
+                    path.truncation_reason = rejection
+                    return current
+                middle = 0.5 * (start + end)
+                stack.append((middle, end))
+                stack.append((start, middle))
+                continue
             state, u = step.state, step.displacement
             history.append(PatchPathPoint(
                 end, w_new, float(torch.max(step.alpha)),
@@ -1251,13 +1264,27 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
                            patch: tuple[float, float], hardening: float,
                            load_factors: Sequence[float], nx: int, ny: int,
                            layers: int = 5, unload_steps: int = 0,
-                           exact_thickness: bool = True) -> dict:
+                           exact_thickness: bool = True,
+                           geometric: bool = False,
+                           inplane_restrained: bool = False,
+                           max_deflection_factor: float | None = None) -> dict:
     """Patch-pressure capacity of a plate panel at a service temperature.
 
     Returns the analytic elastic/yield-line bounds and the finite element path
     (first yield, collapse, permanent set), with the flow stress taken from
     :func:`low_temperature_flow_stress`.  Below the DBTT the plastic result is
     withheld and only the elastic first-yield pressure is reported.
+
+    ``geometric`` / ``inplane_restrained`` / ``max_deflection_factor`` are
+    forwarded to :func:`run_patch_plastic_path`.  They default to the historical
+    bending-only configuration, but a *limit-load* claim needs
+    ``geometric=True, inplane_restrained=True``: without them the layered plate
+    keeps a positive transverse tangent after the bending moments saturate, so
+    load control never loses equilibrium and ``collapse_factor`` is just the
+    last prescribed factor of the ramp.  ``limit_measurements`` (the
+    double-slope / offset / stiffness definitions of
+    :func:`limit_load_from_path`) is reported alongside, so the caller can tell
+    the two apart.
     """
     flow = low_temperature_flow_stress(grade, temperature_c)
     elastic = analytic_first_yield_pressure(a, b, t, young, poisson,
@@ -1284,7 +1311,10 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
                                   hardening=hardening, patch=patch,
                                   load_factors=load_factors, nx=nx, ny=ny,
                                   layers=layers, unload_steps=unload_steps,
-                                  exact_thickness=exact_thickness)
+                                  exact_thickness=exact_thickness,
+                                  geometric=geometric,
+                                  inplane_restrained=inplane_restrained,
+                                  max_deflection_factor=max_deflection_factor)
     # Same-mesh elastic bias: the layered Shell4 element is not an exact thin-plate
     # element, so the transition point is reported both raw and normalised by the
     # element's own elastic surface-stress response (the "consistency regression
@@ -1294,7 +1324,9 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
                                    patch=patch,
                                    load_factors=[0.25 * elastic["pressure"]],
                                    nx=nx, ny=ny, layers=layers,
-                                   exact_thickness=exact_thickness)
+                                   exact_thickness=exact_thickness,
+                                   geometric=geometric,
+                                   inplane_restrained=inplane_restrained)
     fe_sigma_per_pa = probe.loading[0].max_surface_mises / probe.loading[0].load_factor
     bias = fe_sigma_per_pa / elastic["sigma_eq_per_pa"] - 1.0
     fe = {
@@ -1323,6 +1355,20 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
             (fe["first_yield_factor"] - corrected) / corrected
         fe["analytic_first_yield_same_mesh"] = corrected
     fe["collapse_error_vs_upper"] = (fe["collapse_factor"] - upper["pressure"]) / upper["pressure"]
+    # The limit load measured from the path itself.  Reported with its
+    # admissibility gate and the spread of the three definitions: a number whose
+    # definitions disagree is not a limit load, and ``None`` is the honest answer
+    # when the path never turned over.
+    try:
+        measurements = limit_load_from_path(path)
+    except ValueError as error:
+        measurements = {"limit_load": None, "spread": None,
+                        "reason": f"limit load not extractable: {error}"}
+    fe["limit_measurements"] = measurements
+    fe["measured_limit_load"] = measurements.get("limit_load")
+    fe["measured_limit_error_vs_upper"] = (
+        None if measurements.get("limit_load") is None
+        else (measurements["limit_load"] - upper["pressure"]) / upper["pressure"])
     summary["fe"] = fe
     summary["fe_permanent_deflection"] = path.permanent_deflection
     summary["fe_permanent_set_valid"] = path.permanent_set_valid
