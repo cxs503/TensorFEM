@@ -368,7 +368,13 @@ class CorotationalBeam2D:
         L0 = p.length / self.n_elements
         idx_b = [1, 2, 4, 5]
         m = np.zeros((6, 6))
-        ml = p.rho * L0
+        # mass per element = rho * A * L0: the section area MUST be carried by
+        # the consistent mass matrix (it is carried by the axial stiffness
+        # E A / L0 right below).  Omitting A left every frequency scaled by
+        # 1/sqrt(A) whenever A != 1 -- invisible in the A = 1 default section,
+        # but it corrupted the structural inertia -- and hence the added-mass
+        # ratio -- of every submerged run, where the section is rescaled.
+        ml = p.rho * p.A * L0
         m[np.ix_([0, 3], [0, 3])] += ml / 6.0 * np.array([[2.0, 1.0], [1.0, 2.0]])
         m[np.ix_(idx_b, idx_b)] += ml / 420.0 * np.array(
             [[156.0, 22 * L0, 54.0, -13 * L0],
@@ -718,6 +724,18 @@ def _estimate_period(series, dt):
     return float((idx[-1] - idx[0]) * dt / (len(idx) - 1))
 
 
+def _section_dict(props):
+    """Plain dict copy of the beam section actually used by a free-vibration run.
+
+    Returned by :func:`cantilever_free_vibration` so a caller can check that the
+    section it asked for is the section that was simulated (the v4/v5 vacuum
+    check silently compared against a different one).
+    """
+    return {"E": float(props.E), "A": float(props.A), "I": float(props.I),
+            "rho": float(props.rho), "length": float(props.length),
+            "thickness": float(props.thickness)}
+
+
 def _section():
     return BeamProperties(E=1.0e5, A=1.0, I=1.0 / 12.0, rho=1.0,
                           length=1.0, thickness=1.0)
@@ -727,14 +745,23 @@ def cantilever_free_vibration(n_steps=400, n_elements=16, dt=2.0e-3,
                               amplitude=0.05, fluid_rho=0.0, lattice=(96, 96),
                               relax_mode="aitken", fixed_omega=1.0,
                               sub_tol=1e-8, max_sub_iter=20,
-                              correct_epsilon=True):
+                              correct_epsilon=True, props=None):
     """Clamped beam released from a static deflection, optionally submerged.
 
     ``fluid_rho = 0`` runs the structure alone (vacuum reference); otherwise a
     D2Q9 box initially at rest surrounds the beam and the implicit IBM/Aitken
     coupling transfers the hydrodynamic load.
+
+    ``props`` selects the beam section (default :func:`_section`).  Pass the
+    same section that the reference frequency is computed from: comparing a
+    default-section simulation against the Euler-Bernoulli frequency of a
+    *different* section was the ``vacuum free-vibration f vs analytic`` failure
+    of the v4/v5 cross-validation runs (a 300x mismatch that no physics could
+    explain).  ``dt`` must also resolve the reference period -- the period
+    estimators need ``n_steps * dt`` to hold more than one period, see
+    :func:`tensorfem.ibm_aitken_added_mass.period_window_ok`.
     """
-    beam = CorotationalBeam2D(n_elements=n_elements, props=_section())
+    beam = CorotationalBeam2D(n_elements=n_elements, props=props or _section())
     beam.set_initial_deflection(amplitude)
     if fluid_rho <= 0.0:
         tips = []
@@ -745,6 +772,7 @@ def cantilever_free_vibration(n_steps=400, n_elements=16, dt=2.0e-3,
             tips.append(beam.tip()[1])
         period = _estimate_period(tips, dt)
         return {"mode": "vacuum", "dt": dt, "n_steps": n_steps,
+                "section": _section_dict(beam.props),
                 "tip_history": tips, "period": period,
                 "frequency": 1.0 / period if period == period else float("nan"),
                 "sub_iterations": [], "maxit_hits": 0,
@@ -776,6 +804,7 @@ def cantilever_free_vibration(n_steps=400, n_elements=16, dt=2.0e-3,
             "maxit_hits": solver.n_maxit_hits,
             "converged_all": all(h["converged"] for h in hist),
             "relax": [h["omega"] for h in hist],
+            "section": _section_dict(beam.props),
             "lattice": list(lattice), "beam_scale": scale}
 
 
