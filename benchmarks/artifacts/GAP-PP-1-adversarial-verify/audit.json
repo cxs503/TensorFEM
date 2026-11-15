@@ -1,0 +1,269 @@
+{
+  "case": "GAP-PP-1-ICE-STRUCT-CONTACT-PATCH adversarial verification",
+  "role": "verifier seat (independent re-derivation; no reliance on archived numbers)",
+  "A_crosscheck_convergence": {
+    "plate": {
+      "side_m": 1.0,
+      "thickness_m": 0.01,
+      "E_Pa": 206000000000.0,
+      "nu": 0.3
+    },
+    "meshes": [
+      16,
+      24
+    ],
+    "rows": [
+      {
+        "patch": "uniform_0.4x0.4",
+        "plate_nx": 16,
+        "mine_sigma_x_MPa": 330.03360875883874,
+        "ic_sigma_Mx_MPa": 330.033608759414,
+        "navier_at_fe_peak_MPa": 335.2561886973723,
+        "mine_vs_navier_pct": -1.557787779794828,
+        "ic_vs_navier_pct": -1.557787779623243,
+        "path_gap_rel": 1.7158680980849732e-12,
+        "force_balance_rel": 0.0,
+        "projection_force_error_rel": 1.8189894035458566e-16,
+        "fe_peak_at_m": [
+          0.53125,
+          0.5
+        ],
+        "navier_at_centre_MPa": 337.807768764967
+      },
+      {
+        "patch": "uniform_0.4x0.4",
+        "plate_nx": 24,
+        "mine_sigma_x_MPa": 334.40365429733487,
+        "ic_sigma_Mx_MPa": 334.4036542966915,
+        "navier_at_fe_peak_MPa": 332.7529228781391,
+        "mine_vs_navier_pct": 0.49608322142382644,
+        "ic_vs_navier_pct": 0.49608322123047,
+        "path_gap_rel": 1.9334279894582154e-12,
+        "force_balance_rel": 0.0,
+        "projection_force_error_rel": 3.637978807091713e-16,
+        "fe_peak_at_m": [
+          0.4791666567325592,
+          0.4583333432674408
+        ],
+        "navier_at_centre_MPa": 337.807768764967
+      },
+      {
+        "patch": "gaussian_peak2MPa_sigma0.08",
+        "plate_nx": 16,
+        "mine_sigma_x_MPa": 859.8845398864728,
+        "ic_sigma_Mx_MPa": 859.8845398877918,
+        "navier_at_fe_peak_MPa": 897.4591063531161,
+        "mine_vs_navier_pct": -4.186771987787841,
+        "ic_vs_navier_pct": -4.186771987640869,
+        "path_gap_rel": 1.4696989332539178e-12,
+        "force_balance_rel": 0.0,
+        "projection_force_error_rel": 0.005547137909869942,
+        "fe_peak_at_m": [
+          0.46875,
+          0.5
+        ],
+        "navier_at_centre_MPa": 920.3731660966001
+      },
+      {
+        "patch": "gaussian_peak2MPa_sigma0.08",
+        "plate_nx": 24,
+        "mine_sigma_x_MPa": 892.0995892906279,
+        "ic_sigma_Mx_MPa": 892.0995892895428,
+        "navier_at_fe_peak_MPa": 885.5941291364768,
+        "mine_vs_navier_pct": 0.7345870913230357,
+        "ic_vs_navier_pct": 0.7345870912004893,
+        "path_gap_rel": 1.225325270743294e-12,
+        "force_balance_rel": 0.0,
+        "projection_force_error_rel": 0.005547137909869942,
+        "fe_peak_at_m": [
+          0.4791666567325592,
+          0.4583333432674408
+        ],
+        "navier_at_centre_MPa": 920.3731660966001
+      }
+    ],
+    "summary": {
+      "uniform_0.4x0.4": {
+        "errors_pct_by_nx": {
+          "16": -1.557787779794828,
+          "24": 0.49608322142382644
+        },
+        "finest_nx": 24,
+        "finest_abs_error_pct": 0.49608322142382644,
+        "max_abs_path_gap_rel": 1.9334279894582154e-12,
+        "convergence": {
+          "order": 2.822137548375473,
+          "h_ratio": 1.5
+        },
+        "monotone_decreasing": true
+      },
+      "gaussian_peak2MPa_sigma0.08": {
+        "errors_pct_by_nx": {
+          "16": -4.186771987787841,
+          "24": 0.7345870913230357
+        },
+        "finest_nx": 24,
+        "finest_abs_error_pct": 0.7345870913230357,
+        "max_abs_path_gap_rel": 1.4696989332539178e-12,
+        "convergence": {
+          "order": 4.292297195767531,
+          "h_ratio": 1.5
+        },
+        "monotone_decreasing": true
+      }
+    }
+  },
+  "B_chain_independence": {
+    "plate_mindlin_foundation_plate_bending_symbols": [
+      "annotations",
+      "dataclass",
+      "kelvin_kei",
+      "math",
+      "q4_mindlin_stiffness",
+      "q4_winkler_foundation_stiffness",
+      "torch"
+    ],
+    "ice_panel_foundation_plate_bending_symbols": [
+      "assemble_plate_foundation_system",
+      "solve_assembled_system",
+      "torch",
+      "uniform_rect_mesh"
+    ],
+    "shared_assembly_routines": [
+      "torch"
+    ],
+    "numeric_gap_rel_at_nx16": 1.7430206609373637e-12,
+    "mesh_nx": 16,
+    "foundation_plate_bending_available": true,
+    "verdict": "not independent: both chains assemble through the shared tensorfem.foundation_plate_bending routines (torch), hence their < 1e-9 agreement is a code-path identity, not a cross-validation"
+  },
+  "C_artefact_reproduction": {
+    "archive_found": true,
+    "archive_path": "benchmarks/artifacts/GAP-PP-1-patch-from-contact-verify/verification.json",
+    "archive_mission": 20624,
+    "archived_quoted_headline": "gaussian row: mine_vs_navier_pct = -0.41 % (quoted in the VERIFY doc as 'FEM vs Navier 0.41 %')",
+    "rows": [
+      {
+        "patch": "uniform_0.4x0.4",
+        "plate_nx": 16,
+        "archived_mine_MPa": 368.33736724446146,
+        "head_mine_MPa": 330.03360875883874,
+        "mine_drift_pct": -10.399096559812504,
+        "archived_mine_vs_navier_pct": 6.38561705377827,
+        "head_mine_vs_navier_pct": -1.557787779794828,
+        "archived_ic_vs_navier_pct": 1.0674749773881498,
+        "head_ic_vs_navier_pct": -1.557787779623243
+      },
+      {
+        "patch": "gaussian_peak2MPa_sigma0.08",
+        "plate_nx": 16,
+        "archived_mine_MPa": 842.1149601798717,
+        "head_mine_MPa": 859.8845398864728,
+        "mine_drift_pct": 2.1101132917536125,
+        "archived_mine_vs_navier_pct": -0.41392794903848396,
+        "head_mine_vs_navier_pct": -4.186771987787841,
+        "archived_ic_vs_navier_pct": 1.6874509941942728,
+        "head_ic_vs_navier_pct": -4.186771987640869
+      }
+    ],
+    "max_abs_mine_drift_pct": 10.399096559812504,
+    "reproducible": false
+  },
+  "D_validity": {
+    "plate_nx": 12,
+    "thickness_m": 0.01,
+    "winkler_k": 10000000.0,
+    "w_over_t_limit": 0.5,
+    "rows": [
+      {
+        "load_scale": 1.0,
+        "peak_pressure_MPa": 5.0,
+        "total_force_N": 702768.1242288372,
+        "peak_sigma_x_MPa": 2543.579446379497,
+        "peak_sigma_x_uniform_MPa": 914.6122281433063,
+        "delta_sigma_x_pct": 178.10468394272937,
+        "peak_sigma_vm_MPa": 2544.300997993747,
+        "delta_sigma_vm_pct": 101.55309598989963,
+        "peak_deflection_m": 0.14034518103989901,
+        "w_over_t": 14.034518103989901,
+        "small_deflection_valid": false,
+        "load_balance_rel": 0.0
+      },
+      {
+        "load_scale": 0.01,
+        "peak_pressure_MPa": 0.05,
+        "total_force_N": 7027.681242288372,
+        "peak_sigma_x_MPa": 25.435794463794192,
+        "peak_sigma_x_uniform_MPa": 9.14612228143285,
+        "delta_sigma_x_pct": 178.10468394272735,
+        "peak_sigma_vm_MPa": 25.44300997993689,
+        "delta_sigma_vm_pct": 101.55309598989852,
+        "peak_deflection_m": 0.001403451810398994,
+        "w_over_t": 0.1403451810398994,
+        "small_deflection_valid": true,
+        "load_balance_rel": 0.0
+      }
+    ],
+    "delta_sigma_x_ratio_of_scales": 0.9999999999999887,
+    "linearity_rel_dev": 1.1330085907272185e-14,
+    "verdict_demo_case": "INVALID small-deflection regime: w/t = 14.0 > 0.5; the quoted absolute peak stresses are not physical (membrane action is absent from the model), while the non-uniform/uniform *ratio* is a property of linear theory only (it is invariant under load scaling to 1.1e-14)."
+  },
+  "E_load_area": {
+    "rows": {
+      "czm_spherical_edge": {
+        "footprint_m2": 0.03999999999999999,
+        "loaded_area_key_m2": 0.04,
+        "pressurised_area_m2": 0.039999999999999994,
+        "loaded_area_over_pressurised_pct": 2.220446049250313e-14,
+        "contact_force_metadata_N": 40000.00000186938,
+        "discrete_contact_field_force_N": 40000.00000186918,
+        "projected_force_N": 40000.000001869186,
+        "projection_vs_discrete_field_rel": 1.818989403460856e-16,
+        "discrete_field_vs_metadata_rel": 5.093170329690371e-15,
+        "mean_pressure_over_footprint_MPa": 1.0000000000467297,
+        "mean_pressure_over_pressurised_MPa": 1.0000000000467297,
+        "peak_pressure_MPa": 1.5335956730494218
+      },
+      "gaussian_2MPa_sigma0.08": {
+        "footprint_m2": 0.2304,
+        "loaded_area_key_m2": 0.2303999999999997,
+        "pressurised_area_m2": 0.2304,
+        "loaded_area_over_pressurised_pct": -1.3322676295501878e-13,
+        "contact_force_metadata_N": 80424.77193189871,
+        "discrete_contact_field_force_N": 79978.64463062263,
+        "projected_force_N": 79978.64463062263,
+        "projection_vs_discrete_field_rel": 0.0,
+        "discrete_field_vs_metadata_rel": 0.005547137909869942,
+        "mean_pressure_over_footprint_MPa": 0.3471295339870778,
+        "mean_pressure_over_pressurised_MPa": 0.34712953398707735,
+        "peak_pressure_MPa": 2.0
+      },
+      "synthetic_one_sided_half_zero": {
+        "footprint_m2": 0.2304,
+        "loaded_area_key_m2": 0.2303999999999997,
+        "pressurised_area_m2": 0.11519999999999998,
+        "loaded_area_over_pressurised_pct": 99.99999999999976,
+        "contact_force_metadata_N": 36989.72275521249,
+        "discrete_contact_field_force_N": 36989.72275521249,
+        "projected_force_N": 36989.72275521249,
+        "projection_vs_discrete_field_rel": 0.0,
+        "discrete_field_vs_metadata_rel": 0.0,
+        "mean_pressure_over_footprint_MPa": 0.16054567168060999,
+        "mean_pressure_over_pressurised_MPa": 0.3210913433612196,
+        "peak_pressure_MPa": 2.0
+      }
+    },
+    "verdict_loaded_area": "for the two patches actually used by the chain the grid footprint *is* the pressurised area (overstatement ~1e-12), so F/loaded_area is a valid mean pressure there; for a one-sided patch with zero-pressure grid cells the same key overstates the loaded area by 100.0% -- the docstring should say 'footprint', not 'loaded area'.",
+    "verdict_force_error": "projection vs discrete contact field: max 1.8e-16 (exact).  Discrete field vs analytic force: 0.55% (gaussian) / 5.1e-15 (CZM, self-consistent metadata).  The VERIFY doc's '< 0.001% vs analytic' quotes the first quantity and labels it the second."
+  },
+  "figures": [
+    {
+      "name": "fig_convergence.png",
+      "caption": "FE (contact->patch->plate) vs independent Kirchhoff Navier series: error falls monotonically with mesh refinement, so the quoted single-mesh error is a discretisation number, not a converged one."
+    },
+    {
+      "name": "fig_validity.png",
+      "caption": "The end-to-end demo's load level puts the plate at w/t >> 1, far outside small-deflection theory; rescaling by 1e-2 restores validity and leaves the non-uniform/uniform ratio unchanged (linear theory)."
+    }
+  ]
+}
