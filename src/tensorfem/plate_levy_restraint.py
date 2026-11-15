@@ -53,6 +53,9 @@ __all__ = [
     "kirchhoff_strip_deflection",
     "LevyRestrainedSolution",
     "levy_restrained_plate",
+    "LevyStepLoadSolution",
+    "levy_restrained_plate_step_load",
+    "levy_restrained_plate_patch",
     "RitzRestrainedSolution",
     "ritz_restrained_plate",
 ]
@@ -294,6 +297,345 @@ def levy_restrained_plate(
         coeffs=coeffs,
         particular=particular,
         s=s_all,
+    )
+
+
+def _exp_basis3(s: float, x: float, a: float):
+    """:func:`_exp_basis` plus the third derivative.
+
+    The homogeneous space of ``(d^2/dx^2 - s^2)^2 X = 0`` is fixed by four
+    conditions; joining two segments of a piecewise-constant load requires
+    ``X, X', X'', X'''`` to be continuous, hence the third derivative here.
+    """
+    f1 = math.exp(s * (x - a))
+    f2 = math.exp(-s * x)
+    phi = np.array([f1, f2, x * f1, x * f2])
+    dphi = np.array([s * f1, -s * f2, f1 + s * x * f1, f2 - s * x * f2])
+    d2phi = np.array(
+        [s * s * f1, s * s * f2, 2.0 * s * f1 + s * s * x * f1, -2.0 * s * f2 + s * s * x * f2]
+    )
+    d3phi = np.array(
+        [
+            s**3 * f1,
+            -(s**3) * f2,
+            3.0 * s * s * f1 + s**3 * x * f1,
+            3.0 * s * s * f2 - s**3 * x * f2,
+        ]
+    )
+    return phi, dphi, d2phi, d3phi
+
+
+#: Condition-number ceiling for one mode of the step-load system.  The
+#: boundary-condition matrix of a mode with wavenumber ``s`` has dynamic range
+#: ``exp(2 s a)``, so beyond this ceiling the coefficients are dominated by
+#: round-off.  Such modes are *dropped*: their particular amplitude is
+#: ``q_n / (D s^4)`` and their bending-moment scale ``q_n / s^2``, both far below
+#: the series value, and the convergence plateau is asserted in
+#: ``tests/test_plate_levy_patch.py``.
+_STEP_LOAD_COND_LIMIT = 1e14
+
+
+def _normalise_pieces(segments, a: float):
+    """Clip, sort and gap-fill a piecewise-constant pressure description.
+
+    ``segments`` is a sequence of ``(x0, x1, q)``; gaps inside ``[0, a]`` are
+    filled with ``q = 0`` so the returned list always covers ``[0, a]``
+    contiguously (required by the continuity join).
+    """
+    pieces = []
+    for seg in segments:
+        if len(seg) != 3:
+            raise ValueError("each segment must be (x0, x1, q)")
+        x0, x1, q = (float(v) for v in seg)
+        if x1 < x0:
+            raise ValueError("segment x1 must be >= x0")
+        if x1 == x0:
+            continue
+        if x1 <= 0.0 or x0 >= a:
+            continue
+        pieces.append([max(0.0, x0), min(a, x1), q])
+    pieces.sort(key=lambda p: (p[0], p[1]))
+    out: list[list[float]] = []
+    for x0, x1, q in pieces:
+        if out and x0 < out[-1][1] - 1e-12 * a:
+            raise ValueError("overlapping load segments")
+        if out and x0 > out[-1][1] + 1e-12 * a:
+            out.append([out[-1][1], x0, 0.0])
+        out.append([x0, x1, q])
+    if not out:
+        raise ValueError("empty load description")
+    if out[0][0] > 0.0:
+        out.insert(0, [0.0, out[0][0], 0.0])
+    if out[-1][1] < a:
+        out.append([out[-1][1], a, 0.0])
+    return tuple((float(x0), float(x1), float(q)) for x0, x1, q in out)
+
+
+@dataclass
+class LevyStepLoadSolution:
+    """Exact Kirchhoff Levy solution for a *piecewise-constant* patch load.
+
+    Same boundary configuration as :class:`LevyRestrainedSolution` (``y = 0, b``
+    simply supported, ``x = 0, a`` on rotational springs), but the pressure is
+    ``q(x, y) = q_j`` on the strip ``x in [x0_j, x1_j]`` and independent of ``y``
+    - the JOUR-ICE-STRUCT patch idealisation (full breadth x partial length).
+
+    Exactness: with ``w = X(x) sin(s_n y)``, ``s_n = n pi / b``, the plate PDE
+    ``D lap^2 w = q`` becomes one ODE per mode,
+    ``D (X'''' - 2 s^2 X'' + s^4 X) = q_n(x)``, with
+    ``q_n = 4 q(x) / (n pi)`` for odd ``n`` (zero otherwise).  On a segment of
+    constant ``q_n`` a particular integral is the constant ``q_n / (D s^4)``, and
+    the general solution is that constant plus the four-dimensional homogeneous
+    basis of :func:`_exp_basis3`.  The ``4 x n_seg`` amplitudes are obtained from
+    the two edge conditions (``w = 0`` and ``D(w_xx + nu w_yy) = +-K w_x``) plus
+    ``X, X', X'', X'''`` continuity at the internal segment breaks, i.e. one
+    closed-form linear solve per mode and **no discretisation in x**.
+
+    Accuracy domain
+    ---------------
+    Only *interior* stations are certified.  The series for an interior load
+    discontinuity carries a dynamic range ``exp(2 s d)`` (``d`` = distance from
+    the station to the load), so at stations far from the patch - in particular
+    on the **unloaded edges** - the high-mode sum is round-off dominated and is
+    *not* usable, even though the centre values are converged.  Edge moments /
+    spring rotations are therefore deliberately not exposed here; take them from
+    the FEM spring-consistent recovery (``edge_spring_stress``) or from
+    :func:`ritz_restrained_plate`.  See
+    ``docs/CASE-FEM-ELASTIC-RESTRAINT-PATCH-LEVY.md`` Sec. 5.
+    """
+
+    a: float
+    b: float
+    D: float
+    nu: float
+    K: float
+    segments: tuple
+    n_modes: int
+    s: np.ndarray = field(repr=False)
+    coeffs: np.ndarray = field(repr=False)
+    particular: np.ndarray = field(repr=False)
+    dropped_modes: tuple = ()
+
+    # -- geometry helpers ------------------------------------------------
+    def segment_index(self, x: float) -> int:
+        """Index of the constant-load segment containing ``x``."""
+        eps = 1e-12 * max(self.a, 1.0)
+        for j, (x0, x1, _q) in enumerate(self.segments):
+            if x0 - eps <= x <= x1 + eps:
+                return j
+        raise ValueError(f"x={x} outside [0, {self.a}]")
+
+    def load(self, x: float) -> float:
+        """Pressure [Pa] at station ``x`` (independent of ``y``)."""
+        return self.segments[self.segment_index(x)][2]
+
+    def _mode_terms(self, x: float, k: int):
+        """``(X, X', X'')`` of mode ``k`` at ``x`` including its particular part."""
+        j = self.segment_index(x)
+        s = self.s[k]
+        c = self.coeffs[k, j]
+        phi, dphi, d2phi, _d3 = _exp_basis3(s, x, self.a)
+        return (
+            float(c @ phi) + float(self.particular[k, j]),
+            float(c @ dphi),
+            float(c @ d2phi),
+        )
+
+    # -- fields ----------------------------------------------------------
+    def w(self, x: float, y: float) -> float:
+        """Transverse displacement [m]."""
+        return float(
+            sum(self._mode_terms(x, k)[0] * math.sin(self.s[k] * y) for k in range(self.n_modes))
+        )
+
+    def slope(self, x: float, y: float) -> float:
+        """``dw/dx`` [rad]."""
+        return float(
+            sum(self._mode_terms(x, k)[1] * math.sin(self.s[k] * y) for k in range(self.n_modes))
+        )
+
+    def w_xx(self, x: float, y: float) -> float:
+        return float(
+            sum(self._mode_terms(x, k)[2] * math.sin(self.s[k] * y) for k in range(self.n_modes))
+        )
+
+    def w_yy(self, x: float, y: float) -> float:
+        return float(
+            sum(
+                -self.s[k] ** 2 * self._mode_terms(x, k)[0] * math.sin(self.s[k] * y)
+                for k in range(self.n_modes)
+            )
+        )
+
+    def moments(self, x: float, y: float) -> tuple[float, float]:
+        """Bending moments ``(Mx, My)`` [N*m/m]."""
+        wxx = self.w_xx(x, y)
+        wyy = self.w_yy(x, y)
+        return (-self.D * (wxx + self.nu * wyy), -self.D * (wyy + self.nu * wxx))
+
+    def w_centre(self) -> float:
+        return self.w(0.5 * self.a, 0.5 * self.b)
+
+    def moments_centre(self) -> tuple[float, float]:
+        return self.moments(0.5 * self.a, 0.5 * self.b)
+
+
+def levy_restrained_plate_step_load(
+    a: float,
+    b: float,
+    D: float,
+    nu: float,
+    K: float,
+    segments,
+    n_modes: int = 201,
+) -> LevyStepLoadSolution:
+    """Exact Kirchhoff Levy solution for a patch load on rotationally sprung edges.
+
+    Parameters
+    ----------
+    a, b : float
+        Plate dimensions [m]; ``a`` is the sprung direction, and the load is a
+        function of ``x`` only (full breadth in ``y``).
+    D, nu : float
+        Flexural rigidity [N*m] and Poisson ratio.
+    K : float
+        Distributed rotational spring stiffness [N*m/m/rad] on ``x = 0, a``.
+    segments : sequence of (x0, x1, q)
+        Piecewise-constant pressure [Pa] on ``x in [x0, x1]``.  Gaps are treated
+        as zero pressure; overlap is an error.
+    n_modes : int
+        Number of ``sin(n pi y / b)`` modes.  For a load independent of ``y``
+        only odd modes are loaded, and 201 modes converge the centre moment to
+        ~1e-7 relative.
+
+    Notes
+    -----
+    ``K = 0`` is the simply supported plate and ``K -> inf`` the clamped one, so
+    one routine supplies an exact reference for the whole restraint band - the
+    thing the uniform-load routine already did and this one adds for the
+    discontinuous panel patch the manuscript actually applies.
+    """
+    if a <= 0.0 or b <= 0.0:
+        raise ValueError("a and b must be positive")
+    if K < 0.0:
+        raise ValueError("K must be non-negative")
+    if n_modes < 1:
+        raise ValueError("n_modes must be >= 1")
+
+    segs = _normalise_pieces(segments, a)
+    nseg = len(segs)
+    s_all = np.arange(1, n_modes + 1) * math.pi / b
+    coeffs = np.zeros((n_modes, nseg, 4), dtype=float)
+    particular = np.zeros((n_modes, nseg), dtype=float)
+    dropped: list[int] = []
+    size = 4 * nseg
+
+    for k in range(n_modes):
+        n = k + 1
+        s = s_all[k]
+        # y-expansion of a load that is constant across the full breadth
+        factor = 4.0 / (n * math.pi) if n % 2 == 1 else 0.0
+        q_n = np.array([factor * seg[2] for seg in segs], dtype=float)
+        xp = q_n / (D * s**4)
+        particular[k, :] = xp
+
+        rows = np.zeros((size, size), dtype=float)
+        rhs = np.zeros(size, dtype=float)
+
+        # --- edge conditions at x = 0 (segment 0) and x = a (last segment) ---
+        phi, dphi, d2phi, _d3 = _exp_basis3(s, 0.0, a)
+        rows[0, 0:4] = phi
+        rhs[0] = -xp[0]
+        # D(w_xx + nu w_yy) = +K w_x  with w_yy = -s^2 w   (sign = +1 at x = 0)
+        rows[1, 0:4] = D * (d2phi - nu * s * s * phi) - K * dphi
+        rhs[1] = -(D * (-nu * s * s * xp[0]))
+
+        sl = slice(4 * (nseg - 1), 4 * nseg)
+        phi, dphi, d2phi, _d3 = _exp_basis3(s, a, a)
+        rows[2, sl] = phi
+        rhs[2] = -xp[-1]
+        # sign = -1 at x = a
+        rows[3, sl] = D * (d2phi - nu * s * s * phi) + K * dphi
+        rhs[3] = -(D * (-nu * s * s * xp[-1]))
+
+        # --- C0..C2 continuity at the internal load breaks -------------------
+        row = 4
+        for j in range(nseg - 1):
+            xk = segs[j][1]
+            phi, dphi, d2phi, d3phi = _exp_basis3(s, xk, a)
+            sa = slice(4 * j, 4 * j + 4)
+            sb = slice(4 * (j + 1), 4 * (j + 1) + 4)
+            rows[row, sa] = phi
+            rows[row, sb] = -phi
+            rhs[row] = xp[j + 1] - xp[j]
+            row += 1
+            rows[row, sa] = dphi
+            rows[row, sb] = -dphi
+            row += 1
+            rows[row, sa] = d2phi
+            rows[row, sb] = -d2phi
+            row += 1
+            rows[row, sa] = d3phi
+            rows[row, sb] = -d3phi
+            row += 1
+
+        scale = np.abs(rows).max(axis=1)
+        scale[scale == 0.0] = 1.0
+        scaled = rows / scale[:, None]
+        try:
+            if np.linalg.cond(scaled) > _STEP_LOAD_COND_LIMIT:
+                raise np.linalg.LinAlgError("ill-conditioned mode")
+            sol = np.linalg.solve(scaled, rhs / scale)
+            if not np.all(np.isfinite(sol)):  # overflow, not just round-off
+                raise np.linalg.LinAlgError("non-finite mode amplitudes")
+        except np.linalg.LinAlgError:
+            # Very high modes: the boundary-condition matrix has dynamic range
+            # ``exp(2 s a)`` and underflows to a singular matrix once
+            # ``s a >~ 700``.  Such a mode's field is already below the double
+            # precision floor wherever it can be evaluated (its particular
+            # amplitude is ``q_n / (D s^4)`` and its moment scale
+            # ``q_n / s^2``), so dropping it is not an approximation at the
+            # accuracy of the series - see the convergence check against the
+            # 401-term Navier baseline in
+            # ``docs/CASE-FEM-ELASTIC-RESTRAINT-PATCH-LEVY.md``.
+            dropped.append(n)
+            continue
+        coeffs[k, :, :] = sol.reshape(nseg, 4)
+
+    return LevyStepLoadSolution(
+        a=a,
+        b=b,
+        D=D,
+        nu=nu,
+        K=K,
+        n_modes=n_modes,
+        segments=segs,
+        s=s_all,
+        coeffs=coeffs,
+        particular=particular,
+        dropped_modes=tuple(dropped),
+    )
+
+
+def levy_restrained_plate_patch(
+    a: float,
+    b: float,
+    D: float,
+    nu: float,
+    K: float,
+    q: float,
+    patch: tuple[float, float],
+    n_modes: int = 201,
+) -> LevyStepLoadSolution:
+    """Exact reference for a full-breadth pressure patch ``x in patch``.
+
+    Convenience wrapper around :func:`levy_restrained_plate_step_load` for the
+    JOUR-ICE-STRUCT load case: ``q`` [Pa] on ``x in [patch[0], patch[1]]`` and
+    the full breadth ``y in [0, b]``, zero elsewhere.
+    """
+    x0, x1 = (float(v) for v in patch)
+    return levy_restrained_plate_step_load(
+        a, b, D, nu, K, ((x0, x1, q),), n_modes=n_modes
     )
 
 
