@@ -158,11 +158,17 @@ def compute_results(geom: GrillageGeometry) -> dict:
 
     # Plastic collapse cross-check
     plastic = grillage_plastic_collapse(geom, case_study_load_case())
+    systems = plastic.get("systems", {})
+    stiffener_hinges = len(systems.get("longitudinal_stiffener", {}).get("hinges", []))
+    frame_hinges = len(systems.get("transverse_frame", {}).get("hinges", []))
     results["plastic_collapse"] = {
-        "p_ult_MPa": plastic["p_ult"] / 1e6,
-        "governing_system": plastic["governing_system"],
-        "n_hinges_stiffener": plastic["n_hinges_stiffener"],
-        "n_hinges_frame": plastic["n_hinges_frame"],
+        "ice_pressure_ultimate_MPa": plastic["ice_pressure_ultimate"] / 1e6,
+        "ice_pressure_grillage_plastic_MPa": plastic["ice_pressure_grillage_plastic"] / 1e6,
+        "governing_mode": plastic["governing_mode"],
+        "governing_member_line": plastic["governing_member_line"],
+        "n_hinges_stiffener": stiffener_hinges,
+        "n_hinges_frame": frame_hinges,
+        "plastic_reserve_ratio_stiffener": systems.get("longitudinal_stiffener", {}).get("plastic_reserve_ratio", 1.0),
     }
 
     # T1: Timoshenko Table 30
@@ -253,14 +259,14 @@ def generate_figures(geom: GrillageGeometry, results: dict) -> list[dict]:
 
     # Figure 2: Ultimate map heatmap
     rows = results["ultimate_map"]["rows"]
-    axial = sorted(set(r["axial_stress_ratio"] for r in rows))
+    axial = sorted(set(r["sigma_x_over_yield"] for r in rows))
     patch_fracs = sorted(set(r["patch_area_ratio"] for r in rows))
-    hydro = sorted(set(r["hydrostatic_pressure_Pa"] for r in rows))
+    hydro = sorted(set(r["hydrostatic_pressure_MPa"] for r in rows))
     mid_hydro = hydro[len(hydro) // 2]
     matrix = np.zeros((len(axial), len(patch_fracs)))
     for r in rows:
-        if abs(r["hydrostatic_pressure_Pa"] - mid_hydro) < 1e-6:
-            i = axial.index(r["axial_stress_ratio"])
+        if abs(r["hydrostatic_pressure_MPa"] - mid_hydro) < 1e-9:
+            i = axial.index(r["sigma_x_over_yield"])
             j = patch_fracs.index(r["patch_area_ratio"])
             matrix[i, j] = r["ice_pressure_ultimate_MPa"]
 
@@ -269,7 +275,7 @@ def generate_figures(geom: GrillageGeometry, results: dict) -> list[dict]:
                    extent=[min(patch_fracs), max(patch_fracs), min(axial), max(axial)])
     ax.set_xlabel("Patch area ratio")
     ax.set_ylabel("Axial stress ratio")
-    ax.set_title(f"Ultimate ice pressure [MPa] (hydrostatic = {mid_hydro/1e5:.1f} bar)")
+    ax.set_title(f"Ultimate ice pressure [MPa] (hydrostatic = {mid_hydro:.2f} MPa)")
     fig.colorbar(im, ax=ax, label="p_ult [MPa]")
     fig.tight_layout()
     path = FIG / "fig2_ultimate_map.png"
@@ -412,8 +418,8 @@ def generate_report(geom: GrillageGeometry, results: dict, figures: list[dict], 
     for r in results["combined_cases"]:
         lines.append(
             f"| {r['scenario']} | {r['ice_pressure_ultimate_MPa']:.4f} | "
-            f"{r['governing_member']} | {r['utilisation_stiffener_at_limit']:.3f} | "
-            f"{r['utilisation_frame_at_limit']:.3f} |")
+            f"{r['governing_member']} | {r['utilisation_stiffener']:.3f} | "
+            f"{r['utilisation_frame']:.3f} |")
 
     lines += [
         "",
@@ -436,8 +442,9 @@ def generate_report(geom: GrillageGeometry, results: dict, figures: list[dict], 
         "",
         "### 3.3 塑性倒塌交叉校核",
         "",
-        f"- 塑性倒塌极限: {results['plastic_collapse']['p_ult_MPa']:.4f} MPa",
-        f"- 控制系统: {results['plastic_collapse']['governing_system']}",
+        f"- 弹性极限: {results['plastic_collapse']['ice_pressure_ultimate_MPa']:.4f} MPa",
+        f"- 塑性倒塌极限: {results['plastic_collapse']['ice_pressure_grillage_plastic_MPa']:.4f} MPa",
+        f"- 控制系统: {results['plastic_collapse']['governing_mode']}",
         f"- 纵骨塑性铰数: {results['plastic_collapse']['n_hinges_stiffener']}",
         f"- 框架塑性铰数: {results['plastic_collapse']['n_hinges_frame']}",
         "",
