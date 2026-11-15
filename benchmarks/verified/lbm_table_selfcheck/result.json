@@ -1,0 +1,2077 @@
+{
+  "all_gates_passed": true,
+  "anchor": "XVAL-LBM-TABLE-DRIVEN-LATTICE-SELFCHECK",
+  "audit": {
+    "D1Q3": {
+      "checks": [
+        {
+          "description": "sum_i w_i = 1",
+          "expected": [
+            "1"
+          ],
+          "key": "partition_of_unity",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia = 0",
+          "expected": [
+            "0"
+          ],
+          "key": "first_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia c_ib = cs2 delta_ab",
+          "expected": [
+            "1/3"
+          ],
+          "key": "second_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c c c c = cs2^2 (dd + dd + dd)",
+          "expected": [
+            "1/3"
+          ],
+          "key": "fourth_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "odd moment ranks 3 and 5 vanish",
+          "expected": [
+            "0"
+          ],
+          "key": "odd_moments",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "every velocity has its -c in the table",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_closed",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "w_i = w_opp(i)",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_symmetry",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "no repeated velocity vector",
+          "expected": [
+            "0"
+          ],
+          "key": "distinct_velocities",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        }
+      ],
+      "cs2": "1/3",
+      "dim": 1,
+      "failures": [],
+      "isotropy_rank": 5,
+      "lattice": "D1Q3",
+      "passed": true,
+      "q": 3
+    },
+    "D2Q9": {
+      "checks": [
+        {
+          "description": "sum_i w_i = 1",
+          "expected": [
+            "1"
+          ],
+          "key": "partition_of_unity",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia = 0",
+          "expected": [
+            "0",
+            "0"
+          ],
+          "key": "first_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0",
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia c_ib = cs2 delta_ab",
+          "expected": [
+            "1/3",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "key": "second_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c c c c = cs2^2 (dd + dd + dd)",
+          "expected": [
+            "1/3",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "1/9",
+            "0",
+            "0",
+            "1/9",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "key": "fourth_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "1/9",
+            "0",
+            "0",
+            "1/9",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "odd moment ranks 3 and 5 vanish",
+          "expected": [
+            "0"
+          ],
+          "key": "odd_moments",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "every velocity has its -c in the table",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_closed",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "w_i = w_opp(i)",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_symmetry",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "no repeated velocity vector",
+          "expected": [
+            "0"
+          ],
+          "key": "distinct_velocities",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        }
+      ],
+      "cs2": "1/3",
+      "dim": 2,
+      "failures": [],
+      "isotropy_rank": 5,
+      "lattice": "D2Q9",
+      "passed": true,
+      "q": 9
+    },
+    "D3Q15": {
+      "checks": [
+        {
+          "description": "sum_i w_i = 1",
+          "expected": [
+            "1"
+          ],
+          "key": "partition_of_unity",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia = 0",
+          "expected": [
+            "0",
+            "0",
+            "0"
+          ],
+          "key": "first_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0",
+            "0",
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia c_ib = cs2 delta_ab",
+          "expected": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "key": "second_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c c c c = cs2^2 (dd + dd + dd)",
+          "expected": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "key": "fourth_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "odd moment ranks 3 and 5 vanish",
+          "expected": [
+            "0"
+          ],
+          "key": "odd_moments",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "every velocity has its -c in the table",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_closed",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "w_i = w_opp(i)",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_symmetry",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "no repeated velocity vector",
+          "expected": [
+            "0"
+          ],
+          "key": "distinct_velocities",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        }
+      ],
+      "cs2": "1/3",
+      "dim": 3,
+      "failures": [],
+      "isotropy_rank": 5,
+      "lattice": "D3Q15",
+      "passed": true,
+      "q": 15
+    },
+    "D3Q19": {
+      "checks": [
+        {
+          "description": "sum_i w_i = 1",
+          "expected": [
+            "1"
+          ],
+          "key": "partition_of_unity",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia = 0",
+          "expected": [
+            "0",
+            "0",
+            "0"
+          ],
+          "key": "first_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0",
+            "0",
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia c_ib = cs2 delta_ab",
+          "expected": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "key": "second_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c c c c = cs2^2 (dd + dd + dd)",
+          "expected": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "key": "fourth_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "odd moment ranks 3 and 5 vanish",
+          "expected": [
+            "0"
+          ],
+          "key": "odd_moments",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "every velocity has its -c in the table",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_closed",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "w_i = w_opp(i)",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_symmetry",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "no repeated velocity vector",
+          "expected": [
+            "0"
+          ],
+          "key": "distinct_velocities",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        }
+      ],
+      "cs2": "1/3",
+      "dim": 3,
+      "failures": [],
+      "isotropy_rank": 5,
+      "lattice": "D3Q19",
+      "passed": true,
+      "q": 19
+    },
+    "D3Q27": {
+      "checks": [
+        {
+          "description": "sum_i w_i = 1",
+          "expected": [
+            "1"
+          ],
+          "key": "partition_of_unity",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia = 0",
+          "expected": [
+            "0",
+            "0",
+            "0"
+          ],
+          "key": "first_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0",
+            "0",
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c_ia c_ib = cs2 delta_ab",
+          "expected": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "key": "second_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "sum_i w_i c c c c = cs2^2 (dd + dd + dd)",
+          "expected": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "key": "fourth_moment",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/9",
+            "0",
+            "0",
+            "0",
+            "1/3"
+          ],
+          "passed": true
+        },
+        {
+          "description": "odd moment ranks 3 and 5 vanish",
+          "expected": [
+            "0"
+          ],
+          "key": "odd_moments",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "every velocity has its -c in the table",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_closed",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "w_i = w_opp(i)",
+          "expected": [
+            "0"
+          ],
+          "key": "opposite_symmetry",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        },
+        {
+          "description": "no repeated velocity vector",
+          "expected": [
+            "0"
+          ],
+          "key": "distinct_velocities",
+          "max_abs_error": "0",
+          "max_abs_error_float": 0.0,
+          "measured": [
+            "0"
+          ],
+          "passed": true
+        }
+      ],
+      "cs2": "1/3",
+      "dim": 3,
+      "failures": [],
+      "isotropy_rank": 5,
+      "lattice": "D3Q27",
+      "passed": true,
+      "q": 27
+    }
+  },
+  "channel": {
+    "D1Q3_channel": null,
+    "D2Q9_sweep": [
+      {
+        "converged": true,
+        "curvature_measured": 0.0001999999999999372,
+        "curvature_rel_err": 3.140120542061142e-13,
+        "curvature_theory": 0.0002,
+        "density_max_dev": 4.076738946423575e-13,
+        "force": 4e-05,
+        "force_scheme": "guo",
+        "lattice": "D2Q9",
+        "nu_table": 0.1,
+        "ny": 16,
+        "profile": [
+          0.0024706666666662164,
+          0.004870666666665638,
+          0.00687066666666499,
+          0.008470666666664461,
+          0.009670666666664137,
+          0.010470666666663943,
+          0.010870666666663812,
+          0.010870666666663828,
+          0.010470666666663925,
+          0.009670666666664102,
+          0.00847066666666445,
+          0.006870666666665011,
+          0.004870666666665641,
+          0.0024706666666661986
+        ],
+        "profile_analytic_half_way": [
+          0.00135,
+          0.0037500000000000003,
+          0.00575,
+          0.00735,
+          0.00855,
+          0.00935,
+          0.009750000000000002,
+          0.00975,
+          0.00935,
+          0.00855,
+          0.007350000000000001,
+          0.00575,
+          0.00375,
+          0.00135
+        ],
+        "profile_fitted": [
+          0.0024706666666663773,
+          0.004870666666665623,
+          0.006870666666664994,
+          0.008470666666664491,
+          0.009670666666664112,
+          0.010470666666663861,
+          0.010870666666663734,
+          0.010870666666663734,
+          0.010470666666663858,
+          0.009670666666664109,
+          0.008470666666664484,
+          0.006870666666664986,
+          0.004870666666665613,
+          0.0024706666666663656
+        ],
+        "rel_err_profile_fitted": 1.5359419958556303e-14,
+        "rel_err_profile_half_way": 0.11494017094012474,
+        "rel_err_profile_wall_center": 0.029404761905016775,
+        "steps": 6400,
+        "tau": 0.8,
+        "u_max_analytic_half_way": 0.009750000000000002,
+        "u_max_analytic_wall_center": 0.0112,
+        "u_max_measured": 0.010870666666663828,
+        "wall_offset_apriori": 0.5,
+        "wall_offset_bot": -0.1105931676936498,
+        "wall_offset_top": -0.11059316769365424,
+        "wall_y_bot": 0.1105931676936498,
+        "wall_y_top": 14.889406832306346,
+        "width_half_way": 14.0
+      },
+      {
+        "converged": true,
+        "curvature_measured": 0.0002000000000000673,
+        "curvature_rel_err": 3.3650924928518844e-13,
+        "curvature_theory": 0.0002,
+        "density_max_dev": 1.7832402221529264e-12,
+        "force": 4e-05,
+        "force_scheme": "guo",
+        "lattice": "D2Q9",
+        "nu_table": 0.1,
+        "ny": 32,
+        "profile": [
+          0.005404000000001998,
+          0.011004000000003655,
+          0.016204000000005013,
+          0.02100400000000609,
+          0.02540400000000705,
+          0.02940400000000787,
+          0.03300400000000845,
+          0.036204000000008875,
+          0.039004000000009156,
+          0.041404000000009426,
+          0.043404000000009386,
+          0.04500400000000914,
+          0.046204000000008905,
+          0.04700400000000856,
+          0.047404000000008314,
+          0.04740400000000835,
+          0.04700400000000865,
+          0.04620400000000899,
+          0.045004000000009196,
+          0.04340400000000937,
+          0.04140400000000934,
+          0.03900400000000916,
+          0.03620400000000877,
+          0.03300400000000834,
+          0.029404000000007674,
+          0.025404000000006893,
+          0.021004000000005966,
+          0.016204000000004912,
+          0.01100400000000361,
+          0.005404000000001962
+        ],
+        "profile_analytic_half_way": [
+          0.00295,
+          0.00855,
+          0.01375,
+          0.01855,
+          0.02295,
+          0.02695,
+          0.030550000000000004,
+          0.03375,
+          0.03655,
+          0.03895,
+          0.04095000000000001,
+          0.04255,
+          0.043750000000000004,
+          0.04455,
+          0.044950000000000004,
+          0.044950000000000004,
+          0.04455,
+          0.043750000000000004,
+          0.042550000000000004,
+          0.04095,
+          0.038950000000000005,
+          0.03655,
+          0.03375,
+          0.03055,
+          0.026949999999999998,
+          0.02295,
+          0.01855,
+          0.013750000000000002,
+          0.00855,
+          0.00295
+        ],
+        "profile_fitted": [
+          0.005403999999998346,
+          0.011004000000000224,
+          0.016204000000001967,
+          0.021004000000003575,
+          0.025404000000005048,
+          0.029404000000006387,
+          0.03300400000000759,
+          0.03620400000000866,
+          0.0390040000000096,
+          0.0414040000000104,
+          0.043404000000011066,
+          0.0450040000000116,
+          0.04620400000001199,
+          0.04700400000001226,
+          0.04740400000001239,
+          0.04740400000001238,
+          0.047004000000012244,
+          0.046204000000011965,
+          0.045004000000011556,
+          0.04340400000001102,
+          0.041404000000010335,
+          0.03900400000000952,
+          0.03620400000000857,
+          0.033004000000007486,
+          0.029404000000006265,
+          0.025404000000004912,
+          0.021004000000003423,
+          0.0162040000000018,
+          0.011004000000000043,
+          0.005403999999998151
+        ],
+        "rel_err_profile_fitted": 8.59237769300582e-14,
+        "rel_err_profile_half_way": 0.054593993326127424,
+        "rel_err_profile_wall_center": 0.012416666666625796,
+        "steps": 26800,
+        "tau": 0.8,
+        "u_max_analytic_half_way": 0.044950000000000004,
+        "u_max_analytic_wall_center": 0.048,
+        "u_max_measured": 0.04740400000000835,
+        "wall_offset_apriori": 0.5,
+        "wall_offset_bot": -0.09642898545981105,
+        "wall_offset_top": -0.0964289854598448,
+        "wall_y_bot": 0.09642898545981105,
+        "wall_y_top": 30.903571014540155,
+        "width_half_way": 30.0
+      }
+    ],
+    "D3Q19_channel": {
+      "converged": true,
+      "curvature_measured": 0.00019999999999993374,
+      "curvature_rel_err": 3.313592889658823e-13,
+      "curvature_theory": 0.0002,
+      "density_max_dev": 5.03819208574896e-13,
+      "force": 4e-05,
+      "force_scheme": "guo",
+      "lattice": "D3Q19",
+      "nu_table": 0.1,
+      "ny": 17,
+      "profile": [
+        0.002653999999999727,
+        0.005253999999999237,
+        0.0074539999999986475,
+        0.00925399999999812,
+        0.010653999999997724,
+        0.011653999999997463,
+        0.012253999999997349,
+        0.012453999999997353,
+        0.0122539999999974,
+        0.011653999999997474,
+        0.010653999999997705,
+        0.009253999999998099,
+        0.007453999999998546,
+        0.005253999999999135,
+        0.0026539999999996506
+      ],
+      "profile_analytic_half_way": [
+        0.0014500000000000001,
+        0.004050000000000001,
+        0.00625,
+        0.00805,
+        0.00945,
+        0.010450000000000001,
+        0.01105,
+        0.01125,
+        0.01105,
+        0.01045,
+        0.009450000000000002,
+        0.00805,
+        0.00625,
+        0.00405,
+        0.0014500000000000001
+      ],
+      "profile_fitted": [
+        0.002654000000000287,
+        0.005253999999999421,
+        0.007453999999998686,
+        0.009253999999998083,
+        0.010653999999997613,
+        0.011653999999997278,
+        0.012253999999997073,
+        0.012453999999997,
+        0.01225399999999706,
+        0.011653999999997253,
+        0.010653999999997579,
+        0.009253999999998038,
+        0.007453999999998628,
+        0.005253999999999351,
+        0.0026540000000002074
+      ],
+      "rel_err_profile_fitted": 4.499082083994248e-14,
+      "rel_err_profile_half_way": 0.10702222222219794,
+      "rel_err_profile_wall_center": 0.027031250000207147,
+      "steps": 7200,
+      "tau": 0.8,
+      "u_max_analytic_half_way": 0.01125,
+      "u_max_analytic_wall_center": 0.0128,
+      "u_max_measured": 0.012453999999997353,
+      "wall_offset_apriori": 0.5,
+      "wall_offset_bot": -0.10886573425557167,
+      "wall_offset_top": -0.10886573425560009,
+      "wall_y_bot": 0.10886573425557167,
+      "wall_y_top": 15.8911342657444,
+      "width_half_way": 15.0
+    }
+  },
+  "equilibrium_moments": {
+    "D2Q9": {
+      "exact": true,
+      "max_abs_moment_error": "0",
+      "rho": "7/5",
+      "sum_f_equals_rho": "0",
+      "u": [
+        "1/20",
+        "1/10"
+      ],
+      "usq": "1/80"
+    },
+    "D3Q19": {
+      "exact": true,
+      "max_abs_moment_error": "0",
+      "rho": "7/5",
+      "sum_f_equals_rho": "0",
+      "u": [
+        "1/20",
+        "1/10",
+        "3/20"
+      ],
+      "usq": "7/200"
+    },
+    "D3Q27": {
+      "exact": true,
+      "max_abs_moment_error": "0",
+      "rho": "7/5",
+      "sum_f_equals_rho": "0",
+      "u": [
+        "1/20",
+        "1/10",
+        "3/20"
+      ],
+      "usq": "7/200"
+    }
+  },
+  "fast": true,
+  "gates": {
+    "A1_tables_pass_exact": {
+      "passed": true
+    },
+    "A2_mutation_reject_rate": {
+      "class_shift_independence": {
+        "D1Q3": false,
+        "D2Q9": true,
+        "D3Q15": true,
+        "D3Q19": true,
+        "D3Q27": true
+      },
+      "min_reject_rate": 1.0,
+      "passed": true,
+      "rank4_only": {
+        "D2Q9": [
+          "fourth_moment"
+        ],
+        "D3Q15": [
+          "fourth_moment"
+        ],
+        "D3Q19": [
+          "fourth_moment"
+        ],
+        "D3Q27": [
+          "fourth_moment"
+        ]
+      }
+    },
+    "A3_equilibrium_moments_exact": {
+      "passed": true
+    },
+    "A4_channel_curvature": {
+      "max_rel_err": 3.3650924928518844e-13,
+      "passed": true
+    },
+    "A5_wall_offset_and_profile": {
+      "max_profile_err_apriori_half_way": 0.11494017094012474,
+      "max_profile_err_apriori_node_center": 0.029404761905016775,
+      "max_profile_err_fitted": 8.59237769300582e-14,
+      "offset_drift": 0.014164182233824096,
+      "passed": true,
+      "wall_offset_ny16": 0.11059316769365202,
+      "wall_offset_ny32": 0.09642898545982792
+    },
+    "A6_taylorgreen": {
+      "max_field_rel_err": 0.0015850495417311429,
+      "max_nu_rel_err": 7.155835334310412e-05,
+      "passed": true
+    },
+    "A7_3d_channel_same_kernels": {
+      "passed": true
+    },
+    "L1_literature_table_identity": {
+      "passed": true
+    }
+  },
+  "literature_cross_check": {
+    "D2Q9": {
+      "entries_common": 9,
+      "entries_generated": 9,
+      "entries_reference": 9,
+      "identical": true,
+      "max_abs_weight_diff": "0",
+      "reference": "Qian, D'Humieres & Lallemand (1992)"
+    },
+    "D3Q19": {
+      "entries_common": 19,
+      "entries_generated": 19,
+      "entries_reference": 19,
+      "identical": true,
+      "max_abs_weight_diff": "0",
+      "reference": "Qian, D'Humieres & Lallemand (1992)"
+    }
+  },
+  "mutation": {
+    "D1Q3": {
+      "detected": 6,
+      "detected_by": {
+        "first_moment": 4,
+        "fourth_moment": 4,
+        "odd_moments": 4,
+        "opposite_symmetry": 4,
+        "partition_of_unity": 6,
+        "second_moment": 4
+      },
+      "perturbations": 6,
+      "rank4_only_rejections": 0,
+      "reject_rate": 1.0
+    },
+    "D2Q9": {
+      "detected": 18,
+      "detected_by": {
+        "first_moment": 16,
+        "fourth_moment": 16,
+        "odd_moments": 16,
+        "opposite_symmetry": 16,
+        "partition_of_unity": 18,
+        "second_moment": 16
+      },
+      "perturbations": 18,
+      "rank4_only_rejections": 0,
+      "reject_rate": 1.0
+    },
+    "D3Q15": {
+      "detected": 30,
+      "detected_by": {
+        "first_moment": 28,
+        "fourth_moment": 28,
+        "odd_moments": 28,
+        "opposite_symmetry": 28,
+        "partition_of_unity": 30,
+        "second_moment": 28
+      },
+      "perturbations": 30,
+      "rank4_only_rejections": 0,
+      "reject_rate": 1.0
+    },
+    "D3Q19": {
+      "detected": 38,
+      "detected_by": {
+        "first_moment": 36,
+        "fourth_moment": 36,
+        "odd_moments": 36,
+        "opposite_symmetry": 36,
+        "partition_of_unity": 38,
+        "second_moment": 36
+      },
+      "perturbations": 38,
+      "rank4_only_rejections": 0,
+      "reject_rate": 1.0
+    },
+    "D3Q27": {
+      "detected": 54,
+      "detected_by": {
+        "first_moment": 52,
+        "fourth_moment": 52,
+        "odd_moments": 52,
+        "opposite_symmetry": 52,
+        "partition_of_unity": 54,
+        "second_moment": 52
+      },
+      "perturbations": 54,
+      "rank4_only_rejections": 0,
+      "reject_rate": 1.0
+    },
+    "_class_shift_algebra": {
+      "D1Q3": {
+        "fourth_moment_independent_of_mass_and_second": false,
+        "fourth_moment_shift_per_free_direction": [],
+        "free_dimension": 0,
+        "n_classes": 2,
+        "note": "1-D: the mixed rank-4 moment is not defined",
+        "rank_mass_second": 2,
+        "speed_classes": [
+          0,
+          1
+        ]
+      },
+      "D2Q9": {
+        "fourth_moment_independent_of_mass_and_second": true,
+        "fourth_moment_shift_per_free_direction": [
+          "4"
+        ],
+        "free_dimension": 1,
+        "n_classes": 3,
+        "rank_mass_second": 2,
+        "speed_classes": [
+          0,
+          1,
+          2
+        ]
+      },
+      "D3Q15": {
+        "fourth_moment_independent_of_mass_and_second": true,
+        "fourth_moment_shift_per_free_direction": [
+          "8"
+        ],
+        "free_dimension": 1,
+        "n_classes": 3,
+        "rank_mass_second": 2,
+        "speed_classes": [
+          0,
+          1,
+          3
+        ]
+      },
+      "D3Q19": {
+        "fourth_moment_independent_of_mass_and_second": true,
+        "fourth_moment_shift_per_free_direction": [
+          "4"
+        ],
+        "free_dimension": 1,
+        "n_classes": 3,
+        "rank_mass_second": 2,
+        "speed_classes": [
+          0,
+          1,
+          2
+        ]
+      },
+      "D3Q27": {
+        "fourth_moment_independent_of_mass_and_second": true,
+        "fourth_moment_shift_per_free_direction": [
+          "4",
+          "8"
+        ],
+        "free_dimension": 2,
+        "n_classes": 4,
+        "rank_mass_second": 2,
+        "speed_classes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    "_rank4_only_corruption": {
+      "D2Q9": {
+        "failures": [
+          "fourth_moment"
+        ],
+        "isotropy_rank": 3,
+        "moment_errors": {
+          "distinct_velocities": "0",
+          "first_moment": "0",
+          "fourth_moment": "1/250",
+          "odd_moments": "0",
+          "opposite_closed": "0",
+          "opposite_symmetry": "0",
+          "partition_of_unity": "0",
+          "second_moment": "0"
+        },
+        "rejected": true,
+        "speed_class_shift": {
+          "0": "1/250",
+          "1": "-1/500",
+          "2": "1/1000"
+        }
+      },
+      "D3Q15": {
+        "failures": [
+          "fourth_moment"
+        ],
+        "isotropy_rank": 3,
+        "moment_errors": {
+          "distinct_velocities": "0",
+          "first_moment": "0",
+          "fourth_moment": "1/125",
+          "odd_moments": "0",
+          "opposite_closed": "0",
+          "opposite_symmetry": "0",
+          "partition_of_unity": "0",
+          "second_moment": "0"
+        },
+        "rejected": true,
+        "speed_class_shift": {
+          "0": "2/125",
+          "1": "-1/250",
+          "3": "1/1000"
+        }
+      },
+      "D3Q19": {
+        "failures": [
+          "fourth_moment"
+        ],
+        "isotropy_rank": 3,
+        "moment_errors": {
+          "distinct_velocities": "0",
+          "first_moment": "0",
+          "fourth_moment": "1/250",
+          "odd_moments": "0",
+          "opposite_closed": "0",
+          "opposite_symmetry": "0",
+          "partition_of_unity": "0",
+          "second_moment": "0"
+        },
+        "rejected": true,
+        "speed_class_shift": {
+          "0": "3/250",
+          "1": "-1/250",
+          "2": "1/1000"
+        }
+      },
+      "D3Q27": {
+        "failures": [
+          "fourth_moment"
+        ],
+        "isotropy_rank": 3,
+        "moment_errors": {
+          "distinct_velocities": "0",
+          "first_moment": "0",
+          "fourth_moment": "1/500",
+          "odd_moments": "0",
+          "opposite_closed": "0",
+          "opposite_symmetry": "0",
+          "partition_of_unity": "0",
+          "second_moment": "0"
+        },
+        "rejected": true,
+        "speed_class_shift": {
+          "1": "-1/1000",
+          "2": "1/1000",
+          "3": "-3/4000"
+        }
+      }
+    }
+  },
+  "tables": {
+    "D1Q3": {
+      "cs2": "1/3",
+      "dim": 1,
+      "q": 3
+    },
+    "D2Q9": {
+      "cs2": "1/3",
+      "dim": 2,
+      "q": 9
+    },
+    "D3Q15": {
+      "cs2": "1/3",
+      "dim": 3,
+      "q": 15
+    },
+    "D3Q19": {
+      "cs2": "1/3",
+      "dim": 3,
+      "q": 19
+    },
+    "D3Q27": {
+      "cs2": "1/3",
+      "dim": 3,
+      "q": 27
+    }
+  },
+  "taylorgreen": [
+    {
+      "energy": [
+        2.499999999999996e-07,
+        2.4684674086962125e-07,
+        2.4451130973003143e-07,
+        2.421644274373123e-07,
+        2.398413458379137e-07,
+        2.3754053300289584e-07,
+        2.3526188408396048e-07,
+        2.3300518254652727e-07,
+        2.3077015522121314e-07,
+        2.28556530824703e-07,
+        2.2636409015721856e-07,
+        2.241926571815396e-07,
+        2.2204205014219562e-07,
+        2.1991205411634651e-07,
+        2.1780244632989226e-07,
+        2.1571304103719325e-07,
+        2.136436971106726e-07,
+        2.1159427471528486e-07,
+        2.0956458644030593e-07,
+        2.075543954091612e-07,
+        2.0556346121485883e-07,
+        2.0359158357098632e-07,
+        2.0163859992646118e-07,
+        1.9970434708291686e-07,
+        1.9778863553993099e-07,
+        1.9589126629649105e-07,
+        1.940120676945297e-07,
+        1.9215090570976073e-07,
+        1.9030765184472363e-07,
+        1.8848214190189804e-07,
+        1.8667416996735464e-07,
+        1.848835232033109e-07,
+        1.8311001930688059e-07,
+        1.8135350856204335e-07,
+        1.7961384408836756e-07,
+        1.778908584983681e-07,
+        1.7618437430415748e-07,
+        1.7449423377398546e-07,
+        1.7282031050741863e-07,
+        1.7116248615076808e-07,
+        1.6952061607136367e-07,
+        1.6789452091527272e-07,
+        1.6628401250087014e-07,
+        1.6468892550120988e-07,
+        1.6310912231972352e-07,
+        1.6154447038794508e-07,
+        1.5999482144934125e-07,
+        1.584600173286919e-07,
+        1.5693991383655208e-07,
+        1.5543439260927298e-07,
+        1.539433446060619e-07,
+        1.524666418256031e-07,
+        1.5100412764757014e-07,
+        1.4955563573814434e-07,
+        1.4812101655150523e-07,
+        1.4670014388865331e-07,
+        1.452928978886178e-07,
+        1.4389914698416778e-07,
+        1.4251875034057395e-07,
+        1.4115157672129076e-07,
+        1.3979751591823417e-07,
+        1.3845646742615668e-07,
+        1.3712831741687438e-07,
+        1.3581292874753006e-07,
+        1.3451015444550689e-07,
+        1.332198596158783e-07,
+        1.3194192880597057e-07,
+        1.3067625350621912e-07,
+        1.2942271668710993e-07,
+        1.2818119295124056e-07,
+        1.26951563235962e-07,
+        1.2573372544244182e-07,
+        1.2452758699999502e-07,
+        1.2333304631498995e-07,
+        1.2214998300097804e-07,
+        1.209782671927363e-07,
+        1.1981777745598005e-07,
+        1.1866840837041709e-07,
+        1.1753006158752064e-07,
+        1.1640263278695587e-07,
+        1.1528601032453803e-07
+      ],
+      "energy_analytic": [
+        2.499999999999996e-07,
+        2.476020034644625e-07,
+        2.4522700847846316e-07,
+        2.428747944114572e-07,
+        2.405451427491853e-07,
+        2.38237837073374e-07,
+        2.3595266304163079e-07,
+        2.336894083675324e-07,
+        2.3144786280090417e-07,
+        2.29227818108288e-07,
+        2.2702906805359836e-07,
+        2.2485140837896337e-07,
+        2.2269463678574977e-07,
+        2.2055855291577007e-07,
+        2.1844295833266967e-07,
+        2.1634765650349276e-07,
+        2.1427245278042495e-07,
+        2.1221715438271096e-07,
+        2.101815703787458e-07,
+        2.0816551166833783e-07,
+        2.061687909651419e-07,
+        2.0419122277926077e-07,
+        2.022326234000137e-07,
+        2.0029281087887046e-07,
+        1.9837160501254836e-07,
+        1.964688273262722e-07,
+        1.9458430105719447e-07,
+        1.9271785113797418e-07,
+        1.908693041805141e-07,
+        1.890384884598531e-07,
+        1.872252338982135e-07,
+        1.854293720492013e-07,
+        1.8365073608215807e-07,
+        1.8188916076666262e-07,
+        1.8014448245718177e-07,
+        1.7841653907786797e-07,
+        1.7670517010750296e-07,
+        1.750102165645858e-07,
+        1.7333152099256386e-07,
+        1.716689274452057e-07,
+        1.7002228147211377e-07,
+        1.6839143010437679e-07,
+        1.6677622184035903e-07,
+        1.651765066316264e-07,
+        1.6359213586900738e-07,
+        1.6202296236878736e-07,
+        1.6046884035903612e-07,
+        1.589296254660656e-07,
+        1.5740517470101823e-07,
+        1.558953464465836e-07,
+        1.5440000044384254e-07,
+        1.5291899777923747e-07,
+        1.514522008716678e-07,
+        1.4999947345970883e-07,
+        1.4856068058895377e-07,
+        1.4713568859947638e-07,
+        1.457243651134147e-07,
+        1.4432657902267343e-07,
+        1.4294220047674426e-07,
+        1.415711008706431e-07,
+        1.4021315283296318e-07,
+        1.3886823021404243e-07,
+        1.3753620807424467e-07,
+        1.3621696267235284e-07,
+        1.349103714540741e-07,
+        1.336163130406545e-07,
+        1.323346672176036e-07,
+        1.310653149235265e-07,
+        1.2980813823906366e-07,
+        1.285630203759365e-07,
+        1.2732984566609775e-07,
+        1.2610849955098664e-07,
+        1.2489886857088643e-07,
+        1.2370084035438446e-07,
+        1.2251430360793306e-07,
+        1.2133914810551082e-07,
+        1.2017526467838263e-07,
+        1.1902254520495857e-07,
+        1.1788088260074935e-07,
+        1.1675017080841873e-07,
+        1.156303047879309e-07
+      ],
+      "energy_ratio": 0.46114404129815284,
+      "energy_ratio_analytic": 0.4625212191517243,
+      "field_rel_err": 0.0015850495417311429,
+      "k": 0.09817477042468103,
+      "lattice": "D2Q9",
+      "n": 64,
+      "nu_measured": 0.05000357791766716,
+      "nu_rel_err": 7.155835334310412e-05,
+      "nu_table": 0.05,
+      "periods": 1,
+      "steps": 400,
+      "tau": 0.65,
+      "times": [
+        0.0,
+        5.0,
+        10.0,
+        15.0,
+        20.0,
+        25.0,
+        30.0,
+        35.0,
+        40.0,
+        45.0,
+        50.0,
+        55.0,
+        60.0,
+        65.0,
+        70.0,
+        75.0,
+        80.0,
+        85.0,
+        90.0,
+        95.0,
+        100.0,
+        105.0,
+        110.0,
+        115.0,
+        120.0,
+        125.0,
+        130.0,
+        135.0,
+        140.0,
+        145.0,
+        150.0,
+        155.0,
+        160.0,
+        165.0,
+        170.0,
+        175.0,
+        180.0,
+        185.0,
+        190.0,
+        195.0,
+        200.0,
+        205.0,
+        210.0,
+        215.0,
+        220.0,
+        225.0,
+        230.0,
+        235.0,
+        240.0,
+        245.0,
+        250.0,
+        255.0,
+        260.0,
+        265.0,
+        270.0,
+        275.0,
+        280.0,
+        285.0,
+        290.0,
+        295.0,
+        300.0,
+        305.0,
+        310.0,
+        315.0,
+        320.0,
+        325.0,
+        330.0,
+        335.0,
+        340.0,
+        345.0,
+        350.0,
+        355.0,
+        360.0,
+        365.0,
+        370.0,
+        375.0,
+        380.0,
+        385.0,
+        390.0,
+        395.0,
+        400.0
+      ],
+      "u0": 0.001
+    }
+  ]
+}
