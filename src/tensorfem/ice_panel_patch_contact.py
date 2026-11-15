@@ -99,6 +99,9 @@ __all__ = [
     "nonuniformity_scan",
     "design_point_calibration",
     "_solve_with_patch",
+    "CLOSURE_TOL",
+    "relief_axes",
+    "boundary_pressure_ratio",
     "default_law",
     "default_configurations",
     "DESIGN_POINT",
@@ -117,6 +120,10 @@ DESIGN_POINT = {
     "p_ref": 1.0e6,
     "A_ref": 1.0,
 }
+
+#: Boundary-to-peak pressure ratio below which a *relief-driven* contact patch is
+#: declared closed inside its analysis box (see :func:`boundary_pressure_ratio`).
+CLOSURE_TOL = 1e-3
 
 _G2 = 1.0 / math.sqrt(3.0)
 _GAUSS2 = ((-_G2, 1.0), (_G2, 1.0))  # 2x2 Gauss: exact for bilinear x bilinear
@@ -190,6 +197,14 @@ class ContactPatch:
     opening: torch.Tensor
     residual: float
     config: dict = field(default_factory=dict)
+    #: ``max pressure on the relief-wise box faces / peak pressure``.  ``0`` means
+    #: the contact has closed inside the analysis box; values of order one mean the
+    #: box is cutting the patch, so ``contact_area``/``peak_pressure`` describe the
+    #: truncation and not the ice--structure contact.
+    boundary_pressure_ratio: float = 0.0
+    #: ``True``/``False`` for relief-driven edges, ``None`` when the edge has no
+    #: relief (``flat``), where a contact patch cannot close by construction.
+    contact_closed: bool | None = None
 
     def as_dict(self) -> dict:
         mean = self.total_force / self.contact_area if self.contact_area > 0.0 else 0.0
@@ -203,6 +218,8 @@ class ContactPatch:
             "centroid_m": list(self.centroid),
             "approach_m": self.approach,
             "force_residual": self.residual,
+            "boundary_pressure_ratio": self.boundary_pressure_ratio,
+            "contact_closed": self.contact_closed,
         }
 
     def pressure_at(self, xq: torch.Tensor, yq: torch.Tensor) -> torch.Tensor:
@@ -535,6 +552,51 @@ def deflection_at(sol: PanelSolution, xq: torch.Tensor, yq: torch.Tensor) -> tor
     )
 
 # --------------------------------------------------------------------------
+# contact-box closure diagnostics
+# --------------------------------------------------------------------------
+def relief_axes(edge: dict) -> tuple[str, ...]:
+    """In-plane directions in which the ice-edge relief closes the contact patch.
+
+    ``spherical`` relief ``s = amp (X^2 + Y^2) / R^2`` closes in both directions;
+    ``cylindrical`` relief ``s = amp Y^2 / R^2`` is a ridge that runs across the
+    whole box in ``x``, so only ``y`` can close; a ``flat`` edge has no relief at
+    all and the contact fills whatever box it is given -- there is no closure to
+    diagnose, and the box is a *modelling choice* (the nominal patch footprint).
+    """
+    kind = edge.get("kind", "flat")
+    if kind == "spherical":
+        return ("x", "y")
+    if kind == "cylindrical":
+        return ("y",)
+    if kind == "flat":
+        return ()
+    raise ValueError(f"unknown ice-edge kind {kind!r}")
+
+
+def boundary_pressure_ratio(pressure: torch.Tensor, axes: tuple[str, ...]) -> float:
+    """``max pressure on the relief-wise box faces / peak pressure``.
+
+    This is the closure diagnostic of the local contact solve.  A relief-driven
+    patch (``s = amp (x^2 + y^2)/R^2`` and friends) has a finite contact radius
+    where ``p -> 0``; if the analysis box is smaller than that radius, the box
+    faces carry pressure, the "contact area" is the box area, the mean pressure
+    is ``F / box_area`` and the peak pressure is inflated by the force balance --
+    all three are then box artefacts.  ``0`` means closed.
+    """
+    if not axes or pressure.numel() == 0:
+        return 0.0
+    peak = float(pressure.max())
+    if peak <= 0.0:
+        return 0.0
+    faces = []
+    if "x" in axes:
+        faces += [pressure[0, :], pressure[-1, :]]
+    if "y" in axes:
+        faces += [pressure[:, 0], pressure[:, -1]]
+    return float(torch.cat(faces).max() / peak)
+
+
+# --------------------------------------------------------------------------
 # CZM contact solve
 # --------------------------------------------------------------------------
 def _edge_relief(
@@ -572,50 +634,27 @@ def _pressure_from_opening(
     return torch.minimum(p, torch.full_like(p, float(ceiling)))
 
 
-def czm_contact_patch(
+def _czm_solve_in_box(
     *,
     law: BilinearCohesiveLaw,
     ceiling: float,
     edge: dict,
     total_force: float,
-    panel: tuple[float, float] = (DESIGN_POINT["l"], DESIGN_POINT["s"]),
-    centre: tuple[float, float] | None = None,
-    grid: int = 97,
-    deflection: torch.Tensor | None = None,
-    contact_box: tuple[float, float, float, float] | None = None,
-    tol: float = 1e-12,
-    max_iter: int = 200,
+    centre: tuple[float, float],
+    grid: int,
+    deflection: torch.Tensor | None,
+    contact_box: tuple[float, float, float, float],
+    tol: float,
+    max_iter: int,
 ) -> ContactPatch:
-    """Solve the local ice--structure CZM contact for a prescribed normal force.
+    """The contact solve proper, on an explicit analysis box.
 
-    Unknown: the rigid approach ``delta0``.  Opening field
-    ``g = delta0 - s(x, y) - w(x, y)``, ``w`` being the panel deflection sampled
-    on the same contact grid (flat array of length ``grid*grid``).  A bisection on
-    ``delta0`` enforces ``integral p dA = total_force``.
-
-    Parameters
-    ----------
-    law : BilinearCohesiveLaw
-        Interface law; its penalty stiffness sets the pressure--penetration slope
-        and its peak traction bounds the pressure.
-    ceiling : float
-        Local crushing ceiling [Pa]; values above ``law.peak_traction`` are
-        meaningless because the law cannot deliver more traction.
-    edge : dict
-        Ice edge relief ``{"kind": "flat"|"spherical"|"cylindrical", "radius": m,
-        "amplitude": m, "box_half": m}``.
-    total_force : float
-        Target normal force [N].
-    deflection : torch.Tensor, optional
-        Panel deflection on the contact grid, positive in the load direction.
+    Split out of :func:`czm_contact_patch` so the box can be re-sized and the
+    solve repeated without duplicating the physics.
     """
     if total_force <= 0.0:
         raise ValueError("total_force must be positive")
-    a, b = panel
-    cx, cy = (a / 2.0, b / 2.0) if centre is None else centre
-    half = float(edge.get("box_half", 2.0 * float(edge.get("amplitude", 0.0)) + 0.05))
-    if contact_box is None:
-        contact_box = (cx - half, cx + half, cy - half, cy + half)
+    cx, cy = centre
     x0, x1, y0, y1 = contact_box
     xg = torch.linspace(x0, x1, grid, dtype=torch.float64)
     yg = torch.linspace(y0, y1, grid, dtype=torch.float64)
@@ -669,6 +708,9 @@ def czm_contact_patch(
     resid = abs(f_tot - total_force) / total_force
     cxs = float((p * AW * dX).sum() / f_tot)
     cys = float((p * AW * dY).sum() / f_tot)
+    axes = relief_axes(edge)
+    bnd = boundary_pressure_ratio(p, axes)
+    closed = None if not axes else bool(bnd <= CLOSURE_TOL)
     return ContactPatch(
         x=xg,
         y=yg,
@@ -680,6 +722,8 @@ def czm_contact_patch(
         approach=delta0,
         opening=g,
         residual=resid,
+        boundary_pressure_ratio=bnd,
+        contact_closed=closed,
         config={
             "edge": dict(edge),
             "ceiling_MPa": ceiling / 1e6,
@@ -690,8 +734,117 @@ def czm_contact_patch(
             "stiffness_Pa_per_m": float(getattr(law, "stiffness", 0.0)),
             "peak_traction_MPa": float(getattr(law, "peak_traction", 0.0)) / 1e6,
             "coupled_to_plate_deflection": deflection is not None,
+            "relief_axes": list(axes),
+            "boundary_pressure_ratio": bnd,
+            "contact_closed": closed,
         },
     )
+
+
+def czm_contact_patch(
+    *,
+    law: BilinearCohesiveLaw,
+    ceiling: float,
+    edge: dict,
+    total_force: float,
+    panel: tuple[float, float] = (DESIGN_POINT["l"], DESIGN_POINT["s"]),
+    centre: tuple[float, float] | None = None,
+    grid: int = 97,
+    deflection: torch.Tensor | None = None,
+    contact_box: tuple[float, float, float, float] | None = None,
+    auto_close: bool = True,
+    require_closed: bool = False,
+    tol: float = 1e-12,
+    max_iter: int = 200,
+) -> ContactPatch:
+    """Solve the local ice--structure CZM contact for a prescribed normal force.
+
+    Unknown: the rigid approach ``delta0``.  Opening field
+    ``g = delta0 - s(x, y) - w(x, y)``, ``w`` being the panel deflection sampled
+    on the same contact grid (flat array of length ``grid*grid``).  A bisection on
+    ``delta0`` enforces ``integral p dA = total_force``.
+
+    The analysis box matters: a relief-driven patch has a finite contact radius
+    where ``p -> 0``, and a box smaller than that radius silently turns the box
+    area into the "contact area" and inflates the peak pressure.  Every returned
+    patch therefore carries :attr:`ContactPatch.boundary_pressure_ratio` and
+    :attr:`ContactPatch.contact_closed`.  When the box is *not* prescribed
+    (``contact_box is None`` and ``edge`` carries no ``box_half``) and
+    ``auto_close`` is left on, the box is grown until the contact closes inside
+    it, so the default path cannot return a truncated patch.
+
+    Parameters
+    ----------
+    law : BilinearCohesiveLaw
+        Interface law; its penalty stiffness sets the pressure--penetration slope
+        and its peak traction bounds the pressure.
+    ceiling : float
+        Local crushing ceiling [Pa]; values above ``law.peak_traction`` are
+        meaningless because the law cannot deliver more traction.
+    edge : dict
+        Ice edge relief ``{"kind": "flat"|"spherical"|"cylindrical", "radius": m,
+        "amplitude": m, "box_half": m}``.  ``box_half`` is an explicit grid extent
+        request: it is honoured as given (and reported on, see
+        ``contact_closed``) instead of being grown.
+    total_force : float
+        Target normal force [N].
+    deflection : torch.Tensor, optional
+        Panel deflection on the contact grid, positive in the load direction.
+    contact_box : tuple, optional
+        Explicit ``(x0, x1, y0, y1)`` analysis box; honoured as given.
+    auto_close : bool
+        Grow a *derived* box until the relief-driven contact closes (default).
+    require_closed : bool
+        Raise instead of returning a truncated relief-driven patch.  Useful for
+        acceptance gates in downstream scans.
+    """
+    if total_force <= 0.0:
+        raise ValueError("total_force must be positive")
+    a, b = panel
+    cx, cy = (a / 2.0, b / 2.0) if centre is None else centre
+    axes = relief_axes(edge)
+    explicit = contact_box is not None or "box_half" in edge
+    half = float(edge.get("box_half", 2.0 * float(edge.get("amplitude", 0.0)) + 0.05))
+    limit = 0.45 * min(a, b)
+
+    if contact_box is not None:
+        boxes = [tuple(float(v) for v in contact_box)]
+    elif explicit or not auto_close:
+        boxes = [(cx - half, cx + half, cy - half, cy + half)]
+    else:  # derived box: grow it until the contact closes inside it
+        boxes = []
+        h = half
+        for _ in range(6):
+            boxes.append((cx - h, cx + h, cy - h, cy + h))
+            if h >= limit:
+                break
+            h = min(1.5 * h, limit)
+
+    patch = None
+    for box in boxes:
+        patch = _czm_solve_in_box(
+            law=law,
+            ceiling=ceiling,
+            edge=edge,
+            total_force=total_force,
+            centre=(cx, cy),
+            grid=grid,
+            deflection=deflection,
+            contact_box=box,
+            tol=tol,
+            max_iter=max_iter,
+        )
+        if not axes or patch.boundary_pressure_ratio <= CLOSURE_TOL:
+            break
+    assert patch is not None
+    if require_closed and axes and patch.boundary_pressure_ratio > CLOSURE_TOL:
+        raise ValueError(
+            "contact patch is truncated by the analysis box "
+            f"({box}): boundary pressure is "
+            f"{patch.boundary_pressure_ratio:.3f} of the peak; enlarge the box or "
+            "pass auto_close=True"
+        )
+    return patch
 
 
 # --------------------------------------------------------------------------
@@ -714,8 +867,11 @@ def coupled_patch_solve(
     boundary: str = "simply_supported",
     relax: float = 0.5,
     tol: float = 1e-4,
-    max_coupling: int = 12,
+    max_coupling: int = 40,
     w0: torch.Tensor | None = None,
+    contact_box: tuple[float, float, float, float] | None = None,
+    auto_close: bool = True,
+    require_closed: bool = False,
 ) -> tuple[ContactPatch, PanelSolution, dict]:
     """Run ``contact -> patch load -> plate -> deflection -> contact`` to a fixed point.
 
@@ -727,11 +883,109 @@ def coupled_patch_solve(
     positive in the load direction); the default is the flat plate (zeros).
     Exposed so the fixed point can be probed from different starting points
     (see ``tools/verify_gap_pp1_coupling_convergence.py``, section B).
+
+    The analysis box is reported on: ``coup["boundary_pressure_ratio"]`` and
+    ``coup["contact_closed"]`` say whether the coupled contact patch closed
+    inside it.  A box derived from ``edge["amplitude"]`` (i.e. no ``box_half``
+    and no ``contact_box``) is grown on the coupled fixed point until the
+    contact closes; an explicitly requested box is honoured as given and
+    ``require_closed=True`` turns truncation into an error.
     """
     a, b = panel
     cx, cy = (a / 2.0, b / 2.0) if centre is None else centre
+    explicit = "box_half" in edge or contact_box is not None
+    axes = relief_axes(edge)
     half = float(edge.get("box_half", 2.0 * float(edge.get("amplitude", 0.0)) + 0.05))
-    x0, x1, y0, y1 = cx - half, cx + half, cy - half, cy + half
+    if contact_box is not None:
+        cx = 0.5 * (contact_box[0] + contact_box[1])
+        cy = 0.5 * (contact_box[2] + contact_box[3])
+        half = 0.5 * (contact_box[1] - contact_box[0])
+    limit = 0.45 * min(a, b)
+
+    # The coupled contact patch is wider than the one-way patch: the panel
+    # deflects away from the ice, which raises the required approach and lets
+    # the ice edge relief reach contact over a larger radius.  A derived box
+    # therefore has to be *grown on the coupled fixed point* until the contact
+    # closes inside it -- sizing it on the flat-plate solve under-sizes it (see
+    # docs/AUDIT-GAP-PP-1-contact-box-closure.md).
+    for _attempt in range(6):
+        contact_box_try = (cx - half, cx + half, cy - half, cy + half)
+        patch, sol, history, w_hat = _couple_in_box(
+            nx=nx,
+            ny=ny,
+            panel=panel,
+            thickness=thickness,
+            young=young,
+            poisson=poisson,
+            law=law,
+            ceiling=ceiling,
+            edge=edge,
+            total_force=total_force,
+            centre=(cx, cy),
+            grid=grid,
+            boundary=boundary,
+            relax=relax,
+            tol=tol,
+            max_coupling=max_coupling,
+            w0=w0,
+            contact_box=contact_box_try,
+        )
+        if (
+            not axes
+            or patch.boundary_pressure_ratio <= CLOSURE_TOL
+            or explicit
+            or not auto_close
+            or half >= limit
+        ):
+            break
+        half = min(1.5 * half, limit)
+    if require_closed and axes and patch.boundary_pressure_ratio > CLOSURE_TOL:
+        raise ValueError(
+            "coupled contact patch is truncated by the analysis box "
+            f"({contact_box_try}): boundary pressure is "
+            f"{patch.boundary_pressure_ratio:.3f} of the peak"
+        )
+    return patch, sol, {
+        "contact_box": [float(v) for v in contact_box_try],
+        "boundary_pressure_ratio": patch.boundary_pressure_ratio,
+        "contact_closed": patch.contact_closed,
+        "sweeps": len(history),
+        "converged": bool(history[-1]["pressure_change_rel"] < tol),
+        "tol": tol,
+        "history": history,
+        # the relaxed deflection iterate at the last sweep; re-feeding it to
+        # czm_contact_patch reproduces the pressure field to within the
+        # convergence tolerance (fixed-point residual, see
+        # tools/verify_gap_pp1_coupling_convergence.py, section A)
+        "final_deflection": w_hat.clone(),
+    }
+
+
+def _couple_in_box(
+    *,
+    nx: int,
+    ny: int,
+    panel: tuple[float, float],
+    thickness: float,
+    young: float,
+    poisson: float,
+    law: BilinearCohesiveLaw,
+    ceiling: float,
+    edge: dict,
+    total_force: float,
+    centre: tuple[float, float],
+    grid: int,
+    boundary: str,
+    relax: float,
+    tol: float,
+    max_coupling: int,
+    w0: torch.Tensor | None,
+    contact_box: tuple[float, float, float, float],
+) -> tuple[ContactPatch, PanelSolution, list[dict], torch.Tensor]:
+    """The coupling fixed-point loop on one explicit analysis box."""
+    a, b = panel
+    cx, cy = centre
+    x0, x1, y0, y1 = contact_box
     xg = torch.linspace(x0, x1, grid, dtype=torch.float64)
     yg = torch.linspace(y0, y1, grid, dtype=torch.float64)
     XQ, YQ = torch.meshgrid(xg, yg, indexing="ij")
@@ -800,17 +1054,8 @@ def coupled_patch_solve(
         if dp < tol:
             break
     assert patch is not None and sol is not None
-    return patch, sol, {
-        "sweeps": len(history),
-        "converged": bool(history[-1]["pressure_change_rel"] < tol),
-        "tol": tol,
-        "history": history,
-        # the relaxed deflection iterate at the last sweep; re-feeding it to
-        # czm_contact_patch reproduces the pressure field to within the
-        # convergence tolerance (fixed-point residual, see
-        # tools/verify_gap_pp1_coupling_convergence.py, section A)
-        "final_deflection": w_hat.clone(),
-    }
+    return patch, sol, history, w_hat
+
 
 
 # --------------------------------------------------------------------------
@@ -1008,13 +1253,13 @@ def default_configurations() -> list[dict]:
         },
         {
             "name": "C2-spherical-oneway",
-            "edge": {"kind": "spherical", "radius": 1.0, "amplitude": 0.02, "box_half": 0.10},
+            "edge": {"kind": "spherical", "radius": 1.0, "amplitude": 0.02, "box_half": 0.20},
             "coupled": False,
-            "note": "spherical edge, one-way: pressure bell from edge relief, capped at sigma_c",
+            "note": "spherical edge, one-way: pressure bell from edge relief, capped at sigma_c; box_half 0.20 m so the contact closes inside the box (r_c = 0.134 m at 40 kN)",
         },
         {
             "name": "C3-spherical-twoway",
-            "edge": {"kind": "spherical", "radius": 1.0, "amplitude": 0.02, "box_half": 0.10},
+            "edge": {"kind": "spherical", "radius": 1.0, "amplitude": 0.02, "box_half": 0.20},
             "coupled": True,
             "note": "same edge, two-way: panel deflection feeds back into the opening",
         },
@@ -1329,6 +1574,9 @@ def nonuniformity_scan(
                 "pressure_peak_over_mean": patch.peak_pressure
                 / (patch.total_force / patch.contact_area),
                 "force_residual": patch.residual,
+                "contact_box_m": [float(v) for v in patch.config.get("contact_box", [])],
+                "boundary_pressure_ratio": patch.boundary_pressure_ratio,
+                "contact_closed": patch.contact_closed,
                 "force_projection_error_rel": projection_error,
                 "centroid_m": [xc, yc],
                 "approach_m": patch.approach,
@@ -1391,6 +1639,12 @@ def nonuniformity_scan(
             "sigma_Mx_ratio_max": max(ratios),
             "all_couplings_converged": all(
                 r["coupling"]["converged"] for r in rows
+            ),
+            "all_contacts_closed": all(
+                r["contact_closed"] is not False for r in rows
+            ),
+            "max_boundary_pressure_ratio": max(
+                r["boundary_pressure_ratio"] for r in rows
             ),
             "max_force_projection_error_rel": max(
                 r["force_projection_error_rel"] for r in rows
