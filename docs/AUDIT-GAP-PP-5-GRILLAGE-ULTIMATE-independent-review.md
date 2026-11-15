@@ -57,6 +57,8 @@ FD grid convergence (severe-case patch), peak moment: n_x=60: 0.0720 %, n_x=120:
 Cross-method (T13): elastic member limit 0.9979 MPa vs rigid-plastic grillage 5.4346 MPa (ratio 5.446, plastic system transverse_frame).
 
 > **round 7 重算（板底起算约定）**：同一 T12 三工况 p_ult = **1.9254 / 1.2219 / 0.9918 MPa**（较上表 +18.5 / +22.4 / +32.7 %），弹性构件极限 0.9979 → **1.2219 MPa**；上表为 `plate_mid` 历史口径，引用时须与 round 7 并列。
+>
+> **round 8 重设（板厚 25→26 mm）**：`member_governed_geometry` 板厚 +1 mm 恢复 0.9 级板格余量（三档 U_plate 0.838 / 0.759 / 0.719，全部 < 0.9），回归锁收紧回 0.9；构件控制 p_ult 新值 **1.9149 / 1.2042 / 0.9627 MPa**（见 `docs/CASE-GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE-round8.md`）。
 
 Governing-branch census: case study (t=20 mm): {'plate_local_bending': 6}, member-governed (t=25 mm): {'longitudinal_stiffener': 5, 'plate_local_bending': 1}, slender (t=13 mm): {'plate_local_bending': 6}
 
