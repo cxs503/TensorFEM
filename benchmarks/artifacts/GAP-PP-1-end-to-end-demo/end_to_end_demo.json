@@ -76,5 +76,107 @@
     "limit": 0.5,
     "valid": false,
     "note": "the demo load puts the plate at w/t >> 1: the absolute peak stresses are outside small-deflection theory, while the non-uniform/uniform ratio is a load-invariant property of the linear model (exact in linear theory)"
+  },
+  "valid_case": {
+    "case": "GAP-PP-1 valid end-to-end case (small-deflection regime)",
+    "plate": {
+      "nx": 24,
+      "side_m": 1.0,
+      "thickness_m": 0.01,
+      "E_Pa": 206000000000.0,
+      "nu": 0.3,
+      "winkler_k": 0.0,
+      "boundary": "simply_supported"
+    },
+    "contact": {
+      "kind": "gaussian",
+      "centre_m": [
+        0.5,
+        0.5
+      ],
+      "sigma_m": [
+        0.15,
+        0.15
+      ],
+      "peak_pressure_MPa": 0.05,
+      "contact_area_m2": 0.1413716694115407,
+      "n_contact_nodes": 1089,
+      "analytic_total_force_N": 7068.583470577033
+    },
+    "projected_patch": {
+      "total_force_N": 7029.373063238317,
+      "force_error_rel": -0.005547137909869718,
+      "load_balance_rel": 0.0,
+      "projection_method": "exact_subcell_splitting"
+    },
+    "peak_stress_nonuniform": {
+      "sigma_vm_MPa": 52.77051851929475,
+      "sigma_vm_at_m": [
+        0.5208333134651184,
+        0.4583333432674408
+      ],
+      "sigma_x_MPa": 52.76983186558076,
+      "sigma_x_at_m": [
+        0.5208333134651184,
+        0.4583333432674408
+      ]
+    },
+    "peak_stress_uniform": {
+      "sigma_vm_MPa": 27.823891747223517,
+      "sigma_vm_at_m": [
+        0.9791666865348816,
+        0.0
+      ],
+      "sigma_x_MPa": 24.538892117633154,
+      "sigma_x_at_m": [
+        0.5208333134651184,
+        0.4583333432674408
+      ]
+    },
+    "peak_deflection_nonuniform_m": 0.003183382803372064,
+    "peak_deflection_uniform_m": 0.0018394206050673916,
+    "delta_nonuniform_over_uniform_pct": {
+      "sigma_vm": 89.65901319164166,
+      "sigma_x": 115.04569812123435,
+      "deflection": 73.06443097365613,
+      "note": "machine-readable non-uniform-vs-uniform peak stress difference required by the GAP-PP-1 acceptance"
+    },
+    "navier_benchmark": {
+      "nonuniform_fem_vs_navier_pct": 0.4495095573665564,
+      "uniform_fem_vs_navier_pct": 0.9530614901718693,
+      "navier_sigma_x_nonuniform_MPa": 52.53368791755423,
+      "navier_sigma_x_uniform_MPa": 24.3072292760751,
+      "mesh_ladder": [
+        {
+          "plate_nx": 16,
+          "sigma_x_MPa": 51.91481002526767,
+          "navier_sigma_x_MPa": 51.387595171870856,
+          "fem_vs_navier_pct": 1.0259574351231926
+        },
+        {
+          "plate_nx": 24,
+          "sigma_x_MPa": 52.76983186558076,
+          "navier_sigma_x_MPa": 52.53368791755423,
+          "fem_vs_navier_pct": 0.4495095573665564
+        },
+        {
+          "plate_nx": 32,
+          "sigma_x_MPa": 53.07540063063392,
+          "navier_sigma_x_MPa": 53.335386753785095,
+          "fem_vs_navier_pct": -0.4874552130864962
+        }
+      ]
+    },
+    "small_deflection_validity": {
+      "peak_deflection_over_thickness": 0.3183382803372064,
+      "limit": 0.5,
+      "valid": true
+    },
+    "h3_anchor_check": {
+      "h3_anchor_level_pct": 0.339,
+      "fem_vs_navier_pct_finest": -0.4874552130864962,
+      "same_order_of_magnitude": true,
+      "basis": "live FEM-vs-Navier peak bending stress error at the finest mesh of the ladder; 'same order of magnitude' = within a factor of 3 of the H3-ICE-PLATE-FEM anchor (0.339 %)"
+    }
   }
 }
