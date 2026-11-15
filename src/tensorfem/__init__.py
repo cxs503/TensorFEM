@@ -550,3 +550,16 @@ from .grillage_ice_rule_benchmark import (
     run_rule_benchmark as run_rule_benchmark,
     write_rule_benchmark as write_rule_benchmark,
 )
+
+# -- pointwise reference regression (XVAL-LBM-POINTWISE-REFERENCE-REGRESSION) --
+from .pointwise_regression import (
+    Tolerance as Tolerance,
+    ProbeSample as ProbeSample,
+    Snapshot as Snapshot,
+    build_snapshot as build_snapshot,
+    mesh_signature as mesh_signature,
+    sample_nodes as sample_nodes,
+    sample_element_centres as sample_element_centres,
+    compare as compare_pointwise_snapshots,
+    verify_directory as verify_pointwise_reference_store,
+)

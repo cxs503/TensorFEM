@@ -1,0 +1,972 @@
+{
+  "case_id": "cook-membrane-q4",
+  "meta": {
+    "analytic_reference_reason": "the Cook membrane is a distorted quadrilateral domain with no pointwise closed-form elasticity solution; the stored values are a regression baseline, not an accuracy reference",
+    "case_key": "cook-membrane-q4",
+    "created_utc": "2026-11-15T22:18:32+00:00",
+    "discretisation": {
+      "dofs": 162,
+      "elements": 64,
+      "nodes": 81,
+      "nx": 8
+    },
+    "environment": {
+      "dtype": "float64",
+      "tensorfem_version": "0.45.0",
+      "torch_threads": 128,
+      "torch_version": "2.7.1"
+    },
+    "has_analytic_reference": false,
+    "mesh_signature": "14c27406dc0d9dd21fa9332071c5f9d0d452ab58ab2458b9304362b2c4c775d0",
+    "parameters": {
+      "corners": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          48.0,
+          44.0
+        ],
+        [
+          48.0,
+          60.0
+        ],
+        [
+          0.0,
+          44.0
+        ]
+      ],
+      "loaded_edge_resultant": 1.0,
+      "poisson_ratio": 0.3333333333333333,
+      "thickness": 1.0,
+      "young_modulus": 1.0
+    },
+    "quantity_units": {
+      "sigma_xx": "Pa",
+      "sigma_yy": "Pa",
+      "tau_xy": "Pa",
+      "ux": "m",
+      "uy": "m"
+    },
+    "solver": "tensorfem.continuum.solve_continuum (dense direct), Cook model"
+  },
+  "probes": [
+    {
+      "coordinates": [
+        3.0,
+        5.390625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00000",
+      "values": {
+        "sigma_xx": 0.05547379247863882,
+        "sigma_yy": 0.02739254347374891,
+        "tau_xy": 0.04059538338443363
+      }
+    },
+    {
+      "coordinates": [
+        15.0,
+        15.953125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00002",
+      "values": {
+        "sigma_xx": 0.0955934473540811,
+        "sigma_yy": 0.06322369168208489,
+        "tau_xy": 0.07437311640308598
+      }
+    },
+    {
+      "coordinates": [
+        27.0,
+        26.515625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00004",
+      "values": {
+        "sigma_xx": 0.11558001686320618,
+        "sigma_yy": 0.09372821781604747,
+        "tau_xy": 0.10439072788035546
+      }
+    },
+    {
+      "coordinates": [
+        39.0,
+        37.078125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00006",
+      "values": {
+        "sigma_xx": 0.10220423441975118,
+        "sigma_yy": 0.09296518672417284,
+        "tau_xy": 0.09922909850427158
+      }
+    },
+    {
+      "coordinates": [
+        3.0,
+        10.671875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00008",
+      "values": {
+        "sigma_xx": 0.07714552326687796,
+        "sigma_yy": 0.02627280683332046,
+        "tau_xy": 0.04347388360367647
+      }
+    },
+    {
+      "coordinates": [
+        15.0,
+        20.359375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00010",
+      "values": {
+        "sigma_xx": 0.0934414794428296,
+        "sigma_yy": 0.044086695128298686,
+        "tau_xy": 0.06695131337260454
+      }
+    },
+    {
+      "coordinates": [
+        27.0,
+        30.046875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00012",
+      "values": {
+        "sigma_xx": 0.09033027471734997,
+        "sigma_yy": 0.07413883129635811,
+        "tau_xy": 0.08526534603137516
+      }
+    },
+    {
+      "coordinates": [
+        39.0,
+        39.734375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00014",
+      "values": {
+        "sigma_xx": 0.061665973248955695,
+        "sigma_yy": 0.08019105009435959,
+        "tau_xy": 0.08289165918920273
+      }
+    },
+    {
+      "coordinates": [
+        3.0,
+        15.953125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00016",
+      "values": {
+        "sigma_xx": 0.08246863221114334,
+        "sigma_yy": 0.022332803533118315,
+        "tau_xy": 0.040293814847408446
+      }
+    },
+    {
+      "coordinates": [
+        15.0,
+        24.765625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00018",
+      "values": {
+        "sigma_xx": 0.07595087685356916,
+        "sigma_yy": 0.0276752905559223,
+        "tau_xy": 0.05732434254071101
+      }
+    },
+    {
+      "coordinates": [
+        27.0,
+        33.578125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00020",
+      "values": {
+        "sigma_xx": 0.05915116902632365,
+        "sigma_yy": 0.05789276490847645,
+        "tau_xy": 0.06591782242731334
+      }
+    },
+    {
+      "coordinates": [
+        39.0,
+        42.390625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00022",
+      "values": {
+        "sigma_xx": 0.02835596995503879,
+        "sigma_yy": 0.06939676581014911,
+        "tau_xy": 0.07037012371562248
+      }
+    },
+    {
+      "coordinates": [
+        3.0,
+        21.234375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00024",
+      "values": {
+        "sigma_xx": 0.07007379092594918,
+        "sigma_yy": 0.0150738899928267,
+        "tau_xy": 0.03309356180262361
+      }
+    },
+    {
+      "coordinates": [
+        15.0,
+        29.171875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00026",
+      "values": {
+        "sigma_xx": 0.04462089908167805,
+        "sigma_yy": 0.014380756075529052,
+        "tau_xy": 0.04582973570719552
+      }
+    },
+    {
+      "coordinates": [
+        27.0,
+        37.109375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00028",
+      "values": {
+        "sigma_xx": 0.02341219259175424,
+        "sigma_yy": 0.0438075765613419,
+        "tau_xy": 0.04656896693137979
+      }
+    },
+    {
+      "coordinates": [
+        39.0,
+        45.046875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00030",
+      "values": {
+        "sigma_xx": 0.0022659147356223538,
+        "sigma_yy": 0.058054835575604355,
+        "tau_xy": 0.05880032637207391
+      }
+    },
+    {
+      "coordinates": [
+        3.0,
+        26.515625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00032",
+      "values": {
+        "sigma_xx": 0.03907539714405804,
+        "sigma_yy": 0.004343728422205285,
+        "tau_xy": 0.023736537325529737
+      }
+    },
+    {
+      "coordinates": [
+        15.0,
+        33.578125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00034",
+      "values": {
+        "sigma_xx": 0.0009756767655915316,
+        "sigma_yy": 0.004430120518946059,
+        "tau_xy": 0.03160788253687526
+      }
+    },
+    {
+      "coordinates": [
+        27.0,
+        40.640625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00036",
+      "values": {
+        "sigma_xx": -0.014088763427119951,
+        "sigma_yy": 0.03055562644387496,
+        "tau_xy": 0.026970571485837837
+      }
+    },
+    {
+      "coordinates": [
+        39.0,
+        47.703125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00038",
+      "values": {
+        "sigma_xx": -0.018678318745572724,
+        "sigma_yy": 0.04498806150206267,
+        "tau_xy": 0.045736302431513366
+      }
+    },
+    {
+      "coordinates": [
+        3.0,
+        31.796875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00040",
+      "values": {
+        "sigma_xx": -0.012133788410226684,
+        "sigma_yy": -0.009670968226819971,
+        "tau_xy": 0.013823812631487102
+      }
+    },
+    {
+      "coordinates": [
+        15.0,
+        37.984375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00042",
+      "values": {
+        "sigma_xx": -0.052342827668389796,
+        "sigma_yy": -0.002209388578120226,
+        "tau_xy": 0.012230883894515135
+      }
+    },
+    {
+      "coordinates": [
+        27.0,
+        44.171875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00044",
+      "values": {
+        "sigma_xx": -0.05195194775751752,
+        "sigma_yy": 0.016963599512538827,
+        "tau_xy": 0.006737464782807408
+      }
+    },
+    {
+      "coordinates": [
+        39.0,
+        50.359375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00046",
+      "values": {
+        "sigma_xx": -0.03734678046797418,
+        "sigma_yy": 0.02991262270497796,
+        "tau_xy": 0.029319190216135556
+      }
+    },
+    {
+      "coordinates": [
+        3.0,
+        37.078125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00048",
+      "values": {
+        "sigma_xx": -0.0887070633729078,
+        "sigma_yy": -0.02534332021230223,
+        "tau_xy": 0.004948659699143898
+      }
+    },
+    {
+      "coordinates": [
+        15.0,
+        42.390625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00050",
+      "values": {
+        "sigma_xx": -0.10489435545216015,
+        "sigma_yy": -0.006207137829783096,
+        "tau_xy": -0.015741777323042588
+      }
+    },
+    {
+      "coordinates": [
+        27.0,
+        47.703125
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00052",
+      "values": {
+        "sigma_xx": -0.09057694087341557,
+        "sigma_yy": 0.00300204926290941,
+        "tau_xy": -0.014686013292367342
+      }
+    },
+    {
+      "coordinates": [
+        39.0,
+        53.015625
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00054",
+      "values": {
+        "sigma_xx": -0.05696573103496997,
+        "sigma_yy": 0.013266599706967273,
+        "tau_xy": 0.008245610634527435
+      }
+    },
+    {
+      "coordinates": [
+        3.0,
+        42.359375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00056",
+      "values": {
+        "sigma_xx": -0.22339628424352947,
+        "sigma_yy": -0.05074581712213902,
+        "tau_xy": -0.01061654086826144
+      }
+    },
+    {
+      "coordinates": [
+        15.0,
+        46.796875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00058",
+      "values": {
+        "sigma_xx": -0.1533451963771954,
+        "sigma_yy": -0.0155341986400679,
+        "tau_xy": -0.04562514252200982
+      }
+    },
+    {
+      "coordinates": [
+        27.0,
+        51.234375
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00060",
+      "values": {
+        "sigma_xx": -0.1318560011405756,
+        "sigma_yy": -0.010937625703889056,
+        "tau_xy": -0.03797904553872946
+      }
+    },
+    {
+      "coordinates": [
+        39.0,
+        55.671875
+      ],
+      "kind": "element_centre",
+      "probe_id": "e00062",
+      "values": {
+        "sigma_xx": -0.0815012621108484,
+        "sigma_yy": -0.003782651236020131,
+        "tau_xy": -0.01812172282803571
+      }
+    },
+    {
+      "coordinates": [
+        0.0,
+        0.0
+      ],
+      "kind": "node",
+      "probe_id": "n00000",
+      "values": {
+        "ux": 0.0,
+        "uy": 0.0
+      }
+    },
+    {
+      "coordinates": [
+        12.0,
+        11.0
+      ],
+      "kind": "node",
+      "probe_id": "n00002",
+      "values": {
+        "ux": 0.7828811992195296,
+        "uy": 1.4037567824847752
+      }
+    },
+    {
+      "coordinates": [
+        24.0,
+        22.0
+      ],
+      "kind": "node",
+      "probe_id": "n00004",
+      "values": {
+        "ux": 1.761716275743407,
+        "uy": 4.6767705255487595
+      }
+    },
+    {
+      "coordinates": [
+        36.0,
+        33.0
+      ],
+      "kind": "node",
+      "probe_id": "n00006",
+      "values": {
+        "ux": 0.7481809609426193,
+        "uy": 11.367072224814024
+      }
+    },
+    {
+      "coordinates": [
+        48.0,
+        44.0
+      ],
+      "kind": "node",
+      "probe_id": "n00008",
+      "values": {
+        "ux": -4.253352554143252,
+        "uy": 21.40472274525111
+      }
+    },
+    {
+      "coordinates": [
+        6.0,
+        10.5625
+      ],
+      "kind": "node",
+      "probe_id": "n00010",
+      "values": {
+        "ux": 0.40844213248248734,
+        "uy": 0.6694813489925133
+      }
+    },
+    {
+      "coordinates": [
+        18.0,
+        20.6875
+      ],
+      "kind": "node",
+      "probe_id": "n00012",
+      "values": {
+        "ux": 1.331775695905722,
+        "uy": 2.8344803081704457
+      }
+    },
+    {
+      "coordinates": [
+        30.0,
+        30.8125
+      ],
+      "kind": "node",
+      "probe_id": "n00014",
+      "values": {
+        "ux": 0.9067178074208089,
+        "uy": 7.760139159343797
+      }
+    },
+    {
+      "coordinates": [
+        42.0,
+        40.9375
+      ],
+      "kind": "node",
+      "probe_id": "n00016",
+      "values": {
+        "ux": -2.5045068700699544,
+        "uy": 16.203952930600153
+      }
+    },
+    {
+      "coordinates": [
+        0.0,
+        11.0
+      ],
+      "kind": "node",
+      "probe_id": "n00018",
+      "values": {
+        "ux": 0.0,
+        "uy": 0.0
+      }
+    },
+    {
+      "coordinates": [
+        12.0,
+        20.25
+      ],
+      "kind": "node",
+      "probe_id": "n00020",
+      "values": {
+        "ux": 0.8747295745753161,
+        "uy": 1.54599552654924
+      }
+    },
+    {
+      "coordinates": [
+        24.0,
+        29.5
+      ],
+      "kind": "node",
+      "probe_id": "n00022",
+      "values": {
+        "ux": 0.8026950942825488,
+        "uy": 5.0138486559056
+      }
+    },
+    {
+      "coordinates": [
+        36.0,
+        38.75
+      ],
+      "kind": "node",
+      "probe_id": "n00024",
+      "values": {
+        "ux": -1.6060016800948984,
+        "uy": 11.707821313341142
+      }
+    },
+    {
+      "coordinates": [
+        48.0,
+        48.0
+      ],
+      "kind": "node",
+      "probe_id": "n00026",
+      "values": {
+        "ux": -6.933832538065469,
+        "uy": 21.680365088555902
+      }
+    },
+    {
+      "coordinates": [
+        6.0,
+        20.6875
+      ],
+      "kind": "node",
+      "probe_id": "n00028",
+      "values": {
+        "ux": 0.4079116638065613,
+        "uy": 0.6209032694091563
+      }
+    },
+    {
+      "coordinates": [
+        18.0,
+        29.0625
+      ],
+      "kind": "node",
+      "probe_id": "n00030",
+      "values": {
+        "ux": 0.5600479222199921,
+        "uy": 2.9708010520349095
+      }
+    },
+    {
+      "coordinates": [
+        30.0,
+        37.4375
+      ],
+      "kind": "node",
+      "probe_id": "n00032",
+      "values": {
+        "ux": -1.2169844410907142,
+        "uy": 8.078993642374527
+      }
+    },
+    {
+      "coordinates": [
+        42.0,
+        45.8125
+      ],
+      "kind": "node",
+      "probe_id": "n00034",
+      "values": {
+        "ux": -5.406272855348488,
+        "uy": 16.51227931172779
+      }
+    },
+    {
+      "coordinates": [
+        0.0,
+        22.0
+      ],
+      "kind": "node",
+      "probe_id": "n00036",
+      "values": {
+        "ux": 0.0,
+        "uy": 0.0
+      }
+    },
+    {
+      "coordinates": [
+        12.0,
+        29.5
+      ],
+      "kind": "node",
+      "probe_id": "n00038",
+      "values": {
+        "ux": 0.26515966601539204,
+        "uy": 1.4703468054681823
+      }
+    },
+    {
+      "coordinates": [
+        24.0,
+        37.0
+      ],
+      "kind": "node",
+      "probe_id": "n00040",
+      "values": {
+        "ux": -1.1184990809409212,
+        "uy": 5.24257251946274
+      }
+    },
+    {
+      "coordinates": [
+        36.0,
+        44.5
+      ],
+      "kind": "node",
+      "probe_id": "n00042",
+      "values": {
+        "ux": -4.544126852770441,
+        "uy": 12.023665850792996
+      }
+    },
+    {
+      "coordinates": [
+        48.0,
+        52.0
+      ],
+      "kind": "node",
+      "probe_id": "n00044",
+      "values": {
+        "ux": -9.712633326816402,
+        "uy": 22.079183389482466
+      }
+    },
+    {
+      "coordinates": [
+        6.0,
+        30.8125
+      ],
+      "kind": "node",
+      "probe_id": "n00046",
+      "values": {
+        "ux": 0.022451680597883918,
+        "uy": 0.4417057642547813
+      }
+    },
+    {
+      "coordinates": [
+        18.0,
+        37.4375
+      ],
+      "kind": "node",
+      "probe_id": "n00048",
+      "values": {
+        "ux": -1.150759361490845,
+        "uy": 3.0766841383710513
+      }
+    },
+    {
+      "coordinates": [
+        30.0,
+        44.0625
+      ],
+      "kind": "node",
+      "probe_id": "n00050",
+      "values": {
+        "ux": -4.130630888324023,
+        "uy": 8.358314492562839
+      }
+    },
+    {
+      "coordinates": [
+        42.0,
+        50.6875
+      ],
+      "kind": "node",
+      "probe_id": "n00052",
+      "values": {
+        "ux": -8.585729038600146,
+        "uy": 16.7955403166318
+      }
+    },
+    {
+      "coordinates": [
+        0.0,
+        33.0
+      ],
+      "kind": "node",
+      "probe_id": "n00054",
+      "values": {
+        "ux": 0.0,
+        "uy": 0.0
+      }
+    },
+    {
+      "coordinates": [
+        12.0,
+        38.75
+      ],
+      "kind": "node",
+      "probe_id": "n00056",
+      "values": {
+        "ux": -1.1516960453015537,
+        "uy": 1.4812193141872565
+      }
+    },
+    {
+      "coordinates": [
+        24.0,
+        44.5
+      ],
+      "kind": "node",
+      "probe_id": "n00058",
+      "values": {
+        "ux": -3.9886472990347173,
+        "uy": 5.4725260361158385
+      }
+    },
+    {
+      "coordinates": [
+        36.0,
+        50.25
+      ],
+      "kind": "node",
+      "probe_id": "n00060",
+      "values": {
+        "ux": -8.008166888541124,
+        "uy": 12.280614767147119
+      }
+    },
+    {
+      "coordinates": [
+        48.0,
+        56.0
+      ],
+      "kind": "node",
+      "probe_id": "n00062",
+      "values": {
+        "ux": -12.826549882156648,
+        "uy": 22.47262292418429
+      }
+    },
+    {
+      "coordinates": [
+        6.0,
+        40.9375
+      ],
+      "kind": "node",
+      "probe_id": "n00064",
+      "values": {
+        "ux": -0.8972044073404599,
+        "uy": 0.42691117493633907
+      }
+    },
+    {
+      "coordinates": [
+        18.0,
+        45.8125
+      ],
+      "kind": "node",
+      "probe_id": "n00066",
+      "values": {
+        "ux": -3.961495965016082,
+        "uy": 3.2954023277312663
+      }
+    },
+    {
+      "coordinates": [
+        30.0,
+        50.6875
+      ],
+      "kind": "node",
+      "probe_id": "n00068",
+      "values": {
+        "ux": -7.791496527600552,
+        "uy": 8.597736050275898
+      }
+    },
+    {
+      "coordinates": [
+        42.0,
+        55.5625
+      ],
+      "kind": "node",
+      "probe_id": "n00070",
+      "values": {
+        "ux": -12.267746326583671,
+        "uy": 16.978725785172585
+      }
+    },
+    {
+      "coordinates": [
+        0.0,
+        44.0
+      ],
+      "kind": "node",
+      "probe_id": "n00072",
+      "values": {
+        "ux": 0.0,
+        "uy": 0.0
+      }
+    },
+    {
+      "coordinates": [
+        12.0,
+        48.0
+      ],
+      "kind": "node",
+      "probe_id": "n00074",
+      "values": {
+        "ux": -3.920043922653543,
+        "uy": 1.778527156890899
+      }
+    },
+    {
+      "coordinates": [
+        24.0,
+        52.0
+      ],
+      "kind": "node",
+      "probe_id": "n00076",
+      "values": {
+        "ux": -7.794151968513516,
+        "uy": 5.719972390921579
+      }
+    },
+    {
+      "coordinates": [
+        36.0,
+        56.0
+      ],
+      "kind": "node",
+      "probe_id": "n00078",
+      "values": {
+        "ux": -12.138074162552634,
+        "uy": 12.454628299579424
+      }
+    },
+    {
+      "coordinates": [
+        48.0,
+        60.0
+      ],
+      "kind": "node",
+      "probe_id": "n00080",
+      "values": {
+        "ux": -16.46649720427632,
+        "uy": 22.6726190140809
+      }
+    }
+  ],
+  "quantities": [
+    "ux",
+    "uy",
+    "sigma_xx",
+    "sigma_yy",
+    "tau_xy"
+  ],
+  "schema_version": "1.0"
+}
