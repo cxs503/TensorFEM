@@ -39,8 +39,8 @@ Interface
 
 Verification anchors
 --------------------
-* ``V1``: uniform patch load from :func:`patch_from_contact` matches the
-  analytical total force to < 0.1 %.
+* ``V1``: uniform (step) patch load from :func:`patch_from_contact` matches the
+  analytical total force to machine precision (exact sub-cell splitting).
 * ``V2``: Gaussian patch total force matches analytical integral to < 0.5 %.
 * ``V3``: non-uniform patch peak stress vs uniform patch peak stress difference
   is consistent with the H3-ICE-PLATE-FEM anchor (≈ 0.339 % level for mild
@@ -52,8 +52,10 @@ Scope and limitations
 * Small-deflection plate theory (Mindlin-Reissner Q4 SRI).
 * Contact pressure is assumed known (from a prior CZM / contact solve); this
   module does not solve the contact problem itself.
-* The projection uses the plate mesh nodes as target; if the contact mesh and
-  plate mesh differ, nearest-node interpolation is used (documented error).
+* Tensor-product contact grids (the normal CZM output) are projected by exact
+  sub-cell splitting (:func:`exact_consistent_load`): force-conserving to
+  machine precision, including discontinuous step patches.  Scattered contact
+  data falls back to local inverse-distance weighting (documented O(h) error).
 * 2D plate model only (the contact pressure is integrated through the thickness
   direction and applied as transverse load).
 """
@@ -208,9 +210,11 @@ def project_pressure_to_nodes(
     ``method="auto"`` (default) uses a **bilinear interpolant of the contact
     grid** whenever the contact nodes form a tensor-product grid -- which is how
     a CZM / contact solve delivers its interface pressures.  The field is zero
-    outside the contact footprint, so the projected total force stays equal to
-    the contact force (trapezoid-level accuracy) instead of smearing the patch
-    over the whole plate.
+    outside the contact footprint, so the nodal values are the true field
+    values instead of smearing the patch over the whole plate.  Note that the
+    *nodal* values are exact for smooth fields, but a downstream bilinear
+    reconstruction of them still smears a discontinuous edge; use
+    :func:`exact_consistent_load` for a force-conserving load vector.
 
     Since m20624 the legacy global inverse-distance weighting is only a fallback
     for genuinely scattered contact nodes, and its averaging radius defaults to
@@ -533,6 +537,117 @@ def _assemble_gauss_load(
     return load_vector
 
 
+def exact_consistent_load(
+    contact_data: ContactPressureData,
+    plate_nodes: np.ndarray,
+    plate_elements: np.ndarray,
+) -> tuple[np.ndarray, dict]:
+    """Exact conservative projection of a tensor-product contact grid.
+
+    Every plate element is split at the contact-grid lines it crosses; on each
+    sub-rectangle the Q4 shape functions ``N_i`` and the bilinear contact
+    pressure are both bilinear, so the 2x2 Gauss rule integrates
+    ``N_i * p`` exactly.  The projected nodal forces therefore sum to the
+    contact force to machine precision -- including for *discontinuous*
+    (step) patches, where the bilinear reconstruction of the nodal pressures
+    smears the patch edge over one element and inflates the applied force
+    (about +20 % at nx=16 for a 0.4x0.4 patch on a 1x1 plate).
+
+    Parameters
+    ----------
+    contact_data : ContactPressureData
+        Contact pressure on a tensor-product grid (raises otherwise).
+    plate_nodes : (nn, 2) array
+    plate_elements : (ne, 4) array
+
+    Returns
+    -------
+    load_vector : (3*nn,) array
+        Consistent nodal force vector [N] (w DOFs only, ``3*i`` entries).
+    info : dict
+        ``projected_force`` [N], ``contact_force`` [N] (trapezoid integral of
+        the bilinear contact field over its footprint) and
+        ``force_error_rel``.
+    """
+    pos = np.asarray(contact_data.node_positions, dtype=np.float64)
+    pres = np.asarray(contact_data.normal_pressures, dtype=np.float64)
+    nodes = np.asarray(plate_nodes, dtype=np.float64)
+    elements = np.asarray(plate_elements, dtype=np.int64)
+    if pos.shape[1] == 3:
+        pos = pos[:, :2]
+    if nodes.shape[1] == 3:
+        nodes = nodes[:, :2]
+
+    grid = _structured_grid_index(pos)
+    if grid is None:
+        raise ValueError(
+            "exact_consistent_load requires a tensor-product contact grid"
+        )
+    xs, ys, index = grid
+    P = pres[index]  # (ny, nx)
+    field = _bilinear_field(xs, ys, P, outside_zero=True)
+
+    # contact force = integral of the bilinear field over its footprint
+    # (exact: bilinear on each contact cell, 2x2 Gauss per cell)
+    gp = 1.0 / math.sqrt(3.0)
+    contact_force = 0.0
+    for j in range(ys.size - 1):
+        hy = ys[j + 1] - ys[j]
+        for i in range(xs.size - 1):
+            hx = xs[i + 1] - xs[i]
+            for xi in (-gp, gp):
+                xp = 0.5 * (xs[i] + xs[i + 1]) + 0.5 * hx * xi
+                for eta in (-gp, gp):
+                    yp = 0.5 * (ys[j] + ys[j + 1]) + 0.5 * hy * eta
+                    contact_force += float(field(xp, yp)) * 0.25 * hx * hy
+
+    nn = nodes.shape[0]
+    load_vector = np.zeros(3 * nn, dtype=np.float64)
+    x_lo, x_hi = float(xs[0]), float(xs[-1])
+    y_lo, y_hi = float(ys[0]), float(ys[-1])
+
+    for conn in elements:
+        xy = nodes[conn]
+        exa, exb = float(xy[:, 0].min()), float(xy[:, 0].max())
+        eya, eyb = float(xy[:, 1].min()), float(xy[:, 1].max())
+        xa, xb = max(exa, x_lo), min(exb, x_hi)
+        ya, yb = max(eya, y_lo), min(eyb, y_hi)
+        if xb <= xa or yb <= ya:
+            continue
+        bx = np.unique(np.concatenate(([xa, xb], xs[(xs > xa) & (xs < xb)])))
+        by = np.unique(np.concatenate(([ya, yb], ys[(ys > ya) & (ys < yb)])))
+        fe = np.zeros(4, dtype=np.float64)
+        for k in range(bx.size - 1):
+            sx0, sx1 = float(bx[k]), float(bx[k + 1])
+            hx = sx1 - sx0
+            for l in range(by.size - 1):
+                sy0, sy1 = float(by[l]), float(by[l + 1])
+                hy = sy1 - sy0
+                for xi in (-gp, gp):
+                    xp = 0.5 * (sx0 + sx1) + 0.5 * hx * xi
+                    xi_e = 2.0 * (xp - exa) / (exb - exa) - 1.0
+                    for eta in (-gp, gp):
+                        yp = 0.5 * (sy0 + sy1) + 0.5 * hy * eta
+                        eta_e = 2.0 * (yp - eya) / (eyb - eya) - 1.0
+                        N = 0.25 * np.array([
+                            (1.0 - xi_e) * (1.0 - eta_e),
+                            (1.0 + xi_e) * (1.0 - eta_e),
+                            (1.0 + xi_e) * (1.0 + eta_e),
+                            (1.0 - xi_e) * (1.0 + eta_e),
+                        ])
+                        fe += N * float(field(xp, yp)) * 0.25 * hx * hy
+        load_vector[3 * conn] += fe
+
+    projected = float(load_vector[0::3].sum())
+    return load_vector, {
+        "projected_force": projected,
+        "contact_force": float(contact_force),
+        "force_error_rel": (
+            abs(projected - contact_force) / max(abs(contact_force), 1e-30)
+        ),
+    }
+
+
 def patch_from_contact(
     contact_data: ContactPressureData,
     plate_nodes: np.ndarray,
@@ -599,11 +714,28 @@ def patch_from_contact(
     nn = nodes.shape[0]
     ndof = 3 * nn
 
-    # The plate solver re-integrates a pressure callable element by element
-    # (2x2 Gauss), so the load vector is built from the same element bilinear
-    # interpolant of the nodal pressures -- otherwise the two disagree at patch
-    # edges, where the contact field is discontinuous.
-    load_vector = _assemble_gauss_load(nodes, elements, nodal_pressures)
+    exact_info: dict = {}
+    if contact_grid is not None and pressure_fn is None:
+        # Tensor-product contact grid: integrate the contact field itself with
+        # sub-cell splitting.  The bilinear reconstruction of the nodal
+        # pressures smears a discontinuous patch edge over one element and
+        # inflates the applied force (about +20 % at nx=16 for a 0.4x0.4
+        # patch on a 1x1 plate), so the load vector is built from the exact
+        # field instead (see exact_consistent_load).
+        load_vector, exact_info = exact_consistent_load(
+            contact_data, nodes, elements
+        )
+        projection_method = "exact_subcell_splitting"
+    else:
+        # The plate solver re-integrates a pressure callable element by element
+        # (2x2 Gauss), so the load vector is built from the same element
+        # bilinear interpolant of the nodal pressures -- otherwise the two
+        # disagree at patch edges, where the contact field is discontinuous.
+        load_vector = _assemble_gauss_load(nodes, elements, nodal_pressures)
+        projection_method = (
+            "exact_contact_grid_bilinear" if field_fn is not None
+            else "plate_node_interpolation"
+        )
 
     # Compute metadata
     total_force = float(np.sum(load_vector[0::3]))
@@ -634,10 +766,8 @@ def patch_from_contact(
             # the pressure field [Pa] the load vector was integrated from, so a
             # downstream solve can re-use it instead of re-interpolating
             "field_fn": field_fn,
-            "projection_method": (
-                "exact_contact_grid_bilinear" if field_fn is not None
-                else "plate_node_interpolation"
-            ),
+            "projection_method": projection_method,
+            **exact_info,
         },
         nodal_pressures=np.asarray(nodal_pressures, dtype=np.float64),
     )
@@ -657,9 +787,14 @@ def contact_pressure_to_plate_load(
 ) -> tuple[MindlinPlateResult, PatchLoadResult]:
     """End-to-end: contact pressure -> projected plate load -> plate solve.
 
-    The contact pressure is projected onto the plate nodes (:func:`patch_from_contact`),
-    the resulting **nodal pressure field** [Pa] is interpolated bilinearly inside
-    each element, and the plate is solved with the merged Mindlin Q4 solver.
+    The contact pressure is projected onto the plate mesh
+    (:func:`patch_from_contact`).  When the contact data is a tensor-product
+    grid the consistent load vector is built by **exact sub-cell splitting**
+    (:func:`exact_consistent_load`) and fed to the Mindlin Q4 solver as a force
+    vector, so the applied force equals the contact force to machine precision
+    even for discontinuous (step) patches.  For scattered contact data the
+    nodal pressure field is interpolated bilinearly inside each element
+    instead (documented O(h) edge error).
 
     The total force actually applied by this chain is integrated independently
     and stored in ``PatchLoadResult.metadata`` as ``applied_force`` together with
@@ -701,24 +836,41 @@ def contact_pressure_to_plate_load(
     if patch_result.nodal_pressures is None:  # pragma: no cover - defensive
         raise RuntimeError("patch_from_contact did not return a nodal pressure field")
 
-    # Solve with the same interpolant the load vector was built from, so the
-    # applied load and the projected nodal loads use identical quadrature.
-    pressure_callable = _build_pressure_callable_from_nodes(
-        nodes_np, patch_result.nodal_pressures,
-    )
-
-    # Independent audit of the applied force (units are Pa * m^2 = N).
-    applied_force = _integrated_load(nodes_np, elements_np, pressure_callable)
     reference_force = patch_result.total_force
+    if patch_result.metadata.get("projection_method") == "exact_subcell_splitting":
+        # The load vector was integrated exactly on the contact field; feed it
+        # to the solver directly so the applied load equals the contact force
+        # to machine precision (no re-interpolation of the nodal pressures).
+        plate_result = solve_plate_on_winkler_foundation(
+            plate_nx, plate_side, young, poisson, thickness,
+            winkler_k, 0.0, boundary=boundary, dtype=dtype,
+            force_vector=patch_result.load_vector,
+        )
+        applied_force = float(np.sum(patch_result.load_vector[0::3]))
+    else:
+        if pressure_fn is not None:
+            # Diagnostic path: solve with the supplied field directly (the
+            # solver's 2x2 Gauss is exact for bilinear and high-order accurate
+            # for smooth fields) instead of re-interpolating it through the
+            # plate nodes, which would smear a sharp field.
+            pressure_callable = pressure_fn
+        else:
+            # Solve with the same interpolant the load vector was built from,
+            # so the applied load and the projected nodal loads use identical
+            # quadrature.
+            pressure_callable = _build_pressure_callable_from_nodes(
+                nodes_np, patch_result.nodal_pressures,
+            )
+        # Independent audit of the applied force (units are Pa * m^2 = N).
+        applied_force = _integrated_load(nodes_np, elements_np, pressure_callable)
+        plate_result = solve_plate_on_winkler_foundation(
+            plate_nx, plate_side, young, poisson, thickness,
+            winkler_k, pressure_callable, boundary=boundary, dtype=dtype,
+        )
     patch_result.metadata["applied_force"] = applied_force
     patch_result.metadata["load_balance_rel"] = (
         applied_force - reference_force
     ) / reference_force if reference_force > 0.0 else 0.0
-
-    plate_result = solve_plate_on_winkler_foundation(
-        plate_nx, plate_side, young, poisson, thickness,
-        winkler_k, pressure_callable, boundary=boundary, dtype=dtype,
-    )
     return plate_result, patch_result
 
 
@@ -764,7 +916,7 @@ def scan_contact_configurations(
     configurations: Optional[Sequence[dict]] = None,
     boundary: str = "simply_supported",
     dtype=torch.float64,
-    n_contact_per_axis: int = 21,
+    n_contact_per_axis: int = 41,
 ) -> dict:
     """Scan >= 3 contact configurations: non-uniform patch vs uniform patch.
 
