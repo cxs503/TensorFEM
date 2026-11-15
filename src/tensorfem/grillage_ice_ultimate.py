@@ -61,7 +61,11 @@ Scope and limitations (explicit)
 * Small-deflection plate theory for the lateral response; the *axial* capacity
   comes from the effective-width beam-column law, not from a full
   load-shortening path, so post-buckling reserve beyond the peak is absent.
-* Stiffener web local buckling / tripping and frame tripping are not modelled.
+* Stiffener web local buckling / tripping and frame tripping are not modelled *in
+  this module*; they are supplied from first principles by
+  :mod:`tensorfem.stiffener_tripping` (see ``docs/CASE-GAP-PP-5-stiffener-local-
+  instability.md``), which is deliberately kept separate so that the 21 gates of
+  this chain keep their published numbers.
 * Welding residual stress and initial deflection enter only through the
   effective-width law and ``imperfection_ratio``.
 * The ice patch is quasi-static and uniform over its rectangle; other patch
