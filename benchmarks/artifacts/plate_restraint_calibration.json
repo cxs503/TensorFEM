@@ -1,0 +1,470 @@
+{
+  "case": {
+    "name": "JOUR-ICE-STRUCT design panel (patch load, full breadth)",
+    "panel_x_m": 0.8,
+    "panel_y_m": 0.7,
+    "plate_m": 0.022,
+    "young_Pa": 206000000000.0,
+    "poisson": 0.3,
+    "shear_Pa": 79230769230.76923,
+    "D_Nm": 200868.86446886443,
+    "patch_pressure_Pa": 1000000.0,
+    "patch_chord_m": 0.08000000000000002,
+    "baseline_sigma_vm_MPa": 73.37101604723352,
+    "baseline_source": {
+      "file": "tests/data/panel_patch_load_reference.json",
+      "sha256": "616f54be746ec2ef94bcc72167f202ecc82447eba4ba6faea2e33df9c838329b",
+      "upstream": "papers/jour-ice-struct/data/panel_patch_load_results.json",
+      "method": "Kirchhoff thin-plate Navier double series (exact for SSSS) with N=401 terms, centre of plate; sigma = 6*M_vm/t^2"
+    },
+    "nx": 120
+  },
+  "provenance": {
+    "git_sha": "638b67d9a8d9634f6eb4c7a322abf68dd0c6ef63",
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "generated_unix": 1794700672.3394732,
+    "module": "tensorfem.plate_restraint_calibration"
+  },
+  "sections": {
+    "longitudinal_HP220x10": {
+      "J_corrected_m4": 1.6067957333333332e-07,
+      "J_flange_split_m4": 1.1803333333333334e-07,
+      "J_thinwall_m4": 2.1197333333333333e-07,
+      "GJ_corrected_Nm2": 12730.766194871792
+    },
+    "longitudinal_FB200x12": {
+      "J_corrected_m4": 1.1084544e-07,
+      "J_thinwall_m4": 1.1520000000000001e-07,
+      "GJ_corrected_Nm2": 8782.369476923077
+    },
+    "frame_T400x12_100x18": {
+      "J_corrected_m4": 3.9840048e-07,
+      "J_thinwall_m4": 4.248e-07,
+      "GJ_corrected_Nm2": 31565.576492307693
+    }
+  },
+  "calibration": {
+    "upper": {
+      "beta_x": 0.7548276258797545,
+      "beta_y": 0.4541016109299456,
+      "zeta_x": 3.078762966620158,
+      "zeta_y": 0.8318427385424494,
+      "k_rot_x_Nm_per_rad_per_m": 773034.5263422293,
+      "k_rot_y_Nm_per_rad_per_m": 238701.86615384615,
+      "k_rot_x_energy": 773034.5263422299,
+      "k_rot_y_energy": 238701.86615384606,
+      "D_Nm": 200868.86446886443,
+      "side_x_m": 0.8,
+      "side_y_m": 0.7,
+      "longitudinal_gj_Nm2": 12730.766194871792,
+      "frame_gj_Nm2": 31565.576492307693,
+      "longitudinal_span_m": 0.8,
+      "frame_span_m": 0.7,
+      "variant": "upper",
+      "assumption": {
+        "longitudinal_ends": Infinity,
+        "frame_ends": Infinity,
+        "frame_span": null,
+        "longitudinal": "HP220x10 (web+bulb)",
+        "frame": "T400x12+100x18"
+      },
+      "flange_split": false,
+      "correction": true,
+      "J_longitudinal_hi": 1.6067957333333332e-07,
+      "J_longitudinal_lo": 1.1803333333333334e-07,
+      "J_longitudinal_thinwall": 2.1197333333333333e-07,
+      "J_frame": 3.9840048e-07
+    },
+    "upper_Jsplit": {
+      "beta_x": 0.7548276258797545,
+      "beta_y": 0.4541016109299456,
+      "zeta_x": 3.078762966620158,
+      "zeta_y": 0.8318427385424494,
+      "k_rot_x_Nm_per_rad_per_m": 773034.5263422293,
+      "k_rot_y_Nm_per_rad_per_m": 238701.86615384615,
+      "k_rot_x_energy": 773034.5263422299,
+      "k_rot_y_energy": 238701.86615384606,
+      "D_Nm": 200868.86446886443,
+      "side_x_m": 0.8,
+      "side_y_m": 0.7,
+      "longitudinal_gj_Nm2": 12730.766194871792,
+      "frame_gj_Nm2": 31565.576492307693,
+      "longitudinal_span_m": 0.8,
+      "frame_span_m": 0.7,
+      "variant": "upper_Jsplit",
+      "assumption": {
+        "longitudinal_ends": Infinity,
+        "frame_ends": Infinity,
+        "frame_span": null,
+        "longitudinal": "HP220x10 (web+bulb)",
+        "frame": "T400x12+100x18"
+      },
+      "flange_split": true,
+      "correction": true,
+      "J_longitudinal_hi": 1.6067957333333332e-07,
+      "J_longitudinal_lo": 1.1803333333333334e-07,
+      "J_longitudinal_thinwall": 2.1197333333333333e-07,
+      "J_frame": 3.9840048e-07
+    },
+    "mid_frame_global": {
+      "beta_x": 0.1284063329141283,
+      "beta_y": 0.4541016109299456,
+      "zeta_x": 0.14732361851990988,
+      "zeta_y": 0.8318427385424494,
+      "k_rot_x_Nm_per_rad_per_m": 36990.90995192308,
+      "k_rot_y_Nm_per_rad_per_m": 238701.86615384615,
+      "k_rot_x_energy": 36990.90995192307,
+      "k_rot_y_energy": 238701.86615384606,
+      "D_Nm": 200868.86446886443,
+      "side_x_m": 0.8,
+      "side_y_m": 0.7,
+      "longitudinal_gj_Nm2": 12730.766194871792,
+      "frame_gj_Nm2": 31565.576492307693,
+      "longitudinal_span_m": 0.8,
+      "frame_span_m": 3.2,
+      "variant": "mid_frame_global",
+      "assumption": {
+        "longitudinal_ends": Infinity,
+        "frame_ends": Infinity,
+        "frame_span": 3.2,
+        "longitudinal": "HP220x10 (web+bulb)",
+        "frame": "T400x12+100x18"
+      },
+      "flange_split": false,
+      "correction": true,
+      "J_longitudinal_hi": 1.6067957333333332e-07,
+      "J_longitudinal_lo": 1.1803333333333334e-07,
+      "J_longitudinal_thinwall": 2.1197333333333333e-07,
+      "J_frame": 3.9840048e-07
+    },
+    "lower": {
+      "beta_x": 0.03552257602036045,
+      "beta_y": 0.12546323263126782,
+      "zeta_x": 0.03683090462997747,
+      "zeta_y": 0.14346250187828705,
+      "k_rot_x_Nm_per_rad_per_m": 9247.727487980768,
+      "k_rot_y_Nm_per_rad_per_m": 41167.35692307693,
+      "k_rot_x_energy": 9247.727487980768,
+      "k_rot_y_energy": 41167.35692307692,
+      "D_Nm": 200868.86446886443,
+      "side_x_m": 0.8,
+      "side_y_m": 0.7,
+      "longitudinal_gj_Nm2": 8782.369476923077,
+      "frame_gj_Nm2": 31565.576492307693,
+      "longitudinal_span_m": 0.8,
+      "frame_span_m": 3.2,
+      "variant": "lower",
+      "assumption": {
+        "longitudinal_ends": [
+          Infinity,
+          0.0
+        ],
+        "frame_ends": [
+          Infinity,
+          0.0
+        ],
+        "frame_span": 3.2,
+        "longitudinal": "FB200x12",
+        "frame": "T400x12+100x18"
+      },
+      "flange_split": false,
+      "correction": true,
+      "J_longitudinal_hi": 1.1084544e-07,
+      "J_longitudinal_lo": 1.1084544e-07,
+      "J_longitudinal_thinwall": 1.1520000000000001e-07,
+      "J_frame": 3.9840048e-07
+    },
+    "lower_thinwall_J": {
+      "beta_x": 0.03778748956560145,
+      "beta_y": 0.1297525254176338,
+      "zeta_x": 0.03927145942900075,
+      "zeta_y": 0.14909842223891812,
+      "k_rot_x_Nm_per_rad_per_m": 9860.516826923074,
+      "k_rot_y_Nm_per_rad_per_m": 42784.61538461538,
+      "k_rot_x_energy": 9860.516826923076,
+      "k_rot_y_energy": 42784.615384615376,
+      "D_Nm": 200868.86446886443,
+      "side_x_m": 0.8,
+      "side_y_m": 0.7,
+      "longitudinal_gj_Nm2": 9127.384615384615,
+      "frame_gj_Nm2": 33657.230769230766,
+      "longitudinal_span_m": 0.8,
+      "frame_span_m": 3.2,
+      "variant": "lower_thinwall_J",
+      "assumption": {
+        "longitudinal_ends": [
+          Infinity,
+          0.0
+        ],
+        "frame_ends": [
+          Infinity,
+          0.0
+        ],
+        "frame_span": 3.2,
+        "longitudinal": "FB200x12",
+        "frame": "T400x12+100x18"
+      },
+      "flange_split": false,
+      "correction": false,
+      "J_longitudinal_hi": 1.1084544e-07,
+      "J_longitudinal_lo": 1.1084544e-07,
+      "J_longitudinal_thinwall": 1.1520000000000001e-07,
+      "J_frame": 3.9840048e-07
+    }
+  },
+  "response": {
+    "upper": {
+      "beta_x": 0.7548276258797545,
+      "beta_y": 0.4541016109299456,
+      "sigma_vm_centre_MPa_FE": 66.2916095831174,
+      "w_centre_m_FE": 0.0008596503274379125,
+      "Mx_centre_Nm_per_m_FE": 5833.415465102346,
+      "sigma_vm_centre_MPa_Ritz": 66.64404909451147,
+      "w_centre_m_Ritz": 0.0008522616714425633,
+      "Mx_centre_Nm_per_m_Ritz": 5867.379621213718,
+      "FE_vs_Ritz_sigma_pct": -0.5288386827970948,
+      "FE_vs_Ritz_w_pct": 0.8669468829735072,
+      "sigma_change_vs_SSSS_pct": -9.648778012776404
+    },
+    "upper_Jsplit": {
+      "beta_x": 0.7548276258797545,
+      "beta_y": 0.4541016109299456,
+      "sigma_vm_centre_MPa_FE": 66.2916095831174,
+      "w_centre_m_FE": 0.0008596503274379125,
+      "Mx_centre_Nm_per_m_FE": 5833.415465102346,
+      "sigma_vm_centre_MPa_Ritz": 66.64404909451147,
+      "w_centre_m_Ritz": 0.0008522616714425633,
+      "Mx_centre_Nm_per_m_Ritz": 5867.379621213718,
+      "FE_vs_Ritz_sigma_pct": -0.5288386827970948,
+      "FE_vs_Ritz_w_pct": 0.8669468829735072,
+      "sigma_change_vs_SSSS_pct": -9.648778012776404
+    },
+    "mid_frame_global": {
+      "beta_x": 0.1284063329141283,
+      "beta_y": 0.4541016109299456,
+      "sigma_vm_centre_MPa_FE": 69.35596228617882,
+      "w_centre_m_FE": 0.00095269180011544,
+      "Mx_centre_Nm_per_m_FE": 5997.472158745935,
+      "sigma_vm_centre_MPa_Ritz": 69.52477899895746,
+      "w_centre_m_Ritz": 0.000946359197900327,
+      "Mx_centre_Nm_per_m_Ritz": 6008.120098282799,
+      "FE_vs_Ritz_sigma_pct": -0.24281517353857973,
+      "FE_vs_Ritz_w_pct": 0.6691541889340735,
+      "sigma_change_vs_SSSS_pct": -5.472261360630415
+    },
+    "lower": {
+      "beta_x": 0.03552257602036045,
+      "beta_y": 0.12546323263126782,
+      "sigma_vm_centre_MPa_FE": 72.48137755088834,
+      "w_centre_m_FE": 0.001027747219667403,
+      "Mx_centre_Nm_per_m_FE": 6268.064724639537,
+      "sigma_vm_centre_MPa_Ritz": 72.56326695423036,
+      "w_centre_m_Ritz": 0.001021741243051947,
+      "Mx_centre_Nm_per_m_Ritz": 6275.235523090114,
+      "FE_vs_Ritz_sigma_pct": -0.11285242076224389,
+      "FE_vs_Ritz_w_pct": 0.5878177724838007,
+      "sigma_change_vs_SSSS_pct": -1.2125203442357568
+    },
+    "lower_thinwall_J": {
+      "beta_x": 0.03778748956560145,
+      "beta_y": 0.1297525254176338,
+      "sigma_vm_centre_MPa_FE": 72.44908018920388,
+      "w_centre_m_FE": 0.0010269564778477946,
+      "Mx_centre_Nm_per_m_FE": 6265.359037619063,
+      "sigma_vm_centre_MPa_Ritz": 72.53204550775628,
+      "w_centre_m_Ritz": 0.0010209495011720346,
+      "Mx_centre_Nm_per_m_Ritz": 6272.5906617361,
+      "FE_vs_Ritz_sigma_pct": -0.11438436345149183,
+      "FE_vs_Ritz_w_pct": 0.5883715765436115,
+      "sigma_change_vs_SSSS_pct": -1.256539581564653
+    }
+  },
+  "extremes": {
+    "ssss": {
+      "sigma_vm_centre_MPa_FE": 73.28151523842286,
+      "w_centre_m_FE": 0.0010471038650266473,
+      "vs_baseline_pct": -0.12198387542167177
+    },
+    "clamped": {
+      "sigma_vm_centre_MPa_FE": 47.2290750595587,
+      "w_centre_m_FE": 0.0004058079158636282,
+      "vs_baseline_pct": -35.62979279290015
+    }
+  },
+  "beta_scan_diagonal": [
+    {
+      "beta": 0.0,
+      "sigma_vm_centre_MPa": 73.28151523842286,
+      "w_centre_m": 0.0010471038650266473
+    },
+    {
+      "beta": 0.1,
+      "sigma_vm_centre_MPa": 72.49919878999638,
+      "w_centre_m": 0.0010273958339823467
+    },
+    {
+      "beta": 0.25,
+      "sigma_vm_centre_MPa": 71.07227215792702,
+      "w_centre_m": 0.0009914547952386739
+    },
+    {
+      "beta": 0.4,
+      "sigma_vm_centre_MPa": 69.21998036903605,
+      "w_centre_m": 0.0009448178792582504
+    },
+    {
+      "beta": 0.55,
+      "sigma_vm_centre_MPa": 66.717286255558,
+      "w_centre_m": 0.0008818595176699477
+    },
+    {
+      "beta": 0.7,
+      "sigma_vm_centre_MPa": 63.14277918666358,
+      "w_centre_m": 0.000792132700829405
+    },
+    {
+      "beta": 0.85,
+      "sigma_vm_centre_MPa": 57.585564536437026,
+      "w_centre_m": 0.0006535989316880302
+    },
+    {
+      "beta": 1.0,
+      "sigma_vm_centre_MPa": 47.229181217546284,
+      "w_centre_m": 0.00040581030528315324
+    }
+  ],
+  "ritz_convergence": [
+    {
+      "modes": 20,
+      "sigma_vm_centre_MPa": 69.81668225052,
+      "w_centre_m": 0.0009460769620684021
+    },
+    {
+      "modes": 30,
+      "sigma_vm_centre_MPa": 69.29575090944665,
+      "w_centre_m": 0.0009462484350963403
+    },
+    {
+      "modes": 40,
+      "sigma_vm_centre_MPa": 69.52477899895746,
+      "w_centre_m": 0.000946359197900327
+    },
+    {
+      "modes": 60,
+      "sigma_vm_centre_MPa": 69.52830861338356,
+      "w_centre_m": 0.0009464619851240883
+    }
+  ],
+  "strip_limit": {
+    "upper": {
+      "k_rot_y": 238701.86615384615,
+      "M_end_exact": 11994.63210351132,
+      "M_end_clamped": 40833.33333333333,
+      "M_end_simple": 0.0
+    },
+    "upper_Jsplit": {
+      "k_rot_y": 238701.86615384615,
+      "M_end_exact": 11994.63210351132,
+      "M_end_clamped": 40833.33333333333,
+      "M_end_simple": 0.0
+    },
+    "mid_frame_global": {
+      "k_rot_y": 238701.86615384615,
+      "M_end_exact": 11994.63210351132,
+      "M_end_clamped": 40833.33333333333,
+      "M_end_simple": 0.0
+    },
+    "lower": {
+      "k_rot_y": 41167.35692307693,
+      "M_end_exact": 2732.985603852049,
+      "M_end_clamped": 40833.33333333333,
+      "M_end_simple": 0.0
+    },
+    "lower_thinwall_J": {
+      "k_rot_y": 42784.61538461538,
+      "M_end_exact": 2832.902165743152,
+      "M_end_clamped": 40833.33333333333,
+      "M_end_simple": 0.0
+    }
+  },
+  "torsion_beam_limits": {
+    "12GJ/L2_longitudinal_HP": 238701.86615384615,
+    "3GJ/L2_longitudinal_FB": 41167.35692307693
+  },
+  "verdicts": [
+    {
+      "check": "FE beta=0 centre sigma_vM vs Navier N=401 baseline",
+      "error_pct": -0.12198387542167177,
+      "tolerance_pct": 0.5,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'upper': Mindlin FE vs Kirchhoff Ritz (sigma_vM)",
+      "error_pct": -0.5288386827970948,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'upper': Mindlin FE vs Kirchhoff Ritz (w)",
+      "error_pct": 0.8669468829735072,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'upper_Jsplit': Mindlin FE vs Kirchhoff Ritz (sigma_vM)",
+      "error_pct": -0.5288386827970948,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'upper_Jsplit': Mindlin FE vs Kirchhoff Ritz (w)",
+      "error_pct": 0.8669468829735072,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'mid_frame_global': Mindlin FE vs Kirchhoff Ritz (sigma_vM)",
+      "error_pct": -0.24281517353857973,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'mid_frame_global': Mindlin FE vs Kirchhoff Ritz (w)",
+      "error_pct": 0.6691541889340735,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'lower': Mindlin FE vs Kirchhoff Ritz (sigma_vM)",
+      "error_pct": -0.11285242076224389,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'lower': Mindlin FE vs Kirchhoff Ritz (w)",
+      "error_pct": 0.5878177724838007,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'lower_thinwall_J': Mindlin FE vs Kirchhoff Ritz (sigma_vM)",
+      "error_pct": -0.11438436345149183,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "calibrated 'lower_thinwall_J': Mindlin FE vs Kirchhoff Ritz (w)",
+      "error_pct": 0.5883715765436115,
+      "tolerance_pct": 5.0,
+      "pass": true
+    },
+    {
+      "check": "Ritz mode convergence (finest two retained sets, sigma_vM)",
+      "error_pct": -0.00507651415155852,
+      "tolerance_pct": 1.0,
+      "pass": true
+    }
+  ],
+  "runtime_s": 80.95064663887024
+}
