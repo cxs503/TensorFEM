@@ -145,8 +145,25 @@ def _fraction(name: str, value: float) -> float:
 class MemberSection:
     """Tee section (web + flange) built on an attached plate strip.
 
-    The attached plate strip lies at ``z = 0``; the tee hangs below it
+    The attached plate strip is centred at ``z = 0``; the tee hangs below it
     (negative ``z``), matching the convention of ``stiffened_panel_ultimate``.
+    ``web_origin`` fixes where the web starts, i.e. how the plate/web junction is
+    modelled:
+
+    ``"plate_bottom"`` (default)
+        The web is welded to the *underside* of the plating, so it starts at
+        ``z = -t_p/2``.  Plate strip and web then occupy disjoint areas -- no
+        material is counted twice.  This is the convention of
+        :func:`tensorfem.ice_belt_collapse.tee_section` and of
+        ``stiffened_panel_ultimate``.
+    ``"plate_mid"``
+        Legacy convention, kept only to reproduce numbers published before the
+        junction was corrected: the web starts at the plate mid-plane ``z = 0``,
+        so its upper ``t_p/2`` lies inside the plate strip and that overlap is
+        counted twice in ``area`` and in ``plastic_modulus``.  The overlap is
+        reported by :attr:`double_counted_area`.
+
+    ``area``/``inertia``/``plastic_modulus`` all follow ``web_origin``.
     """
 
     web_height: float
@@ -155,6 +172,9 @@ class MemberSection:
     flange_thickness: float
     plate_thickness: float = 0.0
     plate_width: float = 0.0
+    web_origin: str = "plate_bottom"
+
+    _WEB_ORIGINS = ("plate_bottom", "plate_mid")
 
     def validate(self) -> "MemberSection":
         _positive("web_height", self.web_height)
@@ -167,6 +187,10 @@ class MemberSection:
             raise ValueError("flange_width must not be narrower than web_thickness")
         if self.plate_thickness > 0.0 and self.plate_width <= 0.0:
             raise ValueError("an attached plate needs a positive plate_width")
+        if self.web_origin not in self._WEB_ORIGINS:
+            raise ValueError(
+                f"web_origin must be one of {self._WEB_ORIGINS}, "
+                f"got {self.web_origin!r}")
         return self
 
     @property
@@ -185,15 +209,35 @@ class MemberSection:
     def area(self) -> float:
         return self.web_area + self.flange_area + self.attached_area
 
+    @property
+    def web_start_z(self) -> float:
+        """``z`` where the web meets the plating (negative: below mid-plane)."""
+        if self.plate_thickness <= 0.0 or self.web_origin == "plate_mid":
+            return 0.0
+        return -0.5 * self.plate_thickness
+
+    @property
+    def double_counted_area(self) -> float:
+        """Web area lying inside the plate strip (``0`` for ``plate_bottom``)."""
+        if self.attached_area <= 0.0 or self.web_origin != "plate_mid":
+            return 0.0
+        return self.web_thickness * min(0.5 * self.plate_thickness, self.web_height)
+
+    @property
+    def effective_area(self) -> float:
+        """``area`` with any plate/web overlap removed (``<= area``)."""
+        return self.area - self.double_counted_area
+
     def _parts(self) -> list[tuple[float, float, float]]:
         """``[(area, z_from_plate_mid_plane, own_inertia)]``."""
         parts: list[tuple[float, float, float]] = []
+        z0 = self.web_start_z
         if self.attached_area > 0.0:
             parts.append((self.attached_area, 0.0,
                           self.plate_width * self.plate_thickness ** 3 / 12.0))
-        parts.append((self.web_area, -0.5 * self.web_height,
+        parts.append((self.web_area, z0 - 0.5 * self.web_height,
                       self.web_thickness * self.web_height ** 3 / 12.0))
-        parts.append((self.flange_area, -self.web_height - 0.5 * self.flange_thickness,
+        parts.append((self.flange_area, z0 - self.web_height - 0.5 * self.flange_thickness,
                       self.flange_width * self.flange_thickness ** 3 / 12.0))
         return parts
 
@@ -232,10 +276,11 @@ class MemberSection:
             strips.append((self.attached_area, -0.5 * t, 0.5 * t))
         n_sub = 100
         dz = self.web_height / n_sub
+        z0 = self.web_start_z
         for i in range(n_sub):
-            z_hi = -i * dz
+            z_hi = z0 - i * dz
             strips.append((self.web_thickness * dz, z_hi - dz, z_hi))
-        z_hi = -self.web_height
+        z_hi = z0 - self.web_height
         strips.append((self.flange_area, z_hi - self.flange_thickness, z_hi))
 
         total = sum(a for a, _, _ in strips)
@@ -350,6 +395,7 @@ class GrillageGeometry:
             flange_thickness=section.flange_thickness,
             plate_thickness=self.plate_thickness,
             plate_width=tributary,
+            web_origin=section.web_origin,
         ).validate()
 
     @property
