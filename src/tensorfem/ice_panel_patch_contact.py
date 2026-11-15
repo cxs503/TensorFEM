@@ -297,35 +297,42 @@ def patch_from_contact(
         if xb <= xa or yb <= ya:
             continue
         fe = torch.zeros(12, dtype=dtype)
-        for sx0, sx1 in zip(_axis_breaks(xa, xb, xg)[:-1], _axis_breaks(xa, xb, xg)[1:]):
-            for sy0, sy1 in zip(
-                _axis_breaks(ya, yb, yg)[:-1], _axis_breaks(ya, yb, yg)[1:]
-            ):
-                hx, hy = sx1 - sx0, sy1 - sy0
-                sub_pressures = []
-                for gx, wx in _GAUSS2:
-                    xp = 0.5 * (sx0 + sx1) + 0.5 * hx * gx
-                    xi = 2.0 * (xp - exa) / (exb - exa) - 1.0
-                    for gy, wy in _GAUSS2:
-                        yp = 0.5 * (sy0 + sy1) + 0.5 * hy * gy
-                        eta = 2.0 * (yp - eya) / (eyb - eya) - 1.0
-                        N, _ = _shape(
-                            torch.tensor(xi, dtype=dtype),
-                            torch.tensor(eta, dtype=dtype),
-                        )
-                        pq = float(
-                            patch.pressure_at(
-                                torch.tensor([xp], dtype=dtype),
-                                torch.tensor([yp], dtype=dtype),
-                            )[0]
-                        )
-                        sub_pressures.append(pq)
-                        w = wx * wy * 0.25 * hx * hy
-                        for i in range(4):
-                            fe[3 * i] += N[i] * pq * w
-                loaded_area += hx * hy
-                if sub_pressures and min(sub_pressures) > 0.0:
-                    pressurised_area += hx * hy
+        xbks = _axis_breaks(xa, xb, xg)
+        ybks = _axis_breaks(ya, yb, yg)
+        if len(xbks) < 2 or len(ybks) < 2:
+            continue
+        xs0 = torch.tensor(xbks[:-1], dtype=dtype)
+        xs1 = torch.tensor(xbks[1:], dtype=dtype)
+        ys0 = torch.tensor(ybks[:-1], dtype=dtype)
+        ys1 = torch.tensor(ybks[1:], dtype=dtype)
+        SX0, SY0 = torch.meshgrid(xs0, ys0, indexing="ij")
+        SX1, SY1 = torch.meshgrid(xs1, ys1, indexing="ij")
+        HX = SX1 - SX0
+        HY = SY1 - SY0
+        nsub = HX.numel()
+        # all sub-cells x 4 Gauss points in one batch (same points, same
+        # bilinear evaluation as the former point-by-point loop)
+        gxv = torch.tensor([g for g, _ in _GAUSS2], dtype=dtype)
+        gyv = torch.tensor([g for g, _ in _GAUSS2], dtype=dtype)
+        GXX, GYY = torch.meshgrid(gxv, gyv, indexing="ij")
+        GXX4 = GXX.reshape(-1)
+        GYY4 = GYY.reshape(-1)
+        XQ = (0.5 * (SX0 + SX1)[:, :, None] + 0.5 * HX[:, :, None] * GXX4[None, None, :]).reshape(-1)
+        YQ = (0.5 * (SY0 + SY1)[:, :, None] + 0.5 * HY[:, :, None] * GYY4[None, None, :]).reshape(-1)
+        N, _ = _shape(
+            2.0 * (XQ - exa) / (exb - exa) - 1.0,
+            2.0 * (YQ - eya) / (eyb - eya) - 1.0,
+        )
+        PQ = patch.pressure_at(XQ, YQ)
+        wxv = torch.tensor([w for _, w in _GAUSS2], dtype=dtype)
+        wyv = torch.tensor([w for _, w in _GAUSS2], dtype=dtype)
+        wpt = (wxv[:, None] * wyv[None, :]).reshape(-1).repeat(nsub)
+        wpt = wpt * 0.25 * HX.reshape(-1).repeat_interleave(4) * HY.reshape(-1).repeat_interleave(4)
+        fe[0::3] += (N * (PQ * wpt)[None, :]).sum(dim=1)
+        loaded_area += float((HX * HY).sum())
+        pos = PQ.reshape(nsub, 4).min(dim=1).values > 0.0
+        if bool(pos.any()):
+            pressurised_area += float((HX * HY).reshape(-1)[pos].sum())
         dofs = torch.stack((3 * conn, 3 * conn + 1, 3 * conn + 2), dim=1).reshape(-1)
         f[dofs] += fe
 
@@ -708,12 +715,18 @@ def coupled_patch_solve(
     relax: float = 0.5,
     tol: float = 1e-4,
     max_coupling: int = 12,
+    w0: torch.Tensor | None = None,
 ) -> tuple[ContactPatch, PanelSolution, dict]:
     """Run ``contact -> patch load -> plate -> deflection -> contact`` to a fixed point.
 
     Convergence criterion: relative change of the pressure field between sweeps,
     ``max|p_k - p_{k-1}| / max(p_k)``, below ``tol``.  Each sweep re-solves the
     approach, so the total normal force is held at every iteration.
+
+    ``w0`` optionally seeds the deflection guess (shape ``(grid, grid)``,
+    positive in the load direction); the default is the flat plate (zeros).
+    Exposed so the fixed point can be probed from different starting points
+    (see ``tools/verify_gap_pp1_coupling_convergence.py``, section B).
     """
     a, b = panel
     cx, cy = (a / 2.0, b / 2.0) if centre is None else centre
@@ -724,7 +737,11 @@ def coupled_patch_solve(
     XQ, YQ = torch.meshgrid(xg, yg, indexing="ij")
     XF, YF = XQ.reshape(-1), YQ.reshape(-1)
 
-    w_hat = torch.zeros(grid, grid, dtype=torch.float64)
+    w_hat = (
+        torch.zeros(grid, grid, dtype=torch.float64)
+        if w0 is None
+        else torch.as_tensor(w0, dtype=torch.float64).reshape(grid, grid).clone()
+    )
     history: list[dict] = []
     patch: ContactPatch | None = None
     sol: PanelSolution | None = None
@@ -788,6 +805,11 @@ def coupled_patch_solve(
         "converged": bool(history[-1]["pressure_change_rel"] < tol),
         "tol": tol,
         "history": history,
+        # the relaxed deflection iterate at the last sweep; re-feeding it to
+        # czm_contact_patch reproduces the pressure field to within the
+        # convergence tolerance (fixed-point residual, see
+        # tools/verify_gap_pp1_coupling_convergence.py, section A)
+        "final_deflection": w_hat.clone(),
     }
 
 
