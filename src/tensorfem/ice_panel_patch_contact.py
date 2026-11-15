@@ -894,14 +894,17 @@ def uniform_patch_pressure(
         pts = sorted(set(base + [float(e0), float(e1)]))
         return torch.tensor(pts, dtype=torch.float64)
 
-    xg = _grid(min(0.0, x0), max(a, x1), x0, x1)
-    yg = _grid(min(0.0, y0), max(b, y1), y0, y1)
+    # The grid spans only the loaded footprint [x0,x1] x [y0,y1] (clamped to the
+    # plate), so the pressure field is exactly p0 over the whole grid and the
+    # bilinear interpolant used by patch_from_contact is a true step function
+    # (zero outside via outside_zero).  Spanning the whole plate instead would
+    # leave 0->p0 boundary ramps on the interior patch edges, whose exact
+    # integral overestimates the force by ~6 % and biases the non-uniform-vs-
+    # uniform comparison (see test_flat_edge_reduces_to_the_uniform_patch).
+    xg = _grid(max(0.0, x0), min(a, x1), x0, x1)
+    yg = _grid(max(0.0, y0), min(b, y1), y0, y1)
     X, Y = torch.meshgrid(xg, yg, indexing="ij")
-    p = torch.where(
-        (X >= x0) & (X <= x1) & (Y >= y0) & (Y <= y1),
-        torch.full_like(X, p0),
-        torch.zeros_like(X),
-    )
+    p = torch.full_like(X, p0)
     def _trap(g: torch.Tensor) -> torch.Tensor:
         d = torch.diff(g)
         w = torch.zeros(g.numel(), dtype=torch.float64)
@@ -913,7 +916,13 @@ def uniform_patch_pressure(
         x=xg,
         y=yg,
         pressure=p,
-        total_force=float((p * (_trap(xg)[:, None] * _trap(yg)[None, :])).sum()),
+        # The pressure is exactly p0 over exactly `area`, so the total force is
+        # p0*area.  The trapezoidal integral of the *discretised* step field
+        # overestimates it at the interior patch boundaries (it treats the
+        # 0->p0 step as a linear ramp), which would otherwise bias the
+        # non-uniform-vs-uniform comparison by ~6 % (see
+        # test_flat_edge_reduces_to_the_uniform_patch).
+        total_force=p0 * area,
         contact_area=area,
         peak_pressure=p0,
         centroid=(0.5 * (x0 + x1), 0.5 * (y0 + y1)),
