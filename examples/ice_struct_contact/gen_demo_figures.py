@@ -140,7 +140,7 @@ def gen_deflection_comparison_figure(out: Path):
 def gen_stress_comparison_figure(out: Path):
     """Figure 3: Peak stress comparison bar chart."""
     # Load demo results
-    demo_json = Path(__file__).parent.parent.parent / "outputs" / "ice_struct_demo" / "end_to_end_demo.json"
+    demo_json = Path(__file__).parent.parent.parent / "benchmarks" / "artifacts" / "GAP-PP-1-end-to-end-demo" / "end_to_end_demo.json"
     if demo_json.exists():
         data = json.loads(demo_json.read_text())
         sigma_x_nonuni = data["peak_stress_nonuniform"]["sigma_x_MPa"]
@@ -231,7 +231,7 @@ def gen_scan_figure(out: Path):
 
 
 def main():
-    out = Path(__file__).parent.parent.parent / "outputs" / "ice_struct_demo"
+    out = Path(__file__).parent.parent.parent / "benchmarks" / "artifacts" / "GAP-PP-1-end-to-end-demo"
     out.mkdir(parents=True, exist_ok=True)
 
     print("Generating figures for GAP-PP-1-ICE-STRUCT-CONTACT-PATCH report...")
