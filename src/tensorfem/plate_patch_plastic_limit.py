@@ -751,6 +751,8 @@ class PatchPath:
     ramp_completed: bool = False
     #: ramp stopped early by ``max_deflection_factor`` (flat post-saturation path)
     ramp_truncated: bool = False
+    #: why the ramp was truncated (``None`` when the ramp ran to its end)
+    truncation_reason: str | None = None
     # Unloading bookkeeping: a residual deflection is only a *permanent set* if
     # the unload leg actually converged; a failed first step used to be reported
     # as a permanent set equal to the peak deflection.
@@ -854,6 +856,78 @@ class PatchPath:
         return (dp / dw) / k0
 
 
+def section_capacity_ratio_of(path: "PatchPath") -> float | None:
+    """Section capacity ``m_p,layers / m_p`` of the path's own model.
+
+    ``None`` when the path carries no model (synthetic paths in the tests).
+    """
+    model = getattr(path, "model", None)
+    if model is None:
+        return None
+    try:
+        return section_moment_capacity(model.thickness, model.yield_stress,
+                                      model.layers)["ratio"]
+    except (AttributeError, TypeError, ValueError):  # pragma: no cover - defensive
+        return None
+
+
+def path_admissibility(path: "PatchPath", *,
+                       capacity_ratio: float | None = None,
+                       tolerance: float = 1e-3) -> dict:
+    """Physical-admissibility gate for a load-deflection path.
+
+    Why this exists
+    ---------------
+    :func:`limit_load_from_path` fits two tangent lines to *whatever* it is
+    given, including a path whose last step is not an equilibrium state of the
+    layer model at all.  Two such states were measured on the anchored
+    ice-structure ladder (``artifacts/patch_plate_plastic_ladder_nx12_free.json``,
+    queue job ``cj3424``):
+
+    * the peak section-moment invariant exceeded the section capacity
+      (``|M|/m_p = 1.077`` at ``n = 4`` layers, whose capacity ratio is exactly
+      ``1.0``) -- a converged return mapping cannot leave the section;
+    * the centre deflection amplified ``1.9e3`` times in one load step
+      (``0.0696 m -> 133.5 m`` on a 20 mm plate, ``max alpha = 35.4``), i.e. the
+      Newton solver "converged" onto a non-equilibrium branch.
+
+    On that path the two-line rule still returned ``1.825 MPa`` with a
+    plausible 6.8 % criteria spread; removing the bad point makes the same rule
+    return a *negative* limit load.  The reported number was therefore produced
+    entirely by the inadmissible point -- fail-open.  This gate lets the callers
+    (and :func:`limit_load_from_path`) withhold the number instead.
+
+    Returns ``{"admissible": bool, "violations": [str, ...],
+    "capacity_ratio": float|None, "max_moment_ratio": float|None}``.
+    """
+    points = [q for q in path.loading if q.load_factor > 0.0]
+    violations: list[str] = []
+    capacity = capacity_ratio if capacity_ratio is not None else section_capacity_ratio_of(path)
+    peak_moment: float | None = None
+    previous: PatchPathPoint | None = None
+    for q in points:
+        numbers = (q.load_factor, q.centre_deflection, q.max_alpha, q.max_moment_ratio)
+        if not all(math.isfinite(v) for v in numbers):
+            violations.append(
+                f"non-finite step at p = {q.load_factor:.6g}")
+            continue
+        if q.max_moment_ratio > (capacity if capacity is not None else 1.0) * (1.0 + tolerance):
+            violations.append(
+                f"section capacity exceeded: |M|/m_p = {q.max_moment_ratio:.6f} > "
+                f"capacity {capacity if capacity is not None else 1.0:.6f} "
+                f"at p = {q.load_factor:.6g}")
+        peak_moment = (q.max_moment_ratio if peak_moment is None
+                       else max(peak_moment, q.max_moment_ratio))
+        if previous is not None:
+            if q.centre_deflection <= previous.centre_deflection:
+                violations.append(
+                    f"centre deflection does not increase at p = {q.load_factor:.6g} "
+                    f"({previous.centre_deflection:.6g} -> {q.centre_deflection:.6g} m)")
+        previous = q
+    return {"admissible": not violations, "violations": violations,
+            "capacity_ratio": capacity, "max_moment_ratio": peak_moment}
+
+
 def limit_load_from_path(path: "PatchPath", *,
                          criteria: Sequence[float] = (0.02, 0.05, 0.10),
                          minimum_points: int = 3) -> dict:
@@ -885,6 +959,7 @@ def limit_load_from_path(path: "PatchPath", *,
     points = [q for q in path.loading if q.load_factor > 0.0 and q.centre_deflection > 0.0]
     if len(points) < minimum_points:
         raise ValueError("need at least three loading points with positive deflection")
+    admissibility = path_admissibility(path)
     k0 = points[0].centre_deflection / points[0].load_factor
     if k0 <= 0.0:
         raise ValueError("degenerate elastic stiffness")
@@ -912,8 +987,16 @@ def limit_load_from_path(path: "PatchPath", *,
     out: dict = {"elastic_slope": k0, "final_slope": k1,
                  "peak_factor": last.load_factor,
                  "peak_deflection": last.centre_deflection,
-                 "points": len(points), "measurements": {}}
+                 "points": len(points), "measurements": {},
+                 "admissibility": admissibility}
     measurements = out["measurements"]
+    if not admissibility["admissible"]:
+        # Fail-closed: a limit load fitted to a non-equilibrium path is not a
+        # limit load.  Withhold every measurement and say why.
+        out["limit_load"] = None
+        out["spread"] = None
+        out["reason"] = "path inadmissible: " + "; ".join(admissibility["violations"])
+        return out
 
     # 1. two-line intersection (k is deflection per unit load, so the plastic
     #    branch has k1 > k0; p_c = (k1 p_peak - w_peak)/(k1 - k0))
@@ -953,9 +1036,25 @@ def limit_load_from_path(path: "PatchPath", *,
                 frac = 0.0 if (r0 <= criterion or r1 == r0) else (r0 - criterion) / (r0 - r1)
                 measurements[key] = float(p1 + frac * dp_i)
                 break
+    # A limit load must lie strictly inside the ramp: the two-line rule returns
+    # a *negative* number as soon as the final branch is a stiffening one (the
+    # intersection of two stiffening lines is to the left of the origin), and a
+    # measurement above the peak is an extrapolation, not a measurement.
+    rejected = {key: value for key, value in measurements.items()
+                if not (0.0 < value <= last.load_factor)}
+    for key in rejected:
+        measurements.pop(key)
+    out["rejected_measurements"] = rejected
     values = list(measurements.values())
-    out["limit_load"] = measurements.get("intersection_of_tangents") or (
-        min(values) if values else None)
+    if not values:
+        out["limit_load"] = None
+        out["spread"] = None
+        out["reason"] = (
+            "no admissible limit-load definition fired: the load-deflection path "
+            f"does not flatten (final / elastic slope = {k1 / k0:.3f}; a collapse "
+            "branch needs a slope well below the elastic one)")
+        return out
+    out["limit_load"] = measurements.get("intersection_of_tangents") or min(values)
     if len(values) >= 2:
         lo, hi = min(values), max(values)
         out["spread"] = (hi - lo) / lo
@@ -968,6 +1067,42 @@ def limit_load_from_path(path: "PatchPath", *,
 def _centre_node(info: dict) -> int:
     nx, ny = info["nx"], info["ny"]
     return (nx // 2) * (ny + 1) + ny // 2
+
+
+def _step_rejection(w_new: float, moment_ratio: float, load_factor: float,
+                    history: list["PatchPathPoint"], capacity_ratio: float,
+                    max_deflection_factor: float | None) -> str | None:
+    """Reason to refuse committing a converged step, or ``None`` if it is sound.
+
+    The layer model cannot leave the section shell ``|M| <= m_p,layers`` and a
+    small-rotation plate cannot gain an order of magnitude of deflection in one
+    load step, so either event means the Newton iterate is not an equilibrium
+    state of this model.
+    """
+    if not (math.isfinite(w_new) and math.isfinite(moment_ratio)):
+        return "non-finite state in the increment"
+    if moment_ratio > capacity_ratio * (1.0 + 1e-3):
+        return (f"section capacity exceeded: |M|/m_p = {moment_ratio:.6f} > "
+                f"capacity {capacity_ratio:.6f} at p = {load_factor:.6g}")
+    if not history:
+        return None
+    previous = history[-1]
+    if w_new <= previous.centre_deflection:
+        return (f"centre deflection does not increase at p = {load_factor:.6g} "
+                f"({previous.centre_deflection:.6g} -> {w_new:.6g} m)")
+    share = (w_new - previous.centre_deflection) / w_new
+    if share > 0.9:
+        return ("deflection runaway: one increment carries %.1f %% of the whole "
+                "deflection (p = %.6g -> %.6g MPa, w = %.6g -> %.6g m)"
+                % (100.0 * share, previous.load_factor / 1e6, load_factor / 1e6,
+                   previous.centre_deflection, w_new))
+    if max_deflection_factor is not None:
+        elastic = load_factor * previous.centre_deflection / previous.load_factor
+        if w_new > max_deflection_factor * elastic:
+            return ("small-rotation guard: w = %.6g m exceeds %.3g x the elastic "
+                    "prediction (%.6g m) at p = %.6g MPa"
+                    % (w_new, max_deflection_factor, elastic, load_factor / 1e6))
+    return None
 
 
 def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
@@ -1013,6 +1148,8 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
     state = LayeredShell4State.virgin(model)
     u = torch.zeros(model.n_dofs, dtype=model.nodes.dtype)
     centre = _centre_node(info)
+    capacity_ratio = section_moment_capacity(
+        model.thickness, model.yield_stress, model.layers)["ratio"]
 
     def advance(target: float, current: float, history: list[PatchPathPoint]) -> float | None:
         nonlocal state, u
@@ -1031,12 +1168,27 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
                 stack.append((mid, end))
                 stack.append((start, mid))
                 continue
+            # The state is validated *before* it is committed.  A step that
+            # leaves the section (|M|/m_p above the layer capacity) or whose
+            # deflection runs away is a Newton artefact, not an equilibrium
+            # state; committing it puts a non-physical point into the history,
+            # where the limit-load extractor would consume it (measured on the
+            # anchored ladder: 0.0696 m -> 133.5 m, |M|/m_p = 1.077; the
+            # committed point produced a +20.5 % "limit load").
+            w_new = float(step.displacement[6 * centre + 2])
+            moment_ratio = max_section_moment_ratio(
+                step.stress, model.thickness, model.yield_stress, model.layers)
+            rejection = _step_rejection(w_new, moment_ratio, end, history,
+                                        capacity_ratio, max_deflection_factor)
+            if rejection is not None:
+                path.ramp_truncated = True
+                path.truncation_reason = rejection
+                return current
             state, u = step.state, step.displacement
             history.append(PatchPathPoint(
-                end, float(u[6 * centre + 2]), float(torch.max(step.alpha)),
+                end, w_new, float(torch.max(step.alpha)),
                 surface_extrapolated_mises(step.stress, model.thickness),
-                max_section_moment_ratio(step.stress, model.thickness,
-                                         model.yield_stress, model.layers)))
+                moment_ratio))
             current = end
         return current
 
@@ -1049,6 +1201,10 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
         if reached is None:
             path.collapse_factor = previous
             path.limit_point_searched = True
+            break
+        if path.ramp_truncated:
+            # the increment was rejected before commit: stop, do not append
+            previous = reached
             break
         previous = reached
         if max_deflection_factor is not None and len(path.loading) > 1:
