@@ -3,13 +3,14 @@
   "anchor": "fem_wave_dispersion",
   "title": "Rayleigh--Lamb dispersion: exact oracle vs a Bloch--Floquet Q4 plane-strain cell",
   "mission": "GAP-FEM-WAVE-DISPERSION",
-  "generated_at": "2026-11-14T10:17:56+00:00",
+  "generated_at": "2026-11-15T04:54:36+00:00",
   "criteria": {
     "s0_plate_velocity_extrapolated": 0.002,
     "a0_flexural_limit": 0.01,
     "a0_rayleigh_limit": 0.01,
     "s0_rayleigh_limit": 0.01,
     "root_residual": 1e-09,
+    "higher_root_residual": 1e-06,
     "fem_phase_error_fine": 0.03,
     "fem_convergence_order": 1.5,
     "mass_conservation": 1e-12,
@@ -63,6 +64,15 @@
       "passed": true
     },
     {
+      "id": "higher_root_residual",
+      "quantity": "max normalised Rayleigh--Lamb residual over *every* root the scanner reports on the anchor kh grid (n_roots=3 per family, higher branches included)",
+      "reference": "0 (a reported root solves the Rayleigh--Lamb equation; pole crossings of tan/tanh do not, they leave the normalised residual at O(0.1)..1)",
+      "value": 8.52490213333919e-14,
+      "threshold": 1e-06,
+      "operator": "<=",
+      "passed": true
+    },
+    {
       "id": "fem_phase_error_fine",
       "quantity": "max relative phase-velocity error of the 32x16 Floquet cell, A0 and S0, kh=0.2..1 (branches picked by mid-plane parity, not by index)",
       "reference": "exact Rayleigh--Lamb roots",
@@ -112,10 +122,18 @@
   "artifacts": {
     "result": "benchmarks/verified/fem_wave_dispersion/result.json",
     "gates": "benchmarks/verified/fem_wave_dispersion/gates_verified.json",
-    "dispersion_figure": "benchmarks/verified/fem_wave_dispersion/dispersion.png",
-    "convergence_figure": "benchmarks/verified/fem_wave_dispersion/convergence.png",
     "document": "docs/lamb-wave-dispersion-verification.md",
     "solver": "src/tensorfem/wave_dispersion.py",
     "tests": "tests/test_wave_dispersion.py"
-  }
+  },
+  "figures_rendered_on_demand": [
+    {
+      "path": "dispersion.png",
+      "rendered_by": "benchmarks/verified/fem_wave_dispersion/run_verification.py"
+    },
+    {
+      "path": "convergence.png",
+      "rendered_by": "benchmarks/verified/fem_wave_dispersion/run_verification.py"
+    }
+  ]
 }
