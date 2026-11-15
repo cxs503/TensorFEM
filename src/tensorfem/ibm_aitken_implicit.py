@@ -703,6 +703,11 @@ class ImplicitIBMFSI:
         self.aitken = AitkenRelaxation(relax_max=relax_max, relax0=relax_max)
         self.sub_iterations = []
         self.n_maxit_hits = 0
+        #: sub-iteration residual sequence of every time level (diagnostics: see
+        #: :mod:`tensorfem.ibm_subiter_gain` -- the interface gain ``mu`` of the
+        #: coupling is read off this trace, and ``mu -> 1`` means the relaxation
+        #: factor cannot influence the answer at all).
+        self.residual_traces = []
 
     def interface_residual(self, r_k):
         """Dimensionless interface residual and its (translation, rotation) split.
@@ -748,6 +753,7 @@ class ImplicitIBMFSI:
         omega_applied = float("nan")
         n_relax = 0
         converged, res, it = False, float("inf"), 0
+        trace = []
         for it in range(1, self.max_sub_iter + 1):
             self.ibm.move(beam.markers())
             rho_i, mom_i = self.ibm.interpolate(rho, u)
@@ -756,6 +762,7 @@ class ImplicitIBMFSI:
             u_new, _ok, _nit, _nres = beam.newmark_solve(load, self.dt)
             r_k = u_new - u_km1
             res, res_split = self.interface_residual(r_k)
+            trace.append(res)
             if res <= self.sub_tol:
                 converged = True
                 break
@@ -779,6 +786,7 @@ class ImplicitIBMFSI:
         self.fluid.step(force=self.ibm.spread(f_lag))
         beam.advance_history()
         self.sub_iterations.append(it)
+        self.residual_traces.append(trace)
         return {"sub_iterations": it, "residual": res, "converged": converged,
                 "residual_translation": res_split[0],
                 "residual_rotation": res_split[1],
