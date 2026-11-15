@@ -244,6 +244,7 @@ def solve_plate_on_winkler_foundation(
     pressure: float | callable,
     boundary: str = "simply_supported",
     dtype=torch.float64,
+    force_vector: "torch.Tensor | None" = None,
 ) -> MindlinPlateResult:
     """求解 Winkler 弹性地基上的 Mindlin 板。
     
@@ -267,6 +268,10 @@ def solve_plate_on_winkler_foundation(
         边界条件："simply_supported" 或 "clamped"
     dtype : torch.dtype
         数据类型
+    force_vector : torch.Tensor, optional
+        若给定（长度 3*n_nodes，仅 w 自由度非零），直接作为全局载荷向量，
+        跳过 pressure 的单元积分。用于外部已做精确一致投影的载荷
+        （如 ``tensorfem.patch_from_contact.exact_consistent_load``）。
     
     Returns
     -------
@@ -284,11 +289,19 @@ def solve_plate_on_winkler_foundation(
     K = _assemble_plate_stiffness(nodes, elements, young, poisson, thickness, winkler_k, dtype)
     f = torch.zeros(ndof, dtype=dtype)
     
-    for conn in elements:
-        xy = nodes[conn]
-        fe = consistent_load_vector(xy, pressure)
-        dofs = torch.stack((3*conn, 3*conn+1, 3*conn+2), dim=1).reshape(-1)
-        f[dofs] += fe
+    if force_vector is not None:
+        fv = torch.as_tensor(force_vector, dtype=dtype, device=nodes.device)
+        if fv.shape != (ndof,):
+            raise ValueError(
+                f"force_vector must have {ndof} entries, got {fv.shape}"
+            )
+        f = fv.clone()
+    else:
+        for conn in elements:
+            xy = nodes[conn]
+            fe = consistent_load_vector(xy, pressure)
+            dofs = torch.stack((3*conn, 3*conn+1, 3*conn+2), dim=1).reshape(-1)
+            f[dofs] += fe
     
     # 施加边界条件
     _, free = _apply_boundary_conditions(nodes, side, ndof, boundary)
