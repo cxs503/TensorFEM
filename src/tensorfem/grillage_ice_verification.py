@@ -146,16 +146,25 @@ MEMBER_GOVERNED_SCENARIOS: tuple[tuple[str, float, float, float, float, float], 
 def member_governed_geometry() -> GrillageGeometry:
     """Scantling on which the longitudinal stiffener, not the plate, governs.
 
-    Documentation example, not a rule table: 25 mm plating over a 0.55 m bay
+    Documentation example, not a rule table: 26 mm plating over a 0.55 m bay
     keeps the plate field above the member level, while the shallow 160 x 6 web
     makes one stiffener line the weakest link.  The measured utilisation split at
     the limit is reported by :func:`member_governed_case_table`; the branch is
     what the acceptance item means by a *grillage* ultimate rather than a
     plate-panel ultimate.
+
+    The plating was re-set from 25 mm to 26 mm in round 8 so that the plate
+    utilisation at the member limit stays below 0.9 on every combined case.  The
+    round-7 web-origin correction (web welded to the plate underside) had pushed
+    the light-ice case's plate utilisation to 0.911, which forced the regression
+    lock in ``tests/test_grillage_ultimate_independent_audit.py`` to 0.95; the
+    +1 mm re-set restores the 0.9-level margin (0.838 / 0.759 / 0.719 on the
+    three combined cases) while keeping the longitudinal stiffener the governing
+    member -- see ``docs/CASE-GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE-round8.md``.
     """
     return GrillageGeometry(
         frame_spacing=2.4, bay_spacing=0.55, n_bays=4, n_spans=4,
-        plate_thickness=0.025,
+        plate_thickness=0.026,
         stiffener=MemberSection(0.16, 0.006, 0.05, 0.007),
         frame=MemberSection(0.55, 0.010, 0.120, 0.014),
     ).validate()
