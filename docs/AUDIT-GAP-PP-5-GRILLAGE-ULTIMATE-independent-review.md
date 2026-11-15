@@ -56,6 +56,8 @@ FD grid convergence (severe-case patch), peak moment: n_x=60: 0.0720 %, n_x=120:
 
 Cross-method (T13): elastic member limit 0.9979 MPa vs rigid-plastic grillage 5.4346 MPa (ratio 5.446, plastic system transverse_frame).
 
+> **round 7 重算（板底起算约定）**：同一 T12 三工况 p_ult = **1.9254 / 1.2219 / 0.9918 MPa**（较上表 +18.5 / +22.4 / +32.7 %），弹性构件极限 0.9979 → **1.2219 MPa**；上表为 `plate_mid` 历史口径，引用时须与 round 7 并列。
+
 Governing-branch census: case study (t=20 mm): {'plate_local_bending': 6}, member-governed (t=25 mm): {'longitudinal_stiffener': 5, 'plate_local_bending': 1}, slender (t=13 mm): {'plate_local_bending': 6}
 
 
@@ -86,7 +88,7 @@ docstring 已改正并加回归测试 `test_slender_variant_is_also_plate_govern
 
 **F5（低，非阻断）** `MemberSection._parts` 把腹板自**板中面**起算（未让出板厚一半），腹板与板重叠
 ≈ t_p/2 = 12.5 mm；对 A 的重复计≈0.5 %、对 I/centroid 的影响 <1 %，不影响 15 % 级判据，但建议后续
-统一到"板底起算"并给出差值记录。本次未改（改动会挪动已被引用的历史数字）。
+统一到"板底起算"并给出差值记录。本次未改（改动会挪动已被引用的历史数字）。**round 7 已闭合**：见 `docs/CASE-GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE-round7.md`——实测影响远大于本条的估计：ΔI 最大 19.0 %、ΔZ_p 最大 7.5 %、构件控制 p_ult +18.5…+32.7 %；默认口径已改为「腹板自板下表面起算」，`web_origin="plate_mid"` 仅用于复现上述历史数字。
 
 **F6（低，可复现性指针）** round-3 文档指向 `artifacts/grillage_plastic_collapse/*.json`，该目录在
 树内不存在（被合并门禁滤除）。本次审计产物落在 `artifacts/grillage_ultimate_audit/`，可复现。

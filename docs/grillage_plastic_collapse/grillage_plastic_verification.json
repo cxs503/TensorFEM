@@ -1,0 +1,963 @@
+{
+  "all_passed": true,
+  "anchor": "GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE",
+  "case_study": {
+    "16": {
+      "dimensionless": {
+        "axial_reduction_stiffener": 0.91,
+        "axial_stress_ratio": 0.3,
+        "frame_column_slenderness": 0.21076302943767156,
+        "frame_plastic_moment": 930296.232589286,
+        "frame_spacing_over_bay": 6.000000000000001,
+        "hydro_line_load": 203926.15261778474,
+        "hydro_over_collapse_line_load": 0.06488271981960489,
+        "panel_ultimate_stress": 331283476.7823527,
+        "plate_slenderness_beta": 0.7264715564494574,
+        "plate_strength_ratio_faulkner": 1.0,
+        "stiffener_column_slenderness": 0.2940500201760933,
+        "stiffener_plastic_moment": 200067.72630000004
+      },
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 7195355.343164301,
+      "ice_pressure_panel_limit": 2164835.3338241577,
+      "ice_pressure_ultimate": 2164835.3338241577,
+      "load_shares": {
+        "hydro_x": 0.02892308277245386,
+        "hydro_y": 0.9710769172275462,
+        "modal_torsion": 0.10973751704031129,
+        "modal_x": 0.1495487426308199,
+        "modal_y": 0.740713740328869,
+        "x": 0.1679827528322245,
+        "y": 0.8320172471677755
+      },
+      "margin_vs_design": 0.5412088334560394,
+      "systems": {
+        "longitudinal_stiffener": {
+          "hinges": [
+            {
+              "ice_pressure": 67896211.64300852,
+              "node": 32,
+              "section_moment": -200067.72630000007,
+              "x": 4.200000000000001
+            },
+            {
+              "ice_pressure": 118973785.11990319,
+              "node": 36,
+              "section_moment": 200067.72630000004,
+              "x": 4.725
+            },
+            {
+              "ice_pressure": 120771311.61841549,
+              "node": 28,
+              "section_moment": 200067.72630000004,
+              "x": 3.6750000000000016
+            },
+            {
+              "ice_pressure": 124724976.1940053,
+              "node": 29,
+              "section_moment": 200067.72630000004,
+              "x": 3.8062500000000017
+            }
+          ],
+          "ice_pressure_first_hinge": 67896211.64300852,
+          "ice_pressure_ultimate": 124724976.1940053,
+          "plastic_reserve_ratio": 1.8369946301245308
+        },
+        "transverse_frame": {
+          "hinges": [
+            {
+              "ice_pressure": 7195355.343164301,
+              "node": 8,
+              "section_moment": 930296.232589286,
+              "x": 1.4000000000000001
+            }
+          ],
+          "ice_pressure_first_hinge": 7195355.343164301,
+          "ice_pressure_ultimate": 7195355.343164301,
+          "plastic_reserve_ratio": 1.0
+        }
+      }
+    },
+    "4": {
+      "dimensionless": {
+        "axial_reduction_stiffener": 0.91,
+        "axial_stress_ratio": 0.3,
+        "frame_column_slenderness": 0.21076302943767156,
+        "frame_plastic_moment": 930296.232589286,
+        "frame_spacing_over_bay": 6.000000000000001,
+        "hydro_line_load": 203926.15261778474,
+        "hydro_over_collapse_line_load": 0.06788138579164499,
+        "panel_ultimate_stress": 331283476.7823527,
+        "plate_slenderness_beta": 0.7264715564494574,
+        "plate_strength_ratio_faulkner": 1.0,
+        "stiffener_column_slenderness": 0.2940500201760933,
+        "stiffener_plastic_moment": 200067.72630000004
+      },
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6877499.9108885005,
+      "ice_pressure_panel_limit": 2164835.3338241577,
+      "ice_pressure_ultimate": 2164835.3338241577,
+      "load_shares": {
+        "hydro_x": 0.02892308277245386,
+        "hydro_y": 0.9710769172275462,
+        "modal_torsion": 0.10973751704031129,
+        "modal_x": 0.1495487426308199,
+        "modal_y": 0.740713740328869,
+        "x": 0.1679827528322245,
+        "y": 0.8320172471677755
+      },
+      "margin_vs_design": 0.5412088334560394,
+      "systems": {
+        "longitudinal_stiffener": {
+          "hinges": [
+            {
+              "ice_pressure": 86519496.18364042,
+              "node": 8,
+              "section_moment": -200067.72630000004,
+              "x": 4.2
+            },
+            {
+              "ice_pressure": 97253653.54943469,
+              "node": 9,
+              "section_moment": 200067.72630000007,
+              "x": 4.7250000000000005
+            },
+            {
+              "ice_pressure": 120763507.47639936,
+              "node": 7,
+              "section_moment": 200067.72630000007,
+              "x": 3.675
+            },
+            {
+              "ice_pressure": 131554660.40589459,
+              "node": 4,
+              "section_moment": -200067.72629999998,
+              "x": 2.1
+            }
+          ],
+          "ice_pressure_first_hinge": 86519496.18364042,
+          "ice_pressure_ultimate": 131554660.40589459,
+          "plastic_reserve_ratio": 1.520520416885757
+        },
+        "transverse_frame": {
+          "hinges": [
+            {
+              "ice_pressure": 6877499.9108885005,
+              "node": 2,
+              "section_moment": 930296.232589286,
+              "x": 1.4
+            }
+          ],
+          "ice_pressure_first_hinge": 6877499.9108885005,
+          "ice_pressure_ultimate": 6877499.9108885005,
+          "plastic_reserve_ratio": 1.0
+        }
+      }
+    },
+    "8": {
+      "dimensionless": {
+        "axial_reduction_stiffener": 0.91,
+        "axial_stress_ratio": 0.3,
+        "frame_column_slenderness": 0.21076302943767156,
+        "frame_plastic_moment": 930296.232589286,
+        "frame_spacing_over_bay": 6.000000000000001,
+        "hydro_line_load": 203926.15261778474,
+        "hydro_over_collapse_line_load": 0.06627222009818332,
+        "panel_ultimate_stress": 331283476.7823527,
+        "plate_slenderness_beta": 0.7264715564494574,
+        "plate_strength_ratio_faulkner": 1.0,
+        "stiffener_column_slenderness": 0.2940500201760933,
+        "stiffener_plastic_moment": 200067.72630000004
+      },
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 7044493.515403205,
+      "ice_pressure_panel_limit": 2164835.3338241577,
+      "ice_pressure_ultimate": 2164835.3338241577,
+      "load_shares": {
+        "hydro_x": 0.02892308277245386,
+        "hydro_y": 0.9710769172275462,
+        "modal_torsion": 0.10973751704031129,
+        "modal_x": 0.1495487426308199,
+        "modal_y": 0.740713740328869,
+        "x": 0.1679827528322245,
+        "y": 0.8320172471677755
+      },
+      "margin_vs_design": 0.5412088334560394,
+      "systems": {
+        "longitudinal_stiffener": {
+          "hinges": [
+            {
+              "ice_pressure": 70950908.8503151,
+              "node": 16,
+              "section_moment": -200067.72630000004,
+              "x": 4.200000000000001
+            },
+            {
+              "ice_pressure": 113887057.95780969,
+              "node": 18,
+              "section_moment": 200067.72630000007,
+              "x": 4.725000000000001
+            },
+            {
+              "ice_pressure": 120769750.79000911,
+              "node": 14,
+              "section_moment": 200067.7263,
+              "x": 3.675000000000001
+            },
+            {
+              "ice_pressure": 131553225.58186676,
+              "node": 8,
+              "section_moment": -200067.72629999998,
+              "x": 2.1
+            }
+          ],
+          "ice_pressure_first_hinge": 70950908.8503151,
+          "ice_pressure_ultimate": 131553225.58186676,
+          "plastic_reserve_ratio": 1.854144333223471
+        },
+        "transverse_frame": {
+          "hinges": [
+            {
+              "ice_pressure": 7044493.515403205,
+              "node": 4,
+              "section_moment": 930296.232589286,
+              "x": 1.4
+            }
+          ],
+          "ice_pressure_first_hinge": 7044493.515403205,
+          "ice_pressure_ultimate": 7044493.515403205,
+          "plastic_reserve_ratio": 1.0
+        }
+      }
+    }
+  },
+  "checks": [
+    {
+      "allowed": 0.01,
+      "gate": "V1_ss_uniform",
+      "got": 397793.3664609686,
+      "note": "8 Mp/L^2, n=16",
+      "passed": true,
+      "reference": 398829.28668610303,
+      "rel_error": -0.002597402597341647
+    },
+    {
+      "allowed": 0.01,
+      "gate": "V2_ss_central_patch",
+      "got": 547671.0919030354,
+      "note": "8 Mp/(2Lc-c^2), c=1.0 m",
+      "passed": true,
+      "reference": 549636.6107142858,
+      "rel_error": -0.003576033278962276
+    },
+    {
+      "allowed": 0.01,
+      "gate": "V3_clamped_uniform",
+      "got": 795586.7329218988,
+      "note": "16 Mp/L^2, n=16",
+      "passed": true,
+      "reference": 797658.5733722061,
+      "rel_error": -0.0025974025973898307
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V4_two_span_uniform",
+      "got": 580880.6497380855,
+      "note": "virtual-work minimum at a/L = sqrt(2)-1",
+      "passed": true,
+      "reference": 581136.8581661144,
+      "rel_error": -0.0004408745107606915
+    },
+    {
+      "allowed": 0.002,
+      "gate": "V5a_elastic_midspan_moment",
+      "got": 0.5516088867163121,
+      "note": "q L^2/8",
+      "passed": true,
+      "reference": 0.55125,
+      "rel_error": 0.0006510416622442783
+    },
+    {
+      "allowed": 0.01,
+      "gate": "V5b_elastic_midspan_deflection",
+      "got": 1.3196522552972521e-08,
+      "note": "5 q L^4/384EI",
+      "passed": true,
+      "reference": 1.3196522553027309e-08,
+      "rel_error": -4.151679000585773e-12
+    },
+    {
+      "allowed": 1e-12,
+      "gate": "V6_axial_reduction_15",
+      "got": 0.9775,
+      "note": "Mp(1-(P/Py)^2)",
+      "passed": true,
+      "reference": 0.9775,
+      "rel_error": 0.0
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V6_collapse_scales_15",
+      "got": 0.9749610389610985,
+      "note": "collapse load carries the same axial reduction",
+      "passed": true,
+      "reference": 0.9775,
+      "rel_error": -0.002597402597341647
+    },
+    {
+      "allowed": 1e-12,
+      "gate": "V6_axial_reduction_30",
+      "got": 0.91,
+      "note": "Mp(1-(P/Py)^2)",
+      "passed": true,
+      "reference": 0.91,
+      "rel_error": 0.0
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V6_collapse_scales_30",
+      "got": 0.9076363636364191,
+      "note": "collapse load carries the same axial reduction",
+      "passed": true,
+      "reference": 0.91,
+      "rel_error": -0.002597402597341647
+    },
+    {
+      "allowed": 1e-12,
+      "gate": "V6_axial_reduction_45",
+      "got": 0.7975,
+      "note": "Mp(1-(P/Py)^2)",
+      "passed": true,
+      "reference": 0.7975,
+      "rel_error": 0.0
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V6_collapse_scales_45",
+      "got": 0.79542857142862,
+      "note": "collapse load carries the same axial reduction",
+      "passed": true,
+      "reference": 0.7975,
+      "rel_error": -0.002597402597341647
+    },
+    {
+      "allowed": 1.0,
+      "gate": "V7_mesh_convergence",
+      "got": 0.0006506180827634545,
+      "note": "|V1 relative error| at 32 elements/span vs a 0.2 % budget",
+      "passed": true,
+      "reference": 0.002,
+      "rel_error": 0.3253090413817272
+    },
+    {
+      "allowed": 0.0,
+      "gate": "V9a_load_share_positive",
+      "got": 1.0,
+      "note": "both bending shares and the torsion share >= 0",
+      "passed": true,
+      "reference": 1.0,
+      "rel_error": 0.0
+    },
+    {
+      "allowed": 1e-12,
+      "gate": "V9b_system_share_partition",
+      "got": 1.0,
+      "note": "renormalised bending shares sum to one",
+      "passed": true,
+      "reference": 1.0,
+      "rel_error": 0.0
+    },
+    {
+      "allowed": 1e-12,
+      "gate": "V9d_modal_share_partition",
+      "got": 1.0000000000000002,
+      "note": "modal x + y + torsion shares sum to one",
+      "passed": true,
+      "reference": 1.0,
+      "rel_error": 2.220446049250313e-16
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V9c_load_share_terms_convergence",
+      "got": 0.16798276577064125,
+      "note": "x share, terms 121 vs 61",
+      "passed": true,
+      "reference": 0.1679827528322245,
+      "rel_error": 7.702229276596029e-08
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V10_frame_vs_closed_form",
+      "got": 1402016.3002917478,
+      "note": "SS central-patch collapse F_u = 8 Mp/(2L-c)",
+      "passed": true,
+      "reference": 1417594.259183674,
+      "rel_error": -0.010989010988868397
+    },
+    {
+      "allowed": 0.005,
+      "gate": "V11a_x30_eccentric_patch",
+      "got": 1853929.4235360497,
+      "note": "determinate span, c/L = 0.5, n = 64 (independent closed form)",
+      "passed": true,
+      "reference": 1854518.9157295586,
+      "rel_error": -0.00031786798641364467
+    },
+    {
+      "allowed": 0.005,
+      "gate": "V11b_x50_eccentric_patch",
+      "got": 1557379.9223678056,
+      "note": "determinate span, c/L = 0.5, n = 64 (independent closed form)",
+      "passed": true,
+      "reference": 1557795.8892128288,
+      "rel_error": -0.0002670226875700621
+    },
+    {
+      "allowed": 0.005,
+      "gate": "V11c_x70_eccentric_patch",
+      "got": 1853929.4235360404,
+      "note": "determinate span, c/L = 0.5, n = 64 (independent closed form)",
+      "passed": true,
+      "reference": 1854518.9157295588,
+      "rel_error": -0.0003178679864187517
+    },
+    {
+      "allowed": 1e-12,
+      "gate": "V12a_closed_form_central_patch",
+      "got": 1635685.6836734703,
+      "note": "a = L/2 reproduces F_u = 8 Mp/(2L-c)",
+      "passed": true,
+      "reference": 1635685.68367347,
+      "rel_error": 2.220446049250313e-16
+    },
+    {
+      "allowed": 1e-05,
+      "gate": "V12b_closed_form_point_load",
+      "got": 1582136.7325861664,
+      "note": "c -> 0 reproduces the point-load value Mp L/(a(L-a))",
+      "passed": true,
+      "reference": 1582136.449981779,
+      "rel_error": 1.7862200651919125e-07
+    },
+    {
+      "allowed": 1e-09,
+      "gate": "V13a_worst_centre_closed_form",
+      "got": 1635685.6836734703,
+      "note": "closed form is minimum at a = L/2",
+      "passed": true,
+      "reference": 1635685.6836734703,
+      "rel_error": 0.0
+    },
+    {
+      "allowed": 0.005,
+      "gate": "V13b_worst_centre_solver",
+      "got": 1556133.353581503,
+      "note": "hinge solver is minimum at a = L/2",
+      "passed": true,
+      "reference": 1556133.353581503,
+      "rel_error": 0.0
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V14a_x25_plate_deflection",
+      "got": 7.111140447644292e-10,
+      "note": "Navier series vs 13-point FD, nx = 240",
+      "passed": true,
+      "reference": 7.111696870859152e-10,
+      "rel_error": -7.824056972116633e-05
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V14a_x25_plate_moment",
+      "got": 0.06607533765550641,
+      "note": "Navier series vs 13-point FD, nx = 240",
+      "passed": true,
+      "reference": 0.06617185629092717,
+      "rel_error": -0.001458605528556034
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V14b_x50_plate_deflection",
+      "got": 7.01700189310716e-10,
+      "note": "Navier series vs 13-point FD, nx = 240",
+      "passed": true,
+      "reference": 7.017872760530055e-10,
+      "rel_error": -0.00012409279173508647
+    },
+    {
+      "allowed": 0.02,
+      "gate": "V14b_x50_plate_moment",
+      "got": 0.06483440674743016,
+      "note": "Navier series vs 13-point FD, nx = 240",
+      "passed": true,
+      "reference": 0.06483074819486123,
+      "rel_error": 5.643236690611175e-05
+    },
+    {
+      "allowed": 0.0,
+      "gate": "V15_odd_only_basis_witness",
+      "got": 1.0,
+      "note": "pre-round-3 odd-only basis >=5% (w) / >=20% (m_x) wrong on an eccentric patch; the fixed basis <=1% / <=2%",
+      "passed": true,
+      "reference": 1.0,
+      "rel_error": 0.0
+    },
+    {
+      "allowed": 0.05,
+      "gate": "V7b_case_study_mesh",
+      "got": 7195355.343164301,
+      "note": "grillage plastic pressure, n=16 vs n=8",
+      "passed": true,
+      "reference": 7044493.515403205,
+      "rel_error": 0.021415567695708404
+    },
+    {
+      "allowed": 0.0,
+      "gate": "V8a_axial_monotone",
+      "got": 1.0,
+      "note": "collapse pressure non-increasing with coexisting compression",
+      "passed": true,
+      "reference": 1.0,
+      "rel_error": 0.0
+    },
+    {
+      "allowed": 0.0,
+      "gate": "V8b_patch_monotone",
+      "got": 1.0,
+      "note": "collapse pressure non-increasing with patch size",
+      "passed": true,
+      "reference": 1.0,
+      "rel_error": 0.0
+    }
+  ],
+  "convergence": [
+    {
+      "V1_relative_error": -0.04000000000000159,
+      "V4_relative_error": -0.011740238538057612,
+      "elements_per_span": 4
+    },
+    {
+      "V1_relative_error": -0.010309278350544182,
+      "V4_relative_error": -0.004500240285604251,
+      "elements_per_span": 8
+    },
+    {
+      "V1_relative_error": -0.002597402597341647,
+      "V4_relative_error": -0.0004408745107606915,
+      "elements_per_span": 16
+    },
+    {
+      "V1_relative_error": -0.0006506180827634545,
+      "V4_relative_error": -0.0004115696584093831,
+      "elements_per_span": 32
+    }
+  ],
+  "eccentric_patch": {
+    "closed_form_central_force": 1635685.6836734703,
+    "closed_form_point_load_force": 1582136.7325861664,
+    "frame_line_gates": [
+      {
+        "closed_form_line_load": 1854518.9157295586,
+        "hinges": 1,
+        "maximum_at": "inside_patch",
+        "patch_centre_fraction": 0.3,
+        "patch_centre_x": 0.84,
+        "rel_error": -0.00031786798641364467,
+        "solver_line_load": 1853929.4235360497
+      },
+      {
+        "closed_form_line_load": 1557795.8892128288,
+        "hinges": 1,
+        "maximum_at": "inside_patch",
+        "patch_centre_fraction": 0.5,
+        "patch_centre_x": 1.4,
+        "rel_error": -0.0002670226875700621,
+        "solver_line_load": 1557379.9223678056
+      },
+      {
+        "closed_form_line_load": 1854518.9157295588,
+        "hinges": 1,
+        "maximum_at": "inside_patch",
+        "patch_centre_fraction": 0.7,
+        "patch_centre_x": 1.9599999999999997,
+        "rel_error": -0.0003178679864187517,
+        "solver_line_load": 1853929.4235360404
+      }
+    ],
+    "worst_position_scan": {
+      "closed_form_force": [
+        2180914.239082189,
+        1947244.8585488058,
+        1797456.7938234084,
+        1703839.2532585852,
+        1652207.7611528216,
+        1635685.6836734703,
+        1652207.7611528216,
+        1703839.2532585848,
+        1797456.7938234077,
+        1947244.858548805,
+        2180914.2390821883
+      ],
+      "hinge_solver_line_load": [
+        2074106.6122655333,
+        1852163.1904964547,
+        1709856.1742496174,
+        1620900.164325179,
+        1571834.927545038,
+        1556133.353581503,
+        1571834.9275448653,
+        1620900.1643245362,
+        1709856.1742490875,
+        1852163.190495122,
+        2074106.612263622
+      ],
+      "patch_centre_fractions": [
+        0.250000001,
+        0.3000000008,
+        0.3500000006,
+        0.40000000040000006,
+        0.4500000002,
+        0.5,
+        0.5499999998,
+        0.5999999996000001,
+        0.6499999994000001,
+        0.6999999992000001,
+        0.749999999
+      ]
+    }
+  },
+  "load_shares": {
+    "121": {
+      "torsion": 0.10973751569866702,
+      "x": 0.16798276577064125,
+      "y": 0.8320172342293587
+    },
+    "61": {
+      "torsion": 0.10973751704031129,
+      "x": 0.1679827528322245,
+      "y": 0.8320172471677755
+    }
+  },
+  "module": "tensorfem.grillage_plastic_collapse",
+  "n_failed": 0,
+  "odd_only_witness": {
+    "fd_m_x_max": 0.06512153704544484,
+    "fd_w_max": 7.090150644515126e-10,
+    "fixed_m_x_error": -0.0005309613292429072,
+    "fixed_m_x_max": 0.06508696002757285,
+    "fixed_w_error": -0.00048214584587102927,
+    "fixed_w_max": 7.086732157835273e-10,
+    "odd_only_m_x_error": -0.5271108605692545,
+    "odd_only_m_x_max": 0.03079526761182782,
+    "odd_only_w_error": -0.4986612584180027,
+    "odd_only_w_max": 3.5545672017480007e-10,
+    "patch_centre_fraction": 0.3
+  },
+  "patch_position_map": [
+    {
+      "axial_ratio": 0.0,
+      "frame_limit": 6945118.449036713,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6945118.449036713,
+      "ice_pressure_panel_limit": 2274311.1848831177,
+      "ice_pressure_ultimate": 2274311.1848831177,
+      "load_share_x": 0.1640096056849775,
+      "load_share_y": 0.8359903943150225,
+      "margin_vs_design": 0.5685777962207794,
+      "patch_centre_x": 2.1,
+      "patch_centre_x_fraction": 0.25,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 131696157.82498328,
+      "stiffener_reserve": 1.607586817770331
+    },
+    {
+      "axial_ratio": 0.3,
+      "frame_limit": 6945118.449036713,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6945118.449036713,
+      "ice_pressure_panel_limit": 2164835.3338241577,
+      "ice_pressure_ultimate": 2164835.3338241577,
+      "load_share_x": 0.1640096056849775,
+      "load_share_y": 0.8359903943150225,
+      "margin_vs_design": 0.5412088334560394,
+      "patch_centre_x": 2.1,
+      "patch_centre_x_fraction": 0.25,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 119834075.76330468,
+      "stiffener_reserve": 1.607799548611609
+    },
+    {
+      "axial_ratio": 0.0,
+      "frame_limit": 6904448.650350437,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6904448.650350437,
+      "ice_pressure_panel_limit": 2274311.1848831177,
+      "ice_pressure_ultimate": 2274311.1848831177,
+      "load_share_x": 0.1590853079224433,
+      "load_share_y": 0.8409146920775568,
+      "margin_vs_design": 0.5685777962207794,
+      "patch_centre_x": 2.94,
+      "patch_centre_x_fraction": 0.35,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 40303630.081977114,
+      "stiffener_reserve": 1.29263351608451
+    },
+    {
+      "axial_ratio": 0.3,
+      "frame_limit": 6904448.650350437,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6904448.650350437,
+      "ice_pressure_panel_limit": 2164835.3338241577,
+      "ice_pressure_ultimate": 2164835.3338241577,
+      "load_share_x": 0.1590853079224433,
+      "load_share_y": 0.8409146920775568,
+      "margin_vs_design": 0.5412088334560394,
+      "patch_centre_x": 2.94,
+      "patch_centre_x_fraction": 0.35,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 36671736.8196681,
+      "stiffener_reserve": 1.2925713629186368
+    },
+    {
+      "axial_ratio": 0.0,
+      "frame_limit": 6978283.59993595,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6978283.59993595,
+      "ice_pressure_panel_limit": 2274311.1848831177,
+      "ice_pressure_ultimate": 2274311.1848831177,
+      "load_share_x": 0.1679827528322245,
+      "load_share_y": 0.8320172471677755,
+      "margin_vs_design": 0.5685777962207794,
+      "patch_centre_x": 4.2,
+      "patch_centre_x_fraction": 0.5,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 150175411.83390844,
+      "stiffener_reserve": 1.8359972067913637
+    },
+    {
+      "axial_ratio": 0.3,
+      "frame_limit": 6978283.59993595,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6978283.59993595,
+      "ice_pressure_panel_limit": 2164835.3338241577,
+      "ice_pressure_ultimate": 2164835.3338241577,
+      "load_share_x": 0.1679827528322245,
+      "load_share_y": 0.8320172471677755,
+      "margin_vs_design": 0.5412088334560394,
+      "patch_centre_x": 4.2,
+      "patch_centre_x_fraction": 0.5,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 136650141.68575394,
+      "stiffener_reserve": 1.8361250107442078
+    },
+    {
+      "axial_ratio": 0.0,
+      "frame_limit": 6904448.650350437,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6904448.650350437,
+      "ice_pressure_panel_limit": 2274311.1848831177,
+      "ice_pressure_ultimate": 2274311.1848831177,
+      "load_share_x": 0.15908530792244321,
+      "load_share_y": 0.8409146920775568,
+      "margin_vs_design": 0.5685777962207794,
+      "patch_centre_x": 5.460000000000001,
+      "patch_centre_x_fraction": 0.65,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 40303630.081976876,
+      "stiffener_reserve": 1.292440599883353
+    },
+    {
+      "axial_ratio": 0.3,
+      "frame_limit": 6904448.650350437,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6904448.650350437,
+      "ice_pressure_panel_limit": 2164835.3338241577,
+      "ice_pressure_ultimate": 2164835.3338241577,
+      "load_share_x": 0.15908530792244321,
+      "load_share_y": 0.8409146920775568,
+      "margin_vs_design": 0.5412088334560394,
+      "patch_centre_x": 5.460000000000001,
+      "patch_centre_x_fraction": 0.65,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 36671736.81966805,
+      "stiffener_reserve": 1.292378455993396
+    },
+    {
+      "axial_ratio": 0.0,
+      "frame_limit": 6945118.449036736,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6945118.449036736,
+      "ice_pressure_panel_limit": 2274311.1848831177,
+      "ice_pressure_ultimate": 2274311.1848831177,
+      "load_share_x": 0.16400960568497738,
+      "load_share_y": 0.8359903943150226,
+      "margin_vs_design": 0.5685777962207794,
+      "patch_centre_x": 6.300000000000001,
+      "patch_centre_x_fraction": 0.75,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 127867781.14402425,
+      "stiffener_reserve": 1.5608546428351495
+    },
+    {
+      "axial_ratio": 0.3,
+      "frame_limit": 6945118.449036736,
+      "frame_reserve": 1.0,
+      "governing_member_line": "transverse_frame",
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 6945118.449036736,
+      "ice_pressure_panel_limit": 2164835.3338241577,
+      "ice_pressure_ultimate": 2164835.3338241577,
+      "load_share_x": 0.16400960568497738,
+      "load_share_y": 0.8359903943150226,
+      "margin_vs_design": 0.5412088334560394,
+      "patch_centre_x": 6.300000000000001,
+      "patch_centre_x_fraction": 0.75,
+      "patch_centre_y_fraction": 0.5,
+      "stiffener_limit": 116350527.04925473,
+      "stiffener_reserve": 1.5610611896403408
+    }
+  ],
+  "plate_eccentric": [
+    {
+      "fd_m_x_max": 0.06617185629092717,
+      "fd_w_max": 7.111696870859152e-10,
+      "fd_w_peak_x_fraction": 0.25,
+      "navier_m_x_max": 0.06607533765550641,
+      "navier_w_max": 7.111140447644292e-10,
+      "patch_centre_fraction": 0.25,
+      "rel_error_m_x": -0.001458605528556034,
+      "rel_error_w": -7.824056972116633e-05
+    },
+    {
+      "fd_m_x_max": 0.06483074819486123,
+      "fd_w_max": 7.017872760530055e-10,
+      "fd_w_peak_x_fraction": 0.4958333333333333,
+      "navier_m_x_max": 0.06483440674743016,
+      "navier_w_max": 7.01700189310716e-10,
+      "patch_centre_fraction": 0.5,
+      "rel_error_m_x": 5.643236690611175e-05,
+      "rel_error_w": -0.00012409279173508647
+    }
+  ],
+  "reference": {
+    "Mp_frame": 930296.232589286,
+    "Mp_stiffener": 219854.6442857143,
+    "plastic_modulus_frame": 0.0026205527678571437,
+    "plastic_modulus_stiffener": 0.0006193088571428572,
+    "span": 2.1,
+    "yield_stress": 355000000.0
+  },
+  "sensitivity": [
+    {
+      "axial_ratio": 0.0,
+      "frame_reserve": 1.0,
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 10846700.827120591,
+      "ice_pressure_panel_limit": 2447272.539138794,
+      "ice_pressure_ultimate": 2447272.539138794,
+      "patch_length": 0.70035,
+      "stiffener_reserve": 1.7883151860062767
+    },
+    {
+      "axial_ratio": 0.15,
+      "frame_reserve": 1.0,
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 10846700.827120591,
+      "ice_pressure_panel_limit": 2418338.0603790283,
+      "ice_pressure_ultimate": 2418338.0603790283,
+      "patch_length": 0.70035,
+      "stiffener_reserve": 1.7883510858764364
+    },
+    {
+      "axial_ratio": 0.3,
+      "frame_reserve": 1.0,
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 10846700.827120591,
+      "ice_pressure_panel_limit": 2329472.8994369507,
+      "ice_pressure_ultimate": 2329472.8994369507,
+      "patch_length": 0.70035,
+      "stiffener_reserve": 1.7884694537904005
+    },
+    {
+      "axial_ratio": 0.0,
+      "frame_reserve": 1.0,
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 7044493.515403205,
+      "ice_pressure_panel_limit": 2274311.1848831177,
+      "ice_pressure_ultimate": 2274311.1848831177,
+      "patch_length": 1.05,
+      "stiffener_reserve": 1.8540569330647827
+    },
+    {
+      "axial_ratio": 0.15,
+      "frame_reserve": 1.0,
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 7044493.515403205,
+      "ice_pressure_panel_limit": 2247419.9533462524,
+      "ice_pressure_ultimate": 2247419.9533462524,
+      "patch_length": 1.05,
+      "stiffener_reserve": 1.8540772720770142
+    },
+    {
+      "axial_ratio": 0.3,
+      "frame_reserve": 1.0,
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 7044493.515403205,
+      "ice_pressure_panel_limit": 2164835.3338241577,
+      "ice_pressure_ultimate": 2164835.3338241577,
+      "patch_length": 1.05,
+      "stiffener_reserve": 1.854144333223471
+    },
+    {
+      "axial_ratio": 0.0,
+      "frame_reserve": 1.0,
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 5144210.524910776,
+      "ice_pressure_panel_limit": 2232260.1079940796,
+      "ice_pressure_ultimate": 2232260.1079940796,
+      "patch_length": 1.39965,
+      "stiffener_reserve": 1.8489372550505134
+    },
+    {
+      "axial_ratio": 0.15,
+      "frame_reserve": 1.0,
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 5144210.524910776,
+      "ice_pressure_panel_limit": 2205867.1712875366,
+      "ice_pressure_ultimate": 2205867.1712875366,
+      "patch_length": 1.39965,
+      "stiffener_reserve": 1.848957537899856
+    },
+    {
+      "axial_ratio": 0.3,
+      "frame_reserve": 1.0,
+      "governing_mode": "plate_local_bending",
+      "ice_pressure_grillage_plastic": 5144210.524910776,
+      "ice_pressure_panel_limit": 2124809.6227645874,
+      "ice_pressure_ultimate": 2124809.6227645874,
+      "patch_length": 1.39965,
+      "stiffener_reserve": 1.8490244138678156
+    }
+  ]
+}
