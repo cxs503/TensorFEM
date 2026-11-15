@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import numpy as np
 import os
 import sys
 
@@ -105,10 +106,17 @@ def first_yield_pressure_independent(a: float = A, b: float = B, t: float = T,
     u, v = patch
     x1, x2 = 0.5 * (a - u), 0.5 * (a + u)
     y1, y2 = 0.5 * (b - v), 0.5 * (b + v)
-    xs = [a * k / (grid - 1) for k in range(grid)]
-    ys = [b * k / (grid - 1) for k in range(grid)]
-    peak = 0.0
-    where = (0.0, 0.0)
+    xs = np.linspace(0.0, a, grid)
+    ys = np.linspace(0.0, b, grid)
+    # The Mises stress is a function of the *sum* of all (m, n) Fourier terms,
+    # not of any single term: the field must be accumulated before the
+    # invariant is evaluated.  (An earlier revision evaluated the invariant of
+    # each term separately and took the maximum over terms, which is not the
+    # field peak -- it returned 0.887 MPa against the centre-series 0.804 MPa,
+    # i.e. a grid maximum *below* the centre value, which is impossible for the
+    # true field and flagged the scan as a known defect.)
+    Mx = np.zeros((grid, grid))
+    My = np.zeros((grid, grid))
     for m in range(1, terms + 1, 2):
         am = m * math.pi / a
         dx = math.cos(am * x1) - math.cos(am * x2)
@@ -119,18 +127,15 @@ def first_yield_pressure_independent(a: float = A, b: float = B, t: float = T,
             lam = am * am + bn * bn
             cx = qmn * (am * am + nu * bn * bn) / (lam * lam)
             cy = qmn * (bn * bn + nu * am * am) / (lam * lam)
-            si = [math.sin(am * x) for x in xs]
-            sj = [math.sin(bn * y) for y in ys]
-            for i in range(grid):
-                for j in range(grid):
-                    s = si[i] * sj[j]
-                    mx = cx * s
-                    my = cy * s
-                    sx, syv = 6.0 * mx / (t * t), 6.0 * my / (t * t)
-                    eq = math.sqrt(max(sx * sx - sx * syv + syv * syv, 0.0))
-                    if eq > peak:
-                        peak, where = eq, (xs[i], ys[j])
-    return {"sigma_eq_per_pa": peak, "pressure": sy / peak, "at": where,
+            Mx += cx * np.outer(np.sin(am * xs), np.sin(bn * ys))
+            My += cy * np.outer(np.sin(am * xs), np.sin(bn * ys))
+    sx = 6.0 * Mx / (t * t)
+    syv = 6.0 * My / (t * t)
+    eq = np.sqrt(np.maximum(sx * sx - sx * syv + syv * syv, 0.0))
+    idx = np.unravel_index(np.argmax(eq), eq.shape)
+    peak = float(eq[idx])
+    return {"sigma_eq_per_pa": peak, "pressure": sy / peak,
+            "at": (float(xs[idx[0]]), float(ys[idx[1]])),
             "grid": grid, "terms": terms}
 
 
