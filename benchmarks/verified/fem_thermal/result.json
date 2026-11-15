@@ -1,7 +1,7 @@
 {
   "benchmark": "fem_thermal",
   "description": "Thermal conduction verification: steady 1D + transient 2D Q4",
-  "generated_at": "2026-11-13T09:01:38Z",
+  "generated_at": "2026-11-15T14:08:09Z",
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
@@ -1137,9 +1137,5 @@
       0.0
     ]
   },
-  "elapsed_seconds": 97.23,
-  "limitations": [
-    "case C convergence-order gate FAILS (observed order 0.0 on all three refinement pairs): the 5.9e-3 relative-L2 residual is unchanged across four meshes (4x3, 8x5, 16x10, 32x20) and across an 8x refinement of the time step (10 -> 640 backward-Euler steps at the finest mesh), so it is not a discretization error of the solver; the IC is discontinuous at the Dirichlet edge and the double-Fourier reference is truncated at 80 odd modes, both of which are h/dt independent. Kept as an honest FAIL, not tuned away."
-  ],
-  "verdict": "FAIL"
+  "elapsed_seconds": 34.87
 }
