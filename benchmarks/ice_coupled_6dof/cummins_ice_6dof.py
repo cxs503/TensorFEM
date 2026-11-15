@@ -515,6 +515,7 @@ class Cummins6DOF:
                     pen=0.0, u=0.0, started=False, active=False, done=False,
                     unloading=False, peak=np.zeros(2), peak_until=0.0,
                     peak_done=False, J_contact=0.0, mag_start=0.0,
+                    peak_mag=0.0, peak_area=0.0,
                 ))
 
         rec_t = np.empty(nsteps + 1)
@@ -663,6 +664,15 @@ class Cummins6DOF:
             # ---- forces at the end of the step -----------------------------
             mags_new = {id(ev): contact_magnitude(ev) for ev in floes if ev["active"]}
             f_ice_new = assemble(mags_new, [ev for ev in floes if ev["active"]])
+            # per-impact contact-force / contact-area peaks (load statistics)
+            for ev in floes:
+                if not ev["active"]:
+                    continue
+                mag = mags_new.get(id(ev), 0.0)
+                if mag > ev["peak_mag"]:
+                    ev["peak_mag"] = mag
+                    ev["peak_area"] = float(
+                        model.contact_area_m2(ev["pen"], ev["thickness"]))
             ret_new = self.retardation_force(X)
             f_hydro_new = self.hydrodynamic_forces(q_new, v_pred, ret_new,
                                                    t + dt_s, excitation)
@@ -772,6 +782,11 @@ class Cummins6DOF:
                 cluster_size=len(members),
                 peak_heave_m=float(ev["peak"][0]),
                 peak_pitch_rad=float(ev["peak"][1]),
+                peak_contact_N=float(ev["peak_mag"]),
+                peak_contact_area_m2=float(ev["peak_area"]),
+                peak_contact_pressure_MPa=(
+                    float(ev["peak_mag"]) / (float(ev["peak_area"]) * 1.0e6)
+                    if ev["peak_area"] > 0.0 else float("nan")),
                 mutation=mutation or "none",
             ))
         return rows

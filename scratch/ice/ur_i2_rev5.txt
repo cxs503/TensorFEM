@@ -1,0 +1,2537 @@
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 1 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+Structural Requirements for Polar Class Ships 
+ 
+I2.1  General 
+ 
+I2.1.1   Application* 
+ 
+This UR applies to Polar Class ships according to UR I1. 
+ 
+I2.1.2 Definitions 
+ 
+I2.1.2.1 The length LUI is the distance, in m, measured horizontally from the fore side of the 
+stem at the intersection with the upper ice waterline (UIWL) to the after side of the rudder 
+post, or the centre of the rudder stock if there is no rudder post. LUI is not to be less than 
+96%, and need not be greater than 97%, of the extreme length of the upper ice waterline 
+(UIWL) measured horizontally from the fore side of the stem. In ships with unusual stern and 
+bow arrangement the length LUI will be specially considered. 
+ 
+I2.1.2.2 The ship displacement DUI is the displacement, in kt, of the ship corresponding to the 
+upper ice waterline (UIWL). Where multiple waterlines are used for determining the UIWL, the 
+displacement is to be determined from the waterline corresponding to the greatest 
+displacement. 
+ 
+I2.2  Hull areas 
+ 
+I2.2.1   The hull of Polar Class ships is divided into areas reflecting the magnitude of the 
+loads that are expected to act upon them. In the longitudinal direction, there are four regions: 
+Bow, Bow Intermediate, Midbody and Stern. The Bow Intermediate, Midbody and Stern 
+regions are further divided in the vertical direction into the Bottom, Lower and Icebelt regions. 
+The extent of each hull area is illustrated in Figure 1. 
+ 
+__________________________________________________________________________ 
+* Note: 
+1. 
+UR I2 applies to ships contracted for construction on or after 1 July 2007. 
+ 
+2. 
+Rev.1 of this UR is to be uniformly applied by IACS Societies on ships contracted for 
+construction on and after 1 March 2008.  
+ 
+3.  
+Rev.2 of this UR is to be uniformly implemented by the IACS Societies on ships 
+contracted for construction on or after 1 January 2012. 
+ 
+4. 
+Rev.3 of this UR is to be uniformly implemented by the IACS Societies on ships 
+contracted for construction on or after 1 July 2017. 
+ 
+5. 
+The “contracted for construction” date means the date on which the contract to build the 
+vessel is signed between the prospective owner and the shipbuilder. For further details 
+regarding the date of “contract for construction”, refer to IACS Procedural Requirement 
+(PR) No. 29. 
+ 
+6. 
+Rev.4 of this UR is to be uniformly implemented by the IACS Societies on ships 
+contracted for construction on or after 1 Jan 2021. 
+ 
+7. 
+Rev.5 of this UR is to be uniformly implemented by the IACS Societies on ships 
+contracted for construction on or after 1 January 2027.  
+ 
+I2 
+(August 
+2006) 
+(Rev.1  
+Jan 2007) 
+(Corr.1 
+Oct 2007) 
+(Rev.2 
+Nov 2010) 
+(Rev.3 
+Apr 2016) 
+(Rev.4 
+Dec 2019) 
+(Rev.5 
+June 2025) 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 2 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+Figure 1 - Hull area extents 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+I2.2.2   The upper ice waterline (UIWL) and lower ice waterline (LIWL) are as defined in UR 
+I1.3. 
+ 
+I2.2.3   Figure 1 notwithstanding, at no time is the boundary between the Bow and Bow 
+Intermediate regions to be forward of the intersection point of the line of the stem and the ship 
+baseline. 
+ 
+I2.2.4   Figure 1 notwithstanding, the aft boundary of the Bow region need not be more than 
+0.45 LUI aft of the fore side of the stem at the intersection with the upper ice waterline (UIWL). 
+ 
+I2.2.5   The boundary between the bottom and lower regions is to be taken at the point where 
+the shell is inclined 7° from horizontal. 
+ 
+I2.2.6   If a ship is intended to operate astern in ice regions, the aft section of the ship is to be 
+designed using the Bow and Bow Intermediate hull area requirements. 
+ 
+I2.2.7   Figure 1 notwithstanding, if the ship is assigned the additional notation “Icebreaker”, 
+the forward boundary of the stern region is to be at least 0.04 LUI forward of the section where 
+the parallel ship side at the upper ice waterline (UIWL) ends. 
+ 
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 3 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+I2.3  Design ice loads 
+ 
+I2.3.1 General 
+ 
+(i)   A glancing impact on the bow is the design scenario for determining the scantlings 
+required to resist ice loads. 
+ 
+(ii)   The design ice load is characterized by an average pressure (Pavg) uniformly distributed 
+over a rectangular load patch of height (b) and width (w).  
+ 
+(iii)   Within the Bow area of all Polar Class ships, and within the Bow Intermediate Icebelt 
+area of Polar Class PC6 and PC7, the ice load parameters are functions of the actual bow 
+shape. To determine the ice load parameters (Pavg, b and w), it is required to calculate the 
+following ice load characteristics for sub-regions of the bow area; shape coefficient (fai), total 
+glancing impact force (Fi), line load (Qi) and pressure (Pi). 
+ 
+(iv)   In other ice-strengthened areas, the ice load parameters (Pavg, bNonBow and wNonBow) are 
+determined independently of the hull shape and based on a fixed load patch aspect ratio, AR 
+= 3.6.  
+ 
+(v)   Design ice forces calculated according to I2.3.2.1 (iii) are applicable for bow forms where 
+the buttock angle γ at the stem is positive and less than 80 deg, and the normal frame angle 
+β’ at the centre of the foremost sub-region, as defined in I2.3.2.1 (i), is greater than 10 deg. 
+ 
+(vi)   Design ice forces calculated according to I2.3.2.1 (iv) are applicable for ships which are 
+assigned the Polar Class PC6 or PC7 and have a bow form with vertical sides. This includes 
+bows where the normal frame angles β’ at the considered sub-regions, as defined in I2.3.2.1 
+(i), are between 0 and 10 deg. 
+ 
+(vii)   For ships which are assigned the Polar Class PC6 or PC7, and equipped with bulbous 
+bows, the design ice forces on the bow are to be determined according to I2.3.2.1 (iv). In 
+addition, the design forces are not to be taken less than those given in I2.3.2.1 (iii), assuming 
+fa = 0.6 and AR = 1.3. 
+ 
+(viii)   For ships with bow forms other than those defined in (v) to (vii), design forces are to be 
+specially considered by the Classification Society. 
+ 
+(ix)   Ship structures that are not directly subjected to ice loads may still experience inertial 
+loads of stowed cargo and equipment resulting from ship/ice interaction. These inertial loads, 
+based on accelerations determined by the Classification Society, are to be considered in the 
+design of these structures. 
+ 
+I2.3.2 Glancing impact load characteristics 
+ 
+The parameters defining the glancing impact load characteristics are reflected in the Class 
+Factors listed in Table 1 and Table 2. 
+ 
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 4 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+Table 1 - Class factors to be used in I2.3.2.1 (iii) 
+ 
+Polar 
+Class 
+Crushing 
+failure Class 
+Factor (CFC) 
+Flexural failure 
+Class Factor 
+(CFF) 
+Load patch 
+dimensions 
+Class Factor 
+(CFD) 
+Displacement 
+Class Factor 
+(CFDIS) 
+Longitudinal 
+strength 
+Class Factor (CFL) 
+PC1 
+17.69 
+68.60 
+2.01 
+250 
+7.46 
+PC2 
+9.89 
+46.80 
+1.75 
+210 
+5.46 
+PC3 
+6.06 
+21.17 
+1.53 
+180 
+4.17 
+PC4 
+4.50 
+13.48 
+1.42 
+130 
+3.15 
+PC5 
+3.10 
+9.00 
+1.31 
+70 
+2.50 
+PC6 
+2.40 
+5.49 
+1.17 
+40 
+2.37 
+PC7 
+1.80 
+4.06 
+1.11 
+22 
+1.81 
+ 
+ 
+Table 2 - Class factors to be used in I2.3.2.1 (iv) 
+ 
+Polar 
+Class 
+Crushing 
+failure Class 
+Factor (CFCV) 
+Line load Class 
+Factor (CFQV) 
+Pressure 
+Class Factor 
+(CFPV) 
+PC6 
+3.43 
+2.82 
+0.65 
+PC7 
+2.60 
+2.33 
+0.65 
+ 
+I2.3.2.1 
+Bow area 
+ 
+(i)   In the Bow area, the force (F), line load (Q), pressure (P) and load patch aspect ratio (AR) 
+associated with the glancing impact load scenario are functions of the hull angles measured 
+at the upper ice waterline (UIWL).  The influence of the hull angles is captured through 
+calculation of a bow shape coefficient (fa).  The hull angles are defined in Figure 2. 
+ 
+Figure 2 - Definition of hull angles 
+ 
+ 
+ 
+Note: β′ = normal frame angle at upper ice waterline [deg] 
+ 
+ α = upper ice waterline angle [deg] 
+ 
+ γ = buttock angle at upper ice waterline (angle of buttock line measured from horizontal) [deg] 
+ 
+ tan(β) = tan(α)/tan(γ) 
+ 
+ tan(β′) = tan(β)·cos(α) 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 5 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+ 
+(ii)   The waterline length of the bow region is generally to be divided into 4 sub-regions of 
+equal length.  The force (F), line load (Q), pressure (P) and load patch aspect ratio (AR) are 
+to be calculated with respect to the mid-length position of each sub-region (each maximum of 
+F, Q and P is to be used in the calculation of the ice load parameters Pavg, b and w). 
+ 
+(iii) The Bow area load characteristics for bow forms defined in I2.3.1 (v) are determined as 
+follows: 
+ 
+(a) Shape coefficient, fai, is to be taken as 
+ 
+ 
+fai    =   minimum (fai,1 ; fai,2 ; fai,3) 
+ 
+ 
+ 
+where fai,1  =  (0.097 - 0.68 · (x/ LUI - 0.15)2) · αi  / (β′i)0.5 
+ 
+ 
+   
+ fai,2  =  1.2 · CFF  /  ( sin (β′i) · CFC · DUI0.64) 
+ 
+ 
+   
+ fai,3  =  0.60 
+ 
+ 
+(b) Force, Fi: 
+ 
+ 
+Fi  =  fai  · CFC · DUI0.64 [MN] 
+ 
+  
+ 
+(c) Load patch aspect ratio, ARi: 
+ 
+ 
+ARi  = 7.46 · sin (β′i) ≥ 1.3 
+ 
+  
+(d) Line load, Qi: 
+ 
+ 
+Qi  =   Fi 0.61  · CFD / ARi0.35 [MN/m] 
+ 
+  
+(e) Pressure, Pi: 
+ 
+ 
+Pi  =   Fi0.22  · CFD2 · ARi0.3 [MPa] 
+ 
+ 
+ 
+where i = sub-region considered 
+ 
+LUI = length as defined in I2.1.2.1 [m] 
+x = distance from the fore side of the stem at the intersection with the upper ice 
+waterline (UIWL) to station under consideration [m] 
+ 
+α = waterline angle [deg], see Figure 2 
+ 
+β′ = normal frame angle [deg], see Figure 2 
+ 
+DUI = displacement as defined in I2.1.2.2, not to be taken less than 5 [kt] 
+ 
+CFC = Crushing failure Class Factor from Table 1 
+ 
+CFF = Flexural failure Class Factor from Table 1 
+ 
+CFD = Load patch dimensions Class Factor from Table 1 
+ 
+(iv)   The Bow area load characteristics for bow forms defined in I2.3.1 (vi) are determined as 
+follows: 
+ 
+(a) Shape coefficient, fai, is to be taken as 
+ 
+ 
+fai   =  αi  / 30 
+ 
+ (b) Force, Fi: 
+ 
+ 
+Fi  =  fai  · CFCV · DUI0.47 [MN] 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 6 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+ 
+(c) Line load, Qi: 
+ 
+ 
+Qi  =   Fi 0.22  · CFQV [MN/m] 
+ 
+(d) Pressure, Pi: 
+ 
+ 
+Pi  =   F0.56  · CFPV [MPa]  
+ 
+ 
+where 
+i = sub-region considered 
+ 
+ 
+α = waterline angle [deg], see Figure 2 
+ 
+ 
+DUI = displacement as defined in I2.1.2.2, not to be taken less than 5 [kt] 
+ 
+ 
+CFCV = Crushing failure Class Factor from Table 2 
+ 
+ 
+CFQV = Line load Class Factor from Table 2 
+ 
+ 
+CFPV = Pressure Class Factor from Table 2 
+ 
+ 
+I2.3.2.2 
+Hull areas other than the bow 
+ 
+(i) In the hull areas other than the bow, the force (FNonBow) and line load (QNonBow) used in the 
+determination of the load patch dimensions (bNonBow, wNonBow) and design pressure (Pavg) are 
+determined as follows: 
+ 
+(a) Force, FNonBow: 
+ 
+ 
+FNonBow = 0.36 · CFC · DF [MN] 
+ 
+ 
+(b) Line Load, QNonBow: 
+ 
+ 
+QNonBow = 0.639 · FNonBow0.61 · CFD [MN/m] 
+ 
+ 
+where CFC = Crushing failure Class Factor from Table 1 
+ 
+   
+ DF = ship displacement factor 
+ 
+           = DUI0.64  
+ 
+ 
+ 
+if DUI ≤ CFDIS 
+ 
+          = CFDIS0.64 + 0.10 · (DUI - CFDIS) 
+if DUI > CFDIS 
+ 
+   
+ DUI = displacement as defined in I2.1.2.2, not to be taken less than 10 [kt] 
+ 
+   
+ CFDIS = Displacement Class Factor from Table 1 
+ 
+CFD = Load patch dimensions Class Factor from Table 1 
+ 
+I2.3.3 Design load patch 
+ 
+(i) In the Bow area, and the Bow Intermediate Icebelt area for ships with class notation PC6 
+and PC7, the design load patch has dimensions of width, wBow, and height, bBow, defined as 
+follows: 
+ 
+ 
+wBow = FBow / QBow [m] 
+ 
+ 
+ 
+bBow = QBow / PBow [m] 
+ 
+ 
+ 
+where FBow = maximum force Fi in the Bow area [MN] 
+ 
+   
+ QBow = maximum line load Qi in the Bow area [MN/m] 
+ 
+   
+ PBow = maximum pressure Pi in the Bow area [MPa] 
+ 
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 7 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+(ii) In hull areas other than those covered by I2.3.3 (i), the design load patch has dimensions 
+of width, wNonBow, and height, bNonBow, defined as follows: 
+ 
+ 
+wNonBow = FNonBow / QNonBow [m] 
+ 
+ 
+ 
+bNonBow = wNonBow / 3.6 [m] 
+ 
+ 
+ 
+where FNonBow = force as defined in I2.3.2.2 (i) (a) [MN] 
+ 
+   
+ QNonBow = line load as defined in I2.3.2.2 (i) (b) [MN/m] 
+ 
+I2.3.4 Pressure within the design load patch 
+ 
+(i) The average pressure, Pavg, within a design load patch is determined as follows: 
+ 
+ 
+Pavg = F / (b · w) [MPa] 
+ 
+ 
+ 
+where F = FBow or FNonBow as appropriate for the hull area under consideration [MN] 
+ 
+   
+ b = bBow or bNonBow as appropriate for the hull area under consideration [m] 
+ 
+   
+ w = wBow or wNonBow as appropriate for the hull area under consideration [m] 
+ 
+(ii) Areas of higher, concentrated pressure exist within the load patch. In general, smaller 
+areas have higher local pressures. Accordingly, the peak pressure factors listed in Table 3 
+are used to account for the pressure concentration on localized structural members. 
+ 
+Table 3 - Peak Pressure Factors 
+ 
+Structural member 
+Peak Pressure Factor (PPFi) 
+Plating 
+Transversely-framed 
+PPFp  = (1.8 - s) ≥ 1.2 
+Longitudinally-framed 
+PPFp  = (2.2 - 1.2 · s) ≥ 1.5 
+Frames in transverse 
+framing systems  
+ 
+With load distributing stringers 
+PPFt = (1.6 - s) ≥ 1.0 
+With no load distributing stringers 
+PPFt = (1.8 - s) ≥ 1.2 
+Frames in bottom structures 
+PPFs = 1.0 
+Load carrying stringers 
+Side longitudinals 
+Web frames 
+PPFs = 1.0,  if Sw ≥ 0.5 · w 
+PPFs = 2.0 - 2.0 · Sw / w, 
+            if Sw < (0.5 · w) 
+where:  
+s = frame or longitudinal spacing [m] 
+Sw = web frame spacing [m] 
+w = ice load patch width [m] 
+ 
+I2.3.5 Hull area factors 
+ 
+(i) Associated with each hull area is an Area Factor that reflects the relative magnitude of 
+the load expected in that area. The Area Factor (AF) for each hull area is listed in Table 4. 
+ 
+(ii) In the event that a structural member spans across the boundary of a hull area, the 
+largest hull area factor is to be used in the scantling determination of the member. 
+ 
+(iii) Due to their increased manoeuvrability, ships having propulsion arrangements with 
+azimuth thruster(s) or “podded” propellers are to have specially considered Stern Icebelt (Si) 
+and Stern Lower (Sl) hull area factors. 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 8 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+(iv) For ships assigned the additional notation “Icebreaker”, the Area Factor (AF) for each 
+hull area is listed in Table 5. 
+ 
+Table 4 - Hull Area Factors (AF) 
+ 
+Hull area 
+Area 
+Polar Class 
+PC1 
+PC2 
+PC3 
+PC4 
+PC5 
+PC6 
+PC7 
+Bow (B) 
+All 
+B 
+1.00 
+1.00 
+1.00 
+1.00 
+1.00 
+1.00 
+1.00 
+Bow 
+Intermediate 
+(BI) 
+Icebelt 
+BIi 
+0.90 
+0.85 
+0.85 
+0.80 
+0.80 
+1.00* 
+1.00* 
+Lower 
+BIl 
+0.70 
+0.65 
+0.65 
+0.60 
+0.55 
+0.55 
+0.50 
+Bottom 
+BIb 
+0.55 
+0.50 
+0.45 
+0.40 
+0.35 
+0.30 
+0.25 
+Midbody (M) 
+Icebelt 
+Mi 
+0.70 
+0.65 
+0.55 
+0.55 
+0.50 
+0.45 
+0.45 
+Lower 
+Ml 
+0.50 
+0.45 
+0.40 
+0.35 
+0.30 
+0.25 
+0.25 
+Bottom 
+Mb 
+0.30 
+0.30 
+0.25 
+** 
+** 
+** 
+** 
+Stern (S) 
+Icebelt 
+Si 
+0.75 
+0.70 
+0.65 
+0.60 
+0.50 
+0.40 
+0.35 
+Lower 
+Sl 
+0.45 
+0.40 
+0.35 
+0.30 
+0.25 
+0.25 
+0.25 
+Bottom 
+Sb 
+0.35 
+0.30 
+0.30 
+0.25 
+0.15 
+** 
+** 
+ 
+Note to Table 4: * See I2.3.1 (iii);  
+ 
+   
+ **   Indicates that strengthening for ice loads is not necessary. 
+ 
+ 
+Table 5 - Hull Area Factors (AF) for ships with additional notation “Icebreaker” 
+ 
+Hull area 
+Area 
+Polar Class 
+PC1 
+PC2 
+PC3 
+PC4 
+PC5 
+PC6 
+PC7 
+Bow (B) 
+All 
+B 
+1.00 
+1.00 
+1.00 
+1.00 
+1.00 
+1.00 
+1.00 
+Bow 
+Intermediate 
+(BI) 
+Icebelt 
+BIi 
+0.90 
+0.85 
+0.85 
+0.85 
+0.85 
+1.00 
+1.00 
+Lower 
+BIl 
+0.70 
+0.65 
+0.65 
+0.65 
+0.65 
+0.65 
+0.65 
+Bottom 
+BIb 
+0.55 
+0.50 
+0.45 
+0.45 
+0.45 
+0.45 
+0.45 
+Midbody (M) 
+Icebelt 
+Mi 
+0.70 
+0.65 
+0.55 
+0.55 
+0.55 
+0.55 
+0.55 
+Lower 
+Ml 
+0.50 
+0.45 
+0.40 
+0.40 
+0.40 
+0.40 
+0.40 
+Bottom 
+Mb 
+0.30 
+0.30 
+0.25 
+0.25 
+0.25 
+0.25 
+0.25 
+Stern (S) 
+Icebelt 
+Si 
+0.95 
+0.90 
+0.80 
+0.80 
+0.80 
+0.80 
+0.80 
+Lower 
+Sl 
+0.55 
+0.50 
+0.45 
+0.45 
+0.45 
+0.45 
+0.45 
+Bottom 
+Sb 
+0.35 
+0.30 
+0.30 
+0.30 
+0.30 
+0.30 
+0.30 
+ 
+ 
+I2.4  Shell plate requirements 
+ 
+I2.4.1 The required minimum shell plate thickness, t, is given by: 
+ 
+ 
+t = tnet + ts [mm] 
+ 
+ 
+ 
+where tnet = plate thickness required to resist ice loads according to I2.4.2 [mm] 
+ 
+   
+ ts = corrosion and abrasion allowance according to I2.11 [mm] 
+ 
+I2.4.2 The thickness of shell plating required to resist the design ice load, tnet, depends on 
+the orientation of the framing. 
+ 
+In the case of transversely-framed plating (Ω ≥ 70 deg), including all bottom plating, i.e. 
+plating in hull areas BIb, Mb and Sb, the net thickness is given by: 
+ 
+ 
+tnet = 500 · s · ((AF · PPFp · Pavg) / σy)0.5 / (1 + s / (2 · b)) [mm] 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 9 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+ 
+In the case of longitudinally-framed plating (Ω ≤ 20 deg), when b ≥ s, the net thickness is 
+given by: 
+ 
+ 
+tnet = 500 · s · ((AF · PPFp · Pavg) / σy)0.5 / (1 + s / (2 · l)) [mm] 
+ 
+ 
+In the case of longitudinally-framed plating (Ω ≤ 20 deg), when b < s, the net thickness is 
+given by: 
+ 
+ 
+tnet = 500 · s · ((AF · PPFp · Pavg) / σy)0.5 · (2 · b / s – (b / s)2)0.5 / (1 + s / (2 · l)) [mm] 
+ 
+   
+   
+ 
+ 
+In the case of obliquely-framed plating (70 deg > Ω > 20 deg), linear interpolation is to be 
+used. 
+ 
+ 
+where Ω = smallest angle between the chord of the waterline and the line of the first 
+level framing as illustrated in Figure 3 [deg]. 
+ 
+   
+ s = transverse frame spacing in transversely-framed ships or longitudinal frame 
+spacing in longitudinally-framed ships [m] 
+ 
+   
+ AF = Hull Area Factor from Table 4 or Table 5 
+ 
+   
+ PPFp = Peak Pressure Factor from Table 3 
+ 
+   
+ Pavg = average patch pressure as defined in I2.3.4 [MPa] 
+ 
+   
+ σy = minimum upper yield stress of the material [N/mm2] 
+ 
+   
+ b = height of design load patch [m], where b is to be taken not greater than ( l – 
+s/4) in the case of determination of the net thickness for transversely framed 
+plating 
+ 
+   
+ l = distance between frame supports, i.e. equal to the frame span as given in 
+I2.5.5, but not reduced for any fitted end brackets [m]. When a load-distributing 
+stringer is fitted, the length l need not be taken larger than the distance from the 
+stringer to the most distant frame support. 
+ 
+ 
+Figure 3 - Shell framing angle Ω 
+ 
+ 
+ 
+ 
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 10 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+I2.5  Framing - General 
+ 
+I2.5.1 Framing members of Polar Class ships are to be designed to withstand the ice loads 
+defined in I2.3. 
+ 
+I2.5.2 The term “framing member” refers to transverse and longitudinal local frames, load-
+carrying stringers and web frames in the areas of the hull exposed to ice pressure, see Figure 
+1. Where load-distributing stringers have been fitted, the arrangement and scantlings of these 
+are to be in accordance with the requirements of the Classification Society. 
+ 
+I2.5.3 The strength of a framing member is dependent upon the fixity that is provided at its 
+supports.  Fixity can be assumed where framing members are either continuous through the 
+support or attached to a supporting section with a connection bracket.  In other cases, simple 
+support is to be assumed unless the connection can be demonstrated to provide significant 
+rotational restraint. Fixity is to be ensured at the support of any framing which terminates 
+within an ice-strengthened area. 
+ 
+I2.5.4 The details of framing member intersection with other framing members, including 
+plated structures, as well as the details for securing the ends of framing members at 
+supporting sections, are to be in accordance with the requirements of the Classification 
+Society.  
+ 
+I2.5.5   The effective span of a framing member is to be determined on the basis of its 
+moulded length. If brackets are fitted, the effective span may be reduced in accordance with 
+the usual practice of the Classification Society. Brackets are to be configured to ensure 
+stability in the elastic and post-yield response regions. 
+ 
+I2.5.6 When calculating the section modulus and shear area of a framing member, net 
+thicknesses of the web, flange (if fitted) and attached shell plating are to be used. The shear 
+area of a framing member may include that material contained over the full depth of the 
+member, i.e. web area including portion of flange, if fitted, and attached shell plating. 
+ 
+I2.5.7 The actual net effective shear area, Aw, of a transverse or longitudinal local frame is 
+given by: 
+ 
+100
+/
+sin
+)
+5.0
+5.0
+w
+wn
+s
+pn
+c
+w
+t
+t
+t
+t
+h
+A
+ϕ
+⋅
+⋅
++
++
+−
+=（
+ [cm2]  
+ 
+ 
+where 
+ 
+ 
+ h = height of stiffener [mm], see Figure 4 
+ 
+ tpn =fitted net shell plate thickness [mm] (complying with tnet as required by I2.4.2) 
+ts =corrosion and abrasion deduction [mm] to be subtracted from the shell plate 
+thickness, see I2.11.2 
+ 
+ twn = net web thickness [mm] 
+  
+       = tw - tc 
+ 
+ tw = as built web thickness [mm], see Figure 4 
+ 
+ tc = corrosion deduction [mm] to be subtracted from the web and flange thickness (as 
+specified by the Classification Society, but not less than ts as required by I2.11.3).   
+ 
+ ϕw = smallest angle between shell plate and stiffener web, measured at the midspan of 
+the stiffener, see Figure 4.  The angle ϕw may be taken as 90 deg provided the smallest 
+angle is not less than 75 deg. 
+ 
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 11 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+Figure 4 - Stiffener geometry 
+ 
+ 
+ 
+I2.5.8   When the cross-sectional area of the attached plate flange exceeds the cross-
+sectional area of the local frame, the actual net effective plastic section modulus, Zp, of a 
+transverse or longitudinal frame is given by: 
+ 
+(
+) 10
+/
+cos
+sin
+2000
+sin
+20
+/
+2
+w
+w
+w
+fc
+fn
+w
+wn
+w
+pn
+pn
+p
+b
+h
+A
+t
+h
+t
+A
+Z
+ϕ
+ϕ
+ϕ
+⋅
+−
+⋅
+⋅
++
+⋅
+⋅
++
+⋅
+=
+[cm3]  
+ 
+where 
+ 
+ 
+ h, twn, tc, tpn, and ϕw as given in I2.5.7 and s as given in I2.4.2. 
+ 
+ Apn = net cross-sectional area of the local frame [cm2] 
+ 
+ hw = height of local frame web [mm], see Figure 4 
+ 
+ Afn = net cross-sectional area of local frame flange [cm2] 
+ 
+ 
+ 
+ hfc = height of local frame measured to centre of the flange area [mm], see Figure 4 
+ 
+ bw = distance from mid thickness plane of local frame web to the centre of the flange 
+area [mm], see Figure 4 
+ 
+When the cross-sectional area of the local frame exceeds the cross-sectional area of the 
+attached plate flange, the plastic neutral axis is located a distance zna above the attached 
+shell plate, given by: 
+ 
+(
+) (
+)
+wn
+pn
+wn
+w
+fn
+na
+t
+s
+t
+t
+h
+A
+z
+⋅
+⋅
+⋅
+−
+⋅
++
+⋅
+=
+2
+/
+1000
+100
+ [mm]   
+ 
+ 
+and the net effective plastic section modulus, Zp, of a transverse or longitudinal frame is given 
+by: 
+ 
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+
+
+
+
+
+
+
+
+
+
+⋅
+−
+⋅
+−
+⋅
++
+⋅
+⋅
++
+−
++
+⋅
++
+⋅
+⋅
+=
+10
+/
+cos
+sin
+000
+2
+sin
+sin
+2
+/
+2
+2
+w
+w
+w
+na
+fc
+fn
+w
+wn
+na
+na
+w
+w
+pn
+na
+pn
+p
+b
+z
+h
+A
+t
+z
+z
+h
+t
+z
+s
+t
+Z
+ϕ
+ϕ
+ϕ
+ϕ
+ [cm3] 
+ 
+I2.5.9 In the case of oblique framing arrangement (70 deg > Ω > 20 deg, where Ω is defined 
+as given in I2.4.2), linear interpolation is to be used. 
+ 
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 12 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+I2.6  Framing - Local frames in bottom structures and transverse local frames in side 
+structures 
+ 
+I2.6.1   The local frames in bottom structures (i.e. hull areas BIb, Mb and Sb) and transverse 
+local frames in side structures are to be dimensioned such that the combined effects of shear 
+and bending do not exceed the plastic strength of the member. The plastic strength is defined 
+by the magnitude of midspan load that causes the development of a plastic collapse 
+mechanism. 
+For bottom structure the patch load shall be applied with the dimension (b) parallel with the 
+frame direction. 
+ 
+I2.6.2   The actual net effective shear area of the frame, Aw, as defined in I2.5.7, is to comply 
+with the following condition: Aw ≥ At, where: 
+ 
+At = 1002 · 0.5 · LL · s · (AF · PPF · Pavg) / (0.577 · σy) [cm2] 
+ 
+ 
+ 
+where LL = length of loaded portion of span 
+                = lesser of a and b [m] 
+ 
+   
+a = local frame span as defined in I2.5.5 [m] 
+ 
+   
+b = height of design ice load patch as defined in I2.3.3 (i) or I2.3.3 (ii) [m] 
+ 
+   
+s = spacing of local frame [m] 
+ 
+   
+AF = Hull Area Factor from Table 4 or Table 5 
+ 
+   
+PPF = Peak Pressure Factor, PPFt or PPFs as appropriate from Table 3 
+ 
+   
+Pavg = average pressure within load patch as defined in I2.3.4 [MPa] 
+ 
+   
+σy = minimum upper yield stress of the material [N/mm2] 
+ 
+I2.6.3   The actual net effective plastic section modulus of the plate/stiffener combination, Zp, 
+as defined in I2.5.8, is to comply with the following condition: Zp ≥ Zpt, where Zpt is to be the 
+greater calculated on the basis of two load conditions: a) ice load acting at the midspan of the 
+local frame, and b) the ice load acting near a support. The A1 parameter defined below 
+reflects these two conditions: 
+ 
+Zpt = 1003 · LL · Y · s· (AF · PPF · Pavg)· a · A1 / (4·σy)  [cm3] 
+ 
+ 
+ 
+where AF, PPF, Pavg, LL, b, s, a and σy are as given in I2.6.2 
+ 
+   
+ Y = 1 - 0.5 · (LL / a) 
+ 
+   
+ A1 = maximum of  
+ 
+   
+  A1A = 1 / (1 + j / 2 + kw · j / 2 · [(1 - a12) 0.5 - 1]) 
+ 
+   
+  A1B = (1 – 1 / (2 · a1 · Y)) / (0.275 + 1.44 · kz0.7) 
+ 
+   
+  j = 1 for a local frame with one simple support outside the ice-strengthened  areas 
+ 
+   
+    = 2 for a local frame without any simple supports 
+ 
+   
+ a1 = At  / Aw 
+ 
+   
+ At = minimum shear area of the local frame as given in I2.6.2 [cm2] 
+ 
+   
+ Aw = effective net shear area of the local frame (calculated according to I2.5.7) [cm2] 
+ 
+   
+ kw = 1 / (1 + 2 · Afn / Aw) with Afn as given in I2.5.8 
+ 
+   
+ kz = zp / Zp in general 
+  
+    
+    = 0.0 when the frame is arranged with end bracket 
+ 
+   
+ zp = sum of individual plastic section moduli of flange and shell plate as fitted [cm3] 
+ 
+    
+    = (bfn · tfn2 / 4 + beff · tpn2 / 4) / 1000 
+ 
+   
+ bfn = net flange breadth [mm] 
+ 
+   
+     = bf – tc (tc as given in I2.5.7) 
+ 
+   
+ bf = flange breadth [mm], see Figure 4 
+ 
+   
+ tfn = net flange thickness [mm] 
+ 
+   
+     = tf – tc (tc as given in I2.5.7) 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 13 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+ 
+   
+ tf = as-built flange thickness [mm], see Figure 4 
+ 
+   
+ tpn = the fitted net shell plate thickness [mm] (not to be less than tnet as given in I2.4) 
+ 
+   
+ beff = effective width of shell plate flange [mm] 
+ 
+   
+        = 500 · s 
+ 
+   
+ Zp = net effective plastic section modulus of the local frame (calculated according 
+to I2.5.8) [cm3] 
+ 
+I2.6.4 The scantlings of the local frame are to meet the structural stability requirements of 
+I2.9. 
+ 
+I2.7  Framing - Longitudinal local frames in side structures 
+ 
+I2.7.1   Longitudinal local frames in side structures are to be dimensioned such that the 
+combined effects of shear and bending do not exceed the plastic strength of the member. 
+The plastic strength is defined by the magnitude of midspan load that causes the 
+development of a plastic collapse mechanism. 
+ 
+I2.7.2   The actual net effective shear area of the frame, Aw, as defined in I2.5.7, is to comply 
+with the following condition: Aw ≥ AL, where:  
+ 
+AL = 1002 · (AF · PPFs · Pavg) · 0.5 · b1 · a / (0.577 · σy) [cm2] 
+ 
+ 
+ 
+where AF = Hull Area Factor from Table 4 or Table 5 
+ 
+   
+ PPFs = Peak Pressure Factor from Table 3 
+ 
+   
+ Pavg = average pressure within load patch as defined in I2.3.4 [MPa] 
+ 
+   
+ b1 = ko · b2 [m] 
+ 
+   
+ ko = 1 - 0.3 / b’ 
+ 
+   
+ b’ = b / s 
+ 
+   
+ b = height of design ice load patch as defined in I2.3.3 (i) or I2.3.3 (ii) [m] 
+ 
+   
+ s = spacing of longitudinal frames [m] 
+ 
+   
+ b2 = b · (1 - 0.25 · b’) [m], if b’ < 2 
+  
+   
+      = s [m], if b’ ≥ 2 
+ 
+   
+ a = effective span of longitudinal local frame as given in I2.5.5 [m] 
+ 
+   
+ σy = minimum upper yield stress of the material [N/mm2] 
+I2.7.3   The actual net effective plastic section modulus of the plate/stiffener combination, Zp, 
+as defined in I2.5.8, is to comply with the following condition: Zp ≥ ZpL, where: 
+ 
+ZpL = 1003 · (AF · PPFs · Pavg) · b1 · a2 · A4 / ( 8 · σy) [cm3] 
+ 
+ 
+ 
+where AF, PPFs, Pavg, b1, a and σy are as given in I2.7.2 
+ 
+   
+ A4 = 1 / (2 + kwl · [(1 - a42)0.5 - 1]) 
+ 
+   
+ a4 = AL / Aw 
+ 
+   
+ AL = minimum shear area for longitudinal as given in I2.7.2 [cm2] 
+ 
+   
+ Aw = net effective shear area of longitudinal (calculated according to I2.5.7) [cm2] 
+ 
+   
+ kwl = 1 / (1 + 2 · Afn / Aw) with Afn as given in I2.5.8 
+ 
+I2.7.4 The scantlings of the longitudinals are to meet the structural stability requirements of 
+I2.9. 
+ 
+I2.8  Framing - Web frames and load carrying stringers 
+ 
+I2.8.1   Web frames and load-carrying stringers are to be designed to withstand the ice load 
+patch as defined in I2.3. The load patch is to be applied at locations where the capacity of 
+these members under the combined effects of bending and shear is minimised. 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 14 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+ 
+I2.8.2   Web frames and load-carrying stringers are to be dimensioned such that the 
+combined effects of shear and bending do not exceed the limit state(s) defined by the 
+Classification Society. Where the structural configuration is such that members do not form 
+part of a grillage system, the appropriate peak pressure factor (PPF) from Table 3 is to be 
+used. Special attention is to be paid to the shear capacity in way of lightening holes and cut-
+outs in way of intersecting members. 
+ 
+I2.8.3   For determination of scantlings of load carrying stringers, web frames supporting local 
+frames, or web frames supporting load carrying stringers forming part of a structural grillage 
+system, appropriate methods as outlined in I2.17 are normally to be used. 
+ 
+  
+I2.8.4   The scantlings of web frames and load-carrying stringers are to meet the structural 
+stability requirements of I2.9. 
+ 
+I2.9  Framing - Structural stability 
+ 
+I2.9.1   To prevent local buckling in the web, the ratio of web height (hw) to net web thickness 
+(twn) of any framing member is not to exceed: 
+ 
+For flat bar sections:  
+ 
+hw / twn ≤ 282 / (σy)0.5 
+ 
+For bulb, tee and angle sections: 
+hw / twn ≤ 805 / (σy)0.5 
+ 
+ 
+where hw = web height 
+ 
+   
+ twn = net web thickness 
+ 
+   
+ σy = minimum upper yield stress of the material [N/mm2] 
+ 
+I2.9.2   Framing members for which it is not practicable to meet the requirements of I2.9.1 
+(e.g. load carrying stringers or deep web frames) are required to have their webs effectively 
+stiffened. The scantlings of the web stiffeners are to ensure the structural stability of the 
+framing member. The minimum net web thickness for these framing members is given by: 
+ 
+ 
+twn = 2.63 · 10-3 · c1 · (σy / (5.34 + 4 · (c1 / c2)2))0.5 [mm] 
+ 
+ 
+where c1  = hw - 0.8 · h   [mm] 
+ 
+   
+ hw = web height of stringer / web frame [mm] (see Figure 5) 
+ 
+   
+ h = height of framing member penetrating the member under consideration (0 if 
+no such framing member) [mm] (see Figure 5) 
+ 
+   
+ c2 = spacing between supporting structure oriented perpendicular to the member 
+under consideration [mm] (see Figure 5) 
+ 
+   
+ σy = minimum upper yield stress of the material [N/mm2] 
+ 
+ 
+Figure 5 - Parameter definition of web stiffening 
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 15 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+ 
+I2.9.3   In addition, the following is to be satisfied: 
+ 
+twn  ≥ 0.35 · tpn · (σy / 235)0.5 
+ 
+ 
+where σy = minimum upper yield stress of the shell plate in way of the framing member 
+[N/mm2] 
+ 
+   
+ twn = net thickness of the web [mm] 
+ 
+   
+ tpn = net thickness of the shell plate in way of the framing member [mm] 
+ 
+I2.9.4   To prevent local flange buckling of welded profiles, the following are to be satisfied: 
+ 
+(i) The flange width, bf  [mm], is not to be less than five times the net thickness of the web, 
+twn. 
+ 
+(ii) The flange outstand, bout [mm], is to meet the following requirement: 
+ 
+bout / tfn ≤ 155 / (σy)0.5 
+ 
+ 
+where tfn = net thickness of flange [mm] 
+ 
+   
+ σy = minimum upper yield stress of the material [N/mm2] 
+ 
+I2.10  Plated structures 
+ 
+I2.10.1   Plated structures are those stiffened plate elements in contact with the hull and 
+subject to ice loads. These requirements are applicable to an inboard extent which is the 
+lesser of: 
+ 
+ 
+ 
+(i) web height of adjacent parallel web frame or stringer; or 
+ 
+(ii) 2.5 times the depth of framing that intersects the plated structure 
+ 
+I2.10.2   The thickness of the plating and the scantlings of attached stiffeners are to be such 
+that the degree of end fixity necessary for the shell framing is ensured. 
+ 
+I2.10.3   The stability of the plated structure is to adequately withstand the ice loads defined 
+in I2.3. 
+ 
+I2.11  Corrosion/abrasion additions and steel renewal 
+ 
+I2.11.1   Effective protection against corrosion and ice-induced abrasion is recommended for 
+all external surfaces of the shell plating for Polar Class ships. 
+ 
+I2.11.2   The values of corrosion/abrasion additions, ts, to be used in determining the shell 
+plate thickness are listed in Table 6. 
+ 
+I2.11.3   Polar Class ships are to have a minimum corrosion/abrasion addition of ts = 1.0 mm 
+applied to all internal structures within the ice-strengthened hull areas, including plated 
+members adjacent to the shell, as well as stiffener webs and flanges. 
+ 
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 16 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+Table 6 - Corrosion/abrasion additions for shell plating 
+ 
+Hull area 
+ts [mm] 
+With effective protection 
+Without effective protection 
+PC1 - 
+PC3 
+PC4 & 
+PC5 
+PC6 & 
+PC7 
+PC1 - 
+PC3 
+PC4 & 
+PC5 
+PC6 & 
+PC7 
+Bow; Bow Intermediate 
+Icebelt 
+3.5 
+2.5 
+2.0 
+7.0 
+5.0 
+4.0 
+Bow Intermediate Lower; 
+Midbody & Stern Icebelt 
+2.5 
+2.0 
+2.0 
+5.0 
+4.0 
+3.0 
+Midbody & Stern Lower; 
+Bottom 
+2.0 
+2.0 
+2.0 
+4.0 
+3.0 
+2.5 
+ 
+I2.11.4   Steel renewal for ice strengthened structures is required when the gauged thickness 
+is less than tnet + 0.5 mm. 
+ 
+I2.12  Materials 
+ 
+I2.12.1   Steel grades of plating for hull structures are to be not less than those given in Table 
+8 based on the as-built thickness, the Polar Class and the material class of structural 
+members according to I2.12.2. 
+ 
+Table 7 - Material classes for structural members 
+ 
+Structural members 
+Material 
+class 
+Shell plating within the bow and bow intermediate icebelt hull areas (B, BIi) 
+II 
+All weather and sea exposed SECONDARY and PRIMARY, as defined in Table 
+1 of UR S6.1, structural members outside 0.4 LUI amidships 
+I 
+Plating materials for stem and stern frames, rudder horn, rudder, propeller 
+nozzle, shaft brackets, ice skeg, ice knife and other appendages subject to ice 
+impact loads 
+II 
+All inboard framing members attached to the weather and sea-exposed plating, 
+including any contiguous inboard member within 600 mm of the plating 
+I 
+Weather-exposed plating and attached framing in cargo holds of ships which by 
+nature of their trade have their cargo hold hatches open during cold weather 
+operations 
+I 
+All weather and sea exposed SPECIAL, as defined in Table 1 of UR S6.1, 
+structural members within 0.2 LUI from FP  
+II 
+ 
+I2.12.2   Material classes specified in Table 1 of UR S6.1 are applicable to Polar Class ships 
+regardless of the ship’s length. In addition, material classes for weather and sea exposed 
+structural members and for members attached to the weather and sea exposed plating are 
+given in Table 7. Where the material classes in Table 7 and those in Table 1 of UR S6.1 
+differ, the higher material class is to be applied.  
+ 
+I2.12.3   Steel grades for all plating and attached framing of hull structures and appendages 
+situated below the level of 0.3 m below the lower waterline, as shown in Figure 6, are to be 
+obtained from Table 6 and Table 7 of UR S6 based on the material class for structural 
+members in Table 7 above, regardless of Polar Class. 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 17 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+Figure 6 - Steel grade requirements for submerged and weather exposed shell plating 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+I2.12.4   Steel grades for all weather exposed plating of hull structures and appendages 
+situated above the level of 0.3 m below the lower ice waterline, as shown in Figure 6, are to 
+be not less than given in Table 8. 
+ 
+Table 8 - Steel grades for weather exposed plating1) 
+ 
+Thickness, 
+t [mm] 
+Material  
+ class  I 
+Material  
+class  II 
+Material  
+class  III 
+PC1-5 
+PC6&7 
+PC1-5 
+PC6&7 
+PC1-3 
+PC4&5 
+PC6&7 
+MS 
+HT 
+MS 
+HT 
+MS 
+HT 
+MS HT MS HT MS HT MS HT 
+t ≤ 10 
+B 
+AH 
+B 
+AH 
+B 
+AH 
+B 
+AH 
+E 
+EH 
+E 
+EH 
+B 
+AH 
+10 < t ≤ 15 
+B 
+AH 
+B 
+AH 
+D 
+DH 
+B 
+AH 
+E 
+EH 
+E 
+EH 
+D 
+DH 
+15 < t ≤ 20 
+D 
+DH 
+B 
+AH 
+D 
+DH 
+B 
+AH 
+E 
+EH 
+E 
+EH 
+D 
+DH 
+20 < t ≤ 25 
+D 
+DH 
+B 
+AH 
+D 
+DH 
+B 
+AH 
+E 
+EH 
+E 
+EH 
+D 
+DH 
+25 < t ≤ 30 
+D 
+DH 
+B 
+AH 
+E 
+EH2) 
+D 
+DH 
+E 
+EH 
+E 
+EH 
+E 
+EH 
+30 < t ≤ 35 
+D 
+DH 
+B 
+AH 
+E 
+EH 
+D 
+DH 
+E 
+EH 
+E 
+EH 
+E 
+EH 
+35 < t ≤ 40 
+D 
+DH 
+D 
+DH 
+E 
+EH 
+D 
+DH 
+∅ 
+FH 
+E 
+EH 
+E 
+EH 
+40 < t ≤ 45 
+E 
+EH 
+D 
+DH 
+E 
+EH 
+D 
+DH 
+∅ 
+FH 
+E 
+EH 
+E 
+EH 
+45 < t ≤ 50 
+E 
+EH 
+D 
+DH 
+E 
+EH 
+D 
+DH 
+∅ 
+FH 
+∅ 
+FH 
+E 
+EH 
+∅ Not applicable 
+ 
+Notes to Table 8: 
+1)  Includes weather-exposed plating of hull structures and appendages, as well as their outboard framing 
+members, situated above a level of 0.3 m below the lowest ice waterline.  
+ 
+2)  Grades D, DH are allowed for a single strake of side shell plating not more than 1.8 m wide from 0.3 m below 
+the lowest ice waterline. 
+ 
+I2.12.5   Castings are to have specified properties consistent with the expected service 
+temperature for the cast component. 
+ 
+I2.13  Longitudinal strength 
+ 
+I2.13.1 Application 
+ 
+I2.13.1.1   A ramming impact on the bow is the design scenario for the evaluation of the 
+longitudinal strength of the hull. 
+ 
+ 
+ 
+           Steel grades according to I2.12.4 
+          Steel grades according to I2.12.3 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 18 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+I2.13.1.2   Intentional ramming is not considered as a design scenario for ships which are 
+designed with vertical or bulbous bows, see I1.1.6. Hence the longitudinal strength 
+requirements given in I2.13 is not to be considered for ships with stem angle γstem equal to or 
+larger than 80 deg. 
+ 
+I2.13.1.3   Ice loads are only to be combined with still water loads. The combined stresses 
+are to be compared against permissible bending and shear stresses at different locations 
+along the ship’s length. In addition, sufficient local buckling strength is also to be verified. 
+ 
+I2.13.2 Design vertical ice force at the bow 
+ 
+I2.13.2.1   The design vertical ice force at the bow, FIB, is to be taken as 
+ 
+FIB = minimum (FIB,1; FIB,2) [MN] 
+ 
+ 
+ 
+ 
+where FIB,1 = 0.534 · KI0.15 · sin0.2(γstem) · (DUI · Kh)0.5 · CFL [MN] 
+ 
+ 
+ 
+   
+ FIB,2 = 1.20 · CFF [MN] 
+ 
+ 
+ 
+   
+ KI = indentation parameter = Kf / Kh   
+ 
+   
+ a) for the case of a blunt bow form     
+ 
+   
+  Kf = (2 · C · BUI1-eb / (1 + eb))0.9 · tan(γstem)-0.9·(1 + eb) 
+ 
+   
+ b) for the case of wedge bow form (αstem < 80 deg), eb =1 and the above simplifies to 
+          
+  Kf = (tan(αstem) / tan2(γstem))0.9  
+ 
+   
+ Kh   = 0.01 · Awp [MN/m] 
+ 
+   
+ CFL   = Longitudinal Strength Class Factor from Table 1 
+ 
+   
+ eb = bow shape exponent which best describes the waterplane (see Figures 7 
+and 8) 
+                 = 1.0 for a simple wedge bow form 
+          
+     = 0.4 to 0.6 for a spoon bow form 
+    
+     
+     = 0 for a landing craft bow form 
+ 
+   
+ An approximate eb determined by a simple fit is acceptable 
+ 
+   
+ γstem   = stem angle to be measured between the horizontal axis and the stem 
+tangent at the upper ice waterline [deg] (buttock angle as per Figure 2 measured 
+on the centreline) 
+ 
+   
+ αstem = waterline angle measured in way of the stem at the upper ice waterline 
+(UIWL) [deg] (see Figure 7) 
+ 
+   
+ C = 1 / (2 · (LB / BUI)eb) 
+ 
+   
+ BUI = moulded breadth corresponding to the upper ice waterline (UIWL) [m] 
+ 
+   
+ LB = bow length used in the equation y = BUI / 2 · (x/LB)eb [m] (see Figures 7 and 8) 
+ 
+   
+ DUI = displacement as defined in I2.1.2.2, not to be taken less than 10 [kt] 
+ 
+   
+ Awp = waterplane area corresponding to the upper ice waterline (UIWL) [m2] 
+ 
+   
+ CFF = Flexural Failure Class Factor from Table 1 
+ 
+   
+  
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 19 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+Figure 7 - Bow shape definition 
+ 
+ 
+ 
+ 
+Figure 8 - Illustration of eb effect on the bow shape for BUI = 20 and LB =16 
+ 
+ 
+ 
+I2.13.3 Design vertical shear force 
+ 
+I2.13.3.1   The design vertical ice shear force, FI, along the hull girder is to be taken as: 
+ 
+FI  = Cf  · FIB [MN] 
+ 
+ 
+ 
+where Cf = longitudinal distribution factor to be taken as follows: 
+ 
+ 
+   
+  (a)  Positive shear force 
+ 
+   
+   
+Cf =  0.0 between the aft end of LUI and 0.6LUI from aft 
+ 
+   
+   
+Cf =  1.0 between 0.9 LUI from aft and the forward end of LUI 
+ 
+ 
+   
+  (b)  Negative shear force 
+ 
+   
+   
+Cf =  0.0 at the aft end of LUI 
+ 
+   
+   
+Cf =  -0.5 between 0.2 LUI and 0.6LUI from aft 
+ 
+   
+   
+Cf =  0.0 between 0.8 LUI from aft and the forward end of LUI 
+ 
+ 
+   
+  Intermediate values are to be determined by linear interpolation 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 20 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+I2.13.3.2   The applied vertical shear stress, τa, is to be determined along the hull girder in a 
+similar manner as in UR S11.5.4.2 by substituting the design vertical ice shear force for the 
+design vertical wave shear force. 
+ 
+I2.13.4 Design vertical ice bending moment 
+ 
+I2.13.4.1   The design vertical ice bending moment, MI, along the hull girder is to be taken as: 
+ 
+MI = 0.1 · Cm · LUI · sin-0.2(γstem) · FIB [MNm] 
+ 
+ 
+where LUI = length as defined in I2.1.2.1 [m] 
+ 
+  γ stem is as given in I2.13.2.1 
+ 
+  FIB = design vertical ice force at the bow [MN] 
+ 
+  Cm = longitudinal distribution factor for design vertical ice bending moment to be taken 
+as follows: 
+ 
+   
+  Cm  = 0.0 at the aft end of LUI 
+ 
+   
+  Cm  = 1.0 between 0.5LUI and 0.7LUI from aft 
+ 
+   
+  Cm  = 0.3 at 0.95LUI from aft 
+ 
+   
+  Cm  = 0.0 at the forward end of LUI 
+ 
+   
+  Intermediate values are to be determined by linear interpolation 
+ 
+   
+I2.13.4.2   The applied vertical bending stress, σa, is to be determined along the hull girder in 
+a similar manner as in UR S11.5.4.1, by substituting the design vertical ice bending moment 
+for the design vertical wave bending moment.  The ship still water bending moment is to be 
+taken as the permissible still water bending moment in sagging condition. 
+ 
+I2.13.5 Longitudinal strength criteria 
+ 
+I2.13.5.1   The strength criteria provided in Table 9 are to be satisfied.  The design stress is 
+not to exceed the permissible stress. 
+ 
+Table 9 - Longitudinal strength criteria 
+ 
+Failure mode 
+Applied stress 
+Permissible stress when 
+σy / σu ≤ 0.7 
+Permissible stress when 
+σy / σu > 0.7 
+Tension 
+σa 
+η · σy 
+η · 0.41 (σu + σy) 
+Shear 
+τa 
+η · σy / (3)0.5 
+η · 0.41 (σu + σy) / (3)0.5 
+Buckling 
+σa 
+σc   for plating and for web plating of stiffeners 
+σc / 1.1   for stiffeners 
+τa 
+τc 
+ 
+ 
+where σa = applied vertical bending stress [N/mm2] 
+   
+   
+ τa = applied vertical shear stress [N/mm2] 
+   
+   
+ σy = minimum upper yield stress of the material [N/mm2] 
+   
+   
+ σu = ultimate tensile strength of material [N/mm2] 
+   
+   
+ σc = critical buckling stress in compression, according to UR S11.5 [N/mm2] 
+   
+   
+ τc = critical buckling stress in shear, according to UR S11.5 [N/mm2] 
+   
+   
+ η = 0.8 
+ 
+η = 0.6 for ships which are assigned the additional notation “Icebreaker” 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 21 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+I2.14 Stem and stern frames 
+ 
+I2.14.1   The stem and stern frame are to be designed according to the requirements of the 
+Classification Society. For PC6/PC7 ships requiring IAS/IA equivalency, the stem and stern 
+requirements of the Finnish-Swedish Ice Class Rules may need to be additionally considered. 
+ 
+I2.15  Appendages 
+ 
+I2.15.1   All appendages are to be designed to withstand forces appropriate for the location of 
+their attachment to the hull structure or their position within a hull area. 
+ 
+I2.15.2   Load definition and response criteria are to be determined by the Classification 
+Society. 
+ 
+I2.16  Local details 
+ 
+I2.16.1   For the purpose of transferring ice-induced loads to supporting structure (bending 
+moments and shear forces), local design details are to comply with the requirements of the 
+Classification Society. 
+ 
+I2.16.2   The loads carried by a member in way of cut-outs are not to cause instability. Where 
+necessary, the structure is to be stiffened. 
+ 
+I2.17  Direct calculations 
+ 
+I2.17.1   Direct calculations are not to be utilised as an alternative to the analytical procedures 
+prescribed for the shell plating and local frame requirements given in I2.4, I2.6, and I2.7. 
+ 
+I2.17.2   Direct calculations are to be used for load carrying stringers and web frames forming 
+part of a grillage system.  
+ 
+I2.17.3   Where direct calculation is used to check the strength of structural systems, the load 
+patch specified in I2.3 is to be applied, without being combined with any other loads. The load 
+patch is to be applied at locations where the capacity of these members under the combined 
+effects of bending and shear is minimised. Special attention is to be paid to the shear 
+capacity in way of lightening holes and cut-outs in way of intersecting members. 
+ 
+I2.17.4   The strength evaluation of web frames and stringers may be performed based on 
+linear or non-linear analysis. Recognized structural idealisation and calculation methods are 
+to be applied, but the detailed requirements are to be specified by the Classification Society. 
+In the strength evaluation, the guidance given in I2.17.5 and I2.17.6 may generally be 
+considered. 
+ 
+I2.17.5   If the structure is evaluated based on linear calculation methods, the following are to 
+be considered: 
+ 
+(1) 
+Web plates and flange elements in compression and shear to fulfil relevant buckling 
+criteria as specified by the Classification Society 
+ 
+(2) 
+Nominal shear stresses in member web plates to be less than σy /√3 
+ 
+(3) 
+Nominal von Mises stresses in member flanges to be less than 1.15 σy 
+ 
+ 
+I2 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Page 22 of 22  
+      IACS Req. 2006/Rev.5 2025 
+I2 
+(cont) 
+I2.17.6   If the structure is evaluated based on non-linear calculation methods, the following 
+are to be considered: 
+ 
+(1) 
+The analysis is to reliably capture buckling and plastic deformation of the structure 
+ 
+(2) 
+The acceptance criteria are to ensure a suitable margin against fracture and major 
+buckling and yielding causing significant loss of stiffness 
+ 
+(3) 
+Permanent lateral and out-of plane deformation of considered member are to be minor 
+relative to the relevant structural dimensions 
+ 
+(4) 
+Detailed acceptance criteria to be decided by the Classification Society 
+ 
+I2.18  Welding 
+ 
+I2.18.1   All welding within ice-strengthened areas is to be of the double continuous type. 
+ 
+I2.18.2   Continuity of strength is to be ensured at all structural connections. 
+ 
+ 
+End of 
+Document 

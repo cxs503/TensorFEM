@@ -1,0 +1,2058 @@
+{
+  "schema_version": "1.0.0",
+  "task_key": "ice-coupled-6dof",
+  "mission_id": 21515,
+  "slug": "ice-coupled-6dof",
+  "domain": "ice",
+  "title": "Random-ice 6-DOF load ensemble vs the IACS Polar Class design ice load (and the declared ISO 19906 pressure--area family)",
+  "generated_utc": "2026-11-15T07:08:03Z",
+  "git": {
+    "commit": "c400ea246197966d0009b27fab1e8f4a2bbcbe32"
+  },
+  "environment": {
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+    "wall_time_s": null
+  },
+  "experiment": {
+    "groups": [
+      {
+        "name": "G1-mild-c0.3",
+        "concentration": 0.3,
+        "thickness_m": 0.6,
+        "diameter_m": 3.0
+      },
+      {
+        "name": "G2-moderate-c0.5",
+        "concentration": 0.5,
+        "thickness_m": 0.6,
+        "diameter_m": 3.0
+      },
+      {
+        "name": "G3-severe-c0.7",
+        "concentration": 0.7,
+        "thickness_m": 0.6,
+        "diameter_m": 3.0
+      },
+      {
+        "name": "G4-design-severity",
+        "concentration": 0.7,
+        "thickness_m": 1.2,
+        "diameter_m": 10.0
+      }
+    ],
+    "seeds": [
+      7101,
+      7102,
+      7103,
+      7104,
+      7105,
+      7106,
+      7107,
+      7108,
+      7109,
+      7110,
+      7111,
+      7112,
+      7113,
+      7114,
+      7115,
+      7116,
+      7117,
+      7118,
+      7119,
+      7120,
+      7121,
+      7122,
+      7123,
+      7124
+    ],
+    "duration_s": 40.0,
+    "dt_s": 0.01,
+    "commanded_speed_mps": 5.0,
+    "hull": {
+      "length_m": 100.0,
+      "breadth_m": 20.0,
+      "draught_m": 6.0,
+      "block_coefficient": 0.7,
+      "displacement_kt": 8.61,
+      "provenance": "hull/main particulars and damping ratios are declared engineering inputs of this study; the radiation kernel is a synthetic passive model (see module docstring); MMG derivatives are declared estimates, not captive-model data"
+    },
+    "metric": "per impact cluster: peak contact force (heave normal), peak contact area, peak contact pressure; plus per-seed maxima",
+    "convergence_tail_seeds": 10,
+    "deviation_threshold": 0.15
+  },
+  "anchors": {
+    "artifact": "benchmarks/anchors/iacs-ur-i-ice-load.json",
+    "sha256": "3b4ec36679e3a882cd3b1f9027fed68526791a001ae5850edc66da7a82ad3271",
+    "anchor_count": 17,
+    "documents": [
+      {
+        "file": "UR-I2Rev5.pdf",
+        "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+        "url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+        "revision": "IACS Req. 2006/Rev.5 2025",
+        "retrieved_utc": "2026-11-15"
+      },
+      {
+        "file": "UR-I1Rev2-Corr1.pdf",
+        "sha256_file": "26de20c4216d2e546f86d03cd614a5dfef7394a220dc3fc9ed0e5cb85cee5a8f",
+        "url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2022/02/12082733/ur-i1rev2-1.pdf",
+        "revision": "IACS Req. 2007/Rev.2 2022 (Corr.1)",
+        "retrieved_utc": "2026-11-15"
+      }
+    ],
+    "anchor_ids": [
+      "IACS-UR-I2-I2.3.1(ii)",
+      "IACS-UR-I2-I2.3.1(iv)",
+      "IACS-UR-I2-I2.3.2.1(iii)(a)",
+      "IACS-UR-I2-I2.3.2.1(iii)(b)",
+      "IACS-UR-I2-I2.3.2.1(iii)(c)",
+      "IACS-UR-I2-I2.3.2.1(iii)(d)",
+      "IACS-UR-I2-I2.3.2.1(iii)(e)",
+      "IACS-UR-I2-I2.3.2.2(i)(a)",
+      "IACS-UR-I2-I2.3.2.2(i)(b)",
+      "IACS-UR-I2-I2.3.2.2(i)-DF",
+      "IACS-UR-I2-I2.3.3(i)",
+      "IACS-UR-I2-I2.3.3(ii)",
+      "IACS-UR-I2-I2.3.4(i)",
+      "IACS-UR-I2-Table3",
+      "IACS-UR-I2-Table1",
+      "IACS-UR-I2-Table2",
+      "IACS-UR-I2-Table4"
+    ],
+    "code_constants_check": {
+      "fai1_scale": true,
+      "fai1_x_coeff": true,
+      "fai1_offset": true,
+      "fai1_beta_exponent": true,
+      "fai2_scale": true,
+      "fai3_cap": true,
+      "displacement_exponent": true,
+      "ar_scale": true,
+      "ar_min": true,
+      "line_load_force_exponent": true,
+      "line_load_ar_exponent": true,
+      "pressure_force_exponent": true,
+      "pressure_cfd_exponent": true,
+      "pressure_ar_exponent": true
+    },
+    "iso_19906": {
+      "status": "WITHHELD",
+      "entries": [
+        {
+          "anchor_id": "ISO-19906-global-pressure-area",
+          "document": "ISO 19906:2019 Petroleum and natural gas industries - Arctic offshore structures",
+          "needed": "Annex A, global ice pressure clause: the coefficients C_R and the area-law exponent ex together with the A_0 normalisation and the validity range in A",
+          "status": "WITHHELD",
+          "reason": "no licensed copy of ISO 19906 is reachable from this work tree and the standard is not public; writing a recalled coefficient would be fabrication",
+          "consequence": "the ISO 19906 comparison is run at TensorFEM's *declared* coefficients (C_R = 1.0 MPa, A_0 = 1 m2, ex = -0.28) and every ISO-19906-derived number is tagged non_normative; the exponent is swept so that no conclusion rests on that one value"
+        },
+        {
+          "anchor_id": "ISO-19906-local-pressure",
+          "document": "ISO 19906:2019 Annex A, local ice pressure clause/table",
+          "needed": "local (high-pressure-zone) pressure--area parameters and the local area definition",
+          "status": "WITHHELD",
+          "reason": "same as above: document not reachable, no transcription possible",
+          "consequence": "local pressure is not compared; only the global law family is used"
+        },
+        {
+          "anchor_id": "ISO-19906-shape-factor",
+          "document": "ISO 19906:2019 Annex A, pressure-area shape/correction factor clause",
+          "needed": "the shape factor clause that corrects pressure for non-circular or non-square contact areas",
+          "status": "WITHHELD",
+          "reason": "same as above: document not reachable",
+          "consequence": "the floe contact areas of this ensemble are rectangular (h x w), so a shape factor of order one is the expected correction, but it cannot be quantified from an anchored clause here"
+        }
+      ],
+      "declared_values": {
+        "C_R_MPa": 1.0,
+        "A_0_m2": 1.0,
+        "ex": -0.28,
+        "grade": "DECLARED_REFERENCE_NOT_NORMATIVE",
+        "source": "tensorfem.iso19906_ice_6dof.ISO19906PressureArea defaults; declared engineering values of this study, not a transcription"
+      }
+    }
+  },
+  "code_side": {
+    "polar_class_used_for_headline": "PC6",
+    "bow_sub_regions": [
+      {
+        "x_over_L": 0.0125,
+        "alpha_deg": 38.0,
+        "beta_prime_deg": 42.0
+      },
+      {
+        "x_over_L": 0.0375,
+        "alpha_deg": 33.0,
+        "beta_prime_deg": 35.0
+      },
+      {
+        "x_over_L": 0.0625,
+        "alpha_deg": 27.0,
+        "beta_prime_deg": 28.0
+      },
+      {
+        "x_over_L": 0.0875,
+        "alpha_deg": 21.0,
+        "beta_prime_deg": 22.0
+      }
+    ],
+    "per_class": {
+      "PC1": {
+        "polar_class": "PC1",
+        "displacement_kt": 8.61,
+        "class_factors": {
+          "CFC": 17.69,
+          "CFF": 68.6,
+          "CFD": 2.01,
+          "CFDIS": 250.0,
+          "CFL": 7.46
+        },
+        "governing_sub_region": 1,
+        "design_force_MN": 34.618692758697456,
+        "design_line_load_MNm": 9.94919996751459,
+        "design_pressure_MPa": 14.273003681166625,
+        "patch_width_m": 3.479545377691866,
+        "patch_height_m": 0.6970642052480279,
+        "patch_area_m2": 2.42546653332523,
+        "Pavg_MPa": 14.273003681166625,
+        "formula": "I2.3.2.1 (iii)(a)-(e) + I2.3.3 (i) + I2.3.4 (i)"
+      },
+      "PC2": {
+        "polar_class": "PC2",
+        "displacement_kt": 8.61,
+        "class_factors": {
+          "CFC": 9.89,
+          "CFF": 46.8,
+          "CFD": 1.75,
+          "CFDIS": 210.0,
+          "CFL": 5.46
+        },
+        "governing_sub_region": 1,
+        "design_force_MN": 19.354373735642614,
+        "design_line_load_MNm": 6.075554357821884,
+        "design_pressure_MPa": 9.520119969189805,
+        "patch_width_m": 3.185614446972252,
+        "patch_height_m": 0.6381804407385986,
+        "patch_area_m2": 2.0329968317919986,
+        "Pavg_MPa": 9.520119969189805,
+        "formula": "I2.3.2.1 (iii)(a)-(e) + I2.3.3 (i) + I2.3.4 (i)"
+      },
+      "PC3": {
+        "polar_class": "PC3",
+        "displacement_kt": 8.61,
+        "class_factors": {
+          "CFC": 6.06,
+          "CFF": 21.17,
+          "CFD": 1.53,
+          "CFDIS": 180.0,
+          "CFL": 4.17
+        },
+        "governing_sub_region": 1,
+        "design_force_MN": 11.859201702527224,
+        "design_line_load_MNm": 3.9398333838829407,
+        "design_pressure_MPa": 6.533561428246335,
+        "patch_width_m": 3.0100769618940775,
+        "patch_height_m": 0.6030146692812876,
+        "patch_area_m2": 1.8151205636877799,
+        "Pavg_MPa": 6.533561428246336,
+        "formula": "I2.3.2.1 (iii)(a)-(e) + I2.3.3 (i) + I2.3.4 (i)"
+      },
+      "PC4": {
+        "polar_class": "PC4",
+        "displacement_kt": 8.61,
+        "class_factors": {
+          "CFC": 4.5,
+          "CFF": 13.48,
+          "CFD": 1.42,
+          "CFDIS": 130.0,
+          "CFL": 3.15
+        },
+        "governing_sub_region": 1,
+        "design_force_MN": 8.806337897916256,
+        "design_line_load_MNm": 3.0494821955447415,
+        "design_pressure_MPa": 5.271164643643188,
+        "patch_width_m": 2.887814170806511,
+        "patch_height_m": 0.5785215226055013,
+        "patch_area_m2": 1.6706626510967257,
+        "Pavg_MPa": 5.271164643643188,
+        "formula": "I2.3.2.1 (iii)(a)-(e) + I2.3.3 (i) + I2.3.4 (i)"
+      },
+      "PC5": {
+        "polar_class": "PC5",
+        "displacement_kt": 8.61,
+        "class_factors": {
+          "CFC": 3.1,
+          "CFF": 9.0,
+          "CFD": 1.31,
+          "CFDIS": 70.0,
+          "CFL": 2.5
+        },
+        "governing_sub_region": 1,
+        "design_force_MN": 6.066588329675643,
+        "design_line_load_MNm": 2.2411971068834715,
+        "design_pressure_MPa": 4.132999033058431,
+        "patch_width_m": 2.7068517583942553,
+        "patch_height_m": 0.542268964729222,
+        "patch_area_m2": 1.4678417006999271,
+        "Pavg_MPa": 4.132999033058431,
+        "formula": "I2.3.2.1 (iii)(a)-(e) + I2.3.3 (i) + I2.3.4 (i)"
+      },
+      "PC6": {
+        "polar_class": "PC6",
+        "displacement_kt": 8.61,
+        "class_factors": {
+          "CFC": 2.4,
+          "CFF": 5.49,
+          "CFD": 1.17,
+          "CFDIS": 40.0,
+          "CFL": 2.37
+        },
+        "governing_sub_region": 1,
+        "design_force_MN": 4.696713545555336,
+        "design_line_load_MNm": 1.7123512039977222,
+        "design_pressure_MPa": 3.1163149015700147,
+        "patch_width_m": 2.742844770739907,
+        "patch_height_m": 0.5494795160575817,
+        "patch_area_m2": 1.5071370172472327,
+        "Pavg_MPa": 3.116314901570015,
+        "formula": "I2.3.2.1 (iii)(a)-(e) + I2.3.3 (i) + I2.3.4 (i)"
+      },
+      "PC7": {
+        "polar_class": "PC7",
+        "displacement_kt": 8.61,
+        "class_factors": {
+          "CFC": 1.8,
+          "CFF": 4.06,
+          "CFD": 1.11,
+          "CFDIS": 22.0,
+          "CFL": 1.81
+        },
+        "governing_sub_region": 1,
+        "design_force_MN": 3.522535159166502,
+        "design_line_load_MNm": 1.3630674003908125,
+        "design_pressure_MPa": 2.632867771511187,
+        "patch_width_m": 2.584270710426012,
+        "patch_height_m": 0.5177120610232746,
+        "patch_area_m2": 1.3379081157367327,
+        "Pavg_MPa": 2.6328677715111866,
+        "formula": "I2.3.2.1 (iii)(a)-(e) + I2.3.3 (i) + I2.3.4 (i)"
+      }
+    },
+    "pc6_sub_regions": [
+      {
+        "sub_region": 1,
+        "x_over_L": 0.0125,
+        "alpha_deg": 38.0,
+        "beta_prime_deg": 42.0,
+        "fai": 0.4933791751281653,
+        "fai1": 0.4933791751281653,
+        "fai2": 1.0342593046330795,
+        "F_MN": 4.696713545555336,
+        "AR": 4.991714323437082,
+        "Q_MNm": 1.7123512039977222,
+        "P_MPa": 3.1163149015700147,
+        "patch_width_m": 2.742844770739907,
+        "patch_height_m": 0.5494795160575817,
+        "patch_area_m2": 1.5071370172472327
+      },
+      {
+        "sub_region": 2,
+        "x_over_L": 0.0375,
+        "alpha_deg": 33.0,
+        "beta_prime_deg": 35.0,
+        "fai": 0.49306193576579815,
+        "fai1": 0.49306193576579815,
+        "fai2": 1.206560297428023,
+        "F_MN": 4.69369359156148,
+        "AR": 4.278880215178804,
+        "Q_MNm": 1.8065263686103359,
+        "P_MPa": 2.975116686994688,
+        "patch_width_m": 2.5981871469565583,
+        "patch_height_m": 0.6072119377728331,
+        "patch_area_m2": 1.5776502521999605
+      },
+      {
+        "sub_region": 3,
+        "x_over_L": 0.0625,
+        "alpha_deg": 27.0,
+        "beta_prime_deg": 28.0,
+        "fai": 0.4683794806479252,
+        "fai1": 0.4683794806479252,
+        "fai2": 1.474113898474922,
+        "F_MN": 4.458729435930953,
+        "AR": 3.5022578583827455,
+        "Q_MNm": 1.8779447159307805,
+        "P_MPa": 2.77014565686876,
+        "patch_width_m": 2.374260220818608,
+        "patch_height_m": 0.6779227335119696,
+        "patch_area_m2": 1.6095649789660833
+      },
+      {
+        "sub_region": 4,
+        "x_over_L": 0.0875,
+        "alpha_deg": 21.0,
+        "beta_prime_deg": 22.0,
+        "fai": 0.42239725675716705,
+        "fai1": 0.42239725675716705,
+        "fai2": 1.8474169109806902,
+        "F_MN": 4.02100254211469,
+        "AR": 2.7945651868827035,
+        "Q_MNm": 1.9081821468555835,
+        "P_MPa": 2.5305769816795305,
+        "patch_width_m": 2.107242512849593,
+        "patch_height_m": 0.7540502267546642,
+        "patch_area_m2": 1.5889666946413037
+      }
+    ],
+    "code_pressure_area_exponent": {
+      "pressure_force_exponent": 0.22,
+      "area_force_exponent": 0.78,
+      "dlnp_dlnA": 0.28205128205128205,
+      "caveat": "at fixed AR and CFD; AR varies with the normal frame angle and CFD with the Polar Class, so the full trend in a design space is not a single power law"
+    },
+    "iso_exponent_sweep": [
+      -0.42,
+      -0.28,
+      -0.15
+    ],
+    "transport_sensitivity": {
+      "ex=-0.42": 25.818835011167717,
+      "ex=-0.28": 12.759633700741698,
+      "ex=-0.15": 6.631380465746224
+    }
+  },
+  "groups": [
+    {
+      "group": {
+        "name": "G1-mild-c0.3",
+        "concentration": 0.3,
+        "thickness_m": 0.6,
+        "diameter_m": 3.0
+      },
+      "seeds": [
+        7101,
+        7102,
+        7103,
+        7104,
+        7105,
+        7106,
+        7107,
+        7108,
+        7109,
+        7110,
+        7111,
+        7112,
+        7113,
+        7114,
+        7115,
+        7116,
+        7117,
+        7118,
+        7119,
+        7120,
+        7121,
+        7122,
+        7123,
+        7124
+      ],
+      "ice_field": {
+        "concentration": 0.3,
+        "mean_thickness_m": 0.6,
+        "median_floe_diameter_m": 3.0
+      },
+      "statistics": {
+        "impacts": 3640,
+        "peak_force_MN": {
+          "mean": 0.24350408950704883,
+          "sd": 0.11255873803720384,
+          "min": 0.004073560736144701,
+          "p50": 0.23470857300898368,
+          "p95": 0.4420465679108363,
+          "max": 0.9285362450338732,
+          "n": 3640
+        },
+        "peak_area_m2": {
+          "mean": 0.14869844430544624,
+          "sd": 0.09370567242588192,
+          "min": 0.00047920320783970106,
+          "p50": 0.13357791453098192,
+          "p95": 0.3218062515737166,
+          "max": 0.90214468687458,
+          "n": 3640
+        },
+        "peak_pressure_MPa": {
+          "mean": 1.8854560001472955,
+          "sd": 0.5779012034777521,
+          "min": 1.029254241080469,
+          "p50": 1.7570911766162256,
+          "p95": 2.821161425823028,
+          "max": 8.500695883294993,
+          "n": 3640
+        },
+        "per_seed_max_force_MN": {
+          "mean": 0.6491032236097242,
+          "sd": 0.10105984194774181,
+          "min": 0.5333338901743357,
+          "p50": 0.6128907756432675,
+          "p95": 0.79605058547049,
+          "max": 0.9285362450338732,
+          "n": 24
+        },
+        "per_seed_mean_force_MN": {
+          "mean": 0.24342785626460306,
+          "sd": 0.00872499111831405,
+          "min": 0.22101197822677965,
+          "p50": 0.24279264338499673,
+          "p95": 0.25467942872127786,
+          "max": 0.256914732054771,
+          "n": 24
+        },
+        "per_seed_max_pressure_MPa": {
+          "mean": 5.589484897813743,
+          "sd": 1.4154031800673053,
+          "min": 3.6468649967573974,
+          "p50": 5.300249082536377,
+          "p95": 8.085943007369142,
+          "max": 8.500695883294993,
+          "n": 24
+        },
+        "area_overlap_with_code_patch": {
+          "code_patch_area_m2": 1.5071370172472327,
+          "impacts_within_factor_2": 1,
+          "area_ratio_code_over_ensemble": 10.13552646288198
+        },
+        "convergence": {
+          "tail_seeds": [
+            7115,
+            7116,
+            7117,
+            7118,
+            7119,
+            7120,
+            7121,
+            7122,
+            7123,
+            7124
+          ],
+          "running_mean_force_MN": [
+            0.25081651343046213,
+            0.2446545371158888,
+            0.24636026964504457,
+            0.2474569866929684,
+            0.2493485357653289,
+            0.24813511807140312,
+            0.24426038380788548,
+            0.24222404826554556,
+            0.24194470915136712,
+            0.24305208189534996,
+            0.2431079870262849,
+            0.24277558230045468,
+            0.24333198423380564,
+            0.24329582890413656,
+            0.2426963547312896,
+            0.24249134699005181,
+            0.24276414981101369,
+            0.24263445060190397,
+            0.24254555727826257,
+            0.24255625327192715,
+            0.243095602423282,
+            0.24267729959496276,
+            0.24320524518309591,
+            0.24342785626460306
+          ],
+          "mean_force_full_MN": 0.24342785626460306,
+          "mean_force_tail_MN": 0.24361269456925605,
+          "mean_force_rel_diff": 0.0007593145151476545,
+          "mean_pressure_full_MPa": 5.589484897813743,
+          "mean_pressure_tail_MPa": 5.75099425401263,
+          "mean_pressure_rel_diff": 0.028895212913458146,
+          "tolerance": 0.05,
+          "passed": true
+        },
+        "pressure_area_regression": {
+          "slope": -0.27999999999999997,
+          "intercept": 9.007129041198791e-17,
+          "intercept_MPa": 1.0,
+          "slope_se": 2.661604947892834e-18,
+          "r2": 1.0,
+          "n": 3640,
+          "note": "slope of ln p on ln A over per-impact peaks; A is endogenous to the coupled dynamics, so this is not an independent measurement of the law (closure arm)"
+        }
+      },
+      "distribution_fits": {
+        "weibull": {
+          "params": {
+            "k": 2.2525634515632795,
+            "lam": 0.2740917154952883
+          },
+          "weibull_plot_r2": 0.9826863456309449,
+          "n": 3640,
+          "ks_statistic": 0.03772206190754146,
+          "ks_pvalue": 6.166700510765691e-05,
+          "ks_method": "scipy.stats.kstest",
+          "loglik": 2861.886948339894,
+          "n_params": 2,
+          "aic": -5719.773896679788
+        },
+        "gumbel": {
+          "params": {
+            "loc": 0.0,
+            "scale": 0.18494788615036034
+          },
+          "method": "scipy.stats.gumbel_r.fit(floc=0.0) MLE",
+          "n": 3640,
+          "ks_statistic": 0.4698720183611288,
+          "ks_pvalue": 0.0,
+          "ks_method": "scipy.stats.kstest",
+          "loglik": 199.14317040853908,
+          "n_params": 2,
+          "aic": -394.28634081707816
+        },
+        "preferred_by_aic": "weibull"
+      },
+      "tail": {
+        "weibull": {
+          "q_100": 0.539928571038109,
+          "q_1000": 0.6464129180916489,
+          "q_3640": 0.6975367095826543
+        },
+        "gumbel": {
+          "q_100": 0.8507878754685428,
+          "q_1000": 1.2774822243947195,
+          "q_3640": 1.516498979915448
+        },
+        "observed_max_MN": 0.9285362450338732,
+        "assumption": "iid per-impact peaks; the true peaks are clustered inside a floe field and the tail is therefore optimistic -- the comparison of the extrapolated 1/N quantile with the observed maximum is the check on that assumption"
+      },
+      "code_quantile": {
+        "empirical_cdf_of_code_value": {
+          "code_design_force_MN": {
+            "fraction_of_impacts_below": 1.0,
+            "impacts": 3640,
+            "percentile": 100.0
+          },
+          "code_design_pressure_MPa": {
+            "fraction_of_impacts_below": 0.9651098901098901,
+            "impacts": 3640,
+            "percentile": 96.51098901098901
+          }
+        },
+        "fitted_cdf": {
+          "weibull": {
+            "code_design_force_MN": 1.0
+          },
+          "gumbel": {
+            "code_design_force_MN": 0.999999999990642
+          }
+        },
+        "note": "empirical_cdf = fraction of per-impact peaks below the code value; a value near 1.0 means the code brackets the whole ensemble"
+      },
+      "comparison_items": [
+        {
+          "item": "C1-force-mean",
+          "quantity": "mean per-impact peak contact force",
+          "measured": 0.24350408950704883,
+          "measured_unit": "MN",
+          "reference": 4.696713545555336,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(b) PC6 design force",
+          "deviation_pct": -94.81543664212852,
+          "signed_difference": -4.453209456048287,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "formulation_scope",
+          "note": "the code is a prescribed glancing bow impact of a large floe; the ensemble is a random field of small floes, so the code/ensemble ratio is a scope ratio"
+        },
+        {
+          "item": "C2-force-seedmax",
+          "quantity": "median over seeds of the per-seed maximum peak force",
+          "measured": 0.6128907756432675,
+          "measured_unit": "MN",
+          "reference": 4.696713545555336,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(b) PC6 design force",
+          "deviation_pct": -86.95064602729991,
+          "signed_difference": -4.083822769912068,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "formulation_scope",
+          "note": "extreme statistic of the same ensemble, still not the code scenario"
+        },
+        {
+          "item": "C3-pressure-peak-vs-Pavg",
+          "quantity": "maximum per-impact local peak pressure",
+          "measured": 8.500695883294993,
+          "measured_unit": "MPa",
+          "reference": 3.1163149015700147,
+          "reference_label": "IACS UR I2 I2.3.4(i) PC6 average patch pressure Pavg",
+          "deviation_pct": 172.78038811200696,
+          "signed_difference": 5.384380981724979,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "model_difference",
+          "note": "no transport: the code's patch-average pressure compared with the ensemble's extremal local pressure; a small positive deviation would mean the code's average pressure is as high as the worst local peak seen in 24 random fields"
+        },
+        {
+          "item": "C3b-pressure-matched-band",
+          "quantity": "matched-area pressure",
+          "measured": null,
+          "measured_unit": "MPa",
+          "reference": 3.1163149015700147,
+          "reference_label": "IACS UR I2 I2.3.4(i) PC6 Pavg",
+          "deviation_pct": null,
+          "signed_difference": null,
+          "within_15pct": null,
+          "difference_class": "not_evaluated",
+          "evidence_grade": "REAL_ANCHORED",
+          "note": "only 1 impacts (<5) with a peak contact area within a factor 2 of the code patch area 1.507 m2: the ensemble and the code do not overlap in area for this group, so no matched-area comparison exists"
+        },
+        {
+          "item": "C4-iso-closure",
+          "quantity": "mean per-impact peak pressure vs the ISO law at the measured area",
+          "measured": 1.8854560001472955,
+          "measured_unit": "MPa",
+          "reference": 1.705117065525409,
+          "reference_label": "ISO 19906 form p = C_R (A/A_0)^ex with DECLARED coefficients",
+          "deviation_pct": 10.576337441459916,
+          "signed_difference": 0.18033893462188644,
+          "within_15pct": true,
+          "evidence_grade": "DECLARED_REFERENCE_NOT_NORMATIVE(closure_arm)",
+          "difference_class": "closure_tautology",
+          "note": "the contact law of the simulation is this law, so a small deviation only proves the chain reproduces what it was fed; it says nothing about ISO 19906 itself"
+        },
+        {
+          "item": "C5-exponent-vs-iso",
+          "quantity": "fitted pressure--area exponent",
+          "measured": -0.27999999999999997,
+          "measured_unit": "-",
+          "reference": -0.28,
+          "reference_label": "declared ISO exponent ex = -0.28",
+          "deviation_pct": -1.982541115402065e-14,
+          "signed_difference": 5.551115123125783e-17,
+          "within_15pct": true,
+          "evidence_grade": "DECLARED_REFERENCE_NOT_NORMATIVE(closure_arm)",
+          "difference_class": "closure_tautology",
+          "note": "same closure caveat: A is endogenous inside the law that generated it"
+        },
+        {
+          "item": "C6-exponent-vs-code",
+          "quantity": "fitted pressure--area exponent vs the exponent implied by the IACS clause chain",
+          "measured": -0.27999999999999997,
+          "measured_unit": "-",
+          "reference": 0.28205128205128205,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(d)-(e) implied dlnP/dlnA = +0.282",
+          "deviation_pct": -199.27272727272725,
+          "signed_difference": -0.562051282051282,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED(derived)",
+          "difference_class": "formulation_scope",
+          "note": "the IACS chain carries no decreasing area law (its pressure rises with area at fixed AR); the code handles small areas through the Table 3 peak pressure factors instead, so a sign disagreement here is a formulation-scope statement, not an error"
+        }
+      ],
+      "polar_class_table": {
+        "PC1": {
+          "design_force_MN": 34.618692758697456,
+          "design_pressure_MPa": 14.273003681166625,
+          "patch_area_m2": 2.42546653332523,
+          "ratio_code_force_over_ensemble_mean": 142.16883514679262,
+          "ratio_code_pressure_over_ensemble_max": 1.6790394430195992
+        },
+        "PC2": {
+          "design_force_MN": 19.354373735642614,
+          "design_pressure_MPa": 9.520119969189805,
+          "patch_area_m2": 2.0329968317919986,
+          "ratio_code_force_over_ensemble_mean": 79.48274616177382,
+          "ratio_code_pressure_over_ensemble_max": 1.1199224275153894
+        },
+        "PC3": {
+          "design_force_MN": 11.859201702527224,
+          "design_pressure_MPa": 6.533561428246335,
+          "patch_area_m2": 1.8151205636877799,
+          "ratio_code_force_over_ensemble_mean": 48.7022691345146,
+          "ratio_code_pressure_over_ensemble_max": 0.7685913621596155
+        },
+        "PC4": {
+          "design_force_MN": 8.806337897916256,
+          "design_pressure_MPa": 5.271164643643188,
+          "patch_area_m2": 1.6706626510967257,
+          "ratio_code_force_over_ensemble_mean": 36.165051337510846,
+          "ratio_code_pressure_over_ensemble_max": 0.6200862512917011
+        },
+        "PC5": {
+          "design_force_MN": 6.066588329675643,
+          "design_pressure_MPa": 4.132999033058431,
+          "patch_area_m2": 1.4678417006999271,
+          "ratio_code_force_over_ensemble_mean": 24.913702032507466,
+          "ratio_code_pressure_over_ensemble_max": 0.48619537621388487
+        },
+        "PC6": {
+          "design_force_MN": 4.696713545555336,
+          "design_pressure_MPa": 3.1163149015700147,
+          "patch_area_m2": 1.5071370172472327,
+          "ratio_code_force_over_ensemble_mean": 19.28802738000578,
+          "ratio_code_pressure_over_ensemble_max": 0.3665952698877266
+        },
+        "PC7": {
+          "design_force_MN": 3.522535159166502,
+          "design_pressure_MPa": 2.632867771511187,
+          "patch_area_m2": 1.3379081157367327,
+          "ratio_code_force_over_ensemble_mean": 14.466020535004336,
+          "ratio_code_pressure_over_ensemble_max": 0.30972379292913244
+        }
+      }
+    },
+    {
+      "group": {
+        "name": "G2-moderate-c0.5",
+        "concentration": 0.5,
+        "thickness_m": 0.6,
+        "diameter_m": 3.0
+      },
+      "seeds": [
+        7101,
+        7102,
+        7103,
+        7104,
+        7105,
+        7106,
+        7107,
+        7108,
+        7109,
+        7110,
+        7111,
+        7112,
+        7113,
+        7114,
+        7115,
+        7116,
+        7117,
+        7118,
+        7119,
+        7120,
+        7121,
+        7122,
+        7123,
+        7124
+      ],
+      "ice_field": {
+        "concentration": 0.5,
+        "mean_thickness_m": 0.6,
+        "median_floe_diameter_m": 3.0
+      },
+      "statistics": {
+        "impacts": 6069,
+        "peak_force_MN": {
+          "mean": 0.2402206576893479,
+          "sd": 0.10779499492947059,
+          "min": 0.005272829681608313,
+          "p50": 0.23116456372263472,
+          "p95": 0.4295164819910442,
+          "max": 0.7834756680881458,
+          "n": 6069
+        },
+        "peak_area_m2": {
+          "mean": 0.14548827430123806,
+          "sd": 0.08881142493314022,
+          "min": 0.0006857595521990706,
+          "p50": 0.1307848098688395,
+          "p95": 0.3092073229787238,
+          "max": 0.7125465030758438,
+          "n": 6069
+        },
+        "peak_pressure_MPa": {
+          "mean": 1.8856474745466183,
+          "sd": 0.54651442590663,
+          "min": 1.0995432083465748,
+          "p50": 1.7675184446455465,
+          "p95": 2.794297010326149,
+          "max": 7.689035704569598,
+          "n": 6069
+        },
+        "per_seed_max_force_MN": {
+          "mean": 0.6530462331935917,
+          "sd": 0.062418771317996904,
+          "min": 0.5458907094968455,
+          "p50": 0.6450061820456264,
+          "p95": 0.7466604601237753,
+          "max": 0.7834756680881458,
+          "n": 24
+        },
+        "per_seed_mean_force_MN": {
+          "mean": 0.2402179427954065,
+          "sd": 0.007397437109640468,
+          "min": 0.228187121428494,
+          "p50": 0.23930853144898856,
+          "p95": 0.2516537865567715,
+          "max": 0.25362894588325297,
+          "n": 24
+        },
+        "per_seed_max_pressure_MPa": {
+          "mean": 5.8112728694992555,
+          "sd": 0.9380844768368887,
+          "min": 4.08066012890804,
+          "p50": 5.675681634993236,
+          "p95": 7.331602955124449,
+          "max": 7.689035704569598,
+          "n": 24
+        },
+        "area_overlap_with_code_patch": {
+          "code_patch_area_m2": 1.5071370172472327,
+          "impacts_within_factor_2": 0,
+          "area_ratio_code_over_ensemble": 10.359164850128458
+        },
+        "convergence": {
+          "tail_seeds": [
+            7115,
+            7116,
+            7117,
+            7118,
+            7119,
+            7120,
+            7121,
+            7122,
+            7123,
+            7124
+          ],
+          "running_mean_force_MN": [
+            0.2507045259450858,
+            0.24449891118928077,
+            0.2475422560872715,
+            0.24381132574868855,
+            0.2439311012263226,
+            0.24259130316445385,
+            0.2416070772835955,
+            0.24181019342394694,
+            0.241036209184433,
+            0.24195253439859538,
+            0.241804464586405,
+            0.241880460437128,
+            0.24249572269488337,
+            0.24153306602381122,
+            0.24096070702514402,
+            0.2410964802906661,
+            0.24078829761716705,
+            0.24056510877609716,
+            0.2400945894792258,
+            0.24017880408726633,
+            0.24073320880383955,
+            0.2401629321049602,
+            0.23999863589971576,
+            0.2402179427954065
+          ],
+          "mean_force_full_MN": 0.2402179427954065,
+          "mean_force_tail_MN": 0.23837677027563992,
+          "mean_force_rel_diff": -0.007664591988179328,
+          "mean_pressure_full_MPa": 5.8112728694992555,
+          "mean_pressure_tail_MPa": 5.939527195461096,
+          "mean_pressure_rel_diff": 0.022069919764908942,
+          "tolerance": 0.05,
+          "passed": true
+        },
+        "pressure_area_regression": {
+          "slope": -0.2800000000000009,
+          "intercept": -2.601107117578874e-16,
+          "intercept_MPa": 0.9999999999999998,
+          "slope_se": 2.9320633114426433e-17,
+          "r2": 1.0,
+          "n": 6069,
+          "note": "slope of ln p on ln A over per-impact peaks; A is endogenous to the coupled dynamics, so this is not an independent measurement of the law (closure arm)"
+        }
+      },
+      "distribution_fits": {
+        "weibull": {
+          "params": {
+            "k": 2.32618591304956,
+            "lam": 0.2702844332293957
+          },
+          "weibull_plot_r2": 0.9809921814870424,
+          "n": 6069,
+          "ks_statistic": 0.03816459348590792,
+          "ks_pvalue": 4.070875750707473e-08,
+          "ks_method": "scipy.stats.kstest",
+          "loglik": 5002.236894140047,
+          "n_params": 2,
+          "aic": -10000.473788280095
+        },
+        "gumbel": {
+          "params": {
+            "loc": 0.0,
+            "scale": 0.18222523598930526
+          },
+          "method": "scipy.stats.gumbel_r.fit(floc=0.0) MLE",
+          "n": 6069,
+          "ks_statistic": 0.47959517070650143,
+          "ks_pvalue": 0.0,
+          "ks_method": "scipy.stats.kstest",
+          "loglik": 429.3801667110676,
+          "n_params": 2,
+          "aic": -854.7603334221352
+        },
+        "preferred_by_aic": "weibull"
+      },
+      "tail": {
+        "weibull": {
+          "q_100": 0.5211257854242236,
+          "q_1000": 0.6203576277168809,
+          "q_6069": 0.685400063130774
+        },
+        "gumbel": {
+          "q_100": 0.8382632784353822,
+          "q_1000": 1.2586761852645094,
+          "q_6069": 1.5873397463262555
+        },
+        "observed_max_MN": 0.7834756680881458,
+        "assumption": "iid per-impact peaks; the true peaks are clustered inside a floe field and the tail is therefore optimistic -- the comparison of the extrapolated 1/N quantile with the observed maximum is the check on that assumption"
+      },
+      "code_quantile": {
+        "empirical_cdf_of_code_value": {
+          "code_design_force_MN": {
+            "fraction_of_impacts_below": 1.0,
+            "impacts": 6069,
+            "percentile": 100.0
+          },
+          "code_design_pressure_MPa": {
+            "fraction_of_impacts_below": 0.9663865546218487,
+            "impacts": 6069,
+            "percentile": 96.63865546218487
+          }
+        },
+        "fitted_cdf": {
+          "weibull": {
+            "code_design_force_MN": 1.0
+          },
+          "gumbel": {
+            "code_design_force_MN": 0.9999999999935968
+          }
+        },
+        "note": "empirical_cdf = fraction of per-impact peaks below the code value; a value near 1.0 means the code brackets the whole ensemble"
+      },
+      "comparison_items": [
+        {
+          "item": "C1-force-mean",
+          "quantity": "mean per-impact peak contact force",
+          "measured": 0.2402206576893479,
+          "measured_unit": "MN",
+          "reference": 4.696713545555336,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(b) PC6 design force",
+          "deviation_pct": -94.88534577722592,
+          "signed_difference": -4.456492887865988,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "formulation_scope",
+          "note": "the code is a prescribed glancing bow impact of a large floe; the ensemble is a random field of small floes, so the code/ensemble ratio is a scope ratio"
+        },
+        {
+          "item": "C2-force-seedmax",
+          "quantity": "median over seeds of the per-seed maximum peak force",
+          "measured": 0.6450061820456264,
+          "measured_unit": "MN",
+          "reference": 4.696713545555336,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(b) PC6 design force",
+          "deviation_pct": -86.26686137467297,
+          "signed_difference": -4.05170736350971,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "formulation_scope",
+          "note": "extreme statistic of the same ensemble, still not the code scenario"
+        },
+        {
+          "item": "C3-pressure-peak-vs-Pavg",
+          "quantity": "maximum per-impact local peak pressure",
+          "measured": 7.689035704569598,
+          "measured_unit": "MPa",
+          "reference": 3.1163149015700147,
+          "reference_label": "IACS UR I2 I2.3.4(i) PC6 average patch pressure Pavg",
+          "deviation_pct": 146.73487588484159,
+          "signed_difference": 4.572720802999584,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "model_difference",
+          "note": "no transport: the code's patch-average pressure compared with the ensemble's extremal local pressure; a small positive deviation would mean the code's average pressure is as high as the worst local peak seen in 24 random fields"
+        },
+        {
+          "item": "C3b-pressure-matched-band",
+          "quantity": "matched-area pressure",
+          "measured": null,
+          "measured_unit": "MPa",
+          "reference": 3.1163149015700147,
+          "reference_label": "IACS UR I2 I2.3.4(i) PC6 Pavg",
+          "deviation_pct": null,
+          "signed_difference": null,
+          "within_15pct": null,
+          "difference_class": "not_evaluated",
+          "evidence_grade": "REAL_ANCHORED",
+          "note": "only 0 impacts (<5) with a peak contact area within a factor 2 of the code patch area 1.507 m2: the ensemble and the code do not overlap in area for this group, so no matched-area comparison exists"
+        },
+        {
+          "item": "C4-iso-closure",
+          "quantity": "mean per-impact peak pressure vs the ISO law at the measured area",
+          "measured": 1.8856474745466183,
+          "measured_unit": "MPa",
+          "reference": 1.715568889644943,
+          "reference_label": "ISO 19906 form p = C_R (A/A_0)^ex with DECLARED coefficients",
+          "deviation_pct": 9.913830096142336,
+          "signed_difference": 0.17007858490167527,
+          "within_15pct": true,
+          "evidence_grade": "DECLARED_REFERENCE_NOT_NORMATIVE(closure_arm)",
+          "difference_class": "closure_tautology",
+          "note": "the contact law of the simulation is this law, so a small deviation only proves the chain reproduces what it was fed; it says nothing about ISO 19906 itself"
+        },
+        {
+          "item": "C5-exponent-vs-iso",
+          "quantity": "fitted pressure--area exponent",
+          "measured": -0.2800000000000009,
+          "measured_unit": "-",
+          "reference": -0.28,
+          "reference_label": "declared ISO exponent ex = -0.28",
+          "deviation_pct": 3.172065784643304e-13,
+          "signed_difference": -8.881784197001252e-16,
+          "within_15pct": true,
+          "evidence_grade": "DECLARED_REFERENCE_NOT_NORMATIVE(closure_arm)",
+          "difference_class": "closure_tautology",
+          "note": "same closure caveat: A is endogenous inside the law that generated it"
+        },
+        {
+          "item": "C6-exponent-vs-code",
+          "quantity": "fitted pressure--area exponent vs the exponent implied by the IACS clause chain",
+          "measured": -0.2800000000000009,
+          "measured_unit": "-",
+          "reference": 0.28205128205128205,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(d)-(e) implied dlnP/dlnA = +0.282",
+          "deviation_pct": -199.2727272727276,
+          "signed_difference": -0.562051282051283,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED(derived)",
+          "difference_class": "formulation_scope",
+          "note": "the IACS chain carries no decreasing area law (its pressure rises with area at fixed AR); the code handles small areas through the Table 3 peak pressure factors instead, so a sign disagreement here is a formulation-scope statement, not an error"
+        }
+      ],
+      "polar_class_table": {
+        "PC1": {
+          "design_force_MN": 34.618692758697456,
+          "design_pressure_MPa": 14.273003681166625,
+          "patch_area_m2": 2.42546653332523,
+          "ratio_code_force_over_ensemble_mean": 144.11205552299407,
+          "ratio_code_pressure_over_ensemble_max": 1.856280062880209
+        },
+        "PC2": {
+          "design_force_MN": 19.354373735642614,
+          "design_pressure_MPa": 9.520119969189805,
+          "patch_area_m2": 2.0329968317919986,
+          "ratio_code_force_over_ensemble_mean": 80.56914805666543,
+          "ratio_code_pressure_over_ensemble_max": 1.2381422502085655
+        },
+        "PC3": {
+          "design_force_MN": 11.859201702527224,
+          "design_pressure_MPa": 6.533561428246335,
+          "patch_area_m2": 1.8151205636877799,
+          "ratio_code_force_over_ensemble_mean": 49.367951185378416,
+          "ratio_code_pressure_over_ensemble_max": 0.8497244230981313
+        },
+        "PC4": {
+          "design_force_MN": 8.806337897916256,
+          "design_pressure_MPa": 5.271164643643188,
+          "patch_area_m2": 1.6706626510967257,
+          "ratio_code_force_over_ensemble_mean": 36.65936969211268,
+          "ratio_code_pressure_over_ensemble_max": 0.6855430051534983
+        },
+        "PC5": {
+          "design_force_MN": 6.066588329675643,
+          "design_pressure_MPa": 4.132999033058431,
+          "patch_area_m2": 1.4678417006999271,
+          "ratio_code_force_over_ensemble_mean": 25.254232454566516,
+          "ratio_code_pressure_over_ensemble_max": 0.5375185123151643
+        },
+        "PC6": {
+          "design_force_MN": 4.696713545555336,
+          "design_pressure_MPa": 3.1163149015700147,
+          "patch_area_m2": 1.5071370172472327,
+          "ratio_code_force_over_ensemble_mean": 19.55166383579343,
+          "ratio_code_pressure_over_ensemble_max": 0.40529333212979973
+        },
+        "PC7": {
+          "design_force_MN": 3.522535159166502,
+          "design_pressure_MPa": 2.632867771511187,
+          "patch_area_m2": 1.3379081157367327,
+          "ratio_code_force_over_ensemble_mean": 14.663747876845074,
+          "ratio_code_pressure_over_ensemble_max": 0.3424184608671374
+        }
+      }
+    },
+    {
+      "group": {
+        "name": "G3-severe-c0.7",
+        "concentration": 0.7,
+        "thickness_m": 0.6,
+        "diameter_m": 3.0
+      },
+      "seeds": [
+        7101,
+        7102,
+        7103,
+        7104,
+        7105,
+        7106,
+        7107,
+        7108,
+        7109,
+        7110,
+        7111,
+        7112,
+        7113,
+        7114,
+        7115,
+        7116,
+        7117,
+        7118,
+        7119,
+        7120,
+        7121,
+        7122,
+        7123,
+        7124
+      ],
+      "ice_field": {
+        "concentration": 0.7,
+        "mean_thickness_m": 0.6,
+        "median_floe_diameter_m": 3.0
+      },
+      "statistics": {
+        "impacts": 8497,
+        "peak_force_MN": {
+          "mean": 0.237691529888768,
+          "sd": 0.1078563754875531,
+          "min": 0.0035984892467257347,
+          "p50": 0.22842098944674372,
+          "p95": 0.4284996209546732,
+          "max": 0.9895615731266517,
+          "n": 8497
+        },
+        "peak_area_m2": {
+          "mean": 0.14353039302247908,
+          "sd": 0.0885583422129498,
+          "min": 0.0004033875710302527,
+          "p50": 0.128633938570134,
+          "p95": 0.3081910776110009,
+          "max": 0.9855316738627603,
+          "n": 8497
+        },
+        "peak_pressure_MPa": {
+          "mean": 1.8980669136277633,
+          "sd": 0.5687284154838633,
+          "min": 1.0040890611339728,
+          "p50": 1.7757443485430067,
+          "p95": 2.8188530887752337,
+          "max": 8.920674569955603,
+          "n": 8497
+        },
+        "per_seed_max_force_MN": {
+          "mean": 0.6699385810793309,
+          "sd": 0.1032902165369324,
+          "min": 0.5373677452998338,
+          "p50": 0.6499505988221748,
+          "p95": 0.7917222504295263,
+          "max": 0.9895615731266517,
+          "n": 24
+        },
+        "per_seed_mean_force_MN": {
+          "mean": 0.23765038101844768,
+          "sd": 0.005272936433270954,
+          "min": 0.2270829238105724,
+          "p50": 0.23857459623362592,
+          "p95": 0.244421941178419,
+          "max": 0.24471511471023102,
+          "n": 24
+        },
+        "per_seed_max_pressure_MPa": {
+          "mean": 6.506451382309915,
+          "sd": 1.3581705293421453,
+          "min": 4.290253804456439,
+          "p50": 6.644812796022514,
+          "p95": 8.74919528530997,
+          "max": 8.920674569955603,
+          "n": 24
+        },
+        "area_overlap_with_code_patch": {
+          "code_patch_area_m2": 1.5071370172472327,
+          "impacts_within_factor_2": 1,
+          "area_ratio_code_over_ensemble": 10.50047300442626
+        },
+        "convergence": {
+          "tail_seeds": [
+            7115,
+            7116,
+            7117,
+            7118,
+            7119,
+            7120,
+            7121,
+            7122,
+            7123,
+            7124
+          ],
+          "running_mean_force_MN": [
+            0.24471511471023102,
+            0.23785005476350962,
+            0.23993490382797997,
+            0.23948542299598893,
+            0.2394042382145151,
+            0.23967739614380001,
+            0.23937435273102212,
+            0.2396763157138817,
+            0.23938330080668793,
+            0.23989276494776984,
+            0.23887507644032924,
+            0.23882943545511534,
+            0.2389528904060012,
+            0.23852384942930951,
+            0.23835981937485648,
+            0.23787637354177726,
+            0.2379810744460933,
+            0.23781959902961627,
+            0.23725451086019292,
+            0.2374040769130938,
+            0.23767208133266104,
+            0.23730873322764198,
+            0.2373745190807658,
+            0.23765038101844768
+          ],
+          "mean_force_full_MN": 0.23765038101844768,
+          "mean_force_tail_MN": 0.23642752524324115,
+          "mean_force_rel_diff": -0.005145608309004177,
+          "mean_pressure_full_MPa": 6.506451382309915,
+          "mean_pressure_tail_MPa": 6.590110988901583,
+          "mean_pressure_rel_diff": 0.012857946932351875,
+          "tolerance": 0.05,
+          "passed": true
+        },
+        "pressure_area_regression": {
+          "slope": -0.2800000000000003,
+          "intercept": -5.0568286206011035e-17,
+          "intercept_MPa": 1.0,
+          "slope_se": 8.580779432966896e-18,
+          "r2": 1.0,
+          "n": 8497,
+          "note": "slope of ln p on ln A over per-impact peaks; A is endogenous to the coupled dynamics, so this is not an independent measurement of the law (closure arm)"
+        }
+      },
+      "distribution_fits": {
+        "weibull": {
+          "params": {
+            "k": 2.2985634101640446,
+            "lam": 0.2674800304088174
+          },
+          "weibull_plot_r2": 0.981481354815813,
+          "n": 8497,
+          "ks_statistic": 0.037675959895928035,
+          "ks_pvalue": 6.467973336236649e-11,
+          "ks_method": "scipy.stats.kstest",
+          "loglik": 7010.472304945097,
+          "n_params": 2,
+          "aic": -14016.944609890194
+        },
+        "gumbel": {
+          "params": {
+            "loc": 0.0,
+            "scale": 0.18040335556738876
+          },
+          "method": "scipy.stats.gumbel_r.fit(floc=0.0) MLE",
+          "n": 8497,
+          "ks_statistic": 0.4773163135651006,
+          "ks_pvalue": 0.0,
+          "ks_method": "scipy.stats.kstest",
+          "loglik": 682.5115801587207,
+          "n_params": 2,
+          "aic": -1361.0231603174414
+        },
+        "preferred_by_aic": "weibull"
+      },
+      "tail": {
+        "weibull": {
+          "q_100": 0.519803597668869,
+          "q_1000": 0.62008117734541,
+          "q_8497": 0.6973208088651379
+        },
+        "gumbel": {
+          "q_100": 0.8298823566212237,
+          "q_1000": 1.2460919924823388,
+          "q_8497": 1.6321830495568694
+        },
+        "observed_max_MN": 0.9895615731266517,
+        "assumption": "iid per-impact peaks; the true peaks are clustered inside a floe field and the tail is therefore optimistic -- the comparison of the extrapolated 1/N quantile with the observed maximum is the check on that assumption"
+      },
+      "code_quantile": {
+        "empirical_cdf_of_code_value": {
+          "code_design_force_MN": {
+            "fraction_of_impacts_below": 1.0,
+            "impacts": 8497,
+            "percentile": 100.0
+          },
+          "code_design_pressure_MPa": {
+            "fraction_of_impacts_below": 0.9652818641873603,
+            "impacts": 8497,
+            "percentile": 96.52818641873603
+          }
+        },
+        "fitted_cdf": {
+          "weibull": {
+            "code_design_force_MN": 1.0
+          },
+          "gumbel": {
+            "code_design_force_MN": 0.9999999999950643
+          }
+        },
+        "note": "empirical_cdf = fraction of per-impact peaks below the code value; a value near 1.0 means the code brackets the whole ensemble"
+      },
+      "comparison_items": [
+        {
+          "item": "C1-force-mean",
+          "quantity": "mean per-impact peak contact force",
+          "measured": 0.237691529888768,
+          "measured_unit": "MN",
+          "reference": 4.696713545555336,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(b) PC6 design force",
+          "deviation_pct": -94.9391946606217,
+          "signed_difference": -4.459022015666568,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "formulation_scope",
+          "note": "the code is a prescribed glancing bow impact of a large floe; the ensemble is a random field of small floes, so the code/ensemble ratio is a scope ratio"
+        },
+        {
+          "item": "C2-force-seedmax",
+          "quantity": "median over seeds of the per-seed maximum peak force",
+          "measured": 0.6499505988221748,
+          "measured_unit": "MN",
+          "reference": 4.696713545555336,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(b) PC6 design force",
+          "deviation_pct": -86.16158740536251,
+          "signed_difference": -4.046762946733161,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "formulation_scope",
+          "note": "extreme statistic of the same ensemble, still not the code scenario"
+        },
+        {
+          "item": "C3-pressure-peak-vs-Pavg",
+          "quantity": "maximum per-impact local peak pressure",
+          "measured": 8.920674569955603,
+          "measured_unit": "MPa",
+          "reference": 3.1163149015700147,
+          "reference_label": "IACS UR I2 I2.3.4(i) PC6 average patch pressure Pavg",
+          "deviation_pct": 186.25716115727982,
+          "signed_difference": 5.8043596683855885,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "model_difference",
+          "note": "no transport: the code's patch-average pressure compared with the ensemble's extremal local pressure; a small positive deviation would mean the code's average pressure is as high as the worst local peak seen in 24 random fields"
+        },
+        {
+          "item": "C3b-pressure-matched-band",
+          "quantity": "matched-area pressure",
+          "measured": null,
+          "measured_unit": "MPa",
+          "reference": 3.1163149015700147,
+          "reference_label": "IACS UR I2 I2.3.4(i) PC6 Pavg",
+          "deviation_pct": null,
+          "signed_difference": null,
+          "within_15pct": null,
+          "difference_class": "not_evaluated",
+          "evidence_grade": "REAL_ANCHORED",
+          "note": "only 1 impacts (<5) with a peak contact area within a factor 2 of the code patch area 1.507 m2: the ensemble and the code do not overlap in area for this group, so no matched-area comparison exists"
+        },
+        {
+          "item": "C4-iso-closure",
+          "quantity": "mean per-impact peak pressure vs the ISO law at the measured area",
+          "measured": 1.8980669136277633,
+          "measured_unit": "MPa",
+          "reference": 1.7220894861830829,
+          "reference_label": "ISO 19906 form p = C_R (A/A_0)^ex with DECLARED coefficients",
+          "deviation_pct": 10.21883176551555,
+          "signed_difference": 0.17597742744468037,
+          "within_15pct": true,
+          "evidence_grade": "DECLARED_REFERENCE_NOT_NORMATIVE(closure_arm)",
+          "difference_class": "closure_tautology",
+          "note": "the contact law of the simulation is this law, so a small deviation only proves the chain reproduces what it was fed; it says nothing about ISO 19906 itself"
+        },
+        {
+          "item": "C5-exponent-vs-iso",
+          "quantity": "fitted pressure--area exponent",
+          "measured": -0.2800000000000003,
+          "measured_unit": "-",
+          "reference": -0.28,
+          "reference_label": "declared ISO exponent ex = -0.28",
+          "deviation_pct": 9.912705577010324e-14,
+          "signed_difference": -2.7755575615628914e-16,
+          "within_15pct": true,
+          "evidence_grade": "DECLARED_REFERENCE_NOT_NORMATIVE(closure_arm)",
+          "difference_class": "closure_tautology",
+          "note": "same closure caveat: A is endogenous inside the law that generated it"
+        },
+        {
+          "item": "C6-exponent-vs-code",
+          "quantity": "fitted pressure--area exponent vs the exponent implied by the IACS clause chain",
+          "measured": -0.2800000000000003,
+          "measured_unit": "-",
+          "reference": 0.28205128205128205,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(d)-(e) implied dlnP/dlnA = +0.282",
+          "deviation_pct": -199.2727272727274,
+          "signed_difference": -0.5620512820512824,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED(derived)",
+          "difference_class": "formulation_scope",
+          "note": "the IACS chain carries no decreasing area law (its pressure rises with area at fixed AR); the code handles small areas through the Table 3 peak pressure factors instead, so a sign disagreement here is a formulation-scope statement, not an error"
+        }
+      ],
+      "polar_class_table": {
+        "PC1": {
+          "design_force_MN": 34.618692758697456,
+          "design_pressure_MPa": 14.273003681166625,
+          "patch_area_m2": 2.42546653332523,
+          "ratio_code_force_over_ensemble_mean": 145.64546231368823,
+          "ratio_code_pressure_over_ensemble_max": 1.5999915218561391
+        },
+        "PC2": {
+          "design_force_MN": 19.354373735642614,
+          "design_pressure_MPa": 9.520119969189805,
+          "patch_area_m2": 2.0329968317919986,
+          "ratio_code_force_over_ensemble_mean": 81.42643427260467,
+          "ratio_code_pressure_over_ensemble_max": 1.0671973172581708
+        },
+        "PC3": {
+          "design_force_MN": 11.859201702527224,
+          "design_pressure_MPa": 6.533561428246335,
+          "patch_area_m2": 1.8151205636877799,
+          "ratio_code_force_over_ensemble_mean": 49.893244862688,
+          "ratio_code_pressure_over_ensemble_max": 0.7324066556862249
+        },
+        "PC4": {
+          "design_force_MN": 8.806337897916256,
+          "design_pressure_MPa": 5.271164643643188,
+          "patch_area_m2": 1.6706626510967257,
+          "ratio_code_force_over_ensemble_mean": 37.04943925447129,
+          "ratio_code_pressure_over_ensemble_max": 0.5908930543656657
+        },
+        "PC5": {
+          "design_force_MN": 6.066588329675643,
+          "design_pressure_MPa": 4.132999033058431,
+          "patch_area_m2": 1.4678417006999271,
+          "ratio_code_force_over_ensemble_mean": 25.522947041969108,
+          "ratio_code_pressure_over_ensemble_max": 0.4633056615447189
+        },
+        "PC6": {
+          "design_force_MN": 4.696713545555336,
+          "design_pressure_MPa": 3.1163149015700147,
+          "patch_area_m2": 1.5071370172472327,
+          "ratio_code_force_over_ensemble_mean": 19.75970093571802,
+          "ratio_code_pressure_over_ensemble_max": 0.3493362387711812
+        },
+        "PC7": {
+          "design_force_MN": 3.522535159166502,
+          "design_pressure_MPa": 2.632867771511187,
+          "patch_area_m2": 1.3379081157367327,
+          "ratio_code_force_over_ensemble_mean": 14.819775701788513,
+          "ratio_code_pressure_over_ensemble_max": 0.29514222841157745
+        }
+      }
+    },
+    {
+      "group": {
+        "name": "G4-design-severity",
+        "concentration": 0.7,
+        "thickness_m": 1.2,
+        "diameter_m": 10.0
+      },
+      "seeds": [
+        7101,
+        7102,
+        7103,
+        7104,
+        7105,
+        7106,
+        7107,
+        7108,
+        7109,
+        7110,
+        7111,
+        7112,
+        7113,
+        7114,
+        7115,
+        7116,
+        7117,
+        7118,
+        7119,
+        7120,
+        7121,
+        7122,
+        7123,
+        7124
+      ],
+      "ice_field": {
+        "concentration": 0.7,
+        "mean_thickness_m": 1.2,
+        "median_floe_diameter_m": 10.0
+      },
+      "statistics": {
+        "impacts": 985,
+        "peak_force_MN": {
+          "mean": 1.082224898357505,
+          "sd": 0.49223897101725417,
+          "min": 0.019543505575893006,
+          "p50": 1.0352346856684873,
+          "p95": 1.9403521457730402,
+          "max": 3.90117160077041,
+          "n": 985
+        },
+        "peak_area_m2": {
+          "mean": 1.1781949015268205,
+          "sd": 0.735807387485273,
+          "min": 0.004230506000059864,
+          "p50": 1.0492699675996402,
+          "p95": 2.5109271085322153,
+          "max": 6.623754715757361,
+          "n": 985
+        },
+        "peak_pressure_MPa": {
+          "mean": 1.0547454098501006,
+          "sd": 0.33177083161418564,
+          "min": 0.5889667972592415,
+          "p50": 0.9866237647463972,
+          "p95": 1.555894859792528,
+          "max": 4.6196614720831155,
+          "n": 985
+        },
+        "per_seed_max_force_MN": {
+          "mean": 2.369481349290702,
+          "sd": 0.5285581994942724,
+          "min": 1.7297075204002261,
+          "p50": 2.27899176815553,
+          "p95": 3.704225887717346,
+          "max": 3.90117160077041,
+          "n": 24
+        },
+        "per_seed_mean_force_MN": {
+          "mean": 1.0846829860820681,
+          "sd": 0.07900629997580375,
+          "min": 0.9701480318369538,
+          "p50": 1.0697698446319062,
+          "p95": 1.241388743862741,
+          "max": 1.2812276954789912,
+          "n": 24
+        },
+        "per_seed_max_pressure_MPa": {
+          "mean": 2.409278814674488,
+          "sd": 0.8285584715233919,
+          "min": 1.4312639148751085,
+          "p50": 2.2927844346332584,
+          "p95": 4.358058257810372,
+          "max": 4.6196614720831155,
+          "n": 24
+        },
+        "area_overlap_with_code_patch": {
+          "code_patch_area_m2": 1.5071370172472327,
+          "impacts_within_factor_2": 672,
+          "area_ratio_code_over_ensemble": 1.2791915966485143
+        },
+        "convergence": {
+          "tail_seeds": [
+            7115,
+            7116,
+            7117,
+            7118,
+            7119,
+            7120,
+            7121,
+            7122,
+            7123,
+            7124
+          ],
+          "running_mean_force_MN": [
+            1.2812276954789912,
+            1.2130870568058085,
+            1.2248632661956085,
+            1.175032229239831,
+            1.1525731664002248,
+            1.1349687272939848,
+            1.1175520894577449,
+            1.1066530733439133,
+            1.105388867563073,
+            1.1097859812027424,
+            1.1029210772736102,
+            1.102211545076713,
+            1.096259489419632,
+            1.1037816266676648,
+            1.0983388163508216,
+            1.0925299791673824,
+            1.0925044813998868,
+            1.0932941820683908,
+            1.0868128057404203,
+            1.0863123041645,
+            1.0871231663059462,
+            1.0838478001349994,
+            1.0869553694122946,
+            1.0846829860820681
+          ],
+          "mean_force_full_MN": 1.0846829860820681,
+          "mean_force_tail_MN": 1.0579448892622327,
+          "mean_force_rel_diff": -0.02465060959093202,
+          "mean_pressure_full_MPa": 2.409278814674488,
+          "mean_pressure_tail_MPa": 2.578160988609986,
+          "mean_pressure_rel_diff": 0.07009656703361469,
+          "tolerance": 0.05,
+          "passed": true
+        },
+        "pressure_area_regression": {
+          "slope": -0.2800000000000002,
+          "intercept": 1.9859199839467256e-17,
+          "intercept_MPa": 1.0,
+          "slope_se": 6.708991710879733e-18,
+          "r2": 1.0,
+          "n": 985,
+          "note": "slope of ln p on ln A over per-impact peaks; A is endogenous to the coupled dynamics, so this is not an independent measurement of the law (closure arm)"
+        }
+      },
+      "distribution_fits": {
+        "weibull": {
+          "params": {
+            "k": 2.2774792564659965,
+            "lam": 1.216778096475108
+          },
+          "weibull_plot_r2": 0.9687839301876109,
+          "n": 985,
+          "ks_statistic": 0.047802698804709526,
+          "ks_pvalue": 0.021458048231488756,
+          "ks_method": "scipy.stats.kstest",
+          "loglik": -683.7553193660856,
+          "n_params": 2,
+          "aic": 1371.5106387321712
+        },
+        "gumbel": {
+          "params": {
+            "loc": 0.0,
+            "scale": 0.8211430198404621
+          },
+          "method": "scipy.stats.gumbel_r.fit(floc=0.0) MLE",
+          "n": 985,
+          "ks_statistic": 0.4890428829349176,
+          "ks_pvalue": 1.078250659224301e-217,
+          "ks_method": "scipy.stats.kstest",
+          "loglik": -1413.5537884144137,
+          "n_params": 2,
+          "aic": 2831.1075768288274
+        },
+        "preferred_by_aic": "weibull"
+      },
+      "tail": {
+        "weibull": {
+          "q_100": 2.379197977954903,
+          "q_1000": 2.8428181067489886,
+          "q_985": 2.8400853975124236
+        },
+        "gumbel": {
+          "q_100": 3.7773804277920866,
+          "q_1000": 5.671844287418188,
+          "q_985": 5.6594275716133495
+        },
+        "observed_max_MN": 3.90117160077041,
+        "assumption": "iid per-impact peaks; the true peaks are clustered inside a floe field and the tail is therefore optimistic -- the comparison of the extrapolated 1/N quantile with the observed maximum is the check on that assumption"
+      },
+      "code_quantile": {
+        "empirical_cdf_of_code_value": {
+          "code_design_force_MN": {
+            "fraction_of_impacts_below": 1.0,
+            "impacts": 985,
+            "percentile": 100.0
+          },
+          "code_design_pressure_MPa": {
+            "fraction_of_impacts_below": 0.9969543147208122,
+            "impacts": 985,
+            "percentile": 99.69543147208122
+          }
+        },
+        "fitted_cdf": {
+          "weibull": {
+            "code_design_force_MN": 0.999999999613366
+          },
+          "gumbel": {
+            "code_design_force_MN": 0.9967247675066073
+          }
+        },
+        "note": "empirical_cdf = fraction of per-impact peaks below the code value; a value near 1.0 means the code brackets the whole ensemble"
+      },
+      "comparison_items": [
+        {
+          "item": "C1-force-mean",
+          "quantity": "mean per-impact peak contact force",
+          "measured": 1.082224898357505,
+          "measured_unit": "MN",
+          "reference": 4.696713545555336,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(b) PC6 design force",
+          "deviation_pct": -76.95782619355927,
+          "signed_difference": -3.614488647197831,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "formulation_scope",
+          "note": "the code is a prescribed glancing bow impact of a large floe; the ensemble is a random field of small floes, so the code/ensemble ratio is a scope ratio"
+        },
+        {
+          "item": "C2-force-seedmax",
+          "quantity": "median over seeds of the per-seed maximum peak force",
+          "measured": 2.27899176815553,
+          "measured_unit": "MN",
+          "reference": 4.696713545555336,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(b) PC6 design force",
+          "deviation_pct": -51.47688386675786,
+          "signed_difference": -2.417721777399806,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "formulation_scope",
+          "note": "extreme statistic of the same ensemble, still not the code scenario"
+        },
+        {
+          "item": "C3-pressure-peak-vs-Pavg",
+          "quantity": "maximum per-impact local peak pressure",
+          "measured": 4.6196614720831155,
+          "measured_unit": "MPa",
+          "reference": 3.1163149015700147,
+          "reference_label": "IACS UR I2 I2.3.4(i) PC6 average patch pressure Pavg",
+          "deviation_pct": 48.24116361782654,
+          "signed_difference": 1.5033465705131008,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "model_difference",
+          "note": "no transport: the code's patch-average pressure compared with the ensemble's extremal local pressure; a small positive deviation would mean the code's average pressure is as high as the worst local peak seen in 24 random fields"
+        },
+        {
+          "item": "C3b-pressure-matched-band",
+          "quantity": "mean peak pressure of the 672 impacts whose contact area is within a factor 2 of the code patch area",
+          "measured": 0.9291754553159921,
+          "measured_unit": "MPa",
+          "reference": 3.1163149015700147,
+          "reference_label": "IACS UR I2 I2.3.4(i) PC6 average patch pressure Pavg",
+          "deviation_pct": -70.18351852542665,
+          "signed_difference": -2.1871394462540223,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "model_difference",
+          "note": "matched-area, no transport: the only item where the ensemble and the code describe the same patch size"
+        },
+        {
+          "item": "C3c-force-matched-band",
+          "quantity": "mean peak force of the 672 area-matched impacts",
+          "measured": 1.259064095084526,
+          "measured_unit": "MN",
+          "reference": 4.696713545555336,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(b) PC6 design force",
+          "deviation_pct": -73.19265731511298,
+          "signed_difference": -3.43764945047081,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED",
+          "difference_class": "model_difference",
+          "note": "same matched-area subset, force level"
+        },
+        {
+          "item": "C4-iso-closure",
+          "quantity": "mean per-impact peak pressure vs the ISO law at the measured area",
+          "measured": 1.0547454098501006,
+          "measured_unit": "MPa",
+          "reference": 0.9551227751754724,
+          "reference_label": "ISO 19906 form p = C_R (A/A_0)^ex with DECLARED coefficients",
+          "deviation_pct": 10.4303485650131,
+          "signed_difference": 0.09962263467462817,
+          "within_15pct": true,
+          "evidence_grade": "DECLARED_REFERENCE_NOT_NORMATIVE(closure_arm)",
+          "difference_class": "closure_tautology",
+          "note": "the contact law of the simulation is this law, so a small deviation only proves the chain reproduces what it was fed; it says nothing about ISO 19906 itself"
+        },
+        {
+          "item": "C5-exponent-vs-iso",
+          "quantity": "fitted pressure--area exponent",
+          "measured": -0.2800000000000002,
+          "measured_unit": "-",
+          "reference": -0.28,
+          "reference_label": "declared ISO exponent ex = -0.28",
+          "deviation_pct": 5.947623346206195e-14,
+          "signed_difference": -1.6653345369377348e-16,
+          "within_15pct": true,
+          "evidence_grade": "DECLARED_REFERENCE_NOT_NORMATIVE(closure_arm)",
+          "difference_class": "closure_tautology",
+          "note": "same closure caveat: A is endogenous inside the law that generated it"
+        },
+        {
+          "item": "C6-exponent-vs-code",
+          "quantity": "fitted pressure--area exponent vs the exponent implied by the IACS clause chain",
+          "measured": -0.2800000000000002,
+          "measured_unit": "-",
+          "reference": 0.28205128205128205,
+          "reference_label": "IACS UR I2 I2.3.2.1(iii)(d)-(e) implied dlnP/dlnA = +0.282",
+          "deviation_pct": -199.2727272727273,
+          "signed_difference": -0.5620512820512822,
+          "within_15pct": false,
+          "evidence_grade": "REAL_ANCHORED(derived)",
+          "difference_class": "formulation_scope",
+          "note": "the IACS chain carries no decreasing area law (its pressure rises with area at fixed AR); the code handles small areas through the Table 3 peak pressure factors instead, so a sign disagreement here is a formulation-scope statement, not an error"
+        }
+      ],
+      "polar_class_table": {
+        "PC1": {
+          "design_force_MN": 34.618692758697456,
+          "design_pressure_MPa": 14.273003681166625,
+          "patch_area_m2": 2.42546653332523,
+          "ratio_code_force_over_ensemble_mean": 31.98844603486606,
+          "ratio_code_pressure_over_ensemble_max": 3.089621126443836
+        },
+        "PC2": {
+          "design_force_MN": 19.354373735642614,
+          "design_pressure_MPa": 9.520119969189805,
+          "patch_area_m2": 2.0329968317919986,
+          "ratio_code_force_over_ensemble_mean": 17.883874012709178,
+          "ratio_code_pressure_over_ensemble_max": 2.060783030687518
+        },
+        "PC3": {
+          "design_force_MN": 11.859201702527224,
+          "design_pressure_MPa": 6.533561428246335,
+          "patch_area_m2": 1.8151205636877799,
+          "ratio_code_force_over_ensemble_mean": 10.958167494137273,
+          "ratio_code_pressure_over_ensemble_max": 1.4142944169673533
+        },
+        "PC4": {
+          "design_force_MN": 8.806337897916256,
+          "design_pressure_MPa": 5.271164643643188,
+          "patch_area_m2": 1.6706626510967257,
+          "ratio_code_force_over_ensemble_mean": 8.137253089705895,
+          "ratio_code_pressure_over_ensemble_max": 1.1410283362746696
+        },
+        "PC5": {
+          "design_force_MN": 6.066588329675643,
+          "design_pressure_MPa": 4.132999033058431,
+          "patch_area_m2": 1.4678417006999271,
+          "ratio_code_force_over_ensemble_mean": 5.605663239575173,
+          "ratio_code_pressure_over_ensemble_max": 0.8946540905723042
+        },
+        "PC6": {
+          "design_force_MN": 4.696713545555336,
+          "design_pressure_MPa": 3.1163149015700147,
+          "patch_area_m2": 1.5071370172472327,
+          "ratio_code_force_over_ensemble_mean": 4.33986831450981,
+          "ratio_code_pressure_over_ensemble_max": 0.6745764641851114
+        },
+        "PC7": {
+          "design_force_MN": 3.522535159166502,
+          "design_pressure_MPa": 2.632867771511187,
+          "patch_area_m2": 1.3379081157367327,
+          "ratio_code_force_over_ensemble_mean": 3.2549012358823584,
+          "ratio_code_pressure_over_ensemble_max": 0.5699265600784302
+        }
+      }
+    }
+  ],
+  "criteria": [
+    {
+      "id": "1-anchors",
+      "statement": ">= 3 normative anchors, each with clause locator, verbatim quote and sha256",
+      "value": 17,
+      "passed": true,
+      "evidence": {
+        "path": "benchmarks/anchors/iacs-ur-i-ice-load.json",
+        "sha256": "3b4ec36679e3a882cd3b1f9027fed68526791a001ae5850edc66da7a82ad3271",
+        "iso_19906_status": "WITHHELD"
+      }
+    },
+    {
+      "id": "2-ensemble-convergence",
+      "statement": "last 10 seeds agree with the full ensemble mean within 5%",
+      "value": {
+        "G1-mild-c0.3": 0.0007593145151476545,
+        "G2-moderate-c0.5": -0.007664591988179328,
+        "G3-severe-c0.7": -0.005145608309004177,
+        "G4-design-severity": -0.02465060959093202
+      },
+      "passed": true,
+      "evidence": {
+        "tolerance": 0.05
+      }
+    },
+    {
+      "id": "3-deviation-table",
+      "statement": "per-item deviation vs the code with an explicit '<15%?' answer and a cause classification for every item",
+      "value": {
+        "items": 18,
+        "within_15pct": 0,
+        "not_evaluated": 3,
+        "all_within_15pct": false
+      },
+      "passed": true,
+      "evidence": {
+        "deviation_gate_15pct": "FAIL",
+        "note": "the 15% gate itself is reported separately in deviation_gate_15pct; it is NOT satisfied, and the cause is classified per item"
+      }
+    },
+    {
+      "id": "4-distribution-fit",
+      "statement": "Weibull/Gumbel fit with goodness-of-fit and a stated tail assumption",
+      "value": {
+        "G1-mild-c0.3": "weibull",
+        "G2-moderate-c0.5": "weibull",
+        "G3-severe-c0.7": "weibull",
+        "G4-design-severity": "weibull"
+      },
+      "passed": true,
+      "evidence": {
+        "fits": [
+          "weibull",
+          "gumbel"
+        ],
+        "gof": "scipy KS + AIC",
+        "tail_assumption_check": "extrapolated 1/N quantile vs observed max"
+      }
+    },
+    {
+      "id": "5-per-item-answer",
+      "statement": "answer 'is it < 15%' for every item and classify the cause",
+      "value": {
+        "anchored_within_15pct": 0,
+        "anchored_total": 18,
+        "closure_within_15pct": 8,
+        "closure_total": 8
+      },
+      "passed": true,
+      "evidence": {
+        "classification": {
+          "formulation_scope": "code and ensemble measure different physical quantities",
+          "model_difference": "same quantity, different model/inputs",
+          "closure_tautology": "the law is inside the simulation; agreement proves implementation only"
+        }
+      }
+    }
+  ],
+  "provenance": {
+    "script": "benchmarks/ice_coupled_6dof/run_w30_ice_load_vs_code.py",
+    "script_sha256": "f8c6eec4bb5be9de034c280a9c28fa42586a48395a6f547ed0796adf511a929c",
+    "per_impact_csv": "papers/artifacts/w30/ice-coupled-6dof/ensemble_per_impact.csv",
+    "per_impact_csv_sha256": "ad6d90bda1c574615875ec6ba051804bd917e186b06a819747b09c612107a406",
+    "timeseries_csv": "papers/artifacts/w30/ice-coupled-6dof/representative_timeseries.csv",
+    "anchor_artifact": "benchmarks/anchors/iacs-ur-i-ice-load.json",
+    "anchor_script": "benchmarks/anchors/iacs_ur_i_ice_load_anchor.py",
+    "simulation_module": "benchmarks/ice_coupled_6dof/cummins_ice_6dof.py",
+    "iso_module": "src/tensorfem/iso19906_ice_6dof.py",
+    "tensor_report_id": 19444,
+    "reproduce": "python benchmarks/anchors/iacs_ur_i_ice_load_anchor.py && python benchmarks/ice_coupled_6dof/run_w30_ice_load_vs_code.py",
+    "tensor_report_title_sha256_prefix": null,
+    "report_payload": "reports/w30_report.json",
+    "report_generator": "benchmarks/ice_coupled_6dof/make_w30_report.py",
+    "markdown_report": "docs/ice-coupled-6dof-w30-load-vs-iacs-iso19906.md"
+  },
+  "honesty": {
+    "closure_arms": "items tagged closure_tautology compare the simulation against the law that generates its contact force; they can only prove the implementation, never the standard",
+    "iso_19906_withheld": "no ISO 19906 number is transcribed; all ISO-derived values use declared coefficients and are non_normative",
+    "geometry_gate": "no hull geometry file is used, so Cb/L/B are the declared ShipModel particulars and are not independently validated here",
+    "not_claimed": [
+      "compliance with ISO 19906",
+      "validation of the IACS design load against model tests",
+      "extrapolation of the 6-DOF chain to a real ship"
+    ]
+  },
+  "wall_time_s": 34.5072762966156
+}
