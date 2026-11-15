@@ -1,0 +1,1 @@
+tests/test_grillage_ice_ultimate.py + tests/test_grillage_section_junction.py: 26 passed (93.7 s); tests/test_grillage_plastic_collapse.py: 10 passed; grillage_ice_verification 40/40 gates; grillage_plastic_verification 33/33 gates

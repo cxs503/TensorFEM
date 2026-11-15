@@ -166,18 +166,23 @@ def _effective_section(geom: GrillageGeometry, plate_width: float
     """``(A_e, I_e, c, Z)`` of the stiffener plus a ``plate_width`` strip.
 
     Independent of ``MemberSection``: the laminae are laid out explicitly
-    (attached plate at ``z = 0``, web below it, flange below the web) so that a
-    defect in the composite-property algebra cannot hide in both places.
+    (attached plate centred at ``z = 0``, web welded to the plate *underside*
+    at ``z = -t/2``, flange below the web) so that a defect in the
+    composite-property algebra cannot hide in both places.  The junction
+    convention (web from the plate underside, no double-counted overlap) is the
+    only thing shared with the module, and it is stated here on purpose -- see
+    ``docs/CASE-GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE-round7.md``.
     """
     t = geom.plate_thickness
     h = geom.stiffener.web_height
     tw = geom.stiffener.web_thickness
     bf = geom.stiffener.flange_width
     tf = geom.stiffener.flange_thickness
+    z0 = -0.5 * t  # web root: plate underside, not the plate mid-plane
     parts = [
         (plate_width * t, 0.0, plate_width * t ** 3 / 12.0),
-        (h * tw, -0.5 * h, tw * h ** 3 / 12.0),
-        (bf * tf, -h - 0.5 * tf, bf * tf ** 3 / 12.0),
+        (h * tw, z0 - 0.5 * h, tw * h ** 3 / 12.0),
+        (bf * tf, z0 - h - 0.5 * tf, bf * tf ** 3 / 12.0),
     ]
     area = sum(a for a, _, _ in parts)
     z_bar = sum(a * z for a, z, _ in parts) / area
@@ -195,7 +200,8 @@ def hand_stiffener_limit(geom: GrillageGeometry, case: CombinedLoadCase, *,
     bisection, the utilisation composition and the section algebra checkable
     against something that shares none of them:
 
-    ``A_e = be t + h tw + bf tf``,  ``Z = I_e / c``  (own laminae above),
+    ``A_e = be t + h tw + bf tf``,  ``Z = I_e / c``  (own laminae above, web
+    root at the plate underside),
     ``sigma_e = pi^2 E I_e / (A_e L^2)``, ``eta_P = e0 c A_e / I_e``,
     ``sigma_PR`` from the Perry-Robertson quadratic, ``sigma_JO`` by
     Johnson-Ostenfeld, ``sigma_L = min`` thereof,
