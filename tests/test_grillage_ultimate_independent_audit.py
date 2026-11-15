@@ -103,10 +103,13 @@ def test_member_governed_branch_is_exercised():
         # the plate field must stay clear of its own limit, otherwise the case
         # is not a member-governed one.  Under the corrected plate/web junction
         # (web welded to the plate underside, round 7) the stiffener carries more
-        # load, so the plate margin at the member limit narrows to 0.911 on the
-        # light-ice case; the bound is kept tight enough to fail if the plate ever
-        # becomes the governing member (utilisation 1.0).
-        assert row["utilisation_plate_at_limit"] < 0.95, row
+        # load, so the plate margin at the member limit narrowed to 0.911 on the
+        # light-ice case and the bound was relaxed to 0.95.  Round 8 re-set the
+        # member-governed plating from 25 mm to 26 mm, which restores the 0.9-level
+        # margin (0.838 / 0.759 / 0.719 on the three combined cases) while keeping
+        # the stiffener the governing member; the bound is back at 0.9 and still
+        # fails if the plate ever becomes the governing member (utilisation 1.0).
+        assert row["utilisation_plate_at_limit"] < 0.9, row
         assert abs(row["utilisation_stiffener_at_limit"] - 1.0) < 1e-3, row
 
 
