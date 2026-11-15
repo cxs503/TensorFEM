@@ -169,6 +169,38 @@ def _fake_record(nx: int, limit: float, geometry: str = "free",
     }
 
 
+def test_report_line_survives_a_ramp_without_any_limit_definition():
+    """A ramp that never softens must be *reported*, not crash the driver.
+
+    ``limit_load_from_path`` returns ``None`` when none of the limit-load
+    definitions fires (short or purely elastic ramp).  The report path used to
+    format that ``None`` with ``:.4f`` and die with a ``TypeError`` *after* a
+    multi-minute FE run, losing the run; ``describe`` turns it into ``n/a``.
+    """
+    ladder = _ladder_module()
+    record = {
+        "nx": 8, "geometry": "free", "elapsed_s": 1.5, "first_yield": None,
+        "permanent_deflection": None, "permanent_set_valid": False,
+        "limit_estimates": {
+            "tight": {"limit_load": None, "spread": None, "measurements": {}},
+            "loose": {"limit_load": None, "spread": None, "measurements": {}},
+        },
+    }
+    text = ladder.describe(record)
+    assert "limit n/a" in text and "spread n/a" in text
+    assert "perm. set withheld" in text
+    # a record that *does* carry a limit keeps the numeric report
+    record["limit_estimates"]["tight"] = {
+        "limit_load": 1.2e6, "spread": 0.04,
+        "measurements": {"intersection_of_tangents": 1.2e6}}
+    record["errors"] = {"ilyushin_sine": -0.2, "yield_line": -0.35}
+    record["first_yield"] = 0.87e6
+    record["permanent_deflection"] = 5.2e-3
+    record["permanent_set_valid"] = True
+    text = ladder.describe(record)
+    assert "limit 1.2000 MPa" in text and "-20.00 % vs Ilyushin" in text
+
+
 def test_richardson_extrapolation_recovers_a_second_order_ladder(tmp_path, monkeypatch):
     """``p(h) = p_inf + C h^2`` with h = 1/nx must give back ``p_inf`` and q = 2."""
     ladder = _ladder_module()
