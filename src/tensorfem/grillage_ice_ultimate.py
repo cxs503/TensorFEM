@@ -669,7 +669,10 @@ _system_shares = system_load_shares  # backwards-compatible private alias
 
 def grillage_utilisations(geom: "GrillageGeometry", case: "CombinedLoadCase",
                           ice_pressure: float | None = None,
-                          terms: int = 61) -> dict[str, float]:
+                          terms: int = 61,
+                          member_model: str = "smeared",
+                          member_sub: int = 8,
+                          member_load_split: float = 0.5) -> dict[str, float]:
     """Member utilisations for one combined load case.
 
     Load path (two-system smeared orthotropic grillage, classical):
@@ -794,10 +797,52 @@ def grillage_utilisations(geom: "GrillageGeometry", case: "CombinedLoadCase",
     u_frame = ((0.0 if not have_patch else per_frame_ice / f_u_patch)
                + (0.0 if force_h == 0.0 else per_frame_h / f_u_uniform))
 
+    member_keys: dict[str, float] = {}
+    if member_model != "smeared":
+        from .grillage_member_envelope import member_envelope
+        env = member_envelope(geom, case, ice_pressure=p_ice, sub=member_sub,
+                              load_split=member_load_split,
+                              with_system=(member_model != "panel"))
+        branch = env["branch_utilisations"]
+        u_stiff_b1 = branch["stiffener"]["B1_stiffener_path"]
+        u_stiff_b2 = branch["stiffener"]["B2_frame_path"]
+        u_stiff_c = branch["stiffener"].get("C_system", 0.0)
+        u_frame_b1 = branch["frame"]["B1_stiffener_path"]
+        u_frame_b2 = branch["frame"]["B2_frame_path"]
+        u_frame_c = branch["frame"].get("C_system", 0.0)
+        if member_model == "panel":
+            u_stiff, u_frame = max(u_stiff_b1, u_stiff_b2), max(u_frame_b1, u_frame_b2)
+        elif member_model == "system":
+            u_stiff, u_frame = u_stiff_c, u_frame_c
+        elif member_model == "envelope":
+            u_stiff = max(u_stiff_b1, u_stiff_b2, u_stiff_c)
+            u_frame = max(u_frame_b1, u_frame_b2, u_frame_c)
+        else:
+            raise ValueError(
+                "member_model must be 'smeared', 'panel', 'system' or 'envelope', "
+                f"got {member_model!r}")
+        member_keys = {
+            "u_stiffener_panel": max(u_stiff_b1, u_stiff_b2),
+            "u_stiffener_system": u_stiff_c,
+            "u_frame_panel": max(u_frame_b1, u_frame_b2),
+            "u_frame_system": u_frame_c,
+            "m_stiffener_panel": float(
+                env["analytic"]["B1_stiffener_path"]["stiffener_moment_ice"]
+                + env["analytic"]["B1_stiffener_path"]["stiffener_moment_hydrostatic"]),
+            "m_frame_panel": float(
+                env["analytic"]["B2_frame_path"]["frame_moment_ice"]
+                + env["analytic"]["B2_frame_path"]["frame_moment_hydrostatic"]),
+            "m_stiffener_system": (float(env["system"]["stiffener_moment"])
+                                   if env["system"] else 0.0),
+            "m_frame_system": (float(env["system"]["frame_moment"])
+                               if env["system"] else 0.0),
+        }
+
     return {
         "plate_local_bending": u_plate,
         "longitudinal_stiffener": u_stiff,
         "transverse_frame": u_frame,
+        **member_keys,
         "m_plate": m_plate,
         "m_plate_capacity": plate_cap_eff,
         "stiffener_limiting_stress": sigma_l,
@@ -829,7 +874,10 @@ def _governing(u: Mapping[str, float]) -> str:
 
 def ultimate_ice_pressure(geom: "GrillageGeometry", case: "CombinedLoadCase",
                           tol: float = 1e-6, max_iter: int = 200,
-                          terms: int = 61) -> dict[str, object]:
+                          terms: int = 61,
+                          member_model: str = "smeared",
+                          member_sub: int = 8,
+                          member_load_split: float = 0.5) -> dict[str, object]:
     """Largest ice patch pressure keeping every member utilisation ``<= 1``.
 
     Bisection on ``ice_pressure`` (the peak utilisation is monotone increasing in
@@ -843,7 +891,9 @@ def ultimate_ice_pressure(geom: "GrillageGeometry", case: "CombinedLoadCase",
         raise ValueError("ultimate_ice_pressure needs a positive patch size")
 
     def peak(p: float) -> tuple[float, dict[str, float]]:
-        u = grillage_utilisations(geom, case, ice_pressure=p, terms=terms)
+        u = grillage_utilisations(geom, case, ice_pressure=p, terms=terms,
+                                  member_model=member_model, member_sub=member_sub,
+                                  member_load_split=member_load_split)
         return (max(u["plate_local_bending"], u["longitudinal_stiffener"],
                     u["transverse_frame"]), u)
 
@@ -916,7 +966,9 @@ def panel_stress_ultimate_map(geom: "GrillageGeometry",
                               patch_aspect: float = 1.0,
                               design_pressure: float | None = None,
                               design_provenance: str = "caller supplied",
-                              terms: int = 61) -> dict[str, object]:
+                              terms: int = 61,
+                              member_model: str = "smeared",
+                              member_sub: int = 8) -> dict[str, object]:
     """Machine-readable map ``(sigma_x/sigma_y, A_ice/A_panel, p_hydro) -> p_ice,ult``."""
     geom.validate()
     _positive("patch_aspect", patch_aspect)
@@ -942,7 +994,9 @@ def panel_stress_ultimate_map(geom: "GrillageGeometry",
                     design_pressure=design_pressure,
                     design_provenance=design_provenance,
                 ).validate(geom)
-                res = ultimate_ice_pressure(geom, case, terms=terms)
+                res = ultimate_ice_pressure(geom, case, terms=terms,
+                                            member_model=member_model,
+                                            member_sub=member_sub)
                 u_lim = res.get("utilisations_at_limit") or res["base_utilisations"]
                 p_ult = float(res["ice_pressure_ultimate"])
                 rows.append({
@@ -960,6 +1014,7 @@ def panel_stress_ultimate_map(geom: "GrillageGeometry",
                     "utilisation_stiffener": float(u_lim["longitudinal_stiffener"]),
                     "utilisation_frame": float(u_lim["transverse_frame"]),
                     "margin_vs_design": res.get("margin_vs_design"),
+                    "member_model": member_model,
                     "converged": bool(res.get("converged", False)),
                 })
     return {
