@@ -495,3 +495,21 @@ python gen_stiffener_calibration_figures.py                        # writes the 
    derivation in a comment; the physical statement (the spring is within 0.005 %
    of clamped) is unchanged and still asserted, and the separate check that the
    spring is genuinely stiff (`K_rot > 1e5 D/a`) is untouched.
+
+## 4. Verification-debt closure (m21182)
+
+**Status**: feature_ledger `GAP-PP-4-ICE-STRUCT-ELASTIC-RESTRAINT` → **verified** (2026-11-15, mission 21182).
+
+Acceptance criteria bound to committed machine-readable artifacts
+(`benchmarks/verify_restraint_acceptance.py`, output
+`benchmarks/artifacts/restraint_acceptance_verification.json`):
+
+| 判据 | 基准 | got | 误差 | 通过 |
+|---|---|---:|---:|---:|:--:|
+| β=0 中心 σ_vm | Navier N=401 73.3710 MPa | 73.3233 MPa | −0.065% | <0.1% ✅ |
+| β=1 挠度系数 | Timoshenko 0.00126 | 0.001277 | +1.38% | <5% ✅ |
+| β=1 中心弯矩系数 | Timoshenko 0.0231 | 0.022926 | −0.75% | <5% ✅ |
+| β 扫描档数 | ≥5 | 15（单调） | — | ✅ |
+
+Report: **19180**（含 beta 带曲线图 `restraint_acceptance_band.png`）。
+pytest 全量跑已递交调度（cj3252，排队中）；本单为轻量验证欠账闭合，不重跑重算。
