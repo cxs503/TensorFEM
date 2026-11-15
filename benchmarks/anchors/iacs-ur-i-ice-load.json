@@ -1,0 +1,658 @@
+{
+  "schema_version": "1.0.0",
+  "task_key": "ice-coupled-6dof",
+  "topic": "iacs-ur-i-polar-class-design-ice-load",
+  "experiment": "clause-level transcription of the IACS Polar Class design ice load with sha256 binding, plus the ISO 19906 gap record",
+  "repository": "TensorFEM",
+  "branch": "agent/m21515",
+  "git_head": "c400ea246197966d0009b27fab1e8f4a2bbcbe32",
+  "generated_at_utc": "2026-11-15T06:54:26Z",
+  "generated_by": {
+    "script": "benchmarks/anchors/iacs_ur_i_ice_load_anchor.py",
+    "command": "python benchmarks/anchors/iacs_ur_i_ice_load_anchor.py",
+    "python": "3.11.6"
+  },
+  "sources": [
+    {
+      "file": "UR-I2Rev5.pdf",
+      "document": "IACS Unified Requirement I2, Polar Class ships - structural requirements",
+      "url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "revision_as_printed": "IACS Req. 2006/Rev.5 2025",
+      "retrieved_utc": "2026-11-15",
+      "publisher": "International Association of Classification Societies (IACS)",
+      "access": "public, free download",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "pages": 22
+    },
+    {
+      "file": "UR-I1Rev2-Corr1.pdf",
+      "document": "IACS Unified Requirement I1, Polar Class ships - Polar Class descriptions",
+      "url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2022/02/12082733/ur-i1rev2-1.pdf",
+      "revision_as_printed": "IACS Req. 2007/Rev.2 2022 (Corr.1)",
+      "retrieved_utc": "2026-11-15",
+      "publisher": "International Association of Classification Societies (IACS)",
+      "access": "public, free download",
+      "sha256_file": "26de20c4216d2e546f86d03cd614a5dfef7394a220dc3fc9ed0e5cb85cee5a8f",
+      "pages": 2
+    }
+  ],
+  "anchor_count": 17,
+  "anchors": [
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.1(ii)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.1 (ii)",
+      "carries": "definition of the design ice load: average pressure over a rectangular patch b x w",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 3,
+      "printed_page": "Page 3 of 22",
+      "candidate_pages": [
+        3
+      ],
+      "quote": "(ii) The design ice load is characterized by an average pressure (Pavg) uniformly distributed over a rectangular load patch of height (b) and width (w).",
+      "sha256_quote": "030ca59640823fee13eed964c7945ce53801d9482141f2d12e4b84a12c2e77d0",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.1(iv)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.1 (iv)",
+      "carries": "fixed load patch aspect ratio for non-bow areas (AR = 3.6)",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 3,
+      "printed_page": "Page 3 of 22",
+      "candidate_pages": [
+        3
+      ],
+      "quote": "(iv) In other ice-strengthened areas, the ice load parameters (Pavg, bNonBow and wNonBow) are determined independently of the hull shape and based on a fixed load patch aspect ratio, AR = 3.6.",
+      "sha256_quote": "2e98f66099d3d7784e69103196d30a719c28f808582b2f44c8297881198065c6",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.2.1(iii)(a)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.1 (iii) (a)",
+      "carries": "bow shape coefficient fai = min(fai1, fai2, fai3) and its constants",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 5,
+      "printed_page": "Page 5 of 22",
+      "candidate_pages": [
+        5
+      ],
+      "quote": "(a) Shape coefficient, fai, is to be taken as fai = minimum (fai,1 ; fai,2 ; fai,3) where fai,1 = (0.097 - 0.68 · (x/ LUI - 0.15)2) · αi / (β'i)0.5 fai,2 = 1.2 · CFF / ( sin (β'i) · CFC · DUI0.64) fai,3 = 0.60",
+      "sha256_quote": "406bf63a9b021873aaf78d67e0c96feb72b56074b1907f6ca379a20b5668adc8",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.2.1(iii)(b)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.1 (iii) (b)",
+      "carries": "bow glancing impact force Fi = fai CFC DUI^0.64 [MN] (displacement exponent 0.64)",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 5,
+      "printed_page": "Page 5 of 22",
+      "candidate_pages": [
+        5
+      ],
+      "quote": "(b) Force, Fi: Fi = fai · CFC · DUI0.64 [MN]",
+      "sha256_quote": "1ee9e4164af5905049d1442530926ec02e88b444d2f8a1eb3e0dff3ab0eeefa7",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.2.1(iii)(c)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.1 (iii) (c)",
+      "carries": "load patch aspect ratio ARi = 7.46 sin(beta'i) >= 1.3",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 5,
+      "printed_page": "Page 5 of 22",
+      "candidate_pages": [
+        5
+      ],
+      "quote": "(c) Load patch aspect ratio, ARi: ARi = 7.46 · sin (β'i) >= 1.3",
+      "sha256_quote": "7456c405821674b36cc082fbe800fbc451f17ccbec99aac512f0213548a756a2",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.2.1(iii)(d)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.1 (iii) (d)",
+      "carries": "line load Qi = Fi^0.61 CFD / ARi^0.35 [MN/m]",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 5,
+      "printed_page": "Page 5 of 22",
+      "candidate_pages": [
+        5
+      ],
+      "quote": "(d) Line load, Qi: Qi = Fi 0.61 · CFD / ARi0.35 [MN/m]",
+      "sha256_quote": "4477c351c4128e86a095c5e6236dc40f93862ef3979f4863c4797cb8bcbbe919",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.2.1(iii)(e)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.1 (iii) (e)",
+      "carries": "design pressure Pi = Fi^0.22 CFD^2 ARi^0.3 [MPa] (pressure-area trend)",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 5,
+      "printed_page": "Page 5 of 22",
+      "candidate_pages": [
+        5
+      ],
+      "quote": "(e) Pressure, Pi: Pi = Fi0.22 · CFD2 · ARi0.3 [MPa]",
+      "sha256_quote": "a2d824e02ce5a1ed692cef628a207ff8454ec0cc0bfe8984fc0e2836d84621b7",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.2.2(i)(a)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.2 (i) (a)",
+      "carries": "non-bow force FNonBow = 0.36 CFC DF [MN]",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 6,
+      "printed_page": "Page 6 of 22",
+      "candidate_pages": [
+        6
+      ],
+      "quote": "(a) Force, FNonBow: FNonBow = 0.36 · CFC · DF [MN]",
+      "sha256_quote": "b647055c7acbcc68371fc865bb4dc0fa37a70b4af213bb5a73381bbfef7e450a",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.2.2(i)(b)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.2 (i) (b)",
+      "carries": "non-bow line load QNonBow = 0.639 FNonBow^0.61 CFD [MN/m]",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 6,
+      "printed_page": "Page 6 of 22",
+      "candidate_pages": [
+        6
+      ],
+      "quote": "(b) Line Load, QNonBow: QNonBow = 0.639 · FNonBow0.61 · CFD [MN/m]",
+      "sha256_quote": "aa78aa810e50b740d8516d76423f3be3c331a0005c1dbaed4e95b9dd9719c303",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.2.2(i)-DF",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.2 (i), definition of DF",
+      "carries": "ship displacement factor DF = DUI^0.64 below CFDIS, linear above",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 6,
+      "printed_page": "Page 6 of 22",
+      "candidate_pages": [
+        6
+      ],
+      "quote": "DF = ship displacement factor = DUI0.64 if DUI ≤ CFDIS = CFDIS0.64 + 0.10 · (DUI - CFDIS)",
+      "sha256_quote": "8dd90b40b462136afb1464df56b0410042c7c5e1448b81ebe986643031114aa0",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.3(i)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.3 (i)",
+      "carries": "bow design load patch: wBow = FBow/QBow, bBow = QBow/PBow",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 6,
+      "printed_page": "Page 6 of 22",
+      "candidate_pages": [
+        6
+      ],
+      "quote": "wBow = FBow / QBow [m] bBow = QBow / PBow [m]",
+      "sha256_quote": "aa5dd6cf79a68f8276edd6135ec05913409c18f76f57aa994b5fa3aa932306e1",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.3(ii)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.3 (ii)",
+      "carries": "non-bow design load patch: wNonBow = FNonBow/QNonBow, bNonBow = wNonBow/3.6",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 7,
+      "printed_page": "Page 7 of 22",
+      "candidate_pages": [
+        7
+      ],
+      "quote": "wNonBow = FNonBow / QNonBow [m] bNonBow = wNonBow / 3.6 [m]",
+      "sha256_quote": "2fdb029b0fa04bff7763e966701e92977aabd3e532bf1825ae41157b6907de03",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-I2.3.4(i)",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.4 (i)",
+      "carries": "average pressure over the design patch Pavg = F/(b w) [MPa]",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 7,
+      "printed_page": "Page 7 of 22",
+      "candidate_pages": [
+        7
+      ],
+      "quote": "Pavg = F / (b · w) [MPa] where F = FBow or FNonBow as appropriate for the hull area under consideration [MN] b = bBow or bNonBow as appropriate for the hull area under consideration [m]",
+      "sha256_quote": "5fa7a293f7a6eb268ee401e5e9d464da20037cfd5443053cefba5462b79e47b4",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-Table3",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.4 (ii), Table 3",
+      "carries": "peak pressure factors PPFp, PPFt, PPFs (local pressure concentration)",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 7,
+      "printed_page": "Page 7 of 22",
+      "candidate_pages": [
+        7
+      ],
+      "quote": "Table 3 - Peak Pressure Factors Structural member Peak Pressure Factor (PPFi) Plating Transversely-framed PPFp = (1.8 - s) >= 1.2 Longitudinally-framed PPFp = (2.2 - 1.2 · s) >= 1.5 Frames in transverse framing systems With load distributing stringers PPFt = (1.6 - s) >= 1.0 With no load distributing stringers PPFt = (1.8 - s) >= 1.2 Frames in bottom structures PPFs = 1.0 Load carrying stringers Side longitudinals Web frames PPFs = 1.0, if Sw >= 0.5 · w PPFs = 2.0 - 2.0 · Sw / w, if Sw < (0.5 · w)",
+      "sha256_quote": "68dcd0bd9a503bc4c087d921e70ee18f6edbff8bd6a361ed0546f4e108efc05e",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-Table1",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.1 (iii), Table 1",
+      "carries": "class factors CFC, CFF, CFD, CFDIS, CFL for PC1..PC7",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 4,
+      "printed_page": "Page 4 of 22",
+      "candidate_pages": [
+        4
+      ],
+      "quote": "Table 1 - Class factors to be used in I2.3.2.1 (iii) Polar Class Crushing failure Class Factor (CFC) Flexural failure Class Factor (CFF) Load patch dimensions Class Factor (CFD) Displacement Class Factor (CFDIS) Longitudinal strength Class Factor (CFL) PC1 17.69 68.60 2.01 250 7.46 PC2 9.89 46.80 1.75 210 5.46 PC3 6.06 21.17 1.53 180 4.17 PC4 4.50 13.48 1.42 130 3.15 PC5 3.10 9.00 1.31 70 2.50 PC6 2.40 5.49 1.17 40 2.37 PC7 1.80 4.06 1.11 22 1.81",
+      "sha256_quote": "54724517e922026e6362658d10f733a7d1ca20f9e1e689f7b0e07e613cac82a7",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-Table2",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.2.1 (iv), Table 2",
+      "carries": "class factors CFCV, CFQV, CFPV for vertical-sided bows (PC6, PC7)",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 4,
+      "printed_page": "Page 4 of 22",
+      "candidate_pages": [
+        4
+      ],
+      "quote": "Table 2 - Class factors to be used in I2.3.2.1 (iv) Polar Class Crushing failure Class Factor (CFCV) Line load Class Factor (CFQV) Pressure Class Factor (CFPV) PC6 3.43 2.82 0.65 PC7 2.60 2.33 0.65",
+      "sha256_quote": "25637e13c617b87ba959725e69883f741b2d778e9539ed8b7451bb043ad2afe2",
+      "claim_eligible": true
+    },
+    {
+      "anchor_id": "IACS-UR-I2-Table4",
+      "document": "UR-I2Rev5.pdf",
+      "clause": "I2.3.5, Table 4",
+      "carries": "hull area factors AF per hull area and Polar Class",
+      "sha256_file": "d107c3b00dfd411f215c654252b978ae957b9b2d16bcefb10d3c42e410518513",
+      "document_url": "https://iacs.s3.af-south-1.amazonaws.com/wp-content/uploads/2025/06/11113711/UR-I2Rev5.pdf",
+      "retrieved_utc": "2026-11-15",
+      "document_revision": "IACS Req. 2006/Rev.5 2025",
+      "status": "LOCATED",
+      "pdf_page": 8,
+      "printed_page": "Page 8 of 22",
+      "candidate_pages": [
+        8
+      ],
+      "quote": "Table 4 - Hull Area Factors (AF) Hull area Area Polar Class PC1 PC2 PC3 PC4 PC5 PC6 PC7 Bow (B) All B 1.00 1.00 1.00 1.00 1.00 1.00 1.00 Bow Intermediate (BI) Icebelt BIi 0.90 0.85 0.85 0.80 0.80 1.00* 1.00* Lower BIl 0.70 0.65 0.65 0.60 0.55 0.55 0.50 Bottom BIb 0.55 0.50 0.45 0.40 0.35 0.30 0.25 Midbody (M) Icebelt Mi 0.70 0.65 0.55 0.55 0.50 0.45 0.45 Lower Ml 0.50 0.45 0.40 0.35 0.30 0.25 0.25 Bottom Mb 0.30 0.30 0.25 ** ** ** ** Stern (S) Icebelt Si 0.75 0.70 0.65 0.60 0.50 0.40 0.35 Lower Sl 0.45 0.40 0.35 0.30 0.25 0.25 0.25 Bottom Sb 0.35 0.30 0.30 0.25 0.15 ** ** Note to Table 4:",
+      "sha256_quote": "83f52a98d187fd7d08b8da8262e046d97c8acdba07c22bed830a8e854dd57e0d",
+      "claim_eligible": true
+    }
+  ],
+  "parsed_from_quotes": {
+    "bow_design_load_constants": {
+      "fai1_scale": 0.097,
+      "fai1_x_coeff": 0.68,
+      "fai1_offset": 0.15,
+      "fai1_beta_exponent": 0.5,
+      "fai2_scale": 1.2,
+      "fai3_cap": 0.6,
+      "displacement_exponent": 0.64,
+      "ar_scale": 7.46,
+      "ar_min": 1.3,
+      "line_load_force_exponent": 0.61,
+      "line_load_ar_exponent": 0.35,
+      "pressure_force_exponent": 0.22,
+      "pressure_cfd_exponent": 2.0,
+      "pressure_ar_exponent": 0.3,
+      "nonbow_force_scale": 0.36,
+      "nonbow_line_load_scale": 0.639,
+      "nonbow_line_load_exponent": 0.61,
+      "nonbow_aspect_ratio": 3.6,
+      "nonbow_AR_fixed": 3.6,
+      "ppf_plate_transverse_offset": 1.8,
+      "ppf_plate_transverse_floor": 1.2,
+      "ppf_plate_longitudinal_offset": 2.2,
+      "ppf_plate_longitudinal_slope": 1.2,
+      "ppf_plate_longitudinal_floor": 1.5
+    },
+    "class_factors_table1": {
+      "PC1": {
+        "CFC": 17.69,
+        "CFF": 68.6,
+        "CFD": 2.01,
+        "CFDIS": 250.0,
+        "CFL": 7.46
+      },
+      "PC2": {
+        "CFC": 9.89,
+        "CFF": 46.8,
+        "CFD": 1.75,
+        "CFDIS": 210.0,
+        "CFL": 5.46
+      },
+      "PC3": {
+        "CFC": 6.06,
+        "CFF": 21.17,
+        "CFD": 1.53,
+        "CFDIS": 180.0,
+        "CFL": 4.17
+      },
+      "PC4": {
+        "CFC": 4.5,
+        "CFF": 13.48,
+        "CFD": 1.42,
+        "CFDIS": 130.0,
+        "CFL": 3.15
+      },
+      "PC5": {
+        "CFC": 3.1,
+        "CFF": 9.0,
+        "CFD": 1.31,
+        "CFDIS": 70.0,
+        "CFL": 2.5
+      },
+      "PC6": {
+        "CFC": 2.4,
+        "CFF": 5.49,
+        "CFD": 1.17,
+        "CFDIS": 40.0,
+        "CFL": 2.37
+      },
+      "PC7": {
+        "CFC": 1.8,
+        "CFF": 4.06,
+        "CFD": 1.11,
+        "CFDIS": 22.0,
+        "CFL": 1.81
+      }
+    },
+    "hull_area_factors_table4": {
+      "Bow (B)": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "Bow Intermediate (BI) Icebelt": [
+        0.9,
+        0.85,
+        0.85,
+        0.8,
+        0.8,
+        "1.00*",
+        "1.00*"
+      ],
+      "Bow Intermediate (BI) Lower": [
+        0.7,
+        0.65,
+        0.65,
+        0.6,
+        0.55,
+        0.55,
+        0.5
+      ],
+      "Bow Intermediate (BI) Bottom": [
+        0.55,
+        0.5,
+        0.45,
+        0.4,
+        0.35,
+        0.3,
+        0.25
+      ],
+      "Midbody (M) Icebelt": [
+        0.7,
+        0.65,
+        0.55,
+        0.55,
+        0.5,
+        0.45,
+        0.45
+      ],
+      "Midbody (M) Lower": [
+        0.5,
+        0.45,
+        0.4,
+        0.35,
+        0.3,
+        0.25,
+        0.25
+      ],
+      "Midbody (M) Bottom": [
+        0.3,
+        0.3,
+        0.25,
+        "**",
+        "**",
+        "**",
+        "**"
+      ],
+      "Stern (S) Icebelt": [
+        0.75,
+        0.7,
+        0.65,
+        0.6,
+        0.5,
+        0.4,
+        0.35
+      ],
+      "Stern (S) Lower": [
+        0.45,
+        0.4,
+        0.35,
+        0.3,
+        0.25,
+        0.25,
+        0.25
+      ],
+      "Stern (S) Bottom": [
+        0.35,
+        0.3,
+        0.3,
+        0.25,
+        0.15,
+        "**",
+        "**"
+      ]
+    }
+  },
+  "code_vs_transcription_consistency": {
+    "fai1_scale": {
+      "code_literal": 0.097,
+      "transcribed": 0.097,
+      "match": true
+    },
+    "fai1_x_coeff": {
+      "code_literal": 0.68,
+      "transcribed": 0.68,
+      "match": true
+    },
+    "fai1_offset": {
+      "code_literal": 0.15,
+      "transcribed": 0.15,
+      "match": true
+    },
+    "fai1_beta_exponent": {
+      "code_literal": 0.5,
+      "transcribed": 0.5,
+      "match": true
+    },
+    "fai2_scale": {
+      "code_literal": 1.2,
+      "transcribed": 1.2,
+      "match": true
+    },
+    "fai3_cap": {
+      "code_literal": 0.6,
+      "transcribed": 0.6,
+      "match": true
+    },
+    "displacement_exponent": {
+      "code_literal": 0.64,
+      "transcribed": 0.64,
+      "match": true
+    },
+    "ar_scale": {
+      "code_literal": 7.46,
+      "transcribed": 7.46,
+      "match": true
+    },
+    "ar_min": {
+      "code_literal": 1.3,
+      "transcribed": 1.3,
+      "match": true
+    },
+    "line_load_force_exponent": {
+      "code_literal": 0.61,
+      "transcribed": 0.61,
+      "match": true
+    },
+    "line_load_ar_exponent": {
+      "code_literal": 0.35,
+      "transcribed": 0.35,
+      "match": true
+    },
+    "pressure_force_exponent": {
+      "code_literal": 0.22,
+      "transcribed": 0.22,
+      "match": true
+    },
+    "pressure_cfd_exponent": {
+      "code_literal": 2.0,
+      "transcribed": 2.0,
+      "match": true
+    },
+    "pressure_ar_exponent": {
+      "code_literal": 0.3,
+      "transcribed": 0.3,
+      "match": true
+    }
+  },
+  "all_anchor_values_from_transcription": true,
+  "code_pressure_area_exponent": {
+    "pressure_force_exponent": 0.22,
+    "area_force_exponent": 0.78,
+    "dlnp_dlnA": 0.28205128205128205,
+    "caveat": "at fixed AR and CFD; AR varies with the normal frame angle and CFD with the Polar Class, so the full trend in a design space is not a single power law"
+  },
+  "iso_19906": {
+    "status": "WITHHELD",
+    "entries": [
+      {
+        "anchor_id": "ISO-19906-global-pressure-area",
+        "document": "ISO 19906:2019 Petroleum and natural gas industries - Arctic offshore structures",
+        "needed": "Annex A, global ice pressure clause: the coefficients C_R and the area-law exponent ex together with the A_0 normalisation and the validity range in A",
+        "status": "WITHHELD",
+        "reason": "no licensed copy of ISO 19906 is reachable from this work tree and the standard is not public; writing a recalled coefficient would be fabrication",
+        "consequence": "the ISO 19906 comparison is run at TensorFEM's *declared* coefficients (C_R = 1.0 MPa, A_0 = 1 m2, ex = -0.28) and every ISO-19906-derived number is tagged non_normative; the exponent is swept so that no conclusion rests on that one value"
+      },
+      {
+        "anchor_id": "ISO-19906-local-pressure",
+        "document": "ISO 19906:2019 Annex A, local ice pressure clause/table",
+        "needed": "local (high-pressure-zone) pressure--area parameters and the local area definition",
+        "status": "WITHHELD",
+        "reason": "same as above: document not reachable, no transcription possible",
+        "consequence": "local pressure is not compared; only the global law family is used"
+      },
+      {
+        "anchor_id": "ISO-19906-shape-factor",
+        "document": "ISO 19906:2019 Annex A, pressure-area shape/correction factor clause",
+        "needed": "the shape factor clause that corrects pressure for non-circular or non-square contact areas",
+        "status": "WITHHELD",
+        "reason": "same as above: document not reachable",
+        "consequence": "the floe contact areas of this ensemble are rectangular (h x w), so a shape factor of order one is the expected correction, but it cannot be quantified from an anchored clause here"
+      }
+    ],
+    "declared_values_used_downstream": {
+      "C_R_MPa": 1.0,
+      "A_0_m2": 1.0,
+      "ex": -0.28,
+      "grade": "DECLARED_REFERENCE_NOT_NORMATIVE",
+      "source": "tensorfem.iso19906_ice_6dof.ISO19906PressureArea defaults; declared engineering values of this study, not a transcription"
+    }
+  },
+  "verdict": "PASS",
+  "limitations": [
+    "IACS UR I2 is transcribed at Rev.5 (June 2025); another revision changes the class factors and would move every comparison below",
+    "only the bow-area chain (I2.3.2.1 (iii)) is evaluated; the vertical-side PC6/PC7 chain (I2.3.2.1 (iv)) and the non-bow chain (I2.3.2.2) are transcribed but not evaluated here",
+    "ISO 19906 stays WITHHELD: the ISO-side comparison is against declared coefficients and cannot claim compliance with the standard",
+    "IACS design loads are scantling loads for a prescribed glancing bow impact, not a time-domain simulation output, so agreement/disagreement with a 6-DOF ensemble is a formulation-scope comparison, not a validation of either side"
+  ]
+}
