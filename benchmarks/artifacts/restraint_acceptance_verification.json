@@ -1,0 +1,54 @@
+{
+  "anchor": "GAP-PP-4-ICE-STRUCT-ELASTIC-RESTRAINT",
+  "verification": "verification-debt closure: acceptance criteria bound to committed artifacts",
+  "checks": {
+    "A_beta0_vs_navier": {
+      "baseline_sigma_vm_MPa": 73.37101604723352,
+      "fem_beta0_sigma_vm_MPa": 73.32334948607426,
+      "rel_err_pct": -0.06496647276709178,
+      "pass_lt_0_1pct": true
+    },
+    "B_beta1_vs_timoshenko": {
+      "w_coef_fem": 0.0012773847667803828,
+      "w_coef_ref_Timoshenko": 0.00126,
+      "w_err_pct": 1.3797433952684734,
+      "M_centre_fem": 0.022926210713800504,
+      "M_centre_ref_Timoshenko": 0.0231,
+      "M_centre_err_pct": -0.7523345722921904,
+      "pass_lt_5pct": true
+    },
+    "C_beta_sweep": {
+      "n_points": 15,
+      "betas": [
+        0.0,
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        0.95,
+        0.99,
+        1.0
+      ],
+      "pass_ge_5": true,
+      "monotone_w": true
+    },
+    "D_pytest_inventory": {
+      "acceptance_test_files": [
+        "tests/test_plate_restraint_panel.py",
+        "tests/test_plate_restraint_calibration.py",
+        "tests/test_plate_elastic_restraint.py"
+      ],
+      "note": "green status reported by pytest run (see run log)"
+    },
+    "overall": {
+      "all_acceptance_met": true
+    }
+  }
+}
