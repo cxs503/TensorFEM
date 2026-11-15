@@ -559,6 +559,33 @@ class CorotationalBeam2D:
         self.v = self.v_n + dt * ((1.0 - gamma) * self.a_n + gamma * self.a)
         return u, res <= tol * max(1.0, float(np.linalg.norm(load[free]))), it, res
 
+    def velocity_for(self, u, dt, beta=0.25, gamma=0.5, with_accel=False):
+        """Newmark-consistent velocity (and acceleration) of a trial displacement.
+
+        The *correction* relation of the implicit Newmark scheme, evaluated at an
+        arbitrary trial displacement ``u`` (not necessarily the predictor)::
+
+            a(u) = (u - u_pred) / (beta dt^2),
+            v(u) = v_n + dt ((1 - gamma) a_n + gamma a(u))
+
+        which is algebraically the same as the closed form used by the plate
+        driver (:meth:`tensorfem.ibm_aitken_added_mass.SpringMountedBody.body_velocity`)::
+
+            v(u) = gamma/(beta dt) (u - u_n) + (1 - gamma/beta) v_n
+                   + dt (1 - gamma/(2 beta)) a_n
+
+        ``with_accel=True`` returns ``(v, a)``.  Used by the sub-iteration to
+        evaluate the interface force at the *current* iterate instead of the
+        frozen predictor (see :class:`ImplicitIBMFSI` ``velocity_mode``).
+        """
+        u = np.asarray(u, dtype=float)
+        u_pred = self.u_n + dt * self.v_n + dt ** 2 * (0.5 - beta) * self.a_n
+        a = (u - u_pred) / (beta * dt ** 2)
+        v = self.v_n + dt * ((1.0 - gamma) * self.a_n + gamma * a)
+        v[:3] = 0.0
+        a[:3] = 0.0
+        return (v, a) if with_accel else v
+
     def advance_history(self):
         self.u_nm2 = self.u_nm1.copy()
         self.u_nm1 = self.u_n.copy()
@@ -680,13 +707,33 @@ class ImplicitIBMFSI:
     def __init__(self, beam, fluid, ibm=None, dt=1.0, dx=1.0, ref_length=None,
                  sub_tol=1e-8, max_sub_iter=20, relax_max=1.0,
                  relax_mode="aitken", fixed_omega=1.0, correct_epsilon=True,
-                 ref_angle=1.0, residual_measure="dof_scaled"):
+                 ref_angle=1.0, residual_measure="dof_scaled",
+                 velocity_mode="predictor", coupling_scale=1.0):
         self.beam = beam
         self.fluid = fluid
         self.dt = float(dt)
         self.dx = float(dx)
         self.ref_length = float(ref_length if ref_length is not None else beam.props.length)
         self.ref_angle = float(ref_angle)
+        if velocity_mode not in ("predictor", "iterate"):
+            raise ValueError("velocity_mode must be 'predictor' or 'iterate', "
+                             f"got {velocity_mode!r}")
+        #: ``predictor`` (legacy, default): the interface force is evaluated at the
+        #: frozen Newmark predictor velocity, which is constant inside a time step.
+        #: ``iterate``: it is evaluated at the Newmark-consistent velocity of the
+        #: current sub-iterate -- the sub-iteration then carries real information
+        #: (interface gain ``mu > 1``) and Aitken relaxation becomes consequential.
+        #: The plate driver ``IBMImplicitFSI`` has always used the iterate form.
+        self.velocity_mode = velocity_mode
+        #: Multiplier on the marker load handed to the structure.  The shipped
+        #: default (1.0) applies the lattice interface force -- a momentum per
+        #: time step -- directly as a force, so the fluid->structure coupling
+        #: carries a spurious ``dt`` power: the interface gain collapses to
+        #: ``1 + O(dt^2)`` at resolved time steps and Aitken relaxation cannot
+        #: matter.  ``1/dt`` restores the dt-independent (inertial) coupling; see
+        #: ``docs/xval_implicit_ibm_aitken_v14.md``.  Kept opt-in so that every
+        #: archived record stays bit-identical.
+        self.coupling_scale = float(coupling_scale)
         if residual_measure not in ("dof_scaled", "legacy_isotropic"):
             raise ValueError("residual_measure must be 'dof_scaled' or "
                              f"'legacy_isotropic', got {residual_measure!r}")
@@ -741,6 +788,15 @@ class ImplicitIBMFSI:
         return (float(np.linalg.norm(r_k) / (self.ref_length * math.sqrt(free.size))),
                 res_split)
 
+    def marker_velocity(self, u_iter=None):
+        """Marker velocity entering the interface force (see ``velocity_mode``)."""
+        beam = self.beam
+        if self.velocity_mode == "predictor":
+            return beam.node_velocities()
+        u_iter = beam.u if u_iter is None else u_iter
+        v = beam.velocity_for(u_iter, self.dt)
+        return np.asarray(v).reshape(beam.n_nodes, 3)[:, :2].copy()
+
     def step(self, t_index):
         # Pre-force fluid state of this time level: the interface force decided
         # below is applied inside this step's collision (no one-step lag).
@@ -757,8 +813,10 @@ class ImplicitIBMFSI:
         for it in range(1, self.max_sub_iter + 1):
             self.ibm.move(beam.markers())
             rho_i, mom_i = self.ibm.interpolate(rho, u)
-            f_lag = self.ibm.force(rho_i, mom_i, beam.node_velocities(), dt=self.dt)
-            load = beam.apply_marker_loads(-f_lag)          # reaction on the body
+            f_lag = self.ibm.force(rho_i, mom_i, self.marker_velocity(),
+                                   dt=self.dt)
+            load = (self.coupling_scale
+                    * beam.apply_marker_loads(-f_lag))      # reaction on the body
             u_new, _ok, _nit, _nres = beam.newmark_solve(load, self.dt)
             r_k = u_new - u_km1
             res, res_split = self.interface_residual(r_k)
@@ -780,9 +838,15 @@ class ImplicitIBMFSI:
             u_km1 = beam.u.copy()  # update for next sub-iteration
         if not converged:
             self.n_maxit_hits += 1
+        if self.velocity_mode == "iterate":
+            # the committed iterate is beam.u: make the velocity (and hence the
+            # history that the next time level integrates from) consistent with
+            # it.  A no-op when the interface converged (u_new == u_km1), it
+            # removes the MAXIT truncation bias otherwise.
+            beam.v, beam.a = beam.velocity_for(beam.u, self.dt, with_accel=True)
         self.ibm.move(beam.markers())
         rho_i, mom_i = self.ibm.interpolate(rho, u)
-        f_lag = self.ibm.force(rho_i, mom_i, beam.node_velocities(), dt=self.dt)
+        f_lag = self.ibm.force(rho_i, mom_i, self.marker_velocity(), dt=self.dt)
         self.fluid.step(force=self.ibm.spread(f_lag))
         beam.advance_history()
         self.sub_iterations.append(it)
@@ -791,6 +855,7 @@ class ImplicitIBMFSI:
                 "residual_translation": res_split[0],
                 "residual_rotation": res_split[1],
                 "omega": omega_applied if n_relax else float("nan"),
+                "velocity_mode": self.velocity_mode,
                 "tip": beam.tip().tolist()}
 
     def run(self, n_steps, t_start=1):
