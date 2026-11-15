@@ -1,0 +1,491 @@
+{
+  "gap_slug": "GAP-ICE-GATE-POWER",
+  "verdict": {
+    "gap_slug": "GAP-ICE-GATE-POWER",
+    "judged_quantity": "2-D infinite/low-frequency heave added mass per unit length of the chain mid-section [kg/m]",
+    "geometry": {
+      "length_m": 100.0,
+      "breadth_m": 20.0,
+      "draught_m": 6.0,
+      "block_coefficient": 0.7,
+      "water_density": 1025.0,
+      "mass_kg": 8610000.0
+    },
+    "declared": {
+      "heave": {
+        "dof": "heave",
+        "added_mass_total_kg": 8610000.0,
+        "length_m": 100.0,
+        "value_kg_per_m": 86100.0,
+        "value_t_per_m": 86.1,
+        "declared_mass_ratio": 1.0
+      },
+      "surge": {
+        "dof": "surge",
+        "added_mass_total_kg": 861000.0,
+        "length_m": 100.0,
+        "value_kg_per_m": 8610.0,
+        "value_t_per_m": 8.61,
+        "declared_mass_ratio": 0.1
+      }
+    },
+    "deviations": {
+      "heave": -0.6250319594587433,
+      "surge": -0.9625031959458743
+    },
+    "decision": {
+      "heave": "reject",
+      "surge": "reject"
+    },
+    "decision_naive_rule": {
+      "heave": "reject",
+      "surge": "reject"
+    },
+    "rule": {
+      "tol": 0.15,
+      "u_rel": 0.029,
+      "u_used": 0.029,
+      "k": 2.0,
+      "acceptance_limit": 0.092,
+      "rejection_limit": 0.208,
+      "u_contributions": {
+        "route_residual_19234": 0.029,
+        "free_surface_band_half_width": 0.019258454247071014,
+        "independent_anchor_deviation": 0.004440254730182812
+      }
+    },
+    "reference": {
+      "primary_kg_per_m": 229619.569379078,
+      "primary_t_per_m": 229.619569379078,
+      "primary_source": "mean of the two free-surface variants of section_added_mass_2d (computed in this repository)",
+      "independent_anchor_deviation": -0.004440254730182812,
+      "repo_route_omega0_kg_per_m": 225197.45140795887,
+      "repo_route_infinity_kg_per_m": 234041.6873501971,
+      "band": {
+        "min_kg_per_m": 225197.45140795887,
+        "max_kg_per_m": 234041.6873501971
+      },
+      "band_half_width_rel": 0.019258454247071014,
+      "provenance": {
+        "value_kg_per_m": 228600.0,
+        "source": "tensor_reports#19234 (mission 21257) section Q5: BEM mirror Green single-layer + finite-difference five-point Laplace, mutual disagreement 3.8%, deep-submerged-cylinder self-check -0.32%..+2.90%",
+        "geometry": "chain geometry L=100 m, B=20 m, T=6 m, C_b=0.70"
+      }
+    },
+    "baseline_source": {
+      "primary": "tensor_reports#19234 (mission 21257) section Q5: BEM mirror Green single-layer + finite-difference five-point Laplace, mutual disagreement 3.8%, deep-submerged-cylinder self-check -0.32%..+2.90%",
+      "self_verification": [
+        {
+          "a": 1.0,
+          "depth_over_a": 4.0,
+          "exact_kg_per_m": 3.141592653589793,
+          "even_mirror": 3.0507229024015685,
+          "odd_mirror": 3.2475981113176227,
+          "err_even": -0.028924740158273177,
+          "err_odd": 0.03374258518420614
+        },
+        {
+          "a": 1.0,
+          "depth_over_a": 8.0,
+          "exact_kg_per_m": 3.141592653589793,
+          "even_mirror": 3.123092667161462,
+          "odd_mirror": 3.172242815794908,
+          "err_even": -0.005888728574403812,
+          "err_odd": 0.009756249643024795
+        }
+      ],
+      "convergence": {
+        "omega0": {
+          "free_surface": "omega0",
+          "per_edges": [
+            40,
+            80,
+            160,
+            320
+          ],
+          "values_kg_per_m": [
+            225033.19547957974,
+            225118.43437352453,
+            225197.45140795887,
+            225255.18493987888
+          ],
+          "orders": [
+            0.10934817095289025,
+            0.4527542152640717
+          ],
+          "observed_order": 0.4527542152640717,
+          "richardson_kg_per_m": 225411.79265544235
+        },
+        "infinity": {
+          "free_surface": "infinity",
+          "per_edges": [
+            40,
+            80,
+            160,
+            320
+          ],
+          "values_kg_per_m": [
+            233448.16202948554,
+            233815.5637087811,
+            234041.6873501971,
+            234183.94693624062
+          ],
+          "orders": [
+            0.7002463856910941,
+            0.6685859643403346
+          ],
+          "observed_order": 0.6685859643403346,
+          "richardson_kg_per_m": 234425.2635495546
+        }
+      }
+    },
+    "power": {
+      "u_used": 0.029,
+      "at_audited_deviation": 1.0,
+      "mc_at_audited_deviation": 1.0,
+      "at_tolerance": 0.02275013194817921,
+      "at_rejection_limit": 0.5,
+      "orthogonal_mc_check": {
+        "delta": 0.3,
+        "analytic": 0.9992441128268472,
+        "monte_carlo": 0.99923
+      },
+      "critical_deviation_95": 0.255700755181806,
+      "false_accept_at_tolerance": 0.022750131948179264,
+      "naive_power_at_tolerance": 0.5,
+      "naive_false_accept_at_tolerance": 0.5,
+      "naive_false_reject_at_zero": 0.0
+    },
+    "controls": [
+      {
+        "name": "P1_independent_anchor_19234",
+        "value_kg_per_m": 228600.0,
+        "value_t_per_m": 228.6,
+        "deviation": -0.004440254730182812,
+        "expected": "accept",
+        "got": "accept",
+        "passed": true,
+        "provenance": "tensor_reports#19234 (mission 21257) section Q5: BEM mirror Green single-layer + finite-difference five-point Laplace, mutual disagreement 3.8%, deep-submerged-cylinder self-check -0.32%..+2.90%"
+      },
+      {
+        "name": "P2_repo_route_odd_mirror",
+        "value_kg_per_m": 234041.6873501971,
+        "value_t_per_m": 234.04168735019712,
+        "deviation": 0.019258454247071014,
+        "expected": "accept",
+        "got": "accept",
+        "passed": true,
+        "provenance": "tensorfem.ice_gate_power.section_added_mass_2d(free_surface='infinity')"
+      },
+      {
+        "name": "P3_repo_route_even_mirror",
+        "value_kg_per_m": 225197.45140795887,
+        "value_t_per_m": 225.19745140795888,
+        "deviation": -0.019258454247071014,
+        "expected": "accept",
+        "got": "accept",
+        "passed": true,
+        "provenance": "tensorfem.ice_gate_power.section_added_mass_2d(free_surface='omega0')"
+      },
+      {
+        "name": "N1_chain_heave_declared",
+        "value_kg_per_m": 86100.0,
+        "value_t_per_m": 86.1,
+        "deviation": -0.6250319594587433,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "benchmarks/ice_coupled_6dof/cummins_ice_6dof.py ShipModel.radiation['heave']"
+      },
+      {
+        "name": "N2_chain_surge_channel",
+        "value_kg_per_m": 8610.0,
+        "value_t_per_m": 8.61,
+        "deviation": -0.9625031959458743,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "benchmarks/ice_coupled_6dof/cummins_ice_6dof.py ShipModel.radiation['surge']"
+      },
+      {
+        "name": "N3_sign_flipped_heave",
+        "value_kg_per_m": -86100.0,
+        "value_t_per_m": -86.1,
+        "deviation": -1.3749680405412565,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "sign-flipped chain declaration (a physical impossibility probe)"
+      },
+      {
+        "name": "N4_lock_dead_zero",
+        "value_kg_per_m": 0.0,
+        "value_t_per_m": 0.0,
+        "deviation": -1.0,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "zero added mass (lock-dead probe)"
+      },
+      {
+        "name": "N5_rejected_m22156_reference",
+        "value_kg_per_m": 440100.0,
+        "value_t_per_m": 440.1,
+        "deviation": 0.9166484859722072,
+        "expected": "reject",
+        "got": "reject",
+        "passed": true,
+        "provenance": "m22156 tests/test_hydro_ice_anchor.py heave_added_mass_rectangular_barge (strip_theory_newman_1977 label); audit m22176 finding F2: +92.5% against the verified BEM anchor"
+      }
+    ],
+    "meta_gate": {
+      "tol": 0.15,
+      "power_at_audited_deviation": 1.0,
+      "false_reject_at_zero": 0.0,
+      "informative": true,
+      "reason": "has power and can also pass"
+    },
+    "degenerate_gates_rejected": [
+      {
+        "tol": 2.0,
+        "power_at_audited_deviation": 0.0,
+        "false_reject_at_zero": 0.0,
+        "informative": false,
+        "reason": "cannot reject the audited failure"
+      },
+      {
+        "tol": 0.0,
+        "power_at_audited_deviation": 1.0,
+        "false_reject_at_zero": 1.0,
+        "informative": false,
+        "reason": "cannot accept a conforming value"
+      }
+    ],
+    "pass": true,
+    "verdict": "REJECT-DECLARATION (chain heave added mass is outside the acceptance band with power ~1)"
+  },
+  "convergence": {
+    "omega0": {
+      "free_surface": "omega0",
+      "per_edges": [
+        40,
+        80,
+        160,
+        320,
+        640
+      ],
+      "values_kg_per_m": [
+        225033.19547957974,
+        225118.43437352453,
+        225197.45140795887,
+        225255.18493987888,
+        225294.18427872445
+      ],
+      "orders": [
+        0.10934817095289025,
+        0.4527542152640717,
+        0.5659598204697988
+      ],
+      "observed_order": 0.5659598204697988,
+      "richardson_kg_per_m": 225375.36997080894
+    },
+    "infinity": {
+      "free_surface": "infinity",
+      "per_edges": [
+        40,
+        80,
+        160,
+        320,
+        640
+      ],
+      "values_kg_per_m": [
+        233448.16202948554,
+        233815.5637087811,
+        234041.6873501971,
+        234183.94693624062,
+        234273.9929433053
+      ],
+      "orders": [
+        0.7002463856910941,
+        0.6685859643403346,
+        0.6597916617770628
+      ],
+      "observed_order": 0.6597916617770628,
+      "richardson_kg_per_m": 234429.28364635355
+    }
+  },
+  "power_table": [
+    {
+      "delta": 0.0,
+      "guard_band": 7.368550214437164e-13,
+      "guard_band_mc": 0.0,
+      "naive_rule": 2.3108912416969218e-07,
+      "false_accept_guard_band": 1.0
+    },
+    {
+      "delta": 0.05,
+      "guard_band": 2.5430215933042177e-08,
+      "guard_band_mc": 0.0,
+      "naive_rule": 0.0002820887534501493,
+      "false_accept_guard_band": 0.9262305298987659
+    },
+    {
+      "delta": 0.1,
+      "guard_band": 9.79918797816004e-05,
+      "guard_band_mc": 8e-05,
+      "naive_rule": 0.04234147297878926,
+      "false_accept_guard_band": 0.39132700422525313
+    },
+    {
+      "delta": 0.15,
+      "guard_band": 0.02275013194817921,
+      "guard_band_mc": 0.02249,
+      "naive_rule": 0.5,
+      "false_accept_guard_band": 0.022750131948179264
+    },
+    {
+      "delta": 0.2,
+      "guard_band": 0.3913270042073771,
+      "guard_band_mc": 0.38831,
+      "naive_rule": 0.9576585270212108,
+      "false_accept_guard_band": 9.79918797816004e-05
+    },
+    {
+      "delta": 0.2557,
+      "guard_band": 0.9499973142136124,
+      "guard_band_mc": 0.95037,
+      "naive_rule": 0.9998662144399928,
+      "false_accept_guard_band": 8.267343254431125e-09
+    },
+    {
+      "delta": 0.3,
+      "guard_band": 0.9992441128268472,
+      "guard_band_mc": 0.99933,
+      "naive_rule": 0.9999998844554379,
+      "false_accept_guard_band": 3.684275107218582e-13
+    },
+    {
+      "delta": 0.4,
+      "guard_band": 0.9999999999821236,
+      "guard_band_mc": 1.0,
+      "naive_rule": 1.0,
+      "false_accept_guard_band": 0.0
+    },
+    {
+      "delta": 0.625,
+      "guard_band": 1.0,
+      "guard_band_mc": 1.0,
+      "naive_rule": 1.0,
+      "false_accept_guard_band": 0.0
+    },
+    {
+      "delta": 1.0,
+      "guard_band": 1.0,
+      "guard_band_mc": 1.0,
+      "naive_rule": 1.0,
+      "false_accept_guard_band": 0.0
+    }
+  ],
+  "sensitivity_B_over_T": [
+    {
+      "draught_m": 4.0,
+      "B_over_T": 5.0,
+      "roll_coupling_changed_mass_kg": 5740000.0,
+      "declared_t_per_m": 57.4,
+      "route_omega0_t_per_m": 212.73061072883712,
+      "route_infinity_t_per_m": 224.36641867947012,
+      "deviation_heave": -0.737358086932315,
+      "decision": "reject",
+      "control_band_half_width_rel": 0.026620652092704093
+    },
+    {
+      "draught_m": 6.0,
+      "B_over_T": 3.3333333333333335,
+      "roll_coupling_changed_mass_kg": 8610000.0,
+      "declared_t_per_m": 86.1,
+      "route_omega0_t_per_m": 225.19745140795888,
+      "route_infinity_t_per_m": 234.04168735019712,
+      "deviation_heave": -0.6250319594587433,
+      "decision": "reject",
+      "control_band_half_width_rel": 0.019258454247071014
+    },
+    {
+      "draught_m": 8.0,
+      "B_over_T": 2.5,
+      "roll_coupling_changed_mass_kg": 11480000.0,
+      "declared_t_per_m": 114.8,
+      "route_omega0_t_per_m": 235.21030769679146,
+      "route_infinity_t_per_m": 242.22031102814202,
+      "deviation_heave": -0.5190924272657896,
+      "decision": "reject",
+      "control_band_half_width_rel": 0.014682768671335066
+    }
+  ],
+  "sensitivity_u_rel": [
+    {
+      "u_rel": 0.005,
+      "acceptance_limit": 0.13999999999999999,
+      "rejection_limit": 0.16,
+      "critical_deviation_95": 0.1682242681349635,
+      "false_accept_at_tolerance": 0.022750131948179098
+    },
+    {
+      "u_rel": 0.01,
+      "acceptance_limit": 0.13,
+      "rejection_limit": 0.16999999999999998,
+      "critical_deviation_95": 0.18644853626983604,
+      "false_accept_at_tolerance": 0.022750131948179264
+    },
+    {
+      "u_rel": 0.02,
+      "acceptance_limit": 0.10999999999999999,
+      "rejection_limit": 0.19,
+      "critical_deviation_95": 0.22289707253867164,
+      "false_accept_at_tolerance": 0.02275013194817921
+    },
+    {
+      "u_rel": 0.029,
+      "acceptance_limit": 0.092,
+      "rejection_limit": 0.208,
+      "critical_deviation_95": 0.255700755181806,
+      "false_accept_at_tolerance": 0.022750131948179264
+    },
+    {
+      "u_rel": 0.05,
+      "acceptance_limit": 0.04999999999999999,
+      "rejection_limit": 0.25,
+      "critical_deviation_95": 0.3322426813479069,
+      "false_accept_at_tolerance": 0.02278180319001233
+    }
+  ],
+  "deep_cylinder": [
+    {
+      "a": 1.0,
+      "depth_over_a": 2.0,
+      "exact_kg_per_m": 3.141592653589793,
+      "even_mirror": 2.7800093556250975,
+      "odd_mirror": 3.5705250879780976,
+      "err_even": -0.11509553842110187,
+      "err_odd": 0.13653343437067744
+    },
+    {
+      "a": 1.0,
+      "depth_over_a": 4.0,
+      "exact_kg_per_m": 3.141592653589793,
+      "even_mirror": 3.0507229024015685,
+      "odd_mirror": 3.2475981113176227,
+      "err_even": -0.028924740158273177,
+      "err_odd": 0.03374258518420614
+    },
+    {
+      "a": 1.0,
+      "depth_over_a": 8.0,
+      "exact_kg_per_m": 3.141592653589793,
+      "even_mirror": 3.123092667161462,
+      "odd_mirror": 3.172242815794908,
+      "err_even": -0.005888728574403812,
+      "err_odd": 0.009756249643024795
+    }
+  ],
+  "repro": "python benchmarks/ice_gate_power/run_gate_evidence.py"
+}
