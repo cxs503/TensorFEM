@@ -784,6 +784,7 @@ def contact_pressure_to_plate_load(
     boundary: str = "simply_supported",
     pressure_fn: Optional[Callable[[np.ndarray, np.ndarray], np.ndarray]] = None,
     dtype=torch.float64,
+    stiffness_cache: Optional[dict] = None,
 ) -> tuple[MindlinPlateResult, PatchLoadResult]:
     """End-to-end: contact pressure -> projected plate load -> plate solve.
 
@@ -845,6 +846,7 @@ def contact_pressure_to_plate_load(
             plate_nx, plate_side, young, poisson, thickness,
             winkler_k, 0.0, boundary=boundary, dtype=dtype,
             force_vector=patch_result.load_vector,
+            stiffness_cache=stiffness_cache,
         )
         applied_force = float(np.sum(patch_result.load_vector[0::3]))
     else:
@@ -866,6 +868,7 @@ def contact_pressure_to_plate_load(
         plate_result = solve_plate_on_winkler_foundation(
             plate_nx, plate_side, young, poisson, thickness,
             winkler_k, pressure_callable, boundary=boundary, dtype=dtype,
+            stiffness_cache=stiffness_cache,
         )
     patch_result.metadata["applied_force"] = applied_force
     patch_result.metadata["load_balance_rel"] = (
@@ -917,6 +920,7 @@ def scan_contact_configurations(
     boundary: str = "simply_supported",
     dtype=torch.float64,
     n_contact_per_axis: int = 41,
+    stiffness_cache: Optional[dict] = None,
 ) -> dict:
     """Scan >= 3 contact configurations: non-uniform patch vs uniform patch.
 
@@ -958,6 +962,10 @@ def scan_contact_configurations(
         Solver dtype.
     n_contact_per_axis : int
         Contact-node resolution per axis of the Gaussian sampling window.
+    stiffness_cache : dict, optional
+        Stiffness cache shared by every plate solve of the scan (the plate
+        is identical across configurations; only the load changes).  A fresh
+        cache is created when not supplied.
 
     Returns
     -------
@@ -992,6 +1000,9 @@ def scan_contact_configurations(
                 "patch_length": 0.1 * plate_side,
             },
         ]
+
+    if stiffness_cache is None:
+        stiffness_cache = {}
 
     def gaussian_fn_for(peak, sx, sy, cx, cy):
         def gaussian_fn(x, y):
@@ -1044,6 +1055,7 @@ def scan_contact_configurations(
         plate_proj, patch_proj = contact_pressure_to_plate_load(
             contact_data, plate_nx, plate_side, young, poisson, thickness,
             winkler_k, boundary=boundary, dtype=dtype,
+            stiffness_cache=stiffness_cache,
         )
         stress_proj = peak_stresses(plate_proj)
         w_proj = float(np.max(np.abs(plate_proj.displacement[0::3].numpy())))
@@ -1053,6 +1065,7 @@ def scan_contact_configurations(
             contact_data, plate_nx, plate_side, young, poisson, thickness,
             winkler_k, boundary=boundary, dtype=dtype,
             pressure_fn=gaussian_fn_for(peak_p, sx, sy, centre, centre),
+            stiffness_cache=stiffness_cache,
         )
         stress_ana = peak_stresses(plate_ana)
         w_ana = float(np.max(np.abs(plate_ana.displacement[0::3].numpy())))
@@ -1066,6 +1079,7 @@ def scan_contact_configurations(
         plate_uni = solve_plate_on_winkler_foundation(
             plate_nx, plate_side, young, poisson, thickness,
             winkler_k, uniform_fn, boundary=boundary, dtype=dtype,
+            stiffness_cache=stiffness_cache,
         )
         stress_uni = peak_stresses(plate_uni)
         w_uni = float(np.max(np.abs(plate_uni.displacement[0::3].numpy())))

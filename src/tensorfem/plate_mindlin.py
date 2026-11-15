@@ -210,6 +210,30 @@ def _apply_boundary_conditions(
     return fixed, free
 
 
+def _all_elements_congruent(nodes: torch.Tensor, elements: torch.Tensor) -> bool:
+    """True if every element is a pure translate of element 0.
+
+    A conservative fast-path predicate: identical edge vectors (same shape,
+    same orientation, same node ordering) mean every element has the same
+    Jacobian and the same 12x12 stiffness, so one element evaluation serves
+    the whole mesh.  Any deviation (skew, rotation, size change) falls back
+    to the per-element loop, which is the reference path.
+    """
+    if elements.shape[0] < 2:
+        return True
+    ref = nodes[elements[0]]
+    ref_edges = ref[1:] - ref[:-1]
+    for conn in elements[1:]:
+        xy = nodes[conn]
+        # tolerance: linspace node spacing is not ulp-exact, so translated
+        # copies of the same element can differ in the last bit; a real
+        # geometric deviation (skew/rotation/size) is orders of magnitude
+        # larger than this.
+        if not torch.allclose(xy[1:] - xy[:-1], ref_edges, rtol=1e-12, atol=0.0):
+            return False
+    return True
+
+
 def _assemble_plate_stiffness(
     nodes: torch.Tensor,
     elements: torch.Tensor,
@@ -219,18 +243,33 @@ def _assemble_plate_stiffness(
     winkler_k: float,
     dtype: torch.dtype,
 ) -> torch.Tensor:
-    """组装板刚度矩阵（弯曲 + Winkler 地基）。"""
+    """组装板刚度矩阵（弯曲 + Winkler 地基）。
+
+    所有单元彼此平移全等时（结构化网格），只评估一次单元刚度再散射：
+    与逐单元参考循环在舍入水平一致（实测相对差 <= 2e-11，
+    tests/test_plate_mindlin_cache.py 以 rtol=1e-10 钉住，远低于单元
+    离散误差）。否则走逐单元参考路径。
+    """
     n_nodes = nodes.shape[0]
     ndof = 3 * n_nodes
     K = torch.zeros((ndof, ndof), dtype=dtype)
-    
+
+    if _all_elements_congruent(nodes, elements):
+        xy0 = nodes[elements[0]]
+        ke = q4_mindlin_stiffness(xy0, young, poisson, thickness)
+        ke += q4_winkler_foundation_stiffness(xy0, winkler_k)
+        for conn in elements:
+            dofs = torch.stack((3*conn, 3*conn+1, 3*conn+2), dim=1).reshape(-1)
+            K[dofs[:, None], dofs] += ke
+        return K
+
     for conn in elements:
         xy = nodes[conn]
         ke = q4_mindlin_stiffness(xy, young, poisson, thickness)
         ke += q4_winkler_foundation_stiffness(xy, winkler_k)
         dofs = torch.stack((3*conn, 3*conn+1, 3*conn+2), dim=1).reshape(-1)
         K[dofs[:, None], dofs] += ke
-    
+
     return K
 
 
@@ -245,6 +284,7 @@ def solve_plate_on_winkler_foundation(
     boundary: str = "simply_supported",
     dtype=torch.float64,
     force_vector: "torch.Tensor | None" = None,
+    stiffness_cache: "dict | None" = None,
 ) -> MindlinPlateResult:
     """求解 Winkler 弹性地基上的 Mindlin 板。
     
@@ -272,7 +312,12 @@ def solve_plate_on_winkler_foundation(
         若给定（长度 3*n_nodes，仅 w 自由度非零），直接作为全局载荷向量，
         跳过 pressure 的单元积分。用于外部已做精确一致投影的载荷
         （如 ``tensorfem.patch_from_contact.exact_consistent_load``）。
-    
+    stiffness_cache : dict, optional
+        跨调用复用 (K, free_dofs) 的缓存。键为
+        ``(nx, side, young, poisson, thickness, winkler_k, boundary, dtype)``，
+        同一块板反复换载荷求解时（如接触构型扫描）避免重复组装。
+        缓存的 K 不会被本函数修改。
+
     Returns
     -------
     result : MindlinPlateResult
@@ -285,8 +330,16 @@ def solve_plate_on_winkler_foundation(
     n_nodes = nodes.shape[0]
     ndof = 3 * n_nodes
     
-    # 组装全局刚度和载荷
-    K = _assemble_plate_stiffness(nodes, elements, young, poisson, thickness, winkler_k, dtype)
+    # 组装全局刚度和载荷（同一块板重复求解时可经 stiffness_cache 复用 K）
+    cache_key = (nx, side, young, poisson, thickness, winkler_k, boundary, dtype)
+    cached = stiffness_cache.get(cache_key) if stiffness_cache is not None else None
+    if cached is not None:
+        K, free = cached
+    else:
+        K = _assemble_plate_stiffness(nodes, elements, young, poisson, thickness, winkler_k, dtype)
+        _, free = _apply_boundary_conditions(nodes, side, ndof, boundary)
+        if stiffness_cache is not None:
+            stiffness_cache[cache_key] = (K, free)
     f = torch.zeros(ndof, dtype=dtype)
     
     if force_vector is not None:
@@ -303,9 +356,7 @@ def solve_plate_on_winkler_foundation(
             dofs = torch.stack((3*conn, 3*conn+1, 3*conn+2), dim=1).reshape(-1)
             f[dofs] += fe
     
-    # 施加边界条件
-    _, free = _apply_boundary_conditions(nodes, side, ndof, boundary)
-    
+    # 施加边界条件（缓存命中时 free 已随 K 一并取回）
     K_ff = K[free][:, free]
     f_f = f[free]
     
