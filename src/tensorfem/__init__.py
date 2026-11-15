@@ -469,3 +469,28 @@ from .plate_patch_plastic_limit import (
     run_patch_plastic_path,
     plate_capacity_summary,
 )
+
+# --- GAP-ICE-GATE-POWER: information-content gate for ice-chain heave added mass ---
+from .ice_gate_power import (
+    GAP_SLUG,
+    DEFAULT_TOL,
+    DEFAULT_U_REL,
+    DEFAULT_K,
+    chain_particulars,
+    declared_added_mass_per_length,
+    section_added_mass_2d,
+    deep_cylinder_check,
+    validate_reference_routes,
+    convergence_study,
+    richardson_extrapolate,
+    acceptance_limit,
+    rejection_limit,
+    decide,
+    decide_naive,
+    detection_power,
+    detection_power_analytic,
+    false_accept_probability,
+    critical_deviation,
+    meta_gate,
+    gate_verdict,
+)
