@@ -68,6 +68,7 @@ Mesh families and what each one can prove
 """
 from __future__ import annotations
 
+import contextlib
 import math
 from dataclasses import dataclass
 
@@ -89,6 +90,15 @@ __all__ = [
     "q4_gauss_curvatures",
     "moment_error",
     "strain_energy",
+    "ShearState",
+    "constant_shear_dofs",
+    "q4_gauss_shears",
+    "shear_rigidity",
+    "shear_state_selfcheck",
+    "shear_block_check",
+    "mutated_q4_stiffness",
+    "shear_block_mutation",
+    "SHEAR_MUTATIONS",
     "run_patch_case",
     "free_surface_state",
     "free_surface_check",
@@ -676,3 +686,273 @@ def strip_pure_bending(n_x: int, n_y: int = 2, *, moment: float = 1.0e3,
         "theta_rel_error": abs(theta_tip - theta_exact) / abs(theta_exact),
         "free_dofs": int(free.numel()),
     }
+
+
+# --------------------------------------------------------------------------- #
+# round 2 (reopened): the complementary *constant-shear* consistency check
+# --------------------------------------------------------------------------- #
+# Every state graded by the round-1/round-2 pool above is *shear-free*: the
+# closed forms are constructed so that ``gamma_xz = gamma_yz = 0`` identically
+# (that is what makes them shear-free bending states), and the load-driven strip
+# runs at ``t/L = 0.01`` where the transverse-shear flexibility is ~0.005 % of
+# the tip deflection.  The consequence, measured in
+# ``docs/CASE-BENDING-PATCH-round2-shear-block.md``, is that the *whole*
+# transverse-shear constitutive block -- the modulus ``Ds = kappa_s G t`` that
+# the element uses -- enters no graded quantity: scaling it by 1.2 leaves all
+# patch/strip gates green.
+#
+# The complementary state is therefore the *constant transverse shear* state
+#
+#     gamma = (gamma_xz, gamma_yz) constant,   kappa = 0
+#
+# realised by the balanced split ``theta = gamma / 2``, ``w = gamma . x / 2``:
+#
+#     w = (gx x + gy y)/2,  theta_x = gx/2,  theta_y = gy/2
+#     =>  gamma_xz = w,x + theta_x = gx,  gamma_yz = gy,  kappa = 0.
+#
+# The split matters: with ``theta = 0`` and ``w = gamma . x`` the energy is
+# invariant to the *sign* of the shear relation (both ``w,x + theta_x`` and
+# ``w,x - theta_x`` give ``gamma``), so such a state cannot see a sign error.
+# The balanced split gives ``gamma = (gx, gy)`` for the model convention and
+# ``gamma = 0`` for the flipped one, i.e. maximum separation.
+#
+# This state is *not* a Dirichlet patch test: a uniform shear field is not in
+# equilibrium at the free interior rotation DOFs (the consistent load is a body
+# term), so it is graded as a *prescribed field* energy identity on a patch whose
+# DOFs are all prescribed:
+#
+#     U_h = 1/2 u^T K u  ==  1/2 kappa_s G t (gx^2 + gy^2) * Area
+#
+# The identity is exact (to round-off) for every treatment and every valid quad
+# mesh, because the field lies in the interpolation space and the one-point /
+# assumed-natural shear sampling reproduces a constant strain exactly.  There is
+# no interpolation caveat and no convergence study: it is a pass/fail check of
+# the shear block, complementary to the constant-curvature patch test.
+SHEAR_MUTATIONS = ("none", "no_shear", "shear_sign")
+
+
+@dataclass(frozen=True)
+class ShearState:
+    """A constant transverse-shear state ``(gamma_xz, gamma_yz)``, ``kappa = 0``."""
+
+    gamma_xz: float
+    gamma_yz: float
+
+    @property
+    def gamma(self) -> torch.Tensor:
+        return torch.tensor([self.gamma_xz, self.gamma_yz], dtype=torch.float64)
+
+    def label(self) -> str:
+        return f"gxz={self.gamma_xz:g},gyz={self.gamma_yz:g}"
+
+    def magnitude(self) -> float:
+        return math.hypot(self.gamma_xz, self.gamma_yz)
+
+    def field(self, nodes: torch.Tensor) -> torch.Tensor:
+        """Nodal ``(w, theta_x, theta_y)`` of the balanced split, shape (n, 3)."""
+        half_x = 0.5 * self.gamma_xz
+        half_y = 0.5 * self.gamma_yz
+        if self.gamma_xz == 0.0 and self.gamma_yz == 0.0:
+            raise ValueError("degenerate shear state: gamma vanishes")
+        w = half_x * nodes[:, 0] + half_y * nodes[:, 1]
+        tx = torch.full_like(nodes[:, 0], half_x)
+        ty = torch.full_like(nodes[:, 1], half_y)
+        return torch.stack((w, tx, ty), dim=1)
+
+
+def shear_rigidity(young: float, poisson: float, thickness: float,
+                   shear_correction: float = 5.0 / 6.0) -> float:
+    """Transverse-shear rigidity ``Ds = kappa_s G t`` (force / length)."""
+    return shear_correction * young / (2.0 * (1.0 + poisson)) * thickness
+
+
+def constant_shear_dofs(patch: Patch, state: ShearState) -> torch.Tensor:
+    """Prescribed nodal DOF vector (``3 * n_nodes``) of a constant-shear state."""
+    return state.field(patch.nodes).reshape(-1)
+
+
+def q4_gauss_shears(xy: torch.Tensor, ue: torch.Tensor) -> torch.Tensor:
+    """Displacement-based shears ``(4, 2)`` at the 2x2 Gauss points of one Q4.
+
+    This is the *kinematic* shear of the interpolated field (``w,x + theta_x``),
+    not the element's assumed/reduced shear; it is used to verify that the
+    prescribed field really is a constant-shear state.
+    """
+    dtype, device = xy.dtype, xy.device
+    out = []
+    for xif, etaf in _GAUSS_2X2:
+        xi, eta = xy.new_tensor(xif), xy.new_tensor(etaf)
+        n, dN_nat = _shape(xi, eta)
+        jac = dN_nat.T @ xy
+        dN = dN_nat @ torch.linalg.inv(jac).T
+        bs = torch.zeros((2, 12), dtype=dtype, device=device)
+        for i in range(4):
+            bs[0, 3 * i] = dN[i, 0]
+            bs[0, 3 * i + 1] = n[i]
+            bs[1, 3 * i] = dN[i, 1]
+            bs[1, 3 * i + 2] = n[i]
+        out.append(bs @ ue)
+    return torch.stack(out)
+
+
+def shear_state_selfcheck(state: ShearState) -> dict:
+    """Verify the prescribed field before any stiffness is assembled.
+
+    * the kinematic shear at every Gauss point of a distorted probe element
+      equals the prescribed ``gamma``;
+    * the curvature ``kappa`` (i.e. the bending strain) vanishes identically,
+      so the whole energy of the state is transverse-shear energy;
+    * the field is spatially constant along both directions.
+    """
+    probe = distorted_patch_mesh(2, side=1.0, amplitude=0.30)
+    xy = probe.nodes[probe.elements[0]]
+    ue = state.field(xy).reshape(-1)
+    gauss = q4_gauss_shears(xy, ue)
+    gam = state.gamma.to(dtype=gauss.dtype)
+    curv = q4_gauss_curvatures(xy, ue)
+    return {
+        "shear_deviation": float((gauss - gam.unsqueeze(0)).abs().max()),
+        "curvature_leak": float(curv.abs().max()),
+        "spread": float((gauss - gauss[0]).abs().max()),
+        "gamma": gam.tolist(),
+    }
+
+
+def shear_block_check(patch: Patch, state: ShearState, *, young: float,
+                      poisson: float, thickness: float,
+                      shear_treatment: str = "sri",
+                      shear_correction: float = 5.0 / 6.0) -> dict:
+    """Prescribed-field energy identity of the transverse-shear block.
+
+    ``U_h`` is ``1/2 u^T K u`` for the prescribed constant-shear field (no free
+    DOFs, so this is a pure energy evaluation, not a solve) and ``U_exact`` is
+    the closed form ``1/2 Ds gamma^2 Area``.  ``energy_rel_error`` is the graded
+    quantity; ``curvature_leak`` (the bending strain of the prescribed field)
+    must vanish, and ``shear_recovery_error`` checks that the interpolated field
+    is the intended constant-shear state.
+    """
+    k = assemble_plate_stiffness(patch, young=young, poisson=poisson,
+                                 thickness=thickness,
+                                 shear_treatment=shear_treatment,
+                                 shear_correction=shear_correction)
+    u = constant_shear_dofs(patch, state)
+    energy = strain_energy(u, k)
+    ds = shear_rigidity(young, poisson, thickness, shear_correction)
+    area = patch.quad_area()
+    energy_exact = 0.5 * ds * (state.gamma_xz ** 2 + state.gamma_yz ** 2) * area
+    gauss_err = 0.0
+    curv_leak = 0.0
+    gam = state.gamma
+    for e in patch.elements.tolist():
+        xy = patch.nodes[torch.tensor(e)]
+        ue = u[element_dofs(torch.tensor([e]))[0]]
+        gauss_err = max(gauss_err, float((q4_gauss_shears(xy, ue)
+                                         - gam.unsqueeze(0)).abs().max()))
+        curv_leak = max(curv_leak, float(q4_gauss_curvatures(xy, ue).abs().max()))
+    return {
+        "family": patch.family,
+        "n": patch.n,
+        "shear_treatment": shear_treatment,
+        "state": state.label(),
+        "area": area,
+        "shear_rigidity": ds,
+        "energy": energy,
+        "energy_exact": energy_exact,
+        "energy_rel_error": abs(energy - energy_exact) / energy_exact,
+        "shear_recovery_error": gauss_err / state.magnitude(),
+        "curvature_leak": curv_leak,
+    }
+
+
+def mutated_q4_stiffness(xy: torch.Tensor, *, young: float, poisson: float,
+                         thickness: float, shear_correction: float = 5.0 / 6.0,
+                         mutation: str = "none",
+                         kappa_scale: float = 1.0) -> torch.Tensor:
+    """Q4 Mindlin stiffness with a *deliberate* defect in the shear block.
+
+    Audit instrumentation only -- never a solver.  It exists so that a check can
+    be shown to *fail* when the quantity it grades is wrong (a control), exactly
+    as ``shear_treatment="full"`` is kept as the locking control of the patch
+    test.  The bending block is identical to the production element and
+    ``mutation="none", kappa_scale=1.0`` reproduces
+    :func:`tensorfem.plate.q4_mindlin_stiffness` bit-for-bit within round-off
+    (asserted by the test suite), so this copy cannot silently drift away from
+    the element it instruments.
+
+    ``mutation``
+        ``"none"`` -- the production one-point (sri) element;
+        ``"no_shear"`` -- the shear block deleted (bending-only stiffness);
+        ``"shear_sign"`` -- the alternative sign relation
+        ``gamma = w,x - theta_x`` (``Bs`` rotation entries negated).
+    ``kappa_scale``
+        multiplies ``Ds`` (i.e. a wrong shear correction factor: ``1.2`` is
+        ``kappa_s = 1`` instead of ``5/6``).
+    """
+    if mutation not in SHEAR_MUTATIONS:
+        raise ValueError(f"mutation must be one of {SHEAR_MUTATIONS}")
+    dtype, device = xy.dtype, xy.device
+    db = plate_moment_matrix(young, poisson, thickness).to(dtype=dtype, device=device)
+    ds = shear_correction * kappa_scale * young / (2.0 * (1.0 + poisson)) * thickness
+    ds = ds * torch.eye(2, dtype=dtype, device=device)
+    ke = torch.zeros((12, 12), dtype=dtype, device=device)
+    for xif, etaf in _GAUSS_2X2:
+        xi, eta = xy.new_tensor(xif), xy.new_tensor(etaf)
+        n, dN_nat = _shape(xi, eta)
+        jac = dN_nat.T @ xy
+        detj = torch.linalg.det(jac)
+        if bool((detj <= 0).item()):
+            raise ValueError("plate element has non-positive Jacobian")
+        dN = dN_nat @ torch.linalg.inv(jac).T
+        bb = torch.zeros((3, 12), dtype=dtype, device=device)
+        for i in range(4):
+            bb[0, 3 * i + 1] = dN[i, 0]
+            bb[1, 3 * i + 2] = dN[i, 1]
+            bb[2, 3 * i + 1] = dN[i, 1]
+            bb[2, 3 * i + 2] = dN[i, 0]
+        ke = ke + bb.T @ db @ bb * detj
+    if mutation == "no_shear":
+        return ke
+    sign = -1.0 if mutation == "shear_sign" else 1.0
+    n, dN_nat = _shape(xy.new_tensor(0.0), xy.new_tensor(0.0))
+    jac = dN_nat.T @ xy
+    detj = torch.linalg.det(jac)
+    dN = dN_nat @ torch.linalg.inv(jac).T
+    bs = torch.zeros((2, 12), dtype=dtype, device=device)
+    for i in range(4):
+        bs[0, 3 * i] = dN[i, 0]
+        bs[0, 3 * i + 1] = sign * n[i]
+        bs[1, 3 * i] = dN[i, 1]
+        bs[1, 3 * i + 2] = sign * n[i]
+    return ke + bs.T @ ds @ bs * detj * 4.0
+
+
+@contextlib.contextmanager
+def shear_block_mutation(mutation: str = "none", kappa_scale: float = 1.0):
+    """Temporarily run the patch/strip drivers with a mutated (``sri``) element.
+
+    Audit instrumentation: inside the ``with`` block every ``sri`` assembly of
+    this module goes through :func:`mutated_q4_stiffness`; ``mitc``/``full`` are
+    untouched.  Not thread-safe (module-level swap) -- the auditing drivers and
+    the tests run single-threaded.
+    """
+    if mutation not in SHEAR_MUTATIONS:
+        raise ValueError(f"mutation must be one of {SHEAR_MUTATIONS}")
+    global q4_mindlin_stiffness
+    original = q4_mindlin_stiffness
+
+    def patched(xy, young=None, poisson=None, thickness=None,
+                shear_correction=5.0 / 6.0, shear_treatment="sri", **kw):
+        if shear_treatment != "sri" or young is None:
+            return original(xy, young=young, poisson=poisson, thickness=thickness,
+                            shear_correction=shear_correction,
+                            shear_treatment=shear_treatment, **kw)
+        return mutated_q4_stiffness(xy, young=young, poisson=poisson,
+                                    thickness=thickness,
+                                    shear_correction=shear_correction,
+                                    mutation=mutation, kappa_scale=kappa_scale)
+
+    q4_mindlin_stiffness = patched
+    try:
+        yield
+    finally:
+        q4_mindlin_stiffness = original
