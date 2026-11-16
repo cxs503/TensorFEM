@@ -3,14 +3,11 @@
   "anchor": "fem_heat_conduction_l2",
   "title": "Steady heat conduction: manufactured harmonic solution, Q4 convergence \u2265 2nd order",
   "mission": "CASE-FEM-HEAT-L2",
-  "generated_at": "2026-11-14T21:58:16.080427+00:00",
+  "generated_at": "2026-11-16T04:07:08.080976+00:00",
   "criteria": {
     "finest_l2_below_3pct": 0.03,
     "l2_pair_order_ge_1p95": 1.95,
-    "l2_finest_order_in_band": [
-      1.95,
-      2.1
-    ],
+    "l2_finest_order_le_2p1": 2.1,
     "power_law_residual_le_1pct": 0.01,
     "h1_pair_order_ge_0p9": 0.9,
     "quadrature_spread_le_1e-6": 1e-06,
@@ -37,12 +34,12 @@
       "passed": true
     },
     {
-      "id": "l2_finest_order_in_band",
-      "quantity": "Observed L\u2082 order of the finest pair (32\u00d732 \u2192 64\u00d764)",
-      "reference": "theoretical order 2.0 (band [1.95, 2.10])",
+      "id": "l2_finest_order_le_2p1",
+      "quantity": "Observed L\u2082 order of the finest pair (32\u00d732 \u2192 64\u00d764), upper bound of the band [1.95, 2.10]",
+      "reference": "theoretical order 2.0; no runaway super-convergence above 2.10",
       "value": 1.9998538262460381,
       "threshold": 2.1,
-      "operator": "<= and >= 1.95",
+      "operator": "<=",
       "passed": true
     },
     {

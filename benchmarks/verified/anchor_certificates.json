@@ -7,11 +7,11 @@
   "contradicted": 2,
   "uncertified": 5,
   "gates_total": 503,
-  "gates_recomputed": 500,
+  "gates_recomputed": 501,
   "gates_contradicted": 0,
   "gates_contradicted_inferred": 0,
   "gates_without_numeric_criterion": 1,
-  "gates_unrecomputable": 3,
+  "gates_unrecomputable": 2,
   "defect_counts": {
     "E_ARTIFACT_UNTRACKED": 2,
     "E_NO_GATES": 5
@@ -3131,18 +3131,15 @@
       "has_result": true,
       "has_gates": true,
       "declared_overall": true,
-      "recomputed_overall": null,
+      "recomputed_overall": true,
       "gates": 8,
-      "gates_passed": 7,
+      "gates_passed": 8,
       "gates_failed": 0,
       "gates_contradicted": 0,
       "gates_contradicted_inferred": 0,
-      "gates_unrecomputable": 1,
+      "gates_unrecomputable": 0,
       "defects": [],
-      "warnings": [
-        "W_OPERATOR_ABSENT",
-        "W_FAILED_GATES_LIST_UNCHECKED"
-      ],
+      "warnings": [],
       "gate_detail": [
         {
           "id": "finest_l2_below_3pct",
@@ -3171,19 +3168,17 @@
           "warnings": []
         },
         {
-          "id": "l2_finest_order_in_band",
-          "quantity": "Observed L\u2082 order of the finest pair (32\u00d732 \u2192 64\u00d764)",
-          "operator": null,
-          "operator_source": "absent",
+          "id": "l2_finest_order_le_2p1",
+          "quantity": "Observed L\u2082 order of the finest pair (32\u00d732 \u2192 64\u00d764), upper bound of the band [1.95, 2.10]",
+          "operator": "<=",
+          "operator_source": "declared",
           "value": 1.9998538262460381,
           "threshold": 2.1,
           "declared_passed": true,
-          "recomputed_passed": null,
-          "status": "unrecomputable",
+          "recomputed_passed": true,
+          "status": "agrees",
           "defects": [],
-          "warnings": [
-            "W_OPERATOR_ABSENT"
-          ]
+          "warnings": []
         },
         {
           "id": "power_law_residual_le_1pct",

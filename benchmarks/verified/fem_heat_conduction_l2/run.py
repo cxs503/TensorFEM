@@ -410,75 +410,47 @@ def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def main():
-    t0 = time.time()
-    print("=" * 60)
-    print("CASE-FEM-HEAT-L2: Steady heat conduction convergence study")
-    print("=" * 60)
+# ---------------------------------------------------------------------------
+# gates: built from the numbers, never typed
+# ---------------------------------------------------------------------------
+class Gate:
+    def __init__(self, id, quantity, reference, value, threshold, operator, passed):
+        self.id = id
+        self.quantity = quantity
+        self.reference = reference
+        self.value = value
+        self.threshold = threshold
+        self.operator = operator
+        self.passed = passed
 
-    results = convergence_study()
-    orders = observed_orders(results)
-    h1_orders = observed_orders(results, "h1_relative")
-    nodal_orders = observed_orders(results, "l2_nodal_rms_relative")
-    residual = power_law_residual(results)
-    cross = independent_cross_check(results)
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "quantity": self.quantity,
+            "reference": self.reference,
+            "value": self.value,
+            "threshold": self.threshold,
+            "operator": self.operator,
+            "passed": self.passed,
+        }
 
-    # Finest mesh field figure
-    nx_f, ny_f = MESH_LEVELS[-1]
-    FIGURE_DIR.mkdir(parents=True, exist_ok=True)
-    fig_field = FIGURE_DIR / "fig_field.png"
-    fig_convergence = FIGURE_DIR / "fig_convergence.png"
-    make_field_figure(nx_f, ny_f, fig_field)
-    make_convergence_figure(results, orders, nodal_orders, fig_convergence)
 
-    elapsed = time.time() - t0
+def build_gates(levels: list[dict], orders: list[float], h1_orders: list[float],
+                residual: float, cross: dict) -> list[Gate]:
+    """The eight acceptance gates, each one a scalar ``value <op> threshold``.
 
-    # separable diagnostics: the temperature fields are not JSON material
-    levels = [{k: v for k, v in r.items() if not k.startswith("_")} for r in results]
-
-    result = {
-        "benchmark": "fem_heat_conduction_l2",
-        "case_key": "CASE-FEM-HEAT-L2",
-        "description": "Steady-state heat conduction: manufactured harmonic solution on the unit square, Q4 elements",
-        "generated_at": utc_now(),
-        "elapsed_seconds": round(elapsed, 2),
-        "environment": {
-            "python": platform.python_version(),
-            "torch": torch.__version__,
-            "machine": platform.machine(),
-            "dtype": "torch.float64",
-        },
-        "reference": {
-            "solution": "T(x,y) = sin(πx)·sinh(πy)/sinh(π)",
-            "equation": "∇²T = 0 on [0,1]², Dirichlet BC from exact field",
-            "target_order": P_REF,
-            "target_order_source": "src/tensorfem/adaptive_poisson_2d.py (L2 norm O(h^2), bilinear Q4)",
-            "source": "Manufactured harmonic field (Zienkiewicz & Taylor, FEM vol.1, ch.3-4)",
-        },
-        "norm_definition": {
-            "gate_metric": "relative L2 domain integral at 6x6 Gauss (tensorfem.heat_conduction_l2.integral_error_norms)",
-            "diagnostic": "l2_nodal_rms_relative = sqrt(mean_nodal(e^2)/mean_nodal(T^2)) -- sampling pseudo-norm, no gate",
-            "quadrature_orders": [4, 6, 8],
-        },
-        "figures": [
-            {"path": _repo_relative(path), "sha256": _file_sha256(path)}
-            for path in (fig_convergence, fig_field)
-        ],
-        "mesh_levels": levels,
-        "observed_orders_l2": orders,
-        "observed_orders_h1": h1_orders,
-        "nodal_rms_orders": nodal_orders,
-        "mean_order": float(np.mean(orders)) if orders else 0.0,
-        "mean_nodal_rms_order": float(np.mean(nodal_orders)) if nodal_orders else 0.0,
-        "power_law_residual": residual,
-        "independent_cross_check": cross,
-    }
-
-    write_json(result, HERE / "result.json")
-
-    # Gates
-    asymptotic_pairs = [p for p, lv in zip(orders, levels[:-1]) if lv["nx"] >= 8]
-    gates = [
+    Every verdict must be recomputable by a reader who has only the JSON, so no
+    operator may be prose.  The band [1.95, 2.10] is therefore carried by two
+    scalar gates rather than one ``"<= and >= 1.95 2.1"`` string: the upper bound
+    is ``l2_finest_order_le_2p1`` and the lower bound is
+    ``l2_pair_order_ge_1p95``, whose ``min`` runs over *all* asymptotic pairs and
+    therefore bounds the finest pair from below too.  (The prose operator that
+    used to ship here made the platform auditor record the gate as
+    unverifiable; see ``docs/CASE-FEM-HEAT-L2-certificate-derivation-m22874.md``.)
+    """
+    asymptotic = [p for p, lv in zip(orders, levels[:-1]) if lv["nx"] >= 8]
+    h1_asymptotic = [p for p, lv in zip(h1_orders, levels[:-1]) if lv["nx"] >= 8]
+    return [
         Gate(
             id="finest_l2_below_3pct",
             quantity="Relative L₂ error at the finest mesh (64×64), domain integral",
@@ -492,19 +464,19 @@ def main():
             id="l2_pair_order_ge_1p95",
             quantity="Worst observed h-refinement order over all pairs with coarse nx ≥ 8",
             reference="Q4 element: theoretical order 2.0 in L₂",
-            value=min(asymptotic_pairs) if asymptotic_pairs else float("nan"),
+            value=min(asymptotic) if asymptotic else float("nan"),
             threshold=ORDER_GATE,
             operator=">=",
-            passed=bool(asymptotic_pairs) and min(asymptotic_pairs) >= ORDER_GATE,
+            passed=bool(asymptotic) and min(asymptotic) >= ORDER_GATE,
         ),
         Gate(
-            id="l2_finest_order_in_band",
-            quantity="Observed L₂ order of the finest pair (32×32 → 64×64)",
-            reference="theoretical order 2.0 (band [1.95, 2.10])",
+            id="l2_finest_order_le_2p1",
+            quantity="Observed L₂ order of the finest pair (32×32 → 64×64), upper bound of the band [1.95, 2.10]",
+            reference="theoretical order 2.0; no runaway super-convergence above 2.10",
             value=orders[-1],
             threshold=ORDER_BAND[1],
-            operator="<= and >= 1.95",
-            passed=ORDER_BAND[0] <= orders[-1] <= ORDER_BAND[1],
+            operator="<=",
+            passed=orders[-1] <= ORDER_BAND[1],
         ),
         Gate(
             id="power_law_residual_le_1pct",
@@ -519,10 +491,10 @@ def main():
             id="h1_pair_order_ge_0p9",
             quantity="Worst observed H1-seminorm order over all pairs with coarse nx ≥ 8",
             reference="Q4 element: theoretical order 1.0 in H1",
-            value=min([p for p, lv in zip(h1_orders, levels[:-1]) if lv["nx"] >= 8] or [float("nan")]),
+            value=min(h1_asymptotic) if h1_asymptotic else float("nan"),
             threshold=H1_ORDER_GATE,
             operator=">=",
-            passed=all(p >= H1_ORDER_GATE for p, lv in zip(h1_orders, levels[:-1]) if lv["nx"] >= 8),
+            passed=bool(h1_asymptotic) and min(h1_asymptotic) >= H1_ORDER_GATE,
         ),
         Gate(
             id="quadrature_spread_le_1e-6",
@@ -553,50 +525,6 @@ def main():
         ),
     ]
 
-    manifest = gate_manifest(gates)
-    write_json(manifest, HERE / "gates_verified.json")
-
-    # Summary
-    all_pass = all(g.passed for g in gates)
-    print(f"\n{'=' * 60}")
-    print(f"Elapsed: {elapsed:.1f}s")
-    print(f"Observed L2 orders (integral): {[round(o, 5) for o in orders]}")
-    print(f"Observed L2 orders (nodal pseudo-norm, diagnostic): {[round(o, 4) for o in nodal_orders]}")
-    print(f"Gates: {sum(g.passed for g in gates)}/{len(gates)} passed")
-    for g in gates:
-        status = "PASS" if g.passed else "FAIL"
-        print(f"  [{status}] {g.id}: {g.value:.6e} (threshold {g.operator} {g.threshold})")
-    print(f"Figures: {fig_field.name}, {fig_convergence.name} -> {FIGURE_DIR}")
-    print(f"Overall: {'ALL PASS' if all_pass else 'SOME FAIL'}")
-    print("=" * 60)
-
-    return 0 if all_pass else 1
-
-
-# ---------------------------------------------------------------------------
-# harness compatibility
-# ---------------------------------------------------------------------------
-class Gate:
-    def __init__(self, id, quantity, reference, value, threshold, operator, passed):
-        self.id = id
-        self.quantity = quantity
-        self.reference = reference
-        self.value = value
-        self.threshold = threshold
-        self.operator = operator
-        self.passed = passed
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "quantity": self.quantity,
-            "reference": self.reference,
-            "value": self.value,
-            "threshold": self.threshold,
-            "operator": self.operator,
-            "passed": self.passed,
-        }
-
 
 def gate_manifest(gates: list[Gate]) -> dict:
     return {
@@ -608,7 +536,7 @@ def gate_manifest(gates: list[Gate]) -> dict:
         "criteria": {
             "finest_l2_below_3pct": L2_GATE,
             "l2_pair_order_ge_1p95": ORDER_GATE,
-            "l2_finest_order_in_band": list(ORDER_BAND),
+            "l2_finest_order_le_2p1": ORDER_BAND[1],
             "power_law_residual_le_1pct": POWER_LAW_GATE,
             "h1_pair_order_ge_0p9": H1_ORDER_GATE,
             "quadrature_spread_le_1e-6": QUADRATURE_GATE,
@@ -629,6 +557,281 @@ def gate_manifest(gates: list[Gate]) -> dict:
     }
 
 
+def build_result_payload(*, levels, orders, h1_orders, nodal_orders, residual,
+                         cross, elapsed, figures) -> dict:
+    return {
+        "benchmark": "fem_heat_conduction_l2",
+        "case_key": "CASE-FEM-HEAT-L2",
+        "description": "Steady-state heat conduction: manufactured harmonic solution on the unit square, Q4 elements",
+        "generated_at": utc_now(),
+        "elapsed_seconds": round(elapsed, 2),
+        "environment": {
+            "python": platform.python_version(),
+            "torch": torch.__version__,
+            "machine": platform.machine(),
+            "dtype": "torch.float64",
+        },
+        "reference": {
+            "solution": "T(x,y) = sin(πx)·sinh(πy)/sinh(π)",
+            "equation": "∇²T = 0 on [0,1]², Dirichlet BC from exact field",
+            "target_order": P_REF,
+            "target_order_source": "src/tensorfem/adaptive_poisson_2d.py (L2 norm O(h^2), bilinear Q4)",
+            "source": "Manufactured harmonic field (Zienkiewicz & Taylor, FEM vol.1, ch.3-4)",
+        },
+        "norm_definition": {
+            "gate_metric": "relative L2 domain integral at 6x6 Gauss (tensorfem.heat_conduction_l2.integral_error_norms)",
+            "diagnostic": "l2_nodal_rms_relative = sqrt(mean_nodal(e^2)/mean_nodal(T^2)) -- sampling pseudo-norm, no gate",
+            "quadrature_orders": [4, 6, 8],
+        },
+        "figures": figures,
+        "mesh_levels": levels,
+        "observed_orders_l2": orders,
+        "observed_orders_h1": h1_orders,
+        "nodal_rms_orders": nodal_orders,
+        "mean_order": float(np.mean(orders)) if orders else 0.0,
+        "mean_nodal_rms_order": float(np.mean(nodal_orders)) if nodal_orders else 0.0,
+        "power_law_residual": residual,
+        "independent_cross_check": cross,
+    }
+
+
+# ---------------------------------------------------------------------------
+# README.md is a *derived* artifact  (m22874)
+# ---------------------------------------------------------------------------
+#: The README states "no number here is typed by hand".  That claim is only
+#: worth something if the file is machine-produced, so it is rendered from the
+#: two JSON artifacts and the reproduction gate compares the two byte for byte.
+#: (Before m22874 the README was maintained by hand and had drifted: its
+#: ``generated`` stamp named a run ~1.3 days older than the result.json it sits
+#: next to, and nothing could notice.)
+def render_readme(result: dict, manifest: dict) -> str:
+    """Render ``README.md`` from ``result.json`` + ``gates_verified.json``."""
+    levels = result["mesh_levels"]
+    orders = result["observed_orders_l2"]
+    h1_orders = result["observed_orders_h1"]
+    nodal_orders = result["nodal_rms_orders"]
+    gates = manifest["gates"]
+
+    ladder = ["| Mesh | dof | h | L₂ (integral, gate) | L₂ nodal RMS (diagnostic) | observed order |",
+              "|---|---|---|---|---|---|"]
+    for i, lv in enumerate(levels):
+        order = "—" if i == 0 else f"{orders[i - 1]:.5f}"
+        ladder.append(
+            f"| {lv['nx']}×{lv['ny']} | {lv['n_dof']} | {lv['h']:.4f} | "
+            f"{lv['l2_relative']:.6e} | {lv['l2_nodal_rms_relative']:.6e} | {order} |"
+        )
+
+    gate_rows = ["| Gate | Quantity | Value | Threshold | Verdict |",
+                 "|---|---|---|---|---|"]
+    for g in gates:
+        gate_rows.append(
+            f"| `{g['id']}` | {g['quantity']} | {g['value']:.6e} | "
+            f"{g['operator']} {g['threshold']!r} | {'PASS' if g['passed'] else 'FAIL'} |"
+        )
+
+    verdict = ("**ALL PASS**" if manifest["passed"]
+               else "**SOME FAIL** (" + ", ".join(manifest["failed_gates"]) + ")")
+    h1_text = ", ".join(f"{o:.4f}" for o in h1_orders)
+
+    return "\n".join([
+        "# CASE-FEM-HEAT-L2 — Q4 steady heat conduction, L₂ convergence ≥ 2nd order",
+        "",
+        "Manufactured harmonic field `T = sin(πx)·sinh(πy)/sinh(π)` on the unit square,",
+        "Dirichlet conditions from the exact field, Q4 elements with 2×2 Gauss.",
+        "Everything below is regenerated by `run.py`; no number here is typed by hand.",
+        "",
+        "```",
+        "OMP_NUM_THREADS=8 PYTHONPATH=src python3 benchmarks/verified/fem_heat_conduction_l2/run.py",
+        "```",
+        "",
+        "## Gate metric",
+        "",
+        "The acceptance is a *rate*, so the gate metric is the **domain integral**",
+        "`||e||_0 = sqrt(∫(T_h-T)²dΩ/∫T²dΩ)` at 6×6 Gauss, together with the 4-point and",
+        "8-point values so quadrature independence is checkable.  The former",
+        "`sqrt(mean_nodal(e²))` sampling pseudo-norm is kept as a diagnostic only",
+        "(`l2_nodal_rms_relative`): its Dirichlet nodes carry exactly zero error, which",
+        f"biases the measured order low ({nodal_orders[0]:.2f} → {nodal_orders[-1]:.2f} "
+        f"instead of {orders[0]:.2f} → {orders[-1]:.2f}).  See",
+        "`docs/CASE-FEM-HEAT-L2-norm-measurement-defect-m20995.md`.",
+        "",
+        "## Ladder",
+        "",
+        *ladder,
+        "",
+        f"Mean integral order **{result['mean_order']:.5f}** (theory 2.0), H₁ orders",
+        f"{h1_text} (theory 1.0),",
+        f"Roache power-law residual {result['power_law_residual']:.2e} at p_ref = 2.",
+        "The ladder is additionally reproduced by `independent_sparse.py`, a",
+        "numpy/scipy Q4 solver that imports no `tensorfem` module (worst L₂ difference",
+        f"{result['independent_cross_check']['worst_norm_relative_difference']:.2e}).",
+        "",
+        "## Gates",
+        "",
+        "Every gate is a scalar `value <operator> threshold` so a reader can recompute the",
+        "verdict from this table alone; the band [1.95, 2.10] on the finest-pair order is",
+        "carried jointly by `l2_pair_order_ge_1p95` (lower bound) and",
+        "`l2_finest_order_le_2p1` (upper bound), because a prose operator is not",
+        "machine-checkable.",
+        "",
+        *gate_rows,
+        "",
+        f"Overall: {verdict} ({len(gates)} gates,",
+        f"generated {manifest['generated_at']}).",
+        "",
+        "## Reproduction",
+        "",
+        "`run.py --check` recomputes the ladder and verifies the committed artifacts",
+        "without writing anything: the numbers must agree to 1e-12 relative, the gate",
+        "verdicts exactly, the figure hashes with `result.json`, and this file byte for",
+        "byte with `render_readme(result.json, gates_verified.json)`.  See",
+        "`docs/CASE-FEM-HEAT-L2-certificate-derivation-m22874.md`.",
+        "",
+    ])
+
+
+# ---------------------------------------------------------------------------
+# reproduction gate
+# ---------------------------------------------------------------------------
+#: Fields that record *when* and *where* a run happened, not *what* it computed.
+VOLATILE_KEYS = frozenset({"generated_at", "elapsed_seconds", "sha256", "environment"})
+
+#: Predeclared relative tolerance for the reproduction gate.  Deliberately not
+#: zero: a bitwise claim would only hold on one BLAS build, and "reproducible"
+#: means the physics, not the reduction order.  1e-12 sits two orders of
+#: magnitude below the sixth printed digit, so any drift that could change a
+#: published number is still caught.
+DRIFT_RTOL = 1.0e-12
+
+
+def numeric_drift(committed, fresh, path="") -> tuple[float, list[str]]:
+    """Walk two JSON trees; return (worst relative drift, list of messages)."""
+    msgs: list[str] = []
+    worst = 0.0
+
+    def walk(a, b, here):
+        nonlocal worst
+        if isinstance(a, dict) and isinstance(b, dict):
+            for key in sorted(set(a) - set(b)):
+                msgs.append(f"{here}/{key}: absent from the fresh run")
+            for key in sorted(set(b) - set(a)):
+                msgs.append(f"{here}/{key}: absent from the committed artifact")
+            for key in sorted(set(a) & set(b)):
+                if key in VOLATILE_KEYS:
+                    continue
+                walk(a[key], b[key], f"{here}/{key}")
+        elif isinstance(a, list) and isinstance(b, list):
+            if len(a) != len(b):
+                msgs.append(f"{here}: length {len(a)} committed vs {len(b)} fresh")
+            for i, (x, y) in enumerate(zip(a, b)):
+                walk(x, y, f"{here}[{i}]")
+        elif isinstance(a, bool) or isinstance(b, bool):
+            if a is not b:
+                msgs.append(f"{here}: {a!r} committed vs {b!r} fresh")
+        elif isinstance(a, (int, float)) and isinstance(b, (int, float)):
+            if isinstance(a, int) and isinstance(b, int):
+                if a != b:
+                    msgs.append(f"{here}: {a} committed vs {b} fresh")
+                return
+            denom = max(abs(float(a)), abs(float(b)), 1e-300)
+            drift = abs(float(a) - float(b)) / denom
+            worst = max(worst, drift)
+            if drift > DRIFT_RTOL:
+                msgs.append(f"{here}: {a!r} committed vs {b!r} fresh (rel drift {drift:.3e})")
+        else:
+            if a != b:
+                msgs.append(f"{here}: {a!r} committed vs {b!r} fresh")
+
+    walk(committed, fresh, path or "root")
+    return worst, msgs
+
+
+def recompute_without_writing() -> tuple[list[dict], dict, tuple]:
+    """Re-run the study and build the payloads -- nothing is written to disk."""
+    results = convergence_study()
+    orders = observed_orders(results)
+    h1_orders = observed_orders(results, "h1_relative")
+    nodal_orders = observed_orders(results, "l2_nodal_rms_relative")
+    residual = power_law_residual(results)
+    cross = independent_cross_check(results)
+    levels = [{k: v for k, v in r.items() if not k.startswith("_")} for r in results]
+    manifest = gate_manifest(build_gates(levels, orders, h1_orders, residual, cross))
+    return levels, manifest, (orders, h1_orders, nodal_orders, residual, cross)
+
+
+def run_check() -> int:
+    """Verify the committed artifact set against a fresh run. Read-only."""
+    committed_result = json.loads((HERE / "result.json").read_text())
+    committed_manifest = json.loads((HERE / "gates_verified.json").read_text())
+    readme_committed = (HERE / "README.md").read_text()
+
+    print("=" * 60)
+    print("CASE-FEM-HEAT-L2 reproduction gate (read-only)")
+    print("=" * 60)
+
+    failures: list[str] = []
+
+    # 1. the README is the rendering of the committed numbers
+    expected_readme = render_readme(committed_result, committed_manifest)
+    if readme_committed == expected_readme:
+        print(f"  [OK]   README.md == render_readme(result.json, gates_verified.json) "
+              f"({len(readme_committed.encode())} bytes)")
+    else:
+        failures.append("README.md is not the rendering of the committed JSON")
+        import difflib
+        diff = list(difflib.unified_diff(
+            expected_readme.splitlines(), readme_committed.splitlines(),
+            "rendered-from-JSON", "README.md", lineterm="", n=1))
+        print("  [FAIL] README.md drifted from its own numbers:")
+        for line in diff[:24]:
+            print(f"         {line}")
+
+    # 2. the committed figures are the ones those numbers were drawn from
+    recorded = {e["path"]: e["sha256"] for e in committed_result["figures"]}
+    declared = set(committed_manifest["artifacts"]["figures"])
+    if set(recorded) == declared and all(
+            _file_sha256(REPO_ROOT / rel) == digest for rel, digest in recorded.items()):
+        print(f"  [OK]   figures: {len(recorded)} declared, sha256 match result.json")
+    else:
+        failures.append("figure hashes do not match result.json")
+        print("  [FAIL] figures: hash mismatch or declaration disagreement")
+
+    # 3. re-run the study: numbers to 1e-12, verdicts exactly
+    levels, manifest, (orders, h1_orders, nodal_orders, residual, cross) = recompute_without_writing()
+    fresh_result = build_result_payload(
+        levels=levels, orders=orders, h1_orders=h1_orders, nodal_orders=nodal_orders,
+        residual=residual, cross=cross, elapsed=0.0,
+        figures=committed_result["figures"],
+    )
+    worst, msgs = numeric_drift(committed_result, fresh_result)
+    if not msgs:
+        print(f"  [OK]   result.json: {len(levels)} levels reproduce "
+              f"(worst relative drift {worst:.1e} <= {DRIFT_RTOL:.0e})")
+    else:
+        failures.append("result.json numbers drifted")
+        print(f"  [FAIL] result.json: {len(msgs)} field(s) drifted (worst {worst:.1e}):")
+        for m in msgs[:10]:
+            print(f"         {m}")
+
+    worst_g, msgs_g = numeric_drift(committed_manifest, manifest)
+    if not msgs_g:
+        print(f"  [OK]   gates_verified.json: {len(manifest['gates'])} verdicts reproduce "
+              f"(worst relative drift {worst_g:.1e})")
+    else:
+        failures.append("gate verdicts drifted")
+        print(f"  [FAIL] gates_verified.json: {len(msgs_g)} field(s) drifted:")
+        for m in msgs_g[:10]:
+            print(f"         {m}")
+
+    print("-" * 60)
+    if failures:
+        print(f"NOT REPRODUCIBLE: {'; '.join(failures)}")
+        return 1
+    print("REPRODUCIBLE: the committed artifact set is a derived function of "
+          "run.py on this checkout")
+    return 0
+
+
 def _repo_relative(path: Path) -> str:
     """How the certificate names a path: repo-relative POSIX, resolvable by the auditor."""
     try:
@@ -647,5 +850,70 @@ def write_json(data: dict, path: Path):
     path.write_text(json.dumps(data, indent=2, default=str) + "\n")
 
 
+def main() -> int:
+    t0 = time.time()
+    print("=" * 60)
+    print("CASE-FEM-HEAT-L2: Steady heat conduction convergence study")
+    print("=" * 60)
+
+    results = convergence_study()
+    orders = observed_orders(results)
+    h1_orders = observed_orders(results, "h1_relative")
+    nodal_orders = observed_orders(results, "l2_nodal_rms_relative")
+    residual = power_law_residual(results)
+    cross = independent_cross_check(results)
+
+    # Finest mesh field figure
+    nx_f, ny_f = MESH_LEVELS[-1]
+    FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+    fig_field = FIGURE_DIR / "fig_field.png"
+    fig_convergence = FIGURE_DIR / "fig_convergence.png"
+    make_field_figure(nx_f, ny_f, fig_field)
+    make_convergence_figure(results, orders, nodal_orders, fig_convergence)
+
+    elapsed = time.time() - t0
+
+    # separable diagnostics: the temperature fields are not JSON material
+    levels = [{k: v for k, v in r.items() if not k.startswith("_")} for r in results]
+
+    figures = [
+        {"path": _repo_relative(path), "sha256": _file_sha256(path)}
+        for path in (fig_convergence, fig_field)
+    ]
+    result = build_result_payload(
+        levels=levels, orders=orders, h1_orders=h1_orders, nodal_orders=nodal_orders,
+        residual=residual, cross=cross, elapsed=elapsed, figures=figures,
+    )
+    write_json(result, HERE / "result.json")
+
+    gates = build_gates(levels, orders, h1_orders, residual, cross)
+    manifest = gate_manifest(gates)
+    write_json(manifest, HERE / "gates_verified.json")
+
+    # README.md is rendered from the two JSON files just written: the "no number
+    # is typed by hand" claim is enforced by ``run.py --check``, which re-renders
+    # it from the committed JSON and compares byte for byte.
+    (HERE / "README.md").write_text(render_readme(result, manifest))
+
+    # Summary
+    all_pass = all(g.passed for g in gates)
+    print(f"\n{'=' * 60}")
+    print(f"Elapsed: {elapsed:.1f}s")
+    print(f"Observed L2 orders (integral): {[round(o, 5) for o in orders]}")
+    print(f"Observed L2 orders (nodal pseudo-norm, diagnostic): {[round(o, 4) for o in nodal_orders]}")
+    print(f"Gates: {sum(g.passed for g in gates)}/{len(gates)} passed")
+    for g in gates:
+        status = "PASS" if g.passed else "FAIL"
+        print(f"  [{status}] {g.id}: {g.value:.6e} (threshold {g.operator} {g.threshold})")
+    print(f"Figures: {fig_field.name}, {fig_convergence.name} -> {FIGURE_DIR}")
+    print("README.md rendered from result.json + gates_verified.json")
+    print(f"Overall: {'ALL PASS' if all_pass else 'SOME FAIL'}")
+    print("=" * 60)
+
+    return 0 if all_pass else 1
+
+
 if __name__ == "__main__":
+    if "--check" in sys.argv[1:]:
+        sys.exit(run_check())
     sys.exit(main())

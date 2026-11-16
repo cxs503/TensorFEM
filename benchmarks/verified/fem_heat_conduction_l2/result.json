@@ -2,8 +2,8 @@
   "benchmark": "fem_heat_conduction_l2",
   "case_key": "CASE-FEM-HEAT-L2",
   "description": "Steady-state heat conduction: manufactured harmonic solution on the unit square, Q4 elements",
-  "generated_at": "2026-11-14T21:58:16.076803+00:00",
-  "elapsed_seconds": 16.86,
+  "generated_at": "2026-11-16T04:07:08.079677+00:00",
+  "elapsed_seconds": 18.42,
   "environment": {
     "python": "3.11.6",
     "torch": "2.7.1",
