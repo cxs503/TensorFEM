@@ -1,0 +1,21 @@
+{
+  "schema": "tensorfem.jour-ice-struct-calib-prov.live-state/1.0",
+  "subject": "JOUR-ICE-STRUCT-CALIB-PROV",
+  "response_form": "total = raw * calibration_factor",
+  "reported": {
+    "cf_ship_constant": 0.753028,
+    "cf_fleet_min": 0.670077,
+    "cf_fleet_max": 0.901199,
+    "cf_fleet_dispersion_rel": 0.345,
+    "provenance_present": false
+  },
+  "source": {
+    "kind": "programme_ledger",
+    "id": "JOUR-ICE-STRUCT-CALIB-PROV",
+    "clause": "why_blocked paragraph (ice-structure calibration-factor provenance)",
+    "retrieved": "2026-11-16",
+    "note": "values transcribed from the ledger record for the audit; no per-ship table was reachable from this work tree, so the audit treats the fleet spread as (min, max) only and never assumes a distribution"
+  },
+  "declared_defect": "the calibration factor is a per-ship constant with no recorded source, while its fleet value scatters by 34.5%; any accuracy statement about a calibrated total therefore carries an unauditable bias",
+  "tolerance_rel": 0.15
+}
