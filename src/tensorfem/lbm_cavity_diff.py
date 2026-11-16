@@ -45,10 +45,18 @@ Lattice units ``dx = dt = rho0 = 1``.  For a physical cavity of height
 
 References
 ----------
-[1] Ladd, A.J. (1994). J. Supercomput. 4, 149 (moving-wall bounce-back).
-[2] Ghia, U., Ghia, K.N., Shin, C.T. (1982). J. Comput. Phys. 48, 387
-    (lid-driven cavity benchmark, Re = 100).
-[3] Guo, Z., Zheng, C., Shi, B. (2002). Phys. Fluids 14, 2007 (forcing).
+[1] Ladd, A.J.C. (1994). Numerical simulations of particulate suspensions
+    via a discretized Boltzmann equation. Part 1. Theoretical foundation.
+    J. Fluid Mech. 271, 285-309. DOI: 10.1017/S0022112094001771
+    (moving-wall bounce-back).  [REF-VERIFY: journal corrected from a
+    previously-cited J. Supercomput entry, which does not exist.]
+[2] Ghia, U., Ghia, K.N., Shin, C.T. (1982). High-Re solutions for
+    incompressible flow using the Navier-Stokes equations and a multigrid
+    method. J. Comput. Phys. 48, 387-411. DOI: 10.1016/0021-9991(82)90058-4
+    (lid-driven cavity benchmark, Re = 100).  [REF-VERIFY: verified.]
+[3] Guo, Z., Zheng, C., Shi, B. (2002). Discrete lattice effects on the
+    forcing term in the lattice Boltzmann method. Phys. Fluids 14, 2007-2010.
+    DOI: 10.1063/1.1474820 (forcing).  [REF-VERIFY: verified.]
 """
 from __future__ import annotations
 
