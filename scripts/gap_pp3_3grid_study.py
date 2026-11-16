@@ -192,6 +192,14 @@ def headers() -> dict:
             "tightest_admissible_upper": bracket["tightest_admissible_upper"],
             "admissible_bracket_width_ratio": bracket["admissible_bracket_width_ratio"],
         },
+        # The path is integrated with geometric nonlinearity and restrained
+        # in-plane displacements so that a limit point exists at all.  That
+        # choice makes the *linear* Navier first-yield pressure an incompatible
+        # reference (membrane action delays first yield by a model difference,
+        # not by a discretisation error) -- recorded here, not re-derived by the
+        # consumer.
+        "configuration": {"geometric": True, "inplane_restrained": True,
+                          "first_yield_reference_comparable": False},
         "load_ladder_Pa": ladder,
         "meshes": {},
         "criteria": {},
@@ -226,6 +234,7 @@ def run_mesh(nx: int, ny: int, results: dict) -> dict:
         "elastic_bias": fe["elastic_bias"],
         "first_yield_factor": fe["first_yield_factor"],
         "first_yield_error": fe["first_yield_error"],
+        "first_yield_comparable": fe.get("first_yield_error_comparable"),
         "first_yield_error_bias_normalised": fe["first_yield_error_bias_normalised"],
         "analytic_first_yield_same_mesh": fe["analytic_first_yield_same_mesh"],
         "collapse_factor": fe["collapse_factor"],
@@ -261,9 +270,30 @@ def finalize(results: dict) -> dict:
     raw = [results["meshes"][n]["first_yield_error"] for n in names]
     grids = [(results["meshes"][n]["nx"], results["meshes"][n]["ny"]) for n in names]
     conv = _rules(raw, grids)
+    # A Richardson limit is meaningless unless the sequence is asymptotic.  The
+    # anchored case produced errors 0.2969 -> 0.2066 -> 0.2044: a *plateau*, an
+    # observed order of 0.026, and an "extrapolated error" of -2.6e-15 that was
+    # then published as ``met_in_mesh_limit = true`` (docs/HONEST-FAIL-GAP-PP-3-3GRID-LIMIT.md
+    # finding D2).  Gate it: order inside the band a second-order-ish FE scheme
+    # can produce, and errors monotonically decreasing.
+    order = conv.get("observed_order")
+    decreasing = all(b < a for a, b in zip(raw, raw[1:]))
+    order_admissible = bool(order is not None and 0.2 <= order <= 4.0 and decreasing)
+    conv["order_admissible"] = order_admissible
+    if not order_admissible and "extrapolated_error" in conv:
+        # keep the number for traceability, but not under the key a consumer
+        # reads as "the error in the mesh limit"
+        conv["extrapolated_error_inadmissible"] = conv.pop("extrapolated_error")
+    if order is not None and not order_admissible:
+        conv["note"] = ("error sequence is not asymptotic (observed order "
+                        f"{order:.4g}, monotone={decreasing}); the Richardson "
+                        "limit is not interpretable and no mesh-limit claim "
+                        "may be made from it")
     finest = names[-1] if names else None
     finest_raw = results["meshes"][finest]["first_yield_error"] if finest else None
-    extrapolated = conv.get("extrapolated_error", None)
+    extrapolated = conv.get("extrapolated_error", None) if order_admissible else None
+    comparable = all(results["meshes"][n].get("first_yield_comparable", None)
+                     for n in names)
     limits = [results["meshes"][n]["limit_load_measured"] for n in names]
 
     results["criteria"] = {
@@ -276,9 +306,23 @@ def finalize(results: dict) -> dict:
             "met_at_finest_mesh": (None if finest_raw is None
                                    else bool(abs(finest_raw) < 0.05)),
             "met_in_mesh_limit": bool(extrapolated is not None and abs(extrapolated) < 0.05),
+            "order_admissible": order_admissible,
+            "reference_comparable": comparable,
+            "decidable": bool(order_admissible and comparable),
             "note": ("the raw error is the honest FE-vs-Navier comparison; the "
                      "same-mesh normalised error is identically ~0 and carries no "
-                     "information (docs finding N1)"),
+                     "information (docs finding N1). A criterion is only "
+                     "*decidable* when the extrapolation is admissible AND the "
+                     "path's mechanical model matches the reference "
+                     "(`first_yield_reference`). The anchored matrix integrates "
+                     "geometric=True/inplane_restrained=True against a linear "
+                     "Navier reference. Measured on 8x4 (cj4677 probe): the "
+                     "restrained/nonlinear path lands at +29.7 % while the "
+                     "small-deflection free path lands at +38.4 %, i.e. membrane "
+                     "action accounts for ~9 of the ~30 points and the rest is an "
+                     "unexplained element/model offset -- the plateau is NOT fully "
+                     "explained by the model difference, so the criterion is "
+                     "WITHHELD, not passed"),
         },
         "limit_lt_10pct": {
             "finest_mesh": finest,
