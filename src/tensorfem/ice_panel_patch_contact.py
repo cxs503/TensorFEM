@@ -689,10 +689,15 @@ def _czm_solve_in_box(
         step *= 2.0
     f_hi = force_of(hi)[2]
     step = max(1e-9, 0.1 * (hi - lo))
+    prev_f_hi = f_hi
     while f_hi < total_force:
         hi += step
         step *= 2.0
         f_hi = force_of(hi)[2]
+        # Detect force plateau (pressure capped by ceiling); avoid infinite loop
+        if abs(f_hi - prev_f_hi) < 1e-9 * max(1.0, f_hi):
+            break
+        prev_f_hi = f_hi
     for _ in range(max_iter):
         mid = 0.5 * (lo + hi)
         if force_of(mid)[2] < total_force:
