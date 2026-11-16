@@ -55,14 +55,26 @@ References
     method. J. Comput. Phys. 48, 387-411. DOI: 10.1016/0021-9991(82)90058-4
     (lid-driven cavity benchmark, Re = 100).  [REF-VERIFY: verified.]
 [3] Guo, Z., Zheng, C., Shi, B. (2002). Discrete lattice effects on the
-    forcing term in the lattice Boltzmann method. Phys. Fluids 14, 2007-2010.
-    DOI: 10.1063/1.1474820 (forcing).  [REF-VERIFY: verified.]
+    forcing term in the lattice Boltzmann method. Phys. Rev. E 65, 046308.
+    DOI: 10.1103/PhysRevE.65.046308 (discrete-lattice-effect-corrected
+    forcing, implemented by :mod:`tensorfem.lbm_channel2d` /
+    :mod:`tensorfem.lbm_forcing`; this module itself carries no force term).
+    [REF-VERIFY: re-cited — the earlier "Phys. Fluids" attribution mixed the
+    title of this paper with the venue/volume/pages/DOI of the extrapolation
+    boundary-condition paper, and that DOI is not registered; see
+    docs/JOUR-DIFFLBM-REF-VERIFY-REPAIR.md.]
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 
 import numpy as np
+
+from .lbm_references import JOUR_DIFFLBM_CORE_REFS, render_reference_block
+
+#: the citation block above, rendered from the verified registry — the
+#: docstring must agree with it (tests/test_lbm_cavity_diff_ref_verify.py)
+__references__ = render_reference_block(JOUR_DIFFLBM_CORE_REFS)
 
 DTYPE = np.float64
 

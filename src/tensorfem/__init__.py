@@ -575,3 +575,26 @@ from .body_force_inversion import (
     PlaneStressModel as PlaneStressModel,
     run_body_force_inversion as run_body_force_inversion,
 )
+
+
+# -- JOUR-DIFFLBM citation gate + Guo forcing (JOUR-DIFFLBM-REF-VERIFY) -------
+# The verified bibliography of the JOUR-DIFFLBM fluid core and the forcing
+# scheme its reference [3] points at.  ``audit_reference_source`` is the gate
+# used by ``tensorfem lbm-ref-verify`` and by
+# benchmarks/jour_difflbm_ref_verify.py; ``poiseuille_benchmark`` is the
+# analytic check that makes the forcing citation code-backed.
+from .lbm_references import (
+    Reference as Reference,
+    check_citation as check_citation_reference,
+    audit_source as audit_reference_source,
+    resolve_doi_live as resolve_doi_live,
+    WITHDRAWN_DOIS as WITHDRAWN_DOIS,
+    REFS as VERIFIED_REFERENCES,
+)
+from .lbm_forcing import (
+    guo_source as guo_source,
+    PoiseuilleConfig as PoiseuilleConfig,
+    PoiseuilleLBM as PoiseuilleLBM,
+    poiseuille_benchmark as poiseuille_benchmark,
+    benchmark_passed as forcing_benchmark_passed,
+)
