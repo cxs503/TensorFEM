@@ -172,3 +172,4 @@ PYTHONPATH=src python benchmarks/beta_restraint_patch_levy.py \
 PYTHONPATH=src python gen_beta_patch_levy_figure.py
 python -m pytest tests/test_plate_levy_patch.py -q
 ```
+注意与「四边同时对嵌固」的对角族（§9.3：73.32 → 47.27，−35.5%）不是一回事：
