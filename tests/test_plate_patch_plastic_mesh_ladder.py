@@ -218,6 +218,73 @@ def test_richardson_extrapolation_recovers_a_second_order_ladder(tmp_path, monke
     assert extrapolation["limit_infinity"] == pytest.approx(p_inf, rel=1e-9)
 
 
+DENSE_RAMP = {"top_over_py": 2.4, "step_over_py": 0.1, "points": 23,
+              "factors_over_py": [round(0.2 + 0.1 * k, 6) for k in range(23)]}
+COARSE_RAMP = {"top_over_py": 1.8, "step_over_py": 0.4, "points": 5,
+               "factors_over_py": [0.2, 0.6, 1.0, 1.4, 1.8]}
+
+
+def test_ramp_signature_carries_the_prescribed_ramp_and_the_layering():
+    ladder = _ladder_module()
+    record = _fake_record(8, 1.5e6)
+    record["ramp"] = dict(DENSE_RAMP)
+    signature = ladder.ramp_signature(record)
+    assert signature["factors_over_py"] == DENSE_RAMP["factors_over_py"]
+    assert signature["layers"] == 4
+    # a legacy artifact without a ramp still gets a signature, but an empty one
+    legacy = ladder.ramp_signature(_fake_record(12, 1.5e6))
+    assert legacy["factors_over_py"] is None
+    assert "legacy" in ladder._ramp_label(legacy)
+
+
+def test_a_ladder_that_mixes_two_prescribed_ramps_is_refused(tmp_path, monkeypatch):
+    """A mesh ladder is one discretisation family on one ramp.
+
+    The delivered campaign had an ``nx = 12`` record on a dense ramp next to a
+    legacy ``nx = 8`` record on a coarse one; differencing those two measures the
+    ramp resolution, not the mesh.  ``analyse`` must exclude the odd record,
+    report it with a reason, and refuse the Richardson extrapolation.
+    """
+    ladder = _ladder_module()
+    monkeypatch.setattr(ladder, "ART", tmp_path)
+    for nx, limit in ((8, 1.60e6), (16, 1.45e6)):
+        record = _fake_record(nx, limit)
+        record["ramp"] = dict(DENSE_RAMP)
+        (tmp_path / f"patch_plate_plastic_ladder_nx{nx}_free.json").write_text(
+            json.dumps(record))
+    odd = _fake_record(12, 1.20e6)
+    odd["ramp"] = dict(COARSE_RAMP)
+    (tmp_path / "patch_plate_plastic_ladder_nx12_free.json").write_text(
+        json.dumps(odd))
+
+    assert ladder.analyse() == 0
+    summary = json.loads((tmp_path / "patch_plate_plastic_ladder_summary.json").read_text())
+    assert [entry["tag"] for entry in summary["records"]] == ["nx8_free", "nx16_free"]
+    excluded = summary["records_excluded"]
+    assert [entry["tag"] for entry in excluded] == ["nx12_free"]
+    assert "ramp" in excluded[0]["ladder_excluded"]
+    assert "5 points" in excluded[0]["ladder_excluded"]
+    # two comparable meshes are not a convergence order, and the summary says so
+    assert summary["extrapolation_free"]["order_estimate"] is None
+
+
+def test_one_prescribed_ramp_is_extrapolated_even_across_a_geometry_change(
+        tmp_path, monkeypatch):
+    """Records that do share the ramp are admitted (control for the guard)."""
+    ladder = _ladder_module()
+    monkeypatch.setattr(ladder, "ART", tmp_path)
+    p_inf, c = 1.40e6, 3.0e7
+    for nx in (8, 12, 16):
+        record = _fake_record(nx, p_inf + c / nx ** 2)
+        record["ramp"] = dict(DENSE_RAMP)
+        (tmp_path / f"patch_plate_plastic_ladder_nx{nx}_free.json").write_text(
+            json.dumps(record))
+    assert ladder.analyse() == 0
+    summary = json.loads((tmp_path / "patch_plate_plastic_ladder_summary.json").read_text())
+    assert summary["records_excluded"] == []
+    assert summary["extrapolation_free"]["limit_infinity"] == pytest.approx(p_inf, rel=1e-9)
+
+
 def test_analysis_only_judges_the_free_support_against_the_bending_bound(tmp_path, monkeypatch):
     ladder = _ladder_module()
     monkeypatch.setattr(ladder, "ART", tmp_path)
