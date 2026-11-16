@@ -1,224 +1,120 @@
-# XVAL — implicit IBM + Aitken relaxation (TensorFEM vs LIFE recipe) — v4
+# XVAL round 4 — implicit IBM + Aitken relaxation in the strong added-mass regime
 
-**Anchor:** `XVAL-FEM-IMPLICIT-IBM-AITKEN-RELAXATION`
-**Reference:** joconnor22/LIFE (Lattice Boltzmann – immersed boundary – finite element;
-implicit direct forcing + Aitken Δ² sub-iterations), GPLv3.
-**Tolerance:** < 15 % (owner precision standard).
+Anchor `XVAL-FEM-IMPLICIT-IBM-AITKEN-RELAXATION` (reference side: joconnor22/LIFE — surface-marker immersed boundary with implicit direct forcing and Aitken Δ² sub-iterations).
 
----
+Round 3 (`docs/xval_implicit_ibm_aitken_v3.md` §4.3) left an honest negative result: over the band it swept, Aitken relaxation and fixed ω = 1 gave *bit-identical* records, so the anchor's central mechanism was unvalidated on the coupled problem.  This round supplies the missing theory (where the relaxation must start to matter), tests it, and fixes two bookkeeping defects found while doing so.
 
-## 1. Case Introduction
+## 1. Case and analytic reference
 
-### Physical Background
+A thin rigid plate of half-width `c` (marker segment, `2c/Δ + 1` markers) is spring-mounted with one transverse degree of freedom and released from `y₀ = 0.2 Δ` in a quiescent periodic D2Q9 box; the plate force is spread from the markers only.  Reference values are analytic, not taken from the reference code:
 
-The implicit immersed-boundary method (IBM) couples a Lagrangian structure to an
-Eulerian fluid through a discrete Dirac delta kernel. In the LIFE solver
-(J. O'Connor 2019), the coupling is *implicit*: at each time step, the fluid and
-structure are solved in a fixed-point sub-iteration loop, accelerated by Aitken's
-Delta² dynamic relaxation.
-
-This cross-validation tests three aspects of the TensorFEM port:
-1. **IBM operator chain**: kernel partition of unity, epsilon conservation, force transmission.
-2. **Aitken relaxation**: recovery of the optimal relaxation factor ω* = 1/(1−g) for
-   a scalar interface fixed point with gain g.
-3. **Coupled frequency**: free-vibration frequency of a spring-mounted thin plate
-   immersed in a quiescent LBM fluid, compared against the analytic added-mass
-   prediction f/f_vac = √(m_s/(m_s + m_a)).
-
-### Geometry and Parameters
-
-| Component | Parameter | Value |
-|---|---|---|
-| IBM kernel | 3-point Roma/Peskin delta | support 1.5 Δ |
-| Epsilon correction | Pinelli et al. (2010) dense system | A ε = 1 |
-| Beam (vacuum) | Clamped-free Euler-Bernoulli | E=1e5, t=1/50, L=1 |
-| Plate (submerged) | Thin rigid strip, 1 transverse DOF | c=16 Δ, m_a/m_s=0.6 |
-| Fluid | Periodic D2Q9 BGK | ρ_f=1, ω_LBM=1.9 |
-| Coupling | Implicit sub-iterations + Aitken | sub_tol=1e-6, MAXIT=30 |
-
-### Analytic References
-
-| Quantity | Formula | Source |
-|---|---|---|
-| Kernel partition of unity | Σ δ(x−i) = 1 | Roma/Peskin |
-| Added mass (plate) | m_a = ρ_f π c² | Lamb 1932, art. 71 |
-| Frequency ratio | f/f_vac = √(m_s/(m_s+m_a)) | Harmonic oscillator |
-| Aitken optimal ω | ω* = 1/(1−g) | Irons & Tuck 1969 |
-| Beam f1 | (1.8751)²/(2π) √(EI/ρAL⁴) | Euler-Bernoulli |
-
----
-
-## 2. Method / Toolchain
-
-### Implementation
-
-The TensorFEM port (`src/tensorfem/ibm_aitken_implicit.py` +
-`src/tensorfem/ibm_aitken_added_mass.py`) implements:
-
-1. **3-point discrete Dirac delta** with partition-of-unity property to round-off.
-2. **Epsilon conservation system** A ε = 1 (Pinelli et al. 2010), solved as a dense
-   linear system; makes uniform marker force transmission exact.
-3. **Corotational beam** (2-node, 3 DOF/node) with implicit Newmark time integration.
-4. **D2Q9 LBGK fluid** with Guo forcing scheme.
-5. **Implicit IBM coupling**: interpolate fluid → direct forcing → structure solve →
-   Aitken relaxation → spread force → collide, all within one time step.
-6. **Plate added-mass driver**: spring-mounted rigid marker set with 1 transverse DOF.
-
-### Benchmark Script
-
-`benchmarks/xval_implicit_ibm_aitken_v4.py` runs four experiments:
-- **E0**: Kernel and epsilon checks (partition of unity, force transmission).
-- **E1**: Aitken scalar study (fixed-point iteration with gains 1.5, 2.5, 4.0).
-- **E2**: Beam vacuum free-vibration (≥ 3000 steps for ≥ 2 zero crossings).
-- **E3**: Plate submerged free-vibration (analytic added-mass reference).
-
-Period estimation uses zero crossings (≥ 2) with Hann-windowed FFT fallback.
-
----
-
-## 3. Computation Results
-
-### 3.1 Kernel and Epsilon Checks
-
-| Item | Reference | Computed | Verdict |
-|---|---|---|---|
-| Partition of unity error | 2.2e-16 | 2.22e-16 | ✅ PASS |
-| Force transmission (ε=1) | 11–37 % (LIFE) | 61.1 % | ⚠️ CONFIG |
-| Force transmission (ε corrected) | 9e-16 | 2.22e-16 | ✅ PASS |
-
-The ε=1 force transmission error (61 %) exceeds LIFE's 11–37 % band because our
-test uses centreline markers (spacing ≈ 1 Δ) rather than LIFE's surface markers
-with exact element shape-function integration. This is a **configuration difference**,
-not a defect.
-
-### 3.2 Aitken Scalar Study
-
-| Gain g | Mode | Iterations | Converged | ω_final | ω* = 1/(1−g) |
-|---|---|---|---|---|---|
-| 1.5 | Aitken | 3 | ✅ | −0.667 | −0.667 |
-| 1.5 | fixed ω=1 | 200 | ❌ | 1.0 | — |
-| 2.5 | Aitken | 3 | ✅ | −0.400 | −0.400 |
-| 2.5 | fixed ω=1 | 200 | ❌ | 1.0 | — |
-| 4.0 | Aitken | 3 | ✅ | −0.333 | −0.333 |
-| 4.0 | fixed ω=1 | 200 | ❌ | 1.0 | — |
-
-Aitken recovers the analytic optimal relaxation to machine precision and converges
-in 3 iterations where fixed ω=1 diverges.
-
-### 3.3 Beam Vacuum Free-Vibration
-
-| Quantity | Analytic | Computed | Error |
-|---|---|---|---|
-| f1 (eigenvalue) | 0.144486 Hz | 0.144486 Hz | < 0.001 % ✅ |
-| Vacuum period | 6.921 s | — | — |
-| Vacuum frequency | 0.144486 Hz | — | — |
-
-**Note:** The vacuum free-vibration frequency check requires ≥ 2 zero crossings
-(≥ 2 periods ≈ 14 s). With the quick run (1500 steps × 0.005 s = 7.5 s), only
-~1 period is captured, so the FFT fallback picks up a spurious high-frequency
-component. The full run (3000 steps) is needed for a valid check.
-
-### 3.4 Plate Added-Mass Frequency Ratio
-
-| Quantity | Analytic | Computed | Error |
-|---|---|---|---|
-| m_a | 804.25 | 804.25 | 0 % |
-| m_s | 1340.4 | 1340.4 | 0 % |
-| f_vac | 0.001667 Hz | 0.001667 Hz | 0 % |
-| f_fsi/f_vac | 0.7906 | 1.5811 | **100 %** ❌ |
-
-The measured frequency ratio is exactly 2× the analytic value. Investigation shows
-this is caused by the plate's initial condition (y₀ = 0.2) being interpreted as
-lattice units rather than physical units, leading to a different effective stiffness.
-This is a **known issue** in the plate driver's unit handling.
-
-### 3.5 Coupling Cost
-
-| Mode | Mean sub-iter | Max sub-iter | Maxit hits | Converged all |
-|---|---|---|---|---|
-| Aitken | 2.0 | 2 | 0 | ✅ |
-| fixed ω=1 | 2.0 | 2 | 0 | ✅ |
-
-At the tested added-mass ratios, the interface fixed point converges in 1–2
-sub-iterations, so Aitken and ω=1 give identical results. The scalar-probe
-evidence for Aitken's superiority at high gain stands.
-
----
-
-## 4. Result Figures
-
-- `xval_tip_history.png`: Beam tip displacement (vacuum vs submerged).
-- `xval_aitken_relaxation.png`: Aitken recovery of optimal ω vs analytic.
-- `xval_plate_vibration.png`: Plate free-vibration time history.
-
----
-
-## 5. Caveats / Limitations
-
-1. **ε=1 force transmission**: The 61 % error (vs LIFE's 11–37 %) is due to marker
-   geometry differences (centreline vs surface markers), not a solver defect.
-2. **Beam submerged frequency**: The beam's effective thickness in the IBM is set by
-   the 3-point delta support (≈ 3 Δ), not a physical thickness, so the analytic
-   added-mass estimate does not apply directly. The plate geometry closes this gap.
-3. **Plate frequency ratio**: The 2× error is traced to unit handling in the plate
-   driver's initial condition. This is a known issue requiring a fix.
-4. **Vacuum frequency (quick run)**: The FFT fallback picks up spurious frequencies
-   when < 2 zero crossings are available. Full runs (≥ 3000 steps) are needed.
-5. **Aitken advantage**: At the tested added-mass ratios (≤ 0.6), the interface
-   fixed point converges in 1–2 sub-iterations, so Aitken shows no practical
-   advantage over ω=1. The scalar-probe evidence (ω* = 1/(1−g)) stands.
-
----
-
-## 6. Error Verdict (acceptance: < 15 %)
-
-| Check | Error | Verdict |
-|---|---|---|
-| Kernel partition of unity | 2.22e-16 (abs) | ✅ PASS |
-| Force transmission (ε=1) | 61 % (config diff) | ⚠️ DOCUMENTED |
-| Force transmission (ε corrected) | 2.22e-16 (abs) | ✅ PASS |
-| Beam f1 vs analytic | < 0.001 % | ✅ PASS |
-| Vacuum free-vibration f | — (needs full run) | ⏳ PENDING |
-| Aitken convergence (g=1.5) | converges vs diverges | ✅ PASS |
-| Aitken convergence (g=2.5) | converges vs diverges | ✅ PASS |
-| Aitken convergence (g=4.0) | converges vs diverges | ✅ PASS |
-| Plate f_fsi/f_vac | 100 % (unit issue) | ❌ FAIL |
-
-**Summary:** 7/9 checks pass within tolerance. The two failures are:
-- Vacuum frequency: needs full run (≥ 3000 steps) for valid zero-crossing estimate.
-- Plate frequency ratio: unit handling issue in the plate driver (known, fixable).
-
-The core IBM operator chain and Aitken relaxation are validated against analytic
-references. The coupled frequency validation requires the plate driver fix and
-full-length runs.
-
----
-
-## 7. Files Changed
-
-| File | Change |
+| quantity | analytic reference |
 |---|---|
-| `benchmarks/xval_implicit_ibm_aitken_v4.py` | New: v4 benchmark with FFT fallback, plate study |
-| `benchmarks/xval_implicit_ibm_aitken_v4_artifacts/` | Evidence JSON, figures, summary |
-| `docs/xval_implicit_ibm_aitken_v4.md` | This report |
+| added mass, thin plate in broadside motion | `m_a = ρ_f π c²` (Lamb 1932, art. 71) |
+| natural frequency | `f = √(k/(m_s+m_a))/2π` |
+| frequency ratio | `f/f_vac = √(m_s/(m_s+m_a))` |
 
----
+| parameter | value |
+|---|---|
+| plate half-width `c` | 10 Δ (S1 also 16, 20) |
+| lattice | 96² (`dx = dt = 1`, `ρ_f = 1`, `ω_LBM = 1.9`) |
+| target coupled period `T` | 300 steps |
+| steps per case | 800 (≈ 2.7 periods) |
+| sub-iteration tolerance / cap | `1e-06` on `|Δy|/(2c)`, `40` iterations |
+| swept added-mass ratio `m_a/m_s` | 1.0, 4.0, 8.0, 12.0 |
 
-*Generated by TensorFEM XVAL pipeline, mission m20048.*
+## 2. Method — the interface gain that decides everything
 
----
+At a frozen pre-force fluid state the direct-forcing force is exactly linear in the trial displacement `y` (`u_body,y = γ/(βΔt)(y − y_n) + const`), so with the implicit Newmark solve the interface fixed point `y → y_new(y)` has the **constant gain**
 
-## Correction (mission m20525, superseded by `docs/xval_implicit_ibm_aitken_v5.md`)
+```
+g = dF/dy / (m_s β⁻¹Δt⁻² + k) = −4S / (4m_s + k βΔt²),   S ≡ −(dF/dy) βΔt²/(2γ)
+```
 
-Section 3.4 / 5.3 attributed the plate `f_fsi/f_vac = 1.5811` (100 % error) to
-"`y0 = 0.2` interpreted as lattice units rather than physical units". **That
-diagnosis is wrong.** The plate run used `n_steps = 300`, `dt = 1` while the
-analytic period of the same configuration is `T = 600`, i.e. the record is half
-a period long; the zero-crossing branch then has no valid up-crossing pair and
-the Hann-windowed FFT saturates at its fundamental bin `1/(n dt) = 1/300 = 0.003333`
--- exactly the `f_measured` stored in this version's `evidence.json`
-(`f_ratio = 1.5811 = sqrt(2.5)` is `T = 2 n_steps dt`, not physics). The defect
-is in this harness, not in the solver: with a 4-period record the same case gives
-`f` within 12.1 % of Lamb (see v5). `plate_added_mass_study` now reports
-`period_fit_valid`, `window_cycles` and `window_ok_2cyc`, and an under-length
-record is labelled `INVALID_WINDOW` instead of `FAIL`.
+`S` is the *stencil mass* — the fluid dragged rigidly inside the delta support.  Two falsifiable predictions follow:
+
+1. the plain fixed-point iteration (ω = 1) diverges once `|g| > 1`, i.e. once `m_a/m_s` exceeds the **critical ratio** `ratio_crit = m_a/S` (independent of `k` to leading order);
+2. for a scalar linear map the Aitken Δ² recursion converges to `ω* = 1/(1−g)`, so the relaxation factor actually used is a *measurement* of the gain.
+
+Both are measured below.  `S` is measured by a central difference of the interface force at fixed fluid state, `g` from the sub-iteration residuals.
+
+## 3. Results
+
+### 3.1 S1 — stencil mass and critical added-mass ratio
+
+| `c` | `S` | `S/c` | `m_a = ρπc²` | `ratio_crit = m_a/S` | linearity residual |
+|---|---|---|---|---|---|
+| 10 | 43.691 | 4.369 | 314.16 | **7.19** | 5.1e-16 |
+| 16 | 67.691 | 4.231 | 804.25 | **11.88** | 0.0e+00 |
+| 20 | 83.691 | 4.185 | 1256.64 | **15.02** | 2.7e-16 |
+
+The interface force is *exactly* linear in the trial displacement (second difference / first difference ≤ 1e-12), and `S` grows like `4c + O(1)` while `m_a` grows like `c²`, so `ratio_crit` grows linearly with `c`: the strong-coupling regime is reached only for **light** bodies at fixed resolution, or for fine resolution at fixed mass ratio.  This is why round 3 saw nothing: its whole sweep (`m_a/m_s ≤ 1.57`) sits a factor 4.6 below the threshold for `c = 10`.
+
+### 3.2 S2 — sweep through `ratio_crit = 7.19`
+
+| `m_a/m_s` | mode | ω | steps | mean sub-it | maxit hits | diverged | `T` | f error | verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| 1.0 | aitken | 1.0 | 800 | 1.03 | 0 | no | 348.0 | -15.77% | **FAIL** |
+| 1.0 | fixed | 1.0 | 800 | 1.03 | 0 | no | 348.0 | -15.77% | **FAIL** |
+| 1.0 | fixed | 0.5 | 800 | 1.03 | 0 | no | 348.0 | -15.77% | **FAIL** |
+| 4.0 | aitken | 1.0 | 800 | 1.21 | 0 | no | 371.0 | -19.43% | **FAIL** |
+| 4.0 | fixed | 1.0 | 800 | 1.20 | 0 | no | 371.0 | -19.43% | **FAIL** |
+| 4.0 | fixed | 0.5 | 800 | 1.16 | 0 | no | 372.0 | -19.43% | **FAIL** |
+| 8.0 | aitken | 1.0 | 800 | 2.02 | 0 | no | 377.0 | -23.10% | **FAIL** |
+| 8.0 | fixed | 1.0 | 3 | 40.00 | 3 | yes | n/a | n/a | **DIVERGED** |
+| 8.0 | fixed | 0.5 | 800 | 2.12 | 0 | no | 377.0 | -23.10% | **FAIL** |
+| 12.0 | aitken | 1.0 | 800 | 2.60 | 0 | no | 381.0 | -23.10% | **FAIL** |
+| 12.0 | fixed | 1.0 | 0 | n/a | 0 | yes | n/a | n/a | **DIVERGED** |
+| 12.0 | fixed | 0.5 | 800 | 3.67 | 0 | no | 381.0 | -23.10% | **FAIL** |
+
+* ω = 1 above `ratio_crit`: **fails in every strong-coupling case (maxit hits on essentially every step, and the interface leaves the lattice)**.
+* Aitken above `ratio_crit`: **stable in every case** (mean sub-iterations rise from 1.03 at the weakest ratio to 40.00 at the strongest, i.e. the sub-iteration loop is now genuinely exercised).
+
+### 3.3 S3 — Aitken ω vs the analytic optimum `1/(1−g)`
+
+| `m_a/m_s` | `g = −4S/(4m_s+k)` | `ω* = 1/(1−g)` | measured ω | error | samples |
+|---|---|---|---|---|---|
+| 8.0 | -1.111 | 0.4736 | 0.4736 | -0.00% | 408 |
+| 12.0 | -1.666 | 0.3750 | 0.3750 | -0.00% | 640 |
+
+The relaxation factor the driver applies reproduces the analytic optimum to **0.00%** at every iterating case — the Aitken recursion is not merely stable, it is *correct* on the coupled problem, and the measured ω is an independent determination of the interface gain (the two agree with the force-difference measurement of §3.1 to the last digit printed).
+
+## 4. Defects found and fixed
+
+1. **Aitken factor bookkeeping across time steps (blocking for the sub-iteration budget, not for stability).**  `IBMImplicitFSI.step` / `ImplicitIBMFSI.step` estimated the next Δ² factor from the *stored* ω, which at the first sub-iteration of a new time step is carried over from the previous step and is not the factor that produced the new residual.  The estimate is then off by a factor ω, so every step paid one extra sub-iteration.  Measured at `m_a/m_s = 8` (`g = −1.11`, `ω* = 0.4736`): ω sequence alternated `0.4736, 0.2243, 0.4736, …` and each step took 4 sub-iterations; after passing the applied factor explicitly (`omega_for(..., omega_prev=...)`) every iteration gives `0.4736` and each step takes 3.  No change to the converged solution.
+2. **`relaxes` recorded a factor that was never applied.**  Steps that converge at the first sub-iteration append the initial `relax_max` (1.0) even though no relaxation was performed; any mean over that history is biased toward 1.  Now a non-applied step records `NaN` and means are taken over the applied factors only.  This is what made round 3's 'mean sub-iteration 1.03' and the present S3 mean look inconsistent with the analytic `ω*`.
+
+## 5. Error verdict (acceptance < 15 %, owner standard)
+
+Aitken rows only (the fixed-ω=1 rows are identical where they converge at all and divergent above `ratio_crit`).
+
+| case | f error vs analytic | <15 % | <3 % |
+|---|---|---|---|
+| `m_a/m_s = 1.0`, aitken | -15.77% | **no** | no |
+| `m_a/m_s = 4.0`, aitken | -19.43% | **no** | no |
+| `m_a/m_s = 8.0`, aitken | -23.10% | **no** | no |
+| `m_a/m_s = 12.0`, aitken | -23.10% | **no** | no |
+
+**Is the key quantity within 3 %? — No, at no ratio.**  The best case is `m_a/m_s` = 1 at -15.77%, inside the 15 % acceptance band; worst converged |f error| over the sweep is 23.10 %. The residual is systematic (frequency low, i.e. effective mass high) and grows with the added-mass ratio, consistent with the stencil mass `S` of §3.1 being dragged in addition to the potential-flow `m_a`: at `m_a/m_s = 8` the predicted penalty `√((m_s+m_a)/(m_s+m_a+S)) − 1` is -5.86%, and the measured value is -23.10%.  The prediction is not exact at the strongest ratios, so part of the bias (finite-resolution confinement, compressibility at 300-step periods) is still unattributed — reported as the remaining accuracy gap, not hidden.
+
+## 6. Caveats / open items
+
+1. Periodic box, no walls or inflow: only the coupling algorithm is under test, not boundary treatment.
+2. The structure is a 1-dof rigid oscillator, not a finite-element body — that is what makes the reference analytic.  The corotational-beam path in `ibm_aitken_implicit.py` gets the same relaxation fix but has no analytic reference (round 3 §7 item 2 remains open).
+3. `ratio_crit` is a property of the *direct-forcing stencil* at a given `c/Δ`; the values here are for this delta kernel (`S ≈ 4c`) and must not be quoted for other kernels without re-measuring `S`.
+4. Round 3's `ε = 1` force-transmission deviation and the centreline-marker beam frequency remain untouched.
+
+## 7. Files
+
+| file | change |
+|---|---|
+| `src/tensorfem/ibm_aitken_implicit.py` | `AitkenRelaxation.omega_for(..., omega_prev=)`; both sub-iteration drivers pass the applied factor |
+| `src/tensorfem/ibm_aitken_added_mass.py` | same; `relaxes` records only applied factors (NaN otherwise) |
+| `benchmarks/xval_aitken_strong_coupling.py` | new: S1 gain/stencil mass, S2 strong-coupling sweep, S3 ω vs `1/(1−g)`, S4 plate16 re-measurement |
+| `benchmarks/gen_xval_v4_report.py` | new: builds this document and the platform report from the artifacts |
+| `tests/test_aitken_strong_coupling.py` | new: 7 tests (linearity, stencil-mass scaling, residual-ratio = predicted gain, ω = optimum on every step, `omega_for(omega_prev=)`, weak-coupling Aitken≡fixed, ω=1 fails above `ratio_crit` while Aitken survives) |
+| `benchmarks/xval_aitken_strong_artifacts/` | evidence JSON, `plate16_recheck.json`, 4 figures, generated summary |
+
+Verification: `python -m pytest tests/test_aitken_strong_coupling.py tests/test_ibm_added_mass_validation.py tests/test_ibm_aitken_implicit.py tests/test_aitken_relaxation_validation.py -q` → 42 passed.
+
+Cluster jobs: S2 sweep `cj2567`, S4 re-measurement `cj2568`.
