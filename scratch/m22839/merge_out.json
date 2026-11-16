@@ -1,0 +1,62 @@
+{
+  "rows": [
+    [
+      "guo",
+      "PoiseuilleLBM",
+      10,
+      0.013968,
+      0.018826
+    ],
+    [
+      "naive",
+      "PoiseuilleLBM",
+      10,
+      0.742076,
+      0.735703
+    ],
+    [
+      "guo",
+      "PoiseuilleLBM",
+      18,
+      0.003451,
+      0.004707
+    ],
+    [
+      "naive",
+      "PoiseuilleLBM",
+      18,
+      0.762522,
+      0.76087
+    ],
+    [
+      "guo",
+      "PoiseuilleLBM",
+      34,
+      0.00086,
+      0.001177
+    ],
+    [
+      "naive",
+      "PoiseuilleLBM",
+      34,
+      0.767558,
+      0.767142
+    ],
+    [
+      "guo",
+      "PoiseuilleLBM",
+      66,
+      0.000215,
+      0.000294
+    ]
+  ],
+  "order": 1.9999601876788808,
+  "production": {
+    "ny": 34,
+    "rel_err_u_max": 0.0010557202839415168,
+    "rel_l2_profile": 0.0014441913123079686,
+    "steps": 41800,
+    "converged": true
+  },
+  "gate_passed": true
+}

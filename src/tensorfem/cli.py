@@ -29,6 +29,7 @@ def main() -> None:
             "inspect",
             "inverse-identify",
             "body-force-inversion",
+            "lbm-ref-verify",
         ),
         help="run, validate, inspect, or verify TensorFEM projects and results",
     )
@@ -57,6 +58,14 @@ def main() -> None:
     )
     parser.add_argument(
         "--max-adjoint", type=int, default=50, help="body-force-inversion adjoint-iteration budget"
+    )
+    parser.add_argument(
+        "--online-refs", action="store_true",
+        help="lbm-ref-verify: resolve every DOI through Crossref (network)",
+    )
+    parser.add_argument(
+        "--no-bench", action="store_true",
+        help="lbm-ref-verify: citation audit only, skip the forcing benchmark",
     )
     parser.add_argument("--nx", type=int, default=20, help="body-force-inversion mesh nx")
     parser.add_argument("--ny", type=int, default=10, help="body-force-inversion mesh ny")
@@ -315,6 +324,38 @@ def main() -> None:
         payload = json.dumps(row, indent=2, ensure_ascii=False)
         print(payload)
         raise SystemExit(0 if row["passed"] else 1)
+    if args.command == "lbm-ref-verify":
+        # Entry point of JOUR-DIFFLBM-REF-VERIFY: verify every reference of the
+        # JOUR-DIFFLBM fluid core field by field against the Crossref-checked
+        # registry, and (unless --no-bench) drive the forcing benchmark whose
+        # reference [3] the citation claims.  Exit status is the gate.
+        from .lbm_references import audit_source, WITHDRAWN_DOIS
+        from .lbm_forcing import benchmark_passed, poiseuille_benchmark
+
+        sources = ("src/tensorfem/lbm_cavity_diff.py",
+                   "src/tensorfem/lbm_channel2d.py")
+        report = {"anchor_slug": "JOUR-DIFFLBM-REF-VERIFY", "sources": {}}
+        passed = True
+        for src in sources:
+            checks = audit_source(src)
+            entries = [c.as_dict() for c in checks]
+            ok = bool(checks) and all(c.ok for c in checks)
+            report["sources"][src] = {"entries": entries, "passed": ok}
+            passed = passed and ok
+        report["withdrawn_dois"] = sorted(WITHDRAWN_DOIS)
+        if not args.no_bench:
+            bench = poiseuille_benchmark(resolutions=(10, 18), tau_sweep=(),
+                                         guo_only_resolutions=(),
+                                         include_production=False)
+            bench["gate"]["passed"] = benchmark_passed(bench)
+            report["forcing"] = bench
+            passed = passed and bench["gate"]["passed"]
+        payload = json.dumps(report, indent=2, ensure_ascii=False)
+        if args.output:
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(payload + "\n", encoding="utf-8")
+        print(payload)
+        raise SystemExit(0 if passed else 1)
     if args.command == "patch-test":
         # Entry point of the Robinson patch test A/B/C (tensorfem.patch_test).
         # Exit status is the gate: 0 only when every case behaves as a correct

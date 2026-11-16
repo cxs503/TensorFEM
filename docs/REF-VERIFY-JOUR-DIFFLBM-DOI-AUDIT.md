@@ -46,39 +46,65 @@ Ladd 移动壁半程反弹 + Ghia 基准 + Guo 力项）。本单对**该核心�
 - **判定**：作者（U. Ghia / K.N. Ghia / C.T. Shin）、年（1982）、
   期刊（J. Comput. Phys.）、卷（48）、起始页（387）**全部一致**。**核证通过**。
 
-### [3] Guo — **一致，核证通过**
+### [3] Guo — **不一致，改引（返修轮 m22839 推翻原判）**
 
-- **原引用**：Guo, Z., Zheng, C., Shi, B. (2002). *Phys. Fluids 14, 2007*。
-- **核证**：
-  > Guo, Z., Zheng, C., Shi, B. (2002). *Discrete lattice effects on the forcing
-  > term in the lattice Boltzmann method.* **Phys. Fluids 14(6), 2007-2010**.
-  > DOI: **10.1063/1.1474820**。
-- **判定**：作者（Z. Guo / C. Zheng / B. Shi）、年（2002）、
-  期刊（Phys. Fluids）、卷（14）、起始页（2007）**全部一致**。**核证通过**。
+- **本轮原文**：Guo, Z., Zheng, C., Shi, B. (2002). *Discrete lattice effects
+  on the forcing term in the lattice Boltzmann method.* **Phys. Fluids 14,
+  2007-2010**. DOI: **10.1063/1.1474820**。
+- **核证（Crossref 实测，2026-11-16）**：
+  - `10.1063/1.1474820` → **HTTP 404，未注册**（doi.org 同样 404）；
+  - 该**题名/作者/年**属于 **10.1103/PhysRevE.65.046308**：
+    *Phys. Rev. E* **65**, 046308 (2002)；
+  - 该**期刊/卷/页**属于 **10.1063/1.1471914**：
+    *An extrapolation method for boundary conditions in lattice Boltzmann
+    method*, *Phys. Fluids* **14**, 2007-2010 (2002)，作者同三人但**是另一篇论文**。
+- **判定**：**题名/作者/年/DOI 不一致**——原引用是把两篇论文拼起来的"嵌合引用"
+  （chimera）：题名取自 PRE 65, 046308，卷页与 DOI 取自 Phys. Fluids 14, 2007-2010。
+  原判"核证通过"**错误**，本轮按验收判据**改引**为：
+
+  > Guo, Z., Zheng, C., Shi, B. (2002). *Discrete lattice effects on the
+  > forcing term in the lattice Boltzmann method.* **Phys. Rev. E 65, 046308**.
+  > DOI: **10.1103/PhysRevE.65.046308**。
+
+  同时该引用原为"装饰性"（`lbm_cavity_diff.py` 内无任何力项），本轮在
+  :mod:`tensorfem.lbm_forcing` 中实现 Guo 力项并以解析 Poiseuille 剖面定量核证
+  （见 `docs/JOUR-DIFFLBM-REF-VERIFY-REPAIR.md`）。
 
 ---
 
-## ③ 核证结论汇总
+## ③ 核证结论汇总（返修后）
 
 | # | 引用 | 题名 | 作者 | 年 | DOI | 判定 |
 |---|---|---|---|---|---|---|
 | [1] | Ladd | ✗（原无题名） | ✗（A.J.→A.J.C.） | ✓ 1994 | ✗（原无）→ 10.1017/S0022112094001771 | **改引** |
 | [2] | Ghia | ✓ | ✓ | ✓ 1982 | ✓ 10.1016/0021-9991(82)90058-4 | **核证通过** |
-| [3] | Guo | ✓ | ✓ | ✓ 2002 | ✓ 10.1063/1.1474820 | **核证通过** |
+| [3] | Guo（力项） | ✓ | ✓ | ✓ 2002 | ✗ 10.1063/1.1474820（404）→ 10.1103/PhysRevE.65.046308 | **改引** |
 
-**3 条引用中 1 条错引（[1] Ladd）、2 条核证通过**。错引已按验收判据**改引**，
-并在源码 `References` 块内以 `[REF-VERIFY: ...]` 标注核证状态（改引/verified），
-使核证结果**可追溯、可回归**。
+**3 条引用中 2 条错引（[1] Ladd 虚构期刊、[3] Guo 嵌合引用+未注册 DOI）、
+1 条核证通过（[2] Ghia）**。两条错引均已按验收判据**改引**，并由机器判据
+（`src/tensorfem/lbm_references.py` + `benchmarks/jour_difflbm_ref_verify.py`）
+逐字段复核，不再依赖人工断言。
 
----
+> **返修说明（m22839）**：本文件初版把 [3] 判为"核证通过"，是**错误的**
+> ——初版只核对了"作者/年/期刊缩写/卷/起始页"这些字符串是否自相一致，
+> 没有把 DOI 解析到 Crossref 记录上做**跨字段一致性**检查，因此没有发现题名与
+> 卷页来自两篇不同论文。返修轮以 Crossref 实测证据改判，并把该缺陷类别写成
+> 可执行判据（嵌合引用检测），见 `docs/JOUR-DIFFLBM-REF-VERIFY-REPAIR.md`。
 
 ## ④ 落盘与回归门
 
 - **改引**：`src/tensorfem/lbm_cavity_diff.py` `References` 块（[1] 改引 + 全条 DOI 标注）。
-- **回归门**：`tests/test_lbm_cavity_diff_ref_verify.py` —— 断言源码 `References` 块
-  含正确 DOI（10.1017/S0022112094001771 / 10.1016/0021-9991(82)90058-4 /
-  10.1063/1.1474820），且**不含**已废弃的错引串 "J. Supercomput"（防回退）。
+- **回归门（返修后）**：`tests/test_lbm_cavity_diff_ref_verify.py` —— 不再用
+  精确子串断言（旧门可被 "J. Supercomput 4:149" 之类的标点变体绕过），改为
+  `lbm_references.audit_source()` **逐字段**核验（题名/作者/年/期刊/卷/页/DOI），
+  外加嵌合引用（chimera）检测、未注册 DOI 检测与标点变体回归。
 - **核证文档**：本文件（`docs/REF-VERIFY-JOUR-DIFFLBM-DOI-AUDIT.md`）。
 
-**验收判据逐条达成**：立项引用逐条 DOI 核证（3/3 条完成）；不一致者改引
-（[1] Ladd 已改引）；无"未核证"残留（[2]/[3] 已核证通过）。
+**验收判据逐条达成（返修后）**：立项引用逐条 DOI 核证（3/3 条，均解析到
+Crossref 记录并逐字段比对）；不一致者改引（[1] Ladd、[3] Guo 已改引）；
+无"未核证"残留（[2] 核证通过，[1]/[3] 改引后核证通过）。
+
+**返修轮证据**：`artifacts/JOUR-DIFFLBM-REF-VERIFY/ref_verify.json`、
+`artifacts/JOUR-DIFFLBM-REF-VERIFY/forcing_poiseuille.json`、
+`artifacts/JOUR-DIFFLBM-REF-VERIFY/fig_ref_verify.png`；
+入口 `benchmarks/jour_difflbm_ref_verify.py`、CLI `tensorfem lbm-ref-verify`。
