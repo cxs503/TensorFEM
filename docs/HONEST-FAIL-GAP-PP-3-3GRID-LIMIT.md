@@ -64,3 +64,20 @@
   网格稳定（最细两档漂移 <10 %），且 `permanent_set_valid=True` 全网格成立；
   验收：3 网格极限载荷漂移 <10 % + 过渡误差 Richardson 极限 <5 % + pytest≥10 绿。
 - 证据：`outputs/gap_pp3_3grid_results.json`（cj4436 实测，程序化注入）。
+
+## 2026-11-16 · D1 修复（m23449）
+
+**D1（limit-load 提取器塌缩，604% 漂移）已修复**：`limit_load_from_path` 现在在
+`k1/k0 < 3.0`（路径被截面门截断、未形成真实塌缩支）时**扣留** `intersection_of_tangents`
+（其分母 `k1-k0→0` 数值不稳定），改用**全路径定义**的 `stiffness_criterion_0.3` 为主。
+
+修复后 3 网格极限载荷（Pa）：
+| 网格 | 旧 intersection | 新 limit | vs Ilyushin sine UB |
+|---|---|---|---|
+| 8×4  | 1.4248e6 | 1.4248e6 | −16.5% |
+| 16×8 | 0.5094e6 | 1.4273e6 | −16.3% |
+| 24×12| 0.0724e6 | 1.4086e6 | −17.4% |
+
+**最细两网格漂移 = 1.31%（<10% 判据，原 604%）** —— `test_limit_estimate_stable_between_finest_meshes` 转绿。
+
+**仍开放**：D2（首屈服误差平 ~20%，Richardson 未收敛 <5%）、D3（最细网格永久挠度无效）。
