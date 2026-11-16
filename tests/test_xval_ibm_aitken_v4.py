@@ -170,4 +170,57 @@ def test_shipped_evidence_is_self_consistent():
 
     status = ev["status"]
     assert status["invalid_windows"] == []
-    assert status["n_pass"] == status["n_checks"]
+    # The pre-fix v4 assertion demanded `n_pass == n_checks`, which its own
+    # shipped artefact already violated (the plate row was INVALID_WINDOW).  A
+    # configuration-difference row must be published as NOT passing instead of
+    # being upgraded to PASS to satisfy a counter.
+    assert status["n_checks"] == len(ev["table"])
+    assert status["n_pass"] == sum(1 for r in ev["table"] if r["pass"])
+    for r in ev["table"]:
+        if r.get("verdict") == "OUT_OF_REF_BAND":
+            assert r["pass"] is False, r
+        elif r["kind"] == "relative" and "optimal fixed relaxation" not in r["item"]:
+            assert r["pass"] is True, r
+
+# ---------------------------------------------------------------------------
+# m22878 adversarial-review additions: the shipped v4 table conflated the
+# published LIFE band with the applied sanity window, and rendered iteration
+# caps as reference measurements.
+def test_force_band_verdict_keeps_reference_and_sanity_band_apart():
+    from xval_implicit_ibm_aitken_v4 import force_band_verdict
+
+    # The shipped v4 row: 61.1 % printed next to "ref 11-37 %" and marked PASS.
+    shipped = force_band_verdict(0.6111655919181167)
+    assert shipped["verdict"] == "OUT_OF_REF_BAND"
+    assert shipped["pass"] is False
+    assert shipped["ref_band_deviation"] == pytest.approx((0.6111655919181167 - 0.37) / 0.37)
+
+    # Inside the published band -> the only outcome that counts as a pass.
+    assert force_band_verdict(0.25)["verdict"] == "IN_BAND"
+    assert force_band_verdict(0.25)["pass"] is True
+
+    # Outside the sanity window -> hard fail, not "configuration difference".
+    assert force_band_verdict(0.95)["verdict"] == "OUTSIDE_SANITY"
+    assert force_band_verdict(0.95)["pass"] is False
+
+
+@pytest.mark.skipif(not os.path.exists(ARTIFACTS), reason="evidence.json absent")
+def test_shipped_table_has_no_iteration_cap_disguised_as_a_reference():
+    """No `relative` row may carry the solver's iteration cap as its reference."""
+    with open(ARTIFACTS) as fh:
+        ev = json.load(fh)
+    for row in ev["table"]:
+        if row["kind"] != "relative":
+            continue
+        assert isinstance(row["ref"], (int, float)), row
+        assert row["ref"] < 200, f"iteration cap leaked into a relative row: {row}"
+
+    # The honest counterpart of the "Aitken beats fixed relaxation" claim: the
+    # optimal fixed factor omega* = 1/(1-g) converges in fewer iterations than
+    # Aitken for every gain in the shipped scalar study, so the advantage claim
+    # is only true against a deliberately unstable omega = 1.
+    by = {(r["gain"], r["mode"]): r for r in ev["aitken_scalar"]}
+    for g in sorted({r["gain"] for r in ev["aitken_scalar"]}):
+        assert by[(g, "fixed_opt")]["iterations"] < by[(g, "aitken")]["iterations"]
+    opt_rows = [r for r in ev["table"] if "optimal fixed relaxation" in r["item"]]
+    assert opt_rows and not any(r["pass"] for r in opt_rows)
