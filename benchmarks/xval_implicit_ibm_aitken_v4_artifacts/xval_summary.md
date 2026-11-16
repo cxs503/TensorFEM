@@ -1,6 +1,6 @@
 # XVAL — implicit IBM + Aitken relaxation (TensorFEM vs LIFE recipe) — v4
 
-Generated: 2026-11-14T17:05:45Z  |  tolerance: 15%
+Generated: 2026-11-16T02:47:23Z  |  tolerance: 15%
 
 ## Reference side
 joconnor22/LIFE (GPLv3): implicit IBM direct forcing (`src/IBMNode.cpp:51-58`), epsilon conservation (`src/Objects.cpp:235-321`),
@@ -9,17 +9,19 @@ Documented in TensorPlatform `docs/oss_inventory/FEAT-OSS-INVENTORY-LBM_LIFE.md`
 
 ## Cross-validation table
 
-| item | ref | got | kind | pass |
+| item | ref | got | kind | verdict |
 |---|---|---|---|---|
 | kernel partition of unity | 2.2e-16 | 2.22045e-16 | absolute | PASS |
-| force transmission error, eps = 1 | 11-37 % (LIFE surface markers) | 0.6111655919181167 | band | PASS |
+| force transmission error, eps = 1 | 11-37 % (LIFE surface markers) | 0.611166 | band | PASS |
 | force transmission error, eps corrected | 9e-16 | 2.22045e-16 | absolute | PASS |
-| beam f1 vs analytic Euler-Bernoulli | 0.144486 | 0.144486 | relative | PASS |
-| vacuum free-vibration f vs analytic | 0.144486 | 43.0481 | relative | FAIL |
+| vacuum free-vibration f vs analytic | 1.02167 | 1.02539 | relative | PASS |
 | #sub-iterations, gain 1.5: Aitken (fixed omega=1 diverged) | 200 | 3 | relative | PASS |
 | #sub-iterations, gain 2.5: Aitken (fixed omega=1 diverged) | 200 | 3 | relative | PASS |
 | #sub-iterations, gain 4.0: Aitken (fixed omega=1 diverged) | 200 | 3 | relative | PASS |
-| plate f_fsi/f_vac vs analytic added-mass | 0.790569 | 1.58114 | relative | FAIL |
+| plate f_fsi/f_vac vs analytic added-mass | 0.790569 | nan | relative | INVALID_WINDOW |
+
+`INVALID_WINDOW` = the measurement record is too short for the period
+estimator (see `period_window_ok`); it is not a physics result.
 
 ## Coupling cost
 
@@ -28,17 +30,26 @@ Documented in TensorPlatform `docs/oss_inventory/FEAT-OSS-INVENTORY-LBM_LIFE.md`
 | Aitken | 2.00 | 2 | 0 | True |
 | fixed ω=1 | 2.00 | 2 | 0 | True |
 
-## Vacuum frequency
+## Vacuum frequency (beam, clamped-free)
 
-- Analytic f1: 0.144486 Hz
-- FEM eigen: 0.144486 Hz (error: 0.0001 %)
-- Vacuum free-vibration: 43.048128 Hz (error: 29694.0141 %)
+- Analytic f1 (Euler-Bernoulli, with area): 1.021669 Hz (T = 0.9788 s)
+- FEM eigen: 1.021670 Hz (error: 0.0001 %)
+- Section requested == simulated: True (A = 0.02)
+- Record: 1500 steps x dt = 0.005 s = 7.69 periods (gate 2.0)
+- Window valid: True
+- Free-vibration f (damped-sinusoid fit): 1.025391 Hz (error: 0.3643 %)
+- Free-vibration f (legacy mean-removed zero crossings, record only): 1.023018 Hz
 
 ## Plate added-mass frequency ratio
 
+- c = 10, lattice = [144, 144], steps = 300
+- Analytic f_vac: 0.00210819 Hz, f_fsi: 0.00166667 Hz
 - Analytic f_fsi/f_vac: 0.790569
-- Measured f_fsi/f_vac: 1.581139
-- Error: 100.00 %
+- Measured f_fsi/f_vac (damped fit, valid = False): nan
+- Measured f_fsi/f_vac (legacy zero crossings): 1.58114
+- Error (damped fit): n/a
+- Record length: 0.43 periods (gate 2.0), window valid: False
+- Verdict: **INVALID_WINDOW**
 
 ## Notes
 
@@ -53,3 +64,7 @@ Documented in TensorPlatform `docs/oss_inventory/FEAT-OSS-INVENTORY-LBM_LIFE.md`
 3. Aitken relaxation shows no advantage over ω=1 at the tested added-mass ratios
    (≤ 0.23 for the beam, 0.6 for the plate) because the interface fixed point
    converges in 1 sub-iteration. The scalar-probe evidence (ω* = 1/(1−g)) stands.
+4. v4.1 (mission 22704) fixes two harness defects that produced the shipped
+   43.048 Hz / 1.5811 rows: the free-vibration run now receives the section its
+   analytic reference describes, and both frequency rows are gated by the record
+   length instead of being reported as physics failures.
