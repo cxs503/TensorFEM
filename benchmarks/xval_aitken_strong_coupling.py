@@ -75,12 +75,15 @@ from tensorfem.ibm_aitken_added_mass import (  # noqa: E402
     SpringMountedBody,
     analytic_added_mass,
     coupled_free_vibration,
+    estimate_period_damped,
+    period_window_ok,
     plate_markers,
 )
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                    "xval_aitken_strong_artifacts")
 TOL = 15.0                      # owner acceptance on the frequency
+MIN_CYCLES = 3.0                # record length required before a period is trusted
 BETA, GAMMA = 0.25, 0.5         # Newmark parameters used by the driver
 
 
@@ -148,7 +151,26 @@ def _case(ratio, mode, fixed_omega, cfg, n_steps=None):
     g = -4.0 * cfg["stencil_mass"] / (4.0 * m_s + k)      # exact interface gain
     out["gain_pred"] = g
     out["omega_star_pred"] = 1.0 / (1.0 - g)
+    # window guard: a record shorter than MIN_CYCLES periods cannot resolve a
+    # period (the zero-crossing branch runs out of up-crossings and the FFT
+    # bottoms out at the fundamental bin), so those numbers are *not* a
+    # frequency measurement.  Precedence: zero crossing -> window-safe damped
+    # fit -> FFT, and every case records which estimator produced its number.
+    fit = estimate_period_damped(rec["y_history"], dt=1.0)
+    out["period_damped"] = fit["period"]
+    out["period_damped_valid"] = bool(fit["valid"])
+    n_rec = len(rec["y_history"])
+    out["cycles"] = (float(n_rec - 1) / fit["period"]
+                     if np.isfinite(fit["period"]) and fit["period"] > 0.0
+                     else float("nan"))
+    out["window_ok"] = bool(period_window_ok(len(rec["y_history"]), 1.0,
+                                            fit["period"], min_cycles=MIN_CYCLES))
     out["frequency_from"] = "zero_crossing"
+    if not np.isfinite(out["frequency"]) and out["period_damped_valid"]:
+        out["frequency"] = 1.0 / out["period_damped"]
+        out["frequency_error_pct"] = 100.0 * (
+            out["frequency"] - out["frequency_ref"]) / out["frequency_ref"]
+        out["frequency_from"] = "damped_fit"
     if not np.isfinite(out["frequency"]) and np.isfinite(out["period_fft"]):
         out["frequency"] = 1.0 / out["period_fft"]
         out["frequency_error_pct"] = 100.0 * (
@@ -253,7 +275,14 @@ def run(quick=False):
             v = rec["frequency_error_pct"]
         return abs(v) if np.isfinite(v) else float("inf")
 
-    ok = [c for c in cases if not c["diverged"] and np.isfinite(_abs_err(c))]
+    ok = [c for c in cases if not c["diverged"] and np.isfinite(_abs_err(c))
+          and c.get("window_ok", True)]
+    window_violations = [{"ratio": c["added_mass_ratio"],
+                          "mode": c["relax_mode"], "omega": c["fixed_omega"],
+                          "cycles": c.get("cycles"),
+                          "frequency_from": c.get("frequency_from")}
+                         for c in cases
+                         if not c["diverged"] and not c.get("window_ok", True)]
     ratio_crit = [r for r in s1 if r["half_width"] == cfg["half_width"]][0]["ratio_crit"]
     strong = [c for c in cases if c["added_mass_ratio"] > ratio_crit]
     ev["verdict"] = {
@@ -270,6 +299,9 @@ def run(quick=False):
         "coupled_frequency_all_within_tolerance": bool(ok) and
             max(_abs_err(c) for c in ok) <= TOL,
         "n_cases": len(cases),
+        "min_cycles_required": MIN_CYCLES,
+        "window_violations": window_violations,
+        "frequency_verdict_uses": "window-valid cases only",
         "diverged_cases": [{"ratio": c["added_mass_ratio"],
                             "mode": c["relax_mode"],
                             "omega": c["fixed_omega"],
@@ -464,8 +496,8 @@ def _summary(ev):
           "",
           "## S2 — coupled sweep through `ratio_crit = %.2f`" % v["ratio_crit"],
           "",
-          "| m_a/m_s | mode | omega | steps | mean sub-it | maxit hits | diverged | T | f error | verdict |",
-          "|---|---|---|---|---|---|---|---|---|---|"]
+          "| m_a/m_s | mode | omega | steps | mean sub-it | maxit hits | diverged | T | cycles | f error | verdict |",
+          "|---|---|---|---|---|---|---|---|---|---|---|"]
     for cs in ev["S2_coupled"]:
         err = cs["frequency_error_fft_pct"] if np.isfinite(cs["frequency_error_fft_pct"]) \
             else cs["frequency_error_pct"]
@@ -473,13 +505,16 @@ def _summary(ev):
             verdict = "DIVERGED"
         elif not np.isfinite(err):
             verdict = "n/a"
+        elif not cs.get("window_ok", True):
+            verdict = "WINDOW TOO SHORT (not a measurement)"
         else:
             verdict = "PASS" if abs(err) <= ev["tolerance_pct"] else "FAIL"
-        L.append("| %.1f | %s | %.1f | %d | %.2f | %d | %s | %.1f | %+.2f%% | %s |"
+        L.append("| %.1f | %s | %.1f | %d | %.2f | %d | %s | %.1f | %.2f | %+.2f%% | %s |"
                  % (cs["added_mass_ratio"], cs["relax_mode"], cs["fixed_omega"],
                     cs["steps_completed"], cs["mean_sub_iterations"],
                     cs["maxit_hits"], "yes" if cs["diverged"] else "no",
                     cs["period"] if np.isfinite(cs["period"]) else float("nan"),
+                    cs.get("cycles", float("nan")),
                     err if np.isfinite(err) else float("nan"), verdict))
     L += ["",
           "## S3 — Aitken relaxation factor vs analytic optimum `1/(1-g)`",
@@ -500,7 +535,11 @@ def _summary(ev):
           % ("confirmed" if v["fixed_omega1_diverged_above_crit"] else "NOT confirmed"),
           "* Aitken-relaxed implicit IBM above the critical ratio: stable: "
           "**%s**" % ("confirmed" if v["aitken_stable_above_crit"] else "NOT confirmed"),
-          "* max |frequency error| over converged cases: **%.2f %%** "
+          "* records shorter than %.1f coupled periods are excluded from the "
+          "frequency verdict (window guard; `period_window_ok`): %d excluded"
+          % (v.get("min_cycles_required", float("nan")),
+             len(v.get("window_violations", []))),
+          "* max |frequency error| over window-valid, converged cases: **%.2f %%** "
           "(acceptance %.0f %%)" % (v["coupled_frequency_max_abs_error_pct"]
                                     if v["coupled_frequency_max_abs_error_pct"]
                                     is not None else float("nan"),
