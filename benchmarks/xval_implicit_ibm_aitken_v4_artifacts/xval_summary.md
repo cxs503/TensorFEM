@@ -1,6 +1,6 @@
 # XVAL — implicit IBM + Aitken relaxation (TensorFEM vs LIFE recipe) — v4
 
-Generated: 2026-11-14T17:05:45Z  |  tolerance: 15%
+Generated: 2026-11-16T01:14:58Z  |  tolerance: 15%
 
 ## Reference side
 joconnor22/LIFE (GPLv3): implicit IBM direct forcing (`src/IBMNode.cpp:51-58`), epsilon conservation (`src/Objects.cpp:235-321`),
@@ -14,12 +14,12 @@ Documented in TensorPlatform `docs/oss_inventory/FEAT-OSS-INVENTORY-LBM_LIFE.md`
 | kernel partition of unity | 2.2e-16 | 2.22045e-16 | absolute | PASS |
 | force transmission error, eps = 1 | 11-37 % (LIFE surface markers) | 0.6111655919181167 | band | PASS |
 | force transmission error, eps corrected | 9e-16 | 2.22045e-16 | absolute | PASS |
-| beam f1 vs analytic Euler-Bernoulli | 0.144486 | 0.144486 | relative | PASS |
-| vacuum free-vibration f vs analytic | 0.144486 | 43.0481 | relative | FAIL |
+| beam f1 vs analytic Euler-Bernoulli | 1.02167 | 1.02167 | relative | PASS |
+| vacuum free-vibration f vs analytic | 1.02167 | 1.02302 | relative | PASS |
 | #sub-iterations, gain 1.5: Aitken (fixed omega=1 diverged) | 200 | 3 | relative | PASS |
 | #sub-iterations, gain 2.5: Aitken (fixed omega=1 diverged) | 200 | 3 | relative | PASS |
 | #sub-iterations, gain 4.0: Aitken (fixed omega=1 diverged) | 200 | 3 | relative | PASS |
-| plate f_fsi/f_vac vs analytic added-mass | 0.790569 | 1.58114 | relative | FAIL |
+| plate f_fsi/f_vac vs analytic added-mass | 0.790569 | 0.706188 | relative | PASS |
 
 ## Coupling cost
 
@@ -30,15 +30,15 @@ Documented in TensorPlatform `docs/oss_inventory/FEAT-OSS-INVENTORY-LBM_LIFE.md`
 
 ## Vacuum frequency
 
-- Analytic f1: 0.144486 Hz
-- FEM eigen: 0.144486 Hz (error: 0.0001 %)
-- Vacuum free-vibration: 43.048128 Hz (error: 29694.0141 %)
+- Analytic f1: 1.021669 Hz
+- FEM eigen: 1.021670 Hz (error: 0.0001 %)
+- Vacuum free-vibration: 1.023018 Hz (error: 0.1320 %)
 
 ## Plate added-mass frequency ratio
 
 - Analytic f_fsi/f_vac: 0.790569
-- Measured f_fsi/f_vac: 1.581139
-- Error: 100.00 %
+- Measured f_fsi/f_vac: 0.706188
+- Error: 10.67 %
 
 ## Notes
 

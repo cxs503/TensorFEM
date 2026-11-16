@@ -72,7 +72,8 @@ The TensorFEM port (`src/tensorfem/ibm_aitken_implicit.py` +
 - **E2**: Beam vacuum free-vibration (≥ 3000 steps for ≥ 2 zero crossings).
 - **E3**: Plate submerged free-vibration (analytic added-mass reference).
 
-Period estimation uses zero crossings (≥ 2) with Hann-windowed FFT fallback.
+Period estimation uses zero crossings (≥ 2) with Hann-windowed FFT fallback,
+plus the window-safe `estimate_period_damped` for the plate study.
 
 ---
 
@@ -109,14 +110,14 @@ in 3 iterations where fixed ω=1 diverges.
 
 | Quantity | Analytic | Computed | Error |
 |---|---|---|---|
-| f1 (eigenvalue) | 0.144486 Hz | 0.144486 Hz | < 0.001 % ✅ |
-| Vacuum period | 6.921 s | — | — |
-| Vacuum frequency | 0.144486 Hz | — | — |
+| f1 (eigenvalue) | 1.021669 Hz | 1.021670 Hz | < 0.001 % ✅ |
+| Vacuum period | 0.978 s | — | — |
+| Vacuum frequency | 1.021669 Hz | 1.023018 Hz | 0.13 % ✅ |
 
-**Note:** The vacuum free-vibration frequency check requires ≥ 2 zero crossings
-(≥ 2 periods ≈ 14 s). With the quick run (1500 steps × 0.005 s = 7.5 s), only
-~1 period is captured, so the FFT fallback picks up a spurious high-frequency
-component. The full run (3000 steps) is needed for a valid check.
+The beam section (t = 1/50, A = 0.02, I = 6.67×10⁻⁷) is now correctly passed to
+`cantilever_free_vibration` via the `props` argument, ensuring the simulation and
+analytic reference use identical structural properties. The vacuum free-vibration
+frequency matches the analytic Euler-Bernoulli prediction within 0.13 %.
 
 ### 3.4 Plate Added-Mass Frequency Ratio
 
@@ -125,12 +126,12 @@ component. The full run (3000 steps) is needed for a valid check.
 | m_a | 804.25 | 804.25 | 0 % |
 | m_s | 1340.4 | 1340.4 | 0 % |
 | f_vac | 0.001667 Hz | 0.001667 Hz | 0 % |
-| f_fsi/f_vac | 0.7906 | 1.5811 | **100 %** ❌ |
+| f_fsi/f_vac | 0.7906 | 0.7062 | **10.67 %** ✅ |
 
-The measured frequency ratio is exactly 2× the analytic value. Investigation shows
-this is caused by the plate's initial condition (y₀ = 0.2) being interpreted as
-lattice units rather than physical units, leading to a different effective stiffness.
-This is a **known issue** in the plate driver's unit handling.
+The plate frequency ratio is now within the 15 % acceptance tolerance. The fix
+was to increase the simulation length from 300/900 steps to 1200/2400 steps
+(quick/full), ensuring the record spans ≥ 1.5 periods so that the
+`estimate_period_damped` window-safe estimator returns a valid result.
 
 ### 3.5 Coupling Cost
 
@@ -160,11 +161,10 @@ evidence for Aitken's superiority at high gain stands.
 2. **Beam submerged frequency**: The beam's effective thickness in the IBM is set by
    the 3-point delta support (≈ 3 Δ), not a physical thickness, so the analytic
    added-mass estimate does not apply directly. The plate geometry closes this gap.
-3. **Plate frequency ratio**: The 2× error is traced to unit handling in the plate
-   driver's initial condition. This is a known issue requiring a fix.
-4. **Vacuum frequency (quick run)**: The FFT fallback picks up spurious frequencies
-   when < 2 zero crossings are available. Full runs (≥ 3000 steps) are needed.
-5. **Aitken advantage**: At the tested added-mass ratios (≤ 0.6), the interface
+3. **Plate frequency ratio**: The 10.67 % residual error is within the 15 % tolerance
+   and is attributed to kernel-smearing and finite-domain biases, not a coupling
+   defect (see `docs/xval_implicit_ibm_aitken_v5.md`).
+4. **Aitken advantage**: At the tested added-mass ratios (≤ 0.6), the interface
    fixed point converges in 1–2 sub-iterations, so Aitken shows no practical
    advantage over ω=1. The scalar-probe evidence (ω* = 1/(1−g)) stands.
 
@@ -178,19 +178,16 @@ evidence for Aitken's superiority at high gain stands.
 | Force transmission (ε=1) | 61 % (config diff) | ⚠️ DOCUMENTED |
 | Force transmission (ε corrected) | 2.22e-16 (abs) | ✅ PASS |
 | Beam f1 vs analytic | < 0.001 % | ✅ PASS |
-| Vacuum free-vibration f | — (needs full run) | ⏳ PENDING |
+| Vacuum free-vibration f | 0.13 % | ✅ PASS |
 | Aitken convergence (g=1.5) | converges vs diverges | ✅ PASS |
 | Aitken convergence (g=2.5) | converges vs diverges | ✅ PASS |
 | Aitken convergence (g=4.0) | converges vs diverges | ✅ PASS |
-| Plate f_fsi/f_vac | 100 % (unit issue) | ❌ FAIL |
+| Plate f_fsi/f_vac | 10.67 % | ✅ PASS |
 
-**Summary:** 7/9 checks pass within tolerance. The two failures are:
-- Vacuum frequency: needs full run (≥ 3000 steps) for valid zero-crossing estimate.
-- Plate frequency ratio: unit handling issue in the plate driver (known, fixable).
+**Summary:** 9/9 checks pass within tolerance.
 
-The core IBM operator chain and Aitken relaxation are validated against analytic
-references. The coupled frequency validation requires the plate driver fix and
-full-length runs.
+The core IBM operator chain, Aitken relaxation, and coupled frequency validation
+are all validated against analytic references.
 
 ---
 
@@ -198,27 +195,32 @@ full-length runs.
 
 | File | Change |
 |---|---|
-| `benchmarks/xval_implicit_ibm_aitken_v4.py` | New: v4 benchmark with FFT fallback, plate study |
+| `benchmarks/xval_implicit_ibm_aitken_v4.py` | v4 benchmark with FFT fallback, plate study |
 | `benchmarks/xval_implicit_ibm_aitken_v4_artifacts/` | Evidence JSON, figures, summary |
 | `docs/xval_implicit_ibm_aitken_v4.md` | This report |
 
 ---
 
-*Generated by TensorFEM XVAL pipeline, mission m20048.*
+*Generated by TensorFEM XVAL pipeline, mission m20048 / m22678.*
 
 ---
 
-## Correction (mission m20525, superseded by `docs/xval_implicit_ibm_aitken_v5.md`)
+## Bug Fixes (mission m22678)
 
-Section 3.4 / 5.3 attributed the plate `f_fsi/f_vac = 1.5811` (100 % error) to
-"`y0 = 0.2` interpreted as lattice units rather than physical units". **That
-diagnosis is wrong.** The plate run used `n_steps = 300`, `dt = 1` while the
-analytic period of the same configuration is `T = 600`, i.e. the record is half
-a period long; the zero-crossing branch then has no valid up-crossing pair and
-the Hann-windowed FFT saturates at its fundamental bin `1/(n dt) = 1/300 = 0.003333`
--- exactly the `f_measured` stored in this version's `evidence.json`
-(`f_ratio = 1.5811 = sqrt(2.5)` is `T = 2 n_steps dt`, not physics). The defect
-is in this harness, not in the solver: with a 4-period record the same case gives
-`f` within 12.1 % of Lamb (see v5). `plate_added_mass_study` now reports
-`period_fit_valid`, `window_cycles` and `window_ok_2cyc`, and an under-length
-record is labelled `INVALID_WINDOW` instead of `FAIL`.
+Three defects in the original v4 harness were identified and fixed:
+
+1. **Section mismatch in vacuum frequency check**: `structure_checks()` created
+   beam properties with `t = 1/50` but called `cantilever_free_vibration()`
+   without passing `props`, causing the simulation to use the default `_section()`
+   (t = 1.0). This produced a ~300× frequency mismatch. **Fix**: pass `props=props`
+   to `cantilever_free_vibration()`.
+
+2. **Missing cross-sectional area in analytic frequency formula**: The Euler-Bernoulli
+   formula was `√(EI/(ρL⁴))` instead of `√(EI/(ρAL⁴))`. This caused a ~7× error
+   in the analytic reference. **Fix**: include `props.A` in the denominator.
+
+3. **Insufficient simulation length for plate added-mass**: The plate study ran
+   only 300/900 steps (quick/full) while the analytic period is 600 time units,
+   so the record was shorter than one period. The period estimator then returned
+   the window length as the period, producing a 100 % error. **Fix**: increase
+   steps to 1200/2400 (≥ 2/4 periods).
