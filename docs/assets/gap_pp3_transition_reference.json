@@ -1,0 +1,52 @@
+{
+ "analytic": {
+  "first_yield_pressure_Pa": 712514.1365335998,
+  "sigma_eq_per_pa": 525.182562440786,
+  "model": "linear Navier double-sine, small deflection, simply supported"
+ },
+ "case": {
+  "a": 2.0,
+  "b": 1.0,
+  "t": 0.02,
+  "patch": [
+   0.5,
+   0.5
+  ],
+  "layers": 9,
+  "grade": "DH36",
+  "temperature_c": -20.0,
+  "yield_stress_MPa": 374.2
+ },
+ "measured": {
+  "8x4": {
+   "linear-free": {
+    "first_yield_factor_Pa": 986161.7658089317,
+    "first_yield_error": 0.3840592280830172,
+    "elastic_bias": -0.15567349875413816,
+    "fe_surface_mises_per_pa": 443.4255554609652,
+    "reference_comparable": true,
+    "config": {
+     "geometric": false,
+     "inplane_restrained": false
+    },
+    "ladder_Pa": [
+     356257.0682667999,
+     712514.1365335998,
+     1140022.6184537597
+    ],
+    "seconds": 29.8
+   },
+   "nonlinear-fixed": {
+    "first_yield_factor_Pa": 924096.0520305316,
+    "first_yield_error": 0.29695118264780457,
+    "elastic_bias": -0.15567349875407843,
+    "reference_comparable": false,
+    "config": {
+     "geometric": true,
+     "inplane_restrained": true
+    },
+    "source": "docs/assets/gap_pp3_3grid_results.json 8x4 entry"
+   }
+  }
+ }
+}
