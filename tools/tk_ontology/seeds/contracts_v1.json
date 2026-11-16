@@ -1,0 +1,57 @@
+{
+  "version": "1",
+  "description": "Platform-level CRITERION and CONTRACT knowledge objects. These are the obligations every task-kit consumer inherits; they are deliberately kept in one seed file so the tolerance policy has exactly one machine-readable home.",
+  "criteria": [
+    {
+      "id": "CRITERION-PLATFORM-15PCT",
+      "title": "Error above 15 % against experiment/reference is unacceptable",
+      "domain_axis": ["general_mechanics"],
+      "metric": "relative error vs experiment or reference solution",
+      "comparator": ">",
+      "threshold_pct": 15.0,
+      "unit": "percent",
+      "source": "platform precision standard (owner standing order)"
+    },
+    {
+      "id": "CRITERION-PLATFORM-3PCT",
+      "title": "Report target: key quantity within 3 % of the benchmark",
+      "domain_axis": ["general_mechanics"],
+      "metric": "relative error vs analytic/literature benchmark",
+      "comparator": "<",
+      "threshold_pct": 3.0,
+      "unit": "percent",
+      "source": "report discipline (six-element report, item 6)"
+    }
+  ],
+  "contracts": [
+    {
+      "id": "CONTRACT-TASK-KIT-V1",
+      "title": "Task-kit consumption contract v1",
+      "domain_axis": ["general_mechanics"],
+      "scope": "Every task dispatched with an anchor must consume the anchor's KO graph before producing results, and must emit results in the same six-form vocabulary.",
+      "obligations": [
+        "Resolve the anchor slug to a KO; if absent, the task creates it rather than writing free text.",
+        "State the criterion the result is judged by (id of a CRITERION KO), not an ad-hoc tolerance.",
+        "Attach at least one EVIDENCE KO per reported key quantity, with a re-runnable command and an artefact path.",
+        "Declare an evidence grade and keep the mechanically-derived grade reachable for audit (declared vs mechanical may not silently diverge).",
+        "File every defect found as a DEFECT KO linked to the case it was found in, so negative knowledge survives the mission."
+      ],
+      "tolerance_policy": "CRITERION-PLATFORM-15PCT is a hard floor; CRITERION-PLATFORM-3PCT is the reporting target. A result between the two must be reported as an honest partial PASS, never as PASS.",
+      "consumer": "any agent (task-kit dispatcher, reviewer, or downstream solver repo) reading the index"
+    },
+    {
+      "id": "CONTRACT-EVIDENCE-GRADE-V1",
+      "title": "Evidence grading contract v1",
+      "domain_axis": ["general_mechanics"],
+      "scope": "Rules for assigning REAL/MOCK/STUB/WITHHELD/NOT_SUPPORTED to a reported capability.",
+      "obligations": [
+        "REAL requires a re-runnable artefact whose numbers can be recomputed offline; a narrative claim alone is not REAL.",
+        "MOCK requires the artefact to say which values are hard-coded or randomised.",
+        "WITHHELD is used when the artefact referenced by a document does not exist or cannot be parsed; it is not a synonym for 'not yet done'.",
+        "Downgrading a declared grade is always allowed and never requires owner approval; upgrading does."
+      ],
+      "tolerance_policy": "declared_grade vs mechanical_grade divergence is a reportable defect, not a style issue",
+      "consumer": "verifier seat / adversarial review"
+    }
+  ]
+}
