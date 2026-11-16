@@ -4,17 +4,17 @@
   "checks": {
     "A_beta0_vs_navier": {
       "baseline_sigma_vm_MPa": 73.37101604723352,
-      "fem_beta0_sigma_vm_MPa": 73.32334948607426,
-      "rel_err_pct": -0.06496647276709178,
+      "fem_beta0_sigma_vm_MPa": 73.32334946430305,
+      "rel_err_pct": -0.06496650243985602,
       "pass_lt_0_1pct": true
     },
     "B_beta1_vs_timoshenko": {
-      "w_coef_fem": 0.0012773847667803828,
+      "w_coef_fem": 0.0012773947275953415,
       "w_coef_ref_Timoshenko": 0.00126,
-      "w_err_pct": 1.3797433952684734,
-      "M_centre_fem": 0.022926210713800504,
+      "w_err_pct": 1.3805339361382174,
+      "M_centre_fem": 0.02292630079553595,
       "M_centre_ref_Timoshenko": 0.0231,
-      "M_centre_err_pct": -0.7523345722921904,
+      "M_centre_err_pct": -0.7519446080694769,
       "pass_lt_5pct": true
     },
     "C_beta_sweep": {
@@ -46,6 +46,58 @@
         "tests/test_plate_elastic_restraint.py"
       ],
       "note": "green status reported by pytest run (see run log)"
+    },
+    "E_artifact_reproduction": {
+      "solver_module_sha256": "1cd7b32f735448d8be121917d480b6b4b09b30707a822696031dc516fbfdb3cf",
+      "mesh": {
+        "nx": 32,
+        "ny": 28
+      },
+      "tolerance_rel": 1e-09,
+      "worst_rel_diff": 0.0,
+      "rows": [
+        {
+          "beta_x": 0.0,
+          "beta_y": 0.0,
+          "committed_sigma_vm_MPa": 72.18145789164234,
+          "solved_sigma_vm_MPa": 72.18145789164234,
+          "sigma_rel_diff": 0.0,
+          "committed_w_centre_mm": 1.045811737674075,
+          "solved_w_centre_mm": 1.045811737674075,
+          "w_rel_diff": 0.0
+        },
+        {
+          "beta_x": 0.2,
+          "beta_y": 0.2,
+          "committed_sigma_vm_MPa": 70.48409312357394,
+          "solved_sigma_vm_MPa": 70.48409312357394,
+          "sigma_rel_diff": 0.0,
+          "committed_w_centre_mm": 1.0030634576701092,
+          "solved_w_centre_mm": 1.0030634576701092,
+          "w_rel_diff": 0.0
+        },
+        {
+          "beta_x": 1.0,
+          "beta_y": 1.0,
+          "committed_sigma_vm_MPa": 46.15841211307875,
+          "solved_sigma_vm_MPa": 46.15841211307875,
+          "sigma_rel_diff": 0.0,
+          "committed_w_centre_mm": 0.404552137795794,
+          "solved_w_centre_mm": 0.404552137795794,
+          "w_rel_diff": 0.0
+        },
+        {
+          "beta_x": 0.5,
+          "beta_y": 0.0,
+          "committed_sigma_vm_MPa": 70.43490763974006,
+          "solved_sigma_vm_MPa": 70.43490763974006,
+          "sigma_rel_diff": 0.0,
+          "committed_w_centre_mm": 0.9949360879603069,
+          "solved_w_centre_mm": 0.9949360879603069,
+          "w_rel_diff": 0.0
+        }
+      ],
+      "pass_reproduced": true
     },
     "overall": {
       "all_acceptance_met": true
