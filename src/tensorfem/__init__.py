@@ -564,17 +564,14 @@ from .pointwise_regression import (
     verify_directory as verify_pointwise_reference_store,
 )
 
-# -- calibration-factor provenance (JOUR-ICE-STRUCT-CALIB-PROV) --
-from .calibration_provenance import (
-    SourceKind as CalibrationSourceKind,
-    ProvenanceRecord as CalibrationProvenance,
-    AuditVerdict as CalibrationAuditVerdict,
-    CalibrationFactor as CalibrationFactor,
-    CalibratedTotal as CalibratedTotal,
-    UnauditableCalibration as UnauditableCalibration,
-    calibrated_total as calibrated_total,
-    combine_provenance as combine_provenance,
-    fleet_dispersion as calibration_fleet_dispersion,
-    constant_penalty as calibration_constant_penalty,
-    best_single_constant as calibration_best_single_constant,
+
+# -- sparse-observation body-force inversion (JOUR-DIFFLBM-L3-INVERSION) -------
+from .body_force_inversion import (
+    InversionOptions as InversionOptions,
+    ModalBasis as ModalBasis,
+    NodalBasis as NodalBasis,
+    ObservationSet as ObservationSet,
+    PlaneStressMesh as PlaneStressMesh,
+    PlaneStressModel as PlaneStressModel,
+    run_body_force_inversion as run_body_force_inversion,
 )
