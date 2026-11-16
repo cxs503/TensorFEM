@@ -588,6 +588,54 @@ def strip_lower_bound(a: float, b: float, t: float, yield_stress: float,
     return {"pressure": p_x + p_y, "p_x": p_x, "p_y": p_y, "m_p": m_p}
 
 
+def criterion_discrimination(upper: float, lower: float, tolerance: float,
+                             *, label: str = "limit load") -> dict:
+    """Decide whether a ``tolerance`` acceptance against a *bounded* reference
+    can be met by a correct solver at all.
+
+    A plastic limit load quoted from a bracket ``[lower, upper]`` is only known
+    to lie inside that bracket, so the smallest relative error against the upper
+    bound that any correct result can have is ``1 - lower/upper``.  When that
+    floor exceeds ``tolerance`` the acceptance criterion
+
+        ``|p - reference| < tolerance * reference``
+
+    is **unsatisfiable for every solver**, correct or not: a "failure" says
+    nothing about the implementation.  The criterion is only meaningful if the
+    bracket is tighter than ``1/(1 - tolerance)`` (1.111 for 10 %); the returned
+    ``required_tightening_factor`` is how much the bounds must be tightened
+    before the acceptance becomes a test of the solver instead of of the
+    reference.
+
+    Reported verdicts: ``decidable``, ``not_discriminative`` (bracket too wide),
+    ``degenerate`` (``lower == upper``: the reference is exact, the criterion
+    tests equality).
+    """
+    if not (upper > 0.0 and lower > 0.0):
+        raise ValueError("bounds must be positive")
+    if upper < lower:
+        raise ValueError("upper bound must not be below the lower bound")
+    if not (0.0 < tolerance < 1.0):
+        raise ValueError("tolerance must lie in (0, 1)")
+    ratio = upper / lower
+    required = 1.0 / (1.0 - tolerance)
+    best = max(0.0, 1.0 - lower / upper)
+    if ratio == 1.0:
+        verdict = "degenerate"
+    elif ratio <= required:
+        verdict = "decidable"
+    else:
+        verdict = "not_discriminative"
+    return {"label": label, "upper": upper, "lower": lower,
+            "bracket_width_ratio": ratio,
+            "tolerance": tolerance,
+            "required_width_ratio": required,
+            "best_possible_relative_error": best,
+            "required_tightening_factor": ratio / required,
+            "discriminative": verdict == "decidable",
+            "verdict": verdict}
+
+
 # ---------------------------------------------------------------------------
 # 4. FE model, load path, first yield, permanent set
 # ---------------------------------------------------------------------------
