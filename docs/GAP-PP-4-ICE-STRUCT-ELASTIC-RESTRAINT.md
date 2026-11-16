@@ -223,11 +223,20 @@ Observed order p = 2.02 (40/80/160), Richardson extrapolation -0.03%. The
 not a mesh coincidence.
 
 `beta` band (diagonal family, nx=160): 73.32 MPa (SSSS) → 47.27 MPa (clamped),
-i.e. **-35.5%**. Most of the redistribution happens between beta = 0 and 0.2
-(-33%); beyond that the centre stress saturates. Physically this is
-cylindrical-bending-like behaviour of a full-breadth patch (a strip with simply
-supported ends carries `pL^2/8`, with clamped ends `pL^2/24`; two-way action
-puts the ratio below 3).
+i.e. **-35.5%**. The reduction is *not* front-loaded: -2.4% at beta = 0.2,
+-5.6% at 0.4, -10.4% at 0.6, -18.5% at 0.8, i.e. the knee sits at beta -> 1
+because the mapping `zeta = beta/(1-beta)` is strongly nonlinear (beta = 0.2 is
+already `zeta = 0.25`, a soft restraint). Physically the clamped end state is
+cylindrical-bending-like for a full-breadth patch (a strip with simply supported
+ends carries `pL^2/8`, with clamped ends `pL^2/24`; two-way action puts the
+ratio below 3).
+
+> **Corrected 2026-11-15 — see §12.** This paragraph originally read
+> "most of the redistribution happens between beta = 0 and 0.2 (-33%); beyond
+> that the centre stress saturates". That was evidence rot, not physics: the
+> artifact behind the sentence was generated before the tributary-length spring
+> fix (#992) and the consistent patch-load fix (#1014), which made the mid-band
+> 45% over-stiff. The endpoints (and therefore the -35.5% total) were immune.
 
 Literature re-check (`nu=0.3`, uniform load, square, nx=80):
 
@@ -513,3 +522,103 @@ Acceptance criteria bound to committed machine-readable artifacts
 
 Report: **19180**（含 beta 带曲线图 `restraint_acceptance_band.png`）。
 pytest 全量跑已递交调度（cj3252，排队中）；本单为轻量验证欠账闭合，不重跑重算。
+
+---
+
+# 12. Increment 2026-11-15: the committed band artifact was stale — refreshed
+
+## 12.1 What re-opening PR #1101 found
+
+`benchmarks/artifacts/beta_restraint_panel_band.json` was generated at git
+`d111cb7b` (2026-11-14 15:58) and was never regenerated after two solver fixes
+that landed later in main:
+
+* **#992** — the edge restraint is a *distributed* coefficient
+  `c_r [N*m/m/rad]`, so the consistent nodal spring is `c_r * h_i` with `h_i`
+  the tributary edge length. Before the fix the full `c_r` was applied to every
+  edge node, over-applying the restraint by `1/h_i ~ nx ~ 160`.
+* **#1014** — exactly integrated (consistent) Q4 load vector for the pressure
+  patch. At `nx = 160` the 80 mm patch is narrower than one element, so the old
+  fixed 2x2 rule over the whole element mis-sampled the applied load.
+
+Only `beta = 0` was immune (no springs), and because `beta = 1` is already
+asymptotically clamped the band *endpoints* were roughly right — so the artifact
+looked plausible. The **interior was wrong by up to 45%**: `beta = 0.2` was
+committed as 49.1910 MPa where the current solver gives 71.6293 MPa, i.e. the
+artifact claimed -33% stress reduction where the physics gives -2.4%.
+
+The committed tests did not catch it. `test_sweep_artifact_is_machine_readable`
+checks keys, ordering, monotonicity and the `beta = 0/1` literature rows — a
+mid-band-stale but monotone artifact passes all of them.
+
+## 12.2 Refresh (same script, current main)
+
+`python benchmarks/beta_restraint_panel_band.py --nx 160` at main `4aec08fe`;
+solver module sha256 `1cd7b32f...` is recorded in the artifact.
+
+Diagonal family (`beta_x = beta_y`, nx=160, 0.8 x 0.7 m panel, 1 MPa, 8 x 70 cm
+patch):
+
+| beta | committed (pre-#992) sigma_vM ctr [MPa] | refreshed sigma_vM ctr [MPa] | delta | w ctr [mm] | K_rot [N*m/rad] |
+|---|---:|---:|---:|---:|---:|
+| 0.0 | 73.3233 | 73.3233 | -0.00% | 1.04726 | 0.000e+00 |
+| 0.2 | 49.1910 | 71.6293 | +45.61% | 1.00458 | 6.277e+04 |
+| 0.4 | 48.0360 | 69.2621 | +44.19% | 0.94497 | 1.674e+05 |
+| 0.6 | 47.6185 | 65.7174 | +38.01% | 0.85581 | 3.766e+05 |
+| 0.8 | 47.4027 | 59.7984 | +26.15% | 0.70764 | 1.004e+06 |
+| 1.0 | 47.2709 | 47.2710 | +0.00% | 0.40592 | 2.511e+11 |
+
+Band endpoints unchanged: 73.3233 -> 47.2710 MPa, **-35.53%**. The Timoshenko
+Table 8 rows moved by <1e-4 absolute (`w_coef` CCCC 0.00127738 vs 0.00127739),
+as expected — they are `beta = 0/1` aggregates.
+
+Per-edge family (longitudinals only, `beta_y = 0`), cross-checked against the
+*exact* Kirchhoff Levy reference of `CASE-FEM-ELASTIC-RESTRAINT-PATCH-LEVY.md`:
+
+| beta_x | sigma_vM ctr [MPa] | w ctr [mm] | exact Levy sigma_vM [MPa] | error |
+|---|---:|---:|---:|---:|
+| 0.00 | 73.3233 | 1.04726 | (Navier N=401) 73.3710 | -0.065% |
+| 0.25 | 72.6836 | 1.02863 | — | — |
+| 0.50 | 71.5897 | 0.99647 | — | — |
+| 0.75 | 69.2953 | 0.92764 | — | — |
+| 1.00 | 61.5564 | 0.67631 | 59.9473 | +2.684% |
+
+The `beta_x = 1` gap to the exact series is the same Mindlin/Kirchhoff + Ritz
+truncation gap that doc already documents (+2.55%, where the exact field is
+`61.5838` FEM vs `59.9473` exact); it is not a new error, and the *reason* the
+exact value is used at `beta -> 1` is that the variational Ritz reference
+becomes non-convergent there.
+
+## 12.3 Guard against a repeat
+
+* The artifact now carries `solver_sha256` (module hash) and a `guard` block:
+  four `(beta_x, beta_y)` rows re-solved on a coarse `32 x 28` mesh.
+* `tests/test_plate_restraint_panel.py::test_band_artifact_reproduces_from_current_solver`
+  re-solves those rows from the current solver and requires 1e-9 relative
+  agreement — evidence rot is now a test failure, not a silent inconsistency.
+* `benchmarks/verify_restraint_acceptance.py` gained criterion **E**
+  (`E_artifact_reproduction`, worst observed diff `0.0`, tolerance `1e-9`), so
+  the acceptance JSON records artifact-vs-code agreement itself.
+* `benchmarks/artifacts/beta_sweep_results.json` (2 m ice plate, `nx = 12`,
+  different generator) was stale for the same #992 reason and was regenerated:
+  `beta = 0.5` centre deflection 28.16e-6 m committed vs 36.67e-6 m solved
+  (`fraction_from_ss` at `beta = 0.5`: 0.65 -> 0.23).
+
+All acceptance criteria A-E pass after the refresh
+(`benchmarks/artifacts/restraint_acceptance_verification.json`).
+
+## 12.4 Interpretation limit introduced by the correction
+
+The corrected band is monotone but **back-loaded**, so a design sentence must
+quote `beta` *and* `zeta` (or, better, the calibrated `c_r` of
+`CASE-FEM-ELASTIC-RESTRAINT-CALIBRATION.md`). "Even a slightly restrained edge
+removes a third of the peak stress" is only true of the *z* / calibrated
+parameterisation, not of `beta in [0, 0.4]` under `zeta = beta/(1-beta)`.
+
+## 12.5 Reproduction
+
+```bash
+python benchmarks/beta_restraint_panel_band.py --nx 160   # ~2.5 min, 4 threads
+python benchmarks/verify_restraint_acceptance.py          # criteria A-E
+python -m pytest tests/test_plate_restraint_panel.py -q   # 13 tests, ~78 s
+```
