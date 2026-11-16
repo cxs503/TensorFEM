@@ -1,0 +1,98 @@
+{
+  "version": "1",
+  "repo": "TensorFEM",
+  "method_axis": "FEM",
+  "description": "Curated METHOD knowledge objects for the TensorFEM side of the method axis. A method is only listed when its implementation path exists in src/ (the compiler hard-fails otherwise), so a METHOD KO can never point at a module that was removed.",
+  "methods": [
+    {
+      "id": "METHOD-FEM-MINDLIN-PLATE",
+      "title": "Mindlin-Reissner plate with consistent shear integration",
+      "domain_axis": ["structure"],
+      "family": "structural element",
+      "applicability": "Thick-to-moderately-thin plate bending under transverse load; carries transverse shear so a/t down to ~20 is admissible.",
+      "validity_limits": ["Below a/t ~ 10 the element must be shown free of shear locking on the ladder cases.", "Transverse shear correction factor is a modelling choice, not a measured quantity."],
+      "implementation_paths": ["src/tensorfem/plate_mindlin.py"],
+      "references": ["Reissner 1945; Mindlin 1951"]
+    },
+    {
+      "id": "METHOD-FEM-MITC4-SHELL",
+      "title": "4-node MITC4 shell (assumed transverse shear strain)",
+      "domain_axis": ["structure"],
+      "family": "structural element",
+      "applicability": "General thin-shell stiffened-panel and hull plating response including buckling preload paths.",
+      "validity_limits": ["Membrane/shear locking at coarse meshes must be checked against a reference rung.", "Flat-facet geometry: curvature error is O(h^2) in the facet approximation."],
+      "implementation_paths": ["src/tensorfem/shell4_mitc.py", "src/tensorfem/shell4.py"],
+      "references": ["Dvorkin & Bathe 1984"]
+    },
+    {
+      "id": "METHOD-FEM-TIMOSHENKO-BEAM",
+      "title": "Timoshenko beam (shear-deformable) for modal and static response",
+      "domain_axis": ["structure", "vibration_noise"],
+      "family": "structural element",
+      "applicability": "Beam/girder idealisation with shear deformation; modal frequencies of slender ship structures.",
+      "validity_limits": ["Euler-Bernoulli limit recovered only as h -> 0; report both.", "Thin, very slender members may show reduced-order shear over-stiffness."],
+      "implementation_paths": ["src/tensorfem/timoshenko_beam_modal.py", "src/tensorfem/advanced_beam.py"],
+      "references": ["Timoshenko 1921; Blevins 1979 Table 8-1"]
+    },
+    {
+      "id": "METHOD-FEM-COROTATIONAL-BEAM",
+      "title": "Corotational large-deflection beam",
+      "domain_axis": ["structure"],
+      "family": "geometric nonlinearity",
+      "applicability": "Elastica-range cantilever tip deflection where linear theory over-predicts by >5%.",
+      "validity_limits": ["Finite-rotation range only; no plasticity coupling inside this module.", "Path following needs arc-length control beyond the first limit point."],
+      "implementation_paths": ["src/tensorfem/beam_large_deflection.py"],
+      "references": ["Crisfield 1991 ch. 7"]
+    },
+    {
+      "id": "METHOD-FEM-ALM-CONTACT",
+      "title": "Augmented-Lagrangian unilateral contact",
+      "domain_axis": ["contact", "ice"],
+      "family": "constraint enforcement",
+      "applicability": "Hertz-type indentation and ice-structure contact patches with non-penetration constraints.",
+      "validity_limits": ["Contact patch resolution must resolve the contact radius; under-resolved h/a is reported as a modelling error, not a solver error.", "Friction law is a modelling assumption unless separately calibrated."],
+      "implementation_paths": ["src/tensorfem/contact.py", "src/tensorfem/hertz_halfspace_loadcontrol.py"],
+      "references": ["Johnson 1985 §4.2; Simo & Laursen 1992"]
+    },
+    {
+      "id": "METHOD-FEM-CZM-COHESIVE",
+      "title": "Cohesive zone model (3D interface elements)",
+      "domain_axis": ["structure"],
+      "family": "fracture / interface",
+      "applicability": "Delamination and debonding of layered/stiffened assemblies.",
+      "validity_limits": ["Dissipation must be mesh-objective; check the dissipated energy against the analytic DCB value.", "Cohesive stiffness is a numerical parameter that must not change the peak load."],
+      "implementation_paths": ["src/tensorfem/cohesive3d.py", "src/tensorfem/cohesive.py"],
+      "references": ["Dugdale 1960; Barenblatt 1962"]
+    },
+    {
+      "id": "METHOD-FEM-J2-PLASTICITY",
+      "title": "J2 (von Mises) elastoplasticity with implicit tangent",
+      "domain_axis": ["structure", "ice"],
+      "family": "material nonlinearity",
+      "applicability": "Ultimate-strength and plastic-collapse checks of grillages and indented panels.",
+      "validity_limits": ["Associated flow only.", "Limit-point and post-peak response require arc-length control to be trustworthy."],
+      "implementation_paths": ["src/tensorfem/j2_elastoplasticity.py", "src/tensorfem/implicit_plastic_tangent.py"],
+      "references": ["Simo & Hughes 1998 ch. 3"]
+    },
+    {
+      "id": "METHOD-FEM-HEAT-L2",
+      "title": "Steady/transient heat conduction with L2 projection error measure",
+      "domain_axis": ["heat_transfer"],
+      "family": "scalar field",
+      "applicability": "Thermal field of polar/plate structures feeding thermoelastic stress.",
+      "validity_limits": ["The L2 norm must be measured against the interpolant of the exact solution, not the exact solution itself (see the norm-measurement defect)."],
+      "implementation_paths": ["src/tensorfem/heat_conduction_l2.py", "src/tensorfem/thermal.py"],
+      "references": ["Carslaw & Jaeger 1959"]
+    },
+    {
+      "id": "METHOD-FEM-IBM-AITKEN",
+      "title": "Immersed boundary FSI with Aitken dynamic under-relaxation",
+      "domain_axis": ["vibration_noise", "general_mechanics"],
+      "family": "partitioned coupling",
+      "applicability": "Added-mass-dominated fluid-structure sub-iteration where a fixed relaxation factor stalls.",
+      "validity_limits": ["Aitken convergence is a property of the interface operator; report the sub-iteration gain, not just 'converged'.", "Added-mass ratio beyond the tested band is unverified."],
+      "implementation_paths": ["src/tensorfem/ibm_aitken_implicit.py", "src/tensorfem/aitken_multimode.py"],
+      "references": ["Aitken 1926; Küttler & Wall 2008"]
+    }
+  ]
+}

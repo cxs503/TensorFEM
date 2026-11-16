@@ -1,0 +1,86 @@
+{
+  "version": "1",
+  "description": "Closed relation vocabulary for KO schema v1. A relation is legal only if (form of subject, verb, form of object) matches a row here. Edges are stored once on the subject; the compiler materialises the inverse edge deterministically so a consumer can walk either direction. 'cardinality' constrains how many objects a subject may point at through the verb.",
+  "verbs": [
+    {
+      "verb": "has_criterion",
+      "from": "CASE",
+      "to": "CRITERION",
+      "inverse": "criterion_of",
+      "cardinality": "one_to_one",
+      "meaning": "The case is judged by this numeric acceptance criterion."
+    },
+    {
+      "verb": "has_evidence",
+      "from": "CASE",
+      "to": "EVIDENCE",
+      "inverse": "evidence_of",
+      "cardinality": "one_to_many",
+      "meaning": "A concrete artefact was produced for this case."
+    },
+    {
+      "verb": "uses_method",
+      "from": "CASE",
+      "to": "METHOD",
+      "inverse": "method_used_in",
+      "cardinality": "one_to_many",
+      "meaning": "The numerical method exercised by the case."
+    },
+    {
+      "verb": "evaluated_against",
+      "from": "EVIDENCE",
+      "to": "CRITERION",
+      "inverse": "evaluated_by",
+      "cardinality": "one_to_one",
+      "meaning": "The evidence artefact was compared against this criterion."
+    },
+    {
+      "verb": "found_in",
+      "from": "DEFECT",
+      "to": "CASE",
+      "inverse": "has_defect",
+      "cardinality": "one_to_many",
+      "meaning": "The defect was observed while executing / auditing this case."
+    },
+    {
+      "verb": "violates",
+      "from": "DEFECT",
+      "to": "CRITERION",
+      "inverse": "violated_by",
+      "cardinality": "one_to_many",
+      "meaning": "The defect is the concrete instance of breaking this criterion."
+    },
+    {
+      "verb": "limits",
+      "from": "DEFECT",
+      "to": "METHOD",
+      "inverse": "limited_by",
+      "cardinality": "one_to_many",
+      "meaning": "The defect bounds the validity domain of the method."
+    },
+    {
+      "verb": "requires",
+      "from": "CONTRACT",
+      "to": "CRITERION",
+      "inverse": "required_by",
+      "cardinality": "one_to_many",
+      "meaning": "The task-kit contract obliges the producer to report against this criterion."
+    },
+    {
+      "verb": "supersedes",
+      "from": "EVIDENCE",
+      "to": "EVIDENCE",
+      "inverse": "superseded_by",
+      "cardinality": "one_to_many",
+      "meaning": "Version chain: the newer artefact replaces the older one for the same case."
+    },
+    {
+      "verb": "refines",
+      "from": "METHOD",
+      "to": "METHOD",
+      "inverse": "refined_by",
+      "cardinality": "one_to_many",
+      "meaning": "The method is a narrowing/specialisation of a more general method."
+    }
+  ]
+}
