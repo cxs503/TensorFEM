@@ -1,0 +1,57 @@
+{
+  "mission_id": 22811,
+  "audited_mission": 22758,
+  "anchor_slug": "JOUR-DIFFLBM-REF-VERIFY",
+  "repo": "TensorFEM",
+  "audited_commit": "794447ec -> merge 01ad0648 (PR #1172)",
+  "maturity_level": 1,
+  "disposition": "request changes (reopen): reference [3] Guo DOI 10.1063/1.1474820 does not resolve (Crossref/doi.org 404) and stitches PRE 65,046308 title onto Phys. Fluids 14,2007-2010 venue; run_artifacts/entry absent",
+  "evidence": {
+    "impl_files": [
+      "src/tensorfem/lbm_cavity_diff.py",
+      "tests/test_lbm_cavity_diff_ref_verify.py",
+      "docs/REF-VERIFY-JOUR-DIFFLBM-DOI-AUDIT.md"
+    ],
+    "impl_pointers": [
+      "src/tensorfem/lbm_cavity_diff.py:46-59 — References block under audit (Ladd corrected to J. Fluid Mech. 271 + DOI 10.1017/S0022112094001771; Ghia DOI 10.1016/0021-9991(82)90058-4; Guo DOI 10.1063/1.1474820 = non-existent)",
+      "src/tensorfem/lbm_cavity_diff.py:294-301 — Ladd wall closure really implemented (corr = 2.0*W9[i]/CS2*rho*c_i.u_lid on top links) => [1] code-backed",
+      "examples/lbm_cavity_diff_validation.py:48 — GHIA reference table => [2] code-backed",
+      "tests/test_lbm_cavity_diff_ref_verify.py:25,62-64 — regression test hard-codes the invalid Guo DOI as canonical (guards the wrong fact)"
+    ],
+    "entry": "none — m22758 shipped no runnable entry (no CLI/script); the only execution path is the test command, recorded under repro_cmd",
+    "run_artifacts": [],
+    "run_artifacts_note": "m22758 produced no run artifacts at all: /srv/tensor/agent/work/m22758 has no runs/ dir and no artifact for the DOI check (only unrelated legacy artifacts/merge_m3511/). The audit-side artifacts of THIS verdict live in artifacts/refverify_m22758/ and are the auditor's, not the audited mission's.",
+    "tests": [
+      "tests/test_lbm_cavity_diff_ref_verify.py — 6 cases; rerun in this worktree: PYTHONPATH=src pytest tests/test_lbm_cavity_diff_ref_verify.py tests/test_lbm_cavity_diff.py -q => 12 passed, 1 warning in 26.26s",
+      "loophole probe: tests/test_lbm_cavity_diff_ref_verify.py:54 exact-substring guard bypassed by 'J. Supercomput. 4, 149-168' / 'J. Supercomput 4, 149' / 'J. Supercomput. 4:149' (artifacts/refverify_m22758/test_guard_loophole.txt)"
+    ],
+    "integration_callers": [
+      "examples/lbm_cavity_diff_validation.py:41 — from tensorfem.lbm_cavity_diff import CavityConfig, CavityLBM (only consumer; src/tensorfem/__init__.py and cli.py do NOT export lbm_cavity_diff)"
+    ],
+    "benchmark": {
+      "anchor_rows_in_tensor_benchmark_cases": 0,
+      "sibling_anchor_rows": {"JOUR-DIFFLBM-L3-INVERSION": 13},
+      "ref_vs_got": "n/a — documentary anchor: no numeric reference value exists for citation integrity, and m22758 invented none (correct)",
+      "queried_by": "psql -U postgres -d tensorplatform -c \"select case_name,metric,tolerance from tensor_benchmark_cases where anchor_slug='JOUR-DIFFLBM-REF-VERIFY'\" -> (0 rows)"
+    },
+    "repro_cmd": "PYTHONPATH=src python3 scripts/verify_jour_difflbm_refs.py  (independent Crossref resolution; cached in artifacts/refverify_m22758/crossref_cache.json) ; PYTHONPATH=src python3 -m pytest tests/test_lbm_cavity_diff_ref_verify.py tests/test_lbm_cavity_diff.py -q",
+    "external_anchor": "Crossref/doi.org live resolution (2026-11-16): 10.1017/S0022112094001771 -> J. Fluid Mech. 271, 285-309 (1994) MATCH; 10.1016/0021-9991(82)90058-4 -> J. Comput. Phys. 48, 387-411 (1982) MATCH; 10.1063/1.1474820 -> HTTP 404 NOT REGISTERED; cited title belongs to 10.1103/PhysRevE.65.046308, cited venue Phys. Fluids 14, 2007-2010 belongs to 10.1063/1.1471914 ('An extrapolation method for boundary conditions in LBM')",
+    "audit_artifacts": [
+      "docs/AUDIT-m22758-JOUR-DIFFLBM-REF-VERIFY-board-audit.md",
+      "artifacts/refverify_m22758/verification_matrix.json",
+      "artifacts/refverify_m22758/crossref_cache.json",
+      "artifacts/refverify_m22758/disambiguation.json",
+      "artifacts/refverify_m22758/test_guard_loophole.txt",
+      "artifacts/refverify_m22758/fig_refverify.png"
+    ],
+    "level_delta": "claimed by m22758 report: '3/3 references verified, no unverified residue' => implied documentary completeness; machine-checkable substance = L1 only (unit-level citation-integrity test), and its content is falsified for 1/3 references",
+    "notes": [
+      "BLOCKING: reference [3] Guo (2002) DOI 10.1063/1.1474820 is unregistered; the citation mixes PRE 65,046308 (title/authors/year) with Phys. Fluids 14,2007-2010 = 10.1063/1.1471914. m22758 graded it 'verified'.",
+      "MAJOR: audit used no external anchor ('本机无外网'); Crossref/doi.org are reachable from this ecosystem (verified for 2 DOIs), so the stated limitation does not hold.",
+      "MAJOR: [3] is decorative — no forcing/Guo term exists in lbm_cavity_diff.py (grep after stripping the docstring: 0 hits), yet audit doc/report claim 'Guo 力项'.",
+      "MINOR: regression guard is an exact-substring check (bypassed by page-range/punctuation variants) and asserts DOI presence, not DOI validity.",
+      "INFO: 0 benchmark rows for this anchor (documentary anchor) — the 'benchmark ref vs got' leg of the three-piece set does not exist here; no numbers were fabricated.",
+      "Repair spec is machine-generated in artifacts/refverify_m22758/verification_matrix.json:repair_spec (replace DOI with 10.1103/PhysRevE.65.046308, drop the Phys. Fluids venue or cite 10.1063/1.1471914 with its own title, and either implement the forcing term or mark [background])."
+    ]
+  }
+}
