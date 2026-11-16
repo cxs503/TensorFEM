@@ -1,0 +1,169 @@
+{
+  "anchor": "GAP-PP-3-ICE-STRUCT-PLASTIC-SET",
+  "case": {
+    "a": 2.0,
+    "b": 1.0,
+    "t": 0.02,
+    "patch": [
+      0.5,
+      0.5
+    ],
+    "young": 206000000000.0,
+    "poisson": 0.3,
+    "hardening": 1000000000.0,
+    "grade": "DH36",
+    "temperature_c": -20.0,
+    "layers": 9
+  },
+  "material": {
+    "grade": "DH36",
+    "temperature_c": -20.0,
+    "yield_stress_MPa": 374.2,
+    "yield_stress_reference_MPa": 355.0,
+    "sensitivity_MPa_per_K": -0.48,
+    "amplification": 1.0540845070422535,
+    "ductile": true,
+    "note": "linear flow-stress fit, slope 0.48 MPa/K, design temperature -20 C"
+  },
+  "reference": {
+    "p_yield_navier": 712514.1365335998,
+    "sigma_eq_per_pa_navier": 525.182562440786,
+    "source": "Navier double sine series, simply supported, patch load"
+  },
+  "probe_factor": 0.2,
+  "meshes": {
+    "8x4": {
+      "nx": 8,
+      "ny": 4,
+      "elements": 32,
+      "h": 0.25,
+      "sigma_eq_per_pa_linear_free": 443.4255554609692,
+      "sigma_eq_per_pa_anchored": 443.42555546096395,
+      "config_delta": -1.176836406102666e-14,
+      "p_yield_elastic": 843884.6056380201,
+      "error_elastic": 0.18437594760370804,
+      "bias_elastic": -0.1556734987541306,
+      "seconds": [
+        3.6,
+        4.3
+      ]
+    },
+    "16x8": {
+      "nx": 16,
+      "ny": 8,
+      "elements": 128,
+      "h": 0.125,
+      "sigma_eq_per_pa_linear_free": 508.2012410808423,
+      "sigma_eq_per_pa_anchored": 508.2012410807256,
+      "config_delta": -2.2959412149248237e-13,
+      "p_yield_elastic": 736322.483597544,
+      "error_elastic": 0.033414560979480985,
+      "bias_elastic": -0.03233413021373566,
+      "seconds": [
+        17.8,
+        27.5
+      ]
+    },
+    "24x12": {
+      "nx": 24,
+      "ny": 12,
+      "elements": 288,
+      "h": 0.08333333333333333,
+      "sigma_eq_per_pa_linear_free": 517.9591464169378,
+      "sigma_eq_per_pa_anchored": null,
+      "config_delta": null,
+      "p_yield_elastic": 722450.8005864675,
+      "error_elastic": 0.01394591846445295,
+      "bias_elastic": -0.013754104839805437,
+      "seconds": [
+        30.4,
+        null
+      ],
+      "note": "anchored probe not run at this mesh (local 120 s window); the low-load probe is configuration independent to 1e-13 (8x4, 16x8 columns)"
+    }
+  },
+  "dense_ladder": {
+    "8x4": {
+      "first_yield_factor": 843884.6056381701,
+      "ladder_factors": [
+        0.3,
+        0.6,
+        0.9,
+        1.1,
+        1.2,
+        1.35
+      ],
+      "path": [
+        [
+          0.3,
+          94.784,
+          0.0
+        ],
+        [
+          0.6,
+          189.568,
+          0.0
+        ],
+        [
+          0.9,
+          284.352,
+          0.0
+        ],
+        [
+          1.1,
+          347.542,
+          0.0
+        ],
+        [
+          1.2,
+          379.136,
+          0.0
+        ],
+        [
+          1.35,
+          418.834,
+          0.0
+        ]
+      ],
+      "seconds": 29.4,
+      "error_dense_ladder": 0.18437594760391865,
+      "delta_vs_elastic_field": 1.7781975027434752e-13
+    }
+  },
+  "criteria": {
+    "mesh_order": [
+      "8x4",
+      "16x8",
+      "24x12"
+    ],
+    "convergence": {
+      "h": [
+        0.25,
+        0.125,
+        0.08333333333333333
+      ],
+      "errors": [
+        0.18437594760370804,
+        0.033414560979480985,
+        0.01394591846445295
+      ],
+      "observed_order": 2.1550680014468018,
+      "extrapolated_error": -3.469446951953614e-18,
+      "asymptotic": true
+    },
+    "transition_lt_5pct_elastic_field": {
+      "finest_mesh": "24x12",
+      "error_finest": 0.01394591846445295,
+      "met_at_finest_mesh": true,
+      "met_from_mesh": "16x8",
+      "extrapolated_error": -3.469446951953614e-18,
+      "asymptotic": true,
+      "met_in_mesh_limit": true,
+      "basis": "sigma_y / (surface Mises per Pa of one elastic solve); ladder independent, exact while the pre-yield response is linear"
+    },
+    "dense_ladder_reproduces_elastic_field": {
+      "8x4": true
+    },
+    "note": "The +20 % of the anchored 3-grid matrix is a *ladder* artefact of PatchPath.first_yield_factor: the crossing is interpolated across a rung that already sits on the saturated branch. On a ladder that stays elastic up to the transition the path crossing reproduces the elastic-field value, and the elastic-field error converges with h."
+  }
+}

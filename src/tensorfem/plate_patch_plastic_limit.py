@@ -1438,6 +1438,27 @@ def plate_capacity_summary(a: float, b: float, t: float, *, young: float,
     # Is a *linear* analytic reference allowed to judge this path?  See
     # :func:`first_yield_reference`.
     fe["elastic_reference"] = first_yield_reference(geometric, inplane_restrained)
+    # --- transition point: two estimators with different bases ---------------
+    # ``first_yield_factor`` below is the crossing of the *path's* surface Mises
+    # with ``sigma_y``.  It is the transition load only while the load ladder
+    # brackets that crossing inside the *elastic* branch: when one ladder point
+    # already sits on the yielded, saturated branch (~1.13 sigma_y) the linear
+    # interpolation over-reads the transition.  Measured on 16x8, 2 x 1 x 0.020 m,
+    # DH36 at -20 C: path crossing 0.8597 MPa (+20.7 %) against the elastic field
+    # 0.7363 MPa (+3.3 %) of the very same mesh.
+    # ``first_yield_factor_elastic`` is ladder independent (one elastic solve,
+    # ``fe_sigma_per_pa``) and exact while the pre-yield response is linear; on a
+    # ladder dense enough to stay elastic up to yield it reproduces the path
+    # crossing to 1e-13 (8x4: both 843884.605638 Pa, docs/
+    # CASE-GAP-PP-3-TRANSITION-DETECTOR.md).  It is the estimator a *linear*
+    # reference may be judged against (``elastic_reference["comparable"]``).
+    elastic_factor = flow.yield_stress / fe_sigma_per_pa
+    fe["first_yield_factor_elastic"] = elastic_factor
+    fe["first_yield_error_elastic"] = \
+        (elastic_factor - elastic["pressure"]) / elastic["pressure"]
+    fe["first_yield_error_path"] = fe.get("first_yield_error")
+    fe["first_yield_basis"] = ("elastic-field" if fe["elastic_reference"]["comparable"]
+                               else "path-crossing (reference not comparable)")
     if path.first_yield_factor is not None:
         fe["first_yield_error"] = (fe["first_yield_factor"] - elastic["pressure"]) / elastic["pressure"]
         fe["first_yield_error_comparable"] = fe["elastic_reference"]["comparable"]
