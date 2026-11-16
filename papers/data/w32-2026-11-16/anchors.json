@@ -1,0 +1,416 @@
+[
+ {
+  "id": "A1",
+  "discipline": "resistance",
+  "topic": "ITTC-57 摩擦线",
+  "anchor_kind": "closed_form_recomputed",
+  "citation": "ITTC 1957（8th ITTC, Madrid）阻力委员会推荐摩擦线；ITTC Recommended Procedure 7.5-02-02-01 沿用",
+  "formula": "Cf = 0.075/(log10(Re) - 2)^2",
+  "values": {
+   "Re": [
+    1000000.0,
+    10000000.0,
+    100000000.0,
+    1000000000.0
+   ],
+   "Cf": [
+    0.0046875,
+    0.003,
+    0.00208333,
+    0.00153061
+   ],
+   "Cf_KCS_model_Re_1.345e+07": 0.00285114,
+   "Cf_KVLCC2_full": 0.00139517,
+   "Cf_SUBOFF_Re_1.166e+07": 0.00292167
+  },
+  "Re_kcs_model": 13454381.818181818,
+  "Re_suboff": 11656793.678665495,
+  "checks": [
+   {
+    "name": "monotone_decreasing_in_Re",
+    "pass": true
+   },
+   {
+    "name": "Cf_at_Re1e7_in_[0.0025,0.0035]",
+    "pass": true,
+    "value": 0.003
+   }
+  ],
+  "verification": "REAL（闭式解本机复算，无外部数值依赖）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A2",
+  "discipline": "resistance",
+  "topic": "ITTC-78 粗糙度补偿（ΔCf）",
+  "anchor_kind": "closed_form_recomputed",
+  "citation": "ITTC 1978 性能预报法（ITTC Recommended Procedure 7.5-02-03-01.4）粗糙度补偿项",
+  "formula": "dCf = [105 (ks/L)^(1/3) - 0.64] x 1e-3",
+  "values": {
+   "dCf_ks150_L230": 0.00027056,
+   "dCf_ks150_L320": 0.00017565,
+   "ks_critical_L230_m": 5.2083e-05,
+   "dCf_ratio_320_over_230": 0.64919
+  },
+  "checks": [
+   {
+    "name": "monotone_increasing_in_ks",
+    "pass": true
+   },
+   {
+    "name": "positivity_domain_ks>ks_crit",
+    "pass": true,
+    "note": "ks_crit=5.208e-05 m < 150 µm ⇒ 标准工况在适用域内；低于 ks_crit 时 ITTC-78 给负补偿（公式边界，非物理）"
+   }
+  ],
+  "verification": "REAL（闭式解本机复算）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A3",
+  "discipline": "resistance",
+  "topic": "KCS 3600TEU 集装箱船（SIMMAN 2008 / Tokyo-2015 KCS workshop）",
+  "anchor_kind": "cited_value + identity_recomputed",
+  "citation": "KCS 基准船（KRISO 3600TEU）：SIMMAN 2008 与 Tokyo-2015 KCS Workshop 公开几何与拖曳试验值；Lpp=230 m, B=32.2 m, T=10.8 m, Cb=0.6506, S=9530 m²（全尺度），λ=31.6，设计航速 24 kn，模型尺度 C_T=3.557e-3（设计点 Fr=0.26）",
+  "values": {
+   "L": 230.0,
+   "B": 32.2,
+   "T": 10.8,
+   "Cb": 0.6506,
+   "S_full": 9530.0,
+   "V_kn": 24.0,
+   "V_ms": 12.3467,
+   "Fr_recomputed": 0.26,
+   "S_model": 9.5437,
+   "V_model_ms": 2.1964,
+   "CT_model_cited": 0.003557,
+   "RT_model_N_recomputed": 83.93,
+   "Cf_model_ITTC57": 0.002851,
+   "CT_minus_1p1Cf": 0.000421
+  },
+  "checks": [
+   {
+    "name": "Fr_recompute_matches_design_0.26",
+    "pass": true,
+    "value": 0.26
+   },
+   {
+    "name": "CT_exceeds_(1+k)_Cf_k1.1",
+    "pass": true
+   },
+   {
+    "name": "RT_model_in_[70,95]_N",
+    "pass": true,
+    "value": 83.93
+   },
+   {
+    "name": "Cb_range_plausible_0.4_0.9",
+    "pass": true
+   }
+  ],
+  "verification": "REAL（几何与 C_T 为公开试验值；Fr/S/R_T 由本机重算，用于抓量纲/单位错）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A4",
+  "discipline": "seakeeping",
+  "topic": "ITTC/Bretschneider 波浪谱（Hs 与谱面积恒等）",
+  "anchor_kind": "identity_recomputed",
+  "citation": "Bretschneider (1959)；ITTC 1978（15th ITTC）推荐波谱 S(ω)=(5/16)Hs²/ωp (ωp/ω)^5 exp(−5/4 (ωp/ω)^4)",
+  "formula": "∫0∞ S(ω)dω = Hs²/16；峰值在 ω=ωp",
+  "values": {
+   "Hs": 5.0,
+   "wp": 0.8,
+   "integral": 1.562461,
+   "target_Hs2_16": 1.5625,
+   "rel_err": 2.469080630078224e-05,
+   "argmax_w": 0.79998
+  },
+  "checks": [
+   {
+    "name": "integral_identity_rel_err<1e-3",
+    "pass": true,
+    "value": 2.469080630078224e-05
+   },
+   {
+    "name": "peak_at_wp",
+    "pass": true
+   }
+  ],
+  "verification": "REAL（谱矩恒等，本机数值积分）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A5",
+  "discipline": "stability",
+  "topic": "2008 IS Code 完整稳性衡准（A 部 2.2）",
+  "anchor_kind": "cited_value(code_clause)",
+  "citation": "IMO Res. MSC.267(85) 2008 IS Code, Part A, 2.2（完整稳性衡准）；平台报告 #4963 已引同一组条款值",
+  "values": {
+   "area_GZ_to_30_deg_min": 0.055,
+   "area_GZ_to_40_deg_min": 0.09,
+   "area_30_to_40_min": 0.03,
+   "GZ_at_30_deg_min": 0.2,
+   "GZ_max_min": 0.2,
+   "GM0_min": 0.15
+  },
+  "checks": [
+   {
+    "name": "clause_nesting_0.055+0.030<=0.090",
+    "pass": true,
+    "note": "0.085 ≤ 0.090：40° 面积衡准比两段之和大 0.005 m·rad，非冗余条款"
+   }
+  ],
+  "verification": "REAL（规范条款数值；平台符合性需由 research task 逐工况复算）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A6",
+  "discipline": "manoeuvring",
+  "topic": "IMO MSC.137(76) 操纵性衡准（回转/初始回转/Z 形）",
+  "anchor_kind": "cited_value(code_clause)",
+  "citation": "IMO Res. MSC.137(76) 船舶操纵性标准（2002）：回转圈进距 ≤4.5L、战术直径 ≤5L、10°/10° 与 20°/20° Z 形首超越角 ≤25°、初始回转 10° 航向变化所需纵向距离 ≤2.5L",
+  "values": {
+   "advance_max_in_L": 4.5,
+   "tactical_diameter_max_in_L": 5.0,
+   "overshoot_max_deg": 25.0,
+   "initial_turn_dist_max_in_L": 2.5,
+   "L_KCS_m": 230.0,
+   "advance_max_m_KCS": 1035.0,
+   "tactical_max_m_KCS": 1150.0,
+   "initial_turn_max_m_KCS": 575.0
+  },
+  "checks": [
+   {
+    "name": "advance<tactical_by_construction",
+    "pass": true
+   },
+   {
+    "name": "overshoot_bounds_positive",
+    "pass": true
+   }
+  ],
+  "verification": "REAL（规范条款数值；平台回转/Z 形算例的符合性由 research task 判定）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A7",
+  "discipline": "structure",
+  "topic": "IACS UR S11 总纵波浪弯矩（中拱/中垂）",
+  "anchor_kind": "closed_form_recomputed",
+  "citation": "IACS Unified Requirement S11（船体总纵强度）2.2：M_wh = +0.19 C L² B Cb，M_ws = −0.11 C L² B (Cb+0.7) [kN·m]，C = 10.75 − ((300−L)/100)^1.5（90<L≤300），C=10.75（300<L≤350）",
+  "values": {
+   "KCS": {
+    "C": 10.164337981426147,
+    "M_wh_kNm": 2140219.4,
+    "M_ws_kNm": -2572231.6
+   },
+   "KVLCC2": {
+    "C": 10.75,
+    "M_wh_kNm": 9823534.8,
+    "M_ws_kNm": -10603482.4
+   }
+  },
+  "checks": [
+   {
+    "name": "C_KCS_in_[7,10.75]",
+    "pass": true,
+    "value": 10.1643
+   },
+   {
+    "name": "M_wh_KVLCC2_in_[5e6,2e7]_kNm",
+    "pass": true,
+    "value": 9823534.8
+   },
+   {
+    "name": "sagging_dominates_for_Cb<0.96_per_formula",
+    "pass": true,
+    "note": "S11 两式为独立回归：|M_ws|>M_wh 当且仅当 0.11(Cb+0.7)>0.19Cb ⇔ Cb<0.9625。KCS/KVLCC2 的 Cb=0.6506/0.8098 均落此侧 ⇒ 任何『中拱恒大于中垂』的实现都是错的"
+   }
+  ],
+  "verification": "REAL（规则闭式本机复算；平台船体梁算例的复核对齐由 research task 判定）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A8",
+  "discipline": "propulsion",
+  "topic": "作动盘（Froude/Rankine）动量理论理想效率",
+  "anchor_kind": "closed_form_recomputed",
+  "citation": "Froude (1889) / Rankine (1865) 作动盘动量理论；Carlton, Marine Propellers and Propulsion (3rd ed.) 第 2 章给出 η_i=2/(1+√(1+C_T))",
+  "formula": "η_i = 2/(1+sqrt(1+C_T))",
+  "values": {
+   "CT=0.1": 0.976177,
+   "CT=0.3": 0.934503,
+   "CT=0.5": 0.898979,
+   "CT=1.0": 0.828427,
+   "CT=2.0": 0.732051
+  },
+  "checks": [
+   {
+    "name": "eta<=1_for_all_CT",
+    "pass": true
+   },
+   {
+    "name": "eta_monotone_decreasing_in_CT",
+    "pass": true
+   },
+   {
+    "name": "eta_CT_to_0_approaches_1",
+    "pass": true
+   }
+  ],
+  "verification": "REAL（闭式解本机复算）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A9",
+  "discipline": "green",
+  "topic": "EEDI 参考线（按船型分线）",
+  "anchor_kind": "cited_value + identity_recomputed",
+  "citation": "IMO Res. MEPC.203(62) 及后续修正（MEPC.308(73)）EEDI 参考线：散货船 a=961.79, c=0.477；集装箱船 a=174.22, c=0.201（容量=70% DWT）",
+  "values": {
+   "EEDI_ref_bulk_180k": 2.994,
+   "EEDI_ref_container_150k": 15.875,
+   "bulk_line_on_container_over_container_line": 0.2058,
+   "implied_error_pct": -79.42
+  },
+  "checks": [
+   {
+    "name": "bulk_180k_in_[2,6]_g_per_t_nm",
+    "pass": true,
+    "value": 2.994
+   },
+   {
+    "name": "container_150k_in_[10,25]",
+    "pass": true,
+    "value": 15.875
+   },
+   {
+    "name": "reproduces_reported_container_misuse_-79.4pct",
+    "pass": true,
+    "value": -79.42,
+    "note": "与 registry 已引平台审计报告 #1613/#1044 判定的『集装箱参考线误用 −79.4%』独立吻合（差 ≤1 个百分点）"
+   }
+  ],
+  "verification": "REAL（规范系数 + 本机复算；并与他席报告的审计结论交叉验证）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A10",
+  "discipline": "ice",
+  "topic": "Hertz 弹性接触（冰-结构碰撞/颗粒接触核）",
+  "anchor_kind": "closed_form_recomputed",
+  "citation": "Hertz (1882) 弹性接触；Johnson, Contact Mechanics (1985) 第 3–4 章（F=(4/3)E*√R δ^{3/2}）",
+  "values": {
+   "F_N": 100000.0,
+   "R_m": 0.5,
+   "Estar_Pa": 8000000000.0,
+   "a_m": 0.016736,
+   "p0_Pa": 170469700.9,
+   "delta_m": 0.00056018
+  },
+  "checks": [
+   {
+    "name": "F_doubling_scales_force_with_delta_pow_1.5",
+    "pass": true
+   },
+   {
+    "name": "p0_equals_1.5_mean_pressure",
+    "pass": true
+   }
+  ],
+  "verification": "REAL（闭式解本机复算）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A11",
+  "discipline": "vibration",
+  "topic": "四边简支板 Navier 解一阶固有频率",
+  "anchor_kind": "closed_form_recomputed",
+  "citation": "Timoshenko & Woinowsky-Krieger, Theory of Plates and Shells (2nd ed., 1959) §30 Navier 解；Blevins, Formulas for Natural Frequency and Mode Shape (1979)",
+  "formula": "ω_mn = π²((m/a)²+(n/b)²)√(D/(ρh)), D=Eh³/(12(1−ν²))",
+  "values": {
+   "a_m": 10.0,
+   "b_m": 4.0,
+   "h_m": 0.02,
+   "E_Pa": 210000000000.0,
+   "rho": 7850.0,
+   "nu": 0.3,
+   "f1_Hz": 3.5649,
+   "f1_h_0.01_Hz": 1.7825,
+   "ratio_h_half": 0.5
+  },
+  "checks": [
+   {
+    "name": "frequency_scales_linearly_with_h",
+    "pass": true
+   },
+   {
+    "name": "f1_in_[1,50]_Hz_for_10x4x0.02_m",
+    "pass": true,
+    "value": 3.5649
+   }
+  ],
+  "verification": "REAL（闭式解本机复算 + 标度律恒等）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A12",
+  "discipline": "resistance",
+  "topic": "DTRC SUBOFF 裸艇体（几何与无量纲化基准）",
+  "anchor_kind": "cited_value + identity_recomputed",
+  "citation": "Groves, Huang & Chang (1989), Geometric Characteristics of DARPA SUBOFF Models, DTRC Report SHD-1298-01：L=4.356 m, D_max=0.508 m, 裸艇体湿表面积 S=5.586 m²；试验速度 3.048 m/s（10 ft/s）",
+  "values": {
+   "L": 4.356,
+   "D": 0.508,
+   "S_wetted": 5.586,
+   "frontal_area": 0.202683,
+   "S_over_frontal": 27.56,
+   "Cf_ITTC57_at_test": 0.002922,
+   "CT_friction_lower_bound_1p0": 0.002922,
+   "CT_friction_lower_bound_1p15": 0.00336
+  },
+  "checks": [
+   {
+    "name": "S_over_frontal_in_[20,35]",
+    "pass": true,
+    "value": 27.56
+   },
+   {
+    "name": "Cf_in_[0.0025,0.0040]_at_Re1.17e7",
+    "pass": true,
+    "value": 0.002922
+   },
+   {
+    "name": "CT_must_exceed_Cf_because_Cw>0_and_1+k>=1",
+    "pass": true,
+    "note": "(1+k)Cf 是总阻力的下界；k>=0 与 Cw>=0 的推论"
+   }
+  ],
+  "platform_confrontation": {
+   "platform_value": 0.04265,
+   "platform_path": "/root/tensor-ecosystem/TensorLBM/benchmarks/verified/suboff_sail_resistance/verdict.json",
+   "ratio_platform_over_Cf": 14.6,
+   "reading": "平台 SUBOFF 阻力系数 0.04265 是 A12 摩擦下界 0.0029 的 14.6 倍，物理上不可能是同一无量纲化下的总阻力系数；只可能是 ①参考面积用错（S=5.586 m² vs 迎流面积 0.2027 m²，比值 27.6 也对不上）或 ②格点/参考速度归一化不同。此项不是本锚判失败，而是**待解问题**：由 research task 把 DTRC 定义钉死后重算。"
+  },
+  "verification": "REAL（公开几何+ITTC-57 下界；任何 SUBOFF 阻力系数的合法区间由 A1/A12 联合钉死）",
+  "all_checks_pass": true
+ },
+ {
+  "id": "A13",
+  "discipline": "ice",
+  "topic": "ISO 19906 冰作用压力-面积关系（全球平均压力）",
+  "anchor_kind": "anchor_pending",
+  "citation": "ISO 19906:2019 Petroleum and natural gas industries — Arctic offshore structures, §10.3 冰作用（条款数值须从标准原文取证；本机无标准全文，故不填数值）",
+  "values": {},
+  "checks": [
+   {
+    "name": "no_value_quoted_without_source_text",
+    "pass": true,
+    "note": "W32 纪律：无原文即不写数值。此锚的取证= research task 的**第一项**（任一派生 ice 课题据此不得进顶刊轨成稿）"
+   }
+  ],
+  "verification": "WITHHELD（锚待取证：必须有 ISO 19906 原文条款引句才能进 evidence_pack 外部节）",
+  "all_checks_pass": true
+ }
+]
