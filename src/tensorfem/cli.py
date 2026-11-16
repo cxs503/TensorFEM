@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 from .benchmarks import run_single_bar, solve_three_bar
@@ -27,6 +28,7 @@ def main() -> None:
             "status",
             "inspect",
             "inverse-identify",
+            "body-force-inversion",
         ),
         help="run, validate, inspect, or verify TensorFEM projects and results",
     )
@@ -41,6 +43,23 @@ def main() -> None:
     )
     parser.add_argument("--seed", type=int, default=1, help="inverse-identify seed")
     parser.add_argument("--starts", type=int, default=3, help="inverse-identify start count")
+    parser.add_argument(
+        "--order", type=int, default=2, help="body-force-inversion modal order (fixed at 2)"
+    )
+    parser.add_argument(
+        "--fraction", type=float, default=0.10, help="body-force-inversion observed node fraction"
+    )
+    parser.add_argument(
+        "--alpha-rel", type=float, default=1.0e-12, help="body-force-inversion relative damping"
+    )
+    parser.add_argument(
+        "--noise", type=float, default=0.0, help="body-force-inversion relative observation noise"
+    )
+    parser.add_argument(
+        "--max-adjoint", type=int, default=50, help="body-force-inversion adjoint-iteration budget"
+    )
+    parser.add_argument("--nx", type=int, default=20, help="body-force-inversion mesh nx")
+    parser.add_argument("--ny", type=int, default=10, help="body-force-inversion mesh ny")
     args = parser.parse_args()
     if args.command == "capabilities":
         print(
@@ -207,6 +226,76 @@ def main() -> None:
             )
         )
         return
+    if args.command == "body-force-inversion":
+        # Entry point of tensorfem.body_force_inversion: recover a distributed
+        # volume-load field from a sparse (<10 %) set of nodal displacement
+        # samples in plane stress.  The exit status is the gate: 0 only when all
+        # three anchor acceptance criteria hold (<=10 % observed nodes, field
+        # relative L2 <= 5 %, <= 50 adjoint iterations).  Noisy or out-of-span
+        # runs therefore fail loudly instead of printing a hopeful number.
+        from .body_force_inversion import (
+            InversionOptions,
+            PlaneStressMesh,
+            run_body_force_inversion,
+        )
+
+        if args.order != 2:
+            raise SystemExit(
+                "body-force-inversion: --order is fixed at 2 (the 8-coefficient acceptance "
+                "case); other orders would need a different truth vector"
+            )
+        truth = [1.0, 0.5, -0.4, 0.3, 0.6, -0.7, 0.25, 0.4]
+        result = run_body_force_inversion(
+            mesh=PlaneStressMesh(Lx=1.0, Ly=0.25, nx=args.nx, ny=args.ny),
+            truth_coeffs=truth,
+            order=2,
+            fraction=args.fraction,
+            options=InversionOptions(
+                max_adjoint=args.max_adjoint,
+                alpha_rel=args.alpha_rel,
+                noise=args.noise,
+                seed=args.seed,
+            ),
+        )
+        row = {
+            "schema": result["schema"],
+            "entry": "tensorfem.cli body-force-inversion",
+            "mesh": result["mesh"],
+            "observations": result["observations"],
+            "n_unknown": result["basis"]["n_unknown"],
+            "iterations": result["iterations"],
+            "adjoint_iteration_budget": result["adjoint_iteration_budget"],
+            "stop_reason": result["stop_reason"],
+            "field_rel_l2": result["field_rel_l2"],
+            "relative_data_residual": result["relative_data_residual"],
+            "acceptance": result["acceptance"],
+            "passed": all(result["acceptance"].values()),
+            "coefficients": result["coefficients"],
+            "convergence": result["convergence"],
+        }
+        payload = json.dumps(row, indent=2, ensure_ascii=False)
+        if args.output is None:
+            target = (
+                args.runs
+                / "body-force-inversion"
+                / f"order{args.order}-frac{args.fraction:g}-noise{args.noise:g}"
+                / "result.json"
+            )
+            target.parent.mkdir(parents=True, exist_ok=True)
+        else:
+            target = args.output
+            # An existing directory (or a path ending in "/") gets the canonical
+            # file name; anything else is the file the caller asked for.  Suffix
+            # sniffing was wrong: "order2-frac0.1-noise0" has a suffix ".1-noise0".
+            raw = str(args.output)
+            if target.is_dir() or raw.endswith(("/", os.sep)) or target.suffix == "":
+                target.mkdir(parents=True, exist_ok=True)
+                target = target / "result.json"
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(payload + "\n", encoding="utf-8")
+        print(payload)
+        raise SystemExit(0 if row["passed"] else 1)
     if args.command == "inverse-identify":
         # Entry point of tensorfem.inverse: one identification run, the
         # JSON-lines convergence log and the run summary are written under

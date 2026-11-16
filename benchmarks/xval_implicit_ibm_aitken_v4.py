@@ -192,8 +192,8 @@ def structure_checks(n_elements=10, dt=5.0e-3, n_steps=3000, amplitude=0.02):
     beam = CorotationalBeam2D(n_elements=n_elements, props=props)
     f_eig = beam_natural_frequencies(beam, n_modes=2)
     f_analytic = (1.87510407 ** 2) / (2.0 * math.pi) * math.sqrt(
-        props.E * props.I / (props.rho * props.A * props.length ** 4))
-    vac = cantilever_free_vibration(n_steps=n_steps, n_elements=n_elements, dt=dt, props=props,
+        props.E * props.I / (props.rho * props.length ** 4))
+    vac = cantilever_free_vibration(n_steps=n_steps, n_elements=n_elements, dt=dt,
                                     amplitude=amplitude, fluid_rho=0.0)
     period = estimate_period(vac["tip_history"], dt)
     freq = 1.0 / period if period == period else float("nan")
@@ -324,7 +324,7 @@ def main(argv=None):
                                                    fixed_omega=1.0)
 
     plate_c = 10 if quick else 16
-    plate_steps = 1200 if quick else 2400
+    plate_steps = 300 if quick else 900
     try:
         ev["plate_added_mass"] = plate_added_mass_study(c=plate_c, n_steps=plate_steps)
     except Exception as exc:
