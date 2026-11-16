@@ -41,11 +41,22 @@ Verification anchors
 --------------------
 * ``V1``: uniform (step) patch load from :func:`patch_from_contact` matches the
   analytical total force to machine precision (exact sub-cell splitting).
-* ``V2``: Gaussian patch total force matches analytical integral to < 0.5 %.
+* ``V2``: Gaussian patch total force is reproduced *exactly* by the
+  projection: the projected nodal forces sum to the contact-grid force with
+  ``force_error_rel ≈ 1e-15`` at every mesh.  (The 0.55 % gap between the grid
+  force and the infinite-plane analytic ``2*pi*sigma^2*p0`` is an *input*
+  property, not a projection error: −0.539 % is the +-3 sigma contact-window
+  truncation and −0.016 % the bilinear sampling of the Gaussian, see
+  ``docs/VERIFY-patch-from-contact-gaussian-gate.md``.)
 * ``V3``: non-uniform patch peak stress vs uniform patch peak stress difference
   is consistent with the H3-ICE-PLATE-FEM anchor (≈ 0.339 % level for mild
   non-uniformity).
 * ``V4``: end-to-end contact → patch load → plate stress is reproducible.
+* ``V5``: Gaussian patch peak bending stress vs the independent Kirchhoff-Navier
+  series converges monotonically at ~2nd order in h: −6.57 % at nx=16,
+  −1.76 % at nx=32, −0.79 % at nx=48 (series peak 920.37 MPa).  A 2 % agreement
+  claim at nx=16 is *not* attainable and was removed from the gate; see
+  ``artifacts/patch_from_contact_gauss_convergence.json``.
 
 Scope and limitations
 ---------------------
