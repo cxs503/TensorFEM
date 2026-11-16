@@ -43,6 +43,7 @@ import pathlib
 import time
 
 from tensorfem.plate_patch_plastic_limit import (
+    criterion_discrimination,
     analytic_first_yield_pressure,
     ilyushin_sine_upper_bound,
     johansen_twist_upper_bound,
@@ -295,6 +296,21 @@ def analyse() -> int:
             extrapolation["limit_infinity"] / bounds_free["ilyushin_sine"] - 1.0)
         summary["extrapolated_limit_error_vs_yield_line"] = (
             extrapolation["limit_infinity"] / bounds_free["yield_line"] - 1.0)
+    if bounds_free:
+        # The ledger acceptance is "limit load within 10 % of the Ilyushin/upper
+        # bound analysis".  No solver can satisfy that while the admissible
+        # bracket is wide, so the criterion itself is judged here.
+        gate = criterion_discrimination(
+            min(bounds_free["yield_line"], bounds_free["johansen_twist"]),
+            bounds_free["strip_lower"], 0.10, label="limit load vs upper bound")
+        summary["acceptance_discrimination"] = gate
+        for entry in summary["records"]:
+            entry.setdefault("acceptance", {})["criterion_discriminative"] = \
+                gate["discriminative"]
+        print(f"criterion gate: {gate['verdict']} "
+              f"(bracket width {gate['bracket_width_ratio']:.2f}, needs "
+              f"<= {gate['required_width_ratio']:.3f}; best possible error "
+              f"{100 * gate['best_possible_relative_error']:.1f} %)")
     (ART / "patch_plate_plastic_ladder_summary.json").write_text(
         json.dumps(summary, indent=2))
     for entry in summary["records"]:
