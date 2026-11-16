@@ -104,10 +104,7 @@ import torch
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[2] / "src"))
 
-from tensorfem.heat_conduction_l2 import (  # noqa: E402
-    integral_error_norms,
-    run_heat_conduction_l2,
-)
+from tensorfem.heat_conduction_l2 import integral_error_norms  # noqa: E402
 
 FLOAT = torch.float64
 DEV = torch.device("cpu")
@@ -300,9 +297,36 @@ def power_law_residual(results: list[dict], p_ref: float = P_REF) -> float:
     return abs(e0) / e_f
 
 
+def load_independent_solver():
+    """Import ``independent_sparse`` by path, independent of ``sys.path``.
+
+    The cross-check solver sits next to this file and imports no ``tensorfem``
+    module.  ``python benchmarks/verified/fem_heat_conduction_l2/run.py`` puts
+    that directory on ``sys.path``, so a bare ``import independent_sparse`` used
+    to work -- but only in that one invocation mode.  Reached as a library, from
+    the test suite or from ``pytest benchmarks/verified/.../run.py``, the same
+    import raised ``ModuleNotFoundError`` and the reproduction gate
+    (``recompute_without_writing`` -> ``independent_cross_check``) could not run
+    at all (m22937).  Loading by path makes the cross-check reachable from every
+    entry point; the module is cached under its own name so repeated calls and an
+    explicit ``import independent_sparse`` share one instance.
+    """
+    import importlib.util
+
+    cached = sys.modules.get("independent_sparse")
+    if cached is not None:
+        return cached
+    path = Path(__file__).resolve().parent / "independent_sparse.py"
+    spec = importlib.util.spec_from_file_location("independent_sparse", path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["independent_sparse"] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 def independent_cross_check(results: list[dict]) -> dict:
     """Reproduce the ladder with the from-scratch numpy/scipy Q4 solver."""
-    import independent_sparse as isp  # same directory, no tensorfem import
+    isp = load_independent_solver()  # same directory, no tensorfem import
 
     entries = []
     worst_norm = 0.0
