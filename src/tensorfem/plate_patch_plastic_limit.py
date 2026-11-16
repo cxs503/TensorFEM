@@ -1016,8 +1016,14 @@ def path_admissibility(path: "PatchPath", *,
             "capacity_ratio": capacity, "max_moment_ratio": peak_moment}
 
 
+# A two-line intersection is only a *limit* when the final branch is a genuine
+# collapse branch.  Below this ratio the path is truncated by the section gate
+# before a collapse branch forms, and the intersection is numerically unstable.
+COLLAPSE_SLOPE_RATIO = 3.0
+
+
 def limit_load_from_path(path: "PatchPath", *,
-                         criteria: Sequence[float] = (0.02, 0.05, 0.10),
+                         criteria: Sequence[float] = (0.02, 0.05, 0.10, 0.30, 0.40, 0.50),
                          minimum_points: int = 3) -> dict:
     """Extract the plastic *limit load* from a load-deflection path.
 
@@ -1088,9 +1094,19 @@ def limit_load_from_path(path: "PatchPath", *,
 
     # 1. two-line intersection (k is deflection per unit load, so the plastic
     #    branch has k1 > k0; p_c = (k1 p_peak - w_peak)/(k1 - k0))
+    #
+    #    The two-line rule is only a *limit* when the final branch is a genuine
+    #    collapse branch (k1 >> k0).  When the path is truncated by the section
+    #    gate before a collapse branch forms (k1/k0 -> 1), the intersection is
+    #    numerically unstable (the denominator k1 - k0 -> 0) and must be
+    #    withheld in favour of the stiffness criterion, which is defined on the
+    #    *whole* path and is therefore mesh-stable.
     if math.isfinite(k1) and k1 > k0:
         p_c = (k1 * last.load_factor - last.centre_deflection) / (k1 - k0)
-        measurements["intersection_of_tangents"] = float(p_c)
+        if k1 / k0 >= COLLAPSE_SLOPE_RATIO:
+            measurements["intersection_of_tangents"] = float(p_c)
+        else:
+            measurements["intersection_of_tangents_withheld"] = float(p_c)
     # 2. twice the elastic deflection: linear interpolation of the first crossing
     previous = None
     for q in points:
