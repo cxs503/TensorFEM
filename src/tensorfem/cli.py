@@ -71,10 +71,70 @@ def main() -> None:
     parser.add_argument("--ny", type=int, default=10, help="body-force-inversion mesh ny")
     args = parser.parse_args()
     if args.command == "capabilities":
+        # Self-registering capability registry (TensorLBM pilot pattern).
+        # Importing the catalog registers every @capability; the dump is then
+        # derived from the registry (import + static-AST dual mode), not from a
+        # hand-maintained list.
+        from .capability_catalog import (  # noqa: F401  (registers on import)
+            solve_linear_static,
+            solve_frame_static,
+            solve_continuum,
+            solve_modes,
+            solve_linear_buckling,
+            solve_steady_thermal,
+            solve_sparse_static,
+            solve_load_steps,
+            solve_plate_point_load,
+            shell4_stiffness,
+            update_node_facet_contact,
+            solve_hull_girder_uniform_load,
+            morison_base_actions,
+        )
+        from .capability_registry import (
+            dump_capabilities,
+            classify_triad,
+            assert_two_mode_agreement,
+        )
+        _reg_import = dump_capabilities("import")
+        _reg_ast = dump_capabilities("ast")
+        assert_two_mode_agreement()
+        _triad = {
+            "mature": [
+                c["id"] for c in _reg_import["capabilities"]
+                if c["maturity"] == "mature"
+            ],
+            "developing": [
+                c["id"] for c in _reg_import["capabilities"]
+                if c["maturity"] == "developing"
+            ],
+            "undeveloped": [
+                c["id"] for c in _reg_import["capabilities"]
+                if c["maturity"] == "undeveloped"
+            ],
+        }
+        _contracts = {
+            c["id"]: {
+                "callable": c["contract"]["callable_name"],
+                "signature": c["contract"]["signature"],
+                "params": c["contract"]["params"],
+                "returns": c["contract"]["returns"],
+            }
+            for c in _reg_import["capabilities"]
+        }
         print(
             json.dumps(
                 {
                     "version": __import__("tensorfem").__version__,
+                    "registry": {
+                        "count": _reg_import["count"],
+                        "triad": _triad,
+                        "contracts": _contracts,
+                        "dump_modes": {
+                            "import": _reg_import["count"],
+                            "ast": _reg_ast["count"],
+                            "agreement": True,
+                        },
+                    },
                     "stable": [
                         "2-D truss/frame/continuum",
                         "modal/buckling/dynamics",
