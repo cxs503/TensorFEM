@@ -61,6 +61,14 @@ BASELINE_SIGMA_MPA = 73.37101604723352  # Navier N=401, centre von Mises
 BETA_DIAG = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
 BETA_X_ONLY = [0.0, 0.25, 0.5, 0.75, 1.0]
 
+# Cheap (beta_x, beta_y) rows solved on a coarse mesh and stored in the artifact
+# so that a test can re-solve them from the *current* solver.  Committed band
+# numbers silently went stale once (the pre-#992 nodal-spring bug and the
+# pre-#1014 patch-load bug left the artifact untouched); these rows make that
+# class of drift a test failure instead of a silent inconsistency.
+GUARD_NX = 32
+GUARD_CASES = [(0.0, 0.0), (0.2, 0.2), (1.0, 1.0), (0.5, 0.0)]
+
 
 def paper_patch(nx: int, beta_x: float, beta_y: float) -> dict:
     ny = max(1, int(round(nx * S / L)))
@@ -117,6 +125,14 @@ def literature_square(nx: int) -> dict:
     return out
 
 
+def _solver_sha256() -> str:
+    """SHA-256 of the solver module the numbers were produced with."""
+    import hashlib
+    src = (Path(__file__).resolve().parents[1] / "src" / "tensorfem"
+           / "plate_elastic_restraint.py")
+    return hashlib.sha256(src.read_bytes()).hexdigest()
+
+
 def _git_sha() -> str:
     try:
         return subprocess.check_output(
@@ -134,6 +150,8 @@ def main() -> int:
     args = ap.parse_args()
 
     diag = [paper_patch(args.nx, b, b) for b in BETA_DIAG]
+    guard = [dict(paper_patch(GUARD_NX, bx, by), case="paper_panel")
+             for bx, by in GUARD_CASES]
     per_edge = [paper_patch(args.nx, b, 0.0) for b in BETA_X_ONLY]
     lit = literature_square(80)
 
@@ -153,6 +171,8 @@ def main() -> int:
         },
         "baseline_navier_N401_sigma_vm_centre_MPa": BASELINE_SIGMA_MPA,
         "mesh": {"nx": args.nx, "ny": max(1, int(round(args.nx * S / L)))},
+        "solver_module": "src/tensorfem/plate_elastic_restraint.py",
+        "solver_sha256": _solver_sha256(),
         "diagonal_beta": diag,
         "beta_x_only_beta_y_0": per_edge,
         "band": {
@@ -161,6 +181,15 @@ def main() -> int:
             "reduction_vs_SSSS_pct": 100.0 * (1.0 - cccc / ssss),
         },
         "literature_square": lit,
+        # reproducibility guard: solved on a coarse mesh, re-solved by
+        # tests/test_plate_restraint_panel.py from the current solver
+        "guard": {
+            "note": ("re-solved by pytest from the current solver; a mismatch "
+                     "means this artifact no longer matches the code"),
+            "nx": GUARD_NX,
+            "ny": max(1, int(round(GUARD_NX * S / L))),
+            "rows": guard,
+        },
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -175,6 +204,8 @@ def main() -> int:
     print(f"band: SSSS {ssss:.3f} MPa -> clamped {cccc:.3f} MPa "
           f"(-{payload['band']['reduction_vs_SSSS_pct']:.1f}%)")
     print("literature square (nx=80):", json.dumps(lit, indent=1))
+    print(f"guard rows (nx={GUARD_NX}): " + ", ".join(
+        f"({r['beta_x']},{r['beta_y']})={r['sigma_vm_centre_MPa']:.4f}" for r in guard))
     print("written", out)
     return 0
 

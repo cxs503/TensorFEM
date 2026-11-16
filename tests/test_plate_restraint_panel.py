@@ -246,6 +246,49 @@ def test_sweep_artifact_is_machine_readable():
     assert abs(lit["uniform_square_CCCC"]["w_coef"] / TIMOSHENKO_CCCC_W - 1.0) < 0.05
 
 
+def test_band_artifact_reproduces_from_current_solver():
+    """The committed band artifact must reproduce from the *current* solver.
+
+    Regression (found when re-opening PR #1101): the artifact was generated
+    before the tributary-length fix of the nodal rotational spring (#992) and
+    the consistent patch-load fix (#1014).  Only its ``beta = 0`` row survived
+    (no springs involved), so ``test_sweep_artifact_is_machine_readable`` --
+    which only checks structure and monotonicity -- stayed green while the
+    committed mid-band was over-stiff by 45 %: ``beta = 0.2`` was committed as
+    49.19 MPa, the current solver gives 71.63 MPa (nx=160), and the independent
+    Rayleigh-Ritz reference of ``beta_levy_band_verification.json``
+    (0.0059344 m centre deflection) agrees with the solver, not the artifact.
+
+    The coarse ``guard`` rows stored in the artifact are re-solved here, so a
+    future solver/artifact drift is a test failure instead of silent evidence
+    rot.  Re-generate with
+    ``python benchmarks/beta_restraint_panel_band.py --nx 160``.
+    """
+    if not ARTIFACT.exists():
+        pytest.skip("benchmark artifact not generated in this checkout")
+    data = json.loads(ARTIFACT.read_text())
+    guard = data["guard"]
+    case = data["case"]
+    L, S = case["L_m"], case["S_m"]
+    pc = case["patch_length_m"]
+    press = rect_patch_pressure(
+        case["p_MPa"] * 1e6, 0.5 * (L - pc), 0.5 * (L + pc), 0.0, S)
+    assert len(guard["rows"]) >= 3
+    for row in guard["rows"]:
+        res = solve_restrained_panel(
+            guard["nx"], guard["ny"], L, S, case["E_Pa"], case["nu"],
+            case["t_m"], press, beta_x=row["beta_x"], beta_y=row["beta_y"],
+        )
+        pk = peak_bending_stress(res)
+        sig = pk["centre_von_mises"] / 1e6
+        assert sig == pytest.approx(row["sigma_vm_centre_MPa"], rel=1e-9), (
+            f"artifact row beta=({row['beta_x']}, {row['beta_y']}) is stale: "
+            f"committed {row['sigma_vm_centre_MPa']:.6f} MPa, "
+            f"solver {sig:.6f} MPa")
+        assert pk["w_centre"] * 1e3 == pytest.approx(row["w_centre_mm"], rel=1e-9)
+        assert res.K_rot_x == pytest.approx(row["K_rot_x_Nm_per_rad"], rel=1e-9)
+
+
 def test_independent_reference_displacement_is_not_used():
     """Guard against a degenerate 'stress' field: moments must vary in space."""
     ref = json.loads(DATA.read_text())
