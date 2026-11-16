@@ -37,11 +37,17 @@ numpy/scipy Q4 solver that imports no `tensorfem` module (worst L₂ difference
 
 ## Gates
 
+Every gate is a scalar `value <operator> threshold` so a reader can recompute the
+verdict from this table alone; the band [1.95, 2.10] on the finest-pair order is
+carried jointly by `l2_pair_order_ge_1p95` (lower bound) and
+`l2_finest_order_le_2p1` (upper bound), because a prose operator is not
+machine-checkable.
+
 | Gate | Quantity | Value | Threshold | Verdict |
 |---|---|---|---|---|
 | `finest_l2_below_3pct` | Relative L₂ error at the finest mesh (64×64), domain integral | 1.755209e-04 | <= 0.03 | PASS |
 | `l2_pair_order_ge_1p95` | Worst observed h-refinement order over all pairs with coarse nx ≥ 8 | 1.997759e+00 | >= 1.95 | PASS |
-| `l2_finest_order_in_band` | Observed L₂ order of the finest pair (32×32 → 64×64) | 1.999854e+00 | <= and >= 1.95 2.1 | PASS |
+| `l2_finest_order_le_2p1` | Observed L₂ order of the finest pair (32×32 → 64×64), upper bound of the band [1.95, 2.10] | 1.999854e+00 | <= 2.1 | PASS |
 | `power_law_residual_le_1pct` | Roache extrapolation residual |e0|/e_f at p_ref = 2 (two finest levels) | 1.350864e-04 | <= 0.01 | PASS |
 | `h1_pair_order_ge_0p9` | Worst observed H1-seminorm order over all pairs with coarse nx ≥ 8 | 9.997168e-01 | >= 0.9 | PASS |
 | `quadrature_spread_le_1e-6` | Worst relative norm spread between 4-point and 8-point post-processing (nx ≥ 8) | 3.191354e-07 | <= 1e-06 | PASS |
@@ -49,4 +55,12 @@ numpy/scipy Q4 solver that imports no `tensorfem` module (worst L₂ difference
 | `heat_balance_residual` | Max |K·T − f| (global conservation), finest mesh | 1.221245e-15 | <= 1e-10 | PASS |
 
 Overall: **ALL PASS** (8 gates,
-generated 2026-11-14T21:58:16.080427+00:00).
+generated 2026-11-16T04:07:08.080976+00:00).
+
+## Reproduction
+
+`run.py --check` recomputes the ladder and verifies the committed artifacts
+without writing anything: the numbers must agree to 1e-12 relative, the gate
+verdicts exactly, the figure hashes with `result.json`, and this file byte for
+byte with `render_readme(result.json, gates_verified.json)`.  See
+`docs/CASE-FEM-HEAT-L2-certificate-derivation-m22874.md`.
