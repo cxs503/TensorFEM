@@ -10,3 +10,7 @@ outputs/
 checkpoints/
 .qualification/
 .scratch/
+
+# per-configuration cache of long XVAL sweeps (rebuildable; see
+# benchmarks/xval_aitken_strong_attribution.py --assemble)
+benchmarks/xval_aitken_strong_attribution_artifacts/cache/
