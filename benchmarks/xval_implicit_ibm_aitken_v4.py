@@ -6,8 +6,11 @@ element; implicit direct forcing + Aitken Δ² sub-iterations).
 Improvements over v3:
 * Vacuum frequency uses ≥ 3 periods (FFT fallback when < 2 zero crossings).
 * Submerged frequency uses Hann-windowed FFT peak (robust for short records).
-* ε=1 force-transmission band widened to 20–70 % (our centreline-marker geometry
-  differs from LIFE's surface markers; 61 % is expected and documented).
+* ε=1 force-transmission row no longer conflates the published LIFE band with the
+  sanity window actually applied: the row reports both, is judged OUT_OF_REF_BAND
+  when the measurement sits outside LIFE's published 11–37 %, and is excluded from
+  the cross-validation pass count (our centreline-marker geometry differs from
+  LIFE's surface markers, so the row is a sanity check, not an agreement test).
 * Added-mass comparison uses the *plate* geometry (analytic m_a = ρ_f π c²)
   instead of the beam (whose effective thickness is set by the delta support).
 
@@ -47,6 +50,14 @@ from tensorfem.ibm_aitken_added_mass import (  # noqa: E402
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                    "xval_implicit_ibm_aitken_v4_artifacts")
 TOL = 0.15  # owner acceptance: cross-validation error < 15 %
+
+# Published LIFE band (``src/Objects.cpp`` epsilon-conservation study, surface
+# markers) and the sanity window applied to *our* centreline-marker geometry.
+# These are different objects and must never be printed as one criterion: the
+# shipped v4 table showed ``ref = 11-37 %`` next to a 61 % measurement marked
+# PASS, which is a 65 % deviation from the published band.
+FXT_REF_BAND = (0.11, 0.37)
+FXT_SANITY_BAND = (0.02, 0.70)
 
 
 def _json_default(obj):
@@ -103,6 +114,44 @@ def estimate_period(series, dt):
 
 
 # ---------------------------------------------------------------------------
+def band_deviation(got, band):
+    """Relative distance outside ``band`` (0 when inside, NaN when undefined)."""
+    lo, hi = band
+    if got != got:
+        return float("nan")
+    if got < lo:
+        return float((lo - got) / lo)
+    if got > hi:
+        return float((got - hi) / hi)
+    return 0.0
+
+
+def force_band_verdict(got, ref_band=FXT_REF_BAND, sanity_band=FXT_SANITY_BAND,
+                       tol=TOL):
+    """Three-way verdict for the ε=1 force-transmission row.
+
+    ``IN_BAND``     the measurement agrees with LIFE's published band within ``tol``;
+    ``OUT_OF_REF_BAND`` the measurement is inside the sanity window but deviates
+                    from the published band (a *configuration* difference, not a
+                    cross-validation pass);
+    ``OUTSIDE_SANITY`` the measurement is not even inside the sanity window.
+
+    Only ``IN_BAND`` counts as a cross-validation pass.
+    """
+    dev = band_deviation(got, ref_band)
+    in_sanity = bool(sanity_band[0] <= got <= sanity_band[1]) if got == got else False
+    if not in_sanity:
+        verdict = "OUTSIDE_SANITY"
+    elif dev <= tol:
+        verdict = "IN_BAND"
+    else:
+        verdict = "OUT_OF_REF_BAND"
+    return {"verdict": verdict, "pass": verdict == "IN_BAND",
+            "ref_band": list(ref_band), "sanity_band": list(sanity_band),
+            "ref_band_deviation": float(dev)}
+
+
+# ---------------------------------------------------------------------------
 def kernel_and_epsilon_checks():
     """Kernel partition of unity and IBM force-transmission conservation."""
     offs = np.linspace(0.0, 1.0, 401)
@@ -129,7 +178,8 @@ def kernel_and_epsilon_checks():
         "partition_of_unity_error": best,
         "partition_ref": 2.2e-16,
         "force_transmission_error_eps1": raw_err,
-        "force_transmission_ref_band": [0.11, 0.37],
+        "force_transmission_ref_band": list(FXT_REF_BAND),
+        "force_transmission_sanity_band": list(FXT_SANITY_BAND),
         "force_transmission_error_corrected": corr_err,
         "force_transmission_ref_corrected": 9e-16,
         "total_marker_force_rel_error": total_f_rel,
@@ -437,6 +487,7 @@ def main(argv=None):
           "version": "v4",
           "generated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
 
+    ev["run_mode"] = "quick" if quick else "full"
     ev["kernel_epsilon"] = kernel_and_epsilon_checks()
     ev["aitken_scalar"] = aitken_scalar_study()
     ev["structure"] = structure_checks(n_steps=3000 if not quick else 1500)
@@ -468,9 +519,12 @@ def main(argv=None):
         {"item": "kernel partition of unity", "ref": ke["partition_ref"],
          "got": ke["partition_of_unity_error"], "kind": "absolute",
          "pass": ke["partition_of_unity_error"] <= 1e-14},
-        {"item": "force transmission error, eps = 1", "ref": "11-37 % (LIFE surface markers)",
+        {"item": "force transmission error, eps = 1 (sanity window only; "
+                 "not an agreement test)",
+         "ref": "LIFE 11-37 % (surface markers); our pass band 2-70 % is a "
+                "sanity window, not agreement",
          "got": ke["force_transmission_error_eps1"], "kind": "band",
-         "pass": 0.02 <= ke["force_transmission_error_eps1"] <= 0.70},
+         **(fbv := force_band_verdict(ke["force_transmission_error_eps1"]))},
         {"item": "force transmission error, eps corrected",
          "ref": ke["force_transmission_ref_corrected"],
          "got": ke["force_transmission_error_corrected"], "kind": "absolute",
@@ -483,11 +537,27 @@ def main(argv=None):
     by = {(r["gain"], r["mode"]): r for r in ev["aitken_scalar"]}
     for g in sorted({r["gain"] for r in ev["aitken_scalar"]}):
         a_row, f_row = by[(g, "aitken")], by[(g, "fixed1")]
-        table.append({"item": f"#sub-iterations, gain {g}: Aitken (fixed omega=1 "
-                              f"{'converged' if f_row['converged'] else 'diverged'})",
-                      "ref": f_row["iterations"], "got": a_row["iterations"],
-                      "kind": "relative",
+        o_row = by[(g, "fixed_opt")]
+        # The previous v4 row printed the iteration cap (200) in the ``ref``
+        # column of a ``relative`` row, which reads as "200 reference iterations
+        # vs 3" = a 98.5 % error that was nevertheless labelled PASS.  For
+        # g > 1 the map u <- g u + b diverges under omega = 1 by construction
+        # (omega = 1 is outside the stable range 0 < omega < 2/g), so this is a
+        # qualitative statement, not a measurement.
+        table.append({"item": f"#sub-iterations, gain {g}: Aitken converged while "
+                              f"fixed omega=1 did not (qualitative)",
+                      "ref": f"{f_row['iterations']} = iteration cap; omega=1 is "
+                             f"outside 0 < omega < 2/g, divergence is guaranteed",
+                      "got": a_row["iterations"], "kind": "qualitative",
                       "pass": bool(a_row["converged"]) and not f_row["converged"]})
+        opt_err = (abs(a_row["iterations"] - o_row["iterations"])
+                   / max(1.0, float(o_row["iterations"])))
+        table.append({"item": f"#sub-iterations, gain {g}: Aitken vs optimal fixed "
+                              f"relaxation omega*=1/(1-g)",
+                      "ref": o_row["iterations"], "got": a_row["iterations"],
+                      "kind": "relative",
+                      "pass": bool(a_row["converged"] and o_row["converged"]
+                                   and opt_err <= TOL)})
 
     pm = ev.get("plate_added_mass", {})
     pv = plate_verdict(pm)
@@ -529,6 +599,10 @@ def main(argv=None):
     ev["status"] = {"n_checks": len(table), "n_pass": sum(1 for r in table if r["pass"]),
                     "all_pass": all(r["pass"] for r in table),
                     "open_failures": [r["item"] for r in table if not r["pass"]],
+                    "out_of_ref_band": [r["item"] for r in table
+                                        if r.get("verdict") == "OUT_OF_REF_BAND"],
+                    "qualitative_rows": [r["item"] for r in table
+                                         if r.get("kind") == "qualitative"],
                     "invalid_windows": [r["item"] for r in table
                                         if r.get("verdict") == "INVALID_WINDOW"]}
     with open(os.path.join(OUT, "evidence.json"), "w") as fh:
@@ -642,6 +716,21 @@ def _summary_md(ev):
         "",
         "`INVALID_WINDOW` = the measurement record is too short for the period",
         "estimator (see `period_window_ok`); it is not a physics result.",
+        "`OUT_OF_REF_BAND` = inside our sanity window but outside LIFE's published",
+        "band: a configuration difference, *not* a cross-validation pass.",
+        "`qualitative` rows are convergence statements, not measured agreements.",
+        "",
+        f"Run mode: **{ev.get('run_mode', 'full')}** "
+        f"(structure {st['n_steps']} steps, plate {pm.get('n_steps', 'n/a')} steps).",
+        "",
+        "## Verdict accounting",
+        "",
+        f"- checks: {ev['status']['n_checks']}, pass: {ev['status']['n_pass']}, "
+        f"all_pass: {ev['status']['all_pass']}",
+        f"- open failures: {ev['status']['open_failures']}",
+        f"- out of reference band (not counted as pass): "
+        f"{ev['status'].get('out_of_ref_band', [])}",
+        f"- invalid windows: {ev['status']['invalid_windows']}",
         "",
         "## Coupling cost",
         "",
@@ -693,10 +782,11 @@ def _summary_md(ev):
     lines += [
         "## Notes",
         "",
-        "1. ε=1 force-transmission error (61 %) exceeds LIFE's 11–37 % band because our",
-        "   test uses centreline markers (spacing ≈ 1 Δ) rather than LIFE's surface markers",
-        "   with exact element shape-function integration. The 61 % is expected for this",
-        "   geometry and is documented as a configuration difference, not a defect.",
+        "1. ε=1 force-transmission error (61 %) exceeds LIFE's 11–37 % band by 65 %",
+        "   because our test uses centreline markers (spacing ≈ 1 Δ) rather than LIFE's",
+        "   surface markers with exact element shape-function integration. The row is",
+        "   therefore reported as OUT_OF_REF_BAND (sanity window 2–70 %) and is excluded",
+        "   from the pass count: it cannot certify IBM force conservation against LIFE.",
         "2. The beam submerged frequency remains open: the beam's effective thickness in",
         "   the IBM is set by the 3-point delta support (≈ 3 Δ), not a physical thickness,",
         "   so the analytic added-mass estimate (m_a = ρ_f π b²/4) does not apply directly.",
