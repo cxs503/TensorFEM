@@ -1,0 +1,29 @@
+{
+  "anchor": "XVAL-LBM-AKAI2018-GEOMETRICAL-WETTING",
+  "all_gates_passed": false,
+  "gates": {
+    "G1_vectorized_step_repro": {
+      "max_abs_df": 0.0,
+      "passed": true,
+      "note": "vectorized _lbm_step_vec reproduces reference _lbm_step to machine precision (max |df| == 0)"
+    },
+    "G2_wenzel_exact": {
+      "max_abs_error": 0.0,
+      "passed": true,
+      "note": "Wenzel effective-angle helper acos(r*cos(theta)) is exact (max |error| == 0)"
+    },
+    "G3_flat_wall_intrinsic": {
+      "passed": false,
+      "note": "HONEST FAIL: full droplet LBM field goes NaN/overflow; measure_contact_angle returns default 90.0 (false pass). The merged geometric-wetting feature is numerically unstable and does NOT actually validate contact angle."
+    },
+    "G4_rough_wall_wenzel": {
+      "passed": false,
+      "note": "HONEST FAIL: same instability as G3; cannot measure a meaningful effective angle on the rough (pillar) wall."
+    },
+    "G5_sweep_monotone": {
+      "passed": false,
+      "note": "HONEST FAIL: sweep not runnable because every case returns the NaN-default 90.0."
+    }
+  },
+  "verdict": "falsified_hypothesis / defect_fix: the merged lbm_wetting geometric-wetting feature is numerically unstable (density field -> NaN/overflow); measure_contact_angle returns a hard-coded default 90.0 when no valid interface is found, so the existing 'contact-angle validation' is an overstated false pass. Delivered: vectorized bounce-back step (G1), exact Wenzel helper (G2), periodic streaming + local-density BC fixes (reductions toward stability, not yet sufficient)."
+}
