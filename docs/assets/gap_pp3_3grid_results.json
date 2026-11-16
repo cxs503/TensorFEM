@@ -1,346 +1,361 @@
 {
-  "case": {
-    "a": 2.0,
-    "b": 1.0,
-    "t": 0.02,
-    "patch": [
-      0.5,
-      0.5
-    ],
-    "young": 206000000000.0,
-    "poisson": 0.3,
-    "hardening": 1000000000.0,
-    "grade": "DH36",
-    "temperature_c": -20.0,
-    "layers": 9,
-    "geometry_check": {
-      "aspect": 2.0,
-      "t_over_b": 0.02,
-      "note": "rectangle 2.0 x 1.0 x 0.020 m, Cb not applicable (unstiffened plate)"
-    }
-  },
-  "material": {
-    "grade": "DH36",
-    "temperature_c": -20.0,
-    "yield_stress_MPa": 374.2,
-    "yield_stress_reference_MPa": 355.0,
-    "sensitivity_MPa_per_K": -0.48,
-    "amplification": 1.0540845070422535,
-    "ductile": true,
-    "note": "linear flow-stress fit, slope 0.48 MPa/K, design temperature -20 C"
-  },
-  "analytic": {
-    "first_yield_pressure": 712514.1365335998,
-    "first_yield_sigma_eq_per_pa": 525.182562440786,
-    "yield_line_upper_pressure": 2052754.285714286
-  },
-  "bounds": {
-    "strip_lower_pressure": 570209.5238095238,
-    "yield_line_upper_pressure": 2052754.285714286,
-    "ilyushin_sine_upper_pressure": 1706038.7010780228,
-    "johansen_twist_upper_pressure": 2452009.411882463,
-    "tightest_admissible_upper": 2052754.285714286,
-    "admissible_bracket_width_ratio": 3.6000000000000005
-  },
-  "load_ladder_Pa": [
-    320631.361,
-    641262.723,
-    1068771.205,
-    1496279.687,
-    1923788.169
+ "case": {
+  "a": 2.0,
+  "b": 1.0,
+  "t": 0.02,
+  "patch": [
+   0.5,
+   0.5
   ],
-  "meshes": {
-    "8x4": {
-      "nx": 8,
-      "ny": 4,
-      "elements": 32,
-      "dofs": 270,
-      "layers": 9,
-      "section_capacity_ratio": 0.9876543209876544,
-      "elastic_bias": -0.15567349875407843,
-      "first_yield_factor": 924096.0520305316,
-      "first_yield_error": 0.29695118264780457,
-      "first_yield_error_bias_normalised": 0.09505025433178109,
-      "analytic_first_yield_same_mesh": 843884.6056379679,
-      "collapse_factor": 1643235.7276874997,
-      "collapse_is_limit_point": false,
-      "ramp_completed": false,
-      "admissibility": {
-        "admissible": true,
-        "violations": [],
-        "capacity_ratio": 0.9876543209876544,
-        "max_moment_ratio": 0.9858076302086689
-      },
-      "limit_measurements": {
-        "intersection_of_tangents": 1424752.7304621048
-      },
-      "limit_spread": null,
-      "limit_withheld_reason": null,
-      "limit_load_measured": 1424752.7304621048,
-      "limit_load_error_vs_ub": -0.30593118700208133,
-      "permanent_deflection": 0.025906066030738892,
-      "permanent_set_valid": true,
-      "unload_failure": null,
-      "path_points": 7,
-      "path": [
-        [
-          320631.361,
-          0.00665822018378821,
-          0.0
-        ],
-        [
-          641262.723,
-          0.013316440388341216,
-          0.0
-        ],
-        [
-          1068771.205,
-          0.022698721677327626,
-          0.00039344592326487354
-        ],
-        [
-          1496279.687,
-          0.04312717637710827,
-          0.003456588139444189
-        ],
-        [
-          1603156.8074999999,
-          0.05491700278407451,
-          0.005325170563030541
-        ],
-        [
-          1629876.0876249997,
-          0.05853519102279778,
-          0.005900012366859567
-        ],
-        [
-          1643235.7276874997,
-          0.0604206216404228,
-          0.0061997988941650565
-        ]
-      ],
-      "seconds": 284.6
-    },
-    "16x8": {
-      "nx": 16,
-      "ny": 8,
-      "elements": 128,
-      "dofs": 918,
-      "layers": 9,
-      "section_capacity_ratio": 0.9876543209876544,
-      "elastic_bias": -0.032334130213729106,
-      "first_yield_factor": 859749.7557055277,
-      "first_yield_error": 0.20664238310868205,
-      "first_yield_error_bias_normalised": 0.16762665117184158,
-      "analytic_first_yield_same_mesh": 736322.483597539,
-      "collapse_factor": 1479580.1369218747,
-      "collapse_is_limit_point": false,
-      "ramp_completed": false,
-      "admissibility": {
-        "admissible": true,
-        "violations": [],
-        "capacity_ratio": 0.9876543209876544,
-        "max_moment_ratio": 0.9862861825833056
-      },
-      "limit_measurements": {
-        "intersection_of_tangents": 509350.075612999
-      },
-      "limit_spread": null,
-      "limit_withheld_reason": null,
-      "limit_load_measured": 509350.075612999,
-      "limit_load_error_vs_ub": -0.7518699246384654,
-      "permanent_deflection": 0.014559804129333881,
-      "permanent_set_valid": true,
-      "unload_failure": null,
-      "path_points": 9,
-      "path": [
-        [
-          320631.361,
-          0.006948190435310042,
-          0.0
-        ],
-        [
-          641262.723,
-          0.013896380892290335,
-          0.0
-        ],
-        [
-          1068771.205,
-          0.024544404226913695,
-          0.0012274279738014298
-        ],
-        [
-          1282525.446,
-          0.033501739196579894,
-          0.0031788770899261365
-        ],
-        [
-          1389402.5665,
-          0.040059237858501774,
-          0.004720369917448743
-        ],
-        [
-          1442841.1267499998,
-          0.04422135484227892,
-          0.005669344580849827
-        ],
-        [
-          1469560.4068749999,
-          0.04653883992234176,
-          0.006197922596023312
-        ],
-        [
-          1476240.2269062498,
-          0.046566205958525106,
-          0.006197922596023312
-        ],
-        [
-          1479580.1369218747,
-          0.046688931084366454,
-          0.006197922596023312
-        ]
-      ],
-      "seconds": 1538.9
-    },
-    "24x12": {
-      "nx": 24,
-      "ny": 12,
-      "elements": 288,
-      "dofs": 1950,
-      "layers": 9,
-      "section_capacity_ratio": 0.9876543209876544,
-      "elastic_bias": -0.013754104839859171,
-      "first_yield_factor": 858178.9510390002,
-      "first_yield_error": 0.20443778872102603,
-      "first_yield_error_bias_normalised": 0.18787182510186884,
-      "analytic_first_yield_same_mesh": 722450.8005865068,
-      "collapse_factor": 1436161.30671875,
-      "collapse_is_limit_point": false,
-      "ramp_completed": false,
-      "admissibility": {
-        "admissible": true,
-        "violations": [],
-        "capacity_ratio": 0.9876543209876544,
-        "max_moment_ratio": 0.9866918708717815
-      },
-      "limit_measurements": {
-        "intersection_of_tangents": 72375.41513273091
-      },
-      "limit_spread": null,
-      "limit_withheld_reason": null,
-      "limit_load_measured": 72375.41513273091,
-      "limit_load_error_vs_ub": -0.9647422900848813,
-      "permanent_deflection": 0.02328269636399604,
-      "permanent_set_valid": false,
-      "unload_failure": "unloading step to 0 did not converge",
-      "path_points": 8,
-      "path": [
-        [
-          320631.361,
-          0.007003362889032923,
-          0.0
-        ],
-        [
-          641262.723,
-          0.014006725799910545,
-          0.0
-        ],
-        [
-          1068771.205,
-          0.02490787704438597,
-          0.0014383437968218105
-        ],
-        [
-          1282525.446,
-          0.03428579195570034,
-          0.0036991340219408794
-        ],
-        [
-          1389402.5665,
-          0.040909186112056996,
-          0.005441076541991228
-        ],
-        [
-          1416121.8466249998,
-          0.042997331488371204,
-          0.005952523813062865
-        ],
-        [
-          1429481.4866874998,
-          0.04409370435118059,
-          0.006220194262713562
-        ],
-        [
-          1436161.30671875,
-          0.04430295711103291,
-          0.006220194262713562
-        ]
-      ],
-      "seconds": 4061.3
-    }
+  "young": 206000000000.0,
+  "poisson": 0.3,
+  "hardening": 1000000000.0,
+  "grade": "DH36",
+  "temperature_c": -20.0,
+  "layers": 9,
+  "geometry_check": {
+   "aspect": 2.0,
+   "t_over_b": 0.02,
+   "note": "rectangle 2.0 x 1.0 x 0.020 m, Cb not applicable (unstiffened plate)"
   },
-  "criteria": {
-    "mesh_order": [
-      "8x4",
-      "16x8",
-      "24x12"
-    ],
-    "raw_error_convergence": {
-      "h": [
-        0.25,
-        0.125,
-        0.08333333333333333
-      ],
-      "errors": [
-        0.29695118264780457,
-        0.20664238310868205,
-        0.20443778872102603
-      ],
-      "refinement_ratio": 1.5,
-      "observed_order": 0.02645348168741525,
-      "extrapolated_error": -2.6367796834847468e-15
-    },
-    "transition_lt_5pct": {
-      "finest_mesh": "24x12",
-      "raw_error_finest": 0.20443778872102603,
-      "extrapolated_error": -2.6367796834847468e-15,
-      "met_at_finest_mesh": false,
-      "met_in_mesh_limit": true,
-      "note": "the raw error is the honest FE-vs-Navier comparison; the same-mesh normalised error is identically ~0 and carries no information (docs finding N1)"
-    },
-    "limit_lt_10pct": {
-      "finest_mesh": "24x12",
-      "limit_measured": 72375.41513273091,
-      "upper_bound": 2052754.285714286,
-      "error_finest": -0.9647422900848813,
-      "limit_trend": [
-        1424752.7304621048,
-        509350.075612999,
-        72375.41513273091
-      ],
-      "met_at_finest_mesh": false
-    },
-    "permanent_deflection_reported": {
-      "8x4": {
-        "value": 0.025906066030738892,
-        "valid": true
-      },
-      "16x8": {
-        "value": 0.014559804129333881,
-        "valid": true
-      },
-      "24x12": {
-        "value": 0.02328269636399604,
-        "valid": false
-      }
-    }
-  },
-  "shards": {
-    "used": [
-      "gap_pp3_3grid_8x4.json",
-      "gap_pp3_3grid_16x8.json",
-      "gap_pp3_3grid_24x12.json"
-    ],
-    "missing": []
+  "configuration": {
+   "geometric": true,
+   "inplane_restrained": true,
+   "first_yield_reference_comparable": false,
+   "note": "the 3-grid matrix integrates the path with geometric nonlinearity and restrained in-plane displacement so that a limit point exists; a linear Navier reference is therefore not comparable for the transition criterion (see first_yield_reference)"
   }
+ },
+ "material": {
+  "grade": "DH36",
+  "temperature_c": -20.0,
+  "yield_stress_MPa": 374.2,
+  "yield_stress_reference_MPa": 355.0,
+  "sensitivity_MPa_per_K": -0.48,
+  "amplification": 1.0540845070422535,
+  "ductile": true,
+  "note": "linear flow-stress fit, slope 0.48 MPa/K, design temperature -20 C"
+ },
+ "analytic": {
+  "first_yield_pressure": 712514.1365335998,
+  "first_yield_sigma_eq_per_pa": 525.182562440786,
+  "yield_line_upper_pressure": 2052754.285714286
+ },
+ "bounds": {
+  "strip_lower_pressure": 570209.5238095238,
+  "yield_line_upper_pressure": 2052754.285714286,
+  "ilyushin_sine_upper_pressure": 1706038.7010780228,
+  "johansen_twist_upper_pressure": 2452009.411882463,
+  "tightest_admissible_upper": 2052754.285714286,
+  "admissible_bracket_width_ratio": 3.6000000000000005
+ },
+ "load_ladder_Pa": [
+  320631.361,
+  641262.723,
+  1068771.205,
+  1496279.687,
+  1923788.169
+ ],
+ "meshes": {
+  "8x4": {
+   "nx": 8,
+   "ny": 4,
+   "elements": 32,
+   "dofs": 270,
+   "layers": 9,
+   "section_capacity_ratio": 0.9876543209876544,
+   "elastic_bias": -0.15567349875407843,
+   "first_yield_factor": 924096.0520305316,
+   "first_yield_error": 0.29695118264780457,
+   "first_yield_error_bias_normalised": 0.09505025433178109,
+   "analytic_first_yield_same_mesh": 843884.6056379679,
+   "collapse_factor": 1643235.7276874997,
+   "collapse_is_limit_point": false,
+   "ramp_completed": false,
+   "admissibility": {
+    "admissible": true,
+    "violations": [],
+    "capacity_ratio": 0.9876543209876544,
+    "max_moment_ratio": 0.9858076302086689
+   },
+   "limit_measurements": {
+    "intersection_of_tangents": 1424752.7304621048
+   },
+   "limit_spread": null,
+   "limit_withheld_reason": null,
+   "limit_load_measured": 1424752.7304621048,
+   "limit_load_error_vs_ub": -0.30593118700208133,
+   "permanent_deflection": 0.025906066030738892,
+   "permanent_set_valid": true,
+   "unload_failure": null,
+   "path_points": 7,
+   "path": [
+    [
+     320631.361,
+     0.00665822018378821,
+     0.0
+    ],
+    [
+     641262.723,
+     0.013316440388341216,
+     0.0
+    ],
+    [
+     1068771.205,
+     0.022698721677327626,
+     0.00039344592326487354
+    ],
+    [
+     1496279.687,
+     0.04312717637710827,
+     0.003456588139444189
+    ],
+    [
+     1603156.8074999999,
+     0.05491700278407451,
+     0.005325170563030541
+    ],
+    [
+     1629876.0876249997,
+     0.05853519102279778,
+     0.005900012366859567
+    ],
+    [
+     1643235.7276874997,
+     0.0604206216404228,
+     0.0061997988941650565
+    ]
+   ],
+   "seconds": 284.6,
+   "first_yield_comparable": false
+  },
+  "16x8": {
+   "nx": 16,
+   "ny": 8,
+   "elements": 128,
+   "dofs": 918,
+   "layers": 9,
+   "section_capacity_ratio": 0.9876543209876544,
+   "elastic_bias": -0.032334130213729106,
+   "first_yield_factor": 859749.7557055277,
+   "first_yield_error": 0.20664238310868205,
+   "first_yield_error_bias_normalised": 0.16762665117184158,
+   "analytic_first_yield_same_mesh": 736322.483597539,
+   "collapse_factor": 1479580.1369218747,
+   "collapse_is_limit_point": false,
+   "ramp_completed": false,
+   "admissibility": {
+    "admissible": true,
+    "violations": [],
+    "capacity_ratio": 0.9876543209876544,
+    "max_moment_ratio": 0.9862861825833056
+   },
+   "limit_measurements": {
+    "intersection_of_tangents": 509350.075612999
+   },
+   "limit_spread": null,
+   "limit_withheld_reason": null,
+   "limit_load_measured": 509350.075612999,
+   "limit_load_error_vs_ub": -0.7518699246384654,
+   "permanent_deflection": 0.014559804129333881,
+   "permanent_set_valid": true,
+   "unload_failure": null,
+   "path_points": 9,
+   "path": [
+    [
+     320631.361,
+     0.006948190435310042,
+     0.0
+    ],
+    [
+     641262.723,
+     0.013896380892290335,
+     0.0
+    ],
+    [
+     1068771.205,
+     0.024544404226913695,
+     0.0012274279738014298
+    ],
+    [
+     1282525.446,
+     0.033501739196579894,
+     0.0031788770899261365
+    ],
+    [
+     1389402.5665,
+     0.040059237858501774,
+     0.004720369917448743
+    ],
+    [
+     1442841.1267499998,
+     0.04422135484227892,
+     0.005669344580849827
+    ],
+    [
+     1469560.4068749999,
+     0.04653883992234176,
+     0.006197922596023312
+    ],
+    [
+     1476240.2269062498,
+     0.046566205958525106,
+     0.006197922596023312
+    ],
+    [
+     1479580.1369218747,
+     0.046688931084366454,
+     0.006197922596023312
+    ]
+   ],
+   "seconds": 1538.9,
+   "first_yield_comparable": false
+  },
+  "24x12": {
+   "nx": 24,
+   "ny": 12,
+   "elements": 288,
+   "dofs": 1950,
+   "layers": 9,
+   "section_capacity_ratio": 0.9876543209876544,
+   "elastic_bias": -0.013754104839859171,
+   "first_yield_factor": 858178.9510390002,
+   "first_yield_error": 0.20443778872102603,
+   "first_yield_error_bias_normalised": 0.18787182510186884,
+   "analytic_first_yield_same_mesh": 722450.8005865068,
+   "collapse_factor": 1436161.30671875,
+   "collapse_is_limit_point": false,
+   "ramp_completed": false,
+   "admissibility": {
+    "admissible": true,
+    "violations": [],
+    "capacity_ratio": 0.9876543209876544,
+    "max_moment_ratio": 0.9866918708717815
+   },
+   "limit_measurements": {
+    "intersection_of_tangents": 72375.41513273091
+   },
+   "limit_spread": null,
+   "limit_withheld_reason": null,
+   "limit_load_measured": 72375.41513273091,
+   "limit_load_error_vs_ub": -0.9647422900848813,
+   "permanent_deflection": 0.02328269636399604,
+   "permanent_set_valid": false,
+   "unload_failure": "unloading step to 0 did not converge",
+   "path_points": 8,
+   "path": [
+    [
+     320631.361,
+     0.007003362889032923,
+     0.0
+    ],
+    [
+     641262.723,
+     0.014006725799910545,
+     0.0
+    ],
+    [
+     1068771.205,
+     0.02490787704438597,
+     0.0014383437968218105
+    ],
+    [
+     1282525.446,
+     0.03428579195570034,
+     0.0036991340219408794
+    ],
+    [
+     1389402.5665,
+     0.040909186112056996,
+     0.005441076541991228
+    ],
+    [
+     1416121.8466249998,
+     0.042997331488371204,
+     0.005952523813062865
+    ],
+    [
+     1429481.4866874998,
+     0.04409370435118059,
+     0.006220194262713562
+    ],
+    [
+     1436161.30671875,
+     0.04430295711103291,
+     0.006220194262713562
+    ]
+   ],
+   "seconds": 4061.3,
+   "first_yield_comparable": false
+  }
+ },
+ "criteria": {
+  "mesh_order": [
+   "8x4",
+   "16x8",
+   "24x12"
+  ],
+  "raw_error_convergence": {
+   "h": [
+    0.25,
+    0.125,
+    0.08333333333333333
+   ],
+   "errors": [
+    0.29695118264780457,
+    0.20664238310868205,
+    0.20443778872102603
+   ],
+   "refinement_ratio": 1.5,
+   "observed_order": 0.02645348168741525,
+   "order_admissible": false,
+   "extrapolated_error_inadmissible": -2.6367796834847468e-15,
+   "note": "error sequence is not asymptotic (observed order 0.02645, monotone=True); the Richardson limit is not interpretable and no mesh-limit claim may be made from it"
+  },
+  "transition_lt_5pct": {
+   "finest_mesh": "24x12",
+   "raw_error_finest": 0.20443778872102603,
+   "extrapolated_error": null,
+   "met_at_finest_mesh": false,
+   "met_in_mesh_limit": false,
+   "order_admissible": false,
+   "reference_comparable": false,
+   "decidable": false,
+   "note": "the raw error is the honest FE-vs-Navier comparison; the same-mesh normalised error is identically ~0 and carries no information (docs finding N1). A criterion is only *decidable* when the extrapolation is admissible AND the path's mechanical model matches the reference (`first_yield_reference`). The anchored matrix integrates geometric=True/inplane_restrained=True against a linear Navier reference. Measured on 8x4 (cj4677 probe): the restrained/nonlinear path lands at +29.7 % while the small-deflection free path lands at +38.4 %, i.e. membrane action accounts for ~9 of the ~30 points and the rest is an unexplained element/model offset -- the plateau is NOT fully explained by the model difference, so the criterion is WITHHELD, not passed"
+  },
+  "limit_lt_10pct": {
+   "finest_mesh": "24x12",
+   "limit_measured": 72375.41513273091,
+   "upper_bound": 2052754.285714286,
+   "error_finest": -0.9647422900848813,
+   "limit_trend": [
+    1424752.7304621048,
+    509350.075612999,
+    72375.41513273091
+   ],
+   "met_at_finest_mesh": false
+  },
+  "permanent_deflection_reported": {
+   "8x4": {
+    "value": 0.025906066030738892,
+    "valid": true
+   },
+   "16x8": {
+    "value": 0.014559804129333881,
+    "valid": true
+   },
+   "24x12": {
+    "value": 0.02328269636399604,
+    "valid": false
+   }
+  }
+ },
+ "shards": {
+  "used": [
+   "gap_pp3_3grid_8x4.json",
+   "gap_pp3_3grid_16x8.json",
+   "gap_pp3_3grid_24x12.json"
+  ],
+  "missing": []
+ },
+ "criteria_note": "regenerated by gap_pp3_3grid_study.finalize after two gates were added: (i) a Richardson limit is only quoted when the error sequence is asymptotic (0.2<=order<=4, monotone), (ii) the transition criterion is only *decidable* when the path's mechanical model matches the linear reference. The per-mesh numbers are untouched."
 }

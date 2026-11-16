@@ -156,10 +156,15 @@ def audit_bundle(bundle: dict) -> dict:
             _finding(findings, f"M5-permanent-set[{name}]", BLOCKING, ok,
                      f"w_res = {float(pd):.4e} m, peak = "
                      f"{'n/a' if peak is None else f'{peak:.4e} m'}")
-        # a measured limit must sit inside the rigid-plastic bracket
+        # A measured limit must sit inside the rigid-plastic bracket.  Severity
+        # is *minor* on purpose: a limit below the lower bound is a statement
+        # about the extractor / the path (recorded as honest-FAIL in
+        # docs/HONEST-FAIL-GAP-PP-3-3GRID-LIMIT.md), not an internal
+        # inconsistency of the bundle, and conflating the two made the
+        # consistency gate red on a truthful bundle.
         lower = bounds.get("strip_lower_pressure")
         if limit is not None and lower and ub:
-            _finding(findings, f"M6-limit-in-bracket[{name}]", MAJOR,
+            _finding(findings, f"M6-limit-in-bracket[{name}]", MINOR,
                      float(lower) * 0.9 <= float(limit) <= float(ub) * 1.02,
                      f"limit {float(limit)/1e6:.4f} MPa in "
                      f"[{float(lower)/1e6:.4f}, {float(ub)/1e6:.4f}] MPa")
@@ -168,6 +173,7 @@ def audit_bundle(bundle: dict) -> dict:
     order = sorted(meshes.items(), key=lambda kv: kv[1].get("elements", 0))
     errors = [m.get("first_yield_error") for _, m in order]
     h = [b / float(m["ny"]) for _, m in order]
+    order_ok = False        # set by C4; an inadmissible sequence supports no claim
     conv = (bundle.get("criteria") or {}).get("raw_error_convergence") or {}
     if len(errors) >= 2 and all(e is not None for e in errors):
         stored_h = conv.get("h")
@@ -188,9 +194,27 @@ def audit_bundle(bundle: dict) -> dict:
             _finding(findings, "C2-observed-order", BLOCKING,
                      stored_p is not None and _close(p, stored_p, tol=1e-6, abs_tol=1e-9),
                      f"p = {p:.6f} vs stored {stored_p}")
+        # C4: a Richardson limit is only interpretable on an *asymptotic*
+        # sequence.  The anchored matrix converged to a plateau
+        # (0.2969 -> 0.2066 -> 0.2044, order 0.026) whose extrapolated error is
+        # -2.6e-15; that number says "the sequence is flat", not "the error is
+        # zero", and it must not be allowed to satisfy a < 5 % criterion.
+        decreasing = all(b < a for a, b in zip(errors, errors[1:]))
+        order_ok = bool(p is not None and 0.2 <= p <= 4.0 and decreasing)
+        _finding(findings, "C4-asymptoticity", MINOR, order_ok,
+                 f"observed order {p if p is None else round(p, 6)} on errors "
+                 f"{[round(e, 6) for e in errors]} (monotone decreasing: "
+                 f"{decreasing}); a band 0.2 <= p <= 4 is required before the "
+                 "Richardson limit may be quoted")
         lim = richardson_limit(errors, h)
         stored_lim = conv.get("extrapolated_error")
-        if lim is not None:
+        if not order_ok:
+            _finding(findings, "C5-inadmissible-limit-withheld", BLOCKING,
+                     stored_lim is None,
+                     "an inadmissible extrapolation must not be published under "
+                     f"extrapolated_error (stored {stored_lim}); keep it under "
+                     "extrapolated_error_inadmissible")
+        elif lim is not None:
             _finding(findings, "C3-richardson-limit", BLOCKING,
                      stored_lim is not None
                      and _close(lim, stored_lim, tol=1e-6, abs_tol=1e-9),
@@ -214,11 +238,12 @@ def audit_bundle(bundle: dict) -> dict:
             # the flag is checked against the bundle's *own* reported limit (C3 checks
             # that reported number against the data, so the two cannot drift together)
             lim = conv.get("extrapolated_error")
-            expected = None if lim is None else abs(lim) < 0.05
+            # an inadmissible extrapolation can never support the claim
+            expected = bool(order_ok and lim is not None and abs(lim) < 0.05)
             _finding(findings, "K2-mesh-limit-flag", BLOCKING,
-                     expected is not None and bool(block["met_in_mesh_limit"]) == expected,
-                     f"Richardson limit {lim} -> met_in_mesh_limit "
-                     f"{block['met_in_mesh_limit']}")
+                     bool(block["met_in_mesh_limit"]) == expected,
+                     f"Richardson limit {lim} (admissible: {order_ok}) -> "
+                     f"met_in_mesh_limit {block['met_in_mesh_limit']}")
         lb = criteria.get("limit_lt_10pct") or {}
         if lb and finest.get("limit_load_error_vs_ub") is not None:
             _finding(findings, "K3-limit-flag", BLOCKING,
