@@ -1,7 +1,18 @@
 # CASE GAP-PP-3 · 板格低温钢弹塑性 3 网格矩阵实测判定
 
 锚点：`GAP-PP-3-ICE-STRUCT-PLASTIC-SET`（板格低温钢弹塑性 + 永久挠度）。
-本文件的全部数字由 `scripts/publish_gap_pp3_3grid_matrix.py` 从 `outputs/gap_pp3_3grid_results.json` 程序化注入，无手抄。
+本文件原本声明「全部数字由 `scripts/publish_gap_pp3_3grid_matrix.py` 从 `outputs/gap_pp3_3grid_results.json` 程序化注入，无手抄」——**该声明已撤回**，见上框。
+
+> **更正横幅（2026-11-16，对抗式复核 m23086，见 `docs/AUDIT-GAP-PP-3-3GRID-BUNDLE.md`）**
+> 本文件的数字**不可复现**：§3 的「FE 首次屈服」列逐行精确等于 `0.700 MPa × (1 + 原始误差)`
+> （0.8288 / 0.7630 / 0.7385 MPa），与本表自己印出的解析值 `p_y = 0.7125 MPa` 不相容；
+> 而代码定义是 `first_yield_error = (first_yield_factor − p_y)/p_y`，两者不能同时成立。
+> 另外本文件声称的数字来源 `outputs/gap_pp3_3grid_results.json` 被 `.gitignore` 忽略、
+> `docs/assets/` 中的证据副本从未提交，读它的 7 条验收测试在 main 上全部 skip。
+> 因此：§5「弹→塑过渡点 达成」一行**作废（withheld）**，下方「程序化注入，无手抄」的声明撤回。
+> 下表数字原样保留仅供追溯；重算证据（`cj4580`）到位后由
+> `scripts/audit_gap_pp3_3grid_bundle.py` 与本文件的文档-数据对齐测试重判。
+
 
 ## 1 案例（几何/材料/载荷）
 
