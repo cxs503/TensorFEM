@@ -249,34 +249,130 @@ def test_step_patch_fem_converges_to_navier():
     assert errors[-1] < 2.0e-2          # nx=32: under 2 %
 
 
-def test_gaussian_patch_peak_stress_matches_navier_series():
-    """Non-uniform Gaussian patch: the *projected* load must match the series."""
-    peak, sigma_p, nx, grid = 2.0e6, 0.08, 16, 33
+def _gaussian_case(peak=2.0e6, sigma_p=0.08, grid=33):
+    """Non-uniform Gaussian contact case shared by the checks below.
+
+    The contact grid spans +-3 sigma; the nodal pressures are the exact Gaussian
+    samples, so the only "input" error is the finite grid extent.
+    """
     pos, pres = P._gaussian_contact_grid(0.5, 0.5, sigma_p, sigma_p, peak, SIDE, grid)
     data = P.ContactPressureData(
-        node_positions=pos, normal_pressures=pres,
+        node_positions=pos,
+        normal_pressures=pres,
         contact_area=2.0 * math.pi * sigma_p ** 2,
     )
-    sol, patch = P.contact_pressure_to_plate_load(data, nx, SIDE, E, NU, T, 0.0)
-    stress = P.peak_stresses(sol)
-
     xg = np.unique(np.round(pos[:, 0], 12))
     yg = np.unique(np.round(pos[:, 1], 12))
-    contact_patch = IC.ContactPatch(
+    return data, pres.reshape(yg.size, xg.size).T, xg, yg
+
+
+def _navier_patch(xg, yg, pressure_xy, total_force, peak_pressure):
+    """Kirchhoff-Navier reference patch holding exactly the contact pressures."""
+    return IC.ContactPatch(
         x=torch.as_tensor(xg, dtype=torch.float64),
         y=torch.as_tensor(yg, dtype=torch.float64),
-        pressure=torch.as_tensor(pres.reshape(yg.size, xg.size).T, dtype=torch.float64),
-        total_force=float(patch.total_force),
+        pressure=torch.as_tensor(pressure_xy, dtype=torch.float64),
+        total_force=total_force,
         contact_area=float((xg[-1] - xg[0]) * (yg[-1] - yg[0])),
-        peak_pressure=peak,
+        peak_pressure=peak_pressure,
         centroid=(0.5 * (xg[0] + xg[-1]), 0.5 * (yg[0] + yg[-1])),
         approach=0.0,
-        opening=torch.zeros((xg.size, yg.size), dtype=torch.float64),
+        opening=torch.zeros((yg.size, xg.size), dtype=torch.float64),
         residual=0.0,
         config={"kind": "verification"},
     )
-    ref = _navier_sigma(contact_patch, *stress["sigma_x_at_m"])
-    assert stress["sigma_x_MPa"] == pytest.approx(ref, rel=2e-2)
+
+
+def _navier_peak_sigma(contact_patch):
+    """Peak Kirchhoff bending stress from the series; peak sits at the patch centre."""
+    centre = _navier_sigma(contact_patch, 0.5, 0.5)
+    for dx in (-0.02, 0.02):
+        for dy in (-0.02, 0.02):
+            assert centre > _navier_sigma(contact_patch, 0.5 + dx, 0.5 + dy)
+    return centre
+
+
+def test_gaussian_patch_projection_conserves_force_and_centroid():
+    """What the *projection* is responsible for: force, centroid, load spread.
+
+    The contact grid is symmetric, so the projected nodal forces must sum to the
+    contact force and sit on the patch centre to machine precision at every
+    mesh.  The load spread (mean square radius about the centre) must converge
+    to the analytic ``2*sigma^2`` of the Gaussian as h -> 0.  These three
+    quantities are independent of the FE solution, so they separate *projection*
+    error from *discretisation* error.
+    """
+    sigma_p = 0.08
+    data, pressure_xy, xg, yg = _gaussian_case(sigma_p=sigma_p)
+    contact_force = float(np.trapezoid(np.trapezoid(pressure_xy, yg, axis=1), xg))
+    radii = []
+    for nx in (8, 16, 32):
+        nodes, elements = P.structured_square_mesh(nx, SIDE, dtype=torch.float64)
+        patch = P.patch_from_contact(data, nodes.numpy(), elements.numpy())
+        nodal = patch.load_vector[0::3]
+        xy = nodes.numpy()
+        total = float(nodal.sum())
+        assert total == pytest.approx(contact_force, rel=1e-12)
+        assert abs(float((nodal * xy[:, 0]).sum()) / total - 0.5) < 1e-12
+        assert abs(float((nodal * xy[:, 1]).sum()) / total - 0.5) < 1e-12
+        spread = ((xy[:, 0] - 0.5) ** 2 + (xy[:, 1] - 0.5) ** 2)
+        radii.append(float((nodal * spread).sum()) / total)
+    # load smearing must vanish with h and land on the analytic 2*sigma^2
+    assert radii[0] > radii[1] > radii[2]
+    assert radii[-1] == pytest.approx(2.0 * sigma_p ** 2, rel=5e-2)
+
+
+def test_gaussian_patch_peak_stress_converges_to_navier_series():
+    """Peak bending stress of the non-uniform patch vs the Kirchhoff series.
+
+    Defect fixed here (mission m23174): the previous version of this check
+    asserted 2 % at nx=16 and failed on main (859.88 MPa vs 897.46 MPa,
+    -4.19 %).  A 2 % tolerance at h/sigma ~ 0.8 asks a Q4 mesh to resolve a
+    Gaussian it cannot; the projected load is *exact* (force error 1e-15, see
+    the projection check above), so the residual is pure FE discretisation.
+    The honest gate is a mesh study -- measured numbers in
+    ``artifacts/patch_from_contact_gauss_convergence.json``:
+
+        nx   FEM peak [MPa]   series peak   rel. error
+         8        730.44        920.37      -20.64 %
+        16        859.88        920.37       -6.57 %
+        32        904.18        920.37       -1.76 %
+        48        913.08        920.37       -0.79 %   (order 32->48: 1.97)
+    """
+    peak, sigma_p = 2.0e6, 0.08
+    data, pressure_xy, xg, yg = _gaussian_case(peak=peak, sigma_p=sigma_p)
+    meshes = (8, 16, 32)
+    errors, fem, stresses, refs = [], [], {}, []
+    for nx in meshes:
+        sol, patch = P.contact_pressure_to_plate_load(data, nx, SIDE, E, NU, T, 0.0)
+        stress = P.peak_stresses(sol)
+        ref = _navier_peak_sigma(
+            _navier_patch(xg, yg, pressure_xy, float(patch.total_force), peak)
+        )
+        stresses[nx] = (stress, float(patch.total_force))
+        refs.append(ref)
+        fem.append(stress["sigma_x_MPa"])
+        errors.append(abs(stress["sigma_x_MPa"] / ref - 1.0))
+
+    # monotone convergence, ~2nd order in h
+    assert all(e2 < e1 for e1, e2 in zip(errors, errors[1:]))
+    order = math.log(errors[1] / errors[2]) / math.log(2.0)
+    assert 1.4 < order < 2.6
+    # the coarse mesh is documented, not hidden: bound it, then gate the fine one
+    assert errors[1] < 8.0e-2           # nx=16: measured -6.57 %
+    assert errors[2] < 2.0e-2           # nx=32: measured -1.76 % (2 % gate)
+    # the FEM peak rises monotonically to the series peak from below (no overshoot)
+    assert fem[0] < fem[1] < fem[2]
+    assert all(f < r for f, r in zip(fem, refs))
+    assert refs[0] == pytest.approx(refs[-1], rel=1e-12)   # same series peak
+
+    # also against the series sampled at the FEM peak location: -4.19 % at nx=16
+    stress16, force16 = stresses[16]
+    ref_at_peak = _navier_sigma(
+        _navier_patch(xg, yg, pressure_xy, force16, peak),
+        *stress16["sigma_x_at_m"],
+    )
+    assert stress16["sigma_x_MPa"] == pytest.approx(ref_at_peak, rel=6.0e-2)
 
 
 def test_two_independent_fem_paths_agree_for_the_same_patch():
