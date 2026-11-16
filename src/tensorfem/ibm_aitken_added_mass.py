@@ -108,6 +108,7 @@ __all__ = [
     "estimate_period_fft",
     "estimate_period_damped",
     "period_window_ok",
+    "effective_added_mass",
     "structural_probe",
     "forced_oscillation",
     "coupled_free_vibration",
@@ -131,6 +132,23 @@ def analytic_added_mass(half_extent, rho_f=1.0):
 def oscillator_frequency(stiffness, mass):
     """Natural frequency in cycles per unit time of ``m y'' + k y = 0``."""
     return math.sqrt(float(stiffness) / float(mass)) / (2.0 * math.pi)
+
+
+def effective_added_mass(stiffness, mass, period):
+    """Added mass implied by a *measured* coupled period of ``m y'' + k y = 0``.
+
+    ``m_eff = k / (2 pi / T)^2 - m_s`` is the total inertia the coupled solver
+    actually integrates, expressed as an added mass.  It is the quantity that
+    separates a *coupling* error (which scales with the added-mass ratio) from a
+    *geometry* bias of the regularised interface (which does not): see
+    ``benchmarks/xval_aitken_strong_attribution.py``.
+
+    Returns ``nan`` for a non-finite or non-positive period.
+    """
+    if not (np.isfinite(period) and float(period) > 0.0):
+        return float("nan")
+    omega = 2.0 * math.pi / float(period)
+    return float(stiffness) / omega ** 2 - float(mass)
 
 
 # ---------------------------------------------------------------------------
@@ -592,6 +610,7 @@ def coupled_free_vibration(n_steps=900, dt=1.0, half_width=20.0,
     ys = [h["y"] for h in hist]
     period = estimate_period(ys, dt)
     period_fft = estimate_period_fft(ys, dt)
+    fit = estimate_period_damped(ys, dt)
     f_num = 1.0 / period if period == period else float("nan")
     f_fft = 1.0 / period_fft if period_fft == period_fft else float("nan")
     m_a_ref = analytic_added_mass(half_width, rho_f) if added_mass is None \
@@ -609,6 +628,9 @@ def coupled_free_vibration(n_steps=900, dt=1.0, half_width=20.0,
         "markers": int(len(body.positions0)),
         "added_mass_ratio": m_a_ref / mass if mass else float("nan"),
         "period": period, "period_fft": period_fft,
+        "period_damped": fit["period"], "period_damped_valid": fit["valid"],
+        "period_window_ok": period_window_ok(len(ys), dt, fit["period"],
+                                             min_cycles=2.0),
         "frequency": f_num, "frequency_fft": f_fft,
         "frequency_vacuum": f_vac, "frequency_ref": f_ref,
         "frequency_ratio": f_num / f_vac if f_vac else float("nan"),
