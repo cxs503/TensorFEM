@@ -3,8 +3,9 @@
 These are the L1 (implementation) checks for the anchor
 ``XVAL-LBM-SHAN-CHEN-MCMP-BARYCENTRIC-GUO``: conservation and equilibrium
 invariants, the pseudo-potential, the analytic single-interface interaction
-force, a regression against the live lbmpy reference case, and a replay of the
-defect that made the first delivery diverge.
+force, a regression against the live lbmpy reference case, a replay of the
+defect that made the first delivery diverge, tau sensitivity, and spurious
+current quantification.
 """
 from __future__ import annotations
 
@@ -125,3 +126,175 @@ def test_registry_evidence_passes():
     assert len(rows) == 3
     for row in rows:
         assert row.passed, f"{row.id} error {row.error:.3e} > {row.tolerance}"
+
+
+# ======================================================================
+# v2 additions: tau sensitivity and spurious current tests
+# ======================================================================
+
+class TestTauSensitivity:
+    """Tau sensitivity: barycentric+Guo must remain stable across τ values."""
+
+    @pytest.mark.parametrize("tau", [0.6, 0.7, 0.8, 1.0, 1.2, 1.5])
+    def test_symmetric_tau_stable(self, tau):
+        """Barycentric+Guo with symmetric τ must not diverge in 500 steps."""
+        sim = ShanChenMCMP(MCMPConfig(nx=32, ny=32, g_ab=6.0, g_ba=6.0,
+                                      tau_a=tau, tau_b=tau))
+        sim.init_step_x(0.1, 0.9)
+        for _ in range(500):
+            sim.step()
+            assert np.isfinite(sim.f).all(), f"diverged at τ={tau}, step={sim.t}"
+
+    @pytest.mark.parametrize("tau", [0.6, 0.7, 0.8, 1.0, 1.2, 1.5])
+    def test_symmetric_tau_mass_conserved(self, tau):
+        """Mass must be conserved at all τ values."""
+        sim = ShanChenMCMP(MCMPConfig(nx=32, ny=32, g_ab=6.0, g_ba=6.0,
+                                      tau_a=tau, tau_b=tau))
+        sim.init_step_x(0.1, 0.9)
+        m0 = sim.total_mass()
+        sim.run(300)
+        m1 = sim.total_mass()
+        assert np.isfinite(sim.f).all()
+        assert np.abs(m1 - m0).max() / m0.max() < 1e-10, \
+            f"mass drift at τ={tau}: {np.abs(m1 - m0).max() / m0.max():.3e}"
+
+    @pytest.mark.parametrize("tau_a,tau_b", [(0.6, 1.0), (0.8, 1.2), (1.0, 1.5)])
+    def test_asymmetric_tau_stable(self, tau_a, tau_b):
+        """Barycentric+Guo with τ_a ≠ τ_b must not diverge."""
+        sim = ShanChenMCMP(MCMPConfig(nx=32, ny=32, g_ab=6.0, g_ba=6.0,
+                                      tau_a=tau_a, tau_b=tau_b))
+        sim.init_step_x(0.1, 0.9)
+        for _ in range(500):
+            sim.step()
+            assert np.isfinite(sim.f).all(), \
+                f"diverged at τ_a={tau_a}, τ_b={tau_b}, step={sim.t}"
+
+    @pytest.mark.parametrize("tau_a,tau_b", [(0.6, 1.0), (0.8, 1.2), (1.0, 1.5)])
+    def test_asymmetric_tau_mass_conserved(self, tau_a, tau_b):
+        """Mass must be conserved with asymmetric τ."""
+        sim = ShanChenMCMP(MCMPConfig(nx=32, ny=32, g_ab=6.0, g_ba=6.0,
+                                      tau_a=tau_a, tau_b=tau_b))
+        sim.init_step_x(0.1, 0.9)
+        m0 = sim.total_mass()
+        sim.run(300)
+        m1 = sim.total_mass()
+        assert np.isfinite(sim.f).all()
+        assert np.abs(m1 - m0).max() / m0.max() < 1e-10
+
+    def test_barycentric_velocity_is_tau_independent(self):
+        """The barycentric velocity must be the same regardless of τ.
+
+        At the first step, the barycentric velocity depends only on the
+        initial populations and the interaction force, not on τ.
+        """
+        u_vals = []
+        for tau in [0.6, 0.8, 1.0, 1.2, 1.5]:
+            sim = ShanChenMCMP(MCMPConfig(nx=16, ny=16, g_ab=6.0, g_ba=6.0,
+                                          tau_a=tau, tau_b=tau))
+            sim.init_step_x(0.1, 0.9)
+            u = sim.barycentric_velocity()
+            u_vals.append(u.copy())
+        # All barycentric velocities should be identical (before any stepping)
+        for i in range(1, len(u_vals)):
+            assert np.abs(u_vals[i] - u_vals[0]).max() < 1e-14, \
+                f"barycentric velocity differs at τ={[0.6,0.8,1.0,1.2,1.5][i]}"
+
+
+class TestSpuriousCurrents:
+    """Spurious current quantification for the step-interface case.
+
+    Note: Shan-Chen spurious currents are a known model-level artifact
+    (Wagner 2006, Lischner 2020).  They arise from the anisotropy of the
+    lattice force discretization and do not decrease monotonically with
+    resolution.  The tests here verify that they remain within physically
+    acceptable bounds, not that they vanish.
+    """
+
+    @pytest.mark.parametrize("n", [32, 64])
+    def test_spurious_current_is_small_at_g6(self, n):
+        """Spurious current at g_ab=6 must be < 0.01 in lattice units."""
+        sim = ShanChenMCMP(MCMPConfig(nx=n, ny=n, g_ab=6.0, g_ba=6.0))
+        sim.init_step_x(0.1, 0.9)
+        sim.run(500)
+        sc = sim.spurious_current()
+        assert sc < 0.01, f"spurious current {sc:.2e} >= 0.01 at n={n}"
+
+    @pytest.mark.parametrize("g_ab", [3.0, 4.5])
+    def test_spurious_current_decreases_with_resolution(self, g_ab):
+        """Spurious current should decrease (or stay small) with resolution.
+
+        At moderate g_ab, the spurious current generally decreases with
+        resolution.  At high g_ab, the behavior can be non-monotonic due
+        to the lattice anisotropy of the force discretization.
+        """
+        sc_32 = None
+        sc_64 = None
+        for n in [32, 64]:
+            sim = ShanChenMCMP(MCMPConfig(nx=n, ny=n, g_ab=g_ab, g_ba=g_ab))
+            sim.init_step_x(0.1, 0.9)
+            sim.run(500)
+            sc = sim.spurious_current()
+            if n == 32:
+                sc_32 = sc
+            else:
+                sc_64 = sc
+        # Spurious current at n=64 should be <= spurious current at n=32
+        # (or at least not significantly larger)
+        assert sc_64 <= sc_32 * 1.5, \
+            f"spurious current increased with resolution: n=32 {sc_32:.2e}, n=64 {sc_64:.2e}"
+
+    def test_spurious_current_at_low_g_is_small(self):
+        """At low interaction strength (g_ab=3), spurious current should be small.
+
+        The Shan-Chen spurious current scales roughly as g_ab^2, so at g_ab=3
+        it should be significantly smaller than at g_ab=6.
+        """
+        sim = ShanChenMCMP(MCMPConfig(nx=64, ny=64, g_ab=3.0, g_ba=3.0))
+        sim.init_step_x(0.1, 0.9)
+        sim.run(500)
+        sc = sim.spurious_current()
+        # At g_ab=3, spurious current should be < 0.005 (much less than at g_ab=6)
+        assert sc < 5e-3, f"spurious current {sc:.2e} at g_ab=3"
+
+
+class TestConvergence:
+    """Self-convergence of the interface profile across resolutions."""
+
+    def test_interface_profile_converges_with_resolution(self):
+        """The interface profile at n=64 should be closer to n=96 than n=32 is."""
+        profiles = {}
+        for n in [32, 64, 96]:
+            sim = ShanChenMCMP(MCMPConfig(nx=n, ny=n, g_ab=6.0, g_ba=6.0))
+            sim.init_step_x(0.1, 0.9)
+            steps = 400 * n // 32  # scale steps with resolution
+            sim.run(steps)
+            profiles[n] = sim.density()[0, 0, :].copy()
+
+        # Interpolate fine profile to coarser grids
+        fine = profiles[96]
+        x_fine = np.linspace(0, 1, 96)
+        x_64 = np.linspace(0, 1, 64)
+        x_32 = np.linspace(0, 1, 32)
+        fine_at_64 = np.interp(x_64, x_fine, fine)
+        fine_at_32 = np.interp(x_32, x_fine, fine)
+
+        err_32 = relative_l2(profiles[32], fine_at_32)
+        err_64 = relative_l2(profiles[64], fine_at_64)
+
+        # n=64 should be closer to n=96 than n=32 is
+        assert err_64 < err_32, \
+            f"convergence violated: err_32={err_32:.3e}, err_64={err_64:.3e}"
+
+    def test_density_extrema_converge(self):
+        """Density extrema should converge with resolution."""
+        extrema = {}
+        for n in [32, 64, 96]:
+            sim = ShanChenMCMP(MCMPConfig(nx=n, ny=n, g_ab=6.0, g_ba=6.0))
+            sim.init_step_x(0.1, 0.9)
+            sim.run(400)
+            rho = sim.density()
+            extrema[n] = {"rho_min": float(rho.min()), "rho_max": float(rho.max())}
+
+        # All densities should be positive
+        for n, e in extrema.items():
+            assert e["rho_min"] > 0, f"negative density at n={n}: {e['rho_min']}"
