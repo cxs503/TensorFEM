@@ -84,7 +84,7 @@
       "limit_spread": null,
       "limit_withheld_reason": null,
       "limit_load_measured": 1424752.7304620615,
-      "limit_load_error_vs_ub": -0.16487666454355376,
+      "limit_load_error_vs_ub": -0.3059311870021024,
       "permanent_deflection": 0.025906066030738892,
       "permanent_set_valid": true,
       "unload_failure": null,
@@ -158,7 +158,7 @@
       "limit_spread": null,
       "limit_withheld_reason": null,
       "limit_load_measured": 1427322.7860058083,
-      "limit_load_error_vs_ub": -0.1633702183286333,
+      "limit_load_error_vs_ub": -0.3046791835053213,
       "permanent_deflection": 0.014559804129333881,
       "permanent_set_valid": true,
       "unload_failure": null,
@@ -242,7 +242,7 @@
       "limit_spread": null,
       "limit_withheld_reason": null,
       "limit_load_measured": 1408611.043509411,
-      "limit_load_error_vs_ub": -0.17433816558831366,
+      "limit_load_error_vs_ub": -0.313794615696411,
       "permanent_deflection": 0.02328269636399604,
       "permanent_set_valid": false,
       "unload_failure": "unloading step to 0 did not converge",
@@ -330,13 +330,13 @@
     },
     "limit_lt_10pct": {
       "finest_mesh": "24x12",
-      "limit_measured": 72375.41513273091,
+      "limit_measured": 1408611.043509411,
       "upper_bound": 2052754.285714286,
-      "error_finest": -0.9647422900848813,
+      "error_finest": -0.313794615696411,
       "limit_trend": [
-        1424752.7304621048,
-        509350.075612999,
-        72375.41513273091
+        1424752.7304620615,
+        1427322.7860058083,
+        1408611.043509411
       ],
       "met_at_finest_mesh": false
     },
