@@ -32,9 +32,15 @@ loads are *outputs*, not inputs.
 
 References
 ----------
-[1] Guo, Z., Zheng, C., Shi, B. (2002). Phys. Fluids 14, 2007.
-[2] Peskin, C.S. (2002). Acta Numerica 11, 479 (IB delta kernel).
-[3] Turek, S., Hron, J. (2006). LNCS 53, 371 (2D-2 / FSI-2 benchmarks).
+[1] Guo, Z., Zheng, C., Shi, B. (2002). Discrete lattice effects on the
+    forcing term in the lattice Boltzmann method. Phys. Rev. E 65, 046308.
+    DOI: 10.1103/PhysRevE.65.046308 (body-force scheme of ``_collide``).
+[2] Peskin, C.S. (2002). The immersed boundary method. Acta Numerica 11,
+    479-517. DOI: 10.1017/S0962492902000077 (IB delta kernel).
+[3] Turek, S., Hron, J. (2006). Proposal for numerical benchmarking of
+    fluid-structure interaction between an elastic object and laminar
+    incompressible flow. LNCS 53, 371-385. DOI: 10.1007/3-540-34596-5_15
+    (2D-2 / FSI-2 benchmarks).
 """
 from __future__ import annotations
 
@@ -42,6 +48,12 @@ import math
 from dataclasses import dataclass
 
 import numpy as np
+
+from .lbm_references import render_reference_block
+
+#: citation block above, rendered from the verified registry
+__references__ = render_reference_block(
+    ("guo2002_forcing", "peskin2002", "turek2006"))
 
 DTYPE = np.float64
 
