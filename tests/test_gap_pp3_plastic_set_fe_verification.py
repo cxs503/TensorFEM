@@ -405,9 +405,15 @@ class Test3GridConvergenceFromCluster:
     and checks the acceptance criteria across all three mesh densities.
     """
 
-    RESULTS_PATH = os.path.join(
-        os.path.dirname(__file__), "..", "outputs", "gap_pp3_3grid_results.json"
+    # ``outputs/`` is git-ignored (run artefacts); the committed evidence copy
+    # lives in ``docs/assets`` so CI reads the *same* numbers the report quotes.
+    CANDIDATES = (
+        os.path.join(os.path.dirname(__file__), "..", "docs", "assets",
+                     "gap_pp3_3grid_results.json"),
+        os.path.join(os.path.dirname(__file__), "..", "outputs",
+                     "gap_pp3_3grid_results.json"),
     )
+    RESULTS_PATH = next((p for p in CANDIDATES if os.path.exists(p)), CANDIDATES[0])
 
     @pytest.fixture
     def results(self):
@@ -475,6 +481,32 @@ class Test3GridConvergenceFromCluster:
             assert limit <= upper * 1.02, (
                 f"mesh {name}: limit {limit/1e6:.4f} MPa exceeds the yield-line "
                 f"upper bound {upper/1e6:.4f} MPa")
+
+    def test_limit_estimate_stable_between_finest_meshes(self, results):
+        """The measured collapse pressure must not drift >10 % on refinement.
+
+        This is the criterion the data can actually support (see
+        docs/CASE-GAP-PP-3-3GRID-MATRIX-VERDICT.md): a unique collapse load
+        exists only if the estimate is mesh-stable.  It is asserted on the two
+        finest meshes, ordered by element count, and it is a *separate* row from
+        the upper-bound comparison -- the latter is reported, not assumed.
+        """
+        measured = [(name, m["limit_load_measured"])
+                    for name, m in self._by_element_count(results)
+                    if m.get("limit_load_measured") is not None]
+        assert len(measured) >= 2, "need at least two meshes with a measured limit"
+        (nc, vc), (nf, vf) = measured[-2], measured[-1]
+        drift = abs(vf - vc) / vf
+        assert drift < 0.10, (
+            f"limit estimate not mesh-stable: {nc}={vc/1e6:.4f} MPa -> "
+            f"{nf}={vf/1e6:.4f} MPa (drift {drift*100:.2f}%)")
+
+    def test_no_silent_limits(self, results):
+        """Every mesh either reports a measured limit or says why it is withheld."""
+        for name, m in self._by_element_count(results):
+            if m.get("limit_load_measured") is None:
+                assert m.get("limit_withheld_reason"), (
+                    f"mesh {name}: limit load absent without a documented reason")
 
     def test_permanent_deflection_positive_all_meshes(self, results):
         """Permanent deflection is positive on all meshes and below the peak."""
