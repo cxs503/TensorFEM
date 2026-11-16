@@ -117,9 +117,10 @@ def run_one(nx: int, *, layers: int, geometry: str, unload_steps: int,
     p_y = ref["p_yield_analytic"]
     membrane = geometry == "membrane"
     start = time.time()
+    factors = ramp_factors(p_y, top, step)
     path = run_patch_plastic_path(
         A, B, T, young=E, poisson=NU, yield_stress=flow.yield_stress,
-        hardening=HARDENING, patch=PATCH, load_factors=ramp_factors(p_y, top, step),
+        hardening=HARDENING, patch=PATCH, load_factors=factors,
         nx=nx, ny=nx, layers=layers, unload_steps=unload_steps,
         exact_thickness=True, shear_correction=5.0 / 6.0,
         max_deflection_factor=6.0, bisection_tolerance=1e-2,
@@ -131,6 +132,11 @@ def run_one(nx: int, *, layers: int, geometry: str, unload_steps: int,
     primary = estimates["tight"]
     record = {
         "nx": nx, "layers": layers, "geometry": geometry,
+        # prescribed ramp: the comparability key of a mesh ladder (see
+        # ``ramp_signature``/``comparable_ladders``)
+        "ramp": {"top_over_py": top, "step_over_py": step,
+                 "points": len(factors),
+                 "factors_over_py": [round(f / p_y, 6) for f in factors]},
         "section_capacity": section_moment_capacity(T, flow.yield_stress, layers),
         "references": ref,
         "limit_estimates": estimates,
@@ -216,6 +222,75 @@ def richardson(hs: list[float], ps: list[float],
     return q, p3 - sign * slope * h3 ** q
 
 
+def ramp_signature(record: dict) -> dict:
+    """Everything that must agree before two ladder records may be differenced.
+
+    Mesh convergence is a statement about *one* discretisation family: same
+    prescribed load ramp, same layer count, same hardening, same patch, same
+    material.  Differencing records that disagree in any of these measures the
+    ramp (or the layering), not the mesh, so the signature is the gate of every
+    Richardson estimate in :func:`analyse`.
+    """
+    ramp = record.get("ramp") or {}
+    refs = record.get("references") or {}
+    return {
+        "factors_over_py": ramp.get("factors_over_py"),
+        "layers": record.get("layers"),
+        "hardening": refs.get("hardening"),
+        "yield_stress": refs.get("yield_stress"),
+        "patch": list(refs.get("patch") or []),
+    }
+
+
+def comparable_ladders(entries: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Split ladder entries into the one comparable family and the rest.
+
+    Per geometry the records are grouped by :func:`ramp_signature`.  A single
+    group is admitted as is.  When several groups exist, the largest one is
+    admitted and every other record is *excluded with a reason* -- it is still
+    reported (never silently dropped), but it does not contribute to the
+    convergence or extrapolation claim.
+    """
+    admitted: list[dict] = []
+    excluded: list[dict] = []
+    for geometry in sorted({e["geometry"] for e in entries}):
+        group = [e for e in entries if e["geometry"] == geometry]
+        families: dict[str, list[dict]] = {}
+        for entry in group:
+            families.setdefault(json.dumps(entry["ramp_signature"],
+                                           sort_keys=True), []).append(entry)
+        if len(families) == 1:
+            admitted.extend(group)
+            continue
+        # largest family wins; ties broken by the finest mesh in the family
+        ranked = sorted(families.values(),
+                        key=lambda fam: (len(fam), max(e["nx"] for e in fam)),
+                        reverse=True)
+        admitted.extend(ranked[0])
+        reference = ranked[0][0]["ramp_signature"]
+        for family in ranked[1:]:
+            for entry in family:
+                out = dict(entry)
+                out["ladder_excluded"] = (
+                    "ramp/discretisation signature differs from the admitted "
+                    f"ladder ({_ramp_label(entry['ramp_signature'])} vs "
+                    f"{_ramp_label(reference)}): differencing would measure the "
+                    "ramp, not the mesh")
+                excluded.append(out)
+    return admitted, excluded
+
+
+def _ramp_label(signature: dict) -> str:
+    """Short description of a ramp signature for the exclusion reason."""
+    factors = signature.get("factors_over_py") or []
+    if not factors:
+        return "ramp not recorded (legacy artifact)"
+    steps = sorted({round(b - a, 6) for a, b in zip(factors, factors[1:])})
+    step = steps[0] if len(steps) == 1 else "mixed"
+    return (f"{len(factors)} points, {factors[0]:.2f}..{factors[-1]:.2f} p_y, "
+            f"step {step}, {signature.get('layers')} layers")
+
+
 def analyse() -> int:
     """Aggregate the ladder: Richardson extrapolation and acceptance verdicts."""
     files = sorted(ART.glob("patch_plate_plastic_ladder_nx*_*.json"))
@@ -223,7 +298,10 @@ def analyse() -> int:
         print("no ladder artifacts yet")
         return 1
     records = [json.loads(f.read_text()) for f in files]
-    summary: dict = {"records": [], "files": [f.name for f in files]}
+    summary: dict = {"records": [], "records_excluded": [],
+                     "files": [f.name for f in files]}
+    by_tag: dict[str, dict] = {}
+    entries: list[dict] = []
     for rec in sorted(records, key=lambda r: (r["geometry"], r["nx"])):
         tight = rec["limit_estimates"]["tight"]
         loose = rec["limit_estimates"]["loose"]
@@ -247,7 +325,18 @@ def analyse() -> int:
         if entry["limit_tight"]:
             entry["errors"] = {k: entry["limit_tight"] / v - 1.0
                                for k, v in bounds.items()}
-        summary["records"].append(entry)
+        entry["ramp_signature"] = ramp_signature(rec)
+        by_tag[tag(rec)] = rec
+        entries.append(entry)
+
+    # Comparability gate: a mesh ladder is a convergence statement only when all
+    # of its records share one prescribed ramp (and one layering / patch).
+    admitted, excluded = comparable_ladders(entries)
+    summary["records"] = admitted
+    summary["records_excluded"] = excluded
+    for out in excluded:
+        print(f"[{out['tag']}] excluded from the ladder: {out['ladder_excluded']}",
+              flush=True)
 
     # Richardson: p_c(h) = p_inf + C h^q for the bending-only ladder.  Two runs
     # are enough for one estimate; three give the observed order q.
@@ -269,7 +358,7 @@ def analyse() -> int:
                 "note": "three meshes required for a Richardson estimate",
                 "two_mesh_values": ps, "h": hs}
         if geometry == "free":
-            bounds = records[0]["references"]["bounds"]
+            bounds = by_tag[ladder[0]["tag"]]["references"]["bounds"]
             for entry in ladder:
                 entry["acceptance"] = {
                     "within_10pct_of_ilyushin": bool(
@@ -288,8 +377,9 @@ def analyse() -> int:
                         entry["first_yield_error"] is not None
                         and abs(entry["first_yield_error"]) < 0.05),
                 }
-    bounds_free = next((r["references"]["bounds"] for r in records
-                        if r["geometry"] == "free"), None)
+    bounds_free = next((by_tag[e["tag"]]["references"]["bounds"]
+                        for e in summary["records"]
+                        if e["geometry"] == "free"), None)
     extrapolation = summary.get("extrapolation_free") or {}
     if bounds_free and extrapolation.get("limit_infinity"):
         summary["extrapolated_limit_error_vs_ilyushin"] = (
@@ -300,11 +390,21 @@ def analyse() -> int:
         # The ledger acceptance is "limit load within 10 % of the Ilyushin/upper
         # bound analysis".  No solver can satisfy that while the admissible
         # bracket is wide, so the criterion itself is judged here.
+        # ``johansen_twist`` was added to the reference set after the first
+        # artifacts were produced, so the analysis must not assume it: the
+        # admissible upper bound is the tighter of the two when both exist and
+        # the yield-line bound alone otherwise (a legacy artifact must not crash
+        # the whole analysis step).
+        admissible_upper = min(bounds_free["yield_line"],
+                               bounds_free.get("johansen_twist",
+                                              bounds_free["yield_line"]))
         gate = criterion_discrimination(
-            min(bounds_free["yield_line"], bounds_free["johansen_twist"]),
+            admissible_upper,
             bounds_free["strip_lower"], 0.10, label="limit load vs upper bound")
         summary["acceptance_discrimination"] = gate
-        for entry in summary["records"]:
+        # the criterion gate belongs to the bending-only (in-plane free) ladder:
+        # a membrane/grillage record is never judged against the bending bounds
+        for entry in [e for e in summary["records"] if e["geometry"] == "free"]:
             entry.setdefault("acceptance", {})["criterion_discriminative"] = \
                 gate["discriminative"]
         print(f"criterion gate: {gate['verdict']} "
