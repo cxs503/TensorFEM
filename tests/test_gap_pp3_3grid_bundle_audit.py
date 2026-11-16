@@ -298,3 +298,43 @@ def test_case_document_quotes_the_committed_bundle(committed):
                                                            rel=2e-3)
         assert float(cells[5].rstrip("%")) / 100.0 == pytest.approx(
             mesh["first_yield_error"], abs=6e-5)
+
+# ---------------------------------------------------------------------------
+# verification debt pinned (mission m23702): limit error must use the
+# yield-line upper bound, not the Ilyushin sine bound
+# ---------------------------------------------------------------------------
+
+def test_committed_limit_error_is_consistent_with_the_yield_line_ub(committed):
+    """The ``limit_load_error_vs_ub`` column must equal ``(limit - yield_line_UB)/UB``.
+
+    The committed bundle was regenerated (``scripts/regenerate_gap_pp3_3grid_evidence.py``)
+    because an older ``gap_pp3_3grid_study.run_mesh`` had computed the column against the
+    **Ilyushin sine** upper bound (``bounds.ilyushin_sine_upper_pressure``) while the
+    ``criteria.limit_lt_10pct`` block and the auditor use the **yield-line** upper bound
+    (``analytic.yield_line_upper_pressure``).  The two references differ by ~17 %, so the
+    stored column disagreed with the auditor's ``M4-limit-error`` identity on every mesh
+    and the bundle failed the consistency audit.  This test pins the corrected identity.
+    """
+    ub = committed["analytic"]["yield_line_upper_pressure"]
+    for name, mesh in committed["meshes"].items():
+        limit = mesh.get("limit_load_measured")
+        if limit is None:
+            continue
+        expected = (float(limit) - float(ub)) / float(ub)
+        assert mesh["limit_load_error_vs_ub"] == pytest.approx(expected, rel=1e-9), name
+
+
+def test_committed_limit_criteria_uses_the_measured_not_the_withheld_value(committed):
+    """``criteria.limit_lt_10pct.limit_measured`` must be the real measured limit.
+
+    The pre-fix bundle carried a stale ``criteria`` block whose ``limit_measured`` was the
+    *withheld* ``intersection_of_tangents`` value (72.4 kPa on 24x12) instead of the
+    ``limit_load_measured`` (1.41 MPa) that ``limit_load_from_path`` actually returns when
+    the tangent intersection is numerically unstable.  The criteria block must quote the
+    same number as the per-mesh ``limit_load_measured`` so the verdict is not inflated.
+    """
+    finest = committed["criteria"]["limit_lt_10pct"]["finest_mesh"]
+    mesh = committed["meshes"][finest]
+    assert mesh["limit_load_measured"] is not None, "finest mesh limit must be measured"
+    assert committed["criteria"]["limit_lt_10pct"]["limit_measured"] == \
+        pytest.approx(mesh["limit_load_measured"], rel=1e-12)
