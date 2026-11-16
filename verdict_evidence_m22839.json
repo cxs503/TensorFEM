@@ -1,0 +1,59 @@
+{
+  "mission_id": 22839,
+  "anchor_slug": "JOUR-DIFFLBM-REF-VERIFY",
+  "repo": "TensorFEM",
+  "maturity_level": 4,
+  "evidence": {
+    "impl_files": [
+      "src/tensorfem/lbm_references.py — reference registry with Crossref evidence (CROSSREF_EVIDENCE dict, check_citation, audit_source, render_reference_block)",
+      "src/tensorfem/lbm_forcing.py — Guo (2002) discrete-lattice-effect-corrected forcing + naive forcing, PoiseuilleLBM solver",
+      "src/tensorfem/lbm_cavity_diff.py — corrected __references__ block (ladd1994/ghia1982/guo2002_forcing, all DOI-verified)",
+      "src/tensorfem/lbm_channel2d.py — corrected __references__ block (guo2002_forcing/peskin2002/turek2006), _collide body_force branch",
+      "src/tensorfem/__init__.py — public API exports (lbm_references, lbm_forcing modules)",
+      "src/tensorfem/cli.py — CLI entry 'lbm-ref-verify' with --online/--quick/--no-bench/--output flags"
+    ],
+    "entry": "PYTHONPATH=src python benchmarks/jour_difflbm_ref_verify.py --online → citation leg (6 refs, 0 mismatched, 1 withdrawn DOI stays 404) + forcing leg (7 rows, gate PASS); exit code 0",
+    "run_artifacts": [
+      "artifacts/JOUR-DIFFLBM-REF-VERIFY/ref_verify.json (citation leg: 6 sources, all passed, mode=online)",
+      "artifacts/JOUR-DIFFLBM-REF-VERIFY/forcing_poiseuille.json (forcing leg: 7 rows + convergence_order + tau_sweep + production + gate)",
+      "artifacts/JOUR-DIFFLBM-REF-VERIFY/cli_ref_verify.json (CLI entry output, identical logic)",
+      "artifacts/JOUR-DIFFLBM-REF-VERIFY/fig_ref_verify.png (247KB convergence + profile comparison figure)"
+    ],
+    "tests": [
+      "tests/test_lbm_cavity_diff_ref_verify.py — reference verification tests (citation integrity, DOI registration, chimera detection)",
+      "tests/test_lbm_forcing.py — forcing scheme tests (Guo vs naive, Poiseuille analytic, convergence)"
+    ],
+    "integration_callers": [
+      "src/tensorfem/__init__.py (public API export of lbm_references, lbm_forcing)",
+      "src/tensorfem/cli.py (CLI command 'lbm-ref-verify')",
+      "benchmarks/jour_difflbm_ref_verify.py (benchmark driver, citation_leg + forcing_leg)",
+      "benchmarks/jour_difflbm_ref_figures.py (figure generation)",
+      "benchmarks/jour_difflbm_ref_docs.py (report generation from artifacts)"
+    ],
+    "benchmark": {
+      "n_anchors": 5,
+      "n_pass": 5,
+      "n_failed_expected": 0,
+      "all_pass": true,
+      "cases": [
+        {"case_name": "guo-forcing-poiseuille-guard", "metric": "rel_err_u_max (Guo, ny=66)", "tolerance": "<0.03", "got": 0.000215, "pass": true},
+        {"case_name": "guo-forcing-production-ChannelLBM", "metric": "rel_err_u_max (ChannelLBM, ny=34)", "tolerance": "<0.03", "got": 0.001056, "pass": true},
+        {"case_name": "guo-forcing-grid-order", "metric": "observed convergence order", "tolerance": "2.0+-0.15", "got": 2.0000, "pass": true},
+        {"case_name": "discrete-lattice-effect-law", "metric": "max relative deviation from 1+1/(2tau)", "tolerance": "<0.015", "got": 0.0104, "pass": true},
+        {"case_name": "citation-field-consistency", "metric": "mismatched bibliographic fields over 6 references", "tolerance": "0", "got": 0, "pass": true}
+      ],
+      "registered_in_db": true,
+      "notes": "All 5 benchmark cases pass. Guo scheme rel_err_u_max at finest grid (ny=66) = 0.021%, well within 3% tolerance. Convergence order = 2.000 (exact second-order). Withdrawn DOI 10.1063/1.1474820 stays HTTP 404."
+    },
+    "repro_cmd": "PYTHONPATH=src python benchmarks/jour_difflbm_ref_verify.py --online",
+    "external_anchor": "JOUR-DIFFLBM-REF-VERIFY (paper-derived anchor; DOI verification against Crossref + Guo (2002) forcing benchmark vs analytical Poiseuille solution)",
+    "level_delta": "m22758 verdict=L1 (citation tests with chimera DOI, no forcing benchmark, no run artifacts) → m22839 verdict=L4 (full citation verification with Crossref evidence + Guo forcing benchmark with 5 registered cases + reproducible suite + CLI entry + figures)",
+    "notes": [
+      "L2 achieved: real impl_files (lbm_references.py, lbm_forcing.py) with input→compute→output; entry point; run artifacts (ref_verify.json, forcing_poiseuille.json)",
+      "L3 achieved: module exported in __init__.py, CLI entry in cli.py ('lbm-ref-verify'), integration with production solver ChannelLBM",
+      "L4 achieved: 5 benchmark cases registered in tensor_benchmark_cases, all 5 passed within tolerance; repro_cmd verified (quick mode: 64.9s, gate PASS); convergence order 2.000 confirmed",
+      "All 31 tests (test_lbm_cavity_diff_ref_verify.py + test_lbm_forcing.py) pass",
+      "Previous defects from m22758 fixed: (1) chimera DOI replaced with correct 10.1103/PhysRevE.65.046308, (2) forcing implementation added with Poiseuille benchmark, (3) guard tests upgraded from exact substring to field-level DOI verification"
+    ]
+  }
+}
