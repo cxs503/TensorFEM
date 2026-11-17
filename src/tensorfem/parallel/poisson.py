@@ -243,7 +243,16 @@ class DistPoisson:
     # -- solver -------------------------------------------------------------
     def cg(self, b: torch.Tensor, *, iters: int | None = None,
            tol: float = 1e-10, jacobi: bool = True) -> dict:
-        """Distributed preconditioned CG; ``iters`` forces a fixed budget."""
+        """Distributed preconditioned CG; ``iters`` forces a fixed budget.
+
+        Report the global Euclidean norm of the *recomputed* ``b - A x``,
+        normalized by the initial residual. The recurrence's preconditioned
+        norm is used only for stopping, never as the reported residual.
+        """
+        if iters is not None and (not isinstance(iters, int) or iters < 0):
+            raise ValueError("iters must be a non-negative integer or None")
+        if not np.isfinite(tol) or tol <= 0:
+            raise ValueError("tol must be finite and positive")
         x = torch.zeros_like(b)
         pre = self.diag if jacobi else torch.ones_like(self.diag)
         r = b - self.matvec(x)
@@ -253,21 +262,20 @@ class DistPoisson:
         rz = float(self.comm.allreduce(np.array([float((r * z).sum())]), op="sum")[0])
         rz0 = rz
         it = 0
-        nxt = r0
         budget = iters if iters is not None else 20000
-        while it < budget:
-            it += 1
+        while it < budget and rz > 0.0:
             Ap = self.matvec(p)
             two = self.comm.allreduce(
                 np.array([float((p * Ap).sum()), float((r * z).sum())]), op="sum")
             pAp, rz = float(two[0]), float(two[1])
             if pAp == 0.0:  # pragma: no cover
                 break
+            it += 1
             alpha = rz / pAp
             x += alpha * p
             r -= alpha * Ap
             z = r / pre
-            # single collective per iteration: the preconditioned residual norm
+            # This second collective's preconditioned residual norm
             # serves both the beta recurrence and the stopping test
             rz_new = float(self.comm.allreduce(np.array([float((r * z).sum())]),
                                                op="sum")[0])
@@ -276,6 +284,11 @@ class DistPoisson:
             beta = rz_new / rz if rz else 0.0
             p = z + beta * p
             rz = rz_new
+        # Recursive CG residuals can drift at round-off. Reapply the distributed
+        # operator and reduce over OWNED nodes (ghosts must not be counted twice).
+        true_r = b - self.matvec(x)
+        nxt = float(self.comm.allreduce(
+            np.array([float((true_r * true_r).sum())]), op="sum")[0])
         return {
             "iters": it,
             "residual": float(np.sqrt(max(nxt, 0.0))),

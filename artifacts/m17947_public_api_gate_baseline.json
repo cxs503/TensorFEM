@@ -1,0 +1,155 @@
+{
+  "baseline_rev": "fe9673f0208c82200dffae829ec1d91095544281",
+  "baseline_rev_commit": "fe9673f0208c82200dffae829ec1d91095544281",
+  "clean_manifest": {
+    "baseline": {
+      "error_count": 0,
+      "first_error": null,
+      "ok": true,
+      "returncode": 0
+    },
+    "case": "clean_manifest",
+    "hardened": {
+      "error_count": 0,
+      "first_error": null,
+      "ok": true,
+      "returncode": 0
+    }
+  },
+  "entries": 397,
+  "fault_cases": [
+    {
+      "baseline": {
+        "error_count": 0,
+        "first_error": null,
+        "ok": true,
+        "returncode": 0
+      },
+      "case": "unknown_entry_key",
+      "hardened": {
+        "error_count": 3,
+        "first_error": "snapshot: entry[3] has unknown keys ['stabilty']",
+        "ok": false,
+        "returncode": 1
+      }
+    },
+    {
+      "baseline": {
+        "error_count": 0,
+        "first_error": null,
+        "ok": true,
+        "returncode": 0
+      },
+      "case": "missing_introduced",
+      "hardened": {
+        "error_count": 4,
+        "first_error": "snapshot: entry[3] is missing keys ['introduced']",
+        "ok": false,
+        "returncode": 1
+      }
+    },
+    {
+      "baseline": {
+        "error_count": 0,
+        "first_error": null,
+        "ok": true,
+        "returncode": 0
+      },
+      "case": "wrong_schema_id",
+      "hardened": {
+        "error_count": 1,
+        "first_error": "snapshot: schema id 'tensorfem.public-api-manifest/0.9' != 'tensorfem.public-api-manifest/1.0'",
+        "ok": false,
+        "returncode": 1
+      }
+    },
+    {
+      "baseline": {
+        "error_count": 0,
+        "first_error": null,
+        "ok": true,
+        "returncode": 0
+      },
+      "case": "non_semver_introduced",
+      "hardened": {
+        "error_count": 1,
+        "first_error": "snapshot: entry[3]: invalid introduced 'v0.1'",
+        "ok": false,
+        "returncode": 1
+      }
+    },
+    {
+      "baseline": {
+        "error_count": 1,
+        "first_error": "FrameModel: invalid stability",
+        "ok": false,
+        "returncode": 1
+      },
+      "case": "unknown_stability",
+      "hardened": {
+        "error_count": 1,
+        "first_error": "snapshot: entry[3]: invalid stability 'stable-ish'",
+        "ok": false,
+        "returncode": 1
+      }
+    },
+    {
+      "baseline": {
+        "error_count": 0,
+        "first_error": null,
+        "ok": true,
+        "returncode": 0
+      },
+      "case": "stability_without_policy",
+      "hardened": {
+        "error_count": 46,
+        "first_error": "snapshot: stability class 'internal_candidate' has no policy sentence",
+        "ok": false,
+        "returncode": 1
+      }
+    },
+    {
+      "baseline": {
+        "error_count": 0,
+        "first_error": null,
+        "ok": true,
+        "returncode": 0
+      },
+      "case": "unknown_top_level_key",
+      "hardened": {
+        "error_count": 1,
+        "first_error": "snapshot: unknown top-level keys ['generated_by']",
+        "ok": false,
+        "returncode": 1
+      }
+    },
+    {
+      "baseline": {
+        "error_count": 0,
+        "first_error": null,
+        "note": "gate never reads the packaged copy",
+        "ok": true,
+        "returncode": 0
+      },
+      "case": "stale_packaged_copy",
+      "hardened": {
+        "error_count": 1,
+        "first_error": "packaged copy src/tensorfem/public_api_manifest.json drifted from api/public-api-v1.json; regenerate both copies in one review",
+        "ok": false,
+        "returncode": 1
+      }
+    }
+  ],
+  "method": "both gates' audit() called in-process; returncode = 0 if ok else 1",
+  "mission": "m17947",
+  "mission_origin": "#760 reopen round 2 (m15038 deliverables)",
+  "package_version": "0.45.0",
+  "reproduce": "PYTHONPATH=src python scripts/m17947_gate_baseline_compare.py",
+  "summary": {
+    "baseline_escaped": 6,
+    "baseline_escaped_note": "counted over the in-manifest faults; the packaged-copy case is not expressible",
+    "clean_manifest_still_passes": true,
+    "faults_injected": 8,
+    "hardened_escaped": 0
+  }
+}

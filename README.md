@@ -27,6 +27,13 @@ For the icebreaker workflow, FEM can represent hull/structure response and suppo
 
 ## Published benchmark report scope
 
+`tensorfem verify` requires both numerical tolerances and complete, unique
+evidence classifications; unknown/missing checks fail the command. The
+`discretized` class includes non-FEM methods and is not an FE coverage count.
+The separate [FSI3D ice prototype is blocked](docs/fsi3d-quarantine.md): it cannot
+produce coupled simulation or conservation evidence. The SUBOFF cases below
+retain their own stated scope and limitations.
+
 The registry contains scalar checks; it does not certify complete stress fields or research reports. Three independent linear cases now have revalidated displacement/stress fields, three mesh levels, and complete Markdown/HTML/PDF/Word reports. Beam stress qualification is limited to the declared sampling region and model. TensorFEM remains below the 1.0 gate. See [benchmark qualification status and downloads](docs/benchmark-qualification-status.md).
 
 ## Experimental SUBOFF upward ice impact
@@ -122,7 +129,7 @@ and the [FEM surface interface](docs/surface-coupling-interface.md).
 | multistep execution | stable initial subset | linear, thermal, modal and sequential thermoelastic steps with resume |
 | ResultDB v2 | stable core | multistep/multiframe/IP fields, histories, lazy queries and atomic HDF5 publication |
 | engineering case packages | stable examples | pressurized component, thin-wall panel and stopped connector with checkpoints, ResultDB, VTK and reports |
-| public API and release gates | stable infrastructure | versioned 341-symbol manifest, drift audit, executable release logs and offline wheel/sdist installation smoke test |
+| public API and release gates | stable infrastructure | versioned 397-symbol manifest, drift audit, executable release logs and offline wheel/sdist installation smoke test |
 | ship structural screening | stable benchmarks | hull-girder longitudinal bending and equivalent-orthotropic stiffened-panel analytical checks |
 | box-barge hydrostatics | stable initial subset | displacement, KB/BM/KM/GM and small-angle restoring moment for intact rectangular hulls |
 | marine environmental loads | stable initial subset | Airy-wave/Morison pile actions and audited TensorLBM-to-TensorFEM nodal force histories |

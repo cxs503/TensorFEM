@@ -1,0 +1,206 @@
+{
+  "benchmark": "L3 Modal Verification",
+  "generated_by": "benchmarks/verified/fem_modal/run_verification.py",
+  "generated_at": "2026-11-07T12:27:28+00:00",
+  "environment": {
+    "python": "3.11.6",
+    "torch": "2.7.1",
+    "machine": "loongarch64"
+  },
+  "cases": {
+    "simply_supported_beam_modal": {
+      "description": "Simply supported beam free vibration, modes 1-5",
+      "analytical_formula": "\u03c9_n = (n\u03c0/L)\u00b2 \u221a(EI/\u03c1A)",
+      "parameters": {
+        "L": 10.0,
+        "EI": 1000.0,
+        "rho_a": 1.0
+      },
+      "analytical_frequencies": [
+        3.121042951226439,
+        12.484171804905756,
+        28.08938656103795,
+        49.936687219623025,
+        78.02607378066098
+      ],
+      "mesh_convergence": [
+        {
+          "n_elements": 10,
+          "frequencies": [
+            3.1210640042274593,
+            12.48550792641402,
+            28.104396312596965,
+            50.019418902883416,
+            78.33403465075934
+          ],
+          "relative_errors": [
+            6.745501856043063e-06,
+            0.00010702524197385629,
+            0.0005343566875836629,
+            0.0016567315107735296,
+            0.00394689691761326
+          ],
+          "max_relative_error": 0.00394689691761326
+        },
+        {
+          "n_elements": 20,
+          "frequencies": [
+            3.1210442692408007,
+            12.484256016850168,
+            28.090342428945906,
+            49.942031705697254,
+            78.04633420639634
+          ],
+          "relative_errors": [
+            4.222993346288251e-07,
+            6.745497076422635e-06,
+            3.402950455602025e-05,
+            0.00010702524279841943,
+            0.0002596622481904258
+          ],
+          "max_relative_error": 0.0002596622481904258
+        },
+        {
+          "n_elements": 40,
+          "frequencies": [
+            3.1210430317179303,
+            12.484177077598634,
+            28.08944658661166,
+            49.9370240671018,
+            78.02735672457835
+          ],
+          "relative_errors": [
+            2.578993384835387e-08,
+            4.223502335809617e-07,
+            2.1369485438683577e-06,
+            6.74549109147445e-06,
+            1.6442502553450927e-05
+          ],
+          "max_relative_error": 1.6442502553450927e-05
+        }
+      ],
+      "observed_convergence_order": 3.9535725679233793,
+      "max_error_at_finest": 1.6442502553450927e-05
+    },
+    "rectangular_plate_modal": {
+      "description": "Simply supported rectangular plate free vibration, modes 1-4",
+      "analytical_formula": "\u03c9_mn = \u03c0\u00b2 \u221a(D/\u03c1h) * [(m/a)\u00b2 + (n/b)\u00b2]",
+      "parameters": {
+        "a": 1.0,
+        "b": 1.0,
+        "E": 210000000000.0,
+        "nu": 0.3,
+        "t": 0.01,
+        "rho": 7850.0,
+        "D": 19230.769230769234,
+        "rho_h": 78.5
+      },
+      "mode_indices": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ],
+      "analytical_frequencies": [
+        308.9535863275534,
+        772.3839658188836,
+        772.3839658188836,
+        1235.8143453102136
+      ],
+      "mesh_convergence": [
+        {
+          "n_elements_per_side": 6,
+          "n_elements_total": 36,
+          "frequencies": [
+            304.1840418931237,
+            772.9536483610926,
+            772.9536483765598,
+            1166.0686449678885
+          ],
+          "relative_errors": [
+            0.015437737723403563,
+            0.0007375639156427862,
+            0.0007375639356680697,
+            0.05643703733251095
+          ],
+          "max_relative_error": 0.05643703733251095
+        },
+        {
+          "n_elements_per_side": 8,
+          "n_elements_total": 64,
+          "frequencies": [
+            306.125288018534,
+            771.1627749907593,
+            771.1627750228527,
+            1193.644241943377
+          ],
+          "relative_errors": [
+            0.009154444014192025,
+            0.0015810670368196032,
+            0.0015810669952685858,
+            0.03412333213873734
+          ],
+          "max_relative_error": 0.03412333213873734
+        },
+        {
+          "n_elements_per_side": 10,
+          "n_elements_total": 100,
+          "frequencies": [
+            307.0226017207756,
+            770.9224222144567,
+            770.9224222249574,
+            1207.3558040328198
+          ],
+          "relative_errors": [
+            0.006250079922136238,
+            0.0018922500583985408,
+            0.0018922500448033794,
+            0.023028168741842978
+          ],
+          "max_relative_error": 0.023028168741842978
+        }
+      ],
+      "observed_convergence_order": 1.7556684541376275,
+      "max_error_at_finest": 0.023028168741842978
+    }
+  },
+  "gates": [
+    {
+      "id": "G1.beam_modal_error",
+      "description": "Simply supported beam modal error < 3%",
+      "value": 1.6442502553450927e-05,
+      "limit": 0.03,
+      "relation": "le",
+      "passed": true
+    },
+    {
+      "id": "G2.plate_modal_error",
+      "description": "Rectangular plate modal error < 3%",
+      "value": 0.023028168741842978,
+      "limit": 0.03,
+      "relation": "le",
+      "passed": true
+    },
+    {
+      "id": "G3.convergence_order",
+      "description": "Convergence order \u2265 1.5",
+      "value": 1.7556684541376275,
+      "limit": 1.5,
+      "relation": "ge",
+      "passed": true
+    }
+  ],
+  "verdict": "PASS"
+}

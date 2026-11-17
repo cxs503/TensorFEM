@@ -265,7 +265,7 @@ def test_unknown_stability_class_is_rejected():
         compat.classify(BASE, broken)
 
 
-def test_cli_exit_codes_and_git_spec(tmp_path):
+def test_cli_exit_codes_and_git_spec(tmp_path, monkeypatch):
     """The gate must be usable from CI shell and must read baselines out of git."""
     head_path = tmp_path / "head.json"
     head_path.write_text(json.dumps(manifest("1.0.1", ("BetaFn", "beta", "tensorfem.core"))))
@@ -300,14 +300,22 @@ def test_cli_exit_codes_and_git_spec(tmp_path):
         text=True,
     )
     assert good.returncode == 0, good.stdout + good.stderr
-    # git spec form used by the recorded history artifact
-    if (ROOT / ".git").exists():
-        git_verdict = compat.classify(
-            compat.load_manifest("git:HEAD:api/public-api-v1.json"),
-            compat.load_manifest(str(ROOT / "api/public-api-v1.json")),
-        )
-        assert git_verdict["changes"] == []
-        assert git_verdict["compliant"] is True
+    # Test the git reader against a real isolated repository. A development
+    # checkout may legitimately have uncommitted API additions.
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    subprocess.run(["git", "init", "-q", str(repository)], check=True)
+    manifest_path = repository / "manifest.json"
+    manifest_path.write_text(json.dumps(BASE))
+    subprocess.run(["git", "add", "manifest.json"], cwd=repository, check=True)
+    subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                    "commit", "-qm", "baseline"], cwd=repository, check=True)
+    manifest_path.write_text(json.dumps(manifest("1.0.1", ("BetaFn", "beta", "tensorfem.core"))))
+    monkeypatch.setattr(compat, "ROOT", repository)
+    assert compat.load_manifest("git:HEAD:manifest.json") == BASE
+    verdict = compat.classify(compat.load_manifest("git:HEAD:manifest.json"),
+                              compat.load_manifest(str(manifest_path)))
+    assert not verdict["compliant"]  # removed stable name, only a patch bump
 
 
 # --------------------------------------------------------------------------- #
@@ -332,7 +340,7 @@ def test_recorded_evidence_matches_what_the_gate_says_today():
 
     history = payload["history"]["transitions"]
     assert len(history) >= 5
-    # the shipped API has only ever grown: every historical transition is additive
+    # The selected historical sample is additive; this is not all release history.
     for row in history:
         assert set(row["counts"]) <= {"added"}, row
         assert row["breaking"] == []
@@ -340,9 +348,17 @@ def test_recorded_evidence_matches_what_the_gate_says_today():
 
     # and re-deriving the newest transition reproduces the recorded verdict
     newest = history[-1]
-    base = compat.load_manifest(f"git:{newest['base_commit']}:api/public-api-v1.json")
-    head = compat.load_manifest(f"git:{newest['head_commit']}:api/public-api-v1.json")
+    from m18005_compat_baseline_compare import load_historical_snapshot
+    base = load_historical_snapshot(newest["base_snapshot"])
+    head = load_historical_snapshot(newest["head_snapshot"])
     recomputed = compat.classify(base, head, mode="pr")
     assert recomputed["counts"] == newest["counts"]
     assert recomputed["required_bump"] == newest["pr_mode"]["required_bump"]
     assert recomputed["compliant"] == newest["pr_mode"]["compliant"]
+
+
+def test_historical_snapshot_rejects_blob_tampering():
+    from m18005_compat_baseline_compare import HISTORY_INDEX, load_historical_snapshot
+    record = json.loads(HISTORY_INDEX.read_text())["snapshots"][0]
+    with pytest.raises(ValueError, match="blob mismatch"):
+        load_historical_snapshot(dict(record, blob="0" * 40))

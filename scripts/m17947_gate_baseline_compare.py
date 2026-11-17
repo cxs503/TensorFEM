@@ -24,8 +24,8 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
-import os
 import subprocess
 import sys
 import tempfile
@@ -39,6 +39,8 @@ OUT = ROOT / "artifacts" / "m17947_public_api_gate_baseline.json"
 # main tip the branch was cut from; a fixed rev keeps the contrast reproducible
 # after this branch is committed (``HEAD`` would then be the hardened gate).
 BASELINE_REV = "fe9673f0208c82200dffae829ec1d91095544281"
+BASELINE_FIXTURE = ROOT / "tests/fixtures/api_audit_pre_hardening.py"
+BASELINE_BLOB = "b92f18b2b968c69029d31f03deee0960867ae3c9"
 
 
 def _mutations(payload: dict) -> list[tuple[str, dict]]:
@@ -63,10 +65,19 @@ def _load_baseline(baseline_rev: str):
     """Import the historical gate as a module (torch import is amortised)."""
     import importlib.util
 
-    source = subprocess.check_output(
-        ["git", "show", f"{baseline_rev}:scripts/audit_public_api.py"],
-        cwd=ROOT, text=True,
-    )
+    if baseline_rev == BASELINE_REV:
+        # Exact historical source recovered from GitHub, not a reconstructed
+        # weak gate. Pin its git blob so shallow/exported trees are reproducible.
+        raw = BASELINE_FIXTURE.read_bytes()
+        blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+        if blob != BASELINE_BLOB:
+            raise ValueError("historical API gate fixture differs from its source blob")
+        source = raw.decode("utf-8")
+    else:
+        source = subprocess.check_output(
+            ["git", "show", f"{baseline_rev}:scripts/audit_public_api.py"],
+            cwd=ROOT, text=True,
+        )
     tmp = Path(tempfile.mkdtemp(prefix="m17947-baseline-"))
     path = tmp / "audit_baseline.py"
     path.write_text(source, encoding="utf-8")
@@ -84,7 +95,10 @@ def _run_gate(fn, manifest: Path, extra: list[str]) -> dict[str, object]:
     except TypeError as exc:  # historical signature without extra options
         return {"returncode": None, "ok": None, "error_count": 0,
                 "first_error": f"not expressible against this gate: {exc}"}
-    errors = list(result.get("errors") or [])
+    # Count the mandatory stdlib gate's diagnostics, so installing the optional
+    # jsonschema second opinion cannot stale otherwise identical evidence.
+    # The verdict still uses the full gate result, including that second opinion.
+    errors = [e for e in (result.get("errors") or []) if not e.startswith("schema violation at ")]
     return {
         "returncode": 0 if result.get("ok") else 1,
         "ok": bool(result.get("ok")),

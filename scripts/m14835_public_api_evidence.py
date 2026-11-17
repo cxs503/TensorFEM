@@ -42,6 +42,7 @@ TRACKED_SOURCES = (
     "scripts/audit_public_api.py",
     "tests/test_public_api_manifest_gate.py",
     "scripts/m17947_gate_baseline_compare.py",
+    "tests/fixtures/api_audit_pre_hardening.py",
     "artifacts/m17947_public_api_gate_baseline.json",
 )
 

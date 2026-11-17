@@ -1,7 +1,7 @@
 import json, os, urllib.request
 base = "http://127.0.0.1:8010/api/v1"
 def login():
-    d = json.dumps({'user':'eco_admin','pass':'EcoTest!2026pass'}).encode()
+    d = json.dumps({'user':'eco_admin','pass':os.environ["TENSOR_API_PASSWORD"]}).encode()
     r = urllib.request.Request(base+'/auth', data=d, headers={'Content-Type':'application/json'})
     return json.loads(urllib.request.urlopen(r).read())['token']
 tok = login()

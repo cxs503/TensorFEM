@@ -15,6 +15,7 @@ Three layers:
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 from pathlib import Path
 
@@ -198,6 +199,20 @@ def test_modal_convergence_order_at_least_one_and_a_half():
 # ---------------------------------------------------------------------------
 # Committed artifacts
 # ---------------------------------------------------------------------------
+def test_evidence_writer_rejects_another_producer(tmp_path):
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("ladder_writer", ROOT / "benchmarks/structural_ladder.py")
+    driver = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(driver)
+    result = tmp_path / "result.json"
+    original = '{"generated_by": "independent_producer", "verdict": "FAIL"}'
+    result.write_text(original)
+    with pytest.raises(ValueError, match="another producer"):
+        driver._write_json(result, {"generated_by": "benchmarks/structural_ladder.py", "verdict": "PASS"})
+    assert result.read_text() == original
+
+
 @pytest.mark.parametrize("case", ["fem_beam", "fem_plate", "fem_modal"])
 def test_committed_verified_artifacts_are_consistent(case):
     result = json.loads((VERIFIED / case / "result.json").read_text())
@@ -205,6 +220,9 @@ def test_committed_verified_artifacts_are_consistent(case):
     assert result["generated_by"] == "benchmarks/structural_ladder.py"
     assert result["levels"], "no refinement levels recorded"
     assert (VERIFIED / case / "convergence.png").stat().st_size > 5000
+    assert "convergence.png" in result["artifact_sha256"]
+    for name, expected in result["artifact_sha256"].items():
+        assert hashlib.sha256((VERIFIED / case / name).read_bytes()).hexdigest() == expected
     for gate in result["gates"]:
         assert gate["passed"], gate
         assert gate["relation"] in ("le", "ge")

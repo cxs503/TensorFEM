@@ -1,6 +1,16 @@
-# 标量基准注册表的证据分级审计（69 项逐项归类）
+# 标量基准注册表的证据分级审计
 
-**结论先行**：注册表当前登记 **69** 项标量检查（`docs/benchmark-qualification-status.md` 里
+**2026-11-17 更新**：默认 `tensorfem verify` 已把分级审计纳入退出码。
+当前实跑 78 项：`discretized` 50、`trial_space` 9、`closed_form` 16、`identity` 3，
+未分类、失配和重复项均为零。缺项、未知类别、重复 ID、空注册表以及数值失败都会令总门禁失败。
+`summary.passed` 仍统计数值合格项，顶层 `passed` 还必须通过 `evidence_audit.passed`。
+新增 Kirsch 两项来自真实 Q4 解；LBM 两项密度属于非 FEM 离散回归，质量守恒一项属于恒等式。
+`discretized` 还包括差分和时步方法，**不能把这 50 项当作 50 项 FEM 验证**。
+复现：`OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src python -m tensorfem.cli verify --output registry.json`。
+
+下面保留此前 69 项审计的历史推导和数值快照，不代表当前数量。
+
+**历史结论**：注册表当前登记 **69** 项标量检查（`docs/benchmark-qualification-status.md` 里
 "55 个标量检查"的说法已过期）。按证据类别逐项归类后，**只有 43 项（62.3 %）是"离散解 vs 闭式/文献"
 的真数值验证**，9 项（13.0 %）是"数值求积/Ritz/围道积分 vs 闭式"，16 项（23.2 %）是**闭式 vs 闭式**
 （同一物理公式的两份独立编码，误差全部 ≤ 8.97e-16，**结构上不可能发现 FE 内核缺陷**），

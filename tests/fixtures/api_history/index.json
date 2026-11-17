@@ -1,0 +1,47 @@
+{
+  "scope": "Seven consecutive manifest revisions ending 2026-11-13; sampled history, not full release qualification",
+  "snapshots": [
+    {
+      "commit": "163493c566031af64a8891735fd9bbe77cb38519",
+      "blob": "23e5a4e6a8a23cc136d01372fde886db9efd0c3c",
+      "path": "tests/fixtures/api_history/163493c566031af64a8891735fd9bbe77cb38519.json.gz",
+      "source": "https://github.com/cxs503/TensorFEM/blob/163493c566031af64a8891735fd9bbe77cb38519/api/public-api-v1.json"
+    },
+    {
+      "commit": "06f76270afc9b298b004ac6c50545e7bb457e154",
+      "blob": "6855d73aff63921ef5928d07737d32eb97b677e0",
+      "path": "tests/fixtures/api_history/06f76270afc9b298b004ac6c50545e7bb457e154.json.gz",
+      "source": "https://github.com/cxs503/TensorFEM/blob/06f76270afc9b298b004ac6c50545e7bb457e154/api/public-api-v1.json"
+    },
+    {
+      "commit": "38d72b3fe1c3646cff5e9d97e9de597ac6543d83",
+      "blob": "40a241bb9821ab2c73d17ff8cb0bde8a2e01e78b",
+      "path": "tests/fixtures/api_history/38d72b3fe1c3646cff5e9d97e9de597ac6543d83.json.gz",
+      "source": "https://github.com/cxs503/TensorFEM/blob/38d72b3fe1c3646cff5e9d97e9de597ac6543d83/api/public-api-v1.json"
+    },
+    {
+      "commit": "b9c1fc83fa32d50b41d71ae2a76dcf176d1cd928",
+      "blob": "df934f4330d5e3ae56aacef7d58cabc84dc3ce9a",
+      "path": "tests/fixtures/api_history/b9c1fc83fa32d50b41d71ae2a76dcf176d1cd928.json.gz",
+      "source": "https://github.com/cxs503/TensorFEM/blob/b9c1fc83fa32d50b41d71ae2a76dcf176d1cd928/api/public-api-v1.json"
+    },
+    {
+      "commit": "07401ba65e3b17c5998a0e66773ff6edc2131781",
+      "blob": "729e22c7a934a7b6d4f4858a18b6fef56c648309",
+      "path": "tests/fixtures/api_history/07401ba65e3b17c5998a0e66773ff6edc2131781.json.gz",
+      "source": "https://github.com/cxs503/TensorFEM/blob/07401ba65e3b17c5998a0e66773ff6edc2131781/api/public-api-v1.json"
+    },
+    {
+      "commit": "6238900c9121ccf7ab1128cc4bb7d4a039f40721",
+      "blob": "23e51488f1061606d9086167f1c94dad93395db9",
+      "path": "tests/fixtures/api_history/6238900c9121ccf7ab1128cc4bb7d4a039f40721.json.gz",
+      "source": "https://github.com/cxs503/TensorFEM/blob/6238900c9121ccf7ab1128cc4bb7d4a039f40721/api/public-api-v1.json"
+    },
+    {
+      "commit": "c792d047bae04a3793943babd7a318918f89c955",
+      "blob": "b726e69271fdcbf373d000c103e703aac8da3bc6",
+      "path": "tests/fixtures/api_history/c792d047bae04a3793943babd7a318918f89c955.json.gz",
+      "source": "https://github.com/cxs503/TensorFEM/blob/c792d047bae04a3793943babd7a318918f89c955/api/public-api-v1.json"
+    }
+  ]
+}

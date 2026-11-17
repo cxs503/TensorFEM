@@ -4,10 +4,10 @@
 Two independent measurements, both written to one JSON artifact so the numbers in
 the report are machine-generated instead of hand-copied:
 
-1. **Real history.**  Walk the commits that touched ``api/public-api-v1.json``,
-   compare every consecutive pair with the new gate in both modes, and record the
-   verdict.  This shows what the gate says about the API this repository actually
-   shipped (395 names, six transitions) instead of about toy fixtures.
+1. **Real history sample.** Replay seven consecutive historical manifests
+   recovered from GitHub (ending 2026-11-13), checking each original blob hash.
+   Compare six transitions in both modes. The exact snapshots work in shallow
+   and exported checkouts; this bounded sample does not certify all releases.
 2. **Detection contrast.**  Build a scratch copy of the tree, inject *code
    consistent* API breaks into it -- the manifest and the module agree, so the
    point-in-time snapshot gate cannot see anything wrong -- and run both gates.
@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import gzip
 import json
 import os
 import shutil
@@ -36,6 +37,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_REL = "api/public-api-v1.json"
 PACKAGED_REL = "src/tensorfem/public_api_manifest.json"
 DEFAULT_OUT = ROOT / "artifacts/m18005_public_api_compat_baseline.json"
+HISTORY_INDEX = ROOT / "tests/fixtures/api_history/index.json"
 
 
 def _run(cmd: list[str], cwd: Path, env: dict[str, str] | None = None) -> dict[str, object]:
@@ -50,30 +52,31 @@ def _run(cmd: list[str], cwd: Path, env: dict[str, str] | None = None) -> dict[s
     }
 
 
-def manifest_commits() -> list[str]:
-    out = subprocess.run(
-        ["git", "-C", str(ROOT), "log", "--format=%H", "--", MANIFEST_REL],
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout.split()
-    return out
+def load_historical_snapshot(record: dict) -> dict:
+    """Read exact GitHub blob bytes, also in shallow/exported checkouts."""
+    raw = gzip.decompress((ROOT / record["path"]).read_bytes())
+    actual = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+    if actual != record["blob"]:
+        raise ValueError(f"historical manifest blob mismatch: {record['path']}")
+    return json.loads(raw)
 
 
 def history_transitions() -> list[dict[str, object]]:
-    from public_api_compat import classify, load_manifest  # local import: sibling script
+    from public_api_compat import classify  # local import: sibling script
 
-    commits = manifest_commits()
+    snapshots = json.loads(HISTORY_INDEX.read_text())["snapshots"]
     rows = []
-    for older, newer in zip(commits[1:], commits[:-1]):  # oldest -> newest
-        base = load_manifest(f"git:{older}:{MANIFEST_REL}")
-        head = load_manifest(f"git:{newer}:{MANIFEST_REL}")
+    for older, newer in zip(snapshots[:-1], snapshots[1:]):  # oldest -> newest
+        base = load_historical_snapshot(older)
+        head = load_historical_snapshot(newer)
         pr = classify(base, head, mode="pr")
         release = classify(base, head, mode="release")
         rows.append(
             {
-                "base_commit": older[:8],
-                "head_commit": newer[:8],
+                "base_commit": older["commit"],
+                "head_commit": newer["commit"],
+                "base_snapshot": older,
+                "head_snapshot": newer,
                 "base_version": pr["base_version"],
                 "head_version": pr["head_version"],
                 "entries": pr["entries"],
@@ -237,7 +240,8 @@ def main(argv: list[str] | None = None) -> int:
             "reproduce": "PYTHONPATH=src python scripts/m18005_compat_baseline_compare.py",
         },
         "history": {
-            "manifest_commits": len(manifest_commits()),
+            "manifest_commits": len(history) + 1,
+            "scope": json.loads(HISTORY_INDEX.read_text())["scope"],
             "transitions": history,
             "pr_mode_failures": [
                 row["base_commit"] + "->" + row["head_commit"]

@@ -1,38 +1,10 @@
-"""3D Fluid-Structure-Ice (FSI) coupling solver with ice bending failure.
+"""Quarantined 3D fluid/structure/ice prototype; no coupled solver is available.
 
-Physical Background
--------------------
-This module implements a fully coupled 3D solver for ship-ice interaction problems
-where a ship hull impacts an ice plate in the presence of water flow. The physics
-involves three strongly coupled domains:
-
-1. **Ice domain**: 3D solid mechanics with Mohr-Coulomb/Drucker-Prager failure
-   criterion for ice bending and crushing failure.
-   
-2. **Fluid domain**: Incompressible Navier-Stokes with ALE formulation.
-   
-3. **Structure domain**: Ship hull structural response.
-
-Governing Equations
--------------------
-**Ice domain** (3D solid mechanics):
-    ρ_ice ∂²u_ice/∂t² = ∇·σ_ice + f_ice
-    
-    Failure criterion (Drucker-Prager):
-        f(σ) = √J₂ + α·I₁ - k = 0
-
-**Fluid domain** (ALE Navier-Stokes):
-    ρ_f (∂u_f/∂t + (u_f - u_mesh)·∇u_f) = -∇p + μ∇²u_f + f_f
-    ∇·u_f = 0
-
-Validation Strategy
--------------------
-- C1: 3D-2D degradation consistency (plane strain case)
-- C2: Ice bending failure criterion accuracy
-- C3: Mass conservation in fluid domain
-- C4: Energy conservation (global balance)
-- C5: Contact force comparison with model tests
-- C6: Comprehensive pytest suite
+The former stepping path used stiffness as mass, never advanced a fluid state,
+and returned an unconditional zero mass residual. It cannot supply simulation
+or validation evidence. Configuration, shape functions and yield-surface
+helpers remain importable for inspection; they do not qualify an ice model.
+See docs/fsi3d-quarantine.md for the reopening criteria.
 """
 from __future__ import annotations
 
@@ -162,7 +134,7 @@ def generate_ice_mesh(config: GeometryConfig) -> dict:
     y = torch.linspace(0, Ly, ny + 1, dtype=D)
     z = torch.linspace(0, Lz, nz + 1, dtype=D)
     
-    xx, yy, zz = torch.meshgrid(x, y, z, indexing='ij')
+    zz, yy, xx = torch.meshgrid(z, y, x, indexing='ij')
     nodes = torch.stack([xx.reshape(-1), yy.reshape(-1), zz.reshape(-1)], dim=1)
     
     elements = []
@@ -236,6 +208,8 @@ def hex8_stiffness_matrix(coords: torch.Tensor, young: float, poisson: float) ->
         N, dN_nat = hex8_shape_functions(xi, eta, zeta)
         J = dN_nat.T @ coords
         detJ = torch.det(J)
+        if not torch.isfinite(detJ) or detJ <= 0:
+            raise ValueError("HEX8 requires a positive finite Jacobian")
         dN = dN_nat @ torch.linalg.inv(J).T
         
         B = torch.zeros((6, 24), dtype=D)
@@ -288,38 +262,9 @@ class DruckerPragerPlasticity:
         if f <= 0:
             return stress_trial, plastic_strain, False
         
-        G = self.config.shear_modulus
-        K = self.config.bulk_modulus
-        
-        I1 = stress_trial[0] + stress_trial[1] + stress_trial[2]
-        p = I1 / 3.0
-        s = stress_trial.clone()
-        s[0] -= p
-        s[1] -= p
-        s[2] -= p
-        
-        J2 = 0.5 * (s[0]**2 + s[1]**2 + s[2]**2) + s[3]**2 + s[4]**2 + s[5]**2
-        sqrt_J2 = torch.sqrt(J2 + 1e-12)
-        
-        denominator = 1.0 + 3.0 * G * self.alpha**2 / (self.k + 1e-12)
-        dgamma = f / (3.0 * G + denominator)
-        
-        stress = stress_trial.clone()
-        stress[0] -= K * dgamma * 3.0 * self.alpha
-        stress[1] -= K * dgamma * 3.0 * self.alpha
-        stress[2] -= K * dgamma * 3.0 * self.alpha
-        
-        scale = 1.0 - 3.0 * G * dgamma / sqrt_J2
-        stress[0] += s[0] * (scale - 1.0)
-        stress[1] += s[1] * (scale - 1.0)
-        stress[2] += s[2] * (scale - 1.0)
-        stress[3] *= scale
-        stress[4] *= scale
-        stress[5] *= scale
-        
-        plastic_strain_new = plastic_strain + dgamma.item()
-        
-        return stress, plastic_strain_new, True
+        raise FSI3DUnavailableError(
+            "Plastic return mapping is unqualified; no stress update is available."
+        )
 
 
 @dataclass
@@ -342,145 +287,65 @@ class FSI3DState:
     dissipated_energy: float = 0.0
 
 
+class FSI3DUnavailableError(NotImplementedError):
+    """A quarantined path cannot produce physical evidence."""
+
+
+def fsi3d_qualification_status() -> dict:
+    """Machine-readable admission verdict; missing physics never counts as PASS."""
+    return {
+        "schema": "tensorfem.fsi3d-qualification/1.0",
+        "status": "blocked",
+        "passed": False,
+        "scope": "experimental configuration and local helpers only",
+        "missing": [
+            "consistent ice mass and displacement/velocity/acceleration update",
+            "verified constitutive integration and damage evolution",
+            "fluid equations and conservative interface load transfer",
+            "measured mass flux residual and work/energy balance",
+            "mesh/time convergence and independent ship-ice references",
+        ],
+    }
+
+
+def _unavailable() -> None:
+    raise FSI3DUnavailableError(
+        "FSI3D is blocked: no qualified coupled solver; see docs/fsi3d-quarantine.md"
+    )
+
+
 class FSI3DIceCouplingSolver:
-    """3D Fluid-Structure-Ice coupling solver."""
-    
+    """Compatibility entry point that fails before allocating or emitting results.
+
+    Method signatures remain for callers and for older serialized instances;
+    no opt-in bypass can reactivate the dimensionally incorrect prototype.
+    """
+
     def __init__(self, config: SimulationConfig):
         config.validate()
-        self.config = config
-        self.ice_mesh = generate_ice_mesh(config.geometry)
-        self.plasticity = DruckerPragerPlasticity(config.ice_material)
-        self._build_ice_matrices()
-        self.state = FSI3DState()
-        self._initialize_state()
-        self.history = {
-            'time': [], 'contact_force': [], 'kinetic_energy': [],
-            'strain_energy': [], 'fluid_energy': [], 'ice_damage': []
-        }
-    
-    def _build_ice_matrices(self):
-        """Build global stiffness and mass matrices for ice domain."""
-        n_nodes = self.ice_mesh['nodes'].shape[0]
-        n_dof = 3 * n_nodes
-        K = torch.zeros((n_dof, n_dof), dtype=D)
-        M = torch.zeros((n_dof, n_dof), dtype=D)
-        
-        for elem in self.ice_mesh['elements']:
-            coords = self.ice_mesh['nodes'][elem]
-            ke = hex8_stiffness_matrix(coords, self.config.ice_material.young,
-                                       self.config.ice_material.poisson)
-            dof_map = torch.stack([3*elem, 3*elem+1, 3*elem+2], dim=1).reshape(-1)
-            K[dof_map[:, None], dof_map] += ke
-        
-        self.ice_K = K
-        
-        tol = 1e-6
-        fixed_nodes = torch.nonzero(torch.abs(self.ice_mesh['nodes'][:, 0]) < tol).flatten()
-        fixed_dofs = torch.stack([3*fixed_nodes, 3*fixed_nodes+1, 3*fixed_nodes+2]).reshape(-1)
-        self.ice_fixed_dofs = fixed_dofs
-        self.ice_free_dofs = torch.tensor([i for i in range(n_dof) if i not in fixed_dofs], dtype=torch.long)
-        self.ice_K_ff = K[self.ice_free_dofs[:, None], self.ice_free_dofs]
-    
-    def _initialize_state(self):
-        """Initialize simulation state."""
-        n_ice_dof = 3 * self.ice_mesh['nodes'].shape[0]
-        self.state.ice_displacement = torch.zeros(n_ice_dof, dtype=D)
-        self.state.ice_velocity = torch.zeros(n_ice_dof, dtype=D)
-        self.state.ice_acceleration = torch.zeros(n_ice_dof, dtype=D)
-        self.state.ice_stress = torch.zeros((self.ice_mesh['elements'].shape[0], 6), dtype=D)
-        self.state.ice_plastic_strain = torch.zeros(self.ice_mesh['elements'].shape[0], dtype=D)
-        self.state.ice_damage = torch.zeros(self.ice_mesh['elements'].shape[0], dtype=D)
-    
+        _unavailable()
+
     def solve_ice_step(self, contact_forces: torch.Tensor, dt: float) -> None:
-        """Solve ice domain for one time step."""
-        beta = self.config.newmark_beta
-        a0 = 1.0 / (beta * dt**2)
-        
-        # Use stiffness-based effective system (simplified Newmark)
-        K_eff = self.ice_K_ff + a0 * self.ice_K_ff
-        F_ext = contact_forces.reshape(-1)[self.ice_free_dofs]
-        
-        # Add regularization to avoid singular matrix
-        K_eff += 1e-6 * torch.eye(K_eff.shape[0], dtype=D)
-        
-        F_eff = F_ext + a0 * self.ice_K_ff @ self.state.ice_displacement[self.ice_free_dofs]
-        
-        try:
-            u_new = torch.linalg.solve(K_eff, F_eff)
-        except RuntimeError:
-            # Fallback: use pseudo-inverse
-            u_new = torch.linalg.lstsq(K_eff, F_eff).solution
-        
-        u_full = torch.zeros_like(self.state.ice_displacement)
-        u_full[self.ice_free_dofs] = u_new
-        self.state.ice_displacement = u_full
-    
+        _unavailable()
+
     def compute_contact_forces(self, ship_position: torch.Tensor) -> torch.Tensor:
-        """Compute contact forces between ship and ice."""
-        contact_forces = torch.zeros((self.ice_mesh['nodes'].shape[0], 3), dtype=D)
-        ice_nodes = self.ice_mesh['nodes'] + self.state.ice_displacement.reshape(-1, 3)
-        ship_radius = 2.0
-        
-        for i, node in enumerate(ice_nodes):
-            dist = torch.norm(node - ship_position)
-            if dist < ship_radius:
-                penetration = ship_radius - dist
-                normal = (node - ship_position) / dist
-                force_mag = self.config.contact_penalty * penetration
-                contact_forces[i] = force_mag * normal
-        
-        self.state.contact_forces = contact_forces
-        return contact_forces
-    
+        _unavailable()
+
     def compute_energy_balance(self) -> dict:
-        """Compute energy balance for the system."""
-        KE = 0.5 * (self.state.ice_velocity @ self.ice_K @ self.state.ice_velocity).item()
-        SE = 0.5 * (self.state.ice_displacement @ self.ice_K @ self.state.ice_displacement).item()
-        DE = (self.state.ice_plastic_strain * self.config.ice_material.cohesion).sum().item()
-        
-        # Handle NaN values
-        if math.isnan(KE):
-            KE = 0.0
-        if math.isnan(SE):
-            SE = 0.0
-        if math.isnan(DE):
-            DE = 0.0
-        
-        return {
-            'kinetic_energy': KE, 'strain_energy': SE,
-            'dissipated_energy': DE, 'total_energy': KE + SE + DE
-        }
-    
+        _unavailable()
+
     def step(self, ship_position: torch.Tensor) -> None:
-        """Advance simulation by one time step."""
-        dt = self.config.dt
-        contact_forces = self.compute_contact_forces(ship_position)
-        self.solve_ice_step(contact_forces, dt)
-        self.state.time += dt
-        self.state.step += 1
-        
-        self.history['time'].append(self.state.time)
-        self.history['contact_force'].append(contact_forces.norm(dim=1).sum().item())
-        energy = self.compute_energy_balance()
-        self.history['kinetic_energy'].append(energy['kinetic_energy'])
-        self.history['strain_energy'].append(energy['strain_energy'])
-        self.history['ice_damage'].append(self.state.ice_damage.mean().item())
-    
+        _unavailable()
+
     def run(self, ship_trajectory: Callable[[float], torch.Tensor]) -> dict:
-        """Run complete simulation."""
-        n_steps = int(self.config.time_total / self.config.dt)
-        for step in range(n_steps):
-            t = step * self.config.dt
-            ship_pos = ship_trajectory(t)
-            self.step(ship_pos)
-        
-        return {'history': self.history, 'final_state': self.state,
-                'energy_balance': self.compute_energy_balance()}
+        _unavailable()
 
 
 def compute_mass_conservation_residual(fluid_velocity: torch.Tensor, dt: float) -> float:
-    """Compute mass conservation residual."""
-    return 0.0  # Simplified for incompressible flow
+    """Reject: velocity and dt alone lack the mesh/flux data needed for a residual."""
+    raise FSI3DUnavailableError(
+        "Mass residual requires discrete fluid fluxes and boundary geometry; unavailable."
+    )
 
 
 def check_ice_failure(stress: torch.Tensor, config: IceMaterialConfig) -> bool:

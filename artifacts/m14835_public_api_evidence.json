@@ -1,0 +1,124 @@
+{
+  "branch": "codex/fem-p0-trust-repair",
+  "checks_digest": "f7561c883ac52b540da03737bd7cc9b4eea0e6821ddb82b4d2739fccc36730cc",
+  "cohesive_module": "tensorfem.cohesive3d",
+  "commit": "b456104cf94006f2e0530ec05893d5ec6941e3fa",
+  "counts": {
+    "cohesive_exports": 9,
+    "root_all": 397,
+    "root_exports_missing_from_snapshot": [],
+    "snapshot_entries": 397
+  },
+  "line_counts": {
+    "scripts/audit_public_api.py": 240,
+    "scripts/m17947_gate_baseline_compare.py": 198,
+    "src/tensorfem/__init__.py": 598,
+    "src/tensorfem/cohesive3d.py": 867,
+    "tests/fixtures/api_audit_pre_hardening.py": 57,
+    "tests/test_cohesive3d.py": 1007,
+    "tests/test_m14835_cohesive3d_public_api.py": 132,
+    "tests/test_public_api_manifest_gate.py": 208
+  },
+  "mission": "m14835",
+  "package_version": "0.45.0",
+  "reproduce": "PYTHONPATH=src python scripts/m14835_public_api_evidence.py",
+  "round": "reopen-2 (tracked as m17947)",
+  "schema": "tensorfem.mission-evidence/1",
+  "source_sha256": {
+    "api/public-api-manifest.schema.json": "1a56c8f0a6b0b14d97d8ef8809d131b0fae63b7538b4d4f0d9c16b6aa54fca17",
+    "api/public-api-v1.json": "28b43963024a656e8b905808b33da8cbbe170c6c82ade4510d77d71491ddce48",
+    "artifacts/m17947_public_api_gate_baseline.json": "82f8111d2decba13e554f73843ac5188d39bd602721b6f10fd6438761336cdb9",
+    "scripts/audit_public_api.py": "c9f27ebd23c44e54e66c8dba243e2a844fff821e99e0d8bb67c8fa413b3b827d",
+    "scripts/m17947_gate_baseline_compare.py": "0dc856df563ffdf527f6ba3605e72abd15bb2504f0b9276bb8ee0807195963fd",
+    "src/tensorfem/__init__.py": "da07d1dd4aa555787d294e485df5681d36b6d55d8559afcff204c16d0c7187bc",
+    "src/tensorfem/cohesive3d.py": "7a962794e8a506f91eea00a9387a2108985cd608ea7b8770eda4d15676d70f2f",
+    "src/tensorfem/public_api_manifest.json": "28b43963024a656e8b905808b33da8cbbe170c6c82ade4510d77d71491ddce48",
+    "tests/fixtures/api_audit_pre_hardening.py": "52dea161f2abb3518949e85d2ef278113e2e768467aedb44d99ed9752fd25a97",
+    "tests/test_cohesive3d.py": "26c7a24aa9e8bacdb5575100b9422da4938f37e3314ab80e399a61f70d198e1d",
+    "tests/test_m14835_cohesive3d_public_api.py": "4d174376c32984f8a899bacdc84d6ce985a66765e4b26463ed95a9d00b3779a7",
+    "tests/test_public_api_manifest_gate.py": "2a6746c5f982c29f08263bb86bf3ed48fb84db81b9f46841cbe804e350485fb0"
+  },
+  "symbols": [
+    {
+      "in_root_all": true,
+      "module": "tensorfem.cohesive3d",
+      "name": "BKCohesive3DLaw",
+      "reexport_identity_ok": true,
+      "snapshot_introduced": "0.45.0",
+      "snapshot_module": "tensorfem.cohesive3d",
+      "snapshot_stability": "experimental"
+    },
+    {
+      "in_root_all": true,
+      "module": "tensorfem.cohesive3d",
+      "name": "Cohesive3DResponse",
+      "reexport_identity_ok": true,
+      "snapshot_introduced": "0.45.0",
+      "snapshot_module": "tensorfem.cohesive3d",
+      "snapshot_stability": "experimental"
+    },
+    {
+      "in_root_all": true,
+      "module": "tensorfem.cohesive3d",
+      "name": "cohesive_hex8_quadrature",
+      "reexport_identity_ok": true,
+      "snapshot_introduced": "0.45.0",
+      "snapshot_module": "tensorfem.cohesive3d",
+      "snapshot_stability": "experimental"
+    },
+    {
+      "in_root_all": true,
+      "module": "tensorfem.cohesive3d",
+      "name": "cohesive_shape_functions",
+      "reexport_identity_ok": true,
+      "snapshot_introduced": "0.45.0",
+      "snapshot_module": "tensorfem.cohesive3d",
+      "snapshot_stability": "experimental"
+    },
+    {
+      "in_root_all": true,
+      "module": "tensorfem.cohesive3d",
+      "name": "mid_surface_frame",
+      "reexport_identity_ok": true,
+      "snapshot_introduced": "0.45.0",
+      "snapshot_module": "tensorfem.cohesive3d",
+      "snapshot_stability": "experimental"
+    },
+    {
+      "in_root_all": true,
+      "module": "tensorfem.cohesive3d",
+      "name": "interface_area",
+      "reexport_identity_ok": true,
+      "snapshot_introduced": "0.45.0",
+      "snapshot_module": "tensorfem.cohesive3d",
+      "snapshot_stability": "experimental"
+    },
+    {
+      "in_root_all": true,
+      "module": "tensorfem.cohesive3d",
+      "name": "cohesive_separations",
+      "reexport_identity_ok": true,
+      "snapshot_introduced": "0.45.0",
+      "snapshot_module": "tensorfem.cohesive3d",
+      "snapshot_stability": "experimental"
+    },
+    {
+      "in_root_all": true,
+      "module": "tensorfem.cohesive3d",
+      "name": "cohesive_hex8_response",
+      "reexport_identity_ok": true,
+      "snapshot_introduced": "0.45.0",
+      "snapshot_module": "tensorfem.cohesive3d",
+      "snapshot_stability": "experimental"
+    },
+    {
+      "in_root_all": true,
+      "module": "tensorfem.cohesive3d",
+      "name": "assemble_cohesive_interface",
+      "reexport_identity_ok": true,
+      "snapshot_introduced": "0.45.0",
+      "snapshot_module": "tensorfem.cohesive3d",
+      "snapshot_stability": "experimental"
+    }
+  ]
+}

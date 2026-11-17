@@ -691,15 +691,20 @@ def inverse_identification_evidence():
 
 
 def verification_report():
+    from .registry_evidence_audit import audit_evidence_classes
+
     r = run_registered_benchmarks()
-    return {
+    report = {
         "schema_version": 1,
         "qualification_scope": "registered scalar checks; not complete field reports",
-        "policy": "error < tolerance <= 0.03; zero references use invariants",
-        "passed": all(x.passed for x in r),
+        "policy": "error < tolerance <= 0.03 AND complete evidence classification; zero references use invariants",
+        "passed": bool(r) and all(x.passed for x in r),
         "summary": {"total": len(r), "passed": sum(x.passed for x in r)},
         "results": [x.to_dict() for x in r],
     }
+    report["evidence_audit"] = audit_evidence_classes(report)
+    report["passed"] = report["passed"] and report["evidence_audit"]["passed"]
+    return report
 
 
 def patch_benchmark_evidence():

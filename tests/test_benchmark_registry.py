@@ -3,51 +3,138 @@ import pytest
 from tensorfem.benchmark_registry import _evidence, verification_report
 from tensorfem.cli import main
 
+
 @pytest.fixture(scope="module")
-def report(): return verification_report()
+def report():
+    return verification_report()
+
 
 def test_registry_traceable_and_below_three_percent(report):
     expected = {
-        "truss.bar", "frame.cantilever", "continuum.cook",
-        "beam.timoshenko", "buckling.euler", "dynamics.newmark",
-        "solid.hex8", "plate.mindlin", "nonlinear.arch",
-        "contact.spring", "modal.cantilever", "shell.patch_energy",
-        "patch.robinson_A", "patch.robinson_B", "patch.robinson_C",
-        "cohesive.fracture_energy", "plasticity.j2", "sparse.axial_bar",
-        "thermal.rod_convection", "thermal.constrained_bar", "dynamics.explicit",
-        "nonlinear.finite_bar", "solid.tet10_patch", "plasticity.tet4_j2",
-        "marine.hull_girder.deflection", "marine.hull_girder.moment", "marine.stiffened_panel.navier",
-        "marine.hydrostatics.displacement", "marine.hydrostatics.gm", "marine.hydrostatics.restoring",
-        "marine.morison.base_shear", "marine.morison.overturning", "marine.plate_buckling.square",
-        "marine.plate_buckling.long_panel", "marine.plate_buckling.longitudinally_stiffened", "marine.hull_ultimate.initial_yield",
-        "marine.hull_ultimate.full_plastic", "marine.fatigue.hot_spot.linear", "marine.fatigue.hot_spot.quadratic",
-        "marine.fatigue.sn.single_block", "marine.fatigue.miner.multi_block", "marine.prestress_buckling.uniaxial",
-        "marine.prestress_buckling.biaxial", "marine.postbuckling.imperfect_path", "marine.hull_progressive.moment",
-        "marine.fatigue_advanced.hot_spot.path_linear", "marine.fatigue_advanced.rainflow.triangle_count", "marine.fatigue_advanced.miner.variable_amplitude",
-        "marine.fatigue_advanced.paris.m2_closed_form", "marine.shell4_buckling.navier", "marine.imperfect_strip.amplitude",
-        "marine.imperfect_strip.membrane_force", "marine.imperfect_strip.external_work", "marine.fracture.hot_spot",
-        "marine.fracture.scl_membrane", "marine.fracture.mode_i_k", "marine.fracture.mode_i_j",
-        "marine.fracture.numerical_j.plane_stress", "marine.fracture.numerical_j.plane_strain", "shell.spheroid.meridional_pole",
-        "shell.spheroid.meridional_equator", "shell.spheroid.hoop_pole", "shell.spheroid.displacement_equator",
-        "shell.sphere.pressure_sigma_theta", "shell.sphere.pressure_sigma_phi", "shell.sphere.pressure_radial_displacement",
-        "plate.mindlin_thick.center_mx", "plate.mindlin_thick.max_mxy", "plate.mindlin_thick.center_w",
+        "truss.bar",
+        "frame.cantilever",
+        "continuum.cook",
+        "beam.timoshenko",
+        "buckling.euler",
+        "dynamics.newmark",
+        "solid.hex8",
+        "plate.mindlin",
+        "nonlinear.arch",
+        "contact.spring",
+        "modal.cantilever",
+        "shell.patch_energy",
+        "patch.robinson_A",
+        "patch.robinson_B",
+        "patch.robinson_C",
+        "cohesive.fracture_energy",
+        "plasticity.j2",
+        "sparse.axial_bar",
+        "thermal.rod_convection",
+        "thermal.constrained_bar",
+        "dynamics.explicit",
+        "nonlinear.finite_bar",
+        "solid.tet10_patch",
+        "plasticity.tet4_j2",
+        "marine.hull_girder.deflection",
+        "marine.hull_girder.moment",
+        "marine.stiffened_panel.navier",
+        "marine.hydrostatics.displacement",
+        "marine.hydrostatics.gm",
+        "marine.hydrostatics.restoring",
+        "marine.morison.base_shear",
+        "marine.morison.overturning",
+        "marine.plate_buckling.square",
+        "marine.plate_buckling.long_panel",
+        "marine.plate_buckling.longitudinally_stiffened",
+        "marine.hull_ultimate.initial_yield",
+        "marine.hull_ultimate.full_plastic",
+        "marine.fatigue.hot_spot.linear",
+        "marine.fatigue.hot_spot.quadratic",
+        "marine.fatigue.sn.single_block",
+        "marine.fatigue.miner.multi_block",
+        "marine.prestress_buckling.uniaxial",
+        "marine.prestress_buckling.biaxial",
+        "marine.postbuckling.imperfect_path",
+        "marine.hull_progressive.moment",
+        "marine.fatigue_advanced.hot_spot.path_linear",
+        "marine.fatigue_advanced.rainflow.triangle_count",
+        "marine.fatigue_advanced.miner.variable_amplitude",
+        "marine.fatigue_advanced.paris.m2_closed_form",
+        "marine.shell4_buckling.navier",
+        "marine.imperfect_strip.amplitude",
+        "marine.imperfect_strip.membrane_force",
+        "marine.imperfect_strip.external_work",
+        "marine.fracture.hot_spot",
+        "marine.fracture.scl_membrane",
+        "marine.fracture.mode_i_k",
+        "marine.fracture.mode_i_j",
+        "marine.fracture.numerical_j.plane_stress",
+        "marine.fracture.numerical_j.plane_strain",
+        "shell.spheroid.meridional_pole",
+        "shell.spheroid.meridional_equator",
+        "shell.spheroid.hoop_pole",
+        "shell.spheroid.displacement_equator",
+        "shell.sphere.pressure_sigma_theta",
+        "shell.sphere.pressure_sigma_phi",
+        "shell.sphere.pressure_radial_displacement",
+        "plate.mindlin_thick.center_mx",
+        "plate.mindlin_thick.max_mxy",
+        "plate.mindlin_thick.center_w",
         "inverse.axial_bar.modulus",
-        "plate.foundation.winkler_center_w", "plate.foundation.pasternak_center_w",
+        "plate.foundation.winkler_center_w",
+        "plate.foundation.pasternak_center_w",
         "plate.foundation.pasternak_zero_reduces_to_winkler",
+        "kirsch.plate.ktg",
+        "kirsch.plate.ktn",
+        "lbm.mcmp_shan_chen.interface_density",
+        "lbm.mcmp_shan_chen.dense_peak_density",
+        "lbm.mcmp_shan_chen.total_mass_a",
     }
     assert report["passed"]
     assert report["summary"] == {"total": len(expected), "passed": len(expected)}
     assert {item["id"] for item in report["results"]} == expected
     for item in report["results"]:
         assert item["source"].strip() and item["reference"] != 0
-        assert item["error"] < item["tolerance"] <= .03 and item["passed"] is True
+        assert item["error"] < item["tolerance"] <= 0.03 and item["passed"] is True
+
 
 def test_zero_reference_rejected_and_boundary_strict():
-    with pytest.raises(ValueError,match="zero-reference"): _evidence("x","x","x","x","s",0.,0.)
-    assert not _evidence("x","x","x","x","s",1.03,1.,.03).passed
+    with pytest.raises(ValueError, match="zero-reference"):
+        _evidence("x", "x", "x", "x", "s", 0.0, 0.0)
+    assert not _evidence("x", "x", "x", "x", "s", 1.03, 1.0, 0.03).passed
 
-def test_verify_cli_writes_json(monkeypatch,tmp_path,report):
-    path=tmp_path/"evidence.json"; monkeypatch.setattr("sys.argv",["tensorfem","verify","--output",str(path)])
-    with pytest.raises(SystemExit) as exc: main()
+
+def test_verify_cli_writes_json(monkeypatch, tmp_path, report):
+    path = tmp_path / "evidence.json"
+    monkeypatch.setattr("sys.argv", ["tensorfem", "verify", "--output", str(path)])
+    with pytest.raises(SystemExit) as exc:
+        main()
     assert exc.value.code == 0
     assert json.loads(path.read_text())["summary"] == report["summary"]
+
+
+@pytest.mark.parametrize("fault", ["unknown", "missing", "duplicate", "empty", "invalid_class"])
+def test_verify_cli_fails_closed_on_classification_fault(monkeypatch, tmp_path, report, fault):
+    from tensorfem.benchmark_registry import BenchmarkEvidence
+    from tensorfem.registry_evidence_audit import EVIDENCE_CLASSES
+
+    rows = [BenchmarkEvidence(**row) for row in report["results"]]
+    if fault == "unknown":
+        rows.append(_evidence("unknown.check", "x", "x", "x", "test", 1.0, 1.0))
+    elif fault == "missing":
+        rows.pop()
+    elif fault == "duplicate":
+        rows.append(rows[0])
+    elif fault == "empty":
+        rows.clear()
+    else:
+        monkeypatch.setitem(EVIDENCE_CLASSES, rows[0].id, ("typo", "invalid class"))
+    monkeypatch.setattr("tensorfem.benchmark_registry.run_registered_benchmarks", lambda: rows)
+    output = tmp_path / "rejected.json"
+    monkeypatch.setattr("sys.argv", ["tensorfem", "verify", "--output", str(output)])
+    with pytest.raises(SystemExit) as exc:
+        main()
+    assert exc.value.code == 1
+    result = json.loads(output.read_text())
+    assert not result["passed"]
+    assert not result["evidence_audit"]["passed"]

@@ -24,6 +24,7 @@ campaign node definition):
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 import platform
 import sys
@@ -84,6 +85,10 @@ def _env() -> dict:
 
 
 def _write_json(path: Path, payload: dict) -> None:
+    if path.exists():
+        previous = json.loads(path.read_text())
+        if previous.get("generated_by") != payload.get("generated_by"):
+            raise ValueError(f"refusing to overwrite evidence from another producer: {path}")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2) + "\n")
 
@@ -726,7 +731,10 @@ def main() -> int:
         payload = dict(payload, **meta)
         outdir = OUT / name
         outdir.mkdir(parents=True, exist_ok=True)
-        _write_json(outdir / "result.json", payload)
+        # Validate ownership before any figure or JSON is overwritten.
+        existing = outdir / "result.json"
+        if existing.exists() and json.loads(existing.read_text()).get("generated_by") != meta["generated_by"]:
+            raise ValueError(f"evidence producer conflict: {existing}")
         if name == "fem_beam":
             fig_beam(payload, outdir)
             (outdir / "README.md").write_text(readme_beam(payload))
@@ -736,6 +744,11 @@ def main() -> int:
         else:
             fig_modal(payload, outdir)
             (outdir / "README.md").write_text(readme_modal(payload))
+        payload["artifact_sha256"] = {
+            path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted(outdir.glob("*.png"))
+        }
+        _write_json(outdir / "result.json", payload)
 
     gate = next(row for row in beam["levels"] if row["elements"] == 8)
     anchors = [

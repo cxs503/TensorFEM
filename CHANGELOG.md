@@ -1,5 +1,29 @@
 ## Unreleased
 
+### Solver integrity repairs
+
+- Distributed Poisson CG reports the recomputed global residual, including zero
+  RHS and fixed-budget runs; Q4 graph partitioning uses real element edges.
+- `verify` fails on unknown, missing, duplicate or empty evidence classifications,
+  as well as numerical failures. Its additive `evidence_audit` field explains why.
+- Restore the root workflow `ExecutionResult` and `deterministic_job_id` exports;
+  queue-specific versions remain in `tensorfem.compute_queue`. Inventory the two
+  existing HEX20 sparse exports as experimental CPU/SciPy interfaces.
+- Quarantine the incomplete FSI3D ice prototype. Its constructor and execution
+  methods raise `NotImplementedError`; its validation CLI exits 2 with a blocked
+  verdict. See `docs/fsi3d-quarantine.md` for the required reopening evidence.
+- Recompute structural ladder artifacts and prevent producer collisions. The
+  independent modal script now writes `result_verification.json`.
+- Restore reproducible API gate evidence using exact, blob-checked historical
+  sources. Add a GitHub-hosted solver-integrity CI job and pin the full-suite
+  TensorLBM fixture revision.
+- Remove two tracked credential files and four literal helper passwords. Helpers
+  now require `TENSOR_API_PASSWORD`; the tracked-tree scan emits only paths/rules.
+  Previously exposed credentials still require platform-side revocation. This
+  change does not rewrite Git history or prove old credentials have been revoked.
+
+All notable user-visible changes are recorded here.
+
 ### Ice-grillage load split: independent discrete beam-grid cross-check (anchor GAP-PP-5, round 4)
 - **New capability**: `tensorfem.grillage_beam_grid` is a discrete orthogonal beam-grid
   (classical grillage) of the 8.40 m x 2.80 m ice-belt grillage that shares no code and no
@@ -797,8 +821,6 @@
 - Added 22 library-level verification anchors in `tests/test_foundation_reference_audit.py`, with self-validated Bessel/Kelvin oracles so the tests need no SciPy.
 
 # Changelog
-
-All notable user-visible changes are recorded here.
 
 ## Unreleased
 - Added the first pressure-load verification of the metric-consistent cylindrical Shell4 element: an exact four-constant axisymmetric shell solution (`D w'''' + (E t / R^2) w = p`, clamped--clamped, open ends) for a 1.5 m x 15 mm steel cylinder under 1.0 MPa internal pressure with beta*L = 10.28. `tensorfem.cylindrical_pressure_reference` carries the closed form (displacement, moment, shear, hoop force; derivatives by automatic differentiation), self-validated against the governing ODE (residual 8.2e-16), the clamped end conditions (1.4e-12), the semi-infinite limit `|M_x(0)| = p/(2 beta^2)` (1.0e-4), the classical two-layer superposition (5.6e-5) and the pressure-work/strain-energy identity (5.3e-9), plus a consistent 2x2-Gauss pressure load and the production-element driver. At 32x16 elements (3168 dofs) the radial displacement L2 error is 1.41 %, the peak 1.64 %, the plateau 1.70 % and the axial moment L2 0.64 % with |M_x(0)| at 0.11 %, so the field-level 3 % gate passes; the node adjacent to the clamped edge is reported as NOT qualified (5.58 %) and an 8-facet circumferential mesh is rejected (5.82 %), fixing a mesh requirement instead of hiding it. The edge bending stress (181.6 MPa on top of the 100.0 MPa membrane stress) is the ship-relevant number: a `pR/t` screen understates the clamped-edge surface stress by 2.8x. Evidence in `benchmarks/cylindrical_pressure_boundary_layer_evidence.json`, report in `docs/cylindrical-pressure-boundary-layer.md`, gate `tests/test_cylindrical_pressure_boundary_layer.py` (14 tests, including a negative control that rejects a 10 % thickness error in the reference).

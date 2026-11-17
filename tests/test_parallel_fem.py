@@ -26,7 +26,7 @@ import torch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from tensorfem.parallel.comm import (ProcessComm, SerialComm, physical_cpus,  # noqa: E402
+from tensorfem.parallel.comm import (SerialComm, physical_cpus,  # noqa: E402
                                      spawn)
 from tensorfem.parallel.partition import (element_adjacency,  # noqa: E402
                                           graph_partition, partition_stats,
@@ -180,6 +180,55 @@ def test_distributed_solution_matches_serial():
         assert out[0]["dofs"] == ref[0]["dofs"] == (nx + 1) ** 2
         assert abs(out[0]["res"] - ref[0]["res"]) <= 1e-10 * max(1.0, ref[0]["res"])
         assert abs(out[0]["l2"] - ref[0]["l2"]) <= 1e-10 * max(1.0, ref[0]["l2"])
+
+
+@pytest.mark.parametrize("partitioner", ["rcb", "graph"])
+@pytest.mark.parametrize("nprocs", [1, 2, 4])
+def test_reported_residual_matches_independent_global_operator(nprocs, partitioner):
+    """Gather x, then use a serial operator instead of trusting CG diagnostics."""
+    def work(comm):
+        d = DistPoisson(comm, 16, partitioner=partitioner)
+        b = d.assemble_rhs()
+        rows = []
+        for budget in (0, 1, 5, 20, 60, None):
+            result = d.cg(b, iters=budget)
+            rows.append({"owned": d.owned.tolist(), "x": result["x"].tolist(),
+                         "residual": result["residual"],
+                         "relative": result["residual_rel"], "budget": budget})
+        return rows
+
+    ranks, _ = spawn(nprocs, work)
+    serial = DistPoisson(nx=16)
+    b = serial.assemble_rhs()
+    for i in range(len(ranks[0])):
+        x = torch.zeros_like(b)
+        for rank in ranks:
+            x[rank[i]["owned"]] = torch.tensor(rank[i]["x"], dtype=b.dtype)
+        norm = float(torch.linalg.vector_norm(b - serial.matvec(x)))
+        relative = norm / float(torch.linalg.vector_norm(b))
+        for rank in ranks:
+            assert rank[i]["residual"] == pytest.approx(norm, abs=1e-15, rel=1e-9)
+            assert rank[i]["relative"] == pytest.approx(relative, abs=1e-13, rel=1e-9)
+        if ranks[0][i]["budget"] in (20, 60, None):
+            assert relative < 1e-9
+
+
+def test_zero_rhs_and_invalid_cg_controls():
+    d = DistPoisson(nx=4)
+    result = d.cg(torch.zeros(d.nown, dtype=torch.float64))
+    assert result["iters"] == 0
+    assert result["residual"] == result["residual_rel"] == 0.0
+    for kwargs in ({"iters": -1}, {"iters": 0.5}, {"tol": 0}, {"tol": float("nan")}):
+        with pytest.raises(ValueError):
+            d.cg(d.assemble_rhs(), **kwargs)
+
+
+def test_q4_adjacency_excludes_corner_only_and_is_orientation_independent():
+    conn = np.array([[0, 1, 4, 3], [1, 2, 5, 4], [4, 5, 8, 7]])
+    expected = [{1}, {0, 2}, {1}]
+    assert element_adjacency(conn) == expected
+    assert element_adjacency(conn[:, ::-1]) == expected
+    assert element_adjacency(np.roll(conn, 1, axis=1)) == expected
 
 
 def test_second_order_convergence():

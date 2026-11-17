@@ -1,7 +1,8 @@
+import os
 import urllib.request, json
 
 url = 'http://127.0.0.1:8010/api/v1/auth'
-data = json.dumps({'user': 'eco_admin', 'pass': 'EcoTest!2026pass'}).encode()
+data = json.dumps({'user': 'eco_admin', 'pass': os.environ["TENSOR_API_PASSWORD"]}).encode()
 req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'})
 try:
     resp = urllib.request.urlopen(req)
