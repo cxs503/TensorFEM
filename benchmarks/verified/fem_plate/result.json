@@ -24,10 +24,10 @@
       "n_dof": 36,
       "n_free_dof": 16,
       "h": 0.5,
-      "centre_deflection_m": 0.0014408444255984913,
-      "alpha": 0.0027708546646124836,
-      "error_vs_timoshenko_00406": 0.317523481622541,
-      "error_vs_navier_series": 0.31791872935246646
+      "centre_deflection_m": 0.0014408444255984908,
+      "alpha": 0.002770854664612483,
+      "error_vs_timoshenko_00406": 0.3175234816225411,
+      "error_vs_navier_series": 0.31791872935246657
     },
     {
       "n_x": 4,
@@ -35,10 +35,10 @@
       "n_dof": 100,
       "n_free_dof": 64,
       "h": 0.25,
-      "centre_deflection_m": 0.001919507071945359,
-      "alpha": 0.003691359753741076,
-      "error_vs_timoshenko_00406": 0.09079809021155769,
-      "error_vs_navier_series": 0.09132464311295581
+      "centre_deflection_m": 0.0019195070719453585,
+      "alpha": 0.0036913597537410743,
+      "error_vs_timoshenko_00406": 0.09079809021155812,
+      "error_vs_navier_series": 0.09132464311295624
     },
     {
       "n_x": 6,
@@ -46,10 +46,10 @@
       "n_dof": 196,
       "n_free_dof": 144,
       "h": 0.16666666666666666,
-      "centre_deflection_m": 0.0020250164339453945,
-      "alpha": 0.0038942623729719132,
-      "error_vs_timoshenko_00406": 0.040822075622681524,
-      "error_vs_navier_series": 0.04137757150714951
+      "centre_deflection_m": 0.0020250164339453832,
+      "alpha": 0.0038942623729718915,
+      "error_vs_timoshenko_00406": 0.04082207562268687,
+      "error_vs_navier_series": 0.04137757150715485
     },
     {
       "n_x": 8,
@@ -57,10 +57,10 @@
       "n_dof": 324,
       "n_free_dof": 256,
       "h": 0.125,
-      "centre_deflection_m": 0.00206294066042637,
-      "alpha": 0.00396719357774302,
-      "error_vs_timoshenko_00406": 0.02285872469383749,
-      "error_vs_navier_series": 0.023424623828066156
+      "centre_deflection_m": 0.0020629406604263482,
+      "alpha": 0.003967193577742978,
+      "error_vs_timoshenko_00406": 0.022858724693847744,
+      "error_vs_navier_series": 0.023424623828076405
     },
     {
       "n_x": 10,
@@ -68,10 +68,10 @@
       "n_dof": 484,
       "n_free_dof": 400,
       "h": 0.1,
-      "centre_deflection_m": 0.0020806618944541055,
-      "alpha": 0.004001272873950204,
-      "error_vs_timoshenko_00406": 0.014464809371870986,
-      "error_vs_navier_series": 0.015035569737053181
+      "centre_deflection_m": 0.00208066189445431,
+      "alpha": 0.004001272873950597,
+      "error_vs_timoshenko_00406": 0.014464809371774209,
+      "error_vs_navier_series": 0.01503556973695646
     },
     {
       "n_x": 12,
@@ -79,10 +79,10 @@
       "n_dof": 676,
       "n_free_dof": 576,
       "h": 0.08333333333333333,
-      "centre_deflection_m": 0.0020903320905197396,
-      "alpha": 0.004019869404845654,
-      "error_vs_timoshenko_00406": 0.0098843830429424,
-      "error_vs_navier_series": 0.010457796104678762
+      "centre_deflection_m": 0.0020903320905198953,
+      "alpha": 0.004019869404845953,
+      "error_vs_timoshenko_00406": 0.009884383042868695,
+      "error_vs_navier_series": 0.0104577961046051
     },
     {
       "n_x": 16,
@@ -90,10 +90,10 @@
       "n_dof": 1156,
       "n_free_dof": 1024,
       "h": 0.0625,
-      "centre_deflection_m": 0.0020999777029701394,
-      "alpha": 0.004038418659557961,
-      "error_vs_timoshenko_00406": 0.005315601094098233,
-      "error_vs_navier_series": 0.005891660108691842
+      "centre_deflection_m": 0.0020999777029702448,
+      "alpha": 0.0040384186595581635,
+      "error_vs_timoshenko_00406": 0.005315601094048455,
+      "error_vs_navier_series": 0.005891660108642094
     },
     {
       "n_x": 20,
@@ -101,10 +101,10 @@
       "n_dof": 1764,
       "n_free_dof": 1600,
       "h": 0.05,
-      "centre_deflection_m": 0.002104452440041997,
-      "alpha": 0.004047023923157687,
-      "error_vs_timoshenko_00406": 0.0031960780399786634,
-      "error_vs_navier_series": 0.0037733645498092623
+      "centre_deflection_m": 0.002104452440041254,
+      "alpha": 0.004047023923156258,
+      "error_vs_timoshenko_00406": 0.003196078040330522,
+      "error_vs_navier_series": 0.003773364550160917
     },
     {
       "n_x": 24,
@@ -112,18 +112,18 @@
       "n_dof": 2500,
       "n_free_dof": 2304,
       "h": 0.041666666666666664,
-      "centre_deflection_m": 0.0021068858561768835,
-      "alpha": 0.004051703569570931,
-      "error_vs_timoshenko_00406": 0.0020434557707068083,
-      "error_vs_navier_series": 0.0026214098072919892
+      "centre_deflection_m": 0.0021068858561790536,
+      "alpha": 0.004051703569575104,
+      "error_vs_timoshenko_00406": 0.002043455769678792,
+      "error_vs_navier_series": 0.002621409806264569
     }
   ],
-  "observed_order": 1.9440160244049582,
+  "observed_order": 1.9440160244676112,
   "gates": [
     {
       "id": "G2.centre_deflection",
       "description": "|alpha_FE - 0.00406| / 0.00406 < 2e-2 at 16x16 elements",
-      "value": 0.005315601094098233,
+      "value": 0.005315601094048455,
       "limit": 0.02,
       "relation": "le",
       "passed": true
@@ -131,7 +131,7 @@
     {
       "id": "G2.centre_deflection_vs_series",
       "description": "|alpha_FE - alpha_Navier| / alpha_Navier < 2e-2 at 16x16 elements",
-      "value": 0.005891660108691842,
+      "value": 0.005891660108642094,
       "limit": 0.02,
       "relation": "le",
       "passed": true
@@ -139,7 +139,7 @@
     {
       "id": "G2.order",
       "description": "observed convergence order >= 1.5 (levels 2..24)",
-      "value": 1.9440160244049582,
+      "value": 1.9440160244676112,
       "limit": 1.5,
       "relation": "ge",
       "passed": true
@@ -147,13 +147,16 @@
   ],
   "verdict": "PASS",
   "generated_by": "benchmarks/structural_ladder.py",
-  "generated_at": "2026-11-07T08:20:51+00:00",
+  "generated_at": "2026-11-17T15:56:21+00:00",
   "environment": {
-    "python": "3.11.6",
-    "torch": "2.7.1",
-    "numpy": "2.4.6",
-    "machine": "loongarch64",
+    "python": "3.12.14",
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "machine": "x86_64",
     "dtype": "torch.float64 / numpy.float64"
   },
-  "module": "tensorfem.structural_verification"
+  "module": "tensorfem.structural_verification",
+  "artifact_sha256": {
+    "convergence.png": "d1ddfc0fdc3be218ea4b48efe0be82288572c51768f29aa6f3ab40120cab7351"
+  }
 }

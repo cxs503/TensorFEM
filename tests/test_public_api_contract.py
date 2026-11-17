@@ -28,6 +28,20 @@ def test_snapshot_objects_remain_importable_from_recorded_modules():
         assert getattr(value, "__module__", "tensorfem") == entry["module"]
 
 
+def test_queue_import_does_not_shadow_workflow_contracts():
+    from tensorfem import compute_queue, industrial_workflow, step_executor
+
+    assert tensorfem.ExecutionResult is step_executor.ExecutionResult
+    assert tensorfem.ExecutionResult is not compute_queue.ExecutionResult
+    result = tensorfem.ExecutionResult(steps=(), completed=True, resumed_steps=0)
+    assert result.completed
+    spec = industrial_workflow.WorkflowSpec()
+    assert tensorfem.deterministic_job_id is industrial_workflow.deterministic_job_id
+    assert tensorfem.deterministic_job_id(spec) == industrial_workflow.deterministic_job_id(spec)
+    queue_id = compute_queue.deterministic_job_id(compute_queue.JobSpec(cmd="true"))
+    assert queue_id.startswith("cj")
+
+
 def test_deprecation_warning_and_metadata():
     @deprecated(since="0.19", remove="1.1", replacement="new_api")
     def legacy(value):

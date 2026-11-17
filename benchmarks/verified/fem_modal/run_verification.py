@@ -335,7 +335,8 @@ def run_verification():
     
     # Save results
     output_dir = Path(__file__).parent
-    result_file = output_dir / "result.json"
+    # result.json belongs to structural_ladder.py (cantilever modes).
+    result_file = output_dir / "result_verification.json"
     result_file.write_text(json.dumps(results, indent=2))
     print(f"\nResults saved to: {result_file}")
     

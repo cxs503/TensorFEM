@@ -32,7 +32,7 @@ jobs:
         # checkout.  Installing it keeps that fixture under test here instead
         # of it silently not running.  It stays an optional extra so
         # TensorFEM itself remains installable without the sibling repo.
-        run: pip install "git+https://github.com/cxs503/TensorLBM.git"
+        run: pip install "git+https://github.com/cxs503/TensorLBM.git@2d21ee08d95600d61d3b77f5e0e9b7b088d14f6d"
       - name: Run tests
         # --timeout activates pytest-timeout so a hung solver fails the job
         # instead of burning the runner limit.

@@ -388,6 +388,20 @@
     {
       "introduced": "0.45.0",
       "module": "tensorfem.hex20",
+      "name": "solve_hex20_sparse",
+      "object": "solve_hex20_sparse",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hex20",
+      "name": "assemble_hex20_stiffness_sparse",
+      "object": "assemble_hex20_stiffness_sparse",
+      "stability": "experimental"
+    },
+    {
+      "introduced": "0.45.0",
+      "module": "tensorfem.hex20",
       "name": "hex20_mass",
       "object": "hex20_mass",
       "stability": "stable"

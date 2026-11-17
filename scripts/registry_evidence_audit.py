@@ -14,7 +14,6 @@ reference by more than 1e-9 relative.
 from __future__ import annotations
 
 import json
-import math
 import os
 import sys
 
@@ -114,7 +113,7 @@ def main() -> int:
     print(json.dumps({k: audit[k] for k in
                       ("total_checks", "classified", "counts", "unclassified_ids",
                        "stale_ids", "thin_margin", "spheroid_oracle")}, indent=1))
-    ok = not audit["unclassified_ids"] and not audit["stale_ids"] and oracle_delta < 1e-9
+    ok = report["passed"] and audit["passed"] and oracle_delta < 1e-9
     print(f"[gate] {'PASS' if ok else 'FAIL'}")
     return 0 if ok else 1
 

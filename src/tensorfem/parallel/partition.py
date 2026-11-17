@@ -85,15 +85,15 @@ def _rcb_rec(pts, idx, parts, owner) -> None:
 
 
 def element_adjacency(conn: np.ndarray) -> list[set[int]]:
-    """Face-sharing adjacency of quadrilateral elements from a (ne, 4) table."""
+    """Edge-sharing adjacency of cyclically ordered Q4 elements (ne, 4)."""
     conn = np.asarray(conn, dtype=np.int64)
     ne = conn.shape[0]
     adj: list[set[int]] = [set() for _ in range(ne)]
     seen: dict[tuple, list[int]] = {}
     for e in range(ne):
         nodes = conn[e]
-        for a, b in ((nodes[0], nodes[1]), (nodes[1], nodes[3]),
-                     (nodes[3], nodes[2]), (nodes[2], nodes[0])):
+        for a, b in ((nodes[0], nodes[1]), (nodes[1], nodes[2]),
+                     (nodes[2], nodes[3]), (nodes[3], nodes[0])):
             key = (int(min(a, b)), int(max(a, b)))
             lst = seen.setdefault(key, [])
             for other in lst:

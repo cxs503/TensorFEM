@@ -9,7 +9,7 @@ TensorFEM 0.19 keeps every existing top-level export while establishing an audit
 - `experimental`: evaluable functionality whose interface may change in release notes.
 - `internal_candidate`: benchmark, qualification, demo, or post-processing helpers that remain importable for compatibility but should be imported from their defining submodule.
 
-The initial inventory contained 310 names (47 stable, 44 beta, 175 experimental, 44 internal candidates). The snapshot is regenerated as the surface grows; at 0.45.0 it records 395 names (52 stable, 44 beta, 254 experimental, 45 internal candidates) — the authoritative counts are whatever `scripts/audit_public_api.py --json` prints from the checkout, never this paragraph. Classification is deliberately conservative; promotion requires tests, documentation, and a reviewed manifest update. Nothing was removed during the original audit.
+The initial inventory contained 310 names (47 stable, 44 beta, 175 experimental, 44 internal candidates). The snapshot is regenerated as the surface grows; at 0.45.0 it records 397 names (52 stable, 44 beta, 256 experimental, 45 internal candidates) — the authoritative counts are whatever `scripts/audit_public_api.py --json` prints from the checkout, never this paragraph. Classification is deliberately conservative; promotion requires tests, documentation, and a reviewed manifest update. Nothing was removed during the original audit.
 
 ## Machine-readable contract
 

@@ -1,21 +1,15 @@
-"""Comprehensive tests for 3D FSI ice coupling solver.
+"""Local helper checks and fail-closed admission for the quarantined FSI3D path.
 
-Tests cover:
-- C1: 3D-2D degradation consistency
-- C2: Ice bending failure criterion
-- C3: Mass conservation
-- C4: Energy conservation
-- C5: Contact force validation
-- C6: All pytest tests pass
+These tests do not establish fluid coupling, ice fracture, mass conservation,
+energy conservation, or experimental agreement.
 """
 import pytest
 import torch
-import math
 from tensorfem.fsi_ice_3d_coupling import (
-    IceMaterialConfig, FluidConfig, GeometryConfig, SimulationConfig,
+    IceMaterialConfig, GeometryConfig, SimulationConfig,
     generate_ice_mesh, hex8_shape_functions, hex8_stiffness_matrix,
-    DruckerPragerPlasticity, FSI3DIceCouplingSolver, FSI3DState,
-    compute_mass_conservation_residual, check_ice_failure
+    DruckerPragerPlasticity, FSI3DIceCouplingSolver, compute_mass_conservation_residual, check_ice_failure,
+    FSI3DUnavailableError, fsi3d_qualification_status
 )
 
 D = torch.float64
@@ -200,99 +194,70 @@ class TestDruckerPragerPlasticity:
         plasticity = DruckerPragerPlasticity(config)
         
         stress_trial = torch.tensor([2e6, -1e6, 0, 0, 0, 0], dtype=D)
-        stress, plastic_strain, yielded = plasticity.return_mapping(stress_trial, 0.0)
-        
-        assert yielded
-        assert plastic_strain > 0.0
-        # Corrected stress should be on yield surface
-        f_corrected = plasticity.yield_function(stress)
-        assert abs(f_corrected.item()) < 1e6  # relaxed tolerance for simplified return mapping
+        with pytest.raises(FSI3DUnavailableError, match="return mapping"):
+            plasticity.return_mapping(stress_trial, 0.0)
 
 
-class TestFSI3DSolver:
-    """Test 3D FSI ice coupling solver."""
-    
-    def test_solver_initialization(self):
-        """Test solver initializes correctly."""
-        config = SimulationConfig(geometry=GeometryConfig(ice_nx=4, ice_ny=4, ice_nz=1))
-        solver = FSI3DIceCouplingSolver(config)
-        
-        assert solver.state.time == 0.0
-        assert solver.state.step == 0
-        assert solver.state.ice_displacement is not None
-    
-    def test_solver_single_step(self):
-        """Test solver can advance one time step."""
-        config = SimulationConfig(time_total=0.1, dt=0.01, geometry=GeometryConfig(ice_nx=4, ice_ny=4, ice_nz=1))
-        solver = FSI3DIceCouplingSolver(config)
-        
-        ship_pos = torch.tensor([5.0, 5.0, 0.5], dtype=D)
-        solver.step(ship_pos)
-        
-        assert solver.state.time == 0.01
-        assert solver.state.step == 1
-    
-    def test_solver_history_recording(self):
-        """Test solver records history correctly."""
-        config = SimulationConfig(time_total=0.1, dt=0.01, geometry=GeometryConfig(ice_nx=4, ice_ny=4, ice_nz=1))
-        solver = FSI3DIceCouplingSolver(config)
-        
-        ship_pos = torch.tensor([5.0, 5.0, 0.5], dtype=D)
-        for _ in range(5):
-            solver.step(ship_pos)
-        
-        assert len(solver.history['time']) == 5
-        assert len(solver.history['contact_force']) == 5
-    
-    def test_contact_force_computation(self):
-        """Test contact force computation."""
-        config = SimulationConfig(geometry=GeometryConfig(ice_nx=4, ice_ny=4, ice_nz=1))
-        solver = FSI3DIceCouplingSolver(config)
-        
-        # Ship position near ice surface
-        ship_pos = torch.tensor([5.0, 5.0, 0.3], dtype=D)
-        forces = solver.compute_contact_forces(ship_pos)
-        
-        # Should have non-zero forces
-        assert forces.norm().item() > 0
-    
-    def test_energy_balance(self):
-        """Test energy balance computation."""
-        config = SimulationConfig(geometry=GeometryConfig(ice_nx=4, ice_ny=4, ice_nz=1))
-        solver = FSI3DIceCouplingSolver(config)
-        
-        energy = solver.compute_energy_balance()
-        
-        assert 'kinetic_energy' in energy
-        assert 'strain_energy' in energy
-        assert 'dissipated_energy' in energy
-        assert 'total_energy' in energy
-        assert energy['total_energy'] >= 0
+class TestFSI3DAdmission:
+    def test_constructor_rejects_before_assembly(self, monkeypatch):
+        def unexpected_allocation(*args):
+            pytest.fail("quarantined solver attempted mesh assembly")
+        monkeypatch.setattr("tensorfem.fsi_ice_3d_coupling.generate_ice_mesh", unexpected_allocation)
+        with pytest.raises(FSI3DUnavailableError, match="blocked"):
+            FSI3DIceCouplingSolver(SimulationConfig())
 
+    @pytest.mark.parametrize("method,args", [
+        ("step", (None,)), ("run", (None,)), ("solve_ice_step", (None, .01)),
+        ("compute_contact_forces", (None,)), ("compute_energy_balance", ()),
+    ])
+    def test_preexisting_instance_cannot_emit_results(self, method, args):
+        instance = object.__new__(FSI3DIceCouplingSolver)
+        with pytest.raises(FSI3DUnavailableError, match="blocked"):
+            getattr(instance, method)(*args)
 
-class TestC1_3D2DDegradation:
-    """Test C1: 3D-2D degradation consistency."""
-    
-    def test_plane_strain_case(self):
-        """Test 3D solution matches 2D in plane strain."""
-        # Create a thin 3D ice plate (plane strain in x-z)
-        config_3d = SimulationConfig(
-            geometry=GeometryConfig(
-                ice_length=10.0, ice_width=0.1, ice_thickness=0.5,
-                ice_nx=4, ice_ny=2, ice_nz=1
-            )
+    @pytest.mark.parametrize("velocity", [torch.zeros((3, 3)), torch.ones((3, 3)),
+                                         torch.full((3, 3), float("nan"))])
+    def test_missing_mass_diagnostic_never_becomes_zero(self, velocity):
+        with pytest.raises(FSI3DUnavailableError, match="fluxes"):
+            compute_mass_conservation_residual(velocity, .01)
+
+    def test_status_and_validation_cli_reject(self, tmp_path):
+        import json
+        import os
+        from pathlib import Path
+        import subprocess
+        import sys
+        status = fsi3d_qualification_status()
+        assert status["status"] == "blocked" and status["passed"] is False
+        root = Path(__file__).resolve().parents[1]
+        output = tmp_path / "status.json"
+        result = subprocess.run(
+            [sys.executable, str(root / "validate_fsi_ice_3d.py"), "--output", str(output)],
+            cwd=tmp_path, env=dict(os.environ, PYTHONPATH=str(root / "src")),
+            capture_output=True, text=True,
         )
-        solver_3d = FSI3DIceCouplingSolver(config_3d)
-        
-        # Apply uniform load
-        forces = torch.zeros((solver_3d.ice_mesh['nodes'].shape[0], 3), dtype=D)
-        forces[:, 2] = -1e4  # downward load
-        
-        solver_3d.solve_ice_step(forces, 0.01)
-        
-        # Check displacement is primarily in z-direction
-        disp_z = solver_3d.state.ice_displacement[2::3]
-        assert disp_z.abs().max().item() > 0
+        assert result.returncode == 2
+        assert json.loads(result.stdout) == json.loads(output.read_text()) == status
+        assert set(tmp_path.iterdir()) == {output}
+
+
+def test_generated_hexes_have_positive_jacobians_and_correct_volume():
+    config = GeometryConfig(ice_length=3., ice_width=2., ice_thickness=.5,
+                            ice_nx=3, ice_ny=2, ice_nz=1)
+    mesh = generate_ice_mesh(config)
+    _, derivatives = hex8_shape_functions(0., 0., 0.)
+    determinants = torch.linalg.det(derivatives.T @ mesh["nodes"][mesh["elements"]])
+    assert torch.all(determinants > 0)
+    assert float(8 * determinants.sum()) == pytest.approx(3.)
+
+
+def test_inverted_hex_is_rejected():
+    config = GeometryConfig(ice_nx=2, ice_ny=1, ice_nz=1)
+    mesh = generate_ice_mesh(config)
+    coords = mesh["nodes"][mesh["elements"][0]].clone()
+    coords[:, 0] *= -1
+    with pytest.raises(ValueError, match="positive finite Jacobian"):
+        hex8_stiffness_matrix(coords, 5e9, .33)
 
 
 class TestC2_IceFailure:
@@ -317,56 +282,6 @@ class TestC2_IceFailure:
         failed = check_ice_failure(stress, config)
         
         assert not failed
-
-
-class TestC3_MassConservation:
-    """Test C3: Mass conservation."""
-    
-    def test_mass_residual_zero(self):
-        """Test mass conservation residual is small."""
-        fluid_velocity = torch.zeros((100, 3), dtype=D)
-        residual = compute_mass_conservation_residual(fluid_velocity, 0.01)
-        
-        # For incompressible flow, residual should be very small
-        assert abs(residual) < 1e-6
-
-
-class TestC4_EnergyConservation:
-    """Test C4: Energy conservation."""
-    
-    def test_energy_positive(self):
-        """Test all energy components are non-negative."""
-        config = SimulationConfig(geometry=GeometryConfig(ice_nx=4, ice_ny=4, ice_nz=1))
-        solver = FSI3DIceCouplingSolver(config)
-        
-        # Run a few steps
-        ship_pos = torch.tensor([5.0, 5.0, 0.5], dtype=D)
-        for _ in range(5):
-            solver.step(ship_pos)
-        
-        energy = solver.compute_energy_balance()
-        
-        assert energy['kinetic_energy'] >= 0
-        assert energy['strain_energy'] >= 0
-        assert energy['dissipated_energy'] >= 0
-
-
-class TestC5_ContactValidation:
-    """Test C5: Contact force validation."""
-    
-    def test_contact_force_magnitude(self):
-        """Test contact forces have reasonable magnitude."""
-        config = SimulationConfig(contact_penalty=1e8, geometry=GeometryConfig(ice_nx=4, ice_ny=4, ice_nz=1))
-        solver = FSI3DIceCouplingSolver(config)
-        
-        # Ship penetrating ice
-        ship_pos = torch.tensor([5.0, 5.0, 0.3], dtype=D)
-        forces = solver.compute_contact_forces(ship_pos)
-        
-        # Forces should be non-zero and reasonable
-        total_force = forces.norm(dim=1).sum().item()
-        assert total_force > 0
-        assert total_force < 1e12  # sanity check
 
 
 class TestSimulationConfig:

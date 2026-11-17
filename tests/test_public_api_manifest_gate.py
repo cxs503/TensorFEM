@@ -195,6 +195,14 @@ def test_hardening_contrast_without_the_gate_is_measured_not_claimed():
         [sys.executable, str(ROOT / "scripts" / "m17947_gate_baseline_compare.py"), "--check"],
         capture_output=True, text=True, cwd=ROOT, env=_env(),
     )
-    if "unknown revision" in (fresh.stderr + fresh.stdout):  # shallow/exported checkout
-        pytest.skip("git history unavailable")
     assert fresh.returncode == 0, fresh.stdout + fresh.stderr
+
+
+def test_contrast_is_reproducible_without_optional_jsonschema(monkeypatch):
+    import m17947_gate_baseline_compare as contrast
+
+    available = contrast.build()
+    monkeypatch.setitem(sys.modules, "jsonschema", None)
+    unavailable = contrast.build()
+    assert unavailable == available
+    assert unavailable["summary"]["hardened_escaped"] == 0

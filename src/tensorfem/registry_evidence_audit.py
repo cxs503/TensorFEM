@@ -48,7 +48,7 @@ equilibrium gives ``N_theta = p a (1 - a^2/(2 b^2))``, so at the equator
 """
 from __future__ import annotations
 
-import math
+from collections import Counter
 
 __all__ = [
     "EVIDENCE_CLASSES",
@@ -65,6 +65,12 @@ THIN_MARGIN_THRESHOLD = 0.5
 #: ``check id -> (class, basis)``.  Basis is what a reviewer must be able to
 #: verify in the source; it is deliberately short and factual.
 EVIDENCE_CLASSES = {
+    "kirsch.plate.ktg": ("discretized", "Q4 plane-stress quarter plate, d/W=0.02, vs Kirsch Kt=3"),
+    "kirsch.plate.ktn": ("discretized", "same Q4 FE plate net stress vs Heywood finite-width fit"),
+    # These are fluid regression checks, NOT finite-element verification.
+    "lbm.mcmp_shan_chen.interface_density": ("discretized", "D2Q9 time-stepped density at x=0 vs saved lbmpy run; non-FEM"),
+    "lbm.mcmp_shan_chen.dense_peak_density": ("discretized", "D2Q9 time-stepped peak density vs saved lbmpy run; non-FEM"),
+    "lbm.mcmp_shan_chen.total_mass_a": ("identity", "periodic LBM collision/streaming mass invariant; non-FEM"),
     # --- continuum / structural FE against closed form -----------------------
     "truss.bar": ("discretized", "2-node bar FE tip displacement vs u=PL/(EA)"),
     "frame.cantilever": ("discretized", "frame FE tip displacement vs PL^3/(3EI)"),
@@ -179,13 +185,11 @@ def audit_evidence_classes(report: dict) -> dict:
     value is JSON-serialisable and is what the gate test asserts on.
     """
     rows = report["results"]
-    if not rows:
-        raise ValueError("empty registry report")
     per_class = {name: [] for name in CLASS_ORDER}
     unclassified = []
     for row in rows:
         cid = row["id"]
-        if cid not in EVIDENCE_CLASSES:
+        if cid not in EVIDENCE_CLASSES or EVIDENCE_CLASSES[cid][0] not in CLASS_ORDER:
             unclassified.append(cid)
             continue
         cls, basis = EVIDENCE_CLASSES[cid]
@@ -202,6 +206,8 @@ def audit_evidence_classes(report: dict) -> dict:
     stale = sorted(set(EVIDENCE_CLASSES) - {row["id"] for row in rows})
     counts = {name: len(items) for name, items in per_class.items()}
     classified = sum(counts.values())
+    duplicates = sorted(cid for cid, count in Counter(row["id"] for row in rows).items()
+                        if count > 1)
 
     thin = sorted(
         (
@@ -223,8 +229,10 @@ def audit_evidence_classes(report: dict) -> dict:
         "schema": "tensorfem.registry-evidence-classes/1.0",
         "total_checks": len(rows),
         "classified": classified,
+        "passed": bool(rows) and not (unclassified or stale or duplicates),
         "unclassified_ids": sorted(unclassified),
         "stale_ids": stale,
+        "duplicate_ids": duplicates,
         "counts": counts,
         "discretized_share": (counts["discretized"] / len(rows)) if rows else 0.0,
         "min_error": {name: (min((i["error"] for i in items), default=None))
@@ -233,6 +241,6 @@ def audit_evidence_classes(report: dict) -> dict:
                       for name, items in per_class.items()},
         "thin_margin": thin,
         "algebra_only_ids": algebra_only,
-        "policy": "unclassified checks are errors; aggregate 'passed' is not FE coverage",
+        "policy": "unknown, stale, duplicate or empty checks fail; discretized includes non-FEM methods",
         "class_basis": {name: [i["id"] for i in items] for name, items in per_class.items()},
     }

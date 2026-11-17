@@ -1,206 +1,197 @@
 {
-  "benchmark": "L3 Modal Verification",
-  "generated_by": "benchmarks/verified/fem_modal/run_verification.py",
-  "generated_at": "2026-11-07T12:27:28+00:00",
-  "environment": {
-    "python": "3.11.6",
-    "torch": "2.7.1",
-    "machine": "loongarch64"
+  "case": "Euler-Bernoulli cantilever free vibration, modes 1-5",
+  "geometry": {
+    "length_m": 1.0,
+    "width_m": 0.01,
+    "height_m": 0.01,
+    "young_pa": 200000000000.0,
+    "density_kg_m3": 7850.0,
+    "EI_n_m2": 166.66666666666669,
+    "rho_a_kg_per_m": 0.785,
+    "slenderness_L_over_h": 100.0
   },
-  "cases": {
-    "simply_supported_beam_modal": {
-      "description": "Simply supported beam free vibration, modes 1-5",
-      "analytical_formula": "\u03c9_n = (n\u03c0/L)\u00b2 \u221a(EI/\u03c1A)",
-      "parameters": {
-        "L": 10.0,
-        "EI": 1000.0,
-        "rho_a": 1.0
-      },
-      "analytical_frequencies": [
-        3.121042951226439,
-        12.484171804905756,
-        28.08938656103795,
-        49.936687219623025,
-        78.02607378066098
+  "reference": {
+    "method": "cos(beta L) cosh(beta L) = -1 (Blevins 1979 table 8-1)",
+    "beta_l": [
+      1.8751040687119587,
+      4.694091132974178,
+      7.85475743823761,
+      10.995540734875465,
+      14.137168391046469
+    ],
+    "beta_l_table": [
+      1.8751,
+      4.69409,
+      7.85476,
+      10.9955,
+      14.1372
+    ],
+    "angular_frequencies_rad_s": [
+      51.23188068352291,
+      321.0647157526858,
+      898.9905008828455,
+      1761.6625823821498,
+      2912.1544755910127
+    ],
+    "frequencies_hz": [
+      8.15380705467686,
+      51.099036564434265,
+      143.07878200816376,
+      280.37730804615245,
+      463.48377983749594
+    ]
+  },
+  "element": "2-node cubic Hermite beam, consistent mass (tensorfem.modal)",
+  "levels": [
+    {
+      "elements": 4,
+      "dofs": 10,
+      "h": 0.25,
+      "frequencies_hz": [
+        8.15407375001644,
+        51.15857751827249,
+        144.18654032679055,
+        284.44891419934834,
+        529.061503314006
       ],
-      "mesh_convergence": [
-        {
-          "n_elements": 10,
-          "frequencies": [
-            3.1210640042274593,
-            12.48550792641402,
-            28.104396312596965,
-            50.019418902883416,
-            78.33403465075934
-          ],
-          "relative_errors": [
-            6.745501856043063e-06,
-            0.00010702524197385629,
-            0.0005343566875836629,
-            0.0016567315107735296,
-            0.00394689691761326
-          ],
-          "max_relative_error": 0.00394689691761326
-        },
-        {
-          "n_elements": 20,
-          "frequencies": [
-            3.1210442692408007,
-            12.484256016850168,
-            28.090342428945906,
-            49.942031705697254,
-            78.04633420639634
-          ],
-          "relative_errors": [
-            4.222993346288251e-07,
-            6.745497076422635e-06,
-            3.402950455602025e-05,
-            0.00010702524279841943,
-            0.0002596622481904258
-          ],
-          "max_relative_error": 0.0002596622481904258
-        },
-        {
-          "n_elements": 40,
-          "frequencies": [
-            3.1210430317179303,
-            12.484177077598634,
-            28.08944658661166,
-            49.9370240671018,
-            78.02735672457835
-          ],
-          "relative_errors": [
-            2.578993384835387e-08,
-            4.223502335809617e-07,
-            2.1369485438683577e-06,
-            6.74549109147445e-06,
-            1.6442502553450927e-05
-          ],
-          "max_relative_error": 1.6442502553450927e-05
-        }
-      ],
-      "observed_convergence_order": 3.9535725679233793,
-      "max_error_at_finest": 1.6442502553450927e-05
+      "relative_errors": [
+        3.270807584619281e-05,
+        0.001165206975343828,
+        0.0077422962585996,
+        0.014521881893971533,
+        0.14148871293727386
+      ]
     },
-    "rectangular_plate_modal": {
-      "description": "Simply supported rectangular plate free vibration, modes 1-4",
-      "analytical_formula": "\u03c9_mn = \u03c0\u00b2 \u221a(D/\u03c1h) * [(m/a)\u00b2 + (n/b)\u00b2]",
-      "parameters": {
-        "a": 1.0,
-        "b": 1.0,
-        "E": 210000000000.0,
-        "nu": 0.3,
-        "t": 0.01,
-        "rho": 7850.0,
-        "D": 19230.769230769234,
-        "rho_h": 78.5
-      },
-      "mode_indices": [
-        [
-          1,
-          1
-        ],
-        [
-          1,
-          2
-        ],
-        [
-          2,
-          1
-        ],
-        [
-          2,
-          2
-        ]
+    {
+      "elements": 8,
+      "dofs": 18,
+      "h": 0.125,
+      "frequencies_hz": [
+        8.153824039264673,
+        51.103122387074166,
+        143.16580839657647,
+        281.0053863359498,
+        466.1654852732016
       ],
-      "analytical_frequencies": [
-        308.9535863275534,
-        772.3839658188836,
-        772.3839658188836,
-        1235.8143453102136
+      "relative_errors": [
+        2.0830254748914307e-06,
+        7.995889775242918e-05,
+        0.0006082410486813431,
+        0.002240118125729369,
+        0.005785974725255602
+      ]
+    },
+    {
+      "elements": 16,
+      "dofs": 34,
+      "h": 0.0625,
+      "frequencies_hz": [
+        8.15380812171025,
+        51.0992975713675,
+        143.08446993037188,
+        280.4196942531434,
+        463.67296748625915
       ],
-      "mesh_convergence": [
-        {
-          "n_elements_per_side": 6,
-          "n_elements_total": 36,
-          "frequencies": [
-            304.1840418931237,
-            772.9536483610926,
-            772.9536483765598,
-            1166.0686449678885
-          ],
-          "relative_errors": [
-            0.015437737723403563,
-            0.0007375639156427862,
-            0.0007375639356680697,
-            0.05643703733251095
-          ],
-          "max_relative_error": 0.05643703733251095
-        },
-        {
-          "n_elements_per_side": 8,
-          "n_elements_total": 64,
-          "frequencies": [
-            306.125288018534,
-            771.1627749907593,
-            771.1627750228527,
-            1193.644241943377
-          ],
-          "relative_errors": [
-            0.009154444014192025,
-            0.0015810670368196032,
-            0.0015810669952685858,
-            0.03412333213873734
-          ],
-          "max_relative_error": 0.03412333213873734
-        },
-        {
-          "n_elements_per_side": 10,
-          "n_elements_total": 100,
-          "frequencies": [
-            307.0226017207756,
-            770.9224222144567,
-            770.9224222249574,
-            1207.3558040328198
-          ],
-          "relative_errors": [
-            0.006250079922136238,
-            0.0018922500583985408,
-            0.0018922500448033794,
-            0.023028168741842978
-          ],
-          "max_relative_error": 0.023028168741842978
-        }
+      "relative_errors": [
+        1.308632130404854e-07,
+        5.107864077075193e-06,
+        3.975377850077158e-05,
+        0.00015117559722048948,
+        0.0004081861264477607
+      ]
+    },
+    {
+      "elements": 32,
+      "dofs": 66,
+      "h": 0.03125,
+      "frequencies_hz": [
+        8.153807124101922,
+        51.09905296676592,
+        143.07914140338315,
+        280.38000593415563,
+        463.4959308031914
       ],
-      "observed_convergence_order": 1.7556684541376275,
-      "max_error_at_finest": 0.023028168741842978
+      "relative_errors": [
+        8.514435180497608e-09,
+        3.20991015770971e-07,
+        2.511869435486405e-06,
+        9.622347906712135e-06,
+        2.6216593166938383e-05
+      ]
+    },
+    {
+      "elements": 64,
+      "dofs": 130,
+      "h": 0.015625,
+      "frequencies_hz": [
+        8.153806952089894,
+        51.09903757156595,
+        143.07880452572167,
+        280.37747743285195,
+        463.4845444168313
+      ],
+      "relative_errors": [
+        1.2581480762766226e-08,
+        1.9709406632728723e-08,
+        1.5737873630151815e-07,
+        6.041384043666499e-07,
+        1.6496355829439834e-06
+      ]
     }
+  ],
+  "observed_orders": {
+    "mode_1": 3.0622812832601185,
+    "mode_2": 3.966326660387718,
+    "mode_3": 3.9092204424574937,
+    "mode_4": 3.696894973071937,
+    "mode_5": 4.056229616225145
   },
   "gates": [
     {
-      "id": "G1.beam_modal_error",
-      "description": "Simply supported beam modal error < 3%",
-      "value": 1.6442502553450927e-05,
-      "limit": 0.03,
+      "id": "G3.frequencies",
+      "description": "max relative frequency error over modes 1-5 < 1e-2 at 16 elements",
+      "value": 0.0004081861264477607,
+      "limit": 0.01,
       "relation": "le",
       "passed": true
     },
     {
-      "id": "G2.plate_modal_error",
-      "description": "Rectangular plate modal error < 3%",
-      "value": 0.023028168741842978,
-      "limit": 0.03,
+      "id": "G3.roots_vs_table",
+      "description": "bisection roots reproduce the tabulated beta_n L to < 1e-5 (source precision)",
+      "value": 3.704686050259756e-06,
+      "limit": 1e-05,
       "relation": "le",
       "passed": true
     },
     {
-      "id": "G3.convergence_order",
-      "description": "Convergence order \u2265 1.5",
-      "value": 1.7556684541376275,
+      "id": "G3.characteristic_residual",
+      "description": "max |cos(z) cosh(z) + 1| / cosh(z) at the computed roots < 1e-12",
+      "value": 3.0604648975319583e-15,
+      "limit": 1e-12,
+      "relation": "le",
+      "passed": true
+    },
+    {
+      "id": "G3.order",
+      "description": "observed frequency convergence order >= 1.5 for every mode",
+      "value": 3.0622812832601185,
       "limit": 1.5,
       "relation": "ge",
       "passed": true
     }
   ],
-  "verdict": "PASS"
+  "verdict": "PASS",
+  "generated_by": "benchmarks/structural_ladder.py",
+  "generated_at": "2026-11-17T15:56:21+00:00",
+  "environment": {
+    "python": "3.12.14",
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "machine": "x86_64",
+    "dtype": "torch.float64 / numpy.float64"
+  },
+  "module": "tensorfem.structural_verification",
+  "artifact_sha256": {
+    "convergence.png": "aa7a4936466ac08619c77d552c8b1045a43cbdbcadb7641436d0a2cab2d9c4a8"
+  }
 }
