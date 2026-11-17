@@ -92,8 +92,11 @@ docstring 已改正并加回归测试 `test_slender_variant_is_also_plate_govern
 ≈ t_p/2 = 12.5 mm；对 A 的重复计≈0.5 %、对 I/centroid 的影响 <1 %，不影响 15 % 级判据，但建议后续
 统一到"板底起算"并给出差值记录。本次未改（改动会挪动已被引用的历史数字）。**round 7 已闭合**：见 `docs/CASE-GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE-round7.md`——实测影响远大于本条的估计：ΔI 最大 19.0 %、ΔZ_p 最大 7.5 %、构件控制 p_ult +18.5…+32.7 %；默认口径已改为「腹板自板下表面起算」，`web_origin="plate_mid"` 仅用于复现上述历史数字。
 
-**F6（低，可复现性指针）** round-3 文档指向 `artifacts/grillage_plastic_collapse/*.json`，该目录在
-树内不存在（被合并门禁滤除）。本次审计产物落在 `artifacts/grillage_ultimate_audit/`，可复现。
+**F6（低，可复现性指针 → 已闭合）** round-3 文档指向 `artifacts/grillage_plastic_collapse/*.json`，该目录在
+树内不存在（被合并门禁滤除）。本次审计产物落在 `artifacts/grillage_ultimate_audit/`，可复现；
+**重开轮（m24535）已把机读证据包 `audit_evidence.json` + `audit_tables.md` 提交进树**，并加回归锁
+（`test_committed_evidence_bundle_is_present_and_well_formed` / `test_committed_evidence_matches_fresh_recomputation`，
+结构完整 + 绑定量对当前代码重算一致），使本审计自包含、无需重跑慢速基准即可核验。
 
 ## 5. 误差判定（逐项，是否 <3%）
 
@@ -122,6 +125,6 @@ PYTHONPATH=src python -m pytest tests/test_grillage_ultimate_independent_audit.p
 PYTHONPATH=src python -m pytest tests/test_grillage_ice_ultimate.py -q
 ```
 
-产物：`artifacts/grillage_ultimate_audit/audit_evidence.json`（40 gates 全绿，T1–T13）、
-`audit_tables.md`、`docs/assets/grillage_ultimate_audit/fig1_plate_field_fd_vs_navier.png`、
+产物：`artifacts/grillage_ultimate_audit/audit_evidence.json`（40 gates 全绿，T1–T13，**已提交进树**）、
+`audit_tables.md`（**已提交进树**）、`docs/assets/grillage_ultimate_audit/fig1_plate_field_fd_vs_navier.png`、
 `fig2_ultimate_pressure_independent.png`、`fig3_governing_branch_census.png`。
