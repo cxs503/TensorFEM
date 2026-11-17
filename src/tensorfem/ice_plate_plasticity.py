@@ -547,16 +547,22 @@ def patch_load_plate_mesh(
     dy = b / ny
     for i in range(nx + 1):
         for j in range(ny + 1):
+            node = i * (ny + 1) + j
             node_x = i * dx
             node_y = j * dy
             # Check if node is inside or on the boundary of the patch
             if (patch_x0 <= node_x <= patch_x1 and patch_y0 <= node_y <= patch_y1):
-                # Tributary area for this node
-                if 0 < i < nx:
+                # Tributary area for this node: based on patch boundaries, not plate boundaries
+                # A node on the patch edge gets half the element area in that direction
+                if abs(node_x - patch_x0) < 1e-12 or abs(node_x - patch_x1) < 1e-12:
+                    tx = dx / 2.0
+                elif 0 < i < nx:
                     tx = dx
                 else:
                     tx = dx / 2.0
-                if 0 < j < ny:
+                if abs(node_y - patch_y0) < 1e-12 or abs(node_y - patch_y1) < 1e-12:
+                    ty = dy / 2.0
+                elif 0 < j < ny:
                     ty = dy
                 else:
                     ty = dy / 2.0
