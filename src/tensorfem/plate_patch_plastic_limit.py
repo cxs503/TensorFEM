@@ -1336,27 +1336,54 @@ def run_patch_plastic_path(a: float, b: float, t: float, *, young: float,
     if unload_steps > 0 and path.loading:
         peak = path.loading[-1].load_factor
         path.unload_steps_requested = unload_steps
+
+        def unload_advance(start: float, end: float) -> float | None:
+            """Drive the state from ``start`` down to ``end`` (unloading),
+            bisecting any increment that fails to converge.  Returns the reached
+            load factor, or ``None`` when even a bisection-tiny increment fails.
+
+            Unloading is elastic (no new plasticity), so a failed step is a pure
+            step-size problem and the remedy is the same bisection the loading
+            leg uses.  Without it a single oversized step (e.g. peak -> 0 in 3
+            steps on a highly deformed, plastically strained state) aborts the
+            whole leg and the permanent set is flagged invalid (D3, cj4436 24x12).
+            """
+            nonlocal state, u
+            stack = [(start, end)]
+            while stack:
+                seg_start, seg_end = stack.pop()
+                try:
+                    step = solve_layered_shell4_increment(
+                        model, info["reference_load"], seg_end, info["fixed_dofs"],
+                        state, u, tolerance=tolerance, max_iterations=max_iterations,
+                        geometric=geometric)
+                except RuntimeError:
+                    if (abs(seg_end - seg_start)
+                            < bisection_tolerance * max(abs(seg_end), 1e-12)):
+                        return None
+                    mid = 0.5 * (seg_start + seg_end)
+                    stack.append((mid, seg_end))
+                    stack.append((seg_start, mid))
+                    continue
+                state, u = step.state, step.displacement
+                path.unloading.append(PatchPathPoint(
+                    seg_end, float(u[6 * centre + 2]), float(torch.max(step.alpha)),
+                    max_section_moment_ratio(step.stress, model.thickness,
+                                             model.yield_stress, model.layers)))
+            return end
+
         for k in range(1, unload_steps + 1):
             target = peak + (unload_to - peak) * k / unload_steps
             if abs(target - previous) <= 1e-12:
                 continue
-            try:
-                step = solve_layered_shell4_increment(
-                    model, info["reference_load"], target, info["fixed_dofs"], state, u,
-                    tolerance=tolerance, max_iterations=max_iterations,
-                    geometric=geometric)
-            except RuntimeError:
-                # the committed state is unchanged on failure, so the peak
-                # deflection is still standing: record it and flag the leg.
-                path.unload_failure = f"unloading step to {target:.6g} did not converge"
+            reached = unload_advance(previous, target)
+            if reached is None:
+                path.unload_failure = (
+                    f"unloading step to {target:.6g} did not converge even at "
+                    "bisection tolerance")
                 break
-            state, u = step.state, step.displacement
-            path.unloading.append(PatchPathPoint(
-                target, float(u[6 * centre + 2]), float(torch.max(step.alpha)),
-                max_section_moment_ratio(step.stress, model.thickness,
-                                         model.yield_stress, model.layers)))
             path.unload_converged_steps = k
-            previous = target
+            previous = reached
 
     path.state = state
     path.displacement = u
