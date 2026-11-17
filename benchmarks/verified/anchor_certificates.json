@@ -2,10 +2,10 @@
   "schema": "tensorfem.anchor-certificates/1",
   "gate_schema": "tensorfem.verified-gates.v1",
   "git_tracking_checked": true,
-  "anchors": 45,
+  "anchors": 46,
   "certified": 38,
   "contradicted": 2,
-  "uncertified": 5,
+  "uncertified": 6,
   "gates_total": 503,
   "gates_recomputed": 501,
   "gates_contradicted": 0,
@@ -13,8 +13,8 @@
   "gates_without_numeric_criterion": 1,
   "gates_unrecomputable": 2,
   "defect_counts": {
-    "E_ARTIFACT_UNTRACKED": 2,
-    "E_NO_GATES": 5
+    "E_ARTIFACT_MISSING": 2,
+    "E_NO_GATES": 6
   },
   "records": [
     {
@@ -5369,9 +5369,11 @@
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
       "defects": [
-        "E_ARTIFACT_UNTRACKED"
+        "E_ARTIFACT_MISSING"
       ],
-      "warnings": [],
+      "warnings": [
+        "W_ARTIFACT_AMBIGUOUS"
+      ],
       "gate_detail": [
         {
           "id": "k_error_a_over_w_0.20",
@@ -6838,7 +6840,7 @@
       "gates_contradicted_inferred": 0,
       "gates_unrecomputable": 0,
       "defects": [
-        "E_ARTIFACT_UNTRACKED"
+        "E_ARTIFACT_MISSING"
       ],
       "warnings": [],
       "gate_detail": [
@@ -7493,6 +7495,28 @@
           "warnings": []
         }
       ]
+    },
+    {
+      "anchor": "lbm_akai2018_geometrical_wetting",
+      "directory": "benchmarks/verified/lbm_akai2018_geometrical_wetting",
+      "grade": "uncertified",
+      "certified": false,
+      "has_runner": true,
+      "has_result": true,
+      "has_gates": false,
+      "declared_overall": null,
+      "recomputed_overall": null,
+      "gates": 0,
+      "gates_passed": 0,
+      "gates_failed": 0,
+      "gates_contradicted": 0,
+      "gates_contradicted_inferred": 0,
+      "gates_unrecomputable": 0,
+      "defects": [
+        "E_NO_GATES"
+      ],
+      "warnings": [],
+      "gate_detail": []
     },
     {
       "anchor": "lbm_table_selfcheck",
