@@ -26,16 +26,23 @@
     "fem_sent_j_integral": {
       "grade": "contradicted",
       "defects": [
-        "E_ARTIFACT_UNTRACKED"
+        "E_ARTIFACT_MISSING"
       ],
-      "remedy": "git add the artifact the certificate names"
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
     },
     "fem_thermal": {
       "grade": "contradicted",
       "defects": [
-        "E_ARTIFACT_UNTRACKED"
+        "E_ARTIFACT_MISSING"
       ],
-      "remedy": "git add the artifact the certificate names"
+      "remedy": "commit the artifact the certificate names, or drop the stale reference"
+    },
+    "lbm_akai2018_geometrical_wetting": {
+      "grade": "uncertified",
+      "defects": [
+        "E_NO_GATES"
+      ],
+      "remedy": "publish gates_verified.json (schema tensorfem.verified-gates.v1) from a fresh run"
     },
     "lbm_table_selfcheck": {
       "grade": "uncertified",
