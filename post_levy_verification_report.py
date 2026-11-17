@@ -134,8 +134,8 @@ def main() -> int:
     payload = {"title": "弹性嵌固板格内部区间验证：Mindlin FEM vs 精确 Levý 解（GAP-PP-4）",
                "summary": f"为 β∈[0,1] 内部提供精确 Kirchhoff Levý 参考：FEM 中心挠度误差 {s['max_abs_err_w_pct_finest_mesh']:.3f}%、中心弯矩 {s['max_abs_err_Mx_pct_finest_mesh']:.3f}%，圆柱弯曲极限对梁闭式解 {s['strip_max_abs_err_w_pct']:.1e}%；区间移除简支挠度 {s['deflection_range_ssss_to_clamped_pct']:.1f}%。",
                "scenario_key": "ice-structure-elastic-restraint-band-verification",
-               "mission_id": 20812,
-               "tags": ["TensorFEM", "ice-structure", "GAP-PP-4", "verification", "levy-solution", "elastic-restraint", "m20812"],
+               "mission_id": 24176,
+               "tags": ["TensorFEM", "ice-structure", "GAP-PP-4", "verification", "levy-solution", "elastic-restraint", "m24176"],
                "markdown": md,
                "figures": figs}
     req = urllib.request.Request(BASE + "/tensor/reports", data=json.dumps(payload).encode(),
