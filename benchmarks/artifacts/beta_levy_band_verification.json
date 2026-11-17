@@ -1,6 +1,6 @@
 {
   "generated_by": "benchmarks/beta_levy_band_verification.py",
-  "generated_utc": "2026-11-14T19:28:55.016842+00:00",
+  "generated_utc": "2026-11-17T03:24:55.929787+00:00",
   "git_sha": "unknown",
   "python": "3.11.6",
   "torch": "2.13.0",
@@ -474,12 +474,36 @@
         "err_w_pct": 1.1750316971350427,
         "err_Mx_pct": 1.637070005686847,
         "ritz_truncation_spread_w_pct": -0.3032708433626241
+      },
+      {
+        "beta": 1.0,
+        "K_rot_x_Nm_per_m_per_rad": 251086080586.08054,
+        "K_rot_y_Nm_per_m_per_rad": 286955520669.80634,
+        "ritz": {
+          "30": {
+            "w_centre_m": NaN,
+            "Mx_centre_Nm_per_m": NaN
+          },
+          "40": {
+            "w_centre_m": NaN,
+            "Mx_centre_Nm_per_m": NaN
+          },
+          "50": {
+            "w_centre_m": NaN,
+            "Mx_centre_Nm_per_m": NaN
+          }
+        },
+        "fem": {
+          "nx": 80,
+          "ny": 70,
+          "w_centre_m": 0.0019510560959573582,
+          "Mx_centre_Nm_per_m": 11330.724023764193
+        },
+        "err_w_pct": NaN,
+        "err_Mx_pct": NaN,
+        "ritz_truncation_spread_w_pct": NaN
       }
-    ],
-    "excluded": {
-      "beta": 1.0,
-      "reason": "the Rayleigh-Ritz reference itself is not numerically resolvable at the fully closed limit in the 50-mode sine basis (its truncation spread diverges); beta=1 is covered exactly by the Levy section and by Timoshenko CCCC"
-    }
+    ]
   },
   "strip_limit": {
     "case": {

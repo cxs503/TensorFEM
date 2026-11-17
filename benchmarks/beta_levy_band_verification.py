@@ -254,11 +254,12 @@ def main() -> int:
 
     ARTIFACTS.mkdir(parents=True, exist_ok=True)
     meshes = [(10, 10), (20, 20), (40, 40)] if not args.quick else [(10, 10), (20, 20)]
+    n_modes = 2001 if not args.quick else 801
     nx, ny = (80, 70) if not args.quick else (40, 35)
     ritz_modes = (30, 40, 50) if not args.quick else (20, 30, 40)
 
     print("[1/3] canonical Levy sweep ...", flush=True)
-    canonical = canonical_sweep(meshes)
+    canonical = canonical_sweep(meshes, n_modes=n_modes)
     print("[2/3] manuscript panel vs Ritz ...", flush=True)
     panel = panel_sweep(nx=nx, ny=ny, ritz_modes=ritz_modes)
     print("[3/3] strip limit ...", flush=True)
