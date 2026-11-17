@@ -27,6 +27,8 @@ ROOT = os.path.abspath(os.path.join(HERE, ".."))
 OUT = os.path.join(ROOT, "outputs", "gap_pp3")
 FIG = os.path.join(OUT, "figures")
 
+T = 0.02  # plate thickness [m], anchor case
+
 
 def load_levels() -> list[dict]:
     files = sorted(glob.glob(os.path.join(OUT, "nx*.json")),
@@ -75,7 +77,7 @@ def main() -> int:
             "unload_converged": r["unload_converged"],
         })
 
-    summary = {"case": {"a": 1.0, "b": 1.0, "t": 0.02, "E": 210e9, "nu": 0.3,
+    summary = {"case": {"a": 1.0, "b": 1.0, "t": T, "E": 210e9, "nu": 0.3,
                         "sigma_y": 355e6, "patch": [0.5, 0.5],
                         "hardening": levels[0]["hardening"],
                         "layers": levels[0]["layers"]},
@@ -108,7 +110,7 @@ def main() -> int:
     wpa = ref["w_per_pa_navier"]
     wmax = max(r["peak_w"] for r in levels) * 1.05
     wline = [wmax * k / 50 for k in range(51)]
-    ax.plot([w / 0.02 for w in wline], [w / wpa / 1e6 for w in wline],
+    ax.plot([w / T for w in wline], [w / wpa / 1e6 for w in wline],
             "k--", lw=1.0, label="Navier elastic (independent)")
     colors = plt.cm.viridis([0.05 + 0.85 * i / max(len(levels) - 1, 1)
                              for i in range(len(levels))])
@@ -118,7 +120,7 @@ def main() -> int:
         ax.plot(w, f, "o-", color=c, ms=3.2, lw=1.2, label=f"FE {r['nx']}x{r['nx']}")
         if r["unloading"]:
             fu = [s["factor"] / 1e6 for s in r["unloading"]]
-            wu = [s["w"] / 0.02 for s in r["unloading"]]
+            wu = [s["w"] / T for s in r["unloading"]]
             ax.plot(wu, fu, ":", color=c, lw=1.0)
     for val, lab, ls in ((ref["strip_lb"], "strip lower bound", "-."),
                          (ref["sine_ub"], "Ilyushin sine upper bound", "-."),
@@ -162,7 +164,10 @@ def main() -> int:
     fig, ax = plt.subplots(figsize=(6.4, 4.4))
     for c, r in zip(colors, levels):
         seq = r["loading"] + r["unloading"]
-        ax.plot([s["w_over_t"] for s in seq], [s["factor"] / 1e6 for s in seq],
+        # loading points carry ``w_over_t``; unloading points carry ``w`` only,
+        # so normalise both to w/t with the shared plate thickness T.
+        seq_wt = [s.get("w_over_t", s["w"] / T) for s in seq]
+        ax.plot(seq_wt, [s["factor"] / 1e6 for s in seq],
                 "o-", ms=2.6, lw=1.0, color=c, label=f"{r['nx']}x{r['nx']}")
     ax.set_xlabel("centre deflection $w/t$ [-]")
     ax.set_ylabel("patch pressure [MPa]")
