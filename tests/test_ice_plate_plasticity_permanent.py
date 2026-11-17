@@ -205,3 +205,48 @@ class TestElasticConsistency:
         assert fy < lb, (
             f"First-yield ({fy/1e6:.4f} MPa) must be below strip LB ({lb/1e6:.4f} MPa)"
         )
+
+
+# ---------------------------------------------------------------------------
+# Unloading robustness (D3): the unloading leg must bisect oversized steps
+# instead of aborting the whole leg and flagging the permanent set invalid.
+# ---------------------------------------------------------------------------
+
+class TestUnloadingBisection:
+    """The unloading leg must converge via bisection, not abort on a large step.
+
+    Regression for D3 (cj4436 / m22855 honest FAIL): on the finest 3-grid mesh
+    the 3-step peak->0 unloading failed to converge and the permanent set was
+    flagged invalid.  The fix drives the unloading with the same bisection the
+    loading leg uses, so an oversized elastic-recovery step is halved until it
+    converges rather than discarding the residual state.
+    """
+
+    @pytest.fixture(scope="class")
+    def unloaded_path(self):
+        from tensorfem.plate_patch_plastic_limit import run_patch_plastic_path
+        return run_patch_plastic_path(
+            1.0, 1.0, 0.020, young=206e9, poisson=0.3,
+            yield_stress=355e6, hardening=1000e6, patch=(0.5, 0.5),
+            load_factors=[0.3e6, 0.6e6, 0.9e6, 1.2e6, 1.5e6],
+            nx=4, ny=4, layers=3,
+            unload_steps=3, unload_to=0.0,
+            geometric=True, inplane_restrained=True)
+
+    def test_permanent_set_valid_after_unloading(self, unloaded_path):
+        assert unloaded_path.unload_failure is None, (
+            f"unloading leg aborted: {unloaded_path.unload_failure}")
+        assert unloaded_path.permanent_set_valid, (
+            "permanent set must be a real post-unload state, not a flagged failure")
+
+    def test_permanent_deflection_bounded(self, unloaded_path):
+        peak = unloaded_path.loading[-1].centre_deflection
+        perm = unloaded_path.permanent_deflection
+        assert perm is not None
+        assert 0.0 < perm < peak, (
+            f"permanent set {perm} must lie between 0 and the peak {peak}")
+
+    def test_unloading_reduces_deflection(self, unloaded_path):
+        peak = unloaded_path.loading[-1].centre_deflection
+        residual = unloaded_path.unloading[-1].centre_deflection
+        assert residual < peak, "unloading must reduce the centre deflection"
