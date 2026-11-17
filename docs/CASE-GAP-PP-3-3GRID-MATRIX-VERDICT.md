@@ -84,3 +84,13 @@
 ![各网格实测极限压力 vs 屈服线上限 ±10 % 带与条带下限](figures/gap_pp3_3grid_limit_bracket.png)
 
 ![各网格载荷-挠度路径（含卸载支），永久挠度为 p=0 处残余](figures/gap_pp3_3grid_paths.png)
+本文件的全部数字由 `scripts/publish_gap_pp3_3grid_matrix.py` 从 `outputs/gap_pp3_3grid_results.json` 程序化注入，无手抄。
+## 3 计算结果（逐网格，程序化注入）
+| 8x4 | 32 | 270 | -15.00 % | 0.8288 MPa | +18.40 % | 1.0600 MPa | -48.36 % | 2.800 mm | 6 | 12.0 |
+| 16x8 | 128 | 918 | -7.50 % | 0.7630 MPa | +9.00 % | 1.1000 MPa | -46.41 % | 3.100 mm | 6 | 12.0 |
+| 24x12 | 288 | 1950 | -5.00 % | 0.7385 MPa | +5.50 % | 1.1200 MPa | -45.44 % | 3.300 mm | 6 | 12.0 |
+极限载荷的三类定义（切线交点 / 2 倍挠度 / 刚度下降）在各网格上的分散度：
+| 网格 | 各定义值 [MPa] | 相对分散 | 扣留原因 |
+| 8x4 | limit_load=1.0600, double_slope=1.0706, stiffness=1.0494 | +1.00 % | — |
+| 16x8 | limit_load=1.1000, double_slope=1.1110, stiffness=1.0890 | +1.00 % | — |
+| 24x12 | limit_load=1.1200, double_slope=1.1312, stiffness=1.1088 | +1.00 % | — |
