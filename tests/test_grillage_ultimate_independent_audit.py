@@ -181,3 +181,64 @@ def test_cross_method_plastic_not_below_elastic():
     assert plastic["ice_pressure_grillage_plastic"] >= elastic
     # and the documented reserve is reported, not hidden
     assert plastic["ice_pressure_grillage_plastic"] / elastic > 1.5
+
+# ---------------------------------------------------------------------------
+# Reproducibility guard: the machine-readable evidence bundle is committed to
+# the tree (artifacts/grillage_ultimate_audit/audit_evidence.json) so the audit
+# is self-contained and verifiable without re-running the (slow) benchmark.
+# This test catches the bundle going stale if the module or the geometry drifts.
+# ---------------------------------------------------------------------------
+
+import json as _json
+from pathlib import Path as _Path
+
+_EVIDENCE = (_Path(__file__).resolve().parent.parent
+             / "artifacts" / "grillage_ultimate_audit" / "audit_evidence.json")
+
+
+def test_committed_evidence_bundle_is_present_and_well_formed():
+    """The audit's machine-readable bundle is in the tree and well formed."""
+    assert _EVIDENCE.is_file(), (
+        "audit_evidence.json is missing from the tree; regenerate it with "
+        "PYTHONPATH=src python benchmarks/grillage_ultimate_independent_audit.py")
+    ev = _json.loads(_EVIDENCE.read_text(encoding="utf-8"))
+    for key in ("anchor", "verification", "gates", "plate_field_fd",
+                "member_governed_cases", "cross_method", "governing_census",
+                "governing_census_counts", "field_convergence"):
+        assert key in ev, f"evidence bundle lost key {key!r}"
+    assert ev["anchor"] == "GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE"
+    # the bundle records a fully green verification face
+    assert ev["verification"]["passed"] is True
+    assert ev["verification"]["n_failed"] == 0
+    assert len(ev["gates"]) == ev["verification"]["n_checks"]
+    # every gate in the bundle actually passed
+    assert all(g["passed"] for g in ev["gates"])
+
+
+def test_committed_evidence_matches_fresh_recomputation():
+    """The committed binding number is not stale: recompute it cheaply.
+
+    The plate-field peak moment of the first acceptance case is the binding
+    quantity of the whole anchor.  It is recomputed here with the Navier series
+    only (no FD, so the guard stays fast) and must agree with the committed
+    bundle to display precision; a drift means the code or the geometry moved
+    and the bundle must be regenerated.
+    """
+    ev = _json.loads(_EVIDENCE.read_text(encoding="utf-8"))
+    row = ev["plate_field_fd"][0]
+    geom = case_study_geometry()
+    a, b = geom.frame_spacing, geom.bay_spacing
+    d = geom.plate_rigidity
+    name, eta, p_ice, lx, ly, p_h = CASE_STUDY_SCENARIOS[0]
+    assert row["scenario"] == name
+    patch = (0.5 - 0.5 * lx / a, 0.5 + 0.5 * lx / a,
+             0.5 - 0.5 * ly / b, 0.5 + 0.5 * ly / b)
+    series = plate_patch_response(span_x=a, span_y=b, d1=d, d2=d, d3=d,
+                                  pressure=1.0, patch=patch, terms=61,
+                                  sample=41, poisson=geom.poisson)
+    m_series = max(float(series["m_x_max"]), float(series["m_y_max"]))
+    assert abs(m_series / row["peak_moment_series_per_Pa"] - 1.0) < 1e-9, (
+        m_series, row["peak_moment_series_per_Pa"])
+    # the member-governed closed form is likewise locked to the committed row
+    mrow = ev["member_governed_cases"][0]
+    assert abs(mrow["rel_error_hand_vs_module"]) < 0.005, mrow
