@@ -1,0 +1,596 @@
+[
+  {
+    "revision": "PR candidate",
+    "context": "Seven changed or affected test modules, executed together.",
+    "cases": [
+      {
+        "case": "tests.test_structural_coupon_paths::test_first_crack_location_emerges_from_an_intact_mesh",
+        "seconds": 0.027,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_structural_coupon_paths::test_bearing_work_is_the_integral_of_force",
+        "seconds": 0.003,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_structural_coupon_paths::test_unequal_parallel_strips_recover_dense_and_sparse_panel_fields",
+        "seconds": 2.981,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_structural_coupon_paths::test_stroke_loading_recovers_elastic_energy_before_damage_and_postpeak_drop",
+        "seconds": 0.154,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_structural_coupon_paths::test_transient_break_converts_released_energy_to_fragment_motion",
+        "seconds": 1.563,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_envelope_area_equals_fracture_energy",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_damage_is_bounded_and_monotone",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_peak_traction_and_failure_traction",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_unloading_is_secant_to_the_origin",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_compression_never_damages",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_consistent_tangent_matches_finite_difference[0.5]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_consistent_tangent_matches_finite_difference[0.99]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_consistent_tangent_matches_finite_difference[1.2]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_consistent_tangent_matches_finite_difference[1.5]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_consistent_tangent_matches_finite_difference[3.0]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_consistent_tangent_matches_finite_difference[8.0]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_q4_stiffness_matches_repository_continuum",
+        "seconds": 0.004,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_crack_starts_at_tensile_face_and_grows_upwards",
+        "seconds": 3.015,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_peak_load_matches_flexural_strength",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_load_drops_after_the_peak",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_dissipated_energy_bounded_by_fracture_energy",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_elastic_compliance_is_thick_beam_like",
+        "seconds": 0.019,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_assembled_softening_tangent_matches_directional_residual_derivative",
+        "seconds": 0.003,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_cohesive_bending::test_partial_softening_work_and_dissipation",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_reference_is_derived_not_transcribed",
+        "seconds": 0.858,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_reference_matches_3d_elasticity_limit",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_production_mesh_hits_membrane_state_within_3_percent",
+        "seconds": 0.005,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_refinement_reduces_error_monotonically",
+        "seconds": 0.025,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_poisson_invariance_of_membrane_stress[0.0]",
+        "seconds": 0.005,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_poisson_invariance_of_membrane_stress[0.3]",
+        "seconds": 0.005,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_poisson_invariance_of_membrane_stress[0.49]",
+        "seconds": 0.004,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_chord_meridian_control_still_fails",
+        "seconds": 0.004,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_flat_facet_shell4_control_still_fails",
+        "seconds": 0.366,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_committed_evidence_matches_a_fresh_solve",
+        "seconds": 0.005,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_report_verdict_comes_from_the_certificate_not_the_solve_record",
+        "seconds": 0.004,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_report_does_not_claim_committed_figures_it_does_not_ship",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_committed_report_is_what_the_builder_renders_today",
+        "seconds": 0.003,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_pressure_membrane_case::test_report_figures_all_honour_the_requested_directory",
+        "seconds": 1.026,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_membrane_benchmark::test_exact_membrane_reference_values",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_membrane_benchmark::test_flat_facet_membrane_recovery_is_exact",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_membrane_benchmark::test_sphere_mesh_is_a_closed_quadrangulated_surface",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_membrane_benchmark::test_pressure_load_is_self_equilibrated_and_matches_facet_area",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_membrane_benchmark::test_pressure_scatter_matches_independent_sum_over_faces",
+        "seconds": 0.188,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_membrane_benchmark::test_expansion_fit_removes_arbitrary_rigid_motion",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_membrane_benchmark::test_coarse_mesh_resolves_average_before_local_stress",
+        "seconds": 0.573,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_sphere_membrane_benchmark::test_refined_shell_passes_pointwise_membrane_gates",
+        "seconds": 4.701,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_board_audit_m15555_sphere::test_audit_generator_check_is_clean",
+        "seconds": 6.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_board_audit_m15555_sphere::test_evidence_carriers_unchanged",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_board_audit_m15555_sphere::test_stale_hand_typed_numbers_are_gone",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_board_audit_m15555_sphere::test_membrane_stress_numbers_rederived",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_board_audit_m15555_sphere::test_controls_and_falsified_prediction_are_intact",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_board_audit_m15555_sphere::test_reproduction_independent_of_generator",
+        "seconds": 1.362,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_board_audit_m15555_sphere::test_reproduction_verdict_is_recorded",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_board_audit_m15555_sphere::test_figure_is_committed_under_docs",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_board_audit_m15555_sphere::test_figure_matches_a_fresh_render",
+        "seconds": 1.157,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_fd_reproduces_binding_plate_moment",
+        "seconds": 6.234,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_fd_based_ultimate_matches_module_bisection",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_case_study_is_plate_governed",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_slender_variant_is_also_plate_governed",
+        "seconds": 4.997,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_member_governed_branch_is_exercised",
+        "seconds": 5.839,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_member_ultimate_matches_independent_closed_form",
+        "seconds": 5.887,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_hand_section_properties_are_independent_algebra",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_fd_grid_convergence",
+        "seconds": 0.318,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_patch_smaller_than_one_bay_is_handled",
+        "seconds": 7.631,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_cross_method_plastic_not_below_elastic",
+        "seconds": 4.07,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_committed_evidence_bundle_is_present_and_well_formed",
+        "seconds": 0.003,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_grillage_ultimate_independent_audit::test_committed_evidence_matches_fresh_recomputation",
+        "seconds": 0.12,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_q4_kinematics_matches_torch_plate_kernel",
+        "seconds": 0.005,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_jacobian_is_half_the_side_length",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_circular_patch_load_is_exact[0.15]",
+        "seconds": 0.006,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_circular_patch_load_is_exact[0.5]",
+        "seconds": 0.008,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_circular_patch_load_is_exact[1.0]",
+        "seconds": 0.011,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_patch_load_zero_outside_patch",
+        "seconds": 0.003,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_foundation_reaction_balances_the_patch_load[0.3]",
+        "seconds": 0.783,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_foundation_reaction_balances_the_patch_load[1.0]",
+        "seconds": 0.59,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_foundation_reaction_balances_the_patch_load[4.0]",
+        "seconds": 0.653,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_centre_moment_matches_kelvin_anchor[0.1]",
+        "seconds": 0.626,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_centre_moment_matches_kelvin_anchor[0.3]",
+        "seconds": 0.541,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_centre_moment_matches_kelvin_anchor[0.5]",
+        "seconds": 0.495,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_centre_moment_matches_kelvin_anchor[1.0]",
+        "seconds": 0.536,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_centre_state_is_axisymmetric",
+        "seconds": 0.608,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_principal_moment_criterion_is_rankine",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_first_crack_load_within_ten_percent_of_plate_theory[0.2]",
+        "seconds": 0.635,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_first_crack_load_within_ten_percent_of_plate_theory[0.5]",
+        "seconds": 0.611,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_first_crack_load_reproduces_strength_at_failure",
+        "seconds": 1.329,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_small_patch_fails_at_the_bottom_centre_radially",
+        "seconds": 0.567,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_large_patch_migrates_inside_the_patch_and_prefers_radial_moment",
+        "seconds": 0.681,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_critical_location_is_mesh_converged",
+        "seconds": 3.521,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_ice_plate_flexural_limit::test_nevel_form_validity_window",
+        "seconds": 0.029,
+        "outcome": "passed"
+      }
+    ]
+  },
+  {
+    "revision": "PR candidate",
+    "context": "Isolated test module with package-qualified import.",
+    "cases": [
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_square_plate_recovers_exact_johansen_collapse[6]",
+        "seconds": 0.016,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_square_plate_recovers_exact_johansen_collapse[8]",
+        "seconds": 0.013,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_square_plate_recovers_exact_johansen_collapse[12]",
+        "seconds": 0.046,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_square_plate_bound_is_never_below_the_exact_load[4-4]",
+        "seconds": 0.01,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_square_plate_bound_is_never_below_the_exact_load[8-8]",
+        "seconds": 0.032,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_square_plate_bound_is_never_below_the_exact_load[12-12]",
+        "seconds": 0.058,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_hinge_assembly_matches_independent_dihedral",
+        "seconds": 0.007,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_long_plate_bound_sits_inside_the_closed_form_bracket",
+        "seconds": 0.03,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_anchor_geometry_bound_is_admissible_but_not_tighter_than_closed_form",
+        "seconds": 0.23,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_patch_overlap_area_is_exact",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_discrimination_flags_a_bracket_too_wide_for_the_tolerance",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_discrimination_accepts_a_tight_bracket",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_discrimination_rejects_inverted_or_degenerate_brackets",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_plate_mechanism_lp_bound::test_anchor_bracket_is_not_discriminative_for_the_ledger_criterion",
+        "seconds": 0.008,
+        "outcome": "passed"
+      }
+    ]
+  },
+  {
+    "revision": "b767abfe7ca450da53047fd1d901cfb4b9649ce8",
+    "context": "Isolated module with scikit-fem 12.0.2 installed.",
+    "cases": [
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_record_snapshot_is_the_oss_row",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_lame_band_average_matches_numerical_integration",
+        "seconds": 0.248,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_band_average_is_not_centroid_sampling",
+        "seconds": 0.021,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_metric_m2_is_exact_for_a_perfect_layer",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_independent_scikitfem_arm_matches_lame[1]",
+        "seconds": 0.132,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_independent_scikitfem_arm_matches_lame[2]",
+        "seconds": 0.801,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_claim_reproduction_rules",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_decision_table_flags_functional_dependence",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_p2_curved_projection_moves_the_edge_midpoints",
+        "seconds": 1.679,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_xval_method_selection_first_evidence::test_rigid_body_modes_follow_dof_ordering",
+        "seconds": 0.063,
+        "outcome": "passed"
+      }
+    ]
+  },
+  {
+    "revision": "b767abfe7ca450da53047fd1d901cfb4b9649ce8",
+    "context": "Isolated elliptic-hole case, repository CI timeout of 1800 s.",
+    "cases": [
+      {
+        "case": "tests.test_elliptic_hole_reference::test_sharp_ellipse_is_honest_fail_closed",
+        "seconds": 0.48,
+        "outcome": "passed"
+      }
+    ]
+  }
+]

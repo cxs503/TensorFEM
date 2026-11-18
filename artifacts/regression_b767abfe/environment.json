@@ -1,0 +1,112 @@
+{
+  "python": "3.12.14",
+  "system": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "machine": "x86_64",
+  "processor": "AMD EPYC 9V74 80-Core Processor",
+  "packages": {
+    "pytest": "9.2.0",
+    "pytest-timeout": "2.4.0",
+    "torch": "2.15.0+cpu",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "matplotlib": "3.10.8",
+    "sympy": "1.14.0"
+  },
+  "OMP_NUM_THREADS": 1,
+  "MKL_NUM_THREADS": 1,
+  "OPENBLAS_NUM_THREADS": 1,
+  "default_ATEN_dispatch": "AVX512",
+  "tensorlbm_revision": "2d21ee08d95600d61d3b77f5e0e9b7b088d14f6d",
+  "tensorlbm_export_verified_blobs": 1449,
+  "test_revision": "b767abfe7ca450da53047fd1d901cfb4b9649ce8",
+  "collection": "python -m pytest --collect-only -q",
+  "run": "python -m pytest -q --tb=line --timeout=180 --continue-on-collection-errors --junitxml=... <test modules>",
+  "batching": "Isolated detached worktrees of the same revision. Sorted test modules in four strided groups, up to ten per invocation; smaller retries after worker termination.",
+  "timeout_seconds_per_test": 180,
+  "repository_ci_timeout_seconds": 1800,
+  "memory": "Later batches and retried modules used a 2600000 KiB soft process virtual-memory limit after worker terminations.",
+  "hardware_scope": "one x86_64 host; the #8 comparison changes Torch versions and SIMD dispatch on the same host",
+  "issue8": {
+    "DEFAULT": {
+      "torch": "2.15.0+cpu",
+      "dispatch": "ATEN default / MKL DEFAULT",
+      "runxfail": true,
+      "tests": [
+        {
+          "name": "tests.test_finite_rotation_layered_shell4::test_shallow_warped_reference_is_stress_free_objective_and_deep_warp_rejected",
+          "seconds": 0.103,
+          "passed": true
+        },
+        {
+          "name": "tests.test_shell4_arc_line_search::test_shell4_backtracking_closes_failure_preserves_path_energy_and_transaction",
+          "seconds": 20.7,
+          "passed": true
+        },
+        {
+          "name": "tests.test_v1_evidence_aggregator::test_nonlinear_evidence_is_independent_hashed_and_semantic",
+          "seconds": 11.353,
+          "passed": true
+        },
+        {
+          "name": "tests.test_v1_evidence_aggregator::test_semantically_forged_nonlinear_and_release_fail_closed",
+          "seconds": 11.138,
+          "passed": true
+        }
+      ]
+    },
+    "AVX2": {
+      "torch": "2.15.0+cpu",
+      "dispatch": "ATEN avx2 / MKL AVX2",
+      "runxfail": true,
+      "tests": [
+        {
+          "name": "tests.test_finite_rotation_layered_shell4::test_shallow_warped_reference_is_stress_free_objective_and_deep_warp_rejected",
+          "seconds": 0.044,
+          "passed": true
+        },
+        {
+          "name": "tests.test_shell4_arc_line_search::test_shell4_backtracking_closes_failure_preserves_path_energy_and_transaction",
+          "seconds": 10.649,
+          "passed": true
+        },
+        {
+          "name": "tests.test_v1_evidence_aggregator::test_nonlinear_evidence_is_independent_hashed_and_semantic",
+          "seconds": 9.337,
+          "passed": true
+        },
+        {
+          "name": "tests.test_v1_evidence_aggregator::test_semantically_forged_nonlinear_and_release_fail_closed",
+          "seconds": 16.471,
+          "passed": true
+        }
+      ]
+    },
+    "torch28": {
+      "torch": "2.8.0+cpu",
+      "dispatch": "default dispatch",
+      "runxfail": true,
+      "tests": [
+        {
+          "name": "tests.test_finite_rotation_layered_shell4::test_shallow_warped_reference_is_stress_free_objective_and_deep_warp_rejected",
+          "seconds": 0.064,
+          "passed": true
+        },
+        {
+          "name": "tests.test_shell4_arc_line_search::test_shell4_backtracking_closes_failure_preserves_path_energy_and_transaction",
+          "seconds": 31.743,
+          "passed": true
+        },
+        {
+          "name": "tests.test_v1_evidence_aggregator::test_nonlinear_evidence_is_independent_hashed_and_semantic",
+          "seconds": 26.314,
+          "passed": true
+        },
+        {
+          "name": "tests.test_v1_evidence_aggregator::test_semantically_forged_nonlinear_and_release_fail_closed",
+          "seconds": 26.108,
+          "passed": true
+        }
+      ]
+    }
+  }
+}

@@ -54,7 +54,13 @@ def summarize(collection, directories, out, revision):
                     attempts[key].append(row)
                 else:
                     extra.append(
-                        {"classname": key[0], "name": key[1], "outcome": status, "reason": reason}
+                        {
+                            "classname": key[0],
+                            "name": key[1],
+                            "outcome": status,
+                            "reason": reason,
+                            "batch": row[3],
+                        }
                     )
     out.mkdir(parents=True, exist_ok=True)
     counts, repeat_conflicts = Counter(), []
@@ -85,7 +91,13 @@ def summarize(collection, directories, out, revision):
     )
     (out / "summary.json").write_text(json.dumps(data, indent=2) + "\n")
     print(json.dumps({k: data[k] for k in ("collected", "with_junit_outcome", "counts")}))
-    return not counts["unaccounted"] and not extra
+    # JUnit reports a failed module import as one synthetic case. Preserve
+    # that attempt; a subsequent per-item run can still account for the module.
+    modules = {node.partition("::")[0][:-3].replace("/", ".") for node in expected.values()}
+    return not counts["unaccounted"] and all(
+        e["classname"] == "" and e["name"] in modules and e["reason"] == "collection failure"
+        for e in extra
+    )
 
 
 if __name__ == "__main__":
