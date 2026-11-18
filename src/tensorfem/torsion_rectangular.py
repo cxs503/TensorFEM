@@ -41,6 +41,7 @@ so the exact peak sits at the midpoint of a long side, ``(x, y) = (+-b/2, 0)``.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 import numpy as np
 import scipy.sparse as sp
@@ -681,13 +682,20 @@ def shape_factors(a: float, b: float, *, torque: float = 1.0, samples: int = 401
     _check_sides(a, b)
     j_value = rectangular_torsion_constant(a, b, terms=terms)
 
-    def gradient(x, y):
-        tx, ty = torsion_shear_stress(torch.tensor([x]), torch.tensor([y]), a, b,
-                                      twist_rate=1.0, shear_modulus=1.0, terms=terms)
-        return float(torch.sqrt(tx**2 + ty**2))
+    tx, ty = torsion_shear_stress(torch.tensor([b / 2], dtype=torch.float64),
+                                  torch.zeros(1, dtype=torch.float64), a, b, terms=terms)
+    g_long = float(torch.sqrt(tx**2 + ty**2))
 
-    g_long = gradient(b / 2.0, 0.0)
-    g_short = gradient(0.0, a / 2.0)
+    # At the short-side midpoint the Fourier coefficient is
+    # (-1)^k tanh((2k+1) pi a / (2b)) / (2k+1)^2. Its constant-tanh part
+    # sums to Catalan's constant. Summing only the exponentially decaying
+    # correction removes the slow alternating tail even for a square.
+    catalan = 0.91596559417721901505
+    correction = math.fsum(
+        (-1) ** k * (math.tanh(n * math.pi * a / (2 * b)) - 1) / n**2
+        for k, n in enumerate(range(1, 2 * terms, 2))
+    )
+    g_short = (8 * b / math.pi**2) * (catalan + correction)
     peak, location = max_shear_stress(a, b, torque=torque, samples=samples, terms=terms)
     # tau_max = G theta * grad -> with G theta = T / J the hand-book c2 follows
     c2 = j_value / (a * b**2 * g_long)
