@@ -81,6 +81,20 @@ def test_rectangle_torsion_constant_matches_table():
     assert beta == pytest.approx(0.229, rel=1e-2)
 
 
+@pytest.mark.parametrize("samples,torque", [(6, -0.25), (17, 0.0), (40, 1.0)])
+def test_rectangular_peak_scan_preserves_pointwise_maximum_and_first_location(samples, torque):
+    a, b, terms = 3.0, 1.0, 41
+    xs = torch.linspace(-b/2 + b/(2*samples), b/2 - b/(2*samples), samples, dtype=torch.float64)
+    ys = torch.linspace(-a/2 + a/(2*samples), a/2 - a/(2*samples), samples, dtype=torch.float64)
+    x, y = torch.meshgrid(xs, ys, indexing="xy")
+    tx, ty = torsion_shear_stress(x.flatten(), y.flatten(), a, b, terms=terms)
+    j = rectangular_torsion_constant(a, b, terms=terms)
+    magnitude = torch.sqrt(tx**2 + ty**2) * (torque / j)
+    index = int(torch.argmax(magnitude))
+    expected = float(magnitude[index]), (float(x.flatten()[index]), float(y.flatten()[index]))
+    assert max_shear_stress(a, b, terms=terms, samples=samples, torque=torque) == expected
+
+
 def test_peak_shear_coefficient_matches_table():
     """Timoshenko & Goodier Sec. 117: tau_max = T/(alpha a b^2), alpha = 0.208."""
     peak, location = max_shear_stress(SIDE, SIDE)

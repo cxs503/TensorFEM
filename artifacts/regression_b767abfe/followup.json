@@ -592,5 +592,501 @@
         "outcome": "passed"
       }
     ]
+  },
+  {
+    "revision": "PR candidate",
+    "context": "Four torsion modules under the same 2600000 KiB process VA limit; includes three pointwise scan compatibility tests.",
+    "cases": [
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_matches_classical_shape_factor_table[a1]",
+        "seconds": 0.09,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_matches_classical_shape_factor_table[a1.2]",
+        "seconds": 0.089,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_matches_classical_shape_factor_table[a1.5]",
+        "seconds": 0.089,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_matches_classical_shape_factor_table[a2]",
+        "seconds": 0.089,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_matches_classical_shape_factor_table[a2.5]",
+        "seconds": 0.091,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_matches_classical_shape_factor_table[a3]",
+        "seconds": 0.089,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_matches_classical_shape_factor_table[a4]",
+        "seconds": 0.09,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_matches_classical_shape_factor_table[a5]",
+        "seconds": 0.091,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_matches_classical_shape_factor_table[a10]",
+        "seconds": 0.091,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_square_row_keeps_the_previously_verified_anchors",
+        "seconds": 0.087,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_agrees_with_independent_pde_solution[1.2]",
+        "seconds": 0.122,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_agrees_with_independent_pde_solution[1.5]",
+        "seconds": 0.123,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_agrees_with_independent_pde_solution[2.0]",
+        "seconds": 0.302,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_agrees_with_independent_pde_solution[2.5]",
+        "seconds": 0.211,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_agrees_with_independent_pde_solution[3.0]",
+        "seconds": 0.192,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_agrees_with_independent_pde_solution[5.0]",
+        "seconds": 0.319,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_closed_form_agrees_with_independent_pde_solution[7.0]",
+        "seconds": 0.384,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_finite_difference_scheme_is_second_order",
+        "seconds": 0.179,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_thin_strip_limit_is_recovered",
+        "seconds": 1.157,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_peak_sits_on_the_long_side_and_exceeds_the_short_side[1.2]",
+        "seconds": 0.096,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_peak_sits_on_the_long_side_and_exceeds_the_short_side[1.5]",
+        "seconds": 0.083,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_peak_sits_on_the_long_side_and_exceeds_the_short_side[2.0]",
+        "seconds": 0.083,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_peak_sits_on_the_long_side_and_exceeds_the_short_side[3.0]",
+        "seconds": 0.091,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_peak_sits_on_the_long_side_and_exceeds_the_short_side[5.0]",
+        "seconds": 0.089,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_peak_sits_on_the_long_side_and_exceeds_the_short_side[10.0]",
+        "seconds": 0.086,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_long_side_ratio_grows_towards_the_thin_strip_asymptote",
+        "seconds": 0.541,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_rectangular_driver_carries_exactly_the_requested_torque",
+        "seconds": 0.112,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_rectangular_driver_converges_onto_the_closed_form",
+        "seconds": 0.311,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_coarse_rectangular_mesh_stays_a_recorded_failure",
+        "seconds": 0.039,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_slender_section_twist_rate_does_not_converge_monotonically",
+        "seconds": 0.367,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_section::test_cubic_elements_are_used",
+        "seconds": 0.354,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_end_traction::test_exact_traction_is_a_pure_torque_and_reproduces_the_closed_form_rate",
+        "seconds": 0.068,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_end_traction::test_unknown_end_traction_is_rejected",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_end_traction::test_slender_section_converges_once_the_end_disturbance_is_removed",
+        "seconds": 0.377,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_end_traction::test_exact_traction_makes_the_twist_rate_window_independent",
+        "seconds": 0.134,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_end_traction::test_wall_peak_is_larger_on_the_long_side_and_is_recovered",
+        "seconds": 0.415,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_end_traction::test_surface_peak_needs_a_node_on_the_symmetry_plane",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_rectangular_end_traction::test_twist_prism_rotation_profile_is_linear_in_the_middle",
+        "seconds": 0.021,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_boundary_stress::test_reference_matches_classical_torsion_coefficient",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_boundary_stress::test_boundary_series_agrees_with_interior_scan",
+        "seconds": 0.076,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_boundary_stress::test_surface_peak_brackets_the_interior_field",
+        "seconds": 0.003,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_boundary_stress::test_centroid_sampling_cannot_reach_the_peak",
+        "seconds": 0.111,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_boundary_stress::test_surface_recovery_qualifies_and_coarse_mesh_fails_closed",
+        "seconds": 0.236,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_boundary_stress::test_hex20_surface_recovery_qualifies",
+        "seconds": 1.107,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_boundary_stress::test_invalid_arguments_rejected",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_torsion_boundary_stress::test_evidence_file_consistent_with_code",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_square_torsion_constant_matches_table",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_rectangle_torsion_constant_matches_table",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_rectangular_peak_scan_preserves_pointwise_maximum_and_first_location[6--0.25]",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_rectangular_peak_scan_preserves_pointwise_maximum_and_first_location[17-0.0]",
+        "seconds": 0.004,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_rectangular_peak_scan_preserves_pointwise_maximum_and_first_location[40-1.0]",
+        "seconds": 0.009,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_peak_shear_coefficient_matches_table",
+        "seconds": 0.048,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_thin_strip_limit",
+        "seconds": 0.024,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_series_is_converged",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prandtl_stress_function_satisfies_governing_equation",
+        "seconds": 0.151,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_warping_function_is_harmonic",
+        "seconds": 0.196,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_stress_function_vanishes_on_the_boundary",
+        "seconds": 0.003,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_torsion_constant_equals_twice_integral_of_stress_function",
+        "seconds": 2.032,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_shear_stress_is_tangential_on_the_boundary",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_series_survives_slender_sections",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_applied_torque_is_exact",
+        "seconds": 0.208,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_quadratic_element_passes_the_gate",
+        "seconds": 0.33,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_measured_torsion_constant",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_hex20_beats_hex8_at_the_same_refinement",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_convergence_is_monotone",
+        "seconds": 0.189,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_twist_profile_is_linear_inside_the_window",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_warping_shape_is_recovered",
+        "seconds": 0.0,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_shear_field_inside_the_section",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_face_weights_reproduce_linear_tractions",
+        "seconds": 0.626,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_invalid_arguments_are_rejected",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prandtl_field_solves_the_torsion_boundary_value_problem[section0]",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prandtl_field_solves_the_torsion_boundary_value_problem[section1]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prandtl_field_solves_the_torsion_boundary_value_problem[section2]",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prandtl_field_solves_the_torsion_boundary_value_problem[section3]",
+        "seconds": 0.002,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_phi_vanishes_on_the_section_boundary[section0]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_phi_vanishes_on_the_section_boundary[section1]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_phi_vanishes_on_the_section_boundary[section2]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_phi_vanishes_on_the_section_boundary[section3]",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_torque_identities_reproduce_the_section_torsion_constant[section0]",
+        "seconds": 0.007,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_torque_identities_reproduce_the_section_torsion_constant[section1]",
+        "seconds": 0.007,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_torque_identities_reproduce_the_section_torsion_constant[section2]",
+        "seconds": 1.265,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_torque_identities_reproduce_the_section_torsion_constant[section3]",
+        "seconds": 1.297,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_torque_identities_reproduce_the_section_torsion_constant[section4]",
+        "seconds": 0.004,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prandtl_area_identity_equals_the_stress_integral[section0]",
+        "seconds": 0.003,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prandtl_area_identity_equals_the_stress_integral[section1]",
+        "seconds": 0.003,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prandtl_area_identity_equals_the_stress_integral[section2]",
+        "seconds": 0.437,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prandtl_area_identity_equals_the_stress_integral[section3]",
+        "seconds": 0.505,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_rectangle_series_matches_the_textbook_torsion_constants",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_rectangle_series_truncation_is_negligible_at_extremes",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_ellipse_peak_shear_matches_the_closed_form",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_annulus_uses_the_multiply_connected_solution",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_prism_mesh_is_watertight_and_positive",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_square_section_meets_the_three_percent_gate",
+        "seconds": 5.2,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_rectangle_two_to_one_meets_the_gate_on_the_finest_mesh",
+        "seconds": 13.396,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_coarse_mesh_failure_is_retained_not_hidden",
+        "seconds": 0.228,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_annulus_rigidity_converges_second_order",
+        "seconds": 0.457,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_default_sections_cover_three_sections",
+        "seconds": 0.001,
+        "outcome": "passed"
+      },
+      {
+        "case": "tests.test_saint_venant_torsion::test_shear_modulus_must_match_the_elastic_constants",
+        "seconds": 0.001,
+        "outcome": "passed"
+      }
+    ]
   }
 ]

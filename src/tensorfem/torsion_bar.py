@@ -116,18 +116,27 @@ def prandtl_stress_function(x, y, a: float, b: float, *, terms: int = _TERMS):
     return b**2 / 4.0 - X[:, 0] ** 2 - (8.0 * b**2 / math.pi**3) * series
 
 
+def _shear_series_factors(x, y, a, b, terms):
+    """Terms that vary along just one coordinate of a rectangular section."""
+    n, sign, upper = _series_arguments(a, b, terms, dtype=_dtype_of(x, y))
+    x_phase = n[None, :] * math.pi * _column(x) / b
+    y_phase = n[None, :] * math.pi * _column(y) / b
+    weights = (sign / n**2)[None, :]
+    return (
+        weights * torch.sin(x_phase),
+        weights * torch.cos(x_phase),
+        _cosh_ratio(y_phase, upper[None, :]),
+        torch.tanh(y_phase),
+    )
+
+
 def torsion_shear_stress(x, y, a: float, b: float, *, twist_rate: float = 1.0,
                          shear_modulus: float = 1.0, terms: int = _TERMS):
     """Closed-form ``(tau_zx, tau_zy)`` for twist rate ``theta`` and modulus ``G``."""
-    n, sign, upper = _series_arguments(a, b, terms, dtype=_dtype_of(x, y))
-    X, Y = _column(x), _column(y)
-    cosx = torch.cos(n[None, :] * math.pi * X / b)
-    sinx = torch.sin(n[None, :] * math.pi * X / b)
-    ratio = _cosh_ratio(n[None, :] * math.pi * Y / b, upper[None, :])
-    dpsidx = -2.0 * X[:, 0] + (8.0 * b / math.pi**2) * torch.sum((sign / n**2)[None, :] * sinx * ratio, dim=1)
-    dpsidy = -(8.0 * b / math.pi**2) * torch.sum(
-        (sign / n**2)[None, :] * cosx * ratio * torch.tanh(n[None, :] * math.pi * Y / b), dim=1
-    )
+    sinx, cosx, ratio, tanhy = _shear_series_factors(x, y, a, b, terms)
+    scale = 8.0 * b / math.pi**2
+    dpsidx = -2.0 * _column(x)[:, 0] + scale * torch.sum(sinx * ratio, dim=1)
+    dpsidy = -scale * torch.sum(cosx * ratio * tanhy, dim=1)
     g_theta = shear_modulus * twist_rate
     return g_theta * dpsidy, -g_theta * dpsidx
 
@@ -163,11 +172,23 @@ def max_shear_stress(a: float, b: float, *, torque: float = 1.0, samples: int = 
     step_y = a / samples
     xs = torch.linspace(-b / 2 + step_x / 2, b / 2 - step_x / 2, samples, dtype=torch.float64)
     ys = torch.linspace(-a / 2 + step_y / 2, a / 2 - step_y / 2, samples, dtype=torch.float64)
-    X, Y = torch.meshgrid(xs, ys, indexing="xy")
-    tx, ty = torsion_shear_stress(X.reshape(-1), Y.reshape(-1), a, b, terms=terms)
-    magnitude = torch.sqrt(tx**2 + ty**2) * (torque / j)
-    index = int(torch.argmax(magnitude))
-    return float(magnitude[index]), (float(X.reshape(-1)[index]), float(Y.reshape(-1)[index]))
+    # Each Fourier factor depends on x or y alone. Scanning one row at a
+    # time keeps the same per-point sums and first-maximum ordering while
+    # bounding temporary storage to O(samples * terms).
+    sinx, cosx, ratio, tanhy = _shear_series_factors(xs, ys, a, b, terms)
+    scale = 8.0 * b / math.pi**2
+    best = -math.inf
+    location = (float(xs[0]), float(ys[0]))
+    for row, y in enumerate(ys):
+        dpsidx = -2.0 * xs + scale * torch.sum(sinx * ratio[row], dim=1)
+        dpsidy = -scale * torch.sum(cosx * ratio[row] * tanhy[row], dim=1)
+        magnitude = torch.sqrt(dpsidy**2 + dpsidx**2) * (torque / j)
+        column = int(torch.argmax(magnitude))
+        value = float(magnitude[column])
+        if row == 0 or value > best:
+            best = value
+            location = (float(xs[column]), float(y))
+    return best, location
 
 
 def _dtype_of(*values):
@@ -275,7 +296,8 @@ def extrapolate_boundary_shear(result: TorsionBarResult, *, side: float = 1.0) -
     peaks = []
     for mask, wall_coord in walls:
         idx = np.where(mask)[0]
-        if len(idx) == 0: continue
+        if len(idx) == 0:
+            continue
         mag = np.sqrt(np.sum(shear[idx]**2, axis=1))
         # Calibrated extrapolation: exact solution has tau_wall/tau_centroid ~ 1.645 for square section
         # This factor is derived from the analytical stress distribution and is mesh-independent.
