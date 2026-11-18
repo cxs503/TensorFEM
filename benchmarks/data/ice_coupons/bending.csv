@@ -1,0 +1,6 @@
+id,role,width_m,depth_m,peak_N,peak_deflection_m
+02,calibration,0.082,0.038,500.1,0.0006
+03,calibration,0.084,0.044,411.9,0.0004
+04,calibration,0.081,0.040,588.4,0.0009
+05,holdout,0.079,0.039,441.3,0.0010
+10,holdout,0.082,0.037,323.6,0.00115

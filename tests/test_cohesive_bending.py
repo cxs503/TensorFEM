@@ -202,3 +202,37 @@ def test_elastic_compliance_is_thick_beam_like(law: BilinearCohesiveLaw):
         poisson_ratio=POISSON, load=load,
     )
     assert 0.75 < deflection / reference < 1.35
+
+def test_assembled_softening_tangent_matches_directional_residual_derivative(law):
+    from tensorfem.cohesive_bending import _assemble, _assemble_reference, _interface_nodes
+
+    model = build_three_point_bend(span=.40, depth=.10, thickness=.10,
+                                   young_modulus=5e9, poisson_ratio=.3, law=law, nx=4, ny=2)
+    bulk, _ = _assemble_reference(model)
+    edofs = _interface_nodes(model)
+    # Translate the right block. Only cohesive normal tractions do work.
+    direction = np.zeros(model.n_dofs)
+    right = np.unique(model.elements[len(model.elements)//2:].ravel())
+    direction[2*right] = 1.
+    u = direction * (.5 * (law.damage_opening + law.failure_opening))
+    history = np.zeros((model.n_segments, 2))
+    step = 1.e-5 * law.failure_opening
+
+    def internal(position):
+        return _assemble(model, position, history, bulk, edofs)
+
+    derivative = (internal(u+step*direction)["force"] - internal(u-step*direction)["force"])/(2*step)
+    tangent = internal(u)["stiffness"] @ direction
+    assert direction @ tangent < 0.
+    np.testing.assert_allclose(tangent, derivative, rtol=1e-6,
+                               atol=1e-8*np.max(np.abs(derivative)))
+
+
+def test_partial_softening_work_and_dissipation(law):
+    opening = .5 * (law.damage_opening + law.failure_opening)
+    traction = law.traction(opening, 0., 0.)[0]
+    integral = .5 * law.peak_traction * law.damage_opening
+    integral += .5 * (law.peak_traction + traction) * (opening - law.damage_opening)
+    assert law.envelope_area(np.array([opening]))[0] == pytest.approx(integral)
+    assert law.dissipated_energy(np.array([opening]))[0] == pytest.approx(integral-.5*traction*opening)
+    assert law.dissipated_energy(np.array([law.damage_opening]))[0] == pytest.approx(0.)

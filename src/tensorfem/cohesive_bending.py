@@ -182,7 +182,7 @@ class BilinearCohesiveLaw:
         return slope
 
     def envelope_area(self, kappa: np.ndarray) -> np.ndarray:
-        """Energy dissipated per unit area at history ``kappa`` [J/m^2]."""
+        """Integral of the tensile traction envelope up to ``kappa`` [J/m²]."""
         kappa = np.asarray(kappa, dtype=float)
         d0, df = self.damage_opening, self.failure_opening
         area = np.zeros_like(kappa)
@@ -192,10 +192,16 @@ class BilinearCohesiveLaw:
         if np.any(soft):
             area[soft] = (
                 0.5 * self.normal_stiffness * d0**2
-                + 0.5 * self.peak_traction * (kappa[soft] - d0)
+                + self.peak_traction * (kappa[soft] - d0)
+                * (1.0 - 0.5 * (kappa[soft] - d0) / (df - d0))
             )
         area[kappa >= df] = self.fracture_energy
         return area
+
+    def dissipated_energy(self, kappa: np.ndarray) -> np.ndarray:
+        """Irreversible envelope work after subtracting recoverable normal energy."""
+        kappa = np.maximum(kappa, 0.0)
+        return self.envelope_area(kappa) - 0.5 * (1.0 - self.damage(kappa)) * self.normal_stiffness * kappa**2
 
     def traction(self, delta_n: float, delta_t: float, kappa: float):
         """Traction and consistent tangent for one trial opening state.
@@ -473,7 +479,9 @@ def _assemble(
             # zero normal stiffness, which makes the bordered system singular.
             # The floor only modifies the tangent, never the residual, so the
             # converged solution is unaffected.
-            cnn_reg = max(cnn, _TANGENT_FLOOR * law.normal_stiffness)
+            # A negative slope is the consistent tangent on the softening branch.
+            # Regularise only traction-free points, never the descending envelope.
+            cnn_reg = cnn if cnn != 0.0 else _TANGENT_FLOOR * law.normal_stiffness
             ctt_reg = max(ctt, _TANGENT_FLOOR * law.tangential_stiffness)
             tangent[s] += (b.T @ np.diag([cnn_reg, ctt_reg]) @ b) * w
             t_n[s, g] = tn
@@ -628,7 +636,6 @@ def _newton(
             return u, delta, out, reaction, it, False
         u = u_try
         delta += alpha * d_delta
-        out_final = out_try
     out = _assemble(model, u, kappa, elastic_stiffness, edofs)
     reaction = -float(np.sum(out["force"][platen]))
     return u, delta, out, reaction, max_iter, False
@@ -720,20 +727,21 @@ def solve_cmod_control(
     def commit(out, cmod_value, load_value, u_value, kappa_new, stroke):
         nonlocal path_diss, ext_work, prev
         weights = out["weights"]
-        area = law.envelope_area(kappa_new)
+        area = law.dissipated_energy(kappa_new)
         diss_env = float(np.sum(weights * area))
         if prev is not None:
             path_diss += float(
                 np.sum(prev["weights"] * 0.5 * (prev["t_n"] + out["t_n"]) * (out["delta_n"] - prev["delta_n"]))
             )
         u_el = 0.5 * float(u_value @ (elastic_stiffness @ u_value))
-        d = law.damage(np.where(out["delta_n"] > 0.0, np.maximum(kappa_new, out["delta_n"]), kappa_new))
-        coh_strain = float(
-            np.sum(weights * 0.5 * ((1.0 - d) * law.normal_stiffness * out["delta_n"] ** 2
-                                    + law.tangential_stiffness * out["delta_t"] ** 2))
-        )
+        normal_energy = float(0.5 * np.sum(weights * out["t_n"] * out["delta_n"]))
+        coh_strain = normal_energy + float(0.5 * np.sum(weights * out["t_t"] * out["delta_t"]))
+        if prev is None:
+            path_diss = normal_energy
         strain = u_el + coh_strain
-        if prev is not None:
+        if prev is None:
+            ext_work = 0.5 * load_value * stroke
+        else:
             ext_work += 0.5 * (prev["load"] + load_value) * (stroke - prev["stroke"])
         failed = kappa_new.max(axis=1) >= law.failure_opening
         crack = float(np.sum(heights[failed]))
@@ -744,7 +752,7 @@ def solve_cmod_control(
         history["crack_length"].append(crack)
         history["process_zone_length"].append(zone)
         history["dissipated_envelope"].append(diss_env)
-        history["dissipated_path"].append(path_diss)
+        history["dissipated_path"].append(path_diss - normal_energy)
         history["external_work"].append(ext_work)
         history["strain_energy"].append(strain)
         history["newton_iterations"].append(0)
@@ -897,7 +905,6 @@ def solve_arclength(
     edofs = _interface_nodes(model)
     fixed = np.asarray(list(model.dirichlet), dtype=np.int64)
     free = np.setdiff1d(np.arange(model.n_dofs), fixed)
-    n_free = len(free)
     f_free = fref[free]
 
     u = np.zeros(model.n_dofs)
@@ -927,20 +934,21 @@ def solve_arclength(
     def record(out, load_value, u_value, kappa_new):
         nonlocal path_diss, ext_work, prev
         weights = out["weights"]
-        area = law.envelope_area(kappa_new)
+        area = law.dissipated_energy(kappa_new)
         diss_env = float(np.sum(weights * area))
         if prev is not None:
             path_diss += float(
                 np.sum(prev["weights"] * 0.5 * (prev["t_n"] + out["t_n"]) * (out["delta_n"] - prev["delta_n"]))
             )
         u_el = 0.5 * float(u_value @ (elastic_stiffness @ u_value))
-        d = law.damage(np.where(out["delta_n"] > 0.0, np.maximum(kappa_new, out["delta_n"]), kappa_new))
-        coh_strain = float(
-            np.sum(weights * 0.5 * ((1.0 - d) * law.normal_stiffness * out["delta_n"] ** 2
-                                    + law.tangential_stiffness * out["delta_t"] ** 2))
-        )
+        normal_energy = float(0.5 * np.sum(weights * out["t_n"] * out["delta_n"]))
+        coh_strain = normal_energy + float(0.5 * np.sum(weights * out["t_t"] * out["delta_t"]))
+        if prev is None:
+            path_diss = normal_energy
         deflection = float(u_value @ fref)
-        if prev is not None:
+        if prev is None:
+            ext_work = 0.5 * load_value * deflection
+        else:
             ext_work += 0.5 * (prev["load"] + load_value) * (deflection - prev["deflection"])
         failed = kappa_new.max(axis=1) >= law.failure_opening
         crack = float(np.sum(heights[failed]))
@@ -950,7 +958,7 @@ def solve_arclength(
         history["crack_length"].append(crack)
         history["process_zone_length"].append(zone)
         history["dissipated_envelope"].append(diss_env)
-        history["dissipated_path"].append(path_diss)
+        history["dissipated_path"].append(path_diss - normal_energy)
         history["external_work"].append(ext_work)
         history["strain_energy"].append(u_el + coh_strain)
         prev = {

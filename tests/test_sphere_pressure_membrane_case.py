@@ -216,7 +216,7 @@ def test_report_does_not_claim_committed_figures_it_does_not_ship():
     br = _builder()
     card = br.render()[os.path.join(CASE_DIR, "README.md")]
     # Running the solver may leave PNGs locally. The certificate controls what ships.
-    assert not br.CERT.get("artifacts", [])
+    assert all(not str(path).endswith(".png") for path in br.CERT["artifacts"].values())
     assert os.path.join("artifacts", "CASE-SPHERE-PRESSURE", "figures") in card
     assert "not committed" in card
     for stale in ("fem_sphere_pressure_membrane/figures/convergence.png",

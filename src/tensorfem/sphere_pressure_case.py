@@ -555,7 +555,10 @@ def figures(conv: dict, thick: dict, pois: dict, ref: dict, case: dict = CASE,
     ax.grid(True, which="both", alpha=0.3)
     ax.legend(fontsize=7)
     p = os.path.join(out_dir, "convergence.png")
-    fig.tight_layout(); fig.savefig(p); plt.close(fig); made.append(p)
+    fig.tight_layout()
+    fig.savefig(p)
+    plt.close(fig)
+    made.append(p)
 
     # --- 2. field along the meridian ----------------------------------------
     fac = 16
@@ -577,7 +580,8 @@ def figures(conv: dict, thick: dict, pois: dict, ref: dict, case: dict = CASE,
     a1.set_xlabel(r"meridian angle $\varphi$ [deg]")
     a1.set_ylabel(r"$\sigma\,/\,(pR/2t)$")
     a1.set_title(f"stress field, {fac} elements")
-    a1.grid(alpha=0.3); a1.legend(fontsize=7)
+    a1.grid(alpha=0.3)
+    a1.legend(fontsize=7)
     ang = [math.degrees(0.5 * math.pi * i / fac) for i in range(fac + 1)]
     w = [float(u[m.dof(i, "w")]) for i in range(fac + 1)]
     w_ref = case["pressure_pa"] * case["radius_m"] ** 2 * (1 - case["poisson_ratio"]) / (
@@ -587,9 +591,13 @@ def figures(conv: dict, thick: dict, pois: dict, ref: dict, case: dict = CASE,
     a2.set_xlabel(r"meridian angle $\varphi$ [deg]")
     a2.set_ylabel("radial displacement w [µm]")
     a2.set_title("uniform radial expansion")
-    a2.grid(alpha=0.3); a2.legend(fontsize=7)
+    a2.grid(alpha=0.3)
+    a2.legend(fontsize=7)
     p = os.path.join(out_dir, "field_meridian.png")  # panel 2 must follow fig_dir too
-    fig.tight_layout(); fig.savefig(p); plt.close(fig); made.append(p)
+    fig.tight_layout()
+    fig.savefig(p)
+    plt.close(fig)
+    made.append(p)
 
     # --- 3. sensitivity in t/R and nu ---------------------------------------
     fig, (b1, b2) = plt.subplots(1, 2, figsize=(8.6, 3.4))
@@ -599,18 +607,26 @@ def figures(conv: dict, thick: dict, pois: dict, ref: dict, case: dict = CASE,
     b1.loglog(tr, [max(r["fem_vs_thin_rel"], 1e-18) for r in thick["rows"]], "s--",
               label=r"FEM vs thin-shell ref")
     b1.axhline(TOL, color="crimson", lw=1.0, ls=":", label="3% tolerance")
-    b1.set_xlabel("t / R"); b1.set_ylabel("relative deviation")
-    b1.set_title("thickness sensitivity"); b1.grid(True, which="both", alpha=0.3)
+    b1.set_xlabel("t / R")
+    b1.set_ylabel("relative deviation")
+    b1.set_title("thickness sensitivity")
+    b1.grid(True, which="both", alpha=0.3)
     b1.legend(fontsize=7)
     nu = [r["poisson_ratio"] for r in pois["rows"]]
     b2.plot(nu, [r["sigma_theta_max_rel_error"] for r in pois["rows"]], "o-", ms=4,
             label=r"$\sigma_\theta$ rel err")
     b2.plot(nu, [r["w_rel_error"] for r in pois["rows"]], "s--", ms=4, label="w rel err")
     b2.axhline(TOL, color="crimson", lw=1.0, ls=":", label="3% tolerance")
-    b2.set_xlabel(r"Poisson ratio $\nu$"); b2.set_ylabel("relative error")
-    b2.set_title(r"$\nu$ sensitivity (8 elements)"); b2.grid(alpha=0.3); b2.legend(fontsize=7)
+    b2.set_xlabel(r"Poisson ratio $\nu$")
+    b2.set_ylabel("relative error")
+    b2.set_title(r"$\nu$ sensitivity (8 elements)")
+    b2.grid(alpha=0.3)
+    b2.legend(fontsize=7)
     p = os.path.join(out_dir, "sensitivity.png")
-    fig.tight_layout(); fig.savefig(p); plt.close(fig); made.append(p)
+    fig.tight_layout()
+    fig.savefig(p)
+    plt.close(fig)
+    made.append(p)
     return made
 
 

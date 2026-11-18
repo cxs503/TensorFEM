@@ -205,8 +205,16 @@ def _constrained_solve(K: torch.Tensor, force: torch.Tensor, *, fixed) -> tuple:
     free_mask[list(fixed)] = False
     free = torch.nonzero(free_mask).flatten()
     # Direct factorization avoids densifying the fine-grid 6-DOF shell.
-    from scipy.sparse import coo_matrix
-    from scipy.sparse.linalg import spsolve
+    try:
+        from scipy.sparse import coo_matrix
+        from scipy.sparse.linalg import spsolve
+    except ImportError:
+        if ndof > 2400:
+            raise RuntimeError("Install SciPy for fine-grid Shell4 verification")
+        dense = K.to_dense()
+        displacement = torch.zeros_like(force)
+        displacement[free] = torch.linalg.solve(dense[free][:, free], force[free])
+        return displacement, dense @ displacement - force
     coo = K.coalesce()
     rows, cols = coo.indices().numpy()
     matrix = coo_matrix((coo.values().numpy(), (rows, cols)), shape=K.shape).tocsr()
