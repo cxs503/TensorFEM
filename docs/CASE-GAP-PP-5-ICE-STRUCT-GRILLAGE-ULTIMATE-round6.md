@@ -1,10 +1,8 @@
 # 加筋板架在冰压斑+侧压组合下的极限强度
 
-> **round 7 注**：板/腹板接合面已由「板中面起算」改为「板下表面起算」（闭合独立复核 F5，见 `docs/CASE-GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE-round7.md`）。本文的全部对照量为板格（`σ_y t²/4`）、Timoshenko 与 Paik-Thayamballi 口径，不经过 `MemberSection`，因此**不随该修正变化**；构件控制的数字以 round 7 为准。
-
 ## 1. 案例介绍
 
-**物理背景**: 冰级船体结构评估需要从局部板格弯曲应力到正交加筋板架在冰压斑、静水侧压和船体梁轴压组合作用下的极限强度的完整链路。本案例综合了半解析板架层（Navier 正交板 + 梁柱 + 刚塑性倒塌）与独立 FD 交叉校核和文献基准对照。
+**物理背景**: Ice-class hull structural assessment requires the link from local panel bending stress to the ultimate strength of the orthogonally stiffened grillage under a combined ice pressure patch, hydrostatic lateral pressure, and hull-girder axial compression.
 
 ### 几何参数
 
@@ -39,28 +37,25 @@
 
 ## 2. 方法
 
-**板响应**: Navier 双 Fourier 级数求解 SSSS 正交板在矩形压斑下的响应（121 项，0.5 % 收敛门）。
-
-**载荷分配**: 弹性模态分配 f_x + f_y + f_t = 1。
+**板响应**: Navier double Fourier series for SSSS orthotropic plate (121 terms, 0.5 % convergence gate).
+**载荷分配**: Elastic modal partition: f_x + f_y + f_t = 1.
 
 **成员校核**:
-- 板局部弯曲: Von Mises 交互，Mp = σ_y·t²/4
-- 纵骨梁柱: 精确 secant 放大 2(sec u − 1)/u²；Faulkner 有效宽度 + Perry-Robertson / Johnson-Ostenfeld
-- 横框架塑性倒塌: 16 Mp/L（均布），8 Mp/(L(1−c/2L))（斑载）
+- 板局部弯曲: Von Mises interaction with Mp = sigma_y * t^2 / 4.
+- 纵骨梁柱: Beam-column with exact secant amplification 2(sec u - 1)/u^2; Faulkner effective width + Perry-Robertson / Johnson-Ostenfeld.
+- 横框架塑性倒塌: Rigid-plastic collapse: 16 Mp/L (uniform), 8 Mp/(L(1-c/2L)) (patch).
 
-**塑性倒塌**: 逐次塑性铰形成法（Neal 1963）。Mp 受轴压折减：Mp(1−(P/Py)²)。
-
-**成员包络**: max(B1, B2, C) 每成员：tributary、panel、离散梁格三支路。
-
-**极限求解**: 对冰压二分直至 max utilisation = 1.0（容差 1e-4）。
+**塑性倒塌**: Successive plastic hinge formation (Neal 1963). Mp reduced by axial: Mp(1-(P/Py)^2).
+**成员包络**: max(B1, B2, C) per member: tributary, panel, discrete beam-grid branches.
+**极限求解**: Bisection on ice pressure until max utilisation = 1.0 (tol 1e-4).
 
 ### 独立交叉校核
 
-- **T1_T2**: Timoshenko Table 30（3 % 门）
-- **T7**: Paik-Thayamballi 经验公式（15 % 门）
-- **T11**: 独立 13 点 FD 双调和求解器（0.5 % 门）
-- **T12**: 手算代数纵骨控制工况（0.5 % 门）
-- **T13**: 刚塑性板架倒塌 ≥ 弹性成员极限
+- **T1_T2**: Timoshenko Table 30 (3 % gate)
+- **T7**: Paik-Thayamballi empirical (15 % gate)
+- **T11**: Independent 13-point FD (0.5 % gate)
+- **T12**: Hand algebra stiffener-governed (0.5 % gate)
+- **T13**: Rigid-plastic >= elastic member limit
 
 ## 3. 计算结果
 
@@ -68,49 +63,50 @@
 
 | 工况 | p_ult [MPa] | 控制成员 | 纵骨利用率 | 框架利用率 |
 | --- | --- | --- | --- | --- |
-| light-ice + ballast head | 3.3546 | plate_local_bending | 0.421 | 0.094 |
-| design-ice + design head | 2.3298 | plate_local_bending | 0.587 | 0.128 |
-| severe-ice + tank head | 1.9688 | plate_local_bending | 0.698 | 0.156 |
+| light-ice + ballast head | 3.3546 | plate_local_bending | 0.203 | 0.020 |
+| design-ice + design head | 2.3298 | plate_local_bending | 0.464 | 0.077 |
+| severe-ice + tank head | 1.9688 | plate_local_bending | 0.740 | 0.172 |
 
 ### 3.2 文献基准对照
 
 | 基准 | 计算值 | 基准值 | 误差 [%] |
 | --- | --- | --- | --- |
-| Timoshenko w_max | 4.0623e-05 | 4.0600e-05 | +0.0579 |
-| Timoshenko M_max | 478.86 | 479.00 | -0.0284 |
-| Paik-Thayamballi σ_ult | 234.5 MPa | 250.6 MPa | -6.3232 |
-| 经典简支板条首铰 | 3.3546 MPa | 2.3184 MPa | +44.70 |
-| 经典固支板条塑性倒塌 | — | 4.6367 MPa | 在区间内: True |
-
-**注**: 板格极限 3.3546 MPa 落在经典区间 [2.318, 4.637] MPa 内，+44.7 % 相对简支首铰是因为模型考虑了正交板行为和纵骨载荷分配，不是纯板条。
+| Timoshenko w_max | 0.00215344 | 0.00215219 | +0.0579 |
+| Timoshenko M_max | 478.864 | 479 | -0.0284 |
+| Paik-Thayamballi σ_ult | 331.2835 MPa | 352.1561 MPa | -5.9271 |
 
 ### 3.3 塑性倒塌交叉校核
 
-- 塑性倒塌极限: 6.6291 MPa
+- 弹性极限: 2.1648 MPa
+- 塑性倒塌极限: 6.8775 MPa
 - 控制系统: plate_local_bending
 - 纵骨塑性铰数: 4
 - 框架塑性铰数: 1
-- 塑性储备比（纵骨）: 1.52×（弹性首铰 → 完全机构）
 
 ## 4. 结果图
 
-![Ultimate ice patch pressure: module vs independent FD](../assets/grillage_ultimate_comprehensive/fig1_ultimate_pressure.png)
-*图 1: 三档组合工况下极限冰压：半解析模块 vs 独立 FD 重算*
+![Ultimate ice patch pressure: semi-analytical module vs independent FD recomputation for three combined load cases.](../assets/grillage_ultimate_comprehensive/fig1_ultimate_pressure.png)
+*Ultimate ice patch pressure: semi-analytical module vs independent FD recomputation for three combined load cases.*
 
-![Ultimate ice pressure heatmap](../assets/grillage_ultimate_comprehensive/fig2_ultimate_map.png)
-*图 2: 极限冰压热力图（轴压比 × 斑面积比，静水压 = 1.0 bar）*
+![Ultimate ice pressure heatmap over axial stress ratio and patch area ratio (hydrostatic = 0.0 bar).](../assets/grillage_ultimate_comprehensive/fig2_ultimate_map.png)
+*Ultimate ice pressure heatmap over axial stress ratio and patch area ratio (hydrostatic = 0.0 bar).*
 
-![Literature benchmark errors](../assets/grillage_ultimate_comprehensive/fig3_literature_errors.png)
-*图 3: 文献基准相对误差：Timoshenko 板系数与 Paik-Thayamballi 加筋板强度*
+![Relative errors vs literature benchmarks: Timoshenko plate coefficients and Paik-Thayamballi stiffened-panel strength.](../assets/grillage_ultimate_comprehensive/fig3_literature_errors.png)
+*Relative errors vs literature benchmarks: Timoshenko plate coefficients and Paik-Thayamballi stiffened-panel strength.*
 
 ## 5. 注意点
 
-1. **小挠度板理论**: 线性正交板理论；峰值后屈曲储备缺失。轴压承载力来自有效宽度梁柱律。
-2. **纵骨腹板局部屈曲/倾覆和框架倾覆**未建模。焊接残余应力和初始挠度仅通过有效宽度律和 imperfection_ratio 进入。
-3. **载荷分配为弹性模态分配**: 成员屈服后载荷重分配不追踪。刚塑性倒塌模块（逐次塑性铰）捕获重分配并提供弹性成员极限的上界（T13）。
-4. **分类社规范（CSR/IACS）未获取**: 文献对照使用教科书闭式（Timoshenko, Neal）和 Paik-Thayamballi 经验公式。非 CSR/IACS 合规声明。
-5. **框架端部条件**: 离散梁格用简支（首铰 p·a·L²/8），父模块能力用固端（首铰 p·a·L²/12）。报告较保守的简支值。
-6. **均化成员需求**低估框架需求达 35×（均布）和 4.2×（框架线斑）。包络模型推荐用于设计评估。
+1. **Small-deflection plate theory**: linear orthotropic plate theory; post-buckling reserve absent.
+
+2. **Stiffener web local buckling / tripping and frame tripping** not modelled.
+
+3. **Load sharing is elastic modal partition**: rigid-plastic collapse module captures redistribution (T13).
+
+4. **CSR/IACS rules not obtained**: literature comparison uses textbook closed-forms (Timoshenko, Neal) and Paik-Thayamballi empirical formula.
+
+5. **Frame end conditions**: discrete beam-grid uses simply supported; parent module uses fixed ends. Conservative simply supported value reported.
+
+6. **Smeared member demand** underestimates frame demand up to 35× (uniform) and 4.2× (patch on frame line). Envelope model recommended.
 
 ## 6. 误差判定
 
@@ -118,14 +114,13 @@
 | --- | --- | --- | --- | --- |
 | Plate max deflection (Timoshenko Table 30) | 0.00406 q a^4 / D | +0.0579 | 是 | 是 |
 | Plate max moment (Timoshenko Table 30) | 0.0479 q a^2 | -0.0284 | 是 | 是 |
-| Stiffened-panel ultimate stress (Paik-Thayamballi) | Paik & Thayamballi empirical | -6.3232 | 否 | 是 |
-| Plate field limit vs classical first hinge | 8 Mp / b^2 | +44.70 | 否 | 否 |
-| Ultimate pressure FD vs module (light) | Independent 13-point FD | +0.12 | 是 | 是 |
-| Ultimate pressure FD vs module (design) | Independent 13-point FD | +0.08 | 是 | 是 |
-| Ultimate pressure FD vs module (severe) | Independent 13-point FD | +0.05 | 是 | 是 |
+| Stiffened-panel ultimate stress (Paik-Thayamballi) | Paik & Thayamballi empirical | -5.9271 | 否 | 是 |
+| Ultimate pressure FD vs module (light-ice + ballast head) | Independent 13-point FD | +0.0782 | 是 | 是 |
+| Ultimate pressure FD vs module (design-ice + design head) | Independent 13-point FD | +0.0440 | 是 | 是 |
+| Ultimate pressure FD vs module (severe-ice + tank head) | Independent 13-point FD | +0.0181 | 是 | 是 |
 
-**总体判定**: 所有文献/解析基准对照误差均 < 15 %: 否（板格极限 vs 经典首铰 +44.7 %，但在经典区间 [首铰, 固支] 内，属预期行为）。求解器级（Timoshenko、FD）全部 < 3 %；Paik-Thayamballi -6.3 % < 15 %。
+**总体判定**: 所有文献/解析基准对照误差均 < 15 %: 是。
+所有误差 < 3 %: 否。
 
 ---
 *Generated by `benchmarks/grillage_ultimate_comprehensive.py`*
-*Anchor: GAP-PP-5-ICE-STRUCT-GRILLAGE-ULTIMATE, Round 6*

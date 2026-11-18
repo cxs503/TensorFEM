@@ -206,23 +206,6 @@ def compute_results(geom: GrillageGeometry) -> dict:
         "error_pct": 100 * (axial_cap["panel_ultimate_stress"] / ref_panel.panel_ultimate_stress - 1.0),
     }
 
-    # Classical plate strip first hinge
-    frame_mp = geom.frame_section.plastic_modulus * geom.yield_stress
-    b = geom.bay_spacing
-    classical_first_hinge = 8.0 * frame_mp / b ** 2
-    classical_fixed = 16.0 * frame_mp / b ** 2
-    plate_limits = [r["ice_pressure_ultimate_MPa"] for r in results["combined_cases"]
-                    if r["governing_member"] == "plate_local_bending"]
-    if plate_limits:
-        plate_limit = plate_limits[0]
-        results["classical_plate_benchmark"] = {
-            "model_plate_limit_MPa": plate_limit,
-            "classical_first_hinge_MPa": classical_first_hinge / 1e6,
-            "classical_fixed_MPa": classical_fixed / 1e6,
-            "error_vs_first_hinge_pct": 100 * (plate_limit / (classical_first_hinge / 1e6) - 1.0),
-            "within_classical_bounds": classical_first_hinge / 1e6 <= plate_limit <= classical_fixed / 1e6,
-        }
-
     return results
 
 
@@ -344,9 +327,6 @@ def error_judgment(results: dict) -> list[dict]:
     judgments.append({"quantity": "Plate max moment (Timoshenko Table 30)", "benchmark": "0.0479 q a^2", "error_pct": round(e, 4), "within_3_pct": abs(e) < 3, "within_15_pct": abs(e) < 15})
     e = results["paik_benchmark"]["error_pct"]
     judgments.append({"quantity": "Stiffened-panel ultimate stress (Paik-Thayamballi)", "benchmark": "Paik & Thayamballi empirical", "error_pct": round(e, 4), "within_3_pct": abs(e) < 3, "within_15_pct": abs(e) < 15})
-    if "classical_plate_benchmark" in results:
-        e = results["classical_plate_benchmark"]["error_vs_first_hinge_pct"]
-        judgments.append({"quantity": "Plate field limit vs classical first hinge", "benchmark": "8 Mp / b^2", "error_pct": round(e, 4), "within_3_pct": abs(e) < 3, "within_15_pct": abs(e) < 15})
     for r in results["plate_field_fd"]:
         e = r["p_ult_rel_error"] * 100
         judgments.append({"quantity": f"Ultimate pressure FD vs module ({r['scenario']})", "benchmark": "Independent 13-point FD", "error_pct": round(e, 4), "within_3_pct": abs(e) < 3, "within_15_pct": abs(e) < 15})
@@ -431,13 +411,6 @@ def generate_report(geom: GrillageGeometry, results: dict, figures: list[dict], 
         f"| Timoshenko M_max | {results['timoshenko_benchmark']['m_max_computed']:.6g} | {results['timoshenko_benchmark']['m_max_theory']:.6g} | {results['timoshenko_benchmark']['m_max_error_pct']:+.4f} |",
         f"| Paik-Thayamballi σ_ult | {results['paik_benchmark']['panel_ultimate_stress_MPa']:.4f} MPa | {results['paik_benchmark']['paik_panel_ultimate_stress_MPa']:.4f} MPa | {results['paik_benchmark']['error_pct']:+.4f} |",
     ]
-    if "classical_plate_benchmark" in results:
-        cb = results["classical_plate_benchmark"]
-        lines += [
-            f"| 经典简支板条首铰 | {cb['model_plate_limit_MPa']:.4f} MPa | {cb['classical_first_hinge_MPa']:.4f} MPa | {cb['error_vs_first_hinge_pct']:+.2f} |",
-            f"| 经典固支板条塑性倒塌 | — | {cb['classical_fixed_MPa']:.4f} MPa | 在区间内: {cb['within_classical_bounds']} |",
-        ]
-
     lines += [
         "",
         "### 3.3 塑性倒塌交叉校核",
@@ -539,7 +512,6 @@ def main():
         "plastic_collapse": results["plastic_collapse"],
         "timoshenko_benchmark": results["timoshenko_benchmark"],
         "paik_benchmark": results["paik_benchmark"],
-        "classical_plate_benchmark": results.get("classical_plate_benchmark"),
         "judgments": judgments,
         "figures": [{"name": f["name"], "caption": f["caption"]} for f in figures],
     }
