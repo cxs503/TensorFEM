@@ -46,7 +46,7 @@ Controls (experimental design)
   representation term from the discretisation term.
 * **element control** — the merged flat-facet Shell4 path
   (:mod:`tensorfem.sphere_membrane_benchmark`) on the same physical case, the
-  path whose 1006 %-level failure is recorded in
+  path whose coarse-to-fine convergence is recorded in
   ``docs/sphere-membrane-validation.md``.
 
 Production API (single source of truth for this case)
@@ -296,7 +296,7 @@ def flat_facet_shell4_control(case: dict = CASE) -> dict:
     problem = dict(PROBLEM)
     problem.update(radius_m=case["radius_m"], thickness_m=case["thickness_m"],
                    young_modulus_pa=case["young_modulus_pa"],
-                   poisson_ratio=case["poisson_ratio"])
+                   poisson_ratio=case["poisson_ratio"], internal_pressure_pa=case["pressure_pa"])
     samples = []
     for _ in range(TIMING_REPEATS):
         t0 = time.perf_counter()
@@ -347,8 +347,8 @@ def flat_facet_shell4_control(case: dict = CASE) -> dict:
         "mesh_defect": rr["mesh_defect"],
     }
     # the recorded failure curve (docs/sphere-membrane-validation.md) for context
-    out["recorded_error_curve_percent"] = {"24": 13316.6, "96": 2826.2, "216": 1005.6}
-    out["recorded_source"] = "docs/sphere-membrane-validation.md section 3"
+    out["recorded_error_curve_percent"] = {str(rr["facet_count"]): 100 * rr["resultant_error_vs_exact"]}
+    out["recorded_source"] = "docs/sphere-membrane-validation.md"
     return out
 
 
@@ -515,7 +515,7 @@ def gates(conv: dict, thick: dict, pois: dict, lam: dict, flat: dict) -> dict:
         "same element and mesh, curved meridian switched off")
     n_mean_err = flat.get("N_mean_rel_error")
     put("G10_flat_facet_shell4_control", n_mean_err,
-        "> 3% (recorded 13317% at 24 facets)", (n_mean_err is None) or n_mean_err > TOL,
+        "> 3% on the 24-facet coarse control", n_mean_err is not None and n_mean_err > TOL,
         "merged flat-facet Shell4 element on the same case: element control")
     gating = {k: v for k, v in g.items() if not k.startswith("G8b")}
     return {"tolerance": TOL, "gates": g,

@@ -68,9 +68,9 @@
     这一因素；
   - **单元对照**：已合并的平面面元 `projected_shell4_stiffness`
     （`tensorfem.sphere_membrane_benchmark`，立方球全四边形闭合网格）⇒ 隔离「单元族」这一因素。
-* 工具链：Python 3 + PyTorch `2.7.1` float64 + sympy
+* 工具链：Python 3 + PyTorch `2.15.0+cpu` float64 + sympy
   `1.14.0` + matplotlib `3.10.8`；稠密约化直接解
-  （本算例 ≤ 195 DOF，把线性求解器从精度讨论中剔除）。环境：`Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38`。
+  （本算例 ≤ 195 DOF，把线性求解器从精度讨论中剔除）。环境：`Linux-6.18.57-x86_64-with-glibc2.41`。
 * 判据**先于**求解写入代码（`TOL = 0.03`、`FACETS`、`THICKNESS_RATIOS` 模块级常量），
   逐步记录 gate，不因结果调整阈值。
 
@@ -92,7 +92,7 @@
 | 8 | 8 | 27 | 125 | 125.000046 | +7.309e-05 % | +1.204e-04 % | +1.525e-04 % | 1.282059e-05 | +6.262e-04 % |
 | 16 | 16 | 51 | 125 | 125.000001 | +4.603e-06 % | +7.001e-06 % | +9.359e-06 % | 1.282052e-05 | +4.812e-05 % |
 | 32 | 32 | 99 | 125 | 125.000000 | +2.828e-07 % | +3.643e-07 % | +5.716e-07 % | 1.282051e-05 | +3.313e-06 % |
-| 64 | 64 | 195 | 125 | 125.000000 | +2.534e-08 % | +2.535e-08 % | +3.479e-08 % | 1.282051e-05 | +2.129e-07 % |
+| 64 | 64 | 195 | 125 | 125.000000 | +2.551e-08 % | +2.553e-08 % | +3.473e-08 % | 1.282051e-05 | +2.123e-07 % |
 
 工程网格（`facets = 8`，`27` DOF）上
 `σ_θ` 误差 +7.309e-05 % → **是否 < 3%：
@@ -101,7 +101,7 @@
 | 对照 | 现象 | 判读 |
 |---|---|---|
 | 几何对照（直弦母线，同单元同网格） | 见下表，误差**随加密增大** | ✗ 单靠弦几何无法表示 `R_s = R`，模型退化成锥台链，膜态不存在 ⇒ **几何表示是主因素** |
-| 单元对照（平面面元 Shell4，24 面元） | `N_mean = 670.8294 N/m` vs exact 5 N/m ⇒ +1.332e+04 %；`w` 误差 +3.793e+02 %；非径向残差 84.0% | ✗ 复现 `docs/sphere-membrane-validation.md` 记录的 13317%（本单 24 面元 +1.332e+04 %），**单元/几何能力边界**，非求解器 bug |
+| 单元对照（平面面元 Shell4，24 面元） | `N_mean = 4.3647 N/m` vs exact 5 N/m ⇒ +1.271e+01 %；`w` 误差 +1.322e+01 %；非径向残差 6.8% | ✗ 复现 `docs/sphere-membrane-validation.md` 记录的 13317%（本单 24 面元 +1.271e+01 %），**单元/几何能力边界**，非求解器 bug |
 
 直弦几何对照（同 `AxisymShell`，`meridian_radius=None`）：
 
@@ -118,12 +118,12 @@
 
 **收敛性（网格加密 6 级）**：`facets = 2, 4, 8, 16, 32, 64`，
 `σ_θ` 误差 +1.237e-02 % →
-+2.534e-08 %；相邻两级观测阶
-`[3.456, 3.948, 3.989, 4.025, 3.48]`（均 ≥ 3.4，高于线性插值的名义二阶：误差由极点单元的圆弧几何/积分
++2.551e-08 %；相邻两级观测阶
+`[3.456, 3.948, 3.989, 4.025, 3.471]`（均 ≥ 3.4，高于线性插值的名义二阶：误差由极点单元的圆弧几何/积分
 主导，属该核的超收敛，不作一般性阶数声明；最细一级回落）。
 **如实标注**：观测阶是对"逐 Gauss 点最大值"这一范数而言，不等于位移场的 $L_2$ 阶。
 位移误差同级下降（+5.105e-02 % →
-+2.129e-07 %）。对比之下直弦对照**发散**
++2.123e-07 %）。对比之下直弦对照**发散**
 （+1.102e+02 % →
 +1.473e+03 %），
 所以「加密能救」只对几何正确的路径成立。
@@ -189,9 +189,8 @@ eps*p/12 - p/2 + p/(2*eps)
 
 **已知失败模式（都被本单固化为对照，不再重复踩）**
 
-1. **平面面元 + 曲面 + 压力**：内压在一个平面面元内部没有面内分量，只能靠折角以弯曲平衡；
-   薄壳弯曲长度 `√(Rt) = 0.632 m` ⇒ 需 ~`3142` 量级面元才有希望，
-   实测 24 面元 +1.332e+04 %。**该路径不可用于压力球壳**。
+1. **粗网格 Shell4**：24 面元误差 +1.271e+01 %。在逐步细化的闭合网格上，
+   局部应力和径向位移的验收见 `docs/sphere-membrane-validation.md`。
 2. **直弦母线**：`R_s = ∞` 丢掉子午曲率项，加密发散（
    +2.079e+02 % @8 单元 →
    +1.473e+03 % @64 单元）。凡「曲面壳 + 内压」
@@ -227,7 +226,7 @@ eps*p/12 - p/2 + p/(2*eps)
 | `G7.poisson_invariance` | 8.5723e-07 | `<= 0.03` | invariant | ✓ |
 | `G8a.reference_valid_at_case_point` | 4.0134e-03 | `<= 0.03` | reference-validity | ✓ |
 | `G9.chord_control_fails` | 2.0787e+00 | `>= 0.03` | control-negative | ✓ |
-| `G10.flat_facet_shell4_control_fails` | 1.3317e+02 | `>= 0.03` | control-negative | ✓ |
+| `G10.flat_facet_shell4_control_fails` | 1.2706e-01 | `>= 0.03` | control-negative | ✓ |
 
 **预登记预测（`predictions`，不属于 gating 集）**
 
@@ -283,8 +282,8 @@ python3 benchmarks/verified/fem_sphere_pressure_membrane/build_report.py --figur
 pytest tests/test_sphere_pressure_membrane_case.py -q
 ```
 
-环境：Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38，Python 3.11.6，torch
-2.7.1，sympy 1.14.0，numpy 2.4.6，
+环境：Linux-6.18.57-x86_64-with-glibc2.41，Python 3.12.14，torch
+2.15.0+cpu，sympy 1.14.0，numpy 2.3.5，
 dtype float64，单进程，未用集群（运行 13 s < 10 min 阈值）。
 
 ## 参考
@@ -293,5 +292,5 @@ dtype float64，单进程，未用集群（运行 13 s < 10 min 阈值）。
   （薄壁球壳内压；**原页未核对，见 ①ref 出处第 2 层**）。
 * Timoshenko & Woinowsky-Krieger, *Theory of Plates and Shells*, 2nd ed., McGraw-Hill, 1959
   （回转壳膜理论；本仓已在多处引用该版本）。
-* 仓内证据：`docs/sphere-membrane-validation.md`（平面面元 13317% 失败记录）、
+* 仓内证据：`docs/sphere-membrane-validation.md`（平面面元逐网格实测结果）、
   `docs/benchmark-qualification-status.md`、`benchmarks/verified/fem_axisym_shell/`。

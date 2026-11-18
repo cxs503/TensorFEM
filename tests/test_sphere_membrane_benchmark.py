@@ -1,15 +1,4 @@
-"""Audit tests for the closed-sphere membrane oracle of the Shell4 shell facet.
-
-The merged ``projected_shell4_stiffness`` element is a flat facet.  These tests
-pin both halves of the audit:
-
-* the flat-facet membrane stress recovery is exact (manufactured patch test),
-  so any error in the curved case is attributable to the geometry
-  representation and not to the stress operator;
-* the closed faceted sphere under uniform pressure fails the 3% membrane gate
-  at every mesh the dense solver can afford, and the failure is *retained*
-  rather than smoothed away.
-"""
+"""Analytical and assembly checks for the closed Shell4 sphere."""
 import torch
 
 from tensorfem.sphere_membrane_benchmark import (
@@ -67,24 +56,38 @@ def test_pressure_load_is_self_equilibrated_and_matches_facet_area():
     assert total >= .9 * float(geometry['area'].sum())
 
 
-def test_faceted_sphere_fails_the_three_percent_membrane_gate():
-    """Fail-closed: the merged facet element does not reach p*R/2 at 96 facets."""
-    result = solve_sphere_membrane(4, PROBLEM)
+def test_pressure_scatter_matches_independent_sum_over_faces():
+    nodes, faces = sphere_shell_mesh(4)
+    direct = torch.zeros_like(nodes)
+    for face in faces:
+        local = pressure_load(nodes[face], torch.arange(4).reshape(1,4), 1.)
+        direct[face] += local.view(4, 6)[:, :3]
+    torch.testing.assert_close(pressure_load(nodes, faces, 1.).view(-1,6)[:, :3], direct)
+
+
+def test_expansion_fit_removes_arbitrary_rigid_motion():
+    from tensorfem.sphere_membrane_benchmark import uniform_expansion_fit
+    nodes, _ = sphere_shell_mesh(4)
+    q = torch.zeros(len(nodes),6,dtype=D)
+    omega = nodes.new_tensor([-.1,.2,.3]).expand_as(nodes)
+    q[:, :3] = .0123*nodes/10 + nodes.new_tensor([1.,3.,-2.]) + torch.linalg.cross(omega, nodes)
+    fit = uniform_expansion_fit(nodes, q.flatten())
+    assert abs(fit["radial_displacement"]-.0123) < 1e-12
+    assert fit["relative_residual"] < 1e-11
+
+
+def test_coarse_mesh_resolves_average_before_local_stress():
+    coarse = solve_sphere_membrane(2).radius_ratios
+    finer = solve_sphere_membrane(6).radius_ratios
+    assert coarse["resultant_error_vs_exact"] > .03 > finer["resultant_error_vs_exact"]
+    assert finer["principal_min_max_rel_error"] > .03
+
+
+def test_refined_shell_passes_pointwise_membrane_gates():
+    result = solve_sphere_membrane(16)
     ratios = result.radius_ratios
-    assert ratios['resultant_error_vs_exact'] > .03
-    assert ratios['resultant_error_vs_facet'] > .03     # not a faceting-reference artefact
-    assert ratios['resultant_isotropy_defect'] > .10    # strongly non-isotropic
-    assert ratios['uniform_expansion_relative_residual'] > .50
-    # The resultants must still be tensile: the facets are stretched, not inverted.
-    assert float(result.element_resultants['mean'].mean()) > 0.
-
-
-def test_error_decreases_with_facet_refinement_but_stays_unqualified():
-    coarse = solve_sphere_membrane(2, PROBLEM).radius_ratios
-    fine = solve_sphere_membrane(4, PROBLEM).radius_ratios
-    assert fine['resultant_error_vs_exact'] < coarse['resultant_error_vs_exact']
-    assert fine['resultant_error_vs_exact'] > .03
-    # Monotone but far from the exact value: record the measured order.
-    order = (torch.log(torch.tensor(coarse['resultant_error_vs_exact']))
-             - torch.log(torch.tensor(fine['resultant_error_vs_exact']))) / torch.log(torch.tensor(2.))
-    assert 0. < float(order) < 4.
+    for key in ("principal_min", "principal_max", "hoop", "meridional"):
+        assert ratios[key+"_max_rel_error"] < .03
+    assert ratios["radial_displacement_error"] < .03
+    assert ratios["uniform_expansion_relative_residual"] < .03
+    assert ratios["reaction_norm_n"]/ratios["applied_force_total_n"] < 1e-6
