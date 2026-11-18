@@ -1,0 +1,24 @@
+{
+  "revision": "b767abfe7ca450da53047fd1d901cfb4b9649ce8",
+  "collected": 8639,
+  "with_junit_outcome": 8639,
+  "counts": {
+    "passed": 8365,
+    "failure": 210,
+    "error": 23,
+    "xfailed": 7,
+    "skipped": 34
+  },
+  "repeat_conflicts": [],
+  "unmatched_junit_cases": [
+    {
+      "classname": "",
+      "name": "tests.test_plate_mechanism_lp_bound",
+      "outcome": "error",
+      "reason": "collection failure",
+      "batch": "full-evidence/3-110.xml"
+    }
+  ],
+  "collection_sha256": "335fd573680cf3dad3a58d9e6ac9308abfd8373a6a3687829273fe3e93089e95",
+  "table_sha256": "2bb69703aa98744e43fff4e94707bf1fd8fd11a5a9d7a103ab8286259bf9bcc9"
+}

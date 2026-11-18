@@ -1,0 +1,45 @@
+{
+  "input": "measured displacement and 10\u201340% of the loading stroke for stiffness",
+  "limitation": "work under the plotted force-deflection path; failure stroke is prescribed; machine compliance, fragment kinetic energy and fracture energy are not separated",
+  "rows": [
+    {
+      "ice_type": "columnar",
+      "stiffness_N_m": 527899.5031882647,
+      "peak_N": 275.7874,
+      "failure_deflection_m": 0.000503174603,
+      "predicted_N_at_failure": 265.6256229406523,
+      "heldout_nrmse": 0.08128655481755609,
+      "measured_prepeak_work_J": 0.07203833779019972,
+      "measured_trace_work_J": 0.0725628034630875,
+      "predicted_elastic_work_J": 0.0668280336848952,
+      "prepeak_work_error": 0.07232682298248883,
+      "abrupt_failure_total_work_error": 0.07903181112771573
+    },
+    {
+      "ice_type": "mixed",
+      "stiffness_N_m": 534748.660877033,
+      "peak_N": 232.0866,
+      "failure_deflection_m": 0.000304761905,
+      "predicted_N_at_failure": 162.97102058508355,
+      "heldout_nrmse": 0.21797200572910097,
+      "measured_prepeak_work_J": 0.03196663147526599,
+      "measured_trace_work_J": 0.04977643782063532,
+      "predicted_elastic_work_J": 0.024833679346652135,
+      "prepeak_work_error": 0.22313743423772814,
+      "abrupt_failure_total_work_error": 0.5010956903718593
+    },
+    {
+      "ice_type": "snow",
+      "stiffness_N_m": 179919.08864834707,
+      "peak_N": 36.61417,
+      "failure_deflection_m": 0.000215873016,
+      "predicted_N_at_failure": 38.83967630249004,
+      "heldout_nrmse": 0.06758771351025122,
+      "measured_prepeak_work_J": 0.003940757471815756,
+      "measured_trace_work_J": 0.004627390422219144,
+      "predicted_elastic_work_J": 0.0041922190319411265,
+      "prepeak_work_error": 0.06381046332432794,
+      "abrupt_failure_total_work_error": 0.0940425057260077
+    }
+  ]
+}

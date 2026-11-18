@@ -116,7 +116,7 @@ verdict, and it is never counted as a gate here.
 Controls: the same element on the same mesh with straight chords fails at
 {pct(CONV["chord_control"][2]["sigma_theta_max_rel_error"])} (8 facets); the merged
 flat-facet Shell4 path fails at {pct(FLAT["N_mean_rel_error"])}
-({FLAT["facet_count"]} facets), reproducing the recorded 13317 %.
+({FLAT["facet_count"]} facets) on the coarse control mesh.
 
 Limitations: thin-shell (Reissner–Mindlin) theory only — the case validates the element
 against *shell* theory, and the shell formula's own distance from 3-D elasticity is
@@ -342,9 +342,8 @@ report = f"""# CASE-SPHERE-PRESSURE — 均压球壳薄膜应力（TensorFEM · 
 
 **已知失败模式（都被本单固化为对照，不再重复踩）**
 
-1. **平面面元 + 曲面 + 压力**：内压在一个平面面元内部没有面内分量，只能靠折角以弯曲平衡；
-   薄壳弯曲长度 `√(Rt) = {P["sqrt_Rt_m"]:.3f} m` ⇒ 需 ~`{4 * 3.1415926 * P["radius_m"] ** 2 / P["sqrt_Rt_m"] ** 2:.0f}` 量级面元才有希望，
-   实测 24 面元 {pct(FLAT["N_mean_rel_error"])}。**该路径不可用于压力球壳**。
+1. **粗网格 Shell4**：24 面元误差 {pct(FLAT["N_mean_rel_error"])}。在逐步细化的闭合网格上，
+   局部应力和径向位移的验收见 `docs/sphere-membrane-validation.md`。
 2. **直弦母线**：`R_s = ∞` 丢掉子午曲率项，加密发散（
    {pct(CONV["chord_control"][2]["sigma_theta_max_rel_error"])} @8 单元 →
    {pct(CONV["chord_control"][-1]["sigma_theta_max_rel_error"])} @64 单元）。凡「曲面壳 + 内压」
@@ -436,7 +435,7 @@ dtype float64，单进程，未用集群（运行 13 s < 10 min 阈值）。
   （薄壁球壳内压；**原页未核对，见 ①ref 出处第 2 层**）。
 * Timoshenko & Woinowsky-Krieger, *Theory of Plates and Shells*, 2nd ed., McGraw-Hill, 1959
   （回转壳膜理论；本仓已在多处引用该版本）。
-* 仓内证据：`docs/sphere-membrane-validation.md`（平面面元 13317% 失败记录）、
+* 仓内证据：`docs/sphere-membrane-validation.md`（平面面元逐网格实测结果）、
   `docs/benchmark-qualification-status.md`、`benchmarks/verified/fem_axisym_shell/`。
 """
 DOCS = {

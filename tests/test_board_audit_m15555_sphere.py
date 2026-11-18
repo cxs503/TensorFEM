@@ -230,6 +230,7 @@ def test_reproduction_independent_of_generator():
         record.pop("environment", None)
         control = record.get("flat_facet_control") or {}
         control.pop("wall_clock_s", None)
+        control.pop("timing", None)
 
     drift_control, leaves_control = _compare(committed["flat_facet_control"],
                                              fresh["flat_facet_control"])

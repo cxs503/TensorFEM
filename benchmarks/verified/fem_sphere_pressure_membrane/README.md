@@ -35,7 +35,7 @@ Reference (machine-derived, see the report): `σ = pR/(2t) = 125 Pa`,
 | 8 | +7.309e-05 % | +1.204e-04 % | +1.525e-04 % | +6.262e-04 % |
 | 16 | +4.603e-06 % | +7.001e-06 % | +9.359e-06 % | +4.812e-05 % |
 | 32 | +2.828e-07 % | +3.643e-07 % | +5.716e-07 % | +3.313e-06 % |
-| 64 | +2.534e-08 % | +2.535e-08 % | +3.479e-08 % | +2.129e-07 % |
+| 64 | +2.551e-08 % | +2.553e-08 % | +3.473e-08 % | +2.123e-07 % |
 
 Gates: 11/11 gating gates pass (every gate carries a numeric `threshold` and an
 explicit `operator`, so `tools/verified_anchor_audit.py` recomputes each verdict). The
@@ -45,8 +45,8 @@ verdict, and it is never counted as a gate here.
 
 Controls: the same element on the same mesh with straight chords fails at
 +2.079e+02 % (8 facets); the merged
-flat-facet Shell4 path fails at +1.332e+04 %
-(24 facets), reproducing the recorded 13317 %.
+flat-facet Shell4 path fails at +1.271e+01 %
+(24 facets) on the coarse control mesh.
 
 Limitations: thin-shell (Reissner–Mindlin) theory only — the case validates the element
 against *shell* theory, and the shell formula's own distance from 3-D elasticity is

@@ -619,7 +619,9 @@ def solve_assembled_system(
     K = sp.coo_matrix(
         (vals.numpy(), (rows.numpy(), cols.numpy())), shape=(ndof, ndof)
     ).tocsr()
-    K_ff = K[free.numpy()[:, None], free.numpy()]
+    # Two sparse slices avoid broadcasting a quadratic integer index grid.
+    free_indices = free.numpy()
+    K_ff = K[free_indices][:, free_indices]
     sol = spla.spsolve(K_ff.tocsc(), force[free].numpy())
     u[free] = torch.from_numpy(sol)
     return u

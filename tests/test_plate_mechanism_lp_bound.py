@@ -9,7 +9,7 @@ assembly against an independently computed dihedral angle.
 import numpy as np
 import pytest
 
-from plate_mechanism_lp_bound import _clip_area, mechanism_upper_bound
+from scripts.plate_mechanism_lp_bound import _clip_area, mechanism_upper_bound
 from tensorfem.plate_patch_plastic_limit import (
     criterion_discrimination,
     plastic_bound_bracket,

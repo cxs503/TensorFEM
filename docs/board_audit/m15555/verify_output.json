@@ -1,0 +1,220 @@
+{
+ "anchor": {
+  "case": "CASE-SPHERE-PRESSURE",
+  "dir": "benchmarks/verified/fem_sphere_pressure_membrane",
+  "name": "fem_sphere_pressure_membrane"
+ },
+ "anchor_audit_record": {
+  "certified": true,
+  "defects": [],
+  "gates": 11,
+  "gates_contradicted": 0,
+  "gates_passed": 11,
+  "gates_unrecomputable": 0,
+  "grade": "certified",
+  "warnings": []
+ },
+ "audit_mission": 15555,
+ "audited_mission": 15405,
+ "case_numbers": {
+  "controls": {
+   "chord_sigma_theta_rel_error": 2.078740587504614,
+   "flat_shell4_N_mean_rel_error": 0.1270563570664196,
+   "flat_shell4_facets": 24,
+   "flat_shell4_recorded_percent": 12.70563570664196
+  },
+  "ladder": {
+   "facets": [
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
+   ],
+   "observed_orders_sigma": [
+    3.456,
+    3.948,
+    3.989,
+    4.025,
+    3.471
+   ],
+   "sigma_theta_rel_error": [
+    0.0001237432816100892,
+    1.1279845850609149e-05,
+    7.309107164843454e-07,
+    4.603092609301029e-08,
+    2.828166500989937e-09,
+    2.551018951635342e-10
+   ]
+  },
+  "parameters": {
+   "E_pa": 68250000.0,
+   "R_over_t": 250.0,
+   "nu": 0.3,
+   "p_pa": 1.0,
+   "radius_m": 10.0,
+   "thickness_m": 0.04
+  },
+  "reference": {
+   "axial_vs_laplace_residual": "0",
+   "sigma_expr": "R*p/(2*t)",
+   "sigma_pa": 125.0,
+   "w_m": 1.282051282051282e-05
+  },
+  "reference_band": {
+   "deviation_at_case_point": 0.004013376122981727,
+   "prediction_id": "P1.reference_band_reaches_t_over_R_0.05",
+   "prediction_outcome": "falsified",
+   "prediction_threshold": 0.05,
+   "slope": 1.0276,
+   "t_over_R_band_within_tol": [
+    0.001,
+    0.02
+   ]
+  },
+  "site_facets_8": {
+   "anisotropy_rel": 1.5248483981267214e-06,
+   "dof": 27,
+   "elements": 8,
+   "sigma_phi_rel_error": 1.2038552013038384e-06,
+   "sigma_ref_pa": 125.0,
+   "sigma_theta_max_pa": 125.00004562601003,
+   "sigma_theta_pa": [
+    125.00004562601003,
+    124.99993117339451,
+    124.99997986504462,
+    124.99991020694208,
+    124.99992731600346,
+    124.99990944617396,
+    124.99992635940265,
+    124.99990863616044,
+    124.9999214037691,
+    124.99991154734047,
+    124.99992118229169,
+    124.9999120328606,
+    124.99991835116897,
+    124.99991451535013,
+    124.99991771032046,
+    124.99991528944307
+   ],
+   "sigma_theta_rel_error": 7.309107164843454e-07,
+   "w_rel_error": 6.261665208516227e-06
+  },
+  "tolerance": 0.03
+ },
+ "certificate": {
+  "falsified_predictions": [
+   "P1.reference_band_reaches_t_over_R_0.05"
+  ],
+  "gates_without_numeric_threshold": [],
+  "n_gates": 11,
+  "n_passed": 11,
+  "n_predictions": 1,
+  "passed": true,
+  "schema": "tensorfem.verified-gates.v1"
+ },
+ "drift_gates": {
+  "build_report_check": {
+   "clean": true
+  },
+  "emit_certificate_check": {
+   "clean": true
+  }
+ },
+ "figure": {
+  "bytes": 195836,
+  "caption": "CASE-SPHERE-PRESSURE board audit, derived from result.json: (a) sigma_theta error ladder vs pR/2t with the 3 % tolerance band; (b) sigma_theta / sigma_phi along the meridian at 8 facets; (c) thin-shell vs Lame deviation vs t/R with the FALSIFIED t/R=0.05 prediction and the measured band end at t/R=0.02; (d) negative controls (straight-chord meridian, flat-facet Shell4) against the exact-meridian element",
+  "path": "docs/board_audit/m15555/fig_m15555_sphere_audit.png",
+  "sha256": "0c83d6a76259fee3375d60939c1c1f11ee80d4d9da0c61337a836add2f418797"
+ },
+ "inventory": {
+  "evidence": [
+   {
+    "bytes": 45140,
+    "git_tracked": true,
+    "path": "benchmarks/verified/fem_sphere_pressure_membrane/result.json",
+    "sha256": "b72dd3b58277c21e6d1b6a993dcf3c79fea91f8055ec67432379b592d635ccad"
+   },
+   {
+    "bytes": 8587,
+    "git_tracked": true,
+    "path": "benchmarks/verified/fem_sphere_pressure_membrane/gates_verified.json",
+    "sha256": "3cf0d08470d7ec18494c4e3839ce9d118795df2ca340f483f4de425d8a019cb3"
+   }
+  ],
+  "producers": [
+   {
+    "git_tracked": true,
+    "path": "benchmarks/verified/fem_sphere_pressure_membrane/run_verification.py",
+    "role": "driver (thin wrapper over the case module)"
+   },
+   {
+    "git_tracked": true,
+    "path": "benchmarks/verified/fem_sphere_pressure_membrane/build_report.py",
+    "role": "case card + report builder"
+   },
+   {
+    "git_tracked": true,
+    "path": "benchmarks/verified/fem_sphere_pressure_membrane/emit_certificate.py",
+    "role": "certificate emitter"
+   },
+   {
+    "git_tracked": true,
+    "path": "benchmarks/verified/fem_sphere_pressure_membrane/README.md",
+    "role": "case card"
+   },
+   {
+    "git_tracked": true,
+    "path": "scripts/audit_m15555_sphere_board.py",
+    "role": "this audit generator"
+   }
+  ]
+ },
+ "reproduction": {
+  "axisym_noise_margin_decades_geq": 4,
+  "compared_leaves": 1338,
+  "control_noise_margin_decades_geq": 4,
+  "control_reruns": 5,
+  "drift_paths": [],
+  "environment": {
+   "python": "3.12.14",
+   "torch": "2.15.0+cpu"
+  },
+  "excluded_paths": [
+   "environment",
+   "figures",
+   "flat_facet_control/timing",
+   "flat_facet_control/wall_clock_s"
+  ],
+  "excluded_reason": {
+   "environment": "host / interpreter / library versions, distinct on purpose",
+   "figures": "paths are relative to the run's --out directory",
+   "flat_facet_control/timing": "repeated timing provenance; numerical fields remain gated",
+   "flat_facet_control/wall_clock_s": "wall clock of the control solve"
+  },
+  "noise_margin_decades_geq": 4,
+  "rel_tolerance": 1e-09,
+  "reproduced": true
+ },
+ "schema": "tensorfem.board-audit/1",
+ "unverified": [
+  {
+   "claim": "tensor_benchmark_cases holds no CASE-SPHERE-PRESSURE judge row",
+   "reason": "this worktree has no platform database access; the earlier round's 0/18 query is not re-measured",
+   "status": "WITHHELD"
+  },
+  {
+   "claim": "the reference equals the Roark handbook table entry",
+   "reason": "no handbook page in the repo or platform knowledge base; the reference stays machine-derived (sympy) and Lame-cross-anchored",
+   "status": "WITHHELD"
+  }
+ ],
+ "verdict": {
+  "grade": "L3",
+  "l4_blockers": [
+   "no registered judge row in tensor_benchmark_cases (F1, not re-checkable here)",
+   "external handbook page (Roark) absent from this worktree (F2, WITHHELD)"
+  ]
+ }
+}

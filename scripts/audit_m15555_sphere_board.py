@@ -98,6 +98,7 @@ PRODUCERS = [
 VOLATILE = {
     "figures": "paths are relative to the run's --out directory",
     "flat_facet_control/wall_clock_s": "wall clock of the control solve",
+    "flat_facet_control/timing": "repeated timing provenance; numerical fields remain gated",
     "environment": "host / interpreter / library versions, distinct on purpose",
 }
 CONTROL_SUBTREE = "flat_facet_control"
@@ -152,7 +153,7 @@ def _margin_decades_geq(value: float) -> int:
 
 def _prune_control(control: dict) -> dict:
     """The control record without its own wall clock."""
-    return {k: v for k, v in control.items() if k != "wall_clock_s"}
+    return {k: v for k, v in control.items() if k not in {"wall_clock_s", "timing"}}
 
 
 def _prune(record: dict) -> dict:

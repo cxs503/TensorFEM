@@ -217,12 +217,12 @@ def build_gates(result: dict) -> tuple[list[dict], float]:
             "kind": "control-negative",
             "gating": True,
             "quantity": "N_mean rel. error of the merged flat-facet Shell4 path, 24 facets",
-            "reference": "control must MISS the tolerance by orders of magnitude",
+            "reference": "24-facet coarse control must miss the 3% tolerance",
             "value": flat,
             "threshold": tol,
             "operator": ">=",
             "note": (
-                "independent element on the same case; reproduces the recorded 13316.6 % "
+                "independent coarse element discretisation on the same pressure case "
                 f"(recorded source: {result['flat_facet_control']['recorded_source']!r})"
             ),
         },

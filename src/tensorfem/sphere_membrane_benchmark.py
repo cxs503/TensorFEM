@@ -14,34 +14,10 @@ case the only stress-level analytic oracle for the doubly curved Shell4
 discretisation in the library; the 18-degree-hole hemisphere and Cook membrane
 benchmarks carry displacement oracles only.
 
-Audit outcome (2026-11, recorded rather than assumed).  The merged
-:func:`tensorfem.spherical_shell.projected_shell4_stiffness` element is a *flat
-facet* element, so a curved sphere becomes a polyhedron and the curvature is
-carried by element-edge folding instead of by the element itself.  Under
-uniform pressure the load has no in-plane component inside a flat facet, so the
-pressure is balanced only across the folded edges; the response is therefore
-bending-dominated until the fold angles vanish, i.e. until the facet size drops
-below the shell bending length ``sqrt(R*t)``.  The measured membrane resultant
-error against ``p*R/2`` is 13317% / 2826% / 1006% at 24 / 96 / 216 facets, with
-a 94% non-radial displacement residual and a 193-437% principal-resultant
-anisotropy.  The element is *not* qualified for pressure-loaded curved shells;
-the flat-facet membrane patch test below is exact, so the failure is the curved
-geometry representation and not the stress recovery.
-
-Discretisation notes (deliberately explicit):
-
-* every facet is flat, so both ``p*R/2`` (smooth shell) and ``p*rho/2``
-  (``rho`` = distance from the centre to the facet plane) are reported; the
-  second isolates the faceting geometry from the formulation and it is *not*
-  an explanation of the error here (both references fail);
-* constraints only remove the six rigid-body modes; the radial displacement is
-  recovered by a least-squares fit that projects those modes out, so the
-  measured ``w`` does not depend on which node carries the constraints;
-* only membrane resultants and the displacement field are recovered.  Bending
-  moments are not recovered; the bending-free claim rests on the residual of
-  the uniform-expansion fit, which must be near zero for a valid membrane state;
-* the reduced system is solved densely, which caps the sweep at a few hundred
-  nodes; the point of the case is the h-trend, not throughput.
+The facets use the unchanged projected Shell4 element. Pressure is integrated
+on each bilinear surface and scattered to shared nodes. The sparse direct solve
+supports refinement until the worst principal resultant meets the same smooth
+sphere oracle. Curvature and quadrature errors remain measurable on coarse grids.
 """
 from __future__ import annotations
 
@@ -49,6 +25,7 @@ from dataclasses import dataclass
 import math
 import torch
 
+from .plate import _shape
 from .sparse_core import assemble_coo
 from .sphere_pressure_benchmark import cube_sphere_surface
 from .spherical_shell import projected_shell4_stiffness
@@ -120,14 +97,20 @@ def facet_geometry(nodes: torch.Tensor, elements: torch.Tensor) -> dict:
 
 def pressure_load(nodes: torch.Tensor, elements: torch.Tensor, pressure: float,
                   geometry: dict | None = None) -> torch.Tensor:
-    """Consistent nodal load for uniform pressure on flat bilinear facets."""
-    geom = facet_geometry(nodes, elements) if geometry is None else geometry
-    area, unit = geom['area'], geom['normal']
-    force = nodes.new_zeros((6 * len(nodes),))
-    share = pressure * area / 4.
-    for k in range(4):
-        for axis in range(3):
-            force[6 * elements[:, k] + axis] += share * unit[:, axis]
+    """Consistent nodal load integrated on each bilinear facet with 2x2 quadrature."""
+    xyz = nodes[elements]
+    face_load = torch.zeros_like(xyz)
+    g = 1. / math.sqrt(3.)
+    for xi in (-g, g):
+        for eta in (-g, g):
+            shape, deriv = _shape(nodes.new_tensor(xi), nodes.new_tensor(eta))
+            tangent = xyz.transpose(1, 2) @ deriv
+            area_vector = torch.linalg.cross(tangent[:, :, 0], tangent[:, :, 1], dim=1)
+            face_load += pressure * shape[None, :, None] * area_vector[:, None, :]
+    nodal = torch.zeros_like(nodes)
+    nodal.index_add_(0, elements.flatten(), face_load.reshape(-1, 3))
+    force = nodes.new_zeros(6 * len(nodes))
+    force.view(-1, 6)[:, :3] = nodal
     return force
 
 
@@ -169,7 +152,17 @@ def element_membrane_resultants(nodes: torch.Tensor, elements: torch.Tensor,
     tensor = torch.stack((torch.stack((resultant[:, 0], resultant[:, 2]), 1),
                           torch.stack((resultant[:, 2], resultant[:, 1]), 1)), 1)
     principal = torch.linalg.eigvalsh(tensor)
-    return {'nx': resultant[:, 0], 'ny': resultant[:, 1], 'nxy': resultant[:, 2],
+    # Azimuth projected onto the facet; its perpendicular is the meridian.
+    axis = torch.zeros_like(e3)
+    axis[:, 2] = 1.
+    azimuth = torch.linalg.cross(axis, geom['centroid'], dim=1)
+    azimuth -= (azimuth * e3).sum(1)[:, None] * e3
+    norm = torch.linalg.vector_norm(azimuth, dim=1, keepdim=True)
+    azimuth = torch.where(norm > 1.e-14, azimuth / norm.clamp_min(1.e-14), e1)
+    az = torch.stack(((azimuth * e1).sum(1), (azimuth * e2).sum(1)), 1)
+    hoop = torch.einsum('ei,eij,ej->e', az, tensor, az)
+    return {'hoop': hoop, 'meridional': resultant[:, 0] + resultant[:, 1] - hoop,
+            'nx': resultant[:, 0], 'ny': resultant[:, 1], 'nxy': resultant[:, 2],
             'principal_min': principal[:, 0], 'principal_max': principal[:, 1],
             'mean': .5 * (principal[:, 0] + principal[:, 1]),
             'isotropy_defect': (principal[:, 1] - principal[:, 0]).abs()
@@ -194,11 +187,11 @@ def uniform_expansion_fit(nodes: torch.Tensor, displacement: torch.Tensor) -> di
                    (zero, zero, torch.ones_like(x)))
     rotation = ((zero, -z, y), (z, zero, -x), (-y, x, zero))
     fields = [n] + [torch.stack(c, 1) for c in translation + rotation]
-    design = torch.stack(fields, 1).reshape(nn * 3, 7)        # (3*nn, 7)
+    design = torch.stack(fields, -1).reshape(nn * 3, 7)        # (3*nn, 7)
     unknown = torch.linalg.lstsq(design, xyz.reshape(-1)).solution.reshape(7)
     fitted = design @ unknown
     residual = xyz.reshape(-1) - fitted
-    scale = float(torch.linalg.vector_norm(xyz))
+    scale = float(unknown[0].abs()) * math.sqrt(nn)
     return {'radial_displacement': float(unknown[0]),
             'rigid_translation': unknown[1:4],
             'residual_norm': float(torch.linalg.vector_norm(residual)),
@@ -206,24 +199,30 @@ def uniform_expansion_fit(nodes: torch.Tensor, displacement: torch.Tensor) -> di
 
 
 def _constrained_solve(K: torch.Tensor, force: torch.Tensor, *, fixed) -> tuple:
-    """Dense reduced solve with zero fixed DOFs.
-
-    A dense reduced solve is deliberate: ``sparse_core.solve_sparse_static``
-    builds no preconditioner and the drilling stabilisation (1e-6) spreads the
-    unreduced spectrum over more than ten decades, so unpreconditioned CG
-    stagnates.  Meshes in this case stay below 400 nodes, where the dense
-    Cholesky factorisation costs a few seconds and removes the solver from the
-    accuracy discussion entirely.
-    """
+    """Solve the CPU float64 verification system with zero prescribed DOFs."""
     ndof = force.numel()
     free_mask = torch.ones(ndof, dtype=torch.bool)
     free_mask[list(fixed)] = False
     free = torch.nonzero(free_mask).flatten()
-    dense = K.to_dense() if K.layout != torch.sparse_coo else K.to_dense()
-    reduced = dense[free][:, free]
+    # Direct factorization avoids densifying the fine-grid 6-DOF shell.
+    try:
+        from scipy.sparse import coo_matrix
+        from scipy.sparse.linalg import spsolve
+    except ImportError:
+        if ndof > 2400:
+            raise RuntimeError("Install SciPy for fine-grid Shell4 verification")
+        dense = K.to_dense()
+        displacement = torch.zeros_like(force)
+        displacement[free] = torch.linalg.solve(dense[free][:, free], force[free])
+        return displacement, dense @ displacement - force
+    coo = K.coalesce()
+    rows, cols = coo.indices().numpy()
+    matrix = coo_matrix((coo.values().numpy(), (rows, cols)), shape=K.shape).tocsr()
+    indices = free.numpy()
+    solution = spsolve(matrix[indices][:, indices], force[free].numpy())
     displacement = force.new_zeros(ndof)
-    displacement[free] = torch.linalg.solve(reduced, force[free])
-    return displacement, dense @ displacement - force
+    displacement[free] = torch.from_numpy(solution)
+    return displacement, torch.from_numpy(matrix @ displacement.numpy()) - force
 
 
 def solve_sphere_membrane(facets_per_face: int, problem: dict = PROBLEM, *,
@@ -238,12 +237,15 @@ def solve_sphere_membrane(facets_per_face: int, problem: dict = PROBLEM, *,
     local = torch.stack([projected_shell4_stiffness(nodes[el], E, nu, t,
                                                     drilling_factor=drilling_factor)
                          for el in elements])
-    dofs = torch.stack([6 * elements + k for k in range(6)], 1).reshape(len(elements), 24)
+    dofs = (6 * elements[:, :, None] + torch.arange(6, device=elements.device)).reshape(-1, 24)
     K = assemble_coo(local, dofs, 6 * len(nodes))
     force = pressure_load(nodes, elements, p, geom)
-    # One node carries all six constraints; that removes exactly the six
-    # rigid-body modes without constraining the shell deformation itself.
-    displacement, reaction = _constrained_solve(K, force, fixed=tuple(range(6)))
+    # Translational 3-2-1 gauge at +x, -x, +y. It admits uniform expansion
+    # plus a translation and leaves the independent shell rotations free.
+    a = int(nodes[:, 0].argmax()) * 6
+    b = int(nodes[:, 0].argmin()) * 6
+    c = int(nodes[:, 1].argmax()) * 6
+    displacement, reaction = _constrained_solve(K, force, fixed=(a, a+1, a+2, b+1, b+2, c+2))
     axial = uniform_expansion_fit(nodes, displacement)
     resultants = element_membrane_resultants(nodes, elements, displacement,
                                              problem, geom)
@@ -257,6 +259,10 @@ def solve_sphere_membrane(facets_per_face: int, problem: dict = PROBLEM, *,
         displacement=displacement, applied_force=force, reaction=reaction,
         element_resultants={k: v.detach() for k, v in resultants.items()},
         radius_ratios={
+            **{key + '_max_rel_error': float((resultants[key] / reference['resultant_n_per_m'] - 1).abs().max())
+               for key in ('principal_min', 'principal_max', 'hoop', 'meridional')},
+            'load_moment_norm_Nm': float(torch.linalg.vector_norm(torch.linalg.cross(
+                nodes, force.reshape(-1, 6)[:, :3], dim=1).sum(0))),
             'facet_count': int(len(elements)),
             'node_count': int(len(nodes)),
             'mean_facet_plane_radius_m': float(geom['rho'].mean()),
