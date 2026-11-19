@@ -165,3 +165,15 @@ def test_zero_force_keeps_the_fluid_at_rest() -> None:
     for _ in range(50):
         sim.step()
     assert np.max(np.abs(sim.profile())) < 1e-14
+
+def test_poiseuille_relerr_gate_ny18_ny34() -> None:
+    """CASE-POISEUILLE-2D-RELERR: rel_err_u_max < 1% at ny>=18 (anchor gate)."""
+    for ny in (18, 34):
+        cfg = F.PoiseuilleConfig(ny=ny, nu=0.05, scheme="guo")
+        sim = F.PoiseuilleLBM(cfg)
+        stats = sim.run()
+        assert stats["converged"], stats
+        rel_u = abs(float(sim.profile().max()) - cfg.u_max_analytic) / cfg.u_max_analytic
+        rel_l2 = sim.profile_l2_error()
+        assert rel_u < 0.01, f"ny={ny} rel_err_u_max={rel_u*100:.4f}% >= 1%"
+        assert rel_l2 < 0.01, f"ny={ny} rel_l2={rel_l2*100:.4f}% >= 1%"
