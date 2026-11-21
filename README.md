@@ -280,3 +280,16 @@ The next coupling iteration adds [recorded LBM–DEM hull-load replay](docs/reco
 ## Tensor ecosystem integration
 
 This repository's role, interface boundaries, data-exchange requirements and recommended integration path are documented in [Ecosystem Integration](docs/ecosystem-integration.md).
+
+### Transient flexible strip for SPH coupling
+
+`tensorfem.dynamic_strip.DynamicStrip2D` advances a clamped, large-rotation
+Euler–Bernoulli strip under integrated two-component interface forces. The
+coupling stations use material distance from the clamp in metres. The strip
+returns their current positions and velocities and uses the transpose of the
+same shape matrix to distribute their loads. The unit-span planar model uses
+plane-stress beam stiffness, lumped inertia and explicit structural substeps.
+The experimental SPHERIC Test 19 water-column driver lives in TensorSPH.
+
+Run `python -m pytest -q tests/test_dynamic_strip.py` to exercise the dry
+vibration period, clamping, force transfer, moment and virtual work.
