@@ -36,6 +36,22 @@ retain their own stated scope and limitations.
 
 The registry contains scalar checks; it does not certify complete stress fields or research reports. Three independent linear cases now have revalidated displacement/stress fields, three mesh levels, and complete Markdown/HTML/PDF/Word reports. Beam stress qualification is limited to the declared sampling region and model. TensorFEM remains below the 1.0 gate. See [benchmark qualification status and downloads](docs/benchmark-qualification-status.md).
 
+## Fresh-water freezing at a cold plane
+
+The [enthalpy-based LINE2 solver](src/tensorfem/freezing_layer.py) tracks temperature,
+ice mass fraction and heat removed per unit area. In a 2 mm layer initially at
+0 °C with one face held at −20 °C, the 16-cell result at 2 s is 0.70985 mm of ice.
+The one-phase Stefan similarity solution gives 0.71139 mm. This thermal check
+uses fixed geometry and unit area. The [verification tests](tests/test_freezing_layer.py)
+also cover heat balance and latent heat at the melting point.
+
+```python
+from tensorfem.freezing_layer import freeze_layer
+
+layer = freeze_layer(cells=16, depth=0.002, end_s=2, plate_c=-20)
+print(layer.history[-1]["front_m"])
+```
+
 ## Experimental SUBOFF upward ice impact
 
 An artificial SUBOFF bare-hull steel shell can collide upward with independently
