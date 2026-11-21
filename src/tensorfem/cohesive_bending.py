@@ -107,6 +107,7 @@ class BilinearCohesiveLaw:
     tangential_stiffness: float
     peak_traction: float
     fracture_energy: float
+    young_modulus: float | None = field(default=None, repr=False, compare=False)
 
     # -- construction ------------------------------------------------------
     @classmethod
@@ -137,6 +138,7 @@ class BilinearCohesiveLaw:
             tangential_stiffness=stiffness,
             peak_traction=float(tensile_strength),
             fracture_energy=float(fracture_energy),
+            young_modulus=float(young_modulus),
         )
 
     # -- derived quantities ------------------------------------------------
@@ -152,12 +154,10 @@ class BilinearCohesiveLaw:
 
     @property
     def cohesive_length(self) -> float:
-        """Cohesive length implied by the penalty stiffness ``l_ch = E G_f/sigma_f^2``.
-
-        Only meaningful for a law created by :meth:`from_material`, where
-        ``E = K l_ch / penalty_ratio`` is folded into ``K``.
-        """
-        return 2.0 * self.normal_stiffness * self.fracture_energy ** 2 / self.peak_traction**3
+        """Characteristic length E G_f / sigma_f², independent of penalty stiffness."""
+        if self.young_modulus is None:
+            raise ValueError("cohesive length requires the bulk Young's modulus")
+        return self.young_modulus * self.fracture_energy / self.peak_traction**2
 
     # -- constitutive response --------------------------------------------
     def damage(self, kappa: np.ndarray) -> np.ndarray:
@@ -333,6 +333,7 @@ def build_three_point_bend(
     nx: int = 60,
     ny: int = 80,
     load_patch_fraction: float = 0.25,
+    integrate_load_patch: bool = False,
 ) -> ThreePointBendModel:
     """Build the beam mesh with a cohesive interface on the mid-span plane.
 
@@ -349,8 +350,11 @@ def build_three_point_bend(
         ``ny`` linear segments, so the crack-front resolution is ``depth/ny``.
     load_patch_fraction : float
         Width of the loaded patch on the top face as a fraction of ``depth``.
-        A finite patch avoids the singular point-load field at the crack mouth
-        while leaving the mid-span bending moment unchanged.
+        The legacy rule selects and equally weights nodes inside this width.
+    integrate_load_patch : bool
+        For the reference load vector, integrate uniform pressure against
+        the top-edge shape functions over the specified width. Centre nodes carry
+        only their own edge's contribution. Zero width is a centre point load.
     """
     if nx % 2 != 0:
         raise ValueError("nx must be even so that the interface lies on a node line")
@@ -399,9 +403,24 @@ def build_three_point_bend(
         ]
     )
     x_top = nodes[top, 0]
+    if integrate_load_patch and not 0 <= load_patch_fraction * depth <= span:
+        raise ValueError("load patch width must be between zero and the span")
     patch = np.abs(x_top - span / 2.0) <= 0.5 * load_patch_fraction * depth
     loaded = top[patch]
     weights = np.full(len(loaded), -1.0 / len(loaded))
+    if integrate_load_patch and load_patch_fraction > 0:
+        half_width = load_patch_fraction * depth / 2
+        x = x_top - span / 2
+        edge = np.flatnonzero(np.diff(x) > 0)  # skip the zero-length centre seam
+        a = np.maximum(x[edge], -half_width)
+        b = np.minimum(x[edge + 1], half_width)
+        length = np.maximum(b - a, 0)
+        right = length * ((a + b) / 2 - x[edge]) / (x[edge + 1] - x[edge])
+        shares = np.zeros_like(x)
+        np.add.at(shares, edge, length - right)
+        np.add.at(shares, edge + 1, right)
+        loaded = top[shares > 0]
+        weights = -shares[shares > 0] / (2 * half_width)
     load_dofs = 2 * loaded + 1
 
     # crack-mouth pair: the bottom nodes of the two blocks at x = span/2

@@ -10,6 +10,8 @@
       "postpeak_stop": "sustained_postpeak_unloading",
       "peak_N": 479.0659304177567,
       "peak_deflection_m": 0.0007895078900177971,
+      "peak_punch_stroke_m": 0.0007978392675133981,
+      "peak_midspan_top_deflection_m": 0.0007895078900177971,
       "end_force_N": 0.0,
       "external_work_J": 0.1812391336775206,
       "initial_kinetic_J": 8.586900845070446e-07,
@@ -20,6 +22,7 @@
       "energy_balance_rel": 3.3628017542477275e-06,
       "failed_area_fraction": 0.96875,
       "punch_ratio": 100,
+      "punch_stiffness_N_m": 57501407.26076908,
       "history_columns": [
         "punch_stroke_m",
         "force_N",
@@ -1962,6 +1965,11 @@
           0.0007896462692777322
         ],
         [
+          0.0007978392675133981,
+          479.0659304177567,
+          0.0007895078900177971
+        ],
+        [
           0.0007978972675133927,
           288.64673386123775,
           0.0007928774471713927
@@ -2054,6 +2062,8 @@
       "postpeak_stop": "sustained_postpeak_unloading",
       "peak_N": 460.2720595493755,
       "peak_deflection_m": 0.0007247013936481711,
+      "peak_punch_stroke_m": 0.0007321097097234838,
+      "peak_midspan_top_deflection_m": 0.0007247013936481711,
       "end_force_N": 0.0,
       "external_work_J": 0.1648879712502333,
       "initial_kinetic_J": 8.658849252842737e-07,
@@ -2064,6 +2074,7 @@
       "energy_balance_rel": 2.0945893111427646e-06,
       "failed_area_fraction": 0.9375000000000001,
       "punch_ratio": 100,
+      "punch_stiffness_N_m": 62129106.65126469,
       "history_columns": [
         "punch_stroke_m",
         "force_N",
@@ -5041,6 +5052,11 @@
           0.0007247830622702563
         ],
         [
+          0.0007321097097234838,
+          460.2720595493755,
+          0.0007247013936481711
+        ],
+        [
           0.0007321127097234835,
           460.1354067228013,
           0.0007247065931458611
@@ -5133,6 +5149,8 @@
       "postpeak_stop": "sustained_postpeak_unloading",
       "peak_N": 483.2027725814275,
       "peak_deflection_m": 0.0008202363924694816,
+      "peak_punch_stroke_m": 0.0008288899923634104,
+      "peak_midspan_top_deflection_m": 0.0008202363924694816,
       "end_force_N": 0.0,
       "external_work_J": 0.18996980216584025,
       "initial_kinetic_J": 8.55322354368559e-07,
@@ -5143,6 +5161,7 @@
       "energy_balance_rel": 4.738336704684298e-06,
       "failed_area_fraction": 0.9791666666666666,
       "punch_ratio": 100,
+      "punch_stiffness_N_m": 55838353.8070018,
       "history_columns": [
         "punch_stroke_m",
         "force_N",
@@ -6650,6 +6669,11 @@
           0.0008206268768240283
         ],
         [
+          0.0008288899923634104,
+          483.2027725814275,
+          0.0008202363924694816
+        ],
+        [
           0.0008289164923634079,
           430.42257740595875,
           0.0008212081244037496
@@ -6747,6 +6771,8 @@
       "postpeak_stop": "sustained_postpeak_unloading",
       "peak_N": 475.35640715435443,
       "peak_deflection_m": 0.000789204301284501,
+      "peak_punch_stroke_m": 0.0008057380325373245,
+      "peak_midspan_top_deflection_m": 0.000789204301284501,
       "end_force_N": 0.0,
       "external_work_J": 0.18303717831240288,
       "initial_kinetic_J": 8.41935558636713e-07,
@@ -6757,6 +6783,7 @@
       "energy_balance_rel": 1.296922742563768e-06,
       "failed_area_fraction": 0.96875,
       "punch_ratio": 50,
+      "punch_stiffness_N_m": 28750703.63038454,
       "history_columns": [
         "punch_stroke_m",
         "force_N",
@@ -8719,6 +8746,11 @@
           0.0007892201547597758
         ],
         [
+          0.0008057380325373245,
+          475.35640715435443,
+          0.000789204301284501
+        ],
+        [
           0.0008058100325373178,
           262.2463120038217,
           0.0007966886449227666
@@ -8811,6 +8843,8 @@
       "postpeak_stop": "sustained_postpeak_unloading",
       "peak_N": 480.5865234872871,
       "peak_deflection_m": 0.000789706474027842,
+      "peak_punch_stroke_m": 0.0007938853850004711,
+      "peak_midspan_top_deflection_m": 0.000789706474027842,
       "end_force_N": 0.0,
       "external_work_J": 0.1803385213628006,
       "initial_kinetic_J": 8.672555186313569e-07,
@@ -8821,6 +8855,7 @@
       "energy_balance_rel": 4.096418404237049e-06,
       "failed_area_fraction": 0.96875,
       "punch_ratio": 200,
+      "punch_stiffness_N_m": 115002814.52153815,
       "history_columns": [
         "punch_stroke_m",
         "force_N",
@@ -10753,6 +10788,11 @@
           0.0007897869157675835
         ],
         [
+          0.0007938853850004711,
+          480.5865234872871,
+          0.000789706474027842
+        ],
+        [
           0.000793940885000466,
           291.7546433704762,
           0.0007914039501907893
@@ -10845,6 +10885,8 @@
       "postpeak_stop": "sustained_postpeak_unloading",
       "peak_N": 479.06089875920964,
       "peak_deflection_m": 0.000789504477522761,
+      "peak_punch_stroke_m": 0.0007978357675133984,
+      "peak_midspan_top_deflection_m": 0.000789504477522761,
       "end_force_N": 0.0,
       "external_work_J": 0.1812376080286841,
       "initial_kinetic_J": 8.586900845070446e-07,
@@ -10855,6 +10897,7 @@
       "energy_balance_rel": 5.080227680397517e-07,
       "failed_area_fraction": 0.96875,
       "punch_ratio": 100,
+      "punch_stiffness_N_m": 57501407.26076908,
       "history_columns": [
         "punch_stroke_m",
         "force_N",
@@ -12787,6 +12830,11 @@
           0.0007898640933272584
         ],
         [
+          0.0007978357675133984,
+          479.06089875920964,
+          0.000789504477522761
+        ],
+        [
           0.0007978415175133979,
           477.32326034168364,
           0.0007895404465817419
@@ -12884,6 +12932,8 @@
       "postpeak_stop": "sustained_postpeak_unloading",
       "peak_N": 479.08016581952756,
       "peak_deflection_m": 0.0007895041424558946,
+      "peak_punch_stroke_m": 0.0007978357675176413,
+      "peak_midspan_top_deflection_m": 0.0007895041424558946,
       "end_force_N": 0.0,
       "external_work_J": 0.18123762912921926,
       "initial_kinetic_J": 8.586900845070446e-07,
@@ -12894,6 +12944,7 @@
       "energy_balance_rel": 7.764992808477174e-06,
       "failed_area_fraction": 0.96875,
       "punch_ratio": 100,
+      "punch_stiffness_N_m": 57501407.26076908,
       "history_columns": [
         "punch_stroke_m",
         "force_N",
@@ -14841,6 +14892,11 @@
           0.0007898067744886023
         ],
         [
+          0.0007978357675176413,
+          479.08016581952756,
+          0.0007895041424558946
+        ],
+        [
           0.0007978762675176434,
           371.60366329573384,
           0.0007914137532767222
@@ -14933,6 +14989,8 @@
       "postpeak_stop": "sustained_postpeak_unloading",
       "peak_N": 443.0013498064237,
       "peak_deflection_m": 0.000799969388430179,
+      "peak_punch_stroke_m": 0.0008084073931563885,
+      "peak_midspan_top_deflection_m": 0.000799969388430179,
       "end_force_N": 0.0,
       "external_work_J": 0.16988597337984415,
       "initial_kinetic_J": 8.407096899955641e-07,
@@ -14943,6 +15001,7 @@
       "energy_balance_rel": 4.508290486369644e-06,
       "failed_area_fraction": 0.9687499999999999,
       "punch_ratio": 100,
+      "punch_stiffness_N_m": 52500723.11886732,
       "history_columns": [
         "punch_stroke_m",
         "force_N",
@@ -16988,6 +17047,11 @@
           0.0008083538931563935,
           420.9873822058099,
           0.000800335196323349
+        ],
+        [
+          0.0008084073931563885,
+          443.0013498064237,
+          0.000799969388430179
         ],
         [
           0.0008084298931563865,
