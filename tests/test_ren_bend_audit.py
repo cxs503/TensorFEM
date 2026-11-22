@@ -95,3 +95,17 @@ def test_score_ignores_producer_verdict_and_requires_both_holdouts():
     data["rows"].pop()
     with pytest.raises(ValueError, match="both holdouts"):
         score(data, specimens)
+
+
+def test_depth_controls_require_one_variable_and_complete_pairs():
+    from benchmarks.score_ren_bending import score_depth_study
+
+    data = json.loads(CONTROLS.with_name("ren_depth_controls.json").read_text())
+    specimens = read_table(DATA)
+    results = score_depth_study(data, specimens)["through_depth_controls"]
+    assert len(results) == 6
+    assert all(row["numerical_pass"] for row in results)
+    row = next(r for r in data["rows"] if r["case"] == "depth_64")
+    row["inputs"]["nx"] *= 2
+    with pytest.raises(ValueError, match="confounded depth study"):
+        score_depth_study(data, specimens)
