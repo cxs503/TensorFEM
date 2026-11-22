@@ -219,7 +219,7 @@ def _solve_sparse(k: torch.Tensor, force: torch.Tensor, fixed: torch.Tensor, val
     free_idx = torch.arange(n)[free]
     u = torch.zeros(n, dtype=force.dtype)
     u[fixed] = values
-    rhs = force[free] - _sparse_rows(k, free_idx, fixed) @ values if len(fixed) else force[free]
+    rhs = (force - k @ u)[free]
     try:
         import scipy.sparse as sp
         import scipy.sparse.linalg as spla
@@ -229,7 +229,8 @@ def _solve_sparse(k: torch.Tensor, force: torch.Tensor, fixed: torch.Tensor, val
                              (coo.indices()[0].numpy(), coo.indices()[1].numpy())),
                             shape=(n, n)).tocsr()
         sub = mat[free_idx.numpy()][:, free_idx.numpy()].tocsc()
-        solution = spla.spsolve(sub, rhs.numpy())
+        sub.eliminate_zeros()
+        solution = spla.spsolve(sub, rhs.numpy(), permc_spec="MMD_AT_PLUS_A")
         u[free_idx] = torch.as_tensor(solution, dtype=force.dtype)
     except ImportError:  # pragma: no cover - SciPy is present in the report env
         dense = _sparse_rows(k, free_idx, free_idx).to_dense()
@@ -274,6 +275,7 @@ def solve_shell_solid_hex20(
     with torch.sparse.check_sparse_tensor_invariants(enable=False):
         k = torch.sparse_coo_tensor(torch.stack((rows, cols)), ke.reshape(-1),
                                     (ndof, ndof), dtype=dtype, device=device).coalesce()
+    del ke, rows, cols  # release unassembled entries before sparse factorisation
     fixed = fixed_dofs.to(device=device, dtype=torch.long)
     values = (torch.zeros(len(fixed), dtype=dtype, device=device)
               if prescribed_values is None else prescribed_values.to(device=device, dtype=dtype))
@@ -341,5 +343,5 @@ def shell_surface_stress_table(result: Hex20SolidResult, nphi: int, ntheta: int,
     theta = torch.atan2(point[:, 1], point[:, 0])
     if bool((radial <= 0).any()):
         raise ValueError("degenerate surface point at the axis")
-    return {"element_index": columns, "point": point, "polar_angle": phi,
+    return {"grid_shape": (ntheta, nphi), "element_index": columns, "point": point, "polar_angle": phi,
             "azimuth": theta, "stress": stress, "von_mises": von_mises(stress)}

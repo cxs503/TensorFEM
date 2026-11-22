@@ -3,12 +3,12 @@
 The reference is the single-pole kernel ``K(t) = c exp(-lam t)`` (and a
 sign-changing two-pole kernel with ``B(0) = 0``), whose frequency-domain pair
 
-    B(w) = c lam/(lam^2+w^2),      A(w)-A_inf = c/(lam^2+w^2)
+    B(w) = c lam/(lam^2+w^2),      A(w)-A_inf = -c/(lam^2+w^2)
 
 is closed form.  Every transform below is therefore compared with an analytic
 value, never with this module's own output.
 
-Checks (numbered as in docs/CASE-FEM-RADIATION-MEMORY-KK.md):
+Checks (numbered as in docs/marine-controls.md):
 
 V1  B(w) -> K(t) -> B(w) and K(t) -> A(w)                       (transform pair)
 V2  Kramers-Kronig gate accepts an exact pair
@@ -26,6 +26,7 @@ what V1 measures.
 import math
 
 import numpy as np
+from scipy.integrate import trapezoid
 import pytest
 
 from tensorfem import radiation_memory as rm
@@ -48,7 +49,7 @@ def _exact_kernel(times):
 
 def test_kernel_and_inverse_transforms_round_trip():
     ref = _reference()
-    kernel = rm.cummins_kernel(BAND, ref["damping"], TIMES)
+    kernel = rm.cummins_kernel(BAND, ref["damping"], TIMES, zero_frequency_damping=C_REF / LAM_REF)
     kernel_error = np.max(np.abs(kernel - ref["kernel"])) / C_REF
     assert kernel_error < 3e-2, kernel_error
 
@@ -69,7 +70,7 @@ def test_kernel_and_inverse_transforms_round_trip():
 
 def test_kramers_kronig_gate_accepts_exact_pair():
     ref = _reference()
-    gate = rm.kramers_kronig_residual(BAND, ref["damping"], ref["added_mass"], A_INF)
+    gate = rm.kramers_kronig_residual(BAND, ref["damping"], ref["added_mass"], A_INF, zero_frequency_damping=C_REF / LAM_REF)
     assert gate["passed"], gate
     assert gate["residual"] < 2e-2, gate
     assert gate["band"][0] > BAND[0]
@@ -78,18 +79,18 @@ def test_kramers_kronig_gate_accepts_exact_pair():
 def test_kramers_kronig_gate_rejects_inconsistent_pairs():
     ref = _reference()
     scaled = rm.kramers_kronig_residual(
-        BAND, 1.05 * ref["damping"], ref["added_mass"], A_INF
+        BAND, 1.05 * ref["damping"], ref["added_mass"], A_INF, zero_frequency_damping=1.05 * C_REF / LAM_REF
     )
     assert scaled["residual"] > 2e-2, scaled
     assert not scaled["passed"]
 
     other = rm.single_pole_pair(TIMES, BAND, C_REF, 3.0, A_INF)["added_mass"]
-    crossed = rm.kramers_kronig_residual(BAND, ref["damping"], other, A_INF)
+    crossed = rm.kramers_kronig_residual(BAND, ref["damping"], other, A_INF, zero_frequency_damping=C_REF / LAM_REF)
     assert crossed["residual"] > 0.5, crossed
     assert not crossed["passed"]
 
     shifted = rm.kramers_kronig_residual(
-        BAND, ref["damping"], ref["added_mass"], A_INF + 0.2
+        BAND, ref["damping"], ref["added_mass"], A_INF + 0.2, zero_frequency_damping=C_REF / LAM_REF
     )
     assert not shifted["passed"]
 
@@ -116,9 +117,9 @@ def test_radiation_dissipation_energy_balance():
     times = np.arange(0.0, periods * 2.0 * math.pi / omega_0 + 1e-12, 0.005)
     velocity = speed * np.cos(omega_0 * times)
     memory = rm.memory_force(times, _exact_kernel(times), velocity)
-    dissipated = float(np.trapezoid(memory * velocity, times))
+    dissipated = float(trapezoid(memory * velocity, times))
     b_at = C_REF * LAM_REF / (LAM_REF ** 2 + omega_0 ** 2)
-    expected = b_at * float(np.trapezoid(velocity ** 2, times))
+    expected = b_at * float(trapezoid(velocity ** 2, times))
     assert dissipated > 0.0
     assert abs(dissipated - expected) / expected < 2e-2, (dissipated, expected)
 
@@ -186,7 +187,66 @@ def test_zero_damping_gives_zero_kernel_and_no_memory():
 def test_two_pole_pair_gate_accepts_physical_shape():
     a, b, c = 1.0, 6.0, 2.0
     band = np.linspace(0.2, 12.0, 801)
-    damping = c * (a * a / (a * a + band ** 2) - b * b / (b * b + band ** 2))
-    added = A_INF - c * (a / (a * a + band ** 2) - b / (b * b + band ** 2))
-    gate = rm.kramers_kronig_residual(band, damping, added, A_INF)
+    damping = c * (b * b / (b * b + band ** 2) - a * a / (a * a + band ** 2))
+    added = A_INF - c * (b / (b * b + band ** 2) - a / (a * a + band ** 2))
+    gate = rm.kramers_kronig_residual(band, damping, added, A_INF, zero_frequency_damping=0.0)
     assert gate["passed"], gate
+
+
+def test_supplied_origin_matches_full_table_and_unknown_origin_stays_band_limited():
+    omega = np.linspace(0.1, 2.0, 17)
+    b = 1.0 / (1 + omega**2)
+    t = np.array([0.0, 0.5, 2.0])
+    expected = rm.cummins_kernel(np.r_[0.0, omega], np.r_[1.0, b], t)
+    assert np.array_equal(rm.cummins_kernel(omega, b, t, zero_frequency_damping=1.0), expected)
+    truncated = rm.cummins_kernel(omega, b, t)
+    assert expected[0] - truncated[0] == pytest.approx(omega[0]*(1 + b[0])/np.pi)
+    with pytest.raises(ValueError, match="conflicts"):
+        rm.cummins_kernel(np.r_[0.0, omega], np.r_[1.0, b], t, zero_frequency_damping=0.0)
+    estimate = rm.kernel_truncation_estimate(omega, b, t, zero_frequency_damping=1.0)
+    assert estimate["peak_kernel"] == pytest.approx(expected[0])
+    assert estimate["bound"] == pytest.approx(2*b[-1]*omega[-1]/np.pi)
+
+
+def test_constant_damping_finite_band_principal_value():
+    omega = np.linspace(.5, 5., 51)
+    at = np.array([.9, 2.7])
+    expected = 2. - (np.log((5+at)/(5-at))-np.log((at+.5)/(at-.5)))/(np.pi*at)
+    actual = rm.kramers_kronig_added_mass(omega, np.ones_like(omega), 2., at=at)
+    np.testing.assert_allclose(actual, expected, atol=1e-13)
+
+
+def test_conservative_oscillator_preserves_energy():
+    dt = .08
+    result = rm.simulate_cummins(2., 1., 6., np.array([0.,dt]), np.zeros(2), dt, 500, x0=1.)
+    energy = .5*(3.*result["v"]**2 + 6.*result["x"]**2)
+    np.testing.assert_allclose(energy, 3., atol=1e-12, rtol=1e-12)
+
+
+def test_matrix_mass_scalar_added_mass_and_short_memory_window():
+    dt = .05
+    lags = np.arange(3)*dt
+    k = np.array([.6, .5, .4])
+    result = rm.simulate_cummins(np.diag([1.,2.]), .3, np.diag([3.,4.]), lags, k, dt, 25,
+                                 x0=[.25, -.5], v0=[.1, .2], force=lambda t: [t, -t])
+    for j, initial in enumerate([.25, -.5]):
+        scalar = rm.simulate_cummins(1.+j, .3, 3.+j, lags, k, dt, 25, x0=initial,
+                                     v0=[.1,.2][j], force=lambda t: t*(1-2*j))
+        np.testing.assert_allclose(result["x"][:,j], scalar["x"], atol=1e-12)
+        for n in range(2,26):
+            expected = trapezoid(k*result["v"][n-2:n+1,j][::-1], lags)
+            assert result["memory_force"][n,j] == pytest.approx(expected)
+
+
+def test_recursive_free_motion_uses_one_memory_term_and_starts_at_rest_history():
+    dt = .02
+    lags = np.arange(7) * dt
+    model = rm.StateSpaceMemory([2.], [-1.])
+    for _ in range(2):
+        sim = rm.simulate_cummins(2., 0., 4., lags, 2*np.exp(-lags), dt, 20,
+                                  v0=.5, state_space=model)
+        reference, state = [], 0.
+        for v in sim["v"][:-1]:
+            state = np.exp(-dt)*state + 2*(-np.expm1(-dt))*v
+            reference.append(state)
+        np.testing.assert_allclose(sim["memory_force"][1:], reference, atol=1e-14)

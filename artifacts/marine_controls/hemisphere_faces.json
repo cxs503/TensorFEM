@@ -1,0 +1,1566 @@
+{
+  "shell_field_sha256": "4852bcb952395936930dbe27e682821f5a28f6da6f4a2c255743ed923c4a2b0c",
+  "rows": [
+    {
+      "solid_mesh": [
+        20,
+        24,
+        1
+      ],
+      "solid_probe": 0.0889712555916031,
+      "shell_mesh": 24,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.16724192417862108,
+            "max_relative_error": 0.24325451800231201
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.16234781774348392,
+            "max_relative_error": 0.2226781658620809
+          },
+          "near_equator_load": {
+            "elements": 48,
+            "requested": 72,
+            "mean_relative_error": 0.24417526304626733,
+            "max_relative_error": 0.3612827165169967
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.028640384198566453,
+            "max_relative_error": 0.07543099490666594
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.03601497103981971,
+            "max_relative_error": 0.10795675836513752
+          },
+          "near_equator_load": {
+            "elements": 48,
+            "requested": 72,
+            "mean_relative_error": 0.07623663345609298,
+            "max_relative_error": 0.10602182421796691
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        20,
+        24,
+        1
+      ],
+      "solid_probe": 0.0889712555916031,
+      "shell_mesh": 24,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.16437205429338664,
+            "max_relative_error": 0.2410610703333842
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.1597171942498329,
+            "max_relative_error": 0.22249799177610496
+          },
+          "near_equator_load": {
+            "elements": 48,
+            "requested": 72,
+            "mean_relative_error": 0.24151377022502454,
+            "max_relative_error": 0.3680745770971483
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.027279179696799855,
+            "max_relative_error": 0.07390241659384789
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.036353594140060196,
+            "max_relative_error": 0.1121730667117744
+          },
+          "near_equator_load": {
+            "elements": 48,
+            "requested": 72,
+            "mean_relative_error": 0.07533477902224477,
+            "max_relative_error": 0.1070308767235364
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        20,
+        24,
+        1
+      ],
+      "solid_probe": 0.0889712555916031,
+      "shell_mesh": 32,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.16370434089408717,
+            "max_relative_error": 0.22920197316714952
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.1470619641720738,
+            "max_relative_error": 0.21140455834108662
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.23443640704096758,
+            "max_relative_error": 0.39717982321610057
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.03284952542150889,
+            "max_relative_error": 0.07895232480495773
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.029958693695469694,
+            "max_relative_error": 0.09280822619646001
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.06063348449938029,
+            "max_relative_error": 0.10244644856934859
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        20,
+        24,
+        1
+      ],
+      "solid_probe": 0.0889712555916031,
+      "shell_mesh": 32,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.1610898388114672,
+            "max_relative_error": 0.2267747184687503
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.1445932774902753,
+            "max_relative_error": 0.20545571012761688
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.23172071821589424,
+            "max_relative_error": 0.39534929613556913
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.031236772158164,
+            "max_relative_error": 0.07711167379631989
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.029708550929869824,
+            "max_relative_error": 0.096842894354771
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.05996212020381453,
+            "max_relative_error": 0.10397731478621686
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        20,
+        24,
+        1
+      ],
+      "solid_probe": 0.0889712555916031,
+      "shell_mesh": 40,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.16008564582985696,
+            "max_relative_error": 0.21786279849392853
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.13664737031284505,
+            "max_relative_error": 0.1983182677324713
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.21958612662760715,
+            "max_relative_error": 0.404123016290328
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.03262869073612208,
+            "max_relative_error": 0.07182292679902968
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.027151411466435096,
+            "max_relative_error": 0.08801410794728337
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.06069367318686987,
+            "max_relative_error": 0.12241085469387403
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        20,
+        24,
+        1
+      ],
+      "solid_probe": 0.0889712555916031,
+      "shell_mesh": 40,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.15757598700348358,
+            "max_relative_error": 0.2153168916458872
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.1342732793393566,
+            "max_relative_error": 0.1930423676165156
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.21699309897241756,
+            "max_relative_error": 0.40215109390493664
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.03086847276080877,
+            "max_relative_error": 0.07007268673334122
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.026564048972942282,
+            "max_relative_error": 0.0918311420633644
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.05957083791091107,
+            "max_relative_error": 0.12036010442454748
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        28,
+        36,
+        1
+      ],
+      "solid_probe": 0.09240568555257786,
+      "shell_mesh": 24,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.07178997801905819,
+            "max_relative_error": 0.11619857285695656
+          },
+          "near_hole_edge": {
+            "elements": 64,
+            "requested": 64,
+            "mean_relative_error": 0.09572728616570214,
+            "max_relative_error": 0.2010583402972803
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.12129603548370999,
+            "max_relative_error": 0.20777957438078642
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.02160296072658987,
+            "max_relative_error": 0.04961307454882202
+          },
+          "near_hole_edge": {
+            "elements": 64,
+            "requested": 64,
+            "mean_relative_error": 0.061407809418545165,
+            "max_relative_error": 0.18257465006432527
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.10752291469088769,
+            "max_relative_error": 0.26588649558289423
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        28,
+        36,
+        1
+      ],
+      "solid_probe": 0.09240568555257786,
+      "shell_mesh": 24,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.06915326573466522,
+            "max_relative_error": 0.11422928730661908
+          },
+          "near_hole_edge": {
+            "elements": 64,
+            "requested": 64,
+            "mean_relative_error": 0.09399972142344482,
+            "max_relative_error": 0.20088135211289226
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.11975804053583389,
+            "max_relative_error": 0.2040737690051031
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.020222964385303778,
+            "max_relative_error": 0.04781489883881207
+          },
+          "near_hole_edge": {
+            "elements": 64,
+            "requested": 64,
+            "mean_relative_error": 0.06088795461991804,
+            "max_relative_error": 0.1895677374256427
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.10794221124332765,
+            "max_relative_error": 0.2649131709367565
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        28,
+        36,
+        1
+      ],
+      "solid_probe": 0.09240568555257786,
+      "shell_mesh": 32,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.06813940777472488,
+            "max_relative_error": 0.0947346858258431
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.07816488570478469,
+            "max_relative_error": 0.18715202644942686
+          },
+          "near_equator_load": {
+            "elements": 96,
+            "requested": 128,
+            "mean_relative_error": 0.11360791963601846,
+            "max_relative_error": 0.20538866896573849
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.024851355069818303,
+            "max_relative_error": 0.05063284890187558
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.03477302470882782,
+            "max_relative_error": 0.12942349027111888
+          },
+          "near_equator_load": {
+            "elements": 96,
+            "requested": 128,
+            "mean_relative_error": 0.05206871391711591,
+            "max_relative_error": 0.10682271561059276
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        28,
+        36,
+        1
+      ],
+      "solid_probe": 0.09240568555257786,
+      "shell_mesh": 32,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.06573872079698408,
+            "max_relative_error": 0.09257295816214217
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.07585566987624984,
+            "max_relative_error": 0.18690444332402478
+          },
+          "near_equator_load": {
+            "elements": 96,
+            "requested": 128,
+            "mean_relative_error": 0.11178673731625632,
+            "max_relative_error": 0.20225742483141307
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.023180546593621384,
+            "max_relative_error": 0.04873560335064364
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.03451367643511681,
+            "max_relative_error": 0.13359334266077894
+          },
+          "near_equator_load": {
+            "elements": 96,
+            "requested": 128,
+            "mean_relative_error": 0.05144636943502012,
+            "max_relative_error": 0.10835965874791209
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        28,
+        36,
+        1
+      ],
+      "solid_probe": 0.09240568555257786,
+      "shell_mesh": 40,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.06594825531027551,
+            "max_relative_error": 0.08902177237934161
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.06946168140632712,
+            "max_relative_error": 0.16889474899306856
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.09848274735744093,
+            "max_relative_error": 0.20629760412554377
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.025394791473755,
+            "max_relative_error": 0.046560742487013584
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.02811474099175192,
+            "max_relative_error": 0.12222389850933424
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.04655238630447686,
+            "max_relative_error": 0.1052418760350553
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        28,
+        36,
+        1
+      ],
+      "solid_probe": 0.09240568555257786,
+      "shell_mesh": 40,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.06364177413061378,
+            "max_relative_error": 0.08673210346174387
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.06722922918296319,
+            "max_relative_error": 0.1684578306152551
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.09635290565131295,
+            "max_relative_error": 0.20342661357382252
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.023605929069809736,
+            "max_relative_error": 0.04476286615836811
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.02746459353103152,
+            "max_relative_error": 0.1261609493942475
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.045563430351182814,
+            "max_relative_error": 0.10702174301164846
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        34,
+        42,
+        1
+      ],
+      "solid_probe": 0.09296684242138754,
+      "shell_mesh": 24,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.051573611638078116,
+            "max_relative_error": 0.0894607058275112
+          },
+          "near_hole_edge": {
+            "elements": 64,
+            "requested": 64,
+            "mean_relative_error": 0.08503509380745969,
+            "max_relative_error": 0.1894585992187494
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.11195267080031772,
+            "max_relative_error": 0.20702071995347682
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.015609457731518669,
+            "max_relative_error": 0.038905589945898655
+          },
+          "near_hole_edge": {
+            "elements": 64,
+            "requested": 64,
+            "mean_relative_error": 0.061430898097683616,
+            "max_relative_error": 0.17353652727341407
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.10570352770367582,
+            "max_relative_error": 0.2608896695724483
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        34,
+        42,
+        1
+      ],
+      "solid_probe": 0.09296684242138754,
+      "shell_mesh": 24,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.048986205218626955,
+            "max_relative_error": 0.08753859333084746
+          },
+          "near_hole_edge": {
+            "elements": 64,
+            "requested": 64,
+            "mean_relative_error": 0.08333827740904262,
+            "max_relative_error": 0.18928332037440265
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.11086973726334622,
+            "max_relative_error": 0.20912943645342064
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.01428552409955915,
+            "max_relative_error": 0.03708715518327277
+          },
+          "near_hole_edge": {
+            "elements": 64,
+            "requested": 64,
+            "mean_relative_error": 0.06098179177970147,
+            "max_relative_error": 0.18060693592439314
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.1061207612722953,
+            "max_relative_error": 0.2599097198828
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        34,
+        42,
+        1
+      ],
+      "solid_probe": 0.09296684242138754,
+      "shell_mesh": 32,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.04782705668079324,
+            "max_relative_error": 0.06726117899590456
+          },
+          "near_hole_edge": {
+            "elements": 110,
+            "requested": 110,
+            "mean_relative_error": 0.07605981609415619,
+            "max_relative_error": 0.19357226655027104
+          },
+          "near_equator_load": {
+            "elements": 128,
+            "requested": 128,
+            "mean_relative_error": 0.10350592835297528,
+            "max_relative_error": 0.2088947070511854
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.018071208284363344,
+            "max_relative_error": 0.03894242244255708
+          },
+          "near_hole_edge": {
+            "elements": 110,
+            "requested": 110,
+            "mean_relative_error": 0.053975090973481896,
+            "max_relative_error": 0.19664450127802569
+          },
+          "near_equator_load": {
+            "elements": 128,
+            "requested": 128,
+            "mean_relative_error": 0.08271815234627175,
+            "max_relative_error": 0.26115405223995203
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        34,
+        42,
+        1
+      ],
+      "solid_probe": 0.09296684242138754,
+      "shell_mesh": 32,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.04547177036868784,
+            "max_relative_error": 0.06515370213881622
+          },
+          "near_hole_edge": {
+            "elements": 110,
+            "requested": 110,
+            "mean_relative_error": 0.07430650433471613,
+            "max_relative_error": 0.19724150653339967
+          },
+          "near_equator_load": {
+            "elements": 128,
+            "requested": 128,
+            "mean_relative_error": 0.10239411374475493,
+            "max_relative_error": 0.21076478570019208
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.016405995569779258,
+            "max_relative_error": 0.03702181437075924
+          },
+          "near_hole_edge": {
+            "elements": 110,
+            "requested": 110,
+            "mean_relative_error": 0.05310839374303541,
+            "max_relative_error": 0.20146843738586984
+          },
+          "near_equator_load": {
+            "elements": 128,
+            "requested": 128,
+            "mean_relative_error": 0.0825554040092242,
+            "max_relative_error": 0.2599473571661224
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        34,
+        42,
+        1
+      ],
+      "solid_probe": 0.09296684242138754,
+      "shell_mesh": 40,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.04596998559316992,
+            "max_relative_error": 0.061777785324761636
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.05487517315253239,
+            "max_relative_error": 0.17710070912896425
+          },
+          "near_equator_load": {
+            "elements": 200,
+            "requested": 240,
+            "mean_relative_error": 0.07631378604335573,
+            "max_relative_error": 0.18164391798127233
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.018709304344664193,
+            "max_relative_error": 0.03461415634110476
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.02722242560571199,
+            "max_relative_error": 0.13727427733457365
+          },
+          "near_equator_load": {
+            "elements": 200,
+            "requested": 240,
+            "mean_relative_error": 0.04195000913852422,
+            "max_relative_error": 0.11110266323937323
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        34,
+        42,
+        1
+      ],
+      "solid_probe": 0.09296684242138754,
+      "shell_mesh": 40,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.04370659848493374,
+            "max_relative_error": 0.059549014631344654
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.052960619846731144,
+            "max_relative_error": 0.17666072346490136
+          },
+          "near_equator_load": {
+            "elements": 200,
+            "requested": 240,
+            "mean_relative_error": 0.07449566005162256,
+            "max_relative_error": 0.17883160324863856
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.016908070356191015,
+            "max_relative_error": 0.03279375263667672
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.02673370886435796,
+            "max_relative_error": 0.14126412883026584
+          },
+          "near_equator_load": {
+            "elements": 200,
+            "requested": 240,
+            "mean_relative_error": 0.041125608442891856,
+            "max_relative_error": 0.11289196835057558
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        1
+      ],
+      "solid_probe": 0.09005065780066546,
+      "shell_mesh": 24,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.1348297993814817,
+            "max_relative_error": 0.2076767981352754
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.13173378837439434,
+            "max_relative_error": 0.23166948895907336
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.1679293093208362,
+            "max_relative_error": 0.3519895076938857
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.02507893491056384,
+            "max_relative_error": 0.06757338942517988
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.04177636566133319,
+            "max_relative_error": 0.14029618654624176
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.11448890403056773,
+            "max_relative_error": 0.2710036304454405
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        1
+      ],
+      "solid_probe": 0.09005065780066546,
+      "shell_mesh": 24,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.13203883130414895,
+            "max_relative_error": 0.20554611948554546
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.1291849220425819,
+            "max_relative_error": 0.23148798991002373
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.165107682037972,
+            "max_relative_error": 0.30368429550931975
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.023819646058842032,
+            "max_relative_error": 0.06603182023200183
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.04220926925574336,
+            "max_relative_error": 0.14463556197102578
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.11449233414580556,
+            "max_relative_error": 0.27003709035434686
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        1
+      ],
+      "solid_probe": 0.09005065780066546,
+      "shell_mesh": 32,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.1305091127837498,
+            "max_relative_error": 0.18385915541030928
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.11997658547838963,
+            "max_relative_error": 0.19777824306278124
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.19706940410219562,
+            "max_relative_error": 0.333213084551216
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.02946736407593128,
+            "max_relative_error": 0.072061378096267
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.031385702140487075,
+            "max_relative_error": 0.12265388335519112
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.05908309201077877,
+            "max_relative_error": 0.09997108091978846
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        1
+      ],
+      "solid_probe": 0.09005065780066546,
+      "shell_mesh": 32,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.12796873410275278,
+            "max_relative_error": 0.18154369209694177
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.1175717846731733,
+            "max_relative_error": 0.1975284438168976
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.19443394086815372,
+            "max_relative_error": 0.33146636403977014
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.027917049045620607,
+            "max_relative_error": 0.07020695600025617
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.031217110548209057,
+            "max_relative_error": 0.1267987422310639
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.05838522697900677,
+            "max_relative_error": 0.10149850982075459
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        1
+      ],
+      "solid_probe": 0.09005065780066546,
+      "shell_mesh": 40,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.12752570771112495,
+            "max_relative_error": 0.17809358336955805
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.11003979279037339,
+            "max_relative_error": 0.18321917448766945
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.1805275120609639,
+            "max_relative_error": 0.35968186947658953
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.02922939818448581,
+            "max_relative_error": 0.06625207038691627
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.024502212846342245,
+            "max_relative_error": 0.11651413217819662
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.05779525888126667,
+            "max_relative_error": 0.10414297664227545
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        1
+      ],
+      "solid_probe": 0.09005065780066546,
+      "shell_mesh": 40,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.12508624361105344,
+            "max_relative_error": 0.17579789413725844
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.10772010476679049,
+            "max_relative_error": 0.18277690181704598
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.1780165534798612,
+            "max_relative_error": 0.35777235935224505
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.027518837398817608,
+            "max_relative_error": 0.06449132549798431
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.024256043789517612,
+            "max_relative_error": 0.12043115173013197
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.05665765833605398,
+            "max_relative_error": 0.10204953799646344
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        2
+      ],
+      "solid_probe": 0.09006074718598597,
+      "shell_mesh": 24,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.13473239693724087,
+            "max_relative_error": 0.20754666776632957
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.1317412014252658,
+            "max_relative_error": 0.23161496727042752
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.16765842239667442,
+            "max_relative_error": 0.34119980502209724
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.02515150705415973,
+            "max_relative_error": 0.06764229096415364
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.04150833173496349,
+            "max_relative_error": 0.14031511293785592
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.11475744514977275,
+            "max_relative_error": 0.27128544984983305
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        2
+      ],
+      "solid_probe": 0.09006074718598597,
+      "shell_mesh": 24,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.13194166629809262,
+            "max_relative_error": 0.2054162187028592
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.12919233610463968,
+            "max_relative_error": 0.23143347625570443
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.16484707455212322,
+            "max_relative_error": 0.293280097957211
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 272,
+            "requested": 272,
+            "mean_relative_error": 0.023888099286330126,
+            "max_relative_error": 0.06610083568502378
+          },
+          "near_hole_edge": {
+            "elements": 48,
+            "requested": 64,
+            "mean_relative_error": 0.041940990324131615,
+            "max_relative_error": 0.1446545603866627
+          },
+          "near_equator_load": {
+            "elements": 72,
+            "requested": 72,
+            "mean_relative_error": 0.11475822307427402,
+            "max_relative_error": 0.27031928340909506
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        2
+      ],
+      "solid_probe": 0.09006074718598597,
+      "shell_mesh": 32,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.13041223038009617,
+            "max_relative_error": 0.18374402765672526
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.11985331756516054,
+            "max_relative_error": 0.19763676807894037
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.196906300432698,
+            "max_relative_error": 0.3316965141322743
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.02954370704156967,
+            "max_relative_error": 0.07192191690019556
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.031366522392620215,
+            "max_relative_error": 0.12264689280145658
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.05908679044951778,
+            "max_relative_error": 0.09973769870477178
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        2
+      ],
+      "solid_probe": 0.09006074718598597,
+      "shell_mesh": 32,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.12787206824872965,
+            "max_relative_error": 0.1814287895171789
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.11744894380287994,
+            "max_relative_error": 0.19738699833797102
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.19427120183175986,
+            "max_relative_error": 0.3299517805685179
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 506,
+            "requested": 506,
+            "mean_relative_error": 0.027991611848294757,
+            "max_relative_error": 0.07006721610048872
+          },
+          "near_hole_edge": {
+            "elements": 88,
+            "requested": 110,
+            "mean_relative_error": 0.03119123744734724,
+            "max_relative_error": 0.12679172586807597
+          },
+          "near_equator_load": {
+            "elements": 90,
+            "requested": 128,
+            "mean_relative_error": 0.05838883480483796,
+            "max_relative_error": 0.10126480352927225
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        2
+      ],
+      "solid_probe": 0.09006074718598597,
+      "shell_mesh": 40,
+      "recovery": "facet",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.12742987707753034,
+            "max_relative_error": 0.17792964176325898
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.10989349210954853,
+            "max_relative_error": 0.1830259856478027
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.18034619539689284,
+            "max_relative_error": 0.3555462142355035
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.029314524086876126,
+            "max_relative_error": 0.06619428436386665
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.024536867223132842,
+            "max_relative_error": 0.11649203412582065
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.05784951810675846,
+            "max_relative_error": 0.10488415899492698
+          }
+        }
+      }
+    },
+    {
+      "solid_mesh": [
+        24,
+        24,
+        2
+      ],
+      "solid_probe": 0.09006074718598597,
+      "shell_mesh": 40,
+      "recovery": "radial",
+      "face_regions": {
+        "outer": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.12499061971846365,
+            "max_relative_error": 0.17563427199537696
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.10757423810419507,
+            "max_relative_error": 0.1825837851887746
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.17783561167560055,
+            "max_relative_error": 0.35364251214297204
+          }
+        },
+        "inner": {
+          "interior": {
+            "elements": 702,
+            "requested": 702,
+            "mean_relative_error": 0.027602035268807022,
+            "max_relative_error": 0.0644334305092904
+          },
+          "near_hole_edge": {
+            "elements": 156,
+            "requested": 182,
+            "mean_relative_error": 0.024289093049660846,
+            "max_relative_error": 0.12040897615208856
+          },
+          "near_equator_load": {
+            "elements": 190,
+            "requested": 240,
+            "mean_relative_error": 0.05671049209096089,
+            "max_relative_error": 0.10279245234399825
+          }
+        }
+      }
+    }
+  ],
+  "stress_accuracy_qualified": false
+}

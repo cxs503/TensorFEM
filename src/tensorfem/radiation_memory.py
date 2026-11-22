@@ -36,30 +36,21 @@ functions: they are a Hilbert (Kramers-Kronig) pair,
 
     A(omega) - A_inf = -(2/pi) CPV integral_0^inf B(s) / (omega^2 - s^2) ds.  (4)
 
-Eq. (4) is the *causality gate* used below.  A tabulated ``(A, B)`` pair that
-fails it cannot come from a causal (passive) fluid: the ``A`` and ``B`` were
-computed by different routes, interpolated inconsistently, or extrapolated
-through a resonance.  Eq. (4) therefore converts "did the BEM solve converge?"
-into a cheap, discretisation-independent consistency check, and it is the check
-this module is built to run.
+The finite-band residual in (4) tests consistency at the chosen frequency
+resolution and bandwidth. Both missing tails and inconsistent tables can
+increase it. Passivity additionally requires nonnegative radiation damping
+(or a positive semidefinite damping matrix).
 
 Numerics
 --------
 * (3) is a trapezoidal cosine transform; the caller owns the truncation of the
   frequency band (see :func:`kernel_truncation_estimate`, which bounds the
   neglected tail for a decaying damping curve).
-* (4) is evaluated by singularity subtraction: with ``B_w = B(omega)``,
-
-      A(omega) - A_inf = (2/pi) { integral_0^S [B(s)-B_w]/(omega^2-s^2) ds
-                                  + B_w/(2 omega) * ln|(S+omega)/(S-omega)| },
-
-  which is regular at ``s = omega`` and analytic in the truncated-domain part.
-  The logarithmic term is the exact finite-domain value of
-  ``CPV integral_0^S ds/(omega^2-s^2)``; it vanishes as ``S -> inf``.  Requested
-  frequencies must stay inside the tabulated band; near the last tabulated point
-  the logarithmic term grows, which is a property of the truncation and not of
-  the fluid, so :func:`kramers_kronig_residual` reports the residual on an
-  interior band and says so.
+* (4) uses singularity subtraction on the supplied band [L, S]. Integrate
+  (B(s)-B(w))/(w^2-s^2) by quadrature and add B(w)/(2w) times
+  log((S+w)/(S-w)) - log((w+L)/(w-L)) before multiplying by -2/pi.
+  Requested frequencies lie strictly inside the band. A supplied B(0)
+  extends the trapezoidal rule to L=0.
 * The time integrator uses the trapezoidal memory quadrature with the
   ``K(0) v(t) / 2`` term taken implicitly (it enters the effective damping), so
   the scheme stays second order and stable for stiff kernels.
@@ -67,8 +58,8 @@ Numerics
 Conventions
 -----------
 SI units throughout (m, kg, s, rad/s).  ``omega[0]`` is the lowest tabulated
-frequency and ``B(omega[0])`` should be close to the physical ``B(0) = 0``;
-nothing here silently re-normalises the tabulated data.
+frequency. Supply an independently known zero-frequency endpoint when the
+table omits it. Without that input the transform covers the measured band.
 
 The module is deliberately free of any hull geometry: ``A``/``B`` are *inputs*,
 so the coefficients of any radiation solver (this repository's own or an
@@ -86,6 +77,11 @@ from __future__ import annotations
 import math
 
 import numpy as np
+
+try:
+    from numpy import trapezoid
+except ImportError:  # NumPy 1.26
+    from numpy import trapz as trapezoid
 
 __all__ = [
     "single_pole_pair",
@@ -128,7 +124,20 @@ def single_pole_pair(times, omega, coefficient=1.0, rate=1.0, added_mass_inf=0.0
     return {"kernel": kernel, "damping": damping, "added_mass": added_mass}
 
 
-def cummins_kernel(omega, damping, times):
+def _include_origin(omega, damping, zero_frequency_damping):
+    if zero_frequency_damping is not None:
+        endpoint = float(zero_frequency_damping)
+        if not math.isfinite(endpoint):
+            raise ValueError("zero_frequency_damping must be finite")
+        if omega[0] > 0:
+            omega = np.r_[0.0, omega]
+            damping = np.r_[endpoint, damping]
+        elif damping[0] != endpoint:
+            raise ValueError("zero_frequency_damping conflicts with the tabulated origin")
+    return omega, damping
+
+
+def cummins_kernel(omega, damping, times, *, zero_frequency_damping=None):
     """Memory kernel ``K(t) = (2/pi) integral_0^inf B(omega) cos(omega t) domega``.
 
     Parameters
@@ -138,6 +147,10 @@ def cummins_kernel(omega, damping, times):
         coefficient at those frequencies.  The band must resolve ``B`` down to a
         small fraction of its peak (:func:`kernel_truncation_estimate` reports
         what the neglected tail contributes).
+    zero_frequency_damping : float or None
+        Independently known B(0). Include the interval from zero to the first
+        tabulated frequency with the same trapezoid rule. If omitted, integrate
+        only the measured band. The caller must resolve low-frequency structure.
     times : array_like, shape (m,)
         Lags at which ``K`` is wanted.  Lags start at ``0`` - the kernel is
         symmetric and defined for ``t >= 0`` only.
@@ -152,6 +165,9 @@ def cummins_kernel(omega, damping, times):
     _check_band(omega)
     if damping.shape != omega.shape:
         raise ValueError("damping must have the same shape as omega")
+    if not (np.isfinite(omega).all() and np.isfinite(damping).all() and np.isfinite(times).all()):
+        raise ValueError("frequencies, damping and lags must be finite")
+    omega, damping = _include_origin(omega, damping, zero_frequency_damping)
     if np.any(times < 0.0):
         raise ValueError("times must be non-negative; K is causal on t >= 0")
     return _chunked_cosine_transform(omega, damping, times, 2.0 / math.pi)
@@ -187,7 +203,7 @@ def added_mass_from_kernel(times, kernel, omega, added_mass_inf):
     return np.asarray(added_mass_inf, dtype=float) - transformed / omega
 
 
-def kernel_truncation_estimate(omega, damping, times, tail_exponent=2.0):
+def kernel_truncation_estimate(omega, damping, times, tail_exponent=2.0, *, zero_frequency_damping=None):
     """Bound on the part of ``K(t)`` coming from ``omega > omega_max``.
 
     The integrand of (3) is bounded by ``B(omega)``, so a damping curve that
@@ -208,11 +224,11 @@ def kernel_truncation_estimate(omega, damping, times, tail_exponent=2.0):
     damping = np.asarray(damping, dtype=float)
     times = np.asarray(times, dtype=float)
     _check_band(omega)
-    if tail_exponent <= 1.0:
+    if not math.isfinite(tail_exponent) or tail_exponent <= 1.0:
         raise ValueError("tail_exponent must exceed 1 for a converged tail bound")
-    peak = float(np.max(np.abs(damping)))
-    bound = (2.0 / math.pi) * peak * omega[-1] / (tail_exponent - 1.0)
-    kernel = cummins_kernel(omega, damping, times)
+    tail_amplitude = abs(float(damping[-1]))
+    bound = (2.0 / math.pi) * tail_amplitude * omega[-1] / (tail_exponent - 1.0)
+    kernel = cummins_kernel(omega, damping, times, zero_frequency_damping=zero_frequency_damping)
     peak_kernel = float(np.max(np.abs(kernel))) if kernel.size else 0.0
     return {
         "bound": bound,
@@ -224,7 +240,7 @@ def kernel_truncation_estimate(omega, damping, times, tail_exponent=2.0):
 # --------------------------------------------------------------------------- #
 # (4) Kramers-Kronig causality gate
 # --------------------------------------------------------------------------- #
-def kramers_kronig_added_mass(omega, damping, added_mass_inf, at=None):
+def kramers_kronig_added_mass(omega, damping, added_mass_inf, at=None, *, zero_frequency_damping=None):
     """Added mass reconstructed from ``B(omega)`` through the KK relation (4).
 
     Parameters
@@ -249,27 +265,25 @@ def kramers_kronig_added_mass(omega, damping, added_mass_inf, at=None):
 
     Notes
     -----
-    The principal value is removed before discretisation by splitting
-
-        CPV integral_0^S B(s)/(omega^2-s^2) ds
-            = 1/(2 omega) [ integral_0^S (B(omega)-B(s))/(s-omega) ds
-                            + integral_0^S B(s)/(omega+s) ds ],
-
-    where ``(B(omega)-B(s))/(s-omega)`` is a divided difference: smooth through
-    ``s = omega`` with limit ``-B'(omega)``.  That removes the cancellation-prone
-    ``1/(omega^2-s^2)`` integrand and keeps the quadrature accurate at the bottom
-    of a coarse band, where the grid spacing is comparable to ``omega``.  The
-    sign convention is (4), i.e. ``A - A_inf = -(2/pi) * J``.
+    Subtract B(w) before quadrature; the pole then has the finite limit
+    -B'(w)/(2w). Integrate the subtracted constant analytically between the
+    actual lower and upper endpoints of the band. Optional B(0) extends the
+    interval in the same way as in cummins_kernel.
     """
     omega = np.asarray(omega, dtype=float)
     damping = np.asarray(damping, dtype=float)
     _check_band(omega)
     if damping.shape != omega.shape:
         raise ValueError("damping must have the same shape as omega")
+    if not np.isfinite(damping).all() or not np.isfinite(added_mass_inf):
+        raise ValueError("damping and added mass must be finite")
     band_top = float(omega[-1])
     if at is None:
         at = omega[1:-1]
+    omega, damping = _include_origin(omega, damping, zero_frequency_damping)
     at = np.atleast_1d(np.asarray(at, dtype=float))
+    if at.ndim != 1 or not np.isfinite(at).all():
+        raise ValueError("evaluation frequencies must form a finite vector")
     if np.any(at <= omega[0]) or np.any(at >= band_top):
         raise ValueError(
             "KK reconstruction needs frequencies strictly inside the open "
@@ -279,20 +293,17 @@ def kramers_kronig_added_mass(omega, damping, added_mass_inf, at=None):
     for i, w in enumerate(at):
         w = float(w)
         b_w = float(np.interp(w, omega, damping))
-        with np.errstate(divide="ignore", invalid="ignore"):
-            divided = (b_w - damping) / (omega - w)
-        hit = np.abs(omega - w) <= 1e-12 * max(w, 1.0)
-        if np.any(hit):
+        hit = omega == w
+        regular = np.empty_like(omega)
+        regular[~hit] = (damping[~hit] - b_w) / ((w - omega[~hit]) * (w + omega[~hit]))
+        if hit.any():
             idx = int(np.flatnonzero(hit)[0])
-            lo = max(idx - 1, 0)
-            hi = min(idx + 1, damping.size - 1)
-            slope = (damping[hi] - damping[lo]) / (omega[hi] - omega[lo])
-            divided[idx] = -slope
-        part_a = float(np.trapezoid(divided, omega))
-        part_b = float(np.trapezoid(damping / (w + omega), omega))
-        # CPV integral_0^S ds/(omega-s) = ln|omega/(omega-S)|
-        part_c = b_w * math.log(abs(w / (w - band_top)))
-        out[i] = added_mass_inf - (1.0 / math.pi) * (part_a + part_c + part_b) / w
+            slope = (damping[idx+1] - damping[idx-1]) / (omega[idx+1] - omega[idx-1])
+            regular[idx] = -slope / (2*w)
+        upper = math.log((band_top + w) / (band_top - w))
+        lower = math.log((w + omega[0]) / (w - omega[0]))
+        principal = trapezoid(regular, omega) + b_w * (upper-lower) / (2*w)
+        out[i] = added_mass_inf - (2.0/math.pi) * principal
     return out
 
 
@@ -305,6 +316,7 @@ def kramers_kronig_residual(
     band_fraction=0.9,
     pointwise_band=0.05,
     edge_intervals=2,
+    *, zero_frequency_damping=None,
 ):
     """Causality gate: does the tabulated ``(A, B)`` pair satisfy (4)?
 
@@ -343,7 +355,7 @@ def kramers_kronig_residual(
         Number of tabulated intervals dropped at the bottom of the band.  The
         KK quadrature cannot resolve ``omega`` within a few grid spacings of
         ``omega_min``: the missing ``s < omega_min`` band and the pole sit at the
-        same scale there.  ``docs/CASE-FEM-RADIATION-MEMORY-KK.md`` quantifies the
+        same scale there.  ``docs/marine-controls.md`` quantifies the
         resulting residual as a function of table resolution.
 
     Returns
@@ -366,7 +378,8 @@ def kramers_kronig_residual(
     if np.count_nonzero(mask) < 3:
         raise ValueError("interior band too short for a residual; widen the band")
     at = omega[mask]
-    reconstructed = kramers_kronig_added_mass(omega, damping, added_mass_inf, at=at)
+    reconstructed = kramers_kronig_added_mass(omega, damping, added_mass_inf, at=at,
+                                               zero_frequency_damping=zero_frequency_damping)
     deviation = np.abs(reconstructed - added_mass[mask])
     dynamic = np.abs(added_mass[mask] - added_mass_inf)
     scale = float(np.max(dynamic))
@@ -589,8 +602,8 @@ def simulate_cummins(
     n_steps : int
         Number of steps to integrate (``n_steps + 1`` samples returned).
     state_space : StateSpaceMemory, optional
-        If given, the *known* part of the memory force comes from the recursive
-        model instead of the direct trapezoidal convolution.  The recursive state
+        If given, the recursive model supplies the entire memory force using
+        piecewise-constant velocity instead of the direct trapezoidal convolution.  The recursive state
         is advanced with the velocity of the previous step (zero-order hold), so
         that route is first order in the memory coupling; the direct route is the
         reference and the two must agree to ``O(dt)`` (asserted in the tests).
@@ -613,16 +626,16 @@ def simulate_cummins(
         raise ValueError("dt must be positive")
     if kernel_times.ndim != 1 or kernel_times.size < 2 or kernel_times[0] != 0.0:
         raise ValueError("kernel_times must be a 1-D grid of >= 2 lags starting at 0")
-    if not math.isclose(kernel_times[1] - kernel_times[0], dt, rel_tol=1e-9):
+    if not np.allclose(np.diff(kernel_times), dt, rtol=1e-9, atol=0):
         raise ValueError("kernel lag spacing must equal dt")
     if n_steps < 1:
         raise ValueError("n_steps must be positive")
     n_lag = kernel_times.size
 
     scalar = np.ndim(mass) == 0 and np.ndim(added_mass_inf) == 0
-    m_eff = np.asarray(mass, dtype=float) + np.asarray(added_mass_inf, dtype=float)
-    ndof = 1 if scalar else int(np.atleast_2d(m_eff).shape[0])
-    if kernel.ndim == 1:
+    matrix_mass = mass if np.ndim(mass) else added_mass_inf
+    ndof = 1 if scalar else np.atleast_2d(matrix_mass).shape[0]
+    if kernel.shape == (n_lag,):
         kernel_mats = np.zeros((n_lag, ndof, ndof))
         for i in range(ndof):
             kernel_mats[:, i, i] = kernel
@@ -630,8 +643,6 @@ def simulate_cummins(
         kernel_mats = kernel
     else:
         raise ValueError("kernel must be (n_lag,) or (n_lag, ndof, ndof)")
-
-    m_eff = np.atleast_2d(m_eff)
 
     def _as_matrix(value):
         arr = np.asarray(value, dtype=float)
@@ -641,48 +652,49 @@ def simulate_cummins(
             return arr
         raise ValueError("matrix input must be (ndof, ndof) or a scalar")
 
+    m_eff = _as_matrix(mass) + _as_matrix(added_mass_inf)
     rest = _as_matrix(restoring)
     visc = _as_matrix(viscous_damping)
     k0 = kernel_mats[0]
     forcing = (lambda _t: np.zeros(ndof)) if force is None else force
 
-    lhs = m_eff / dt + visc + 0.5 * dt * k0 + 0.5 * dt * rest
+    if state_space is not None:
+        if ndof != 1:
+            raise ValueError("recursive memory requires a scalar motion")
+        state_space.reset()
+    implicit_memory = 0.5 * dt * k0 if state_space is None else np.zeros_like(k0)
+    lhs = m_eff / dt + 0.5 * (visc + implicit_memory) + 0.25 * dt * rest
     x = np.zeros((n_steps + 1, ndof))
     v = np.zeros((n_steps + 1, ndof))
     a = np.zeros((n_steps + 1, ndof))
     mem = np.zeros((n_steps + 1, ndof))
-    x[0] = float(x0)
-    v[0] = float(v0)
+    x[0] = x0
+    v[0] = v0
     t = np.arange(n_steps + 1) * dt
 
+    last_force = np.asarray(forcing(t[0]), dtype=float)
+    a[0] = np.linalg.solve(m_eff, last_force - rest @ x[0] - visc @ v[0])
     for n in range(n_steps):
         # trapezoid memory over the available lags; the j == n term is implicit
         m = min(n + 1, n_lag - 1)
-        if m < 1:
-            known = np.zeros(ndof)
+        if state_space is not None:
+            known = np.array([state_space.step(float(v[n][0]), dt)])
         else:
             hist = v[n - m + 1 : n + 1][::-1]      # v_n, v_{n-1}, ..., v_{n-m+1}
             lags = kernel_mats[1 : m + 1]          # K_1 .. K_m
             weights = np.ones(m)
-            if m == n + 1:                         # history reaches v_0
-                weights[-1] = 0.5
+            weights[-1] = 0.5  # both endpoints of the available integration window
             known = dt * np.einsum("kij,kj->i", lags, hist * weights[:, None])
-        if state_space is not None:
-            known = np.array([state_space.step(float(v[n][0]), dt)])
-        rhs = (
-            forcing(t[n + 1])
-            - rest @ x[n]
-            - 0.5 * dt * rest @ v[n]
-            - known
-            + m_eff @ v[n] / dt
-        )
-        v_next = np.linalg.solve(lhs, rhs)
-        x[n + 1] = x[n] + 0.5 * dt * (v[n] + v_next)
-        v[n + 1] = v_next
-        a[n + 1] = (v_next - v[n]) / dt
-        mem[n + 1] = known + 0.5 * dt * k0 @ v_next
-        if state_space is not None:
-            mem[n + 1] = known  # recursive model has no lag-0 split; see docstring
+        next_force = np.asarray(forcing(t[n + 1]), dtype=float)
+        # Average both endpoint forces in the momentum equation, as well as
+        # velocities in the displacement equation (trapezoidal Newmark).
+        rhs = (0.5*(last_force + next_force - mem[n] - known - visc @ v[n])
+               - rest @ (x[n] + 0.25*dt*v[n]) + m_eff @ v[n] / dt)
+        v[n + 1] = np.linalg.solve(lhs, rhs)
+        x[n + 1] = x[n] + 0.5*dt*(v[n] + v[n+1])
+        mem[n + 1] = known + implicit_memory @ v[n+1]
+        a[n + 1] = np.linalg.solve(m_eff, next_force - rest @ x[n+1] - visc @ v[n+1] - mem[n+1])
+        last_force = next_force
     memory_window = float((n_lag - 1) * dt)
     if scalar:
         return {
@@ -736,7 +748,7 @@ def _chunked_cosine_transform(grid, values, targets, prefactor, chunk_elements=4
     step = max(1, int(chunk_elements // max(grid.size, 1)))
     for start in range(0, targets.size, step):
         block = targets[start : start + step]
-        out[start : start + block.size] = np.trapezoid(
+        out[start : start + block.size] = trapezoid(
             values[None, :] * np.cos(np.outer(block, grid)), grid, axis=1
         )
     return prefactor * out
@@ -751,7 +763,7 @@ def _chunked_sine_transform(grid, values, targets, chunk_elements=4_000_000):
     step = max(1, int(chunk_elements // max(grid.size, 1)))
     for start in range(0, targets.size, step):
         block = targets[start : start + step]
-        out[start : start + block.size] = np.trapezoid(
+        out[start : start + block.size] = trapezoid(
             values[None, :] * np.sin(np.outer(block, grid)), grid, axis=1
         )
     return out
@@ -760,6 +772,8 @@ def _chunked_sine_transform(grid, values, targets, chunk_elements=4_000_000):
 def _check_band(omega):
     if omega.ndim != 1 or omega.size < 5:
         raise ValueError("a frequency band needs at least 5 samples")
+    if not np.isfinite(omega).all():
+        raise ValueError("frequency band must be finite")
     if np.any(np.diff(omega) <= 0.0):
         raise ValueError("omega must be strictly increasing")
     if np.any(omega < 0.0):
