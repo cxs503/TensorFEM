@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import subprocess
 import sys
 import time
@@ -34,8 +33,7 @@ from pathlib import Path
 import torch
 
 from tensorfem.hemisphere_benchmark_fields import hemisphere_fields
-from tensorfem.hemisphere_hex20_oracle import (MH_REFERENCE_DISPLACEMENT, shell_surface_stress_table,
-                                               von_mises)
+from tensorfem.hemisphere_hex20_oracle import (MH_REFERENCE_DISPLACEMENT, shell_surface_stress_table)
 from tensorfem.hemisphere_hex20_reference import (hemisphere_hex20_model, lame_ring_model,
                                                   thin_strip_bending_validation)
 
@@ -80,52 +78,45 @@ def _oracle_studies(meshes):
     return studies
 
 
-def _match(shell_phi, shell_theta, eval_phi, eval_theta) -> torch.Tensor:
-    """Nearest oracle station (in angle) for every shell4 element centre."""
-    dphi = (shell_phi[:, None] - eval_phi[None, :]).abs()
-    dtheta = (shell_theta[:, None] - eval_theta[None, :]).abs()
-    distance = dphi ** 2 + dtheta ** 2
-    return distance.argmin(1)
-
-
 def _compare(shell, table_outer, table_inner):
-    """Region-wise von Mises comparison of shell4 against the oracle."""
+    """Interpolate centre fields at common angular stations on each physical face."""
+    import numpy as np
+    from scipy.interpolate import RegularGridInterpolator
+
     phi_s, theta_s, _ = _phi_theta(shell["nodes"], shell["elements"])
-    outer_index = _match(phi_s, theta_s, torch.rad2deg(table_outer["polar_angle"]),
-                         torch.rad2deg(table_outer["azimuth"]))
-    inner_index = _match(phi_s, theta_s, torch.rad2deg(table_inner["polar_angle"]),
-                         torch.rad2deg(table_inner["azimuth"]))
-    # shell4 records both surfaces per element; take the larger as the outer one
-    shell_vm = torch.as_tensor(shell["von_mises_top_bottom"], dtype=torch.float64).max(1).values
-    oracle_vm = table_outer["von_mises"][outer_index]
-    oracle_signed_max = torch.stack((table_outer["von_mises"][outer_index],
-                                     table_inner["von_mises"][inner_index]), 1).max(1).values
-    relative = (shell_vm - oracle_vm).abs() / oracle_vm
-    regions = {}
-    for name, (p0, p1, t0, t1) in STATIONS.items():
-        mask = ((phi_s >= p0) & (phi_s <= p1) & (theta_s >= t0) & (theta_s <= t1))
-        if not bool(mask.any()):
-            continue
-        regions[name] = {
-            "elements": int(mask.sum()),
-            "oracle_von_mises_mean": float(oracle_vm[mask].mean()),
-            "shell4_von_mises_mean": float(shell_vm[mask].mean()),
-            "mean_relative_error": float(relative[mask].mean()),
-            "max_relative_error": float(relative[mask].max()),
-            "max_absolute_relative_error_against_two_sided_oracle":
-                float(((shell_vm - oracle_signed_max).abs() / oracle_signed_max)[mask].max()),
-        }
-    return {
-        "regions": regions,
-        "global_mean_relative_error": float(relative.mean()),
-        "global_max_relative_error": float(relative.max()),
-        "median_relative_error": float(relative.median()),
-        "stations": {"phi": phi_s.tolist(), "theta": theta_s.tolist(),
-                     "shell4_von_mises": shell_vm.tolist(),
-                     "oracle_von_mises": oracle_vm.tolist(),
-                     "oracle_von_mises_inner": table_inner["von_mises"][inner_index].tolist(),
-                     "relative_error": relative.tolist()},
-    }
+    shell_vm = np.asarray(shell["von_mises_top_bottom"])
+    stations = np.column_stack((theta_s, phi_s))
+    output = {}
+    face_errors = {}
+    for side, table, col in (("outer", table_outer, 0), ("inner", table_inner, 1)):
+        shape = table["grid_shape"]
+        theta = np.rad2deg(table["azimuth"].numpy()).reshape(shape).mean(axis=1)
+        phi = np.rad2deg(table["polar_angle"].numpy()).reshape(shape).mean(axis=0)
+        interp = RegularGridInterpolator((theta, phi), table["von_mises"].numpy().reshape(shape),
+                                         bounds_error=False, fill_value=np.nan)
+        reference = interp(stations)
+        valid = np.isfinite(reference) & (reference > 0)
+        rel = np.full(len(reference), np.nan)
+        rel[valid] = np.abs(shell_vm[valid, col] / reference[valid] - 1)
+        regions = {}
+        for name, (p0, p1, t0, t1) in STATIONS.items():
+            region = ((stations[:,1] >= p0) & (stations[:,1] <= p1) &
+                      (stations[:,0] >= t0) & (stations[:,0] <= t1))
+            used = region & valid
+            regions[name] = dict(elements=int(used.sum()), requested=int(region.sum()),
+                                 mean_relative_error=float(rel[used].mean()) if used.any() else None,
+                                 max_relative_error=float(rel[used].max()) if used.any() else None)
+        face_errors[side] = regions
+        if side == "outer":
+            output = dict(regions=regions, global_mean_relative_error=float(rel[valid].mean()),
+                          global_max_relative_error=float(rel[valid].max()),
+                          median_relative_error=float(np.median(rel[valid])),
+                          stations=dict(phi=stations[valid,1].tolist(), theta=stations[valid,0].tolist(),
+                                        shell4_von_mises=shell_vm[valid,col].tolist(),
+                                        oracle_von_mises=reference[valid].tolist(),
+                                        relative_error=rel[valid].tolist()))
+    output["face_regions"] = face_errors
+    return output
 
 
 def _figures(out_dir: Path, studies, shell_runs, comparisons, meridian_theta=45.0):
@@ -199,15 +190,15 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--meshes", default="20,24,1;28,36,1;34,42,1")
     parser.add_argument("--shell-meshes", default="32,40")
-    parser.add_argument("--out", default="benchmarks/tutorials/hemisphere-hex20-oracle.json")
-    parser.add_argument("--figures", default="docs/assets/hemisphere-hex20-oracle")
+    parser.add_argument("--out", default="benchmarks/tutorials/hemisphere-hex20-oracle-v2.json")
+    parser.add_argument("--figures", default="docs/assets/hemisphere-hex20-oracle-v2")
     args = parser.parse_args(argv)
 
     meshes = [tuple(int(v) for v in block.split(",")) for block in args.meshes.split(";")]
     shell_meshes = [int(v) for v in args.shell_meshes.split(",")]
 
     report = {
-        "schema": "tensorfem.hemisphere-hex20-oracle.v1",
+        "schema": "tensorfem.hemisphere-hex20-oracle.v2",
         "case": "MacNeal-Harder hemisphere with an 18-degree hole",
         "oracle": "three-dimensional HEX20 solid of revolution (no shell theory)",
         "reference_displacement": MH_REFERENCE_DISPLACEMENT,

@@ -1,0 +1,117 @@
+{
+  "V1_transform_pair": {
+    "added_mass_rel_error": 0.0051601703244897575,
+    "band_only_damping_rel_error": 0.0946446683394939,
+    "damping_rel_error": 0.0004479277822428878,
+    "kernel_rel_error": 0.019092702512139126,
+    "supplied_B0": 1.3333333333333333,
+    "truncation": {
+      "bound": 0.03816283978624726,
+      "peak_kernel": 1.9618145949757217,
+      "relative": 0.019452826930732227
+    }
+  },
+  "V2_gate_accepted": {
+    "band": [
+      0.08498499999999999,
+      44.976005
+    ],
+    "pointwise": 0.00011573854249693256,
+    "residual": 1.3500288623026837e-05
+  },
+  "V3_gate_negative_controls": {
+    "accepted": 1.3500288623026837e-05,
+    "cross_pair": 2.990401260195967,
+    "damping_scaled_5pct": 0.050000100217379564,
+    "level_shift_ainf_plus_0p2": 0.1841544040617723
+  },
+  "V4_time_vs_frequency_rel_error": 7.430181748000216e-06,
+  "V5_dissipation": {
+    "dissipated": 0.5323816132274887,
+    "expected": 0.5427688406235774,
+    "rel_error": 0.01913747919677016
+  },
+  "V6_state_space": {
+    "force_rel_error": 0.008829029681558671,
+    "kernel_fit_rel_error": 0.017967473071523386,
+    "n_modes": 10,
+    "poles_max_real_part": -0.02
+  },
+  "V7_free_decay": [
+    {
+      "omega_n_pred_rad_s": 0.9,
+      "rel_error": 0.031769527030202256,
+      "zeta_free_decay": 0.03990424981118477,
+      "zeta_frequency_domain": 0.04121358594383913
+    },
+    {
+      "omega_n_pred_rad_s": 1.2,
+      "rel_error": 0.030813088515119283,
+      "zeta_free_decay": 0.021805137788742414,
+      "zeta_frequency_domain": 0.02249838243825951
+    },
+    {
+      "omega_n_pred_rad_s": 1.6,
+      "rel_error": 0.024264243111262348,
+      "zeta_free_decay": 0.011096303360339496,
+      "zeta_frequency_domain": 0.011372242210044167
+    }
+  ],
+  "figures": [
+    "docs/fig_radiation_memory_kernel.png",
+    "docs/fig_radiation_memory_gate.png",
+    "docs/fig_radiation_memory_convergence.png"
+  ],
+  "gate_on_41_point_band": 0.02645677831603474,
+  "gate_resolution_study": [
+    {
+      "n_points": 21,
+      "passed_at_3pct": false,
+      "residual": 0.12093049859132517
+    },
+    {
+      "n_points": 41,
+      "passed_at_3pct": true,
+      "residual": 0.02645677831603474
+    },
+    {
+      "n_points": 81,
+      "passed_at_3pct": true,
+      "residual": 0.0151727489222071
+    },
+    {
+      "n_points": 161,
+      "passed_at_3pct": true,
+      "residual": 0.012340290315718127
+    },
+    {
+      "n_points": 401,
+      "passed_at_3pct": true,
+      "residual": 0.011305164156845354
+    },
+    {
+      "n_points": 1001,
+      "passed_at_3pct": true,
+      "residual": 0.010976358804173657
+    },
+    {
+      "n_points": 2001,
+      "passed_at_3pct": true,
+      "residual": 0.010875878825792626
+    }
+  ],
+  "parameters": {
+    "added_mass_inf": 3.0,
+    "band_points": 2001,
+    "band_rad_s": [
+      0.01,
+      50.0
+    ],
+    "kernel_grid_s": [
+      0.0,
+      15.0
+    ],
+    "single_pole_c": 2.0,
+    "single_pole_lambda": 1.5
+  }
+}
