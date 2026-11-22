@@ -191,14 +191,60 @@ def score(data, specimens):
     )
 
 
+def score_depth_study(data, specimens):
+    """Check that both grids series reproduce their archived baselines with exactly one variable."""
+    result = score(data, specimens)
+    by_key = {(r["id"], r["case"]): r for r in data["rows"]}
+    scored = {(r["id"], r["case"]): r for r in result["rows"]}
+    depths = (16, 32, 64)
+    expected = {"baseline", *(f"depth_{n}" for n in depths)}
+    if {case for _, case in by_key} != expected:
+        raise ValueError("depth study requires baseline and all three depth grids")
+    controls = []
+    for i in HOLDOUT:
+        base = by_key[i, "baseline"]
+        for ny in depths:
+            case = f"depth_{ny}"
+            row, evaluation = by_key[i, case], scored[i, case]
+            if (
+                row["inputs"] != base["inputs"] | {"ny": ny, "dt_s": 1e-7}
+                or row["contact_mode"] != "fixed_stiffness"
+                or any(
+                    row[k] != base[k]
+                    for k in ("E_Pa", "punch_stiffness_N_m", "loaded_x_count", "cohesive_length_m")
+                )
+            ):
+                raise ValueError(f"confounded depth study for {i} at grid {ny}")
+            controls.append(
+                dict(
+                    id=i,
+                    ny=ny,
+                    segment_to_characteristic_length=row["inputs"]["depth_m"]
+                    / (ny * positive(row["cohesive_length_m"])),
+                    peak_N=evaluation["peak_N"],
+                    deflection_m=evaluation["sample_deflection_m"],
+                    numerical_pass=evaluation["numerical_pass"],
+                    joint_pass=evaluation["joint_pass"],
+                )
+            )
+    result["through_depth_controls"] = controls
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--controls", type=Path, default=CONTROLS)
     parser.add_argument("--measurements", type=Path, default=DATA)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--check", action="store_true", help="exit 1 for a failed baseline gate")
+    parser.add_argument(
+        "--through-depth",
+        action="store_true",
+        help="also verify the three-grid through-depth protocol",
+    )
     args = parser.parse_args()
-    result = score(json.loads(args.controls.read_text()), read_table(args.measurements))
+    scorer = score_depth_study if args.through_depth else score
+    result = scorer(json.loads(args.controls.read_text()), read_table(args.measurements))
     if args.output:
         args.output.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
     for r in result["rows"]:

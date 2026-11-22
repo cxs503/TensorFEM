@@ -52,7 +52,14 @@ def cases(other):
         yield f"integrated_{nx}x{ny}", {"nx": nx, "ny": ny, "integrate_load_patch": True}
 
 
-def run_pair(sample, other, young, law):
+def depth_cases():
+    # Baseline anchors the punch and independent scorer to the original protocol.
+    yield "baseline", {}
+    for ny in (16, 32, 64):
+        yield f"depth_{ny}", {"ny": ny, "dt_s": 1e-7}
+
+
+def run_pair(sample, other, young, law, *, through_depth=False):
     defaults = dict(
         width_m=float(sample["width_m"]),
         depth_m=float(sample["depth_m"]),
@@ -67,7 +74,7 @@ def run_pair(sample, other, young, law):
         integrate_load_patch=False,
     )
     mesh_punch = {}
-    for name, override in cases(other):
+    for name, override in depth_cases() if through_depth else cases(other):
         p = defaults | override
         modulus = young * p["E_scale"]
         interface = replace(
@@ -90,7 +97,8 @@ def run_pair(sample, other, young, law):
         normalized = name == "baseline" or name.startswith(("mesh_", "dt_", "punch_"))
         # On each grid swap only the projection of the pressure patch.
         grid = (p["nx"], p["ny"])
-        fixed = None if normalized else mesh_punch[grid]
+        reference_grid = (24, 16) if through_depth else grid
+        fixed = None if normalized else mesh_punch[reference_grid]
         observer = BlockPeaks()
         result = rupture(
             model,
@@ -138,8 +146,16 @@ def run_pair(sample, other, young, law):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=OUTPUT)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--through-depth",
+        action="store_true",
+        help="vary only the depth mesh at fixed dt and absolute punch stiffness",
+    )
     args = parser.parse_args()
+    output = args.output or (
+        OUTPUT.with_name("ren_depth_controls.json") if args.through_depth else OUTPUT
+    )
     with (DATA / "bending.csv").open() as stream:
         samples = {row["id"]: row for row in csv.DictReader(stream)}
     calibration = [samples[i] for i in ("02", "03", "04")]
@@ -147,7 +163,9 @@ def main():
     law = BilinearCohesiveLaw.from_material(young, strength, 1.5)
     rows = []
     for sample, other in [("05", "10"), ("10", "05")]:
-        for row in run_pair(samples[sample], samples[other], young, law):
+        for row in run_pair(
+            samples[sample], samples[other], young, law, through_depth=args.through_depth
+        ):
             rows.append(row)
             print(sample, row["case"], flush=True)
     meta = dict(
@@ -165,7 +183,7 @@ def main():
         frame_columns=["punch_stroke_m", "force_N", "patch_deflection_m", "top_midspan_m"],
     )
     # One reproducible record per line keeps comparisons of reruns local.
-    args.output.write_text(
+    output.write_text(
         json.dumps(meta, indent=2)[:-2]
         + ',\n  "rows": [\n'
         + ",\n".join("    " + json.dumps(r, allow_nan=False) for r in rows)
