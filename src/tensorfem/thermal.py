@@ -5,6 +5,7 @@ TensorFEM's verified element kernels.  It supports LINE2 and Q4 conduction,
 consistent heat capacity, prescribed temperature, nodal heat input, boundary
 convection and element volumetric heat generation.
 """
+import math
 from dataclasses import dataclass
 
 import torch
@@ -104,9 +105,13 @@ def _expand(value, ne, like, default=1.0):
     return torch.as_tensor(value, dtype=like.dtype, device=like.device).reshape(-1).expand(ne)
 
 
-def assemble_thermal(model: ThermalModel, *, sparse: bool = False) -> ThermalMatrices:
+def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:
     """Assemble conductivity ``K``, capacity ``C`` and heat vector ``f``."""
     x = model.nodes
+    load_like = x
+    if complex_loads:
+        dtype = torch.complex128 if x.dtype == torch.float64 else torch.complex64
+        load_like = x.new_empty(0, dtype=dtype)
     conn = model.elements.long()
     ne, nen = conn.shape
     material = torch.as_tensor(1.0 if model.conductivity is None else model.conductivity,
@@ -125,10 +130,10 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False) -> ThermalMat
     rho = _expand(model.density, ne, x)
     cp = _expand(model.specific_heat, ne, x)
     thick = _expand(model.thickness, ne, x)
-    source = _expand(model.heat_source, ne, x, 0.0)
+    source = _expand(model.heat_source, ne, load_like, 0.0)
     ke = x.new_zeros((ne, nen, nen))
     ce = torch.zeros_like(ke)
-    fe = x.new_zeros((ne, nen))
+    fe = load_like.new_zeros((ne, nen))
     coords = x[conn]
     if model.element_type.lower() == "line2":
         length = coords[:, 1, 0] - coords[:, 0, 0]
@@ -167,17 +172,17 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False) -> ThermalMat
 
     K = matrix(ke, rows, cols)
     C = matrix(ce, rows, cols)
-    f = x.new_zeros(nd).index_put((conn.reshape(-1),),fe.reshape(-1),accumulate=True)
+    f = load_like.new_zeros(nd).index_put((conn.reshape(-1),),fe.reshape(-1),accumulate=True)
     if model.nodal_heat is not None:
         if model.nodal_heat.shape != (nd,):
             raise ValueError("nodal_heat must have shape [n_nodes]")
-        f = f + model.nodal_heat.to(dtype=x.dtype,device=x.device)
+        f = f + model.nodal_heat.to(load_like)
     if model.convection_edges is not None:
         edges = model.convection_edges.long().to(x.device)
         ec = x[edges]
         length = torch.linalg.vector_norm(ec[:,1]-ec[:,0],dim=1)
         h = _expand(model.convection_coefficient,len(edges),x)
-        ta = _expand(model.ambient_temperature,len(edges),x)
+        ta = _expand(model.ambient_temperature,len(edges),load_like)
         # In 1-D an endpoint is represented as [node,node] and has unit area.
         length = torch.where(length > 0,length,torch.ones_like(length))
         # ``thickness`` is cross-sectional area for LINE2 and out-of-plane
@@ -226,6 +231,34 @@ def solve_steady_thermal(model: ThermalModel) -> torch.Tensor:
         rhs = matrices.heat[free]-matrices.conductivity[free][:,fixed]@prescribed
         temperature[free] = torch.linalg.solve(matrices.conductivity[free][:,free],rhs)
     return temperature
+
+
+@dataclass(frozen=True)
+class ThermalHarmonicResult:
+    temperature: torch.Tensor
+    reaction_power: torch.Tensor
+
+
+def solve_harmonic_thermal(model: ThermalModel, angular_frequency: float) -> ThermalHarmonicResult:
+    """Solve (K+iωC)T=f using the exp(iωt) convention, with ω in rad/s.
+
+    Temperatures, nodal and volumetric loads, and convective ambient temperatures
+    in the model are phasors. Material data remain real. Positive reaction
+    power enters through prescribed temperatures; free-node entries are residuals.
+    """
+    if not math.isfinite(angular_frequency) or angular_frequency <= 0:
+        raise ValueError("angular_frequency must be finite and positive")
+    m = assemble_thermal(model, complex_loads=True)
+    operator = m.conductivity + (1j*angular_frequency)*m.capacity
+    fixed, free = _partition(model)
+    prescribed = model.fixed_temperatures.to(operator)
+    if not torch.isfinite(m.heat).all() or not torch.isfinite(prescribed).all():
+        raise ValueError("thermal phasor loads and prescribed temperatures must be finite")
+    temperature = torch.zeros_like(m.heat).index_put((fixed,), prescribed)
+    if free.numel():
+        rhs = m.heat[free] - operator[free][:,fixed] @ prescribed
+        temperature = temperature.index_put((free,), torch.linalg.solve(operator[free][:,free], rhs))
+    return ThermalHarmonicResult(temperature, operator @ temperature - m.heat)
 
 
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,

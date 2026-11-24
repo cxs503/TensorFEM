@@ -29,8 +29,8 @@ from .nonlinear_step import (
     save_checkpoint, load_checkpoint,
 )
 from .thermal import (
-    ThermalModel, ThermalTransientResult, ThermoelasticBarResult,
-    solve_steady_thermal, solve_transient_thermal, solve_thermoelastic_bar,
+    ThermalModel, ThermalHarmonicResult, ThermalTransientResult, ThermoelasticBarResult,
+    solve_steady_thermal, solve_harmonic_thermal, solve_transient_thermal, solve_thermoelastic_bar,
 )
 from .explicit_dynamics import ExplicitResult, central_difference, critical_time_step
 from .solid_plasticity import Tet4J2Model, PlasticSolidState, solve_load_steps
@@ -285,8 +285,8 @@ __all__ = [
     "ModelDB", "ElementBlock", "Material", "Section",
     "NonlinearConvergenceError", "StepState", "solve_adaptive",
     "save_checkpoint", "load_checkpoint",
-    "ThermalModel", "ThermalTransientResult", "ThermoelasticBarResult",
-    "solve_steady_thermal", "solve_transient_thermal", "solve_thermoelastic_bar",
+    "ThermalModel", "ThermalHarmonicResult", "ThermalTransientResult", "ThermoelasticBarResult",
+    "solve_steady_thermal", "solve_harmonic_thermal", "solve_transient_thermal", "solve_thermoelastic_bar",
     "ExplicitResult", "central_difference", "critical_time_step",
     "Tet4J2Model", "PlasticSolidState", "solve_load_steps",
     "Tet10Model", "solve_tet10",

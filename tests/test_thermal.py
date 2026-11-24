@@ -192,3 +192,37 @@ def test_ramping_dirichlet_rod_with_exact_storage(sparse, theta):
     heat = result.integrated_nodal_reactions()
     torch.testing.assert_close(heat[model.fixed_nodes], torch.tensor([1.,-1.], dtype=D),
                                rtol=0., atol=1e-13)
+
+
+def test_harmonic_rod_matches_complex_affine_solution_and_wall_powers():
+    from dataclasses import replace
+    from tensorfem import solve_harmonic_thermal
+
+    model = line_model(fixed=(8,0), values=(0.,0.))
+    omega = 3.
+    x = model.nodes[:,0]
+    field = (2.+1j) + (.5-2j)*x
+    # Integrate the linear field against each hat exactly, including endpoints.
+    heat = torch.zeros_like(field)
+    heat[:-1] += 1j*omega*42.*.25*(2*field[:-1]+field[1:])/6
+    heat[1:] += 1j*omega*42.*.25*(field[:-1]+2*field[1:])/6
+    model = replace(model, fixed_temperatures=field[model.fixed_nodes], nodal_heat=heat)
+    result = solve_harmonic_thermal(model, omega)
+    torch.testing.assert_close(result.temperature, field, atol=1e-13, rtol=0.)
+    expected = torch.zeros_like(field)
+    expected[-1], expected[0] = 5.-20j, -5.+20j
+    torch.testing.assert_close(result.reaction_power, expected, atol=1e-12, rtol=0.)
+
+
+def test_harmonic_uniform_driven_rod_complex_source_and_ambient():
+    from dataclasses import replace
+    from tensorfem import solve_harmonic_thermal
+
+    model = line_model(fixed=(), values=(), convection=True)
+    value = 1.5-.7j
+    model = replace(model, heat_source=21.*2j*value, ambient_temperature=value)
+    result = solve_harmonic_thermal(model, 2.)
+    torch.testing.assert_close(result.temperature, torch.full_like(result.temperature, value))
+    assert result.reaction_power.abs().max() < 1e-12
+    with pytest.raises(ValueError, match="angular_frequency"):
+        solve_harmonic_thermal(model, 0.)
