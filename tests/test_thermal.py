@@ -174,3 +174,18 @@ def test_integrated_nodal_reactions_include_storage_and_applied_loads(sparse, th
     # Capacity per length = rho*c*A = 42, source per length = 4.
     stored = 42.*torch.trapezoid(delta, model.nodes[:, 0])
     torch.testing.assert_close(heat[[0,-1]].sum(), stored - 8.*time[-1], rtol=0., atol=1e-12)
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+@pytest.mark.parametrize("theta", [.5, 1.])
+def test_ramping_dirichlet_rod_with_exact_storage(sparse, theta):
+    # T=1+x+2t, source=rho*c*2. A LINE2 element represents this field exactly.
+    model = line_model(fixed=(8,0), values=(3.,1.), source=42.)
+    time = torch.tensor([0., .001, .017, .1], dtype=D)
+    exact = 1. + model.nodes[:,0] + 2*time[:,None]
+    result = solve_transient_thermal(model, time, exact[0], theta, sparse=sparse,
+                                     fixed_temperature_history=exact[:,model.fixed_nodes])
+    torch.testing.assert_close(result.temperature, exact, rtol=0., atol=2e-14)
+    heat = result.integrated_nodal_reactions()
+    torch.testing.assert_close(heat[model.fixed_nodes], torch.tensor([1.,-1.], dtype=D),
+                               rtol=0., atol=1e-13)

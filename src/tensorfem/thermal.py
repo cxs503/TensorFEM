@@ -221,13 +221,15 @@ def solve_steady_thermal(model: ThermalModel) -> torch.Tensor:
 
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
                             initial_temperature: torch.Tensor, theta: float=1.0, *,
-                            sparse: bool=False) -> ThermalTransientResult:
+                            sparse: bool=False, fixed_temperature_history: torch.Tensor | None=None) -> ThermalTransientResult:
     """Integrate ``C Tdot + K T = f`` using the theta method.
 
     ``theta >= 0.5`` is required to make the stable public path fail closed.
     Backward Euler (1.0) and Crank--Nicolson (0.5) are supported. sparse=True
     uses CPU SciPy sparse LU and returns torch COO matrices. Use the default
-    dense path for autograd or GPU execution.
+    dense path for autograd or GPU execution. fixed_temperature_history can
+    prescribe one temperature per time and fixed node, in model.fixed_nodes
+    order. Its first row sets the initial constrained temperatures.
     """
     if not 0.5 <= theta <= 1.0:
         raise ValueError("theta must be in [0.5, 1] for unconditional stability")
@@ -237,6 +239,10 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         raise ValueError("initial_temperature must have shape [n_nodes]")
     m = assemble_thermal(model, sparse=sparse); fixed, free = _partition(model)
     prescribed = model.fixed_temperatures.to(dtype=model.nodes.dtype,device=model.nodes.device)
+    if fixed_temperature_history is not None:
+        prescribed = torch.as_tensor(fixed_temperature_history).to(model.nodes)
+        if prescribed.shape != (len(time), fixed.numel()) or not torch.isfinite(prescribed).all():
+            raise ValueError("fixed_temperature_history needs finite values at every time and fixed node")
     out = model.nodes.new_zeros((len(time),len(model.nodes)))
     out[0] = initial_temperature.to(dtype=model.nodes.dtype,device=model.nodes.device)
     out[:,fixed] = prescribed
@@ -249,10 +255,17 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         return ThermalTransientResult(time, out, m, theta)
     Kff=m.conductivity[free][:,free]; Cff=m.capacity[free][:,free]
     Kfc=m.conductivity[free][:,fixed]
-    rhs_const=m.heat[free]-Kfc@prescribed
+    source = m.heat[free]
+    if prescribed.ndim == 1:
+        source = source - Kfc @ prescribed
+    else:
+        Cfc = m.capacity[free][:,fixed]
     for i,dt in enumerate(time[1:]-time[:-1]):
         A=Cff/dt+theta*Kff
-        rhs=(Cff/dt-(1-theta)*Kff)@out[i,free]+rhs_const
+        rhs=(Cff/dt-(1-theta)*Kff)@out[i,free]+source
+        if prescribed.ndim == 2:
+            change = prescribed[i+1] - prescribed[i]
+            rhs = rhs - Kfc @ (prescribed[i] + theta*change) - Cfc @ (change/dt)
         out[i+1,free]=torch.linalg.solve(A,rhs)
     return ThermalTransientResult(time, out, m, theta)
 
@@ -270,9 +283,16 @@ def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta)
 
     free = free.numpy()
     k_rows = csc(matrices.conductivity)[free]
-    source = matrices.heat.numpy()[free] - k_rows[:, fixed.numpy()] @ prescribed.numpy()
+    kfc = k_rows[:, fixed.numpy()]
+    c_rows = csc(matrices.capacity)[free]
+    source = matrices.heat.numpy()[free]
+    prescribed = prescribed.numpy()
+    if prescribed.ndim == 1:
+        source = source - kfc @ prescribed
+    else:
+        cfc = c_rows[:, fixed.numpy()]
     k = k_rows[:, free]
-    c = csc(matrices.capacity)[free][:, free]
+    c = c_rows[:, free]
     history = out.numpy()
     previous_dt = None
     for i, dt in enumerate(time.diff().numpy()):
@@ -280,7 +300,11 @@ def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta)
             factor = splu((c + (theta*dt)*k).tocsc())
             previous_dt = dt
         state = history[i, free]
-        history[i+1, free] = factor.solve(c @ state + dt*(source - (1-theta)*(k @ state)))
+        rhs = c @ state + dt*(source - (1-theta)*(k @ state))
+        if prescribed.ndim == 2:
+            change = prescribed[i+1] - prescribed[i]
+            rhs -= dt*(kfc @ (prescribed[i] + theta*change)) + cfc @ change
+        history[i+1, free] = factor.solve(rhs)
 
 
 @dataclass(frozen=True)
