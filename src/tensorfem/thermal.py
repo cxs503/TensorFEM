@@ -239,21 +239,38 @@ class ThermalHarmonicResult:
     reaction_power: torch.Tensor
 
 
-def solve_harmonic_thermal(model: ThermalModel, angular_frequency: float) -> ThermalHarmonicResult:
+def solve_harmonic_thermal(model: ThermalModel, angular_frequency: float, *,
+                           sparse: bool = False) -> ThermalHarmonicResult:
     """Solve (K+iωC)T=f using the exp(iωt) convention, with ω in rad/s.
 
     Temperatures, nodal and volumetric loads, and convective ambient temperatures
     in the model are phasors. Material data remain real. Positive reaction
     power enters through prescribed temperatures; free-node entries are residuals.
+    sparse=True uses CPU SciPy sparse LU for inputs without autograd.
     """
     if not math.isfinite(angular_frequency) or angular_frequency <= 0:
         raise ValueError("angular_frequency must be finite and positive")
-    m = assemble_thermal(model, complex_loads=True)
-    operator = m.conductivity + (1j*angular_frequency)*m.capacity
+    m = assemble_thermal(model, sparse=sparse, complex_loads=True)
     fixed, free = _partition(model)
-    prescribed = model.fixed_temperatures.to(operator)
+    prescribed = model.fixed_temperatures.to(m.heat)
     if not torch.isfinite(m.heat).all() or not torch.isfinite(prescribed).all():
         raise ValueError("thermal phasor loads and prescribed temperatures must be finite")
+    if sparse:
+        if any(t.device.type != "cpu" or t.requires_grad for t in
+               (m.heat, m.conductivity, m.capacity, prescribed)):
+            raise ValueError("sparse harmonic solution requires CPU tensors without autograd")
+        from scipy.sparse.linalg import splu
+
+        operator = _scipy_csc(m.conductivity) + (1j*angular_frequency)*_scipy_csc(m.capacity)
+        load = m.heat.resolve_conj().numpy()
+        state = load.copy()
+        fixed_ids, free_ids = fixed.numpy(), free.numpy()
+        state[fixed_ids] = prescribed.resolve_conj().numpy()
+        if free_ids.size:
+            rhs = load[free_ids] - operator[free_ids][:,fixed_ids] @ state[fixed_ids]
+            state[free_ids] = splu(operator[free_ids][:,free_ids].tocsc()).solve(rhs)
+        return ThermalHarmonicResult(torch.from_numpy(state), torch.from_numpy(operator @ state - load))
+    operator = m.conductivity + (1j*angular_frequency)*m.capacity
     temperature = torch.zeros_like(m.heat).index_put((fixed,), prescribed)
     if free.numel():
         rhs = m.heat[free] - operator[free][:,fixed] @ prescribed
@@ -312,21 +329,23 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
     return ThermalTransientResult(time, out, m, theta)
 
 
+def _scipy_csc(tensor):
+    from scipy.sparse import coo_matrix
+
+    row, col = tensor.indices().numpy()
+    return coo_matrix((tensor.values().numpy(), (row, col)), shape=tensor.shape).tocsc()
+
+
 def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta):
     try:
-        from scipy.sparse import coo_matrix
         from scipy.sparse.linalg import splu
     except ImportError as exc:
         raise RuntimeError("sparse thermal integration requires SciPy") from exc
 
-    def csc(tensor):
-        row, col = tensor.indices().numpy()
-        return coo_matrix((tensor.values().numpy(), (row, col)), shape=tensor.shape).tocsc()
-
     free = free.numpy()
-    k_rows = csc(matrices.conductivity)[free]
+    k_rows = _scipy_csc(matrices.conductivity)[free]
     kfc = k_rows[:, fixed.numpy()]
-    c_rows = csc(matrices.capacity)[free]
+    c_rows = _scipy_csc(matrices.capacity)[free]
     source = matrices.heat.numpy()[free]
     prescribed = prescribed.numpy()
     if prescribed.ndim == 1:
