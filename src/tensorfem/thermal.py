@@ -73,6 +73,20 @@ class ThermalTransientResult:
     time: torch.Tensor
     temperature: torch.Tensor
     matrices: ThermalMatrices
+    theta: float = 1.0
+
+    def integrated_nodal_reactions(self) -> torch.Tensor:
+        """Heat supplied by prescribed temperatures over the returned time interval.
+
+        Positive heat enters the model. Free-node entries measure residuals
+        of the time-discrete equations. Applied loads are already subtracted.
+        """
+        t = self.temperature
+        dt = self.time.diff().to(t)
+        stages = (1 - self.theta) * t[:-1] + self.theta * t[1:]
+        m = self.matrices
+        return (m.capacity @ (t[-1] - t[0]) + m.conductivity @ (dt @ stages)
+                - dt.sum() * m.heat)
 
 
 def _expand(value, ne, like, default=1.0):
@@ -232,7 +246,7 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
             raise ValueError("sparse transient integration requires CPU tensors without autograd")
         if free.numel():
             _advance_sparse_thermal(m, time, out, fixed, free, prescribed, theta)
-        return ThermalTransientResult(time, out, m)
+        return ThermalTransientResult(time, out, m, theta)
     Kff=m.conductivity[free][:,free]; Cff=m.capacity[free][:,free]
     Kfc=m.conductivity[free][:,fixed]
     rhs_const=m.heat[free]-Kfc@prescribed
@@ -240,7 +254,7 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         A=Cff/dt+theta*Kff
         rhs=(Cff/dt-(1-theta)*Kff)@out[i,free]+rhs_const
         out[i+1,free]=torch.linalg.solve(A,rhs)
-    return ThermalTransientResult(time,out,m)
+    return ThermalTransientResult(time, out, m, theta)
 
 
 def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta):

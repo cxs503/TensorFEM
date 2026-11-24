@@ -160,3 +160,17 @@ def test_sparse_thermal_history_matches_dense_with_contact_and_film(theta):
         assert actual.is_sparse
         torch.testing.assert_close(actual.to_dense(), getattr(reference.matrices, name))
     torch.testing.assert_close(result.temperature, reference.temperature, rtol=2e-13, atol=2e-13)
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+@pytest.mark.parametrize("theta", [.5, .75, 1.])
+def test_integrated_nodal_reactions_include_storage_and_applied_loads(sparse, theta):
+    model = line_model(fixed=(0, 8), values=(5., 1.), source=2.)
+    time = torch.tensor([0., .01, .035, .1], dtype=D)
+    solution = solve_transient_thermal(model, time, torch.zeros(9, dtype=D), theta, sparse=sparse)
+    heat = solution.integrated_nodal_reactions()
+    assert heat[1:-1].abs().max() < 1e-12
+    delta = solution.temperature[-1] - solution.temperature[0]
+    # Capacity per length = rho*c*A = 42, source per length = 4.
+    stored = 42.*torch.trapezoid(delta, model.nodes[:, 0])
+    torch.testing.assert_close(heat[[0,-1]].sum(), stored - 8.*time[-1], rtol=0., atol=1e-12)
