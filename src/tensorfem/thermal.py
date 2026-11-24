@@ -81,7 +81,7 @@ def _expand(value, ne, like, default=1.0):
     return torch.as_tensor(value, dtype=like.dtype, device=like.device).reshape(-1).expand(ne)
 
 
-def assemble_thermal(model: ThermalModel) -> ThermalMatrices:
+def assemble_thermal(model: ThermalModel, *, sparse: bool = False) -> ThermalMatrices:
     """Assemble conductivity ``K``, capacity ``C`` and heat vector ``f``."""
     x = model.nodes
     conn = model.elements.long()
@@ -136,8 +136,14 @@ def assemble_thermal(model: ThermalModel) -> ThermalMatrices:
     nd = len(x)
     rows = conn[:,:,None].expand(-1,-1,nen).reshape(-1)
     cols = conn[:,None,:].expand(-1,nen,-1).reshape(-1)
-    K = x.new_zeros((nd,nd)).index_put((rows,cols),ke.reshape(-1),accumulate=True)
-    C = x.new_zeros((nd,nd)).index_put((rows,cols),ce.reshape(-1),accumulate=True)
+    def matrix(entries, row, col):
+        if sparse:
+            return torch.sparse_coo_tensor(torch.stack((row, col)), entries.reshape(-1),
+                                           (nd, nd)).coalesce()
+        return x.new_zeros((nd, nd)).index_put((row, col), entries.reshape(-1), accumulate=True)
+
+    K = matrix(ke, rows, cols)
+    C = matrix(ce, rows, cols)
     f = x.new_zeros(nd).index_put((conn.reshape(-1),),fe.reshape(-1),accumulate=True)
     if model.nodal_heat is not None:
         if model.nodal_heat.shape != (nd,):
@@ -158,7 +164,10 @@ def assemble_thermal(model: ThermalModel) -> ThermalMatrices:
         hf = (h*ta*boundary_measure/2)[:,None]*x.new_ones((len(edges),2))
         er = edges[:,:,None].expand(-1,-1,2).reshape(-1)
         ecidx = edges[:,None,:].expand(-1,2,-1).reshape(-1)
-        K = K.index_put((er,ecidx),hk.reshape(-1),accumulate=True)
+        if sparse:
+            K = (K + matrix(hk, er, ecidx)).coalesce()
+        else:
+            K = K.index_put((er,ecidx),hk.reshape(-1),accumulate=True)
         f = f.index_put((edges.reshape(-1),),hf.reshape(-1),accumulate=True)
     if model.contact_pairs is not None:
         pairs = model.contact_pairs.to(device=x.device, dtype=torch.long)
@@ -167,9 +176,12 @@ def assemble_thermal(model: ThermalModel) -> ThermalMatrices:
             raise ValueError("contact_conductance must be finite, nonnegative, scalar or one per pair")
         g = g.reshape(-1).expand(len(pairs))
         left, right = pairs.unbind(dim=1)
-        K = K.index_put((torch.cat((left, right, left, right)),
-                         torch.cat((left, right, right, left))),
-                        torch.cat((g, g, -g, -g)), accumulate=True)
+        indices = (torch.cat((left, right, left, right)), torch.cat((left, right, right, left)))
+        entries = torch.cat((g, g, -g, -g))
+        if sparse:
+            K = (K + matrix(entries, *indices)).coalesce()
+        else:
+            K = K.index_put(indices, entries, accumulate=True)
     return ThermalMatrices(K,C,f)
 
 
@@ -194,11 +206,14 @@ def solve_steady_thermal(model: ThermalModel) -> torch.Tensor:
 
 
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
-                            initial_temperature: torch.Tensor, theta: float=1.0) -> ThermalTransientResult:
+                            initial_temperature: torch.Tensor, theta: float=1.0, *,
+                            sparse: bool=False) -> ThermalTransientResult:
     """Integrate ``C Tdot + K T = f`` using the theta method.
 
     ``theta >= 0.5`` is required to make the stable public path fail closed.
-    Backward Euler (1.0) and Crank--Nicolson (0.5) are supported.
+    Backward Euler (1.0) and Crank--Nicolson (0.5) are supported. sparse=True
+    uses CPU SciPy sparse LU and returns torch COO matrices. Use the default
+    dense path for autograd or GPU execution.
     """
     if not 0.5 <= theta <= 1.0:
         raise ValueError("theta must be in [0.5, 1] for unconditional stability")
@@ -206,11 +221,18 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         raise ValueError("time must be strictly increasing")
     if initial_temperature.shape != (len(model.nodes),):
         raise ValueError("initial_temperature must have shape [n_nodes]")
-    m = assemble_thermal(model); fixed, free = _partition(model)
+    m = assemble_thermal(model, sparse=sparse); fixed, free = _partition(model)
     prescribed = model.fixed_temperatures.to(dtype=model.nodes.dtype,device=model.nodes.device)
     out = model.nodes.new_zeros((len(time),len(model.nodes)))
     out[0] = initial_temperature.to(dtype=model.nodes.dtype,device=model.nodes.device)
     out[:,fixed] = prescribed
+    if sparse:
+        if any(v.device.type != "cpu" or v.requires_grad for v in
+               (time, out, m.heat, m.conductivity, m.capacity)):
+            raise ValueError("sparse transient integration requires CPU tensors without autograd")
+        if free.numel():
+            _advance_sparse_thermal(m, time, out, fixed, free, prescribed, theta)
+        return ThermalTransientResult(time, out, m)
     Kff=m.conductivity[free][:,free]; Cff=m.capacity[free][:,free]
     Kfc=m.conductivity[free][:,fixed]
     rhs_const=m.heat[free]-Kfc@prescribed
@@ -219,6 +241,32 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         rhs=(Cff/dt-(1-theta)*Kff)@out[i,free]+rhs_const
         out[i+1,free]=torch.linalg.solve(A,rhs)
     return ThermalTransientResult(time,out,m)
+
+
+def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta):
+    try:
+        from scipy.sparse import coo_matrix
+        from scipy.sparse.linalg import splu
+    except ImportError as exc:
+        raise RuntimeError("sparse thermal integration requires SciPy") from exc
+
+    def csc(tensor):
+        row, col = tensor.indices().numpy()
+        return coo_matrix((tensor.values().numpy(), (row, col)), shape=tensor.shape).tocsc()
+
+    free = free.numpy()
+    k_rows = csc(matrices.conductivity)[free]
+    source = matrices.heat.numpy()[free] - k_rows[:, fixed.numpy()] @ prescribed.numpy()
+    k = k_rows[:, free]
+    c = csc(matrices.capacity)[free][:, free]
+    history = out.numpy()
+    previous_dt = None
+    for i, dt in enumerate(time.diff().numpy()):
+        if dt != previous_dt:
+            factor = splu((c + (theta*dt)*k).tocsc())
+            previous_dt = dt
+        state = history[i, free]
+        history[i+1, free] = factor.solve(c @ state + dt*(source - (1-theta)*(k @ state)))
 
 
 @dataclass(frozen=True)

@@ -141,3 +141,22 @@ def test_contact_exchange_block_and_conductance_gradient():
     torch.testing.assert_close(energy, g @ expected)
     torch.testing.assert_close(torch.autograd.grad(energy, g)[0], expected)
     torch.testing.assert_close(delta.sum(1), torch.zeros_like(t))
+
+
+@pytest.mark.parametrize("theta", [.5, 1.])
+def test_sparse_thermal_history_matches_dense_with_contact_and_film(theta):
+    from dataclasses import replace
+
+    pytest.importorskip("scipy")
+    base = line_model(convection=True, source=1.2)
+    model = replace(base, contact_pairs=torch.tensor([[1, 6], [2, 7]]),
+                    contact_conductance=torch.tensor([.7, 1.1], dtype=D))
+    times = torch.tensor([0., .125, .25, .4, .65], dtype=D)
+    initial = torch.arange(9, dtype=D) + 32.
+    reference = solve_transient_thermal(model, times, initial, theta)
+    result = solve_transient_thermal(model, times, initial, theta, sparse=True)
+    for name in ("conductivity", "capacity"):
+        actual = getattr(result.matrices, name)
+        assert actual.is_sparse
+        torch.testing.assert_close(actual.to_dense(), getattr(reference.matrices, name))
+    torch.testing.assert_close(result.temperature, reference.temperature, rtol=2e-13, atol=2e-13)
