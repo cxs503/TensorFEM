@@ -91,3 +91,53 @@ def test_sequential_thermal_expansion_free_and_fully_restrained():
     exact=-E*A*alpha*dT
     assert relative(held.axial_force[0],exact) < 1e-12
     assert relative(held.axial_force[1],exact) < 1e-12
+
+
+
+def test_q4_anisotropic_conductivity_integrates_piecewise_energy():
+    nodes = torch.tensor([[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 1]], dtype=D)
+    material = torch.tensor([[[3, 1], [1, 2]], [[2, -0.5], [-0.5, 4]]], dtype=D)
+    model = ThermalModel(nodes, torch.tensor([[0, 1, 4, 3], [1, 2, 5, 4]]),
+                         material, 1., 1., torch.tensor([], dtype=torch.long),
+                         nodes.new_empty(0), element_type="q4")
+    gradient = nodes.new_tensor([2., -1.])
+    temperature = nodes @ gradient
+    matrix = assemble_thermal(model).conductivity
+    # Each element has unit area, so the integral of grad(T).K.grad(T)
+    # is the sum of the two constant energy densities, 10 and 14.
+    assert (temperature @ matrix @ temperature).item() == pytest.approx(24.)
+    assert torch.allclose(matrix.sum(1), torch.zeros(6, dtype=D), atol=1e-12)
+
+
+@pytest.mark.parametrize("hot,cold", [(310., 290.), (290., 310.)])
+def test_q4_two_layer_contact_jump_and_heat_reactions(hot, cold):
+    # Coincident interface coordinates, separate temperature DOFs. Area 1.2
+    # is split equally between the two endpoint contacts on the Q4 edge.
+    nodes = torch.tensor([[0, 0], [.4, 0], [.4, 1.2], [0, 1.2],
+                          [.4, 0], [1, 0], [1, 1.2], [.4, 1.2]], dtype=D)
+    model = ThermalModel(nodes, torch.arange(8).reshape(2, 4), nodes.new_tensor([4., 1.]),
+                         1., 1., torch.tensor([0, 3, 5, 6]), nodes.new_tensor([hot, hot, cold, cold]),
+                         element_type="q4", contact_pairs=torch.tensor([[1, 4], [2, 7]]),
+                         contact_conductance=nodes.new_tensor(0.6 / 0.3))
+    t = solve_steady_thermal(model)
+    q = (hot - cold) / (.4 / 4 + .3 + .6)
+    npairs = t[[1, 2]] - t[[4, 7]]
+    torch.testing.assert_close(npairs, nodes.new_full((2,), q * .3), atol=1e-11, rtol=0)
+    reaction = assemble_thermal(model).conductivity @ t
+    assert reaction[[0, 3]].sum().item() == pytest.approx(1.2*q, abs=1e-10)
+    assert reaction[[5, 6]].sum().item() == pytest.approx(-1.2*q, abs=1e-10)
+
+
+def test_contact_exchange_block_and_conductance_gradient():
+    from dataclasses import replace
+    model = line_model()
+    g = torch.tensor([0., 2., 5.], dtype=D, requires_grad=True)
+    pairs = torch.tensor([[1, 2], [2, 3], [2, 3]])
+    coupled = replace(model, contact_pairs=pairs, contact_conductance=g)
+    delta = assemble_thermal(coupled).conductivity - assemble_thermal(model).conductivity
+    t = torch.arange(len(model.nodes), dtype=D)**2
+    energy = t @ delta @ t
+    expected = (t[pairs[:, 0]] - t[pairs[:, 1]])**2
+    torch.testing.assert_close(energy, g @ expected)
+    torch.testing.assert_close(torch.autograd.grad(energy, g)[0], expected)
+    torch.testing.assert_close(delta.sum(1), torch.zeros_like(t))

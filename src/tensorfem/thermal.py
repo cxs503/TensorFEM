@@ -12,6 +12,8 @@ import torch
 
 @dataclass(frozen=True)
 class ThermalModel:
+    """Q4 conductivity also accepts SPD tensors shaped (1, 2, 2) or (ne, 2, 2) in global coordinates."""
+
     nodes: torch.Tensor
     elements: torch.Tensor
     conductivity: torch.Tensor
@@ -26,6 +28,10 @@ class ThermalModel:
     convection_coefficient: torch.Tensor | None = None
     ambient_temperature: torch.Tensor | None = None
     element_type: str = "line2"
+    # Lumped two-node contacts: pair distinct temperature DOFs across an
+    # interface. Each conductance is tributary area / areal resistance [W/K].
+    contact_pairs: torch.Tensor | None = None
+    contact_conductance: torch.Tensor | None = None
 
     def __post_init__(self):
         nen = {"line2": 2, "q4": 4}.get(self.element_type.lower())
@@ -40,6 +46,14 @@ class ThermalModel:
             raise ValueError("fixed_nodes and fixed_temperatures must match")
         if self.elements.numel() and (self.elements.min() < 0 or self.elements.max() >= len(self.nodes)):
             raise ValueError("invalid element connectivity")
+        if (self.contact_pairs is None) != (self.contact_conductance is None):
+            raise ValueError("contact_pairs and contact_conductance must be supplied together")
+        if self.contact_pairs is not None:
+            pairs = self.contact_pairs
+            if pairs.ndim != 2 or pairs.shape[1] != 2 or pairs.dtype not in (torch.int32, torch.int64):
+                raise ValueError("contact_pairs must be an integer tensor of shape [n_contacts, 2]")
+            if torch.any(pairs < 0) or torch.any(pairs >= len(self.nodes)) or torch.any(pairs[:, 0] == pairs[:, 1]):
+                raise ValueError("contacts must connect distinct, valid nodes")
         if self.convection_edges is not None:
             if self.convection_edges.ndim != 2 or self.convection_edges.shape[1] != 2:
                 raise ValueError("convection_edges must have shape [n_edges, 2]")
@@ -72,7 +86,19 @@ def assemble_thermal(model: ThermalModel) -> ThermalMatrices:
     x = model.nodes
     conn = model.elements.long()
     ne, nen = conn.shape
-    k = _expand(model.conductivity, ne, x)
+    material = torch.as_tensor(1.0 if model.conductivity is None else model.conductivity,
+                               dtype=x.dtype, device=x.device)
+    anisotropic = nen == 4 and material.ndim == 3 and material.shape[-2:] == (2, 2)
+    if anisotropic:
+        if material.shape[0] not in (1, ne):
+            raise ValueError("Q4 conductivity needs one tensor or one per element")
+        if not torch.allclose(material, material.transpose(-1, -2)) or not torch.isfinite(material).all():
+            raise ValueError("Q4 conductivity tensors must be finite and symmetric")
+        if torch.any(torch.linalg.cholesky_ex(material).info != 0):
+            raise ValueError("Q4 conductivity tensors must be positive definite")
+        k = material
+    else:
+        k = _expand(material, ne, x)
     rho = _expand(model.density, ne, x)
     cp = _expand(model.specific_heat, ne, x)
     thick = _expand(model.thickness, ne, x)
@@ -103,7 +129,8 @@ def assemble_thermal(model: ThermalModel) -> ThermalMatrices:
                 raise ValueError("Q4 element has non-positive Jacobian")
             grad = torch.einsum("ib,ebc->eic", dn, torch.linalg.inv(jac))
             weight = det*thick
-            ke = ke + k[:,None,None]*(grad @ grad.transpose(1,2))*weight[:,None,None]
+            weighted_grad = grad @ k if anisotropic else grad * k[:, None, None]
+            ke = ke + (weighted_grad @ grad.transpose(1, 2)) * weight[:, None, None]
             ce = ce + (rho*cp*weight)[:,None,None]*(n[None,:,None]*n[None,None,:])
             fe = fe + (source*weight)[:,None]*n[None,:]
     nd = len(x)
@@ -133,6 +160,16 @@ def assemble_thermal(model: ThermalModel) -> ThermalMatrices:
         ecidx = edges[:,None,:].expand(-1,2,-1).reshape(-1)
         K = K.index_put((er,ecidx),hk.reshape(-1),accumulate=True)
         f = f.index_put((edges.reshape(-1),),hf.reshape(-1),accumulate=True)
+    if model.contact_pairs is not None:
+        pairs = model.contact_pairs.to(device=x.device, dtype=torch.long)
+        g = torch.as_tensor(model.contact_conductance, dtype=x.dtype, device=x.device)
+        if g.numel() not in (1, len(pairs)) or not torch.isfinite(g).all() or (g < 0).any():
+            raise ValueError("contact_conductance must be finite, nonnegative, scalar or one per pair")
+        g = g.reshape(-1).expand(len(pairs))
+        left, right = pairs.unbind(dim=1)
+        K = K.index_put((torch.cat((left, right, left, right)),
+                         torch.cat((left, right, right, left))),
+                        torch.cat((g, g, -g, -g)), accumulate=True)
     return ThermalMatrices(K,C,f)
 
 

@@ -450,7 +450,62 @@ def verdicts(payload: dict) -> dict:
 __all__ = [
     "TransientCase", "exact_slab_step", "exact_slab_mode", "exact_slab_initial_step",
     "line_mesh", "q4_strip", "observed_order", "run_slab",
-    "study_step_profile", "study_spatial_order", "study_temporal_order",
+    "study_transient_contact_mode", "study_step_profile", "study_spatial_order", "study_temporal_order",
     "study_q4_strip_consistency", "study_adiabatic_conservation",
     "study_capacity_and_stiffness_scaling", "study_step_convergence", "run_all", "verdicts",
 ]
+
+def study_transient_contact_mode(
+    n: int, steps: int = 128, *, heterogeneous: bool = False,
+) -> dict[str, float]:
+    """Verify two unit rods with insulated ends and a finite contact at x=1.
+
+    The temperature perturbations are cos(a*x) and -B*cos(b*(2-x)).
+    Choose heat capacities so both modes decay at rate a², choose B for
+    continuous Fourier flux, and set G = flux / temperature jump. In the
+    homogeneous case a=b=pi/4 and B=1. The heterogeneous case uses k=(1,4)
+    and b=pi/6. All rods have unit cross section and length.
+    """
+    if n < 2 or steps < 1:
+        raise ValueError("the one-sided gradient needs n >= 2, and steps must be positive")
+    local, conn = line_mesh(n)
+    nodes = torch.cat((local, 1.0 + local))
+    elements = torch.cat((conn, conn + n + 1))
+    a = math.pi / 4
+    b = math.pi / 6 if heterogeneous else a
+    k_right = 4.0 if heterogeneous else 1.0
+    capacity_right = k_right * (b/a)**2
+    flux0 = a * math.sin(a)
+    amplitude = flux0 / (k_right * b * math.sin(b))
+    conductance = flux0 / (math.cos(a) + amplitude * math.cos(b))
+    model = ThermalModel(
+        nodes, elements, nodes.new_tensor([1., k_right]).repeat_interleave(n), 1.,
+        nodes.new_tensor([1., capacity_right]).repeat_interleave(n),
+        torch.empty(0, dtype=torch.long), nodes.new_empty(0),
+        contact_pairs=torch.tensor([[n, n + 1]]), contact_conductance=conductance,
+    )
+    x = local.flatten()
+    mode = torch.cat((torch.cos(a*x), -amplitude * torch.cos(b*x.flip((0,)))))
+    time = torch.linspace(0., 0.5, steps + 1, dtype=nodes.dtype)
+    result = solve_transient_thermal(model, time, 1 + mode, theta=0.5)
+    t = result.temperature
+    exact = 1 + torch.exp(-a**2 * time[:, None]) * mode
+    jump = t[:, n] - t[:, n+1]
+    # Independent integral of the piecewise-linear temperature on each rod.
+    heat = torch.trapezoid(t[:, :n+1], x) + capacity_right * torch.trapezoid(t[:, n+1:], x)
+    flux = flux0 * torch.exp(-a**2 * time)
+    left_flux = -0.5*n*(3*t[:, n] - 4*t[:, n-1] + t[:, n-2])
+    right_flux = -0.5*n*k_right*(-3*t[:, n+1] + 4*t[:, n+2] - t[:, n+3])
+    return {
+        "elements_per_rod": n, "time_steps": steps,
+        "right_conductivity": k_right, "right_volumetric_heat_capacity": capacity_right,
+        "contact_conductance": conductance,
+        "left_flux_rel_linf": float((left_flux-flux).abs().max() / flux0),
+        "right_flux_rel_linf": float((right_flux-flux).abs().max() / flux0),
+        "contact_flux_rel_linf": float((conductance*jump-flux).abs().max() / flux0),
+        "max_temperature_error_K": float((t - exact).abs().max()),
+        "max_jump_error_K": float((jump - (exact[:, n] - exact[:, n+1])).abs().max()),
+        "measured_decay_rate": -math.log(float(jump[-1] / jump[0])) / float(time[-1]),
+        "exact_decay_rate": a**2,
+        "max_relative_heat_drift": float((heat - heat[0]).abs().max() / heat[0]),
+    }

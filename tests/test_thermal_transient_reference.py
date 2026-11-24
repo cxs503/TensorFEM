@@ -184,3 +184,18 @@ def test_theta_below_half_still_fails_closed():
     with pytest.raises(ValueError):
         solve_transient_thermal(model, torch.linspace(0.0, 0.1, 6, dtype=FLOAT),
                                 torch.ones(len(nodes), dtype=FLOAT), theta=0.4)
+
+@pytest.mark.parametrize("heterogeneous", [False, True])
+def test_finite_contact_transient_mode_refines_and_conserves_heat(heterogeneous):
+    from tensorfem.thermal_transient_reference import study_transient_contact_mode
+
+    levels = [study_transient_contact_mode(n, heterogeneous=heterogeneous) for n in (4, 8, 16, 32)]
+    for key in ("max_temperature_error_K", "max_jump_error_K"):
+        orders = [observed_order(a[key], b[key]) for a, b in zip(levels, levels[1:])]
+        assert all(1.9 < p < 2.1 for p in orders), (key, orders)
+    assert max(row["max_relative_heat_drift"] for row in levels) < 1e-11
+    fine = levels[-1]
+    for key in ("left_flux_rel_linf", "right_flux_rel_linf", "contact_flux_rel_linf"):
+        assert observed_order(levels[-2][key], fine[key]) > 1.9
+        assert fine[key] < 3e-4
+    assert fine["measured_decay_rate"] == pytest.approx(fine["exact_decay_rate"], rel=1e-4)
