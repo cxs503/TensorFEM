@@ -169,6 +169,9 @@ def test_integrated_nodal_reactions_include_storage_and_applied_loads(sparse, th
     time = torch.tensor([0., .01, .035, .1], dtype=D)
     solution = solve_transient_thermal(model, time, torch.zeros(9, dtype=D), theta, sparse=sparse)
     heat = solution.integrated_nodal_reactions()
+    increments = solution.nodal_reaction_heat_steps()
+    torch.testing.assert_close(increments.sum(dim=0), heat, atol=1e-12, rtol=0.)
+    assert increments[:,1:-1].abs().max() < 1e-12
     assert heat[1:-1].abs().max() < 1e-12
     delta = solution.temperature[-1] - solution.temperature[0]
     # Capacity per length = rho*c*A = 42, source per length = 4.

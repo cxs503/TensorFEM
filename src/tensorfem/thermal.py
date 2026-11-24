@@ -75,6 +75,15 @@ class ThermalTransientResult:
     matrices: ThermalMatrices
     theta: float = 1.0
 
+    def nodal_reaction_heat_steps(self) -> torch.Tensor:
+        """Return inward reaction heat per interval and node, shape (nt-1, nn)."""
+        t = self.temperature
+        dt = self.time.diff().to(t)[:, None]
+        stages = (1 - self.theta) * t[:-1] + self.theta * t[1:]
+        m = self.matrices
+        return ((m.capacity @ t.diff(dim=0).T + m.conductivity @ (dt*stages).T).T
+                - dt*m.heat)
+
     def integrated_nodal_reactions(self) -> torch.Tensor:
         """Heat supplied by prescribed temperatures over the returned time interval.
 
