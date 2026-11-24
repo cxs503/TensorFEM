@@ -105,6 +105,62 @@ def _expand(value, ne, like, default=1.0):
     return torch.as_tensor(value, dtype=like.dtype, device=like.device).reshape(-1).expand(ne)
 
 
+def _element_conductivity(model):
+    x, ne = model.nodes, len(model.elements)
+    material = torch.as_tensor(1.0 if model.conductivity is None else model.conductivity,
+                               dtype=x.dtype, device=x.device)
+    anisotropic = model.element_type.lower() == "q4" and material.ndim == 3 and material.shape[-2:] == (2, 2)
+    if anisotropic:
+        if material.shape[0] not in (1, ne):
+            raise ValueError("Q4 conductivity needs one tensor or one per element")
+        if not torch.allclose(material, material.transpose(-1, -2)) or not torch.isfinite(material).all():
+            raise ValueError("Q4 conductivity tensors must be finite and symmetric")
+        if torch.any(torch.linalg.cholesky_ex(material).info != 0):
+            raise ValueError("Q4 conductivity tensors must be positive definite")
+        return material
+    return _expand(material, ne, x)
+
+
+def _q4_geometry(coords, xi, eta):
+    n = coords.new_tensor([(1-xi)*(1-eta),(1+xi)*(1-eta),
+                      (1+xi)*(1+eta),(1-xi)*(1+eta)]) / 4
+    dn = coords.new_tensor([[-(1-eta),-(1-xi)],[(1-eta),-(1+xi)],
+                       [(1+eta),(1+xi)],[-(1+eta),(1-xi)]]) / 4
+    jac = torch.einsum("eia,ib->eab", coords, dn)
+    det = torch.linalg.det(jac)
+    if torch.any(det <= 0):
+        raise ValueError("Q4 element has non-positive Jacobian")
+    grad = torch.einsum("ib,ebc->eic", dn, torch.linalg.inv(jac))
+    return n, grad, det
+
+
+def thermal_element_flux(model: ThermalModel, temperature: torch.Tensor, *, xi=0., eta=0.) -> torch.Tensor:
+    """Return global Fourier heat flux [element, direction] in W/m².
+
+    For Q4, (xi, eta) selects one point of the parent square [-1,1]² in
+    every element. LINE2 flux is constant. Complex input gives flux phasors.
+    """
+    if temperature.shape != (len(model.nodes),):
+        raise ValueError("temperature must have one value per node")
+    if not (-1 <= xi <= 1 and -1 <= eta <= 1):
+        raise ValueError("parent coordinates must be in [-1,1]")
+    conn = model.elements.long()
+    coords = model.nodes[conn]
+    values = temperature.to(device=coords.device)[conn]
+    k = _element_conductivity(model)
+    dtype = torch.promote_types(values.dtype, coords.dtype)
+    if model.element_type.lower() == "line2":
+        length = coords[:,1,0] - coords[:,0,0]
+        if torch.any(length <= 0):
+            raise ValueError("LINE2 element must have positive length")
+        return (-k * (values[:,1].to(dtype)-values[:,0].to(dtype)) / length)[:,None]
+    _, grad, _ = _q4_geometry(coords, xi, eta)
+    gradient = torch.einsum("ei,eia->ea", values.to(dtype), grad.to(dtype))
+    if k.ndim == 3:
+        return -(gradient[:,None,:] @ k.to(dtype)).squeeze(1)
+    return -k[:,None]*gradient
+
+
 def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:
     """Assemble conductivity ``K``, capacity ``C`` and heat vector ``f``."""
     x = model.nodes
@@ -114,19 +170,7 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
         load_like = x.new_empty(0, dtype=dtype)
     conn = model.elements.long()
     ne, nen = conn.shape
-    material = torch.as_tensor(1.0 if model.conductivity is None else model.conductivity,
-                               dtype=x.dtype, device=x.device)
-    anisotropic = nen == 4 and material.ndim == 3 and material.shape[-2:] == (2, 2)
-    if anisotropic:
-        if material.shape[0] not in (1, ne):
-            raise ValueError("Q4 conductivity needs one tensor or one per element")
-        if not torch.allclose(material, material.transpose(-1, -2)) or not torch.isfinite(material).all():
-            raise ValueError("Q4 conductivity tensors must be finite and symmetric")
-        if torch.any(torch.linalg.cholesky_ex(material).info != 0):
-            raise ValueError("Q4 conductivity tensors must be positive definite")
-        k = material
-    else:
-        k = _expand(material, ne, x)
+    k = _element_conductivity(model)
     rho = _expand(model.density, ne, x)
     cp = _expand(model.specific_heat, ne, x)
     thick = _expand(model.thickness, ne, x)
@@ -147,17 +191,9 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
     else:
         g = 3.0**-0.5
         for xi, eta in ((-g,-g),(g,-g),(g,g),(-g,g)):
-            n = x.new_tensor([(1-xi)*(1-eta),(1+xi)*(1-eta),
-                              (1+xi)*(1+eta),(1-xi)*(1+eta)]) / 4
-            dn = x.new_tensor([[-(1-eta),-(1-xi)],[(1-eta),-(1+xi)],
-                               [(1+eta),(1+xi)],[-(1+eta),(1-xi)]]) / 4
-            jac = torch.einsum("eia,ib->eab", coords, dn)
-            det = torch.linalg.det(jac)
-            if torch.any(det <= 0):
-                raise ValueError("Q4 element has non-positive Jacobian")
-            grad = torch.einsum("ib,ebc->eic", dn, torch.linalg.inv(jac))
+            n, grad, det = _q4_geometry(coords, xi, eta)
             weight = det*thick
-            weighted_grad = grad @ k if anisotropic else grad * k[:, None, None]
+            weighted_grad = grad @ k if k.ndim == 3 else grad * k[:, None, None]
             ke = ke + (weighted_grad @ grad.transpose(1, 2)) * weight[:, None, None]
             ce = ce + (rho*cp*weight)[:,None,None]*(n[None,:,None]*n[None,None,:])
             fe = fe + (source*weight)[:,None]*n[None,:]

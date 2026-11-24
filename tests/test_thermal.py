@@ -228,3 +228,29 @@ def test_harmonic_uniform_driven_rod_complex_source_and_ambient(sparse):
     assert result.reaction_power.abs().max() < 1e-12
     with pytest.raises(ValueError, match="angular_frequency"):
         solve_harmonic_thermal(model, 0.)
+
+
+def test_element_flux_on_sheared_cells_uses_global_tensor_and_complex_gradient():
+    from tensorfem import thermal_element_flux
+    from tensorfem.thermal_analytic import structured_quad_mesh
+
+    mesh = structured_quad_mesh(2, 1, shear=.4)
+    xy = mesh.nodes
+    k = xy.new_tensor([[[2., .6], [.6, 1.]], [[1., -.3], [-.3, 3.]]])
+    model = ThermalModel(xy, mesh.elements, k, 1., 1., torch.arange(0), xy.new_empty(0),
+                         element_type="q4")
+    gradient = torch.tensor([2.+1j, -.5j], dtype=torch.complex128)
+    field = xy.to(gradient) @ gradient
+    expected = -(k.to(gradient) @ gradient)
+    for xi, eta in ((0., 0.), (-1., .5), (1., -1.)):
+        torch.testing.assert_close(thermal_element_flux(model, field, xi=xi, eta=eta), expected)
+
+
+def test_line_element_flux_recovers_variable_conductivity():
+    from dataclasses import replace
+    from tensorfem import thermal_element_flux
+
+    model = line_model()
+    k = torch.arange(1,9, dtype=D)
+    flux = thermal_element_flux(replace(model, conductivity=k), 5.-3.*model.nodes[:,0])
+    torch.testing.assert_close(flux[:,0], 3*k)
