@@ -750,6 +750,18 @@ def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *
     return width*((g[:,0]+mid*dg)*(jump[...,0]+mid*dj) + (width**2/12)*dg*dj)
 
 
+def thermal_contact_edge_heat_steps(model: ThermalModel, result: ThermalTransientResult, *,
+                                    start: float = 0., end: float = 1.) -> torch.Tensor:
+    """Heat crossing each Q4 contact edge per step in J, shape (nt-1, n_edges).
+
+    Positive heat leaves the first trace. The edge fractions follow
+    thermal_contact_edge_power. Use the integrator's weighted stage field so
+    that full-edge exchange balances the discrete energy equations.
+    """
+    power = thermal_contact_edge_power(model, result.interval_temperature, start=start, end=end)
+    return result.time.diff().to(power)[:, None]*power
+
+
 def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:
     """Assemble conductivity ``K``, capacity ``C`` and heat vector ``f``."""
     x = model.nodes

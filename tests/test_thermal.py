@@ -991,3 +991,42 @@ def test_graded_two_material_contact_subedge_power(sparse, record_property):
     record_property("max_partial_edge_power_error_W",err)
     assert err < 2e-13
     assert abs(float(thermal_contact_edge_power(model,field).sum())-7.) < 2e-13
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+@pytest.mark.parametrize("method,theta,order", [("theta",1.,1), ("theta",.5,2), ("sdirk2",.5,2)])
+def test_transient_contact_heat_against_two_layer_relaxation(sparse, method, theta, order, record_property):
+    from tensorfem import thermal_contact_edge_heat_steps
+
+    # Unit square per slab, insulated exterior. Uniformity in y reduces Q4 to
+    # two LINE2 elements of lengths one with four independent temperatures.
+    x = torch.tensor([[0,0],[1,0],[1,1],[0,1],[1,0],[2,0],[2,1],[1,1]],dtype=D)
+    model = ThermalModel(x,torch.arange(8).reshape(2,4),x.new_tensor([2.,5.]),1.,
+                         x.new_tensor([3.,4.]),torch.empty(0,dtype=torch.long),x.new_empty(0),
+                         element_type="q4",contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]),
+                         contact_edge_conductance=1.5)
+    initial = x.new_tensor([10.,10.,10.,10.,2.,2.,2.,2.])
+    # Independent 1-D capacity and stiffness. The contact is a 1.5 W/K link.
+    c = torch.block_diag(3*x.new_tensor([[2,1],[1,2]])/6,4*x.new_tensor([[2,1],[1,2]])/6)
+    k = x.new_tensor([[2,-2,0,0],[-2,3.5,-1.5,0],[0,-1.5,6.5,-5],[0,0,-5,5]])
+    end = .2
+    reference = torch.matrix_exp(-end*torch.linalg.solve(c,k)) @ x.new_tensor([10,10,2,2])
+    reference_heat = 3*(10-reference[:2].mean())
+    errors = []
+    worst_budget = 0.
+    for n in (8,16,32):
+        time = end*torch.linspace(0,1,n+1,dtype=D)**1.25
+        result = solve_transient_thermal(model,time,initial,theta=theta,method=method,sparse=sparse)
+        heat = thermal_contact_edge_heat_steps(model,result)[:,0]
+        # Unit volume, so each layer's stored heat is capacity times its
+        # four-corner average; this is independent of the discrete reactions.
+        left = 3*result.temperature[:,:4].mean(1).diff()
+        right = 4*result.temperature[:,4:].mean(1).diff()
+        worst_budget = max(worst_budget,float((left+heat).abs().max()),float((right-heat).abs().max()))
+        part = thermal_contact_edge_heat_steps(model,result,start=.1,end=.7)[:,0]
+        torch.testing.assert_close(part,.6*heat,rtol=1e-12,atol=1e-14)
+        errors.append(abs(float(heat.sum()-reference_heat)))
+        record_property(f"cumulative_heat_error_{n}_J", errors[-1])
+    record_property("max_layer_step_balance_error_J", worst_budget)
+    assert worst_budget < 1e-13
+    assert all(2**(order-.2) < a/b < 2**(order+.2) for a,b in zip(errors,errors[1:]))
