@@ -761,3 +761,40 @@ def test_section_power_with_spatially_quadratic_net_source(element_type):
     torch.testing.assert_close(recovered,power,atol=1e-13,rtol=0.)
     with pytest.raises(ValueError,match="broadcast"):
         thermal_element_section_power(model,local,f,net_line_source_gradient=[1.,2.])
+
+
+@pytest.mark.parametrize("element_type",["line2","q4"])
+def test_element_net_input_separates_storage_and_graded_bulk_loss(element_type):
+    from tensorfem import thermal_element_nodal_heat_steps, thermal_element_nodal_power
+
+    xy = torch.tensor([[0.,0.],[1.,0.],[1.,1.],[0.,1.]],dtype=D)
+    nodes = xy[:2,:1] if element_type=="line2" else xy
+    x = nodes[:,0]
+    ids = torch.arange(len(nodes))
+    model = ThermalModel(nodes,ids[None],1.,1.,2.,ids,1+x,element_type=element_type,
+                         heat_loss_coefficient=(.3+.8*x)[None],heat_source=(2-x)[None])
+    gauss = x.new_tensor([.5-(3/5)**.5/2,.5,.5+(3/5)**.5/2])
+    weights = x.new_tensor([5.,8.,5.])/18
+    def project(density):
+        left,right = (weights*(1-gauss))@density.real,(weights*gauss)@density.real
+        if density.is_complex():
+            left = left+1j*((weights*(1-gauss))@density.imag)
+            right = right+1j*((weights*gauss)@density.imag)
+        return torch.stack([left,right] if element_type=="line2" else [left/2,right/2,right/2,left/2])[None]
+    omega,phase = 2.4,.4+.7j
+    extra = (.3-.1j)*x[None]
+    _,net = thermal_element_nodal_power(model,phase*(1+x),omega,element_nodal_heat=extra,return_net_input=True)
+    target = project(2-gauss-(.3+.8*gauss+2j*omega)*phase*(1+gauss))+extra
+    torch.testing.assert_close(net,target,rtol=0.,atol=3e-15)
+
+    times = x.new_tensor([0.,.09,.25])
+    history = 1+x+times[:,None]*(.5-x)
+    result = solve_transient_thermal(model,times,history[0],theta=.5,fixed_temperature_history=history)
+    supplemental = (times[:,None,None]*x[None,None,:])
+    added_heat = torch.full_like(supplemental[:-1],.013)
+    _,net_heat = thermal_element_nodal_heat_steps(model,result,element_nodal_heat_history=supplemental,
+            element_nodal_step_heat=added_heat,return_net_input=True)
+    for i,dt in enumerate(times.diff()):
+        mid = (times[i]+times[i+1])/2
+        target = project(2-gauss-2*(.5-gauss)-(.3+.8*gauss)*(1+gauss+mid*(.5-gauss)))
+        torch.testing.assert_close(net_heat[i],dt*(target+mid*x)+added_heat[i],rtol=0.,atol=3e-15)

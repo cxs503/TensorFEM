@@ -255,6 +255,7 @@ def _thermal_element_matrices(model, load_like):
             loss = loss.expand(ne)
         if not torch.isfinite(loss).all() or (loss<0).any():
             raise ValueError("heat_loss_coefficient must be finite and nonnegative")
+    sink = None
     quadratic = model.heat_source_quadratic
     if quadratic is not None:
         raw = torch.as_tensor(quadratic, device=x.device)
@@ -284,9 +285,9 @@ def _thermal_element_matrices(model, load_like):
             # Integrals of H(x)*N_i*N_j for a linear coefficient on LINE2.
             left,right = loss.unbind(1)
             entries = torch.stack((3*left+right,left+right,left+right,left+3*right),1)
-            ke = ke+(thick*length/12)[:,None,None]*entries.reshape(ne,2,2)
+            sink = (thick*length/12)[:,None,None]*entries.reshape(ne,2,2)
         elif loss is not None:
-            ke = ke+loss[:,None,None]*measure
+            sink = loss[:,None,None]*measure
         if interpolated:
             fe = (thick*length/6)[:, None]*(source @ base_c.to(source.dtype))
         else:
@@ -299,6 +300,7 @@ def _thermal_element_matrices(model, load_like):
                 power = quadratic*position.square()*thick*length/2
                 fe = fe + power[:, None]*n
     else:
+        sink = torch.zeros_like(ke) if loss is not None else None
         g = 3.0**-0.5
         for xi, eta in ((-g,-g),(g,-g),(g,g),(-g,g)):
             n, grad, det = _q4_geometry(coords, xi, eta)
@@ -308,7 +310,7 @@ def _thermal_element_matrices(model, load_like):
             measure = weight[:,None,None]*(n[None,:,None]*n[None,None,:])
             ce = ce+(rho*cp)[:,None,None]*measure
             if loss is not None and not variable_loss:
-                ke = ke+loss[:,None,None]*measure
+                sink = sink+loss[:,None,None]*measure
             density = source @ n.to(source.dtype) if interpolated else source
             fe = fe + (density*weight)[:,None]*n[None,:]
         if variable_loss or quadratic is not None:
@@ -321,7 +323,7 @@ def _thermal_element_matrices(model, load_like):
                     n,_,det = _q4_geometry(coords,xi,eta)
                     weight = wx*wy*det*thick
                     if variable_loss:
-                        ke = ke+(weight*(loss @ n))[:,None,None]*torch.outer(n,n)
+                        sink = sink+(weight*(loss @ n))[:,None,None]*torch.outer(n,n)
                     if quadratic is not None:
                         # With a bilinear map, N_i*q(x,y)*det(J) has degree at
                         # most four in either parent coordinate.
@@ -329,11 +331,12 @@ def _thermal_element_matrices(model, load_like):
                         a, b, c = quadratic.unbind(1)
                         power = weight*(a*px.square() + b*px*py + c*py.square())
                         fe = fe + power[:, None]*n
-    return ke, ce, fe
+    return ke if sink is None else ke+sink, ce, fe, sink
 
 
 def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
-                                angular_frequency: float = 0., *, element_nodal_heat=None) -> torch.Tensor:
+                                angular_frequency: float = 0., *, element_nodal_heat=None,
+                                return_net_input: bool=False) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Inward power phasors (W) at LINE2 or Q4 element nodes under exp(+iωt).
 
     Zero frequency recovers steady powers. The return dtype is complex.
@@ -341,6 +344,8 @@ def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
     volume loads. Supply any additional element-resolved nodal loads (ne, nen)
     in W to subtract them before assembly. Global point loads, films and
     contacts otherwise appear as exchanges. Q4 entries are weak-form nodal powers.
+    return_net_input also returns element-resolved distributed input minus bulk
+    loss and storage, in W, for use as net_element_nodal_input in section recovery.
     """
     if not math.isfinite(angular_frequency) or angular_frequency < 0:
         raise ValueError("angular_frequency must be finite and nonnegative")
@@ -348,19 +353,27 @@ def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
         raise ValueError("temperature must have one value per node")
     dtype = torch.promote_types(model.nodes.dtype, torch.promote_types(temperature.dtype, torch.complex64))
     values = temperature.to(device=model.nodes.device, dtype=dtype)[model.elements.long()]
-    ke, ce, fe = _thermal_element_matrices(model, values)
+    ke, ce, fe, sink = _thermal_element_matrices(model, values)
     power = torch.einsum("eij,ej->ei", ke.to(dtype) + 1j*angular_frequency*ce.to(dtype), values) - fe
     if element_nodal_heat is not None:
         load = torch.as_tensor(element_nodal_heat, dtype=dtype, device=values.device)
         if load.shape != values.shape or not torch.isfinite(load).all():
             raise ValueError("element_nodal_heat needs finite powers at every element node")
         power = power - load
+    if return_net_input:
+        net = fe-1j*angular_frequency*torch.einsum("eij,ej->ei",ce.to(dtype),values)
+        if element_nodal_heat is not None:
+            net = net+load
+        if sink is not None:
+            net = net-torch.einsum("eij,ej->ei",sink.to(dtype),values)
+        return power,net
     return power
 
 
 def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransientResult, *,
                                     element_nodal_heat_history: torch.Tensor | None = None,
-                                    element_nodal_step_heat: torch.Tensor | None = None) -> torch.Tensor:
+                                    element_nodal_step_heat: torch.Tensor | None = None,
+                                    return_net_input: bool=False) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Inward energy at each element node, shaped (nt-1, ne, nen), in J.
 
     Uses local consistent capacity, conductivity and static volumetric sources.
@@ -370,23 +383,38 @@ def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransie
     load once. Global point loads, films and contacts appear as exchanges unless
     explicitly allocated to element nodes. For LINE2, negate the right entry
     for energy leaving the right end. Q4 entries are nodal weak-form quantities.
+    return_net_input also returns the distributed net input in J per interval
+    and element node. Divide both arrays by interval duration to recover power.
     """
-    ke, ce, fe = _thermal_element_matrices(model, model.nodes)
+    ke, ce, fe, sink = _thermal_element_matrices(model, model.nodes)
     t = result.temperature[:, model.elements.long()]
     stage = result.interval_temperature[:, model.elements.long()]
-    heat = torch.einsum("eij,tej->tei", ce, t.diff(dim=0))
+    stored = torch.einsum("eij,tej->tei", ce, t.diff(dim=0))
+    dt = result.time.diff().to(t)[:,None,None]
+    heat = stored
+    net = dt*fe-stored if return_net_input else None
     power = torch.einsum("eij,tej->tei", ke, stage) - fe
     if element_nodal_heat_history is not None:
         load = torch.as_tensor(element_nodal_heat_history).to(t)
         if load.shape != t.shape or not torch.isfinite(load).all():
             raise ValueError("element_nodal_heat_history needs finite powers at every time and element node")
-        power = power - ((1-result.theta)*load[:-1] + result.theta*load[1:])
+        average = (1-result.theta)*load[:-1] + result.theta*load[1:]
+        power = power-average
+        if return_net_input:
+            net = net+dt*average
     if element_nodal_step_heat is not None:
         supplied = torch.as_tensor(element_nodal_step_heat).to(t)
         if supplied.shape != heat.shape or not torch.isfinite(supplied).all():
             raise ValueError("element_nodal_step_heat needs finite joules per interval and element node")
         heat = heat - supplied
-    return heat + result.time.diff().to(t)[:, None, None]*power
+        if return_net_input:
+            net = net+supplied
+    heat = heat+dt*power
+    if return_net_input:
+        if sink is not None:
+            net = net-dt*torch.einsum("eij,tej->tei",sink,stage)
+        return heat,net
+    return heat
 
 
 def thermal_element_section_power(model: ThermalModel, nodal_power: torch.Tensor, fractions, *,
@@ -507,7 +535,7 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
         load_like = x.new_empty(0, dtype=dtype)
     conn = model.elements.long()
     ne, nen = conn.shape
-    ke, ce, fe = _thermal_element_matrices(model, load_like)
+    ke, ce, fe, _ = _thermal_element_matrices(model, load_like)
     nd = len(x)
     rows = conn[:,:,None].expand(-1,-1,nen).reshape(-1)
     cols = conn[:,None,:].expand(-1,nen,-1).reshape(-1)
@@ -760,7 +788,7 @@ def thermal_element_low_frequency_power(model: ThermalModel, result: ThermalLowF
     if u.shape!=(len(model.nodes),) or lag.shape!=u.shape:
         raise ValueError("both temperature coefficients must have one value per node")
     conn = model.elements.long()
-    k,c,f = _thermal_element_matrices(model,u)
+    k,c,f,_ = _thermal_element_matrices(model,u)
     k = k.to(u)
     t0 = u[conn].unsqueeze(-1)
     t1 = lag[conn].unsqueeze(-1)
