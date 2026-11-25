@@ -1030,3 +1030,40 @@ def test_transient_contact_heat_against_two_layer_relaxation(sparse, method, the
     record_property("max_layer_step_balance_error_J", worst_budget)
     assert worst_budget < 1e-13
     assert all(2**(order-.2) < a/b < 2**(order+.2) for a,b in zip(errors,errors[1:]))
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_low_frequency_contact_power_against_layer_capacity_moments(sparse, record_property):
+    from tensorfem import (thermal_contact_edge_low_frequency_power, thermal_contact_edge_power,
+                           solve_harmonic_thermal, solve_low_frequency_thermal)
+
+    # Two unit slabs, unit contact area, fixed complex wall drives.
+    x = torch.tensor([[0,0],[1,0],[1,1],[0,1],[1,0],[2,0],[2,1],[1,1]],dtype=D)
+    hot, cold = 2.+.5j, -.3+.7j
+    kl, kr, cl, cr, g = 2., 5., 3., 4., 1.5
+    model = ThermalModel(x,torch.arange(8).reshape(2,4),x.new_tensor([kl,kr]),1.,
+                         x.new_tensor([cl,cr]),torch.tensor([0,3,5,6]),
+                         torch.tensor([hot,hot,cold,cold],dtype=torch.complex128),
+                         element_type="q4",contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]),
+                         contact_edge_conductance=g)
+    resistance = 1/kl+1/g+1/kr
+    dc = (hot-cold)/resistance
+    # Integrate dq1/dx=-C*T0 and dT1/dx=-q1/k on each layer. T1 is
+    # zero at both outer walls and jumps by q1/g at the interface.
+    left_moment = cl/kl*(hot/2-dc/(3*kl))
+    right_moment = cr/kr*(cold/2+dc/(3*kr))
+    lag = (right_moment-left_moment)/resistance
+    interval = dict(start=.2,end=.8)
+    steady, first = thermal_contact_edge_low_frequency_power(
+        model, solve_low_frequency_thermal(model,sparse=sparse), **interval)
+    for name, value, reference in (("dc_W",steady,dc),("lag_W_s",first,lag)):
+        error = abs(value.item()-.6*reference)
+        record_property(f"absolute_error_{name}", error)
+        assert error < 2e-14
+    errors = []
+    for omega in (.05,.025,.0125):
+        harmonic = solve_harmonic_thermal(model,omega,sparse=sparse)
+        actual = thermal_contact_edge_power(model,harmonic.temperature,**interval)
+        errors.append(abs((actual-steady-1j*omega*first).item()))
+        record_property(f"complex_power_remainder_{omega}_W", errors[-1])
+    assert all(3.9 < a/b < 4.1 for a,b in zip(errors,errors[1:]))

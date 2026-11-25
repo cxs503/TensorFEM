@@ -1094,6 +1094,17 @@ def solve_low_frequency_thermal(model: ThermalModel, *, sparse: bool=False) -> T
                                      ThermalHarmonicResult(lag,k @ lag+c @ u))
 
 
+def thermal_contact_edge_low_frequency_power(model: ThermalModel, result: ThermalLowFrequencyResult,
+                                           *, start: float = 0., end: float = 1.):
+    """Return the steady (W) and iω (W s) contact power coefficients per Q4 edge.
+
+    Positive power enters the second trace from the first. Each coefficient
+    integrates the same fractional edge interval for fixed contact conductance.
+    """
+    fields = torch.stack((result.steady.temperature, result.first_order.temperature))
+    return thermal_contact_edge_power(model, fields, start=start, end=end).unbind(0)
+
+
 def thermal_element_low_frequency_power(model: ThermalModel, result: ThermalLowFrequencyResult):
     """Return steady and first-order inward nodal powers for each element (W, W s).
 
