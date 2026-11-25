@@ -52,6 +52,11 @@ class ThermalModel:
     # Coefficients in W/m⁵, shared (3,) or element-specific (ne, 3).
     heat_source_quadratic: torch.Tensor | None = None
 
+    # Conforming Q4 contact edges (n,2,2): two traces with endpoints in
+    # matching physical order. Total edge conductance is area/R in W/K.
+    contact_edge_pairs: torch.Tensor | None = None
+    contact_edge_conductance: torch.Tensor | None = None
+
     def __post_init__(self):
         nen = {"line2": 2, "q4": 4}.get(self.element_type.lower())
         if nen is None:
@@ -73,6 +78,30 @@ class ThermalModel:
                 raise ValueError("contact_pairs must be an integer tensor of shape [n_contacts, 2]")
             if torch.any(pairs < 0) or torch.any(pairs >= len(self.nodes)) or torch.any(pairs[:, 0] == pairs[:, 1]):
                 raise ValueError("contacts must connect distinct, valid nodes")
+        if (self.contact_edge_pairs is None) != (self.contact_edge_conductance is None):
+            raise ValueError("supply both contact_edge_pairs and contact_edge_conductance")
+        if self.contact_edge_pairs is not None:
+            edges = self.contact_edge_pairs
+            if (nen != 4 or edges.ndim != 3 or edges.shape[1:] != (2,2)
+                    or edges.dtype not in (torch.int32,torch.int64)):
+                raise ValueError("contact_edge_pairs requires Q4 endpoint indices shaped (n,2,2)")
+            if (edges < 0).any() or (edges >= len(self.nodes)).any():
+                raise ValueError("invalid contact edge indices")
+            edges = edges.to(self.nodes.device).long()
+            if (edges.flatten(1).sort(1).values.diff(dim=1) == 0).any():
+                raise ValueError("each contact edge pair requires four distinct nodes")
+            a,b = self.nodes[edges].unbind(1)
+            lengths = (a[:,1]-a[:,0]).norm(dim=1)
+            if (lengths <= 0).any() or ((a-b).norm(dim=2) >
+                    128*torch.finfo(a.dtype).eps*lengths[:,None]).any():
+                raise ValueError("contact edge endpoints must coincide in matching order")
+            # A trace must be an edge of a Q4, not a diagonal or an interior line.
+            def edge_keys(start,end):
+                return torch.minimum(start,end)*len(self.nodes)+torch.maximum(start,end)
+            conn = self.elements.to(edges.device).long()
+            keys,counts = torch.unique(edge_keys(conn,conn.roll(-1,1)),return_counts=True)
+            if not torch.isin(edge_keys(edges[:,:,0],edges[:,:,1]),keys[counts==1]).all():
+                raise ValueError("contact traces must be exposed element edges")
         if self.convection_area is not None and self.convection_edges is None:
             raise ValueError("convection_area requires convection_edges")
         if self.wall_areal_heat_capacity is not None and self.convection_edges is None:
@@ -750,6 +779,20 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
             K = (K + matrix(entries, *indices)).coalesce()
         else:
             K = K.index_put(indices, entries, accumulate=True)
+    if model.contact_edge_pairs is not None:
+        ids = model.contact_edge_pairs.to(device=x.device,dtype=torch.long).reshape(-1,4)
+        g = torch.as_tensor(model.contact_edge_conductance,dtype=x.dtype,device=x.device)
+        if g.numel() not in (1,len(ids)) or not torch.isfinite(g).all() or (g < 0).any():
+            raise ValueError("provide finite nonnegative total conductance per contact edge")
+        # Integral of N_i N_j on a unit interval, with opposite signs
+        # for temperatures evaluated on opposite traces.
+        jump = x.new_tensor([[2,1,-2,-1],[1,2,-1,-2],[-2,-1,2,1],[-1,-2,1,2]])/6
+        blocks = g.reshape(-1).expand(len(ids))[:,None,None]*jump
+        row = ids[:,:,None].expand_as(blocks).reshape(-1)
+        col = ids[:,None,:].expand_as(blocks).reshape(-1)
+        K = K + matrix(blocks,row,col)
+        if sparse:
+            K = K.coalesce()
     return ThermalMatrices(K,C,f)
 
 

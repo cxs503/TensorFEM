@@ -916,3 +916,23 @@ def test_cubic_patch_integrates_varying_flux_on_sheared_edges():
         torch.testing.assert_close(result[0],exact,atol=1e-12,rtol=0.)
     with pytest.raises(ValueError,match="complete cubic"):
         recover_q4_patch_boundary_power(model,t,[[0,1,3,4]],0,degree=3)
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+def test_consistent_edge_contact_linear_jump(sparse):
+    from dataclasses import replace
+    x = torch.tensor([[0,0],[1,0],[1,1],[0,1],[1,0],[2,0],[2,1],[1,1]],dtype=D)
+    base = ThermalModel(x,torch.arange(8).reshape(2,4),1.,1.,1.,torch.tensor([],dtype=torch.long),
+                        x.new_empty(0),element_type="q4")
+    edges = torch.tensor([[[1,2],[4,7]]])
+    attached = replace(base,contact_edge_pairs=edges,contact_edge_conductance=3.)
+    def conductivity(model):
+        return assemble_thermal(model,sparse=sparse).conductivity.to_dense()
+    jump_operator = conductivity(attached)-conductivity(base)
+    temp = x.new_tensor([0,2,6,0,1,0,0,2])
+    # Jump varies from 1 to 4 K; integrate it against each endpoint hat.
+    npower = x.new_tensor([0,3,4.5,0,-3,0,0,-4.5])
+    torch.testing.assert_close(jump_operator@temp,npower)
+    torch.testing.assert_close(jump_operator@torch.ones_like(temp),torch.zeros_like(temp))
+    with pytest.raises(ValueError,match="matching order"):
+        replace(attached,contact_edge_pairs=torch.tensor([[[1,2],[7,4]]]))
