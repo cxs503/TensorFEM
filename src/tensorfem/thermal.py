@@ -171,6 +171,30 @@ def thermal_element_flux(model: ThermalModel, temperature: torch.Tensor, *, xi=0
     return -k[:,None]*gradient
 
 
+def thermal_element_edge_power(model: ThermalModel, temperature: torch.Tensor) -> torch.Tensor:
+    """Integrate outward Fourier power (W) on each Q4 edge using two Gauss points.
+
+    Columns follow local node pairs (0,1), (1,2), (2,3), (3,0). Thickness
+    is per element. Adjacent elements use their own one-sided gradient, so
+    their reported interior powers can differ in magnitude on a finite mesh.
+    """
+    if model.element_type.lower() != "q4":
+        raise ValueError("edge power requires Q4 elements")
+    coords = model.nodes[model.elements.long()]
+    tangent = coords.roll(-1, dims=1)-coords
+    normal_measure = torch.stack((tangent[:,:,1], -tangent[:,:,0]), dim=-1)
+    g = 3.**-.5
+    rules = (((-g,-1.), (g,-1.)), ((1.,-g), (1.,g)),
+             ((g,1.), (-g,1.)), ((-1.,g), (-1.,-g)))
+    powers = []
+    for edge, points in enumerate(rules):
+        flux = sum(thermal_element_flux(model, temperature, xi=xi, eta=eta)
+                   for xi, eta in points)/2
+        powers.append((flux*normal_measure[:,edge]).sum(dim=1))
+    thickness = _expand(model.thickness, len(coords), model.nodes)
+    return torch.stack(powers, dim=1)*thickness[:,None]
+
+
 def _thermal_element_matrices(model, load_like):
     x = model.nodes
     conn = model.elements.long()

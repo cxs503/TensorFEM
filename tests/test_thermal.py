@@ -402,3 +402,17 @@ def test_q4_bilinear_corner_heat_density_integrates_exact_hat_weights():
     model = ThermalModel(x, torch.arange(4)[None], 1., 1., 1., torch.tensor([0]),
                          x.new_zeros(1), element_type="q4", heat_source=x.new_tensor([[0.,0.,1.,0.]]))
     torch.testing.assert_close(assemble_thermal(model).heat, x.new_tensor([1.,2.,4.,2.])/18)
+
+
+def test_q4_trapezoid_edge_power_has_outward_sign_thickness_and_phase():
+    from tensorfem import thermal_element_edge_power
+
+    xy = torch.tensor([[0.,0.], [2.,0.], [1.6,1.], [.2,.8]], dtype=D)
+    material = xy.new_tensor([[2., .3], [.3, 1.]])
+    field = (1+.5j)*xy[:,0]+(.2-.7j)*xy[:,1]
+    model = ThermalModel(xy, torch.arange(4)[None], material[None], 1., 1., torch.tensor([0]),
+                         field[:1], element_type="q4", thickness=.4)
+    flux = -material.to(field) @ field.new_tensor([1+.5j, .2-.7j])
+    # Length-weighted outward normals, in local edge order.
+    expected = .4*(field.new_tensor([[0.,-2.],[1.,.4],[-.2,1.4],[-.8,.2]]) @ flux)
+    torch.testing.assert_close(thermal_element_edge_power(model,field)[0], expected)
