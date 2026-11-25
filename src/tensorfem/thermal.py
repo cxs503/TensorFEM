@@ -47,6 +47,7 @@ class ThermalModel:
     # to heat_source to exchange with a prescribed ambient temperature Ta.
     heat_loss_coefficient: torch.Tensor | None = None
 
+    # LINE2 additive A*x², scalar or per element in W/m⁵.
     # Q4 additive A*x²+B*x*y+C*y² volumetric heating in global coordinates.
     # Coefficients in W/m⁵, shared (3,) or element-specific (ne, 3).
     heat_source_quadratic: torch.Tensor | None = None
@@ -56,8 +57,6 @@ class ThermalModel:
         if nen is None:
             raise ValueError("element_type must be 'line2' or 'q4'")
         dim = 1 if self.element_type.lower() == "line2" else 2
-        if self.heat_source_quadratic is not None and nen != 4:
-            raise ValueError("heat_source_quadratic requires Q4 elements")
         if self.nodes.ndim != 2 or self.nodes.shape[1] != dim:
             raise ValueError(f"nodes must have shape [n, {dim}]")
         if self.elements.ndim != 2 or self.elements.shape[1] != nen:
@@ -256,6 +255,22 @@ def _thermal_element_matrices(model, load_like):
             loss = loss.expand(ne)
         if not torch.isfinite(loss).all() or (loss<0).any():
             raise ValueError("heat_loss_coefficient must be finite and nonnegative")
+    quadratic = model.heat_source_quadratic
+    if quadratic is not None:
+        raw = torch.as_tensor(quadratic, device=x.device)
+        if raw.is_complex() and not load_like.is_complex():
+            raise ValueError("complex heat_source_quadratic requires complex loads")
+        quadratic = torch.as_tensor(quadratic, device=x.device, dtype=load_like.dtype)
+        if not torch.isfinite(quadratic).all():
+            raise ValueError("heat_source_quadratic must be finite")
+        if nen == 2:
+            if quadratic.shape not in ((), (1,), (ne,)):
+                raise ValueError("LINE2 heat_source_quadratic requires a scalar or one value per element")
+            quadratic = quadratic.expand(ne)
+        else:
+            if quadratic.shape not in ((3,), (ne, 3)):
+                raise ValueError("Q4 heat_source_quadratic requires one triple or one per element")
+            quadratic = quadratic.expand(ne, 3)
     if model.element_type.lower() == "line2":
         length = coords[:, 1, 0] - coords[:, 0, 0]
         if torch.any(length <= 0):
@@ -276,6 +291,13 @@ def _thermal_element_matrices(model, load_like):
             fe = (thick*length/6)[:, None]*(source @ base_c.to(source.dtype))
         else:
             fe = (source*thick*length/2)[:, None] * x.new_ones((ne, 2))
+        if quadratic is not None:
+            # Two-point Gauss integrates N_i(x)*x² exactly on the affine line.
+            for t in ((1-3**-.5)/2, (1+3**-.5)/2):
+                n = x.new_tensor([1-t, t])
+                position = coords[:, :, 0] @ n
+                power = quadratic*position.square()*thick*length/2
+                fe = fe + power[:, None]*n
     else:
         g = 3.0**-0.5
         for xi, eta in ((-g,-g),(g,-g),(g,g),(-g,g)):
@@ -289,14 +311,6 @@ def _thermal_element_matrices(model, load_like):
                 ke = ke+loss[:,None,None]*measure
             density = source @ n.to(source.dtype) if interpolated else source
             fe = fe + (density*weight)[:,None]*n[None,:]
-        quadratic = model.heat_source_quadratic
-        if quadratic is not None:
-            quadratic = torch.as_tensor(quadratic, device=x.device)
-            if quadratic.shape not in ((3,), (ne, 3)) or not torch.isfinite(quadratic).all():
-                raise ValueError("heat_source_quadratic requires one finite triple or one per Q4 element")
-            if quadratic.is_complex() and not load_like.is_complex():
-                raise ValueError("complex heat_source_quadratic requires complex loads")
-            quadratic = quadratic.to(load_like.dtype).expand(ne, 3)
         if variable_loss or quadratic is not None:
             # On a distorted bilinear map, H*N_i*N_j*det(J) can have
             # degree four in a reference coordinate. Three Gauss points suffice.

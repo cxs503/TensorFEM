@@ -136,3 +136,48 @@ def test_complex_quadratic_heat_on_sheared_harmonic_patch(sparse, record_propert
     torch.testing.assert_close(result.temperature, exact, atol=1e-14, rtol=0.)
     torch.testing.assert_close(flux, expected_flux, atol=1e-13, rtol=0.)
     assert power_error < 1e-13
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_layered_rod_quadratic_generation_and_contact(sparse, record_property):
+    from tensorfem.thermal import assemble_thermal
+
+    # Global x spans both signs. Each side has distinct conductivity, area,
+    # and source; a finite contact conductance transmits the interface power.
+    positions = [[-.7,-.55,-.1,.2], [.2,.37,.83,1.1]]
+    k = (1.7, 3.1)
+    area = (.8, 1.3)
+    beta = (4., -2.2)
+    contact = 2.5
+    exact = []
+    initial_t, initial_power = 3., .4
+    wall_input = initial_power
+    for i, points in enumerate(positions):
+        x = torch.tensor(points, dtype=D)
+        start, end = points[0], points[-1]
+        # P' = area*beta*x², T' = -P/(k*area).
+        offset = initial_power-area[i]*beta[i]*start**3/3
+        t = initial_t-(offset*(x-start)+area[i]*beta[i]*(x**4-start**4)/12)/(k[i]*area[i])
+        exact.append(t)
+        initial_power = offset+area[i]*beta[i]*end**3/3
+        if i == 0:
+            interface_power = initial_power
+            initial_t = t[-1].item()-interface_power/contact
+    temperature = torch.cat(exact)
+    nodes = torch.tensor(positions,dtype=D).reshape(-1,1)
+    fixed = torch.tensor([0,7])
+    def layers(values):
+        return torch.tensor(values,dtype=D).repeat_interleave(3)
+    model = ThermalModel(nodes, torch.tensor([[0,1],[1,2],[2,3],[4,5],[5,6],[6,7]]),
+                         layers(k), 1., 1., fixed, temperature[fixed], thickness=layers(area),
+                         contact_pairs=torch.tensor([[3,4]]), contact_conductance=contact,
+                         heat_source_quadratic=layers(beta))
+    result = solve_steady_thermal(model,sparse=sparse)
+    matrices = assemble_thermal(model,sparse=sparse)
+    wall = (matrices.conductivity @ result - matrices.heat)[fixed]
+    expected = torch.tensor([wall_input, -initial_power],dtype=D)
+    record_property("max_temperature_error_K", (temperature-result).abs().max().item())
+    record_property("max_wall_power_error_W", (expected-wall).abs().max().item())
+    torch.testing.assert_close(result,temperature,atol=2e-14,rtol=0.)
+    torch.testing.assert_close(wall,expected,atol=2e-14,rtol=0.)
+    assert abs(contact*(result[3]-result[4])-interface_power) < 2e-14
