@@ -28,6 +28,7 @@ class ThermalModel:
     thickness: torch.Tensor | None = None
     convection_edges: torch.Tensor | None = None
     convection_coefficient: torch.Tensor | None = None
+    # Scalar, per-edge constant, or (n_edges, 2) endpoint values in edge order.
     ambient_temperature: torch.Tensor | None = None
     element_type: str = "line2"
     # Lumped two-node contacts: pair distinct temperature DOFs across an
@@ -327,7 +328,7 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
         ec = x[edges]
         length = torch.linalg.vector_norm(ec[:,1]-ec[:,0],dim=1)
         h = _expand(model.convection_coefficient,len(edges),x)
-        ta = _expand(model.ambient_temperature,len(edges),load_like)
+        ta = torch.as_tensor(model.ambient_temperature,dtype=load_like.dtype,device=x.device)
         # In 1-D an endpoint is represented as [node,node] and has unit area.
         length = torch.where(length > 0,length,torch.ones_like(length))
         # ``thickness`` is cross-sectional area for LINE2 and out-of-plane
@@ -335,7 +336,11 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
         boundary_measure = length*_expand(model.thickness,len(edges),x)
         edge_mass = boundary_measure[:,None,None]*x.new_tensor([[2.,1.],[1.,2.]])/6
         hk = h[:,None,None]*edge_mass
-        hf = (h*ta*boundary_measure/2)[:,None]*x.new_ones((len(edges),2))
+        if ta.shape == (len(edges), 2):
+            hf = torch.einsum("eij,ej->ei", hk.to(ta.dtype), ta)
+        else:
+            ta = _expand(ta,len(edges),load_like)
+            hf = (h*ta*boundary_measure/2)[:,None]*x.new_ones((len(edges),2))
         er = edges[:,:,None].expand(-1,-1,2).reshape(-1)
         ecidx = edges[:,None,:].expand(-1,2,-1).reshape(-1)
         if model.wall_areal_heat_capacity is not None:

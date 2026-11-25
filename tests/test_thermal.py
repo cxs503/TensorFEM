@@ -437,3 +437,16 @@ def test_consistent_wall_capacity_includes_tangential_variation_and_area(sparse)
     assert increment[-1,-1] == pytest.approx(4.)
     with pytest.raises(ValueError,match="nonnegative"):
         assemble_thermal(replace(line,wall_areal_heat_capacity=-1.), sparse=sparse)
+
+
+def test_endpoint_ambient_load_preserves_edge_orientation_and_complex_phase():
+    from dataclasses import replace
+    nodes = torch.tensor([[0.,0.],[1.,0.],[1.,1.],[0.,1.]],dtype=D)
+    ambient = torch.tensor([[1j, 3.+2j]],dtype=torch.complex128)
+    model = ThermalModel(nodes,torch.tensor([[0,1,2,3]]),1.,1.,1.,torch.tensor([],dtype=torch.long),
+                         torch.zeros(0,dtype=D),element_type="q4",convection_edges=torch.tensor([[0,1]]),
+                         convection_coefficient=6.,ambient_temperature=ambient)
+    heat = assemble_thermal(model,complex_loads=True).heat
+    torch.testing.assert_close(heat[:2],torch.tensor([3.+4j,6.+5j],dtype=ambient.dtype))
+    reverse = replace(model,convection_edges=model.convection_edges.flip((1,)),ambient_temperature=ambient.flip((1,)))
+    torch.testing.assert_close(assemble_thermal(reverse,sparse=True,complex_loads=True).heat,heat)
