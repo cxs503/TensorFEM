@@ -154,29 +154,31 @@ def _q4_geometry(coords, xi, eta):
 
 
 def thermal_element_flux(model: ThermalModel, temperature: torch.Tensor, *, xi=0., eta=0.) -> torch.Tensor:
-    """Return global Fourier heat flux [element, direction] in W/m².
+    """Return global Fourier heat flux (..., element, direction) in W/m².
+
+    Temperature has shape (..., node), including transient (time, node) histories.
 
     For Q4, (xi, eta) selects one point of the parent square [-1,1]² in
     every element. LINE2 flux is constant. Complex input gives flux phasors.
     """
-    if temperature.shape != (len(model.nodes),):
+    if temperature.ndim < 1 or temperature.shape[-1] != len(model.nodes):
         raise ValueError("temperature must have one value per node")
     if not (-1 <= xi <= 1 and -1 <= eta <= 1):
         raise ValueError("parent coordinates must be in [-1,1]")
     conn = model.elements.long()
     coords = model.nodes[conn]
-    values = temperature.to(device=coords.device)[conn]
+    values = temperature.to(device=coords.device)[..., conn]
     k = _element_conductivity(model)
     dtype = torch.promote_types(values.dtype, coords.dtype)
     if model.element_type.lower() == "line2":
         length = coords[:,1,0] - coords[:,0,0]
         if torch.any(length <= 0):
             raise ValueError("LINE2 element must have positive length")
-        return (-k * (values[:,1].to(dtype)-values[:,0].to(dtype)) / length)[:,None]
+        return (-k * (values[...,1].to(dtype)-values[...,0].to(dtype)) / length)[...,None]
     _, grad, _ = _q4_geometry(coords, xi, eta)
-    gradient = torch.einsum("ei,eia->ea", values.to(dtype), grad.to(dtype))
+    gradient = torch.einsum("...ei,eia->...ea", values.to(dtype), grad.to(dtype))
     if k.ndim == 3:
-        return -(gradient[:,None,:] @ k.to(dtype)).squeeze(1)
+        return -torch.einsum("eij,...ej->...ei", k.to(dtype), gradient)
     return -k[:,None]*gradient
 
 

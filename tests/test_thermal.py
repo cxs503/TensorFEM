@@ -244,6 +244,9 @@ def test_element_flux_on_sheared_cells_uses_global_tensor_and_complex_gradient()
     expected = -(k.to(gradient) @ gradient)
     for xi, eta in ((0., 0.), (-1., .5), (1., -1.)):
         torch.testing.assert_close(thermal_element_flux(model, field, xi=xi, eta=eta), expected)
+        history = torch.stack((field,2*field,3*field))
+        torch.testing.assert_close(thermal_element_flux(model, history, xi=xi, eta=eta),
+                                   torch.stack((expected,2*expected,3*expected)))
 
 
 def test_line_element_flux_recovers_variable_conductivity():
@@ -254,6 +257,9 @@ def test_line_element_flux_recovers_variable_conductivity():
     k = torch.arange(1,9, dtype=D)
     flux = thermal_element_flux(replace(model, conductivity=k), 5.-3.*model.nodes[:,0])
     torch.testing.assert_close(flux[:,0], 3*k)
+    history = torch.stack((model.nodes[:,0], -model.nodes[:,0]))
+    result = thermal_element_flux(replace(model, conductivity=k), history)
+    torch.testing.assert_close(result[...,0], torch.stack((-k,k)))
 
 
 @pytest.mark.parametrize("all_fixed", [False, True])
