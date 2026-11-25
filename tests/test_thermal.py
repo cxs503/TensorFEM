@@ -1290,3 +1290,10 @@ def test_harmonic_uniform_heating_on_disconnected_components(sparse):
         torch.testing.assert_close(1j*omega*state.mean_temperature, rates.repeat_interleave(2), atol=1e-14, rtol=0)
         for v in (power, net, state.temperature, state.reaction_power):
             assert v.abs().max() < 1e-14
+    for omega in (0., 1e-12, 1.):
+        state = solve_harmonic_thermal(model, omega, sparse=sparse, return_mean_rate=True)
+        torch.testing.assert_close(state.mean_heating_rate, rates.repeat_interleave(2), atol=1e-14, rtol=0)
+        power, net = thermal_element_nodal_power(model, state.temperature, omega,
+            mean_heating_rate=state.mean_heating_rate, return_net_input=True)
+        for v in (power, net, state.temperature, state.reaction_power):
+            assert v.abs().max() < 1e-14
