@@ -41,9 +41,23 @@ def measure(n, steps):
     torch.testing.assert_close(harmonic.temperature, discrete, atol=1e-13, rtol=0)
     # Net heat enters through each end at -k*pi*gain for unit area.
     ratio = recovered[n//2]/discrete[n//2]
+    # Compare the reported interval energies with integrals of the exact
+    # semi-discrete reaction; normalize by the peak energy scale per interval.
+    end_power = harmonic.reaction_power[model.fixed_nodes]
+    exact_heat = ((phase[1:]-phase[:-1])[:, None]*end_power/(1j*omega)).real
+    reactions = t.nodal_reaction_heat_steps()
+    numerical_heat = reactions[:, model.fixed_nodes]
+    heat_error = (numerical_heat-exact_heat).abs().max()/(time.diff()[0]*end_power.abs().max())
+    # Free-node residuals and global storage must also close on every interval.
+    torch.testing.assert_close(reactions[:, 1:-1], torch.zeros_like(reactions[:, 1:-1]),
+                               rtol=0, atol=1e-13)
+    stage_load = .5*(phase.real[1:]+phase.real[:-1])*load.sum()
+    applied = time.diff()*stage_load+numerical_heat.sum(1)
+    stored = (t.matrices.capacity @ t.temperature.diff(dim=0).T).sum(0)
+    torch.testing.assert_close(applied, stored, rtol=0, atol=1e-13)
     return (float((harmonic.temperature-gain*mode).abs().max()),
             float((harmonic.reaction_power[model.fixed_nodes]+k*math.pi*gain).abs().max()),
-            float(abs(abs(ratio)-1)), float(abs(torch.angle(ratio))))
+            float(abs(abs(ratio)-1)), float(abs(torch.angle(ratio))), float(heat_error))
 
 
 if __name__ == "__main__":
