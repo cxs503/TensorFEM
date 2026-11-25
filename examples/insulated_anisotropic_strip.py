@@ -4,6 +4,7 @@ import math
 import torch
 
 from tensorfem import ThermalModel, solve_steady_thermal, thermal_element_flux
+from tensorfem.thermal import assemble_thermal
 from tensorfem.thermal_analytic import structured_quad_mesh
 
 
@@ -29,7 +30,15 @@ def measure(n, cross):
     lower = thermal_element_flux(model, t, eta=-1)[rows[0], 1]
     upper = thermal_element_flux(model, t, eta=1)[rows[-1], 1]
     leakage = torch.cat((lower, upper)).square().mean().sqrt()
-    return tuple(map(float, (center_error, axial_error, leakage)))
+    # Reactions are positive inward. Integrate the reference horizontal flux
+    # along each unit-height end, including the two prescribed corner nodes.
+    matrices = assemble_thermal(model, sparse=True)
+    reaction = matrices.conductivity @ t - matrices.heat
+    west = float(reaction[grid[:, 0]].sum())
+    east = float(reaction[grid[:, -1]].sum())
+    end_error = max(abs(west + effective*(1+cross/2)), abs(east-effective*cross/2))
+    balance = abs(west + east + effective)
+    return tuple(map(float, (center_error, axial_error, leakage, end_error, balance)))
 
 
 if __name__ == "__main__":
@@ -38,10 +47,12 @@ if __name__ == "__main__":
         for n in (8, 16, 32, 64, 128):
             errors = measure(n, cross)
             orders = ([math.log2(previous[i]/errors[i]) for i in (0, 2)] if previous else [])
-            print(f"Kxy={cross:+.2f} n={n} RMS(T,qx,wall_qy)={errors} orders(T,wall_qy)={orders}")
+            print(f"Kxy={cross:+.2f} n={n} RMS(T,qx,wall_qy)={errors[:3]} end_power_error={errors[3]:.3e} balance={errors[4]:.3e} orders(T,wall_qy)={orders}")
             # Center differentiation reproduces the axial derivative of this quadratic.
             if not all(math.isfinite(e) for e in errors) or errors[1] > 1e-10:
                 raise SystemExit("center flux accuracy gate failed")
+            if max(errors[3:]) > 1e-10:
+                raise SystemExit("end power or global energy balance gate failed")
             if orders and (orders[0] < 1.8 or orders[1] < .9):
                 raise SystemExit("convergence gate failed")
             previous = errors
