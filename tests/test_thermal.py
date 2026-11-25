@@ -362,3 +362,19 @@ def test_harmonic_element_power_with_complex_volume_and_nodal_heat():
     torch.testing.assert_close(power, expected, atol=2e-14, rtol=0)
     with pytest.raises(ValueError, match="element_nodal_heat"):
         thermal_element_nodal_power(model, temp, 7., element_nodal_heat=extra[0])
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_concentrated_capacity_on_contact_only_store(sparse):
+    from tensorfem import solve_harmonic_thermal
+
+    xy = torch.tensor([[0.], [1.], [.5]], dtype=D)
+    model = ThermalModel(xy, torch.tensor([[0,1]]), 1., 1., 1., torch.tensor([0,1]),
+                        xy.new_tensor([1., 0.]), contact_pairs=torch.tensor([[0,2],[2,1]]),
+                        contact_conductance=xy.new_tensor([2., 4.]), nodal_heat_capacity=xy.new_tensor([0.,0.,3.]))
+    harmonic = solve_harmonic_thermal(model, 5., sparse=sparse)
+    assert abs(complex(harmonic.temperature[2])-2/(6+15j)) < 1e-14
+    time = torch.linspace(0., 1., 129, dtype=D)
+    transient = solve_transient_thermal(model, time, xy.new_zeros(3), .5, sparse=sparse)
+    exact = (1-torch.exp(-2*time))/3
+    torch.testing.assert_close(transient.temperature[:, 2], exact, rtol=0, atol=3e-6)

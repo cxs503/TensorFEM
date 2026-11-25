@@ -33,6 +33,8 @@ class ThermalModel:
     # interface. Each conductance is tributary area / areal resistance [W/K].
     contact_pairs: torch.Tensor | None = None
     contact_conductance: torch.Tensor | None = None
+    # Additional concentrated storage in J/K, one entry per global node.
+    nodal_heat_capacity: torch.Tensor | None = None
 
     def __post_init__(self):
         nen = {"line2": 2, "q4": 4}.get(self.element_type.lower())
@@ -272,6 +274,12 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
 
     K = matrix(ke, rows, cols)
     C = matrix(ce, rows, cols)
+    if model.nodal_heat_capacity is not None:
+        lump = torch.as_tensor(model.nodal_heat_capacity, dtype=x.dtype, device=x.device)
+        if lump.shape != (nd,) or not torch.isfinite(lump).all() or torch.any(lump < 0):
+            raise ValueError("nodal_heat_capacity needs one finite nonnegative capacity per node")
+        indices = torch.arange(nd, device=x.device)
+        C = (C + matrix(lump, indices, indices)).coalesce() if sparse else C + torch.diag(lump)
     f = load_like.new_zeros(nd).index_put((conn.reshape(-1),),fe.reshape(-1),accumulate=True)
     if model.nodal_heat is not None:
         if model.nodal_heat.shape != (nd,):
