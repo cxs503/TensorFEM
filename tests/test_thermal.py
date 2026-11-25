@@ -416,3 +416,24 @@ def test_q4_trapezoid_edge_power_has_outward_sign_thickness_and_phase():
     # Length-weighted outward normals, in local edge order.
     expected = .4*(field.new_tensor([[0.,-2.],[1.,.4],[-.2,1.4],[-.8,.2]]) @ flux)
     torch.testing.assert_close(thermal_element_edge_power(model,field)[0], expected)
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_consistent_wall_capacity_includes_tangential_variation_and_area(sparse):
+    from dataclasses import replace
+    model = ThermalModel(torch.tensor([[0.,0.],[2.,0.],[2.,1.],[0.,1.]],dtype=D),
+                         torch.tensor([[0,1,2,3]]),1.,1.,1.,torch.empty(0,dtype=torch.long),
+                         torch.empty(0,dtype=D),thickness=3.,element_type="q4",
+                         convection_edges=torch.tensor([[0,1],[1,2]]),
+                         convection_coefficient=0.,ambient_temperature=0.)
+    base = assemble_thermal(model,sparse=sparse).capacity.to_dense()
+    storage = assemble_thermal(replace(model,wall_areal_heat_capacity=torch.tensor([2.,4.])),
+                               sparse=sparse).capacity.to_dense()-base
+    expected = torch.tensor([[4.,2.,0.,0.],[2.,8.,2.,0.],[0.,2.,4.,0.],[0.,0.,0.,0.]],dtype=D)
+    torch.testing.assert_close(storage,expected)
+    line = line_model(convection=True)
+    increment = (assemble_thermal(replace(line,wall_areal_heat_capacity=2.), sparse=sparse).capacity.to_dense()
+                 - assemble_thermal(line,sparse=sparse).capacity.to_dense())
+    assert increment[-1,-1] == pytest.approx(4.)
+    with pytest.raises(ValueError,match="nonnegative"):
+        assemble_thermal(replace(line,wall_areal_heat_capacity=-1.), sparse=sparse)

@@ -36,6 +36,8 @@ class ThermalModel:
     contact_conductance: torch.Tensor | None = None
     # Additional concentrated storage in J/K, one entry per global node.
     nodal_heat_capacity: torch.Tensor | None = None
+    # Consistent surface storage in J/(m² K), scalar or one value per convection edge.
+    wall_areal_heat_capacity: torch.Tensor | None = None
 
     def __post_init__(self):
         nen = {"line2": 2, "q4": 4}.get(self.element_type.lower())
@@ -58,6 +60,8 @@ class ThermalModel:
                 raise ValueError("contact_pairs must be an integer tensor of shape [n_contacts, 2]")
             if torch.any(pairs < 0) or torch.any(pairs >= len(self.nodes)) or torch.any(pairs[:, 0] == pairs[:, 1]):
                 raise ValueError("contacts must connect distinct, valid nodes")
+        if self.wall_areal_heat_capacity is not None and self.convection_edges is None:
+            raise ValueError("wall_areal_heat_capacity requires convection_edges")
         if self.convection_edges is not None:
             if self.convection_edges.ndim != 2 or self.convection_edges.shape[1] != 2:
                 raise ValueError("convection_edges must have shape [n_edges, 2]")
@@ -329,10 +333,18 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
         # ``thickness`` is cross-sectional area for LINE2 and out-of-plane
         # thickness for Q4 boundary edges.
         boundary_measure = length*_expand(model.thickness,len(edges),x)
-        hk = (h*boundary_measure)[:,None,None]*x.new_tensor([[2.,1.],[1.,2.]])/6
+        edge_mass = boundary_measure[:,None,None]*x.new_tensor([[2.,1.],[1.,2.]])/6
+        hk = h[:,None,None]*edge_mass
         hf = (h*ta*boundary_measure/2)[:,None]*x.new_ones((len(edges),2))
         er = edges[:,:,None].expand(-1,-1,2).reshape(-1)
         ecidx = edges[:,None,:].expand(-1,2,-1).reshape(-1)
+        if model.wall_areal_heat_capacity is not None:
+            cw = torch.as_tensor(model.wall_areal_heat_capacity, dtype=x.dtype, device=x.device)
+            if cw.numel() not in (1,len(edges)) or not torch.isfinite(cw).all() or (cw < 0).any():
+                raise ValueError("wall_areal_heat_capacity needs finite nonnegative values per edge")
+            C = C + matrix(cw.reshape(-1,1,1)*edge_mass, er, ecidx)
+            if sparse:
+                C = C.coalesce()
         if sparse:
             K = (K + matrix(hk, er, ecidx)).coalesce()
         else:
