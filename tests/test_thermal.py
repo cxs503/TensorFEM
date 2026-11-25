@@ -1274,3 +1274,19 @@ def test_contact_and_bulk_entropy_of_insulated_slab_mode(sparse, record_property
         errors.append(row)
     for coarse, fine in zip(errors, errors[1:]):
         assert all(a/b > 3.7 for a, b in zip(coarse, fine))
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+def test_harmonic_uniform_heating_on_disconnected_components(sparse):
+    from tensorfem.thermal import solve_harmonic_thermal, thermal_element_nodal_power
+    rates = torch.tensor([.27+.34j, -.6+.13j], dtype=torch.complex128)
+    c = torch.tensor([.9, 2.], dtype=D)
+    model = ThermalModel(torch.tensor([[0.],[1.],[1.],[2.]],dtype=D),torch.tensor([[0,1],[2,3]]),
+        1.,1.,c,torch.empty(0,dtype=torch.long),torch.empty(0,dtype=D),heat_source=c*rates)
+    for omega in (1., 1e-12):
+        state = solve_harmonic_thermal(model, omega, sparse=sparse, separate_mean=True)
+        power, net = thermal_element_nodal_power(model, state.temperature, omega,
+            mean_temperature=state.mean_temperature, return_net_input=True)
+        torch.testing.assert_close(1j*omega*state.mean_temperature, rates.repeat_interleave(2), atol=1e-14, rtol=0)
+        for v in (power, net, state.temperature, state.reaction_power):
+            assert v.abs().max() < 1e-14

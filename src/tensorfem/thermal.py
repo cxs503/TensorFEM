@@ -508,7 +508,7 @@ def _thermal_element_matrices(model, load_like):
 
 def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
                                 angular_frequency: float = 0., *, element_nodal_heat=None,
-                                return_net_input: bool=False) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+                                mean_temperature=None, return_net_input: bool=False) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Inward power phasors (W) at LINE2 or Q4 element nodes under exp(+iωt).
 
     Zero frequency recovers steady powers. The return dtype is complex.
@@ -516,6 +516,8 @@ def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
     volume loads. Supply any additional element-resolved nodal loads (ne, nen)
     in W to subtract them before assembly. Global point loads, films and
     contacts otherwise appear as exchanges. Q4 entries are weak-form nodal powers.
+    When temperature is a relative field from separate_mean=True, pass its
+    nodal mean_temperature to restore the uniform storage power.
     return_net_input also returns element-resolved distributed input minus bulk
     loss and storage, in W, for use as net_element_nodal_input in section recovery.
     """
@@ -527,6 +529,16 @@ def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
     values = temperature.to(device=model.nodes.device, dtype=dtype)[model.elements.long()]
     ke, ce, fe, sink = _thermal_element_matrices(model, values)
     power = torch.einsum("eij,ej->ei", ke.to(dtype) + 1j*angular_frequency*ce.to(dtype), values) - fe
+    uniform_storage = None
+    if mean_temperature is not None:
+        mean = torch.as_tensor(mean_temperature, dtype=dtype, device=values.device)
+        if mean.shape != temperature.shape or not torch.isfinite(mean).all():
+            raise ValueError("mean_temperature requires a finite offset at each node")
+        element_mean = mean[model.elements.long()]
+        if torch.any(element_mean != element_mean[:, :1]) or (sink is not None and torch.any(sink != 0)):
+            raise ValueError("mean_temperature must be uniform on each lossless element")
+        uniform_storage = ce.sum(dim=2)*(1j*angular_frequency*element_mean)
+        power = power+uniform_storage
     if element_nodal_heat is not None:
         load = torch.as_tensor(element_nodal_heat, dtype=dtype, device=values.device)
         if load.shape != values.shape or not torch.isfinite(load).all():
@@ -534,6 +546,8 @@ def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
         power = power - load
     if return_net_input:
         net = fe-1j*angular_frequency*torch.einsum("eij,ej->ei",ce.to(dtype),values)
+        if uniform_storage is not None:
+            net = net-uniform_storage
         if element_nodal_heat is not None:
             net = net+load
         if sink is not None:
@@ -1071,16 +1085,21 @@ def solve_steady_thermal(model: ThermalModel, *, sparse: bool = False) -> torch.
 class ThermalHarmonicResult:
     temperature: torch.Tensor
     reaction_power: torch.Tensor
+    mean_temperature: torch.Tensor | None = None
 
 
 def solve_harmonic_thermal(model: ThermalModel, angular_frequency: float, *,
-                           sparse: bool = False) -> ThermalHarmonicResult:
+                           sparse: bool = False, separate_mean: bool = False) -> ThermalHarmonicResult:
     """Solve (K+iωC)T=f using the exp(iωt) convention, with ω in rad/s.
 
     Temperatures, nodal and volumetric loads, and convective ambient temperatures
     in the model are phasors. Material data remain real. Positive reaction
     power enters through prescribed temperatures; free-node entries are residuals.
     sparse=True uses CPU SciPy sparse LU for inputs without autograd.
+    For fully insulated, lossless models, separate_mean=True returns the
+    relative nodal temperature plus a separate mean_temperature per node.
+    Each connected component has its own capacity-weighted mean. Pass both
+    fields to thermal_element_nodal_power to retain precision at low frequency.
     """
     if not math.isfinite(angular_frequency) or angular_frequency <= 0:
         raise ValueError("angular_frequency must be finite and positive")
@@ -1089,10 +1108,15 @@ def solve_harmonic_thermal(model: ThermalModel, angular_frequency: float, *,
     prescribed = model.fixed_temperatures.to(m.heat)
     if not torch.isfinite(m.heat).all() or not torch.isfinite(prescribed).all():
         raise ValueError("thermal phasor loads and prescribed temperatures must be finite")
+    if sparse and any(t.device.type != "cpu" or t.requires_grad for t in
+                      (m.heat, m.conductivity, m.capacity, prescribed)):
+        raise ValueError("sparse harmonic solution requires CPU tensors without autograd")
+    if separate_mean:
+        if fixed.numel() or any(v is not None and torch.any(torch.as_tensor(v) != 0)
+                                for v in (model.convection_coefficient, model.heat_loss_coefficient)):
+            raise ValueError("separate_mean requires an insulated model without temperature constraints or heat loss")
+        return _solve_insulated_thermal(m, sparse, angular_frequency)
     if sparse:
-        if any(t.device.type != "cpu" or t.requires_grad for t in
-               (m.heat, m.conductivity, m.capacity, prescribed)):
-            raise ValueError("sparse harmonic solution requires CPU tensors without autograd")
         operator = _scipy_csc(m.conductivity) + (1j*angular_frequency)*_scipy_csc(m.capacity)
         load = m.heat.resolve_conj().numpy()
         state = _solve_sparse_dirichlet(operator, load, fixed, free, prescribed)
@@ -1111,7 +1135,7 @@ class ThermalLowFrequencyResult:
     first_order: ThermalHarmonicResult
 
 
-def _insulated_low_frequency(m, sparse):
+def _solve_insulated_thermal(m, sparse, omega=None):
     """Solve on the zero-stored-energy subspace of each insulated component."""
     # Only the connectivity is discrete. Capacity weights and both dense
     # solutions remain in the autograd graph.
@@ -1131,7 +1155,8 @@ def _insulated_low_frequency(m, sparse):
         weights = c @ basis
         if np.any(np.asarray(weights.sum(axis=0)) <= 0):
             raise ValueError("each insulated component requires positive heat capacity")
-        border = sp.bmat([[k,weights],[weights.T,None]],format="csc")
+        operator = k if omega is None else k+1j*omega*c
+        border = sp.bmat([[operator,weights],[weights.T,None]],format="csc")
         groups = torch.from_numpy(labels).long()
     else:
         # Flood each connected component on the dense conductivity graph,
@@ -1150,10 +1175,22 @@ def _insulated_low_frequency(m, sparse):
         weights = c @ basis
         if torch.any(weights.sum(0) <= 0):
             raise ValueError("each insulated component requires positive heat capacity")
-        border = torch.cat((torch.cat((k,weights),1),
+        operator = k if omega is None else k+1j*omega*c
+        border = torch.cat((torch.cat((operator,weights),1),
                             torch.cat((weights.T,k.new_zeros(count,count)),1)),0).to(f)
 
     net = f.new_zeros(count).index_add(0,groups,f)
+    if omega is not None:
+        if sparse:
+            rate = net.resolve_conj().numpy()/np.asarray(weights.sum(axis=0)).ravel()
+            rhs = f.resolve_conj().numpy()-weights @ rate
+            u = splu(border).solve(np.r_[rhs,np.zeros(count,dtype=rhs.dtype)])[:len(f)]
+            return ThermalHarmonicResult(torch.from_numpy(u), torch.from_numpy(operator @ u-rhs),
+                                         torch.from_numpy(rate[labels]/(1j*omega)))
+        rate = net/weights.sum(0)
+        rhs = f-weights.to(f) @ rate
+        u = torch.linalg.solve(border,torch.cat((rhs,f.new_zeros(count))))[:len(f)]
+        return ThermalHarmonicResult(u,operator.to(f) @ u-rhs,rate[groups]/(1j*omega))
     scale = f.real.new_zeros(count).index_add(0,groups,f.abs())
     if torch.any(net.abs() > 64*torch.finfo(scale.dtype).eps*scale):
         raise ValueError("each insulated component requires zero net heat input")
@@ -1198,7 +1235,7 @@ def solve_low_frequency_thermal(model: ThermalModel, *, sparse: bool=False) -> T
         raise ValueError("sparse low-frequency solution requires CPU tensors without autograd")
     if not fixed.numel() and all(value is None or not torch.any(torch.as_tensor(value) != 0)
                                  for value in (model.convection_coefficient,model.heat_loss_coefficient)):
-        return _insulated_low_frequency(m,sparse)
+        return _solve_insulated_thermal(m,sparse)
     if sparse:
         from scipy.sparse.linalg import splu
         f = m.heat.resolve_conj().numpy()
