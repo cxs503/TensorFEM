@@ -257,12 +257,15 @@ def thermal_element_edge_power(model: ThermalModel, temperature: torch.Tensor) -
     return torch.stack(powers, dim=-1)*thickness[:,None]
 
 
-def recover_linear_edge_flux(nodal_power: torch.Tensor, edge_areas: torch.Tensor) -> torch.Tensor:
-    """Recover continuous piecewise-linear normal flux (W/m²) on an open edge chain.
+def recover_linear_edge_flux(nodal_power: torch.Tensor, edge_areas: torch.Tensor, *, closed: bool = False) -> torch.Tensor:
+    """Recover continuous piecewise-linear normal flux (W/m²) on an ordered edge chain.
 
     Supply oriented powers (W) against each ordered node's linear edge shape
     function, shaped (..., n+1), and positive areas (length times thickness)
-    for its n consecutive straight edges. To recover an interface trace from
+    for its n consecutive straight edges. For a loop set closed=True, supply n
+    distinct nodes and n areas, and place the closing edge last. A single nodal
+    value represents the normal flux on both incident edges at every vertex.
+    To recover an interface trace from
     element powers, assemble one material side and subtract any other loads
     at its interface nodes, including exterior loads at the chain endpoints.
     Output has the input power shape and orientation. The product of each
@@ -272,15 +275,32 @@ def recover_linear_edge_flux(nodal_power: torch.Tensor, edge_areas: torch.Tensor
     if power.ndim < 1 or power.shape[-1] < 2 or not (power.is_floating_point() or power.is_complex()):
         raise ValueError("supply real or complex nodal powers for at least two ordered nodes")
     area = torch.as_tensor(edge_areas, device=power.device)
-    if area.is_complex() or area.shape != (power.shape[-1]-1,) or not torch.isfinite(area).all() or (area <= 0).any():
+    if area.is_complex() or area.shape != (power.shape[-1] if closed else power.shape[-1]-1,) or not torch.isfinite(area).all() or (area <= 0).any():
         raise ValueError("supply one positive finite real area per edge")
     if not torch.isfinite(power).all():
         raise ValueError("nodal powers must be finite")
     area = area.to(power.real.dtype)
-    # The edge mass matrix contributes area/6 * [[2,1],[1,2]].
-    # Eliminate one off-diagonal at a time to keep storage linear in n.
     off = area/6
+    if closed:
+        if len(area) < 3:
+            raise ValueError("a closed boundary requires at least three distinct nodes")
+        diagonal = (area+area.roll(1))/3
+        # Remove the rank-one closing term w*(e0+en)*(e0+en)^T, solve
+        # the resulting tridiagonal system, then restore that term.
+        ends = torch.zeros_like(area)
+        ends[0] = ends[-1] = 1
+        weight = off[-1]
+        diagonal = diagonal-weight*ends
+        field = _edge_mass_solve(diagonal, off[:-1], power)
+        update = _edge_mass_solve(diagonal, off[:-1], ends)
+        scale = weight*(field[...,0]+field[...,-1])/(1+weight*(update[0]+update[-1]))
+        return field-scale[...,None]*update
     diagonal = torch.cat((area[:1], area[:-1]+area[1:], area[-1:]))/3
+    return _edge_mass_solve(diagonal, off, power)
+
+
+def _edge_mass_solve(diagonal, off, power):
+    """Thomas sweep for the positive definite edge mass tridiagonal."""
     pivot = diagonal[0]
     rhs = [power[..., 0]/pivot]
     upper = []

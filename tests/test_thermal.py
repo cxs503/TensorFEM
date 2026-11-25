@@ -1311,3 +1311,18 @@ def test_linear_edge_flux_recovers_complex_traces_on_unequal_edges():
     torch.testing.assert_close((areas*(result[:,:-1]+result[:,1:])/2).sum(-1), power.sum(-1))
     with pytest.raises(ValueError, match="area"):
         recover_linear_edge_flux(power, -areas)
+
+
+@pytest.mark.parametrize("n", [3, 7])
+def test_closed_linear_edge_flux_is_invariant_to_seam(n):
+    from tensorfem import recover_linear_edge_flux
+    area = torch.linspace(.2, .9, n, dtype=D)
+    x = torch.arange(n, dtype=D)
+    flux = torch.stack((torch.exp(1j*x), x+1j*x.square()))
+    neighbor = flux.roll(-1, dims=-1)
+    power = (area*(2*flux+neighbor)+(area*(flux+2*neighbor)).roll(1, dims=-1))/6
+    for shift in (0, 1, n-1):
+        recovered = recover_linear_edge_flux(power.roll(shift, dims=-1), area.roll(shift), closed=True)
+        torch.testing.assert_close(recovered, flux.roll(shift, dims=-1), atol=1e-13, rtol=0)
+    with pytest.raises(ValueError, match="three"):
+        recover_linear_edge_flux(power[:,:2], area[:2], closed=True)
