@@ -1129,3 +1129,39 @@ def test_harmonic_contact_slab_against_layer_transfer_solution(sparse, record_pr
         errors.append(row)
     for coarse, fine in zip(errors, errors[1:]):
         assert all(a/b > 3.8 for a, b in zip(coarse, fine))
+
+
+def test_periodic_contact_entropy_production_against_cycle_integral(record_property):
+    import math
+    from tensorfem import thermal_contact_edge_entropy_production_density
+
+    nodes = torch.tensor([[0,0],[1,0],[1,2],[0,2],[1,0],[2,0],[2,2],[1,2]], dtype=D)
+    model = ThermalModel(nodes, torch.arange(8).reshape(2,4), 1., 1., 1.,
+                         torch.empty(0, dtype=torch.long), nodes.new_empty(0), element_type="q4",
+                         contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]),
+                         contact_edge_conductance=nodes.new_tensor([[2., 5.]]))
+    phase = torch.arange(128, dtype=D) * (2*math.pi/128)
+    phi = 0.7
+    history = nodes.new_full((128, 8), 300.)
+    history[:, [1,2]] = 310 + phase.cos()[:, None]*nodes.new_tensor([18., 25.])
+    history[:, [4,7]] = 290 + (phase-phi).cos()[:, None]*nodes.new_tensor([31., 12.])
+
+    # For denominator b+B*cos(t) the means of 1/den and cos(t)/den
+    # are 1/root and -B/(root*(b+root)), root=sqrt(b²-B²).
+    def mean_ratio(a, amp, b, other):
+        root = math.sqrt(b*b-other*other)
+        return (a - amp*math.cos(phi)*other/(b+root))/root
+
+    worst = 0.
+    for s in (0., 0.37, 1.):
+        rate = thermal_contact_edge_entropy_production_density(model, history, fraction=s)
+        a, b = 18+7*s, 31-19*s
+        expected = (2+3*s)/2 * (mean_ratio(310,a,290,b) + mean_ratio(290,b,310,a) - 2)
+        worst = max(worst, abs(rate.mean().item()-expected))
+        assert rate.shape == (128, 1) and (rate >= 0).all()
+    record_property("max_cycle_mean_error_W_per_m_K", worst)
+    assert worst < 2e-15
+    with pytest.raises(ValueError, match="positive"):
+        thermal_contact_edge_entropy_production_density(model, 0*history[0], fraction=0.5)
+    with pytest.raises(ValueError, match="real"):
+        thermal_contact_edge_entropy_production_density(model, history[0].to(torch.complex128), fraction=0.5)
