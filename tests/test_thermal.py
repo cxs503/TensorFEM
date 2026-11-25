@@ -450,3 +450,38 @@ def test_endpoint_ambient_load_preserves_edge_orientation_and_complex_phase():
     torch.testing.assert_close(heat[:2],torch.tensor([3.+4j,6.+5j],dtype=ambient.dtype))
     reverse = replace(model,convection_edges=model.convection_edges.flip((1,)),ambient_temperature=ambient.flip((1,)))
     torch.testing.assert_close(assemble_thermal(reverse,sparse=True,complex_loads=True).heat,heat)
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_surface_measure_uses_element_owner_with_reordered_edges(sparse):
+    from dataclasses import replace
+    nodes = torch.tensor([[0.,0.],[1.,0.],[3.,0.],[0.,1.],[1.,1.],[3.,1.]],dtype=D)
+    model = ThermalModel(nodes,torch.tensor([[1,2,5,4],[0,1,4,3]]),1.,1.,1.,
+                         torch.empty(0,dtype=torch.long),torch.empty(0,dtype=D),
+                         element_type="q4",thickness=torch.tensor([5.,2.],dtype=D))
+    edges = torch.tensor([[3,0],[5,4],[0,1]])
+    bc = replace(model,convection_edges=edges,convection_coefficient=3.,ambient_temperature=4.,
+                 wall_areal_heat_capacity=2.)
+    original = assemble_thermal(model,sparse=sparse)
+    with_edges = assemble_thermal(bc,sparse=sparse)
+    # Left, top right and lower left have areas 2, 10 and 2, respectively.
+    area_matrix = nodes.new_zeros((6,6))
+    for (a,b),area in zip(edges.tolist(), [2.,10.,2.]):
+        area_matrix[a,a] += area/3
+        area_matrix[b,b] += area/3
+        area_matrix[a,b] += area/6
+        area_matrix[b,a] += area/6
+    torch.testing.assert_close(with_edges.capacity.to_dense()-original.capacity.to_dense(),2*area_matrix)
+    torch.testing.assert_close(with_edges.conductivity.to_dense()-original.conductivity.to_dense(),3*area_matrix)
+    torch.testing.assert_close(with_edges.heat,12*area_matrix.sum(dim=1))
+    with pytest.raises(ValueError,match="unique owning element"):
+        assemble_thermal(replace(bc,convection_edges=torch.tensor([[1,4]])),sparse=sparse)
+
+
+def test_line_endpoint_area_follows_connectivity_instead_of_edge_index():
+    from dataclasses import replace
+    model = replace(line_model(convection=True),thickness=torch.arange(1,9,dtype=D),
+                    convection_edges=torch.tensor([[8,8],[0,0]]),wall_areal_heat_capacity=2.)
+    base = replace(model,convection_edges=None,wall_areal_heat_capacity=None)
+    delta = assemble_thermal(model).capacity-assemble_thermal(base).capacity
+    torch.testing.assert_close(delta.diag()[[8,0]],torch.tensor([16.,2.],dtype=D))

@@ -291,6 +291,29 @@ def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransie
     return heat + result.time.diff().to(t)[:, None, None]*power
 
 
+def _boundary_thickness(model, edges):
+    """Gather the owning element's section area (LINE2) or thickness (Q4)."""
+    x = model.nodes
+    thickness = torch.as_tensor(1. if model.thickness is None else model.thickness,
+                                dtype=x.dtype, device=x.device).reshape(-1)
+    if thickness.numel() == 1 or edges.numel() == 0:
+        return thickness.expand(len(edges)) if thickness.numel() == 1 else thickness[:0]
+    conn = model.elements.to(device=x.device, dtype=torch.long)
+    # Encode undirected faces so reversing either the element list or an edge
+    # does not change the mapping. LINE2 boundary faces are repeated node IDs.
+    other = conn if model.element_type.lower() == "line2" else conn.roll(-1,dims=1)
+    keys = torch.minimum(conn,other)*len(x)+torch.maximum(conn,other)
+    ordered, permutation = keys.flatten().sort()
+    first, last = edges.unbind(dim=1)
+    query = torch.minimum(first,last)*len(x)+torch.maximum(first,last)
+    start = torch.searchsorted(ordered,query)
+    stop = torch.searchsorted(ordered,query,right=True)
+    if not torch.all(stop-start == 1):
+        raise ValueError("per-element thickness requires convection edges with a unique owning element")
+    owners = permutation[start] // conn.shape[1]
+    return thickness[owners]
+
+
 def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:
     """Assemble conductivity ``K``, capacity ``C`` and heat vector ``f``."""
     x = model.nodes
@@ -333,7 +356,7 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
         length = torch.where(length > 0,length,torch.ones_like(length))
         # ``thickness`` is cross-sectional area for LINE2 and out-of-plane
         # thickness for Q4 boundary edges.
-        boundary_measure = length*_expand(model.thickness,len(edges),x)
+        boundary_measure = length*_boundary_thickness(model,edges)
         edge_mass = boundary_measure[:,None,None]*x.new_tensor([[2.,1.],[1.,2.]])/6
         hk = h[:,None,None]*edge_mass
         if ta.shape == (len(edges), 2):
