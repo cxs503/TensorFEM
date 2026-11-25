@@ -257,6 +257,43 @@ def thermal_element_edge_power(model: ThermalModel, temperature: torch.Tensor) -
     return torch.stack(powers, dim=-1)*thickness[:,None]
 
 
+def recover_linear_edge_flux(nodal_power: torch.Tensor, edge_areas: torch.Tensor) -> torch.Tensor:
+    """Recover continuous piecewise-linear normal flux (W/m²) on an open edge chain.
+
+    Supply oriented powers (W) against each ordered node's linear edge shape
+    function, shaped (..., n+1), and positive areas (length times thickness)
+    for its n consecutive straight edges. To recover an interface trace from
+    element powers, assemble one material side and subtract any other loads
+    at its interface nodes, including exterior loads at the chain endpoints.
+    Output has the input power shape and orientation. The product of each
+    edge area and its two endpoint fluxes' average gives its integrated power.
+    """
+    power = torch.as_tensor(nodal_power)
+    if power.ndim < 1 or power.shape[-1] < 2 or not (power.is_floating_point() or power.is_complex()):
+        raise ValueError("supply real or complex nodal powers for at least two ordered nodes")
+    area = torch.as_tensor(edge_areas, device=power.device)
+    if area.is_complex() or area.shape != (power.shape[-1]-1,) or not torch.isfinite(area).all() or (area <= 0).any():
+        raise ValueError("supply one positive finite real area per edge")
+    if not torch.isfinite(power).all():
+        raise ValueError("nodal powers must be finite")
+    area = area.to(power.real.dtype)
+    # The edge mass matrix contributes area/6 * [[2,1],[1,2]].
+    # Eliminate one off-diagonal at a time to keep storage linear in n.
+    off = area/6
+    diagonal = torch.cat((area[:1], area[:-1]+area[1:], area[-1:]))/3
+    pivot = diagonal[0]
+    rhs = [power[..., 0]/pivot]
+    upper = []
+    for i in range(len(off)):
+        upper.append(off[i]/pivot)
+        pivot = diagonal[i+1]-off[i]*upper[-1]
+        rhs.append((power[..., i+1]-off[i]*rhs[-1])/pivot)
+    flux = [rhs[-1]]
+    for i in reversed(range(len(off))):
+        flux.append(rhs[i]-upper[i]*flux[-1])
+    return torch.stack(flux[::-1], dim=-1)
+
+
 def recover_q4_boundary_power(model, temperature, boundary_elements, interior_elements, local_edge):
     """Estimate outward Fourier power (W) on a row of Q4 boundary edges.
 

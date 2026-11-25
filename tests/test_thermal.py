@@ -1297,3 +1297,17 @@ def test_harmonic_uniform_heating_on_disconnected_components(sparse):
             mean_heating_rate=state.mean_heating_rate, return_net_input=True)
         for v in (power, net, state.temperature, state.reaction_power):
             assert v.abs().max() < 1e-14
+
+
+def test_linear_edge_flux_recovers_complex_traces_on_unequal_edges():
+    from tensorfem import recover_linear_edge_flux
+    areas = torch.tensor([.4, 1.2, .7], dtype=D)
+    traces = torch.tensor([[1+.5j, -.7j, .2, 1j], [.3, 1., -.8j, .5]], dtype=torch.complex128)
+    power = torch.zeros_like(traces)
+    power[:,:-1] += areas*(2*traces[:,:-1]+traces[:,1:])/6
+    power[:,1:] += areas*(traces[:,:-1]+2*traces[:,1:])/6
+    result = recover_linear_edge_flux(power, areas)
+    torch.testing.assert_close(result, traces)
+    torch.testing.assert_close((areas*(result[:,:-1]+result[:,1:])/2).sum(-1), power.sum(-1))
+    with pytest.raises(ValueError, match="area"):
+        recover_linear_edge_flux(power, -areas)
