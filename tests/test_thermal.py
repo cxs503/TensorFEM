@@ -525,7 +525,9 @@ def test_dirichlet_jump_conserves_free_heat_and_resolves_wall_impulse(sparse):
                          nodal_heat_capacity=x.new_tensor([.1,0.,.2]))
     before = x.new_tensor([.3,.8,.6])
     target = x.new_tensor([.4,1.3])
-    after,impulse = apply_thermal_temperature_jump(model,before,target,sparse=sparse)
+    after,impulse,local = apply_thermal_temperature_jump(model,before,target,sparse=sparse,
+                                                       return_element_impulse=True)
+    torch.testing.assert_close(local,x.new_tensor([[1.8,.6],[-.6,-.6]])/12)
     # C_ff=1/3 and each end couples to the middle with C_fc=1/12.
     expected_delta = x.new_tensor([1.,-.2,-.2])
     torch.testing.assert_close(after,before+expected_delta)
