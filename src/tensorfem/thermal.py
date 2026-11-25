@@ -284,6 +284,74 @@ def recover_q4_boundary_power(model, temperature, boundary_elements, interior_el
     return (estimate*normal).sum(-1)*thickness[outer]
 
 
+def recover_q4_patch_boundary_power(model, temperature, patches, local_edge):
+    """Fit a physical-coordinate quadratic to nodal temperatures on Q4 patches.
+
+    Each row of patches lists distinct edge-connected elements, beginning
+    with the element whose local edge is exposed. Use a single material and
+    thickness per patch. At least six quadratically independent nodal samples
+    are needed (a two-by-two patch usually suffices). The least-squares fit
+    weights each element-node incidence equally. Integrating its linear flux
+    on the straight edge gives outward power in W, including thickness.
+    Temperature can contain leading time or load axes and complex phasors.
+    """
+    if model.element_type.lower() != "q4" or local_edge not in (0,1,2,3):
+        raise ValueError("provide Q4 patches and a local edge index from 0 to 3")
+    x = model.nodes
+    ids = torch.as_tensor(patches,device=x.device)
+    if (ids.ndim != 2 or not ids.shape[1] or ids.dtype not in (torch.int32,torch.int64)
+            or (ids < 0).any() or (ids >= len(model.elements)).any()):
+        raise ValueError("provide a matrix of valid patch element indices")
+    if temperature.ndim < 1 or temperature.shape[-1] != len(x):
+        raise ValueError("temperature must have one value per node")
+    ids = ids.long()
+    if (ids.sort(dim=1).values.diff(dim=1) == 0).any():
+        raise ValueError("each patch requires distinct elements")
+    conn = model.elements[ids].long()
+    # Traverse shared edges by node identity, preserving topological cracks.
+    ends = conn.roll(-1,2)
+    forward = conn*len(x)+ends
+    reverse = ends*len(x)+conn
+    matches = forward[:,:,None,:,None] == reverse[:,None,:,None,:]
+    if matches[:,0,:,local_edge,:].any():
+        raise ValueError("target edge must be exposed on the patch")
+    adjacent = matches.any(-1).any(-1)
+    reached = torch.zeros_like(ids,dtype=torch.bool)
+    reached[:,0] = True
+    for _ in range(ids.shape[1]-1):
+        reached = reached | (adjacent & reached[:,None,:]).any(-1)
+    if not reached.all():
+        raise ValueError("each patch must be edge-connected")
+
+    k = _element_conductivity(model)
+    k = k.expand(len(model.elements),*k.shape[1:])[ids]
+    thick = _expand(model.thickness,len(model.elements),x)[ids]
+    if (k != k[:,:1]).any() or (thick != thick[:,:1]).any():
+        raise ValueError("use one material and thickness per patch")
+    coords = x[conn]
+    sides = coords.roll(-1,2)-coords
+    following = sides.roll(-1,2)
+    if ((sides[...,0]*following[...,1]-sides[...,1]*following[...,0]) <= 0).any():
+        raise ValueError("patches require counterclockwise convex Q4 elements")
+    tangent = sides[:,0,local_edge]
+    normal = torch.stack((tangent[:,1],-tangent[:,0]),1)
+    midpoint = coords[:,0,local_edge]+tangent/2
+    displacement = coords.flatten(1,2)-midpoint[:,None,:]
+    scale = displacement.norm(dim=-1).amax(1)
+    a,b = (displacement/scale[:,None,None]).unbind(-1)
+    basis = torch.stack((torch.ones_like(a),a,b,a*a,a*b,b*b),dim=-1)
+    if (torch.linalg.matrix_rank(basis) < 6).any():
+        raise ValueError("patch nodes must span a complete quadratic")
+    q,r = torch.linalg.qr(basis,mode="reduced")
+    # The derivative at the origin uses just the two linear coefficients.
+    direction = (k[:,0] @ normal.unsqueeze(-1)).squeeze(-1) if k.ndim == 4 else k[:,:1]*normal
+    derivative = torch.zeros_like(r[:,:,0])
+    derivative[:,1:3] = -direction*(thick[:,0]/scale)[:,None]
+    weights = q @ torch.linalg.solve_triangular(r.transpose(1,2),derivative[:,:,None],upper=False)
+    values = temperature.to(x.device)[...,conn.flatten(1,2)]
+    return ((values-values[...,:1])*weights.squeeze(-1)).sum(-1)
+
+
 def _thermal_element_matrices(model, load_like):
     x = model.nodes
     conn = model.elements.long()

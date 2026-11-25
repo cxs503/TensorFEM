@@ -861,3 +861,31 @@ def test_recovered_corner_edges_integrate_quadratic_on_graded_sheared_grid():
         torch.testing.assert_close(power,torch.stack((expected,2*expected)),rtol=1e-12,atol=1e-13)
     with pytest.raises(ValueError,match="share"):
         recover_q4_boundary_power(model,u,[0],[5],3)
+
+
+def test_quadratic_boundary_patch_on_distorted_mesh():
+    from tensorfem import recover_q4_patch_boundary_power
+    from tensorfem.thermal_analytic import structured_quad_mesh
+    mesh = structured_quad_mesh(2,2,dtype=D)
+    xy = mesh.nodes.clone()
+    xy[4] += xy.new_tensor([.12,-.09])
+    k = xy.new_tensor([[2.,.25],[.25,.8]])
+    model = ThermalModel(xy,mesh.elements,k[None],1.,1.,torch.tensor([],dtype=torch.long),
+                         xy.new_empty(0),element_type="q4")
+    x,y = xy.T
+    field = (1.+.4j)*(x*x+2*x*y-.5*y*y)+y
+    for edge,first in enumerate((0,1,3,2)):
+        patch = [[first,*[v for v in range(4) if v != first]]]
+        coords = xy[mesh.elements[first]]
+        a,b = coords[edge],coords[(edge+1)%4]
+        u,v = (a+b)/2
+        grad = (1.+.4j)*torch.stack((2*u+2*v,2*u-v))+xy.new_tensor([0.,1.])
+        tangent = b-a
+        normal = torch.stack((tangent[1],-tangent[0]))
+        target = -(grad*(k@normal)).sum()
+        result = recover_q4_patch_boundary_power(model,torch.stack((field,2*field)),patch,edge)
+        torch.testing.assert_close(result[:,0],torch.stack((target,2*target)),atol=1e-12,rtol=0.)
+    with pytest.raises(ValueError,match="edge-connected"):
+        recover_q4_patch_boundary_power(model,field,[[0,3]],0)
+    with pytest.raises(ValueError,match="complete quadratic"):
+        recover_q4_patch_boundary_power(model,field,[[0]],0)
