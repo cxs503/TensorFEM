@@ -499,3 +499,22 @@ def test_internal_shoulder_assembles_only_exposed_area():
     assert float((a.conductivity-b.conductivity).sum()) == pytest.approx(.9)
     with pytest.raises(ValueError,match="nonnegative"):
         assemble_thermal(replace(line,convection_area=-1.))
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+def test_dirichlet_jump_conserves_free_heat_and_resolves_wall_impulse(sparse):
+    from tensorfem import apply_thermal_temperature_jump
+    x = torch.tensor([[0.],[.5],[1.]],dtype=torch.float64)
+    fixed = torch.tensor([2,0])
+    model = ThermalModel(x,torch.tensor([[0,1],[1,2]]),1.,1.,1.,fixed,x.new_zeros(2),
+                         nodal_heat_capacity=x.new_tensor([.1,0.,.2]))
+    before = x.new_tensor([.3,.8,.6])
+    target = x.new_tensor([.4,1.3])
+    after,impulse = apply_thermal_temperature_jump(model,before,target,sparse=sparse)
+    # C_ff=1/3 and each end couples to the middle with C_fc=1/12.
+    expected_delta = x.new_tensor([1.,-.2,-.2])
+    torch.testing.assert_close(after,before+expected_delta)
+    torch.testing.assert_close(impulse,x.new_tensor([1/6+.1-.2/12,0.,-.2*(1/6+.2)-.2/12]))
+    restored,reverse = apply_thermal_temperature_jump(model,after,before[fixed],sparse=sparse)
+    torch.testing.assert_close(restored,before)
+    torch.testing.assert_close(reverse,-impulse)

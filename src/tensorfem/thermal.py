@@ -425,6 +425,41 @@ def _solve_sparse_dirichlet(operator, load, fixed, free, prescribed):
     return state
 
 
+def apply_thermal_temperature_jump(model: ThermalModel, temperature: torch.Tensor,
+                                   fixed_temperatures: torch.Tensor, *, sparse: bool=False):
+    """Apply an instantaneous change of Dirichlet temperature with consistent capacity.
+
+    Return the right-limit temperature and inward nodal impulse heat (J).
+    Pass the left-limit field and new temperatures in model.fixed_nodes order.
+    Integrating C*Tdot across the jump gives (C*delta_T)[free]=0; the fixed
+    rows give the reaction heat. Include these impulses when accumulating a
+    heat budget across segments. The finite-element right-limit field can
+    overshoot near the wall even if both prescribed temperatures are positive.
+    """
+    fixed,free = _partition(model)
+    old = torch.as_tensor(temperature,dtype=model.nodes.dtype,device=model.nodes.device)
+    target = torch.as_tensor(fixed_temperatures,dtype=model.nodes.dtype,device=model.nodes.device)
+    if old.shape!=(len(model.nodes),) or target.shape!=fixed.shape:
+        raise ValueError("provide one temperature per node and one target per fixed node")
+    if not torch.isfinite(old).all() or not torch.isfinite(target).all():
+        raise ValueError("jump temperatures must be finite")
+    if not fixed.numel():
+        return old.clone(),torch.zeros_like(old)
+    capacity = assemble_thermal(model,sparse=sparse).capacity
+    change = target-old[fixed]
+    if sparse:
+        if capacity.device.type!="cpu" or any(t.requires_grad for t in (capacity,old,target)):
+            raise ValueError("sparse temperature jump requires CPU tensors without autograd")
+        delta = torch.from_numpy(_solve_sparse_dirichlet(_scipy_csc(capacity),old.new_zeros(old.shape).numpy(),
+                                                         fixed,free,change))
+    else:
+        delta = torch.zeros_like(old).index_put((fixed,),change)
+        if free.numel() and fixed.numel():
+            rhs = -capacity[free][:,fixed] @ change
+            delta = delta.index_put((free,),torch.linalg.solve(capacity[free][:,free],rhs))
+    return (old+delta).index_put((fixed,),target),capacity @ delta
+
+
 def solve_steady_thermal(model: ThermalModel, *, sparse: bool = False) -> torch.Tensor:
     """Solve steady conduction. sparse=True uses CPU SciPy LU without autograd."""
     matrices = assemble_thermal(model, sparse=sparse)
