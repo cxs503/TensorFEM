@@ -528,3 +528,25 @@ def test_dirichlet_jump_conserves_free_heat_and_resolves_wall_impulse(sparse):
     restored,reverse = apply_thermal_temperature_jump(model,after,before[fixed],sparse=sparse)
     torch.testing.assert_close(restored,before)
     torch.testing.assert_close(reverse,-impulse)
+
+
+@pytest.mark.parametrize("element",["line2","q4"])
+def test_bulk_heat_loss_matches_unit_capacity_mass(element):
+    from dataclasses import replace
+    if element=="line2":
+        model = line_model()
+    else:
+        nodes = torch.tensor([[0.,0.],[2.,.1],[1.8,1.5],[0.,1.]],dtype=D)
+        model = ThermalModel(nodes,torch.tensor([[0,1,2,3]]),2.,3.,1.,torch.tensor([0]),
+                             nodes.new_zeros(1),thickness=.8,element_type="q4")
+    h = torch.linspace(.5,2.,len(model.elements),dtype=D)
+    reference = assemble_thermal(replace(model,density=h,specific_heat=1.))
+    cooled = assemble_thermal(replace(model,heat_loss_coefficient=h))
+    torch.testing.assert_close(cooled.conductivity-reference.conductivity,reference.capacity)
+
+
+@pytest.mark.parametrize("invalid",[-1.,float("nan"),1j,[1.,2.,3.]])
+def test_invalid_bulk_heat_loss(invalid):
+    from dataclasses import replace
+    with pytest.raises(ValueError,match="heat_loss_coefficient"):
+        assemble_thermal(replace(line_model(),heat_loss_coefficient=invalid))

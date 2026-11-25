@@ -41,6 +41,9 @@ class ThermalModel:
     wall_areal_heat_capacity: torch.Tensor | None = None
     # Optional total exposed area in m², scalar or per edge (e.g. a stepped shoulder).
     convection_area: torch.Tensor | None = None
+    # H in W/(m³ K), scalar or per-element. The bulk sink is H*T; add H*Ta
+    # to heat_source to exchange with a prescribed ambient temperature Ta.
+    heat_loss_coefficient: torch.Tensor | None = None
 
     def __post_init__(self):
         nen = {"line2": 2, "q4": 4}.get(self.element_type.lower())
@@ -224,6 +227,14 @@ def _thermal_element_matrices(model, load_like):
     ce = torch.zeros_like(ke)
     fe = load_like.new_zeros((ne, nen))
     coords = x[conn]
+    loss = None
+    if model.heat_loss_coefficient is not None:
+        raw = torch.as_tensor(model.heat_loss_coefficient, device=x.device)
+        if raw.is_complex() or raw.shape not in ((),(1,),(ne,)):
+            raise ValueError("heat_loss_coefficient must be real and scalar or per element")
+        loss = torch.as_tensor(model.heat_loss_coefficient,dtype=x.dtype,device=x.device).expand(ne)
+        if not torch.isfinite(loss).all() or (loss<0).any():
+            raise ValueError("heat_loss_coefficient must be finite and nonnegative")
     if model.element_type.lower() == "line2":
         length = coords[:, 1, 0] - coords[:, 0, 0]
         if torch.any(length <= 0):
@@ -231,7 +242,10 @@ def _thermal_element_matrices(model, load_like):
         base_k = x.new_tensor([[1., -1.], [-1., 1.]])
         base_c = x.new_tensor([[2., 1.], [1., 2.]])
         ke = k[:, None, None] * thick[:, None, None] / length[:, None, None] * base_k
-        ce = (rho*cp*thick*length/6)[:, None, None] * base_c
+        measure = (thick*length/6)[:,None,None]*base_c
+        ce = (rho*cp)[:,None,None]*measure
+        if loss is not None:
+            ke = ke+loss[:,None,None]*measure
         if interpolated:
             fe = (thick*length/6)[:, None]*(source @ base_c.to(source.dtype))
         else:
@@ -243,7 +257,10 @@ def _thermal_element_matrices(model, load_like):
             weight = det*thick
             weighted_grad = grad @ k if k.ndim == 3 else grad * k[:, None, None]
             ke = ke + (weighted_grad @ grad.transpose(1, 2)) * weight[:, None, None]
-            ce = ce + (rho*cp*weight)[:,None,None]*(n[None,:,None]*n[None,None,:])
+            measure = weight[:,None,None]*(n[None,:,None]*n[None,None,:])
+            ce = ce+(rho*cp)[:,None,None]*measure
+            if loss is not None:
+                ke = ke+loss[:,None,None]*measure
             density = source @ n.to(source.dtype) if interpolated else source
             fe = fe + (density*weight)[:,None]*n[None,:]
     return ke, ce, fe
