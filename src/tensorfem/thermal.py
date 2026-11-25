@@ -41,7 +41,8 @@ class ThermalModel:
     wall_areal_heat_capacity: torch.Tensor | None = None
     # Optional total exposed area in m², scalar or per edge (e.g. a stepped shoulder).
     convection_area: torch.Tensor | None = None
-    # H in W/(m³ K), scalar or per-element. The bulk sink is H*T; add H*Ta
+    # H in W/(m³ K), scalar, per-element or (ne, nen) local nodal values.
+    # The bulk sink is H*T; add H*Ta
     # to heat_source to exchange with a prescribed ambient temperature Ta.
     heat_loss_coefficient: torch.Tensor | None = None
 
@@ -228,11 +229,15 @@ def _thermal_element_matrices(model, load_like):
     fe = load_like.new_zeros((ne, nen))
     coords = x[conn]
     loss = None
+    variable_loss = False
     if model.heat_loss_coefficient is not None:
         raw = torch.as_tensor(model.heat_loss_coefficient, device=x.device)
-        if raw.is_complex() or raw.shape not in ((),(1,),(ne,)):
-            raise ValueError("heat_loss_coefficient must be real and scalar or per element")
-        loss = torch.as_tensor(model.heat_loss_coefficient,dtype=x.dtype,device=x.device).expand(ne)
+        variable_loss = raw.shape==(ne,nen)
+        if raw.is_complex() or not variable_loss and raw.shape not in ((),(1,),(ne,)):
+            raise ValueError("heat_loss_coefficient must be real and scalar, per element or locally nodal")
+        loss = torch.as_tensor(model.heat_loss_coefficient,dtype=x.dtype,device=x.device)
+        if not variable_loss:
+            loss = loss.expand(ne)
         if not torch.isfinite(loss).all() or (loss<0).any():
             raise ValueError("heat_loss_coefficient must be finite and nonnegative")
     if model.element_type.lower() == "line2":
@@ -244,7 +249,12 @@ def _thermal_element_matrices(model, load_like):
         ke = k[:, None, None] * thick[:, None, None] / length[:, None, None] * base_k
         measure = (thick*length/6)[:,None,None]*base_c
         ce = (rho*cp)[:,None,None]*measure
-        if loss is not None:
+        if variable_loss:
+            # Integrals of H(x)*N_i*N_j for a linear coefficient on LINE2.
+            left,right = loss.unbind(1)
+            entries = torch.stack((3*left+right,left+right,left+right,left+3*right),1)
+            ke = ke+(thick*length/12)[:,None,None]*entries.reshape(ne,2,2)
+        elif loss is not None:
             ke = ke+loss[:,None,None]*measure
         if interpolated:
             fe = (thick*length/6)[:, None]*(source @ base_c.to(source.dtype))
@@ -259,10 +269,20 @@ def _thermal_element_matrices(model, load_like):
             ke = ke + (weighted_grad @ grad.transpose(1, 2)) * weight[:, None, None]
             measure = weight[:,None,None]*(n[None,:,None]*n[None,None,:])
             ce = ce+(rho*cp)[:,None,None]*measure
-            if loss is not None:
+            if loss is not None and not variable_loss:
                 ke = ke+loss[:,None,None]*measure
             density = source @ n.to(source.dtype) if interpolated else source
             fe = fe + (density*weight)[:,None]*n[None,:]
+        if variable_loss:
+            # On a distorted bilinear map, H*N_i*N_j*det(J) can have
+            # degree four in a reference coordinate. Three Gauss points suffice.
+            g = (3/5)**.5
+            rule = ((-g,5/9),(0.,8/9),(g,5/9))
+            for xi,wx in rule:
+                for eta,wy in rule:
+                    n,_,det = _q4_geometry(coords,xi,eta)
+                    weight = wx*wy*det*thick*(loss @ n)
+                    ke = ke+weight[:,None,None]*torch.outer(n,n)
     return ke, ce, fe
 
 

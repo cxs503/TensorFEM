@@ -550,3 +550,25 @@ def test_invalid_bulk_heat_loss(invalid):
     from dataclasses import replace
     with pytest.raises(ValueError,match="heat_loss_coefficient"):
         assemble_thermal(replace(line_model(),heat_loss_coefficient=invalid))
+
+
+def test_distorted_q4_nodal_bulk_loss_against_physical_integral():
+    from dataclasses import replace
+    import numpy as np
+    coords = np.array([[0.,0.],[1.8,.2],[1.3,1.5],[-.2,.8]])
+    nodes = torch.tensor(coords,dtype=D)
+    h = np.array([.4,1.3,2.8,.1])
+    model = ThermalModel(nodes,torch.tensor([[0,1,2,3]]),1.,1.,1.,torch.tensor([0]),nodes.new_zeros(1),
+                         element_type="q4",thickness=.7)
+    k = assemble_thermal(replace(model,heat_loss_coefficient=[h.tolist()])).conductivity
+    loss = (k-assemble_thermal(model).conductivity).numpy()
+    corners = np.array([[-1,-1],[1,-1],[1,1],[-1,1]])
+    rule,weights = np.polynomial.legendre.leggauss(6)
+    expected = np.zeros((4,4))
+    for xi,wx in zip(rule,weights):
+        for eta,wy in zip(rule,weights):
+            fx,fy = (1+corners*[xi,eta]).T
+            shape = fx*fy/4
+            grad = np.column_stack((corners[:,0]*fy,corners[:,1]*fx))/4
+            expected += .7*wx*wy*np.linalg.det(coords.T @ grad)*(h @ shape)*np.outer(shape,shape)
+    np.testing.assert_allclose(loss,expected,atol=1e-14,rtol=0.)
