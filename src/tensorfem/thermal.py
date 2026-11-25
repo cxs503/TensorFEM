@@ -226,6 +226,64 @@ def thermal_element_edge_power(model: ThermalModel, temperature: torch.Tensor) -
     return torch.stack(powers, dim=-1)*thickness[:,None]
 
 
+def recover_q4_boundary_power(model, temperature, boundary_elements, interior_elements, local_edge):
+    """Estimate outward Fourier power (W) on a row of Q4 boundary edges.
+
+    Pair each boundary element with the next inward element of the same
+    material. Both must be parallelograms sharing the opposite edge, with
+    centers collinear with the wall midpoint. Their widths may differ.
+    Extrapolate center fluxes to the wall midpoint and integrate using the
+    physical edge vector and boundary element thickness. This postprocessed
+    estimate is independent of the assembled nodal reaction.
+    """
+    if model.element_type.lower() != "q4" or local_edge not in (0,1,2,3):
+        raise ValueError("provide Q4 elements and a local edge index from 0 to 3")
+    x = model.nodes
+    ids = []
+    for supplied in (boundary_elements,interior_elements):
+        index = torch.as_tensor(supplied,device=x.device)
+        if (index.ndim != 1 or index.dtype not in (torch.int32,torch.int64)
+                or torch.any(index < 0) or torch.any(index >= len(model.elements))):
+            raise ValueError("element indices must be valid integer vectors")
+        ids.append(index.long())
+    outer,inner = ids
+    if outer.shape != inner.shape:
+        raise ValueError("provide one interior element for each boundary element")
+    conn = model.elements[outer].long()
+    near,far = x[conn],x[model.elements[inner].long()]
+    e = local_edge
+    opposite = conn[:,[(e+2)%4,(e+3)%4]]
+    inner_conn = model.elements[inner]
+    # The neighbor must traverse the common edge in the opposite direction.
+    shared = (inner_conn == opposite[:,1:]) & (inner_conn.roll(-1,1) == opposite[:,:1])
+    if not shared.any(1).all():
+        raise ValueError("the inward neighbor must share the opposite edge")
+    tol = 128*torch.finfo(x.dtype).eps
+    for coords in (near,far):
+        sides = coords.roll(-1,1)-coords
+        scale = sides.norm(dim=2).amax(1)
+        if torch.any((sides[:,0]+sides[:,2]).norm(dim=1) > tol*scale):
+            raise ValueError("boundary recovery requires parallelogram elements")
+    tangent = near[:,(e+1)%4]-near[:,e]
+    normal = torch.stack((tangent[:,1],-tangent[:,0]),1)
+    center = near.mean(1)
+    to_wall = (near[:,e]+near[:,(e+1)%4])/2-center
+    outward = center-far.mean(1)
+    ratio = (to_wall*outward).sum(1)/outward.square().sum(1)
+    if (not torch.isfinite(ratio).all() or (ratio <= 0).any() or
+            torch.any((to_wall-ratio[:,None]*outward).norm(dim=1) > tol*outward.norm(dim=1))):
+        raise ValueError("element centers must align with the boundary midpoint")
+    k = _element_conductivity(model)
+    if k.shape[0] != 1 and not torch.equal(k[outer],k[inner]):
+        raise ValueError("boundary recovery requires the same conductivity across each pair")
+    flux = thermal_element_flux(model,temperature)
+    estimate = flux[...,outer,:]+ratio[:,None]*(flux[...,outer,:]-flux[...,inner,:])
+    thickness = _expand(model.thickness,len(model.elements),x)
+    if not torch.equal(thickness[outer],thickness[inner]):
+        raise ValueError("boundary recovery requires equal thickness across each pair")
+    return (estimate*normal).sum(-1)*thickness[outer]
+
+
 def _thermal_element_matrices(model, load_like):
     x = model.nodes
     conn = model.elements.long()

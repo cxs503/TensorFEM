@@ -835,3 +835,29 @@ def test_insulated_dense_capacity_gradient():
     lag = solve_low_frequency_thermal(replace(model,specific_heat=c,nodal_heat=load)).first_order.temperature[0].real
     gradient, = torch.autograd.grad(lag,c)
     torch.testing.assert_close(gradient,lag.detach()/c.detach())
+
+
+def test_recovered_corner_edges_integrate_quadratic_on_graded_sheared_grid():
+    from tensorfem.thermal import recover_q4_boundary_power
+    from tensorfem.thermal_analytic import structured_quad_mesh
+
+    mesh = structured_quad_mesh(3,2,dtype=D)
+    x,y = mesh.nodes.T
+    nodes = torch.stack((x**2+.25*y,y),dim=1)
+    k = nodes.new_tensor([[2.,.6],[.6,1.]])
+    model = ThermalModel(nodes,mesh.elements,k[None],1.,1.,torch.tensor([],dtype=torch.long),
+                         nodes.new_empty(0),element_type="q4",thickness=1.7)
+    x,y = nodes.T
+    u = (1+.3j)*(x*x+2*x*y-.4*y*y)
+    for edge,outer,inner in ((3,[0,3],[1,4]),(1,[2,5],[1,4]),(0,[0,1,2],[3,4,5]),
+                             (2,[3,4,5],[0,1,2])):
+        coords = nodes[mesh.elements[outer]]
+        start,end = coords[:,edge],coords[:,(edge+1)%4]
+        a,b = ((start+end)/2).T
+        gradient = torch.stack((2*a+2*b,2*a-.8*b),dim=1)
+        dx,dy = (end-start).T
+        expected = -(1+.3j)*1.7*((gradient @ k)*torch.stack((dy,-dx),dim=1)).sum(1)
+        power = recover_q4_boundary_power(model,torch.stack((u,2*u)),outer,inner,edge)
+        torch.testing.assert_close(power,torch.stack((expected,2*expected)),rtol=1e-12,atol=1e-13)
+    with pytest.raises(ValueError,match="share"):
+        recover_q4_boundary_power(model,u,[0],[5],3)
