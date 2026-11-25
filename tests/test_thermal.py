@@ -728,3 +728,28 @@ def test_transient_section_power_from_quadratic_slab_with_storage(element_type):
     torch.testing.assert_close(thermal_element_section_power(model,phase*local,f),phase*power)
     with pytest.raises(ValueError,match="fractions"):
         thermal_element_section_power(model,local,[1.1])
+
+
+@pytest.mark.parametrize("element_type", ["line2","q4"])
+def test_section_power_with_spatially_quadratic_net_source(element_type):
+    from tensorfem import thermal_element_nodal_power, thermal_element_section_power
+
+    length, area, k = 1.4, 1.7, 2.1
+    xy = torch.tensor([[0.,0.],[length,0.],[length,1.],[0.,1.]],dtype=D)
+    nodes = xy[:2,:1] if element_type=="line2" else xy
+    fixed = torch.arange(len(nodes))
+    x = nodes[:,0]
+    # P(x)=-k*A*T'(x)=.7+.4*x²-.2*x³. The prescribed steady volume
+    # heating P'(x)/A contains linear and quadratic terms.
+    temperature = 1.-(.7*x+.4*x**3/3-.05*x**4)/(k*area)
+    model = ThermalModel(nodes,fixed[None],k,1.,1.,fixed,temperature,thickness=area,
+                         heat_source=(.8*x/area)[None],element_type=element_type,
+                         heat_source_quadratic=-.6/area if element_type=="line2" else [-.6/area,0.,0.])
+    local = thermal_element_nodal_power(model,temperature)
+    f = x.new_tensor([0.,.12,.5,.81,1.])
+    power = thermal_element_section_power(model,local,f,net_line_source_gradient=.8-.6*length,
+                                           net_line_source_curvature=-1.2)
+    ref = .7+.4*(length*f)**2-.2*(length*f)**3
+    torch.testing.assert_close(power[0],ref.to(power),atol=1e-13,rtol=0.)
+    with pytest.raises(ValueError,match="broadcast"):
+        thermal_element_section_power(model,local,f,net_line_source_gradient=[1.,2.])

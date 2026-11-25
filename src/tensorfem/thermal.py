@@ -333,16 +333,17 @@ def _thermal_element_matrices(model, load_like):
 
 
 def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
-                                angular_frequency: float, *, element_nodal_heat=None) -> torch.Tensor:
+                                angular_frequency: float = 0., *, element_nodal_heat=None) -> torch.Tensor:
     """Inward power phasors (W) at LINE2 or Q4 element nodes under exp(+iωt).
 
+    Zero frequency recovers steady powers. The return dtype is complex.
     Includes the consistent storage term and subtracts the model's element
     volume loads. Supply any additional element-resolved nodal loads (ne, nen)
     in W to subtract them before assembly. Global point loads, films and
     contacts otherwise appear as exchanges. Q4 entries are weak-form nodal powers.
     """
-    if not math.isfinite(angular_frequency) or angular_frequency <= 0:
-        raise ValueError("angular_frequency must be finite and positive")
+    if not math.isfinite(angular_frequency) or angular_frequency < 0:
+        raise ValueError("angular_frequency must be finite and nonnegative")
     if temperature.shape != (len(model.nodes),):
         raise ValueError("temperature must have one value per node")
     dtype = torch.promote_types(model.nodes.dtype, torch.promote_types(temperature.dtype, torch.complex64))
@@ -388,7 +389,8 @@ def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransie
     return heat + result.time.diff().to(t)[:, None, None]*power
 
 
-def thermal_element_section_power(model: ThermalModel, nodal_power: torch.Tensor, fractions) -> torch.Tensor:
+def thermal_element_section_power(model: ThermalModel, nodal_power: torch.Tensor, fractions, *,
+                                  net_line_source_gradient=None, net_line_source_curvature=None) -> torch.Tensor:
     """Recover through-section power (W) from inward element nodal powers (W).
 
     For LINE2 the positive direction is node 0 to node 1. For a Q4 strip
@@ -402,6 +404,14 @@ def thermal_element_section_power(model: ThermalModel, nodal_power: torch.Tensor
     Returns (..., element, sample). Linear interpolation of the two section
     powers preserves each element's net heat balance, with constant power
     gradient in the local fractional coordinate. Area is already included.
+
+    For a straight constant-section element, optional gradient (W/m²) and
+    curvature (W/m³) describe the first and second axial derivatives of net
+    heat input per length at its midpoint. Include section area and subtract
+    storage and sinks when forming net heat input. For transient data use
+    interval-mean derivatives. Scalars or arrays broadcastable to
+    (..., element) are accepted. Integrating this quadratic source profile
+    gives a cubic power profile with the same two endpoint powers.
     """
     if nodal_power.ndim<2 or nodal_power.shape[-2:]!=model.elements.shape:
         raise ValueError("nodal_power needs one inward power per element node")
@@ -416,7 +426,33 @@ def thermal_element_section_power(model: ThermalModel, nodal_power: torch.Tensor
     if model.element_type.lower()=="q4":
         entering = entering+nodal_power[...,3]
         leaving = leaving-nodal_power[...,2]
-    return entering[...,None]*(1-f)+leaving[...,None]*f
+    power = entering[...,None]*(1-f)+leaving[...,None]*f
+    if net_line_source_gradient is None and net_line_source_curvature is None:
+        return power
+
+    coords = model.nodes[model.elements.long()].to(device=power.device)
+    span = coords[:,1]-coords[:,0]
+    if model.element_type.lower()=="q4":
+        span = (span+coords[:,2]-coords[:,3])/2
+    length = torch.linalg.vector_norm(span,dim=-1)
+    # Integrate about the midpoint and remove the endpoint interpolant.
+    # Both basis functions vanish at f=0,1, preserving the nodal heat budget.
+    bubble = f*(f-1)
+    for value,basis in ((net_line_source_gradient,length[:,None]**2*bubble/2),
+                        (net_line_source_curvature,length[:,None]**3*bubble*(f-.5)/6)):
+        if value is None:
+            continue
+        raw = torch.as_tensor(value)
+        dtype = torch.promote_types(power.dtype,raw.dtype)
+        derivative = torch.as_tensor(value,dtype=dtype,device=power.device)
+        if not torch.isfinite(derivative).all():
+            raise ValueError("net line source derivatives must be finite")
+        try:
+            derivative = torch.broadcast_to(derivative,entering.shape)
+        except RuntimeError as exc:
+            raise ValueError("net line source derivatives must broadcast to the element power shape") from exc
+        power = power+derivative[...,None]*basis
+    return power
 
 
 def _boundary_thickness(model, edges):
