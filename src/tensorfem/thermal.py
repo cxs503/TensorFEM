@@ -646,7 +646,7 @@ def thermal_element_low_frequency_power(model: ThermalModel, result: ThermalLowF
 
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
                             initial_temperature: torch.Tensor, theta: float=1.0, *,
-                            sparse: bool=False, fixed_temperature_history: torch.Tensor | None=None,
+                            sparse: bool=False, fixed_temperature_history: torch.Tensor | Callable[[torch.Tensor], torch.Tensor] | None=None,
                             nodal_heat_history: torch.Tensor | Callable[[torch.Tensor], torch.Tensor] | None=None,
                             nodal_step_heat: torch.Tensor | None=None, method: str="theta") -> ThermalTransientResult:
     """Integrate ``C Tdot + K T = f`` using the theta method.
@@ -656,7 +656,9 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
     uses CPU SciPy sparse LU and returns torch COO matrices. Use the default
     dense path for autograd or GPU execution. fixed_temperature_history can
     prescribe one temperature per time and fixed node, in model.fixed_nodes
-    order. Its first row sets the initial constrained temperatures.
+    order. Its first row sets the initial constrained temperatures. A callable
+    accepts scalar time and returns one temperature per fixed node. SDIRK2
+    samples it at the internal stages as well as at output times.
     nodal_heat_history adds inward applied powers in W, shaped (nt, nn),
     to the static assembled loads. It may also be a function of scalar time
     returning one power per node. SDIRK2 evaluates such functions at its two
@@ -682,21 +684,34 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         raise ValueError("initial_temperature must have shape [n_nodes]")
     m = assemble_thermal(model, sparse=sparse); fixed, free = _partition(model)
     prescribed = model.fixed_temperatures.to(dtype=model.nodes.dtype,device=model.nodes.device)
+    def sample_history(fn,t,count,name):
+        value = torch.as_tensor(fn(t)).to(model.nodes)
+        if value.shape!=(count,) or not torch.isfinite(value).all():
+            raise ValueError(f"{name} callable must return {count} finite nodal values")
+        return value
+
+    fixed_stage_history = None
+    if method=="sdirk2":
+        gamma = 1-1/math.sqrt(2)
+        first_times = time[:-1]+gamma*time.diff()
     if fixed_temperature_history is not None:
-        prescribed = torch.as_tensor(fixed_temperature_history).to(model.nodes)
+        if callable(fixed_temperature_history):
+            def temperatures(t):
+                return sample_history(fixed_temperature_history,t,fixed.numel(),"fixed_temperature_history")
+            prescribed = torch.stack([temperatures(t) for t in time])
+            if method=="sdirk2":
+                fixed_stage_history = torch.stack([temperatures(t) for t in first_times])
+        else:
+            prescribed = torch.as_tensor(fixed_temperature_history).to(model.nodes)
         if prescribed.shape != (len(time), fixed.numel()) or not torch.isfinite(prescribed).all():
             raise ValueError("fixed_temperature_history needs finite values at every time and fixed node")
     stage_power = first_offset = None
     if nodal_heat_history is not None:
         def sample_power(t):
-            value = torch.as_tensor(nodal_heat_history(t)).to(model.nodes)
-            if value.shape!=(len(model.nodes),) or not torch.isfinite(value).all():
-                raise ValueError("nodal_heat_history callable must return one finite power per node")
-            return value
+            return sample_history(nodal_heat_history,t,len(model.nodes),"nodal_heat_history")
 
         if callable(nodal_heat_history) and method=="sdirk2":
-            gamma = 1-1/math.sqrt(2)
-            first = torch.stack([sample_power(t) for t in time[:-1]+gamma*time.diff()])
+            first = torch.stack([sample_power(t) for t in first_times])
             end = torch.stack([sample_power(t) for t in time[1:]])
             stage_power = (1-gamma)*first+gamma*end
             first_offset = first-stage_power
@@ -718,11 +733,11 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
     out[0] = initial_temperature.to(dtype=model.nodes.dtype,device=model.nodes.device)
     out[:,fixed] = prescribed
     if sparse:
-        inputs = (time, out, m.heat, m.conductivity, m.capacity, stage_power)
+        inputs = (time, out, m.heat, m.conductivity, m.capacity, stage_power, fixed_stage_history, first_offset)
         if any(v.device.type != "cpu" or v.requires_grad for v in inputs if v is not None):
             raise ValueError("sparse transient integration requires CPU tensors without autograd")
     if method=="sdirk2":
-        means = _advance_sdirk2(m,time,out,fixed,free,stage_power,first_offset,sparse)
+        means = _advance_sdirk2(m,time,out,fixed,free,stage_power,first_offset,fixed_stage_history,sparse)
         return ThermalTransientResult(time,out,m,theta,stage_power,means)
     if sparse:
         if free.numel():
@@ -754,14 +769,19 @@ def _scipy_csc(tensor):
     return coo_matrix((tensor.values().numpy(), (row, col)), shape=tensor.shape).tocsc()
 
 
-def _advance_sdirk2(m,time,out,fixed,free,average_power,first_offset,sparse):
+def _advance_sdirk2(m,time,out,fixed,free,average_power,first_offset,fixed_stage_history,sparse):
     """Solve both stages using the same constrained operator on each interval."""
     gamma = 1-1/math.sqrt(2)
     if not free.numel():
-        return .5*(out[:-1]+out[1:])
+        means = .5*(out[:-1]+out[1:])
+        if fixed_stage_history is not None:
+            means[:,fixed] = (1-gamma)*fixed_stage_history+gamma*out[1:,fixed]
+        return means
     if sparse:
         from scipy.sparse.linalg import splu
         fixed,free = fixed.numpy(),free.numpy()
+        if fixed_stage_history is not None:
+            fixed_stage_history = fixed_stage_history.numpy()
         state = out.numpy()
         c = _scipy_csc(m.capacity)[free]
         k = _scipy_csc(m.conductivity)[free]
@@ -790,16 +810,17 @@ def _advance_sdirk2(m,time,out,fixed,free,average_power,first_offset,sparse):
         old = state[i,free]
         fixed_start,fixed_end = state[i,fixed],state[i+1,fixed]
         fixed_change = fixed_end-fixed_start
-        fixed_stage = fixed_start+gamma*fixed_change
+        fixed_stage = fixed_start+gamma*fixed_change if fixed_stage_history is None else fixed_stage_history[i]
+        fixed_mean = (1-gamma)*fixed_stage+gamma*fixed_end
         load = source if average_power is None else source+average_power[i,free]
         first_load = load if first_offset is None else load+first_offset[i,free]
         stored = cff@old
         boundary_storage = cfc@fixed_change
-        first = solve(stored-gamma*boundary_storage+shift*(first_load-kfc@fixed_stage))
-        end = solve(stored-boundary_storage+dt*(load-(1-gamma)*(kff@first)-kfc@(.5*(fixed_start+fixed_end))))
+        first = solve(stored-cfc@(fixed_stage-fixed_start)+shift*(first_load-kfc@fixed_stage))
+        end = solve(stored-boundary_storage+dt*(load-(1-gamma)*(kff@first)-kfc@fixed_mean))
         state[i+1,free] = end
         means[i,free] = torch.as_tensor((1-gamma)*first+gamma*end)
-        means[i,fixed] = torch.as_tensor(.5*(fixed_start+fixed_end))
+        means[i,fixed] = torch.as_tensor(fixed_mean)
     return means
 
 

@@ -674,3 +674,25 @@ def test_callable_heating_matches_time_quadrature_and_energy(sparse,method):
     torch.testing.assert_close(result.temperature[1:],exact[:,None]*ones,atol=1e-14,rtol=0.)
     torch.testing.assert_close(result.additional_stage_power,power[:,None]*mass_load)
     assert abs(result.nodal_reaction_heat_steps()).max()<1e-13
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+@pytest.mark.parametrize("fully_fixed",[False,True])
+def test_callable_dirichlet_stages_follow_fixed_node_order(sparse,fully_fixed):
+    ids = tuple(reversed(range(9))) if fully_fixed else (8,0)
+    model = line_model(fixed=ids,values=(0.,)*len(ids))
+    times = torch.tensor([0.,.07,.21],dtype=D)
+    shape = 1+model.nodes[:,0]
+    def boundary(t):
+        return t.square()*shape[model.fixed_nodes]
+    result = solve_transient_thermal(model,times,0*shape,method="sdirk2",sparse=sparse,
+                                     fixed_temperature_history=boundary)
+    gamma = 1-1/math.sqrt(2)
+    first = times[:-1]+gamma*times.diff()
+    avg = (1-gamma)*first.square()+gamma*times[1:].square()
+    torch.testing.assert_close(result.interval_temperature[:,model.fixed_nodes],avg[:,None]*shape[model.fixed_nodes])
+    torch.testing.assert_close(result.temperature[:,model.fixed_nodes],times[:,None].square()*shape[model.fixed_nodes])
+    heat = result.nodal_reaction_heat_steps()
+    torch.testing.assert_close(heat.sum(0),result.integrated_nodal_reactions())
+    if not fully_fixed:
+        assert heat[:,1:-1].abs().max()<1e-13
