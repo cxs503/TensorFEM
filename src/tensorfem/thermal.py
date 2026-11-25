@@ -767,18 +767,55 @@ def thermal_contact_edge_entropy_production_density(model: ThermalModel, tempera
     index times or sampled phases. Each output is the local heat flow per
     length times the difference of reciprocal absolute trace temperatures.
     """
+    pairs, g, traces = _positive_contact_traces(model, temperature)
+    conductance = _contact_line_conductance(model, pairs, g, fraction)
+    return conductance * _contact_entropy_factor(traces, fraction)
+
+
+def _positive_contact_traces(model, temperature):
     if temperature.is_complex():
         raise ValueError("supply real instantaneous absolute temperatures")
     pairs, g, traces = _contact_edge_traces(model, temperature)
-    conductance = _contact_line_conductance(model, pairs, g, fraction)
     if not torch.isfinite(traces).all() or (traces <= 0).any():
         raise ValueError("contact temperatures must be positive and finite in kelvins")
-    local = (1-fraction)*traces[..., 0] + fraction*traces[..., 1]
-    first, second = local.unbind(-1)
-    # Evaluate the reciprocal difference without subtracting nearby inverses.
-    jump = traces[..., 0, :] - traces[..., 1, :]
-    local_jump = (1-fraction)*jump[..., 0] + fraction*jump[..., 1]
-    return conductance * (local_jump / first) * (local_jump / second)
+    return pairs, g, traces
+
+
+def _contact_entropy_factor(traces, fraction):
+    first, second = traces.unbind(-2)
+    jump = first-second
+    # Interpolate the nodal differences before dividing by absolute temperatures.
+    def interpolate(values):
+        return (1-fraction)*values[..., 0] + fraction*values[..., 1]
+    local_jump = interpolate(jump)
+    return (local_jump / interpolate(first)) * (local_jump / interpolate(second))
+
+
+
+def thermal_contact_edge_entropy_production(model: ThermalModel, temperature: torch.Tensor, *,
+                                            start: float = 0., end: float = 1.,
+                                            quadrature_order: int = 8) -> torch.Tensor:
+    """Integrate instantaneous entropy production over each Q4 contact edge (W/K).
+
+    Supply absolute temperatures with nodes on the final axis. The normalized
+    interval follows the paired edge orientation. Gauss-Legendre quadrature
+    integrates the rational temperature dependence; increase its order when
+    the relative variation of either temperature along the interval is large.
+    """
+    from numpy.polynomial.legendre import leggauss
+
+    if not 0. <= start <= end <= 1.:
+        raise ValueError("contact edge fractions must satisfy 0 <= start <= end <= 1")
+    if type(quadrature_order) is not int or quadrature_order < 1:
+        raise ValueError("quadrature_order must be a positive integer")
+    _, g, traces = _positive_contact_traces(model, temperature)
+    points, weights = leggauss(quadrature_order)
+    half = (end-start)/2
+    fractions = g.new_tensor(start + half*(1+points))
+    conductance = g[:, :1]*(1-fractions) + g[:, 1:] * fractions
+    # Insert the integration axis before the two trace and endpoint axes.
+    factor = _contact_entropy_factor(traces.unsqueeze(-3), fractions)
+    return half * (factor * conductance * g.new_tensor(weights)).sum(dim=-1)
 
 
 def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *,

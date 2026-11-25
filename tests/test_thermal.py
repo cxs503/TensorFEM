@@ -1165,3 +1165,33 @@ def test_periodic_contact_entropy_production_against_cycle_integral(record_prope
         thermal_contact_edge_entropy_production_density(model, 0*history[0], fraction=0.5)
     with pytest.raises(ValueError, match="real"):
         thermal_contact_edge_entropy_production_density(model, history[0].to(torch.complex128), fraction=0.5)
+
+
+def test_integrated_contact_entropy_on_graded_subedge(record_property):
+    import math
+    from tensorfem import thermal_contact_edge_entropy_production
+
+    nodes = torch.tensor([[0,0],[1,0],[1,2],[0,2],[1,0],[2,0],[2,2],[1,2]], dtype=D)
+    model = ThermalModel(nodes, torch.arange(8).reshape(2,4), 1., 1., 1.,
+                         torch.empty(0, dtype=torch.long), nodes.new_empty(0), element_type="q4",
+                         contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]),
+                         contact_edge_conductance=nodes.new_tensor([[2., 6.]]))
+    t = nodes.new_tensor([300, 100, 900, 300, 500, 300, 300, 200])
+    histories = torch.stack((t, t*1.3, torch.full_like(t, 350.)))
+    for start, end in ((0., 1.), (.12, .86)):
+        # Partial fractions of (2+4s)*(1100s-400)^2/((100+800s)*(500-300s)).
+        reference = (-121/12*(end**2-start**2) - 3817/144*(end-start)
+                     + 129/128*math.log1p(8*(end-start)/(1+8*start))
+                     - 1118/27*math.log1p(-3*(end-start)/(5-3*start)))
+        errors = []
+        for order in (4, 8, 16, 32):
+            result = thermal_contact_edge_entropy_production(
+                model, histories, start=start, end=end, quadrature_order=order)
+            torch.testing.assert_close(result[0], result[1])
+            assert result.shape == (3, 1) and result[2, 0] == 0
+            error = abs(float(result[0, 0])-reference)
+            record_property(f"error_{start}_{end}_order_{order}_W_per_K", error)
+            errors.append(error)
+        assert errors[1] < errors[0]/100
+        assert errors[2] < errors[1]/100
+        assert errors[-1] < 2e-14
