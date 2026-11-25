@@ -25,13 +25,16 @@ def measure(n, method):
     result = solve_transient_thermal(model,time,initial,theta=.5,method=method,sparse=True,
                                     fixed_temperature_history=lambda t:initial[fixed]+t*warming[fixed])
     dt = time.diff()
-    local = thermal_element_nodal_heat_steps(model,result)/dt[:,None,None]
+    heat,net = thermal_element_nodal_heat_steps(model,result,return_net_input=True)
+    local = heat/dt[:,None,None]
     f = x.new_tensor([0.,.13,.5,.73,1.])
     points = x[:-1,None]+x.diff()[:,None]*f
     exact = -area*k*(.3-.4*points+.33*points**2+.8*((time[1:]+time[:-1])/2)[:,None,None])
     applied_gradient = area*(capacity*.8-k*.66)
     net_gradient = applied_gradient-area*capacity*.8
     corrected = thermal_element_section_power(model,local,f,net_line_source_gradient=net_gradient)
+    from_load = thermal_element_section_power(model,local,f,net_element_nodal_input=net/dt[:,None,None])
+    load_error = float(abs(from_load-exact).max())
     uncorrected = thermal_element_section_power(model,local,f)
     applied_only = thermal_element_section_power(model,local,f,net_line_source_gradient=applied_gradient)
     mean_storage = area*x.diff()*capacity*(warming[:-1]+warming[1:])/2
@@ -42,9 +45,9 @@ def measure(n, method):
     control_defect = float(abs(applied_only[:,:,2]-exact[:,:,2]-control).max())
     error = float(abs(corrected-exact).max())
     balance = float(residual.abs().max())
-    return dict(ncells=n,method=method,corrected_W=error,linear_W=float(abs(uncorrected-exact).max()),
+    return dict(ncells=n,method=method,corrected_W=error,from_net_load_W=load_error,linear_W=float(abs(uncorrected-exact).max()),
                 applied_only_W=float(abs(applied_only-exact).max()),control_defect_W=control_defect,
-                cell_balance_J=balance,passed=max(error,control_defect,balance)<1e-10)
+                cell_balance_J=balance,passed=max(error,load_error,control_defect,balance)<1e-10)
 
 
 if __name__ == "__main__":
