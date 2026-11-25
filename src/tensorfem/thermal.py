@@ -23,6 +23,7 @@ class ThermalModel:
     fixed_nodes: torch.Tensor
     fixed_temperatures: torch.Tensor
     nodal_heat: torch.Tensor | None = None
+    # W/m³: uniform, per-element constant, or (ne, nen) interpolated within each element.
     heat_source: torch.Tensor | None = None
     thickness: torch.Tensor | None = None
     convection_edges: torch.Tensor | None = None
@@ -178,7 +179,11 @@ def _thermal_element_matrices(model, load_like):
     rho = _expand(model.density, ne, x)
     cp = _expand(model.specific_heat, ne, x)
     thick = _expand(model.thickness, ne, x)
-    source = _expand(model.heat_source, ne, load_like, 0.0)
+    source = torch.as_tensor(0. if model.heat_source is None else model.heat_source,
+                             dtype=load_like.dtype, device=x.device)
+    interpolated = source.shape == (ne, nen)
+    if not interpolated:
+        source = source.reshape(-1).expand(ne)
     ke = x.new_zeros((ne, nen, nen))
     ce = torch.zeros_like(ke)
     fe = load_like.new_zeros((ne, nen))
@@ -191,7 +196,10 @@ def _thermal_element_matrices(model, load_like):
         base_c = x.new_tensor([[2., 1.], [1., 2.]])
         ke = k[:, None, None] * thick[:, None, None] / length[:, None, None] * base_k
         ce = (rho*cp*thick*length/6)[:, None, None] * base_c
-        fe = (source*thick*length/2)[:, None] * x.new_ones((ne, 2))
+        if interpolated:
+            fe = (thick*length/6)[:, None]*(source @ base_c.to(source.dtype))
+        else:
+            fe = (source*thick*length/2)[:, None] * x.new_ones((ne, 2))
     else:
         g = 3.0**-0.5
         for xi, eta in ((-g,-g),(g,-g),(g,g),(-g,g)):
@@ -200,7 +208,8 @@ def _thermal_element_matrices(model, load_like):
             weighted_grad = grad @ k if k.ndim == 3 else grad * k[:, None, None]
             ke = ke + (weighted_grad @ grad.transpose(1, 2)) * weight[:, None, None]
             ce = ce + (rho*cp*weight)[:,None,None]*(n[None,:,None]*n[None,None,:])
-            fe = fe + (source*weight)[:,None]*n[None,:]
+            density = source @ n.to(source.dtype) if interpolated else source
+            fe = fe + (density*weight)[:,None]*n[None,:]
     return ke, ce, fe
 
 

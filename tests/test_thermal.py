@@ -378,3 +378,27 @@ def test_concentrated_capacity_on_contact_only_store(sparse):
     transient = solve_transient_thermal(model, time, xy.new_zeros(3), .5, sparse=sparse)
     exact = (1-torch.exp(-2*time))/3
     torch.testing.assert_close(transient.temperature[:, 2], exact, rtol=0, atol=3e-6)
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_interpolated_volumetric_heat_integrates_distinct_local_traces(sparse):
+    from tensorfem import thermal_element_nodal_power
+
+    x = torch.tensor([[0.], [.2], [1.]], dtype=D)
+    conn = torch.tensor([[0, 1], [1, 2]])
+    s = torch.tensor([[1.+.3j, -2j], [.8j, 2.]], dtype=torch.complex128)
+    model = ThermalModel(x, conn, 1., 1., 1., torch.tensor([0,2]), x.new_zeros(2),
+                         heat_source=s, thickness=x.new_tensor([2., 3.]))
+    local = torch.stack((2*s[:,0]+s[:,1], s[:,0]+2*s[:,1]), 1)
+    local = local*x.new_tensor([.4, 2.4])[:, None]/6
+    assembled = assemble_thermal(model, sparse=sparse, complex_loads=True)
+    expected = torch.stack((local[0,0], local[0,1]+local[1,0], local[1,1]))
+    torch.testing.assert_close(assembled.heat, expected)
+    torch.testing.assert_close(thermal_element_nodal_power(model, x[:,0]*0., 2.), -local)
+
+
+def test_q4_bilinear_corner_heat_density_integrates_exact_hat_weights():
+    x = torch.tensor([[0.,0.], [2.,0.], [2.25,1.], [.25,1.]], dtype=D)
+    model = ThermalModel(x, torch.arange(4)[None], 1., 1., 1., torch.tensor([0]),
+                         x.new_zeros(1), element_type="q4", heat_source=x.new_tensor([[0.,0.,1.,0.]]))
+    torch.testing.assert_close(assemble_thermal(model).heat, x.new_tensor([1.,2.,4.,2.])/18)
