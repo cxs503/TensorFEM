@@ -751,5 +751,13 @@ def test_section_power_with_spatially_quadratic_net_source(element_type):
                                            net_line_source_curvature=-1.2)
     ref = .7+.4*(length*f)**2-.2*(length*f)**3
     torch.testing.assert_close(power[0],ref.to(power),atol=1e-13,rtol=0.)
+    # Integrate the two shape-weighted sources independently at Gauss points.
+    gauss = x.new_tensor([.5-(3/5)**.5/2,.5,.5+(3/5)**.5/2])
+    weighted = length*x.new_tensor([5.,8.,5.])/18*(.8*length*gauss-.6*(length*gauss)**2)
+    west,east = weighted@(1-gauss),weighted@gauss
+    load = torch.stack([west,east] if element_type=="line2" else [west/2,east/2,east/2,west/2])[None]
+    recovered = thermal_element_section_power(model,local,f,net_element_nodal_input=load,
+                                               net_line_source_curvature=-1.2)
+    torch.testing.assert_close(recovered,power,atol=1e-13,rtol=0.)
     with pytest.raises(ValueError,match="broadcast"):
         thermal_element_section_power(model,local,f,net_line_source_gradient=[1.,2.])

@@ -390,7 +390,8 @@ def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransie
 
 
 def thermal_element_section_power(model: ThermalModel, nodal_power: torch.Tensor, fractions, *,
-                                  net_line_source_gradient=None, net_line_source_curvature=None) -> torch.Tensor:
+                                  net_line_source_gradient=None, net_line_source_curvature=None,
+                                  net_element_nodal_input=None) -> torch.Tensor:
     """Recover through-section power (W) from inward element nodal powers (W).
 
     For LINE2 the positive direction is node 0 to node 1. For a Q4 strip
@@ -412,6 +413,13 @@ def thermal_element_section_power(model: ThermalModel, nodal_power: torch.Tensor
     interval-mean derivatives. Scalars or arrays broadcastable to
     (..., element) are accepted. Integrating this quadratic source profile
     gives a cubic power profile with the same two endpoint powers.
+
+    Alternatively, supply net_element_nodal_input in W with the same shape
+    as nodal_power. Each entry is the integral of the net distributed input
+    against its local shape function, after removing storage and sinks.
+    The difference of the two axial nodal loads gives the linear source
+    moment. This replaces the prescribed gradient and can be combined with
+    a prescribed curvature; it is exact for quadratic net input per length.
     """
     if nodal_power.ndim<2 or nodal_power.shape[-2:]!=model.elements.shape:
         raise ValueError("nodal_power needs one inward power per element node")
@@ -427,6 +435,18 @@ def thermal_element_section_power(model: ThermalModel, nodal_power: torch.Tensor
         entering = entering+nodal_power[...,3]
         leaving = leaving-nodal_power[...,2]
     power = entering[...,None]*(1-f)+leaving[...,None]*f
+    if net_element_nodal_input is not None:
+        if net_line_source_gradient is not None:
+            raise ValueError("supply either net nodal input or an axial source gradient")
+        load = torch.as_tensor(net_element_nodal_input,device=power.device)
+        if load.shape!=nodal_power.shape or not torch.isfinite(load).all():
+            raise ValueError("net_element_nodal_input requires finite powers at every element node")
+        moment = load[...,1]-load[...,0]
+        if model.element_type.lower()=="q4":
+            moment = moment+load[...,2]-load[...,3]
+        # For g=g0+g1*x+g2*x²/2 about the midpoint, the right-minus-left
+        # shape-function integral is g1*length²/6.
+        power = power+3*moment[...,None]*(f*(f-1))
     if net_line_source_gradient is None and net_line_source_curvature is None:
         return power
 
