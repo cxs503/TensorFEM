@@ -264,3 +264,28 @@ def test_sparse_steady_matches_dense_with_source_and_convection(all_fixed):
     model.fixed_temperatures.requires_grad_()
     with pytest.raises(ValueError, match="autograd"):
         solve_steady_thermal(model, sparse=True)
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+@pytest.mark.parametrize("theta", [.5, 1.])
+def test_nodal_power_history_drives_free_nodes_and_enters_reaction_heat(sparse, theta):
+    model = line_model(fixed=(0, 8), values=(0., 0.), source=2.)
+    time = torch.tensor([0., .02, .1, .16], dtype=D)
+    x = model.nodes[:, 0]
+    exact = time[:, None]**2*(1+x)
+    m = assemble_thermal(model)
+    # Manufacture loads for the time-discrete equation on nonuniform steps.
+    stages = (1-theta)*exact[:-1]+theta*exact[1:]
+    storage = (exact.diff(dim=0)/time.diff()[:, None]) @ m.capacity.T
+    required = storage+stages @ m.conductivity.T-m.heat
+    powers = torch.zeros_like(exact)
+    for i in range(len(time)-1):
+        powers[i+1] = (required[i]-(1-theta)*powers[i])/theta
+    powers[:, 0] += 2.
+    result = solve_transient_thermal(model, time, exact[0], theta, sparse=sparse,
+                fixed_temperature_history=exact[:, model.fixed_nodes], nodal_heat_history=powers)
+    torch.testing.assert_close(result.temperature, exact)
+    reactions = torch.zeros_like(required)
+    reactions[:, 0] = -2*time.diff()
+    torch.testing.assert_close(result.nodal_reaction_heat_steps(), reactions)
+    torch.testing.assert_close(result.integrated_nodal_reactions(), reactions.sum(0))

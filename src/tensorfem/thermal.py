@@ -76,14 +76,18 @@ class ThermalTransientResult:
     matrices: ThermalMatrices
     theta: float = 1.0
 
+    # Extra nodal power (W) averaged by the theta scheme on each interval.
+    additional_stage_power: torch.Tensor | None = None
+
     def nodal_reaction_heat_steps(self) -> torch.Tensor:
         """Return inward reaction heat per interval and node, shape (nt-1, nn)."""
         t = self.temperature
         dt = self.time.diff().to(t)[:, None]
         stages = (1 - self.theta) * t[:-1] + self.theta * t[1:]
         m = self.matrices
+        applied = m.heat if self.additional_stage_power is None else m.heat + self.additional_stage_power
         return ((m.capacity @ t.diff(dim=0).T + m.conductivity @ (dt*stages).T).T
-                - dt*m.heat)
+                - dt*applied)
 
     def integrated_nodal_reactions(self) -> torch.Tensor:
         """Heat supplied by prescribed temperatures over the returned time interval.
@@ -95,8 +99,11 @@ class ThermalTransientResult:
         dt = self.time.diff().to(t)
         stages = (1 - self.theta) * t[:-1] + self.theta * t[1:]
         m = self.matrices
+        applied_heat = dt.sum() * m.heat
+        if self.additional_stage_power is not None:
+            applied_heat = applied_heat + dt @ self.additional_stage_power
         return (m.capacity @ (t[-1] - t[0]) + m.conductivity @ (dt @ stages)
-                - dt.sum() * m.heat)
+                - applied_heat)
 
 
 def _expand(value, ne, like, default=1.0):
@@ -329,7 +336,8 @@ def solve_harmonic_thermal(model: ThermalModel, angular_frequency: float, *,
 
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
                             initial_temperature: torch.Tensor, theta: float=1.0, *,
-                            sparse: bool=False, fixed_temperature_history: torch.Tensor | None=None) -> ThermalTransientResult:
+                            sparse: bool=False, fixed_temperature_history: torch.Tensor | None=None,
+                            nodal_heat_history: torch.Tensor | None=None) -> ThermalTransientResult:
     """Integrate ``C Tdot + K T = f`` using the theta method.
 
     ``theta >= 0.5`` is required to make the stable public path fail closed.
@@ -338,6 +346,8 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
     dense path for autograd or GPU execution. fixed_temperature_history can
     prescribe one temperature per time and fixed node, in model.fixed_nodes
     order. Its first row sets the initial constrained temperatures.
+    nodal_heat_history adds inward applied powers in W, shaped (nt, nn),
+    to the static assembled loads. Each step uses the theta-weighted power.
     """
     if not 0.5 <= theta <= 1.0:
         raise ValueError("theta must be in [0.5, 1] for unconditional stability")
@@ -351,16 +361,22 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         prescribed = torch.as_tensor(fixed_temperature_history).to(model.nodes)
         if prescribed.shape != (len(time), fixed.numel()) or not torch.isfinite(prescribed).all():
             raise ValueError("fixed_temperature_history needs finite values at every time and fixed node")
+    stage_power = None
+    if nodal_heat_history is not None:
+        powers = torch.as_tensor(nodal_heat_history).to(model.nodes)
+        if powers.shape != (len(time), len(model.nodes)) or not torch.isfinite(powers).all():
+            raise ValueError("nodal_heat_history needs finite powers at every time and node")
+        stage_power = (1-theta)*powers[:-1] + theta*powers[1:]
     out = model.nodes.new_zeros((len(time),len(model.nodes)))
     out[0] = initial_temperature.to(dtype=model.nodes.dtype,device=model.nodes.device)
     out[:,fixed] = prescribed
     if sparse:
-        if any(v.device.type != "cpu" or v.requires_grad for v in
-               (time, out, m.heat, m.conductivity, m.capacity)):
+        inputs = (time, out, m.heat, m.conductivity, m.capacity, stage_power)
+        if any(v.device.type != "cpu" or v.requires_grad for v in inputs if v is not None):
             raise ValueError("sparse transient integration requires CPU tensors without autograd")
         if free.numel():
-            _advance_sparse_thermal(m, time, out, fixed, free, prescribed, theta)
-        return ThermalTransientResult(time, out, m, theta)
+            _advance_sparse_thermal(m, time, out, fixed, free, prescribed, theta, stage_power)
+        return ThermalTransientResult(time, out, m, theta, stage_power)
     Kff=m.conductivity[free][:,free]; Cff=m.capacity[free][:,free]
     Kfc=m.conductivity[free][:,fixed]
     source = m.heat[free]
@@ -371,11 +387,13 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
     for i,dt in enumerate(time[1:]-time[:-1]):
         A=Cff/dt+theta*Kff
         rhs=(Cff/dt-(1-theta)*Kff)@out[i,free]+source
+        if stage_power is not None:
+            rhs = rhs + stage_power[i, free]
         if prescribed.ndim == 2:
             change = prescribed[i+1] - prescribed[i]
             rhs = rhs - Kfc @ (prescribed[i] + theta*change) - Cfc @ (change/dt)
         out[i+1,free]=torch.linalg.solve(A,rhs)
-    return ThermalTransientResult(time, out, m, theta)
+    return ThermalTransientResult(time, out, m, theta, stage_power)
 
 
 def _scipy_csc(tensor):
@@ -385,7 +403,7 @@ def _scipy_csc(tensor):
     return coo_matrix((tensor.values().numpy(), (row, col)), shape=tensor.shape).tocsc()
 
 
-def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta):
+def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta, stage_power):
     try:
         from scipy.sparse.linalg import splu
     except ImportError as exc:
@@ -403,6 +421,8 @@ def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta)
         cfc = c_rows[:, fixed.numpy()]
     k = k_rows[:, free]
     c = c_rows[:, free]
+    if stage_power is not None:
+        stage_power = stage_power.numpy()
     history = out.numpy()
     previous_dt = None
     for i, dt in enumerate(time.diff().numpy()):
@@ -411,6 +431,8 @@ def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta)
             previous_dt = dt
         state = history[i, free]
         rhs = c @ state + dt*(source - (1-theta)*(k @ state))
+        if stage_power is not None:
+            rhs += dt*stage_power[i, free]
         if prescribed.ndim == 2:
             change = prescribed[i+1] - prescribed[i]
             rhs -= dt*(kfc @ (prescribed[i] + theta*change)) + cfc @ change
