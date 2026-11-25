@@ -422,6 +422,10 @@ def test_q4_trapezoid_edge_power_has_outward_sign_thickness_and_phase():
     # Length-weighted outward normals, in local edge order.
     expected = .4*(field.new_tensor([[0.,-2.],[1.,.4],[-.2,1.4],[-.8,.2]]) @ flux)
     torch.testing.assert_close(thermal_element_edge_power(model,field)[0], expected)
+    amplitudes = field.new_tensor([[1.,2j],[-.5j,.2],[3.,-2.]])
+    history = amplitudes[...,None]*field
+    torch.testing.assert_close(thermal_element_edge_power(model,history),
+                               amplitudes[...,None,None]*expected[None,:])
 
 
 @pytest.mark.parametrize("sparse", [False, True])

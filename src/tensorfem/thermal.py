@@ -185,6 +185,7 @@ def thermal_element_flux(model: ThermalModel, temperature: torch.Tensor, *, xi=0
 def thermal_element_edge_power(model: ThermalModel, temperature: torch.Tensor) -> torch.Tensor:
     """Integrate outward Fourier power (W) on each Q4 edge using two Gauss points.
 
+    Temperature has shape (..., node) and power has shape (..., element, 4).
     Columns follow local node pairs (0,1), (1,2), (2,3), (3,0). Thickness
     is per element. Adjacent elements use their own one-sided gradient, so
     their reported interior powers can differ in magnitude on a finite mesh.
@@ -201,9 +202,9 @@ def thermal_element_edge_power(model: ThermalModel, temperature: torch.Tensor) -
     for edge, points in enumerate(rules):
         flux = sum(thermal_element_flux(model, temperature, xi=xi, eta=eta)
                    for xi, eta in points)/2
-        powers.append((flux*normal_measure[:,edge]).sum(dim=1))
+        powers.append((flux*normal_measure[:,edge]).sum(dim=-1))
     thickness = _expand(model.thickness, len(coords), model.nodes)
-    return torch.stack(powers, dim=1)*thickness[:,None]
+    return torch.stack(powers, dim=-1)*thickness[:,None]
 
 
 def _thermal_element_matrices(model, load_like):
