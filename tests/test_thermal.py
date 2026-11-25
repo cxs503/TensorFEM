@@ -485,3 +485,17 @@ def test_line_endpoint_area_follows_connectivity_instead_of_edge_index():
     base = replace(model,convection_edges=None,wall_areal_heat_capacity=None)
     delta = assemble_thermal(model).capacity-assemble_thermal(base).capacity
     torch.testing.assert_close(delta.diag()[[8,0]],torch.tensor([16.,2.],dtype=D))
+
+
+def test_internal_shoulder_assembles_only_exposed_area():
+    from dataclasses import replace
+    line = replace(line_model(convection=True),thickness=torch.arange(1,9,dtype=D),
+                   convection_edges=torch.tensor([[4,4]]),convection_area=.3,
+                   wall_areal_heat_capacity=6.,convection_coefficient=3.,ambient_temperature=10.)
+    base = replace(line,convection_edges=None,convection_area=None,wall_areal_heat_capacity=None)
+    a, b = assemble_thermal(line), assemble_thermal(base)
+    assert float(a.heat[4]) == pytest.approx(9.)
+    assert float((a.capacity-b.capacity).sum()) == pytest.approx(1.8)
+    assert float((a.conductivity-b.conductivity).sum()) == pytest.approx(.9)
+    with pytest.raises(ValueError,match="nonnegative"):
+        assemble_thermal(replace(line,convection_area=-1.))

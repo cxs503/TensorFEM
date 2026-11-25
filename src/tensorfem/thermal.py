@@ -39,6 +39,8 @@ class ThermalModel:
     nodal_heat_capacity: torch.Tensor | None = None
     # Consistent surface storage in J/(m² K), scalar or one value per convection edge.
     wall_areal_heat_capacity: torch.Tensor | None = None
+    # Optional total exposed area in m², scalar or per edge (e.g. a stepped shoulder).
+    convection_area: torch.Tensor | None = None
 
     def __post_init__(self):
         nen = {"line2": 2, "q4": 4}.get(self.element_type.lower())
@@ -61,6 +63,8 @@ class ThermalModel:
                 raise ValueError("contact_pairs must be an integer tensor of shape [n_contacts, 2]")
             if torch.any(pairs < 0) or torch.any(pairs >= len(self.nodes)) or torch.any(pairs[:, 0] == pairs[:, 1]):
                 raise ValueError("contacts must connect distinct, valid nodes")
+        if self.convection_area is not None and self.convection_edges is None:
+            raise ValueError("convection_area requires convection_edges")
         if self.wall_areal_heat_capacity is not None and self.convection_edges is None:
             raise ValueError("wall_areal_heat_capacity requires convection_edges")
         if self.convection_edges is not None:
@@ -356,7 +360,13 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
         length = torch.where(length > 0,length,torch.ones_like(length))
         # ``thickness`` is cross-sectional area for LINE2 and out-of-plane
         # thickness for Q4 boundary edges.
-        boundary_measure = length*_boundary_thickness(model,edges)
+        if model.convection_area is None:
+            boundary_measure = length*_boundary_thickness(model,edges)
+        else:
+            area = torch.as_tensor(model.convection_area, dtype=x.dtype, device=x.device)
+            if area.numel() not in (1,len(edges)) or not torch.isfinite(area).all() or (area < 0).any():
+                raise ValueError("convection_area needs finite nonnegative areas per edge")
+            boundary_measure = area.reshape(-1).expand(len(edges))
         edge_mass = boundary_measure[:,None,None]*x.new_tensor([[2.,1.],[1.,2.]])/6
         hk = h[:,None,None]*edge_mass
         if ta.shape == (len(edges), 2):
