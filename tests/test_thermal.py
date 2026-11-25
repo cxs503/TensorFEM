@@ -1223,3 +1223,52 @@ def test_contact_entropy_history_against_isolated_reservoirs(record_property):
         errors.append(error)
         record_property(f"max_cumulative_entropy_error_{n}_J_per_K", error)
     assert all(3.8 < a/b < 4.2 for a, b in zip(errors, errors[1:]))
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_contact_and_bulk_entropy_of_insulated_slab_mode(sparse, record_property):
+    from tensorfem import thermal_contact_edge_entropy_steps
+
+    # Unit k, heat capacity and cross section. The insulated outer walls admit
+    # opposite cosine modes with a jump at x=1. Fourier flux fixes G.
+    beta, mean, amplitude = 1.1, 300., 70.
+    g = beta*math.tan(beta)/2
+    errors = []
+    for n in (8, 16, 32):
+        local_x = torch.linspace(0., 1., n+1, dtype=D)
+        x = torch.cat((local_x, local_x+1)).repeat_interleave(2)
+        y = x.new_tensor([0., 1.]).repeat(2*(n+1))
+        nodes = torch.stack((x, y), dim=1)
+        first = torch.cat((2*torch.arange(n), 2*(n+1)+2*torch.arange(n)))
+        elements = first[:, None] + torch.tensor([0, 2, 3, 1])
+        interface = torch.tensor([[[2*n, 2*n+1], [2*n+2, 2*n+3]]])
+        model = ThermalModel(nodes, elements, 1., 1., 1., torch.empty(0, dtype=torch.long),
+                             x.new_empty(0), element_type="q4", contact_edge_pairs=interface,
+                             contact_edge_conductance=g)
+        mode = torch.cos(beta*local_x)
+        initial = mean + amplitude*torch.cat((mode, -mode.flip((0,)))).repeat_interleave(2)
+        time = torch.linspace(0., .4, n+1, dtype=D)
+        field = solve_transient_thermal(model, time, initial, theta=.5, sparse=sparse).temperature
+        contact = thermal_contact_edge_entropy_steps(model, time, field)[:, 0].cumsum(0)
+        delta = amplitude*math.cos(beta)
+        exact_contact = (2*g/beta**2)*torch.log1p(
+            delta**2 * (-torch.expm1(-2*beta**2*time[1:])) / (mean**2-delta**2))
+
+        # The solution is constant across the unit width. For a linear
+        # element temperature, the spatial mean of 1/T² is 1/(T_left*T_right).
+        left, right = field[:, first], field[:, first+2]
+        bulk_rate = (n*(right-left).square()/(left*right)).sum(dim=1)
+        bulk = (time.diff()*(bulk_rate[1:]+bulk_rate[:-1])/2).cumsum(0)
+        # Integrate C log(T/T_initial) independently with two Gauss points.
+        storage = torch.zeros_like(time)
+        for fraction in (0.5-0.5/math.sqrt(3), 0.5+0.5/math.sqrt(3)):
+            sample = torch.lerp(left, right, fraction)
+            storage += torch.log(sample/sample[0]).sum(dim=1)/(2*n)
+        row = ((contact-exact_contact).abs().max().item(),
+               (storage[1:]-bulk-contact).abs().max().item())
+        record_property(f"max_contact_entropy_error_{n}_J_per_K", row[0])
+        record_property(f"max_total_entropy_balance_error_{n}_J_per_K", row[1])
+        assert (contact.diff() > 0).all() and (bulk.diff() > 0).all()
+        errors.append(row)
+    for coarse, fine in zip(errors, errors[1:]):
+        assert all(a/b > 3.7 for a, b in zip(coarse, fine))
