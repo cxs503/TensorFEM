@@ -698,8 +698,8 @@ def _boundary_thickness(model, edges):
     return thickness[owners]
 
 
-def _contact_edge_matrix(model):
-    """Integrate g(s) N_i(s) N_j(s) on the normalized edge."""
+def _contact_edge_profile(model):
+    """Return matched endpoints and area-scaled conductance at both ends."""
     x = model.nodes
     pairs = model.contact_edge_pairs.to(device=x.device,dtype=torch.long)
     g = torch.as_tensor(model.contact_edge_conductance,device=x.device)
@@ -712,24 +712,42 @@ def _contact_edge_matrix(model):
         g = g.reshape(-1,1).expand(len(pairs),2)
     if not torch.isfinite(g).all() or (g < 0).any():
         raise ValueError("contact edge conductance must be finite and nonnegative")
+    return pairs,g
+
+
+def _contact_edge_matrix(model):
+    """Integrate g(s) N_i(s) N_j(s) on the normalized edge."""
+    pairs,g = _contact_edge_profile(model)
     left,right = g.unbind(1)
     mixed = left+right
     mass = torch.stack((3*left+right,mixed,mixed,left+3*right),dim=1).reshape(-1,2,2)/12
     return pairs,mass
 
 
-def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor) -> torch.Tensor:
+def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *,
+                               start: float = 0., end: float = 1.) -> torch.Tensor:
     """Integrated W per Q4 contact edge, positive from the first trace to the second.
 
     Accept real temperatures or complex phasors with arbitrary leading axes.
+    start and end are fractions along each edge in the supplied endpoint order.
+    Both the temperature jump and conductance are linear in this coordinate.
     """
     if model.contact_edge_pairs is None:
         raise ValueError("provide matching contact edge pairs on the model")
     if temperature.ndim < 1 or temperature.shape[-1] != len(model.nodes):
         raise ValueError("temperature must have one value per node")
-    pairs,mass = _contact_edge_matrix(model)
+    if not 0. <= start <= end <= 1.:
+        raise ValueError("contact edge fractions must satisfy 0 <= start <= end <= 1")
+    pairs,g = _contact_edge_profile(model)
     traces = temperature.to(model.nodes.device)[...,pairs]
-    return ((traces[...,0,:]-traces[...,1,:])*mass.sum(1)).sum(-1)
+    jump = traces[...,0,:]-traces[...,1,:]
+    # The product of two linear interpolants is quadratic. Integrate about
+    # the subinterval midpoint, whose central second moment is width²/12.
+    width = end-start
+    mid = start+.5*width
+    dg = g[:,1]-g[:,0]
+    dj = jump[...,1]-jump[...,0]
+    return width*((g[:,0]+mid*dg)*(jump[...,0]+mid*dj) + (width**2/12)*dg*dj)
 
 
 def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:

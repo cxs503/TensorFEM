@@ -943,5 +943,51 @@ def test_consistent_edge_contact_linear_jump(sparse):
     histories = torch.stack((temp,2*temp))*(1+.4j)
     torch.testing.assert_close(thermal_contact_edge_power(graded,histories)[:,0],
                                x.new_tensor([9.,18.])*(1+.4j))
+    # For the linear jump and graded conductance the primitive is 3s²+6s³.
+    half = thermal_contact_edge_power(graded,histories,end=.5)
+    torch.testing.assert_close(half[:,0], x.new_tensor([1.5,3.])*(1+.4j))
+    torch.testing.assert_close(half+thermal_contact_edge_power(graded,histories,start=.5),
+                               thermal_contact_edge_power(graded,histories))
+    with pytest.raises(ValueError,match="fractions"):
+        thermal_contact_edge_power(graded,temp,start=.9,end=.2)
     with pytest.raises(ValueError,match="matching order"):
         replace(attached,contact_edge_pairs=torch.tensor([[[1,2],[7,4]]]))
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_graded_two_material_contact_subedge_power(sparse, record_property):
+    from tensorfem import thermal_contact_edge_power
+
+    # Unit height with three unequal interface segments. Each Q4 represents
+    # the bilinear solution T=A-(4+6y)*(x-1)/k exactly. Its interface jump
+    # is 2 K and the local conductance per area is 2+3y.
+    ys = torch.tensor([0., .2, .65, 1.], dtype=D)
+    coords, elems, pairs = [], [], []
+    for y in ys.tolist():
+        coords.extend([(0.,y), (1.,y), (1.,y), (2.,y)])
+    for row in range(len(ys)-1):
+        i = 4*row
+        elems.extend([[i,i+1,i+5,i+4], [i+2,i+3,i+7,i+6]])
+        pairs.append([[i+1,i+5], [i+2,i+6]])
+    nodes = torch.tensor(coords, dtype=D)
+    x,y = nodes.T
+    left = torch.arange(len(x))%4 < 2
+    exact = torch.where(left, 12., 10.) - (4+6*y)*(x-1)/torch.where(left, 2., 5.)
+    fixed = torch.where((x==0)|(x==2)|(y==0)|(y==1))[0]
+    dy = ys.diff()
+    conductance = dy[:,None]*(2+3*torch.stack((ys[:-1],ys[1:]),dim=1))
+    model = ThermalModel(nodes, torch.tensor(elems), nodes.new_tensor([2.,5.]).repeat(len(dy)),
+                         1., 1., fixed, exact[fixed], element_type="q4",
+                         contact_edge_pairs=torch.tensor(pairs), contact_edge_conductance=conductance)
+    field = solve_steady_thermal(model,sparse=sparse)
+    terr = float((field-exact).abs().max())
+    record_property("max_temperature_error_K", terr)
+    assert terr < 2e-13
+    a,b = .15,.8
+    lo,hi = ys[:-1]+a*dy, ys[:-1]+b*dy
+    expected = 4*(hi-lo)+3*(hi**2-lo**2)
+    power = thermal_contact_edge_power(model,field,start=a,end=b)
+    err = float((power-expected).abs().max())
+    record_property("max_partial_edge_power_error_W",err)
+    assert err < 2e-13
+    assert abs(float(thermal_contact_edge_power(model,field).sum())-7.) < 2e-13
