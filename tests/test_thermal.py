@@ -616,3 +616,42 @@ def test_element_low_frequency_power_with_complex_volume_heat(sparse):
     for local,coeff in ((steady,result.steady),(lag,result.first_order)):
         assembled = torch.zeros_like(coeff.temperature).scatter_add(0,model.elements.flatten(),local.flatten())
         torch.testing.assert_close(assembled,coeff.reaction_power)
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+def test_sdirk2_stiff_rod_mode_and_interval_reactions(sparse):
+    model = line_model(fixed=(0,8),values=(0.,0.))
+    m = assemble_thermal(model)
+    # Uniform LINE2 rod: sine vectors diagonalize both consistent matrices.
+    initial = torch.sin(7*math.pi*model.nodes[:,0]/2)
+    rate = (initial@m.conductivity@initial)/(initial@m.capacity@initial)
+    time = torch.tensor([0.,1.,601.],dtype=D)
+    result = solve_transient_thermal(model,time,initial,method="sdirk2",sparse=sparse)
+    gamma = 1-1/math.sqrt(2)
+    state = initial
+    for i,z in enumerate(time.diff()*rate):
+        first = state/(1+gamma*z)
+        state = state*(1-(1-2*gamma)*z)/(1+gamma*z)**2
+        torch.testing.assert_close(result.temperature[i+1],state,atol=1e-13,rtol=0.)
+        torch.testing.assert_close(result.interval_temperature[i],(1-gamma)*first+gamma*state,atol=1e-13,rtol=0.)
+    assert abs(result.nodal_reaction_heat_steps()[:,1:-1]).max()<1e-12
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+def test_sdirk2_moving_temperatures_and_independent_heat_inputs(sparse):
+    model = line_model(fixed=(0,8),values=(0.,0.))
+    m = assemble_thermal(model)
+    time = torch.tensor([0.,.04,.15,.23],dtype=D)
+    slope = 1+model.nodes[:,0]
+    exact = time[:,None]*slope
+    # Supply the storage load as integrated heat and conduction as endpoint power.
+    heat = time.diff()[:,None]*(m.capacity@slope)
+    powers = exact@m.conductivity.T
+    heat[:,0] += .25
+    result = solve_transient_thermal(model,time,exact[0],method="sdirk2",sparse=sparse,
+        fixed_temperature_history=exact[:,model.fixed_nodes],nodal_heat_history=powers,nodal_step_heat=heat)
+    torch.testing.assert_close(result.temperature,exact,atol=1e-13,rtol=0.)
+    reactions = torch.zeros_like(heat)
+    reactions[:,0] = -.25
+    torch.testing.assert_close(result.nodal_reaction_heat_steps(),reactions,rtol=0.,atol=1e-13)
+    torch.testing.assert_close(result.integrated_nodal_reactions(),reactions.sum(0),rtol=0.,atol=1e-13)

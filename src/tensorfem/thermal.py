@@ -95,11 +95,20 @@ class ThermalTransientResult:
     # Extra nodal power (W) averaged by the theta scheme on each interval.
     additional_stage_power: torch.Tensor | None = None
 
+    # Actual stage-weighted temperatures for multistage integration.
+    stage_temperature: torch.Tensor | None = None
+
+    @property
+    def interval_temperature(self) -> torch.Tensor:
+        if self.stage_temperature is not None:
+            return self.stage_temperature
+        return (1-self.theta)*self.temperature[:-1] + self.theta*self.temperature[1:]
+
     def nodal_reaction_heat_steps(self) -> torch.Tensor:
         """Return inward reaction heat per interval and node, shape (nt-1, nn)."""
         t = self.temperature
         dt = self.time.diff().to(t)[:, None]
-        stages = (1 - self.theta) * t[:-1] + self.theta * t[1:]
+        stages = self.interval_temperature
         m = self.matrices
         applied = m.heat if self.additional_stage_power is None else m.heat + self.additional_stage_power
         return ((m.capacity @ t.diff(dim=0).T + m.conductivity @ (dt*stages).T).T
@@ -113,7 +122,7 @@ class ThermalTransientResult:
         """
         t = self.temperature
         dt = self.time.diff().to(t)
-        stages = (1 - self.theta) * t[:-1] + self.theta * t[1:]
+        stages = self.interval_temperature
         m = self.matrices
         applied_heat = dt.sum() * m.heat
         if self.additional_stage_power is not None:
@@ -326,7 +335,7 @@ def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransie
     """
     ke, ce, fe = _thermal_element_matrices(model, model.nodes)
     t = result.temperature[:, model.elements.long()]
-    stage = (1-result.theta)*t[:-1] + result.theta*t[1:]
+    stage = result.interval_temperature[:, model.elements.long()]
     heat = torch.einsum("eij,tej->tei", ce, t.diff(dim=0))
     power = torch.einsum("eij,tej->tei", ke, stage) - fe
     if element_nodal_heat_history is not None:
@@ -638,7 +647,7 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
                             initial_temperature: torch.Tensor, theta: float=1.0, *,
                             sparse: bool=False, fixed_temperature_history: torch.Tensor | None=None,
                             nodal_heat_history: torch.Tensor | None=None,
-                            nodal_step_heat: torch.Tensor | None=None) -> ThermalTransientResult:
+                            nodal_step_heat: torch.Tensor | None=None, method: str="theta") -> ThermalTransientResult:
     """Integrate ``C Tdot + K T = f`` using the theta method.
 
     ``theta >= 0.5`` is required to make the stable public path fail closed.
@@ -650,8 +659,18 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
     nodal_heat_history adds inward applied powers in W, shaped (nt, nn),
     to the static assembled loads. Each step uses the theta-weighted power.
     nodal_step_heat additionally supplies integrated inward energy in joules
-    for each interval and node, shape (nt-1, nn).
+    for each interval and node, shape (nt-1, nn). method="sdirk2" uses the
+    L-stable two-stage second-order scheme, linearly interpolating endpoint
+    powers and prescribed temperatures and distributing step heat uniformly
+    over its interval. interval_temperature returns the stage-weighted field
+    used for integrated Fourier fluxes. theta selects the theta method weight.
+
     """
+    if method not in ("theta","sdirk2"):
+        raise ValueError("method must be theta or sdirk2")
+    if method=="sdirk2":
+        # The RK quadrature integrates a linear input at its midpoint on average.
+        theta = .5
     if not 0.5 <= theta <= 1.0:
         raise ValueError("theta must be in [0.5, 1] for unconditional stability")
     if time.ndim != 1 or time.numel() < 2 or torch.any(time[1:] <= time[:-1]):
@@ -683,6 +702,11 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         inputs = (time, out, m.heat, m.conductivity, m.capacity, stage_power)
         if any(v.device.type != "cpu" or v.requires_grad for v in inputs if v is not None):
             raise ValueError("sparse transient integration requires CPU tensors without autograd")
+    if method=="sdirk2":
+        change = powers.diff(dim=0) if nodal_heat_history is not None else None
+        means = _advance_sdirk2(m,time,out,fixed,free,stage_power,change,sparse)
+        return ThermalTransientResult(time,out,m,theta,stage_power,means)
+    if sparse:
         if free.numel():
             _advance_sparse_thermal(m, time, out, fixed, free, prescribed, theta, stage_power)
         return ThermalTransientResult(time, out, m, theta, stage_power)
@@ -710,6 +734,55 @@ def _scipy_csc(tensor):
 
     row, col = tensor.indices().numpy()
     return coo_matrix((tensor.values().numpy(), (row, col)), shape=tensor.shape).tocsc()
+
+
+def _advance_sdirk2(m,time,out,fixed,free,average_power,power_change,sparse):
+    """Solve both stages using the same constrained operator on each interval."""
+    gamma = 1-1/math.sqrt(2)
+    if not free.numel():
+        return .5*(out[:-1]+out[1:])
+    if sparse:
+        from scipy.sparse.linalg import splu
+        fixed,free = fixed.numpy(),free.numpy()
+        state = out.numpy()
+        c = _scipy_csc(m.capacity)[free]
+        k = _scipy_csc(m.conductivity)[free]
+        source = m.heat.numpy()[free]
+        steps = time.diff().numpy()
+        if average_power is not None:
+            average_power = average_power.numpy()
+        if power_change is not None:
+            power_change = power_change.numpy()
+    else:
+        state,c,k,source,steps = out,m.capacity[free],m.conductivity[free],m.heat[free],time.diff()
+    cff,kff,cfc,kfc = c[:,free],k[:,free],c[:,fixed],k[:,fixed]
+    means = torch.empty_like(out[:-1])
+    previous = None
+    for i,dt in enumerate(steps):
+        shift = gamma*dt
+        if sparse:
+            if dt!=previous:
+                factor = splu((cff+shift*kff).tocsc())
+                previous = dt
+            solve = factor.solve
+        else:
+            lu,piv = torch.linalg.lu_factor(cff+shift*kff)
+            def solve(rhs):
+                return torch.linalg.lu_solve(lu,piv,rhs[:,None]).squeeze(1)
+        old = state[i,free]
+        fixed_start,fixed_end = state[i,fixed],state[i+1,fixed]
+        fixed_change = fixed_end-fixed_start
+        fixed_stage = fixed_start+gamma*fixed_change
+        load = source if average_power is None else source+average_power[i,free]
+        first_load = load if power_change is None else load+(gamma-.5)*power_change[i,free]
+        stored = cff@old
+        boundary_storage = cfc@fixed_change
+        first = solve(stored-gamma*boundary_storage+shift*(first_load-kfc@fixed_stage))
+        end = solve(stored-boundary_storage+dt*(load-(1-gamma)*(kff@first)-kfc@(.5*(fixed_start+fixed_end))))
+        state[i+1,free] = end
+        means[i,free] = torch.as_tensor((1-gamma)*first+gamma*end)
+        means[i,fixed] = torch.as_tensor(.5*(fixed_start+fixed_end))
+    return means
 
 
 def _advance_sparse_thermal(matrices, time, out, fixed, free, prescribed, theta, stage_power):
