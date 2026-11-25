@@ -134,9 +134,9 @@ def solve_linear_buckling(stiffness, geometric_unit, constrained_dofs, modes=3):
     has_test=True,
     in_public_api=True,
 )
-def solve_steady_thermal(model):
+def solve_steady_thermal(model, *, sparse=False):
     """Steady thermal — delegates to ``tensorfem.thermal.solve_steady_thermal``."""
-    return thermal.solve_steady_thermal(model)
+    return thermal.solve_steady_thermal(model, sparse=sparse)
 
 
 @capability(

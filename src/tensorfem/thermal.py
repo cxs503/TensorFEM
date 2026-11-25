@@ -258,10 +258,30 @@ def _partition(model):
     return fixed, torch.arange(len(model.nodes),device=model.nodes.device)[mask]
 
 
-def solve_steady_thermal(model: ThermalModel) -> torch.Tensor:
-    matrices = assemble_thermal(model)
+def _solve_sparse_dirichlet(operator, load, fixed, free, prescribed):
+    from scipy.sparse.linalg import splu
+
+    state = load.copy()
+    fixed_ids, free_ids = fixed.numpy(), free.numpy()
+    state[fixed_ids] = prescribed.resolve_conj().numpy()
+    if free_ids.size:
+        rhs = load[free_ids] - operator[free_ids][:,fixed_ids] @ state[fixed_ids]
+        state[free_ids] = splu(operator[free_ids][:,free_ids].tocsc()).solve(rhs)
+    return state
+
+
+def solve_steady_thermal(model: ThermalModel, *, sparse: bool = False) -> torch.Tensor:
+    """Solve steady conduction. sparse=True uses CPU SciPy LU without autograd."""
+    matrices = assemble_thermal(model, sparse=sparse)
     fixed, free = _partition(model)
     prescribed = model.fixed_temperatures.to(dtype=model.nodes.dtype,device=model.nodes.device)
+    if sparse:
+        if any(t.device.type != "cpu" or t.requires_grad for t in
+               (matrices.heat, matrices.conductivity, prescribed)):
+            raise ValueError("sparse steady solution requires CPU tensors without autograd")
+        state = _solve_sparse_dirichlet(_scipy_csc(matrices.conductivity),
+                                        matrices.heat.numpy(), fixed, free, prescribed)
+        return torch.from_numpy(state)
     temperature = model.nodes.new_zeros(len(model.nodes)).index_put((fixed,),prescribed)
     if free.numel():
         rhs = matrices.heat[free]-matrices.conductivity[free][:,fixed]@prescribed
@@ -295,16 +315,9 @@ def solve_harmonic_thermal(model: ThermalModel, angular_frequency: float, *,
         if any(t.device.type != "cpu" or t.requires_grad for t in
                (m.heat, m.conductivity, m.capacity, prescribed)):
             raise ValueError("sparse harmonic solution requires CPU tensors without autograd")
-        from scipy.sparse.linalg import splu
-
         operator = _scipy_csc(m.conductivity) + (1j*angular_frequency)*_scipy_csc(m.capacity)
         load = m.heat.resolve_conj().numpy()
-        state = load.copy()
-        fixed_ids, free_ids = fixed.numpy(), free.numpy()
-        state[fixed_ids] = prescribed.resolve_conj().numpy()
-        if free_ids.size:
-            rhs = load[free_ids] - operator[free_ids][:,fixed_ids] @ state[fixed_ids]
-            state[free_ids] = splu(operator[free_ids][:,free_ids].tocsc()).solve(rhs)
+        state = _solve_sparse_dirichlet(operator, load, fixed, free, prescribed)
         return ThermalHarmonicResult(torch.from_numpy(state), torch.from_numpy(operator @ state - load))
     operator = m.conductivity + (1j*angular_frequency)*m.capacity
     temperature = torch.zeros_like(m.heat).index_put((fixed,), prescribed)

@@ -254,3 +254,13 @@ def test_line_element_flux_recovers_variable_conductivity():
     k = torch.arange(1,9, dtype=D)
     flux = thermal_element_flux(replace(model, conductivity=k), 5.-3.*model.nodes[:,0])
     torch.testing.assert_close(flux[:,0], 3*k)
+
+
+@pytest.mark.parametrize("all_fixed", [False, True])
+def test_sparse_steady_matches_dense_with_source_and_convection(all_fixed):
+    model = (line_model(fixed=tuple(range(9)), values=tuple(range(9)), convection=True, source=3.)
+             if all_fixed else line_model(convection=True, source=3.))
+    torch.testing.assert_close(solve_steady_thermal(model, sparse=True), solve_steady_thermal(model))
+    model.fixed_temperatures.requires_grad_()
+    with pytest.raises(ValueError, match="autograd"):
+        solve_steady_thermal(model, sparse=True)
