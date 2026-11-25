@@ -338,3 +338,27 @@ def test_q4_nodal_heat_for_linear_temperature_and_uniform_storage():
     inward = .5*(side+side.roll(1))
     torch.testing.assert_close(thermal_element_nodal_heat_steps(model, result)[:, 0],
                                time.diff()[:, None]*inward, rtol=0, atol=2e-15)
+
+
+def test_harmonic_element_power_with_complex_volume_and_nodal_heat():
+    from tensorfem import thermal_element_nodal_power
+
+    x = torch.tensor([0., .2, 1.], dtype=D)
+    conn = torch.tensor([[0, 1], [1, 2]])
+    temp = (1+.7j)*x + .3j
+    k = x.new_tensor([2., 3.])
+    cp = x.new_tensor([4., 5.])
+    volume_source = torch.tensor([1j, 2.-.3j], dtype=temp.dtype)
+    extra = torch.tensor([[.1+.3j, -.1j], [2., -.7j]], dtype=temp.dtype)
+    fixed = torch.tensor([0, 2])
+    model = ThermalModel(x[:, None], conn, k, 1., cp, fixed, temp[fixed], heat_source=volume_source)
+    power = thermal_element_nodal_power(model, temp, 7., element_nodal_heat=extra)
+    # Exact linear-field storage integrated against each endpoint's hat.
+    left, right = temp[:-1], temp[1:]
+    stored = cp[:, None]*x.diff()[:, None]*torch.stack((2*left+right, left+2*right), 1)/6
+    flux = k*(1+.7j)
+    expected = (7j*stored + torch.stack((-flux, flux), 1)
+                - (x.diff()*volume_source/2)[:, None] - extra)
+    torch.testing.assert_close(power, expected, atol=2e-14, rtol=0)
+    with pytest.raises(ValueError, match="element_nodal_heat"):
+        thermal_element_nodal_power(model, temp, 7., element_nodal_heat=extra[0])

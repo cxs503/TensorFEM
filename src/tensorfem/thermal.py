@@ -202,6 +202,31 @@ def _thermal_element_matrices(model, load_like):
     return ke, ce, fe
 
 
+def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
+                                angular_frequency: float, *, element_nodal_heat=None) -> torch.Tensor:
+    """Inward power phasors (W) at LINE2 or Q4 element nodes under exp(+iωt).
+
+    Includes the consistent storage term and subtracts the model's element
+    volume loads. Supply any additional element-resolved nodal loads (ne, nen)
+    in W to subtract them before assembly. Global point loads, films and
+    contacts otherwise appear as exchanges. Q4 entries are weak-form nodal powers.
+    """
+    if not math.isfinite(angular_frequency) or angular_frequency <= 0:
+        raise ValueError("angular_frequency must be finite and positive")
+    if temperature.shape != (len(model.nodes),):
+        raise ValueError("temperature must have one value per node")
+    dtype = torch.promote_types(model.nodes.dtype, torch.promote_types(temperature.dtype, torch.complex64))
+    values = temperature.to(device=model.nodes.device, dtype=dtype)[model.elements.long()]
+    ke, ce, fe = _thermal_element_matrices(model, values)
+    power = torch.einsum("eij,ej->ei", ke.to(dtype) + 1j*angular_frequency*ce.to(dtype), values) - fe
+    if element_nodal_heat is not None:
+        load = torch.as_tensor(element_nodal_heat, dtype=dtype, device=values.device)
+        if load.shape != values.shape or not torch.isfinite(load).all():
+            raise ValueError("element_nodal_heat needs finite powers at every element node")
+        power = power - load
+    return power
+
+
 def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransientResult, *,
                                     element_nodal_heat_history: torch.Tensor | None = None) -> torch.Tensor:
     """Inward energy at each element node, shaped (nt-1, ne, nen), in J.
