@@ -557,6 +557,56 @@ def solve_harmonic_thermal(model: ThermalModel, angular_frequency: float, *,
     return ThermalHarmonicResult(temperature, operator @ temperature - m.heat)
 
 
+@dataclass(frozen=True)
+class ThermalLowFrequencyResult:
+    steady: ThermalHarmonicResult
+    first_order: ThermalHarmonicResult
+
+
+def solve_low_frequency_thermal(model: ThermalModel, *, sparse: bool=False) -> ThermalLowFrequencyResult:
+    """Return constant and i*omega coefficients of temperature and reaction power.
+
+    Assume frequency-independent loads and prescribed-temperature phasors, and
+    a nonsingular steady free-node conductivity matrix. With exp(+i*omega*t),
+    K*T0=f and K*T1=-C*T0 on free nodes. Prescribed nodes have zero T1.
+    First-order temperature and reaction power are in K s and W s, respectively.
+    """
+    m = assemble_thermal(model,sparse=sparse,complex_loads=True)
+    fixed,free = _partition(model)
+    prescribed = model.fixed_temperatures.to(m.heat)
+    if not torch.isfinite(m.heat).all() or not torch.isfinite(prescribed).all():
+        raise ValueError("thermal phasor loads and prescribed temperatures must be finite")
+    if sparse:
+        from scipy.sparse.linalg import splu
+        if any(t.device.type!="cpu" or t.requires_grad for t in (m.conductivity,m.capacity,m.heat,prescribed)):
+            raise ValueError("sparse low-frequency solution requires CPU tensors without autograd")
+        f = m.heat.resolve_conj().numpy()
+        k = _scipy_csc(m.conductivity).astype(f.dtype)
+        c = _scipy_csc(m.capacity)
+        u = f.copy()
+        u[fixed.numpy()] = prescribed.resolve_conj().numpy()
+        lag = f*0.
+        ids = free.numpy()
+        if ids.size:
+            factor = splu(k[ids][:,ids].tocsc())
+            u[ids] = factor.solve(f[ids]-k[ids][:,fixed.numpy()] @ u[fixed.numpy()])
+            lag[ids] = factor.solve(-(c @ u)[ids])
+        return ThermalLowFrequencyResult(
+            ThermalHarmonicResult(torch.from_numpy(u),torch.from_numpy(k @ u-f)),
+            ThermalHarmonicResult(torch.from_numpy(lag),torch.from_numpy(k @ lag+c @ u)))
+    k,c = m.conductivity.to(m.heat.dtype),m.capacity.to(m.heat.dtype)
+    u = torch.zeros_like(m.heat).index_put((fixed,),prescribed)
+    lag = torch.zeros_like(u)
+    if free.numel():
+        factors = torch.linalg.lu_factor(k[free][:,free])
+        rhs = m.heat[free]-k[free][:,fixed] @ prescribed
+        u = u.index_put((free,),torch.linalg.lu_solve(*factors,rhs[:,None])[:,0])
+        rhs = -(c @ u)[free]
+        lag = lag.index_put((free,),torch.linalg.lu_solve(*factors,rhs[:,None])[:,0])
+    return ThermalLowFrequencyResult(ThermalHarmonicResult(u,k @ u-m.heat),
+                                     ThermalHarmonicResult(lag,k @ lag+c @ u))
+
+
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
                             initial_temperature: torch.Tensor, theta: float=1.0, *,
                             sparse: bool=False, fixed_temperature_history: torch.Tensor | None=None,

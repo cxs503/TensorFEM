@@ -43,6 +43,20 @@ def measure(n,strip):
             field = thermal.solve_steady_thermal(model,sparse=True)
             matrices = thermal.assemble_thermal(model,sparse=True)
             power = matrices.conductivity @ field-matrices.heat
+            # Differentiate both Airy boundary conditions with respect to
+            # i*omega. Their prescribed values are frequency-independent.
+            basis = np.column_stack((ai,bi))
+            dz = scale*c/slope
+            d_basis = dz*np.column_stack((dai,dbi))
+            d_weights = np.linalg.solve(basis[[0,-1]],-(d_basis @ weights)[[0,-1]])
+            lag = d_basis @ weights+basis @ d_weights
+            # Ai''(z)=z*Ai(z), and likewise for Bi.
+            slope_lag = scale*(dz*z*exact+np.column_stack((dai,dbi)) @ d_weights)
+            lag_power = k*np.array([-slope_lag[0],slope_lag[-1]])
+            direct = thermal.solve_low_frequency_thermal(model,sparse=True).first_order
+            errors["lag_temperature_K_s"] = float(abs(direct.temperature.numpy().reshape(-1,n+1)-lag).max())
+            actual = direct.reaction_power[ends].reshape(-1,2).sum(0).numpy()
+            errors["lag_wall_power_W_s"] = float(abs(actual-lag_power).max())
         end_power = power[ends].reshape(-1,2).sum(0).numpy()
         errors[name+"_temperature"] = float(abs(field.numpy().reshape(-1,n+1)-exact).max())
         errors[name+"_wall_power"] = float(abs(end_power-expected_power).max())

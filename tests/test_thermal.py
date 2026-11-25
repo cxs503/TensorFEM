@@ -572,3 +572,29 @@ def test_distorted_q4_nodal_bulk_loss_against_physical_integral():
             grad = np.column_stack((corners[:,0]*fy,corners[:,1]*fx))/4
             expected += .7*wx*wy*np.linalg.det(coords.T @ grad)*(h @ shape)*np.outer(shape,shape)
     np.testing.assert_allclose(loss,expected,atol=1e-14,rtol=0.)
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+def test_low_frequency_rod_matches_integrated_heat_capacity(sparse):
+    from dataclasses import replace
+    from tensorfem.thermal import solve_low_frequency_thermal
+    drive = 1.+.4j
+    model = replace(line_model(),fixed_temperatures=torch.tensor([drive],dtype=torch.complex128))
+    result = solve_low_frequency_thermal(model,sparse=sparse)
+    x = model.nodes[:,0]
+    expected = (3*7/5)*drive*(x*x/2-2*x)
+    torch.testing.assert_close(result.steady.temperature,torch.full_like(expected,drive))
+    torch.testing.assert_close(result.first_order.temperature,expected)
+    power = torch.zeros_like(expected)
+    power[0] = 3*7*2*2*drive
+    torch.testing.assert_close(result.first_order.reaction_power,power)
+
+
+def test_dense_low_frequency_capacity_gradient():
+    from dataclasses import replace
+    from tensorfem.thermal import solve_low_frequency_thermal
+    capacity = torch.tensor(1.5,dtype=D,requires_grad=True)
+    model = replace(line_model(),specific_heat=capacity)
+    lag = solve_low_frequency_thermal(model).first_order.temperature[-1].real
+    derivative, = torch.autograd.grad(lag,capacity)
+    torch.testing.assert_close(derivative,lag.detach()/capacity.detach())
