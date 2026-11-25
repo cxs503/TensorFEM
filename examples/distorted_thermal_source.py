@@ -9,6 +9,27 @@ from tensorfem.thermal import assemble_thermal
 from tensorfem.thermal_analytic import structured_quad_mesh
 
 
+def recovered_wall_flux(xy, state, grid, edge, k, midpoints, normal):
+    """Quadratic least-squares reconstruction on one-sided 3×3 nodal patches."""
+    n = grid.shape[0]-1
+    offsets = torch.arange(3)
+    along = (torch.arange(n)-1).clamp(0, n-2)[:,None]+offsets
+    inward = offsets if edge in (0,3) else n-offsets
+    if edge in (0,2):
+        indices = grid[inward[None,:,None], along[:,None,:]]
+    else:
+        indices = grid[along[:,:,None], inward[None,None,:]]
+    indices = indices.reshape(n, 9)
+    # Fit in physical coordinates so skewness and the physical normal enter
+    # independently. Scale by the boundary cell width for conditioning.
+    x, y = ((xy[indices]-midpoints[:,None])*n).unbind(-1)
+    design = torch.stack((torch.ones_like(x), x, y, x*x, x*y, y*y), dim=2)
+    fit = torch.linalg.lstsq(design, state[indices].unsqueeze(-1)).solution.squeeze(-1)
+    # A quadratic field has linear flux along a straight edge, whose midpoint
+    # value is also its edge mean.
+    return -n*(fit[:,1:3] @ k @ normal)
+
+
 def measure(n, cross):
     mesh = structured_quad_mesh(n, n, dtype=torch.float64)
     xy, cells = mesh.nodes.clone(), mesh.elements
@@ -45,7 +66,7 @@ def measure(n, cross):
     sides = ((cell_grid[0],0,ids[0], [0.,-1.]), (cell_grid[:,-1],1,ids[:,-1],[1.,0.]),
              (cell_grid[-1],2,ids[-1],[0.,1.]), (cell_grid[:,0],3,ids[:,0],[-1.,0.]))
     powers = thermal_element_edge_power(model,state)
-    edge_errors, reaction_errors = [], []
+    edge_errors, reaction_errors, recovered_errors = [], [], []
     # Three-point quadrature integrates the quadratic reference flux times
     # the quadratic test function exactly. It vanishes at the two corners.
     z = xy.new_tensor([-math.sqrt(3/5),0.,math.sqrt(3/5)])/2+.5
@@ -55,6 +76,8 @@ def measure(n, cross):
         points = a[:,None]+(b-a)[:,None]*z[None,:,None]
         exact_q = flux(points) @ xy.new_tensor(normal)
         edge_errors.append(float((n*powers[elements,edge]-exact_q @ weights).abs().max()))
+        recovered = recovered_wall_flux(xy, state, ids, edge, k, .5*(a+b), xy.new_tensor(normal))
+        recovered_errors.append(float((recovered-exact_q @ weights).abs().max()))
         axis = 0 if edge in (0,2) else 1
         along = points[:,:,axis]
         target = ((exact_q*along*(1-along)) @ weights).sum()/n
@@ -62,6 +85,7 @@ def measure(n, cross):
         reaction_errors.append(float(abs((outward_reactions[nodes]*along*(1-along)).sum()-target)))
     return dict(n=n, cross=cross, nodal_temperature_error_K=float((state-temperature(xy)).abs().max()),
                 max_wall_mean_flux_error_W_m2=max(edge_errors), max_weighted_wall_power_error_W=max(reaction_errors),
+                max_recovered_mean_flux_error_W_m2=max(recovered_errors),
                 integrated_source_error_W=source_error, global_balance_error_W=float(abs(outward_reactions[fixed].sum()-total)))
 
 
@@ -72,11 +96,11 @@ def main():
         for n in (8,16,32,64):
             row = measure(n,cross)
             errors = [row[k] for k in ("nodal_temperature_error_K","max_wall_mean_flux_error_W_m2",
-                                       "max_weighted_wall_power_error_W")]
+                                       "max_weighted_wall_power_error_W", "max_recovered_mean_flux_error_W_m2")]
             orders = [math.log2(a/b) for a,b in zip(previous,errors)] if previous else []
             passed = max(row["integrated_source_error_W"],row["global_balance_error_W"]) < 1e-10
             if orders:
-                passed &= all(order > bound for order,bound in zip(orders,(1.7,.85,1.7)))
+                passed &= all(order > bound for order,bound in zip(orders,(1.7,.85,1.7,1.7)))
             row.update(orders=orders, passed=passed)
             runs.append(row)
             previous = errors
