@@ -388,6 +388,37 @@ def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransie
     return heat + result.time.diff().to(t)[:, None, None]*power
 
 
+def thermal_element_section_power(model: ThermalModel, nodal_power: torch.Tensor, fractions) -> torch.Tensor:
+    """Recover through-section power (W) from inward element nodal powers (W).
+
+    For LINE2 the positive direction is node 0 to node 1. For a Q4 strip
+    with one-dimensional heat transport and insulated lateral edges, it is
+    from edge (0,3) toward edge (1,2). Nodal exchanges on the lateral edges
+    must be absent or separately accounted for before using this reduction.
+
+    Supply (..., element, local_node) phasors from thermal_element_nodal_power
+    or interval-mean powers from thermal_element_nodal_heat_steps divided by
+    the interval durations. fractions is a scalar or vector in [0,1].
+    Returns (..., element, sample). Linear interpolation of the two section
+    powers preserves each element's net heat balance, with constant power
+    gradient in the local fractional coordinate. Area is already included.
+    """
+    if nodal_power.ndim<2 or nodal_power.shape[-2:]!=model.elements.shape:
+        raise ValueError("nodal_power needs one inward power per element node")
+    f = torch.as_tensor(fractions,device=nodal_power.device)
+    if f.is_complex():
+        raise ValueError("fractions must be real")
+    # Convert the original input directly to preserve float64 Python samples.
+    f = torch.atleast_1d(torch.as_tensor(fractions,dtype=model.nodes.dtype,device=nodal_power.device))
+    if f.ndim!=1 or not torch.isfinite(f).all() or ((f<0)|(f>1)).any():
+        raise ValueError("fractions must be finite local positions in [0,1]")
+    entering,leaving = nodal_power[...,0],-nodal_power[...,1]
+    if model.element_type.lower()=="q4":
+        entering = entering+nodal_power[...,3]
+        leaving = leaving-nodal_power[...,2]
+    return entering[...,None]*(1-f)+leaving[...,None]*f
+
+
 def _boundary_thickness(model, edges):
     """Gather the owning element's section area (LINE2) or thickness (Q4)."""
     x = model.nodes

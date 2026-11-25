@@ -696,3 +696,35 @@ def test_callable_dirichlet_stages_follow_fixed_node_order(sparse,fully_fixed):
     torch.testing.assert_close(heat.sum(0),result.integrated_nodal_reactions())
     if not fully_fixed:
         assert heat[:,1:-1].abs().max()<1e-13
+
+
+@pytest.mark.parametrize("element_type", ["line2", "q4"])
+def test_transient_section_power_from_quadratic_slab_with_storage(element_type):
+    from tensorfem import thermal_element_nodal_heat_steps, thermal_element_section_power
+
+    x = torch.tensor([0., .13, .46, .7, 1.], dtype=D)
+    i = torch.arange(len(x)-1)
+    area, k, capacity, rate = 1.3, 2.4, 1.7, .6
+    if element_type=="line2":
+        nodes,conn = x[:,None],torch.stack((i,i+1),1)
+        fixed = torch.tensor([0,len(x)-1])
+    else:
+        nodes = torch.stack((x.repeat(2),torch.cat((0*x,0*x+1))),1)
+        conn = torch.stack((i,i+1,i+1+len(x),i+len(x)),1)
+        fixed = torch.tensor([0,len(x)-1,len(x),len(nodes)-1])
+    initial = 1.+nodes[:,0]*(.4-.3*nodes[:,0])
+    model = ThermalModel(nodes,conn,k,1.,capacity,fixed,initial[fixed],thickness=area,
+                         heat_source=capacity*rate+.6*k,element_type=element_type)
+    times = x.new_tensor([0.,.03,.12,.2])
+    expected = initial+rate*times[:,None]
+    result = solve_transient_thermal(model,times,initial,theta=.5,fixed_temperature_history=expected[:,fixed])
+    f = x.new_tensor([0.,.19,.57,1.])
+    local = thermal_element_nodal_heat_steps(model,result)/times.diff()[:,None,None]
+    power = thermal_element_section_power(model,local,f)
+    analytic = -k*area*(.4-.6*(x[:-1,None]+x.diff()[:,None]*f))
+    torch.testing.assert_close(power,analytic.expand_as(power),atol=2e-13,rtol=0.)
+    torch.testing.assert_close(result.temperature,expected,atol=2e-13,rtol=0.)
+    phase = .2+.7j
+    torch.testing.assert_close(thermal_element_section_power(model,phase*local,f),phase*power)
+    with pytest.raises(ValueError,match="fractions"):
+        thermal_element_section_power(model,local,[1.1])
