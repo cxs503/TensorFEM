@@ -47,11 +47,17 @@ class ThermalModel:
     # to heat_source to exchange with a prescribed ambient temperature Ta.
     heat_loss_coefficient: torch.Tensor | None = None
 
+    # Q4 additive A*x²+B*x*y+C*y² volumetric heating in global coordinates.
+    # Coefficients in W/m⁵, shared (3,) or element-specific (ne, 3).
+    heat_source_quadratic: torch.Tensor | None = None
+
     def __post_init__(self):
         nen = {"line2": 2, "q4": 4}.get(self.element_type.lower())
         if nen is None:
             raise ValueError("element_type must be 'line2' or 'q4'")
         dim = 1 if self.element_type.lower() == "line2" else 2
+        if self.heat_source_quadratic is not None and nen != 4:
+            raise ValueError("heat_source_quadratic requires Q4 elements")
         if self.nodes.ndim != 2 or self.nodes.shape[1] != dim:
             raise ValueError(f"nodes must have shape [n, {dim}]")
         if self.elements.ndim != 2 or self.elements.shape[1] != nen:
@@ -283,7 +289,15 @@ def _thermal_element_matrices(model, load_like):
                 ke = ke+loss[:,None,None]*measure
             density = source @ n.to(source.dtype) if interpolated else source
             fe = fe + (density*weight)[:,None]*n[None,:]
-        if variable_loss:
+        quadratic = model.heat_source_quadratic
+        if quadratic is not None:
+            quadratic = torch.as_tensor(quadratic, device=x.device)
+            if quadratic.shape not in ((3,), (ne, 3)) or not torch.isfinite(quadratic).all():
+                raise ValueError("heat_source_quadratic requires one finite triple or one per Q4 element")
+            if quadratic.is_complex() and not load_like.is_complex():
+                raise ValueError("complex heat_source_quadratic requires complex loads")
+            quadratic = quadratic.to(load_like.dtype).expand(ne, 3)
+        if variable_loss or quadratic is not None:
             # On a distorted bilinear map, H*N_i*N_j*det(J) can have
             # degree four in a reference coordinate. Three Gauss points suffice.
             g = (3/5)**.5
@@ -291,8 +305,16 @@ def _thermal_element_matrices(model, load_like):
             for xi,wx in rule:
                 for eta,wy in rule:
                     n,_,det = _q4_geometry(coords,xi,eta)
-                    weight = wx*wy*det*thick*(loss @ n)
-                    ke = ke+weight[:,None,None]*torch.outer(n,n)
+                    weight = wx*wy*det*thick
+                    if variable_loss:
+                        ke = ke+(weight*(loss @ n))[:,None,None]*torch.outer(n,n)
+                    if quadratic is not None:
+                        # With a bilinear map, N_i*q(x,y)*det(J) has degree at
+                        # most four in either parent coordinate.
+                        px, py = (coords.transpose(1, 2) @ n).unbind(1)
+                        a, b, c = quadratic.unbind(1)
+                        power = weight*(a*px.square() + b*px*py + c*py.square())
+                        fe = fe + power[:, None]*n
     return ke, ce, fe
 
 

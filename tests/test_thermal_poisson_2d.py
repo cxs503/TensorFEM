@@ -93,3 +93,18 @@ def test_nonuniform_source_assembly():
     T = solve_steady_thermal(model)
     assert torch.isfinite(T).all()
     assert T.min().item() >= 0.0  # T >= 0 in domain for Q>0, T|bdry=0
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_quadratic_heat_load_on_trapezoid(sparse, record_property):
+    from tensorfem.thermal import assemble_thermal
+
+    model = ThermalModel(torch.tensor([[0.,0.],[2.,0.],[3.,1.],[0.,1.]], dtype=D),
+                         torch.arange(4)[None,:], 1., 1., 1., torch.tensor([0]), torch.zeros(1,dtype=D),
+                         heat_source_quadratic=torch.tensor([1.,2.,-3.],dtype=D), element_type="q4")
+    # Map the unit square using x=(2+v)*u, y=v, det J=2+v. Integrating
+    # each unit-square basis times (x²+2xy-3y²)*(2+v) gives these fractions.
+    exact = torch.tensor([137/240,161/80,1103/360,217/360], dtype=D)
+    heat = assemble_thermal(model, sparse=sparse).heat
+    record_property("peak_nodal_load_error_W", (heat-exact).abs().max().item())
+    torch.testing.assert_close(heat, exact, atol=2e-15, rtol=0.)
