@@ -802,13 +802,17 @@ def thermal_contact_edge_entropy_production(model: ThermalModel, temperature: to
     integrates the rational temperature dependence; increase its order when
     the relative variation of either temperature along the interval is large.
     """
+    _, g, traces = _positive_contact_traces(model, temperature)
+    return _integrate_contact_entropy(g, traces, start, end, quadrature_order)
+
+
+def _integrate_contact_entropy(g, traces, start, end, quadrature_order):
     from numpy.polynomial.legendre import leggauss
 
     if not 0. <= start <= end <= 1.:
         raise ValueError("contact edge fractions must satisfy 0 <= start <= end <= 1")
     if type(quadrature_order) is not int or quadrature_order < 1:
         raise ValueError("quadrature_order must be a positive integer")
-    _, g, traces = _positive_contact_traces(model, temperature)
     points, weights = leggauss(quadrature_order)
     half = (end-start)/2
     fractions = g.new_tensor(start + half*(1+points))
@@ -816,6 +820,36 @@ def thermal_contact_edge_entropy_production(model: ThermalModel, temperature: to
     # Insert the integration axis before the two trace and endpoint axes.
     factor = _contact_entropy_factor(traces.unsqueeze(-3), fractions)
     return half * (factor * conductance * g.new_tensor(weights)).sum(dim=-1)
+
+
+def thermal_contact_edge_entropy_steps(model: ThermalModel, time: torch.Tensor, temperature: torch.Tensor, *,
+                                       start: float = 0., end: float = 1., quadrature_order: int = 8,
+                                       time_order: int = 4) -> torch.Tensor:
+    """Entropy generated per sampled interval and Q4 contact edge (J/K).
+
+    Interpolate instantaneous absolute nodal temperatures linearly between
+    samples. Apply Gauss-Legendre quadrature in time and along the selected
+    edge fraction. Returns shape (len(time)-1, n_edges).
+    """
+    from numpy.polynomial.legendre import leggauss
+
+    if (time.ndim != 1 or time.numel() < 2 or time.is_complex() or not torch.isfinite(time).all()
+            or not (time[1:] > time[:-1]).all()):
+        raise ValueError("supply finite strictly increasing real sample times")
+    if temperature.ndim != 2 or temperature.shape != (time.numel(), len(model.nodes)):
+        raise ValueError("supply one nodal temperature field per sample time")
+    if type(time_order) is not int or time_order < 1:
+        raise ValueError("time_order must be a positive integer")
+    # Validate the endpoints, including extrema that interior quadrature misses.
+    _, g, traces = _positive_contact_traces(model, temperature)
+    nodes, weights = leggauss(time_order)
+    dtype = torch.promote_types(temperature.dtype, model.nodes.dtype)
+    traces = traces.to(dtype)
+    fraction = traces.new_tensor((nodes+1)/2).view(-1, 1, 1, 1)
+    sampled = torch.lerp(traces[:-1, None], traces[1:, None], fraction)
+    rate = _integrate_contact_entropy(g, sampled, start, end, quadrature_order)
+    duration = time.to(device=rate.device).diff().to(rate.dtype)
+    return duration[:, None] * (rate * rate.new_tensor(weights/2)[:, None]).sum(dim=1)
 
 
 def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *,

@@ -1195,3 +1195,31 @@ def test_integrated_contact_entropy_on_graded_subedge(record_property):
         assert errors[1] < errors[0]/100
         assert errors[2] < errors[1]/100
         assert errors[-1] < 2e-14
+
+
+def test_contact_entropy_history_against_isolated_reservoirs(record_property):
+    from tensorfem import thermal_contact_edge_entropy_steps
+
+    nodes = torch.tensor([[0,0],[1,0],[1,2],[0,2],[1,0],[2,0],[2,2],[1,2]], dtype=D)
+    g, c1, c2 = 1.5, 3., 5.
+    model = ThermalModel(nodes, torch.arange(8).reshape(2,4), 1., 1., 1.,
+                         torch.empty(0, dtype=torch.long), nodes.new_empty(0), element_type="q4",
+                         contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]), contact_edge_conductance=g)
+    equilibrium = (400*c1+280*c2)/(c1+c2)
+    errors = []
+    for n in (12, 24, 48):
+        time = 3*torch.linspace(0, 1, n+1, dtype=D)**1.25
+        difference = 120*torch.exp(-g*(1/c1+1/c2)*time)
+        hot = equilibrium + c2/(c1+c2)*difference
+        cold = equilibrium - c1/(c1+c2)*difference
+        histories = torch.cat((hot[:, None].expand(-1, 4), cold[:, None].expand(-1, 4)), dim=1)
+        entropy = thermal_contact_edge_entropy_steps(model, time, histories)[:, 0]
+        # No external exchange. Total entropy change equals contact production.
+        exact = c1*torch.log(hot/400) + c2*torch.log(cold/280)
+        error = (entropy.cumsum(dim=0)-exact[1:]).abs().max().item()
+        assert (entropy > 0).all()
+        part = thermal_contact_edge_entropy_steps(model, time, histories, start=.2, end=.7)
+        torch.testing.assert_close(part[:, 0], .5*entropy)
+        errors.append(error)
+        record_property(f"max_cumulative_entropy_error_{n}_J_per_K", error)
+    assert all(3.8 < a/b < 4.2 for a, b in zip(errors, errors[1:]))
