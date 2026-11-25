@@ -724,6 +724,35 @@ def _contact_edge_matrix(model):
     return pairs,mass
 
 
+def _contact_edge_jump(model, temperature):
+    if model.contact_edge_pairs is None:
+        raise ValueError("provide matching contact edge pairs on the model")
+    if temperature.ndim < 1 or temperature.shape[-1] != len(model.nodes):
+        raise ValueError("temperature must have one value per node")
+    pairs,g = _contact_edge_profile(model)
+    traces = temperature.to(model.nodes.device)[...,pairs]
+    jump = traces[...,0,:]-traces[...,1,:]
+    return pairs,g,jump
+
+
+def thermal_contact_edge_line_power_density(model: ThermalModel, temperature: torch.Tensor, *,
+                                            fraction: float) -> torch.Tensor:
+    """Local heat flow per physical edge length (W/m), positive out of the first trace.
+
+    Evaluate all edges at the same fraction along their supplied endpoint order.
+    Area-scaled conductance already includes thickness. Leading temperature axes
+    and complex phasors are supported as in thermal_contact_edge_power.
+    """
+    if not 0. <= fraction <= 1.:
+        raise ValueError("contact edge fraction must lie in [0, 1]")
+    pairs,g,jump = _contact_edge_jump(model, temperature)
+    first, last = model.nodes[pairs[:,0]].unbind(1)
+    length = (last-first).norm(dim=1)
+    conductance = (1-fraction)*g[:,0] + fraction*g[:,1]
+    local_jump = (1-fraction)*jump[...,0] + fraction*jump[...,1]
+    return conductance*local_jump/length
+
+
 def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *,
                                start: float = 0., end: float = 1.) -> torch.Tensor:
     """Integrated W per Q4 contact edge, positive from the first trace to the second.
@@ -732,15 +761,9 @@ def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *
     start and end are fractions along each edge in the supplied endpoint order.
     Both the temperature jump and conductance are linear in this coordinate.
     """
-    if model.contact_edge_pairs is None:
-        raise ValueError("provide matching contact edge pairs on the model")
-    if temperature.ndim < 1 or temperature.shape[-1] != len(model.nodes):
-        raise ValueError("temperature must have one value per node")
     if not 0. <= start <= end <= 1.:
         raise ValueError("contact edge fractions must satisfy 0 <= start <= end <= 1")
-    pairs,g = _contact_edge_profile(model)
-    traces = temperature.to(model.nodes.device)[...,pairs]
-    jump = traces[...,0,:]-traces[...,1,:]
+    _,g,jump = _contact_edge_jump(model, temperature)
     # The product of two linear interpolants is quadratic. Integrate about
     # the subinterval midpoint, whose central second moment is width²/12.
     width = end-start

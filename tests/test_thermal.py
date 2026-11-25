@@ -937,10 +937,16 @@ def test_consistent_edge_contact_linear_jump(sparse):
     # For endpoint g=(0,6) and jump=(1,4), the density is 6s(1+3s).
     # Integrating against the two endpoint hats gives 2.5 and 6.5 W.
     from tensorfem import thermal_contact_edge_power
+    from tensorfem import thermal_contact_edge_line_power_density
     graded = replace(attached,contact_edge_conductance=x.new_tensor([[0.,6.]]))
     expected = x.new_tensor([0,2.5,6.5,0,-2.5,0,0,-6.5])
     torch.testing.assert_close((conductivity(graded)-conductivity(base))@temp,expected)
     histories = torch.stack((temp,2*temp))*(1+.4j)
+    length = (x[2]-x[1]).norm()
+    for s in (0., .31, 1.):
+        local = thermal_contact_edge_line_power_density(graded,histories,fraction=s)
+        expected_local = x.new_tensor([1.,2.])*(1+.4j)*6*s*(1+3*s)/length
+        torch.testing.assert_close(local[:,0],expected_local)
     torch.testing.assert_close(thermal_contact_edge_power(graded,histories)[:,0],
                                x.new_tensor([9.,18.])*(1+.4j))
     # For the linear jump and graded conductance the primitive is 3s²+6s³.
@@ -983,6 +989,14 @@ def test_graded_two_material_contact_subedge_power(sparse, record_property):
     terr = float((field-exact).abs().max())
     record_property("max_temperature_error_K", terr)
     assert terr < 2e-13
+    from tensorfem import thermal_contact_edge_line_power_density
+    point_errors = []
+    for fraction in (0., .37, 1.):
+        local = thermal_contact_edge_line_power_density(model,field,fraction=fraction)
+        expected_local = 4 + 6*(ys[:-1] + fraction*dy)
+        point_errors.append(float((local-expected_local).abs().max()))
+    record_property("max_line_power_density_error_W_per_m", max(point_errors))
+    assert max(point_errors) < 2e-13
     a,b = .15,.8
     lo,hi = ys[:-1]+a*dy, ys[:-1]+b*dy
     expected = 4*(hi-lo)+3*(hi**2-lo**2)
