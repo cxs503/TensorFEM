@@ -298,7 +298,8 @@ def test_nodal_power_history_drives_free_nodes_and_enters_reaction_heat(sparse, 
 
 
 @pytest.mark.parametrize("sparse", [False, True])
-def test_nonuniform_rod_element_end_heat_with_local_load_history(sparse):
+@pytest.mark.parametrize("interval_fraction",[0.,.4,1.])
+def test_nonuniform_rod_element_end_heat_with_local_load_history(sparse,interval_fraction):
     from tensorfem import thermal_element_nodal_heat_steps
 
     x = torch.tensor([0., .13, .46, .7, 1.], dtype=D)
@@ -317,9 +318,13 @@ def test_nonuniform_rod_element_end_heat_with_local_load_history(sparse):
     nodal = torch.zeros_like(exact)
     nodal[:, :-1] += end_load
     nodal[:, 1:] += end_load
+    dt = time.diff()[:, None]
+    step_heat = interval_fraction*.5*dt*(nodal[:-1]+nodal[1:])
     result = solve_transient_thermal(model, time, initial, .5, sparse=sparse,
-                 fixed_temperature_history=exact[:, fixed], nodal_heat_history=nodal)
-    heat = thermal_element_nodal_heat_steps(model, result, element_nodal_heat_history=local)
+                 fixed_temperature_history=exact[:, fixed], nodal_heat_history=(1-interval_fraction)*nodal,
+                 nodal_step_heat=step_heat)
+    heat = thermal_element_nodal_heat_steps(model, result, element_nodal_heat_history=(1-interval_fraction)*local,
+                 element_nodal_step_heat=interval_fraction*.5*dt[:,:,None]*(local[:-1]+local[1:]))
     reference = time.diff()[:, None, None]*x.new_tensor([1., -1.])
     torch.testing.assert_close(result.temperature, exact)
     torch.testing.assert_close(heat, reference.expand_as(heat), rtol=0, atol=2e-15)

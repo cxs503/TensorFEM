@@ -312,12 +312,14 @@ def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
 
 
 def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransientResult, *,
-                                    element_nodal_heat_history: torch.Tensor | None = None) -> torch.Tensor:
+                                    element_nodal_heat_history: torch.Tensor | None = None,
+                                    element_nodal_step_heat: torch.Tensor | None = None) -> torch.Tensor:
     """Inward energy at each element node, shaped (nt-1, ne, nen), in J.
 
     Uses local consistent capacity, conductivity and static volumetric sources.
     An optional (nt, ne, nen) array assigns additional applied powers (W) to
-    individual element nodes, before global assembly. Supply each distributed
+    individual element nodes, before global assembly. element_nodal_step_heat
+    additionally assigns integrated joules of shape (nt-1, ne, nen). Supply each distributed
     load once. Global point loads, films and contacts appear as exchanges unless
     explicitly allocated to element nodes. For LINE2, negate the right entry
     for energy leaving the right end. Q4 entries are nodal weak-form quantities.
@@ -332,6 +334,11 @@ def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransie
         if load.shape != t.shape or not torch.isfinite(load).all():
             raise ValueError("element_nodal_heat_history needs finite powers at every time and element node")
         power = power - ((1-result.theta)*load[:-1] + result.theta*load[1:])
+    if element_nodal_step_heat is not None:
+        supplied = torch.as_tensor(element_nodal_step_heat).to(t)
+        if supplied.shape != heat.shape or not torch.isfinite(supplied).all():
+            raise ValueError("element_nodal_step_heat needs finite joules per interval and element node")
+        heat = heat - supplied
     return heat + result.time.diff().to(t)[:, None, None]*power
 
 
@@ -630,7 +637,8 @@ def thermal_element_low_frequency_power(model: ThermalModel, result: ThermalLowF
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
                             initial_temperature: torch.Tensor, theta: float=1.0, *,
                             sparse: bool=False, fixed_temperature_history: torch.Tensor | None=None,
-                            nodal_heat_history: torch.Tensor | None=None) -> ThermalTransientResult:
+                            nodal_heat_history: torch.Tensor | None=None,
+                            nodal_step_heat: torch.Tensor | None=None) -> ThermalTransientResult:
     """Integrate ``C Tdot + K T = f`` using the theta method.
 
     ``theta >= 0.5`` is required to make the stable public path fail closed.
@@ -641,6 +649,8 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
     order. Its first row sets the initial constrained temperatures.
     nodal_heat_history adds inward applied powers in W, shaped (nt, nn),
     to the static assembled loads. Each step uses the theta-weighted power.
+    nodal_step_heat additionally supplies integrated inward energy in joules
+    for each interval and node, shape (nt-1, nn).
     """
     if not 0.5 <= theta <= 1.0:
         raise ValueError("theta must be in [0.5, 1] for unconditional stability")
@@ -660,6 +670,12 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         if powers.shape != (len(time), len(model.nodes)) or not torch.isfinite(powers).all():
             raise ValueError("nodal_heat_history needs finite powers at every time and node")
         stage_power = (1-theta)*powers[:-1] + theta*powers[1:]
+    if nodal_step_heat is not None:
+        energy = torch.as_tensor(nodal_step_heat).to(model.nodes)
+        if energy.shape != (len(time)-1,len(model.nodes)) or not torch.isfinite(energy).all():
+            raise ValueError("nodal_step_heat needs finite joules per interval and node")
+        mean_power = energy/time.diff().to(energy)[:,None]
+        stage_power = mean_power if stage_power is None else stage_power + mean_power
     out = model.nodes.new_zeros((len(time),len(model.nodes)))
     out[0] = initial_temperature.to(dtype=model.nodes.dtype,device=model.nodes.device)
     out[:,fixed] = prescribed
