@@ -55,6 +55,8 @@ class ThermalModel:
     # Conforming Q4 contact edges (n,2,2): two traces with endpoints in
     # matching physical order. Total edge conductance is area/R in W/K.
     contact_edge_pairs: torch.Tensor | None = None
+    # Optional (n,2) profile: each endpoint coefficient is h(endpoint)*edge area
+    # in W/K, linearly interpolated along the edge.
     contact_edge_conductance: torch.Tensor | None = None
 
     def __post_init__(self):
@@ -696,6 +698,40 @@ def _boundary_thickness(model, edges):
     return thickness[owners]
 
 
+def _contact_edge_matrix(model):
+    """Integrate g(s) N_i(s) N_j(s) on the normalized edge."""
+    x = model.nodes
+    pairs = model.contact_edge_pairs.to(device=x.device,dtype=torch.long)
+    g = torch.as_tensor(model.contact_edge_conductance,device=x.device)
+    if g.is_complex():
+        raise ValueError("contact edge conductance must be real")
+    g = torch.as_tensor(model.contact_edge_conductance,dtype=x.dtype,device=x.device)
+    if g.shape != (len(pairs),2):
+        if g.numel() not in (1,len(pairs)):
+            raise ValueError("provide scalar, per-edge or paired endpoint conductances")
+        g = g.reshape(-1,1).expand(len(pairs),2)
+    if not torch.isfinite(g).all() or (g < 0).any():
+        raise ValueError("contact edge conductance must be finite and nonnegative")
+    left,right = g.unbind(1)
+    mixed = left+right
+    mass = torch.stack((3*left+right,mixed,mixed,left+3*right),dim=1).reshape(-1,2,2)/12
+    return pairs,mass
+
+
+def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor) -> torch.Tensor:
+    """Integrated W per Q4 contact edge, positive from the first trace to the second.
+
+    Accept real temperatures or complex phasors with arbitrary leading axes.
+    """
+    if model.contact_edge_pairs is None:
+        raise ValueError("provide matching contact edge pairs on the model")
+    if temperature.ndim < 1 or temperature.shape[-1] != len(model.nodes):
+        raise ValueError("temperature must have one value per node")
+    pairs,mass = _contact_edge_matrix(model)
+    traces = temperature.to(model.nodes.device)[...,pairs]
+    return ((traces[...,0,:]-traces[...,1,:])*mass.sum(1)).sum(-1)
+
+
 def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:
     """Assemble conductivity ``K``, capacity ``C`` and heat vector ``f``."""
     x = model.nodes
@@ -780,14 +816,10 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
         else:
             K = K.index_put(indices, entries, accumulate=True)
     if model.contact_edge_pairs is not None:
-        ids = model.contact_edge_pairs.to(device=x.device,dtype=torch.long).reshape(-1,4)
-        g = torch.as_tensor(model.contact_edge_conductance,dtype=x.dtype,device=x.device)
-        if g.numel() not in (1,len(ids)) or not torch.isfinite(g).all() or (g < 0).any():
-            raise ValueError("provide finite nonnegative total conductance per contact edge")
-        # Integral of N_i N_j on a unit interval, with opposite signs
-        # for temperatures evaluated on opposite traces.
-        jump = x.new_tensor([[2,1,-2,-1],[1,2,-1,-2],[-2,-1,2,1],[-1,-2,1,2]])/6
-        blocks = g.reshape(-1).expand(len(ids))[:,None,None]*jump
+        pairs,mass = _contact_edge_matrix(model)
+        ids = pairs.reshape(-1,4)
+        top = torch.cat((mass,-mass),dim=2)
+        blocks = torch.cat((top,-top),dim=1)
         row = ids[:,:,None].expand_as(blocks).reshape(-1)
         col = ids[:,None,:].expand_as(blocks).reshape(-1)
         K = K + matrix(blocks,row,col)

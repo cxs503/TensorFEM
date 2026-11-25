@@ -934,5 +934,14 @@ def test_consistent_edge_contact_linear_jump(sparse):
     npower = x.new_tensor([0,3,4.5,0,-3,0,0,-4.5])
     torch.testing.assert_close(jump_operator@temp,npower)
     torch.testing.assert_close(jump_operator@torch.ones_like(temp),torch.zeros_like(temp))
+    # For endpoint g=(0,6) and jump=(1,4), the density is 6s(1+3s).
+    # Integrating against the two endpoint hats gives 2.5 and 6.5 W.
+    from tensorfem import thermal_contact_edge_power
+    graded = replace(attached,contact_edge_conductance=x.new_tensor([[0.,6.]]))
+    expected = x.new_tensor([0,2.5,6.5,0,-2.5,0,0,-6.5])
+    torch.testing.assert_close((conductivity(graded)-conductivity(base))@temp,expected)
+    histories = torch.stack((temp,2*temp))*(1+.4j)
+    torch.testing.assert_close(thermal_contact_edge_power(graded,histories)[:,0],
+                               x.new_tensor([9.,18.])*(1+.4j))
     with pytest.raises(ValueError,match="matching order"):
         replace(attached,contact_edge_pairs=torch.tensor([[[1,2],[7,4]]]))
