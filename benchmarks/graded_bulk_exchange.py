@@ -53,7 +53,14 @@ def measure(n,strip):
             # Ai''(z)=z*Ai(z), and likewise for Bi.
             slope_lag = scale*(dz*z*exact+np.column_stack((dai,dbi)) @ d_weights)
             lag_power = k*np.array([-slope_lag[0],slope_lag[-1]])
-            direct = thermal.solve_low_frequency_thermal(model,sparse=True).first_order
+            coefficients = thermal.solve_low_frequency_thermal(model,sparse=True)
+            direct = coefficients.first_order
+            steady_local,lag_local = thermal.thermal_element_low_frequency_power(model,coefficients)
+            # On each interior cut, sum the west element's outward nodal powers.
+            east_indices = [1,2] if strip else [1]
+            for key,local,slope_ref in (("steady",steady_local,derivative),("lag",lag_local,slope_lag)):
+                rightward = -local[:-1,east_indices].sum(1).numpy()
+                errors[key+"_interior_power"] = float(abs(rightward+k*slope_ref[1:-1]).max())
             errors["lag_temperature_K_s"] = float(abs(direct.temperature.numpy().reshape(-1,n+1)-lag).max())
             actual = direct.reaction_power[ends].reshape(-1,2).sum(0).numpy()
             errors["lag_wall_power_W_s"] = float(abs(actual-lag_power).max())

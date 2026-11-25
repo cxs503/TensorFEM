@@ -598,3 +598,16 @@ def test_dense_low_frequency_capacity_gradient():
     lag = solve_low_frequency_thermal(model).first_order.temperature[-1].real
     derivative, = torch.autograd.grad(lag,capacity)
     torch.testing.assert_close(derivative,lag.detach()/capacity.detach())
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+def test_element_low_frequency_power_with_complex_volume_heat(sparse):
+    from dataclasses import replace
+    from tensorfem.thermal import solve_low_frequency_thermal, thermal_element_low_frequency_power
+    model = replace(line_model(fixed=(0,8),values=(1.,.2)),heat_source=torch.tensor(.6+.8j,dtype=torch.complex128),
+                    heat_loss_coefficient=1.4)
+    result = solve_low_frequency_thermal(model,sparse=sparse)
+    steady,lag = thermal_element_low_frequency_power(model,result)
+    for local,coeff in ((steady,result.steady),(lag,result.first_order)):
+        assembled = torch.zeros_like(coeff.temperature).scatter_add(0,model.elements.flatten(),local.flatten())
+        torch.testing.assert_close(assembled,coeff.reaction_power)

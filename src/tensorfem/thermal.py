@@ -607,6 +607,26 @@ def solve_low_frequency_thermal(model: ThermalModel, *, sparse: bool=False) -> T
                                      ThermalHarmonicResult(lag,k @ lag+c @ u))
 
 
+def thermal_element_low_frequency_power(model: ThermalModel, result: ThermalLowFrequencyResult):
+    """Return steady and first-order inward nodal powers for each element (W, W s).
+
+    Both arrays have shape (elements, nodes per element). Element volume
+    loads enter the steady balance. Bulk heat loss acts at both orders,
+    and consistent material capacity acts on the steady temperature at first
+    order. Surface films, contacts and lumped loads remain external exchanges.
+    """
+    u = result.steady.temperature
+    lag = result.first_order.temperature
+    if u.shape!=(len(model.nodes),) or lag.shape!=u.shape:
+        raise ValueError("both temperature coefficients must have one value per node")
+    conn = model.elements.long()
+    k,c,f = _thermal_element_matrices(model,u)
+    k = k.to(u)
+    t0 = u[conn].unsqueeze(-1)
+    t1 = lag[conn].unsqueeze(-1)
+    return (k @ t0).squeeze(-1)-f,(k @ t1+c.to(u) @ t0).squeeze(-1)
+
+
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
                             initial_temperature: torch.Tensor, theta: float=1.0, *,
                             sparse: bool=False, fixed_temperature_history: torch.Tensor | None=None,
