@@ -289,3 +289,52 @@ def test_nodal_power_history_drives_free_nodes_and_enters_reaction_heat(sparse, 
     reactions[:, 0] = -2*time.diff()
     torch.testing.assert_close(result.nodal_reaction_heat_steps(), reactions)
     torch.testing.assert_close(result.integrated_nodal_reactions(), reactions.sum(0))
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_nonuniform_rod_element_end_heat_with_local_load_history(sparse):
+    from tensorfem import thermal_element_nodal_heat_steps
+
+    x = torch.tensor([0., .13, .46, .7, 1.], dtype=D)
+    ids = torch.arange(4)
+    conn = torch.stack((ids, ids+1), 1)
+    k = torch.tensor([1.2, 2.1, .8, 3.], dtype=D)
+    capacity = torch.tensor([3., 2., 4., 1.], dtype=D)
+    fixed = torch.tensor([0, 4])
+    time = torch.tensor([0., .02, .11, .15], dtype=D)
+    # Unit axial conduction power and a uniform-in-space temperature ramp t².
+    initial = torch.cat((x.new_zeros(1), (-x.diff()/k).cumsum(0)))
+    exact = initial + time[:, None].square()
+    model = ThermalModel(x[:, None], conn, k, 1., capacity, fixed, initial[fixed])
+    end_load = time[:, None]*capacity*x.diff()
+    local = end_load[:, :, None].expand(-1, -1, 2)
+    nodal = torch.zeros_like(exact)
+    nodal[:, :-1] += end_load
+    nodal[:, 1:] += end_load
+    result = solve_transient_thermal(model, time, initial, .5, sparse=sparse,
+                 fixed_temperature_history=exact[:, fixed], nodal_heat_history=nodal)
+    heat = thermal_element_nodal_heat_steps(model, result, element_nodal_heat_history=local)
+    reference = time.diff()[:, None, None]*x.new_tensor([1., -1.])
+    torch.testing.assert_close(result.temperature, exact)
+    torch.testing.assert_close(heat, reference.expand_as(heat), rtol=0, atol=2e-15)
+    torch.testing.assert_close(heat[:, :-1, 1], -heat[:, 1:, 0], rtol=0, atol=2e-15)
+
+
+def test_q4_nodal_heat_for_linear_temperature_and_uniform_storage():
+    from tensorfem import thermal_element_nodal_heat_steps
+
+    xy = torch.tensor([[0., 0.], [2., 0.], [2.25, 1.], [.25, 1.]], dtype=D)
+    ids = torch.arange(4)
+    gradient = xy.new_tensor([.8, -.3])
+    k = xy.new_tensor([[2., .4], [.4, 1.]])
+    time = xy.new_tensor([0., .02, .07])
+    exact = (xy @ gradient) + time[:, None]
+    model = ThermalModel(xy, ids[None], k[None], 1., 3., ids, exact[0], heat_source=3., element_type="q4")
+    result = solve_transient_thermal(model, time, exact[0], .5, fixed_temperature_history=exact)
+    # Integrate n·K grad(T) against both linear endpoint weights on each edge.
+    edges = xy.roll(-1, 0)-xy
+    normals = torch.stack((edges[:, 1], -edges[:, 0]), 1)
+    side = normals @ (k @ gradient)
+    inward = .5*(side+side.roll(1))
+    torch.testing.assert_close(thermal_element_nodal_heat_steps(model, result)[:, 0],
+                               time.diff()[:, None]*inward, rtol=0, atol=2e-15)

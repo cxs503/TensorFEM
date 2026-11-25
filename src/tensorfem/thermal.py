@@ -168,13 +168,8 @@ def thermal_element_flux(model: ThermalModel, temperature: torch.Tensor, *, xi=0
     return -k[:,None]*gradient
 
 
-def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:
-    """Assemble conductivity ``K``, capacity ``C`` and heat vector ``f``."""
+def _thermal_element_matrices(model, load_like):
     x = model.nodes
-    load_like = x
-    if complex_loads:
-        dtype = torch.complex128 if x.dtype == torch.float64 else torch.complex64
-        load_like = x.new_empty(0, dtype=dtype)
     conn = model.elements.long()
     ne, nen = conn.shape
     k = _element_conductivity(model)
@@ -204,6 +199,43 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
             ke = ke + (weighted_grad @ grad.transpose(1, 2)) * weight[:, None, None]
             ce = ce + (rho*cp*weight)[:,None,None]*(n[None,:,None]*n[None,None,:])
             fe = fe + (source*weight)[:,None]*n[None,:]
+    return ke, ce, fe
+
+
+def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransientResult, *,
+                                    element_nodal_heat_history: torch.Tensor | None = None) -> torch.Tensor:
+    """Inward energy at each element node, shaped (nt-1, ne, nen), in J.
+
+    Uses local consistent capacity, conductivity and static volumetric sources.
+    An optional (nt, ne, nen) array assigns additional applied powers (W) to
+    individual element nodes, before global assembly. Supply each distributed
+    load once. Global point loads, films and contacts appear as exchanges unless
+    explicitly allocated to element nodes. For LINE2, negate the right entry
+    for energy leaving the right end. Q4 entries are nodal weak-form quantities.
+    """
+    ke, ce, fe = _thermal_element_matrices(model, model.nodes)
+    t = result.temperature[:, model.elements.long()]
+    stage = (1-result.theta)*t[:-1] + result.theta*t[1:]
+    heat = torch.einsum("eij,tej->tei", ce, t.diff(dim=0))
+    power = torch.einsum("eij,tej->tei", ke, stage) - fe
+    if element_nodal_heat_history is not None:
+        load = torch.as_tensor(element_nodal_heat_history).to(t)
+        if load.shape != t.shape or not torch.isfinite(load).all():
+            raise ValueError("element_nodal_heat_history needs finite powers at every time and element node")
+        power = power - ((1-result.theta)*load[:-1] + result.theta*load[1:])
+    return heat + result.time.diff().to(t)[:, None, None]*power
+
+
+def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:
+    """Assemble conductivity ``K``, capacity ``C`` and heat vector ``f``."""
+    x = model.nodes
+    load_like = x
+    if complex_loads:
+        dtype = torch.complex128 if x.dtype == torch.float64 else torch.complex64
+        load_like = x.new_empty(0, dtype=dtype)
+    conn = model.elements.long()
+    ne, nen = conn.shape
+    ke, ce, fe = _thermal_element_matrices(model, load_like)
     nd = len(x)
     rows = conn[:,:,None].expand(-1,-1,nen).reshape(-1)
     cols = conn[:,None,:].expand(-1,nen,-1).reshape(-1)
