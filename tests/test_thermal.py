@@ -798,3 +798,40 @@ def test_element_net_input_separates_storage_and_graded_bulk_loss(element_type):
         mid = (times[i]+times[i+1])/2
         target = project(2-gauss-2*(.5-gauss)-(.3+.8*gauss)*(1+gauss+mid*(.5-gauss)))
         torch.testing.assert_close(net_heat[i],dt*(target+mid*x)+added_heat[i],rtol=0.,atol=3e-15)
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+def test_insulated_components_have_independent_energy_gauges(sparse):
+    from dataclasses import replace
+    from tensorfem.thermal import solve_low_frequency_thermal
+
+    load = torch.tensor([1.,-1.,2.,-2.],dtype=torch.complex128)*(1+.3j)
+    model = ThermalModel(torch.tensor([[0.],[1.],[1.],[2.]],dtype=D),torch.tensor([[0,1],[2,3]]),
+        1.,1.,1.,torch.empty(0,dtype=torch.long),torch.empty(0,dtype=D),
+        nodal_heat=load,nodal_heat_capacity=torch.tensor([1.,0.,0.,2.],dtype=D),
+        contact_pairs=torch.tensor([[1,2]]),contact_conductance=0.)
+    for g in (0.,3.):
+        case = replace(model,contact_conductance=g)
+        result = solve_low_frequency_thermal(case,sparse=sparse)
+        for coeff in (result.steady,result.first_order):
+            energy = torch.tensor([1.5,.5,.5,2.5],dtype=D)*coeff.temperature
+            groups = energy.reshape(2,2).sum(1) if g == 0. else energy.sum()
+            torch.testing.assert_close(groups,torch.zeros_like(groups),atol=1e-13,rtol=0.)
+            torch.testing.assert_close(coeff.reaction_power,torch.zeros_like(load),atol=1e-13,rtol=0.)
+        steady = result.steady.temperature
+        torch.testing.assert_close(steady[[0,2]]-steady[[1,3]],load[[0,2]])
+    with pytest.raises(ValueError,match="each insulated component"):
+        solve_low_frequency_thermal(replace(model,nodal_heat=load[[0,2,1,3]]),sparse=sparse)
+
+
+def test_insulated_dense_capacity_gradient():
+    from dataclasses import replace
+    from tensorfem.thermal import solve_low_frequency_thermal
+
+    model = line_model(fixed=(),values=())
+    c = torch.tensor(2.,dtype=D,requires_grad=True)
+    load = torch.zeros(9,dtype=D)
+    load[0],load[-1] = 1.,-1.
+    lag = solve_low_frequency_thermal(replace(model,specific_heat=c,nodal_heat=load)).first_order.temperature[0].real
+    gradient, = torch.autograd.grad(lag,c)
+    torch.testing.assert_close(gradient,lag.detach()/c.detach())

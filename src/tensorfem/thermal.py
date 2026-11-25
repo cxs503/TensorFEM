@@ -731,11 +731,80 @@ class ThermalLowFrequencyResult:
     first_order: ThermalHarmonicResult
 
 
+def _insulated_low_frequency(m, sparse):
+    """Solve on the zero-stored-energy subspace of each insulated component."""
+    # Only the connectivity is discrete. Capacity weights and both dense
+    # solutions remain in the autograd graph.
+    k, c, f = m.conductivity, m.capacity, m.heat
+    if sparse:
+        from scipy import sparse as sp
+        from scipy.sparse.csgraph import connected_components
+        from scipy.sparse.linalg import splu
+        import numpy as np
+
+        k = _scipy_csc(k).astype(f.resolve_conj().numpy().dtype)
+        k.eliminate_zeros()
+        count, labels = connected_components(k,directed=False)
+        c = _scipy_csc(c)
+        basis = sp.csc_matrix((np.ones(len(labels),dtype=c.dtype),(np.arange(len(labels)),labels)),
+                              shape=(len(labels),count))
+        weights = c @ basis
+        if np.any(np.asarray(weights.sum(axis=0)) <= 0):
+            raise ValueError("each insulated component requires positive heat capacity")
+        border = sp.bmat([[k,weights],[weights.T,None]],format="csc")
+        groups = torch.from_numpy(labels).long()
+    else:
+        # Flood each connected component on the dense conductivity graph,
+        # without requiring SciPy for the differentiable backend.
+        graph = k.detach() != 0
+        groups = torch.full((len(f),),-1,device=f.device,dtype=torch.long)
+        count = 0
+        while (groups < 0).any():
+            active = torch.zeros_like(groups,dtype=torch.bool)
+            active[torch.where(groups < 0)[0][0]] = True
+            while active.any():
+                groups[active] = count
+                active = graph[active].any(0) & (groups < 0)
+            count += 1
+        basis = torch.nn.functional.one_hot(groups,count).to(c)
+        weights = c @ basis
+        if torch.any(weights.sum(0) <= 0):
+            raise ValueError("each insulated component requires positive heat capacity")
+        border = torch.cat((torch.cat((k,weights),1),
+                            torch.cat((weights.T,k.new_zeros(count,count)),1)),0).to(f)
+
+    net = f.new_zeros(count).index_add(0,groups,f)
+    scale = f.real.new_zeros(count).index_add(0,groups,f.abs())
+    if torch.any(net.abs() > 64*torch.finfo(scale.dtype).eps*scale):
+        raise ValueError("each insulated component requires zero net heat input")
+    if sparse:
+        load = f.resolve_conj().numpy()
+        factor = splu(border)
+        def solve(rhs):
+            return factor.solve(np.r_[rhs,np.zeros(count,dtype=rhs.dtype)])[:len(f)]
+        u = solve(load)
+        lag = solve(-(c @ u))
+        return ThermalLowFrequencyResult(
+            ThermalHarmonicResult(torch.from_numpy(u),torch.from_numpy(k @ u-load)),
+            ThermalHarmonicResult(torch.from_numpy(lag),torch.from_numpy(k @ lag+c @ u)))
+    factors = torch.linalg.lu_factor(border)
+    def solve(rhs):
+        return torch.linalg.lu_solve(*factors,torch.cat((rhs,f.new_zeros(count)))[:,None])[:len(f),0]
+    k,c = k.to(f),c.to(f)
+    u = solve(f)
+    lag = solve(-(c @ u))
+    return ThermalLowFrequencyResult(ThermalHarmonicResult(u,k @ u-f),
+                                     ThermalHarmonicResult(lag,k @ lag+c @ u))
+
+
 def solve_low_frequency_thermal(model: ThermalModel, *, sparse: bool=False) -> ThermalLowFrequencyResult:
     """Return constant and i*omega coefficients of temperature and reaction power.
 
-    Assume frequency-independent loads and prescribed-temperature phasors, and
-    a nonsingular steady free-node conductivity matrix. With exp(+i*omega*t),
+    Assume frequency-independent loads and prescribed-temperature phasors.
+    For fully insulated, lossless bodies each connected component must have
+    balanced heat input and positive heat capacity. Both coefficients then
+    have zero capacity-weighted mean on each component (the harmonic limit).
+    Otherwise require a nonsingular steady free-node matrix. With exp(+i*omega*t),
     K*T0=f and K*T1=-C*T0 on free nodes. Prescribed nodes have zero T1.
     First-order temperature and reaction power are in K s and W s, respectively.
     """
@@ -744,10 +813,14 @@ def solve_low_frequency_thermal(model: ThermalModel, *, sparse: bool=False) -> T
     prescribed = model.fixed_temperatures.to(m.heat)
     if not torch.isfinite(m.heat).all() or not torch.isfinite(prescribed).all():
         raise ValueError("thermal phasor loads and prescribed temperatures must be finite")
+    if sparse and any(t.device.type!="cpu" or t.requires_grad
+                      for t in (m.conductivity,m.capacity,m.heat,prescribed)):
+        raise ValueError("sparse low-frequency solution requires CPU tensors without autograd")
+    if not fixed.numel() and all(value is None or not torch.any(torch.as_tensor(value) != 0)
+                                 for value in (model.convection_coefficient,model.heat_loss_coefficient)):
+        return _insulated_low_frequency(m,sparse)
     if sparse:
         from scipy.sparse.linalg import splu
-        if any(t.device.type!="cpu" or t.requires_grad for t in (m.conductivity,m.capacity,m.heat,prescribed)):
-            raise ValueError("sparse low-frequency solution requires CPU tensors without autograd")
         f = m.heat.resolve_conj().numpy()
         k = _scipy_csc(m.conductivity).astype(f.dtype)
         c = _scipy_csc(m.capacity)
