@@ -108,3 +108,31 @@ def test_quadratic_heat_load_on_trapezoid(sparse, record_property):
     heat = assemble_thermal(model, sparse=sparse).heat
     record_property("peak_nodal_load_error_W", (heat-exact).abs().max().item())
     torch.testing.assert_close(heat, exact, atol=2e-15, rtol=0.)
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_complex_quadratic_heat_on_sheared_harmonic_patch(sparse, record_property):
+    from tensorfem.thermal import solve_harmonic_thermal, thermal_element_flux
+
+    shear, k, capacity, omega = .35, 2., 1.5, 3.
+    phase = .7-.4j
+    mesh = structured_quad_mesh(5, 4, shear=shear, dtype=D)
+    x, y = mesh.nodes.T
+    # The physical quadratic (x-s*y)*y is bilinear on this sheared mesh.
+    exact = phase*(x-shear*y)*y
+    fixed = mesh.boundary_nodes
+    quadratic = 1j*omega*capacity*phase*torch.tensor([0.,1.,-shear], dtype=torch.complex128)
+    model = ThermalModel(mesh.nodes, mesh.elements, k, capacity, 1., fixed, exact[fixed],
+                         heat_source=2*k*shear*phase, heat_source_quadratic=quadratic, element_type="q4")
+    result = solve_harmonic_thermal(model, omega, sparse=sparse)
+    cx, cy = mesh.nodes[mesh.elements].mean(dim=1).T
+    expected_flux = -k*phase*torch.stack((cy, cx-2*shear*cy), dim=1)
+    flux = thermal_element_flux(model, result.temperature)
+    # Inward conductive wall reaction integrates k*ΔT over the unit area.
+    power_error = abs(result.reaction_power[fixed].sum()+2*k*shear*phase)
+    record_property("temperature_error_K", (result.temperature-exact).abs().max().item())
+    record_property("flux_error_W_m2", (flux-expected_flux).abs().max().item())
+    record_property("wall_power_error_W", power_error.item())
+    torch.testing.assert_close(result.temperature, exact, atol=1e-14, rtol=0.)
+    torch.testing.assert_close(flux, expected_flux, atol=1e-13, rtol=0.)
+    assert power_error < 1e-13
