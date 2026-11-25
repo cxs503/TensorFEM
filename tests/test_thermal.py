@@ -655,3 +655,22 @@ def test_sdirk2_moving_temperatures_and_independent_heat_inputs(sparse):
     reactions[:,0] = -.25
     torch.testing.assert_close(result.nodal_reaction_heat_steps(),reactions,rtol=0.,atol=1e-13)
     torch.testing.assert_close(result.integrated_nodal_reactions(),reactions.sum(0),rtol=0.,atol=1e-13)
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+@pytest.mark.parametrize("method",["theta","sdirk2"])
+def test_callable_heating_matches_time_quadrature_and_energy(sparse,method):
+    model = line_model(fixed=tuple(),values=tuple())
+    ones = torch.ones(len(model.nodes),dtype=D)
+    mass_load = assemble_thermal(model).capacity@ones
+    times = torch.tensor([0.,.05,.16,.3],dtype=D)
+    result = solve_transient_thermal(model,times,0*ones,theta=.5,method=method,sparse=sparse,
+                                     nodal_heat_history=lambda t:3*t*t*mass_load)
+    gamma = 1-1/math.sqrt(2)
+    first = times[:-1]+gamma*times.diff()
+    power = ((1-gamma)*3*first**2+gamma*3*times[1:]**2 if method=="sdirk2"
+             else 1.5*(times[:-1]**2+times[1:]**2))
+    exact = (times.diff()*power).cumsum(0)
+    torch.testing.assert_close(result.temperature[1:],exact[:,None]*ones,atol=1e-14,rtol=0.)
+    torch.testing.assert_close(result.additional_stage_power,power[:,None]*mass_load)
+    assert abs(result.nodal_reaction_heat_steps()).max()<1e-13

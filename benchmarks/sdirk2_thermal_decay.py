@@ -5,10 +5,10 @@ from pathlib import Path
 import subprocess
 
 import torch
-from tensorfem.thermal import ThermalModel, solve_transient_thermal
+from tensorfem.thermal import ThermalModel, assemble_thermal, solve_transient_thermal
 
 
-def measure(n,steps):
+def measure(n,steps,driven=False):
     x = torch.linspace(0.,1.,n+1,dtype=torch.float64)
     ids = torch.arange(n)
     model = ThermalModel(x[:,None],torch.stack((ids,ids+1),1),1.,1.,1.,
@@ -16,11 +16,24 @@ def measure(n,steps):
     initial = torch.sin(math.pi*x)
     initial[[0,-1]] = 0
     times = torch.linspace(0.,.1,steps+1,dtype=x.dtype)
-    solution = solve_transient_thermal(model,times,initial,method="sdirk2",sparse=True)
     # Uniform linear elements have stiffness eigenvalue 2*(1-cos(q))/h
     # and consistent mass eigenvalue h*(2+cos(q))/3.
     q = math.pi/n
     rate = 12*n*n*math.sin(q/2)**2/(2+math.cos(q))
+    if driven:
+        # A scalar modal amplitude a(t)=1-exp(-t) satisfies a'+rate*a=f.
+        # The integral of f is rate*t+(1-rate)*(1-exp(-t)).
+        shape = assemble_thermal(model).capacity@initial
+        solution = solve_transient_thermal(model,times,0*initial,method="sdirk2",sparse=True,
+            nodal_heat_history=lambda t:(rate+(1-rate)*torch.exp(-t))*shape)
+        amplitude = -torch.expm1(-times)
+        integral = (rate*times+(1-rate)*amplitude)[:,None]*shape
+        supplied = (times.diff()[:,None]*solution.additional_stage_power).cumsum(0)
+        return dict(cells=n,steps=steps,
+                    temporal_error_K=float(abs(solution.temperature-amplitude[:,None]*initial).max()),
+                    nodal_input_error_J=float(abs(supplied-integral[1:]).max()),
+                    free_residual_J=float(abs(solution.nodal_reaction_heat_steps()[:,1:-1]).max()))
+    solution = solve_transient_thermal(model,times,initial,method="sdirk2",sparse=True)
     discrete = torch.exp(-rate*times[:,None])*initial
     continuum = torch.exp(-math.pi**2*times[:,None])*initial
     end_heat = -solution.nodal_reaction_heat_steps()[:,model.fixed_nodes].cumsum(0)
@@ -33,11 +46,13 @@ def measure(n,steps):
 
 if __name__=="__main__":
     rows = []
-    for study in ("time","space"):
+    for study in ("time","space","driven"):
         previous = None
         for level in (1,2,4,8):
-            row = measure(32,4*level) if study=="time" else measure(8*level,256)
+            row = measure(8*level,256) if study=="space" else measure(32,4*level,driven=study=="driven")
             metrics = ["temporal_error_K"] if study=="time" else ["temperature_error_K","end_heat_error_J"]
+            if study=="driven":
+                metrics = ["temporal_error_K","nodal_input_error_J"]
             orders = {k:math.log2(previous[k]/row[k]) for k in metrics} if previous else {}
             row.update(study=study,orders=orders,passed=(row["free_residual_J"]<1e-11 and
                        (level<8 or min(orders.values())>1.9)))

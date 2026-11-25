@@ -7,6 +7,7 @@ convection and element volumetric heat generation.
 """
 import math
 from dataclasses import dataclass
+from collections.abc import Callable
 
 import torch
 
@@ -646,7 +647,7 @@ def thermal_element_low_frequency_power(model: ThermalModel, result: ThermalLowF
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
                             initial_temperature: torch.Tensor, theta: float=1.0, *,
                             sparse: bool=False, fixed_temperature_history: torch.Tensor | None=None,
-                            nodal_heat_history: torch.Tensor | None=None,
+                            nodal_heat_history: torch.Tensor | Callable[[torch.Tensor], torch.Tensor] | None=None,
                             nodal_step_heat: torch.Tensor | None=None, method: str="theta") -> ThermalTransientResult:
     """Integrate ``C Tdot + K T = f`` using the theta method.
 
@@ -657,7 +658,9 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
     prescribe one temperature per time and fixed node, in model.fixed_nodes
     order. Its first row sets the initial constrained temperatures.
     nodal_heat_history adds inward applied powers in W, shaped (nt, nn),
-    to the static assembled loads. Each step uses the theta-weighted power.
+    to the static assembled loads. It may also be a function of scalar time
+    returning one power per node. SDIRK2 evaluates such functions at its two
+    stage times; theta integration samples the output times.
     nodal_step_heat additionally supplies integrated inward energy in joules
     for each interval and node, shape (nt-1, nn). method="sdirk2" uses the
     L-stable two-stage second-order scheme, linearly interpolating endpoint
@@ -683,12 +686,28 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         prescribed = torch.as_tensor(fixed_temperature_history).to(model.nodes)
         if prescribed.shape != (len(time), fixed.numel()) or not torch.isfinite(prescribed).all():
             raise ValueError("fixed_temperature_history needs finite values at every time and fixed node")
-    stage_power = None
+    stage_power = first_offset = None
     if nodal_heat_history is not None:
-        powers = torch.as_tensor(nodal_heat_history).to(model.nodes)
-        if powers.shape != (len(time), len(model.nodes)) or not torch.isfinite(powers).all():
-            raise ValueError("nodal_heat_history needs finite powers at every time and node")
-        stage_power = (1-theta)*powers[:-1] + theta*powers[1:]
+        def sample_power(t):
+            value = torch.as_tensor(nodal_heat_history(t)).to(model.nodes)
+            if value.shape!=(len(model.nodes),) or not torch.isfinite(value).all():
+                raise ValueError("nodal_heat_history callable must return one finite power per node")
+            return value
+
+        if callable(nodal_heat_history) and method=="sdirk2":
+            gamma = 1-1/math.sqrt(2)
+            first = torch.stack([sample_power(t) for t in time[:-1]+gamma*time.diff()])
+            end = torch.stack([sample_power(t) for t in time[1:]])
+            stage_power = (1-gamma)*first+gamma*end
+            first_offset = first-stage_power
+        else:
+            powers = (torch.stack([sample_power(t) for t in time]) if callable(nodal_heat_history)
+                      else torch.as_tensor(nodal_heat_history).to(model.nodes))
+            if powers.shape != (len(time), len(model.nodes)) or not torch.isfinite(powers).all():
+                raise ValueError("nodal_heat_history needs finite powers at every time and node")
+            stage_power = (1-theta)*powers[:-1] + theta*powers[1:]
+            if method=="sdirk2":
+                first_offset = (.5-1/math.sqrt(2))*powers.diff(dim=0)
     if nodal_step_heat is not None:
         energy = torch.as_tensor(nodal_step_heat).to(model.nodes)
         if energy.shape != (len(time)-1,len(model.nodes)) or not torch.isfinite(energy).all():
@@ -703,8 +722,7 @@ def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
         if any(v.device.type != "cpu" or v.requires_grad for v in inputs if v is not None):
             raise ValueError("sparse transient integration requires CPU tensors without autograd")
     if method=="sdirk2":
-        change = powers.diff(dim=0) if nodal_heat_history is not None else None
-        means = _advance_sdirk2(m,time,out,fixed,free,stage_power,change,sparse)
+        means = _advance_sdirk2(m,time,out,fixed,free,stage_power,first_offset,sparse)
         return ThermalTransientResult(time,out,m,theta,stage_power,means)
     if sparse:
         if free.numel():
@@ -736,7 +754,7 @@ def _scipy_csc(tensor):
     return coo_matrix((tensor.values().numpy(), (row, col)), shape=tensor.shape).tocsc()
 
 
-def _advance_sdirk2(m,time,out,fixed,free,average_power,power_change,sparse):
+def _advance_sdirk2(m,time,out,fixed,free,average_power,first_offset,sparse):
     """Solve both stages using the same constrained operator on each interval."""
     gamma = 1-1/math.sqrt(2)
     if not free.numel():
@@ -751,8 +769,8 @@ def _advance_sdirk2(m,time,out,fixed,free,average_power,power_change,sparse):
         steps = time.diff().numpy()
         if average_power is not None:
             average_power = average_power.numpy()
-        if power_change is not None:
-            power_change = power_change.numpy()
+        if first_offset is not None:
+            first_offset = first_offset.numpy()
     else:
         state,c,k,source,steps = out,m.capacity[free],m.conductivity[free],m.heat[free],time.diff()
     cff,kff,cfc,kfc = c[:,free],k[:,free],c[:,fixed],k[:,fixed]
@@ -774,7 +792,7 @@ def _advance_sdirk2(m,time,out,fixed,free,average_power,power_change,sparse):
         fixed_change = fixed_end-fixed_start
         fixed_stage = fixed_start+gamma*fixed_change
         load = source if average_power is None else source+average_power[i,free]
-        first_load = load if power_change is None else load+(gamma-.5)*power_change[i,free]
+        first_load = load if first_offset is None else load+first_offset[i,free]
         stored = cff@old
         boundary_storage = cfc@fixed_change
         first = solve(stored-gamma*boundary_storage+shift*(first_load-kfc@fixed_stage))
