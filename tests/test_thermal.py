@@ -1081,3 +1081,51 @@ def test_low_frequency_contact_power_against_layer_capacity_moments(sparse, reco
         errors.append(abs((actual-steady-1j*omega*first).item()))
         record_property(f"complex_power_remainder_{omega}_W", errors[-1])
     assert all(3.9 < a/b < 4.1 for a,b in zip(errors,errors[1:]))
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_harmonic_contact_slab_against_layer_transfer_solution(sparse, record_property):
+    from tensorfem import solve_harmonic_thermal, thermal_contact_edge_power
+
+    # Unit cross section, insulated lateral edges, interface at x=1.
+    omega = 2.3
+    conductance = 2.5
+    interface_power = 0.8 - 0.4j
+    cold_trace = 0.7 + 0.2j
+    traces = [cold_trace + interface_power/conductance, cold_trace]
+    materials = [(2., 3.), (4., 1.5)]
+    errors = []
+    for n in (8, 16, 32):
+        coords, elements, exact, wall_power = [], [], [], []
+        for side, (k, capacity) in enumerate(materials):
+            wave = (1j*omega*capacity/k)**0.5
+            x = torch.linspace(side, side+1, n+1, dtype=D)
+            arg = wave*(x-1)
+            profile = traces[side]*arg.cosh() - interface_power*arg.sinh()/(k*wave)
+            flux = interface_power*arg.cosh() - k*wave*traces[side]*arg.sinh()
+            wall_power.append(flux[0] if side == 0 else -flux[-1])
+            base = len(coords)
+            for xi in x.tolist():
+                coords.extend(((xi, 0.), (xi, 1.)))
+            for j in range(base, base+2*n, 2):
+                elements.append([j, j+2, j+3, j+1])
+            exact.append(profile.repeat_interleave(2))
+        exact = torch.cat(exact)
+        nodes = torch.tensor(coords, dtype=D)
+        fixed = torch.tensor([0, 1, len(coords)-2, len(coords)-1])
+        interface = torch.tensor([[[2*n, 2*n+1], [2*n+2, 2*n+3]]])
+        model = ThermalModel(
+            nodes, torch.tensor(elements), nodes.new_tensor([2., 4.]).repeat_interleave(n),
+            1., nodes.new_tensor([3., 1.5]).repeat_interleave(n), fixed, exact[fixed],
+            element_type="q4", contact_edge_pairs=interface, contact_edge_conductance=conductance)
+        result = solve_harmonic_thermal(model, omega, sparse=sparse)
+        transferred = thermal_contact_edge_power(model, result.temperature)
+        inward = result.reaction_power[fixed].reshape(2, 2).sum(dim=1)
+        row = [float((result.temperature-exact).abs().max()),
+               float((transferred-interface_power).abs().max()),
+               float((inward-torch.stack(wall_power)).abs().max())]
+        for name, error in zip(("temperature_K", "contact_power_W", "wall_power_W"), row):
+            record_property(f"max_error_{n}_{name}", error)
+        errors.append(row)
+    for coarse, fine in zip(errors, errors[1:]):
+        assert all(a/b > 3.8 for a, b in zip(coarse, fine))
