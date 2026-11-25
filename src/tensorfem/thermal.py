@@ -284,19 +284,22 @@ def recover_q4_boundary_power(model, temperature, boundary_elements, interior_el
     return (estimate*normal).sum(-1)*thickness[outer]
 
 
-def recover_q4_patch_boundary_power(model, temperature, patches, local_edge):
-    """Fit a physical-coordinate quadratic to nodal temperatures on Q4 patches.
+def recover_q4_patch_boundary_power(model, temperature, patches, local_edge, *, degree=2):
+    """Fit a physical-coordinate polynomial to nodal temperatures on Q4 patches.
 
     Each row of patches lists distinct edge-connected elements, beginning
     with the element whose local edge is exposed. Use a single material and
     thickness per patch. At least six quadratically independent nodal samples
-    are needed (a two-by-two patch usually suffices). The least-squares fit
-    weights each element-node incidence equally. Integrating its linear flux
+    are needed for degree=2. For degree=3 use ten cubically independent
+    samples (a three-by-three patch usually suffices). The least-squares fit
+    weights each element-node incidence equally. Integrating its flux
     on the straight edge gives outward power in W, including thickness.
     Temperature can contain leading time or load axes and complex phasors.
     """
     if model.element_type.lower() != "q4" or local_edge not in (0,1,2,3):
         raise ValueError("provide Q4 patches and a local edge index from 0 to 3")
+    if degree not in (2,3):
+        raise ValueError("boundary patch degree must be 2 or 3")
     x = model.nodes
     ids = torch.as_tensor(patches,device=x.device)
     if (ids.ndim != 2 or not ids.shape[1] or ids.dtype not in (torch.int32,torch.int64)
@@ -340,13 +343,25 @@ def recover_q4_patch_boundary_power(model, temperature, patches, local_edge):
     scale = displacement.norm(dim=-1).amax(1)
     a,b = (displacement/scale[:,None,None]).unbind(-1)
     basis = torch.stack((torch.ones_like(a),a,b,a*a,a*b,b*b),dim=-1)
-    if (torch.linalg.matrix_rank(basis) < 6).any():
-        raise ValueError("patch nodes must span a complete quadratic")
+    if degree == 3:
+        cubic = torch.stack((a**3,a*a*b,a*b*b,b**3),dim=-1)
+        basis = torch.cat((basis,cubic),dim=-1)
+    if (torch.linalg.matrix_rank(basis) < basis.shape[-1]).any():
+        polynomial = "quadratic" if degree == 2 else "cubic"
+        raise ValueError(f"patch nodes must span a complete {polynomial}")
     q,r = torch.linalg.qr(basis,mode="reduced")
-    # The derivative at the origin uses just the two linear coefficients.
+    # Center the polynomial on the edge so odd derivative terms average to zero.
     direction = (k[:,0] @ normal.unsqueeze(-1)).squeeze(-1) if k.ndim == 4 else k[:,:1]*normal
     derivative = torch.zeros_like(r[:,:,0])
-    derivative[:,1:3] = -direction*(thick[:,0]/scale)[:,None]
+    linear = -direction*(thick[:,0]/scale)[:,None]
+    derivative[:,1:3] = linear
+    if degree == 3:
+        # In normalized coordinates the edge is z*tangent/scale, for
+        # -1/2 <= z <= 1/2. Its mean z² is 1/12.
+        tx,ty = (tangent/scale[:,None]).unbind(1)
+        gx,gy = linear.unbind(1)
+        derivative[:,6:] = torch.stack((3*gx*tx**2,2*gx*tx*ty+gy*tx**2,
+                                        gx*ty**2+2*gy*tx*ty,3*gy*ty**2),dim=1)/12
     weights = q @ torch.linalg.solve_triangular(r.transpose(1,2),derivative[:,:,None],upper=False)
     values = temperature.to(x.device)[...,conn.flatten(1,2)]
     return ((values-values[...,:1])*weights.squeeze(-1)).sum(-1)

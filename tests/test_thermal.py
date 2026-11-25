@@ -889,3 +889,30 @@ def test_quadratic_boundary_patch_on_distorted_mesh():
         recover_q4_patch_boundary_power(model,field,[[0,3]],0)
     with pytest.raises(ValueError,match="complete quadratic"):
         recover_q4_patch_boundary_power(model,field,[[0]],0)
+
+
+def test_cubic_patch_integrates_varying_flux_on_sheared_edges():
+    from tensorfem import recover_q4_patch_boundary_power
+    from tensorfem.thermal_analytic import structured_quad_mesh
+
+    mesh = structured_quad_mesh(3,3,shear=.3,dtype=D)
+    xy = mesh.nodes.clone()
+    xy[5] += xy.new_tensor([.06,-.04])
+    k = xy.new_tensor([[1.5,-.4],[-.4,2.]])
+    model = ThermalModel(xy,mesh.elements,k[None],1.,1.,torch.tensor([],dtype=torch.long),
+                         xy.new_empty(0),element_type="q4",thickness=.7)
+    x,y = xy.T
+    t = (1.+.4j)*(2*x**3+x*x*y-3*x*y*y+y**3)
+    for edge,outer in enumerate((0,2,8,6)):
+        patch = [[outer,*[i for i in range(9) if i!=outer]]]
+        endpoints = xy[mesh.elements[outer,[edge,(edge+1)%4]]]
+        tangent = endpoints[1]-endpoints[0]
+        # Two-point Gauss integration of the analytic quadratic flux.
+        a,b = (endpoints.mean(0)+xy.new_tensor([[-1.],[1.]])*tangent/(2*3**.5)).T
+        grad = torch.stack((6*a*a+2*a*b-3*b*b,a*a-6*a*b+3*b*b),dim=1)
+        normal = torch.stack((tangent[1],-tangent[0]))
+        exact = -.7*(1.+.4j)*(grad @ k @ normal).mean()
+        result = recover_q4_patch_boundary_power(model,t,patch,edge,degree=3)
+        torch.testing.assert_close(result[0],exact,atol=1e-12,rtol=0.)
+    with pytest.raises(ValueError,match="complete cubic"):
+        recover_q4_patch_boundary_power(model,t,[[0,1,3,4]],0,degree=3)
