@@ -1,0 +1,28 @@
+{
+  "source_commit": "711f57412b8a2079b08095423ebdec0e3ff44e07",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_shallow_heat.xml",
+  "tests": 165,
+  "failures": 0,
+  "errors": 0,
+  "reference": "Integrate the power between roots of the half-angle quadratic in 80-digit decimal arithmetic. Compare the positive magnitude of the reverse heat to the FEM contact diagnostic. Bias 1+ulp(1), phasor -1+i sqrt(factor*ulp(1)), omega=1 rad/s. The non-reversing case must transfer exactly zero reverse heat.",
+  "measurements": {
+    "test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap[1.5]": {
+      "reverse_heat_J": 0.0
+    },
+    "test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap[2.5]": {
+      "reverse_heat_J": 7.79873360536385e-25,
+      "reverse_heat_reference_J": 7.798733605363839e-25,
+      "reverse_heat_relative_error": 1.3322676295501878e-15
+    },
+    "test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap[4.0]": {
+      "reverse_heat_J": 6.2389868842910685e-24,
+      "reverse_heat_reference_J": 6.238986884291068e-24,
+      "reverse_heat_relative_error": 2.220446049250313e-16
+    },
+    "test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap[6.0]": {
+      "reverse_heat_J": 1.7646519734464557e-23,
+      "reverse_heat_reference_J": 1.7646519734464566e-23,
+      "reverse_heat_relative_error": 5.551115123125783e-16
+    }
+  }
+}
