@@ -1499,3 +1499,35 @@ def test_linear_directional_contact_heat_zero_endpoints_and_weak_asymmetric_cros
     expected = field.new_tensor([[1.5,0.],[2.25,.25],[0.,.5],[0.,0.]])
     torch.testing.assert_close(forward/amplitude,expected,atol=0,rtol=0)
     torch.testing.assert_close(reverse/amplitude,expected.flip((1,)),atol=0,rtol=0)
+
+
+@pytest.mark.parametrize("graded",[False,True])
+def test_directional_contact_edge_power_cancelling_traces(graded,record_property):
+    from tensorfem import thermal_contact_edge_directional_power, thermal_contact_edge_power
+
+    nodes = torch.tensor([[0,0],[1,0],[1,1],[0,1],[1,0],[2,0],[2,1],[1,1]],dtype=D)
+    # With g=1+s the zero at 5/9 makes integral(g*(s-5/9)) vanish.
+    root = 5/9 if graded else .5
+    model = ThermalModel(nodes,torch.arange(8).reshape(2,4),1.,1.,1.,torch.arange(8),
+                         nodes.new_zeros(8),element_type="q4",contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]),
+                         contact_edge_conductance=nodes.new_tensor([[1.,1.+graded]]))
+    field = nodes.new_zeros(8)
+    field[[1,2]] = nodes.new_tensor([-root,1-root])
+    batch = torch.stack((field,-field,field*0))
+    def primitive(s):
+        return .5*s*s-root*s + graded*(s**3/3-.5*root*s*s)
+    worst,net_error = 0.,0.
+    for a,b in ((0.,1.),(.125,.875),(0.,root),(root,1.),(.25,.25)):
+        forward,reverse = thermal_contact_edge_directional_power(model,batch,start=a,end=b)
+        split = max(a,min(b,root))
+        pos,neg = primitive(b)-primitive(split),primitive(a)-primitive(split)
+        expected = nodes.new_tensor([pos,neg,0.])
+        worst = max(worst,float((forward[:,0]-expected).abs().max()),
+                    float((reverse[:,0]-expected[[1,0,2]]).abs().max()))
+        signed = thermal_contact_edge_power(model,batch,start=a,end=b)
+        net_error = max(net_error,float((forward-reverse-signed).abs().max()))
+        if (a,b)==(0.,1.):
+            assert min(forward[0].item(),reverse[0].item())>.12 and abs(signed[0].item())<1e-15
+    record_property("max_directional_error_W",worst)
+    record_property("max_signed_residual_W",net_error)
+    assert max(worst,net_error)<2e-15

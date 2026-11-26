@@ -1019,6 +1019,44 @@ def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *
     return width*((g[:,0]+mid*dg)*(jump[...,0]+mid*dj) + (width**2/12)*dg*dj)
 
 
+def thermal_contact_edge_directional_power(model: ThermalModel, temperature: torch.Tensor, *,
+                                           start: float = 0., end: float = 1.) -> tuple[torch.Tensor, torch.Tensor]:
+    """Forward and reverse power magnitudes (W) along each Q4 contact edge.
+
+    Use real instantaneous nodal temperatures, optionally with leading batch
+    dimensions. Forward is from the first trace to the second. Integrals
+    cover the supplied edge fractions and split at a zero of the linear jump.
+    Conductance may vary linearly along the edge.
+    """
+    if not 0. <= start <= end <= 1.:
+        raise ValueError("contact edge fractions must satisfy 0 <= start <= end <= 1")
+    if temperature.is_complex():
+        raise ValueError("directional power requires real instantaneous temperatures")
+    _,g,jump = _contact_edge_jump(model,temperature)
+    if not torch.isfinite(jump).all():
+        raise ValueError("contact temperature jumps must be finite")
+    def endpoints(values):
+        left,right = values.unbind(-1)
+        return (1-start)*left+start*right, (1-end)*left+end*right
+    left,right = endpoints(jump)
+    gl,gr = endpoints(g)
+    crossing = ((left>0)&(right<0)) | ((left<0)&(right>0))
+    scale = torch.maximum(left.abs(),right.abs())
+    scale = torch.where(crossing,scale,1.)
+    a,b = left.abs()/scale,right.abs()/scale
+    total = torch.where(crossing,a+b,1.)
+    # Keep both subedge lengths independently for a zero close to an endpoint.
+    fl,fr = torch.where(crossing,a/total,0.),torch.where(crossing,b/total,0.)
+    gz = fr*gl+fl*gr
+    # Integrating g times each endpoint hat gives these weights. On a
+    # crossing subedge the jump is zero at its internal endpoint.
+    wl = torch.where(crossing,fl*(gl/3+gz/6),gl/3+gr/6)
+    wr = torch.where(crossing,fr*(gr/3+gz/6),gr/3+gl/6)
+    forward = (end-start)*(wl*left.clamp_min(0)+wr*right.clamp_min(0))
+    reverse = (end-start)*(wl*(-left).clamp_min(0)+wr*(-right).clamp_min(0))
+    return forward,reverse
+
+
 def thermal_contact_edge_heat_steps(model: ThermalModel, result: ThermalTransientResult, *,
                                     start: float = 0., end: float = 1.) -> torch.Tensor:
     """Heat crossing each Q4 contact edge per step in J, shape (nt-1, n_edges).
