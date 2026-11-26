@@ -1,0 +1,43 @@
+{
+  "source_commit": "26be4319c21d9a76a0b9f77ac1a5398a9d61b48d",
+  "baseline_commit": "20a54621a083d370d054cb30bfbc532be52274f1",
+  "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_thermal.py tests/test_thermal_transient_reference.py tests/test_thermal_2d_reference.py tests/test_thermal_verification.py -o junit_family=legacy --junitxml=/tmp/fem-contact-after.xml",
+  "passed": 237,
+  "reference": "Prescribed Q4 slab interface jump ramps by one signed float64 spacing at 1536 K over 1.5 s, then holds for 0.5 s. Integrated temperature differences equal (0.75,0.5) times the signed jump. Pair conductance is 2 W/K; the integral of 1+2s over the middle half of the unit edge is 1 W/K.",
+  "before": {
+    "test_contact_heat_ramp_on_common_temperature[False--1]": {
+      "max_pair_relative_error": 1.0,
+      "max_subedge_relative_error": 1.0
+    },
+    "test_contact_heat_ramp_on_common_temperature[False-1]": {
+      "max_pair_relative_error": 1.0,
+      "max_subedge_relative_error": 1.0
+    },
+    "test_contact_heat_ramp_on_common_temperature[True--1]": {
+      "max_pair_relative_error": 1.0,
+      "max_subedge_relative_error": 1.0
+    },
+    "test_contact_heat_ramp_on_common_temperature[True-1]": {
+      "max_pair_relative_error": 1.0,
+      "max_subedge_relative_error": 1.0
+    }
+  },
+  "after": {
+    "test_contact_heat_ramp_on_common_temperature[False--1]": {
+      "max_pair_relative_error": 0.0,
+      "max_subedge_relative_error": 0.0
+    },
+    "test_contact_heat_ramp_on_common_temperature[False-1]": {
+      "max_pair_relative_error": 0.0,
+      "max_subedge_relative_error": 0.0
+    },
+    "test_contact_heat_ramp_on_common_temperature[True--1]": {
+      "max_pair_relative_error": 0.0,
+      "max_subedge_relative_error": 0.0
+    },
+    "test_contact_heat_ramp_on_common_temperature[True-1]": {
+      "max_pair_relative_error": 0.0,
+      "max_subedge_relative_error": 0.0
+    }
+  }
+}
