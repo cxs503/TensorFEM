@@ -1,0 +1,14 @@
+{
+  "source_commit": "70d30bdfb023b3bfb6b75c231cb53660fe4fde8c",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_origin.xml",
+  "tests": 161,
+  "failures": 0,
+  "errors": 0,
+  "reference": "Factor 1-cos(x)-b sin(x) at x=0. At angular frequency 2 rad/s the other oriented root is (2 atan(b) mod 2pi)/2. Both pair orientations and b=±0.8, ±2^-30 tested. The short reverse duration is atan(|b|) seconds.",
+  "second_crossing_error_s": {
+    "test_biased_contact_reversal_exactly_at_origin[0.8]": 0.0,
+    "test_biased_contact_reversal_exactly_at_origin[-0.8]": 0.0,
+    "test_biased_contact_reversal_exactly_at_origin[9.313225746154785e-10]": 0.0,
+    "test_biased_contact_reversal_exactly_at_origin[-9.313225746154785e-10]": 0.0
+  }
+}
