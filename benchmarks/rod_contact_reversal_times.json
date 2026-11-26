@@ -1,0 +1,42 @@
+{
+  "source_commit": "a1c821d54b820afee7777cd5852914160b07e2cc",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_reversals.xml",
+  "tests": 157,
+  "failures": 0,
+  "errors": 0,
+  "reference": "For a solved two-material rod, compare both oriented roots of bias + Re((0.8-0.4i)exp(i*2.3*t)) over a single cycle. Bias comes from the DC series resistance. Refine 8,16,32,64 elements per material on dense and sparse paths. Additional exact cases cover a crossing at the cycle origin, tangency, constant sign and zero power.",
+  "measurements": {
+    "test_curved_harmonic_rod_contact_power_refinement[False]": {
+      "n8_forward_entry_s": 0.0007681994284247651,
+      "n8_reverse_entry_s": 0.0011086869060126237,
+      "n16_forward_entry_s": 0.00019440994907649056,
+      "n16_forward_entry_s_order": 1.9823788385937011,
+      "n16_reverse_entry_s": 0.0002757594049933587,
+      "n16_reverse_entry_s_order": 2.0073700088614355,
+      "n32_forward_entry_s": 4.874991035608289e-05,
+      "n32_forward_entry_s_order": 1.9956305807718233,
+      "n32_reverse_entry_s": 6.885135940737364e-05,
+      "n32_reverse_entry_s_order": 2.0018530464616,
+      "n64_forward_entry_s": 1.2196690168053692e-05,
+      "n64_forward_entry_s_order": 1.9989098711221596,
+      "n64_reverse_entry_s": 1.7207305665012385e-05,
+      "n64_reverse_entry_s_order": 2.0004639227316083
+    },
+    "test_curved_harmonic_rod_contact_power_refinement[True]": {
+      "n8_forward_entry_s": 0.0007681994284252092,
+      "n8_reverse_entry_s": 0.0011086869060119575,
+      "n16_forward_entry_s": 0.00019440994907649056,
+      "n16_forward_entry_s_order": 1.9823788385945351,
+      "n16_reverse_entry_s": 0.0002757594049926926,
+      "n16_reverse_entry_s_order": 2.0073700088640534,
+      "n32_forward_entry_s": 4.874991035785925e-05,
+      "n32_forward_entry_s_order": 1.9956305807192543,
+      "n32_reverse_entry_s": 6.885135940981613e-05,
+      "n32_reverse_entry_s_order": 2.0018530464069357,
+      "n64_forward_entry_s": 1.219669016894187e-05,
+      "n64_forward_entry_s_order": 1.9989098710696698,
+      "n64_reverse_entry_s": 1.720730564258588e-05,
+      "n64_reverse_entry_s_order": 2.0004639246630713
+    }
+  }
+}
