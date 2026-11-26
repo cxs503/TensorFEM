@@ -1,0 +1,50 @@
+{
+  "source_commit": "1b8ffc406a309e59abb38c1b4821ae25d87ac879",
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest -q tests/test_thermal.py tests/test_thermal_poisson_2d.py -o junit_family=legacy --junitxml=/tmp/fem-interval-flux.xml",
+  "reference": "Time-exact mixed-boundary eigenmode of an eight-element consistent-mass LINE2 rod on graded time steps. The distorted anisotropic Q4 reference integrates both components of an imposed affine temperature gradient that reverses linearly in time.",
+  "passed": 189,
+  "runs": {
+    "test_volume_mean_heat_steps_mixed_rod_mode[False-theta-0.5-2]": {
+      "cumulative_flux_error_8_J_per_m2": 0.00043796289602071603,
+      "cumulative_flux_error_16_J_per_m2": 0.00010968554428470931,
+      "cumulative_flux_error_32_J_per_m2": 2.743743626119899e-05,
+      "cumulative_flux_error_64_J_per_m2": 6.860622893635135e-06
+    },
+    "test_volume_mean_heat_steps_mixed_rod_mode[False-theta-1.0-1]": {
+      "cumulative_flux_error_8_J_per_m2": 0.023114333131142653,
+      "cumulative_flux_error_16_J_per_m2": 0.011860941888429618,
+      "cumulative_flux_error_32_J_per_m2": 0.006008557571185442,
+      "cumulative_flux_error_64_J_per_m2": 0.0030239945036875833
+    },
+    "test_volume_mean_heat_steps_mixed_rod_mode[False-sdirk2-0.5-2]": {
+      "cumulative_flux_error_8_J_per_m2": 0.00021453835340805305,
+      "cumulative_flux_error_16_J_per_m2": 5.348819716915684e-05,
+      "cumulative_flux_error_32_J_per_m2": 1.3347933109494545e-05,
+      "cumulative_flux_error_64_J_per_m2": 3.3334999413629426e-06
+    },
+    "test_volume_mean_heat_steps_mixed_rod_mode[True-theta-0.5-2]": {
+      "cumulative_flux_error_8_J_per_m2": 0.0004379628960209381,
+      "cumulative_flux_error_16_J_per_m2": 0.00010968554428505278,
+      "cumulative_flux_error_32_J_per_m2": 2.743743626153379e-05,
+      "cumulative_flux_error_64_J_per_m2": 6.860622893920497e-06
+    },
+    "test_volume_mean_heat_steps_mixed_rod_mode[True-theta-1.0-1]": {
+      "cumulative_flux_error_8_J_per_m2": 0.023114333131142986,
+      "cumulative_flux_error_16_J_per_m2": 0.011860941888429278,
+      "cumulative_flux_error_32_J_per_m2": 0.006008557571185409,
+      "cumulative_flux_error_64_J_per_m2": 0.0030239945036880985
+    },
+    "test_volume_mean_heat_steps_mixed_rod_mode[True-sdirk2-0.5-2]": {
+      "cumulative_flux_error_8_J_per_m2": 0.00021453835340816407,
+      "cumulative_flux_error_16_J_per_m2": 5.348819716923317e-05,
+      "cumulative_flux_error_32_J_per_m2": 1.3347933109458116e-05,
+      "cumulative_flux_error_64_J_per_m2": 3.3334999409596194e-06
+    },
+    "test_volume_mean_heat_steps_distorted_q4_time_ramp[theta]": {
+      "max_interval_component_error_J_per_m2": 9.71445146547012e-17
+    },
+    "test_volume_mean_heat_steps_distorted_q4_time_ramp[sdirk2]": {
+      "max_interval_component_error_J_per_m2": 9.71445146547012e-17
+    }
+  }
+}
