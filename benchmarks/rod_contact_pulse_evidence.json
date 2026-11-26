@@ -1,0 +1,32 @@
+{
+  "source_commit": "5eca2394b10fd88acdc292f9d358e2cba14dc101",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_pulse_contact.xml",
+  "tests": 151,
+  "failures": 0,
+  "errors": 0,
+  "reference": "Two insulated unit-area linear rod elements joined by finite contact conductance. Independently integrate element mass, stiffness and source and use two matrix exponentials for a 0.07 s heating pulse and 0.13 s cooldown. Compare four nodal temperatures and cumulative contact heat at shutoff and end, and measure per-material balance each step. Time refinement on a fixed spatial mesh with n SDIRK2 steps per phase.",
+  "measurements": {
+    "test_insulated_two_material_rod_contact_heat_after_source_pulse[False]": {
+      "n8_temperature_error_K": 5.885453976513244e-06,
+      "n8_contact_heat_error_J": 2.778460362465318e-06,
+      "n8_material_balance_J": 8.673617379884035e-18,
+      "n16_temperature_error_K": 1.4493357981260058e-06,
+      "n16_contact_heat_error_J": 6.923682206016329e-07,
+      "n16_material_balance_J": 1.0191500421363742e-17,
+      "n32_temperature_error_K": 3.59658315070982e-07,
+      "n32_contact_heat_error_J": 1.72804945221261e-07,
+      "n32_material_balance_J": 1.6371452804531117e-17
+    },
+    "test_insulated_two_material_rod_contact_heat_after_source_pulse[True]": {
+      "n8_temperature_error_K": 5.885453976520183e-06,
+      "n8_contact_heat_error_J": 2.7784603624635834e-06,
+      "n8_material_balance_J": 1.474514954580286e-17,
+      "n16_temperature_error_K": 1.4493357981398836e-06,
+      "n16_contact_heat_error_J": 6.923682205998982e-07,
+      "n16_material_balance_J": 1.0625181290357943e-17,
+      "n32_temperature_error_K": 3.59658315070982e-07,
+      "n32_contact_heat_error_J": 1.7280494522299572e-07,
+      "n32_material_balance_J": 1.1492543028346347e-17
+    }
+  }
+}
