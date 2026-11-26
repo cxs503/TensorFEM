@@ -1,0 +1,9 @@
+{
+  "source_commit": "8f87fc19db4a8fee52676672e88244b05cc3ab55",
+  "reference": "Polygon boundary integral of linearly interpolated edge temperatures with one-sided material tensors and per-cell thickness; stepped LINE2 bar with piecewise constant flux.",
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest -q tests/test_thermal.py tests/test_thermal_poisson_2d.py -o junit_family=legacy --junitxml=/tmp/fem-mean.xml",
+  "tests": 181,
+  "failures": 0,
+  "errors": 0,
+  "max_absolute_flux_error_W_per_m2": 7.32410687763558e-15
+}
