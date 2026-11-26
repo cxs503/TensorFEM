@@ -199,3 +199,45 @@ def test_finite_contact_transient_mode_refines_and_conserves_heat(heterogeneous)
         assert observed_order(levels[-2][key], fine[key]) > 1.9
         assert fine[key] < 3e-4
     assert fine["measured_decay_rate"] == pytest.approx(fine["exact_decay_rate"], rel=1e-4)
+
+
+def test_equal_wall_ramp_and_hold_reaction_heat(record_property):
+    """Both Dirichlet reactions supply half the unit slab's storage change."""
+    ramp_end, end = .04, .09
+    wave = torch.pi*torch.arange(1, 80, 2, dtype=FLOAT)
+
+    def ramp_storage(t):
+        # Spatial integral of the continuum solution for a ramp continued to t.
+        return (t-1/12+(8*torch.exp(-wave.square()*t)/wave**4).sum())/ramp_end
+
+    stored = torch.stack((wave.new_zeros(()), ramp_storage(ramp_end),
+                          ramp_storage(end)-ramp_storage(end-ramp_end)))
+    reference = stored.diff()/2
+    errors = []
+    for phase, value in zip(("ramp", "hold"), reference):
+        record_property(f"{phase}_wall_reference_J_m2", value.item())
+    for n, steps in ((12, 32), (24, 64), (48, 128), (48, 256)):
+        nodes, conn = line_mesh(n)
+        unit = nodes.new_tensor(1.)
+        model = ThermalModel(nodes=nodes, elements=conn, conductivity=unit, density=unit,
+                             specific_heat=unit, thickness=unit, fixed_nodes=torch.tensor([0, n]),
+                             fixed_temperatures=nodes.new_zeros(2))
+        time = torch.cat((torch.linspace(0., ramp_end, steps+1, dtype=FLOAT),
+                          torch.linspace(ramp_end, end, steps+1, dtype=FLOAT)[1:]))
+        wall = (time/ramp_end).clamp(max=1.)[:, None].expand(-1, 2)
+        result = solve_transient_thermal(model, time, nodes.new_zeros(n+1), theta=.5,
+                                         fixed_temperature_history=wall)
+        inward = result.nodal_reaction_heat_steps()[:, [0, n]].reshape(2, steps, 2).sum(1)
+        uptake = torch.trapezoid(result.temperature[::steps], nodes[:, 0]).diff()
+        balance = (uptake-inward.sum(1)).abs().max().item()
+        assert balance < 1e-12
+        error = (inward-reference[:, None]).abs().amax(1)
+        errors.append(error)
+        prefix = f"n{n}_steps{steps}"
+        record_property(f"{prefix}_balance_J_m2", balance)
+        for phase, value in zip(("ramp", "hold"), error):
+            record_property(f"{prefix}_{phase}_wall_error_J_m2", value.item())
+    for coarse, fine in zip(errors[:2], errors[1:3]):
+        assert torch.all(coarse > 3*fine)
+    assert torch.all(errors[-1] < .01*reference)
+    assert torch.all(abs(errors[-1]-errors[-2]) < .05*errors[-1])
