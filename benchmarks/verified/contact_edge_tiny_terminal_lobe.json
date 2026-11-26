@@ -1,0 +1,21 @@
+{
+  "source_commit": "5f78d4694ed863033e44080e127a8eb25f3720ce",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal_transient_reference.py tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_tiny_terminal.xml",
+  "reference": "Over unit time and unit edge conductance, the jump changes from 1 to -a(s), then back to 1 over the next interval; a=1e-20*(1+s). Each reverse heat is the integral of a^2/(2*(1+a)). The reference 7e-40/6 neglects a relative correction bounded by 2e-20. Verify both endpoint orderings.",
+  "tests": 189,
+  "errors": 0,
+  "failures": 0,
+  "skipped": 0,
+  "cases": {
+    "test_directional_edge_heat_tiny_terminal_lobe[False]": {
+      "reference_reverse_J": 1.1666666666666666e-40,
+      "terminal_relative_error": 0.0,
+      "initial_relative_error": 0.0
+    },
+    "test_directional_edge_heat_tiny_terminal_lobe[True]": {
+      "reference_reverse_J": 1.1666666666666666e-40,
+      "terminal_relative_error": 0.0,
+      "initial_relative_error": 0.0
+    }
+  }
+}
