@@ -1,0 +1,35 @@
+{
+  "source_commit": "65e6b42d065c7217cafd9e02265f5f7e1ef9b160",
+  "baseline_commit": "2daa14ec3f2a0b1a3dbd0bdc23ced3a78a851156",
+  "reference": "Translated distorted Q4 with exactly representable dyadic coordinates. Flux is -K grad(T), the weak conductive nodal load is the sum of the adjacent half-edge contributions, and both assembled matrices are invariant to translation. Errors use the maximum absolute reference entry as the scale.",
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest -q tests/test_thermal.py tests/test_thermal_poisson_2d.py -o junit_family=legacy --junitxml=/tmp/q4-origin-after.xml",
+  "before": {
+    "test_q4_geometry_invariant_to_coordinate_origin[dtype0-1048576.0]": {
+      "flux": 0.053038936108350754,
+      "nodal_load": 0.11257641017436981,
+      "stiffness_translation": 0.07498457282781601,
+      "capacity_translation": 0.058988675475120544
+    },
+    "test_q4_geometry_invariant_to_coordinate_origin[dtype1-281474976710656.0]": {
+      "flux": 0.06713313896987343,
+      "nodal_load": 0.02006626414034551,
+      "stiffness_translation": 0.019326043591952818,
+      "capacity_translation": 0.020934507109775766
+    }
+  },
+  "after": {
+    "test_q4_geometry_invariant_to_coordinate_origin[dtype0-1048576.0]": {
+      "flux": 0.0,
+      "nodal_load": 1.6183564355287672e-07,
+      "stiffness_translation": 0.0,
+      "capacity_translation": 0.0
+    },
+    "test_q4_geometry_invariant_to_coordinate_origin[dtype1-281474976710656.0]": {
+      "flux": 0.0,
+      "nodal_load": 1.7225278442669095e-16,
+      "stiffness_translation": 0.0,
+      "capacity_translation": 0.0
+    }
+  },
+  "passed": 193
+}
