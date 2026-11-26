@@ -226,7 +226,10 @@ def thermal_element_flux(model: ThermalModel, temperature: torch.Tensor, *, xi=0
             raise ValueError("LINE2 element must have positive length")
         return (-k * (values[...,1].to(dtype)-values[...,0].to(dtype)) / length)[...,None]
     _, grad, _ = _q4_geometry(coords, xi, eta)
-    gradient = torch.einsum("...ei,eia->...ea", values.to(dtype), grad.to(dtype))
+    # Q4 shape gradients sum to zero. Remove the common temperature before
+    # multiplication so roundoff acts on nodal contrasts rather than the datum.
+    values = values.to(dtype)
+    gradient = torch.einsum("...ei,eia->...ea", values-values[..., :1], grad.to(dtype))
     if k.ndim == 3:
         return -torch.einsum("eij,...ej->...ei", k.to(dtype), gradient)
     return -k[:,None]*gradient

@@ -2026,3 +2026,35 @@ def test_volume_mean_heat_steps_distorted_q4_time_ramp(method, record_property):
     error = (thermal_volume_mean_heat_steps(model, result)-exact).abs().max().item()
     record_property("max_interval_component_error_J_per_m2", error)
     assert error < 1e-14
+
+
+@pytest.mark.parametrize("dtype,epsilon", [(torch.float64, 2.**-39), (torch.float32, 2.**-10)])
+def test_q4_flux_invariant_to_temperature_datum(dtype, epsilon, record_property):
+    from tensorfem import thermal_element_edge_power, thermal_element_flux, thermal_volume_mean_flux
+
+    nodes = torch.tensor([[0., 0.], [1.5, .25], [1.25, 1.25], [-.25, .75]], dtype=dtype)
+    conductivity = nodes.new_tensor([[2., .5], [.5, 3.]])
+    model = ThermalModel(nodes, torch.arange(4)[None,:], conductivity[None], 1., 1.,
+                         torch.arange(4), nodes.new_zeros(4), thickness=.75, element_type="q4")
+    # Dyadic coordinates and slopes keep all nodal contrasts exactly
+    # representable after adding the common temperature to either quadrature.
+    slope = epsilon*nodes.new_tensor([2., -1.])
+    contrast = nodes @ slope
+    wave = torch.complex(contrast, -2*contrast)
+    fields = torch.stack((wave, wave + (512-256j), torch.full_like(wave, 512-256j)))
+    q = -(conductivity @ slope)
+    flux = torch.complex(q, -2*q)
+    expected = torch.stack((flux, flux, torch.zeros_like(flux)))
+    points = [(0., 0.), (.37, -.21), (-1., .6), (1., 1.)]
+    errors = [(thermal_element_flux(model, fields, xi=a, eta=b)[:,0]-expected).abs().max()
+              for a,b in points]
+    errors.append((thermal_volume_mean_flux(model, fields)-expected).abs().max())
+    edges = nodes.roll(-1, dims=0)-nodes
+    normals = torch.stack((edges[:,1], -edges[:,0]), dim=1)
+    power = .75*(expected @ normals.T.to(expected))
+    actual = thermal_element_edge_power(model, fields)[:,0]
+    flux_error = float(torch.stack(errors).max()/flux.abs().max())
+    power_error = float((actual-power).abs().max()/power.abs().max())
+    record_property("scaled_flux_error", flux_error)
+    record_property("scaled_edge_power_error", power_error)
+    assert max(flux_error, power_error) < 8*torch.finfo(dtype).eps
