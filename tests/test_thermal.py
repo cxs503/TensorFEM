@@ -1688,3 +1688,42 @@ def test_insulated_two_material_rod_contact_heat_after_source_pulse(sparse, reco
         if previous is not None:
             assert np.all(previous/errors > 3.5)
         previous = errors
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_insulated_rod_contact_decay_against_continuous_mode(sparse, record_property):
+    from tensorfem import thermal_contact_pair_heat_steps
+
+    # A cosine measured from each insulated end has zero end flux. Normalize
+    # their amplitudes to a common unit rightward contact power at t=0.
+    decay = 3.
+    k = torch.tensor([1.4, 2.3], dtype=D)
+    cv = k.new_tensor([1.5, 2.])
+    lengths = k.new_tensor([.4, .6])
+    wave = (decay*cv/k).sqrt()
+    amplitude = k.new_tensor([1., -1.])/(k*wave*(wave*lengths).sin())
+    traces = amplitude*(wave*lengths).cos()
+    conductance = float(1/(traces[0]-traces[1]))
+    assert conductance > 0
+    previous = None
+    for n in (8, 16, 32):
+        west = torch.linspace(0., .4, n+1, dtype=D)
+        east = torch.linspace(.4, 1., n+1, dtype=D)
+        shape = torch.cat((amplitude[0]*(wave[0]*west).cos(),
+                           amplitude[1]*(wave[1]*(1-east)).cos()))
+        left = torch.cat((torch.arange(n), torch.arange(n)+n+1))
+        model = ThermalModel(torch.cat((west, east))[:, None], torch.stack((left, left+1), dim=1),
+                             k.repeat_interleave(n), 1., cv.repeat_interleave(n),
+                             torch.empty(0, dtype=torch.long), k.new_empty(0),
+                             contact_pairs=torch.tensor([[n, n+1]]), contact_conductance=conductance)
+        time = torch.linspace(0., .2, 4*n+1, dtype=D)
+        result = solve_transient_thermal(model, time, 2+shape, method="sdirk2", sparse=sparse)
+        exact = 2+torch.exp(-decay*time[:, None])*shape
+        heat = thermal_contact_pair_heat_steps(model, result)[:, 0].cumsum(0)
+        temperature_error = float((result.temperature-exact).abs().max())
+        heat_error = float((heat+torch.expm1(-decay*time[1:])/decay).abs().max())
+        record_property(f"n{n}_temperature_error_K", temperature_error)
+        record_property(f"n{n}_contact_heat_error_J", heat_error)
+        if previous is not None:
+            assert previous[0]/temperature_error > 3.5 and previous[1]/heat_error > 3.5
+        previous = temperature_error, heat_error
