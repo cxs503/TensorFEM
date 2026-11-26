@@ -232,6 +232,33 @@ def thermal_element_flux(model: ThermalModel, temperature: torch.Tensor, *, xi=0
     return -k[:,None]*gradient
 
 
+def thermal_volume_mean_flux(model: ThermalModel, temperature: torch.Tensor) -> torch.Tensor:
+    """Return volume-averaged Fourier flux (..., direction) in W/m².
+
+    LINE2 uses cross-sectional area and Q4 uses thickness, constant per cell.
+    For bilinear Q4, both the Jacobian determinant and its product with the
+    physical temperature gradient are affine in parent coordinates. Their
+    integrals therefore give the cell mean flux exactly at the parent center.
+    """
+    coords = model.nodes[model.elements.long()]
+    if len(coords) == 0:
+        raise ValueError("volume mean requires at least one element")
+    if model.element_type.lower() == "line2":
+        measure = coords[:, 1, 0] - coords[:, 0, 0]
+    else:
+        edges = coords.roll(-1, dims=1) - coords
+        following = edges.roll(-1, dims=1)
+        corner_cross = edges[..., 0]*following[..., 1] - edges[..., 1]*following[..., 0]
+        if torch.any(corner_cross <= 0):
+            raise ValueError("Q4 element has non-positive corner Jacobian")
+        measure = corner_cross.sum(dim=1) / 4
+    volume = measure * _expand(model.thickness, len(coords), model.nodes)
+    if not torch.isfinite(volume).all() or torch.any(volume <= 0):
+        raise ValueError("volume mean requires finite positive element volumes")
+    flux = thermal_element_flux(model, temperature)
+    return (flux * (volume / volume.sum())[:, None]).sum(dim=-2)
+
+
 def thermal_element_edge_power(model: ThermalModel, temperature: torch.Tensor) -> torch.Tensor:
     """Integrate outward Fourier power (W) on each Q4 edge using two Gauss points.
 

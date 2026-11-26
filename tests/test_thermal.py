@@ -1939,3 +1939,38 @@ def test_directional_edge_heat_tiny_terminal_lobe(edge_reversed, record_property
         record_property(f"{label}_relative_error", value.item())
     assert errors.max() < 1e-13
     torch.testing.assert_close(forward, torch.full_like(forward, .5))
+
+
+def test_volume_mean_flux_distorted_q4_boundary_integral(record_property):
+    from tensorfem import thermal_volume_mean_flux
+
+    nodes = torch.tensor([[0, 0], [.8, .1], [2.3, 0], [0, 1], [1.1, 1.4], [2., 1.]], dtype=D)
+    cells = torch.tensor([[0, 1, 4, 3], [1, 2, 5, 4]])
+    k = nodes.new_tensor([[[2., .4], [.4, 1.]], [[3., -.8], [-.8, 4.]]])
+    thickness = nodes.new_tensor([.7, 2.3])
+    model = ThermalModel(nodes, cells, k, 1., 1., torch.arange(6), nodes.new_zeros(6),
+                         thickness=thickness, element_type="q4")
+    t = nodes.new_tensor([3, -1, 2, 5, 4, -2])
+    history = torch.stack((t + 1j*t.flip(0), t.square() - 2j*t))
+    numerator = history.new_zeros((2, 2))
+    volume = 0.
+    for cell, material, h in zip(cells, k, thickness):
+        x, y = nodes[cell].T
+        volume += h * (x @ y.roll(-1) - y @ x.roll(-1)) / 2
+        normal_measure = torch.stack((y.roll(-1) - y, x - x.roll(-1)), dim=1)
+        trace = history[:, cell]
+        integrated_grad = ((trace + trace.roll(-1, dims=1)) / 2) @ normal_measure.to(history)
+        numerator -= h * (integrated_grad @ material.T.to(history))
+    error = (thermal_volume_mean_flux(model, history) - numerator / volume).abs().max().item()
+    record_property("max_absolute_flux_error_W_per_m2", error)
+    assert error < 5e-14
+
+
+def test_volume_mean_flux_line2_stepped_area():
+    from tensorfem import thermal_volume_mean_flux
+
+    x = torch.tensor([[0.], [1.], [4.]], dtype=D)
+    model = ThermalModel(x, torch.tensor([[0, 1], [1, 2]]), x.new_tensor([2., 4.]), 1., 1.,
+                         torch.arange(3), x.new_zeros(3), thickness=x.new_tensor([5., 2.]))
+    actual = thermal_volume_mean_flux(model, x.new_tensor([1., 3., 0.]))
+    torch.testing.assert_close(actual, x.new_tensor([(-4*5 + 4*6)/11]))
