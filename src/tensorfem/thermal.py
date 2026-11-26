@@ -1126,14 +1126,24 @@ def thermal_contact_pair_harmonic_cycle_heat(model: ThermalModel, temperature: t
     return minor+period*bias.clamp_min(0), minor+period*(-bias).clamp_min(0)
 
 
+def _integrate_contact_power(model, result, power_fn, **edge_interval):
+    if result.stage_temperature is None:
+        # Form the temperature jump before averaging: its mean may be
+        # smaller than one representable spacing at the absolute temperature.
+        power = power_fn(model, result.temperature, **edge_interval)
+        average = (1-result.theta)*power[:-1] + result.theta*power[1:]
+    else:
+        average = power_fn(model, result.stage_temperature, **edge_interval)
+    return result.time.diff().to(average)[:, None]*average
+
+
 def thermal_contact_pair_heat_steps(model: ThermalModel, result: ThermalTransientResult) -> torch.Tensor:
     """Heat in J per time interval and lumped contact, shaped (nt-1, n_pairs).
 
-    Positive heat leaves the first node in each pair. The integrator's
-    stage-weighted temperature accounts for nonuniform steps and SDIRK2 stages.
+    Positive heat leaves the first node in each pair. The theta method
+    averages endpoint powers. SDIRK2 uses its stored stage-weighted field.
     """
-    power = thermal_contact_pair_power(model, result.interval_temperature)
-    return result.time.diff().to(power)[:, None]*power
+    return _integrate_contact_power(model, result, thermal_contact_pair_power)
 
 
 def _contact_pair_interval_parts(model, time, temperature):
@@ -1403,11 +1413,10 @@ def thermal_contact_edge_heat_steps(model: ThermalModel, result: ThermalTransien
     """Heat crossing each Q4 contact edge per step in J, shape (nt-1, n_edges).
 
     Positive heat leaves the first trace. The edge fractions follow
-    thermal_contact_edge_power. Use the integrator's weighted stage field so
-    that full-edge exchange balances the discrete energy equations.
+    thermal_contact_edge_power. The theta method averages endpoint powers.
+    SDIRK2 uses its stored stage-weighted field.
     """
-    power = thermal_contact_edge_power(model, result.interval_temperature, start=start, end=end)
-    return result.time.diff().to(power)[:, None]*power
+    return _integrate_contact_power(model, result, thermal_contact_edge_power, start=start, end=end)
 
 
 def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:

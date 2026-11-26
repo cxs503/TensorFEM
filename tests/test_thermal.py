@@ -2119,3 +2119,33 @@ def test_theta_rod_reaction_heat_for_small_end_ramp(sparse, sign, record_propert
     record_property("total_error_per_unit_jump", total_error)
     assert max(step_error, total_error) < 2e-15
     torch.testing.assert_close(steps.sum(1), jump*x.new_tensor([.5, 0.]), rtol=2e-15, atol=0.)
+
+
+@pytest.mark.parametrize("direction", [-1, 1])
+@pytest.mark.parametrize("sparse", [False, True])
+def test_contact_heat_ramp_on_common_temperature(direction, sparse, record_property):
+    from tensorfem import thermal_contact_edge_heat_steps, thermal_contact_pair_heat_steps
+
+    x = torch.tensor([[0,0],[1,0],[1,1],[0,1],[1,0],[2,0],[2,1],[1,1]], dtype=D)
+    base = 1536.
+    delta = direction*math.ulp(base)
+    initial = x.new_full((8,), base)
+    model = ThermalModel(x, torch.arange(8).reshape(2,4), 1., 1., 1.,
+                         torch.arange(8), initial, element_type="q4",
+                         contact_pairs=torch.tensor([[1,4]]), contact_conductance=2.,
+                         contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]),
+                         contact_edge_conductance=x.new_tensor([[1.,3.]]))
+    times = x.new_tensor([0., 1.5, 2.])
+    prescribed = initial.repeat(3, 1)
+    prescribed[1:, :4] += delta
+    run = solve_transient_thermal(model, times, initial, theta=.5, sparse=sparse,
+                                  fixed_temperature_history=prescribed)
+    # Unit edge: integrate g(s)=1+2s over [1/4, 3/4] to get 1 W/K.
+    # The jump ramps for 1.5 s then holds for 0.5 s.
+    integral = delta*x.new_tensor([.75, .5])
+    pair = thermal_contact_pair_heat_steps(model, run)[:,0]
+    edge = thermal_contact_edge_heat_steps(model, run, start=.25, end=.75)[:,0]
+    errors = [(pair/(2*integral)-1).abs().max(), (edge/integral-1).abs().max()]
+    record_property("max_pair_relative_error", float(errors[0]))
+    record_property("max_subedge_relative_error", float(errors[1]))
+    assert max(errors) < 2e-15
