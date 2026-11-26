@@ -964,6 +964,41 @@ def thermal_contact_pair_heat_steps(model: ThermalModel, result: ThermalTransien
     return result.time.diff().to(power)[:, None]*power
 
 
+def thermal_contact_pair_directional_heat(model: ThermalModel, time: torch.Tensor,
+                                          temperature: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    """Forward and reverse heat magnitudes (J) from piecewise-linear temperature histories.
+
+    Both outputs have shape (nt-1, n_pairs). Forward follows contact_pairs
+    order. Within a sampling interval a linear sign change contributes a
+    triangle to each direction. Their difference equals the trapezoidal net
+    heat, and thus the stage-integrated net heat for Crank--Nicolson. For
+    other time integrators thermal_contact_pair_heat_steps gives the solver's
+    own net heat. Multiple reversals require intermediate temperature samples.
+    """
+    if time.is_complex() or time.ndim != 1 or len(time) < 2 or not torch.isfinite(time).all():
+        raise ValueError("time must be a finite real vector with at least two entries")
+    if temperature.is_complex() or temperature.shape != (len(time),len(model.nodes)):
+        raise ValueError("temperature must be a real (nt, n_nodes) history")
+    power = thermal_contact_pair_power(model,temperature)
+    dt = time.diff().to(power)[:, None]
+    if not torch.isfinite(power).all() or not torch.isfinite(dt).all() or (dt <= 0).any():
+        raise ValueError("require finite contact powers and positive finite time steps")
+    left,right = power[:-1],power[1:]
+    # Normalize before forming the zero-crossing fractions, including for
+    # weak signals. A zero-power interval contributes zero to both integrals.
+    scale = torch.maximum(left.abs(),right.abs())
+    scale = torch.where(scale > 0,scale,torch.ones_like(scale))
+    a,b = left.abs()/scale,right.abs()/scale
+    total = a+b
+    total = torch.where(total > 0,total,torch.ones_like(total))
+    crossing = ((left > 0) & (right < 0)) | ((left < 0) & (right > 0))
+    left_weight = torch.where(crossing,a/total,1.)*.5
+    right_weight = torch.where(crossing,b/total,1.)*.5
+    forward = dt*(left_weight*left.clamp_min(0)+right_weight*right.clamp_min(0))
+    reverse = dt*(left_weight*(-left).clamp_min(0)+right_weight*(-right).clamp_min(0))
+    return forward,reverse
+
+
 def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *,
                                start: float = 0., end: float = 1.) -> torch.Tensor:
     """Integrated W per Q4 contact edge, positive from the first trace to the second.

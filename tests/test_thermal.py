@@ -1451,3 +1451,51 @@ def test_reversing_pair_heat_against_two_driven_stores(sparse,method,theta,order
         record_property(f"n{n}_max_step_balance_J",balance)
         assert balance < 2e-13
         assert heat[0,0] > 0 and heat[-1,0] < 0
+
+
+@pytest.mark.parametrize("sparse",[False,True])
+def test_directional_heat_across_two_store_reversal(sparse,record_property):
+    from tensorfem import thermal_contact_pair_directional_heat, thermal_contact_pair_heat_steps
+
+    x = torch.tensor([[0.],[1.]],dtype=D)
+    model = ThermalModel(x,torch.empty((0,2),dtype=torch.long),1.,1.,1.,
+                         torch.empty(0,dtype=torch.long),x.new_empty(0),contact_pairs=torch.tensor([[0,1]]),
+                         contact_conductance=1.5,nodal_heat_capacity=x.new_tensor([2.,3.]),
+                         nodal_heat=x.new_tensor([0.,3.75]))
+    # q(t)=1.5*(3*exp(-1.25*t)-1); its primitive peaks at log(3)/1.25.
+    crossing = math.log(3)/1.25
+    def primitive(t):
+        return 1.5*(-3*math.expm1(-1.25*t)/1.25-t)
+    expected = [primitive(crossing),primitive(crossing)-primitive(1.5)]
+    previous = None
+    for n in (16,32,64,128):
+        time = 1.5*torch.linspace(0.,1.,n+1,dtype=D)
+        result = solve_transient_thermal(model,time,x.new_tensor([2.,0.]),theta=.5,sparse=sparse)
+        forward,reverse = thermal_contact_pair_directional_heat(model,time,result.temperature)
+        assert ((forward>0)&(reverse>0)).sum()==1
+        residual = float((forward-reverse-thermal_contact_pair_heat_steps(model,result)).abs().max())
+        record_property(f"n{n}_net_residual_J",residual)
+        assert residual < 1e-14
+        errors = [abs(float(q.sum())-ref) for q,ref in zip((forward,reverse),expected)]
+        for i,name in enumerate(("forward","reverse")):
+            record_property(f"n{n}_{name}_error_J",errors[i])
+            if previous is not None:
+                order = math.log2(previous[i]/errors[i])
+                record_property(f"n{n}_{name}_order",order)
+                assert 1.85 < order < 2.15
+        previous = errors
+
+
+def test_linear_directional_contact_heat_zero_endpoints_and_weak_asymmetric_crossing():
+    from dataclasses import replace
+    from tensorfem import thermal_contact_pair_directional_heat
+
+    model = replace(line_model(),contact_pairs=torch.tensor([[0,1],[1,0]]),contact_conductance=1.)
+    time = torch.tensor([0.,1.,3.,4.,6.],dtype=D)
+    field = torch.zeros((5,len(model.nodes)),dtype=D)
+    amplitude = 2.**-600
+    field[:,0] = field.new_tensor([0.,3.,-1.,0.,0.])*amplitude
+    forward,reverse = thermal_contact_pair_directional_heat(model,time,field)
+    expected = field.new_tensor([[1.5,0.],[2.25,.25],[0.,.5],[0.,0.]])
+    torch.testing.assert_close(forward/amplitude,expected,atol=0,rtol=0)
+    torch.testing.assert_close(reverse/amplitude,expected.flip((1,)),atol=0,rtol=0)
