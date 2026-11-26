@@ -954,6 +954,16 @@ def thermal_contact_pair_power(model: ThermalModel, temperature: torch.Tensor) -
     return g*(field[...,left]-field[...,right])
 
 
+def thermal_contact_pair_heat_steps(model: ThermalModel, result: ThermalTransientResult) -> torch.Tensor:
+    """Heat in J per time interval and lumped contact, shaped (nt-1, n_pairs).
+
+    Positive heat leaves the first node in each pair. The integrator's
+    stage-weighted temperature accounts for nonuniform steps and SDIRK2 stages.
+    """
+    power = thermal_contact_pair_power(model, result.interval_temperature)
+    return result.time.diff().to(power)[:, None]*power
+
+
 def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *,
                                start: float = 0., end: float = 1.) -> torch.Tensor:
     """Integrated W per Q4 contact edge, positive from the first trace to the second.

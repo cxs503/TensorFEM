@@ -1415,3 +1415,39 @@ def test_curved_harmonic_rod_contact_power_refinement(sparse, record_property):
                 record_property(f"n{n}_{name}_order",order)
                 assert 1.9 < order < 2.1
         previous = errors
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+@pytest.mark.parametrize("method,theta,order", [("theta",1.,1),("theta",.5,2),("sdirk2",.5,2)])
+def test_reversing_pair_heat_against_two_driven_stores(sparse,method,theta,order,record_property):
+    from tensorfem import thermal_contact_pair_heat_steps
+
+    # Two parallel links in opposite node order. A 3.75 W heater in store 2
+    # reverses their heat flow: D=T1-T2 satisfies D'=-1.25*(D+1), D(0)=2.
+    x = torch.tensor([[0.],[1.]],dtype=D)
+    initial = x.new_tensor([2.,0.])
+    model = ThermalModel(x,torch.empty((0,2),dtype=torch.long),1.,1.,1.,
+                         torch.empty(0,dtype=torch.long),x.new_empty(0),
+                         contact_pairs=torch.tensor([[0,1],[1,0]]),contact_conductance=x.new_tensor([1.,.5]),
+                         nodal_heat_capacity=x.new_tensor([2.,3.]),nodal_heat=x.new_tensor([0.,3.75]))
+    previous = None
+    for n in (16,32,64):
+        time = 1.5*torch.linspace(0.,1.,n+1,dtype=D)**1.25
+        result = solve_transient_thermal(model,time,initial,theta=theta,method=method,sparse=sparse)
+        heat = thermal_contact_pair_heat_steps(model,result)
+        integral = -3*torch.expm1(-1.25*time)/1.25-time
+        expected = integral[:,None]*x.new_tensor([1.,-.5])
+        error = float((heat.cumsum(0)-expected[1:]).abs().max())
+        record_property(f"n{n}_max_cumulative_heat_error_J",error)
+        if previous is not None:
+            measured = math.log2(previous/error)
+            record_property(f"n{n}_order",measured)
+            assert order-.15 < measured < order+.15
+        previous = error
+        transfer = heat[:,0]-heat[:,1]
+        change = result.temperature.diff(dim=0)
+        balance = max(float((2*change[:,0]+transfer).abs().max()),
+                      float((3*change[:,1]-transfer-3.75*time.diff()).abs().max()))
+        record_property(f"n{n}_max_step_balance_J",balance)
+        assert balance < 2e-13
+        assert heat[0,0] > 0 and heat[-1,0] < 0
