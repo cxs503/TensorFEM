@@ -1880,3 +1880,35 @@ def test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap(factor, r
     record_property("entry_error_s", error)
     record_property("duration_error_s", width_error)
     assert error < 1e-22 and width_error < 1e-22
+
+
+@pytest.mark.parametrize("start,end", [(0., 1.), (.17, .82), (.5, .5)])
+def test_contact_edge_heat_moving_zero(start, end, record_property):
+    from numpy.polynomial import Polynomial
+    from tensorfem import thermal_contact_edge_directional_heat, thermal_contact_edge_power
+
+    nodes = torch.tensor([[0,0],[1,0],[1,1],[0,1],[1,0],[2,0],[2,1],[1,1]], dtype=D)
+    model = ThermalModel(nodes, torch.arange(8).reshape(2, 4), 1., 1., 1., torch.arange(8),
+                         nodes.new_zeros(8), element_type="q4", contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]),
+                         contact_edge_conductance=nodes.new_tensor([[1., 2.]]))
+    times = nodes.new_tensor([-.25, .23, .68, 1.3])
+    field = nodes.new_zeros((len(times), 8))
+    field[:, 1], field[:, 2] = -times, 1-times
+    forward, reverse = thermal_contact_edge_directional_heat(model, times, field, start=start, end=end)
+
+    # Integrate (1+s)*max(s-t,0) in time FIRST. Its integral between two
+    # times is the difference of positive-part squared polynomials / 2.
+    def primitive(t, positive):
+        f = (Polynomial([1, 1])*Polynomial([-t, 1])**2/2).integ()
+        split = min(end, max(start, t))
+        return f(end)-f(split) if positive else f(split)-f(start)
+
+    for direction, actual, positive in (("forward", forward, True), ("reverse", reverse, False)):
+        values = nodes.new_tensor([primitive(t, positive) for t in times.tolist()])
+        exact = -values.diff() if positive else values.diff()
+        error = (actual[:, 0]-exact).abs().max().item()
+        record_property(direction+"_max_error_J", error)
+        assert error < 1e-13
+    net = thermal_contact_edge_power(model, field, start=start, end=end)
+    torch.testing.assert_close(forward-reverse, .5*times.diff()[:, None]*(net[:-1]+net[1:]),
+                               atol=1e-13, rtol=0.)

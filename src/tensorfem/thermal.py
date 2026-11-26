@@ -1283,6 +1283,49 @@ def thermal_contact_edge_biased_cycle_heat(model: ThermalModel, temperature: tor
     return tuple((p*time_weights).sum(dim=(-2, -1)) for p in powers)
 
 
+def thermal_contact_edge_directional_heat(model: ThermalModel, time: torch.Tensor, temperature: torch.Tensor, *,
+                                        start: float = 0., end: float = 1., time_order: int = 8):
+    """Return forward and reverse joules per sampled interval and Q4 contact edge.
+
+    Linearly interpolate real nodal temperatures in time. Split each time
+    interval where the jump changes sign at either end of the selected
+    subedge. At each Gauss-Legendre time sample integrate both directions
+    analytically along the edge. Increase time_order for strongly varying
+    spatial slopes. Net heat follows trapezoidal endpoint power integration.
+    """
+    from numpy.polynomial.legendre import leggauss
+
+    if not 0. <= start <= end <= 1. or type(time_order) is not int or time_order < 1:
+        raise ValueError("require ordered edge fractions in [0,1] and a positive integer time_order")
+    if (time.ndim != 1 or time.numel() < 2 or time.is_complex() or not torch.isfinite(time).all()
+            or not (time[1:] > time[:-1]).all()):
+        raise ValueError("supply finite strictly increasing real sample times")
+    if temperature.shape != (time.numel(), len(model.nodes)) or temperature.is_complex():
+        raise ValueError("supply one real nodal field per sample time")
+    _, g, jump = _contact_edge_jump(model, temperature)
+    if not torch.isfinite(jump).all():
+        raise ValueError("contact temperature jumps must be finite")
+    jump = jump.to(torch.promote_types(jump.dtype, g.dtype))
+    fractions = jump.new_tensor([start, end])
+    edge = (1-fractions)*jump[..., :1]+fractions*jump[..., 1:]
+    before, after = edge[:-1], edge[1:]
+    crossing = ((before > 0) & (after < 0)) | ((before < 0) & (after > 0))
+    scale = torch.where(crossing, torch.maximum(before.abs(), after.abs()), 1.)
+    a = torch.where(crossing, before.abs()/scale, 0.)
+    b = torch.where(crossing, after.abs()/scale, 0.)
+    roots = a/torch.where(crossing, a+b, 1.)
+    zero = torch.zeros_like(roots[..., :1])
+    cuts = torch.cat((zero, roots, zero+1.), dim=-1).sort().values
+    span = cuts.diff(dim=-1)[..., None]
+    nodes, weights = leggauss(time_order)
+    phase = cuts[..., :-1, None]+span*jump.new_tensor((1+nodes)/2)
+    left, right = ((1-phase)*before[..., j, None, None]+phase*after[..., j, None, None] for j in (0, 1))
+    gl, gr = ((1-f)*g[:, 0, None, None]+f*g[:, 1, None, None] for f in (start, end))
+    powers = _edge_directional_integrals(left, right, gl, gr, end-start)
+    duration = time.diff().to(jump)[:, None]
+    return tuple(duration*(p*span*jump.new_tensor(weights/2)).sum(dim=(-2, -1)) for p in powers)
+
+
 def thermal_contact_edge_heat_steps(model: ThermalModel, result: ThermalTransientResult, *,
                                     start: float = 0., end: float = 1.) -> torch.Tensor:
     """Heat crossing each Q4 contact edge per step in J, shape (nt-1, n_edges).
