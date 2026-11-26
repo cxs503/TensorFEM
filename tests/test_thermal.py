@@ -1326,3 +1326,44 @@ def test_closed_linear_edge_flux_is_invariant_to_seam(n):
         torch.testing.assert_close(recovered, flux.roll(shift, dims=-1), atol=1e-13, rtol=0)
     with pytest.raises(ValueError, match="three"):
         recover_linear_edge_flux(power[:,:2], area[:2], closed=True)
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+@pytest.mark.parametrize("omega", [.125, 2., 16.])
+def test_driven_two_material_rod_contact_pair_power(sparse,omega,record_property):
+    from tensorfem import solve_harmonic_thermal, thermal_contact_pair_power, thermal_element_nodal_power
+
+    # Axial power q fixes the slope -q/(k*A) in each segment and the
+    # temperature jump q/G. Local volumetric heating i*omega*C*T supplies
+    # storage, keeping these piecewise-linear fields exact at every frequency.
+    x = torch.tensor([0.,.375,1.,1.,1.25,2.],dtype=D)
+    conn = torch.tensor([[0,1],[1,2],[3,4],[4,5]])
+    q, cold, g = .75-.25j, .5+.375j, 2.5
+    area = torch.tensor([1.,1.,.5,.5],dtype=D)
+    k = torch.tensor([2.,2.,3.,3.],dtype=D)
+    capacity = torch.tensor([1.5,1.5,4.,4.],dtype=D)
+    exact = torch.cat((cold+q/g-q*(x[:3]-1)/2, cold-q*(x[3:]-1)/1.5))
+    model = ThermalModel(x[:,None],conn,k,1.,capacity,torch.tensor([0,5]),exact[[0,5]],
+                         thickness=area,heat_source=1j*omega*capacity[:,None]*exact[conn],
+                         contact_pairs=torch.tensor([[2,3]]),contact_conductance=g)
+    result = solve_harmonic_thermal(model,omega,sparse=sparse)
+    contact = thermal_contact_pair_power(model,result.temperature).item()
+    element = thermal_element_nodal_power(model,result.temperature,omega)
+    errors = dict(temperature_K=float((result.temperature-exact).abs().max()),
+                  contact_W=abs(contact-q),left_balance_W=abs(element[1,1].item()+contact),
+                  right_balance_W=abs(element[2,0].item()-contact))
+    for name,error in errors.items():
+        record_property(name,error)
+        assert error < 3e-14
+
+
+def test_batched_contact_pair_power_reverses_with_node_order():
+    from dataclasses import replace
+    from tensorfem import thermal_contact_pair_power
+
+    model = replace(line_model(),contact_pairs=torch.tensor([[1,2],[4,3],[6,7]]),
+                    contact_conductance=torch.tensor([2.,.5,0.],dtype=D))
+    field = model.nodes[:,0]
+    batch = torch.stack((field,-3*field))
+    expected = batch.new_tensor([[-.5,.125,0.],[1.5,-.375,0.]])
+    torch.testing.assert_close(thermal_contact_pair_power(model,batch),expected,rtol=0,atol=0)

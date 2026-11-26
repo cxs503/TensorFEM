@@ -927,6 +927,33 @@ def thermal_contact_edge_entropy_steps(model: ThermalModel, time: torch.Tensor, 
     return duration[:, None] * (rate * rate.new_tensor(weights/2)[:, None]).sum(dim=1)
 
 
+def _contact_pair_data(model):
+    x = model.nodes
+    pairs = model.contact_pairs.to(device=x.device, dtype=torch.long)
+    g = torch.as_tensor(model.contact_conductance, dtype=x.dtype, device=x.device)
+    if g.numel() not in (1, len(pairs)) or not torch.isfinite(g).all() or (g < 0).any():
+        raise ValueError("contact_conductance must be finite, nonnegative, scalar or one per pair")
+    g = g.reshape(-1).expand(len(pairs))
+    return pairs,g
+
+
+def thermal_contact_pair_power(model: ThermalModel, temperature: torch.Tensor) -> torch.Tensor:
+    """Signed W through each lumped contact, positive from first node to second.
+
+    Real fields and complex phasors may have arbitrary leading axes; the
+    final temperature axis indexes global nodes, and the output indexes
+    contacts in contact_pairs order. Conductance includes tributary area.
+    """
+    if model.contact_pairs is None:
+        raise ValueError("provide contact_pairs on the model")
+    if temperature.ndim < 1 or temperature.shape[-1] != len(model.nodes):
+        raise ValueError("temperature must have one value per node")
+    pairs,g = _contact_pair_data(model)
+    left,right = pairs.unbind(dim=1)
+    field = temperature.to(model.nodes.device)
+    return g*(field[...,left]-field[...,right])
+
+
 def thermal_contact_edge_power(model: ThermalModel, temperature: torch.Tensor, *,
                                start: float = 0., end: float = 1.) -> torch.Tensor:
     """Integrated W per Q4 contact edge, positive from the first trace to the second.
@@ -1030,11 +1057,7 @@ def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads
             K = K.index_put((er,ecidx),hk.reshape(-1),accumulate=True)
         f = f.index_put((edges.reshape(-1),),hf.reshape(-1),accumulate=True)
     if model.contact_pairs is not None:
-        pairs = model.contact_pairs.to(device=x.device, dtype=torch.long)
-        g = torch.as_tensor(model.contact_conductance, dtype=x.dtype, device=x.device)
-        if g.numel() not in (1, len(pairs)) or not torch.isfinite(g).all() or (g < 0).any():
-            raise ValueError("contact_conductance must be finite, nonnegative, scalar or one per pair")
-        g = g.reshape(-1).expand(len(pairs))
+        pairs,g = _contact_pair_data(model)
         left, right = pairs.unbind(dim=1)
         indices = (torch.cat((left, right, left, right)), torch.cat((left, right, right, left)))
         entries = torch.cat((g, g, -g, -g))
