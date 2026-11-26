@@ -1839,7 +1839,8 @@ def test_biased_contact_reversal_exactly_at_origin(imag, record_property):
 def test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap(factor, record_property):
     from dataclasses import replace
     from decimal import Decimal, localcontext
-    from tensorfem import thermal_contact_pair_harmonic_cycle_duration, thermal_contact_pair_harmonic_reversal_times
+    from tensorfem import (thermal_contact_pair_harmonic_cycle_duration, thermal_contact_pair_harmonic_cycle_heat,
+                           thermal_contact_pair_harmonic_reversal_times)
 
     model = replace(line_model(), contact_pairs=torch.tensor([[0, 1]]), contact_conductance=1.)
     eps = math.ulp(1.)
@@ -1849,6 +1850,8 @@ def test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap(factor, r
     dc[0], ac[0] = 1+eps, complex(-1., y)
     entries = thermal_contact_pair_harmonic_reversal_times(model, ac, 1., steady_temperature=dc)
     _, reverse = thermal_contact_pair_harmonic_cycle_duration(model, ac, 1., steady_temperature=dc)
+    _, reverse_heat = thermal_contact_pair_harmonic_cycle_heat(model, ac, 1., steady_temperature=dc)
+    record_property("reverse_heat_J", reverse_heat.item())
     # Solve the quadratic in tan(t/2) using the actual binary inputs.
     with localcontext() as ctx:
         ctx.prec = 80
@@ -1857,9 +1860,21 @@ def test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap(factor, r
         discriminant = v*v-(b-1)*(b+1)
         if discriminant <= 0:
             assert reverse.item() == 0. and all(t.isnan().all() for t in entries)
+            assert reverse_heat.item() == 0.
             return
         root = discriminant.sqrt()
-        roots = [2*math.atan(float((v+s*root)/(b+1))) for s in (1, -1)]
+        z_hi, z_lo = ((v+s*root)/(b+1) for s in (1, -1))
+        roots = [2*math.atan(float(z)) for z in (z_hi, z_lo)]
+        # Integrate b-cos(t)-v*sin(t) directly with z=tan(t/2). Here
+        # |z| < 1e-7, so truncating atan(z) after z^9 costs < 1e-77 rad.
+        def primitive(z):
+            atan = sum((-1)**j*z**(2*j+1)/(2*j+1) for j in range(5))
+            return 2*b*atan-2*(z+v*z*z)/(1+z*z)
+        expected_heat = float(primitive(z_lo)-primitive(z_hi))
+    relative_error = abs(reverse_heat.item()/expected_heat-1)
+    record_property("reverse_heat_reference_J", expected_heat)
+    record_property("reverse_heat_relative_error", relative_error)
+    assert relative_error < 5e-15
     error = max(abs(t.item()-ref) for t, ref in zip(entries, roots))
     width_error = abs(reverse.item()-(roots[0]-roots[1]))
     record_property("entry_error_s", error)
