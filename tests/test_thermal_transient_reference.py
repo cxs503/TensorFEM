@@ -241,3 +241,57 @@ def test_equal_wall_ramp_and_hold_reaction_heat(record_property):
         assert torch.all(coarse > 3*fine)
     assert torch.all(errors[-1] < .01*reference)
     assert torch.all(abs(errors[-1]-errors[-2]) < .05*errors[-1])
+
+
+def test_equal_effusivity_interface_heat_from_both_elements(record_property):
+    """Two traces of the same rightward heat under symmetric wall heating."""
+    from tensorfem import thermal_element_nodal_heat_steps
+
+    ramp_end, end = .04, .09
+    y = .25  # Integral of 1/k from the left wall to the material interface.
+    wave = torch.pi*torch.arange(1, 80, 2, dtype=FLOAT)
+
+    def ramp_heat(t):
+        # With k*C=1 the resistance coordinate gives T_t=T_yy. Half the
+        # total storage minus storage in [0,y] equals rightward interface heat.
+        tail = (4*torch.cos(wave*y)*torch.exp(-wave.square()*t)/wave**4).sum()
+        return (t*(.5-y)-1/24+y*y/4-y**3/6+tail)/ramp_end
+
+    cumulative = torch.stack((wave.new_zeros(()), ramp_heat(ramp_end),
+                              ramp_heat(end)-ramp_heat(end-ramp_end)))
+    reference = cumulative.diff()
+    for phase, value in zip(("ramp", "hold"), reference):
+        record_property(f"{phase}_interface_reference_J_m2", value.item())
+    errors = []
+    for n, steps in ((12, 32), (24, 64), (48, 128), (48, 256)):
+        nodes, conn = line_mesh(n)
+        mid = n//2
+        k = nodes.new_tensor([2., 2/3]).repeat_interleave(mid)
+        model = ThermalModel(nodes, conn, k, nodes.new_tensor(1.), 1/k, torch.tensor([0, n]),
+                             nodes.new_zeros(2))
+        time = torch.cat((torch.linspace(0., ramp_end, steps+1, dtype=FLOAT),
+                          torch.linspace(ramp_end, end, steps+1, dtype=FLOAT)[1:]))
+        wall = (time/ramp_end).clamp(max=1.)[:, None].expand(-1, 2)
+        result = solve_transient_thermal(model, time, nodes.new_zeros(n+1), theta=.5,
+                                         fixed_temperature_history=wall)
+        local = thermal_element_nodal_heat_steps(model, result).reshape(2, steps, n, 2).sum(1)
+        left_out, right_in = -local[:, mid-1, 1], local[:, mid, 0]
+        walls = result.nodal_reaction_heat_steps()[:, [0, n]].reshape(2, steps, 2).sum(1)
+        cell_storage = result.temperature[::steps, conn].mean(-1)/(n*k)
+        left_gain = cell_storage[:, :mid].sum(1).diff()
+        right_gain = cell_storage[:, mid:].sum(1).diff()
+        prefix = f"n{n}_steps{steps}"
+        for key, residual in (("left_balance", walls[:, 0]-left_out-left_gain),
+                              ("right_balance", walls[:, 1]+right_in-right_gain),
+                              ("trace_difference", left_out-right_in)):
+            value = residual.abs().max().item()
+            record_property(f"{prefix}_{key}_J_m2", value)
+            assert value < 1e-12
+        error = torch.maximum(abs(left_out-reference), abs(right_in-reference))
+        for phase, value in zip(("ramp", "hold"), error):
+            record_property(f"{prefix}_{phase}_interface_error_J_m2", value.item())
+        errors.append(error)
+    for coarse, fine in zip(errors[:2], errors[1:3]):
+        assert torch.all(coarse > 3*fine)
+    assert torch.all(errors[-1] < .01*abs(reference))
+    assert torch.all(abs(errors[-1]-errors[-2]) < .05*errors[-1])
