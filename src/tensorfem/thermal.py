@@ -195,7 +195,8 @@ def _q4_geometry(coords, xi, eta):
                       (1+xi)*(1+eta),(1-xi)*(1+eta)]) / 4
     dn = coords.new_tensor([[-(1-eta),-(1-xi)],[(1-eta),-(1+xi)],
                        [(1+eta),(1+xi)],[-(1+eta),(1-xi)]]) / 4
-    jac = torch.einsum("eia,ib->eab", coords, dn)
+    # Only relative coordinates enter the Jacobian (shape derivatives sum to zero).
+    jac = torch.einsum("eia,ib->eab", coords - coords[:, :1], dn)
     det = torch.linalg.det(jac)
     if torch.any(det <= 0):
         raise ValueError("Q4 element has non-positive Jacobian")

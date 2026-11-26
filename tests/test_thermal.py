@@ -2058,3 +2058,38 @@ def test_q4_flux_invariant_to_temperature_datum(dtype, epsilon, record_property)
     record_property("scaled_flux_error", flux_error)
     record_property("scaled_edge_power_error", power_error)
     assert max(flux_error, power_error) < 8*torch.finfo(dtype).eps
+
+
+@pytest.mark.parametrize("dtype,offset", [(torch.float32, 2.**20), (torch.float64, 2.**48)])
+def test_q4_geometry_invariant_to_coordinate_origin(dtype, offset, record_property):
+    from dataclasses import replace
+    from tensorfem import thermal_element_flux
+
+    local = torch.tensor([[0., 0.], [1.5, .25], [1.25, 1.25], [-.25, .75]], dtype=dtype)
+    shift = local.new_tensor([offset, -offset])
+    translated = local + shift
+    torch.testing.assert_close(translated-shift, local, rtol=0., atol=0.)
+    k = local.new_tensor([[2., .5], [.5, 3.]])
+    model = ThermalModel(local, torch.arange(4)[None,:], k[None], 1.5, 2.,
+                         torch.arange(4), local.new_zeros(4), thickness=.75, element_type="q4")
+    moved = replace(model, nodes=translated)
+    baseline = assemble_thermal(model)
+    matrices = assemble_thermal(moved)
+    slope = local.new_tensor([2., -1.])
+    temperature = local @ slope
+    exact_flux = -k @ slope
+    flux = thermal_element_flux(moved, temperature, xi=.37, eta=-.21)[0]
+    # For a constant physical gradient, integration by parts gives each
+    # nodal conductive load from the half-edge shares on its adjacent sides.
+    edges = local.roll(-1, dims=0)-local
+    normals = torch.stack((edges[:,1], -edges[:,0]), dim=1)
+    exact_load = -.75/2*((normals+normals.roll(1, dims=0)) @ exact_flux)
+    def scaled_error(actual, exact):
+        return float((actual-exact).abs().max()/exact.abs().max())
+    errors = dict(flux=scaled_error(flux, exact_flux),
+                  nodal_load=scaled_error(matrices.conductivity @ temperature, exact_load),
+                  stiffness_translation=scaled_error(matrices.conductivity, baseline.conductivity),
+                  capacity_translation=scaled_error(matrices.capacity, baseline.capacity))
+    for key,value in errors.items():
+        record_property(key, value)
+    assert max(errors.values()) < 8*torch.finfo(dtype).eps
