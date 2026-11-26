@@ -1057,6 +1057,48 @@ def thermal_contact_edge_directional_power(model: ThermalModel, temperature: tor
     return forward,reverse
 
 
+def thermal_contact_edge_harmonic_cycle_heat(model: ThermalModel, temperature: torch.Tensor,
+                                             angular_frequency: float, *, start: float = 0.,
+                                             end: float = 1., quadrature_order: int = 16) -> torch.Tensor:
+    """Heat in J flowing in each direction during one zero-mean harmonic cycle.
+
+    For peak nodal phasors with exp(iωt), the forward and reverse magnitudes
+    are equal. Return that common value per Q4 contact edge and leading batch.
+    Integrate the local positive half-cycle (2*g*abs(jump)/ω) over the edge
+    fraction using Gauss-Legendre quadrature. Increase quadrature_order to
+    resolve sharply varying phasor magnitudes near a phase reversal.
+    """
+    from numpy.polynomial.legendre import leggauss
+
+    if not math.isfinite(angular_frequency) or angular_frequency <= 0:
+        raise ValueError("angular_frequency must be finite and positive")
+    if not 0. <= start <= end <= 1.:
+        raise ValueError("contact edge fractions must satisfy 0 <= start <= end <= 1")
+    if type(quadrature_order) is not int or quadrature_order < 1:
+        raise ValueError("quadrature_order must be a positive integer")
+    _,g,jump = _contact_edge_jump(model,temperature)
+    if not torch.isfinite(jump).all():
+        raise ValueError("contact temperature jumps must be finite")
+    left,right = jump.unbind(-1)
+    delta = right-left
+    length = delta.abs()
+    safe_length = torch.where(length > 0,length,1.)
+    # Split at the nearest approach to zero, including a true spatial reversal.
+    projection = -(left*(delta/safe_length).conj()).real
+    split = (projection.clamp_min(0).minimum(length)/safe_length).clamp(start,end)
+    points,weights = leggauss(quadrature_order)
+    nodes = g.new_tensor((1+points)/2)
+    weights = g.new_tensor(weights/2)
+    def integrate(lo,hi):
+        width = hi-lo
+        s = lo + width*nodes
+        conductance = (1-s)*g[:,0:1]+s*g[:,1:2]
+        magnitude = ((1-s)*left[...,None]+s*right[...,None]).abs()
+        return width.squeeze(-1)*(weights*conductance*magnitude).sum(dim=-1)
+    middle = split[...,None]
+    return 2*(integrate(start,middle)+integrate(middle,end))/angular_frequency
+
+
 def thermal_contact_edge_heat_steps(model: ThermalModel, result: ThermalTransientResult, *,
                                     start: float = 0., end: float = 1.) -> torch.Tensor:
     """Heat crossing each Q4 contact edge per step in J, shape (nt-1, n_edges).

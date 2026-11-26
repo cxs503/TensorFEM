@@ -1531,3 +1531,28 @@ def test_directional_contact_edge_power_cancelling_traces(graded,record_property
     record_property("max_directional_error_W",worst)
     record_property("max_signed_residual_W",net_error)
     assert max(worst,net_error)<2e-15
+
+
+@pytest.mark.parametrize("imag", [0., .25, 1.])
+def test_harmonic_contact_edge_cycle_heat_against_local_magnitude(imag,record_property):
+    from tensorfem import thermal_contact_edge_harmonic_cycle_heat
+
+    x = torch.tensor([[0,0],[1,0],[1,1],[0,1],[1,0],[2,0],[2,1],[1,1]],dtype=D)
+    model = ThermalModel(x,torch.arange(8).reshape(2,4),1.,1.,1.,torch.arange(8),x.new_zeros(8),
+                         element_type="q4",contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]),
+                         contact_edge_conductance=x.new_tensor([[1.,3.]]))
+    # With y=s-1/2, g=2+2y and the local jump amplitude is |y+i*b|.
+    def primitive(y):
+        r = math.hypot(y,imag)
+        return y*r + (imag**2*math.asinh(y/imag) if imag else 0.) + 2*r**3/3
+    field = torch.zeros(8,dtype=torch.complex128)
+    field[1],field[2] = -.5+1j*imag,.5+1j*imag
+    batch = torch.stack((field,1j*field,field*0))
+    omega = 2.5
+    worst = 0.
+    for start,end in ((0.,1.),(.15,.85),(.5,.5),(.65,.9)):
+        result = thermal_contact_edge_harmonic_cycle_heat(model,batch,omega,start=start,end=end)
+        expected = 2*(primitive(end-.5)-primitive(start-.5))/omega
+        worst = max(worst,float((result[:,0]-x.new_tensor([expected,expected,0.])).abs().max()))
+    record_property("max_per_direction_cycle_heat_error_J",worst)
+    assert worst < 1e-13
