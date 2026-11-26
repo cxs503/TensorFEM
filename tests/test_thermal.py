@@ -1912,3 +1912,30 @@ def test_contact_edge_heat_moving_zero(start, end, record_property):
     net = thermal_contact_edge_power(model, field, start=start, end=end)
     torch.testing.assert_close(forward-reverse, .5*times.diff()[:, None]*(net[:-1]+net[1:]),
                                atol=1e-13, rtol=0.)
+
+
+@pytest.mark.parametrize("edge_reversed", [False, True])
+def test_directional_edge_heat_tiny_terminal_lobe(edge_reversed, record_property):
+    from tensorfem import thermal_contact_edge_directional_heat
+
+    nodes = torch.tensor([[0,0],[1,0],[1,1],[0,1],[1,0],[2,0],[2,1],[1,1]], dtype=D)
+    pair = torch.tensor([[[1,2],[4,7]]])
+    if edge_reversed:
+        pair = pair.flip((-1,))
+    model = ThermalModel(nodes, torch.arange(8).reshape(2, 4), 1., 1., 1., torch.arange(8),
+                         nodes.new_zeros(8), element_type="q4", contact_edge_pairs=pair,
+                         contact_edge_conductance=1.)
+    eps = 1e-20
+    field = nodes.new_zeros((3, 8))
+    field[[0, 2], 1:3] = 1.
+    field[1, 1:3] = -eps*nodes.new_tensor([1., 2.])
+    forward, reverse = thermal_contact_edge_directional_heat(model, nodes.new_tensor([0., 1., 2.]), field)
+    # At each s the reverse triangle has area a²/(2*(1+a)), a=eps*(1+s).
+    # Omitting 1+a changes the reference by at most 2*eps in relative terms.
+    expected = 7*eps**2/6
+    errors = abs(reverse[:, 0]/expected-1)
+    record_property("reference_reverse_J", expected)
+    for label, value in zip(("terminal", "initial"), errors):
+        record_property(f"{label}_relative_error", value.item())
+    assert errors.max() < 1e-13
+    torch.testing.assert_close(forward, torch.full_like(forward, .5))

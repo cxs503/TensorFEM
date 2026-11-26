@@ -1313,13 +1313,22 @@ def thermal_contact_edge_directional_heat(model: ThermalModel, time: torch.Tenso
     scale = torch.where(crossing, torch.maximum(before.abs(), after.abs()), 1.)
     a = torch.where(crossing, before.abs()/scale, 0.)
     b = torch.where(crossing, after.abs()/scale, 0.)
-    roots = a/torch.where(crossing, a+b, 1.)
+    total = torch.where(crossing, a+b, 1.)
+    # Keep distances to both time endpoints. For a terminal lobe much shorter
+    # than one ulp of normalized time, its root rounds to 1 but b/total
+    # still resolves the entire interval. Missing roots are placed at zero.
+    roots = (a/total).sort(dim=-1).values
+    remaining = torch.where(crossing, b/total, 1.).sort(dim=-1, descending=True).values
     zero = torch.zeros_like(roots[..., :1])
-    cuts = torch.cat((zero, roots, zero+1.), dim=-1).sort().values
-    span = cuts.diff(dim=-1)[..., None]
+    cuts = torch.cat((zero, roots, zero+1.), dim=-1)
+    complements = torch.cat((zero+1., remaining, zero), dim=-1)
+    span = torch.where(cuts[..., :-1] < .5, cuts.diff(dim=-1), -complements.diff(dim=-1))[..., None]
     nodes, weights = leggauss(time_order)
-    phase = cuts[..., :-1, None]+span*jump.new_tensor((1+nodes)/2)
-    left, right = ((1-phase)*before[..., j, None, None]+phase*after[..., j, None, None] for j in (0, 1))
+    lo_weight = jump.new_tensor((1-nodes)/2)
+    hi_weight = jump.new_tensor((1+nodes)/2)
+    phase = lo_weight*cuts[..., :-1, None]+hi_weight*cuts[..., 1:, None]
+    complement = lo_weight*complements[..., :-1, None]+hi_weight*complements[..., 1:, None]
+    left, right = (complement*before[..., j, None, None]+phase*after[..., j, None, None] for j in (0, 1))
     gl, gr = ((1-f)*g[:, 0, None, None]+f*g[:, 1, None, None] for f in (start, end))
     powers = _edge_directional_integrals(left, right, gl, gr, end-start)
     duration = time.diff().to(jump)[:, None]
