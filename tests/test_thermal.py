@@ -1690,9 +1690,10 @@ def test_insulated_two_material_rod_contact_heat_after_source_pulse(sparse, reco
         previous = errors
 
 
+@pytest.mark.parametrize("bias", [0., -.75])
 @pytest.mark.parametrize("sparse", [False, True])
-def test_insulated_rod_contact_decay_against_continuous_mode(sparse, record_property):
-    from tensorfem import thermal_contact_pair_heat_steps
+def test_rod_contact_decay_against_continuous_mode(sparse, bias, record_property):
+    from tensorfem import thermal_contact_pair_directional_heat, thermal_contact_pair_heat_steps
 
     # A cosine measured from each insulated end has zero end flux. Normalize
     # their amplitudes to a common unit rightward contact power at t=0.
@@ -1712,18 +1713,34 @@ def test_insulated_rod_contact_decay_against_continuous_mode(sparse, record_prop
         shape = torch.cat((amplitude[0]*(wave[0]*west).cos(),
                            amplitude[1]*(wave[1]*(1-east)).cos()))
         left = torch.cat((torch.arange(n), torch.arange(n)+n+1))
+        # Superpose a steady through-flow with equal and opposite end powers.
+        static = 2+torch.cat((bias/conductance-bias*(west-.4)/k[0], -bias*(east-.4)/k[1]))
+        applied = torch.zeros_like(shape)
+        applied[0], applied[-1] = bias, -bias
         model = ThermalModel(torch.cat((west, east))[:, None], torch.stack((left, left+1), dim=1),
                              k.repeat_interleave(n), 1., cv.repeat_interleave(n),
                              torch.empty(0, dtype=torch.long), k.new_empty(0),
-                             contact_pairs=torch.tensor([[n, n+1]]), contact_conductance=conductance)
+                             contact_pairs=torch.tensor([[n, n+1]]), contact_conductance=conductance, nodal_heat=applied)
         time = torch.linspace(0., .2, 4*n+1, dtype=D)
-        result = solve_transient_thermal(model, time, 2+shape, method="sdirk2", sparse=sparse)
-        exact = 2+torch.exp(-decay*time[:, None])*shape
+        result = solve_transient_thermal(model, time, static+shape, method="sdirk2", sparse=sparse)
+        exact = static+torch.exp(-decay*time[:, None])*shape
         heat = thermal_contact_pair_heat_steps(model, result)[:, 0].cumsum(0)
         temperature_error = float((result.temperature-exact).abs().max())
-        heat_error = float((heat+torch.expm1(-decay*time[1:])/decay).abs().max())
+        heat_error = float((heat-bias*time[1:]+torch.expm1(-decay*time[1:])/decay).abs().max())
         record_property(f"n{n}_temperature_error_K", temperature_error)
         record_property(f"n{n}_contact_heat_error_J", heat_error)
+        errors = [temperature_error, heat_error]
+        if bias:
+            crossing = -math.log(-bias)/decay
+            def primitive(t):
+                return bias*t-math.expm1(-decay*t)/decay
+            expected = (primitive(crossing), primitive(crossing)-primitive(float(time[-1])))
+            forward, reverse = thermal_contact_pair_directional_heat(model, time, result.temperature)
+            assert ((forward > 0) & (reverse > 0)).sum() == 1
+            for label, transferred, target in zip(("forward", "reverse"), (forward, reverse), expected):
+                error = abs(float(transferred.sum())-target)
+                record_property(f"n{n}_{label}_heat_error_J", error)
+                errors.append(error)
         if previous is not None:
-            assert previous[0]/temperature_error > 3.5 and previous[1]/heat_error > 3.5
-        previous = temperature_error, heat_error
+            assert all(coarse/fine > 3.5 for coarse, fine in zip(previous, errors))
+        previous = errors
