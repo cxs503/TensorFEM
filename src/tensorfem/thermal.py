@@ -48,7 +48,7 @@ class ThermalModel:
     heat_loss_coefficient: torch.Tensor | None = None
 
     # LINE2 additive A*x², scalar or per element in W/m⁵.
-    # Q4 additive A*x²+B*x*y+C*y² volumetric heating in global coordinates.
+    # Q4 additive A*x²+B*x*y+C*y² volumetric heating along the global axes.
     # Coefficients in W/m⁵, shared (3,) or element-specific (ne, 3).
     heat_source_quadratic: torch.Tensor | None = None
 
@@ -58,6 +58,10 @@ class ThermalModel:
     # Optional (n,2) profile: each endpoint coefficient is h(endpoint)*edge area
     # in W/K, linearly interpolated along the edge.
     contact_edge_conductance: torch.Tensor | None = None
+
+    # Shared reference point (m) for the coordinates in heat_source_quadratic.
+    # None uses the global origin. Other loads retain their given values.
+    heat_source_origin: torch.Tensor | None = None
 
     def __post_init__(self):
         nen = {"line2": 2, "q4": 4}.get(self.element_type.lower())
@@ -526,6 +530,18 @@ def _thermal_element_matrices(model, load_like):
         if not torch.isfinite(loss).all() or (loss<0).any():
             raise ValueError("heat_loss_coefficient must be finite and nonnegative")
     sink = None
+    source_coords = coords
+    if model.heat_source_origin is not None:
+        origin = model.heat_source_origin
+        if torch.as_tensor(origin).is_complex():
+            raise ValueError("heat_source_origin must be real")
+        origin = torch.as_tensor(origin, device=x.device, dtype=x.dtype)
+        if origin.ndim == 0 and nen == 2:
+            origin = origin.reshape(1)
+        if origin.shape != (x.shape[1],) or not torch.isfinite(origin).all():
+            raise ValueError("heat_source_origin requires one finite coordinate per spatial dimension")
+        if model.heat_source_quadratic is not None:
+            source_coords = coords - origin
     quadratic = model.heat_source_quadratic
     if quadratic is not None:
         raw = torch.as_tensor(quadratic, device=x.device)
@@ -566,7 +582,7 @@ def _thermal_element_matrices(model, load_like):
             # Two-point Gauss integrates N_i(x)*x² exactly on the affine line.
             for t in ((1-3**-.5)/2, (1+3**-.5)/2):
                 n = x.new_tensor([1-t, t])
-                position = coords[:, :, 0] @ n
+                position = source_coords[:, :, 0] @ n
                 power = quadratic*position.square()*thick*length/2
                 fe = fe + power[:, None]*n
     else:
@@ -597,7 +613,7 @@ def _thermal_element_matrices(model, load_like):
                     if quadratic is not None:
                         # With a bilinear map, N_i*q(x,y)*det(J) has degree at
                         # most four in either parent coordinate.
-                        px, py = (coords.transpose(1, 2) @ n).unbind(1)
+                        px, py = (source_coords.transpose(1, 2) @ n).unbind(1)
                         a, b, c = quadratic.unbind(1)
                         power = weight*(a*px.square() + b*px*py + c*py.square())
                         fe = fe + power[:, None]*n

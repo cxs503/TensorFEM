@@ -96,12 +96,15 @@ def test_nonuniform_source_assembly():
 
 
 @pytest.mark.parametrize("sparse", [False, True])
-def test_quadratic_heat_load_on_trapezoid(sparse, record_property):
+@pytest.mark.parametrize("translated", [False, True])
+def test_quadratic_heat_load_on_trapezoid(sparse, translated, record_property):
     from tensorfem.thermal import assemble_thermal
 
-    model = ThermalModel(torch.tensor([[0.,0.],[2.,0.],[3.,1.],[0.,1.]], dtype=D),
+    origin = torch.tensor([2.**43, -2.**43], dtype=D) if translated else torch.zeros(2, dtype=D)
+    model = ThermalModel(torch.tensor([[0.,0.],[2.,0.],[3.,1.],[0.,1.]], dtype=D)+origin,
                          torch.arange(4)[None,:], 1., 1., 1., torch.tensor([0]), torch.zeros(1,dtype=D),
-                         heat_source_quadratic=torch.tensor([1.,2.,-3.],dtype=D), element_type="q4")
+                         heat_source_quadratic=torch.tensor([1.,2.,-3.],dtype=D), element_type="q4",
+                         heat_source_origin=origin if translated else None)
     # Map the unit square using x=(2+v)*u, y=v, det J=2+v. Integrating
     # each unit-square basis times (x²+2xy-3y²)*(2+v) gives these fractions.
     exact = torch.tensor([137/240,161/80,1103/360,217/360], dtype=D)
@@ -111,19 +114,22 @@ def test_quadratic_heat_load_on_trapezoid(sparse, record_property):
 
 
 @pytest.mark.parametrize("sparse", [False, True])
-def test_complex_quadratic_heat_on_sheared_harmonic_patch(sparse, record_property):
+@pytest.mark.parametrize("translated", [False, True])
+def test_complex_quadratic_heat_on_sheared_harmonic_patch(sparse, translated, record_property):
     from tensorfem.thermal import solve_harmonic_thermal, thermal_element_flux
 
-    shear, k, capacity, omega = .35, 2., 1.5, 3.
+    shear, k, capacity, omega = .25 if translated else .35, 2., 1.5, 3.
     phase = .7-.4j
-    mesh = structured_quad_mesh(5, 4, shear=shear, dtype=D)
+    mesh = structured_quad_mesh(4 if translated else 5, 4, shear=shear, dtype=D)
+    origin = mesh.nodes.new_tensor([2.**43, -2.**43]) if translated else mesh.nodes.new_zeros(2)
     x, y = mesh.nodes.T
     # The physical quadratic (x-s*y)*y is bilinear on this sheared mesh.
     exact = phase*(x-shear*y)*y
     fixed = mesh.boundary_nodes
     quadratic = 1j*omega*capacity*phase*torch.tensor([0.,1.,-shear], dtype=torch.complex128)
-    model = ThermalModel(mesh.nodes, mesh.elements, k, capacity, 1., fixed, exact[fixed],
-                         heat_source=2*k*shear*phase, heat_source_quadratic=quadratic, element_type="q4")
+    model = ThermalModel(mesh.nodes+origin, mesh.elements, k, capacity, 1., fixed, exact[fixed],
+                         heat_source=2*k*shear*phase, heat_source_quadratic=quadratic, element_type="q4",
+                         heat_source_origin=origin if translated else None)
     result = solve_harmonic_thermal(model, omega, sparse=sparse)
     cx, cy = mesh.nodes[mesh.elements].mean(dim=1).T
     expected_flux = -k*phase*torch.stack((cy, cx-2*shear*cy), dim=1)
@@ -181,3 +187,20 @@ def test_layered_rod_quadratic_generation_and_contact(sparse, record_property):
     torch.testing.assert_close(result,temperature,atol=2e-14,rtol=0.)
     torch.testing.assert_close(wall,expected,atol=2e-14,rtol=0.)
     assert abs(contact*(result[3]-result[4])-interface_power) < 2e-14
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_translated_rod_complex_quadratic_load(sparse, record_property):
+    from tensorfem.thermal import assemble_thermal
+
+    origin = 2.**43
+    nodes = torch.tensor([[origin+1.], [origin+3.]], dtype=D)
+    phase = .75-.5j
+    model = ThermalModel(nodes, torch.tensor([[0,1]]), 1., 1., 1., torch.tensor([0]),
+                         torch.zeros(1,dtype=D), heat_source_quadratic=phase, heat_source_origin=origin)
+    actual = assemble_thermal(model, sparse=sparse, complex_loads=True).heat
+    # Integrate (3-x)*x²/2 and (x-1)*x²/2 over local x from 1 to 3.
+    exact = phase*nodes.new_tensor([3., 17/3])
+    error = float((actual-exact).abs().max())
+    record_property("peak_nodal_load_error_W", error)
+    assert error < 2e-15
