@@ -259,6 +259,16 @@ def thermal_volume_mean_flux(model: ThermalModel, temperature: torch.Tensor) -> 
     return (flux * (volume / volume.sum())[:, None]).sum(dim=-2)
 
 
+def thermal_volume_mean_heat_steps(model: ThermalModel, result: ThermalTransientResult) -> torch.Tensor:
+    """Time-integrated volume-mean Fourier flux per interval and direction (J/m²).
+
+    The spatial mean uses the model's element volumes. The time integral uses
+    the transient solver's stage weights, including the internal SDIRK2 stage.
+    """
+    flux = thermal_volume_mean_flux(model, result.interval_temperature)
+    return flux * result.time.diff().to(flux)[:, None]
+
+
 def thermal_element_edge_power(model: ThermalModel, temperature: torch.Tensor) -> torch.Tensor:
     """Integrate outward Fourier power (W) on each Q4 edge using two Gauss points.
 

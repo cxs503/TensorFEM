@@ -1974,3 +1974,55 @@ def test_volume_mean_flux_line2_stepped_area():
                          torch.arange(3), x.new_zeros(3), thickness=x.new_tensor([5., 2.]))
     actual = thermal_volume_mean_flux(model, x.new_tensor([1., 3., 0.]))
     torch.testing.assert_close(actual, x.new_tensor([(-4*5 + 4*6)/11]))
+
+
+@pytest.mark.parametrize("method,theta,order", [("theta", .5, 2), ("theta", 1., 1), ("sdirk2", .5, 2)])
+@pytest.mark.parametrize("sparse", [False, True])
+def test_volume_mean_heat_steps_mixed_rod_mode(method, theta, order, sparse, record_property):
+    from tensorfem import thermal_volume_mean_heat_steps
+
+    length, k, capacity = 1.4, 1.8, 2.3
+    n = 8
+    x = torch.linspace(0., length, n+1, dtype=D)
+    cells = torch.stack((torch.arange(n), torch.arange(1,n+1)), dim=1)
+    model = ThermalModel(x[:,None], cells, k, 1., capacity, torch.tensor([0]), x.new_zeros(1))
+    # Fixed left temperature, insulated right end. The consistent LINE2 mass
+    # and stiffness stencils share this sine eigenvector, including the end row.
+    phase = math.pi/(2*n)
+    mode = torch.sin(math.pi*x/(2*length))
+    rate = 12*(k/capacity)*math.sin(phase/2)**2/((length/n)**2*(2+math.cos(phase)))
+    previous = None
+    for steps in (8, 16, 32, 64):
+        # Unequal step sizes exercise the individual interval widths.
+        time = .8*torch.linspace(0., 1., steps+1, dtype=D)**1.3
+        result = solve_transient_thermal(model, time, mode, theta=theta, method=method, sparse=sparse)
+        actual = thermal_volume_mean_heat_steps(model, result)
+        # The volume-mean flux is -k*(T_right-T_left)/length at every instant.
+        exact = (k/length)*torch.exp(-rate*time[:-1])*torch.expm1(-rate*time.diff())/rate
+        assert actual.shape == (steps, 1)
+        error = (actual[:,0]-exact).cumsum(0).abs().max().item()
+        record_property(f"cumulative_flux_error_{steps}_J_per_m2", error)
+        if previous is not None:
+            assert previous/error > .94*2**order
+        previous = error
+
+
+@pytest.mark.parametrize("method", ["theta", "sdirk2"])
+def test_volume_mean_heat_steps_distorted_q4_time_ramp(method, record_property):
+    from tensorfem import thermal_volume_mean_heat_steps
+
+    nodes = torch.tensor([[0., 0.], [1.2, .1], [1., 1.], [-.1, .7]], dtype=D)
+    k = nodes.new_tensor([[2., .4], [.4, 1.3]])
+    gradient = nodes.new_tensor([.7, -.3])
+    initial = nodes @ gradient
+    model = ThermalModel(nodes, torch.arange(4)[None,:], k[None,:,:], 1., 1.,
+                         torch.arange(4), initial, element_type="q4")
+    time = nodes.new_tensor([0., .13, .54, .8])
+    history = (1-2*time[:,None])*initial
+    result = solve_transient_thermal(model, time, initial, theta=.5, method=method,
+                                     fixed_temperature_history=history)
+    # Integrate q(t) = -K grad(T0) (1 - 2t) in both global directions.
+    exact = (time-time.square()).diff()[:,None] * (-k @ gradient)
+    error = (thermal_volume_mean_heat_steps(model, result)-exact).abs().max().item()
+    record_property("max_interval_component_error_J_per_m2", error)
+    assert error < 1e-14
