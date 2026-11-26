@@ -2237,3 +2237,37 @@ def test_element_power_small_complex_gradient_with_bulk_exchange(element_type, o
     record_property("power_error_per_unit_jump", power_error)
     record_property("net_error_per_unit_jump", net_error)
     assert max(power_error, net_error) < 3e-15
+
+
+@pytest.mark.parametrize("element_type", ["line2", "q4"])
+@pytest.mark.parametrize("loss", [0., 2.**-53])
+def test_low_frequency_power_small_affine_coefficients(element_type, loss, record_property):
+    from tensorfem.thermal import (ThermalHarmonicResult, ThermalLowFrequencyResult,
+                                   thermal_element_low_frequency_power)
+
+    coords = [[0.], [1.]] if element_type == "line2" else [[0.,0.],[1.,0.],[1.,1.],[0.,1.]]
+    xy = torch.tensor(coords, dtype=D)
+    ids = torch.arange(len(xy))
+    base = 1536.*(1+.5j)
+    jump = math.ulp(1536.)*(1-.5j)
+    x = xy[:,0]
+    u = base + jump*x
+    lag = -base + 2*jump*x
+    capacity = 2.**-52
+    model = ThermalModel(xy, ids[None], 3., 1., capacity, ids, u, element_type=element_type,
+                         heat_source=jump, heat_loss_coefficient=loss)
+    fields = ThermalLowFrequencyResult(ThermalHarmonicResult(u, torch.zeros_like(u)),
+                                       ThermalHarmonicResult(lag, torch.zeros_like(lag)))
+    steady, first = thermal_element_low_frequency_power(model, fields)
+    # Integral of each hat times an affine temperature on a unit element.
+    share = 2/len(xy)
+    int_u = share*(base/2+(1+x)*jump/6)
+    int_lag = share*(-base/2+(1+x)*2*jump/6)
+    flux = share*3*jump*(2*x-1)
+    exact_steady = flux + loss*int_u - jump/len(xy)
+    exact_first = 2*flux + loss*int_lag + capacity*int_u
+    for name, value, exact in (("steady",steady,exact_steady), ("first",first,exact_first)):
+        error = float((value[0]-exact).abs().max()) / abs(jump)
+        record_property(name+"_error_per_unit_jump", error)
+    torch.testing.assert_close(steady[0], exact_steady, rtol=0., atol=3e-15*abs(jump))
+    torch.testing.assert_close(first[0], exact_first, rtol=0., atol=3e-15*abs(jump))

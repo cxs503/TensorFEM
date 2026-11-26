@@ -1827,11 +1827,15 @@ def thermal_element_low_frequency_power(model: ThermalModel, result: ThermalLowF
     if u.shape!=(len(model.nodes),) or lag.shape!=u.shape:
         raise ValueError("both temperature coefficients must have one value per node")
     conn = model.elements.long()
-    k,c,f,_ = _thermal_element_matrices(model,u)
-    k = k.to(u)
-    t0 = u[conn].unsqueeze(-1)
-    t1 = lag[conn].unsqueeze(-1)
-    return (k @ t0).squeeze(-1)-f,(k @ t1+c.to(u) @ t0).squeeze(-1)
+    k, c, f, sink = _thermal_element_matrices(model, u, include_sink=False)
+    fields = torch.stack((u[conn], lag[conn]))
+    # Both conductive coefficients depend only on gradients. Bulk loss acts
+    # on the full fields, and storage at first order uses the steady field.
+    power = torch.einsum("eij,aej->aei", k.to(fields), fields-fields[..., :1])
+    if sink is not None:
+        power = power + torch.einsum("eij,aej->aei", sink.to(fields), fields)
+    storage = torch.einsum("eij,ej->ei", c.to(fields), fields[0])
+    return power[0]-f, power[1]+storage
 
 
 def solve_transient_thermal(model: ThermalModel, time: torch.Tensor,
