@@ -1,0 +1,29 @@
+{
+  "source_commit": "ea13c9b911c9d5a3af9f2ec6060f15eb9ffa7d73",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal_transient_reference.py tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_equal_wall.xml",
+  "reference": "Both prescribed wall temperatures of a unit homogeneous slab increase by 1 K over 0.04 s then hold for 0.05 s. Spatial integration of the odd sine modes yields the stored energy. Each boundary supplies half of the increase during each phase. LINE2 consistent capacity, unit cross section, dense theta=0.5. Wall input measured from integrated nodal reactions.",
+  "companion_records": [
+    "https://github.com/cxs503/TensorFVM/blob/fbb0cedc/benchmarks/verified/equal_wall_ramp_and_hold.json",
+    "https://github.com/cxs503/TensorSPH/blob/ea5b2dd/benchmarks/verified/equal_wall_ramp_and_hold.json"
+  ],
+  "tests": 182,
+  "errors": 0,
+  "failures": 0,
+  "skipped": 0,
+  "measurements": {
+    "ramp_wall_reference_J_m2": 0.15044437694765547,
+    "hold_wall_reference_J_m2": 0.14498519287946607,
+    "n12_steps32_balance_J_m2": 1.1102230246251565e-16,
+    "n12_steps32_ramp_wall_error_J_m2": 0.0016296266912434465,
+    "n12_steps32_hold_wall_error_J_m2": 0.000792002671170744,
+    "n24_steps64_balance_J_m2": 4.996003610813204e-16,
+    "n24_steps64_ramp_wall_error_J_m2": 0.00040807582268584386,
+    "n24_steps64_hold_wall_error_J_m2": 0.00019968817043089504,
+    "n48_steps128_balance_J_m2": 7.771561172376096e-16,
+    "n48_steps128_ramp_wall_error_J_m2": 0.000102059656462955,
+    "n48_steps128_hold_wall_error_J_m2": 5.002458663469489e-05,
+    "n48_steps256_balance_J_m2": 1.2212453270876722e-15,
+    "n48_steps256_ramp_wall_error_J_m2": 0.00010228419412378065,
+    "n48_steps256_hold_wall_error_J_m2": 5.029118491117757e-05
+  }
+}
