@@ -1693,7 +1693,7 @@ def test_insulated_two_material_rod_contact_heat_after_source_pulse(sparse, reco
 @pytest.mark.parametrize("bias", [0., -.75])
 @pytest.mark.parametrize("sparse", [False, True])
 def test_rod_contact_decay_against_continuous_mode(sparse, bias, record_property):
-    from tensorfem import thermal_contact_pair_directional_heat, thermal_contact_pair_heat_steps
+    from tensorfem import thermal_contact_pair_directional_duration, thermal_contact_pair_directional_heat, thermal_contact_pair_heat_steps
 
     # A cosine measured from each insulated end has zero end flux. Normalize
     # their amplitudes to a common unit rightward contact power at t=0.
@@ -1732,6 +1732,12 @@ def test_rod_contact_decay_against_continuous_mode(sparse, bias, record_property
         errors = [temperature_error, heat_error]
         if bias:
             crossing = -math.log(-bias)/decay
+            durations = thermal_contact_pair_directional_duration(model, time, result.temperature)
+            torch.testing.assert_close(sum(durations)[:, 0], time.diff())
+            for label, observed, target in zip(("forward", "reverse"), durations, (crossing, .2-crossing)):
+                error = abs(float(observed.sum())-target)
+                record_property(f"n{n}_{label}_duration_error_s", error)
+                assert error < .01/n**1.5
             def primitive(t):
                 return bias*t-math.expm1(-decay*t)/decay
             expected = (primitive(crossing), primitive(crossing)-primitive(float(time[-1])))
@@ -1744,3 +1750,17 @@ def test_rod_contact_decay_against_continuous_mode(sparse, bias, record_property
         if previous is not None:
             assert all(coarse/fine > 3.5 for coarse, fine in zip(previous, errors))
         previous = errors
+
+
+def test_contact_duration_zero_intervals_and_unequal_reversal():
+    from dataclasses import replace
+    from tensorfem import thermal_contact_pair_directional_duration
+
+    model = replace(line_model(), contact_pairs=torch.tensor([[0, 1], [1, 0]]), contact_conductance=1.)
+    time = model.nodes.new_tensor([0., 1., 3., 7., 8., 10.])
+    history = model.nodes.new_zeros((len(time), len(model.nodes)))
+    history[:, 0] = time.new_tensor([0., 0., 1., -3., -1., 0.])
+    forward, reverse = thermal_contact_pair_directional_duration(model, time, history)
+    expected = time.new_tensor([[0., 0.], [2., 0.], [1., 3.], [0., 1.], [0., 2.]])
+    torch.testing.assert_close(forward, expected)
+    torch.testing.assert_close(reverse, expected.flip(1))
