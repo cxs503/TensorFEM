@@ -1,0 +1,43 @@
+{
+  "source_commit": "91354a79669b7617b1cd8479f98ecff6524ed579",
+  "baseline_commit": "33aca7ac164382f996ec587179474ddf4d37a9e0",
+  "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_thermal.py tests/test_thermal_transient_reference.py tests/test_thermal_2d_reference.py tests/test_thermal_verification.py -o junit_family=legacy --junitxml=/tmp/fem-end-final.xml",
+  "passed": 233,
+  "reference": "Unit two-node linear rod, unit thermal conductance and capacity, both nodes prescribed. Right end ramps by signed spacing at 1024 K in 1 s, then holds 1.5 s. Exact interval end reactions per signed jump: (1/6-1/2,1/3+1/2), then (-1.5,1.5).",
+  "before": {
+    "test_theta_rod_reaction_heat_for_small_end_ramp[-1-False]": {
+      "step_error_per_unit_jump": 0.5,
+      "total_error_per_unit_jump": 4.440892098500626e-16
+    },
+    "test_theta_rod_reaction_heat_for_small_end_ramp[-1-True]": {
+      "step_error_per_unit_jump": 0.5,
+      "total_error_per_unit_jump": 4.440892098500626e-16
+    },
+    "test_theta_rod_reaction_heat_for_small_end_ramp[1-False]": {
+      "step_error_per_unit_jump": 0.5,
+      "total_error_per_unit_jump": 4.440892098500626e-16
+    },
+    "test_theta_rod_reaction_heat_for_small_end_ramp[1-True]": {
+      "step_error_per_unit_jump": 0.5,
+      "total_error_per_unit_jump": 4.440892098500626e-16
+    }
+  },
+  "after": {
+    "test_theta_rod_reaction_heat_for_small_end_ramp[-1-False]": {
+      "step_error_per_unit_jump": 0.0,
+      "total_error_per_unit_jump": 4.440892098500626e-16
+    },
+    "test_theta_rod_reaction_heat_for_small_end_ramp[-1-True]": {
+      "step_error_per_unit_jump": 0.0,
+      "total_error_per_unit_jump": 4.440892098500626e-16
+    },
+    "test_theta_rod_reaction_heat_for_small_end_ramp[1-False]": {
+      "step_error_per_unit_jump": 0.0,
+      "total_error_per_unit_jump": 4.440892098500626e-16
+    },
+    "test_theta_rod_reaction_heat_for_small_end_ramp[1-True]": {
+      "step_error_per_unit_jump": 0.0,
+      "total_error_per_unit_jump": 4.440892098500626e-16
+    }
+  }
+}
