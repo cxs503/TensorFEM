@@ -1371,7 +1371,8 @@ def test_batched_contact_pair_power_reverses_with_node_order():
 
 @pytest.mark.parametrize("sparse", [False, True])
 def test_curved_harmonic_rod_contact_power_refinement(sparse, record_property):
-    from tensorfem import solve_harmonic_thermal, thermal_contact_pair_power
+    from dataclasses import replace
+    from tensorfem import solve_harmonic_thermal, thermal_contact_pair_harmonic_cycle_duration, thermal_contact_pair_power
 
     # In each constant layer k*T''=i*omega*C*T-S. Set both interface traces
     # and their slopes independently of the mesh, then prescribe the resulting
@@ -1408,6 +1409,17 @@ def test_curved_harmonic_rod_contact_power_refinement(sparse, record_property):
         errors = dict(nodal_temperature_K=float((result.temperature-expected).abs().max()),
                       contact_W=abs(contact-q),west_W=abs((result.reaction_power[0]-ends[0]).item()),
                       east_W=abs((result.reaction_power[-1]-ends[1]).item()))
+        # The DC power follows the two unit-length rods and contact in series.
+        dc_model = replace(model, heat_source=0., fixed_temperatures=nodes.new_tensor([1., .5]))
+        steady = solve_steady_thermal(dc_model, sparse=sparse)
+        bias = .5/(sum(1/(k*area) for k, _, area, _, _ in layers)+1/conductance)
+        reverse_reference = 2*math.acos(bias/abs(q))/omega
+        period = 2*math.pi/omega
+        forward, reverse = thermal_contact_pair_harmonic_cycle_duration(
+            model, result.temperature, omega, steady_temperature=steady)
+        errors["forward_duration_s"] = abs(forward.item()-(period-reverse_reference))
+        errors["reverse_duration_s"] = abs(reverse.item()-reverse_reference)
+        assert abs(forward.item()+reverse.item()-period) < 1e-14
         for name,value in errors.items():
             record_property(f"n{n}_{name}",value)
             if previous is not None:
