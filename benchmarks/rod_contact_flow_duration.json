@@ -1,0 +1,26 @@
+{
+  "source_commit": "72a053b48685700e6bc164afec1796e2534fe700",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_contact_duration.xml",
+  "tests": 156,
+  "failures": 0,
+  "errors": 0,
+  "reference": "Integrate the time spent in either direction for analytic rod contact power exp(-3t)-0.75 W over [0,0.2] s. Its unique crossing is -log(0.75)/3 s. Compare durations reconstructed from dense and sparse SDIRK2 temperature histories with n linear elements per material and 4n time steps.",
+  "measurements": {
+    "test_rod_contact_decay_against_continuous_mode[False--0.75]": {
+      "n8_forward_duration_error_s": 6.982761365061096e-05,
+      "n8_reverse_duration_error_s": 6.982761365061096e-05,
+      "n16_forward_duration_error_s": 1.7499938195122966e-05,
+      "n16_reverse_duration_error_s": 1.7499938195122966e-05,
+      "n32_forward_duration_error_s": 4.31875847731189e-06,
+      "n32_reverse_duration_error_s": 4.31875847731189e-06
+    },
+    "test_rod_contact_decay_against_continuous_mode[True--0.75]": {
+      "n8_forward_duration_error_s": 6.982761365174894e-05,
+      "n8_reverse_duration_error_s": 6.982761365174894e-05,
+      "n16_forward_duration_error_s": 1.7499938197509946e-05,
+      "n16_reverse_duration_error_s": 1.7499938197509946e-05,
+      "n32_forward_duration_error_s": 4.318758478297213e-06,
+      "n32_reverse_duration_error_s": 4.318758478297213e-06
+    }
+  }
+}
