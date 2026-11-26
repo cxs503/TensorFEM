@@ -973,6 +973,12 @@ def _contact_pair_cycle_parameters(model, temperature, angular_frequency, steady
     gap = torch.where(reverses,amplitude-magnitude,0.)
     fraction = gap/torch.where(reverses,amplitude,1.)
     angle = 2*torch.asin(torch.sqrt(torch.where(reverses,.5*fraction,.5)))
+    if phasor.is_complex():
+        # When q(0)=0, the imaginary component gives a nonzero slope even
+        # if hypot(real, imag) rounds to abs(real) at a shallow crossing.
+        origin = (bias == -phasor.real) & (phasor.imag != 0)
+        angle = torch.where(origin, torch.atan2(phasor.imag.abs(), phasor.real.abs()), angle)
+        reverses = reverses | origin
     return phasor, bias, reverses, angle
 
 
@@ -994,7 +1000,16 @@ def thermal_contact_pair_harmonic_reversal_times(model: ThermalModel, temperatur
         wrapped = torch.remainder(angle, 2*math.pi)
         wrapped = torch.where(wrapped >= 2*math.pi, 0., wrapped)
         return torch.where(reverses, wrapped/angular_frequency, float("nan"))
-    return cycle_time(-falling-phase), cycle_time(falling-phase)
+    rising_time, falling_time = cycle_time(-falling-phase), cycle_time(falling-phase)
+    if phasor.is_complex():
+        # Factor q(t) at the known root. The other root satisfies
+        # tan(ωt/2) = -imag/real. Use the narrow lobe to avoid cancellation.
+        origin = (bias == -phasor.real) & (phasor.imag != 0)
+        short_arc = ((phasor.real < 0) & (phasor.imag > 0)) | ((phasor.real >= 0) & (phasor.imag < 0))
+        other = torch.where(short_arc, 2*half, 2*math.pi-2*half)/angular_frequency
+        rising_time = torch.where(origin, torch.where(phasor.imag < 0, 0., other), rising_time)
+        falling_time = torch.where(origin, torch.where(phasor.imag > 0, 0., other), falling_time)
+    return rising_time, falling_time
 
 
 def thermal_contact_pair_harmonic_cycle_duration(model: ThermalModel, temperature: torch.Tensor,

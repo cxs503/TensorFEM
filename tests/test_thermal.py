@@ -1809,3 +1809,27 @@ def test_contact_cycle_reversals_at_origin_and_absent_crossings():
     rising, falling = thermal_contact_pair_harmonic_reversal_times(model, ac, 2., steady_temperature=dc)
     assert rising[0].item() == math.pi/2 and falling[0].item() == 0.
     assert rising[1:].isnan().all() and falling[1:].isnan().all()
+
+
+@pytest.mark.parametrize("imag", [0.8, -0.8, 2.**-30, -2.**-30])
+def test_biased_contact_reversal_exactly_at_origin(imag, record_property):
+    from dataclasses import replace
+    from tensorfem import thermal_contact_pair_harmonic_cycle_duration, thermal_contact_pair_harmonic_reversal_times
+
+    model = replace(line_model(), contact_pairs=torch.tensor([[0, 1], [1, 0]]), contact_conductance=1.)
+    ac = torch.zeros(len(model.nodes), dtype=torch.complex128)
+    ac[0] = complex(-1., imag)
+    dc = torch.zeros_like(ac.real)
+    dc[0] = 1.
+    omega = 2.
+    rising, falling = thermal_contact_pair_harmonic_reversal_times(model, ac, omega, steady_temperature=dc)
+    # 1-cos(x)-imag*sin(x) factors into 2*sin(x/2)*(sin(x/2)-imag*cos(x/2)).
+    other = (2*math.atan(imag) % (2*math.pi))/omega
+    at_origin, second = (falling, rising) if imag > 0 else (rising, falling)
+    assert at_origin[0].item() == 0.
+    assert second[1].item() == 0.
+    error = max(abs(second[0].item()-other), abs(at_origin[1].item()-other))
+    record_property("second_crossing_error_s", error)
+    assert error < 1e-15 and second[0].item() > 0.
+    _, reverse = thermal_contact_pair_harmonic_cycle_duration(model, ac, omega, steady_temperature=dc)
+    assert math.isclose(reverse[0].item(), 2*math.atan(abs(imag))/omega, rel_tol=1e-14)
