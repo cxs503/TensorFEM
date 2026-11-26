@@ -1075,6 +1075,10 @@ def thermal_contact_edge_directional_power(model: ThermalModel, temperature: tor
         return (1-start)*left+start*right, (1-end)*left+end*right
     left,right = endpoints(jump)
     gl,gr = endpoints(g)
+    return _edge_directional_integrals(left, right, gl, gr, end-start)
+
+
+def _edge_directional_integrals(left, right, gl, gr, width):
     crossing = ((left>0)&(right<0)) | ((left<0)&(right>0))
     scale = torch.maximum(left.abs(),right.abs())
     scale = torch.where(crossing,scale,1.)
@@ -1087,8 +1091,8 @@ def thermal_contact_edge_directional_power(model: ThermalModel, temperature: tor
     # crossing subedge the jump is zero at its internal endpoint.
     wl = torch.where(crossing,fl*(gl/3+gz/6),gl/3+gr/6)
     wr = torch.where(crossing,fr*(gr/3+gz/6),gr/3+gl/6)
-    forward = (end-start)*(wl*left.clamp_min(0)+wr*right.clamp_min(0))
-    reverse = (end-start)*(wl*(-left).clamp_min(0)+wr*(-right).clamp_min(0))
+    forward = width*(wl*left.clamp_min(0)+wr*right.clamp_min(0))
+    reverse = width*(wl*(-left).clamp_min(0)+wr*(-right).clamp_min(0))
     return forward,reverse
 
 
@@ -1132,6 +1136,58 @@ def thermal_contact_edge_harmonic_cycle_heat(model: ThermalModel, temperature: t
         return width.squeeze(-1)*(weights*conductance*magnitude).sum(dim=-1)
     middle = split[...,None]
     return 2*(integrate(start,middle)+integrate(middle,end))/angular_frequency
+
+
+def thermal_contact_edge_biased_cycle_heat(model: ThermalModel, temperature: torch.Tensor,
+                                          angular_frequency: float, *, steady_temperature: torch.Tensor,
+                                          start: float = 0., end: float = 1., quadrature_order: int = 32):
+    """Forward and reverse heat magnitudes (J) per Q4 contact edge per period.
+
+    Supply peak phasors and real steady nodal temperatures with broadcastable
+    batch dimensions. Positive transfer follows contact_edge_pairs order.
+    Spatial integration is exact at each sampled phase. Gauss-Legendre time
+    quadrature splits at zero crossings of either subedge endpoint.
+    """
+    from numpy.polynomial.legendre import leggauss
+
+    if not math.isfinite(angular_frequency) or angular_frequency <= 0:
+        raise ValueError("angular_frequency must be finite and positive")
+    if not 0 <= start <= end <= 1 or type(quadrature_order) is not int or quadrature_order < 1:
+        raise ValueError("require ordered edge fractions in [0,1] and positive integer quadrature_order")
+    if steady_temperature.is_complex():
+        raise ValueError("steady_temperature must be real")
+    _, g, phasor = _contact_edge_jump(model, temperature)
+    _, _, bias = _contact_edge_jump(model, steady_temperature)
+    if not torch.isfinite(phasor).all() or not torch.isfinite(bias).all():
+        raise ValueError("contact temperature jumps must be finite")
+
+    def endpoints(values):
+        left, right = values.unbind(-1)
+        return (1-start)*left + start*right, (1-end)*left + end*right
+
+    def crossings(ac, dc):
+        amplitude = ac.abs()
+        crosses = amplitude > dc.abs()
+        ratio = -dc/torch.where(crosses, amplitude, 1.)
+        angle = torch.acos(ratio.clamp(-1., 1.))
+        return [torch.where(crosses, (sign*angle-ac.angle()) % (2*math.pi), 0.)
+                for sign in (-1, 1)]
+
+    al, ar = endpoints(phasor)
+    bl, br = endpoints(bias)
+    gl, gr = endpoints(g)
+    roots = crossings(al, bl) + crossings(ar, br)
+    zero = torch.zeros_like(roots[0])
+    cuts = torch.stack([zero, *roots, zero+2*math.pi], dim=-1).sort().values
+    lo = cuts[..., :-1, None]
+    span = cuts.diff(dim=-1)[..., None]
+    points, weights = leggauss(quadrature_order)
+    phase = torch.exp(1j*(lo + span*g.new_tensor((1+points)/2)))
+    left = bl[..., None, None] + (al[..., None, None]*phase).real
+    right = br[..., None, None] + (ar[..., None, None]*phase).real
+    powers = _edge_directional_integrals(left, right, gl[:, None, None], gr[:, None, None], end-start)
+    time_weights = span*g.new_tensor(weights/2)/angular_frequency
+    return tuple((p*time_weights).sum(dim=(-2, -1)) for p in powers)
 
 
 def thermal_contact_edge_heat_steps(model: ThermalModel, result: ThermalTransientResult, *,

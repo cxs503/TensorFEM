@@ -1602,3 +1602,37 @@ def test_contact_cycle_heat_resolves_tiny_reverse_lobe_and_static_load():
     forward,reverse = thermal_contact_pair_harmonic_cycle_heat(model,0*ac,2.,steady_temperature=dc)
     torch.testing.assert_close(forward,dc[:1]*math.pi)
     assert reverse.item()==0.
+
+
+def test_biased_edge_cycle_heat_against_space_time_quadrature(record_property):
+    from scipy.integrate import quad
+    from tensorfem import thermal_contact_edge_biased_cycle_heat, thermal_contact_edge_power
+
+    x = torch.tensor([[0,0],[1,0],[1,1],[0,1],[1,0],[2,0],[2,1],[1,1]], dtype=D)
+    model = ThermalModel(x, torch.arange(8).reshape(2,4), 1., 1., 1., torch.arange(8), x.new_zeros(8),
+                         element_type="q4", contact_edge_pairs=torch.tensor([[[1,2],[4,7]]]),
+                         contact_edge_conductance=x.new_tensor([[1.,3.]]))
+    dc = x.new_zeros(8)
+    ac = dc.to(torch.complex128)
+    dc[1], dc[2] = -1.3, .9
+    ac[1], ac[2] = .8+.3j, -.2+.9j
+    omega, start, end = 2.5, .12, .93
+    forward, reverse = thermal_contact_edge_biased_cycle_heat(
+        model, torch.stack((ac, 1j*ac)), omega, steady_temperature=dc, start=start, end=end)
+    def local(s, sign):
+        bias = -1.3+2.2*s
+        phasor = (1-s)*(.8+.3j)+s*(-.2+.9j)
+        roots = []
+        if abs(bias) < abs(phasor):
+            angle = math.acos(-bias/abs(phasor))
+            roots = [(v*angle-math.atan2(phasor.imag, phasor.real))%(2*math.pi) for v in (-1,1)]
+        def power(t):
+            return max(sign*(bias+phasor.real*math.cos(t)-phasor.imag*math.sin(t)), 0.)
+        return (1+2*s)*quad(power, 0., 2*math.pi, points=roots)[0]/omega
+    exact = [quad(local, start, end, args=(sign,), epsabs=1e-12, epsrel=1e-12)[0] for sign in (1,-1)]
+    error = max((forward-exact[0]).abs().max().item(), (reverse-exact[1]).abs().max().item())
+    net = thermal_contact_edge_power(model, dc, start=start, end=end)*2*math.pi/omega
+    balance = (forward-reverse-net).abs().max().item()
+    record_property("max_directional_error_J", error)
+    record_property("max_balance_error_J", balance)
+    assert error < 1e-9 and balance < 1e-12
