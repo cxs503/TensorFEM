@@ -273,14 +273,24 @@ def thermal_volume_mean_flux(model: ThermalModel, temperature: torch.Tensor) -> 
     return (flux * (volume / volume.sum())[:, None]).sum(dim=-2)
 
 
+def _integrate_thermal_rate(model, result, rate_fn, **kwargs):
+    if result.stage_temperature is None:
+        # Form temperature differences before averaging: their means may be
+        # smaller than one representable spacing at the absolute temperature.
+        rate = rate_fn(model, result.temperature, **kwargs)
+        average = (1-result.theta)*rate[:-1] + result.theta*rate[1:]
+    else:
+        average = rate_fn(model, result.stage_temperature, **kwargs)
+    return result.time.diff().to(average)[:, None]*average
+
+
 def thermal_volume_mean_heat_steps(model: ThermalModel, result: ThermalTransientResult) -> torch.Tensor:
     """Time-integrated volume-mean Fourier flux per interval and direction (J/m²).
 
     The spatial mean uses the model's element volumes. The time integral uses
     the transient solver's stage weights, including the internal SDIRK2 stage.
     """
-    flux = thermal_volume_mean_flux(model, result.interval_temperature)
-    return flux * result.time.diff().to(flux)[:, None]
+    return _integrate_thermal_rate(model, result, thermal_volume_mean_flux)
 
 
 def thermal_element_edge_power(model: ThermalModel, temperature: torch.Tensor) -> torch.Tensor:
@@ -1126,24 +1136,13 @@ def thermal_contact_pair_harmonic_cycle_heat(model: ThermalModel, temperature: t
     return minor+period*bias.clamp_min(0), minor+period*(-bias).clamp_min(0)
 
 
-def _integrate_contact_power(model, result, power_fn, **edge_interval):
-    if result.stage_temperature is None:
-        # Form the temperature jump before averaging: its mean may be
-        # smaller than one representable spacing at the absolute temperature.
-        power = power_fn(model, result.temperature, **edge_interval)
-        average = (1-result.theta)*power[:-1] + result.theta*power[1:]
-    else:
-        average = power_fn(model, result.stage_temperature, **edge_interval)
-    return result.time.diff().to(average)[:, None]*average
-
-
 def thermal_contact_pair_heat_steps(model: ThermalModel, result: ThermalTransientResult) -> torch.Tensor:
     """Heat in J per time interval and lumped contact, shaped (nt-1, n_pairs).
 
     Positive heat leaves the first node in each pair. The theta method
     averages endpoint powers. SDIRK2 uses its stored stage-weighted field.
     """
-    return _integrate_contact_power(model, result, thermal_contact_pair_power)
+    return _integrate_thermal_rate(model, result, thermal_contact_pair_power)
 
 
 def _contact_pair_interval_parts(model, time, temperature):
@@ -1416,7 +1415,7 @@ def thermal_contact_edge_heat_steps(model: ThermalModel, result: ThermalTransien
     thermal_contact_edge_power. The theta method averages endpoint powers.
     SDIRK2 uses its stored stage-weighted field.
     """
-    return _integrate_contact_power(model, result, thermal_contact_edge_power, start=start, end=end)
+    return _integrate_thermal_rate(model, result, thermal_contact_edge_power, start=start, end=end)
 
 
 def assemble_thermal(model: ThermalModel, *, sparse: bool = False, complex_loads: bool = False) -> ThermalMatrices:

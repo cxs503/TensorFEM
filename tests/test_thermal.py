@@ -2149,3 +2149,31 @@ def test_contact_heat_ramp_on_common_temperature(direction, sparse, record_prope
     record_property("max_pair_relative_error", float(errors[0]))
     record_property("max_subedge_relative_error", float(errors[1]))
     assert max(errors) < 2e-15
+
+
+@pytest.mark.parametrize("sign", [-1, 1])
+@pytest.mark.parametrize("sparse", [False, True])
+def test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp(sign, sparse, record_property):
+    from tensorfem import thermal_volume_mean_heat_steps
+
+    xy = torch.tensor([[0,0],[1,0],[3,0],[0,1],[1,1],[3,1]], dtype=D)
+    elements = torch.tensor([[0,1,4,3],[1,2,5,4]])
+    k = xy.new_tensor([[[3.,1.],[1.,2.]], [[5.,-2.],[-2.,4.]]])
+    initial = xy.new_full((6,), 1536.)
+    model = ThermalModel(xy, elements, k, 1., 1., torch.arange(6), initial,
+                         element_type="q4", thickness=xy.new_tensor([2.,3.]))
+    time = xy.new_tensor([0., 1.5, 2.])
+    delta = sign*math.ulp(1536.)
+    history = initial.repeat(3,1)
+    history[1:] += delta*xy[:,1]
+    result = solve_transient_thermal(model, time, initial, theta=.5, sparse=sparse,
+                                     fixed_temperature_history=history)
+    # Gradient points along y. Weight the negative second conductivity
+    # columns by element volumes 2 and 6; integrate a ramp followed by a hold.
+    mean_flux = delta*xy.new_tensor([1.25, -3.5])
+    expected = xy.new_tensor([.75, .5])[:,None]*mean_flux
+    measured = thermal_volume_mean_heat_steps(model, result)
+    relative = (measured/expected-1).abs().amax(dim=0)
+    record_property("max_relative_x_error", float(relative[0]))
+    record_property("max_relative_y_error", float(relative[1]))
+    assert float(relative.max()) < 2e-15
