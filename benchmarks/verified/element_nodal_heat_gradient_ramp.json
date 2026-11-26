@@ -1,0 +1,43 @@
+{
+  "source_commit": "dd87b645176587936adc645a498a5e295d053211",
+  "baseline_commit": "8383863882d8ed9806e2d5fbb2bd7bede7f9f4cb",
+  "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_thermal.py tests/test_thermal_transient_reference.py tests/test_thermal_2d_reference.py tests/test_thermal_verification.py -o junit_family=legacy --junitxml=/tmp/fem-local-after.xml",
+  "passed": 245,
+  "reference": "Unit LINE2 rod and unit Q4 square, unit conductivity and volumetric heat capacity. Linear x-temperature difference ramps over one second by a signed spacing at 1536 K, followed by a 1.5 s hold. Integrate consistent shape functions for storage, uniform source and signed Fourier transfer separately.",
+  "before": {
+    "test_element_heat_balances_a_small_gradient_ramp[-1-line2]": {
+      "nodal_heat_error_per_unit_jump": 0.5000000000000001,
+      "net_input_error_per_unit_jump": 0.0
+    },
+    "test_element_heat_balances_a_small_gradient_ramp[-1-q4]": {
+      "nodal_heat_error_per_unit_jump": 0.75,
+      "net_input_error_per_unit_jump": 5.551115123125783e-17
+    },
+    "test_element_heat_balances_a_small_gradient_ramp[1-line2]": {
+      "nodal_heat_error_per_unit_jump": 0.5000000000000001,
+      "net_input_error_per_unit_jump": 0.0
+    },
+    "test_element_heat_balances_a_small_gradient_ramp[1-q4]": {
+      "nodal_heat_error_per_unit_jump": 0.75,
+      "net_input_error_per_unit_jump": 5.551115123125783e-17
+    }
+  },
+  "after": {
+    "test_element_heat_balances_a_small_gradient_ramp[-1-line2]": {
+      "nodal_heat_error_per_unit_jump": 2.220446049250313e-16,
+      "net_input_error_per_unit_jump": 0.0
+    },
+    "test_element_heat_balances_a_small_gradient_ramp[-1-q4]": {
+      "nodal_heat_error_per_unit_jump": 1.6653345369377348e-16,
+      "net_input_error_per_unit_jump": 5.551115123125783e-17
+    },
+    "test_element_heat_balances_a_small_gradient_ramp[1-line2]": {
+      "nodal_heat_error_per_unit_jump": 2.220446049250313e-16,
+      "net_input_error_per_unit_jump": 0.0
+    },
+    "test_element_heat_balances_a_small_gradient_ramp[1-q4]": {
+      "nodal_heat_error_per_unit_jump": 1.6653345369377348e-16,
+      "net_input_error_per_unit_jump": 5.551115123125783e-17
+    }
+  }
+}
