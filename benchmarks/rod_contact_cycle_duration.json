@@ -1,0 +1,17 @@
+{
+  "source_commit": "ba46b430c91167339f60ed7fb7ccbaceccc6736c",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_cycle_duration.xml",
+  "tests": 156,
+  "failures": 0,
+  "errors": 0,
+  "reference": "Split the phase interval at roots of bias + 0.6 cos(theta) - 0.8 sin(theta), classify intervals by midpoint sign and sum their durations at 1.75 rad/s. Check both pair orientations and a phase-rotated batch. Additional tests cover a tiny reverse lobe and static positive, negative and zero powers.",
+  "max_duration_error_s": {
+    "test_biased_contact_cycle_heat_against_time_quadrature[-2.0]": 0.0,
+    "test_biased_contact_cycle_heat_against_time_quadrature[-1.0]": 0.0,
+    "test_biased_contact_cycle_heat_against_time_quadrature[-0.375]": 0.0,
+    "test_biased_contact_cycle_heat_against_time_quadrature[0.0]": 2.220446049250313e-16,
+    "test_biased_contact_cycle_heat_against_time_quadrature[0.375]": 4.440892098500626e-16,
+    "test_biased_contact_cycle_heat_against_time_quadrature[1.0]": 0.0,
+    "test_biased_contact_cycle_heat_against_time_quadrature[2.0]": 0.0
+  }
+}
