@@ -1,0 +1,43 @@
+{
+  "source_commit": "f34312b1c4046b6e523bd824fee50db540cd3338",
+  "baseline_commit": "ea176b15f82c3b92a7762d73a57dd7831b91f2d3",
+  "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_thermal.py tests/test_thermal_transient_reference.py tests/test_thermal_2d_reference.py tests/test_thermal_verification.py -o junit_family=legacy --junitxml=/tmp/fem-flux-after.xml",
+  "passed": 241,
+  "reference": "Two fully prescribed anisotropic Q4 cells with volumes 2 and 6. A y-temperature difference ramps from zero to one signed spacing at 1536 K over 1.5 s, then holds for 0.5 s. The mean flux at the end is the signed temperature difference times (1.25,-3.5); interval integrals multiply that vector by 0.75 and 0.5 seconds.",
+  "before": {
+    "test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp[False--1]": {
+      "max_relative_x_error": 1.0,
+      "max_relative_y_error": 1.0
+    },
+    "test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp[False-1]": {
+      "max_relative_x_error": 1.0,
+      "max_relative_y_error": 1.0
+    },
+    "test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp[True--1]": {
+      "max_relative_x_error": 1.0,
+      "max_relative_y_error": 1.0
+    },
+    "test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp[True-1]": {
+      "max_relative_x_error": 1.0,
+      "max_relative_y_error": 1.0
+    }
+  },
+  "after": {
+    "test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp[False--1]": {
+      "max_relative_x_error": 0.0,
+      "max_relative_y_error": 0.0
+    },
+    "test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp[False-1]": {
+      "max_relative_x_error": 0.0,
+      "max_relative_y_error": 0.0
+    },
+    "test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp[True--1]": {
+      "max_relative_x_error": 0.0,
+      "max_relative_y_error": 0.0
+    },
+    "test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp[True-1]": {
+      "max_relative_x_error": 0.0,
+      "max_relative_y_error": 0.0
+    }
+  }
+}
