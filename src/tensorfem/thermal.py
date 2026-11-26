@@ -659,9 +659,13 @@ def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
         raise ValueError("temperature must have one value per node")
     dtype = torch.promote_types(model.nodes.dtype, torch.promote_types(temperature.dtype, torch.complex64))
     values = temperature.to(device=model.nodes.device, dtype=dtype)[model.elements.long()]
-    ke, ce, fe, sink = _thermal_element_matrices(model, values)
-    power = torch.einsum("eij,ej->ei", ke.to(dtype) + 1j*angular_frequency*ce.to(dtype), values) - fe
-    uniform_storage = None
+    ke, ce, fe, sink = _thermal_element_matrices(model, values, include_sink=False)
+    # A uniform complex amplitude drives storage and bulk loss. Its spatial
+    # gradient is zero, so remove it only from the conductive term.
+    conductive = torch.einsum("eij,ej->ei", ke.to(dtype), values-values[:, :1])
+    net = fe - 1j*angular_frequency*torch.einsum("eij,ej->ei", ce.to(dtype), values)
+    if sink is not None:
+        net = net - torch.einsum("eij,ej->ei", sink.to(dtype), values)
     if mean_temperature is not None and mean_heating_rate is not None:
         raise ValueError("supply only one of mean_temperature and mean_heating_rate")
     if mean_temperature is not None or mean_heating_rate is not None:
@@ -673,22 +677,15 @@ def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
         if torch.any(element_mean != element_mean[:, :1]) or (sink is not None and torch.any(sink != 0)):
             raise ValueError("mean_temperature or mean_heating_rate must be uniform on each lossless element")
         rate = 1j*angular_frequency*element_mean if mean_heating_rate is None else element_mean
-        uniform_storage = ce.sum(dim=2)*rate
-        power = power+uniform_storage
+        net = net - ce.sum(dim=2)*rate
     if element_nodal_heat is not None:
         load = torch.as_tensor(element_nodal_heat, dtype=dtype, device=values.device)
         if load.shape != values.shape or not torch.isfinite(load).all():
             raise ValueError("element_nodal_heat needs finite powers at every element node")
-        power = power - load
+        net = net + load
+    power = conductive - net
     if return_net_input:
-        net = fe-1j*angular_frequency*torch.einsum("eij,ej->ei",ce.to(dtype),values)
-        if uniform_storage is not None:
-            net = net-uniform_storage
-        if element_nodal_heat is not None:
-            net = net+load
-        if sink is not None:
-            net = net-torch.einsum("eij,ej->ei",sink.to(dtype),values)
-        return power,net
+        return power, net
     return power
 
 

@@ -2209,3 +2209,31 @@ def test_element_heat_balances_a_small_gradient_ramp(element_type, direction, re
     record_property("nodal_heat_error_per_unit_jump", float(err))
     record_property("net_input_error_per_unit_jump", float(net_err))
     assert max(err, net_err) < 2e-15
+
+
+@pytest.mark.parametrize("element_type", ["line2", "q4"])
+@pytest.mark.parametrize("omega", [0., 2.**-52])
+def test_element_power_small_complex_gradient_with_bulk_exchange(element_type, omega, record_property):
+    from tensorfem import thermal_element_nodal_power
+
+    coords = [[0.], [1.]] if element_type == "line2" else [[0.,0.],[1.,0.],[1.,1.],[0.,1.]]
+    xy = torch.tensor(coords, dtype=D)
+    ids = torch.arange(len(xy))
+    base = 1536.*(1+.5j)
+    jump = math.ulp(1536.)*(1-.5j)
+    x = xy[:,0]
+    field = base+jump*x
+    h = 2.**-53
+    model = ThermalModel(xy, ids[None], 3., 1., 1., ids, field,
+                         element_type=element_type, heat_loss_coefficient=h)
+    power, net = thermal_element_nodal_power(model, field, omega, return_net_input=True)
+    # Integral of N_i times the linear temperature, grouped by left/right end.
+    share = 2/len(xy)
+    mass_field = share*(.5*base+(1+x)*jump/6)
+    exchange = (h+1j*omega)*mass_field
+    expected = share*3.*jump*(2*x-1) + exchange
+    power_error = float((power[0]-expected).abs().max())/abs(jump)
+    net_error = float((net[0]+exchange).abs().max())/abs(jump)
+    record_property("power_error_per_unit_jump", power_error)
+    record_property("net_error_per_unit_jump", net_error)
+    assert max(power_error, net_error) < 3e-15
