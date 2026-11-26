@@ -1636,3 +1636,55 @@ def test_biased_edge_cycle_heat_against_space_time_quadrature(record_property):
     record_property("max_directional_error_J", error)
     record_property("max_balance_error_J", balance)
     assert error < 1e-9 and balance < 1e-12
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_insulated_two_material_rod_contact_heat_after_source_pulse(sparse, record_property):
+    import numpy as np
+    from scipy.linalg import block_diag, expm
+    from tensorfem import thermal_contact_pair_heat_steps
+
+    x = torch.tensor([0., .4, .4, 1.], dtype=D)
+    pairs = torch.tensor([[0, 1], [2, 3]])
+    k, cv = x.new_tensor([1.4, 2.3]), x.new_tensor([1.5, 2.])
+    g = 2.5
+    model = ThermalModel(x[:, None], pairs, k, 1., cv, torch.empty(0, dtype=torch.long),
+                         x.new_empty(0), contact_pairs=torch.tensor([[1, 2]]), contact_conductance=g)
+    # Unit area. Integrate the linear shape functions for the two local mass
+    # and stiffness matrices and for the uniform 3 W/m³ source in the left rod.
+    lengths = np.array([.4, .6])
+    mass = block_diag(*(v*np.array([[2., 1.], [1., 2.]])/6 for v in cv.numpy()*lengths))
+    stiffness = block_diag(*(v*np.array([[1., -1.], [-1., 1.]]) for v in k.numpy()/lengths))
+    jump = np.array([0., 1., -1., 0.])
+    stiffness += g*np.outer(jump, jump)
+    power = np.array([.6, .6, 0., 0.])
+    # Augment T with cumulative contact heat and a constant coordinate for forcing.
+    operator = np.zeros((6, 6))
+    operator[:4, :4] = -np.linalg.solve(mass, stiffness)
+    operator[:4, 5] = np.linalg.solve(mass, power)
+    operator[4, :4] = g*jump
+    hot = expm(.07*operator) @ [0., 0., 0., 0., 0., 1.]
+    operator[:4, 5] = 0.
+    cold = expm(.13*operator) @ hot
+    targets = np.stack((hot, cold))
+    previous = None
+    for n in (8, 16, 32):
+        time = torch.cat((torch.linspace(0., .07, n+1, dtype=D),
+                          torch.linspace(.07, .2, n+1, dtype=D)[1:]))
+        supplied = time.diff()[:, None]*x.new_tensor(power)
+        supplied[n:] = 0.
+        result = solve_transient_thermal(model, time, torch.zeros_like(x), sparse=sparse,
+                                         method="sdirk2", nodal_step_heat=supplied)
+        transfer = thermal_contact_pair_heat_steps(model, result)[:, 0]
+        temp_error = np.max(abs(result.temperature[[n, 2*n]].numpy()-targets[:, :4]))
+        heat_error = np.max(abs(transfer.cumsum(0)[[n-1, 2*n-1]].numpy()-targets[:, 4]))
+        change = result.temperature.diff(dim=0).reshape(2*n, 2, 2).mean(dim=2)*cv*x.new_tensor(lengths)
+        residual = change-torch.stack((supplied.sum(1)-transfer, transfer), dim=1)
+        record_property(f"n{n}_temperature_error_K", float(temp_error))
+        record_property(f"n{n}_contact_heat_error_J", float(heat_error))
+        record_property(f"n{n}_material_balance_J", float(residual.abs().max()))
+        assert residual.abs().max() < 2e-13
+        errors = np.array([temp_error, heat_error])
+        if previous is not None:
+            assert np.all(previous/errors > 3.5)
+        previous = errors
