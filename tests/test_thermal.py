@@ -2177,3 +2177,35 @@ def test_volume_mean_heat_resolves_a_one_spacing_gradient_ramp(sign, sparse, rec
     record_property("max_relative_x_error", float(relative[0]))
     record_property("max_relative_y_error", float(relative[1]))
     assert float(relative.max()) < 2e-15
+
+
+@pytest.mark.parametrize("element_type", ["line2", "q4"])
+@pytest.mark.parametrize("direction", [-1, 1])
+def test_element_heat_balances_a_small_gradient_ramp(element_type, direction, record_property):
+    from tensorfem import thermal_element_nodal_heat_steps
+
+    coords = [[0.], [1.]] if element_type == "line2" else [[0.,0.],[1.,0.],[1.,1.],[0.,1.]]
+    xy = torch.tensor(coords, dtype=D)
+    ids = torch.arange(len(xy))
+    initial = xy.new_full((len(xy),), 1536.)
+    jump = direction*math.ulp(1536.)
+    model = ThermalModel(xy, ids[None], 1., 1., 1., ids, initial,
+                         element_type=element_type, heat_source=2*jump)
+    times = xy.new_tensor([0., 1., 2.5])
+    history = initial.repeat(3, 1)
+    history[1:] += jump*xy[:,0]
+    result = solve_transient_thermal(model, times, initial, theta=.5,
+                                     fixed_temperature_history=history)
+    heat, net = thermal_element_nodal_heat_steps(model, result, return_net_input=True)
+    # For either x edge the storage fractions are 1/6 and 1/3 on the ramp.
+    # A Q4 splits each edge contribution equally between its two nodes.
+    x = xy[:,0]
+    share = 2/len(xy)
+    stored = share*jump*torch.stack(((1+x)/6, 0*x))
+    source = (times.diff()*2*jump/len(xy))[:,None]
+    conduction = share*jump*xy.new_tensor([.5, 1.5])[:,None]*(2*x-1)
+    err = (heat[:,0]-(stored+conduction-source)).abs().max()/abs(jump)
+    net_err = (net[:,0]-(source-stored)).abs().max()/abs(jump)
+    record_property("nodal_heat_error_per_unit_jump", float(err))
+    record_property("net_input_error_per_unit_jump", float(net_err))
+    assert max(err, net_err) < 2e-15

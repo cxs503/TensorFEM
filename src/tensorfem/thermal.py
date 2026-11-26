@@ -516,7 +516,7 @@ def recover_q4_patch_boundary_power(model, temperature, patches, local_edge, *, 
     return ((values-values[...,:1])*weights.squeeze(-1)).sum(-1)
 
 
-def _thermal_element_matrices(model, load_like):
+def _thermal_element_matrices(model, load_like, *, include_sink=True):
     x = model.nodes
     conn = model.elements.long()
     ne, nen = conn.shape
@@ -633,7 +633,9 @@ def _thermal_element_matrices(model, load_like):
                         a, b, c = quadratic.unbind(1)
                         power = weight*(a*px.square() + b*px*py + c*py.square())
                         fe = fe + power[:, None]*n
-    return ke if sink is None else ke+sink, ce, fe, sink
+    if include_sink and sink is not None:
+        ke = ke + sink
+    return ke, ce, fe, sink
 
 
 def thermal_element_nodal_power(model: ThermalModel, temperature: torch.Tensor,
@@ -706,14 +708,27 @@ def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransie
     return_net_input also returns the distributed net input in J per interval
     and element node. Divide both arrays by interval duration to recover power.
     """
-    ke, ce, fe, sink = _thermal_element_matrices(model, model.nodes)
-    t = result.temperature[:, model.elements.long()]
-    stage = result.interval_temperature[:, model.elements.long()]
+    ke, ce, fe, sink = _thermal_element_matrices(model, model.nodes, include_sink=False)
+    conn = model.elements.long()
+    t = result.temperature[:, conn]
+    # A uniform element temperature has zero conductive power. Remove it
+    # before time weighting, retaining even a sub-spacing mean gradient.
+    if result.stage_temperature is None:
+        delta = t - t[..., :1]
+        gradient_field = (1-result.theta)*delta[:-1] + result.theta*delta[1:]
+    else:
+        stage = result.stage_temperature[:, conn]
+        gradient_field = stage - stage[..., :1]
     stored = torch.einsum("eij,tej->tei", ce, t.diff(dim=0))
     dt = result.time.diff().to(t)[:,None,None]
     heat = stored
     net = dt*fe-stored if return_net_input else None
-    power = torch.einsum("eij,tej->tei", ke, stage) - fe
+    power = torch.einsum("eij,tej->tei", ke, gradient_field) - fe
+    if sink is not None:
+        loss = torch.einsum("eij,tej->tei", sink, result.interval_temperature[:, conn])
+        power = power + loss
+        if return_net_input:
+            net = net - dt*loss
     if element_nodal_heat_history is not None:
         load = torch.as_tensor(element_nodal_heat_history).to(t)
         if load.shape != t.shape or not torch.isfinite(load).all():
@@ -731,8 +746,6 @@ def thermal_element_nodal_heat_steps(model: ThermalModel, result: ThermalTransie
             net = net+supplied
     heat = heat+dt*power
     if return_net_input:
-        if sink is not None:
-            net = net-dt*torch.einsum("eij,tej->tei",sink,stage)
         return heat,net
     return heat
 
