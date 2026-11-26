@@ -1372,7 +1372,7 @@ def test_batched_contact_pair_power_reverses_with_node_order():
 @pytest.mark.parametrize("sparse", [False, True])
 def test_curved_harmonic_rod_contact_power_refinement(sparse, record_property):
     from dataclasses import replace
-    from tensorfem import solve_harmonic_thermal, thermal_contact_pair_harmonic_cycle_duration, thermal_contact_pair_power
+    from tensorfem import solve_harmonic_thermal, thermal_contact_pair_harmonic_cycle_duration, thermal_contact_pair_harmonic_reversal_times, thermal_contact_pair_power
 
     # In each constant layer k*T''=i*omega*C*T-S. Set both interface traces
     # and their slopes independently of the mesh, then prescribe the resulting
@@ -1420,6 +1420,11 @@ def test_curved_harmonic_rod_contact_power_refinement(sparse, record_property):
         errors["forward_duration_s"] = abs(forward.item()-(period-reverse_reference))
         errors["reverse_duration_s"] = abs(reverse.item()-reverse_reference)
         assert abs(forward.item()+reverse.item()-period) < 1e-14
+        entries = thermal_contact_pair_harmonic_reversal_times(model, result.temperature, omega, steady_temperature=steady)
+        phase = math.atan2(q.imag, q.real)
+        for name, sign, entry in zip(("forward_entry_s", "reverse_entry_s"), (-1, 1), entries):
+            reference = ((sign*math.acos(-bias/abs(q))-phase) % (2*math.pi))/omega
+            errors[name] = abs(entry.item()-reference)
         for name,value in errors.items():
             record_property(f"n{n}_{name}",value)
             if previous is not None:
@@ -1790,3 +1795,17 @@ def test_contact_duration_zero_intervals_and_unequal_reversal():
     expected = time.new_tensor([[0., 0.], [2., 0.], [1., 3.], [0., 1.], [0., 2.]])
     torch.testing.assert_close(forward, expected)
     torch.testing.assert_close(reverse, expected.flip(1))
+
+
+def test_contact_cycle_reversals_at_origin_and_absent_crossings():
+    from dataclasses import replace
+    from tensorfem import thermal_contact_pair_harmonic_reversal_times
+
+    model = replace(line_model(), contact_pairs=torch.tensor([[0, 1]]), contact_conductance=1.)
+    ac = torch.zeros((4, len(model.nodes)), dtype=torch.complex128)
+    ac[:3, 0] = 1j
+    dc = torch.zeros_like(ac.real)
+    dc[:, 0] = dc.new_tensor([0., 1., -2., 0.])
+    rising, falling = thermal_contact_pair_harmonic_reversal_times(model, ac, 2., steady_temperature=dc)
+    assert rising[0].item() == math.pi/2 and falling[0].item() == 0.
+    assert rising[1:].isnan().all() and falling[1:].isnan().all()
