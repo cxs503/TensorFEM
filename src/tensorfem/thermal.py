@@ -954,15 +954,7 @@ def thermal_contact_pair_power(model: ThermalModel, temperature: torch.Tensor) -
     return g*(field[...,left]-field[...,right])
 
 
-def thermal_contact_pair_harmonic_cycle_heat(model: ThermalModel, temperature: torch.Tensor,
-                                             angular_frequency: float, *, steady_temperature=None):
-    """Return forward and reverse heat magnitudes (J) per lumped contact and cycle.
-
-    Supply peak nodal phasors for Re(T*exp(iωt)) and, optionally, real steady
-    nodal temperatures. Leading batch dimensions may broadcast. Positive
-    transfer follows contact_pairs order. A common absolute temperature offset
-    can be omitted from the steady field.
-    """
+def _contact_pair_cycle_parameters(model, temperature, angular_frequency, steady_temperature):
     if not math.isfinite(angular_frequency) or angular_frequency <= 0:
         raise ValueError("angular_frequency must be finite and positive")
     amplitude = thermal_contact_pair_power(model,temperature).abs()
@@ -980,6 +972,36 @@ def thermal_contact_pair_harmonic_cycle_heat(model: ThermalModel, temperature: t
     gap = torch.where(reverses,amplitude-magnitude,0.)
     fraction = gap/torch.where(reverses,amplitude,1.)
     angle = 2*torch.asin(torch.sqrt(torch.where(reverses,.5*fraction,.5)))
+    return amplitude, bias, reverses, angle
+
+
+def thermal_contact_pair_harmonic_cycle_duration(model: ThermalModel, temperature: torch.Tensor,
+                                                 angular_frequency: float, *, steady_temperature=None):
+    """Return seconds of forward and reverse flow per lumped contact over a cycle.
+
+    Supply peak nodal phasors and optional real steady temperatures, as for
+    thermal_contact_pair_harmonic_cycle_heat. A contact at zero power throughout
+    contributes zero in both directions. An isolated zero costs no duration.
+    """
+    amplitude, bias, reverses, angle = _contact_pair_cycle_parameters(
+        model, temperature, angular_frequency, steady_temperature)
+    minor = torch.where(reverses, 2*angle/angular_frequency, 0.)
+    period = 2*math.pi/angular_frequency
+    major = torch.where((amplitude > 0) | (bias != 0), period-minor, 0.)
+    return torch.where(bias >= 0, major, minor), torch.where(bias >= 0, minor, major)
+
+
+def thermal_contact_pair_harmonic_cycle_heat(model: ThermalModel, temperature: torch.Tensor,
+                                             angular_frequency: float, *, steady_temperature=None):
+    """Return forward and reverse heat magnitudes (J) per lumped contact and cycle.
+
+    Supply peak nodal phasors for Re(T*exp(iωt)) and, optionally, real steady
+    nodal temperatures. Leading batch dimensions may broadcast. Positive
+    transfer follows contact_pairs order. A common absolute temperature offset
+    can be omitted from the steady field.
+    """
+    amplitude, bias, reverses, angle = _contact_pair_cycle_parameters(
+        model, temperature, angular_frequency, steady_temperature)
     square = angle.square()
     # sin(a)-a*cos(a) loses its leading cubic term to roundoff for small a.
     series = angle*square*(1/3+square*(-1/30+square*(1/840-square/45360)))

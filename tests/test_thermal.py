@@ -1562,7 +1562,7 @@ def test_harmonic_contact_edge_cycle_heat_against_local_magnitude(imag,record_pr
 def test_biased_contact_cycle_heat_against_time_quadrature(bias,record_property):
     from dataclasses import replace
     from scipy.integrate import quad
-    from tensorfem import thermal_contact_pair_harmonic_cycle_heat
+    from tensorfem import thermal_contact_pair_harmonic_cycle_duration, thermal_contact_pair_harmonic_cycle_heat
 
     model = replace(line_model(),contact_pairs=torch.tensor([[0,1],[1,0]]),contact_conductance=1.)
     dc = torch.zeros(len(model.nodes),dtype=D)
@@ -1583,11 +1583,20 @@ def test_biased_contact_cycle_heat_against_time_quadrature(bias,record_property)
     record_property("directional_error_J",error)
     record_property("net_residual_J",residual)
     assert max(error,residual)<5e-14
+    durations = thermal_contact_pair_harmonic_cycle_duration(
+        model, torch.stack([ac, 1j*ac]), omega, steady_temperature=dc)
+    cuts = sorted([0., *roots, 2*math.pi])
+    positive = sum(b-a for a, b in zip(cuts, cuts[1:]) if q((a+b)/2) > 0)/omega
+    expected = dc.new_tensor([positive, 2*math.pi/omega-positive])
+    duration_error = max(float((durations[0]-expected).abs().max()),
+                         float((durations[1]-expected.flip(0)).abs().max()))
+    record_property("duration_error_s", duration_error)
+    assert duration_error < 5e-14
 
 
 def test_contact_cycle_heat_resolves_tiny_reverse_lobe_and_static_load():
     from dataclasses import replace
-    from tensorfem import thermal_contact_pair_harmonic_cycle_heat
+    from tensorfem import thermal_contact_pair_harmonic_cycle_duration, thermal_contact_pair_harmonic_cycle_heat
 
     model = replace(line_model(),contact_pairs=torch.tensor([[0,1]]),contact_conductance=1.)
     ac = torch.zeros(len(model.nodes),dtype=D)
@@ -1602,6 +1611,11 @@ def test_contact_cycle_heat_resolves_tiny_reverse_lobe_and_static_load():
     forward,reverse = thermal_contact_pair_harmonic_cycle_heat(model,0*ac,2.,steady_temperature=dc)
     torch.testing.assert_close(forward,dc[:1]*math.pi)
     assert reverse.item()==0.
+    _, short = thermal_contact_pair_harmonic_cycle_duration(model, ac, 1., steady_temperature=dc)
+    assert abs(short.item()/(2*math.sqrt(2*gap))-1) < 3e-15
+    for bias, durations in [(dc, (math.pi, 0.)), (-dc, (0., math.pi)), (0*dc, (0., 0.))]:
+        actual = thermal_contact_pair_harmonic_cycle_duration(model, 0*ac, 2., steady_temperature=bias)
+        assert tuple(v.item() for v in actual) == durations
 
 
 def test_biased_edge_cycle_heat_against_space_time_quadrature(record_property):
