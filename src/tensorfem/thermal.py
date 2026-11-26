@@ -1004,15 +1004,16 @@ def thermal_contact_pair_harmonic_reversal_times(model: ThermalModel, temperatur
     """
     phasor, bias, reverses, half = _contact_pair_cycle_parameters(
         model, temperature, angular_frequency, steady_temperature)
-    phase = torch.angle(phasor)
-    # Relative to the phasor peak, reverse flow begins on the falling branch.
-    falling = torch.where(bias > 0, math.pi-half, half)
-    falling = torch.where(bias == 0, math.pi/2, falling)
+    # Center on the smaller lobe directly. Computing pi-angle(phasor) near
+    # the negative real axis would lose precision at early crossings.
+    center = -torch.angle(torch.where(bias > 0, -phasor, phasor))
+    offset = torch.where(bias > 0, half, -half)
+    offset = torch.where(bias == 0, -math.pi/2, offset)
     def cycle_time(angle):
         wrapped = torch.remainder(angle, 2*math.pi)
         wrapped = torch.where(wrapped >= 2*math.pi, 0., wrapped)
         return torch.where(reverses, wrapped/angular_frequency, float("nan"))
-    rising_time, falling_time = cycle_time(-falling-phase), cycle_time(falling-phase)
+    rising_time, falling_time = cycle_time(center+offset), cycle_time(center-offset)
     if phasor.is_complex():
         # Factor q(t) at the known root. The other root satisfies
         # tan(ωt/2) = -imag/real. Use the narrow lobe to avoid cancellation.

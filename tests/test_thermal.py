@@ -1835,7 +1835,7 @@ def test_biased_contact_reversal_exactly_at_origin(imag, record_property):
     assert math.isclose(reverse[0].item(), 2*math.atan(abs(imag))/omega, rel_tol=1e-14)
 
 
-@pytest.mark.parametrize("factor", [1.5, 2.5])
+@pytest.mark.parametrize("factor", [1.5, 2.5, 4., 6.])
 def test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap(factor, record_property):
     from dataclasses import replace
     from decimal import Decimal, localcontext
@@ -1864,4 +1864,4 @@ def test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap(factor, r
     width_error = abs(reverse.item()-(roots[0]-roots[1]))
     record_property("entry_error_s", error)
     record_property("duration_error_s", width_error)
-    assert error < 1e-15 and width_error < 1e-22
+    assert error < 1e-22 and width_error < 1e-22
