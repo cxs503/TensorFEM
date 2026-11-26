@@ -1367,3 +1367,51 @@ def test_batched_contact_pair_power_reverses_with_node_order():
     batch = torch.stack((field,-3*field))
     expected = batch.new_tensor([[-.5,.125,0.],[1.5,-.375,0.]])
     torch.testing.assert_close(thermal_contact_pair_power(model,batch),expected,rtol=0,atol=0)
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+def test_curved_harmonic_rod_contact_power_refinement(sparse, record_property):
+    from tensorfem import solve_harmonic_thermal, thermal_contact_pair_power
+
+    # In each constant layer k*T''=i*omega*C*T-S. Set both interface traces
+    # and their slopes independently of the mesh, then prescribe the resulting
+    # exact temperatures at the outer ends. Rightward power is -A*k*T'.
+    omega, conductance = 2.3, 2.5
+    q, cold = .8-.4j, .7+.2j
+    layers = [(2., 3., 1., .75+.25j, cold+q/conductance),
+              (4., 1.5, .5, -.5+.75j, cold)]
+    previous = None
+    for n in (8, 16, 32, 64):
+        coords, exact, ends = [], [], []
+        for side,(k,c,area,source,trace) in enumerate(layers):
+            x = torch.linspace(side,side+1,n+1,dtype=D)
+            wave = (1j*omega*c/k)**.5
+            background = source/(1j*omega*c)
+            arg = wave*(x-1)
+            profile = background+(trace-background)*arg.cosh()-q*arg.sinh()/(area*k*wave)
+            flux = q*arg.cosh()-area*k*wave*(trace-background)*arg.sinh()
+            coords.append(x)
+            exact.append(profile)
+            ends.append(flux[0] if side==0 else -flux[-1])
+        nodes = torch.cat(coords)[:,None]
+        expected = torch.cat(exact)
+        left = torch.cat((torch.arange(n),torch.arange(n)+n+1))
+        fixed = torch.tensor([0,2*n+1])
+        model = ThermalModel(nodes,torch.stack((left,left+1),dim=1),
+            torch.tensor([row[0] for row in layers],dtype=D).repeat_interleave(n),1.,
+            torch.tensor([row[1] for row in layers],dtype=D).repeat_interleave(n),fixed,expected[fixed],
+            thickness=torch.tensor([row[2] for row in layers],dtype=D).repeat_interleave(n),
+            heat_source=torch.tensor([row[3] for row in layers],dtype=torch.complex128).repeat_interleave(n),
+            contact_pairs=torch.tensor([[n,n+1]]),contact_conductance=conductance)
+        result = solve_harmonic_thermal(model,omega,sparse=sparse)
+        contact = thermal_contact_pair_power(model,result.temperature).item()
+        errors = dict(nodal_temperature_K=float((result.temperature-expected).abs().max()),
+                      contact_W=abs(contact-q),west_W=abs((result.reaction_power[0]-ends[0]).item()),
+                      east_W=abs((result.reaction_power[-1]-ends[1]).item()))
+        for name,value in errors.items():
+            record_property(f"n{n}_{name}",value)
+            if previous is not None:
+                order = math.log2(previous[name]/value)
+                record_property(f"n{n}_{name}_order",order)
+                assert 1.9 < order < 2.1
+        previous = errors
