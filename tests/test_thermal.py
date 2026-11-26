@@ -1833,3 +1833,35 @@ def test_biased_contact_reversal_exactly_at_origin(imag, record_property):
     assert error < 1e-15 and second[0].item() > 0.
     _, reverse = thermal_contact_pair_harmonic_cycle_duration(model, ac, omega, steady_temperature=dc)
     assert math.isclose(reverse[0].item(), 2*math.atan(abs(imag))/omega, rel_tol=1e-14)
+
+
+@pytest.mark.parametrize("factor", [1.5, 2.5])
+def test_near_axis_biased_contact_cycle_resolves_sub_ulp_amplitude_gap(factor, record_property):
+    from dataclasses import replace
+    from decimal import Decimal, localcontext
+    from tensorfem import thermal_contact_pair_harmonic_cycle_duration, thermal_contact_pair_harmonic_reversal_times
+
+    model = replace(line_model(), contact_pairs=torch.tensor([[0, 1]]), contact_conductance=1.)
+    eps = math.ulp(1.)
+    y = math.sqrt(factor*eps)
+    dc = torch.zeros(len(model.nodes), dtype=D)
+    ac = torch.zeros_like(dc, dtype=torch.complex128)
+    dc[0], ac[0] = 1+eps, complex(-1., y)
+    entries = thermal_contact_pair_harmonic_reversal_times(model, ac, 1., steady_temperature=dc)
+    _, reverse = thermal_contact_pair_harmonic_cycle_duration(model, ac, 1., steady_temperature=dc)
+    # Solve the quadratic in tan(t/2) using the actual binary inputs.
+    with localcontext() as ctx:
+        ctx.prec = 80
+        b = Decimal.from_float(dc[0].item())
+        v = Decimal.from_float(y)
+        discriminant = v*v-(b-1)*(b+1)
+        if discriminant <= 0:
+            assert reverse.item() == 0. and all(t.isnan().all() for t in entries)
+            return
+        root = discriminant.sqrt()
+        roots = [2*math.atan(float((v+s*root)/(b+1))) for s in (1, -1)]
+    error = max(abs(t.item()-ref) for t, ref in zip(entries, roots))
+    width_error = abs(reverse.item()-(roots[0]-roots[1]))
+    record_property("entry_error_s", error)
+    record_property("duration_error_s", width_error)
+    assert error < 1e-15 and width_error < 1e-22

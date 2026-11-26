@@ -971,6 +971,18 @@ def _contact_pair_cycle_parameters(model, temperature, angular_frequency, steady
     reverses = amplitude > magnitude
     # Half-width of the smaller lobe. Retain A-|bias| close to tangency.
     gap = torch.where(reverses,amplitude-magnitude,0.)
+    if phasor.is_complex():
+        # Near a coordinate axis, rounding hypot(x,y) can hide a shallow
+        # crossing. Recover hypot(x,y)-x as y*(y/x)/(hypot(x,y)/x+1).
+        major = torch.maximum(phasor.real.abs(), phasor.imag.abs())
+        minor = torch.minimum(phasor.real.abs(), phasor.imag.abs())
+        scale = torch.where(major > 0, major, 1.)
+        ratio = minor/scale
+        near_axis = (major > 0) & (ratio <= math.sqrt(8*torch.finfo(major.dtype).eps))
+        correction = minor*(ratio/(amplitude/scale+1))
+        resolved_gap = (major-magnitude)+correction
+        gap = torch.where(near_axis, resolved_gap.clamp_min(0.), gap)
+        reverses = gap > 0
     fraction = gap/torch.where(reverses,amplitude,1.)
     angle = 2*torch.asin(torch.sqrt(torch.where(reverses,.5*fraction,.5)))
     if phasor.is_complex():
