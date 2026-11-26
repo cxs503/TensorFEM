@@ -295,3 +295,52 @@ def test_equal_effusivity_interface_heat_from_both_elements(record_property):
         assert torch.all(coarse > 3*fine)
     assert torch.all(errors[-1] < .01*abs(reference))
     assert torch.all(abs(errors[-1]-errors[-2]) < .05*errors[-1])
+
+
+def test_resistive_decay_mode_interface_traces_and_heat(record_property):
+    """Dirichlet rod decay with separate material traces at the midpoint."""
+    from tensorfem.thermal import thermal_contact_pair_heat_steps
+
+    wave = 1.5*torch.pi
+    windows = torch.tensor([0., .025, .05], dtype=FLOAT)
+    widths = windows.diff()
+    integrated = torch.exp(-wave**2*windows[:-1])*(-torch.expm1(-wave**2*widths))/wave**2
+    # West sin(wx), east -sin(w(1-x))/3. Right-side k=C=3 keeps the
+    # diffusivity equal and matches the left Fourier flux at the interface.
+    angle = windows.new_tensor(wave/2)
+    traces = torch.sin(angle)*windows.new_tensor([1., -1/3])
+    flux = -wave*torch.cos(angle)
+    conductance = flux/(traces[0]-traces[1])
+    exact_means = (integrated/widths)[:, None]*traces
+    exact_heat = integrated*flux
+    errors = []
+    for n, steps in ((12, 24), (24, 48), (48, 96), (48, 192)):
+        mid = n//2
+        half, conn = line_mesh(mid, length=.5)
+        nodes = torch.cat((half, .5+half))
+        elements = torch.cat((conn, conn+mid+1))
+        pair = torch.tensor([[mid, mid+1]])
+        materials = nodes.new_tensor([1., 3.]).repeat_interleave(mid)
+        model = ThermalModel(nodes, elements, materials, 1., materials, torch.tensor([0, n+1]),
+                             nodes.new_zeros(2), contact_pairs=pair, contact_conductance=conductance)
+        sine = torch.sin(wave*half[:, 0])
+        initial = torch.cat((sine, -sine.flip((0,))/3))
+        time = torch.linspace(0., .05, 2*steps+1, dtype=FLOAT)
+        result = solve_transient_thermal(model, time, initial, method="sdirk2")
+        means = result.interval_temperature[:, pair[0]].reshape(2, steps, 2).mean(1)
+        transfer = thermal_contact_pair_heat_steps(model, result).reshape(2, steps).sum(1)
+        # Independent left-layer budget includes the heat reaction at the fixed end.
+        west = result.nodal_reaction_heat_steps()[:, 0].reshape(2, steps).sum(1)
+        stored = torch.trapezoid(result.temperature[::steps, :mid+1], half[:, 0])
+        balance = (west-transfer-stored.diff()).abs().max().item()
+        assert balance < 1e-12
+        error = torch.cat(((means-exact_means).abs().amax(0), (transfer-exact_heat).abs().max()[None]))
+        prefix = f"n{n}_steps{steps}"
+        record_property(f"{prefix}_left_balance_J_m2", balance)
+        for quantity, value in zip(("west_trace_K", "east_trace_K", "contact_heat_J_m2"), error):
+            record_property(f"{prefix}_max_error_{quantity}", value.item())
+        errors.append(error)
+    for coarse, fine in zip(errors[:2], errors[1:3]):
+        assert torch.all(coarse > 3*fine)
+    assert torch.all(errors[-1] < windows.new_tensor([1e-3, 1e-3, 1e-4]))
+    assert torch.all(abs(errors[-1]-errors[-2]) < .1*errors[-1])
