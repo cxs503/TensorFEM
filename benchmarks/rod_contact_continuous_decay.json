@@ -1,0 +1,26 @@
+{
+  "source_commit": "72918f208cf13995a2d18b5f00f060fa152442e5",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_rod_continuum.xml",
+  "tests": 153,
+  "failures": 0,
+  "errors": 0,
+  "reference": "Unit-area insulated two-material rod. Piecewise cosine eigenfunctions with a common 1 W initial interface power decay as exp(-3t). Fix positive contact conductance by the exact initial temperature jump; integrate contact power analytically. Compare max errors over all output times up to 0.2 s, with n linear elements per material and 4n SDIRK2 steps, dense and sparse.",
+  "measurements": {
+    "test_insulated_rod_contact_decay_against_continuous_mode[False]": {
+      "n8_temperature_error_K": 0.0001409630926831884,
+      "n8_contact_heat_error_J": 3.299699702663528e-05,
+      "n16_temperature_error_K": 3.522665200716979e-05,
+      "n16_contact_heat_error_J": 8.240871307463316e-06,
+      "n32_temperature_error_K": 8.805758933583263e-06,
+      "n32_contact_heat_error_J": 2.0597149237577828e-06
+    },
+    "test_insulated_rod_contact_decay_against_continuous_mode[True]": {
+      "n8_temperature_error_K": 0.00014096309268407659,
+      "n8_contact_heat_error_J": 3.2996997026718544e-05,
+      "n16_temperature_error_K": 3.522665200383912e-05,
+      "n16_contact_heat_error_J": 8.24087130787965e-06,
+      "n32_temperature_error_K": 8.805758930696683e-06,
+      "n32_contact_heat_error_J": 2.05971492434065e-06
+    }
+  }
+}
