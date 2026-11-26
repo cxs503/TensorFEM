@@ -2093,3 +2093,29 @@ def test_q4_geometry_invariant_to_coordinate_origin(dtype, offset, record_proper
     for key,value in errors.items():
         record_property(key, value)
     assert max(errors.values()) < 8*torch.finfo(dtype).eps
+
+
+@pytest.mark.parametrize("sparse", [False, True])
+@pytest.mark.parametrize("sign", [-1, 1])
+def test_theta_rod_reaction_heat_for_small_end_ramp(sparse, sign, record_property):
+    # For a unit linear rod C has diagonal 1/3 and off-diagonal 1/6.
+    # The right end ramps over the first interval and holds over the second.
+    x = torch.tensor([[0.], [1.]], dtype=D)
+    initial = x.new_full((2,), 1024.)
+    jump = sign*math.ulp(1024.)
+    time = x.new_tensor([0., 1., 2.5])
+    prescribed = initial.repeat(3, 1)
+    prescribed[1:, 1] += jump
+    model = ThermalModel(x, torch.tensor([[0, 1]]), 1., 1., 1., torch.arange(2), initial)
+    run = solve_transient_thermal(model, time, initial, theta=.5, sparse=sparse,
+                                  fixed_temperature_history=prescribed)
+    torch.testing.assert_close(run.temperature, prescribed, rtol=0., atol=0.)
+    expected = jump*x.new_tensor([[1/6-.5, 1/3+.5], [-1.5, 1.5]])
+    steps = run.nodal_reaction_heat_steps()
+    total = run.integrated_nodal_reactions()
+    step_error = float((steps-expected).abs().max())/abs(jump)
+    total_error = float((total-expected.sum(0)).abs().max())/abs(jump)
+    record_property("step_error_per_unit_jump", step_error)
+    record_property("total_error_per_unit_jump", total_error)
+    assert max(step_error, total_error) < 2e-15
+    torch.testing.assert_close(steps.sum(1), jump*x.new_tensor([.5, 0.]), rtol=2e-15, atol=0.)

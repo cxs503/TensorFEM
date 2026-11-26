@@ -145,15 +145,26 @@ class ThermalTransientResult:
             return self.stage_temperature
         return (1-self.theta)*self.temperature[:-1] + self.theta*self.temperature[1:]
 
+    def _interval_net_power(self) -> torch.Tensor:
+        """Conductive power minus applied power, with the solver's time weights."""
+        m = self.matrices
+        if self.stage_temperature is not None:
+            power = (m.conductivity @ self.stage_temperature.T).T - m.heat
+        else:
+            # Apply the spatial operator before time averaging so a small
+            # nodal contrast survives on a common temperature background.
+            endpoint = (m.conductivity @ self.temperature.T).T - m.heat
+            power = (1-self.theta)*endpoint[:-1] + self.theta*endpoint[1:]
+        if self.additional_stage_power is not None:
+            power = power - self.additional_stage_power
+        return power
+
     def nodal_reaction_heat_steps(self) -> torch.Tensor:
         """Return inward reaction heat per interval and node, shape (nt-1, nn)."""
         t = self.temperature
         dt = self.time.diff().to(t)[:, None]
-        stages = self.interval_temperature
-        m = self.matrices
-        applied = m.heat if self.additional_stage_power is None else m.heat + self.additional_stage_power
-        return ((m.capacity @ t.diff(dim=0).T + m.conductivity @ (dt*stages).T).T
-                - dt*applied)
+        storage = (self.matrices.capacity @ t.diff(dim=0).T).T
+        return storage + dt*self._interval_net_power()
 
     def integrated_nodal_reactions(self) -> torch.Tensor:
         """Heat supplied by prescribed temperatures over the returned time interval.
@@ -163,13 +174,8 @@ class ThermalTransientResult:
         """
         t = self.temperature
         dt = self.time.diff().to(t)
-        stages = self.interval_temperature
-        m = self.matrices
-        applied_heat = dt.sum() * m.heat
-        if self.additional_stage_power is not None:
-            applied_heat = applied_heat + dt @ self.additional_stage_power
-        return (m.capacity @ (t[-1] - t[0]) + m.conductivity @ (dt @ stages)
-                - applied_heat)
+        storage = self.matrices.capacity @ (t[-1] - t[0])
+        return storage + dt @ self._interval_net_power()
 
 
 def _expand(value, ne, like, default=1.0):
