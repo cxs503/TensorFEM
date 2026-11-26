@@ -1,0 +1,43 @@
+{
+  "source_commit": "d4c04eefe5264a40980ab59f106f5d77f7974ce1",
+  "baseline_commit": "7e22bd8cd8f42d8be34ea34b4ba2979192d43759",
+  "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_thermal.py tests/test_thermal_transient_reference.py tests/test_thermal_2d_reference.py tests/test_thermal_verification.py -o junit_family=legacy --junitxml=/tmp/fem-hpow-after.xml",
+  "passed": 249,
+  "reference": "Unit LINE2 and Q4 elements, a prescribed affine complex temperature field with real and imaginary baseline (1536,768) K and signed complex slope spacing(1536)*(1-0.5j). Compare Fourier power and exact shape function integrals of storage and heat loss, at zero and nonzero frequency.",
+  "before": {
+    "test_element_power_small_complex_gradient_with_bulk_exchange[0.0-line2]": {
+      "power_error_per_unit_jump": 1.2611998255629437,
+      "net_error_per_unit_jump": 4.965068306494546e-17
+    },
+    "test_element_power_small_complex_gradient_with_bulk_exchange[0.0-q4]": {
+      "power_error_per_unit_jump": 1.6875,
+      "net_error_per_unit_jump": 4.965068306494546e-17
+    },
+    "test_element_power_small_complex_gradient_with_bulk_exchange[2.220446049250313e-16-line2]": {
+      "power_error_per_unit_jump": 1.5662455107677085,
+      "net_error_per_unit_jump": 1.1102230246251565e-16
+    },
+    "test_element_power_small_complex_gradient_with_bulk_exchange[2.220446049250313e-16-q4]": {
+      "power_error_per_unit_jump": 1.7286645857424163,
+      "net_error_per_unit_jump": 1.1102230246251565e-16
+    }
+  },
+  "after": {
+    "test_element_power_small_complex_gradient_with_bulk_exchange[0.0-line2]": {
+      "power_error_per_unit_jump": 0.0,
+      "net_error_per_unit_jump": 4.965068306494546e-17
+    },
+    "test_element_power_small_complex_gradient_with_bulk_exchange[0.0-q4]": {
+      "power_error_per_unit_jump": 2.220446049250313e-16,
+      "net_error_per_unit_jump": 4.965068306494546e-17
+    },
+    "test_element_power_small_complex_gradient_with_bulk_exchange[2.220446049250313e-16-line2]": {
+      "power_error_per_unit_jump": 9.930136612989092e-17,
+      "net_error_per_unit_jump": 1.1102230246251565e-16
+    },
+    "test_element_power_small_complex_gradient_with_bulk_exchange[2.220446049250313e-16-q4]": {
+      "power_error_per_unit_jump": 2.482534153247273e-16,
+      "net_error_per_unit_jump": 1.1102230246251565e-16
+    }
+  }
+}
