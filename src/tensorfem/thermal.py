@@ -954,6 +954,41 @@ def thermal_contact_pair_power(model: ThermalModel, temperature: torch.Tensor) -
     return g*(field[...,left]-field[...,right])
 
 
+def thermal_contact_pair_harmonic_cycle_heat(model: ThermalModel, temperature: torch.Tensor,
+                                             angular_frequency: float, *, steady_temperature=None):
+    """Return forward and reverse heat magnitudes (J) per lumped contact and cycle.
+
+    Supply peak nodal phasors for Re(T*exp(iωt)) and, optionally, real steady
+    nodal temperatures. Leading batch dimensions may broadcast. Positive
+    transfer follows contact_pairs order. A common absolute temperature offset
+    can be omitted from the steady field.
+    """
+    if not math.isfinite(angular_frequency) or angular_frequency <= 0:
+        raise ValueError("angular_frequency must be finite and positive")
+    amplitude = thermal_contact_pair_power(model,temperature).abs()
+    if steady_temperature is None:
+        bias = torch.zeros_like(amplitude)
+    else:
+        if steady_temperature.is_complex():
+            raise ValueError("steady_temperature must be real")
+        bias = thermal_contact_pair_power(model,steady_temperature)
+    if not torch.isfinite(amplitude).all() or not torch.isfinite(bias).all():
+        raise ValueError("contact powers must be finite")
+    magnitude = bias.abs()
+    reverses = amplitude > magnitude
+    # Half-width of the smaller lobe. Retain A-|bias| close to tangency.
+    gap = torch.where(reverses,amplitude-magnitude,0.)
+    fraction = gap/torch.where(reverses,amplitude,1.)
+    angle = 2*torch.asin(torch.sqrt(torch.where(reverses,.5*fraction,.5)))
+    square = angle.square()
+    # sin(a)-a*cos(a) loses its leading cubic term to roundoff for small a.
+    series = angle*square*(1/3+square*(-1/30+square*(1/840-square/45360)))
+    lobe = torch.where(angle < .05,series,torch.sin(angle)-angle*torch.cos(angle))
+    minor = torch.where(reverses,amplitude*lobe,0.)*(2/angular_frequency)
+    period = 2*math.pi/angular_frequency
+    return minor+period*bias.clamp_min(0), minor+period*(-bias).clamp_min(0)
+
+
 def thermal_contact_pair_heat_steps(model: ThermalModel, result: ThermalTransientResult) -> torch.Tensor:
     """Heat in J per time interval and lumped contact, shaped (nt-1, n_pairs).
 

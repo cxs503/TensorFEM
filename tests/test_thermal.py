@@ -1556,3 +1556,49 @@ def test_harmonic_contact_edge_cycle_heat_against_local_magnitude(imag,record_pr
         worst = max(worst,float((result[:,0]-x.new_tensor([expected,expected,0.])).abs().max()))
     record_property("max_per_direction_cycle_heat_error_J",worst)
     assert worst < 1e-13
+
+
+@pytest.mark.parametrize("bias", [-2.,-1.,-.375,0.,.375,1.,2.])
+def test_biased_contact_cycle_heat_against_time_quadrature(bias,record_property):
+    from dataclasses import replace
+    from scipy.integrate import quad
+    from tensorfem import thermal_contact_pair_harmonic_cycle_heat
+
+    model = replace(line_model(),contact_pairs=torch.tensor([[0,1],[1,0]]),contact_conductance=1.)
+    dc = torch.zeros(len(model.nodes),dtype=D)
+    dc[0] = bias
+    ac = dc.to(torch.complex128)
+    ac[0] = .6+.8j
+    omega = 1.75
+    forward,reverse = thermal_contact_pair_harmonic_cycle_heat(model,torch.stack([ac,1j*ac]),omega,
+                                                              steady_temperature=dc)
+    phase = math.atan2(.8,.6)
+    roots = [(s*math.acos(-bias)-phase)%(2*math.pi) for s in (-1,1)] if abs(bias)<1 else []
+    def q(angle):
+        return bias+.6*math.cos(angle)-.8*math.sin(angle)
+    refs = dc.new_tensor([quad(lambda t:max(sign*q(t),0.),0,2*math.pi,points=roots)[0]/omega
+                          for sign in (1,-1)])
+    error = max(float((forward-refs).abs().max()),float((reverse-refs.flip(0)).abs().max()))
+    residual = float((forward[:,0]-reverse[:,0]-2*math.pi*bias/omega).abs().max())
+    record_property("directional_error_J",error)
+    record_property("net_residual_J",residual)
+    assert max(error,residual)<5e-14
+
+
+def test_contact_cycle_heat_resolves_tiny_reverse_lobe_and_static_load():
+    from dataclasses import replace
+    from tensorfem import thermal_contact_pair_harmonic_cycle_heat
+
+    model = replace(line_model(),contact_pairs=torch.tensor([[0,1]]),contact_conductance=1.)
+    ac = torch.zeros(len(model.nodes),dtype=D)
+    ac[0] = 1.
+    gap = 2.**-50
+    dc = ac*(1-gap)
+    _,reverse = thermal_contact_pair_harmonic_cycle_heat(model,ac,1.,steady_temperature=dc)
+    # Expanding cos near its minimum gives (4 sqrt(2)/3)*gap^(3/2)
+    # with a relative correction O(gap).
+    expected = 4*math.sqrt(2)/3*gap**1.5
+    assert abs(reverse.item()/expected-1)<3e-15
+    forward,reverse = thermal_contact_pair_harmonic_cycle_heat(model,0*ac,2.,steady_temperature=dc)
+    torch.testing.assert_close(forward,dc[:1]*math.pi)
+    assert reverse.item()==0.
