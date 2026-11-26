@@ -1,0 +1,38 @@
+{
+  "source_commit": "156bdeffa8c540718a385f11dc90625337a8895b",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_counterflow.xml",
+  "tests": 155,
+  "failures": 0,
+  "errors": 0,
+  "reference": "Superpose an exact steady -0.75 W contact power and a source-free piecewise cosine decay in a unit-area two-material rod. Integrate q(t)=exp(-3t)-0.75 W on either side of its analytical zero over [0,0.2] s. Refine space and time together, testing dense and sparse SDIRK2 temperatures and the directional heat from the piecewise-linear temperature history.",
+  "measurements": {
+    "test_rod_contact_decay_against_continuous_mode[False--0.75]": {
+      "n8_temperature_error_K": 0.00014096309268429863,
+      "n8_contact_heat_error_J": 3.299699702666303e-05,
+      "n8_forward_heat_error_J": 7.390085812367109e-06,
+      "n8_reverse_heat_error_J": 2.3339322565530535e-05,
+      "n16_temperature_error_K": 3.522665200517139e-05,
+      "n16_contact_heat_error_J": 8.240871307158004e-06,
+      "n16_forward_heat_error_J": 1.8416362309522927e-06,
+      "n16_reverse_heat_error_J": 5.832506195166398e-06,
+      "n32_temperature_error_K": 8.805758926921925e-06,
+      "n32_contact_heat_error_J": 2.0597149229806266e-06,
+      "n32_forward_heat_error_J": 4.6075050550917207e-07,
+      "n32_reverse_heat_error_J": 1.4572636556041407e-06
+    },
+    "test_rod_contact_decay_against_continuous_mode[True--0.75]": {
+      "n8_temperature_error_K": 0.00014096309268385454,
+      "n8_contact_heat_error_J": 3.299699702691283e-05,
+      "n8_forward_heat_error_J": 7.390085812387925e-06,
+      "n8_reverse_heat_error_J": 2.3339322565750845e-05,
+      "n16_temperature_error_K": 3.522665200517139e-05,
+      "n16_contact_heat_error_J": 8.24087130743556e-06,
+      "n16_forward_heat_error_J": 1.8416362311691331e-06,
+      "n16_reverse_heat_error_J": 5.832506195194154e-06,
+      "n32_temperature_error_K": 8.80575892425739e-06,
+      "n32_contact_heat_error_J": 2.059714923285938e-06,
+      "n32_forward_heat_error_J": 4.6075050549355956e-07,
+      "n32_reverse_heat_error_J": 1.457263655885166e-06
+    }
+  }
+}
