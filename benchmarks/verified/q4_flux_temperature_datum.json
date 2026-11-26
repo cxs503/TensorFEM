@@ -1,0 +1,27 @@
+{
+  "source_commit": "316f5e6e7ddcd41efd09d3168b11b2f86e758b1b",
+  "baseline_commit": "c895c85475654bcbe7a0dfbe223f2495646d05b7",
+  "reference": "A distorted dyadic Q4 with constant anisotropic conductivity and a linear complex temperature field. Exact Cartesian Fourier flux is -K grad(T) and integrated edge power is its normal component times edge length and thickness. Check both quadratures with and without a uniform datum and with zero gradient. Errors normalized by the maximum magnitude of the nonzero reference.",
+  "command": "PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest -q tests/test_thermal.py tests/test_thermal_poisson_2d.py -o junit_family=legacy --junitxml=/tmp/q4-datum-after.xml",
+  "before": {
+    "test_q4_flux_invariant_to_temperature_datum[dtype0-1.8189894035458565e-12]": {
+      "scaled_flux_error": 0.02702644797797377,
+      "scaled_edge_power_error": 0.00873766447368421
+    },
+    "test_q4_flux_invariant_to_temperature_datum[dtype1-0.0009765625]": {
+      "scaled_flux_error": 0.02395787090063095,
+      "scaled_edge_power_error": 0.009608084335923195
+    }
+  },
+  "after": {
+    "test_q4_flux_invariant_to_temperature_datum[dtype0-1.8189894035458565e-12]": {
+      "scaled_flux_error": 2.5376526277146434e-16,
+      "scaled_edge_power_error": 2.49313240617579e-16
+    },
+    "test_q4_flux_invariant_to_temperature_datum[dtype1-0.0009765625]": {
+      "scaled_flux_error": 1.362391799375473e-07,
+      "scaled_edge_power_error": 1.3384902786128805e-07
+    }
+  },
+  "passed": 191
+}
