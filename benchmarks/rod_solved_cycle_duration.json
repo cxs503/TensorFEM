@@ -1,0 +1,46 @@
+{
+  "source_commit": "4f8444659c5ddf781496c70c5f6f5ee0567fc819",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src python -m pytest -q tests/test_thermal.py -o junit_family=legacy --junitxml=/tmp/fem_solved_cycle_duration.xml",
+  "tests": 156,
+  "failures": 0,
+  "errors": 0,
+  "reference": "Two unit-length rods with unequal cross-sections and a finite contact. Combine the DC series-resistance solution with the continuous harmonic contact power 0.8-0.4i W at 2.3 rad/s. Compare whole-cycle forward and reverse durations on dense and sparse FEM solutions using 8, 16, 32 and 64 elements per material.",
+  "exact_duration_s": {
+    "forward": 1.7230845180625574,
+    "reverse": 1.008735180711176
+  },
+  "measurements": {
+    "test_curved_harmonic_rod_contact_power_refinement[False]": {
+      "n8_forward_duration_s": 0.0018768863344373887,
+      "n8_reverse_duration_s": 0.0018768863344373887,
+      "n16_forward_duration_s": 0.00047016935407029337,
+      "n16_forward_duration_s_order": 1.9970888707714498,
+      "n16_reverse_duration_s": 0.00047016935407029337,
+      "n16_reverse_duration_s_order": 1.9970888707714498,
+      "n32_forward_duration_s": 0.00011760126976345653,
+      "n32_forward_duration_s_order": 1.9992768689858031,
+      "n32_reverse_duration_s": 0.00011760126976345653,
+      "n32_reverse_duration_s_order": 1.9992768689858031,
+      "n64_forward_duration_s": 2.9403995833066077e-05,
+      "n64_forward_duration_s_order": 1.9998195098998812,
+      "n64_reverse_duration_s": 2.9403995833066077e-05,
+      "n64_reverse_duration_s_order": 1.9998195098998812
+    },
+    "test_curved_harmonic_rod_contact_power_refinement[True]": {
+      "n8_forward_duration_s": 0.0018768863344371667,
+      "n8_reverse_duration_s": 0.0018768863344371667,
+      "n16_forward_duration_s": 0.00047016935406962723,
+      "n16_forward_duration_s_order": 1.9970888707733232,
+      "n16_reverse_duration_s": 0.00047016935406962723,
+      "n16_reverse_duration_s_order": 1.9970888707733232,
+      "n32_forward_duration_s": 0.00011760126976767538,
+      "n32_forward_duration_s_order": 1.9992768689320035,
+      "n32_reverse_duration_s": 0.00011760126976767538,
+      "n32_reverse_duration_s_order": 1.9992768689320035,
+      "n64_forward_duration_s": 2.940399581197184e-05,
+      "n64_forward_duration_s_order": 1.999819510986617,
+      "n64_reverse_duration_s": 2.940399581197184e-05,
+      "n64_reverse_duration_s_order": 1.999819510986617
+    }
+  }
+}
