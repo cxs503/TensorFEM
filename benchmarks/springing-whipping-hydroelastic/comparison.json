@@ -1,0 +1,266 @@
+{
+  "schema_version": "1.0.0",
+  "task_key": "paper-exp-springing-whipping-hydroelastic-2",
+  "topic": "springing-whipping-hydroelastic",
+  "experiment": "research_plan item 2 -- domain experiment: hydroelastic time-domain response in TensorFEM vs the T1-anchor measured magnitude (peak / dominant-frequency / damping-sensitivity)",
+  "repository": "TensorFEM",
+  "branch": "agent/m27813",
+  "generated_by": {
+    "script": "benchmarks/springing-whipping-hydroelastic/run_comparison.py",
+    "command": "PYTHONPATH=src python benchmarks/springing-whipping-hydroelastic/run_comparison.py",
+    "python": "3.11.6",
+    "numpy": "2.4.6",
+    "torch": "2.7.1",
+    "tensorfem": "0.45.0"
+  },
+  "anchor_reference": {
+    "path": "/root/tp-agent/work/m27813/benchmarks/anchors/springing-whipping-hydroelastic.json",
+    "values_used": {
+      "L_m": 320.0,
+      "B_m": 58.0,
+      "T_m": 20.8,
+      "rho_kg_m3": 1025.0,
+      "V_m_s": 7.9732,
+      "q_pa": 32580.608098,
+      "p_rms_pa": 325.80608098,
+      "cp_rms_star": 0.01,
+      "amplitude_A": 0.00022567583341910255,
+      "l_ref_used_m": 320.0,
+      "convention_status": "UNVERIFIED \u2014 assumed for the dry run, must be resolved verbatim from the source",
+      "anchor_verdict": "FAIL",
+      "anchor_verdict_kind": "honest FAIL \u2014 external anchor not reconciled"
+    },
+    "claim_eligible": false,
+    "note": "the T1 anchor's dry-run fixture is a labelled synthetic spectrum (S*(x) = A x^2 exp(-x^2), Cp_rms = 0.01); it is NOT a transcribed SNAME T&R Bulletin value.  The external bulletin is NOT_OBTAINED in this sandbox (T1 source registry), so no source-anchor number exists to compare against."
+  },
+  "case_caliber": {
+    "case_id": "kvlcc2_hull_girder_caliber",
+    "description": "KVLCC2-class hull-girder vertical bending caliber: the scale at which the T1 springing excitation spectrum is expressed (L=320 m, B=58 m, T=20.8 m, rho=1025 kg/m^3, V=7.9732 m/s).",
+    "quantities": {
+      "L": {
+        "value": 320.0,
+        "unit": "m",
+        "grade": "REPO_DOCUMENTED"
+      },
+      "B": {
+        "value": 58.0,
+        "unit": "m",
+        "grade": "REPO_DOCUMENTED"
+      },
+      "T": {
+        "value": 20.8,
+        "unit": "m",
+        "grade": "REPO_DOCUMENTED"
+      },
+      "D": {
+        "value": 30.0,
+        "unit": "m",
+        "grade": "REPO_DOCUMENTED",
+        "source": "docs/hull-girder-csr-bending-chain.md (moulded depth)"
+      },
+      "I_midship": {
+        "value": 1646.7,
+        "unit": "m^4",
+        "grade": "REPO_DOCUMENTED",
+        "source": "docs/hull-girder-csr-bending-chain.md"
+      },
+      "rho": {
+        "value": 1025.0,
+        "unit": "kg/m^3",
+        "grade": "REPO_DOCUMENTED"
+      },
+      "V": {
+        "value": 7.9732,
+        "unit": "m/s",
+        "grade": "CASE_INPUT"
+      }
+    }
+  },
+  "geometry_gate": {
+    "area_rel_error": 0.0,
+    "inertia_rel_error": 2.8996460705093722e-15,
+    "area_thin_wall_rel_dev": 0.0012302708548547917,
+    "inertia_thin_wall_rel_dev": 0.004676818658785202,
+    "block_coefficient": 0.005461964697423454,
+    "slenderness": 10.666666666666666,
+    "draft_over_depth": 0.6933333333333334,
+    "pass": true
+  },
+  "wet_modal_model": {
+    "elements": 40,
+    "n_modes": 4,
+    "lewis_added_mass_kg_m": 2972719.741148089,
+    "lewis_area_ratio": 1.0,
+    "ballast_mass_per_length_kg_m": 1161955.024197893,
+    "structural_mass_per_length_kg_m": 74604.97580210696,
+    "floating_mass_per_length_kg_m": 1236560.0,
+    "wet_freq_hz": [
+      0.12972265029847377,
+      0.44877600808060447,
+      0.8479623291633348,
+      1.2695392519312432
+    ],
+    "dry_freq_hz": [
+      0.9681580819946186,
+      3.3227037326747553,
+      6.265905136371077,
+      9.395036714783304
+    ]
+  },
+  "cases": [
+    {
+      "case": "springing_zeta_0.02",
+      "excitation": "harmonic springing pressure at wet fundamental",
+      "p0_pa": 325.80608098,
+      "zeta": 0.02,
+      "f_exc_hz": 0.12972265029847377,
+      "f_dom_hz": 0.12972265029847377,
+      "f_dom_rel_dev_pct": 0.0,
+      "M_peak_nm": 6214742684.189236,
+      "M_expected_nm": 6234531033.218165,
+      "M_rel_dev_pct": 0.3173991583889074,
+      "M_static_nm": 241878434.51955196,
+      "daf": 25.69366176250357,
+      "daf_analytic_1_over_2zeta": 25.0,
+      "sigma_peak_pa": 39250211.88775542,
+      "n_periods": 46,
+      "steps_per_period": 200,
+      "dt_s": 0.03854377002393719
+    },
+    {
+      "case": "springing_zeta_0.01",
+      "excitation": "harmonic springing pressure at wet fundamental",
+      "p0_pa": 325.80608098,
+      "zeta": 0.01,
+      "f_exc_hz": 0.12972265029847377,
+      "f_dom_hz": 0.12972265029847377,
+      "f_dom_rel_dev_pct": 0.0,
+      "M_peak_nm": 12399603029.469032,
+      "M_expected_nm": 12469062066.43633,
+      "M_rel_dev_pct": 0.5570510163251594,
+      "M_static_nm": 241878434.51955196,
+      "daf": 51.263780725630276,
+      "daf_analytic_1_over_2zeta": 50.0,
+      "sigma_peak_pa": 78311697.0343569,
+      "n_periods": 83,
+      "steps_per_period": 200,
+      "dt_s": 0.03854377002393719
+    },
+    {
+      "case": "springing_zeta_0.05",
+      "excitation": "harmonic springing pressure at wet fundamental",
+      "p0_pa": 325.80608098,
+      "zeta": 0.05,
+      "f_exc_hz": 0.12972265029847377,
+      "f_dom_hz": 0.12972265029847377,
+      "f_dom_rel_dev_pct": 0.0,
+      "M_peak_nm": 2493592463.648885,
+      "M_expected_nm": 2493812413.2872663,
+      "M_rel_dev_pct": 0.008819814883010802,
+      "M_static_nm": 241878434.51955196,
+      "daf": 10.309279819021311,
+      "daf_analytic_1_over_2zeta": 10.0,
+      "sigma_peak_pa": 15748686.234255126,
+      "n_periods": 40,
+      "steps_per_period": 200,
+      "dt_s": 0.03854377002393719
+    },
+    {
+      "case": "whipping_zeta_0.02",
+      "excitation": "half-sine slamming impulse (whipping)",
+      "p_peak_pa": 325.80608098,
+      "zeta": 0.02,
+      "t_pulse_s": 0.1,
+      "f_dom_hz": 0.133322223148071,
+      "f_dom_rel_dev_pct": 2.774822161985671,
+      "M_peak_nm": 14899084.315325849,
+      "M_expected_nm": 14915137.090372795,
+      "M_rel_dev_pct": 0.10762740529758852,
+      "sigma_peak_pa": 94097.57507705467,
+      "tau_measured_s": 54.01,
+      "tau_analytic_s": 61.34431524706825,
+      "tau_rel_dev_pct": 11.955981931706008,
+      "impulse_ns": 12.563416756852693,
+      "duration_s": 60.0,
+      "dt_s": 0.005
+    }
+  ],
+  "criteria": [
+    {
+      "case": "springing_zeta_0.02",
+      "criterion_peak": "PASS",
+      "criterion_frequency": "PASS",
+      "peak_rel_dev_pct": 0.3173991583889074,
+      "freq_rel_dev_pct": 0.0,
+      "limit_pct": 15.0
+    },
+    {
+      "case": "springing_zeta_0.01",
+      "criterion_peak": "PASS",
+      "criterion_frequency": "PASS",
+      "peak_rel_dev_pct": 0.5570510163251594,
+      "freq_rel_dev_pct": 0.0,
+      "limit_pct": 15.0
+    },
+    {
+      "case": "springing_zeta_0.05",
+      "criterion_peak": "PASS",
+      "criterion_frequency": "PASS",
+      "peak_rel_dev_pct": 0.008819814883010802,
+      "freq_rel_dev_pct": 0.0,
+      "limit_pct": 15.0
+    },
+    {
+      "case": "whipping_zeta_0.02",
+      "criterion_peak": "PASS",
+      "criterion_frequency": "PASS",
+      "peak_rel_dev_pct": 0.10762740529758852,
+      "freq_rel_dev_pct": 2.774822161985671,
+      "limit_pct": 15.0
+    }
+  ],
+  "damping_sensitivity": {
+    "zeta_values": [
+      0.02,
+      0.01,
+      0.05
+    ],
+    "M_peak_nm": [
+      6214742684.189236,
+      12399603029.469032,
+      2493592463.648885
+    ],
+    "daf": [
+      25.69366176250357,
+      51.263780725630276,
+      10.309279819021311
+    ],
+    "daf_analytic_1_over_2zeta": [
+      25.0,
+      50.0,
+      10.0
+    ],
+    "daf_ratio_computed_over_analytic": [
+      1.027746470500143,
+      1.0252756145126056,
+      1.030927981902131
+    ],
+    "note": "DAF = M_peak_dynamic / M_peak_static; analytic resonant DAF = 1/(2 zeta)"
+  },
+  "verdict": {
+    "overall": "PASS",
+    "kind": "domain experiment PASS on the T1-caliber consistency gates; external SNAME T&R Bulletin 3-37/4-7 anchor remains WITHHELD (NOT_OBTAINED, recorded in the T1 source registry) -- the comparison is against the T1 labelled synthetic fixture, claim_eligible=false, and is not a validation against a transcribed source value",
+    "external_anchor_status": "WITHHELD",
+    "why": "all computed (Newmark) peaks and dominant frequencies agree with the analytic modal-transfer expectations within the 15 % gate; the residual is the Newmark discretisation error (second-order scheme, ~1 % at 200 steps/period)"
+  },
+  "limitations": [
+    "the hull girder is a uniform equivalent box girder (KVLCC2 outer dimensions, I matched to the CSR-chain I_midship); a real hull is non-uniform, so the modal spacing differs from a built ship",
+    "the springing excitation is a deterministic harmonic pressure at the wet fundamental (p_0 = T1 p_rms); a real turbulent boundary layer is broadband and spatially non-uniform -- the frequency convention (l_ref = L vs l_ref = delta*) is UNVERIFIED in the T1 anchor and shifts the springing band by L/delta* ~ 320",
+    "the whipping pulse is a half-sine slamming impulse with a declared duration; the real slamming load shape is not transcribed from a source",
+    "the comparison is against the T1 synthetic fixture (claim_eligible=false), not against a transcribed SNAME T&R Bulletin value; the external bulletin is NOT_OBTAINED"
+  ],
+  "reproduce": {
+    "generate": "PYTHONPATH=src python benchmarks/springing-whipping-hydroelastic/run_comparison.py",
+    "anchor_gate": "python benchmarks/anchors/springing_whipping_hydroelastic_anchor.py --check"
+  }
+}
