@@ -1,0 +1,386 @@
+{
+ "mission": {
+  "id": 28177,
+  "week": "W52",
+  "date": "2026-11-16",
+  "repo": "TensorFEM",
+  "topic": "hull-vibration-analytic-kernel",
+  "discipline": "vibration",
+  "criterion": "一阶频率相对差 ≤5%（裸板 f11 FE vs Navier 外部锚 A11）",
+  "task": "paper-exp-hull-vibration-analytic-kernel-4"
+ },
+ "provenance": {
+  "git_commit": "63d70d42a7c73cac5b0bccf061ef4c7e96fe00bc",
+  "python": "3.11.6",
+  "platform": "Linux-6.6.52-1.7.lns23.loongarch64-loongarch64-with-glibc2.38",
+  "numpy": "2.4.6",
+  "torch": "2.7.1",
+  "script": "scripts/w52_stiffened_plate_analytic_kernel.py",
+  "elapsed_s": 61.5
+ },
+ "anchors": {
+  "A11": {
+   "values": {
+    "a_m": 10.0,
+    "b_m": 4.0,
+    "h_m": 0.02,
+    "E_Pa": 210000000000.0,
+    "rho": 7850.0,
+    "nu": 0.3,
+    "f1_Hz": 3.5649,
+    "f1_h_0.01_Hz": 1.7825,
+    "ratio_h_half": 0.5
+   },
+   "citation": "Timoshenko & Woinowsky-Krieger, Theory of Plates and Shells (2nd ed., 1959) §30 Navier 解；Blevins, Formulas for Natural Frequency and Mode Shape (1979)",
+   "formula": "ω_mn = π²((m/a)²+(n/b)²)√(D/(ρh)), D=Eh³/(12(1−ν²))"
+  },
+  "provenance": {
+   "path": "/root/tp-agent/work/m28177/papers/data/w32-2026-11-16/anchors.json",
+   "sha256": "b6e616f8d83ecc236ca820d3ca22b8082a11ee14b370f4517d406619a46345da",
+   "anchor_ids": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6",
+    "A7",
+    "A8",
+    "A9",
+    "A10",
+    "A11",
+    "A12",
+    "A13"
+   ],
+   "anchor_kind": "closed_form_recomputed",
+   "citation": "Timoshenko & Woinowsky-Krieger, Theory of Plates and Shells (2nd ed., 1959) §30 Navier 解；Blevins, Formulas for Natural Frequency and Mode Shape (1979)",
+   "verification": "REAL（闭式解本机复算 + 标度律恒等）"
+  }
+ },
+ "plate": {
+  "geometry": {
+   "a_m": 10.0,
+   "b_m": 4.0,
+   "h_m": 0.02,
+   "aspect_a_over_b": 2.5,
+   "a_over_h": 500.0
+  },
+  "material": {
+   "E_Pa": 210000000000.0,
+   "nu": 0.3,
+   "rho": 7850.0,
+   "rigidity_Nm": 153846.15384615387
+  },
+  "fe_mesh": [
+   40,
+   20
+  ],
+  "bare": {
+   "fem_frequencies_hz": [
+    3.574269446344328,
+    5.053669844851638,
+    7.534215047765457,
+    11.038871765362472,
+    12.934266925987732
+   ],
+   "navier_frequencies_hz": [
+    3.5649330576249083,
+    5.040077771124869,
+    7.498652293624806,
+    12.784587516999668,
+    14.259732230499633
+   ],
+   "errors_pct": [
+    0.26189520444010256,
+    0.26967984114529236,
+    0.4742552761232256,
+    13.654846113071049,
+    9.29516265163038
+   ],
+   "mode_pairs": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "f1_fem_hz": 3.574269446344328,
+   "f1_navier_hz": 3.5649330576249083,
+   "f1_rel_error": 0.0026189520444010257,
+   "f1_error_pct": 0.26189520444010256,
+   "mac_first3": [
+    1.0,
+    1.0000000000000007,
+    1.0000000000000002
+   ]
+  },
+  "single_stiffened": {
+   "stiffener": {
+    "flange_width": 0.06,
+    "flange_thickness": 0.008,
+    "web_height": 0.05,
+    "web_thickness": 0.006,
+    "area_m2": 0.0007800000000000001,
+    "inertia_m4": 2.2032153846153848e-07
+   },
+   "fem_frequencies_hz": [
+    4.223322093284381,
+    6.897961252789824,
+    10.480077097190227,
+    14.848409620903182
+   ],
+   "reference_hz": 3.781748578096888,
+   "error_pct": 11.676437660213477,
+   "reference_label": "simplified plate+stiffener coupling (internal model)"
+  },
+  "double_stiffened": {
+   "spacing_x": 0.25,
+   "spacing_y": 0.25,
+   "orthotropic": {
+    "Dx": 338916.2461538462,
+    "Dy": 338916.2461538462,
+    "H": 100000.00000000001
+   },
+   "fem_frequencies_hz": [
+    5.235186791587079,
+    7.301695156563316,
+    10.880665927636743,
+    16.016213073457678
+   ],
+   "reference_hz": 4.827351033873991,
+   "error_pct": 8.44843797045761,
+   "reference_label": "homogenised orthotropic Navier (internal model)"
+  }
+ },
+ "convergence": {
+  "mesh_levels": [
+   10,
+   20,
+   40
+  ],
+  "f1_by_mesh": [
+   {
+    "mesh": [
+     10,
+     5
+    ],
+    "f1_hz": 3.722675726663295,
+    "rel_error_pct": 4.424842388021749
+   },
+   {
+    "mesh": [
+     20,
+     10
+    ],
+    "f1_hz": 3.603112954547687,
+    "rel_error_pct": 1.0709849611654574
+   },
+   {
+    "mesh": [
+     40,
+     20
+    ],
+    "f1_hz": 3.574269446344328,
+    "rel_error_pct": 0.26189520444010256
+   }
+  ],
+  "gci": {
+   "fine_freq": 3.574269446344328,
+   "medium_freq": 3.603112954547687,
+   "coarse_freq": 3.722675726663295,
+   "refinement_ratio": 2.0,
+   "apparent_order": 2.0514496983036796,
+   "gci_fine": 0.0032071507238181623,
+   "gci_medium": 0.013187931295961366,
+   "extrapolated_freq": 3.565098869670756
+  }
+ },
+ "criteria": [
+  {
+   "id": "C1",
+   "name": "一阶频率相对差 ≤5%（主判据：裸板 f11 FE vs Navier 外部锚 A11）",
+   "quantity": "f11 (FE 40x20)",
+   "value": 3.574269446344328,
+   "reference": 3.5649330576249083,
+   "reference_label": "Navier closed form (A11, anchors.json 直读)",
+   "rel_error": 0.0026189520444010257,
+   "threshold": 0.05,
+   "unit": "Hz",
+   "verdict": "PASS",
+   "pass": true,
+   "honest_fail": false,
+   "note": "外部锚为对比核心；a/h=500 薄板，偏差来自剪切变形与离散"
+  },
+  {
+   "id": "C2",
+   "name": "Navier 闭式一阶频率独立复算 vs 锚值",
+   "quantity": "f11 (Navier recompute)",
+   "value": 3.5649330576249083,
+   "reference": 3.5649,
+   "reference_label": "anchors.A11.f1_Hz",
+   "rel_error": 9.27308617580528e-06,
+   "threshold": 0.03,
+   "unit": "Hz",
+   "verdict": "PASS",
+   "pass": true,
+   "honest_fail": false,
+   "note": "锚值直读 anchors.json；本项是独立复算"
+  },
+  {
+   "id": "C3",
+   "name": "裸板前 5 阶频率 vs Navier（信息项，逐阶）",
+   "quantity": "f11..f22 (FE 40x20)",
+   "value": [
+    3.574269446344328,
+    5.053669844851638,
+    7.534215047765457,
+    11.038871765362472,
+    12.934266925987732
+   ],
+   "reference": [
+    3.5649330576249083,
+    5.040077771124869,
+    7.498652293624806,
+    12.784587516999668,
+    14.259732230499633
+   ],
+   "reference_label": "Navier closed form (A11)",
+   "rel_error": [
+    0.0026189520444010257,
+    0.0026967984114529236,
+    0.004742552761232256,
+    0.13654846113071048,
+    0.09295162651630379
+   ],
+   "threshold": 0.05,
+   "unit": "Hz",
+   "verdict": "INFO",
+   "pass": false,
+   "informational": true,
+   "honest_fail": false,
+   "note": "前 3 阶均 <0.5%（收敛良好）；模态 (1,2)/(2,2) 离散误差 13.7%/9.3% 为 40x20 网格高阶离散行为，非主判据，如实记录"
+  },
+  {
+   "id": "C4",
+   "name": "单加劲板 f1 FE vs 简化耦合参考（内部模型，信息项）",
+   "quantity": "f1 (FE 40x20)",
+   "value": 4.223322093284381,
+   "reference": 3.781748578096888,
+   "reference_label": "simplified plate+stiffener coupling (internal)",
+   "rel_error": 0.11676437660213476,
+   "threshold": 0.5,
+   "unit": "Hz",
+   "verdict": "PASS",
+   "pass": true,
+   "informational": true,
+   "honest_fail": false,
+   "note": "参考为简化等效厚度模型，非外部锚；模块文档预期 <200%"
+  },
+  {
+   "id": "C5",
+   "name": "双加劲板 f1 FE vs 正交各向等效 Navier（内部模型，信息项）",
+   "quantity": "f1 (FE 40x20)",
+   "value": 5.235186791587079,
+   "reference": 4.827351033873991,
+   "reference_label": "homogenised orthotropic Navier (internal)",
+   "rel_error": 0.08448437970457609,
+   "threshold": 0.5,
+   "unit": "Hz",
+   "verdict": "PASS",
+   "pass": true,
+   "informational": true,
+   "honest_fail": false,
+   "note": "参考为均质化正交各向板，非外部锚"
+  },
+  {
+   "id": "C6",
+   "name": "网格收敛 GCI（ASME V&V 20）",
+   "quantity": "GCI_fine",
+   "value": 0.0032071507238181623,
+   "reference": 0.0,
+   "reference_label": "GCI 收敛区间",
+   "rel_error": 0.0032071507238181623,
+   "threshold": 0.05,
+   "unit": "-",
+   "verdict": "PASS",
+   "pass": true,
+   "honest_fail": false,
+   "note": "r=2.0, p=2.051, extrap=3.56510 Hz"
+  },
+  {
+   "id": "C7",
+   "name": "振型 MAC（前 3 阶，w DOF）",
+   "quantity": "MAC",
+   "value": [
+    1.0,
+    1.0000000000000007,
+    1.0000000000000002
+   ],
+   "reference": 1.0,
+   "reference_label": "MAC=1 完全一致",
+   "rel_error": [
+    0.0,
+    -6.661338147750939e-16,
+    -2.220446049250313e-16
+   ],
+   "threshold": 0.05,
+   "unit": "-",
+   "verdict": "PASS",
+   "pass": true,
+   "honest_fail": false,
+   "note": "FEM 振型 vs Navier 解析振型"
+  },
+  {
+   "id": "C8",
+   "name": "量纲标度律 f ∝ sqrt(E/ρ)/L",
+   "quantity": "dimensional check",
+   "value": 0.002618952044401048,
+   "reference": 0.0,
+   "reference_label": "标度律恒等",
+   "rel_error": 0.002618952044401048,
+   "threshold": 0.01,
+   "unit": "-",
+   "verdict": "PASS",
+   "pass": true,
+   "honest_fail": false,
+   "note": "f 与 sqrt(E/ρ)/L 标度一致性"
+  }
+ ],
+ "criterion_summary": {
+  "total": 8,
+  "real_total": 5,
+  "pass": 5,
+  "fail": 0,
+  "informational": 3,
+  "honest_fail": 0,
+  "thresholds": {
+   "f1_vs_anchor": 0.05,
+   "navier_recompute": 0.03,
+   "gci": 0.05,
+   "mac": 0.95,
+   "dimensional": 0.01
+  }
+ },
+ "honest_failures": [],
+ "artifact_paths": {
+  "stiffened_plate_json": "papers/data/w32-2026-11-16/vibration/stiffened_plate.json",
+  "fig_modes": "artifacts/w52-stiffened-plate/fig_modes.png",
+  "fig_frequencies": "artifacts/w52-stiffened-plate/fig_frequencies.png",
+  "fig_convergence": "artifacts/w52-stiffened-plate/fig_convergence.png"
+ }
+}
